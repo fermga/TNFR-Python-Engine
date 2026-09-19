@@ -1,0 +1,1815 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/CAPACITY_LOCALIZATION_BALANCE/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Capacity-conditioned EPI balance on a canonical cycle - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#capacity-conditioned-epi-balance-on-a-canonical-cycle" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Capacity-conditioned EPI balance on a canonical cycle
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/CLI_AND_SDK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI and SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FUNDAMENTAL_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NODAL_PARAMETER_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NODAL_RESEARCH_STRATEGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/FIVE_STAGE_EXECUTION_PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Active execution plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DERIVED_EPI_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/archive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Historical archive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../factorization-lab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Applications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Applications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../primality-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.github/WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-canonical-channels-and-the-restricted-preparation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The canonical channels and the restricted preparation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-a-shifted-structural-coordinate-gives-the-exact-balance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. A shifted structural coordinate gives the exact balance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-what-a-capacity-dip-produces-and-what-it-does-not-establish" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. What a capacity dip produces, and what it does not establish
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-canonical-capacity-updates-generally-release-the-static-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Canonical capacity updates generally release the static profile
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-diminishing-capacity-can-retain-contrast-by-exhausting-the-nodal-clock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Diminishing capacity can retain contrast by exhausting the nodal clock
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-the-common-walk-condition-is-essential" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. The common-walk condition is essential
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-executable-evidence-and-the-next-structural-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Executable evidence and the next structural extension
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="capacity-conditioned-epi-balance-on-a-canonical-cycle">Capacity-conditioned EPI balance on a canonical cycle<a class="headerlink" href="#capacity-conditioned-epi-balance-on-a-canonical-cycle" title="Permanent link">&para;</a></h1>
+<p><strong>Status:</strong> Exact fixed-capacity balance and relaxation theorem, with finite
+canonical preparation and runtime checks. General localization remains open.
+<strong>Research links:</strong> B2.d.2/O3.a, S3, S8, S9 and S16.</p>
+<h2 id="1-the-canonical-channels-and-the-restricted-preparation">1. The canonical channels and the restricted preparation<a class="headerlink" href="#1-the-canonical-channels-and-the-restricted-preparation" title="Permanent link">&para;</a></h2>
+<p>Consider a fixed simple unit-conductance cycle. Let <code>L=I-W/2</code> be its normalized
+Laplacian, <code>B=2L</code> its conductance Laplacian, <code>x</code> its real scalar EPI field and
+<code>nu_i&gt;0</code> its structural capacities. Keep a regular phase twist whose absolute
+adjacent gap is strictly below both the effective U3 gate and <code>pi/2</code>, so the
+neighbor phasor resultant points along the local phase. Its phase pressure is zero,
+as shown in <a href="../COUPLING_WINDING_PERSISTENCE/">Coupling winding persistence</a>.
+The cycle's uniform degree makes topology pressure zero as well.</p>
+<p>The remaining canonical gradients are the neighbor mean differences already
+implemented by <a href="../../src/tnfr/dynamics/dnfr.py">dnfr.py</a>. Writing the effective
+normalized channel coefficients as <code>e=w_epi&gt;0</code>, <code>f=w_vf&gt;=0</code>, the nodal equation
+becomes</p>
+<div class="arithmatex">\[
+\Delta\mathrm{NFR}=-eLx-fL\nu,\qquad
+\dot x=\operatorname{diag}(\nu)\Delta\mathrm{NFR}.
+\]</div>
+<p>The full four-channel normalization remains in force even when two channel
+values vanish; the EPI/capacity pair is not renormalized by itself. The
+capacity profile and the phase twist are held fixed during this restricted EPI
+flow. Clipping, changing support, an independent phase advance and intervening
+capacity-changing operators are separate dynamics. No external potential or
+new restoring coefficient has been introduced.</p>
+<h2 id="2-a-shifted-structural-coordinate-gives-the-exact-balance">2. A shifted structural coordinate gives the exact balance<a class="headerlink" href="#2-a-shifted-structural-coordinate-gives-the-exact-balance" title="Permanent link">&para;</a></h2>
+<p>Set <code>r=f/e</code> and define</p>
+<div class="arithmatex">\[
+y=x+r\nu,\qquad H=\operatorname{diag}(2/\nu_i).
+\]</div>
+<p>Fixed capacity gives the exact homogeneous equation</p>
+<div class="arithmatex">\[
+\dot y=-e\operatorname{diag}(\nu)Ly.
+\]</div>
+<p>The capacity-pressure channel has been retained in the structural coordinate
+<code>y</code>, not discarded. In particular, <code>sum_i H_i*x_i</code> is conserved, because
+<code>H*diag(nu)*L=B</code> and the rows and columns of <code>B</code> sum to zero. If <code>x0</code> is the
+initial EPI, let</p>
+<div class="arithmatex">\[
+c=\frac{\sum_i H_i(x_{0i}+r\nu_i)}{\sum_i H_i},\qquad
+x_i^*=c-r\nu_i.
+\]</div>
+<p>The connected cycle has only the constant null mode of <code>L</code>. Thus <code>x*</code> is the
+unique zero-pressure profile with the conserved weighted EPI total selected
+by <code>x0</code>. All capacities are positive, so rate stationarity and zero pressure
+coincide in this fixed model. This implication changes at zero capacity.</p>
+<p>Let <code>z=x-x*</code>. Its inherited weighted deviation energy satisfies</p>
+<div class="arithmatex">\[
+V=\tfrac12z^\top Hz,\qquad
+\dot V=-e z^\top Bz
+=-e\sum_i(z_{i+1}-z_i)^2\leq0.
+\]</div>
+<p>Since <code>sum_i H_i*z_i=0</code>, the only zero-dissipation deviation is zero. More
+explicitly, write <code>nu_min=min_i nu_i</code> and
+<code>lambda2=1-cos(2*pi/n)</code>. Weighted mean minimization and the cycle Poincare
+inequality give</p>
+<div class="arithmatex">\[
+z^\top Bz\geq\nu_{\min}\lambda_2 z^\top Hz,
+\qquad V(t)\leq e^{-2e\nu_{\min}\lambda_2t}V(0).
+\]</div>
+<p>This proves relaxation to the capacity-conditioned profile within the exact
+held-field model, not attraction for general multichannel operator schedules.</p>
+<p>A second diagnostic is the shifted Dirichlet energy</p>
+<div class="arithmatex">\[
+F=\tfrac12y^\top By,\qquad
+\dot F=-e(By)^\top\operatorname{diag}(\nu_i/2)(By)\leq0.
+\]</div>
+<p>The ordinary EPI Dirichlet energy <code>x^T*B*x/2</code> can increase: its gradient is
+only one of the two pressure contributions. For example, with
+<code>e=f=1/2</code>, <code>nu=(1/2,1,1,1)</code> and <code>x=(3/4,1/2,1/2,1/2)</code>, its derivative is
+<code>1/16</code>, while both <code>V'</code> and <code>F'</code> are <code>-1/16</code>. This is structural redistribution
+under the existing capacity channel, not a violation of the derived balance.</p>
+<h2 id="3-what-a-capacity-dip-produces-and-what-it-does-not-establish">3. What a capacity dip produces, and what it does not establish<a class="headerlink" href="#3-what-a-capacity-dip-produces-and-what-it-does-not-establish" title="Permanent link">&para;</a></h2>
+<p>For initially uniform EPI <code>x0=b*1</code>, define the harmonic capacity
+<code>nu_h=n/sum_i(1/nu_i)</code>. Then</p>
+<div class="arithmatex">\[
+x_i^*=b+r(\nu_h-\nu_i),\qquad
+x_i^*-x_j^*=-r(\nu_i-\nu_j).
+\]</div>
+<p>A capacity dip produces a higher equilibrium EPI at the same location; a
+capacity peak produces a lower one. This contrast is fixed by the prepared
+structural capacity, not by an independently fitted confinement law. With
+uniform capacity the equilibrium is uniform, so an EPI bump alone disperses
+under the same positive-capacity flow.</p>
+<p>One canonical preparation makes this quantitative. Start with capacity one
+and uniform EPI, then apply a single Silence operation at a selected node.
+With the ideal repository formulas, its retained capacity is
+<code>q=1-1/(4*pi)</code>, while the default channel ratio is <code>r=1/pi</code>. The subsequent
+held-capacity equilibrium has core-minus-background contrast</p>
+<div class="arithmatex">\[
+r(1-q)=\frac1{4\pi^2}\simeq0.0253303.
+\]</div>
+<p>This contrast is independent of cycle size; the common equilibrium level
+depends on the harmonic capacity. Runtime observations instead use the exact
+ratio of materialized normalized channel coefficients and the represented
+Silence factor. They do not assert bitwise equality with the symbolic formula.</p>
+<p>The selected node is a declared structural preparation. As in the existing
+<a href="../../src/tnfr/physics/pointed_symmetry.py">pointed symmetry analysis</a>, its location
+breaks translation symmetry through that selector, not spontaneously. Once
+prepared, the EPI contrast develops under the autonomous restricted nodal
+flow without continuing external forcing. Its persistence is conditional on
+retaining the capacity profile and the other hypotheses. It is not evidence
+for an independently generated or universally stable localized entity.</p>
+<p>Capacity acts through both nodal levers here. Multiplying a heterogeneous
+capacity profile by <code>a</code> scales the EPI-pressure rate contribution by <code>a</code> and
+the capacity-pressure contribution by <code>a^2</code>. It also changes the predicted
+equilibrium contrast. It is therefore not merely a rescaling of time when
+the capacity channel is active and the profile is nonuniform.</p>
+<h2 id="4-canonical-capacity-updates-generally-release-the-static-profile">4. Canonical capacity updates generally release the static profile<a class="headerlink" href="#4-canonical-capacity-updates-generally-release-the-static-profile" title="Permanent link">&para;</a></h2>
+<p>The same canonical operators that prepared or synchronize the network can
+change its conditional balance. Suppose <code>x=c-r*nu</code> initially and preserve
+the regular phase twist and unit cycle support. Use target-only UM
+(<code>UM_BIDIRECTIONAL=False</code>) without functional links
+(<code>UM_FUNCTIONAL_LINKS=False</code>). Its immutable all-target stage with the
+configured capacity synchronization factor has</p>
+<div class="arithmatex">\[
+\nu^+=(I-sL)\nu,\qquad s=\texttt{UM\_vf\_sync}.
+\]</div>
+<p>UM leaves EPI unchanged. After the canonical pressure is refreshed,</p>
+<div class="arithmatex">\[
+\Delta\mathrm{NFR}^+=f s L^2\nu.
+\]</div>
+<p>Similarly, uniform Silence attenuation <code>nu^+=q*nu</code> gives</p>
+<div class="arithmatex">\[
+\Delta\mathrm{NFR}^+=f(1-q)L\nu.
+\]</div>
+<p>For a nonconstant capacity profile and positive <code>f</code>, these expressions are
+generally nonzero. A direct UM pressure write or its local stabilization
+telemetry must not replace this refreshed channel sum. The fixed-capacity
+profile is not forward invariant under the default capacity-changing stages.
+UM's capacity synchronization itself uses the same cycle diffusion map and
+smooths the supporting capacity contrast under its own exact fixed-gate
+hypotheses.</p>
+<p>For continuously varying capacity, even the shifted coordinate carries an
+additional term:</p>
+<div class="arithmatex">\[
+\dot y=-e\operatorname{diag}(\nu)Ly+r\dot\nu.
+\]</div>
+<p>The fixed-capacity conservation law and Lyapunov metric cannot be transferred
+without accounting for that forcing and the changing metric. This term is a
+consequence of the coordinate definition, not a new physical force.</p>
+<h2 id="5-diminishing-capacity-can-retain-contrast-by-exhausting-the-nodal-clock">5. Diminishing capacity can retain contrast by exhausting the nodal clock<a class="headerlink" href="#5-diminishing-capacity-can-retain-contrast-by-exhausting-the-nodal-clock" title="Permanent link">&para;</a></h2>
+<p>If capacity is spatially uniform during each EPI segment, its own pressure
+gradient is zero. Let each segment have duration <code>h</code> and capacity
+<code>nu_k=nu0*q^k</code>, as in repeated uniform canonical Silence attenuation with
+<code>0&lt;q&lt;1</code>. The total capacity exposure is finite:</p>
+<div class="arithmatex">\[
+\Theta_\infty=h\sum_{k\geq0}\nu_0q^k=\frac{h\nu_0}{1-q}.
+\]</div>
+<p>Exact continuous diffusion on these piecewise constant segments multiplies
+a Laplacian mode of eigenvalue <code>lambda&gt;0</code> by
+<code>exp(-e*lambda*Theta_infinity)&gt;0</code>. Nonzero initial contrast therefore need
+not vanish. Its rate tends to zero because capacity tends to zero; its
+pressure can remain nonzero. This is retention through a finite accumulated
+reorganization budget, not a restoring mechanism or spontaneous confinement.
+The formula concerns the exact segmented flow. A finite Euler trajectory
+has its own product of modal factors and numerical error.</p>
+<p>At exactly zero capacity, stationarity is weaker still. A node freezes even
+when its pressure is nonzero, and <code>H_i=2/nu_i</code> is unavailable. If every
+capacity vanishes, any EPI field is stationary although <code>-e*L*x</code> need not
+vanish. With some frozen nodes, the active part instead has a Dirichlet
+problem for <code>y</code>, with the frozen values as boundary data. Different frozen
+values can support residual pressure at those nodes. The executable balance
+in this note deliberately requires strictly positive capacity.</p>
+<h2 id="6-the-common-walk-condition-is-essential">6. The common-walk condition is essential<a class="headerlink" href="#6-the-common-walk-condition-is-essential" title="Permanent link">&para;</a></h2>
+<p>The canonical implementation averages EPI with edge conductances but averages
+capacity over the unweighted unique neighbor support. The two walks coincide
+on the unit cycle considered here; they need not coincide on a weighted
+graph. With distinct walks <code>L_E,L_0</code>, the pressure is
+<code>-e*L_E*x-f*L_0*nu</code>, and substituting <code>x=c-r*nu</code> leaves
+<code>f*(L_E-L_0)*nu</code> rather than zero.</p>
+<p>Even regular weighted strength is insufficient: a four-cycle with alternating
+edge weights <code>1,3</code>, capacity <code>(1,2,3,4)</code>, <code>x=5-nu</code> and <code>e=f=1/2</code> has residual
+pressure <code>(-1/4,-1/4,1/4,1/4)</code>. For a more general graph, the weighted total
+can drift as well. On a three-node path with edge weights <code>1,3</code>, strengths
+<code>d_E=(1,4,3)</code> and capacity <code>(1,2,4)</code>,
+<code>d_E^T*L_0*nu=3</code>; consequently the derivative of
+<code>sum_i (d_Ei/nu_i)*x_i</code> is <code>-3*f</code>. No stationary unclipped two-channel state
+exists for that fixed forcing when <code>f&gt;0</code>. These controls prevent a false
+extension of the cycle theorem.</p>
+<h2 id="7-executable-evidence-and-the-next-structural-extension">7. Executable evidence and the next structural extension<a class="headerlink" href="#7-executable-evidence-and-the-next-structural-extension" title="Permanent link">&para;</a></h2>
+<p><a href="../../src/tnfr/physics/capacity_localization.py"><code>capacity_localization.py</code></a>
+observes exact rational supplied cycle coordinates, the shifted equilibrium,
+pressure/rate, weighted conservation and both energy balances. It uses the
+shared exact-or-represented real reader and the existing full-channel default
+normalization. General positive explicit coefficient pairs are formal
+algebraic inputs; actual normalized canonical coefficients and live graph
+conditions require separate evidence. No clipping interval, observed phase
+loop or operator history is inferred from the detached vectors.</p>
+<p><a href="../../tests/physics/test_capacity_localization.py">Exact tests</a> cover pressure
+cancellation, capacity dips, uniform-capacity dispersion, the two-lever
+scaling, and EPI-energy growth with decreasing shifted energies.
+<a href="../../tests/physics/test_capacity_pressure_boundaries.py">Boundary tests</a> exercise
+the weighted-walk mismatch and actual UM/Silence refresh effects.
+<a href="../../tests/physics/test_capacity_clock_retention.py">Clock tests</a> connect actual
+uniform Silence attenuation to the finite-exposure obstruction using existing
+rational exponential bounds.
+<a href="../../tests/physics/test_capacity_localization_runtime.py">Runtime tests</a>
+and the <a href="../../benchmarks/capacity_localization.py">benchmark</a> retain the actual
+canonical preparation, pressure-refreshed solver partitions and finite
+residuals. These are distinct from a future binary64 or complete-runtime
+stability theorem.</p>
+<p>The zero-winding control shares the exact prepared two-channel model; its
+binary64 endpoints need not equal those of represented winding phases. The
+runtime test accounts for their difference with the captured remaining-channel
+pressure defect <code>delta_p</code> and Euler residual <code>epsilon</code>. For each recorded step,
+<code>d=h*diag(nu)*delta_p+epsilon</code>. The common matrix
+<code>M=I-h*e*diag(nu)*L</code> has nonnegative entries and unit row sums on these admitted
+steps, so the exact discrepancy satisfies
+<code>Delta_next=M*Delta+d_zero-d_winding</code> and
+<code>||Delta_next||_inf &lt;= ||Delta||_inf+||d_zero-d_winding||_inf</code>.
+This is a finite bound derived from the retained residuals, not an arbitrary
+equality tolerance or a prediction of unobserved numerical errors.</p>
+<p>The change of coordinate also reuses the existing
+<a href="../../src/tnfr/physics/structural_diffusion.py">heterogeneous diffusion geometry</a>:
+the reference coordinate <code>y</code> has effective capacity <code>e*nu</code>. Its exact-model
+convergence and Dirichlet identities therefore need no new transport law;
+identifying a particular materialized runtime generator remains separate.</p>
+<p>A further identity suggests how to study localized phase structure without
+introducing another primitive. Write <code>phi_i=2*pi*W*i/n+p_i</code> with a periodic
+phase perturbation <code>p</code> and a consistent lift. Require every lifted gap
+<code>2*pi*W/n+p_{i+1}-p_i</code> to have absolute value strictly below both the effective
+U3 gate and <code>pi/2</code>. The canonical phase channel is then <code>-L*p/pi</code>.
+If both this derived coordinate and capacity are
+held fixed, the combined pressure is
+<code>-L*(e*x+f*nu+(w_phase/pi)*p)</code>. The corresponding shifted coordinate is
+<code>x+(f/e)*nu+(w_phase/(pi*e))*p</code>. A target-only all-node UM stage without
+functional links on this fixed cycle evolves <code>p</code> with its phase gap
+coefficient and evolves <code>nu</code> with its separate capacity
+coefficient, so this more general balance is likewise conditional on what
+structural fields are retained. That algebraic extension is developed in the
+joint support/release study linked below; it is not implemented by the
+capacity-only observer or a claim of spontaneous physical localization.
+The separate <a href="../CYCLE_SUPPORT_DYNAMICS/">joint cycle observer and proof</a>
+now use the normalized coordinate <code>a=p/pi</code>, derive the reset/flow energy
+budget and distinguish default-factor finite-clock retention from an active
+zero-pressure equilibrium. Both observers reuse one private exact cycle
+algebra; their hypotheses and public read-outs remain separate.
+Neither note opens a new cycle campaign; the
+<a href="../research/FIVE_STAGE_EXECUTION_PLAN/#current-g3-gate">execution plan</a> owns resumption.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../docs/assets/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+      
+    
+  </body>
+</html>

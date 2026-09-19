@@ -1,0 +1,59 @@
+{
+  "scope": "Full text captured before consolidating each live document; archival instructions and conclusions are historical, not current authority.",
+  "snapshots": [
+    {
+      "original_path": "theory/research/FIVE_STAGE_EXECUTION_PLAN.md",
+      "archive_path": "theory/research/archive/EXECUTION_PLAN_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt",
+      "bytes": 211122,
+      "sha256": "689526cd7f7161ca30255f326697e046333ef6a31c46bf646cc73b858c3f0928"
+    },
+    {
+      "original_path": "theory/CORE_RESEARCH_PROGRAM.md",
+      "archive_path": "theory/research/archive/CORE_PROGRAM_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt",
+      "bytes": 177456,
+      "sha256": "df25bcaf411a6fd36d8b45d273b839030b05490cb0a8436835428b87d4579e54"
+    },
+    {
+      "original_path": "theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md",
+      "archive_path": "theory/research/archive/CATALOG_PROGRAM_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt",
+      "bytes": 35360,
+      "sha256": "4766d2886df6cd5ef4740bb5a48af20dd9ed99da0f0f982120119038d93136fb"
+    },
+    {
+      "original_path": "theory/NODAL_RESEARCH_STRATEGY.md",
+      "archive_path": "theory/research/archive/STRATEGY_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt",
+      "bytes": 147937,
+      "sha256": "32ebfe4b5af1283cd3bf99de22e3232c64d3f69a4ad1c9e2a9f87ae1560cbc81"
+    },
+    {
+      "original_path": "theory/TNFR_RIEMANN_RESEARCH_NOTES.md",
+      "archive_path": "theory/research/archive/RIEMANN_NOTEBOOK_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt",
+      "bytes": 827771,
+      "sha256": "e2426dc5c78bebdd1dbe4410476c18e9a95548638b28b0298e1cfc10b2548a65"
+    },
+    {
+      "original_path": "AGENTS.md",
+      "archive_path": "theory/research/archive/AGENT_SYNTHESIS_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt",
+      "bytes": 131015,
+      "sha256": "4df5dc37151263d91cdb2a827373802f48bf9a53aec5349548bf74e35bb29097"
+    },
+    {
+      "original_path": "theory/NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md",
+      "archive_path": "theory/research/archive/NUCLEUS_B_PROPOSAL_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt",
+      "bytes": 16471,
+      "sha256": "2089674b511a70f4db7a358ca7bdc1e454d9ea3aadf57606041f7cf80ad90b74"
+    },
+    {
+      "original_path": "README.md",
+      "archive_path": "theory/research/archive/README_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt",
+      "bytes": 66673,
+      "sha256": "51d48ca862987e7509b286873260467c43eb8ffaf9d9ba4a6df3b8ba70df1de7"
+    },
+    {
+      "original_path": "theory/APPLIED_STRUCTURAL_ANALYSIS.md",
+      "archive_path": "theory/research/archive/APPLIED_ANALYSIS_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt",
+      "bytes": 8164,
+      "sha256": "6430d811f2418f33c5daf198cdcd21f3f88023fb8b6cff3da5d9d730d334fb77"
+    }
+  ]
+}

@@ -1,0 +1,2876 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE/">
+      
+      
+        <link rel="prev" href="../TNFR_DIFFUSION_STABILITY_THEOREM/">
+      
+      
+        <link rel="next" href="../DERIVED_EPI_MEMORY/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Scale, geometry and bridge - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#exact-scale-coherence-geometry-and-bridge-results" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Scale, geometry and bridge
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/CLI_AND_SDK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI and SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FUNDAMENTAL_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NODAL_PARAMETER_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NODAL_RESEARCH_STRATEGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/FIVE_STAGE_EXECUTION_PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Active execution plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-pure-epi-coarse-graining" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Pure-EPI coarse-graining
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Pure-EPI coarse-graining">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exact-closure-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exact closure condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inherited-topology-source-and-same-law-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inherited topology source and same-law scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#joint-constitutive-reduction-with-inherited-support-counts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Joint constitutive reduction with inherited support counts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#geometric-observation-can-require-an-additional-state-coordinate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Geometric observation can require an additional state coordinate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#joint-epipotential-realization-and-field-provenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Joint EPI/potential realization and field provenance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#remaining-tetrad-dependencies-and-the-limit-of-linear-compression" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remaining tetrad dependencies and the limit of linear compression
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-complete-reflection-invariant-form-state-on-the-retained-p5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A complete reflection-invariant form state on the retained P5
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#continuity-boundary-for-a-later-approximate-reduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Continuity boundary for a later approximate reduction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#derived-memory-when-closure-fails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Derived memory when closure fails
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#consequence-for-s9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consequence for S9
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generic-fixed-vector-operator-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generic fixed-vector operator test
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#circular-phase-extension-and-obstruction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Circular phase extension and obstruction
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-geometry-forced-by-canonical-coherence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Geometry forced by canonical coherence
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Geometry forced by canonical coherence">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed-topology-structural-state-metric" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed-topology structural-state metric
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-dissipative-symplectic-direct-product" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Dissipative-symplectic direct product
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-inverse-identifiability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Inverse identifiability
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Inverse identifiability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#contract-snapshot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contract snapshot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quantitative-one-step-signatures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quantitative one-step signatures
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-executable-s16-endpoint-certificate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Executable S16 endpoint certificate
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-time-resolved-s16-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Time-resolved S16 boundary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DERIVED_EPI_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/archive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Historical archive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../factorization-lab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Applications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Applications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../primality-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.github/WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-pure-epi-coarse-graining" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Pure-EPI coarse-graining
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Pure-EPI coarse-graining">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exact-closure-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exact closure condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inherited-topology-source-and-same-law-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inherited topology source and same-law scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#joint-constitutive-reduction-with-inherited-support-counts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Joint constitutive reduction with inherited support counts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#geometric-observation-can-require-an-additional-state-coordinate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Geometric observation can require an additional state coordinate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#joint-epipotential-realization-and-field-provenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Joint EPI/potential realization and field provenance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#remaining-tetrad-dependencies-and-the-limit-of-linear-compression" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remaining tetrad dependencies and the limit of linear compression
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-complete-reflection-invariant-form-state-on-the-retained-p5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A complete reflection-invariant form state on the retained P5
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#continuity-boundary-for-a-later-approximate-reduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Continuity boundary for a later approximate reduction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#derived-memory-when-closure-fails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Derived memory when closure fails
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#consequence-for-s9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consequence for S9
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generic-fixed-vector-operator-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generic fixed-vector operator test
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#circular-phase-extension-and-obstruction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Circular phase extension and obstruction
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-geometry-forced-by-canonical-coherence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Geometry forced by canonical coherence
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Geometry forced by canonical coherence">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed-topology-structural-state-metric" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed-topology structural-state metric
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-dissipative-symplectic-direct-product" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Dissipative-symplectic direct product
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-inverse-identifiability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Inverse identifiability
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Inverse identifiability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#contract-snapshot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contract snapshot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quantitative-one-step-signatures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quantitative one-step signatures
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-executable-s16-endpoint-certificate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Executable S16 endpoint certificate
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-time-resolved-s16-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Time-resolved S16 boundary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="exact-scale-coherence-geometry-and-bridge-results">Exact scale, coherence-geometry and bridge results<a class="headerlink" href="#exact-scale-coherence-geometry-and-bridge-results" title="Permanent link">&para;</a></h1>
+<p>This note records restricted results for core research lines S8, S9, S11, S12,
+S14, S15 and S16. Each exact claim states its domain and executable certificate.
+None establishes closure of all 13 operators or a coupled global TNFR geometry.</p>
+<p>Repository graphs keep two edge channels distinct. <code>weight</code> is transport
+conductance: it defines <code>W</code>, diffusion, Dirichlet energy, quotient generators
+and the conductance coordinate of the fixed-topology state metric; it defaults
+to one.
+<code>length</code> is the independent shortest-path channel used by structural potential
+geometry and is the second edge coordinate of that metric. An explicit <code>length</code>
+wins there; if it is absent, path geometry falls back to <code>weight</code> for
+compatibility, and then to one if neither is present.
+Consequently <code>length</code> does not change EPI diffusion, while <code>weight</code> also changes
+legacy path geometry unless <code>length</code> is declared. Models in which coupling and
+distance differ should declare both attributes explicitly. The executable
+policy is centralized in
+<a href="../../src/tnfr/physics/_edge_semantics.py"><code>_edge_semantics.py</code></a>.</p>
+<h2 id="1-pure-epi-coarse-graining">1. Pure-EPI coarse-graining<a class="headerlink" href="#1-pure-epi-coarse-graining" title="Permanent link">&para;</a></h2>
+<p>On fixed symmetric nonnegative conductance with positive fine row strengths
+and positive capacities, take a partition with positive macro row strengths.
+These hypotheses make the inverse metric and the displayed positive macro
+capacities well defined. Isolates require a separate zero-row treatment and
+are outside this construction. Write</p>
+<div class="highlight"><pre><span></span><code>x' = -A x,                 A = H^-1 B,
+H = diag(h_i),             h_i = d_i/nu_i.
+</code></pre></div>
+<p>For a node partition, let <code>P</code> copy one macro value to every node in a block.
+The reversible block average is</p>
+<div class="highlight"><pre><span></span><code>R = (P^T H P)^-1 P^T H,   R P = I.
+</code></pre></div>
+<p>The quotient conductance between two blocks is the sum of all micro
+conductances crossing between them. If <code>h_bar=P^T h</code>, its generator is</p>
+<div class="highlight"><pre><span></span><code>A_bar = diag(h_bar)^-1 B_bar.
+</code></pre></div>
+<p>This is again a TNFR pure-EPI nodal equation. Its macro capacity is
+<code>nu_bar_a=d_bar_a/h_bar_a</code> and macro EPI is <code>R x</code>.</p>
+<h3 id="exact-closure-condition">Exact closure condition<a class="headerlink" href="#exact-closure-condition" title="Permanent link">&para;</a></h3>
+<p>The macro observable is autonomous for every micro state exactly when</p>
+<div class="highlight"><pre><span></span><code>R A = A_bar R.
+</code></pre></div>
+<p>Equivalently in this reversible construction, the block-constant subspace is
+invariant:</p>
+<div class="highlight"><pre><span></span><code>A P = P A_bar.
+</code></pre></div>
+<p>Thus exact coarse-graining is an intertwining structural morphism, not a
+fourteenth operator. The information removed by the quotient has dimension
+<code>N-m</code>, where <code>m</code> is the number of blocks. A nonzero intertwining defect measures
+the influence of those unresolved within-block modes; the effective dynamics
+then needs memory or additional macro variables and the nodal equation is not
+closed in <code>R x</code> alone.</p>
+<p><a href="../../src/tnfr/physics/structural_morphism.py"><code>certify_epi_coarse_graining</code></a>
+constructs the quotient, reports both closure defects and a clearly named
+within-tolerance decision, then delegates morphism classification to the
+existing certificate. The exact theorem is the zero-residual identity; a caller
+tolerance cannot make a nonzero defect algebraically exact. An equitable
+reflection partition of a path has zero residual to machine precision. A path partition
+whose middle block mixes boundary and interior nodes is an executable
+counterexample.</p>
+<h3 id="inherited-topology-source-and-same-law-scope">Inherited topology source and same-law scope<a class="headerlink" href="#inherited-topology-source-and-same-law-scope" title="Permanent link">&para;</a></h3>
+<p>Closure of EPI diffusion does not imply that every canonical pressure channel
+can be recomputed from the bare quotient graph. This can fail even at uniform
+phase and capacity, with no unresolved EPI memory. The following exact
+fixed-support result uses the existing unique-neighbor topology channel,
+not an additional physical interaction.</p>
+<p>Take unit undirected complete bipartite support <code>K_(a,b)</code>, with positive
+integers <code>a,b</code>, <code>a+b&gt;2</code>, and common capacity <code>nu&gt;0</code>. Partition into its two
+sides. Hold support, capacity and common phase fixed and keep the declared
+effective channel coefficients fixed. The fine unique degrees are <code>b</code> on
+the first side and <code>a</code> on the second. The existing topology response is the
+neighbor-mean degree minus the node's degree, hence</p>
+<div class="highlight"><pre><span></span><code>g_topo = (a-b) on side A, (b-a) on side B.
+</code></pre></div>
+<p>The reversible projection is the arithmetic mean on each side: fine weights
+are <code>b/nu</code> and <code>a/nu</code>, and each block has total metric weight <code>a*b/nu</code>.
+The quotient conductance is <code>a*b</code>, its capacity is again <code>nu</code>, and</p>
+<div class="highlight"><pre><span></span><code>A_bar = nu * [[1,-1],[-1,1]],       R A = A_bar R.
+</code></pre></div>
+<p>Indeed every fine neighbor mean is exactly the opposite block's average;
+averaging each fine derivative proves the intertwining identity for all
+fine EPI fields, not only block-constant ones. Uniform capacity and phase
+make their gradient channels zero. With <code>y=R*x</code>, the complete enabled
+pressure therefore gives the exact affine coarse law</p>
+<div class="highlight"><pre><span></span><code>y_dot = -w_epi*A_bar*y + nu*w_topo*(a-b, b-a).
+</code></pre></div>
+<p>But the simple two-node quotient has one unique neighbor at each node,
+regardless of the conductance <code>a*b</code>. Its freshly recomputed topology gradient
+is <code>(0,0)</code>. For <code>a!=b</code> and <code>w_topo!=0</code>, applying the unchanged four-channel
+recipe to that bare quotient loses a nonzero source. Changing only its
+scalar coefficient cannot repair a zero gradient. In <code>K_(2,3)</code> at uniform
+EPI, <code>nu=1</code> and all four effective weights <code>1/4</code>, the actual projected nodal
+rate is <code>(-1/4,+1/4)</code> while the naive quotient rate is zero.</p>
+<p><strong>Positive inheritance result.</strong> Retaining the fine degree profile <code>(b,a)</code>
+or its calculated source restores the displayed exact affine law. This is
+structure inherited from the declared graph, not pressure solved from a
+desired trajectory. The existing
+<a href="../../src/tnfr/physics/epi_memory.py">forced closure observer</a> verifies its
+all-state affine closure and zero hidden-to-macro coupling. Thus the result
+does not refute coarse autonomy; it refutes losing inherited structure while
+claiming the identical bare-graph pressure recipe. For this held domain the
+source is constant; a changing support would need its own inherited evolution
+and event law.</p>
+<p><a href="../../tests/physics/test_joint_scale_topology_scope.py">Nine executable controls</a>
+compare the production pressure writer, exact represented-coefficient
+support/forcing records and both macro constructions. They include hidden
+nonuniform fine EPI, the inherited affine response, balanced bipartite graphs
+and a zero-topology-weight control. The default topology weight is zero, so
+this is not a defect in the default configuration. The all-state real identity
+above and the finite binary64 controls have distinct scope. Neither supplies
+autonomous phase/capacity/support laws, spontaneous partition selection or
+physical emergence. This complements the existing phase-fiber and inherited
+potential obstructions below rather than replacing them.</p>
+<h3 id="joint-constitutive-reduction-with-inherited-support-counts">Joint constitutive reduction with inherited support counts<a class="headerlink" href="#joint-constitutive-reduction-with-inherited-support-counts" title="Permanent link">&para;</a></h3>
+<p>The next constructive bridge retains structural information rather than
+reapplying the fine formulas to a bare simple graph. Consider connected
+symmetric positive transport and a fixed partition with exactly
+block-constant primitive phases <code>Theta_a</code> and positive fine capacities
+<code>kappa_a</code>. Hold phase, capacity, support and effective channel coefficients
+fixed. Fine scalar EPI evolves by the declared multichannel pressure and
+need not be block-constant. These held rows specify a conditional fine
+model; the nodal product does not derive their stationarity.</p>
+<p>Require equitable <strong>unique-support</strong> counts</p>
+<div class="highlight"><pre><span></span><code>N_ab = number of distinct neighbors in block b of each node in block a,
+s_a = sum_b N_ab.
+</code></pre></div>
+<p>Internal neighbors contribute to <code>N_aa</code>; zero-conductance support edges
+still contribute to these counts. They are different from transport
+conductance. On the defined circular-mean branch, the fine non-EPI channels
+are block-constant and are reconstructed by</p>
+<div class="highlight"><pre><span></span><code>g_phase,a = wrap(Arg(sum_b N_ab exp(i Theta_b)) - Theta_a) / pi,
+g_vf,a    = (sum_b N_ab kappa_b)/s_a - kappa_a,
+g_topo,a  = (sum_b N_ab s_b)/s_a - s_a.
+</code></pre></div>
+<p>These follow by grouping the existing neighbor sums. They do not introduce
+chosen phase weights, a new pressure channel or an autonomous phase clock.
+The phase formula retains the production wrap orientation; a zero phasor
+resultant requires an explicit implementation policy and is outside an
+exact regular-branch interpretation.</p>
+<p>Keep <code>d_i</code> for fine <strong>transport strength</strong>, so <code>h_i=d_i/kappa_a</code> and
+<code>hbar_a=sum_(i in a) h_i</code>. The existing cross-only quotient removes internal
+transport from its displayed adjacency, giving strength <code>dbar_a</code> and
+effective capacity <code>nu_eff,a=dbar_a/hbar_a</code>. Consequently</p>
+<div class="highlight"><pre><span></span><code>sigma_a = kappa_a / nu_eff,a = (sum_(i in a) d_i)/dbar_a,
+f_N,a   = w_phase*g_phase,a + w_vf*g_vf,a + w_topo*g_topo,a,
+p_eff   = -w_epi*L_rw,bar*y + diag(sigma)*f_N,
+y_dot   = diag(nu_eff)*p_eff.
+</code></pre></div>
+<p>This is the projected nodal law for every fine EPI state when the existing
+exact EPI intertwining test passes. Indeed <code>R diag(nu)</code> applied to a
+block-constant source equals <code>diag(kappa)</code> applied to that source, while
+<code>diag(nu_eff) diag(sigma)=diag(kappa)</code>. Thus the rescaling is fixed by the
+inherited metric and the selected transport normalization, independently
+of measured rates or desired responses. Fine capacity <code>kappa</code> remains
+the input to the capacity-pressure formula; replacing it by <code>nu_eff</code>
+generally changes that formula.</p>
+<p><strong>A second normalization obstruction.</strong> On unit <code>K3</code>, partition
+<code>((0),(1,2))</code>, uniform fine capacity one descends to <code>nu_eff=(1,1/2)</code>.
+Here <code>N=((0,2),(1,1))</code>, so counted capacity pressure is still zero.
+Using <code>nu_eff</code> as the capacity field on a new bare P2 instead produces
+gradients <code>(-1/2,+1/2)</code>. Retaining a self-neighbor changes the second
+incorrect value but does not repair the first. This issue can occur with
+the default positive capacity-channel weight, unlike the earlier
+zero-default-topology counterexample. It concerns a naive reduction, not
+the original fine engine. The counted construction preserves the actual
+zero channel without a fitted cancellation.</p>
+<p>The shared <a href="../../src/tnfr/physics/quotient_structure.py">support observer</a>
+owns exact multiplicities, both conductance normalizations, the inherited
+metric, both capacities and counted capacity/topology gradients. It rejects
+inequitable support or nonconstant block capacity; weighted EPI closure is
+a separate obligation. The <a href="../../src/tnfr/physics/joint_quotient.py">joint observer</a>
+then reuses the existing pressure capture and exact affine closure owners.
+It evaluates counted phase with the same non-JIT NumPy kernel using repeated
+target indices for distinct fine neighbors, rather than adding another
+phase implementation.</p>
+<p><strong>Numerical and dynamical scope.</strong> Grouped phase sums can round differently
+from the fine neighbor order. The observer keeps that unit-phase defect,
+its projected rate contribution, fresh pressure assembly error and stale
+stored-pressure residual separately. Its exact rational identities connect
+those represented-coefficient models. The inherited NumPy <code>atan2(0,0)</code>
+policy can also return a pressure coefficient where the geometric curvature
+reader reports an undefined represented resultant. The explicit
+<code>phase_geometry_scope</code> retains that distinction; successful rate identities
+do not certify geometric phase availability. They are not a certificate of exact
+transcendental evaluation, continuous phase evolution or repeated runtime
+execution. Held phases/capacities have zero rates in this specified model;
+no history or event is executed. The selected partition has not emerged.
+This is a derived effective description with inherited structure, not
+proof that the unchanged simple-graph engine represents every scale.</p>
+<p>Controls are centralized in
+<a href="../../tests/physics/test_quotient_structure.py">support tests</a> and
+<a href="../../tests/physics/test_joint_quotient_contract.py">joint-channel tests</a>.
+They distinguish the counted channels from simple-graph recomputation,
+including unequal phase-neighbor multiplicities and internal neighbors.
+Field inheritance remains a separate requirement, addressed next.</p>
+<h3 id="geometric-observation-can-require-an-additional-state-coordinate">Geometric observation can require an additional state coordinate<a class="headerlink" href="#geometric-observation-can-require-an-additional-state-coordinate" title="Permanent link">&para;</a></h3>
+<p>For the same held fine law, write <code>p=-e L x+f</code>, <code>x_dot=-A x+b</code>,
+and let <code>K</code> be the actual inverse-square fine distance kernel. Observing
+the averaged potential gives</p>
+<div class="highlight"><pre><span></span><code>O = -e R K L,             o0 = R K f,
+R Phi_s = O P y + O Q x + o0,       Q=I-PR.
+</code></pre></div>
+<p>EPI autonomy requires <code>R A Q=0</code>. Potential determination by the current
+macro EPI additionally requires <code>O Q=0</code>. This is weaker than the full
+arbitrary-pressure factorization <code>R K=Kbar R</code>; the latter must not replace
+the actual observation test when only this constitutive family is claimed.</p>
+<p>A minimal exact countercontrol uses unit-conductance P3, common capacity
+one, pure EPI pressure and blocks <code>((0,2),(1))</code>. Set the existing explicit
+edge lengths to <code>1,2</code>, so the endpoint distance is <code>3</code>. The transport still
+closes exactly, but for the hidden vector <code>delta_x=(1,0,-1)</code>:</p>
+<div class="highlight"><pre><span></span><code>R delta_x=0,       R A delta_x=0,       -R K L delta_x=(0,-3/4).
+</code></pre></div>
+<p>The missing geometric observation is retained by one derived coordinate,
+<code>h=(x0-x2)/2</code>. With <code>u=(x0+x2)/2</code>, <code>v=x1</code>,</p>
+<div class="highlight"><pre><span></span><code>u_dot=v-u,       v_dot=u-v,       h_dot=-h,
+R Phi_s=(-37*(v-u)/72, 5*(v-u)/4 - 3*h/4).
+</code></pre></div>
+<p>The stacked linear observation <code>(R;O)</code> has rank three. Thus three scalar
+coordinates are necessary and sufficient for this exact instantaneous
+linear state/field description; the explicit equations also close its
+evolution. No new force was introduced: the extra coordinate was already
+part of fine EPI. Equal edge lengths supply the two-coordinate positive
+control, with inherited kernel <code>((1/4,1),(2,0))</code>. The asymmetric lengths
+are declared input geometry, not a claimed spontaneously selected metric.</p>
+<p><a href="../../tests/physics/test_joint_quotient_geometry.py">Independent rational and production-field controls</a>
+verify the two domains and the decoder. This is one potential observation,
+not full-tetrad sufficiency. In particular, primitive phase fields and the
+nonlinear coherence-length fit have their own dependencies.</p>
+<h3 id="joint-epipotential-realization-and-field-provenance">Joint EPI/potential realization and field provenance<a class="headerlink" href="#joint-epipotential-realization-and-field-provenance" title="Permanent link">&para;</a></h3>
+<p>The <a href="../../src/tnfr/physics/geometry_realization.py">joint geometry observer</a>
+now derives the joint observation directly from a captured held fine law.
+With <code>A=e diag(nu) L</code>, it constructs</p>
+<div class="highlight"><pre><span></span><code>O_joint = (R; -R K diag(1/nu) A),
+o_joint = (0; R K f).
+</code></pre></div>
+<p>The inverse-capacity conversion is essential: the potential aggregates
+pressure, whereas <code>A</code> generates the EPI rate. Using <code>-R K A</code> would silently
+change the field at heterogeneous capacity. The fixed source <code>f</code> comes from
+the existing non-EPI channel capture, independently of a desired response or
+stored pressure. Its potential offset stays in the decoder, without adding
+a constant state coordinate.</p>
+<p>The observer delegates these rows to the single
+<a href="../DERIVED_EPI_MEMORY/#11-minimal-linear-state-retaining-a-declared-observation">affine realization owner</a>.
+That owner derives a minimal closed <strong>linear</strong> state <code>s=Cx</code> with
+<code>s_dot=-G s+C b</code> and outputs <code>D s+o_joint</code>. Both EPI means and averaged
+model potential, including their rates, are reproduced for every initial
+scalar EPI in the held model. EPI partitions that fail instantaneous closure
+are allowed: the same invariant-row construction retains the missing
+directions. Redundant field rows do not inflate the state dimension. The
+two P3 controls give dimensions two and three as derived above; dimension
+three is a change of coordinates of the complete P3 form, not compression.</p>
+<p><strong>Distance provenance.</strong> The exact kernel uses the shared edge reader's
+materialized binary64 lengths: explicit <code>length</code>, legacy <code>weight</code>, then
+unit default, with the minimum over parallel edges. This differs from the
+summed parallel conductance used in transport. Detached rational shortest
+paths and inverse squares give <code>K</code>; self, zero-distance and unreachable
+pairs contribute zero, following the canonical field policy. The original
+raw edge attribute need not equal its binary64 materialization. Runtime
+path sums, inverse powers and field accumulation are separate numerical
+operations: for example, exact represented edge lengths <code>1</code> and <code>2^-54</code>
+have rational path sum <code>1+2^-54</code>, while binary64 addition gives <code>1</code>.</p>
+<p>For fresh pressure-kernel defect <code>delta_p_kernel</code>, stored-pressure residual
+<code>delta_p_stored</code> and the actually materialized fine field <code>Phi_runtime</code>,
+the observer verifies the exact diagnostic telescope</p>
+<div class="highlight"><pre><span></span><code>R Phi_runtime = (O x + R K f)
+              + R K delta_p_kernel + R K delta_p_stored + delta_field,
+delta_field  = R Phi_runtime - R K p_stored,
+O            = -R K diag(1/nu) A.
+</code></pre></div>
+<p>Thus numerical field evaluation is not silently identified with the exact
+model observation. These potential corrections have no capacity multiplier.
+They are detached measurements, not certified future error bounds.
+<a href="../../tests/physics/test_forced_support_geometry.py">Geometry controls</a>
+independently check capacities, source offsets, nonclosed partitions,
+length/transport conventions, the separate defects and graph immutability.
+Phase, capacity, support, materialized lengths and channel coefficients
+remain held data. This result introduces no graph evolution, partition
+selection, complete-tetrad reconstruction or physical-emergence claim.</p>
+<h3 id="remaining-tetrad-dependencies-and-the-limit-of-linear-compression">Remaining tetrad dependencies and the limit of linear compression<a class="headerlink" href="#remaining-tetrad-dependencies-and-the-limit-of-linear-compression" title="Permanent link">&para;</a></h3>
+<p><a href="../../src/tnfr/physics/geometry_realization.py"><code>observe_forced_support_tetrad_dependencies</code></a>
+composes the same geometry realization with the existing phase and coherence
+readers. It does not create another field implementation or reduction method.
+The retained observation is <code>s=Cx</code>, with <code>CT=I</code>. Set</p>
+<div class="highlight"><pre><span></span><code>M = -diag(1/nu) A,       Dp = M T,       Ep = M - Dp C,
+p = Dp s + f + Ep x.
+</code></pre></div>
+<p>Thus all fine <strong>model pressure</strong> is determined by <code>s</code> exactly when <code>Ep=0</code>.
+If column <code>j</code> of <code>Ep</code> is nonzero, <code>delta=(I-TC)e_j</code> satisfies <code>C delta=0</code>
+and <code>M delta=Ep e_j != 0</code>: it is a same-state/different-pressure witness.
+The observer tests the whole residual matrix, not just its action on the
+current state, which can vanish accidentally.</p>
+<p>There is a useful limit. On the admitted connected positive-capacity model,
+<code>ker(M)=span(1)</code>. Because <code>C</code> retains <code>R</code> and <code>R1=1</code>,
+<code>ker(C) intersect ker(M)={0}</code>. Consequently <code>Ep=0</code> implies <code>ker(C)={0}</code>;
+the converse follows from <code>TC=I</code> at full rank. <strong>Retaining all fine pressure
+and the partition means therefore requires the full fine linear dimension.</strong>
+Pressure completeness is sufficient input for a pressure-based model
+diagnostic, but it is not necessary for every nonlinear scalar diagnostic.
+Failure of this test must not be labeled failure of every possible xi decoder.</p>
+<p>The dependency contract is:</p>
+<table>
+<thead>
+<tr>
+<th>Read-out</th>
+<th>Retained input and result</th>
+<th>Boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Averaged model potential</td>
+<td>The shared affine realization supplies the exact linear output and its rate</td>
+<td>Actual stored pressure and numerical field residuals remain separate</td>
+</tr>
+<tr>
+<td>Averaged phase gradient and curvature</td>
+<td>Fine primitive phases and unique-neighbor support are held; the existing phase observer supplies these constant read-outs</td>
+<td>They are not derived form angles; represented cancellation leaves curvature unavailable in any average containing it</td>
+</tr>
+<tr>
+<td>Coherence-length fit</td>
+<td>Nonlinear function of fine pressure products, runtime floating paths and the estimator's sample/bin policy</td>
+<td>A current value from full stored pressure is not a forecast from <code>s</code>; model pressure completeness only supplies a sufficient input criterion</td>
+</tr>
+<tr>
+<td>Coherence-length fallback</td>
+<td>A selected normalized-Laplacian mode scale with explicit method metadata</td>
+<td>It is dimensionless, not fitted path-length correlation; the cutoff can skip the true smallest positive mode</td>
+</tr>
+</tbody>
+</table>
+<p>The observer evaluates xi on a detached graph copy so that the canonical
+spectral cache does not mutate the caller's graph. Its <code>observed_coherence_length</code>
+uses <strong>actual stored pressure</strong>. It preserves the <code>autocorrelation_fit</code>,
+historical <code>spectral_gap</code>, or <code>unavailable</code> method and associated provenance.
+The fallback selects the smallest numerical eigenvalue greater than <code>1e-9</code>;
+it equals the usual gap scale only when that gap passes the selection. An
+independent P4 with conductances <code>(1,2^-40,1)</code> demonstrates a skipped small
+mode. The fit bins equality of floating shortest-path distances, not the
+rational edge-path model used by the potential realization. These are
+estimation conventions, not new TNFR equations.</p>
+<p><strong>An exact nonlinear obstruction on the existing P5 reduction.</strong> Use the
+unit path, common capacity one, pure EPI pressure, equal primitive phases
+and reflection blocks <code>((0,4),(1,3),(2))</code>. Both its transport and inverse-square
+kernel respect reflection. The existing three-coordinate orbit projection
+therefore retains EPI means and averaged potential and is already invariant.
+For the hidden form</p>
+<div class="highlight"><pre><span></span><code>x(a)=a*(-2,-1,0,1,2),      Cx(a)=0,
+p(a)=(a,0,0,0,-a),        R Phi_s(a)=0,
+</code></pre></div>
+<p>the retained state and all its modeled outputs are the same for every <code>a</code>.
+Nevertheless the canonical coherence products differ. At <code>a=1</code>, the three
+accepted distance bins <code>1,2,3</code> have exact means <code>(3/4,2/3,1/2)</code>; at <code>a=2</code>
+they have <code>(2/3,5/9,1/3)</code>. Their pair counts are <code>(4,3,2)</code>; the tenth pair
+at distance four is a singleton and is excluded from regression. The exact
+real log-linear fits give</p>
+<div class="highlight"><pre><span></span><code>xi(a=1)=2/log(3/2),       xi(a=2)=2/log(2).
+</code></pre></div>
+<p>The production reader agrees numerically on prepared inputs whose stored
+and model pressures coincide. These are successful fits, not two values of
+the spectral fallback. Hence no single-valued xi output of this three-state
+realization exists on the full admitted fine-form domain. No trajectory or
+new force is needed for the counterexample. Completing its pressure inputs
+with the shared affine algorithm gives dimension five, as the theorem predicts.</p>
+<p>The converse boundary matters: every finite-pressure P3 has fewer than the
+required ten pairs, so its fitted branch is unavailable independently of
+pressure. Its fixed selected spectral value can be constant despite missing
+pressure coordinates. Also <code>a</code> and <code>-a</code> on P5 have opposite pressure but
+identical xi by reflection. These facts motivate a symmetry-based nonlinear
+observation test; they do not establish a minimal nonlinear state or an
+autonomously selected geometry.</p>
+<p>Controls reuse the existing P5 reduction owner in
+<a href="../../tests/physics/test_tetrad_geometry_scope.py">tetrad dependency tests</a>,
+with separate <a href="../../tests/physics/test_coherence_spectral_selection_scope.py">spectral selection controls</a>.
+Held phase, capacity, source and support are still premises. This completes
+the explicit observation/dependency contract, not full-tetrad minimality or
+a complete evolving law for the fine substrate.</p>
+<h3 id="a-complete-reflection-invariant-form-state-on-the-retained-p5">A complete reflection-invariant form state on the retained P5<a class="headerlink" href="#a-complete-reflection-invariant-form-state-on-the-retained-p5" title="Permanent link">&para;</a></h3>
+<p>The P5 observation obstruction can be resolved without declaring the missing
+shape irrelevant. Write the existing fine form as</p>
+<div class="highlight"><pre><span></span><code>x=(a+r, p+s, c, p-s, a-r).
+</code></pre></div>
+<p>Reflection fixes <code>(a,p,c)</code> and sends <code>(r,s)</code> to <code>(-r,-s)</code>. Reuse the same
+unit-support, pure-EPI P5 generator with common positive capacity <code>nu</code>.
+Its equations give</p>
+<div class="highlight"><pre><span></span><code>a_dot=nu*(p-a),       p_dot=nu*((a+c)/2-p),       c_dot=nu*(p-c),
+r_dot=nu*(s-r),       s_dot=nu*(r/2-s).
+</code></pre></div>
+<p>The three quadratic observations</p>
+<div class="highlight"><pre><span></span><code>J00=r^2,       J01=r*s,       J11=s^2
+</code></pre></div>
+<p>are unchanged by reflection. Their valid image requires <strong>both</strong>
+<code>J00&gt;=0,J11&gt;=0</code> and <code>J00*J11=J01^2</code>; the determinant equality alone is
+insufficient. They determine the hidden pair up to its simultaneous sign:
+when <code>J00&gt;0</code>, choose <code>r=sqrt(J00)</code> and <code>s=J01/r</code>; when <code>J00=0</code>, necessarily
+<code>J01=0</code>, so choose <code>r=0,s=sqrt(J11)</code>. The zero triple gives zero hidden form.
+Thus <code>(a,p,c,J00,J01,J11)</code> distinguishes exactly the two-element reflection
+orbits, with the symmetric form as the one-element orbit.</p>
+<p>The product rule derives a closed law, rather than selecting one:</p>
+<div class="highlight"><pre><span></span><code>J00_dot=2*nu*(J01-J00),
+J01_dot=nu*(J00/2+J11-2*J01),
+J11_dot=nu*(J01-2*J11).
+</code></pre></div>
+<p>For <code>Delta=J00*J11-J01^2</code>, <code>Delta_dot=-4*nu*Delta</code>. More fully, the matrix
+<code>J=h h^T</code> evolves by <code>J_dot=B J+J B^T</code>, where
+<code>B=nu*((-1,1),(1/2,-1))</code>. Congruence with the exact linear hidden flow
+preserves positive semidefiniteness and rank; the valid invariant image is
+forward invariant in the exact continuous model. Keeping only the diagonal
+squares fails: <code>(r,s)=(1,1)</code> and <code>(1,-1)</code> have the same squares, but
+<code>J00_dot</code> is respectively <code>0</code> and <code>-4*nu</code>. The cross term carries necessary
+shape information.</p>
+<p><strong>What is preserved.</strong> Reflection commutes with this transport generator
+and with the unit-path inverse-square kernel. Pressure and fine potential
+are therefore recovered <strong>up to reflection</strong>; their labels are not recovered
+uniquely. Orbit-averaged potential and EPI, uniform held-phase read-outs and
+the scalar coherence diagnostic are invariant. Reflection bijects the full
+unordered node pairs while preserving their distances and coherence products,
+so it preserves the fit input and its branch, as well as the selected spectral
+fallback. This exact statement concerns the declared model and estimator;
+arbitrary stored-pressure defects and numerical order effects need their own
+provenance. The invariant state retains the previously missing magnitude
+information, so it distinguishes the P5 <code>a=1</code> and <code>a=2</code> hidden-line examples.</p>
+<p><strong>Dimension and boundary.</strong> Six displayed coordinates obey one independent
+constraint away from zero hidden form: the quotient still has intrinsic
+dimension five. It removes the duplication between reflected descriptions,
+not two continuous physical degrees of freedom. The observation Jacobian
+has rank five off <code>r=s=0</code> and rank three on that symmetric stratum; the latter
+does not make its surrounding state space three-dimensional. A chosen
+representative can change sign branch at <code>r=0</code> even while the invariants
+remain continuous. That change of representative is not a physical jump.
+The exact symmetric stratum stays symmetric under this unforced law; no
+spontaneous symmetry breaking or geometry selection has been derived.</p>
+<p>The implementation lives beside the existing reduction in
+<a href="../../src/tnfr/physics/p5_reduction.py"><code>p5_reduction.py</code></a>.
+<code>observe_p5_reflection_invariants</code> derives the observation and its rates from
+the shared fine generator. <code>decode_p5_reflection_invariants</code> supplies an exact
+rational representative on the rationally liftable image, including both
+axes and the zero state. A valid real image with irrational lift is outside
+that exact rational decoder and is explicitly rejected; no floating square
+root silently replaces it. Generated rational/represented fine snapshots
+lie in the supported image. The mathematical real quotient is broader.</p>
+<p>No integrator is added. In particular, advancing quadratic invariants with
+ordinary Euler is not the pushforward of a fine Euler step: squaring
+<code>h+dt*h_dot</code> also gives <code>dt^2*h_dot*h_dot^T</code>. An independently supplied Euler
+step on the displayed J law need not stay on its rank-one cone.
+<a href="../../tests/physics/test_p5_reflection_invariants.py">Independent controls</a>
+verify the quotient, mixed-term obstruction, derivative and singular domains,
+decoder, and field invariance using the existing readers.</p>
+<h3 id="continuity-boundary-for-a-later-approximate-reduction">Continuity boundary for a later approximate reduction<a class="headerlink" href="#continuity-boundary-for-a-later-approximate-reduction" title="Permanent link">&para;</a></h3>
+<p>Removing a discrete reflection redundancy differs from neglecting a small
+hidden amplitude. For the preceding hidden line, write its amplitude as
+<code>alpha&gt;0</code> to distinguish it from the even coordinate <code>a</code>. Endpoint coherence
+is <code>z=1/(1+alpha)</code>. The retained bin means are
+<code>((1+z)/2,(1+2*z)/3,z)</code>, and their exact-real fit is</p>
+<div class="highlight"><pre><span></span><code>xi(alpha)=2/log(1+alpha/2).
+</code></pre></div>
+<p>This expression applies while all three bins pass the current floor,
+<code>0&lt;alpha&lt;10^9-1</code>. Hence it diverges as <code>alpha -&gt; 0+</code>, whereas the exactly
+uniform pressure case has no admissible fit and returns the distinct finite
+P5 spectral scale <code>sqrt(2+sqrt(2))</code>. This is a discontinuity between tagged
+estimator branches, not a divergence of the nodal state or a phase transition
+proved by the dynamics. Binary64 coherence rounding can switch branches
+earlier; the expression is not a binary64 asymptotic theorem. It follows
+that small pressure error alone cannot justify a uniform error bound for
+the unqualified displayed xi value near this boundary. Any later dynamical
+reduction must retain that distinction instead of imposing continuity or
+altering a nodal force to improve the diagnostic.</p>
+<h3 id="derived-memory-when-closure-fails">Derived memory when closure fails<a class="headerlink" href="#derived-memory-when-closure-fails" title="Permanent link">&para;</a></h3>
+<p>For fixed reversible pure-EPI diffusion, the unresolved coordinate
+<code>z=(I-PR)x</code> can now be eliminated exactly. With <code>Q=I-PR</code>, the projected
+equation has instantaneous generator <code>RAP</code>, kernel
+<code>K(t)=RA exp(-QAQ t) QAP</code>, and initial hidden source
+<code>f(t)=-RA exp(-QAQ t) Qx_0</code>. The convolution enters with a positive sign.
+The weighted identity <code>H_bar K(0)=(QAP)^T H(QAP)</code> proves that its kernel
+vanishes exactly when the quotient closes for every state.</p>
+<p>The proof and independent P4/P5 controls are centralized in
+<a href="../DERIVED_EPI_MEMORY/">Derived EPI memory</a>.
+<a href="../../src/tnfr/physics/epi_memory.py"><code>observe_epi_memory</code></a> reuses the same
+partition geometry and records finite numerical samples of the full equation
+and the two omission controls. Numerical generator/propagator checks reject
+loss of the necessary diffusion invariants; they are not accuracy enclosures.
+This is an offline observation, without a REMESH or complete-runtime claim.</p>
+<p>For the explicit P5 partition, the same note's section 8 derives uniform and
+causal error bounds for a shortened history window. Its separate rational
+reference preserves the initial hidden source, encloses the actual truncated
+solution and keeps evaluation width separate from model error. This restricted
+approximation has no fitted memory rate or asserted REMESH correspondence.</p>
+<p>The P5 reflection partition <code>((0,4),(1,3),(2,))</code> supplies a complementary exact
+closure on a genuine three-node quotient with conductances <code>2,2</code>. Observing
+only its endpoint mean and combined inner/center mean is precisely the second
+reduction that generates memory. Uniform unclipped REMESH commutes with this
+reflection projection and its lift; the fine stationary-history energy splits
+into quotient and discarded energies. These identities reuse the existing
+companion theorem in the quotient's metric. They do not identify a REMESH
+echo with a forward diffusion step, as an exact causal-history counterexample
+shows. See section 9 of <a href="../DERIVED_EPI_MEMORY/">Derived EPI memory</a>.</p>
+<h3 id="consequence-for-s9">Consequence for S9<a class="headerlink" href="#consequence-for-s9" title="Permanent link">&para;</a></h3>
+<p>The pure-EPI diffusion channel is a fixed family under every exact quotient:
+its generator remains <code>diag(nu_bar)L_rw,bar</code>. This does not show that Emission,
+Coherence, REMESH or the other nonlinear operators close under the same map.
+Operator RG flow therefore remains open beyond this one channel.</p>
+<p>Field inheritance is another independent obligation. On the unit triangular
+prism, the triangle-mean quotient closes exactly and has zero memory kernel,
+yet a self-excluded scalar macro potential reverses the sign of the averaged
+fine potential. The inherited kernel retains within-block sources. Keeping
+four internal modes and the mean contrast instead reconstructs full exact
+model pressure and potential; primitive phase and field provenance remain
+separate. See the single
+<a href="../NODAL_PARAMETER_FOUNDATIONS/#13-faithful-macro-state-and-tetrad-inheritance-on-the-retained-prism">macro-state and tetrad derivation</a>.</p>
+<h3 id="generic-fixed-vector-operator-test">Generic fixed-vector operator test<a class="headerlink" href="#generic-fixed-vector-operator-test" title="Permanent link">&para;</a></h3>
+<p>For any declared micro map <code>F</code>, macro map <code>F_bar</code>, projection <code>R</code> and right
+inverse lift <code>P</code>, two logically independent identities are relevant:</p>
+<div class="highlight"><pre><span></span><code>R F = F_bar R,        F P = P F_bar.
+</code></pre></div>
+<p>The first makes the projected dynamics autonomous for every micro state; the
+second keeps lifted macro states inside the lifted subspace. Exact strong
+closure requires both. A deterministic counterexample shows that projected
+closure need not imply lift invariance.</p>
+<p><a href="../../src/tnfr/physics/operator_quotient.py"><code>certify_operator_quotient</code></a> checks
+both identities globally for matrices and names every Boolean decision as
+within the declared numerical tolerance. For nonlinear callables it reports only
+sampled residuals and repeated-evaluation consistency on declared macro and
+micro probes, including the defect
+between two micro states with the same projection. A cubic componentwise map
+closes on block-constant probes yet depends on unresolved within-block fibers,
+providing an explicit nonlinear obstruction. Graph mutation, operator history
+and nested-EPI changes are rejected as outside a fixed-dimensional vector-map
+test. Thus the certificate advances S9 without claiming closure or completeness
+of the 13-operator catalog.</p>
+<h3 id="circular-phase-extension-and-obstruction">Circular phase extension and obstruction<a class="headerlink" href="#circular-phase-extension-and-obstruction" title="Permanent link">&para;</a></h3>
+<p>Choose an open semicircle chart <code>q</code> so every relevant wrapped pairwise
+difference stays on one branch. The pairwise phase-pressure realization is then</p>
+<div class="highlight"><pre><span></span><code>r_pair(q) = -(1/pi) diag(nu_f) L_rw q.
+</code></pre></div>
+<p>It is linear and inherits the reversible pure-EPI projection and lift
+identities. This exact fixed-branch statement concerns pairwise edge
+differences. It is distinct from the engine's canonical phase channel, which
+uses the argument of the unweighted sum of neighboring phasors:</p>
+<div class="highlight"><pre><span></span><code>g_i(q) = -(1/pi) wrap(q_i - Arg sum_{j in N(i)} exp(i q_j)),
+r_i(q) = nu_f_i g_i(q).
+</code></pre></div>
+<p>For a lifted block-constant phase field, this nonlinear channel closes on the
+macro support under a sufficient fixed-support domain: neighbor-count profiles
+are equitable inside each fiber, fibers have no internal edges, every active
+macro neighbor has the same multiplicity within its source block, capacity is
+exactly block-constant, the chart stays on one wrap branch, and all phasor resultants
+are nonzero. The canonical support is the unweighted NetworkX adjacency,
+including edges whose transport <code>weight</code> is zero; the reversible pairwise
+projection continues to use the conductance-degree-over-capacity metric.</p>
+<p>That lifted-subspace result does not make the projected canonical dynamics
+autonomous for arbitrary micro phases. On <code>K3,3</code>, a nonconstant micro state and
+its lifted representative have the same macro chart coordinate but different
+projected nodal rates. This is a constructive counterexample to global
+canonical phase closure: unresolved within-fiber phase affects the macro
+derivative. Branch crossing, zero resultants, evolving capacity, changing
+support and finite-time phase evolution remain outside the certificate.</p>
+<p><a href="../../src/tnfr/physics/phase_quotient.py"><code>certify_phase_nodal_coarse_graining</code></a>
+reports the pairwise matrix quotient, the restricted canonical lift test and
+the same-macro-state counterexample without reading or changing EPI.
+The capacity hypothesis uses exact represented equality within each fiber;
+the separately rounded macro-capacity match has its own numerical residual.
+In a <code>K3,3</code> fiber, capacities <code>1</code> and <code>1+2^-35</code> can pass a <code>1e-10</code> tolerance
+while unequal lifted nodal rates still exclude exact closure. Numerical
+closeness must not satisfy that algebraic premise. A small nonzero phasor
+resultant can likewise fail the implementation's numerical margin without
+being an exact circular-mean singularity. The regression owner is
+<a href="../../tests/physics/test_phase_quotient.py">the phase quotient tests</a>.</p>
+<h2 id="2-geometry-forced-by-canonical-coherence">2. Geometry forced by canonical coherence<a class="headerlink" href="#2-geometry-forced-by-canonical-coherence" title="Permanent link">&para;</a></h2>
+<p>For the signed local chart <code>p=DeltaNFR</code>, <code>v=dEPI</code>, the constitutive kernel is</p>
+<div class="highlight"><pre><span></span><code>C(p,v) = 1 / (1+|p|+|v|).
+</code></pre></div>
+<p>For <code>0&lt;c&lt;1</code>, its exact level set is</p>
+<div class="highlight"><pre><span></span><code>|p|+|v| = 1/c-1.
+</code></pre></div>
+<p>It is an L1 diamond. It is smooth on each open edge and nondifferentiable at
+the four axis vertices. Its Euclidean distance from equilibrium is not fixed:
+it ranges from <code>r/sqrt(2)</code> to <code>r</code>, whereas its L1 distance is exactly
+<code>r=1/c-1</code>. At <code>c=1</code> the level collapses to <code>(0,0)</code>.</p>
+<p><a href="../../src/tnfr/physics/coherence_geometry.py"><code>coherence_level_set_geometry</code></a>
+exposes this exact geometry. The result rejects the assumption that canonical
+coherence alone supplies a smooth Riemannian manifold. It naturally supplies
+an L1 gauge in the local constitutive chart. A smooth information metric on the
+full graph state would require an additional modeling choice.</p>
+<p>For a fixed nonempty network with <code>N</code> nodes, canonical mean aggregation gives</p>
+<div class="highlight"><pre><span></span><code>C_N = 1 / (1 + (sum_i |p_i| + sum_i |v_i|) / N).
+</code></pre></div>
+<p>Thus <code>C_N=c</code> is the boundary of a <code>2N</code>-dimensional cross-polytope with
+total L1 radius <code>R=N(1/c-1)</code>, intrinsic dimension <code>2N-1</code>, <code>4N</code> vertices
+and</p>
+<div class="highlight"><pre><span></span><code>f_k = 2^(k+1) binom(2N,k+1)
+</code></pre></div>
+<p><code>k</code>-faces. Its <code>2^(2N)</code> open facets form the regular locus; every lower
+face is a nonsmooth absolute-value stratum. The Euclidean radius ranges from
+<code>R/sqrt(2N)</code> to <code>R</code>, the regular gradient norm is
+<code>c^2 sqrt(2/N)</code>, and the superlevel set <code>C_N&gt;=c</code> is closed and convex.</p>
+<p>The fixed-capacity nodal equation <code>v_i=nu_f_i p_i</code> cuts this ambient level
+down to</p>
+<div class="highlight"><pre><span></span><code>sum_i (1+nu_f_i)|p_i| = N(1/c-1).
+</code></pre></div>
+<p>This is a weighted <code>N</code>-dimensional cross-polytope. The executable certificate
+reports its pressure-axis vertices, Euclidean radii in the induced
+<code>(p_i,nu_f_i p_i)</code> metric, face stratification and regular gradient norm.
+<a href="../../src/tnfr/physics/coherence_geometry.py"><code>network_coherence_level_set_geometry</code></a>
+and
+<a href="../../src/tnfr/physics/coherence_geometry.py"><code>fixed_capacity_coherence_level_set_geometry</code></a>
+make both scopes explicit. They describe one instantaneous chart; capacity
+evolution, changing node count, basin boundaries and temporal attraction
+remain outside the result.</p>
+<h3 id="fixed-topology-structural-state-metric">Fixed-topology structural-state metric<a class="headerlink" href="#fixed-topology-structural-state-metric" title="Permanent link">&para;</a></h3>
+<p>One such explicit choice is now available within a declared topology and label
+class. For each node, form the five-nodal-channel state</p>
+<div class="highlight"><pre><span></span><code>q_i = (EPI_i, nu_f_i, phase_i, DeltaNFR_i, dEPI_i),
+</code></pre></div>
+<p>and assign each edge both its <code>weight</code> conductance coordinate (unit when
+<code>weight</code> is absent) and its effective structural-length coordinate (<code>length</code>,
+then the compatibility fallback <code>weight</code>, then one). Declare one finite positive
+reference scale per channel, use circular geodesic distance for phase, and
+minimize the scaled Euclidean product over node and edge coordinates across all
+topology- and declared label-preserving graph isomorphisms. The compatibility
+API lets an omitted <code>edge_length</code> scale reuse <code>edge_conductance</code>; dimensional
+studies should declare both. Because a finite graph has finitely many
+isomorphisms and they act by isometries, the minimum is an exact metric on the
+resulting state-isomorphism classes. The certificate also reports the two
+<code>L_infinity</code> residuals of
+<code>dEPI=nu_f*DeltaNFR</code>; it does not project inconsistent inputs onto the nodal
+equation.</p>
+<p><a href="../../src/tnfr/physics/structural_state_distance.py"><code>fixed_topology_structural_state_distance</code></a>
+implements this quotient metric for finite simple graphs. It preserves phase
+wrapping and node relabeling, accepts explicit node and edge labels, validates
+finite nonnegative conductance and structural length, and rejects nonisomorphic
+supports, mixed
+direction and multigraphs. It reports every distance minimizer, uses an explicit
+lexicographic component refinement, and withholds a node mapping when that
+refinement remains ambiguous. The exhaustive
+isomorphism search can be factorial. Cross-topology edit costs, nested EPI
+identity and operator-history geometry remain open, so this is a structural
+state metric rather than a completed global information geometry.</p>
+<p>The structural-length coordinate is a numeric cost. A caller that requires
+identical path geometry may additionally include <code>"length"</code> in
+<code>edge_label_attributes</code>, which makes exact attribute equality part of the
+admissible-isomorphism test rather than merely charging a nonzero distance.</p>
+<h2 id="3-dissipative-symplectic-direct-product">3. Dissipative-symplectic direct product<a class="headerlink" href="#3-dissipative-symplectic-direct-product" title="Permanent link">&para;</a></h2>
+<p>Let <code>z</code> be the <code>4N</code>-dimensional harmonic substrate coordinate and <code>x</code> the EPI
+field. Define</p>
+<div class="highlight"><pre><span></span><code>X = (z,x),
+H = (1/2)||z||^2,
+V = (1/2)x^T Bx,
+J = diag(J_sub,0),
+G = diag(0,diag(nu_i/d_i)).
+</code></pre></div>
+<p>Then</p>
+<div class="highlight"><pre><span></span><code>X' = J grad(H) - G grad(V)
+</code></pre></div>
+<p>simultaneously reproduces the specified auxiliary harmonic-substrate flow and
+fixed symmetric EPI diffusion. The degeneracy identities</p>
+<div class="highlight"><pre><span></span><code>J grad(V) = 0,             G grad(H) = 0
+</code></pre></div>
+<p>give <code>H'=0</code> and <code>V'&lt;=0</code>. This is an exact metriplectic-style <strong>direct product</strong>.
+<a href="../../src/tnfr/physics/metriplectic.py"><code>verify_metriplectic_product</code></a> checks the
+antisymmetry, positive semidefiniteness, degeneracies and both vector-field
+residuals.</p>
+<p>The graph's stored <code>DeltaNFR</code> initializes part of the auxiliary coordinate <code>z</code>
+through <code>Phi_s</code> and <code>J_DeltaNFR</code>. The dissipative EPI block nevertheless
+constructs its pressure independently as <code>p_epi=-D^-1 Bx</code> from the <code>weight</code>
+conductance and supplied EPI. It does not replace the stored value. The
+certificate returns
+<code>stored_pressure_consistency_residual=||DeltaNFR_stored-p_epi||_2</code> and the
+separate relative-tolerance decision <code>stored_pressure_matches_epi_channel</code>.
+Neither is included in <code>is_decoupled_metriplectic_bridge</code>: the block-product
+identity can pass while stored pressure contains other channels or is otherwise
+inconsistent with pure-EPI diffusion. A caller asserting a pure-EPI graph state
+must therefore require both the bridge Boolean and the pressure-consistency
+Boolean. This separation is exercised by
+<a href="../../tests/physics/test_metriplectic_product.py"><code>test_metriplectic_product.py</code></a>.</p>
+<p>The cross blocks are zero, so the result does not derive how a pulse changes
+EPI relaxation or how dissipation feeds back into the substrate. A coupled
+bridge requires a TNFR derivation and preservation of the realizable graph-field
+image, as well as its stated balance laws. Nonzero cross tensors alone are
+insufficient. Fixed mutual-singleton P2 already excludes nonzero continuous
+harmonic evolution of the same geometric read-outs; its fixed-phase pure-EPI
+potential/flux sector instead has a closed dissipative law with rate
+<code>nu_0+nu_1</code>. The exact proof and production regressions are centralized in
+<a href="../TNFR_VARIATIONAL_PRINCIPLE/#37-p2-read-out-realizability-obstruction-and-derived-flow">the variational note, section 3.7</a>.
+Broader TNFR-derived realizability and coupling remain open under S12.</p>
+<h2 id="4-inverse-identifiability">4. Inverse identifiability<a class="headerlink" href="#4-inverse-identifiability" title="Permanent link">&para;</a></h2>
+<h3 id="contract-snapshot">Contract snapshot<a class="headerlink" href="#contract-snapshot" title="Permanent link">&para;</a></h3>
+<p><a href="../../src/tnfr/operators/operator_contracts.py"><code>contract_identifiability_certificate</code></a>
+partitions the catalog using only declared executable contract features. With
+the richest non-tautological tuple <code>(channel, direction, scale, context)</code>, eleven
+operators are singletons and one class contains both Silence and Contraction.
+Both are node-scale decreases of <code>nu_f</code> observed at network context.</p>
+<p>This is an exact negative result for instantaneous contract identification. It
+does not say their trajectories are always identical: Silence targets latency,
+whereas Contraction also densifies pressure. Resolving them requires temporal
+state changes or a quantitative postcondition observer. Catalog coverage is
+therefore distinct from catalog identifiability and from universal catalog
+completeness.</p>
+<h3 id="quantitative-one-step-signatures">Quantitative one-step signatures<a class="headerlink" href="#quantitative-one-step-signatures" title="Permanent link">&para;</a></h3>
+<p><a href="../../src/tnfr/physics/temporal_identifiability.py"><code>probe_canonical_operator_identifiability</code></a>
+enumerates the 13 operators from the current contract catalog and applies each
+one to a fresh deterministic heterogeneous path graph at the known target node
+<code>n_nodes//2</code>. Its features
+contain the target-node change, the across-node mean and RMS change in the four
+raw channels EPI, <code>nu_f</code>, <code>DeltaNFR</code> and wrapped phase; the corresponding target,
+mean and RMS change in nodal velocity <code>nu_f*DeltaNFR</code>; and node/edge-count
+changes. Operator names, glyphs and contract categories are evaluation labels
+and never enter the feature matrix. Executed history is checked separately to
+reject a fallback mislabeled as the requested operator.</p>
+<p>With the declared default three probes, all 13 rows are distinct after the
+declared decimal quantization. Matrix rank and affine rank are 12. Row
+distinctness exactly partitions this finite generated hypothesis matrix; rank is
+only a numerical diagnostic. Silence and Contraction separate because both
+reduce <code>nu_f</code> while only Contraction changes EPI on these probes. The result is
+measured on this finite family.</p>
+<p>This is closed-set classification against the fixed current catalog and a known
+target, not target localization or operator discovery. Although mean and RMS
+summaries of the raw changes are included, the protocol does not invert from
+aggregate TNFR telemetry alone: <code>C(t)</code>, Si, phase synchronization and the tetrad
+are absent, and target-indexed raw coordinates are present. Identification from
+those aggregate read-outs, localization of an unknown target, unseen states,
+compositions and arbitrary grammar words remain open.</p>
+<p>For any declared positive feature scales, let <code>delta</code> be the minimum pairwise
+distance between these finite prototypes in the scaled L-infinity or L2 norm.
+The triangle inequality gives an exact robustness statement: an additive error
+strictly smaller than <code>delta/2</code> cannot cross a nearest-prototype boundary. The
+noise-margin certificate compares the supplied binary64 values through exact
+rational arithmetic, rounds the minimum distance downward and halves that
+lower bound. It therefore reports a conservative radius and marks midpoint
+ties as uncertified. Stable L2 accumulation avoids false underflow, large
+declared feature scales avoid false subtraction overflow, and unrepresentable
+scaled separations are rejected. The default operator probe attaches a
+unit-scaled L-infinity margin after applying
+the same decimal quantization as its row partition. Those unit scales define a
+coordinate convention, not a calibrated sensor or process-noise law. This
+handles bounded perturbations around the fixed prototypes only. It does not
+provide a stochastic noise law or extend the prototypes beyond the declared
+states.</p>
+<h2 id="5-executable-s16-endpoint-certificate">5. Executable S16 endpoint certificate<a class="headerlink" href="#5-executable-s16-endpoint-certificate" title="Permanent link">&para;</a></h2>
+<p><a href="../../src/tnfr/physics/core_research_integration.py"><code>certify_core_research_integration</code></a>
+turns the restricted S16 intersection into one inspectable endpoint
+certificate. It accepts two independently frozen states, one partition and
+explicit <code>StructuralChannelScales</code>. The inputs must be finite undirected simple
+graphs with exactly the same node identifiers and bare edge support. At each
+endpoint the effective positive-conductance graph must also be connected, every
+capacity must be positive and frozen, and all raw state channels required by the
+constituent certificates must exist. Identical bare support alone is therefore
+insufficient when zero <code>weight</code> disconnects effective conductance. Conductance,
+structural length and state values may differ between endpoints.</p>
+<p>At each endpoint it runs the fixed heterogeneous pure-EPI stability certificate,
+the graph-specific full-potential EPI reconstruction certificate and the
+reversible pure-EPI partition certificate. It also computes the declared
+fixed-topology structural-state distance between the endpoints. Finally, it
+checks two state-consistency conditions independently at each endpoint: stored
+<code>DeltaNFR</code> must match <code>-L_rw EPI</code>, and stored <code>dEPI</code> must match
+<code>nu_f*DeltaNFR</code>, after scaling by the declared pressure and EPI-rate scales.</p>
+<p>The result exposes all constituent certificates, raw and scaled consistency
+residuals, <code>numerical_conditions</code> with fifteen named entries, and
+<code>failed_conditions</code>. <code>joint_numerical_conditions_pass</code> is true only when every
+entry passes. Numerical rank, closure, balance and consistency decisions use the
+single declared relative tolerance; the exact metric-on-isomorphism-classes
+entry remains a structural Boolean. A nonclosing partition, a pure-EPI pressure
+mismatch or an independent nodal-equation mismatch blocks joint promotion while
+leaving the other evidence inspectable; changed support is rejected before
+composition. These positive and negative paths are executable in
+<a href="../../tests/physics/test_core_research_integration.py"><code>test_core_research_integration.py</code></a>.</p>
+<p>A passing Boolean demonstrates simultaneous endpoint membership in this shared
+restricted numerical hypothesis class under the declared tolerance. It does not
+certify a trajectory or persistence between the endpoints. Phase dynamics,
+nonlinear or multichannel pressure,
+operator histories and words, S15 inverse identification, REMESH/nesting,
+changing support/topology and nonzero dissipative-symplectic coupling remain
+open. The exact L1 coherence level-set result also remains a separate theorem;
+the current S16 Boolean does not consume it. Explicit <code>length</code> values contribute
+to the numeric state distance; they may still differ unless the caller includes
+<code>"length"</code> among the exact edge-label constraints.</p>
+<h2 id="6-time-resolved-s16-boundary">6. Time-resolved S16 boundary<a class="headerlink" href="#6-time-resolved-s16-boundary" title="Permanent link">&para;</a></h2>
+<p><a href="../../src/tnfr/physics/core_research_trajectory.py"><code>certify_core_research_trajectory</code></a>
+extends the endpoint intersection to a finite ordered sample path without
+claiming unobserved interpolation. It retains persistent node identifiers and
+fixed bare edge support, applies the endpoint certificate to every adjacent
+pair, and checks the left-explicit update</p>
+<p><code>EPI^(k+1) - EPI^k = dt_k diag(nu_f^k) DeltaNFR^k</code></p>
+<p>in scaled L-infinity norm. Stored <code>dEPI</code> remains an independent endpoint channel;
+it is not substituted for the vector field in this step test.</p>
+<p>Two extra stability conditions prevent a merely self-consistent data sequence
+from being called stable. First, each timestep must satisfy the modal
+explicit-Euler condition for its left-hand transport regime. Its stationary-mode
+resolution uses a separate dimensionless tolerance relative to the fastest
+decay rate; the EPI residual tolerance is not reused as an absolute frequency
+cutoff. Second, all sampled regimes must share the exact projective <code>d_i/nu_i</code>
+metric required by the common switching theorem. The implementation evaluates
+the resulting common quadratic at every supplied state. At each snapshot it
+recomputes that metric's instantaneous weighted projection onto the consensus
+subspace before evaluating disagreement energy; it does not freeze the first
+snapshot's consensus coordinate. This is necessary because the represented
+binary64 generator can contract disagreement in the displayed metric without
+preserving that metric's weighted mean as an exact rational identity. The
+certificate limits both each
+positive increment and the cumulative positive variation over the whole path
+by one declared EPI-squared scale budget. This prevents individually small
+increases from accumulating without bound as samples are added.</p>
+<p>The Euler residual and both local and cumulative Lyapunov-budget decisions
+compare exact rational values of the represented binary64 inputs with the exact
+rationalization of the caller tolerance. Their exposed float magnitudes are
+diagnostics only and do not decide a boundary case.</p>
+<p>The analytic switching theorem covers arbitrary
+piecewise-constant continuous solutions among this finite regime family. The
+snapshot certificate only checks its supplied Euler steps: it does not prove
+that the samples lie on such a continuous solution, identify a switching law
+between them, or cover an unseen regime.</p>
+<p>The companion refinement comparison certifies both paths before comparing
+them. It separates the strict path tolerance from the coarser agreement
+tolerance, requires every coarse time to match exactly one fine time, and
+requires a smaller fine-grid maximum step. Direct EPI differences on persistent
+ids determine agreement. Quotient structural distance is exposed only as a
+diagnostic because a different minimizing isomorphism at each time is not a
+node trajectory. The joint result also requires the caller to set
+<code>same_dynamics_declared=True</code>. That recorded assertion closes the previous
+semantic gap in which identical equilibrium samples from different generators
+could be promoted as a refinement pair; snapshots cannot independently verify
+the declaration.</p>
+<p>The deterministic
+<a href="../../examples/02_physics_regimes/161_core_research_trajectory.py"><code>161_core_research_trajectory.py</code></a>
+uses two nested stable Euler meshes for one non-equilibrium fixed generator and
+also evaluates the analytic fixed-generator semigroup numerically through the symmetric similarity
+<code>H^(-1/2) B H^(-1/2)</code>. The fine solution is closer at every noninitial common
+time in this experiment. This finite result does not prove numerical
+convergence or its order. Phase evolution, nonlinear/multichannel pressure,
+operator histories, REMESH/nesting, adaptive/event timesteps, changing support
+and nonzero metriplectic cross-coupling remain open.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../docs/assets/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+      
+    
+  </body>
+</html>

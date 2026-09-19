@@ -1,0 +1,2871 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/AGENTS/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../ARCHITECTURE/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Canonical reference - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tnfr-resonant-fractal-nature-theory" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Canonical reference
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-tnfr-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What TNFR is
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. What TNFR is">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#source-hierarchy-authority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source hierarchy (authority)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#communication-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Communication policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-foundations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Foundations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Foundations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-nodal-equation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The nodal equation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structural-triad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structural triad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-fractal-resonant-node-nfr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The fractal-resonant node (NFR)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accumulated-evolution-and-the-convergence-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accumulated evolution and the convergence policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transport-content-structural-diffusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transport content (structural diffusion)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-structural-tetrad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The structural tetrad
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. The structural tetrad">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#field-scales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field scales
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-these-four-scope-and-minimality-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why these four (scope and minimality boundary)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-emergent-geometry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Emergent geometry
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Emergent geometry">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#auxiliary-symplectic-substrate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auxiliary symplectic substrate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structural-conservation-theorem-noether-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structural conservation theorem (Noether-like)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regime-correspondences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regime correspondences
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-the-13-canonical-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. The 13 canonical operators
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. The 13 canonical operators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dual-lever-and-contracts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dual-lever and contracts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operator-events-and-physical-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operator events and physical time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#composition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Composition
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-unified-grammar-u1u6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Unified grammar (U1–U6)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-telemetry-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Telemetry &amp; metrics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-canonical-invariants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Canonical invariants
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-tnfr-agent-playbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. TNFR agent playbook
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. TNFR agent playbook">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#shared-public-execution-and-observations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shared public execution and observations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-development-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Development workflow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Development workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#commit-pr-templates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit / PR templates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-research-programs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Research programs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-map-of-the-codebase-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Map of the codebase &amp; examples
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-philosophy-excellence-standards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Philosophy &amp; excellence standards
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/CLI_AND_SDK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI and SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../theory/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/FUNDAMENTAL_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/NODAL_PARAMETER_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/NODAL_RESEARCH_STRATEGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/research/FIVE_STAGE_EXECUTION_PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Active execution plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/DERIVED_EPI_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/research/archive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Historical archive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../factorization-lab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Applications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Applications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../primality-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.github/WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-tnfr-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What TNFR is
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. What TNFR is">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#source-hierarchy-authority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source hierarchy (authority)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#communication-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Communication policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-foundations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Foundations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Foundations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-nodal-equation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The nodal equation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structural-triad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structural triad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-fractal-resonant-node-nfr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The fractal-resonant node (NFR)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accumulated-evolution-and-the-convergence-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accumulated evolution and the convergence policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transport-content-structural-diffusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transport content (structural diffusion)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-structural-tetrad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The structural tetrad
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. The structural tetrad">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#field-scales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field scales
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-these-four-scope-and-minimality-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why these four (scope and minimality boundary)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-emergent-geometry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Emergent geometry
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Emergent geometry">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#auxiliary-symplectic-substrate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auxiliary symplectic substrate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structural-conservation-theorem-noether-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structural conservation theorem (Noether-like)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regime-correspondences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regime correspondences
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-the-13-canonical-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. The 13 canonical operators
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. The 13 canonical operators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dual-lever-and-contracts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dual-lever and contracts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operator-events-and-physical-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operator events and physical time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#composition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Composition
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-unified-grammar-u1u6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Unified grammar (U1–U6)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-telemetry-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Telemetry &amp; metrics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-canonical-invariants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Canonical invariants
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-tnfr-agent-playbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. TNFR agent playbook
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. TNFR agent playbook">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#shared-public-execution-and-observations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shared public execution and observations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-development-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Development workflow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Development workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#commit-pr-templates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit / PR templates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-research-programs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Research programs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-map-of-the-codebase-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Map of the codebase &amp; examples
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-philosophy-excellence-standards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Philosophy &amp; excellence standards
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tnfr-resonant-fractal-nature-theory">TNFR: Resonant Fractal Nature Theory<a class="headerlink" href="#tnfr-resonant-fractal-nature-theory" title="Permanent link">&para;</a></h1>
+<p><strong>Working reference for the TNFR Python Engine, version 0.0.3.6.</strong>
+This synthesis states current definitions, contracts and mathematical boundaries.
+Guide responsibilities belong to the <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/README.md">documentation map</a>.
+Detailed derivations belong to the <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md">theory index</a>;
+execution details belong to <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/API_CONTRACTS.md">API contracts</a>.
+This file is mirrored verbatim at <code>.github/agents/my-agent.md</code>.</p>
+<h2 id="1-what-tnfr-is">1. What TNFR is<a class="headerlink" href="#1-what-tnfr-is" title="Permanent link">&para;</a></h2>
+<p>TNFR models coherent patterns on graph-coupled networks. Its nodal equation is</p>
+<div class="arithmatex">\[\frac{\partial\mathrm{EPI}}{\partial t}=\nu_f\,\Delta\mathrm{NFR}.\]</div>
+<p>It relates structural change, reorganization capacity and pressure. It does
+not, by itself, determine the pressure realization or the evolution of phase,
+capacity and support. The hypothesis that physical entities emerge from this
+structure remains open. An implemented model or diagnostic is not evidence
+that the hypothesis is physically established.</p>
+<h3 id="source-hierarchy-authority">Source hierarchy (authority)<a class="headerlink" href="#source-hierarchy-authority" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Explicit mathematical definitions, hypotheses, derivations and counterexamples.</li>
+<li>Repository code and tests as evidence of implemented behavior, subject to audit.</li>
+<li>This synthesis and the specialized document responsible for each result.</li>
+<li>Published releases and historical notes, which can lag the working tree.</li>
+</ol>
+<p>A contradiction is resolved by examining the mathematics and actual execution;
+neither a historical label of "canonical" nor a passing test makes an unsupported
+theorem true. Update this file as a coherent reference, not a session log.</p>
+<h3 id="communication-policy">Communication policy<a class="headerlink" href="#communication-policy" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Use English in code, documentation, comments, commits, issues and PRs;
+  preserve verbatim quotations and raw data in their original language.</li>
+<li>State the model, assumptions and evidence for claims. Distinguish exact
+  identities, conditional theorems, configured contracts, finite observations,
+  auxiliary models and open hypotheses.</li>
+<li>Do not promote graph analogies, arithmetic constructions or telemetry to
+  particle physics, cosmology or consciousness conclusions.</li>
+<li>Record source/configuration, inputs, seeds, execution path and precision when
+  reporting reproducible numerical results. Include negative results and limits.</li>
+</ul>
+<h2 id="2-foundations">2. Foundations<a class="headerlink" href="#2-foundations" title="Permanent link">&para;</a></h2>
+<h3 id="the-nodal-equation">The nodal equation<a class="headerlink" href="#the-nodal-equation" title="Permanent link">&para;</a></h3>
+<p>Write <code>x=EPI</code>, <code>p=DeltaNFR</code>; the unforced continuous row is <code>dx/dt=nu_f*p</code>.
+In a selected scalar chart, <code>[p]=[x]/([nu_f][t])</code>. <code>Hz_str</code> denotes structural
+rate relative to the declared clock; identifying it with laboratory seconds
+requires a measurement bridge. Pressure is a structural driving term, not an
+arbitrary loss function. Defining it retrospectively as a measured derivative
+merely reconstructs the identity and supplies no independent prediction.</p>
+<h3 id="structural-triad">Structural triad<a class="headerlink" href="#structural-triad" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Form EPI:</strong> structural configuration in a declared state space. The graph
+  scalar chart is signed real, directly or via uniform-real <code>BEPIElement</code>.
+  <code>real_scalar_epi</code> and <code>scalarize_epi</code> preserve that sign. A nonuniform or
+  complex BEPI has no signed scalar representative; scalar-only glyphs,
+  diffusion and certificates reject it. <code>abs(BEPIElement)</code> is a magnitude.</li>
+<li><strong>Capacity nu_f:</strong> nonnegative reorganization rate. Zero capacity suppresses
+  the unforced nodal row even under nonzero pressure; it need not imply equilibrium.</li>
+<li><strong>Phase phi/theta:</strong> circular synchronization coordinate. U3 compares
+  <code>abs(wrap(phi_i-phi_j))</code> with the configured <code>Delta_phi_max</code>.</li>
+</ul>
+<p>Named transformations use their operator contracts. Declared numerical solvers
+advance EPI through the shared nodal integrator with explicit capacity, pressure,
+clock and provenance or residual. Initialization is distinct from evolution.
+Full closure also needs justified phase, capacity, support and input laws.
+The optional Gamma registry supplies an additional rate in the extended row
+<code>dx/dt=nu_f*p+Gamma</code>; nonzero Gamma can move EPI at zero capacity. It is declared
+forcing, not a derivation from the nodal product. Unforced certificates require
+Gamma to be absent/zero; see <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/dynamics/integrators.py">integrators</a>.</p>
+<h3 id="the-fractal-resonant-node-nfr">The fractal-resonant node (NFR)<a class="headerlink" href="#the-fractal-resonant-node-nfr" title="Permanent link">&para;</a></h3>
+<p>An NFR is modeled as a region of structural coherence coupled to a network,
+carrying the triad. Nesting supplies operational fractality; persistence,
+autonomous formation and physical identification require separate evidence.
+Emission acts on an existing node with supplied basal capacity. THOL can create
+children under configured preconditions and construction rules. Neither fact
+proves spontaneous creation of the substrate or an autonomous maintained NFR.</p>
+<p>The radial/annular/multinodal classifier is a calibrated read-out of potential
+geometry. It does not derive a universal geometry or select Platonic solids.
+<code>Network.nfr()</code> exposes this read-out. <code>structural_coherence</code> and
+<code>is_structural_equilibrium</code> in <code>metrics/common.py</code> are shared diagnostic kernels;
+reusing them across arithmetic, graph and chemical models does not identify
+those models' dynamics. See <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md">foundations</a>.</p>
+<h3 id="accumulated-evolution-and-the-convergence-policy">Accumulated evolution and the convergence policy<a class="headerlink" href="#accumulated-evolution-and-the-convergence-policy" title="Permanent link">&para;</a></h3>
+<p>On continuous intervals, <code>x(t)-x(t0)=integral(nu_f*p dt)</code>. Hybrid execution also
+adds actual operator jumps. Finite-horizon integrability, boundedness, convergence
+and absolute integrability are different conditions. Absolute integrability is
+sufficient for a finite limiting state; bounded or vanishing pressure alone is
+not. U2 is a stabilization/debt policy, not a universal convergence theorem.</p>
+<h3 id="transport-content-structural-diffusion">Transport content (structural diffusion)<a class="headerlink" href="#transport-content-structural-diffusion" title="Permanent link">&para;</a></h3>
+<p>The implemented pressure combines configured phase, form, capacity and topology
+channels. Only the isolated EPI channel is exactly
+<code>p_epi=-L_rw*x</code>, <code>L_rw=I-D^(-1)W</code>, with zero rows at isolates.
+On fixed connected symmetric nonnegative conductance and fixed positive capacity,
+<code>dx/dt=-diag(nu_f)*L_rw*x</code> relaxes to consensus. With common capacity it conserves
+the degree-weighted mean and decays in modes <code>exp(-nu_f*lambda_k*t)</code>; heterogeneous
+capacity conserves weights <code>d_i/nu_f_i</code>. Other channels, changing support,
+directed nonnormality, forcing and zero capacity require their own hypotheses.</p>
+<p>Exact-real diffusion theorems, materialized binary64 identities, finite executor
+certificates and asymptotic runtime convergence are distinct. REMESH stability
+results likewise specify support, metric, delays, clipping, capacity and schedule;
+none provides unrestricted complete-runtime stability. The detailed owners are
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_DIFFUSION_STABILITY_THEOREM.md">diffusion</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_DIRECTED_NONNORMAL_DYNAMICS.md">directed transport</a> and
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/REMESH_INFINITY_DERIVATION.md">REMESH</a>.</p>
+<p>The canonical phase channel uses an unweighted neighbor-phasor resultant,
+including support edges with zero transport weight. It is nonlinear and has
+branch/resultant boundaries; a pairwise Laplacian comparison is not its global
+law. Phase quotient and midpoint results retain their explicit chart, support
+and represented-rounding hypotheses.</p>
+<h2 id="3-the-structural-tetrad">3. The structural tetrad<a class="headerlink" href="#3-the-structural-tetrad" title="Permanent link">&para;</a></h2>
+<p>The tetrad is the diagnostic interface, not a proven complete state basis.
+Compute it through <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/fields.py">fields.py</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Phi_s</code></td>
+<td>Nonlocal pressure aggregation</td>
+<td>Sum of pressure divided by squared path distance</td>
+</tr>
+<tr>
+<td><code>abs(grad phi)</code></td>
+<td>Local phase stress</td>
+<td>Mean absolute wrapped neighbor separation, bounded by pi</td>
+</tr>
+<tr>
+<td><code>K_phi</code></td>
+<td>Circular phase curvature</td>
+<td>Wrapped displacement from a neighbor resultant; bounded by pi where defined</td>
+</tr>
+<tr>
+<td><code>xi_C</code></td>
+<td>Coherence correlation range</td>
+<td>Static coherence-product fit with separately tagged spectral fallback</td>
+</tr>
+</tbody>
+</table>
+<h3 id="field-scales">Field scales<a class="headerlink" href="#field-scales" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>Phi_s</code> reads explicit edge <code>length</code>, with <code>weight</code> as compatibility fallback;
+  diffusion instead reads <code>weight</code> as conductance. These roles need not coincide.
+  Potential is bounded by the aggregation operator norm times pressure, not by pi.</li>
+<li>The exact phase-wrap scale is pi. <code>pi/16</code> gradient warnings, <code>0.9*pi</code> curvature
+  margins, <code>pi/4</code> potential magnitude and U6 <code>pi/2</code> drift are selected policies.</li>
+<li>Curvature is undefined for an exactly joint-zero represented resultant.
+  Preserve availability evidence rather than inventing a direction.</li>
+<li>The xi fit uses static coherence products, not centered fluctuations or a
+  temporal relaxation measurement. The fallback uses the first spectral value
+  above the implementation cutoff <code>1e-9</code>; it equals <code>1/sqrt(lambda_2)</code> only under
+  the relevant connected-graph and cutoff conditions. Always report provenance.</li>
+</ul>
+<h3 id="why-these-four-scope-and-minimality-boundary">Why these four (scope and minimality boundary)<a class="headerlink" href="#why-these-four-scope-and-minimality-boundary" title="Permanent link">&para;</a></h3>
+<p>Aggregation, first/second local phase observations and nonlocal correlation
+capture complementary information. They do not reconstruct hidden form,
+capacity, history, support or future evolution in general. Higher powers of a
+Laplacian can carry independent information. Lossy aggregation can preserve
+mean dynamics but lose potential or xi. Definitions and limitations belong to
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/STRUCTURAL_FIELDS_TETRAD.md">Structural Fields</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/MINIMAL_STRUCTURAL_DEGREES.md">minimal degrees</a> and
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md">scale/geometry</a>.</p>
+<h2 id="4-emergent-geometry">4. Emergent geometry<a class="headerlink" href="#4-emergent-geometry" title="Permanent link">&para;</a></h2>
+<h3 id="auxiliary-symplectic-substrate">Auxiliary symplectic substrate<a class="headerlink" href="#auxiliary-symplectic-substrate" title="Permanent link">&para;</a></h3>
+<p>The substrate initializes ambient canonical pairs <code>(K_phi,J_phi)</code> and
+<code>(Phi_s,J_DeltaNFR)</code> from graph read-outs. Its declared quadratic Hamiltonian
+has a harmonic symplectic flow and model-specific conserved charges. Graph
+fields need not remain in the realizable image under that auxiliary flow.
+Neither the full nodal equation nor all 13 operators have been derived from it.
+U(2)/Stokes polarization is a classical construction, not a quantum-state or
+particle-generation result.</p>
+<p>A restricted bridge is exact for reversible EPI diffusion: with <code>B=D-W</code>,
+<code>E_D=x^T B x/2</code> and mobility <code>M=diag(nu_f/d)</code> (zero at isolates),
+<code>dx/dt=-M*grad(E_D)</code> and <code>dE_D/dt&lt;=0</code>. This Dirichlet energy is distinct from
+potential aggregation and the auxiliary isotropic Hamiltonian. See
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_VARIATIONAL_PRINCIPLE.md">variational scope</a>.</p>
+<h3 id="structural-conservation-theorem-noether-like">Structural conservation theorem (Noether-like)<a class="headerlink" href="#structural-conservation-theorem-noether-like" title="Permanent link">&para;</a></h3>
+<p>The diagnostic balance uses <code>rho=Phi_s+K_phi</code> and the declared phase/pressure
+currents. Its source/residual must be measured on the actual trajectory;
+operator labels alone do not make it vanish. The nonnegative sum-of-squares
+field energy is a Lyapunov candidate until monotonicity is proved for a stated
+law or observed on a specified trace. Read the precise hypotheses in
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/STRUCTURAL_CONSERVATION_THEOREM.md">conservation</a>.</p>
+<h3 id="regime-correspondences">Regime correspondences<a class="headerlink" href="#regime-correspondences" title="Permanent link">&para;</a></h3>
+<p>First-order nodal drift treats capacity as mobility, not inverse mass. An
+auxiliary second-order graph wave has frequencies <code>sqrt(lambda_k)</code>. Finite graph
+spectra exist independently of dissonance. <code>net.rhythm()</code> reports modal rhythm;
+<code>net.resonance()</code> reports phase synchronization. These do not establish a shared
+native clock or a maintained engine wave. Prescribed phase motion can generate
+a conditional periodic form response; the origin of that motion remains open.
+See <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/PHYSICAL_REGIME_CORRESPONDENCES.md">regime comparisons</a>.</p>
+<h2 id="5-the-13-canonical-operators">5. The 13 canonical operators<a class="headerlink" href="#5-the-13-canonical-operators" title="Permanent link">&para;</a></h2>
+<p>The registry is the semantic interface for named transformations. Catalog
+completeness and a uniquely derived autonomous selection law remain open.
+Read executable tokens from <code>TNFR.operators()</code>'s <code>token</code> field; <code>name</code> is the
+display name and <code>glyph</code> the internal symbol. Do not infer a token by lowercasing
+a display/class name. The catalog describes contracts, not live-state admission.</p>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Glyph</th>
+<th>Primary channel</th>
+<th>Direct contract or execution boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Emission</td>
+<td>AL</td>
+<td>EPI</td>
+<td>Sources form on existing support; does not write capacity, pressure or phase</td>
+</tr>
+<tr>
+<td>Reception</td>
+<td>EN</td>
+<td>EPI</td>
+<td>Blends incoming form; stored pressure and rate, hence immediate local C, unchanged</td>
+</tr>
+<tr>
+<td>Coherence</td>
+<td>IL</td>
+<td>pressure</td>
+<td>Contracts pressure magnitude; compare C using the declared local scope</td>
+</tr>
+<tr>
+<td>Dissonance</td>
+<td>OZ</td>
+<td>pressure</td>
+<td>Local destabilizing pressure contract precedes any propagated increments</td>
+</tr>
+<tr>
+<td>Coupling</td>
+<td>UM</td>
+<td>phase</td>
+<td>Requires circular U3 compatibility; can also change neighboring state/support</td>
+</tr>
+<tr>
+<td>Resonance</td>
+<td>RA</td>
+<td>EPI</td>
+<td>Uses U3-compatible neighbors and preserves scalar sign/kind identity</td>
+</tr>
+<tr>
+<td>Silence</td>
+<td>SHA</td>
+<td>capacity</td>
+<td>Attenuates capacity and preserves EPI at the event; later unforced freezing requires zero nodal product</td>
+</tr>
+<tr>
+<td>Expansion</td>
+<td>VAL</td>
+<td>capacity</td>
+<td>Capacity does not decrease; no general state-dimension increase follows</td>
+</tr>
+<tr>
+<td>Contraction</td>
+<td>NUL</td>
+<td>capacity</td>
+<td>Capacity does not increase; also affects pressure</td>
+</tr>
+<tr>
+<td>Self-organization</td>
+<td>THOL</td>
+<td>pressure</td>
+<td>Configured child/hierarchy construction; autonomous maintenance unproved</td>
+</tr>
+<tr>
+<td>Mutation</td>
+<td>ZHIR</td>
+<td>phase</td>
+<td>Needs live temporal evidence and grammar context; does not create topology</td>
+</tr>
+<tr>
+<td>Transition</td>
+<td>NAV</td>
+<td>pressure</td>
+<td>Controlled state change; not a U2 destabilizer</td>
+</tr>
+<tr>
+<td>Recursivity</td>
+<td>REMESH</td>
+<td>EPI</td>
+<td>Node glyph is advisory; separate network operation mixes delayed EPI</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dual-lever-and-contracts">Dual-lever and contracts<a class="headerlink" href="#dual-lever-and-contracts" title="Permanent link">&para;</a></h3>
+<p>Capacity and pressure are the two factors of the nodal product. Primary channel
+classification does not list every auxiliary write or establish a one-to-one
+mapping to tetrad fields. The registry in
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/operator_contracts.py">operator_contracts.py</a>
+owns metadata; <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/STRUCTURAL_OPERATORS.md">STRUCTURAL_OPERATORS.md</a>
+owns mathematical interpretation. Direct glyphs, public classes and atomic
+stages can have different secondary effects; identify the actual path.</p>
+<p>Mutation requires active capacity and a finite signed two-sample EPI secant
+strictly above <code>ZHIR_THRESHOLD_XI</code>. Timestamped history is authoritative and must
+end at the live state; legacy histories use explicit operator-step units.
+<code>nu_f*DeltaNFR</code> is a prediction, not observed trigger evidence. Missing/stale
+history rejects direct execution; default selection can abstain to IL. U4b
+context remains separate. <code>variant_creation</code> is rejected; THOL owns child creation.</p>
+<h3 id="operator-events-and-physical-time">Operator events and physical time<a class="headerlink" href="#operator-events-and-physical-time" title="Permanent link">&para;</a></h3>
+<p>Named events are hybrid jumps, not finite-duration solutions of an invented
+pressure law. Physical partitions record held/refreshed pressure, solver spans
+and jumps separately. Atomic all-target stages use a shared immutable snapshot,
+validate all proposals and commit graph-owned state together. Target-order
+invariance of specified primary writes does not imply relabeling equivariance,
+callback invariance, arbitrary external rollback or future stability.</p>
+<p>REMESH advisory stages do not implicitly invoke delayed-EPI mixing. Network
+REMESH validates exact live history support and reports raw/bounded values,
+clipping and defects. Finite causal certificates bind retained execution only;
+the next invocation needs its own admission. See
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/API_CONTRACTS.md">API contracts</a>.</p>
+<h3 id="composition">Composition<a class="headerlink" href="#composition" title="Permanent link">&para;</a></h3>
+<p>Words preserve operator order; simultaneous target stages are not simultaneous
+words. Grammar admission, operator state preconditions, continuous propagation,
+reduction closure and complete-runtime stability are independent obligations.
+Reuse the shared executor and evidence adapters; do not manufacture a certificate
+from caller-supplied flags or unrelated traces.</p>
+<h2 id="6-unified-grammar-u1u6">6. Unified grammar (U1–U6)<a class="headerlink" href="#6-unified-grammar-u1u6" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Engine policy</th>
+<th>Mathematical boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>U1</td>
+<td>Standalone initiation <code>{AL,NAV,REMESH}</code> and closure <code>{SHA,NAV,REMESH,OZ}</code></td>
+<td>History admission, not existence of the derivative at zero EPI</td>
+</tr>
+<tr>
+<td>U2</td>
+<td>Destabilizers <code>{OZ,ZHIR,VAL}</code> require stabilization <code>{IL,THOL}</code> and bounded debt</td>
+<td>Calibrated policy, not universal convergence</td>
+</tr>
+<tr>
+<td>U3</td>
+<td>UM/RA require circular phase compatibility</td>
+<td>Admissibility does not derive phase motion or its persistence</td>
+</tr>
+<tr>
+<td>U4</td>
+<td>Bifurcation handlers, recent destabilizer and prior IL for ZHIR</td>
+<td>Configured recency and live trigger evidence, not a universal relaxation time</td>
+</tr>
+<tr>
+<td>U5</td>
+<td>Declared deep recursion and nearby scale-stabilizer coverage</td>
+<td>Parent/child inequality requires its normalization; nesting alone does not prove it</td>
+</tr>
+<tr>
+<td>U6</td>
+<td>Reference-relative potential drift monitoring</td>
+<td>Read-only safety policy, not a graph-independent potential bound</td>
+</tr>
+</tbody>
+</table>
+<p><code>grammar_canon.py</code> owns rule bases; role sets derive from shared predicates and
+are exposed through <code>grammar_types.py</code>. The <code>core</code> word profile omits legacy
+pair/THOL preferences while retaining word and live contracts.
+<code>GRAMMAR_REJECTION_MODE="raise"</code> prevents blocked-step substitution; it does not
+derive selection. Full rule premises are in
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md">grammar scope</a> and
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/UNIFIED_GRAMMAR_RULES.md">grammar specification</a>.</p>
+<h2 id="7-telemetry-metrics">7. Telemetry &amp; metrics<a class="headerlink" href="#7-telemetry-metrics" title="Permanent link">&para;</a></h2>
+<p><code>C(t)=1/(1+mean(abs(DeltaNFR))+mean(abs(dEPI)))</code> is the configured global
+coherence read-out; the per-node kernel uses local values. Its cuts
+<code>pi/(pi+1)</code> and <code>1/(pi+1)</code> label a policy band. C is not by itself proof of
+stability, identity, coupling or autonomous formation.</p>
+<p>Si is a configured diagnostic mixture. Default controllers consume it, but
+that dependency is not an emergent selection law. The auxiliary affinity
+<code>coherence_matrix</code> is not C and need not be positive semidefinite. Report tetrad
+availability, stored versus refreshed pressure and xi fit/fallback provenance.
+Do not treat undefined or unsupported observations as successful zero values.</p>
+<h2 id="8-canonical-invariants">8. Canonical invariants<a class="headerlink" href="#8-canonical-invariants" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Preserve continuous nodal flow and declared hybrid jumps with their provenance.</li>
+<li>Enforce circular phase admission before U3 coupling/resonance.</li>
+<li>Retain declared nested structure and test the applicable U5 contract.</li>
+<li>Use registered semantic operators or explicitly justified new contracts;
+   numerical evolution uses the shared integrator.</li>
+<li>Preserve structural units and expose the relevant structural telemetry.</li>
+<li>Make execution reproducible under fixed source, configuration, inputs,
+   seed, target order, precision and backend; a seed alone is insufficient.</li>
+</ol>
+<h2 id="9-tnfr-agent-playbook">9. TNFR agent playbook<a class="headerlink" href="#9-tnfr-agent-playbook" title="Permanent link">&para;</a></h2>
+<p>Start from the relevant mathematical question and actual code path. Reuse shared
+kernels and theorem owners before adding mechanisms. Separate supplied state,
+forcing and controller choices from quantities derived by the model. Accept
+changes against the affected contract and evidence: destabilization, negative
+results or corrected diagnostics need not increase C. Never hide a contradiction
+by relabeling telemetry or adjusting a reserved response after evaluation.</p>
+<h3 id="shared-public-execution-and-observations">Shared public execution and observations<a class="headerlink" href="#shared-public-execution-and-observations" title="Permanent link">&para;</a></h3>
+<p>For a declared finite operator study, use <code>StudySpec</code> and <code>run_study</code> from
+<code>tnfr.sdk</code>. The CLI <code>tnfr network</code> (also <code>python -m tnfr network</code>) delegates to
+that same owner in <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/sdk/study.py">sdk/study.py</a>.
+Extend the shared model before adding separate CLI validation, simulation or
+serialization logic. <code>TNFR.operators()</code> and <code>list_sequences()</code> expose existing
+registries; do not maintain a second operator catalog or word table.</p>
+<p><code>StudySpec.cycles</code> and this CLI's <code>--steps</code>/<code>--cycles</code> count complete requested
+operator words, not seconds. The report records the requested word and observed
+endpoints, not every realized per-node glyph; inherited grammar policy and live
+preconditions remain active. The supplied zero-form baseline is initialization,
+not spontaneous substrate creation. The study runner sets both the topology
+seed and graph <code>RANDOM_SEED</code>; direct <code>TNFR.create(..., seed=...)</code> sets only the
+topology seed. Other engine configuration is inherited, so retain relevant
+configuration and runtime provenance when comparing runs.</p>
+<p>Use <code>diagnose_network(network)</code> for detached stored-state observations. It does
+not refresh pressure, evolve the graph or invent missing temporal evidence.
+Preserve independent field availability, per-node undefined curvature and xi
+estimator provenance. Its nodal product is a model-rate read-out, not a measured
+derivative or permission to execute Mutation. Diagnostic values do not select
+the next operator in the shared study runner.</p>
+<p><code>StudySpec.from_dict</code> validates a construction recipe and rejects unknown keys.
+<code>StudyResult.to_dict()</code> returns detached report data; the shared <code>export_to_json</code>
+writer saves it. Neither a recipe nor this scalar state/support projection is
+a complete resumable checkpoint. <code>import_from_json</code> reads data without restoring
+callbacks, histories or a live graph. Usage and schema details belong to the
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/CLI_AND_SDK.md">CLI and SDK guide</a>.</p>
+<h2 id="10-development-workflow">10. Development workflow<a class="headerlink" href="#10-development-workflow" title="Permanent link">&para;</a></h2>
+<p>Inspect repository instructions, local changes and relevant source/tests before
+editing. Preserve unrelated work. Keep definitions centralized and APIs stable
+or explicitly migrated. Documentation should identify current owners rather
+than duplicate derivations and delivery histories. The documentation map owns
+navigation and responsibilities; the example and benchmark indexes identify
+maintained entry points and their scope. Historical paths or retired notebooks
+are evidence to inspect, not current instructions to restore automatically.</p>
+<h3 id="commit-pr-templates">Commit / PR templates<a class="headerlink" href="#commit-pr-templates" title="Permanent link">&para;</a></h3>
+<p>Describe the concrete problem, resulting behavior, mathematical scope, validation
+and material limitations. Follow a repository template when present. A change
+need not claim improved coherence to be valid.</p>
+<h3 id="testing-requirements">Testing requirements<a class="headerlink" href="#testing-requirements" title="Permanent link">&para;</a></h3>
+<p>Run checks appropriate to the affected behavior. Verify actual operator
+postconditions, unsupported domains, numerical/representation boundaries and
+provenance where relevant. Do not assume RA always increases synchronization,
+OZ always produces a bifurcation, or every valid sequence is monotone. A test
+suite checks finite cases and implementations, not unrestricted theorems.
+Exercise the actual shared owner with an independent expected result or a
+meaningful boundary; assigning fixture literals and asserting those same values
+does not test nodal dynamics. Reuse an expensive producer's report through a
+module fixture while retaining distinct assertions. Test CLI/report wiring
+separately when it needs no new scientific execution; preserve independently
+necessary cold-import, atomicity and provenance checks. See the
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/tests/core_physics/README.md">core contract map</a>
+for the tests that retain the behavior of retired introductory illustrations.
+Default test selection, dependencies and parallel scheduling have their owners
+in test configuration and the workflow guide; do not duplicate those settings
+here or regenerate historical research artifacts for an unrelated change.
+See <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/TESTING.md">TESTING.md</a>.</p>
+<h2 id="11-troubleshooting">11. Troubleshooting<a class="headerlink" href="#11-troubleshooting" title="Permanent link">&para;</a></h2>
+<p>Inspect the declared model, execution path, state/history and telemetry before
+attributing a failure to theory. Grammar rejection, live-state rejection, solver
+defect and a theorem's unsupported domain are different outcomes. A drop in C
+is a violation only where an applicable contract promises nondecrease. Preserve
+explicit abstention and undefined-field evidence.</p>
+<h2 id="12-research-programs">12. Research programs<a class="headerlink" href="#12-research-programs" title="Permanent link">&para;</a></h2>
+<p>The <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR_lineas_de_investigacion.txt">portfolio</a>
+classifies primary, supporting and parked work. The
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/research/FIVE_STAGE_EXECUTION_PLAN.md">execution plan</a>
+is the sole task queue; the
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_RESEARCH_STRATEGY.md">strategy</a>
+explains its rationale. Conditional core results, finite C6 evidence, arithmetic
+models and Millennium notes retain their own scope and do not constitute
+additional active campaigns. Historical instructions are preserved in the
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/research/archive/README.md">archive</a>.</p>
+<p>The primary objective is a predictive generative account of coherence patterns.
+The P1-P5 measurement bridge separates calibration from reserved evaluation and
+requires an independently declared measurement/clock mapping. Current research
+uses workstation-accessible terrestrial data or laboratory-scale protocols;
+physical admission and identification remain open. Track detailed status in
+the plan rather than appending milestones here.</p>
+<h2 id="13-map-of-the-codebase-examples">13. Map of the codebase &amp; examples<a class="headerlink" href="#13-map-of-the-codebase-examples" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Owner</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dynamics/</code></td>
+<td>Configured pressure and phase/capacity maps; shared integration</td>
+</tr>
+<tr>
+<td><code>operators/</code></td>
+<td>Named transformations, grammar, stages and causal execution</td>
+</tr>
+<tr>
+<td><code>physics/</code></td>
+<td>Fields, model theorems, reductions and scope-aware observations</td>
+</tr>
+<tr>
+<td><code>metrics/</code></td>
+<td>Shared coherence, sense and diagnostic kernels</td>
+</tr>
+<tr>
+<td><code>config/</code>, <code>constants/</code></td>
+<td>Declared defaults, policy calibration and classifications</td>
+</tr>
+<tr>
+<td><code>mathematics/</code></td>
+<td>Numerical backends, exact helpers and arithmetic constructions</td>
+</tr>
+<tr>
+<td><code>sdk/</code></td>
+<td>Public networks, validated study recipes and detached diagnostic reports</td>
+</tr>
+<tr>
+<td><code>cli/</code></td>
+<td>Command adapters; study execution and catalogs reuse SDK owners</td>
+</tr>
+<tr>
+<td><code>research/</code> and domain packages</td>
+<td>Scoped experiments and analysis</td>
+</tr>
+</tbody>
+</table>
+<p>See <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/ARCHITECTURE.md">ARCHITECTURE.md</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/README.md">docs</a> and
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/README.md">examples</a>.
+Historical examples can illustrate an auxiliary model without proving physical
+emergence; consult the current theoretical owner before reusing a conclusion.
+Choose the current entry point from the example index rather than assuming an
+old numbered filename still exists. Examples and benchmarks are not an
+instruction to execute every file or reopen parked research branches.</p>
+<h2 id="14-philosophy-excellence-standards">14. Philosophy &amp; excellence standards<a class="headerlink" href="#14-philosophy-excellence-standards" title="Permanent link">&para;</a></h2>
+<p>Use the nodal framework to formulate testable questions. Prefer explicit
+assumptions, reusable mathematics, negative controls and traceable observations
+over claims of universality. Operational terminology, configured engine behavior,
+conditional mathematical results and empirical validation must remain distinct.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../docs/assets/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+      
+    
+  </body>
+</html>

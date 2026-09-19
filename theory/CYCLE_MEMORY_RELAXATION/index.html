@@ -1,0 +1,1792 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/CYCLE_MEMORY_RELAXATION/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Passive cycle relaxation with canonical delayed memory - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#passive-cycle-relaxation-with-canonical-delayed-memory" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Passive cycle relaxation with canonical delayed memory
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/CLI_AND_SDK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI and SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FUNDAMENTAL_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NODAL_PARAMETER_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NODAL_RESEARCH_STRATEGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/FIVE_STAGE_EXECUTION_PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Active execution plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DERIVED_EPI_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/archive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Historical archive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../factorization-lab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Applications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Applications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../primality-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.github/WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-retained-positive-capacity-removes-the-finite-clock-obstruction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Retained positive capacity removes the finite-clock obstruction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-a-rational-full-state-flow-gain-comes-from-the-cycle-spectrum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. A rational full-state flow gain comes from the cycle spectrum
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-memory-state-contains-pre-remesh-samples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The memory state contains pre-REMESH samples
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-reuse-of-the-sealed-common-gain-history-theorem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Reuse of the sealed common-gain history theorem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-mean-history-transients-and-the-localization-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Mean history, transients and the localization boundary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-exact-adapter-and-finite-executor-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Exact adapter and finite executor evidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="passive-cycle-relaxation-with-canonical-delayed-memory">Passive cycle relaxation with canonical delayed memory<a class="headerlink" href="#passive-cycle-relaxation-with-canonical-delayed-memory" title="Permanent link">&para;</a></h1>
+<p><strong>Status:</strong> Exact conditional cycle relaxation derived from the existing
+REMESH history theorem; finite runtime correspondence is checked separately.
+<strong>Research links:</strong> B2.d.4/O3.a, S3, S8, S9 and S16.</p>
+<h2 id="1-retained-positive-capacity-removes-the-finite-clock-obstruction">1. Retained positive capacity removes the finite-clock obstruction<a class="headerlink" href="#1-retained-positive-capacity-removes-the-finite-clock-obstruction" title="Permanent link">&para;</a></h2>
+<p>Use a fixed simple unit-conductance cycle with <code>n&gt;=3</code> nodes, scalar EPI <code>x</code>,
+uniform capacity <code>nu&gt;0</code> and a regular phase twist. Its adjacent circular gap
+is strictly below both the effective U3 gate and <code>pi/2</code>. Target-only
+all-node Coupling without functional links preserves this regular twist
+and uniform capacity. The topology, capacity and phase pressure gradients
+vanish; with the effective fully normalized EPI coefficient <code>e&gt;0</code>, the
+refreshed canonical pressure and nodal flow are</p>
+<div class="arithmatex">\[
+\Delta\mathrm{NFR}=-eLx,\qquad \dot x=-e\nu Lx,
+\qquad L=I-W/2.
+\]</div>
+<p>Thus the flow uses the same canonical channels as
+<a href="../CYCLE_SUPPORT_DYNAMICS/">joint support dynamics</a>. No Silence attenuation
+or additional restoring law is inserted. Capacity persists, so repeating
+one fixed partition satisfying the exact Euler restriction
+<code>0 &lt; e*nu*h_j &lt;= 1/2</code> from section 2 supplies a common strict contraction
+on every delay circuit. Positive duration alone is insufficient for Euler
+stability; the continuous-flow result has its separate spectral bound. This removes the finite-clock explanation for EPI
+contrast in the preceding block; it does not itself prove a localized
+restoring mechanism.</p>
+<p>The graph, coefficients, phase chart and capacities must remain fixed over
+the declared family. Grammar admission of a complete event word is a
+separate requirement. In particular, a registered REMESH word token is
+advisory and must not be identified with the separately executed delayed
+EPI map. The admitted bridge uses Coupling, Coherence and this advisory
+Recursivity token. Coherence has its own phase-lock action and is not
+generally inert in the phase sector: the regular strict twist is a fixed
+point of its exact neighbor-midpoint update. In this restricted preparation
+the bridge leaves EPI, capacity and phase unchanged before the flow;
+its direct pressure changes are replaced by the canonical refresh needed
+to identify the flow above. Runtime phase drift and pressure-realization
+residuals remain separate measured quantities.</p>
+<h2 id="2-a-rational-full-state-flow-gain-comes-from-the-cycle-spectrum">2. A rational full-state flow gain comes from the cycle spectrum<a class="headerlink" href="#2-a-rational-full-state-flow-gain-comes-from-the-cycle-spectrum" title="Permanent link">&para;</a></h2>
+<p>Let <code>bar(x)</code> be the spatial arithmetic mean and
+<code>E(x)=sum_i(x_i-bar(x))^2/2</code>. A constant positive multiple of this metric
+gives the same gain. The cycle eigenvalues are
+<code>lambda_j=1-cos(2*pi*j/n)</code>. In particular,</p>
+<div class="arithmatex">\[
+\lambda_2=2\sin^2(\pi/n)\geq\ell_n:=\frac8{n^2}&gt;0,
+\qquad \lambda_{\max}\leq2.
+\]</div>
+<p>Here the subscript <code>2</code> denotes the first nonconstant eigenvalue. The
+inequality uses <code>sin(t)&gt;=2t/pi</code> on <code>[0,pi/2]</code>; <code>ell_n</code> is a derived rational
+bound, not a fitted parameter or an asserted exact cycle eigenvalue.</p>
+<p>For an exact refreshed Euler partition with positive segment durations
+<code>h_j</code>, put <code>kappa_j=e*nu*h_j</code> and require <code>kappa_j&lt;=1/2</code>. Every modal factor
+lies in <code>[0,1]</code>, and for each nonconstant mode it is at most
+<code>1-kappa_j*ell_n</code>. Therefore the complete partition map <code>S_E</code> preserves
+the spatial mean and obeys</p>
+<div class="arithmatex">\[
+E(S_E x)\leq q_E E(x),\qquad
+q_E=\prod_j(1-\kappa_j\ell_n)^2&lt;1.
+\]</div>
+<p>This bounds all spatial modes, including a local EPI bump; it is not a
+single-eigenmode fit. For the exact continuous flow over
+<code>h=sum_j h_j</code>, a separate rational upper bound is</p>
+<div class="arithmatex">\[
+E(S_Cx)\leq e^{-2e\nu h\lambda_2}E(x)
+\leq q_CE(x),\qquad
+q_C=\frac1{1+2e\nu h\ell_n}&lt;1.
+\]</div>
+<p>The last step uses <code>exp(-u)&lt;=1/(1+u)</code> for <code>u&gt;=0</code>. The continuous and Euler
+maps have separate bounds; this comparison is not an Euler accuracy or
+binary64 convergence theorem. The restricted half-step condition avoids
+the nondecaying checkerboard boundary at <code>kappa=1</code> on an even cycle.</p>
+<h2 id="3-the-memory-state-contains-pre-remesh-samples">3. The memory state contains pre-REMESH samples<a class="headerlink" href="#3-the-memory-state-contains-pre-remesh-samples" title="Permanent link">&para;</a></h2>
+<p>The actual <a href="../../src/tnfr/operators/event_remesh_runtime.py">event/REMESH executor</a>
+first completes its schedule and physical flow, appends the resulting EPI
+field to <code>_epi_hist</code>, and then applies the delayed map. A delay <code>tau</code> reads
+<code>history[-(tau+1)]</code> after that append. The post-REMESH output is not appended
+again.</p>
+<p>Write <code>y_k</code> for this stored pre-REMESH EPI and <code>x_k</code> for its same-cycle
+post-REMESH result. Here <code>y</code> is a history label, not the shifted support
+coordinate of the preceding note. For one uniform <code>alpha</code> in <code>[0,1]</code>,</p>
+<div class="arithmatex">\[
+\begin{aligned}
+\beta&amp;=(1-\alpha)^2,&amp;
+\gamma&amp;=\alpha(1-\alpha),&amp;\delta&amp;=\alpha,\\
+x_k&amp;=\beta y_k+\gamma y_{k-\tau_l}+\delta y_{k-\tau_g},\\
+y_{k+1}&amp;=Sx_k.
+\end{aligned}
+\]</div>
+<p>The endpoint <code>alpha=0</code> is a formal identity-memory control of the exact
+certificate. The actual delayed REMESH configuration requires positive
+alpha. A runtime memory-free control instead executes the same admitted
+word and flow while omitting the separate delayed-map call.</p>
+<p>Coincident delays combine. Let <code>m</code> be the greatest delay with a positive
+coefficient and set <code>H=m+1</code>. Then <code>Y_k=(y_k,...,y_{k-m})</code> is the active
+history. At <code>alpha=0</code>, <code>m=0</code>; at <code>alpha=1</code>, only <code>tau_global</code> is active.
+Older retained rows lie outside this active state. A startup buffer is
+declared initial data and is not automatically a past solution of the
+nodal equation. Insufficient-history no-op behavior lies outside the
+applied recurrence until the required samples exist.</p>
+<p>This indexing matters. The schedule acts on the mixed head to produce the
+next stored pre-REMESH row. Storing post-REMESH states instead changes the
+history recurrence and cannot be substituted without a separate proof.</p>
+<p>Nor can unchanged delayed rows be repeatedly reused as rolling memory.
+If their combined contribution is held at <code>b</code>, the pre-map recurrence is
+<code>y_(k+1)=S*(beta*y_k+b)</code>. For a spatial mode with schedule factor <code>0&lt;r&lt;1</code>,
+its stationary amplitude is <code>r*b_mode/(1-beta*r)</code>, which can be nonzero.
+This is sustained by held input, not the advancing companion proved below.
+History advancement and its causal provenance distinguish these experiments.</p>
+<h2 id="4-reuse-of-the-sealed-common-gain-history-theorem">4. Reuse of the sealed common-gain history theorem<a class="headerlink" href="#4-reuse-of-the-sealed-common-gain-history-theorem" title="Permanent link">&para;</a></h2>
+<p>Let <code>P</code> and its positive stationary row <code>pi</code> be the temporal companion and
+stationary distribution already constructed by
+<a href="../../src/tnfr/physics/remesh_history_stability.py"><code>remesh_history_stability.py</code></a>.
+For the chronological energies in newest-first order,</p>
+<div class="arithmatex">\[
+v_k=(E(y_k),\ldots,E(y_{k-m}))^\top,\qquad V_k=\pi^\top v_k.
+\]</div>
+<p>Convexity of the centered quadratic energy and either gain <code>q=q_E</code> or
+<code>q=q_C</code> give the componentwise envelope</p>
+<div class="arithmatex">\[
+v_{k+1}\leq D_qPv_k,\qquad D_q=\operatorname{diag}(q,1,\ldots,1).
+\]</div>
+<p>This is exactly the order and convention of the existing
+<a href="../../src/tnfr/physics/remesh_schedule_policy_stability.py">policy certificate</a>,
+whose proof is in <a href="../REMESH_INFINITY_DERIVATION/">the REMESH derivation</a>.
+That certificate proves prefix gain at most one and</p>
+<div class="arithmatex">\[
+V_{k+N}\leq q^{\lfloor N/H\rfloor}V_k.
+\]</div>
+<p>No new temporal stability theorem is required: the cycle calculation
+supplies the previously conditional spatial schedule gain. Since <code>q&lt;1</code>
+and every <code>pi_j&gt;0</code>, all active rows lose their nonuniform spatial component.
+The post-REMESH field also loses it, by the same convexity inequality.
+The physical pressure therefore tends to zero in this exact fixed family.</p>
+<p>With a prepared row <code>y_{-1}=x_initial</code> and unit delays, the first executed
+flow creates <code>y_0</code>. The initial augmented energy is then formed from
+<code>(y_0,y_{-1})</code>; two successive executed cycles provide one transition
+from <code>V_0</code> to <code>V_1</code>. Counting the initial preparation as an additional
+verified schedule transition would change this finite bound's provenance.</p>
+<p>At <code>alpha=1</code>, the recurrence becomes
+<code>y_{k+1}=S*y_{k-tau_global}</code>: diffusion contracts each delay circuit once
+per <code>tau_global+1</code> stored transitions. Pure-delay temporal permutation
+therefore does not protect nonuniform spatial structure when every circuit
+includes the positive-capacity flow. At <code>alpha=0</code>, <code>H=1</code> and the certificate
+reduces to the ordinary memory-free schedule estimate.</p>
+<p>The common strict gain cannot be replaced by total elapsed time alone.
+For <code>alpha=1</code>, <code>tau_global=1</code>, each mode obeys
+<code>a_k=exp(-e*nu*lambda*h_k)*a_{k-2}</code>. Taking <code>h_{2j}=1</code> and
+<code>h_{2j-1}=2^{-j}</code> gives infinite total time, but the odd delay lineage
+receives only finite exposure and can retain nonzero contrast. The fixed
+partition assumed here excludes that control; a broader varying-duration
+theorem would need sufficient exposure along every active delay lineage.</p>
+<h2 id="5-mean-history-transients-and-the-localization-boundary">5. Mean history, transients and the localization boundary<a class="headerlink" href="#5-mean-history-transients-and-the-localization-boundary" title="Permanent link">&para;</a></h2>
+<p>The result concerns spatial disagreement. The schedule preserves means,
+so historical means obey the scalar REMESH companion. If every initial
+active row has the same mean, every subsequent pre- and post-REMESH field
+has it, and spatial relaxation gives full consensus to that constant.
+Otherwise <code>0&lt;alpha&lt;1</code> mixes these means to their stationary history
+barycenter, while <code>alpha=1</code> can retain a period dividing
+<code>tau_global+1</code> among spatially uniform fields. That temporal effect is not
+localized structure. Zero pressure during a physical flow also does not
+forbid a subsequent named REMESH event from changing a uniform EPI level.</p>
+<p>Even in the decaying regime, the current EPI energy need not decrease at
+each delayed map: older high-contrast rows can raise the current contrast.
+The nonincrease theorem applies to the augmented energy at stored-row
+boundaries. It does not justify multiplying a gain assigned only to the
+current REMESH input across an arbitrary history.</p>
+<p>A simple comparison shows why memory can prolong a passive transient.
+Let a nonconstant mode have a positive schedule factor <code>0&lt;r&lt;1</code>, and prepare
+every active startup amplitude equal to <code>a_0&gt;0</code>. The exact scalar recurrence
+has nonnegative coefficients summing to one:</p>
+<div class="arithmatex">\[
+a_{k+1}=r\left(\beta a_k+
+\gamma a_{k-\tau_l}+\delta a_{k-\tau_g}\right).
+\]</div>
+<p>Induction gives <code>a_{k+1}&lt;=a_k</code> and <code>a_{k+1}&gt;=r*a_k</code>; hence
+<code>a_k&gt;=r^k*a_0</code>, the memory-free amplitude. The common-gain theorem still
+forces <code>a_k-&gt;0</code>. This comparison requires the specified positive mode and
+repeated startup preparation; arbitrary signed histories can interfere
+differently. It is not a claim that memory always slows every trajectory.</p>
+<p>Thus uniform delayed memory plus retained positive-capacity diffusion does
+not sustain nonuniform EPI in this canonical cycle class. A persistent
+twisted phase pattern can coexist with spatially uniform EPI, but delayed
+echoes alone do not turn the passive EPI transient into a self-restoring
+localized entity. Moving structural support, nonlinear branch changes,
+clipping and more general graph/operator families require their own
+analysis rather than a transfer of this result.</p>
+<h2 id="6-exact-adapter-and-finite-executor-evidence">6. Exact adapter and finite executor evidence<a class="headerlink" href="#6-exact-adapter-and-finite-executor-evidence" title="Permanent link">&para;</a></h2>
+<p><a href="../../src/tnfr/physics/cycle_memory_relaxation.py"><code>cycle_memory_relaxation.py</code></a>
+derives <code>ell_n</code>, the complete Euler-partition gain and the continuous gain.
+It passes each gain to the existing sealed policy certificate while
+retaining their common sealed REMESH history model. Node count, uniform
+capacity, fully normalized EPI coefficient, positive physical partition,
+alpha and active delays remain explicit inputs. Exact rationals are
+preserved, and other supported real values use the shared materialized-real
+reader. The adapter introduces no second history recurrence or new
+transport kernel. Its declared physical partition repeats unchanged in
+the exact family; the history delays count stored cycle samples, not units
+of physical time.</p>
+<p><a href="../../tests/physics/test_cycle_memory_relaxation.py">Independent exact tests</a>
+check local-bump gains across cycle sizes, the true pre-REMESH recurrence,
+finite augmented envelopes, coincident and inactive delays, common means,
+pure-delay damping, uniform temporal cycles and current-energy transients.
+They also verify that altered nested policy payloads lose their seal.</p>
+<p><a href="../../tests/physics/test_cycle_memory_relaxation_runtime.py">Runtime tests</a>
+and the <a href="../../benchmarks/cycle_memory_relaxation.py">benchmark</a> compare the
+same admitted Coupling/Coherence/advisory-Recursivity word and physical
+partition with and without the separately invoked delayed map. The memory
+case uses explicit unit delays and a prepared initial history row. Four
+executed cycles expose three adjacent pre-REMESH history transitions.
+The records separately retain actual channel states, applied delayed
+proposals, the ideal exact mixture, canonical pressure refresh and Euler
+arithmetic residuals. The regular phase twist, uniform positive capacity
+and fixed support must be checked in these records; they are not inferred
+from the exact companion's input vectors.</p>
+<p>These finite observations connect the implementation to the restricted
+reference. They do not prove that future binary64 histories remain inside
+a uniform relative-defect class, that rounding preserves a positive
+contraction margin indefinitely, or that a generic adaptive operator
+schedule satisfies the same assumptions. Those remain distinct from the
+exact passive-relaxation theorem established here.</p>
+<p>In the bounded default C8 run at physical <code>T=2</code>, all capacities stay at one
+and every accumulated nodal clock is exactly two. The initial centered
+energy <code>0.109375</code> becomes <code>0.07105253529907486</code> with delayed memory and
+<code>0.05179949153244585</code> in the advisory-only control. Winding remains one.
+The four observed augmented energies decrease, and both complete two-step
+block slacks against the conservative <code>q_E≈0.9773016233624776</code> are positive.
+Clipping is inactive; the maximum measured REMESH rounding defect is
+<code>8.326672684688674e-17</code>. These recorded finite values demonstrate delayed
+relaxation in this preparation; the asymptotic statement belongs to the
+separate exact model and its hypotheses.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../docs/assets/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+      
+    
+  </body>
+</html>

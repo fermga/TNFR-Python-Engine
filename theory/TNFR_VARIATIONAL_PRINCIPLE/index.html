@@ -1,0 +1,4018 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/TNFR_VARIATIONAL_PRINCIPLE/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>TNFR Variational Principle — Lagrangian Action Formulation - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tnfr-variational-principle-lagrangian-action-formulation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              TNFR Variational Principle — Lagrangian Action Formulation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/CLI_AND_SDK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI and SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FUNDAMENTAL_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NODAL_PARAMETER_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NODAL_RESEARCH_STRATEGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/FIVE_STAGE_EXECUTION_PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Active execution plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DERIVED_EPI_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/archive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Historical archive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../factorization-lab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Applications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Applications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../primality-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.github/WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-main-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Main Result
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-tnfr-lagrangian" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The TNFR Lagrangian
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. The TNFR Lagrangian">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-lagrangian-density" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Lagrangian Density
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-action-functional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Action Functional
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-hamiltonian" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Hamiltonian
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-harmonic-model-and-the-unresolved-nodal-correspondence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Harmonic Model and the Unresolved Nodal Correspondence
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Harmonic Model and the Unresolved Nodal Correspondence">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-canonical-conjugate-pairs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Canonical Conjugate Pairs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-hamiltons-equations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Hamilton's Equations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-scope-of-hamiltons-equations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Scope of Hamilton's Equations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-overdamped-graph-diffusion-and-the-missing-bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Overdamped Graph Diffusion and the Missing Bridge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-exact-restricted-dirichlet-balance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Exact Restricted Dirichlet Balance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-exact-decoupled-metriplectic-product" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 Exact Decoupled Metriplectic Product
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-p2-read-out-realizability-obstruction-and-derived-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 P2 Read-Out Realizability: Obstruction and Derived Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#38-prepared-prism-harmonic-geometric-velocity-has-no-phase-lift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.8 Prepared prism harmonic geometric velocity has no phase lift
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-grammar-labelled-heuristics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Grammar-Labelled Heuristics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-operator-energy-heuristics-and-local-symplectic-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Operator Energy Heuristics and Local Symplectic Checks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-telemetry-thresholds-are-regular-points-of-the-quadratic-potential" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Telemetry Thresholds Are Regular Points of the Quadratic Potential
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-interaction-lagrangian" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Interaction Lagrangian
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-energy-partition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Energy Partition
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-consistency-relations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Consistency Relations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-single-source-of-truth-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Single Source of Truth Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Single Source of Truth Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-sector-decompositions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 Sector Decompositions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-translate_sectors-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 translate_sectors() API
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-api-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. API Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-symplectic-reduction-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Symplectic Reduction Scope
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-forced-potential-family-and-reciprocal-closure-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Forced-Potential Family and Reciprocal Closure Constraints
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="13. Forced-Potential Family and Reciprocal Closure Constraints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#131-mixed-derivatives-require-reciprocal-coupling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.1 Mixed derivatives require reciprocal coupling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#132-lower-bounds-require-the-actual-source-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.2 Lower bounds require the actual source compatibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#133-canonical-phase-pressure-is-not-generally-a-fixed-metric-gradient" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.3 Canonical phase pressure is not generally a fixed-metric gradient
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#134-relation-to-the-full-tetrad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.4 Relation to the full tetrad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#135-necessary-restoring-contribution-on-the-compatible-p2-preparation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.5 Necessary restoring contribution on the compatible P2 preparation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#136-exact-state-dependent-metric-for-canonical-phase-pressure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.6 Exact state-dependent metric for canonical phase pressure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#137-phase-alignment-representation-does-not-close-the-joint-law" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.7 Phase alignment representation does not close the joint law
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#138-structural-restrictions-do-not-select-the-auxiliary-potential" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.8 Structural restrictions do not select the auxiliary potential
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#139-joint-source-compatibility-and-the-common-mean-saddle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.9 Joint source compatibility and the common-mean saddle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1310-persistent-motion-is-a-separate-dynamical-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.10 Persistent motion is a separate dynamical target
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1311-cycle-budgets-reuse-the-nodal-transport-owners" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.11 Cycle budgets reuse the nodal transport owners
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1312-oriented-sourceform-work-without-a-selected-clock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.12 Oriented source/form work without a selected clock
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1313-work-pulled-back-to-a-proposed-geometric-phase-relation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.13 Work pulled back to a proposed geometric phase relation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1314-existing-optional-feedback-pressure-consistency-before-recurrence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.14 Existing optional feedback: pressure consistency before recurrence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1315-full-repeated-triple-feedback-and-the-mean-work-term" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.15 Full repeated-triple feedback and the mean-work term
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1316-full-prism-feedback-boundary-exchange-does-not-remove-all-dissipation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.16 Full-prism feedback: boundary exchange does not remove all dissipation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1317-all-spatial-modes-and-local-nonlinear-attraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.17 All spatial modes and local nonlinear attraction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1318-source-sensitivity-joint-work-and-the-passive-transfer-limit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.18 Source sensitivity, joint work and the passive-transfer limit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1319-structural-closure-tests-exchange-jacobi-and-the-remaining-potential" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.19 Structural closure tests: exchange, Jacobi and the remaining potential
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1320-locality-and-exact-diffusion-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.20 Locality and exact diffusion compatibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation &amp; Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation &amp; Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#executable-demonstrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executable Demonstrations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-source-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Source Modules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tnfr-variational-principle-lagrangian-action-formulation">TNFR Variational Principle — Lagrangian Action Formulation<a class="headerlink" href="#tnfr-variational-principle-lagrangian-action-formulation" title="Permanent link">&para;</a></h1>
+<p><strong>Status</strong>: Exact restricted EPI balances, conditional forced-potential family and reciprocal closure constraints; decoupled product and fixed-P2 harmonic realizability obstruction; broader coupled tetrad/nodal bridge unresolved
+<strong>Module</strong>: <code>src/tnfr/physics/variational.py</code>
+<strong>Tests</strong>: <code>tests/physics/test_diffusion_energy_balance.py</code>, <code>tests/physics/test_variational.py</code>, <code>tests/physics/test_symplectic_substrate.py</code>, <code>tests/physics/test_metriplectic_product.py</code>, <code>tests/physics/test_symplectic_graph_realizability.py</code>, <code>tests/physics/test_constitutive_variational_scope.py</code>
+<strong>Updated</strong>: 2026-09-19</p>
+<hr />
+<h2 id="1-main-result">1. Main Result<a class="headerlink" href="#1-main-result" title="Permanent link">&para;</a></h2>
+<p>The TNFR nodal equation</p>
+<div class="arithmatex">\[\frac{\partial \mathrm{EPI}}{\partial t} = \nu_f \cdot \Delta\mathrm{NFR}(t)\]</div>
+<p>is the engine evolution law. This note specifies the implemented field-based energy and action readouts and the associated harmonic substrate model. A derivation of the full nodal law from the particular potential below is <strong>not established</strong>. The exact algebraic identities of the readouts must be distinguished from that unresolved dynamical correspondence.</p>
+<hr />
+<h2 id="2-the-tnfr-lagrangian">2. The TNFR Lagrangian<a class="headerlink" href="#2-the-tnfr-lagrangian" title="Permanent link">&para;</a></h2>
+<h3 id="21-lagrangian-density">2.1 Lagrangian Density<a class="headerlink" href="#21-lagrangian-density" title="Permanent link">&para;</a></h3>
+<p>On a graph <span class="arithmatex">\(G=(V,E)\)</span> the implemented <strong>Lagrangian diagnostic</strong> at node <span class="arithmatex">\(i\)</span> is</p>
+<div class="arithmatex">\[\mathcal{L}(i) \;=\; T(i) \;-\; V(i)\]</div>
+<p>where the historical kinetic and potential labels denote the following
+quadratic field groups:</p>
+<div class="arithmatex">\[T(i) = \tfrac{1}{2}\bigl[J_\varphi(i)^{\,2} + J_{\Delta\mathrm{NFR}}(i)^{\,2}\bigr]\]</div>
+<div class="arithmatex">\[V(i) = \tfrac{1}{2}\bigl[\Phi_s(i)^{\,2} + |\nabla\varphi|(i)^{\,2} + K_\varphi(i)^{\,2}\bigr]\]</div>
+<p>These graph read-outs are not independently supplied positions and velocities.
+The harmonic model in section 3 adds that coordinate interpretation explicitly.
+Physical energy units require field scales or a metric; raw pressure, angle
+and path-length quantities cannot be added dimensionally without them. The
+<a href="../STRUCTURAL_CONSERVATION_THEOREM/#main-result">normalization boundary</a>
+owns that distinction for all field-energy and charge diagnostics.</p>
+<h3 id="22-action-functional">2.2 Action Functional<a class="headerlink" href="#22-action-functional" title="Permanent link">&para;</a></h3>
+<div class="arithmatex">\[S_{\mathrm{TNFR}} = \int \mathrm{d}t \;\sum_{i\in V} \mathcal{L}(i,t)\]</div>
+<p>In discrete form (time steps of width <span class="arithmatex">\(\Delta t\)</span>):</p>
+<div class="arithmatex">\[S_{\mathrm{TNFR}} = \Delta t \;\sum_n \sum_i \mathcal{L}(i,\,t_n)\]</div>
+<h3 id="23-hamiltonian">2.3 Hamiltonian<a class="headerlink" href="#23-hamiltonian" title="Permanent link">&para;</a></h3>
+<p>Treating the two conjugate sectors as independent harmonic-model coordinates gives the <strong>substrate Hamiltonian plus held-fixed background</strong>:</p>
+<div class="arithmatex">\[\mathcal{H}(i) = T(i) + V(i) = \tfrac{1}{2}\bigl[\Phi_s^2 + |\nabla\varphi|^2 + K_\varphi^2 + J_\varphi^2 + J_{\Delta\mathrm{NFR}}^2\bigr]\]</div>
+<p>This is exactly <span class="arithmatex">\(\tfrac{1}{2}\,\mathcal{E}(i)\)</span> where <span class="arithmatex">\(\mathcal{E}\)</span> is the energy density from <code>unified.compute_energy_density()</code>, and the total Hamiltonian <span class="arithmatex">\(H = \sum_i \mathcal{H}(i)\)</span> equals <code>conservation.compute_energy_functional()</code>.</p>
+<hr />
+<h2 id="3-harmonic-model-and-the-unresolved-nodal-correspondence">3. Harmonic Model and the Unresolved Nodal Correspondence<a class="headerlink" href="#3-harmonic-model-and-the-unresolved-nodal-correspondence" title="Permanent link">&para;</a></h2>
+<h3 id="31-canonical-conjugate-pairs">3.1 Canonical Conjugate Pairs<a class="headerlink" href="#31-canonical-conjugate-pairs" title="Permanent link">&para;</a></h3>
+<p>The substrate model assigns two canonical coordinate pairs <span class="arithmatex">\((q,\,p)\)</span> to the extracted field sectors:</p>
+<table>
+<thead>
+<tr>
+<th>Sector</th>
+<th>Coordinate <span class="arithmatex">\(q\)</span></th>
+<th>Momentum <span class="arithmatex">\(p\)</span></th>
+<th>Graph-field interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Geometric</strong></td>
+<td><span class="arithmatex">\(K_\varphi\)</span> (curvature)</td>
+<td><span class="arithmatex">\(J_\varphi\)</span> (phase current)</td>
+<td>Two instantaneous phase statistics; no continuity law follows from pairing them</td>
+</tr>
+<tr>
+<td><strong>Potential</strong></td>
+<td><span class="arithmatex">\(\Phi_s\)</span> (potential)</td>
+<td><span class="arithmatex">\(J_{\Delta\mathrm{NFR}}\)</span> (ΔNFR flux)</td>
+<td>Two pressure statistics; their graph balance has a measured residual</td>
+</tr>
+</tbody>
+</table>
+<p>The ambient canonical brackets are a model premise. Conservation diagnostics
+do not establish those brackets or a small continuity residual. Sections 3.7–3.8
+test whether the resulting auxiliary velocity is realizable by the graph fields.</p>
+<h3 id="32-hamiltons-equations">3.2 Hamilton's Equations<a class="headerlink" href="#32-hamiltons-equations" title="Permanent link">&para;</a></h3>
+<div class="arithmatex">\[\frac{\partial q_i}{\partial t} = \frac{\partial \mathcal{H}}{\partial p_i} = p_i \qquad\text{(dynamics)}\]</div>
+<div class="arithmatex">\[\frac{\partial p_i}{\partial t} = -\frac{\partial \mathcal{H}}{\partial q_i} = -q_i \qquad\text{(force law)}\]</div>
+<h3 id="33-scope-of-hamiltons-equations">3.3 Scope of Hamilton's Equations<a class="headerlink" href="#33-scope-of-hamiltons-equations" title="Permanent link">&para;</a></h3>
+<p>The equations above define isotropic oscillators, <code>q''=-q</code>, on the specified
+ambient coordinate space. Extracting coordinates from a graph does not prove
+that all ambient points are realizable by graph fields or that an evolved
+ambient point is the image of an engine trajectory.</p>
+<h3 id="34-overdamped-graph-diffusion-and-the-missing-bridge">3.4 Overdamped Graph Diffusion and the Missing Bridge<a class="headerlink" href="#34-overdamped-graph-diffusion-and-the-missing-bridge" title="Permanent link">&para;</a></h3>
+<p>For a separate graph-wave model,</p>
+<div class="highlight"><pre><span></span><code>q'' + gamma*q' + L_rw*q = 0,
+</code></pre></div>
+<p>the overdamped slow rates approach <code>lambda_k/gamma</code>, producing the EPI
+channel's diffusion with mobility <code>nu_f=1/gamma</code>. This requires an explicit
+stiffness operator and damping law. It does not identify the graph wave with
+the isotropic substrate oscillator, whose stiffness is the identity.</p>
+<p>The previously stated identity <code>DeltaNFR=-dV/dEPI</code> fails for the implemented
+potential even on one edge. With pure EPI-channel pressure, equal phases,
+and <code>EPI=[1,0]</code>, one obtains <code>DeltaNFR=[-1,1]</code>, <code>Phi_s=[1,-1]</code>, and
+<code>V=(EPI_0-EPI_1)^2</code>. Hence <code>-gradient(V)=[-2,2]</code>, not <code>DeltaNFR</code>.</p>
+<p>The EPI-only diffusion does have a degree-metric gradient formulation using
+its Dirichlet energy. A bridge to the different tetrad potential and to the
+full pressure still requires a specified coordinate map, metric and damping
+mechanism. The nodal equation makes <code>nu_f</code> a mobility; it does not derive an
+inverse inertial mass.</p>
+<h3 id="35-exact-restricted-dirichlet-balance">3.5 Exact Restricted Dirichlet Balance<a class="headerlink" href="#35-exact-restricted-dirichlet-balance" title="Permanent link">&para;</a></h3>
+<p>Hold a finite symmetric nonnegative adjacency <code>W</code> fixed. Let <code>d_i=Σ_j W_ij</code>,
+<code>B=D−W</code>, and <code>x=EPI</code>. For the isolated EPI channel, define</p>
+<div class="highlight"><pre><span></span><code>E_D(x) = ½ xᵀ B x = ¼ Σ_ij W_ij (x_i−x_j)²,
+∇E_D = Bx,
+M_ii = νf_i/d_i if d_i&gt;0, otherwise 0.
+</code></pre></div>
+<p>Symmetry gives <code>∇E_D=Bx</code>. Multiplying by the nonnegative mobility yields
+<code>−M∇E_D=−diag(νf)L_rw x</code>, exactly the canonical pure EPI pressure times
+capacity. The chain rule therefore proves</p>
+<div class="highlight"><pre><span></span><code>dE_D/dt = −(∇E_D)ᵀ M (∇E_D) = −Σ_i M_ii (∇E_D_i)² ≤ 0.
+</code></pre></div>
+<p>For positive strengths and capacities, the metric is <code>diag(d_i/νf_i)</code>.
+Zero capacity instead gives degenerate mobility: nonzero pressure may coexist
+with zero velocity and constant positive energy. Isolates have zero flow;
+self-loops add row strength but no Dirichlet energy. Parallel-edge conductance
+is summed. Disconnected components need not share a uniform equilibrium value.</p>
+<p>The read-only implementation
+<a href="../../src/tnfr/physics/structural_diffusion.py"><code>compute_diffusion_energy</code></a> reuses
+the diffusion module's validated adjacency, capacity and EPI readers. Its edge
+difference evaluation avoids cancellation under large common EPI offsets and
+requires only the core NumPy dependency. The generic spectral smoothness helper
+evaluates <code>xᵀLx</code> for a supplied matrix and imports optional SciPy; it neither
+supplies this mobility nor validates this transport scope.</p>
+<p>Tests compare the gradient and directional energy derivative against independent
+edge-energy finite differences, then compare velocity with the canonical pressure
+callback for weighted graphs, parallel edges, loops and heterogeneous capacities.
+This establishes the restricted identity, not a theorem about the different
+tetrad potential, changing graph weights, all four pressure channels, arbitrary
+discrete time steps, or a lift to the isotropic substrate.</p>
+<h3 id="36-exact-decoupled-metriplectic-product">3.6 Exact Decoupled Metriplectic Product<a class="headerlink" href="#36-exact-decoupled-metriplectic-product" title="Permanent link">&para;</a></h3>
+<p>The harmonic substrate and the restricted EPI gradient flow can coexist in one
+block system <code>X'=J grad(H)-G grad(E_D)</code>. With zero cross blocks,
+<code>J grad(E_D)=0</code> and <code>G grad(H)=0</code>; therefore the substrate Hamiltonian is
+conserved while Dirichlet energy decreases. The implementation
+<a href="../../src/tnfr/physics/metriplectic.py"><code>verify_metriplectic_product</code></a> verifies
+both degeneracies and both component vector fields.</p>
+<p>Its numerical Dirichlet energy, gradient, mobility and rate now come from
+the shared <a href="../../src/tnfr/physics/structural_diffusion.py">diffusion balance</a>,
+aligned explicitly to the substrate's node order. Recomputing these
+quantities locally previously admitted false zero motion after underflow:
+on P2 with conductance <code>1e200</code>, capacity <code>1e-200</code> and EPI <code>(1,0)</code>, a computed
+zero <code>nu/d</code> erased representable nodal rates of magnitude <code>1e-200</code>. The exact
+Dirichlet derivative is <code>-2*W*nu</code>, approximately <code>-2</code> for those binary64
+inputs. The shared owner rejects this
+unrepresentable positive mobility, as well as lost nonzero energy/rate
+terms, instead of certifying their zero substitutes. Normal-range and
+reordered weighted-loop controls independently compare the edge energy and
+dissipation. This numerical admission does not extend the mathematical model.</p>
+<p>This is an exact direct product, not the missing coupled derivation. Since the
+cross blocks vanish, it supplies no pulse-relaxation feedback. A full bridge
+would require a TNFR-derived interaction and preservation of the realizable
+graph-field image, not just nonzero cross tensors with those degeneracy laws.
+See <a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/">TNFR_SCALE_GEOMETRY_AND_BRIDGE.md</a>.</p>
+<h3 id="37-p2-read-out-realizability-obstruction-and-derived-flow">3.7 P2 Read-Out Realizability: Obstruction and Derived Flow<a class="headerlink" href="#37-p2-read-out-realizability-obstruction-and-derived-flow" title="Permanent link">&para;</a></h3>
+<p>An ambient harmonic solution need not be a trajectory of the graph fields
+used to initialize it. For a graph state <code>X</code>, actual vector field <code>F</code> and
+read-out <code>h</code>, a proposed smooth autonomous field flow <code>f</code> requires
+<code>Dh(X) F(X) = f(h(X))</code>. In particular, <code>f</code> must be tangent to the realizable
+image of <code>h</code>. An instantaneous coordinate pairing does not establish this.</p>
+<p><strong>Exact geometric obstruction.</strong> On fixed mutual-singleton P2 support,
+choose an open wrap branch and set <code>k=wrap(theta_i-theta_j)</code> in <code>(-pi,pi)</code>.
+The production definitions of curvature and phase current give</p>
+<div class="highlight"><pre><span></span><code>K_phi(i) = k,                 J_phi(i) = -sin(k),
+c(k,j) = j + sin(k) = 0.
+</code></pre></div>
+<p>The singleton phasor resultant has unit magnitude, so no ambiguous circular
+mean is used. The auxiliary harmonic velocity <code>(k_dot,j_dot)=(j,-k)</code> has
+constraint derivative</p>
+<div class="highlight"><pre><span></span><code>c_dot = -k + cos(k)*j = -k - sin(k)*cos(k).
+k + sin(k)*cos(k) = integral_0^k 2*cos(u)^2 du.
+</code></pre></div>
+<p>The integral has the strict sign of <code>k</code>, hence tangency holds only at <code>k=0</code>.
+No nonzero continuous harmonic geometric trajectory can therefore be produced
+by <strong>any differentiable phase evolution</strong> with this fixed support and these
+same read-outs. Changing capacity or EPI does not change that constraint.
+A nonvanishing scalar rescaling of time cannot remove the obstruction.
+Synchronized phases may rotate together while the geometric read-out stays
+zero; the theorem does not freeze all possible phase evolution.</p>
+<p>This is an exact-real, fixed-support, open-branch result. It is not a claim
+about larger graphs, different derived observables, or branch-crossing events.
+It also does not exclude isolated endpoint coincidences: a harmonic half-turn
+maps <code>(k,-sin(k))</code> to <code>(-k,sin(k))</code>, again on the geometric image, although the
+intermediate harmonic path leaves that image. No graph event is certified by
+that isolated coincidence.</p>
+<p><strong>A field flow that does derive from the nodal equation.</strong> Now restrict to
+unit conductance and unit metric length on P2, positive fixed capacities
+<code>nu_0,nu_1</code>, scalar EPI <code>x</code>, fixed phase, pure-EPI pressure refreshed from
+the current state, and no additional forcing. Write <code>d=x_1-x_0</code>. The nodal
+law and the same production field definitions give</p>
+<div class="highlight"><pre><span></span><code>DeltaNFR = (d,-d),            d_dot = -(nu_0+nu_1)*d,
+Phi_s = (-d,d),               J_DeltaNFR = (-2*d,2*d) = 2*Phi_s,
+K_phi_dot = J_phi_dot = 0,
+Phi_s_dot = -(nu_0+nu_1)*Phi_s,
+J_DeltaNFR_dot = -(nu_0+nu_1)*J_DeltaNFR.
+</code></pre></div>
+<p>Thus the extracted potential/flux sector has a closed <strong>dissipative</strong> flow
+with rate determined by the nodal capacities, without a fitted coefficient
+or an imported interaction. The lost common EPI offset does not prevent this
+read-out closure. This does not establish complete state reconstruction.
+On the realized potential line <code>p=2q</code>, the auxiliary harmonic velocity instead
+has <code>(p-2q)_dot=-q-2p=-5q</code>, nonzero for <code>q!=0</code>. Consequently even synchronized
+phases do not rescue that harmonic comparison when EPI disagreement remains.
+The synchronized uniform-EPI state is a common zero-field fixed point.</p>
+<p><strong>Executable boundary.</strong> The fixture <code>x=(0,1)</code>, <code>nu=(1,1)</code> and
+<code>theta=(0,pi/3)</code> gives <code>K_phi(0)=-pi/3</code>, <code>J_phi(0)=sqrt(3)/2</code> and geometric
+tangency defect <code>pi/3+sqrt(3)/4</code>. Tests use the production pressure callback,
+field extractors and shared nodal integrator for three explicitly refreshed
+Euler segments of length <code>1/8</code>, with no active clipping or added forcing.
+The exact ideal segment disagreement factor is <code>1-(nu_0+nu_1)*dt</code>; this finite
+check is not an asymptotic binary64 solver theorem. Additional fixtures check
+heterogeneous capacities, both signs of the geometric defect, the zero control
+and the half-turn boundary. Numerical tolerances verify represented readings;
+the nonzero-for-all-<code>k</code> claim follows from the analytic integral above.</p>
+<p>Regression owner:
+<a href="../../tests/physics/test_symplectic_graph_realizability.py">test_symplectic_graph_realizability.py</a>.
+Field owners: <a href="../../src/tnfr/physics/canonical.py">canonical.py</a>,
+<a href="../../src/tnfr/physics/extended.py">extended.py</a>,
+<a href="../../src/tnfr/physics/symplectic_substrate.py">symplectic_substrate.py</a>.
+No new physical primitive or general TNFR-to-Hamiltonian equivalence is assumed.</p>
+<hr />
+<h3 id="38-prepared-prism-harmonic-geometric-velocity-has-no-phase-lift">3.8 Prepared prism harmonic geometric velocity has no phase lift<a class="headerlink" href="#38-prepared-prism-harmonic-geometric-velocity-has-no-phase-lift" title="Permanent link">&para;</a></h3>
+<p>The current unit-prism preparation supplies a separate exact realizability
+test. At repeated phases <code>(0,pi/3,pi/6)</code>, the actual geometric fields are
+<code>K=(-pi/6,pi/6,0)</code> and <code>J_phi=((1+sqrt(3))/6,-(1+sqrt(3))/6,0)</code>, repeated
+in both triangles. Let <code>R</code> be the shared phasor mean-response matrix.
+Then <code>DK=I-R</code> has rank five and kernel equal to common phase rotation.</p>
+<p>The auxiliary harmonic direction requires <code>K_dot=J_phi</code> and <code>J_phi_dot=-K</code>.
+Since <code>DK*J_phi=J_phi</code>, every possible primitive phase velocity satisfying
+the first row is <code>theta_dot=J_phi+q*1</code>. The actual mean-sine derivative
+annihilates <code>1</code>, and necessarily gives</p>
+<div class="arithmatex">\[
+DJ_\phi\,\dot\theta=
+\left(-\frac{5+3\sqrt3}{36},\frac{5+3\sqrt3}{36},0\right)_{\rm repeated},
+\]</div>
+<p>which differs from <code>-K</code>. The stacked derivative has rank five, while
+adjoining the proposed harmonic velocity raises the rank to six. Therefore
+<strong>no primitive phase velocity</strong>, even a nonrepeated one, lifts this auxiliary
+geometric direction at this state. This is a prepared-state obstruction,
+not a classification of every prism state or every coupled Hamiltonian.
+It reuses the existing field extraction and harmonic-vector-field owners;
+no new flow is executed.</p>
+<p>Reciprocal exchange also does not automatically replenish loss. In the
+conditional linear family <code>z_dot=-e*z-k*zeta</code>, <code>zeta_dot=a*z+b*zeta</code>, with
+<code>a,e,k&gt;0</code>, <code>b&lt;=0</code>, the positive storage
+<code>S=a*|z|^2+k*|zeta|^2</code> satisfies
+<code>S_dot=-2*a*e*|z|^2+2*k*b*|zeta|^2&lt;=0</code>. After scaling coordinates by
+<code>sqrt(a),sqrt(k)</code>, the generator is an antisymmetric exchange plus diagonal
+loss. At <code>b=0</code>, zero instantaneous loss need not imply zero velocity: a
+state with <code>z=0,zeta!=0</code> immediately leaves that set. The largest invariant
+zero-loss set is only the origin; the characteristic polynomial in the
+<a href="../NODAL_PARAMETER_FOUNDATIONS/#174-admission-conditions-for-a-joint-linear-response">joint-response classification</a>
+gives asymptotic decay throughout this passive class, including damped
+oscillations where its discriminant is negative. This storage is a
+comparison quadratic, not a derived canonical joint energy.</p>
+<p>Controls: <a href="../../tests/physics/test_prism_harmonic_phase_lift.py">prepared prism lift and passive exchange</a>.</p>
+<h2 id="4-grammar-labelled-heuristics">4. Grammar-Labelled Heuristics<a class="headerlink" href="#4-grammar-labelled-heuristics" title="Permanent link">&para;</a></h2>
+<p><code>analyze_grammar_stationarity()</code> reports energy and interaction statistics
+labelled by related grammar rules. Each result now explicitly carries
+<code>verification_scope="heuristic"</code>. Its legacy <code>is_satisfied</code> flag evaluates that
+statistic only. In particular:</p>
+<ul>
+<li>Nonzero Lagrangian density does not establish a generator history.</li>
+<li>Potential dominance does not prove an attractor or valid closure.</li>
+<li>A finite sampled action does not prove infinite-horizon convergence.</li>
+<li>Bounded bilinear interactions do not verify the U3 phase gate.</li>
+<li><code>T/V</code> does not determine a Hessian, bifurcation, or handler history.</li>
+<li>Energy dispersion does not establish nested identities or per-level stabilizers.</li>
+<li>Absolute potential magnitude is not U6 drift from a reference state.</li>
+</ul>
+<p>Canonical sequence validation and confinement telemetry remain responsible for
+the actual grammar requirements.</p>
+<hr />
+<h2 id="5-operator-energy-heuristics-and-local-symplectic-checks">5. Operator Energy Heuristics and Local Symplectic Checks<a class="headerlink" href="#5-operator-energy-heuristics-and-local-symplectic-checks" title="Permanent link">&para;</a></h2>
+<p>Older code attached sign labels to operators. Those labels are priors for a
+snapshot statistic, not consequences of U2 or of the glyph factors. The
+five-field Hamiltonian has no explicit EPI or capacity term, while phase and
+pressure changes propagate through graph-dependent fields. Every realized sign
+therefore remains state-dependent and must be measured.</p>
+<table>
+<thead>
+<tr>
+<th>Operators</th>
+<th>U2 bookkeeping role</th>
+<th>Historical sign prior</th>
+<th>Valid conclusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>IL, THOL</strong></td>
+<td>Stabilizer</td>
+<td>decrease</td>
+<td>No universal <span class="arithmatex">\(\Delta H\)</span> sign</td>
+</tr>
+<tr>
+<td><strong>OZ, ZHIR, VAL</strong></td>
+<td>Destabilizer</td>
+<td>increase</td>
+<td>No universal <span class="arithmatex">\(\Delta H\)</span> sign</td>
+</tr>
+<tr>
+<td><strong>AL, EN, UM, RA, SHA, NUL, NAV, REMESH</strong></td>
+<td>Neutral</td>
+<td>unchanged</td>
+<td>U2 neutrality does not imply <span class="arithmatex">\(\Delta H=0\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>The policy-multiplier layer in <code>physics.lyapunov</code> now exposes this scope through
+<code>is_energy_bound=False</code> and <code>is_lyapunov_certificate=False</code>. A canonical
+transformation can also change a particular Hamiltonian; energy conservation
+and symplecticity are separate properties.</p>
+<p><code>check_symplectic_preservation(before, after, ...)</code> preserves its positional
+arguments and legacy ratio fields, but snapshots alone now return
+<code>is_canonical=None</code>, <code>classification="inconclusive"</code>. The old ratio category
+is available as <code>heuristic_classification</code>; <code>sum(abs(q*p))</code> is not a volume.</p>
+<p>For a supplied local derivative, use:</p>
+<div class="highlight"><pre><span></span><code><span class="n">result</span> <span class="o">=</span> <span class="n">check_symplectic_preservation</span><span class="p">(</span>
+    <span class="n">before</span><span class="p">,</span> <span class="n">after</span><span class="p">,</span> <span class="s2">"map name"</span><span class="p">,</span> <span class="n">jacobian</span><span class="o">=</span><span class="n">M</span><span class="p">,</span> <span class="n">jacobian_tolerance</span><span class="o">=</span><span class="mf">1e-9</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>The matrix must be finite, real, and <code>(4N,4N)</code>, with coordinates interleaved
+<code>(K_phi,J_phi,Phi_s,J_DNFR)</code> per node. The shared substrate helper evaluates
+<code>max(abs(M.T @ omega @ M - omega))</code>. A passing result concerns this supplied
+Jacobian only; establishing that it is an engine operator's derivative and
+proving preservation over its domain requires additional evidence.</p>
+<p>The functions historically named <code>compute_phase_space_volume</code> and
+<code>compute_poisson_bracket_estimate</code> retain their numeric statistics for
+compatibility. They no longer claim those statistics are geometric certificates.</p>
+<hr />
+<h2 id="6-telemetry-thresholds-are-regular-points-of-the-quadratic-potential">6. Telemetry Thresholds Are Regular Points of the Quadratic Potential<a class="headerlink" href="#6-telemetry-thresholds-are-regular-points-of-the-quadratic-potential" title="Permanent link">&para;</a></h2>
+<p>For each field coordinate, <code>V(x)=x^2/2</code>, <code>V'(x)=x</code>, and <code>V''(x)=1</code>. The only
+critical point is zero. Nonzero configured thresholds do not create extrema
+or saddles of this potential, and the restoring force does not reverse sign
+when a threshold is crossed.</p>
+<p><code>analyze_potential_critical_points()</code> retains its API and configured comparison
+values. It reports the correct derivatives and <code>critical_type="regular"</code> at
+nonzero thresholds. The added <code>near_threshold_count</code> preserves the observation
+of nodes near a threshold without mislabelling them as stationary points. A
+nonlinear constrained effective potential would require an explicit formula
+and a separate derivative calculation.</p>
+<hr />
+<h2 id="7-interaction-lagrangian">7. Interaction Lagrangian<a class="headerlink" href="#7-interaction-lagrangian" title="Permanent link">&para;</a></h2>
+<p>The bilinear cross-sector coupling is:</p>
+<div class="arithmatex">\[\mathcal{A}(i) = \Phi_s \cdot |\nabla\varphi| + K_\varphi \cdot J_\varphi + |\nabla\varphi| \cdot J_{\Delta\mathrm{NFR}}\]</div>
+<p>This equals the snapshot contraction <code>unified.compute_action_density()</code>.
+One can formally write a candidate interaction functional:</p>
+<div class="arithmatex">\[\mathcal{L}_{\mathrm{full}} = T - V - \mathcal{A}\]</div>
+<p>This algebra alone does not derive a coupled equation of motion for the graph
+or its extracted fields. Such a claim requires a declared state space,
+admissible variations, metric/mobilities and a realizability check against the
+nodal dynamics. The specified harmonic substrate supplies its own independent
+sector flow; the snapshot bilinear term does not establish the missing
+phase/capacity feedback or the restoring contribution in section 13.5.</p>
+<hr />
+<h2 id="8-energy-partition">8. Energy Partition<a class="headerlink" href="#8-energy-partition" title="Permanent link">&para;</a></h2>
+<p>For the harmonic conjugate core, a complete-period average satisfies
+<code>&lt;T&gt;=&lt;V_core&gt;</code>. This does not imply instantaneous equipartition, and the full
+potential also contains the held-fixed <code>|grad_phi|</code> background. The instantaneous
+<code>T/V</code> ratio is an energy-partition statistic; it does not by itself certify an
+attractor or bifurcation.</p>
+<hr />
+<h2 id="9-consistency-relations">9. Consistency Relations<a class="headerlink" href="#9-consistency-relations" title="Permanent link">&para;</a></h2>
+<p>The following algebraic readout identities use shared field definitions:</p>
+<table>
+<thead>
+<tr>
+<th>Relation</th>
+<th>Verification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(\mathcal{H}(i) = \tfrac{1}{2}\,\mathcal{E}(i)\)</span></td>
+<td><code>compute_hamiltonian_density()</code> vs <code>unified.compute_energy_density()</code></td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\sum_i \mathcal{H}(i) = E\)</span></td>
+<td>Total Hamiltonian vs <code>conservation.compute_energy_functional()</code></td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\rho = \Phi_s + K_\varphi\)</span></td>
+<td>Charge density from conjugate pair coordinates</td>
+</tr>
+<tr>
+<td>$\mathcal{A} = $ action density</td>
+<td><code>compute_interaction_density()</code> vs <code>unified.compute_action_density()</code></td>
+</tr>
+<tr>
+<td>Recorded <span class="arithmatex">\(dH/dt\)</span></td>
+<td>Finite-difference diagnostic; no universal sign is certified here</td>
+</tr>
+</tbody>
+</table>
+<p>Tests cover these readout identities across deterministic graph fixtures. Passing identity tests does not prove the unresolved model correspondence in section 3.</p>
+<hr />
+<h2 id="10-single-source-of-truth-architecture">10. Single Source of Truth Architecture<a class="headerlink" href="#10-single-source-of-truth-architecture" title="Permanent link">&para;</a></h2>
+<p>The five fields in the energy expression admit three readout groupings.
+This algebraic regrouping does not assert a six-dimensional independent phase space.
+The implementation ensures a <strong>single computational path</strong> with no duplicated
+formulae:</p>
+<div class="highlight"><pre><span></span><code>unified.py                    (Layer 3 — RAW quadratic forms)
+  ├── compute_energy_density   ℰ(i) = Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²
+  └── compute_action_density   𝒜(i) = bilinear coupling term
+       │
+       ├──► variational.py      H(i) = ½·ℰ(i),  T, V, ℒ = T−V
+       │    (delegates via _raw_energy_density / _action_density)
+       │
+       └──► conservation.py     E = ½·Σℰ(i),  ρ, div(J), Q
+            (delegates via _raw_energy_density)
+</code></pre></div>
+<h3 id="101-sector-decompositions">10.1 Sector Decompositions<a class="headerlink" href="#101-sector-decompositions" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Decomposition</th>
+<th>Split</th>
+<th>Grouping criterion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Variational</strong> (T / V)</td>
+<td><span class="arithmatex">\(T = \tfrac{1}{2}[J_\varphi^2 + J_{\Delta NFR}^2]\)</span>, <span class="arithmatex">\(V = \tfrac{1}{2}[\Phi_s^2 + \vert \nabla\varphi\vert ^2 + K_\varphi^2]\)</span></td>
+<td>Temporal role (kinetic / configuration)</td>
+</tr>
+<tr>
+<td><strong>Conservation</strong> (<span class="arithmatex">\(\rho\)</span> / J)</td>
+<td><span class="arithmatex">\(\rho = \Phi_s + K_\varphi\)</span>, <span class="arithmatex">\(\mathbf{J} = (J_\varphi, J_{\Delta NFR})\)</span></td>
+<td>Diagnostic charge/current grouping; conservation requires a separate law</td>
+</tr>
+<tr>
+<td><strong>Unified</strong> (<span class="arithmatex">\(\Psi\)</span>)</td>
+<td><span class="arithmatex">\(\Psi = K_\varphi + i\,J_\varphi\)</span></td>
+<td>Dual structure (geometry-transport)</td>
+</tr>
+</tbody>
+</table>
+<p>All three satisfy the <strong>consistency identity</strong> <span class="arithmatex">\(T(i) + V(i) = \tfrac{1}{2}\,\mathcal{E}(i)\)</span> at every node, verified by <code>translate_sectors()</code> with residual &lt; <span class="arithmatex">\(10^{-12}\)</span>.</p>
+<h3 id="102-translate_sectors-api">10.2 translate_sectors() API<a class="headerlink" href="#102-translate_sectors-api" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.physics.variational</span><span class="w"> </span><span class="kn">import</span> <span class="n">translate_sectors</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">translate_sectors</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="c1"># result['variational']        -&gt; {'T': {...}, 'V': {...}}</span>
+<span class="c1"># result['conservation']       -&gt; {'rho': {...}, 'J_phi': {...}, 'J_dnfr': {...}}</span>
+<span class="c1"># result['unified_psi']        -&gt; {node: K_φ + i·J_φ}</span>
+<span class="c1"># result['energy_density']     -&gt; raw ℰ from unified.py</span>
+<span class="c1"># result['consistency_check']  -&gt; max |T+V − ½ℰ|  (should be ~0)</span>
+</code></pre></div>
+<hr />
+<h2 id="11-api-summary">11. API Summary<a class="headerlink" href="#11-api-summary" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.physics.variational</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="c1"># Core densities</span>
+    <span class="n">compute_kinetic_density</span><span class="p">,</span>       <span class="c1"># T(i) = ½[J_φ² + J_ΔNFR²]</span>
+    <span class="n">compute_potential_density</span><span class="p">,</span>     <span class="c1"># V(i) = ½[Φ_s² + |∇φ|² + K_φ²]</span>
+    <span class="n">compute_lagrangian_density</span><span class="p">,</span>    <span class="c1"># ℒ(i) = T(i) − V(i)</span>
+    <span class="n">compute_hamiltonian_density</span><span class="p">,</span>   <span class="c1"># H(i) = ½·ℰ(i) — delegates to unified.py</span>
+    <span class="n">compute_interaction_density</span><span class="p">,</span>   <span class="c1"># 𝒜(i) — delegates to unified.compute_action_density</span>
+
+    <span class="c1"># Sector translation</span>
+    <span class="n">translate_sectors</span><span class="p">,</span>             <span class="c1"># All three decompositions + consistency check</span>
+
+    <span class="c1"># Phase space</span>
+    <span class="n">identify_conjugate_pairs</span><span class="p">,</span>      <span class="c1"># (K_φ,J_φ), (Φ_s,J_ΔNFR)</span>
+    <span class="n">compute_phase_space_volume</span><span class="p">,</span>    <span class="c1"># Legacy sum |q*p| statistic</span>
+    <span class="n">compute_poisson_bracket_estimate</span><span class="p">,</span>
+
+    <span class="c1"># Snapshot &amp; tracking</span>
+    <span class="n">capture_lagrangian_snapshot</span><span class="p">,</span>    <span class="c1"># Complete instant analysis</span>
+    <span class="n">compute_euler_lagrange_residual</span><span class="p">,</span>
+    <span class="n">compute_action_functional</span><span class="p">,</span>     <span class="c1"># S = ∫ℒ dt</span>
+    <span class="n">VariationalTracker</span><span class="p">,</span>            <span class="c1"># Time-series accumulation</span>
+
+    <span class="c1"># Canonical checks</span>
+    <span class="n">check_symplectic_preservation</span><span class="p">,</span>
+    <span class="n">classify_operator_canonical</span><span class="p">,</span>
+
+    <span class="c1"># Grammar stationarity</span>
+    <span class="n">analyze_grammar_stationarity</span><span class="p">,</span>  <span class="c1"># Explicitly heuristic grammar-labelled readouts</span>
+    <span class="n">analyze_potential_critical_points</span><span class="p">,</span>
+
+    <span class="c1"># Comprehensive</span>
+    <span class="n">compute_variational_suite</span><span class="p">,</span>     <span class="c1"># Full analysis in one call</span>
+<span class="p">)</span>
+</code></pre></div>
+<hr />
+<h2 id="12-symplectic-reduction-scope">12. Symplectic Reduction Scope<a class="headerlink" href="#12-symplectic-reduction-scope" title="Permanent link">&para;</a></h2>
+<p>For <code>J=H_sub=|z|^2/2&gt;0</code>, the diagonal U(1) action is free and the quotient has
+dimension <code>4N-2</code>. Its global space is complex projective space <code>CP^(2N-1)</code>,
+not a flat linear space. The certificate restricts the symplectic form to the
+actual horizontal tangent space orthogonal to <code>z</code> and <code>omega*z</code>. Relative
+phase checks use only nonzero complex coordinates and a defined reference.</p>
+<p>At <code>J=0</code>, the level set and quotient are a point. The certificate reports
+<code>reduced_dimension=0</code>, <code>reduction_status="singular_zero_level"</code>, and
+<code>is_valid_reduction=False</code>, meaning the regular-level test is inapplicable.
+The legacy constant <code>reduced_symplectic_form_matrix(n_nodes)</code> remains a local
+non-orthonormal action-angle basis matrix; it does not certify a supplied state.</p>
+<h2 id="13-forced-potential-family-and-reciprocal-closure-constraints">13. Forced-Potential Family and Reciprocal Closure Constraints<a class="headerlink" href="#13-forced-potential-family-and-reciprocal-closure-constraints" title="Permanent link">&para;</a></h2>
+<p>The full canonical pressure constrains a possible variational completion more
+strongly than the EPI-only energy does. These are exact conditional identities,
+not an added engine law. Fix a connected symmetric conductance <code>W</code>, positive
+strengths <code>d</code>, unweighted support <code>U</code>, and constant channel coefficients. Write
+<code>D=diag(d)</code>, <code>B=D-W</code>, <code>L_W=D^-1 B</code>, and <code>L_U</code> for the support random-walk
+Laplacian. On a regular phase chart with nonzero neighbor resultants,</p>
+<div class="highlight"><pre><span></span><code>p = -e L_W x + F(theta,nu,U),
+F = w_phi g(theta) - v L_U nu - t L_U k,
+Dg = (R-I)/pi,
+</code></pre></div>
+<p>where <code>k</code> is support degree and <code>R</code> is the exact neighbor-mean derivative from
+<a href="../../src/tnfr/physics/phase_response.py">phase_response</a>. Positive capacity gives
+the already established EPI mobility <code>M_x=diag(nu_i/d_i)</code>. Suppose a <code>C2</code>
+scalar potential supplies the EPI component specifically as
+<code>x'=-M_x gradient_x E</code>, with no cross-mobility contribution to that component.
+The nodal equation then requires</p>
+<div class="highlight"><pre><span></span><code>gradient_x E = e Bx - DF,
+E(x,theta,nu,W) = (e/2) x^T Bx - x^T DF + Psi(theta,nu,W).
+</code></pre></div>
+<p>Integration in <code>x</code> proves both necessity and sufficiency on a connected EPI
+coordinate domain. The arbitrary <code>x</code>-independent function <code>Psi</code> is genuine
+remaining freedom; setting it to zero is an additional choice. The expression
+is not identified with the different field energy in section 2.</p>
+<h3 id="131-mixed-derivatives-require-reciprocal-coupling">13.1 Mixed derivatives require reciprocal coupling<a class="headerlink" href="#131-mixed-derivatives-require-reciprocal-coupling" title="Permanent link">&para;</a></h3>
+<p>For this entire potential family, equality of mixed partial derivatives fixes
+the following dependence on EPI:</p>
+<div class="highlight"><pre><span></span><code>gradient_theta E = -(w_phi/pi)(R-I)^T D x + gradient_theta Psi,
+gradient_nu E    = v L_U^T D x + gradient_nu Psi.
+</code></pre></div>
+<p>Thus a proposed joint gradient completion with positive definite block
+mobilities <code>M_theta(theta,nu,W)</code> and <code>M_nu(theta,nu,W)</code>, independent of <code>x</code>,
+would necessarily have these terms in <code>theta'=-M_theta gradient_theta E</code> and
+<code>nu'=-M_nu gradient_nu E</code>. An <code>x</code>-independent phase relaxation cannot satisfy
+that completion on an open full-state domain when <code>w_phi&gt;0</code> and <code>R-I!=0</code>.
+An <code>x</code>-independent capacity relaxation likewise cannot satisfy it when <code>v&gt;0</code>
+and <code>L_U!=0</code>. An <code>x</code>-independent <code>Psi</code> cannot cancel an <code>x</code>-linear term for all
+<code>x</code>. The obstruction does not cover degenerate mobilities, cross blocks,
+other metrics, constrained submanifolds or non-gradient dynamics. In
+particular it does not turn the engine's discrete phase/capacity policies
+into smooth laws or assume that their complete state dependence is absent.</p>
+<p>Even if a gradient completion is selected, the EPI equation determines neither
+<code>Psi</code> nor the two auxiliary mobilities and their time scale. For smoothly
+varying positive off-diagonal edge conductances on fixed support, it also forces</p>
+<div class="highlight"><pre><span></span><code>partial E / partial W_ij = (e/2)(x_i-x_j)^2 - x_i F_i - x_j F_j
+                          + partial Psi / partial W_ij,
+</code></pre></div>
+<p>where each undirected edge <code>i&lt;j</code> is one coordinate and <code>F</code> is independent of its
+weight on this fixed-support chart. This supplies a necessary energy
+derivative, not an edge evolution law. Edge birth/deletion changes <code>U</code> and
+the pressure realization; it is a separate hybrid closure obligation.</p>
+<h3 id="132-lower-bounds-require-the-actual-source-compatibility">13.2 Lower bounds require the actual source compatibility<a class="headerlink" href="#132-lower-bounds-require-the-actual-source-compatibility" title="Permanent link">&para;</a></h3>
+<p>At held <code>theta,nu,W</code>, shifting <code>x</code> by <code>c*1</code> changes every compatible potential
+by <code>-c*d^T F</code>. Therefore no member of this family is bounded below over all
+real EPI fields if <code>d^T F!=0</code>. An arbitrary <code>Psi</code> cannot repair this tilt.
+Conversely, for <code>e&gt;0</code> and connected conductance, <code>d^T F=0</code> yields a solution
+<code>e Bx_*=DF</code>, and completing the square gives</p>
+<div class="highlight"><pre><span></span><code>E = (e/2)(x-x_*)^T B(x-x_*) - (e/2)x_*^T Bx_* + Psi.
+</code></pre></div>
+<p>This is bounded below in <code>x</code>, with the common-offset freedom retained for
+the held source. Section 13.9 tests whether that freedom extends jointly
+to phase variations. This held-source result reuses the compatibility and profile in
+<a href="../../src/tnfr/physics/forced_support.py">forced_support</a>; it supplies no new
+stationary phase or capacity maintenance law. A weighted three-node path
+with edge weights <code>(1,2)</code>, capacities <code>(1/2,1,3/2)</code>, phase consensus and
+channel weights <code>(e,v,t)=(1/2,1/4,1/4)</code> has
+<code>F=(3/8,-1/4,1/8)</code> and <code>d^T F=-1/8</code>. This is an exact canonical-source
+example of the unbounded tilt, despite symmetric conductance.</p>
+<h3 id="133-canonical-phase-pressure-is-not-generally-a-fixed-metric-gradient">13.3 Canonical phase pressure is not generally a fixed-metric gradient<a class="headerlink" href="#133-canonical-phase-pressure-is-not-generally-a-fixed-metric-gradient" title="Permanent link">&para;</a></h3>
+<p>It is also necessary to check integrability before treating <code>g</code> itself as a
+phase gradient flow. On the unit star <code>K1,3</code>, index the center by zero and
+choose phases <code>(0,0,0,alpha)</code> with <code>0&lt;alpha&lt;pi/2</code>. Every edge satisfies strict
+U3, all resultants are nonzero and the wrap chart is regular. Put
+<code>c=cos(alpha)</code>. The shared circular-mean derivative gives</p>
+<div class="highlight"><pre><span></span><code>R_01=R_02=(2+c)/(5+4c),  R_03=(1+2c)/(5+4c),
+R_j0=1 for j=1,2,3; all other entries are zero.
+</code></pre></div>
+<p>A constant positive diagonal metric <code>H</code> could represent <code>g</code> as
+<code>-H^-1 gradient V</code> only if <code>H(R-I)</code> were symmetric throughout the domain.
+At consensus this forces <code>H</code> proportional to <code>diag(3,1,1,1)</code>. At every
+nonzero arbitrarily small <code>alpha</code> its center/first-leaf antisymmetry is</p>
+<div class="highlight"><pre><span></span><code>3 R_01 - R_10 = (1-c)/(5+4c) &gt; 0.
+</code></pre></div>
+<p>Consequently no such constant diagonal metric works on any open neighborhood
+of consensus. For the exact planar cosine Gram with <code>c=3/5</code>, the center row
+is <code>(0,13/37,13/37,11/37)</code>, its squared resultant is <code>37/5</code>, and the metric
+antisymmetries are <code>2/37,2/37,-4/37</code>. This does not exclude state-dependent
+metrics, non-diagonal metrics, different phase laws or a variational
+completion of the joint pressure family above. Strict U3 and symmetric graph
+support alone do not establish the missing gradient identity.
+Section 13.6 derives an exact <strong>state-dependent</strong> diagonal representation
+on the regular phase domain. It preserves this constant-metric obstruction
+and does not by itself select a joint evolution law.</p>
+<h3 id="134-relation-to-the-full-tetrad">13.4 Relation to the full tetrad<a class="headerlink" href="#134-relation-to-the-full-tetrad" title="Permanent link">&para;</a></h3>
+<p>Neither this conditional potential nor its mixed derivatives close the four
+read-outs <code>Phi_s</code>, phase-gradient magnitude, <code>K_phi</code> and <code>xi_C</code>. Their
+evolution still requires actual phase/capacity/support laws and the derivative
+of their common graph observation map, with branch and estimator boundaries
+handled separately. The five-field energy in section 2 has no explicit
+<code>xi_C</code> term; its algebraic identity cannot establish a correlation-length
+evolution. The complete closure obligations remain in
+<a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/#13-structural-grammar-refactor-and-the-full-nodal-system">DIAGNOSTIC_AND_GRAMMAR_SCOPE section 13</a>.</p>
+<p>Exact finite regression controls reuse the pressure decomposition,
+support-transport and phase-response owners in
+<a href="../../tests/physics/test_constitutive_variational_scope.py">test_constitutive_variational_scope.py</a>.
+They check source signs, the required mixed coupling and the fixed-metric
+obstruction without trajectories, new feedback coefficients or fitted laws.</p>
+<h3 id="135-necessary-restoring-contribution-on-the-compatible-p2-preparation">13.5 Necessary restoring contribution on the compatible P2 preparation<a class="headerlink" href="#135-necessary-restoring-contribution-on-the-compatible-p2-preparation" title="Permanent link">&para;</a></h3>
+<p>The <a href="../NODAL_PARAMETER_FOUNDATIONS/#11-finite-joint-phase-capacity-source-compatibility">finite joint compatibility result</a>
+does not select a maintenance mechanism. The same two-node preparation gives
+an exact test of what the conditional potential family in section 13 would
+require. Keep its EPI mobility premise and fixed unit P2 support. Write
+<code>xi=x_0-x_1</code>, <code>eta=nu_0-nu_1</code>, and hold phase and both common coordinates
+fixed <strong>only as a perturbation subspace</strong>. This does not assert that the
+subspace is invariant under an unspecified joint flow.</p>
+<p>For regular singleton phase means, set <code>a(theta)=w_phi*g_0(theta)</code>, so
+<code>g_1=-g_0</code>. The topology channel vanishes on this support. Restricting the
+already-required potential to the plane gives</p>
+<div class="arithmatex">\[
+E(\xi,\eta)=\frac e2\xi^2+v\xi\eta-a\xi+\Psi(\eta),
+\qquad e&gt;0,\quad v&gt;0.
+\]</div>
+<p>Here <code>Psi</code> is the restriction of the still-undetermined, EPI-independent
+potential contribution; it is not the complex geometric field with the same
+letter elsewhere. The source owners determine the mixed coefficient <code>v</code>.
+They do not determine <code>Psi</code>. Assume it is twice continuously differentiable
+near the preparation, with all held coordinates understood as parameters.</p>
+<p><strong>Stationarity and restoring curvature are distinct requirements.</strong> A local
+minimum in the interior requires</p>
+<div class="arithmatex">\[
+e\xi_*+v\eta_*-a=0,\qquad
+\Psi'(\eta_*)=-v\xi_*.
+\]</div>
+<p>The first equation is the zero-pressure condition; it does not imply the
+second. At the retained consensus-phase preparation</p>
+<div class="highlight"><pre><span></span><code>x=(1/4,0), nu=(1,3/2), theta=(0,0),
+e=1/2, v=w_phi=1/4, xi*=1/4, eta*=-1/2, a=0,
+</code></pre></div>
+<p>the additional requirement is <code>Psi'(eta*)=-1/16</code>. Setting <code>Psi=0</code> therefore
+does not even make this point stationary on the plane. Calling that
+noncritical point a saddle would be incorrect.</p>
+<p>Let <code>k=Psi''(eta*)</code>. The restricted Hessian and its quadratic form are</p>
+<div class="arithmatex">\[
+H=\begin{pmatrix}e&amp;v\\v&amp;k\end{pmatrix},\qquad
+(u,s)H(u,s)^\top
+=e\left(u+\frac ve s\right)^2
+ +\left(k-\frac{v^2}{e}\right)s^2.
+\]</div>
+<p>Consequently a local energy minimum <strong>necessarily</strong> requires</p>
+<div class="arithmatex">\[
+k\ge\frac{v^2}{e};\qquad
+\text{at this preparation: }k\ge\frac18.
+\]</div>
+<p>Together with stationarity, strict inequality suffices for a strict local
+minimum on this two-coordinate plane. It does not establish a minimum in
+the full phase/capacity/common-coordinate space or dynamical stability. With
+<code>[xi]=X</code>, <code>[eta]=T^-1</code> and unit conductance, <code>[E]=X^2</code>, <code>[v]=XT</code> and
+<code>[k]=X^2*T^2</code>; <code>1/8</code> belongs to this normalized fixture, not a universal
+dimensionless structural threshold.</p>
+<p><strong>Exact insufficient-curvature obstruction.</strong> If stationarity is supplied
+but <code>k&lt;v^2/e</code>, take <code>delta_eta=s</code> and <code>delta_xi=-(v/e)*s</code>. Taylor's theorem
+gives</p>
+<div class="arithmatex">\[
+E(\xi_*-(v/e)s,\eta_*+s)-E(\xi_*,\eta_*)
+=\frac12\left(k-\frac{v^2}{e}\right)s^2+o(s^2)&lt;0
+\]</div>
+<p>for sufficiently small nonzero <code>s</code>. The pure <code>xi</code> direction has positive
+quadratic curvature, so a stationary point in this case is a saddle on
+the plane. At the retained fixture, the perturbation is</p>
+<div class="arithmatex">\[
+x(s)=(1/4-s/4,\ s/4),\qquad
+\nu(s)=(1+s/2,\ 3/2-s/2),\qquad\theta=0.
+\]</div>
+<p>For <code>0&lt;s&lt;1/2</code>, both capacities stay strictly inside the earlier closed bands
+<code>[3/4,7/4]</code>, and EPI remains nonnegative. Thus the descending direction is
+not an artifact of negative capacity or a forbidden phase separation. Each
+point has exactly zero canonical pressure: the capacity source compensates
+the new EPI contrast. The curve is <strong>not a nodal trajectory</strong>, since EPI
+changes along it while the nodal equation would give <code>xdot=0</code> at each point.</p>
+<p><strong>Equality is genuinely undecided by the Hessian.</strong> Put
+<code>s=eta-eta*</code> and <code>r=xi-xi*+s/2</code>. At this fixture the exact identity is</p>
+<div class="arithmatex">\[
+\Delta E=\frac{r^2}{4}
+ +\Psi(\eta_*+s)-\Psi(\eta_*)+\frac{s}{16}-\frac{s^2}{16}.
+\]</div>
+<p>The three logical completions</p>
+<div class="arithmatex">\[
+\Psi(\eta_*+s)-\Psi(\eta_*)
+=-\frac{s}{16}+\frac{s^2}{16}+\{0,\ +s^4,\ -s^4\}
+\]</div>
+<p>share the required slope and <code>k=1/8</code>. They yield a flat valley, a strict
+restricted minimum, and a descending null direction, respectively. These
+polynomials show why second-order evidence is insufficient at equality;
+none is installed or proposed as a selected TNFR law.</p>
+<p><strong>Tetrad and physical scope.</strong> Along the displayed curve, zero pressure
+gives <code>Phi_s=0</code>; consensus phase gives zero phase gradient and <code>K_phi=0</code>.
+The graph-distance metric and static pressure-coherence inputs to <code>xi_C</code>
+are unchanged; its actual fit/fallback provenance is retained. All four
+current diagnostics can therefore agree while the conditional joint
+potential changes. This is a failure of observation sufficiency, not an
+executed relaxation or a new diagnostic feedback law. Auxiliary field-energy
+positivity cannot substitute for the missing capacity derivatives.</p>
+<p>The obstruction concerns a local energy minimum in the stated passive
+gradient class. It is not a no-go theorem for TNFR patterns, non-gradient
+motion, oscillatory identity, hybrid events or constrained/degenerate
+mobilities. Those possibilities need their own independently justified laws.
+Even a strict minimum on the plane supplies neither an activation mechanism
+nor a route by which a preparation forms spontaneously.</p>
+<table>
+<thead>
+<tr>
+<th>Required ingredient</th>
+<th>Provenance and remaining obligation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EPI force and mixed coefficient <code>v</code></td>
+<td>Fixed by the declared pressure realization and the section 13 EPI mobility premise; checked through the shared pressure and support owners.</td>
+</tr>
+<tr>
+<td><code>Psi'(eta*)</code> and lower bound on <code>Psi''(eta*)</code></td>
+<td>Necessary consequences for a restricted stationary minimum, not a derivation or selection of <code>Psi</code>.</td>
+</tr>
+<tr>
+<td>Phase, capacity and support evolution</td>
+<td>Not supplied by the nodal product or the local Hessian; auxiliary mobilities and any event occurrence remain unjustified unless separately derived.</td>
+</tr>
+<tr>
+<td>Existing capacity adaptation</td>
+<td><a href="../../src/tnfr/dynamics/adaptation.py">adaptation.py</a> implements configured averaging and pressure/Si gates; its gains, timing and activation policy do not establish this missing potential.</td>
+</tr>
+<tr>
+<td>Reduction and memory</td>
+<td><a href="../../src/tnfr/physics/epi_memory.py">epi_memory.py</a> derives its closure/kernel from supplied dynamics with held capacity/forcing; <a href="../../src/tnfr/physics/operator_quotient.py">operator quotients</a> check supplied maps. Neither derives a law for those held inputs.</td>
+</tr>
+<tr>
+<td>Physical emergence</td>
+<td>Requires a justified complete mechanism, spontaneous formation and independently testable consequences; the present conditional obstruction establishes none of these.</td>
+</tr>
+</tbody>
+</table>
+<p>The exact regression extension in
+<a href="../../tests/physics/test_constitutive_variational_scope.py">test_constitutive_variational_scope.py</a>
+reuses the existing forced-potential helper and exact semidefinite primitive.
+No new public certificate, runtime potential or phase/capacity update is
+needed for this bounded result. The
+<a href="../research/FIVE_STAGE_EXECUTION_PLAN/">single execution plan</a> records the
+constitutive decision required before another origin experiment.</p>
+<h3 id="136-exact-state-dependent-metric-for-canonical-phase-pressure">13.6 Exact state-dependent metric for canonical phase pressure<a class="headerlink" href="#136-exact-state-dependent-metric-for-canonical-phase-pressure" title="Permanent link">&para;</a></h3>
+<p>The nonlinear pressure admits a geometric representation that the
+constant-metric test in section 13.3 could not decide. Fix reciprocal,
+unweighted <strong>unique neighbor support</strong>, including any zero-conductance
+support edges. This is the phase channel's support, not the weighted EPI
+conductance. At a node with a nonzero neighbor resultant, put</p>
+<div class="arithmatex">\[
+S_i=\sum_{j\in N(i)}e^{i\theta_j},\quad r_i=|S_i|&gt;0,\quad
+\delta_i=\operatorname{wrap}(\arg S_i-\theta_i),\quad
+g_i=\delta_i/\pi.
+\]</div>
+<p>Work on the open branch <code>|delta_i|&lt;pi</code> at every node. Let</p>
+<div class="arithmatex">\[
+V_\phi(\theta)=\sum_{\{i,j\}\in U}\bigl(1-\cos(\theta_j-\theta_i)\bigr)
+=\frac12\sum_{\{i,j\}\in U}|e^{i\theta_j}-e^{i\theta_i}|^2.
+\]</div>
+<p>Each undirected distinct-neighbor edge is counted once. A self-loop has
+zero cost and zero derivative, although its own phasor still contributes to
+<code>S_i</code> and changes the metric below. Parallel multiplicity and conductance
+weights do not multiply this cost. It is an alignment cost derived from
+the specified phasor geometry, not a new definition of tetrad energy or
+physical energy. Choosing a scale for it as part of a joint potential
+would require the corresponding units and a constitutive premise.</p>
+<p>Reciprocity gives the exact derivative</p>
+<div class="arithmatex">\[
+\partial_i V_\phi=-\sum_{j\in N(i)}\sin(\theta_j-\theta_i)
+                 =-r_i\sin\delta_i.
+\]</div>
+<p>Writing <code>sinc(delta)=sin(delta)/delta</code>, continuously extended by one at
+zero, therefore gives</p>
+<div class="arithmatex">\[
+H_\phi(\theta)=\operatorname{diag}
+  \left(\pi r_i\operatorname{sinc}\delta_i\right)&gt;0,\qquad
+g=-H_\phi^{-1}\nabla V_\phi.
+\]</div>
+<p>The diagonal mobility is
+<code>M_i=delta_i/(pi*r_i*sin(delta_i))</code>, with the regular limit
+<code>M_i=1/(pi*r_i)</code> at zero displacement. These factors are fixed by the
+displayed pressure/cost representation; they are not primitive capacity
+or an angular clock. A positive constant rescaling of the cost rescales this metric by the
+same factor without changing <code>g</code>, so no absolute energy scale is inferred.</p>
+<p>The previously established constant-metric obstruction remains correct.
+Here differentiating <code>H_phi*g=-gradient V_phi</code> includes
+<code>(dH_phi)*g</code> as well as <code>H_phi*Dg</code>. Testing only the latter for symmetry
+would incorrectly reject a variable metric. The star counterexample in
+section 13.3 is a useful control for this distinction.</p>
+<p><strong>Complete response identity.</strong> Write <code>J=Dg</code>, <code>H=H_phi</code>, and let <code>DH</code>
+denote the matrix with entries <code>partial_j H_i</code> for the diagonal coefficients.
+On this regular domain, differentiating every component gives</p>
+<div class="arithmatex">\[
+H J+\operatorname{diag}(g)DH=-\operatorname{Hess}V_\phi.
+\]</div>
+<p>Thus the antisymmetric part of <code>HJ</code> is exactly the negative of the
+antisymmetric part of <code>diag(g)DH</code>. This accounts for the entire matrix,
+not just one off-diagonal entry. It does not make <code>J</code> reversible or remove
+the retained response's cycle ratio <code>4/5</code>. At <code>g=0</code>, the correction vanishes
+and <code>HJ=-Hess(V_phi)</code> is symmetric. For direct evaluation, with
+<code>T_ij=1[j in N_i]*sin(Arg S_i-theta_j)</code>,</p>
+<div class="arithmatex">\[
+\partial_j H_i=\pi\operatorname{sinc}(\delta_i)T_{ij}
+ +\pi r_i\operatorname{sinc}'(\delta_i)(R_{ij}-\delta_{ij}),
+\]</div>
+<p>where <code>sinc(0)=1</code>, <code>sinc'(0)=0</code>. All 36 entries are checked at the retained
+nonrepeated preparation and its repeated comparator, including removable
+zero displacements. The underlying covector identity is stronger:</p>
+<div class="arithmatex">\[
+g^TH\,d\theta=-dV_\phi,
+\qquad \oint g^TH\,d\theta=0
+\]</div>
+<p>for a closed regular phase loop. There is no independent circulating work
+in this <strong>metric-weighted phase covector</strong>. The unweighted source response
+and the joint EPI source work are different objects; neither vanishes by
+this argument. In particular it specifies no phase velocity. The maintenance
+implication is the joint budget in section 13.18, not an invented phase
+propagator <code>R</code>. Controls:
+<a href="../../tests/physics/test_phase_metric_transfer_identity.py">complete metric and phase-work identities</a>.</p>
+<p><strong>Current and curvature share this geometry.</strong> With
+<code>n_i=|N(i)|</code>, the existing
+<a href="../../src/tnfr/physics/extended.py">phase current</a> reads
+<code>J_phi(i)=r_i*sin(delta_i)/n_i</code>. The regular canonical curvature has
+<code>K_phi(i)=-delta_i</code>; hence</p>
+<div class="arithmatex">\[
+\nabla_i V_\phi=-n_iJ_\phi(i),\qquad
+J_\phi(i)=-\frac{r_i}{n_i}\sin K_\phi(i).
+\]</div>
+<p>Nonzero current and curvature have <strong>opposite</strong> signs on this domain.
+Current and phase pressure have the same sign. The former documentation's
+same-sign/current-curvature claim does not match these definitions and has
+been removed. None of these instantaneous directional statistics measures
+an actual phase velocity without a phase evolution law.</p>
+<p>The domain exclusions matter:</p>
+<ul>
+<li>At <code>delta=0</code> with <code>r&gt;0</code>, the apparent <code>0/0</code> is removable.</li>
+<li>At an exact half-turn, the sine torque can vanish while <code>|g|=1</code>;
+  no finite positive diagonal mobility represents that component. The metric
+  degenerates on approach to that branch boundary.</li>
+<li>At a zero neighbor resultant the circular mean has no direction. Engine
+  fallback conventions or represented residuals do not supply this theorem's
+  missing ideal direction. Isolates likewise require their separate zero
+  convention rather than division by zero.</li>
+<li>Strict edge U3 (<code>|wrap(theta_j-theta_i)|&lt;pi/2</code>) implies a positive
+  real component of every nonempty rotated neighbor sum and therefore
+  <code>r&gt;0</code>, <code>|delta|&lt;pi/2</code>. It is a sufficient current-state domain condition,
+  not a proof that a future trajectory remains there.</li>
+<li>Directed neighbor support does not generally yield this gradient from
+  the undirected cost; reciprocal support is part of the claim.</li>
+</ul>
+<p>Exact trigonometric identities and represented observations remain distinct.
+For example binary64 <code>sin(pi)</code> is not ideal zero. The shared forcing capture
+and current/curvature owners verify numerical readings with their explicit
+residual or tolerance; exact symbolic controls establish the limiting and
+branch statements. No trigonometric reimplementation or energy API is needed.</p>
+<h3 id="137-phase-alignment-representation-does-not-close-the-joint-law">13.7 Phase alignment representation does not close the joint law<a class="headerlink" href="#137-phase-alignment-representation-does-not-close-the-joint-law" title="Permanent link">&para;</a></h3>
+<p>Representing <code>g</code> as a gradient does not establish <code>theta_dot=g</code>. To examine
+that tempting completion, retain the section 13 premises: the EPI block
+uses <code>M_x=diag(nu/d)</code>, there are no cross-mobility blocks, the phase block
+uses the newly derived <code>H_phi^-1</code>, and <code>Psi</code> is independent of EPI. With
+<code>J_g=(R-I)/pi</code>, the required phase velocity is</p>
+<div class="arithmatex">\[
+\dot\theta=w_\phi H_\phi^{-1}J_g^\top D x
+                  -H_\phi^{-1}\nabla_\theta\Psi.
+\]</div>
+<p>Making this equal <code>g=-H_phi^-1*gradient V_phi</code> would require
+<code>gradient_theta Psi=gradient V_phi+w_phi*J_g^T*D*x</code>. For <code>w_phi&gt;0</code> and
+<code>J_g!=0</code>, an EPI-independent <code>Psi</code> cannot satisfy that identity throughout
+an open EPI domain. The metric representation thus exposes the missing
+reciprocal interaction rather than removing it. Other block metrics,
+cross mobilities, constraints and non-gradient laws remain separate cases;
+the nodal identity still selects none of them automatically.</p>
+<p>The retained unit prism gives a concrete same-phase comparison. Write
+<code>q=(1,-1,0,1,-1,0)</code>, <code>r_0=1+sqrt(3)</code> and keep the prepared phases
+<code>(0,pi/3,pi/6)</code> in each triangle. Then <code>Rq=R^Tq=0</code>, <code>D=3I</code> and
+<code>H_phi*q=3*r_0*q</code>. Two EPI states differing by <code>epsilon*q</code> therefore
+require phase velocities differing by</p>
+<div class="arithmatex">\[
+-\frac{w_\phi\epsilon}{\pi(1+\sqrt3)}q.
+\]</div>
+<p>Every <code>Psi</code> term cancels in this comparison. For <code>w_phi=1/4</code> and
+<code>epsilon=1/16</code>, the difference is <code>-q/(64*pi*(1+sqrt(3)))</code>, whereas the
+isolated pressure vector <code>g</code> is identical in the two preparations. This is
+an exact conditional model obstruction, not a phase update or a runtime
+derivative certificate.</p>
+<p>There is also a useful <strong>conditional budget</strong>, without installing that
+completion. Suppose a supplied exact-real model does use <code>theta_dot=g</code>
+and stays on the regular unit-prism domain for all time, with
+<code>H_phi&gt;=h_min*I</code>, <code>h_min&gt;0</code>. Assume fixed unit capacity and conductance,
+fixed EPI coefficient <code>e&gt;0</code>, fixed phase coefficient <code>w&gt;=0</code>, no other
+nonzero forcing, events or pressure residuals. Then</p>
+<div class="arithmatex">\[
+\dot V_\phi=-\sum_i H_{\phi,i}g_i^2,
+\qquad \int_0^\infty\|g\|^2dt\le V_\phi(0)/h_{\min}.
+\]</div>
+<p>Combining this with the existing internal-form budget and Young's
+inequality gives, for <code>S=|z_0|^2+|z_1|^2</code>,</p>
+<div class="arithmatex">\[
+\dot S\le-eS+\frac{w^2}{e}\|g\|^2,\qquad
+\frac{d}{dt}\left(S+\frac{w^2}{e h_{\min}}V_\phi\right)\le-eS.
+\]</div>
+<p>Consequently <code>integral S dt&lt;=S(0)/e+w^2*V_phi(0)/(e^2*h_min)</code>.
+The scalar comparison bound is an exponentially decaying initial term
+plus the convolution of <code>exp(-e*t)</code> with an integrable nonnegative input;
+both tend to zero, so <code>S(t)-&gt;0</code>. Thus this separately supplied phase-only
+relaxation cannot maintain nonzero internal amplitude under the stated
+uniform regularity hypotheses, even if it initially supports growth.
+It may retain phase structure with zero source; the result is not a theorem
+of phase consensus or a rejection of other TNFR completions. If the metric
+approaches zero or a branch/resultant boundary, this uniform bound does
+not apply. No future-domain or engine-trajectory claim is made here.</p>
+<p>Portable controls reuse the existing current, curvature, forcing, phase
+response and regional-balance owners:
+<a href="../../tests/physics/test_phase_alignment_metric.py">phase alignment metric</a> and
+<a href="../../tests/physics/test_joint_phase_alignment_scope.py">joint reciprocity and cost budget</a>.
+No second field-energy implementation or phase solver is introduced.</p>
+<p>The new result is the intrinsic metric/cost representation and its
+conditional implications. A law generating a joint source, its reciprocal
+response, and an appropriate phase/capacity time scale remain open. The
+<a href="../research/FIVE_STAGE_EXECUTION_PLAN/">single execution plan</a> retains those
+dependencies before any maintenance experiment.</p>
+<h3 id="138-structural-restrictions-do-not-select-the-auxiliary-potential">13.8 Structural restrictions do not select the auxiliary potential<a class="headerlink" href="#138-structural-restrictions-do-not-select-the-auxiliary-potential" title="Permanent link">&para;</a></h3>
+<p>Retain the section 13.7 potential family and phase metric. Even common-phase
+rotation invariance, individual <code>2*pi</code> periodicity, graph relabeling covariance,
+undirected edge locality, nonnegativity and the same consensus Hessian do not
+select <code>Psi</code>. In the already declared nondimensional comparison, put</p>
+<div class="arithmatex">\[
+Q_\phi=\sum_{\{i,j\}\in U}(1-\cos(\theta_j-\theta_i))^2.
+\]</div>
+<p>The two logical alternatives <code>Psi=V_phi</code> and <code>Psi=V_phi+Q_phi</code> have all those
+properties. Neither is installed as a constitutive law. Since each edge cost
+<code>a=1-cos(delta)</code> lies in <code>[0,2]</code>, <code>0&lt;=Q_phi&lt;=2*V_phi</code>; the alternatives have
+identical zeros. The added term has zero gradient and Hessian at consensus,
+so their quadratic normalization and linearization agree. On strict U3 edges,
+the respective edge curvatures are</p>
+<div class="arithmatex">\[
+\cos\delta&gt;0,\qquad
+\cos\delta+2(1-\cos\delta)(1+2\cos\delta)&gt;0.
+\]</div>
+<p>Thus even local convexity on that phase domain does not remove the freedom.
+Dimensional analysis can require a cost scale; it cannot select between these
+two dimensionless edge functions after that scale is fixed.</p>
+<p>At the prepared prism phases, with <code>q=(1,-1,0,1,-1,0)</code> and
+<code>r_0=1+sqrt(3)</code>, exact evaluation gives</p>
+<div class="arithmatex">\[
+Q_\phi=\frac{15}{2}-4\sqrt3,\qquad \nabla Q_\phi=-q.
+\]</div>
+<p>For the same state, coefficients and phase block <code>H_phi^-1</code>, replacing the
+first alternative by the second leaves the instantaneous EPI rate unchanged
+but changes the conditional rates by</p>
+<div class="arithmatex">\[
+\Delta\dot\theta=\frac{q}{3r_0},\qquad
+\Delta\dot p=-\frac{q}{12\pi r_0},\quad w_\phi=\frac14.
+\]</div>
+<p>These are ideal derivatives of two supplied joint models, not derivatives
+of binary64 trigonometric execution. The captured current-pressure residual
+is retained separately. Nor does <code>V_phi+Q_phi</code> represent the original isolated
+<code>g</code> under the same metric: this comparison concerns the still-free auxiliary
+part of the joint potential. No phase clock or full-pattern stability follows.</p>
+<h3 id="139-joint-source-compatibility-and-the-common-mean-saddle">13.9 Joint source compatibility and the common-mean saddle<a class="headerlink" href="#139-joint-source-compatibility-and-the-common-mean-saddle" title="Permanent link">&para;</a></h3>
+<p>Fix support, conductance and capacity, and write <code>C(theta)=d^T F(theta)</code>.
+The letter <code>C</code> here denotes source compatibility, not the coherence metric.
+The conditional potential family forced by the EPI block is</p>
+<div class="arithmatex">\[
+\mathcal E(x,\theta)=\frac e2x^TBx-x^TDF(\theta)+\Psi(\theta),
+\qquad B\mathbf1=0.
+\]</div>
+<p>Other held arguments of <code>Psi</code> and <code>F</code> are suppressed. Under a common EPI shift,</p>
+<div class="arithmatex">\[
+\mathcal E(x+c\mathbf1,\theta)-\mathcal E(x,\theta)=-cC(\theta),
+\qquad
+\Delta\dot\theta=cH_\phi^{-1}\nabla C.
+\]</div>
+<p>Pointwise source compatibility <code>C=0</code> does not establish phase-rate covariance,
+whose condition here is <code>gradient C=0</code>. These two pointwise conditions are
+logically independent. Indeed phase-rotation invariance
+gives <code>1^T*gradient C=0</code>. A positive definite phase mobility cannot map a
+nonzero <code>gradient C</code> to a pure common rotation, since that would contradict
+its positive quadratic form. This tests inheritance of the frozen nodal
+flow's shift symmetry; it does not declare absolute EPI unphysical or remove
+the Emission/vacuum contracts.</p>
+<p><strong>Centering changes the law unless justified separately.</strong> For fixed weights
+<code>rho^T*1=1</code>, replacing the cross term by <code>-(Px)^T D F</code>,
+<code>P=I-1*rho^T</code>, changes the pressure to</p>
+<div class="arithmatex">\[
+p_{\rm centered}=p-C D^{-1}\rho.
+\]</div>
+<p>Its phase derivative differs by <code>-D^-1*rho*(gradient C)^T</code>, even at a point
+where <code>C=0</code>. Degree-weighted centering subtracts uniform pressure <code>C/sum(d)</code>;
+centering with weights proportional to <code>d/nu</code> subtracts a uniform nodal drift.
+An invertible chart retaining the mean retains the omitted coupling term.
+A fixed-mean constraint or an invariant <code>C=0</code> manifold therefore needs its
+own derivation; it is not supplied by recentering a diagnostic.</p>
+<p><strong>Stationary-pattern obstruction, independent of <code>Psi</code>.</strong> Assume a <code>C^2</code>
+potential on an open EPI/phase chart. At a point with <code>C=0</code> and
+<code>gradient C!=0</code>, choose a phase direction <code>v</code> with
+<code>b=gradient C dot v!=0</code>. Restrict its second variation to
+<code>x=x_*+a*1</code>, <code>theta=theta_*+t*v</code>. Its Hessian on this plane is</p>
+<div class="arithmatex">\[
+\begin{pmatrix}0&amp;-b\\-b&amp;k\end{pmatrix},\qquad \det=-b^2&lt;0,
+\]</div>
+<p>where <code>k</code> includes every possible <code>C^2</code>, EPI-independent <code>Psi</code>. The zero
+entry follows from <code>B*1=0</code>, and the mixed entry from <code>-a*C(theta)</code>.
+Consequently any full critical point there is a saddle; if it is not
+critical, it already cannot be an interior local minimum. Smooth symmetric
+positive definite gradient mobility makes such a critical point linearly unstable:
+<code>-M*Hessian(E)</code> is similar to the symmetric matrix
+<code>-sqrt(M)*Hessian(E)*sqrt(M)</code>, which has a positive eigenvalue. This last
+statement also applies to cross mobility for this same potential family;
+allowing cross mobility when deriving the EPI law in the first place can
+change the family and is not excluded by this argument.</p>
+<p>The retained source has exactly this obstruction. For the prepared phases,
+unit capacity/conductance and <code>e=1/2</code>, <code>w_phi=1/4</code>, put</p>
+<div class="arithmatex">\[
+q=(1,-1,0,1,-1,0),\quad s=(1,1,-2,1,1,-2),\qquad
+x_*=\tfrac12\mathbf1+\tfrac1{12}q.
+\]</div>
+<p>This is an <strong>ideal exact</strong> zero-pressure reference with source <code>F=q/24</code>;
+it is distinct from the earlier growing preparation with amplitude <code>1/16</code>.
+Although <code>C=0</code>,</p>
+<div class="arithmatex">\[
+\nabla C=-\frac{w_\phi\gamma}{\pi}s\ne0,\qquad
+\gamma=\frac{3(2-\sqrt3)}{2(1+\sqrt3)}&gt;0.
+\]</div>
+<p>The reference EPI lies strictly between zero and one and the largest edge
+phase gap is <code>pi/3&lt;pi/2</code>, so sufficiently small two-sided variations are
+admissible. No binary64 zero-pressure equilibrium is asserted. As an
+additional control, the hypothetical completion <code>Psi=V_phi</code> at this reference
+has <code>C_dot=(1/2)*gradient C^T*H_phi^-1*gradient C&gt;0</code>: initial compatibility
+does not even persist under that particular trial law.</p>
+<p><strong>Repeated-triple family corollary.</strong> This is not just an isolated phase
+choice. On the unit prism, let each triangle carry the same arbitrary three
+phases, with common nonzero neighbor resultant <code>r*exp(i*beta)</code> and a regular
+phase-source chart. Every row contains one copy of each of those phases.
+Column sums of <code>R</code> are <code>3*cos(theta_j-beta)/r</code>. Hence <code>J_g^T*d=0</code> forces
+each of the three cosines to equal <code>r/3&gt;0</code>. Their sines have equal magnitude
+and sum to zero by definition of <code>beta</code>. Three signed copies of a nonzero
+magnitude cannot sum to zero, so every sine vanishes. The positive cosine
+then forces phase consensus modulo <code>2*pi</code>. No semicircle premise needs to
+be added; derivative compatibility itself implies it.</p>
+<p>For <code>w_phi&gt;0</code> and uniform capacity on this unit support, every nonconsensus
+regular repeated triple therefore has either <code>C!=0</code>, excluding a critical
+point in the common-EPI direction, or <code>C=0</code> and <code>gradient C!=0</code>, giving the
+saddle above. This excludes an interior stationary minimum supported by
+such phases throughout this family, for every admissible <code>Psi</code>. It does
+not classify arbitrary six-phase configurations, resultant singularities,
+other supports or moving patterns.</p>
+<p>The obstruction does not require the two-dimensional test plane to be
+dynamically invariant. Allowing capacity to vary cannot restore an interior
+minimum while this negative direction remains admissible. Conversely a
+derived fixed-mean constraint, a boundary point, degenerate mobility,
+non-gradient motion, moving identity or a different justified joint law lies
+outside the conclusion. This rejects stabilization of this preparation by
+choosing <code>Psi</code> alone in the stated gradient class, not autonomous TNFR
+patterns generally.</p>
+<p>Controls reuse the existing forced-support solver and the shared prism
+geometry/phase-metric fixture:
+<a href="../../tests/physics/test_phase_auxiliary_freedom.py">auxiliary freedom</a> and
+<a href="../../tests/physics/test_joint_source_compatibility_stability.py">compatibility and stability</a>.
+The <a href="../research/FIVE_STAGE_EXECUTION_PLAN/#current-g3-gate">single execution plan</a>
+owns the next admission gate; no new potential, dynamics API or trajectory
+is introduced here.</p>
+<h3 id="1310-persistent-motion-is-a-separate-dynamical-target">13.10 Persistent motion is a separate dynamical target<a class="headerlink" href="#1310-persistent-motion-is-a-separate-dynamical-target" title="Permanent link">&para;</a></h3>
+<p>A maintained NFR need not be a stationary point. The interior-minimum
+obstructions above concern one conditional gradient class; they do not
+define persistence for the whole TNFR programme. A periodic state, a relative
+equilibrium under a stated symmetry, a response sustained by its environment,
+and a transient oscillatory observation are different claims. Specify the
+full state, the identity observation and any allowed symmetry before testing
+one. Constant amplitude alone does not establish identity or robustness.</p>
+<p>There is nevertheless a useful stronger exclusion <strong>within pure gradient
+dynamics</strong>. Let the complete continuous state obey</p>
+<div class="arithmatex">\[
+\dot z=-M(z)\nabla\mathcal E(z),\qquad M=M^T\succeq0,
+\]</div>
+<p>with a single-valued, time-independent differentiable energy and sufficiently
+regular autonomous flow. Then</p>
+<div class="arithmatex">\[
+\dot{\mathcal E}=-\nabla\mathcal E^T M\nabla\mathcal E\le0.
+\]</div>
+<p>A periodic return, recurrence to the initial state, or motion entirely along
+an energy-invariant symmetry orbit forces the energy to be constant. For a
+positive semidefinite symmetric matrix, zero quadratic form implies
+<code>M*gradient E=0</code>, hence <code>z_dot=0</code>. Thus even degeneracy cannot generate a
+nonconstant recurrent orbit in this pure gradient model. Positive definiteness
+additionally forces <code>gradient E=0</code>. This does not exclude a transient
+oscillatory projection, a nonrecurrent drifting state or recurrence of a lossy
+observation while hidden energy is consumed.</p>
+<p>A common phase rotation preserves canonical phase differences and regular
+<code>g</code>; it changes neither the phase source nor its work by itself. If the joint
+energy is rotation invariant, that rotation is also excluded as nonzero
+motion of a pure gradient law. A supplied angular clock can generate it in a
+different law, but the phase symmetry does not derive that clock.</p>
+<p>Possible recurrent completions must therefore justify something absent from
+this restricted class: for example a circulation term, an explicit sustaining
+boundary, a time-dependent input, or hybrid energy transfers with their actual
+occurrence law. The algebra <code>z_dot=(J-M)*gradient E</code>, <code>J^T=-J</code>, shows why an
+antisymmetric term does no energy work. It does <strong>not</strong> derive <code>J</code>, a Poisson
+structure or a TNFR phase velocity. The existing auxiliary substrate and
+decoupled product in section 3 retain their realizability/closure obligations.</p>
+<h3 id="1311-cycle-budgets-reuse-the-nodal-transport-owners">13.11 Cycle budgets reuse the nodal transport owners<a class="headerlink" href="#1311-cycle-budgets-reuse-the-nodal-transport-owners" title="Permanent link">&para;</a></h3>
+<p>Pointwise pressure equilibrium is too strong a test for a moving pattern.
+For fixed symmetric connected conductance, positive fixed capacity and a
+declared source <code>F(t)</code>, the actual EPI model is</p>
+<div class="arithmatex">\[
+\dot x=\operatorname{diag}(\nu)(-eL_{\rm rw}x+F(t)),\quad
+H=\operatorname{diag}(d/\nu),\quad
+m_H=\frac{\mathbf1^THx}{\mathbf1^TH\mathbf1}.
+\]</div>
+<p>Writing <code>C(t)=d^T F(t)</code> gives</p>
+<div class="arithmatex">\[
+\dot m_H=\frac{C(t)}{\sum_i d_i/\nu_i}.
+\]</div>
+<p>A periodic EPI field requires <code>integral_0^T C(t) dt=0</code>, not <code>C(t)=0</code> at
+every instant. A relative pattern translating in common EPI may have a
+nonzero mean drift; it is not a bounded recurrent full EPI state. The held
+case is already implemented by <code>derive_forced_support_balance</code>; no second
+Poisson solver or mean-centering law is needed.</p>
+<p>For the retained unit prism with unit capacity, let <code>y</code> be the within-triangle centered EPI,
+<code>z_a=sqrt(2)*u_a+i*sqrt(6)*v_a</code>, <code>S=|z_0|^2+|z_1|^2=||y||^2</code> and
+<code>D_z=|z_0-z_1|^2</code>. Summing the existing exact regional balances gives</p>
+<div class="arithmatex">\[
+\dot S=-2eS-\frac{2e}{3}D_z+2\langle y,F\rangle.
+\]</div>
+<p>Whenever <code>S(T)=S(0)</code>,</p>
+<div class="arithmatex">\[
+\int_0^T\langle y,F\rangle\,dt
+=e\int_0^T S\,dt+\frac e3\int_0^T D_z\,dt.
+\]</div>
+<p>For positive <code>e</code> and continuous nonzero internal form this work is positive.
+A zero-average source can still supply positive work through its correlation
+with the moving form. Returning <code>S</code> is only an accounting condition, not a
+return of the full pattern. Stored-pressure defects add their own work;
+changing capacity/geometry, boundaries, Euler steps and events require the
+existing derivative/finite/reset owners. None may be silently omitted.</p>
+<p><strong>An exact driven control with canonical phase pressure.</strong> Set
+<code>q=(1,-1,0,1,-1,0)</code> and prescribe identical phase triples <code>(-a(t),a(t),0)</code>
+in the two triangles. For <code>a(t)=A*cos(omega*t)</code>, <code>0&lt;A&lt;pi/4</code>, <code>omega&gt;0</code>,
+every neighbor resultant is the positive real number <code>1+2*cos(a)</code> and the
+largest edge gap is below <code>pi/2</code>. The canonical ideal pressure is therefore
+<code>g=(a/pi)*q</code>. Use nondimensional structural time with common capacity
+normalized to one. With <code>F=w*g</code>, <code>L_rw*q=q</code> and <code>e,w&gt;0</code>,</p>
+<div class="arithmatex">\[
+x=\mu\mathbf1+u(t)q,\qquad
+u(t)=\frac{wA}{\pi(e^2+\omega^2)}
+       (e\cos\omega t+\omega\sin\omega t)
+\]</div>
+<p>solves <code>u_dot=-e*u+w*a/pi</code> exactly. In an unscaled time with common capacity
+<code>nu</code>, replace the decay coefficient by <code>nu*e</code> and forcing coefficient by
+<code>nu*w</code>; the denominator becomes <code>(nu*e)^2+omega^2</code>. Here <code>S=4u^2</code> and the cycle source work
+equals dissipation. If a scalar EPI band is required, choose a declared mean
+and amplitude whose entire analytic range lies in that band. The general
+scalar solution differs by <code>constant*exp(-e*t)</code> under this <strong>supplied</strong> source.
+No phase evolution is derived, no graph is integrated and no autonomous
+periodic orbit of the full state is certified.</p>
+<p>The response amplitude is <code>w*A/(pi*sqrt(e^2+omega^2))</code>, strictly decreasing
+for <code>omega&gt;0</code>. It has no nonzero-frequency resonance peak in this particular
+first-order channel. This does not rule out resonance in another justified
+joint law; it prevents mistaking a periodically driven relaxation for such
+a derivation. Neither this frequency nor the auxiliary graph-wave
+<code>sqrt(lambda)</code> is selected by the nodal product alone.</p>
+<p>The exact controls are in
+<a href="../../tests/physics/test_resonant_pattern_scope.py">test_resonant_pattern_scope.py</a>.
+They reuse the shared prism and regional budgets, and separate the analytic
+source from represented runtime pressure. The
+<a href="../NODAL_RESEARCH_STRATEGY/#resonant-persistence-and-pulse-audit">resonant-persistence audit</a>
+maps the existing implementations; the single execution plan retains the
+constitutive gate for a real autonomous mechanism.</p>
+<h3 id="1312-oriented-sourceform-work-without-a-selected-clock">13.12 Oriented source/form work without a selected clock<a class="headerlink" href="#1312-oriented-sourceform-work-without-a-selected-clock" title="Permanent link">&para;</a></h3>
+<p>The preceding cycle balance concerns the squared internal amplitude. A
+different identity tests the <strong>oriented joint loop</strong> without first choosing
+its traversal speed. Fix symmetric conductance with positive row strengths,
+positive fixed capacities and coefficient <code>e&gt;0</code>. Set <code>B=D-W</code>,
+<code>H=diag(d/nu)</code> and retain the actual EPI law</p>
+<div class="arithmatex">\[
+H\dot x=-eBx+DF.
+\]</div>
+<p>Taking its scalar product with <code>dx=dot(x)*dt</code> and integrating an actual
+trajectory segment yields</p>
+<div class="arithmatex">\[
+\int F^TD\,dx
+=\frac e2[x^TBx]_{t_0}^{t_1}
+ +\int_{t_0}^{t_1}\dot x^TH\dot x\,dt.
+\]</div>
+<p>When <code>x(t_1)=x(t_0)</code>, this becomes</p>
+<div class="arithmatex">\[
+\boxed{\ \int_{t_0}^{t_1} F^TD\,dx=\int_{t_0}^{t_1}\|\dot x\|_H^2dt&gt;0\ }
+\]</div>
+<p>whenever its continuously differentiable EPI path is nonconstant. This is
+work against form displacement, distinct from the amplitude-budget integral
+<code>integral &lt;y,F&gt; dt</code> in section 13.11. The left side is an oriented line
+integral along the traced joint <code>(x,F)</code> path. If the source also returns,
+this is a closed joint loop and may be written with <code>oint</code>. Closing EPI
+alone does not guarantee that stronger return. The integral is unchanged by an
+orientation-preserving reparameterization, negated by reversing the path,
+and zero for a constant held source on a closed EPI path. A nonconstant
+periodic EPI path under a held source is therefore excluded in this fixed
+model without choosing a global time unit.</p>
+<p>The right side uses the actual time/capacity of an admitted solution. Arbitrarily
+changing its speed while keeping the same fixed capacities and pressure law
+does not generally produce another solution. Under a consistent change
+<code>d tau/dt=h&gt;0</code>, <code>dx/dtau=dot(x)/h</code> and the effective EPI metric is <code>H_tau=hH</code>,
+so its kinetic integral is preserved. This is a change of coordinate for
+the complete supplied vector field, not a constitutive invariance theorem
+with unchanged coefficients. The multichannel pressure's capacity dependence
+must also be transformed consistently. The parameter foundations derive the
+separate constant-time-unit special case; they do not establish arbitrary
+state-dependent clock covariance of the configured engine. The line integral
+is not a license to rescale one channel in isolation.</p>
+<p><strong>Reciprocal phase geometry.</strong> If all nonphase source components are held and
+<code>F=w_phi*g(theta)+F_0</code>, a closed joint source/form loop satisfies integration
+by parts:</p>
+<div class="arithmatex">\[
+\oint F^TD\,dx
+=-w_\phi\oint x^TD J_g(\theta)\,d\theta.
+\]</div>
+<p>The regular source Jacobian <code>J_g=(R-I)/pi</code> is the existing response owner.
+Common rotation has <code>J_g*dtheta=0</code> and cannot supply this loop work. More
+generally a finite path preserving the entire source gives zero work when
+EPI closes. Relative source/form variation with the proper orientation is
+necessary here; a high synchronization score alone says nothing about it.
+Positive varying capacity alone leaves the first work identity valid with
+the instantaneous <code>H(t)=diag(d/nu(t))</code>: no metric derivative is taken in
+this velocity-action identity. If capacity variation also changes the source,
+integration by parts must include that part of <code>dF</code>; the phase-only expression
+then does not suffice. Changing support, conductance or <code>e</code> requires the
+corresponding Dirichlet derivative and event terms. These belong to the existing
+derivative and event budgets, not an unchanged fixed-coefficient formula.</p>
+<p>For the supplied prism control of section 13.11, in normalized structural
+time, exact evaluation gives</p>
+<div class="arithmatex">\[
+\oint F^TD\,dx
+=\frac{12w^2A^2\omega}{\pi(e^2+\omega^2)}.
+\]</div>
+<p>This equals the positive nodal-rate integral and the reciprocal phase line
+integral. Reversing the same geometric loop makes the left side negative,
+so that orientation cannot solve the same positive-capacity nodal law.
+Changing <code>omega</code> in the displayed control changes the EPI amplitude and lag,
+hence changes the loop itself; it is not just a relabeling of one loop.</p>
+<p>The positive value is a necessary admission result, not a derivation of the
+loop, its clock, attraction or autonomous phase feedback. The existing
+common-mean/phase saddle and gradient recurrence exclusions are not bypassed:
+any proposed reciprocal completion still needs its full energy/work balance.
+The <a href="../FORCED_SUPPORT_BALANCE/#25-relational-time-and-synchronization-are-separate-claims">relational-clock tangent test</a>
+supplies another necessary condition before a curve may be called a trajectory.
+Exact controls reuse the shared conductance and phase geometry in
+<a href="../../tests/physics/test_phase_form_cycle_work_scope.py">test_phase_form_cycle_work_scope.py</a>.
+No new force, integration path or physical-time calibration is introduced.</p>
+<h3 id="1313-work-pulled-back-to-a-proposed-geometric-phase-relation">13.13 Work pulled back to a proposed geometric phase relation<a class="headerlink" href="#1313-work-pulled-back-to-a-proposed-geometric-phase-relation" title="Permanent link">&para;</a></h3>
+<p>A phase observation proposed as an endogenous source must pass a geometric
+test as well as the earlier full-vector-field test. Let <code>z</code> be coordinates
+on a regular open chart, and declare <code>x=chi(z)</code>, <code>theta=Theta(z)</code>. Hold
+conductance, the EPI coefficient, positive capacities and all nonphase source
+components fixed. Put <code>F=w*g(Theta)+F_0</code>, with fixed <code>w&gt;0</code>. The source work
+one-form on this chart is</p>
+<div class="arithmatex">\[
+\alpha=F^TD\,D\chi\,dz.
+\]</div>
+<p>For twice differentiable <code>chi</code> and a differentiable regular phase map, define</p>
+<div class="arithmatex">\[
+K=w(D\chi)^TDJ_gD\Theta.
+\]</div>
+<p>The mixed derivatives of <code>chi</code> cancel in the exterior derivative of <code>alpha</code>;
+the constant source contributes the exact differential <code>d(F_0^TD chi)</code>.
+Consequently <code>d alpha=0</code> exactly when <code>K=K^T</code>. This criterion must hold
+throughout the chart, not merely at one sampled state. On a simply connected
+chart it makes <code>alpha</code> exact, hence every closed embedded loop has zero work.
+Section 13.12 then excludes a closed embedded-state cycle with nonconstant
+EPI under the stated law. EPI return alone suffices only if <code>chi</code> is
+injective on the chart or otherwise guarantees return of the latent state;
+a lossy EPI map can hide different endpoints of the work primitive.
+On a domain with holes, closedness alone
+does not establish global exactness. A nonzero antisymmetric part only permits
+local circulation; it proves neither nodal tangency nor an autonomous orbit.</p>
+<p>This reuses the canonical source Jacobian <code>J_g</code>, the actual conductance metric
+<code>D</code>, and the proposed observation map. Testing symmetry of the raw phase
+Jacobian, or only counting available coordinates, would answer a different
+question. No additional field, energy API or phase solver is needed.</p>
+<p><strong>Exact two-coordinate prism control.</strong> Use the retained repeated-triple
+chart, with <code>P=(1,-1,0)^2</code>, <code>Q=(1,1,-2)^2</code>,
+<code>x=mu*1+u*P+v*Q</code>, fixed <code>mu</code>, and the declared phase relation
+<code>Theta=beta*1-pi*kappa*(x-mu*1)</code>, <code>kappa&gt;0</code>. Choose a simply connected
+neighborhood of <code>(u,v)=(0,0)</code> with a fixed nonzero-resultant branch and
+strict U3. Each node has one neighbor of each triple type, so its neighbor
+resultant is common and</p>
+<div class="arithmatex">\[
+g=\kappa(uP+vQ)+c(u,v)\mathbf1.
+\]</div>
+<p>The common component drops out of the fixed-mean work because
+<code>1^T P=1^T Q=0</code>, <code>D=3I</code>, <code>P^T P=4</code>, <code>Q^T Q=12</code> and <code>P^T Q=0</code>:</p>
+<div class="arithmatex">\[
+\alpha=w\kappa(12u\,du+36v\,dv)
+       =d\{w\kappa(6u^2+18v^2)\}.
+\]</div>
+<p>This phase-from-form relation may support instantaneous amplitude growth but
+cannot supply positive net work around a closed embedded loop. It is a
+declared geometric candidate, not a derived phase law. Its fixed-mean chart
+also need not be invariant: at <code>u=0</code>, <code>v=1/12</code>, <code>kappa=1</code>, the common resultant
+has imaginary part <code>1/2-2*sin(pi/12)!=0</code>, so the common phase source generally
+moves the EPI mean. Dropping that source would alter the model.</p>
+<p>Allowing independent source and form coordinates can instead give nonzero
+circulation. For <code>x=mu*1+uP</code>, <code>theta=-aP</code>, the work is
+<code>alpha=(12w/pi)*a du</code>; its exterior derivative is nonzero. This is the
+geometry already used by the supplied loop in section 13.12, not proof that
+<code>a</code> has its own justified equation. A freely drawn loop can fail nodal
+tangency at an EPI turning point despite positive total work.
+Controls: <a href="../../tests/physics/test_phase_form_pullback_scope.py">pullback scope</a>.</p>
+<h3 id="1314-existing-optional-feedback-pressure-consistency-before-recurrence">13.14 Existing optional feedback: pressure consistency before recurrence<a class="headerlink" href="#1314-existing-optional-feedback-pressure-consistency-before-recurrence" title="Permanent link">&para;</a></h3>
+<p>The optional extended integrator contains a phase response depending on
+pressure, so it is a concrete candidate to audit rather than inventing a
+feedback term. Its full pressure block, however, evolves stored pressure
+independently and fails the fresh-pressure chain rule on the retained prism.
+The <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/#optional-pressure-composition-and-source-consistency">constitutive audit</a>
+owns that exact positive-squared-Laplacian obstruction. It is not a canonical
+phase/form closure or a source of admitted resonant motion.</p>
+<p>A separate conditional comparison isolates what the existing phase formula
+would do <strong>if</strong> paired with freshly realized pressure. This substitution is
+not the implemented optional model and is not installed as a new one. Retain
+unit capacity, the repeated antisymmetric prism family <code>x=mu*1+uP</code>,
+<code>theta=-aP</code>, no other source, and let <code>c=w_phi/pi&gt;0</code>, <code>e=w_epi&gt;0</code>. Then</p>
+<div class="arithmatex">\[
+p=-\eta P,\quad \eta=eu-ca,\qquad
+J_\phi=j(a)P,\quad j(a)=\frac{\sin(2a)+\sin a}{3}.
+\]</div>
+<p>Write the existing configured phase coefficients as <code>A=0.5</code>, <code>B=0.15</code>,
+<code>G=0.135</code>, and hold the prism's common configured coupling <code>kappa&gt;0</code> fixed.
+Set <code>f(eta)=A*sin(pi*eta)+B*eta</code>, <code>k=G*kappa&gt;0</code>. Its phase formula and the
+fresh EPI product give</p>
+<div class="arithmatex">\[
+\dot u=-\eta,\qquad \dot a=f(\eta)-k j(a),\qquad
+\dot\eta=-e\eta-c f(\eta)+ck j(a).
+\]</div>
+<p>No coefficient or clock has been inferred by writing these supplied laws.
+On <code>|eta|&lt;1</code>, <code>|a|&lt;pi/4</code>, consider the derived comparison function</p>
+<div class="arithmatex">\[
+V=\int_0^\eta f(s)ds+ck\int_0^a j(s)ds
+ =\frac A\pi(1-\cos\pi\eta)+\frac B2\eta^2
+  +ck\left(\frac{1-\cos2a}{6}+\frac{1-\cos a}{3}\right).
+\]</div>
+<p>Direct substitution yields</p>
+<div class="arithmatex">\[
+\dot V=-e\eta f(\eta)-c\{f(\eta)-k j(a)\}^2.
+\]</div>
+<p>Here <code>eta*f(eta)&gt;0</code> for nonzero <code>eta</code> and <code>j(a)=0</code> only at <code>a=0</code>.
+Thus <code>V_dot&lt;0</code> away from <code>(eta,a)=(0,0)</code> on this chart. A nonconstant
+periodic orbit contained there is excluded. This neither proves forward
+invariance of the chart nor classifies its exterior or the actual optional
+runtime. It shows why pressure-dependent feedback alone is insufficient
+evidence for sustained resonance: the fresh-pressure comparison is dissipative
+here, while the implemented independent-pressure completion has a different
+and incompatible pressure slope. Exact and production-reader controls share
+<a href="../../tests/physics/test_extended_pressure_feedback_scope.py">one test module</a>.</p>
+<p>The <a href="../NODAL_PARAMETER_FOUNDATIONS/#16-phase-and-form-directed-exchange-frames-and-the-moving-mean">phase/form exchange owner</a>
+extends these work tests to radial/tangential source projections, transported
+internal frames and a supplied circular phase-contrast response with a moving
+mean. Its primitive source and clock remain prescribed. The full work includes
+the mean even when the time integral of the mean source is zero.</p>
+<p>The <a href="../NODAL_PARAMETER_FOUNDATIONS/#17-primitive-phase-origin-symmetry-retained-state-and-the-missing-row">phase-origin admission study</a>
+complements this work test with actual prism reflection constraints and the
+relative oriented-area budget of independent phase/form state. Its joint
+linear classification places the same hypothetical fresh-pressure feedback
+in a nonoscillatory stable contrast class near uniform state. The nonlinear
+one-direction proof above and that local two-direction result have distinct
+scopes; neither certifies the implemented independent-pressure extension.</p>
+<h3 id="1315-full-repeated-triple-feedback-and-the-mean-work-term">13.15 Full repeated-triple feedback and the mean-work term<a class="headerlink" href="#1315-full-repeated-triple-feedback-and-the-mean-work-term" title="Permanent link">&para;</a></h3>
+<p>The one-direction result in section 13.14 extends to the two internal
+directions only when the common phase pressure is retained. This remains a
+<strong>hypothetical fresh-pressure comparison</strong> of the configured optional phase
+formula, not the implemented independent-pressure model or a selected TNFR
+completion. Fix the repeated unit prism, unit capacities, positive weights
+<code>e,w</code>, <code>k=w/pi</code>, and held common <code>g&gt;0</code>. Write</p>
+<div class="arithmatex">\[
+p=h+q\mathbf1,\quad h=-ey-k\eta,\quad q=w c(\eta),\quad
+v=\dot\eta=\Pi f(p)+gJ(\eta),\quad \dot h=-eh-kv,
+\]</div>
+<p>where <code>sum h=sum eta=0</code>, <code>Pi=I-11^T/3</code>, and
+<code>f(s)=A*sin(pi*s)+B*s</code>, <code>A,B&gt;0</code>. The common EPI rate is <code>mu_dot=q</code>, and
+the common phase rate is <code>beta_dot=mean f(p)</code>. Let</p>
+<div class="arithmatex">\[
+F(s)=\frac A\pi(1-\cos\pi s)+\frac B2s^2,\qquad
+V(\eta)=\sum_{i&lt;j}[1-\cos(\eta_i-\eta_j)].
+\]</div>
+<p>The actual three-neighbor mean-sine current is <code>J=-grad V/3</code>. Define the
+comparison storage, counted once per repeated triple,</p>
+<div class="arithmatex">\[
+\mathcal E=\sum_i[F(h_i+q)-F(q)]+\frac{kg}{3}V(\eta).
+\]</div>
+<p>If all pressures and their mean lie in a convex interval where <code>f'&gt;=m&gt;0</code>,
+Jensen's inequality gives <code>E&gt;=m*||h||^2/2+(kg/3)V&gt;=0</code>. Exact differentiation
+using both nodal rows yields</p>
+<div class="arithmatex">\[
+\boxed{\quad
+\dot{\mathcal E}=-e\sum_i h_i f(p_i)-k\|v\|^2
+       +\underbrace{\left[\sum_i f(p_i)-3f(q)\right]
+                    w\,Dc(\eta)[v]}_{\mathcal W_{\rm mean}}.
+\quad}
+\]</div>
+<p>The last term is a nonlinear mean-pressure contribution. It vanishes for
+affine <code>f</code>, but can have either sign for the sine response, even at a state
+where <code>c=0</code>: zero current value does not imply zero derivative. Omitting it
+would turn the one-direction dissipation proof into a false unrestricted
+two-direction proof. It is a balance term, not evidence of an independently
+generated energy supply.</p>
+<p><strong>A sufficient complete-mean dissipation criterion.</strong> Suppose on a declared
+domain that <code>f'&gt;=m&gt;0</code>, <code>|f''|&lt;=M</code>, <code>||h||&lt;=H</code> and the derivative of <code>c</code>
+restricted to centered phase directions has norm at most <code>C</code>. Taylor's
+theorem and <code>sum h=0</code> give</p>
+<div class="arithmatex">\[
+\left|\sum_i f(p_i)-3f(q)\right|\le\tfrac M2\|h\|^2,
+\qquad
+\sum_i h_i f(p_i)\ge m\|h\|^2.
+\]</div>
+<p>Thus, with <code>gamma=w*M*C*H/2</code>,</p>
+<div class="arithmatex">\[
+\dot{\mathcal E}\le-em\|h\|^2-k\|v\|^2+
+                    \gamma\|h\|\|v\|.
+\]</div>
+<p>The right side is strictly negative away from <code>h=v=0</code> whenever
+<code>gamma^2&lt;4*e*m*k</code>. This is a declared-domain test; its bounds are not
+new evolution coefficients. Within the strict phase chart, <code>h=v=0</code>
+also implies <code>eta=0</code>: then <code>v=gJ</code>, and
+<code>eta^T J=-(1/3)sum_pairs (eta_i-eta_j)*sin(eta_i-eta_j)&lt;0</code>
+for nonzero centered <code>eta</code>. The complete stationary contrast has <code>q=0</code>.</p>
+<p><strong>An explicit finite-pressure class.</strong> On any centered triple whose phase
+spread is strictly less than <code>pi/2</code>, write <code>a=Arg(sum exp(i eta_i))</code> and
+<code>s_i=cos(eta_i-a)/|sum exp(i eta_i)|</code>. Each <code>s_i</code> is positive and
+<code>sum s_i=1</code>, so</p>
+<div class="arithmatex">\[
+\|Dc|_{\mathbf1^\perp}\|^2
+ =\frac{\sum_i s_i^2-1/3}{\pi^2}\le\frac{2}{3\pi^2}.
+\]</div>
+<p>For the declared exact-real coefficients
+<code>e=1/2</code>, <code>w=1/4</code>, <code>A=1/2</code>, <code>B=3/20</code>, take the natural monotonic-sine
+pressure interval <code>|p_i|&lt;=1/2</code>. Then one may use
+<code>m=3/20</code>, <code>M=pi^2/2</code>, <code>H=sqrt(3)/2</code>, <code>C=sqrt(2/3)/pi</code>.
+Consequently</p>
+<div class="arithmatex">\[
+\gamma=\frac{\pi\sqrt2}{32},\qquad
+\frac{\gamma^2}{4emk}=\frac{5\pi^3}{192}&lt;\frac{64}{75}&lt;1,
+\]</div>
+<p>where <code>pi&lt;16/5</code> suffices for the strict rational bound. This proves strict
+contrast dissipation on the stated class despite the potentially positive
+mean-work term. It excludes a nonconstant periodic orbit wholly contained
+in that class. It does <strong>not</strong> prove forward invariance, convergence of all
+initial states, behavior beyond this pressure interval, binary64 runtime
+stability or the independent-pressure extension's consistency.
+The existing <a href="../../src/tnfr/dynamics/integrators.py">local coupling estimator</a>
+depends only on degree, so it is common and constant on this fixed prism.
+A changing coefficient would add <code>(k*g_dot/3)*V</code> to the displayed balance
+and would require a new bound; it cannot silently inherit the result.</p>
+<p>The <a href="../NODAL_PARAMETER_FOUNDATIONS/#182-nonzero-oriented-area-production-from-initially-uniform-phase">finite-amplitude orientation witness</a>
+lies in this pressure class and creates oriented area while this storage
+decreases. Angular generation and sustained identity are therefore distinct
+even in one explicitly specified nonlinear comparison. The single G3 queue
+must retain both tests. No phase formula, coefficient or pressure-refresh
+policy is changed by this derivation.</p>
+<p>Exact controls: <a href="../../tests/physics/test_nonlinear_phase_mean_balance_scope.py">complete mean-work balance</a>.</p>
+<h3 id="1316-full-prism-feedback-boundary-exchange-does-not-remove-all-dissipation">13.16 Full-prism feedback: boundary exchange does not remove all dissipation<a class="headerlink" href="#1316-full-prism-feedback-boundary-exchange-does-not-remove-all-dissipation" title="Permanent link">&para;</a></h3>
+<p>The repeated-triple restriction can be removed on the same unit prism.
+Keep fixed unit capacities, fixed <code>e,w,g&gt;0</code>, <code>k=w/pi</code>, and the <strong>conditional
+fresh-pressure comparison</strong> of sections 13.14-13.15. In a regular phase chart,
+write the actual six-node equations as</p>
+<div class="arithmatex">\[
+p=-eLx+w g_\phi(\theta),\qquad \dot x=p,\qquad
+v=\dot\theta=f(p)+gJ(\theta),\qquad
+\dot p=-eLp+k(R-I)v.
+\]</div>
+<p>Here <code>L</code> is the unit prism's symmetric random-walk Laplacian, <code>R</code> is the
+actual neighbor-phasor mean derivative, <code>R1=1</code>, and <code>J</code> is the mean-sine
+current. This is not the optional runtime's independent pressure derivative.
+No repeated phase, form, or triangle mean is assumed. Set
+<code>q=mean p</code>, <code>h=p-q1</code>, <code>u=Pi v</code>, <code>Pi=I-11^T/6</code>. With <code>F'=f</code> as above and
+<code>V=sum_edges(1-cos(theta_i-theta_j))</code>, each undirected edge counted once,
+<code>grad V=-3J</code> and <code>sum J=0</code>. The full-graph comparison storage is</p>
+<div class="arithmatex">\[
+\mathcal E_6=\sum_{i=1}^6 F(p_i)-6F(q)+\frac{kg}{3}V,
+\]</div>
+<p>with the exact balance</p>
+<div class="arithmatex">\[
+\boxed{\quad \dot{\mathcal E}_6
+=-e f(p)^TLp-k\|u\|^2
+ +k\,[f(p)-f(q)\mathbf1]^T R u.\quad}
+\]</div>
+<p>The last term contains the full nonlinear neighbor response, including the
+common pressure rate. To verify cancellation of the common phase velocity,
+use <code>v=u+mean(f(p))*1</code>, <code>R1=1</code>, and <code>sum J=0</code>; do not set that velocity to zero.
+On repeated triples the formula reduces to twice section 13.15's balance.
+Its last term is not generally zero and cannot be discarded as internal
+exchange. Thus the previous proof is reused through its storage and exact
+chain rule, not extended by assuming the same reduced equations.</p>
+<p>Suppose all six lifted phases have spread less than <code>pi/2</code>, and all
+<code>|p_i|&lt;=1/4</code>. The regular phasor geometry makes <code>R</code> nonnegative with row
+sums one, giving <code>||R||_2&lt;=sqrt(6)</code>. For <code>A=1/2</code>, <code>B=3/20</code>,</p>
+<div class="arithmatex">\[
+m=B+A\pi/\sqrt2\le f'(p_i)\le M=B+A\pi.
+\]</div>
+<p>These bounds hold on the whole pressure interval, including its mean.
+The graph's gap is <code>lambda_2=2/3</code>. Pairwise monotonicity and the gap give
+<code>f(p)^T Lp&gt;=m lambda_2 ||h||^2</code>; componentwise Lipschitz continuity gives
+<code>||f(p)-f(q)1||&lt;=M||h||</code>. Therefore</p>
+<div class="arithmatex">\[
+\dot{\mathcal E}_6\le
+-em\lambda_2\|h\|^2-k\|u\|^2+kM\sqrt6\|h\|\|u\|.
+\]</div>
+<p>For <code>e=1/2</code>, <code>w=1/4</code>, strict negativity away from <code>h=u=0</code> follows from
+<code>6kM^2&lt;4em lambda_2</code>. The constants need no numerical parameter scan:
+<code>3&lt;pi&lt;16/5</code> and <code>sqrt2&lt;3/2</code> imply</p>
+<div class="arithmatex">\[
+6kM^2&lt;\frac{49}{32}&lt;\frac{23}{15}&lt;4em\lambda_2,
+\qquad 735&lt;736.
+\]</div>
+<p>Storage is nonnegative, with <code>E_6&gt;=m||h||^2/2+(kg/3)V</code>. In this strict phase
+chart, <code>h=u=0</code> forces <code>J=0</code>, hence uniform phase by connected attractive
+sine coupling. Then <code>g_phi=0</code>, <code>q=0</code>, and <code>Lp=0</code> with <code>p=-eLx</code> forces
+uniform form. Consequently no nonconstant periodic full-state orbit, or
+recurrent nonuniform quotient orbit, can lie wholly within this domain.
+Inter-triangle exchange does not evade this sufficient dissipation test.</p>
+<p>This six-node theorem uses a narrower pressure band than the repeated
+theorem (<code>1/4</code> versus <code>1/2</code>) and controls additional directions. Neither
+declared band is proved forward invariant. This is not global convergence,
+a theorem for larger graphs or variable capacities, a binary64 solver result,
+or admission of the comparison as a physically derived law.
+Controls: <a href="../../tests/physics/test_full_prism_phase_feedback_scope.py">full nonlinear balance</a>.</p>
+<h3 id="1317-all-spatial-modes-and-local-nonlinear-attraction">13.17 All spatial modes and local nonlinear attraction<a class="headerlink" href="#1317-all-spatial-modes-and-local-nonlinear-attraction" title="Permanent link">&para;</a></h3>
+<p>Near uniform form and phase, the same conditional model has an exact local
+classification on the <strong>whole prism</strong>. At uniform phase, both implemented
+support derivatives share <code>L</code>: <code>Dg_phi=-L/pi</code>, <code>DJ=-L</code>. Write
+<code>sigma=f'(0)=A*pi+B&gt;0</code>. Every Laplacian mode <code>lambda</code> carries the block</p>
+<div class="arithmatex">\[
+\frac{d}{dt}\begin{pmatrix}\delta x_\lambda\\\delta\theta_\lambda\end{pmatrix}
+=\lambda\begin{pmatrix}-e&amp;-k\\-\sigma e&amp;-\sigma k-g\end{pmatrix}
+\begin{pmatrix}\delta x_\lambda\\\delta\theta_\lambda\end{pmatrix}.
+\]</div>
+<p>The full spatial spectrum is <code>0,2/3,1,1,5/3,5/3</code>. For every <code>lambda&gt;0</code>,
+the temporal characteristic polynomial is</p>
+<div class="arithmatex">\[
+r^2+\lambda(e+\sigma k+g)r+\lambda^2eg.
+\]</div>
+<p>Its discriminant divided by <code>lambda^2</code> is
+<code>(e-g)^2+2*sigma*k*(e+g)+(sigma*k)^2&gt;0</code>. Thus both roots are real and
+strictly negative for <strong>any positive</strong> <code>e,k,sigma,g</code>. The inter-triangle mean
+mode and the opposite internal modes add no growing or oscillatory linear
+direction. The two neutral directions are the independent uniform shifts
+of EPI and primitive phase; their neutrality is not a pulsation.</p>
+<p>There is also a local nonlinear consequence, distinct from an instantaneous
+linear diagnostic. The regular continuous comparison is smooth and invariant
+under both uniform shifts. Its ten-dimensional centered quotient is therefore
+autonomous, with a Hurwitz Jacobian at the origin. Local linearization stability
+gives a sufficiently small exponentially attracting quotient neighborhood.
+The absolute means can drift during that decay; their smooth rate functions
+vanish with the contrast and are integrable, so both approach finite constants.
+For example, along the nonrepeated small phase preparation
+<code>theta=t*(0,0,0,1,1,-2)</code>, the mean phase pressure is
+<code>t^3/(18*pi)+O(t^5)</code>. Mean stationarity cannot be imposed even this close
+to consensus. Here <code>t</code> is a preparation amplitude, not trajectory time.</p>
+<p>This proves existence of a local basin for the exact conditional ODE, not
+that every state in section 13.16's displayed pressure/phase band belongs
+to it. No basin radius, global attraction, recurrence outside these domains,
+event law, or implemented-runtime stability is established. It closes the
+small-amplitude, missing-spatial-mode loophole without a trajectory campaign.
+Controls: <a href="../../tests/physics/test_full_prism_local_phase_stability.py">full local mode and mean tests</a>.</p>
+<h3 id="1318-source-sensitivity-joint-work-and-the-passive-transfer-limit">13.18 Source sensitivity, joint work and the passive-transfer limit<a class="headerlink" href="#1318-source-sensitivity-joint-work-and-the-passive-transfer-limit" title="Permanent link">&para;</a></h3>
+<p>This closes the source-asymmetry check before returning to the maintenance
+mechanism. Fix the reciprocal unit prism, unit capacities, fixed <code>e,w&gt;0</code>,
+regular phase geometry and freshly constituted pressure
+<code>p=-eLx+w*g(theta)</code>. Let <code>Pi</code> center the <strong>complete</strong> six-node field,
+<code>y=Pi*x</code>, <code>mu=mean(x)</code>, <code>omega=theta_dot</code> and <code>J=Dg</code>. Then</p>
+<div class="arithmatex">\[
+\dot\mu=w\,\overline g,\qquad
+\frac{d}{dt}\frac{\|y\|^2}{2}
+ =-e\,y^TLy+w\,y^Tg,
+\qquad \dot p=-eLp+wJ\omega.
+\]</div>
+<p>The instantaneous contribution to form contrast is <code>w*y^T*g</code>. The matrix
+<code>J</code> enters its change, through the still-unspecified <code>omega</code>; matrix cycle
+imbalance is not an additional term in the nodal equation. In particular,</p>
+<div class="arithmatex">\[
+\ddot\mu=w\,\overline{J\omega},\qquad
+\frac{d^2}{dt^2}\|y\|^2
+ =2\|\Pi p\|^2-2e\,y^TLp+2w\,y^TJ\omega.
+\]</div>
+<p><strong>Unchanged-preparation controls.</strong> Keep the shared EPI
+<code>x=(3/4,1/4,1/2)</code> repeated, <code>e=1/2</code>, <code>w=1/4</code>. At the retained phase
+<code>theta=(-a,a,0,-a,a,a)</code>, <code>a=pi/6</code>, put
+<code>gamma=atan(1/(3*sqrt(3)))</code>. The phase reflection has exactly the same <code>R</code>
+and cycle ratio, but opposite <code>g</code>. Its contribution to <code>d||y||^2/dt</code> is
+respectively <code>+1/12</code> and <code>-1/12</code>; total rates are <code>-1/6</code> and <code>-1/3</code>.
+Both lose contrast. The mean rates are opposite as well:
+<code>mu_dot=+/- (3*gamma-pi/6)/(24*pi)</code>. Detached production pressure readings
+verify those exact-model expressions with their floating-point scope.</p>
+<p>At the same unreflected state, the three <em>tangent controls</em>
+<code>omega=0,+u,-u</code>, <code>u=(-1,1,0,0,0,0)</code>, give phase contributions to
+<code>d^2||y||^2/dt^2</code> of zero and
+<code>+/- (40-7*sqrt(3))/(112*pi)</code>, and mean accelerations zero and
+<code>+/-1/(168*pi)</code>. These are local derivatives, not chosen trajectories.
+Common phase rotation contributes zero. Thus neither the sign of work nor
+its subsequent change is determined by the cycle defect alone.
+Controls: <a href="../../tests/physics/test_phase_source_work_classification.py">source work, sensitivity and mean</a>.</p>
+<p><strong>A conditional storage criterion for maintenance.</strong> For a fixed declared
+comparison coefficient <code>beta&gt;0</code>, with the units needed to compare the two
+terms, define</p>
+<div class="arithmatex">\[
+\mathcal E=\frac12\|y\|^2+\beta V_\phi\ge0,\qquad
+\mathcal R=w\,y^Tg-\beta g^TH\omega.
+\]</div>
+<p>This is a mathematical storage and its signed transfer residual, not a new
+TNFR parameter, physical energy law, external power meter or selector. No
+<code>beta</code> is fitted or installed in the dynamics. The exact identity is</p>
+<div class="arithmatex">\[
+\dot{\mathcal E}=-e\,y^TLy+\mathcal R.
+\]</div>
+<p>It retains both work exchanged with form and the change of phase storage.
+In the class <code>R&lt;=0</code>, phase/form transfer cannot maintain nonzero contrast
+indefinitely. For example the <em>supplied comparison family</em>
+<code>omega=(w/beta)*H^-1*y+lambda*g+c*1</code>, <code>lambda&gt;=0</code>, gives
+<code>R=-beta*lambda*g^THg&lt;=0</code>. State-dependent skew exchange preserves power;
+this does not prove a Poisson structure or derive that comparison law.
+Common rotation cancels because <code>g^TH*1=-1^T gradient V_phi=0</code>.</p>
+<p>More generally, let <code>B(T)</code> be an independently justified upper bound on
+<code>integral_0^T R(t) dt</code> for the specified complete trajectory. Since this
+prism has gap <code>lambda_2=2/3</code>,</p>
+<div class="arithmatex">\[
+e\lambda_2\int_0^T\|y(t)\|^2dt
+ \le \mathcal E(0)+B(T).
+\]</div>
+<p>If <code>||y||&gt;=rho&gt;0</code> throughout that interval, its duration obeys
+<code>e*lambda_2*rho^2*T&lt;=E(0)+B(T)</code>. With a uniform finite cumulative bound,
+indefinite uniformly nonzero form and nonzero periodic centered form are
+excluded while the hypotheses persist. Gauge motion at zero contrast is
+not excluded. Integral control alone proves neither pointwise convergence
+nor domain invariance; no binary64 or changing-support theorem is implied.</p>
+<p>Conversely, sustained contrast with bounded storage requires the cumulative
+residual to pay its integrated loss. Sufficient positive cumulative or average
+residual is a necessary accounting condition, not pointwise positivity or
+a generation law: held phase support can satisfy
+it without explaining why the phases are held. Nor does this diagnostic
+residual establish a literal physical external supply. A proposed complete
+law must determine its value independently and retain any changing capacity,
+support, boundary, memory or event contributions. Those terms cannot be
+inserted retrospectively to make the balance close.
+Controls: <a href="../../tests/physics/test_phase_form_passive_transfer_budget.py">passive joint storage and duration bounds</a>.</p>
+<p>The geometric asymmetry branch is therefore resolved in scope. Its metric
+correction and actual work have separate owners, and no further matrix or
+amplitude sweep is needed. The remaining task is the law supporting the
+joint transfer, not another reinterpretation of the response matrix.</p>
+<p>Validation: 418 tests across 32 relevant modules, including 14 new metric,
+work, storage and configured-coordination controls, pass. The shared symbolic
+fixture replaces duplicate retained preparation/response algebra in tests.
+No production dynamics changes. Source-bound record:
+<code>artifacts/research/phase_transfer_maintenance_validation_2026_09_19.json</code>.</p>
+<h3 id="1319-structural-closure-tests-exchange-jacobi-and-the-remaining-potential">13.19 Structural closure tests: exchange, Jacobi and the remaining potential<a class="headerlink" href="#1319-structural-closure-tests-exchange-jacobi-and-the-remaining-potential" title="Permanent link">&para;</a></h3>
+<p>This tests whether stronger structural conditions determine the missing
+phase row. Keep the same fixed unit prism, canonical regular phase source,
+positive <code>e,w</code>, complete EPI field and declared comparison <code>beta</code> from
+section 13.18. No new dynamical coefficient or trajectory is installed.
+Write <code>a=H*g=-gradient V_phi</code>, <code>M=H^-1</code> and <code>y=Pi*x</code>.</p>
+<p><strong>Power balance leaves four nongauge phase directions.</strong> Prescribing a
+storage residual <code>R_*</code> imposes only</p>
+<div class="arithmatex">\[
+a^T\omega=(w y^Tg-R_*)/\beta.
+\]</div>
+<p>At <code>a!=0</code> the complete solution is</p>
+<div class="arithmatex">\[
+\omega=\frac w\beta My-
+ \frac{R_*}{\beta}\frac a{a^Ta}+v,\qquad a^Tv=0.
+\]</div>
+<p>There are five free instantaneous directions on six nodes. Because
+<code>a^T 1=0</code>, common phase rotation is one of them; four remain after taking
+that quotient. These are directions of the existing phase state, not four
+new coordinates or attributes. At <code>a=0</code>, positive <code>H</code> implies <code>g=0</code>;
+only <code>R_*=0</code> is compatible and the balance constrains no phase velocity.
+Prescribing the residual is itself a premise, not a measured law inferred
+from the desired outcome.</p>
+<p>Locality and graph symmetries do not eliminate all this freedom. With
+<code>W_U</code> the unit reciprocal support adjacency, form the derived matrix</p>
+<div class="arithmatex">\[
+ B(a)=\operatorname{diag}(W_U(a\odot a))
+       -\operatorname{diag}(a)W_U\operatorname{diag}(a),\qquad
+ r=B(a)Lx.
+\]</div>
+<p>It has <code>B(a)a=0</code> and
+<code>z^T B(a)z=sum_{edges ij}(a_j z_i-a_i z_j)^2&gt;=0</code>.
+Thus <code>a^T r=0</code>. This construction uses only the existing nodal fields and
+support, respects relabeling, common phase rotation and common EPI shifts,
+and has radius-two dependence in the primitive fields. It is a witness
+against uniqueness under finite locality, not a new operator or an assertion
+of strict one-hop dependence.</p>
+<p>At the unchanged preparation <code>x=(3/4,1/4,1/2)</code> repeated and
+<code>theta=(-pi/6,pi/6,0,-pi/6,pi/6,pi/6)</code>,</p>
+<div class="arithmatex">\[
+\|\Pi r\|^2=\frac{131}{96}+\frac{283\sqrt3}{768}&gt;0.
+\]</div>
+<p>The two comparison rows <code>omega_0=(w/beta)My</code> and
+<code>omega_1=omega_0+(w/beta)r</code> have the same zero residual and the same
+instantaneous full EPI rate. They have different subsequent responses:</p>
+<div class="arithmatex">\[
+\Delta\ddot\mu=\frac{w^2}{\beta}
+ \frac{155\sqrt3-267}{2688\pi},\qquad
+\Delta\frac{d^2}{dt^2}\|y\|^2=\frac{w^2}{\beta}
+ \frac{13\sqrt3-333}{448\pi}.
+\]</div>
+<p>The displayed zero-residual baseline uses the global mean through <code>y</code>;
+only its null addition <code>r</code> has the asserted radius-two dependence.
+There is also a fully local pair, <code>omega_bar_0=(w/beta)M Lx</code> and
+<code>omega_bar_1=omega_bar_0+(w/beta)r</code>. They share the independently specified
+residual function <code>R_*=w*g^T*(y-Lx)</code> and preserve the stated symmetries.
+This residual is not generally zero. At the retained form <code>Lx=y</code>, they
+coincide with the preceding pair, including the instantaneous response
+differences. The residual is part of these mathematical countercontrols,
+not a rule inferred retrospectively or installed in the engine.</p>
+<p>Neither pair is selected as a TNFR law. The zero-residual family retains
+the previous dissipation budget, so its freedom does not bypass that
+maintenance obstruction; the local pair has its own nonzero-residual
+budget away from the retained point. Controls:
+<a href="../../tests/physics/test_phase_exchange_constitutive_freedom.py">intrinsic exchange freedom</a>.</p>
+<p><strong>A power-canceling skew tensor need not be Poisson.</strong> The lossless comparison
+above can be written, before adding <code>(-eLx,0)</code>, as</p>
+<div class="arithmatex">\[
+\binom{\dot x}{\dot\theta}=
+P(\theta)\nabla_{x,\theta}\mathcal E,\qquad
+P=c\begin{pmatrix}0&amp;-M\\M&amp;0\end{pmatrix},\quad c=w/\beta.
+\]</div>
+<p>Since <code>gradient_x E=y</code>, this gives the <strong>full</strong> source row <code>xdot=w*g</code>
+and <code>theta_dot=c*M*y</code>, including <code>mean(xdot)=w*mean(g)</code>. No centering
+of the source row is implicit. Antisymmetry cancels exchange power, but
+the Jacobi identity for this particular full tensor additionally requires</p>
+<div class="arithmatex">\[
+\{x_i,\{x_j,\theta_k\}\}+\text{cyclic}
+=c^2(\delta_{jk}m_i\partial_i m_j
+       -\delta_{ik}m_j\partial_j m_i)=0,
+\qquad m_i=1/H_i.
+\]</div>
+<p>Because every <code>m_i&gt;0</code>, this is equivalent to
+<code>partial_i m_j=0</code> for every <code>i!=j</code>. Together with the canonical metric's
+common-phase-shift invariance, it would require a locally constant metric.
+The retained nonrepeated preparation violates it: <code>H_0=H_1=3(1+sqrt(3))</code>,
+<code>partial_1 H_0=3-9sqrt(3)/pi</code>, and the <code>(x_1,x_0,theta_0)</code> Jacobiator is</p>
+<div class="arithmatex">\[
+\frac{c^2(3\sqrt3-\pi)}{9\pi(1+\sqrt3)^3}&gt;0.
+\]</div>
+<p>This rejects promotion of that skew tensor to a Hamiltonian structure.
+It does not reject other cross blocks, reduced brackets or the existing
+closed wave pullback. Adding a dissipative term does not repair this
+tensor's Jacobi identity. The substrate's constant bracket and supplied
+tangent-map tests are different owners and cannot certify it.
+Controls: <a href="../../tests/physics/test_phase_exchange_jacobi_scope.py">Jacobi condition and exact obstruction</a>.</p>
+<p><strong>Even a selected genuine symplectic structure leaves a potential to derive.</strong>
+Reuse the <a href="../NODAL_PARAMETER_FOUNDATIONS/#214-local-wave-realizability-does-not-select-a-wave-law">existing local pressure coordinates</a>,
+<code>(y,theta modulo rotation)-&gt;(y,v=Pi*p)</code>, on global phase spread below <code>pi/2</code>.
+In orthonormal centered coordinates the selected canonical form is
+<code>3 sum(dy_alpha wedge dv_alpha)</code>. For an autonomous Hamiltonian on this
+ten-dimensional chart, requiring the nodal first row <code>ydot=v</code> forces,
+on connected velocity fibers,</p>
+<div class="arithmatex">\[
+\mathcal H(y,v)=\frac32\|v\|^2+U(y),\qquad
+\dot v=-\frac13\nabla U(y).
+\]</div>
+<p>The function <code>U</code> remains undetermined. The existing wave chooses
+<code>U_L=3*y^T L y/2</code>; the distinct <code>U_L2=3*y^T L^2 y/2</code> shares positivity,
+graph relabeling covariance and common-offset invariance. Both have the
+same genuine coordinate pullback and local nodal first-row lift. A separate
+one-hop acceleration condition could exclude <code>L^2</code>, but is not implied by
+symplecticity or a one-hop assumption about a different state variable.
+At the original EPI contrast, an eigenvector of <code>L</code> with eigenvalue one,
+these two accelerations coincide. Their derivative in the existing
+inter-triangle mean direction differs because its eigenvalue is <code>2/3</code>.
+This distinguishes full local laws without changing the retained preparation
+or constructing a favorable new trajectory. The executable phase-lift
+controls reuse the existing repeated phase comparator from section 21.4;
+they do not claim to have executed a lift at the nonrepeated phase point
+of the preceding two tests. The acceleration equality at <code>L y=y</code> is
+independent of that choice of regular phase.</p>
+<p>For every such comparison the complete mean still obeys
+<code>mu_dot=w*mean(g)</code> and <code>mu_ddot=w*mean(Dg*omega)</code>; the centered Hamiltonian
+does not justify setting either to zero. Common phase rotation is also
+outside its ten-dimensional form. No hypothesis here establishes global
+chart invariance, autonomous law selection, runtime realization or physical
+validation. Controls:
+<a href="../../tests/physics/test_phase_hamiltonian_closure_freedom.py">Hamiltonian family and retained-state derivatives</a>.</p>
+<p>The constitutive gap is now sharper: a specified storage balance, finite
+locality and symmetries do not determine phase evolution; imposing a genuine
+Hamiltonian structure in the known pressure chart still leaves <code>U</code> and the
+choice of that structure as premises. Further calculation inside those
+same assumptions cannot establish uniqueness. The single G3 plan must
+identify an independent structural relation that constrains this remaining
+freedom, or report it as an unresolved premise. It must not rename a chosen
+potential, tensor or diagnostic as a derivation.</p>
+<p>The integration also corrects the decoupled product observer's validation
+order: all nodal scalar channels pass its existing finite-real contract
+before substrate fields are extracted. Invalid phase/pressure booleans no
+longer reach a different downstream exception after field/cache work.
+Validated values retain the substrate's canonical node order. This repairs
+the observer boundary, without changing its valid-input product dynamics.</p>
+<p>Validation: 193 tests in 19 modules pass, including 12 new exact controls.
+The common metric differential and centered pressure-coordinate fixture
+replace duplicate test construction. Source-bound checkpoint:
+<code>artifacts/research/joint_constitutive_conditions_validation_2026_09_19.json</code>.</p>
+<h3 id="1320-locality-and-exact-diffusion-compatibility">13.20 Locality and exact diffusion compatibility<a class="headerlink" href="#1320-locality-and-exact-diffusion-compatibility" title="Permanent link">&para;</a></h3>
+<p>The next structural restrictions can be tested without a new trajectory.
+Retain the same unit-conductance triangular prism, degree three, unit
+capacity, <code>e,w&gt;0</code> and complete nodal equation
+<code>xdot=-e*L*x+w*g(theta)</code>. Here <code>L=L_rw</code>, <code>Pi=I-11^T/6</code>, <code>y=Pi*x</code> and
+<code>v=Pi*xdot</code>. The selected centered symplectic chart from section 13.19
+has <code>H=3||v||^2/2+U(y)</code>. These are conditional restrictions on that
+comparison family; they do not establish its physical origin.</p>
+<p><strong>One-hop acceleration and symmetry leave two edge coefficients.</strong>
+For a quadratic <code>U=y^T Q y/2</code>, require a constant symmetric Hessian,
+<code>Q*1=0</code>, zero off-support entries and invariance under all twelve prism
+automorphisms. The graph is vertex-transitive but has two edge orbits:
+six triangle edges and three edges joining the triangles. Exactly</p>
+<div class="arithmatex">\[
+Q=aB_{\triangle}+bB_{\mathrm{matching}},\qquad
+\operatorname{spec}(Q)=\{0,2b,3a,3a,3a+2b,3a+2b\},
+\]</div>
+<p>where the <code>B</code> matrices are the combinatorial edge-orbit Laplacians and
+<code>B_triangle+B_matching=3L</code>. The nine edge coefficients obey seven
+independent symmetry constraints. Positivity on centered forms requires
+and is implied by <code>a,b&gt;0</code>; it does not fix their ratio. The original form
+only probes the triangle coefficient. Its existing inter-triangle tangent
+probes the other coefficient, without changing the preparation.</p>
+<p>Requiring acceleration <code>-Q*y/3=-sigma*L*y</code> on every centered form forces
+<code>a=b=sigma</code>. This <em>transport-matching premise</em> is stronger than graph
+symmetry and leaves the scalar unspecified. Matching only the consensus
+Hessian is weaker still: the unit edge quadratic and that quadratic plus
+<code>sum_edges (x_i-x_j)^4/4</code> have the same Hessian there, all graph symmetries
+and one-hop gradients, but different responses at the retained form.
+The quartic is a dimensionless mathematical countercontrol; a physical
+use would additionally need its scale and justification. Controls:
+<a href="../../tests/physics/test_local_potential_stiffness_scope.py">local potential classification</a>.</p>
+<p><strong>Exact embedded diffusion differs from a leading overdamped balance.</strong>
+For the supplied auxiliary model</p>
+<div class="arithmatex">\[
+\dot y=v,\qquad \dot v=-Ky-\gamma v,
+\]</div>
+<p>the complete diffusion graph <code>v=-eL*y</code> is invariant if and only if
+<code>K*Pi=gamma*e*L-e^2*L^2</code>. With <code>K*1=0</code> this gives</p>
+<div class="arithmatex">\[
+K=\gamma eL-e^2L^2,\qquad
+s^2+\gamma s+\gamma e\lambda-e^2\lambda^2
+=(s+e\lambda)(s+\gamma-e\lambda).
+\]</div>
+<p>Damping remains free and the initial velocity must lie on the specified
+graph. Positive centered stiffness requires <code>gamma&gt;e*lambda_max</code>, with
+<code>lambda_max=5/3</code>; the diffusion root is the strictly slower root in every
+nonuniform mode only when <code>gamma&gt;2e*lambda_max</code>. The leading choice
+<code>K=gamma*e*L</code> instead has exact tangency residual <code>-e^2*L^2*y</code>.
+Discarding inertia in <code>tau*vdot+v=-eL*y</code> gives a leading balance, not an
+exact finite-<code>tau</code> embedding or a proof of convergence of that limit.</p>
+<p>On ordered nodes <code>((0,0),(0,1),(0,2),(1,0),(1,1),(1,2))</code>, nodes 0 and 4
+are nonadjacent, yet <code>(L^2)[0,4]=2/9</code>. Thus the exact embedding requires
+<code>K[0,4]=-2e^2/9</code>, independently of damping: strict one-hop acceleration
+and this exact embedding cannot both hold on the retained support.
+At <code>gamma=0</code> the embedding requires negative centered stiffness
+<code>K=-e^2*L^2</code>, not a positive conservative wave. When <code>gamma&gt;e*lambda_max</code>,
+the positive centered energy satisfies</p>
+<div class="arithmatex">\[
+\mathcal H=\frac32(\|v\|^2+y^TKy),\qquad
+\dot{\mathcal H}=-3\gamma\|v\|^2.
+\]</div>
+<p>A periodic solution then has <code>v=0</code> throughout and <code>y=0</code>; this family
+does not supply nonzero periodic maintenance. These centered auxiliary
+identities are not primitive phase or full runtime certificates. Controls:
+<a href="../../tests/physics/test_exact_diffusion_embedding_scope.py">exact diffusion embedding</a>.</p>
+<p><strong>Primitive phase locality is a separate restriction.</strong>
+At the existing repeated phase comparator
+<code>theta=(0,pi/3,pi/6,0,pi/3,pi/6)</code>, let <code>J=Dg</code>, <code>B=pi*J</code> and
+<code>T=(Pi*B+11^T/6)^(-1)*Pi</code>, the shared exact pressure-coordinate inverse.
+Consider the selected Hamiltonian acceleration <code>vdot=-kappa*L*y</code>,
+<code>kappa&gt;=0</code>. Differentiating the nodal lift at fixed phase gives</p>
+<div class="arithmatex">\[
+w\Pi J D_x\omega=-(\kappa L+e^2L^2),\qquad
+D_x\omega=-\frac\pi w T(\kappa L+e^2L^2)+\mathbf1 c^T.
+\]</div>
+<p>The row difference eliminates every common-phase gauge derivative:</p>
+<div class="arithmatex">\[
+\partial_{x_0}\omega_4-\partial_{x_0}\omega_5
+=\frac\pi w\left[
+ \frac{193-111\sqrt3}{1716}\kappa
++\frac{37-19\sqrt3}{396}e^2\right]&gt;0.
+\]</div>
+<p>Both 4 and 5 are nonneighbors of 0. A continuously differentiable phase
+law depending only on each node's and its neighbors' <strong>primitive</strong> EPI,
+phase and fixed capacity would require both derivatives to vanish. Such
+a law cannot realize this selected acceleration on an open EPI neighborhood
+at this phase. Relabeling and choosing another common phase velocity do
+not remove the obstruction. The complete form mean is retained: its
+acceleration derivative in the existing repeated <code>Q_MODE=(1,1,-2)</code>
+direction is <code>(kappa+e^2)*(5-3sqrt(3))/2</code>, not zero.</p>
+<p>At phase consensus a sparse lift exists, so this is a state-dependent
+obstruction rather than an artifact of centering. It excludes the specified
+<code>kappa*L</code> family under this strict locality requirement, not all local
+stiffnesses or every TNFR law. Access to freshly computed neighboring
+pressures can already have radius-two primitive dependence; it is a
+different restriction. Neither the nodal equation nor the current global
+coordinator establishes strict primitive one-hop phase locality. Controls:
+<a href="../../tests/physics/test_primitive_phase_locality_scope.py">primitive phase locality and mean</a>.</p>
+<p>The same study repairs a separate numerical diagnostic error: subtracting
+near-equal terms lost the slow damped-wave root at large damping. All
+graph-wave observers now share a root kernel that recovers the small root
+from the root product. On P2 with <code>gamma=1e10</code>, the nonuniform rate is
+approximately <code>-2e-10</code>, rather than zero. Decimal comparison, zero/critical/
+complex-root controls and existing coordinate regressions cover this fix.
+It does not change native evolution, prove a wave limit, remove all
+floating-range limitations or repair the distinct critical-trajectory
+fallback. Controls:
+<a href="../../tests/physics/test_damped_wave_root_precision.py">root precision</a>.</p>
+<p>These restrictions do not identify a unique potential or phase law.
+Locality must name its primitive variables, and diffusion compatibility
+must distinguish a limiting approximation from an exact invariant graph.
+The single G3 plan retains the remaining independent closure premise;
+no coefficient, clock or maintaining trajectory is selected here.</p>
+<p>Validation: 144 tests in 11 modules pass, including 12 new exact mathematical
+controls and five numerical regression cases. Shared owners supply the
+support, symmetries and pressure-coordinate inverse. Earlier research
+artifacts are preserved byte-for-byte. Source-bound checkpoint:
+<code>artifacts/research/locality_transport_closure_validation_2026_09_19.json</code>.</p>
+<h2 id="implementation-examples">Implementation &amp; Examples<a class="headerlink" href="#implementation-examples" title="Permanent link">&para;</a></h2>
+<h3 id="executable-demonstrations">Executable Demonstrations<a class="headerlink" href="#executable-demonstrations" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Example</th>
+<th>Concept from this document</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../examples/02_physics_regimes/27_variational_principle_demo.py">27_variational_principle_demo.py</a></td>
+<td>Lagrangian snapshots, conjugate pairs, Euler-Lagrange residual, action functional, symplectic preservation, grammar stationarity, critical points</td>
+</tr>
+</tbody>
+</table>
+<h3 id="key-source-modules">Key Source Modules<a class="headerlink" href="#key-source-modules" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>src/tnfr/physics/variational.py</code> — Lagrangian, Hamiltonian, Euler-Lagrange, symplectic checks</li>
+<li><code>src/tnfr/physics/conservation.py</code> — Energy functional (Lyapunov candidate)</li>
+<li><code>src/tnfr/physics/classical_mechanics.py</code> — Classical limit correspondence</li>
+</ul>
+<hr />
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Nodal equation: <code>TNFR.pdf</code> §2.1, <code>AGENTS.md</code> §Foundational Physics</li>
+<li>Conservation theorem: <a href="../STRUCTURAL_CONSERVATION_THEOREM/">STRUCTURAL_CONSERVATION_THEOREM.md</a></li>
+<li>Grammar rules: <a href="../UNIFIED_GRAMMAR_RULES/">UNIFIED_GRAMMAR_RULES.md</a></li>
+<li>Classical mechanics analogy: <code>src/tnfr/physics/classical_mechanics.py</code></li>
+<li>Unified fields (canonical source): <code>src/tnfr/physics/unified.py</code></li>
+<li>Energy functional: <code>src/tnfr/physics/conservation.py</code></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../docs/assets/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+      
+    
+  </body>
+</html>

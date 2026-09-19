@@ -1,0 +1,1856 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/TNFR_RIEMANN_RESEARCH_NOTES/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>TNFR–Riemann: Current Evidence and Scope - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tnfrriemann-current-evidence-and-scope" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              TNFR–Riemann: Current Evidence and Scope
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/CLI_AND_SDK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI and SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FUNDAMENTAL_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NODAL_PARAMETER_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NODAL_RESEARCH_STRATEGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/FIVE_STAGE_EXECUTION_PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Active execution plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DERIVED_EPI_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/archive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Historical archive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../factorization-lab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Applications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Applications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../primality-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.github/WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-current-conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Current conclusion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-reusable-construction-and-evidence-inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Reusable construction and evidence inventory
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-exact-arithmetic-identities-and-their-domains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Exact arithmetic identities and their domains
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Exact arithmetic identities and their domains">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#finite-zero-sums-and-the-li-criterion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finite zero sums and the Li criterion
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-finite-pulse-and-analytic-phase-are-different-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Finite pulse and analytic phase are different objects
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-what-the-smooth-rescaling-actually-proves" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. What the smooth rescaling actually proves
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-conditional-symmetry-results-that-remain-useful" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Conditional symmetry results that remain useful
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-superseded-claims-and-preserved-historical-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Superseded claims and preserved historical record
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-remaining-boundary-and-reuse-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Remaining boundary and reuse policy
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tnfrriemann-current-evidence-and-scope">TNFR–Riemann: Current Evidence and Scope<a class="headerlink" href="#tnfrriemann-current-evidence-and-scope" title="Permanent link">&para;</a></h1>
+<p><strong>Status</strong>: secondary mathematical comparison program; no proof or disproof of RH,
+no derived Hilbert–Pólya bridge, and no autonomous arithmetic NFR mechanism.
+<strong>Review</strong>: 2026-09-19. Documentation/source audit; historical measurements were
+not rerun for this consolidation.
+<strong>Authority</strong>: this note owns the current scope of the arithmetic comparison.
+The active research queue remains in
+<a href="../research/FIVE_STAGE_EXECUTION_PLAN/">FIVE_STAGE_EXECUTION_PLAN.md</a>.</p>
+<h2 id="1-current-conclusion">1. Current conclusion<a class="headerlink" href="#1-current-conclusion" title="Permanent link">&para;</a></h2>
+<p>The repository contains finite arithmetic constructions, classical analytic
+identities, numerical comparisons and conditional symmetry arguments. They are
+useful as reproducibility baselines and examples of information retained or
+discarded by an observation. They do not derive prime labels, logarithmic
+frequencies, arithmetic carriers or a physical particle ontology from the nodal
+equation.</p>
+<p>The identity <span class="arithmatex">\(\dot x_i=\nu_i p_i\)</span> determines a form rate after the capacity and
+pressure are specified. It does not select the arithmetic assignment
+<span class="arithmatex">\(\nu_i=\log i\)</span>, the phase law <span class="arithmatex">\(\dot\theta_i=-\log i\)</span>, a Hamiltonian, or a
+schedule that produces a prime ladder. Positive capacity is not proof of an
+oscillator. The current foundations and joint scale obligations are maintained in
+<a href="../NODAL_PARAMETER_FOUNDATIONS/">NODAL_PARAMETER_FOUNDATIONS.md</a> and
+<a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/">TNFR_SCALE_GEOMETRY_AND_BRIDGE.md</a>.</p>
+<p>RH concerns the real parts of <strong>all</strong> nontrivial zeta zeros. Finite critical-line
+scans, agreement at known zeros, a target spectrum placed on a diagonal, or a
+small residual against those targets do not settle that assertion. The historic
+label G4 denotes this unresolved external target; it is not a quantified
+fraction of the remaining TNFR development.</p>
+<h2 id="2-reusable-construction-and-evidence-inventory">2. Reusable construction and evidence inventory<a class="headerlink" href="#2-reusable-construction-and-evidence-inventory" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Owner</th>
+<th>What is supplied</th>
+<th>Supported result</th>
+<th>Boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../src/tnfr/riemann/von_mangoldt.py">von_mangoldt.py</a></td>
+<td>Prime labels, integer ladder depth, weights <span class="arithmatex">\(\log p\)</span></td>
+<td>Finite weighted trace; classical infinite Dirichlet identity on <span class="arithmatex">\(\Re s&gt;1\)</span></td>
+<td>Finite cutoff is not the full analytic function</td>
+</tr>
+<tr>
+<td><a href="../../src/tnfr/riemann/prime_ladder_hamiltonian.py">prime_ladder_hamiltonian.py</a></td>
+<td>Frequencies <span class="arithmatex">\(k\log p\)</span>, selected Hamiltonian coefficients</td>
+<td>Decoupled real diagonal spectrum and finite trace readback</td>
+<td>Frequencies are assigned; ladder edges are not an executed REMESH history</td>
+</tr>
+<tr>
+<td><a href="../../src/tnfr/riemann/analytic_continuation.py">analytic_continuation.py</a></td>
+<td>Classical zeta evaluator and known-zero comparisons</td>
+<td>Numerical evaluation of the established meromorphic continuation</td>
+<td>Does not derive continuation or establish that every zero is on the critical line</td>
+</tr>
+<tr>
+<td><a href="../../src/tnfr/riemann/weil_explicit_formula.py">weil_explicit_formula.py</a></td>
+<td>Test functions, cutoffs and prime/zero data</td>
+<td>Finite residual comparison for a classical explicit formula</td>
+<td>A reported small residual is not a uniform remainder estimate or a new proof</td>
+</tr>
+<tr>
+<td><a href="../../src/tnfr/riemann/li_keiper.py">li_keiper.py</a></td>
+<td>Finite supplied critical-line zeros or line-restricted peak coordinates</td>
+<td>Truncated conjugate-pair sums</td>
+<td>No certified zero-sum tail; signs are not an independent zero-location test</td>
+</tr>
+<tr>
+<td><a href="../../src/tnfr/riemann/structural_zero_density.py">structural_zero_density.py</a></td>
+<td>Classical Riemann–Siegel theta function</td>
+<td>Smooth counting targets from a declared scalar inversion</td>
+<td>Target construction does not emerge from nodal evolution</td>
+</tr>
+<tr>
+<td><a href="../../src/tnfr/riemann/admissible_rescaling.py">admissible_rescaling.py</a></td>
+<td>Positive source and target spectra, eigenvectors</td>
+<td>Finite spectral congruence identity</td>
+<td>Does not independently predict targets or establish an analytic range/kernel decomposition</td>
+</tr>
+<tr>
+<td><a href="../../src/tnfr/riemann/nodal_pulse.py">nodal_pulse.py</a></td>
+<td>Integer labels, amplitudes, logarithmic phase rates, cutoff</td>
+<td>Finite interference sum and known-ordinate comparisons</td>
+<td>No certified critical-line Dirichlet-series limit or autonomous graph evolution</td>
+</tr>
+<tr>
+<td><a href="../../src/tnfr/riemann/pulse_coherence.py">pulse_coherence.py</a></td>
+<td>Finite pulse or classical analytic zeta evaluation</td>
+<td>Phase/counting and rectified-phase diagnostics</td>
+<td>Pulse, analytic evaluator and supplied comparison oracle must be distinguished</td>
+</tr>
+<tr>
+<td><a href="../../src/tnfr/riemann/dirichlet_l.py">dirichlet_l.py</a> and twisted modules</td>
+<td>Explicit Dirichlet characters and arithmetic data</td>
+<td>Analogous finite/classical GL(1) comparisons</td>
+<td>No GRH result or elliptic-curve GL(2) construction follows</td>
+</tr>
+</tbody>
+</table>
+<p>The <a href="../NUCLEUS_A_PRIME_LADDER_ATLAS/">prime-ladder atlas</a> retains reproduction
+entry points. Numerical tolerances and old reported counts in that atlas are
+historical evidence, not freshly revalidated universal guarantees.</p>
+<h2 id="3-exact-arithmetic-identities-and-their-domains">3. Exact arithmetic identities and their domains<a class="headerlink" href="#3-exact-arithmetic-identities-and-their-domains" title="Permanent link">&para;</a></h2>
+<p>The classical identity is</p>
+<div class="arithmatex">\[
+-\frac{\zeta'(s)}{\zeta(s)}
+=\sum_{n\ge1}\Lambda(n)n^{-s}
+=\sum_{p}\sum_{k\ge1}\log(p)\,e^{-sk\log p},
+\qquad \Re s&gt;1.
+\]</div>
+<p>The implemented finite trace uses a finite prime set and ladder depth.
+Convergence of the infinite series in this half-plane is distinct from the
+meromorphic continuation outside it. At a zero <span class="arithmatex">\(\rho\)</span> of multiplicity <span class="arithmatex">\(m_\rho\)</span>,
+the continued function <span class="arithmatex">\(-\zeta'/\zeta\)</span> has residue <span class="arithmatex">\(-m_\rho\)</span>; at the pole <span class="arithmatex">\(s=1\)</span>
+of zeta its residue is <span class="arithmatex">\(+1\)</span>. Writing an arbitrary nontrivial zero as
+<span class="arithmatex">\(\rho=1/2+it\)</span> would assume RH. Critical-line examples only use selected zeros
+already known or supplied on that line.</p>
+<p>The decoupled P14 finite matrix with diagonal <span class="arithmatex">\(k\log p\)</span> has that spectrum by
+construction. With diagonal trace weights <span class="arithmatex">\(\log p\)</span>, its finite exponential
+trace is precisely the finite sum above. This is a useful consistency identity;
+reading assigned entries back as eigenvalues is not independent evidence that
+the nodal law generated prime arithmetic.</p>
+<h3 id="finite-zero-sums-and-the-li-criterion">Finite zero sums and the Li criterion<a class="headerlink" href="#finite-zero-sums-and-the-li-criterion" title="Permanent link">&para;</a></h3>
+<p>The implemented P16 evaluator forms only</p>
+<div class="arithmatex">\[
+\lambda_n^{(K)}=2\operatorname{Re}\sum_{k=1}^{K}
+\left[1-\left(1-\frac{1}{\rho_k}\right)^n\right].
+\]</div>
+<p>The complete classical Li criterion concerns all zeros with the required
+summation convention and every positive integer index. The finite evaluator
+supplies neither a certified omitted-zero tail nor a bound on its numerical
+rounding. A sign of <span class="arithmatex">\(\lambda_n^{(K)}\)</span> is therefore not by itself a certified
+sign of the complete coefficient, even for one index.</p>
+<p>There is also an input-dependence boundary. If <span class="arithmatex">\(\rho=1/2+it\)</span> is supplied, then
+<span class="arithmatex">\(|(\rho-1)/\rho|=1\)</span>, and its paired contribution is
+<span class="arithmatex">\(2[1-\cos(n\arg(1-1/\rho))]\geq0\)</span> in exact arithmetic, whether or not <span class="arithmatex">\(t\)</span>
+is actually a zero ordinate. The default known-zero list and the optional
+critical-line scan both use this real part; the latter explicitly constructs
+<code>complex(0.5, detected_ordinate)</code>. Nonnegative truncated sums consequently do
+not validate zero location, pole detection or a TNFR-derived resonance law.
+Negative numerical output would require investigating the supplied coordinates
+and arithmetic before drawing any conclusion about the analytic criterion.</p>
+<h2 id="4-finite-pulse-and-analytic-phase-are-different-objects">4. Finite pulse and analytic phase are different objects<a class="headerlink" href="#4-finite-pulse-and-analytic-phase-are-different-objects" title="Permanent link">&para;</a></h2>
+<p>The evaluator forms</p>
+<div class="arithmatex">\[
+P_N(T)=\sum_{n=1}^{N} n^{-1/2}e^{-iT\log n}.
+\]</div>
+<p>The ordinary infinite Dirichlet series for zeta is not valid at
+<span class="arithmatex">\(\Re s=1/2\)</span>. No statement equates this unregularized finite sum with
+<span class="arithmatex">\(\zeta(1/2+iT)\)</span>, and the default cutoff has no certified remainder bound
+making it a convergent critical-line approximation. Frequency and amplitude
+are declared arithmetic inputs. This evaluator does not execute its optional
+graph helper or the shared nodal integrator.</p>
+<p>The known-zero tuple in the source supplies comparison ordinates, scan
+endpoints and nearest-dip matches. These checks are not blind predictions.
+A dip of a finite trigonometric sum need not be an analytic zero; a phase
+branch or a zero resultant also needs its own availability treatment.</p>
+<p>The analytic argument term <span class="arithmatex">\(S(T)=\pi^{-1}\arg\zeta(1/2+iT)\)</span> requires the
+standard continuation/branch convention. Away from zero ordinates, the
+classical counting formula relates it to the Riemann–Siegel theta function.
+At a zero ordinate, the counting and argument conventions must be stated.
+Using an analytic evaluator for <span class="arithmatex">\(S(T)\)</span> and then checking that classical
+formula is not a TNFR derivation.</p>
+<p>Finite phase, RMS, peak and off-axis comparisons remain descriptive. They
+neither validate grammar U2 nor imply a uniform estimate at unobserved
+heights, criticality, a pressure-equilibrium axis or RH.</p>
+<h2 id="5-what-the-smooth-rescaling-actually-proves">5. What the smooth rescaling actually proves<a class="headerlink" href="#5-what-the-smooth-rescaling-actually-proves" title="Permanent link">&para;</a></h2>
+<p>Suppose <span class="arithmatex">\(H U=U\,\mathrm{diag}(\lambda_i)\)</span>, <span class="arithmatex">\(U^*U=I\)</span> and both the retained
+source values <span class="arithmatex">\(\lambda_i\)</span> and supplied targets <span class="arithmatex">\(\mu_i\)</span> are positive. Define</p>
+<div class="arithmatex">\[
+F=U\,\mathrm{diag}\!\left(\sqrt{\mu_i/\lambda_i}\right)U^*.
+\]</div>
+<p>Then</p>
+<div class="arithmatex">\[
+FHF^*=U\,\mathrm{diag}(\mu_i)U^*.
+\]</div>
+<p>This finite congruence identity holds for <strong>any</strong> such target list. It is not a
+similarity transformation preserving the source spectrum. If <span class="arithmatex">\(U\)</span> spans the
+whole space, <span class="arithmatex">\(F\)</span> is positive and invertible there; if only selected columns
+are retained, it is invertible on their range and zero on the complement.</p>
+<p>P28 obtains its smooth targets from the classical theta counting function.
+P30 transfers those targets to a selected operator by this identity. A smaller
+distance to known zero ordinates reports the chosen target approximation; it
+does not measure a percentage of RH proved or a fraction of an ontological
+mechanism discovered. Optional irrational probe frequencies are configured
+test inputs, not newly derived TNFR constants.</p>
+<p>The optional P30 amplitude sweep selects its best value using the W1
+discrepancy against the same known zero ordinates later reported as its score.
+That is in-sample calibration, not held-out prediction. Compatibility flags
+named structurally_derived do not certify derivation from nodal dynamics.</p>
+<p>No analytic decomposition <span class="arithmatex">\(F=F_{\rm smooth}\oplus F_{\rm osc}\)</span>, identification
+of <span class="arithmatex">\(S(T)\)</span> with a finite Fourier-mask kernel, or REMESH-infinity operator is
+established by this construction.</p>
+<h2 id="6-conditional-symmetry-results-that-remain-useful">6. Conditional symmetry results that remain useful<a class="headerlink" href="#6-conditional-symmetry-results-that-remain-useful" title="Permanent link">&para;</a></h2>
+<p>For an operator <span class="arithmatex">\(L\)</span> and an explicitly specified group action <span class="arithmatex">\(P_\sigma\)</span>,</p>
+<div class="arithmatex">\[
+[L,P_\sigma]=0\quad\Longrightarrow\quad
+[f(L),P_\sigma]=0
+\]</div>
+<p>for polynomials and other defined functional calculi on that operator.
+Equivariant maps compose when their domains and actions agree; invariant
+initial states then remain invariant under an equivariant evolution.
+The input state, node selector, support, weights and history belong to those
+hypotheses. Uniform graph-level coefficients alone do not prove them.</p>
+<p>The finite pointed operator probes compare actions at corresponding selected
+nodes. They do not prove equivariance for one fixed selector on every state.
+A nonlinear equivariant map preserves the fixed set but need not preserve
+its orthogonal complement. General support-changing maps also need explicit
+compatible actions on their output spaces.</p>
+<p>A relabel-invariant scalar spectrum can still carry information about a
+graph or an unordered set of weights. Relabeling covariance is not blindness
+to arithmetic. No representation has been supplied that places analytic
+<span class="arithmatex">\(S(T)\)</span> in <span class="arithmatex">\(\mathrm{Fix}(S_n)^\perp\)</span>, and no catalog-wide no-go theorem for its
+reconstruction follows. See
+<a href="../TNFR_STRUCTURAL_OBSERVABILITY/">TNFR_STRUCTURAL_OBSERVABILITY.md</a> and
+<a href="../NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS/">NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md</a>.</p>
+<h2 id="7-superseded-claims-and-preserved-historical-record">7. Superseded claims and preserved historical record<a class="headerlink" href="#7-superseded-claims-and-preserved-historical-record" title="Permanent link">&para;</a></h2>
+<p>The full earlier notebook is preserved as
+<a href="../research/archive/RIEMANN_NOTEBOOK_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt">RIEMANN_NOTEBOOK_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt</a>.
+It is a chronological record, not an active task queue or current theorem
+authority. Specifically superseded readings include:</p>
+<ul>
+<li>P1–P11's eliminated combinatorial prototype as a live canonical model.</li>
+<li>The June/July remapping as a derivation of autonomous arithmetic pulses,
+  a physical substrate, a critical-line attractor or an analytic zeta identity.</li>
+<li>P28/P30 finite rescaling as a solved smooth part of a derived Hilbert–Pólya
+  mechanism, or a universal characterization of the remaining RH content.</li>
+<li>CCET, prime-cancellation, tetrad-fixed-sector and lifted-bundle arguments
+  promoted from restricted hypotheses or samples to every engine operator,
+  state, support or candidate construction.</li>
+<li>Registry closure as completeness of all admissible TNFR transformations;
+  Python scalar storage as proof of the physical dimension of EPI.</li>
+<li>Tetrad completeness, a Hilbert state space inferred from a nonnegative
+  snapshot functional, and global conservation/convergence inferred from
+  grammar or auxiliary harmonic evolution.</li>
+</ul>
+<p>Finite artifacts, source names and historical theorem labels are retained for
+traceability. Their validity must be assessed from the actual hypotheses and
+implementation; a label such as CLOSED, CANONICAL or CERTIFIED is not a proof.
+The archive contains superseded instructions and publication plans that are
+not current authorization or research priorities.</p>
+<h2 id="8-remaining-boundary-and-reuse-policy">8. Remaining boundary and reuse policy<a class="headerlink" href="#8-remaining-boundary-and-reuse-policy" title="Permanent link">&para;</a></h2>
+<p>A new arithmetic bridge would need independently specified carriers,
+operators, domains, observables and a theorem connecting them to the analytic
+target, with construction inputs separated from scoring oracles. A nodal
+emergence claim would additionally need the coupled evolution and a mechanism
+producing and maintaining the effective pattern. Neither requirement is
+satisfied by assigning arithmetic coordinates.</p>
+<p>The existing exact linear algebra, symmetry controls, spectrum provenance
+and observation-loss examples can be reused by the main TNFR research.
+They do not warrant restarting RH parameter sweeps or the old envelope
+catalog. The single active plan decides priorities; the arithmetic and other
+Millennium notes are comparison/reference material.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../docs/assets/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+      
+    
+  </body>
+</html>

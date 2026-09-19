@@ -1,0 +1,310 @@
+TNFR - RESEARCH PORTFOLIO AND RESUMPTION INDEX
+============================================
+Updated: 2026-09-19. Primary objective: test generative TNFR coherence and
+emergent observable entities; autonomous formation and physical identity
+remain open. Mathematical models must derive their relations from declared
+nodal structure and dynamics, without retrospective pressure fitting.
+
+Documentation consolidation: completed; current owners and archives are below.
+Scientific resumption: the current G3 gate in
+  theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate.
+It tests controlled omission of decaying hidden form, with explicit field
+errors and xi fit/fallback provenance. The exact P5 reflection quotient
+retains shape up to reflection but keeps five continuous dimensions.
+Latest scientific checkpoint:
+  artifacts/research/tetrad_symmetry_validation_2026_09_19.json.
+
+Document status and owners: theory/README.md.
+Scientific interpretation: theory/NODAL_RESEARCH_STRATEGY.md.
+Execution and admission: theory/research/FIVE_STAGE_EXECUTION_PLAN.md.
+Historical chronology: theory/research/archive/README.md.
+P1-P5 remain a supporting measurement bridge; physical model admission is
+open. C6, prepared-ring response, polyhedral geometry, public-data searches
+and Millennium campaigns are parked. No historical next-step instruction
+reopens them. Exact, conditional, auxiliary and observed results retain
+their individual hypotheses; the nodal identity alone is not a complete law.
+
+1. DOCUMENT OWNERSHIP: ONE PLACE FOR EACH RESPONSIBILITY
+======================================================
+This file owns the portfolio: main axes, supporting mechanisms, deferred
+programmes and resumption entry. It does not duplicate execution checklists.
+
+- Active order, stage status, tasks, budgets and acceptance gates:
+  theory/research/FIVE_STAGE_EXECUTION_PLAN.md (generative priority + P1-P5 bridge)
+- Scientific rationale, audit findings and experimental candidates:
+  theory/NODAL_RESEARCH_STRATEGY.md
+- NFR formation: definition, child birth, coherent-region formation and
+  autonomous macro-state boundaries; existing result/module reuse map:
+  theory/EMERGENT_ONTOLOGY.md section 1.1 (no separate task queue)
+- Exact regional full-graph balances and conditional child response:
+  theory/FORCED_SUPPORT_BALANCE.md section 7; broader reuse and legacy
+  exclusions remain in theory/NODAL_RESEARCH_STRATEGY.md
+- P2 measurement specification, source inventory and missing admission evidence:
+  theory/research/PASSIVE_TRANSPORT_PROTOCOL.md (annex, not another task queue)
+- Technical S1-S16 implementation/evidence inventory:
+  theory/CORE_RESEARCH_PROGRAM.md
+- Canonical synthesis and implementation contracts:
+  AGENTS.md, mirrored at .github/agents/my-agent.md; ARCHITECTURE.md
+- Navigation to individual derivations and domain programmes:
+  theory/README.md
+- Reported empirical results and their current limitations:
+  docs/EMPIRICAL_CONFRONTATION_EEG.md
+- Historical roadmaps and portfolio chronology, preserved byte for byte:
+  theory/research/archive/README.md (archive paths, byte counts and SHA-256)
+
+The historical snapshots contain completed deliveries, older priorities,
+O/S/E/H mappings and past resume instructions. Those instructions are
+historical evidence, not active tasks. Individual theory notes continue to
+own their proofs and scope; no theorem is moved into this index. Do not
+maintain a second execution queue in the strategy, CORE or domain notes.
+
+2. MACRO OBJECTIVE AND EVIDENCE BOUNDARY
+======================================
+Test whether explicitly derived TNFR dynamics can predict formation,
+persistence, interaction, recovery and loss of coherent patterns in
+independently specified observations. The next structural milestone is a
+joint effective nodal law derived from a declared finer TNFR model, with its
+inherited geometry and missing-state terms exposed. A closed generation
+mechanism or an exact obstruction must retain its declared family; independent
+physical prediction remains a required subsequent bridge.
+Neither milestone would show that all physical reality emerges from TNFR.
+
+Motivating hypothesis: observable entities, including physical particles,
+would arise as persistent and interacting TNFR coherence patterns rather
+than being assigned in advance to fundamental graph nodes. This is the
+open research objective, not a demonstrated physical result. Structural
+priority is not an assertion of an earlier physical time. The current P1-P5
+programme supplies necessary scoped tests; completing it would not by itself
+derive physical particles or establish the full hypothesis.
+
+The macro objective exceeds relabeling measurements as EPI or capacity:
+derive observable behavior from specified nodal mechanisms and test its
+transfer across preparations or scales. Measurement correspondence,
+mathematical emergence under projection and physical emergence are separate
+claims. Their shared criterion and existing memory witness are centralized
+in theory/NODAL_RESEARCH_STRATEGY.md, section "Measurement correspondence
+versus generative emergence". P2/P3 establish the bridge; P4/P5 test admitted
+reductions and mechanisms. Physical priority or universality remains unproved.
+
+All explanatory mechanisms must follow from the nodal equation and admitted
+structural/operator laws. Its factorization alone does not determine pressure,
+phase/capacity evolution, support or policy selection. Keep primitives,
+constitutive choices, preparation, numerical settings and measurement
+calibration distinct. Do not set pressure equal to measured derivative divided
+by fitted capacity, or import a physical law to repair a failed derivation.
+Comparison models remain controls. Instrument calibration is not a new force.
+
+Use only surface observations and ordinary workstation/research-laboratory
+resources. No astronomy, satellite/space data or mandatory large facilities.
+Mathematical theorem, implementation test, finite simulation and physical
+support are separate evidence. A negative result can complete a study without
+fulfilling its positive objective. Inconclusive mandatory gates stay open.
+
+3. RESEARCH HIERARCHY: PRIMARY HYPOTHESIS AND SUPPORTING AXES
+============================================================
+Use the existing O/S identifiers; this reprioritization creates no new domain
+programme or duplicate task queue. All O1-O6 objectives remain broadly open.
+
+A. Generative coherence and persistent structures - PRIMARY
+----------------------------------------------------------
+Owners: O1.b/O3.a, with S1/S2/S5/S6/S7/S10/S16.
+Question: can specified canonical nodal dynamics generate differentiated,
+interacting and persistent patterns without inserting the desired pattern,
+its target or its restoring mechanism as an unexplained input?
+Finite birth, attachment and configured response are established in their
+recorded domains; autonomous initiation and maintenance remain open.
+- Birth, eligibility, dispatch and inherited preparation:
+  theory/THOL_BIRTH_AND_TRANSPORT.md and theory/THOL_PRESSURE_FEEDBACK.md.
+- Full-state closure, fixed targets, regional boundary work and finite response:
+  theory/FORCED_SUPPORT_BALANCE.md and theory/CHILD_COUPLING_FEEDBACK.md.
+  Family means alone fail exact closure in the retained models; the existing
+  full sixteen-coordinate realization supplies the missing observations.
+- Primitive and derived phase, capacity, geometry and constitutive obligations:
+  theory/NODAL_PARAMETER_FOUNDATIONS.md and theory/TNFR_VARIATIONAL_PRINCIPLE.md.
+- Current cohort-identity interpretation and mechanism reuse:
+  theory/NODAL_RESEARCH_STRATEGY.md; its bounded execution belongs only to G3
+  in theory/research/FIVE_STAGE_EXECUTION_PLAN.md.
+- Effective substrate and inherited geometry: theory/FUNDAMENTAL_THEORY.md
+  section 2.9 and theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md section 1.
+  This refines the primary generative question; it is not a new parallel axis.
+Preparation, operator policy and environmental input remain explicit premises.
+Winding, finite form retention, damage recovery and autonomous maintenance
+require separate evidence. The bounded current G3 omission-error gate is
+active in the plan; broader approximation programmes remain parked.
+These results do not establish physical identity or universal emergence.
+
+B. Derived observables, geometry and composition - SUPPORTING THEORY
+------------------------------------------------------------------
+Owners: O1.a/O2/O4/O5, with S3/S8/S9/S11/S12/S14.
+Contribution: derive what a larger-scale observer can read and predict from
+the same underlying nodal mechanism. Reuse exact quotient/memory results,
+minimal observable realizations and symmetry sectors. A partition or seed
+selected by an analyst must remain visible as a premise.
+Internal mathematical work does not require a physical dataset. Physical
+claims require an observation/clock/uncertainty bridge. Classical auxiliary
+wave, gauge and spectral-well models do not supply quantum measurements,
+physical particle identities or universal physical constants by analogy.
+
+C. Independent measurement and prediction - SUPPORTING EMPIRICAL BRIDGE
+-----------------------------------------------------------------------
+Owners: O6.a/O1.a, S3/S14/S15/S16; existing stages P1-P5.
+P1 diagnostics, frozen prediction/evaluation and byte-checked evidence are
+implemented. P2 has equal-capacity and fixed-reference continuous bounds.
+The one predeclared Volts continuation improves persistence but loses to the
+affine control. No physical model is admitted; uncertainty and independent
+preparations remain missing. This exploration is closed, not a refitting task.
+P2 source admission is parked while axis A is primary. P3 and the physical
+P4/P5 variants retain their measurement dependencies. Existing internal
+memory and feedback mathematics may be reused by A/B without claiming that
+these physical stages have been completed.
+
+Riemann and the other Millennium programmes are source libraries for A/B:
+extract valid recurrence, symmetry, conservation and obstruction tools while
+keeping inserted arithmetic, supplied dynamics and physical analogies apart.
+Their shared reuse assessment is in theory/NODAL_RESEARCH_STRATEGY.md under
+"Cross-domain reuse for the generative hypothesis". Original notes retain
+proofs and historical evidence; they are not separate active campaigns.
+
+4. SUPPORTING MECHANISMS: REUSE, DO NOT REOPEN BY DEFAULT
+=======================================================
+Support is technical contribution, not another active project.
+
+- Pure EPI diffusion and capacity spectrum (S1/S4): restricted exact balances,
+  stability and mode references; supply P2/P3 transport predictions and P4
+  reference dynamics. Owners: structural_diffusion.py and
+  theory/TNFR_DIFFUSION_STABILITY_THEOREM.md. General multichannel claims open.
+- Canonical operators, grammar and finite causal execution: implemented
+  contracts and simultaneous stages; supply admissible transformations and
+  event provenance to P3/P5. Owners: operator_contracts.py, network_stage.py,
+  theory/UNIFIED_GRAMMAR_RULES.md. Autonomous selection is not thereby derived.
+- Mean/shape/forcing budgets (S2/S16): restricted profiles and event accounting;
+  prevent target changes or mean drift from masquerading as recovery in P5.
+  Owners: forced_support.py, support_transport.py,
+  theory/FORCED_SUPPORT_BALANCE.md, theory/CHILD_COUPLING_FEEDBACK.md.
+- Phase response and winding: restricted response/chart/gate and winding
+  results; support P5 mechanism admission. Owners: phase_response.py,
+  phase_quotient.py, theory/COUPLING_WINDING_PERSISTENCE.md. Protected winding
+  is not persistent EPI localization or physical-particle identification.
+- REMESH/history: restricted disagreement and finite causal certificates;
+  supply P4/P5 comparisons only when their hypotheses match. Owner:
+  theory/REMESH_INFINITY_DERIVATION.md. Full future-runtime closure is open.
+- THOL birth/attachment: causal finite structural growth and pressure-use
+  controls; directly support the primary generation-closure study. Owners:
+  theory/THOL_PRESSURE_FEEDBACK.md, theory/THOL_BIRTH_AND_TRANSPORT.md.
+  Birth, attachment and autonomous maintenance have different evidence.
+- Observability, tetrad, geometry and non-normal transients (S3/S11/S13/S14):
+  select meaningful read-outs and expose hidden directions; support P2-P5.
+  A diagnostic summary is not a complete state. See CORE_RESEARCH_PROGRAM.md.
+- Source/claim manifests and numerical defect accounting: shared evidence
+  infrastructure for every phase. Hash identity and a status label do not
+  substitute for mathematical or physical validation.
+- C6 exact binary64 stability case: useful origin/history, rounding and
+  guarded-induction controls for O3.a; B75 leaves 15 regions pending.
+  It is parked supporting work, not a prerequisite for P1-P5. No new solver
+  run, deeper history or budget increase is scheduled by this plan.
+
+Unqualified Python filenames above refer to their established src/tnfr
+owners; ARCHITECTURE.md and CORE_RESEARCH_PROGRAM.md locate their APIs.
+
+5. TECHNICAL S1-S16 MAP
+======================
+The detailed status remains in theory/CORE_RESEARCH_PROGRAM.md. All lines
+remain open at their broadest scope; restricted completed results are reused.
+
+S1  Nontrivial stability: primary A; restricted diffusion/history results.
+S2  Lyapunov functionals: primary A; restricted energy and event budgets.
+S3  Observability/minimality: supporting B/C; insufficient tetrad-only prediction.
+S4  Heterogeneous-capacity spectra: transport support for A/B/C.
+S5  Adaptive grammar: reusable O1.b contract/closure evidence; selection unproved.
+S6  Coherence transitions: primary A/O4.c; finite diagnostics available.
+S7  Nodal-topology transitions: primary A; detection precedes prediction.
+S8  Coarse-graining/closure: supporting B; scoped quotient and memory results.
+S9  Operator renormalization: supporting B; restricted intertwining/closure.
+S10 Operator completeness: deferred O1; admissible transformation class open.
+S11 Coherence geometry: O2/O3 support; instantaneous read-outs available.
+S12 Dissipative-symplectic bridge: deferred O4.b; broader realizability open.
+S13 Non-normal transients: O2 support; restricted pressure-growth criterion.
+S14 Information geometry: O1 observation support; changing-state scope open.
+S15 Inverse telemetry: supporting C; finite signatures, general inversion open.
+S16 Integrated persistence: primary A and programme integration; finite
+    causal evidence does not establish general persistent structures.
+
+E1-E10 and H1-H10 remain historical aliases/hypotheses in the archived
+roadmap. They do not create extra queues or independent experiments.
+
+6. DEFERRED OBJECTIVES AND SECONDARY DOMAIN PROGRAMMES
+======================================================
+Deferred does not mean disproved or abandoned. Reopen only for a named
+primary-route dependency or an explicit change of priority, with a bounded question.
+
+- General S10 operator completeness remains open and deferred. O1.b
+  birth/support/pressure studies are reusable evidence; the plan selects the
+  current bounded G3 gate, without reopening unrestricted grammar searches.
+- O2 autonomous geometry, dimension and physical clocks: scoped graph
+  geometry exists; physical emergence remains open. Only the clock/geometry
+  premises required by a selected structural claim are active; physical clocks
+  still require P2 admission before a measurement claim.
+- O4.b realizable sector coupling: auxiliary constructions and restricted
+  bridges exist; no general derivation of the full nodal law from the
+  auxiliary Hamiltonian. See theory/TNFR_VARIATIONAL_PRINCIPLE.md.
+- O5 quantum preparation/composition/detection: classical phasors and
+  polarization are controls; measurement probabilities and entangled
+  composition are not derived. See theory/EMERGENT_ONTOLOGY.md.
+
+Secondary domain programmes retain their own scoped notes:
+
+- Structural arithmetic R1-R9: symmetry, arithmetic pulse, CRT/p-adic
+  transport, finite fields, additive comparisons, arithmetic pressure,
+  operator classification and directed transport. Exact/finite/negative
+  results coexist with open bridges. Reuse a mathematical tool only when
+  its contract fits; do not treat arithmetic analogies as physical evidence.
+  Owner: theory/STRUCTURAL_RESEARCH_PROGRAM.md.
+- Riemann: finite exploratory spectral protocols; the bridge to RH is open.
+  Owner: theory/TNFR_RIEMANN_RESEARCH_NOTES.md.
+- Navier-Stokes: scoped diffusion/comparison diagnostics; nonlinear uniform
+  limiting bounds are open. Owner: theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md.
+- Yang-Mills: finite diagnostics; independent non-Abelian construction and
+  continuum gap open. Owner: theory/TNFR_YANG_MILLS_RESEARCH_NOTES.md.
+- P versus NP: finite trapping diagnostic, not complexity separation.
+  Owner: theory/TNFR_P_VS_NP_RESEARCH_NOTES.md. Current canon derives a
+  Dirichlet-gradient identity only in the restricted diffusion model;
+  general potential descent is not an established complexity theorem.
+- BSD: finite arithmetic diagnostic; GL(2) and rank/order bridges open.
+  Owner: theory/TNFR_BSD_RESEARCH_NOTES.md.
+- Hodge: auxiliary simplicial baseline; TNFR tetrad/cochain bridge open.
+  Owner: theory/TNFR_HODGE_RESEARCH_NOTES.md.
+- Catalogue type hygiene: completed historical implementation audit, not
+  proof of operator completeness. Owner:
+  theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md.
+
+Domain mechanisms can support the primary route without restarting their
+old campaigns. The sole execution plan controls any actual delivery.
+None currently establishes a classical open-problem solution through TNFR.
+
+7. CURRENT EVIDENCE AND RESUMPTION
+================================
+Resume only through the current G3 gate in
+  theory/research/FIVE_STAGE_EXECUTION_PLAN.md.
+That plan owns the next bounded task and all execution/acceptance status.
+Current primary scope and topology inheritance:
+  theory/FUNDAMENTAL_THEORY.md section 2.9;
+  theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md section 1.
+Current scoped geometry/substrate revalidation and numerical fixes:
+  artifacts/research/effective_substrate_audit_validation_2026_09_19.json.
+Current joint counted-support law and geometric-observation boundary:
+  artifacts/research/joint_quotient_contract_validation_2026_09_19.json.
+Supporting ring recovery is parked; old evidence is retained below.
+Current cohort report:
+  artifacts/research/thol_child_ring_identity_2026_09_19.json.
+Integration checkpoint:
+  artifacts/research/cohort_identity_integration_validation_2026_09_19.json.
+Inherited-cycle evidence:
+  artifacts/research/inherited_child_winding_audit_2026_09_19.json.
+Detailed cohort result: theory/THOL_BIRTH_AND_TRANSPORT.md section 13.1.
+Proof and interpretation owners: theory/FORCED_SUPPORT_BALANCE.md,
+  theory/NODAL_PARAMETER_FOUNDATIONS.md, theory/COUPLING_WINDING_PERSISTENCE.md
+  and theory/NODAL_RESEARCH_STRATEGY.md.
+Versioned readers/tests provide portable checks; local artifacts retain
+source-bound observations and do not certify an unobserved trajectory.
+Historical checkpoints and superseded resume instructions remain in
+  theory/research/archive/README.md and its immutable snapshots.

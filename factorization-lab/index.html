@@ -1,0 +1,1799 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/factorization-lab/">
+      
+      
+        <link rel="prev" href="../benchmarks/">
+      
+      
+        <link rel="next" href="../primality-test/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Factorization lab - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tnfr-spectral-factorization-lab" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Factorization lab
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/CLI_AND_SDK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI and SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../theory/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/FUNDAMENTAL_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/NODAL_PARAMETER_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/NODAL_RESEARCH_STRATEGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/research/FIVE_STAGE_EXECUTION_PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Active execution plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/DERIVED_EPI_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/research/archive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Historical archive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="./" class="md-nav__link md-nav__link--active">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Applications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link md-nav__link--active" for="__nav_10" id="__nav_10_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Applications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../primality-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.github/WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#results-and-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Results and verification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setup-and-public-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup and public interfaces
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#candidate-policy-and-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Candidate policy and configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#telemetry-and-mechanism-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Telemetry and mechanism boundaries
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification-and-historical-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification and historical evidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tnfr-spectral-factorization-lab">TNFR spectral factorization lab<a class="headerlink" href="#tnfr-spectral-factorization-lab" title="Permanent link">&para;</a></h1>
+<p>This experimental lab combines supplied Jacobi-residue graphs, spectral
+heuristics, arithmetic statistics and optional partition workflows. It returns
+factor candidates and diagnostic records. It establishes neither autonomous
+factor recovery from the nodal equation nor a complexity improvement or a
+cryptographic factorization capability.</p>
+<p>This README owns current usage and configuration. The mathematical scope is in
+<a href="../theory/TNFR_NUMBER_THEORY/">TNFR number theory</a>; the
+<a href="../theory/APPLIED_STRUCTURAL_ANALYSIS/">applied analysis overview</a> links here.</p>
+<h2 id="results-and-verification">Results and verification<a class="headerlink" href="#results-and-verification" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Result</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>candidate_factors</code></td>
+<td>Union of heuristic seeds, arithmetic refinements and later partition hints; provenance depends on mode. It need not be a complete prime factorization.</td>
+</tr>
+<tr>
+<td><code>tnfr_certified_factors</code></td>
+<td>Compatibility name for the configured structural acceptance rule. The verifier records <code>support_divisible</code> but does not require it in its final acceptance condition.</td>
+</tr>
+<tr>
+<td><code>tnfr_verification</code></td>
+<td>Per-candidate scores, thresholds, endorsements and a separate divisibility observation.</td>
+</tr>
+<tr>
+<td><code>factor_signature</code>, <code>composite_signature</code></td>
+<td>Serialized analysis/signature records; hashes check recorded content, not mathematical truth. Pure-mode composite powers and <code>structural_complete</code> are hypotheses.</td>
+</tr>
+<tr>
+<td><code>certificate_path</code>, partition paths</td>
+<td>Optional exported analysis and workflow records; a proposed grammar-valid word is not by itself an executed operator trace.</td>
+</tr>
+</tbody>
+</table>
+<p>Check every claimed proper factor independently:</p>
+<div class="highlight"><pre><span></span><code><span class="n">verified</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">({</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">candidate_factors</span> <span class="k">if</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="n">d</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="ow">and</span> <span class="n">n</span> <span class="o">%</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">0</span><span class="p">})</span>
+</code></pre></div>
+<p>Divisibility establishes that a candidate is a factor. It does not establish
+that the factor is prime, that all multiplicities were recovered, or that
+factor recovery came from a TNFR mechanism. A complete prime factorization
+requires those additional checks.</p>
+<h2 id="setup-and-public-interfaces">Setup and public interfaces<a class="headerlink" href="#setup-and-public-interfaces" title="Permanent link">&para;</a></h2>
+<p>Use a supported Python environment for the main engine. From the repository
+root, install its dependencies and make the source package available:</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</code></pre></div>
+<p>The local lab is a source directory, without its own <code>setup.py</code> or
+<code>pyproject.toml</code>. To import its high-level interface directly, run Python from
+the lab directory:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>factorization-lab
+python<span class="w"> </span>-m<span class="w"> </span>tnfr_factorization.cli<span class="w"> </span><span class="m">221</span><span class="w"> </span>--max-nodes<span class="w"> </span><span class="m">4097</span><span class="w"> </span>--json
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr_factorization</span><span class="w"> </span><span class="kn">import</span> <span class="n">factorize</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="mi">221</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">factorize</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">pure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">trace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_nodes</span><span class="o">=</span><span class="mi">4097</span><span class="p">)</span>
+<span class="n">verified</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">({</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">candidate_factors</span> <span class="k">if</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="n">d</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="ow">and</span> <span class="n">n</span> <span class="o">%</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">0</span><span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">verified</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">tnfr_verification</span><span class="p">)</span>
+</code></pre></div>
+<p>There are three related interfaces; their arguments and result types differ:</p>
+<table>
+<thead>
+<tr>
+<th>Interface</th>
+<th>Configuration</th>
+<th>Return</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tnfr_factorization.factorize</code></td>
+<td><code>pure</code>, <code>trace</code>, <code>max_nodes</code>, <code>modulus</code></td>
+<td><code>FactorizationResult</code></td>
+</tr>
+<tr>
+<td><code>SpectralPaleyFactorizer(...).analyze</code></td>
+<td>Constructor sets <code>max_nodes</code>, backend and diagnostic options; <code>analyze</code> takes <code>modulus</code>, <code>trace_certificates</code>, <code>certificate_dir</code></td>
+<td><code>SpectralAnalysisResult</code></td>
+</tr>
+<tr>
+<td><code>tnfr.factorization.factorize</code></td>
+<td><code>modulus</code>, <code>trace_certificates</code>, <code>certificate_dir</code>; reuses one default factorizer and reads the environment policy</td>
+<td><code>SpectralAnalysisResult</code></td>
+</tr>
+</tbody>
+</table>
+<p>The engine wrapper discovers the sibling lab in a source checkout. A deployment
+without that directory needs an importable <code>tnfr_factorization</code> package.</p>
+<p><strong>Node cap:</strong> omitting the low-level constructor argument uses 4097. Passing
+<code>None</code> disables the cap. The high-level wrapper and CLI currently pass <code>None</code>
+when their argument is omitted.
+Set an explicit positive <code>max_nodes</code> / <code>--max-nodes</code> for consistent behavior.
+CLI <code>--max-nodes 0</code> also disables the cap; the Python constructor does not give
+zero that special meaning.</p>
+<p>Automatic modulus selection rounds upward to a value at least <code>n</code> and 5 that
+is 1 modulo 4. It does not prove the modulus prime. For explicit overrides,
+odd values 1 modulo 4 are the intended domain; the builder currently enforces
+only the lower bound 5. Classical prime-modulus Paley spectral identities need
+their own hypotheses. This graph is an arithmetic input construction, not an
+emergent support selected by a closed nodal law.</p>
+<h2 id="candidate-policy-and-configuration">Candidate policy and configuration<a class="headerlink" href="#candidate-policy-and-configuration" title="Permanent link">&para;</a></h2>
+<p><code>pure=True</code> sets <code>TNFR_PURE_MODE</code> temporarily and restores its prior value.
+<code>pure=None</code> inherits the environment. This override is process-wide during the
+call, so concurrent callers using different policies must coordinate.</p>
+<p>The pure policy skips arithmetic-statistic seed hints and gcd refinement in
+the <strong>initial candidate stage</strong>, and uses a periodic-confidence rule in one
+partition stage. It does not make the complete pipeline arithmetic-free:</p>
+<ul>
+<li><code>_compute_arithmetic_telemetry</code> factors <code>n</code> to obtain <code>Omega</code>, <code>tau</code> and
+  <code>sigma</code> in both modes. Its cached results remain arithmetic inputs.</li>
+<li>Even-number hints, integer-size seeds and later partition-size divisibility
+  checks remain active.</li>
+<li>An empty initial candidate list reaches trial division without a pure-mode
+  guard. Its default bound is <code>isqrt(n)</code>.</li>
+<li>The structural verifier records <code>n % factor == 0</code> separately from acceptance.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Actual role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TNFR_PURE_MODE</code></td>
+<td>Select the partial pure policy; truthy values are <code>1</code>, <code>true</code>, <code>yes</code>, <code>on</code>.</td>
+</tr>
+<tr>
+<td><code>TNFR_PURE_MODE_VERIFY_DIVISIBILITY</code></td>
+<td>Filter initial pure seeds by proper divisibility. It is not a final filter over every later candidate or acceptance label.</td>
+</tr>
+<tr>
+<td><code>TNFR_FACTOR_FALLBACK_MAX_DIVISOR</code></td>
+<td>Positive integer cap for the empty-candidate trial fallback. Missing, invalid or nonpositive values use <code>isqrt(n)</code>. It does not cap arithmetic telemetry factorization.</td>
+</tr>
+<tr>
+<td><code>TNFR_DISABLE_OPTIMIZER</code></td>
+<td>Disable the optional sequence optimizer; it does not change candidate verification into a theorem.</td>
+</tr>
+<tr>
+<td><code>TNFR_FAILURE_TELEMETRY</code></td>
+<td>Control failure diagnostics. For isolated low-level calls use the constructor's <code>failure_telemetry=False</code>.</td>
+</tr>
+<tr>
+<td><code>TNFR_PARTITION_TARGET_SIZE</code>, <code>TNFR_PARTITION_OVERLAP</code></td>
+<td>Partition planner settings; defaults are 256 and 4. Planning may further adapt partition size.</td>
+</tr>
+<tr>
+<td><code>TNFR_PARTITION_OUTPUT_DIR</code></td>
+<td>Override partition-export destination.</td>
+</tr>
+</tbody>
+</table>
+<p>The CLI exposes backend/dispatcher choices through <code>--fft-backend</code>,
+<code>--fft-dispatcher</code> and related options; consult <code>--help</code> for their spelling.
+Its <code>--json</code> output is one JSON list of target results. Pure mode is selected
+through the environment, not a CLI <code>--pure</code> flag. Explicit trace export uses
+the Python APIs; <code>trace=False</code> does not guarantee the absence of all optional
+diagnostic writes. Trace output normally uses <code>factorization-lab/results/</code>;
+the low-level API accepts an explicit certificate directory.</p>
+<h2 id="telemetry-and-mechanism-boundaries">Telemetry and mechanism boundaries<a class="headerlink" href="#telemetry-and-mechanism-boundaries" title="Permanent link">&para;</a></h2>
+<p>The lab's compatibility field names are not interchangeable with canonical
+nodewise fields from <code>tnfr.physics.fields</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Lab field</th>
+<th>Computation or source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>phi_s</code></td>
+<td>Normalized edge density; no nodewise pressure or path-distance input.</td>
+</tr>
+<tr>
+<td><code>phase_gradient</code></td>
+<td>Selected spectral gap divided by node count.</td>
+</tr>
+<tr>
+<td><code>phase_curvature</code></td>
+<td>Largest supplied eigenvalue divided by node count.</td>
+</tr>
+<tr>
+<td><code>coherence_length</code></td>
+<td>Backend-provided value when positive, otherwise inverse selected gap. Record backend and normalization before comparison.</td>
+</tr>
+<tr>
+<td>Arithmetic EPI, capacity, pressure</td>
+<td>Static functions of already computed factor/divisor statistics. They supply no phase or autonomous evolution law.</td>
+</tr>
+<tr>
+<td>Energy/Noether proxies</td>
+<td>Algebraic combinations of lab features; their names do not prove an energy balance or conserved charge.</td>
+</tr>
+</tbody>
+</table>
+<p>The fallback spectrum on regular unit-weight graphs equals the combinatorial
+Laplacian spectrum <code>d * spectrum(L_rw)</code>. Its inverse selected gap is not the
+normalized EPI diffusion timescale <code>1 / (nu * lambda_2(L_rw))</code> without the
+corresponding degree/time conversion. Selection skips eigenvalues at or below
+<code>1e-9</code>, so it need not select the true second eigenvalue.</p>
+<p>Partition pressure reduction includes a fixed scalar attenuation surrogate.
+That calculation alone is not execution of the named TNFR operators or a
+convergence theorem. Optional optimizer/workflow records must be assessed on
+their actual captured execution. Lab thresholds are configured heuristic
+criteria, not universal TNFR constants or a proof of U5.</p>
+<h2 id="verification-and-historical-evidence">Verification and historical evidence<a class="headerlink" href="#verification-and-historical-evidence" title="Permanent link">&para;</a></h2>
+<p>From the repository root, existing focused regression modules include:</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>factorization-lab/tests/test_spectral_paley.py<span class="w"> </span>factorization-lab/tests/test_cli.py<span class="w"> </span>-q
+</code></pre></div>
+<p>These exercise selected candidate, fallback, serialization and CLI cases. The
+<a href="tests/test_false_positive_verifier.py">false-positive tests</a> test a finite
+selection of adversarial inputs; acceptance on that selection is not a general
+factor certificate. Benchmarks apply only to recorded inputs, environment,
+backend and cache state. Arithmetic telemetry and fallback costs belong in any
+end-to-end comparison.</p>
+<p>Run the actual verifier and configured-criteria controls directly:</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>factorization-lab/tests/test_false_positive_verifier.py<span class="w"> </span>factorization-lab/tests/test_verification_robustness.py<span class="w"> </span>-q
+</code></pre></div>
+<p>These suites read the production implementation. The copied-criteria simulation
+and duplicate standalone runners have been retired. The verifier suite uses a
+finite curated sample by default; <code>TNFR_RUN_LONG_TESTS=1</code> opts into its larger
+generated input set. Criteria-range checks preserve a configured policy; they
+do not derive the thresholds or certify general false-positive resistance.</p>
+<p>The obsolete live <code>notebooks/spectral_history.ipynb</code> has been retired. Its
+<a href="notebooks/archive/spectral_history_legacy_2026_09_19.ipynb">unaltered historical copy</a>
+retains saved code, outputs and metadata. It uses the removed <code>_fft_engine</code>
+attribute, a synthetic spectrum and a notebook-incompatible <code>__file__</code> path;
+it is not current executable guidance. Use the maintained tests above for
+regressions. The archive is 37,107 bytes, SHA-256
+<code>1b67bb2a7fdbd9b26fb9a96082f7519111a2287dab974e94436cf2f6dea6dfe5</code>.</p>
+<p>The root <a href="../LICENSE/">LICENSE.md</a> is authoritative for this repository.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../docs/assets/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,183 @@
+"""Experimental U6 telemetry and metrics.
+
+This module isolates U6 experimental functions to avoid impacting the
+stable typing surface of tnfr.operators.metrics. Functions here may use
+relaxed typing and conservative imports.
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+from tnfr.constants.aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_VF
+from tnfr.metrics.local_coherence import compute_radius_structural_coherence
+from tnfr.operators.metrics_core import get_node_attr as _get_node_attr
+
+# ---------------------------------------------------------------------------
+# Nonlinear accumulation severity thresholds (α boundaries)
+# ---------------------------------------------------------------------------
+_ALPHA_MILD_THRESHOLD = 1.1
+_ALPHA_MODERATE_THRESHOLD = 1.5
+_ALPHA_SEVERE_THRESHOLD = 2.0
+
+# ---------------------------------------------------------------------------
+# Bifurcation index thresholds
+# ---------------------------------------------------------------------------
+_VF_BIFURCATION_FLOOR = 0.01
+_BIFURCATION_STABLE_LIMIT = 0.5
+_BIFURCATION_MODERATE_LIMIT = 1.5
+_BIFURCATION_HIGH_LIMIT = 3.0
+
+__all__ = [
+    "measure_tau_relax_observed",
+    "measure_nonlinear_accumulation",
+    "compute_bifurcation_index",
+]
+
+
+def measure_tau_relax_observed(
+    G: Any,
+    node_id: Any,
+    coherence_threshold: float = 0.95,
+    epsilon_c: float = 0.05,
+    max_steps: int = 100,
+) -> dict[str, Any]:
+    """Return an initial relaxation snapshot and estimated timescales.
+
+    This call does not observe a trajectory, so ``tau_relax_observed`` and all
+    final-state fields remain ``None``. The initial local C value is the shared
+    radius-one constitutive read-out over pressure and recorded EPI rate.
+    """
+    dnfr_initial = abs(_get_node_attr(G, node_id, ALIAS_DNFR))
+    vf = _get_node_attr(G, node_id, ALIAS_VF)
+
+    coherence_initial = compute_radius_structural_coherence(G, node_id, radius=1)
+
+    # Spectral topological estimate (existing proxy)
+    try:
+        from tnfr.utils.topology import compute_k_top_spectral  # type: ignore
+
+        k_top = compute_k_top_spectral(G)
+    except Exception:
+        k_top = 1.0
+
+    k_op = 1.0  # operator-specific factor (refine later with glyph mapping)
+    spectral_tau = (k_top / max(vf, 0.01)) * k_op * 3.0
+
+    # Attempt Liouvillian slow-mode relaxation time integration.
+    # Graceful fallback if spectrum unavailable.
+    liouv_tau = None
+    slow_mode_real = None
+    try:
+        # Preferred: use proper Liouvillian spectrum computation
+        from tnfr.mathematics.liouville import (  # type: ignore
+            get_liouvillian_spectrum,
+            get_slow_relaxation_mode,
+        )
+
+        liouv_eigs = get_liouvillian_spectrum(G)
+        if liouv_eigs is not None:
+            slow_mode = get_slow_relaxation_mode(liouv_eigs)
+            if slow_mode is not None:
+                slow_mode_real = float(slow_mode.real)
+                if abs(slow_mode_real) > 1e-12:
+                    liouv_tau = 1.0 / abs(slow_mode_real)
+    except Exception:
+        liouv_tau = None
+
+    # Final τ selection: prefer Liouvillian slow-mode if available
+    tau_relax_estimated = liouv_tau if liouv_tau is not None else spectral_tau
+
+    return {
+        "metric_type": "u6_relaxation_snapshot",
+        "measurement_kind": "initial_snapshot_with_estimated_timescale",
+        "coherence_kind": "radius_one_structural_coherence",
+        "tau_relax_observed": None,
+        "dnfr_initial": dnfr_initial,
+        "dnfr_final": None,
+        "coherence_initial": coherence_initial,
+        "coherence_final": None,
+        "coherence_threshold": coherence_threshold,
+        "epsilon_c": epsilon_c,
+        "recovery_complete": None,
+        "steps_to_recovery": None,
+        "vf": vf,
+        "k_top": k_top,
+        "estimated_tau_relax": tau_relax_estimated,
+        "estimated_tau_relax_spectral": spectral_tau,
+        "estimated_tau_relax_liouvillian": liouv_tau,
+        "liouvillian_slow_mode_real": slow_mode_real,
+        "max_steps": max_steps,
+        "node_id": node_id,
+        "requires_monitoring_infrastructure": True,
+    }
+
+
+def measure_nonlinear_accumulation(
+    G: Any,
+    node_id: Any,
+    dnfr_before_first: float,
+    dnfr_before_second: float,
+    dt_separation: float,
+) -> dict[str, Any]:
+    """Measure nonlinear accumulation factor α(Δt) for spacing validation."""
+    dnfr_actual = abs(_get_node_attr(G, node_id, ALIAS_DNFR))
+    dnfr_linear = dnfr_before_second + abs(dnfr_before_first)
+
+    denominator = abs(dnfr_before_first * dnfr_before_second)
+    if denominator < 1e-9:
+        alpha = 1.0
+    else:
+        alpha = (dnfr_actual - dnfr_linear) / denominator
+
+    if alpha <= _ALPHA_MILD_THRESHOLD:
+        severity = "none"
+    elif alpha <= _ALPHA_MODERATE_THRESHOLD:
+        severity = "mild"
+    elif alpha <= _ALPHA_SEVERE_THRESHOLD:
+        severity = "moderate"
+    else:
+        severity = "severe"
+
+    return {
+        "metric_type": "u6_nonlinear_accumulation",
+        "alpha": alpha,
+        "dnfr_actual": dnfr_actual,
+        "dnfr_linear": dnfr_linear,
+        "dnfr_before_first": dnfr_before_first,
+        "dnfr_before_second": dnfr_before_second,
+        "dt_separation": dt_separation,
+        "nonlinear_regime": alpha > _ALPHA_MILD_THRESHOLD,
+        "amplification_severity": severity,
+        "node_id": node_id,
+    }
+
+
+def compute_bifurcation_index(G: Any, node_id: Any) -> dict[str, Any]:
+    """Compute bifurcation index B = |d2EPI| / νf^2."""
+    vf = _get_node_attr(G, node_id, ALIAS_VF)
+    d2_epi = _get_node_attr(G, node_id, ALIAS_D2EPI)
+
+    if vf < _VF_BIFURCATION_FLOOR:
+        B = 0.0
+    else:
+        B = abs(d2_epi) / (vf * vf)
+
+    if B < _BIFURCATION_STABLE_LIMIT:
+        risk = "stable"
+    elif B < _BIFURCATION_MODERATE_LIMIT:
+        risk = "moderate"
+    elif B < _BIFURCATION_HIGH_LIMIT:
+        risk = "high"
+    else:
+        risk = "critical"
+
+    return {
+        "metric_type": "u6_bifurcation_index",
+        "B": B,
+        "B_normalized": B / _BIFURCATION_HIGH_LIMIT,
+        "d2_epi_dt2": d2_epi,
+        "vf": vf,
+        "risk_level": risk,
+        "node_id": node_id,
+    }

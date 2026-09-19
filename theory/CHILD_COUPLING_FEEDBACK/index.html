@@ -1,0 +1,3275 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/CHILD_COUPLING_FEEDBACK/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Child Coupling and changes of the structural reference - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#child-coupling-and-changes-of-the-structural-reference" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Child Coupling and changes of the structural reference
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/CLI_AND_SDK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI and SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FUNDAMENTAL_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NODAL_PARAMETER_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NODAL_RESEARCH_STRATEGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/FIVE_STAGE_EXECUTION_PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Active execution plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DERIVED_EPI_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/archive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Historical archive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../factorization-lab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Applications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Applications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../primality-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.github/WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-closing-an-existing-structural-feedback-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Closing an existing structural feedback path
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-what-singleton-capacity-synchronization-predicts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. What singleton capacity synchronization predicts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-same-epi-events-change-both-the-model-and-its-coordinates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Same-EPI events change both the model and its coordinates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-exact-variance-and-dirichlet-error-resets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Exact variance and Dirichlet error resets
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-a-fixed-old-profile-observable-prevents-a-moving-target-conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. A fixed old-profile observable prevents a moving-target conclusion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-shared-observations-and-the-bounded-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Shared observations and the bounded comparison
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-exact-full-event-accounting-on-the-same-ordered-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Exact full-event accounting on the same ordered nodes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-matched-perturbation-and-response-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Matched perturbation and response comparison
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-frozen-model-compatibility-with-the-original-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Frozen-model compatibility with the original target
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-compatibility-channel-cancellation-and-the-old-metric" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Compatibility, channel cancellation and the old metric
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-what-the-retained-upf-channels-explain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. What the retained U/P/F channels explain
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-a-canonical-capacity-profile-family-and-its-obstruction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. A canonical capacity-profile family and its obstruction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-joint-capacity-and-form-evolution-on-synchronized-p2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Joint capacity and form evolution on synchronized P2
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-finite-admission-and-the-represented-capacity-obstruction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Finite admission and the represented capacity obstruction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#15-the-represented-capacity-class-on-the-unit-interval" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. The represented capacity class on the unit interval
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#16-uniform-stored-epi-despite-a-nonzero-exact-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16. Uniform stored EPI despite a nonzero exact profile
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#17-compatible-capacity-support-and-differentiated-prepared-regions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        17. Compatible capacity support and differentiated prepared regions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="17. Compatible capacity support and differentiated prepared regions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-connected-pressure-graph-with-two-compatible-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A connected pressure graph with two compatible components
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finite-runtime-discriminator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finite runtime discriminator
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#18-antipodal-phase-response-under-simultaneous-um-and-il" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        18. Antipodal phase response under simultaneous UM and IL
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="18. Antipodal phase response under simultaneous UM and IL">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exact-local-composition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exact local composition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finite-controls-and-the-pressure-distinction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finite controls and the pressure distinction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#consequence-for-the-next-structural-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consequence for the next structural test
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="child-coupling-and-changes-of-the-structural-reference">Child Coupling and changes of the structural reference<a class="headerlink" href="#child-coupling-and-changes-of-the-structural-reference" title="Permanent link">&para;</a></h1>
+<p><strong>Status:</strong> Exact event/target balances, restricted capacity/profile and local
+phase-response identities, bounded canonical response controls, and a
+self-consistent spatial envelope, finite pressure first-passage result and
+observed finite mean-deficit repayment for fixed-source carried C6 evolution;
+complete-carry-cell trapping obstruction, finite seven-cell escape proof,
+and a finite graph-owned bridge from the original preparation to its phase tail.
+Recovery of an earlier relative pattern requires a fixed comparison target.
+<strong>Research links:</strong> B2.d.8-B2.d.45/Q3/O3.a, S1, S2, S3, S8, S9, S10 and S16.</p>
+<p><strong>Research status:</strong> The regional-response and C6 continuations recorded here
+are parked. Their hypotheses, obstructions and historical follow-ups remain
+reusable evidence; they are not active instructions. Scientific resumption
+belongs only to the <a href="../research/FIVE_STAGE_EXECUTION_PLAN/#current-g3-gate">current G3 gate</a>.</p>
+<h2 id="1-closing-an-existing-structural-feedback-path">1. Closing an existing structural feedback path<a class="headerlink" href="#1-closing-an-existing-structural-feedback-path" title="Permanent link">&para;</a></h2>
+<p><a href="../THOL_BIRTH_AND_TRANSPORT/">THOL birth and transport</a> established an
+actual child node followed by an admitted parent-child connection.
+<a href="../FORCED_SUPPORT_BALANCE/">Forced support balance</a> then separated the
+retained graph's relative profile from its mean drift during physical
+EPI evolution. A child-target Coupling event now tests another existing
+path: the evolved EPI enters the compatibility score, actual links
+change the pressure neighborhoods, and refreshed nodal flow changes EPI.</p>
+<p>The child must already have a U3-compatible neighbor. Equal phase alone
+does not admit Coupling on an isolate. The functional candidate sample,
+phase gate, EPI/sense compatibility and actual edge commit must be
+captured. The child-target selector is a declared policy; the study does
+not derive autonomous target selection from the resulting profile.</p>
+<p>The
+<a href="../../src/tnfr/operators/_coupling_stage_kernel.py">canonical Coupling kernel</a>
+preserves EPI during its event. Its capacity synchronization uses the
+old compatible neighbors, before functional edges are added. Default
+bidirectional phase updates also use that old neighborhood. New links
+can subsequently change the phase pressure even when the stored phases
+are unchanged, because the neighbor phasor sets have changed.</p>
+<h2 id="2-what-singleton-capacity-synchronization-predicts">2. What singleton capacity synchronization predicts<a class="headerlink" href="#2-what-singleton-capacity-synchronization-predicts" title="Permanent link">&para;</a></h2>
+<p>Suppose the child's only old compatible neighbor is its parent, with
+parent capacity one and child capacity <code>nu_c=1-delta</code>, <code>0&lt;delta&lt;1</code>.
+The existing default synchronization coefficient is
+<code>s=COUPLING_GENTLE</code>, whose ideal expression is <code>1/(4*pi)</code>. The canonical
+capacity proposal is</p>
+<div class="arithmatex">\[
+\nu_c^+=\nu_c+s(1-\nu_c),\qquad
+\delta^+=(1-s)\delta.
+\]</div>
+<p>This describes the exact companion using the represented coefficient;
+the actual binary64 write has its own observable arithmetic residual.
+The initial production capacity <code>0.95</code> likewise denotes its represented
+value, rather than the exact rational <code>19/20</code>.</p>
+<p>If the original cycle and single child edge of weight <code>omega</code> remain
+unchanged, all other capacities remain one, and no phase contribution
+changes, the weighted capacity forcing is</p>
+<div class="arithmatex">\[
+b_{\nu}=\frac23w_{\nu}(\omega-1)\delta,
+\qquad b_{\nu}^+=(1-s)b_{\nu}.
+\]</div>
+<p>The total forcing numerator scales this way only when the other
+weighted channel contributions vanish. Even in that case the mean
+drift changes with the metric mass:</p>
+<div class="arithmatex">\[
+\frac{\bar v^+}{\bar v^-}
+=(1-s)\frac{Z^-}{Z^+},\qquad
+Z=16+\omega+\frac{\omega}{\nu_c}
+\]</div>
+<p>for the C8 with one child edge. A smaller capacity mismatch therefore
+does not by itself establish the same reduction factor for mean drift.</p>
+<p>The default functional-link branch can leave this singleton geometry.
+If the child ends with <code>k</code> edges into otherwise unit-capacity cycle
+vertices, with positive weights <code>omega_j</code> and no other added edges,
+then the exact unweighted capacity gradients give</p>
+<div class="arithmatex">\[
+g_{\nu,c}=\delta,\qquad
+g_{\nu,j}=-\delta/3\ \text{at each adjacent cycle vertex},
+\]</div>
+<div class="arithmatex">\[
+\sum_i d_i g_{\nu,i}
+=\frac{2\delta}{3}\left(\sum_{j=1}^k\omega_j-k\right).
+\]</div>
+<p>Adding links can increase the magnitude of this negative contribution
+despite a smaller deficit. Unequal link weights at reflected cycle
+vertices can also remove weighted phase cancellation while preserving
+the same stored phases. The actual refreshed channel decomposition is
+needed to interpret a changed total drift.</p>
+<p>The reflected preparation gives a concrete nonlinear phase identity.
+Let <code>eta=UM_theta_push</code>, with ideal existing phases
+<code>theta1=(1-eta)*pi/4</code>, <code>theta7=-theta1</code> and child/parent phase zero.
+After child edges to vertices <code>1</code> and <code>7</code> are added, vertex <code>1</code> has
+neighbor phasor sum <code>2+i</code>, hence</p>
+<div class="arithmatex">\[
+g_{\phi,1}=\frac{\arctan(1/2)}{\pi}-\frac{1-\eta}{4},
+\qquad g_{\phi,7}=-g_{\phi,1}.
+\]</div>
+<p>The default coefficient makes <code>g_phi,1&lt;0</code>. The other equal-strength
+reflected pairs cancel in the weighted sum, while parent and child
+phase pressure vanish. Thus</p>
+<div class="arithmatex">\[
+b_{\phi}=w_{\phi}(\omega_1-\omega_7)g_{\phi,1}.
+\]</div>
+<p>For <code>omega1&lt;omega7</code>, this term is positive and opposes the negative
+capacity contribution. The cause is a changed neighbor-phasor geometry;
+no independent phase evolution has been introduced. These expressions
+are the ideal chart identities. Actual stored phases and represented
+phasor arithmetic must be checked against the captured production
+kernel before attributing the measured cancellation to them.</p>
+<p>Direct UM pressure attenuation is a separate operator write. The
+postevent held reference uses independently captured canonical forcing
+and a refreshed full pressure; an attenuated stored pressure must not
+be substituted for that reference.</p>
+<h2 id="3-same-epi-events-change-both-the-model-and-its-coordinates">3. Same-EPI events change both the model and its coordinates<a class="headerlink" href="#3-same-epi-events-change-both-the-model-and-its-coordinates" title="Permanent link">&para;</a></h2>
+<p>Let two valid forced-support references describe the states before and
+after one event, on the same ordered node set. Each has connected
+symmetric positive conductance, positive capacity and the profile
+construction of the preceding note. Index their conductances,
+Laplacians, metric matrices, forcing, drift and centered relative
+profiles by <code>0</code> and <code>1</code>.</p>
+<p>At a canonical UM event the actual EPI field <code>x</code> is unchanged. Define</p>
+<div class="arithmatex">\[
+m_j=\frac{h_j^\top x}{Z_j},\qquad
+u_j=x-m_j\mathbf1-z_j,\qquad j\in\{0,1\}.
+\]</div>
+<p>The reference-induced coordinate change is exactly</p>
+<div class="arithmatex">\[
+\delta u=u_1-u_0=(m_0-m_1)\mathbf1+z_0-z_1.
+\]</div>
+<p>The change <code>m1-m0</code> is a reweighting of the same EPI values. It is not
+an accumulated physical change of EPI during the event. Likewise the
+profile shift <code>z1-z0</code> changes the comparison target. Neither is an
+additional term in the nodal evolution law.</p>
+<p>The old reference may have been derived before a preceding physical
+flow interval. Its source EPI is not automatically the current event
+EPI. Reset observations therefore require explicit actual before/after
+snapshots, validate each under its own reference and enforce identical
+node order and EPI across the event.</p>
+<h2 id="4-exact-variance-and-dirichlet-error-resets">4. Exact variance and Dirichlet error resets<a class="headerlink" href="#4-exact-variance-and-dirichlet-error-resets" title="Permanent link">&para;</a></h2>
+<p>For <code>V_j=u_j^T H_j u_j/2</code>, direct expansion gives</p>
+<div class="arithmatex">\[
+\begin{aligned}
+V_1-V_0
+={}&amp;\tfrac12u_0^\top(H_1-H_0)u_0\\
+ &amp;+u_0^\top H_1\delta u
+ +\tfrac12\delta u^\top H_1\delta u.
+\end{aligned}
+\]</div>
+<p>These are the metric change, the signed interaction with the changed
+reference, and its quadratic term. A decrease of <code>V</code> need not describe
+any improved physical EPI field: that field is identical at the two
+event endpoints.</p>
+<p>For the relative Dirichlet error <code>E_j=u_j^T B_j u_j/2</code>, the corresponding
+identity is</p>
+<div class="arithmatex">\[
+\begin{aligned}
+E_1-E_0
+={}&amp;\tfrac12u_0^\top(B_1-B_0)u_0\\
+ &amp;+u_0^\top B_1\delta u
+ +\tfrac12\delta u^\top B_1\delta u.
+\end{aligned}
+\]</div>
+<p>The metric term reuses the existing conductance-reset identity by
+holding the error field <code>u0</code> fixed across the old and new supports.
+The same helper applied to the actual EPI field instead gives</p>
+<div class="arithmatex">\[
+\tfrac12x^\top(B_1-B_0)x,
+\]</div>
+<p>the raw Dirichlet reset. Raw structural energy and error relative to a
+profile are distinct observables. The error coordinates are detached
+data; they are not written into live nodes or treated as new nodes.</p>
+<p>Each subsequent held-support flow interval has the separate mean and
+Euler defect budgets from the preceding block. A finite event/flow
+sequence combines those interval budgets with the explicit resets
+above. Its changing weighted mean additionally includes each
+<code>m1-m0</code> reweighting. Telescoping such terms is exact finite accounting;
+it does not prove nonincrease under arbitrary later events.</p>
+<h2 id="5-a-fixed-old-profile-observable-prevents-a-moving-target-conclusion">5. A fixed old-profile observable prevents a moving-target conclusion<a class="headerlink" href="#5-a-fixed-old-profile-observable-prevents-a-moving-target-conclusion" title="Permanent link">&para;</a></h2>
+<p>Retain the original metric <code>H0</code>, projection
+<code>P0=I-1*h0^T/Z0</code>, and original relative profile <code>z0</code>. Define</p>
+<div class="arithmatex">\[
+R_0(x)=\tfrac12(P_0x-z_0)^\top H_0(P_0x-z_0).
+\]</div>
+<p>The target here is specifically the old <strong>derived relative profile</strong>,
+not the finite observed EPI field at an earlier time. It also ignores
+uniform EPI shifts by its declared projection. This fixed observable
+can be evaluated after capacity or conductance changes without
+asserting that the old dynamics still govern the graph.</p>
+<p>Because the UM event preserves <code>x</code>, it preserves <code>R0(x)</code> exactly.
+Meanwhile its new-model error <code>V1</code> can rise or fall due to the reset
+terms. Improvement of a changing-reference score alone therefore
+cannot establish recovery toward the old target.</p>
+<p>Even exact future relaxation under the new held model has a distinct
+limit for this comparison. If its coefficients remain fixed and its
+unrestricted-chart error decays, then</p>
+<div class="arithmatex">\[
+R_0(x(t))\longrightarrow
+\tfrac12(P_0z_1-z_0)^\top H_0(P_0z_1-z_0).
+\]</div>
+<p>This value is generally nonzero even though the new-model error tends
+to zero. Actual finite trajectories must report both observables and
+their mean/pressure defects. Clipping and later structural events
+invalidate a direct promotion to that asymptotic reference.</p>
+<h2 id="6-shared-observations-and-the-bounded-comparison">6. Shared observations and the bounded comparison<a class="headerlink" href="#6-shared-observations-and-the-bounded-comparison" title="Permanent link">&para;</a></h2>
+<p>The existing
+<a href="../../src/tnfr/physics/forced_support.py"><code>forced_support.py</code></a> now centralizes
+the profile coordinates in both old state observations and the new
+<code>observe_forced_support_pattern</code> read-out. That read-out accepts only
+the ordered node identifiers and EPI alongside the retained reference.
+It keeps the original profile and metrics fixed without certifying a
+current pressure law.</p>
+<p><code>observe_forced_support_reset</code> takes both references and explicit event
+snapshots. It rebuilds their public cached fields, validates each
+snapshot under its own held model, and reuses
+<a href="../../src/tnfr/physics/support_transport.py"><code>support_transport.py</code></a>
+for the raw and error-coordinate conductance resets. Its signed
+metric-first energy decomposition carries a checked exact residual.
+These detached observations do not establish operator admission,
+pressure refresh or a causal link between arbitrary supplied records.</p>
+<p>The 19 independent controls in
+<a href="../../tests/physics/test_forced_support_reset.py"><code>test_forced_support_reset.py</code></a>
+include references predating the event, separate metric/profile changes,
+fixed old-profile comparisons after dynamics changes, and a direct
+counterexample to a moving-target recovery claim. In that example,
+unchanged EPI has positive old-profile error and exactly zero error
+under a newly chosen reference; the reset terms fully account for
+the apparent improvement.</p>
+<p>The executed comparison in
+<a href="../../benchmarks/child_coupling_feedback.py"><code>child_coupling_feedback.py</code></a>
+retains the actual born and connected graph after the preceding 24
+physical segments, at time <code>6.5</code>. One case applies public child-target
+UM; the matched case takes no extra event. Each then executes 12
+additional refreshed Euler intervals. The comparison retains both
+the old fixed-profile observable and each case's current-model error.
+Its independent runtime checks are in the
+<a href="../../tests/physics/test_child_coupling_feedback_runtime.py">runtime test suite</a>.</p>
+<p>The actual child-target event preserves every EPI and phase value.
+Its child capacity changes from <code>0.95</code> to <code>0.9539788735772974</code> and it
+adds child edges to cycle vertices <code>1</code> and <code>7</code>, with respective weights
+<code>0.8791579029688148</code> and <code>0.8981657798702134</code>. The old parent-child edge
+remains. The captured vertex-1 phase matches <code>(1-eta)*pi/4</code>; the wrapped
+vertex-7 reflection residual is approximately <code>-2.45e-16</code>. This finite
+check supports the ideal chart calculation above without certifying
+exact transcendental arithmetic.</p>
+<p>The materialized weighted forcing contributions are approximately:</p>
+<table>
+<thead>
+<tr>
+<th>Channel</th>
+<th>Before child UM</th>
+<th>After child UM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Phase</td>
+<td><code>0</code></td>
+<td><code>+0.0006063375069147582</code></td>
+</tr>
+<tr>
+<td>Capacity</td>
+<td><code>-0.0003191519727040398</code></td>
+<td><code>-0.0006920500301710027</code></td>
+</tr>
+</tbody>
+</table>
+<p>The new phase contribution opposes a larger negative capacity term.
+Including the new metric mass, the reference mean drift changes from
+<code>-1.8015381161585726e-5</code> to <code>-4.014215906537859e-6</code>.
+This is a combined structural effect, rather than the singleton
+capacity prediction alone.</p>
+<p>At unchanged EPI the current-model variance jumps from
+<code>0.06603591731695654</code> to <code>0.9294668175027274</code>. Its reset terms are
+approximately <code>+0.03686666543873662</code> from the metric,
+<code>-0.3938392738714086</code> from the reference interaction, and
+<code>+1.2204035086184428</code> from the quadratic reference shift.
+Their exact rational identity residual is zero. The raw EPI Dirichlet
+reset is approximately <code>+0.029393575677005273</code>; the relative Dirichlet
+error reset is <code>+0.46220825274344396</code>. They also have exact zero budget
+residuals. The weighted mean reweights by approximately
+<code>-0.018281219168014524</code> despite no EPI change during the event.</p>
+<p>Both cases then execute 12 intervals of duration <code>1/4</code>, reaching time
+<code>9.5</code>. They share the initial fixed old-profile variance
+<code>R0=0.06603591731695654</code> and give:</p>
+<table>
+<thead>
+<tr>
+<th>Continuation</th>
+<th>Fixed old-profile variance at <code>9.5</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Child UM</td>
+<td><code>0.14196498883949968</code></td>
+</tr>
+<tr>
+<td>No extra event</td>
+<td><code>0.021532984486475837</code></td>
+</tr>
+</tbody>
+</table>
+<p>In the child-UM case, the new-regime variance nevertheless decreases
+from <code>0.9294668175027274</code> to <code>0.5219712930713153</code>. Thus a reduced
+reference drift and relaxation toward the new profile coexist with
+increased distance from the old target over this measured horizon.
+The finite comparison does not establish recovery toward that target.</p>
+<p>The full represented states, reset terms and later interval budgets
+are generated as <code>artifacts/research/child_coupling_feedback.json</code> by</p>
+<div class="highlight"><pre><span></span><code><span class="p">.</span><span class="n">venv313</span><span class="p">\</span><span class="n">Scripts</span><span class="p">\</span><span class="n">python</span><span class="p">.</span><span class="n">exe</span> <span class="n">-X</span> <span class="n">utf8</span> <span class="n">benchmarks</span><span class="p">/</span><span class="n">child_coupling_feedback</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+<p>This tests one finite structural action and its subsequent evolution.
+The conditional singleton calculation is not silently substituted for
+the default functional-link branch or treated as an additional run.
+The operator policy and all measured intervals remain explicit.</p>
+<h2 id="7-exact-full-event-accounting-on-the-same-ordered-nodes">7. Exact full-event accounting on the same ordered nodes<a class="headerlink" href="#7-exact-full-event-accounting-on-the-same-ordered-nodes" title="Permanent link">&para;</a></h2>
+<p>The new <code>observe_forced_support_event</code> in the shared
+<a href="../../src/tnfr/physics/forced_support.py"><code>forced_support.py</code></a> separates an
+actual EPI jump from accompanying reference and metric changes. Each
+endpoint must satisfy its own reference's fixed-model domain: symmetric
+nonnegative conductance with connected positive-conductance support,
+positive weighted degrees, positive capacities and positive EPI coefficient.
+Node count and order agree across the event. The existing same-EPI observer
+retains its stricter EPI-equality contract.</p>
+<p>For actual endpoint fields <code>x0</code>, <code>x1</code>, let</p>
+<div class="arithmatex">\[
+\delta=x_1-x_0,\qquad
+a=\frac{h_0^\top\delta}{Z_0},\qquad
+v=\delta-a\mathbf1=P_0\delta.
+\]</div>
+<p>In the original reference, <code>u0=P0*x0-z0</code> and the algebraic midpoint error is
+<code>u_mid=P0*x1-z0=u0+v</code>. Direct expansion gives the EPI-jump contributions</p>
+<div class="arithmatex">\[
+J_H=u_0^\top H_0v+\tfrac12v^\top H_0v,\qquad
+J_B=(B_0u_0)^\top v+\tfrac12v^\top B_0v.
+\]</div>
+<p>The first term in each is signed; positive quadratic terms do not imply a
+positive total. Apply the same-EPI reset of section 4 at field <code>x1</code>, changing
+from the old to the new reference. With its reset differences <code>R_H</code>, <code>R_B</code>
+and mean reweighting <code>r_m</code>, the complete endpoint identities are</p>
+<div class="arithmatex">\[
+V_1(x_1)-V_0(x_0)=J_H+R_H,\qquad
+E_1(x_1)-E_0(x_0)=J_B+R_B,
+\]</div>
+<div class="arithmatex">\[
+m_1(x_1)-m_0(x_0)=a+r_m.
+\]</div>
+<p>The complete relative-error change likewise equals the centered EPI jump
+<code>v</code> plus the reset's reference-error shift. Totals telescope along compatible
+endpoint/reference chains. The decomposition's separate cross, quadratic
+and metric terms need not cancel under reversal.</p>
+<p>The midpoint is an algebraic evaluation of post-event EPI in old coordinates,
+not an observed intermediate graph or an internal operator write order. The
+public <code>ForcedSupportEvent</code> exposes it only as a <code>ForcedSupportPattern</code>;
+the copied pressure used internally to validate the reused reset is not
+exposed as observed midpoint pressure. Both actual endpoints and references
+are rebuilt and validated; reference source EPI may predate the event.
+The observer neither evolves EPI nor certifies elapsed flow, operator
+admission, pressure refresh, causal provenance or nonincrease.</p>
+<p>Independent exact controls are in
+<a href="../../tests/physics/test_forced_support_event.py"><code>test_forced_support_event.py</code></a>.
+For P2 with old <code>w=1</code>, <code>nu=(1,2)</code>, <code>e=1/2</code>, <code>F=(1/4,1/2)</code> and <code>x0=(1,0)</code>,
+the original metric is <code>H0=diag(1,1/2)</code> and profile <code>z0=(-1/6,1/3)</code>.
+The pure jump to <code>x1=(0,1)</code> has H cross/quadratic terms <code>-1,2/3</code> and B
+terms <code>-3,2</code>. Simultaneously changing to <code>w=2,nu=(1,1)</code> with the same
+forcing adds reset changes <code>23/96,7/16</code>; complete changes are <code>-3/32,-9/16</code>.
+These hand-solvable balances do not require a canonical runtime campaign.</p>
+<p>A separate exact control sets <code>x1=(2,0)</code> and a new reference with
+<code>w=1,nu=(1,1),F=(1,-1)</code>. Its new-profile error is zero while the original
+H-error increases from <code>3/8</code> to <code>25/24</code>. Even with a real EPI jump, a new
+zero-error reference does not establish recovery of an older target. The
+event's pre-reference and a study's fixed target are separate inputs to
+different existing observers; the event API does not silently choose a target.</p>
+<h2 id="8-matched-perturbation-and-response-comparison">8. Matched perturbation and response comparison<a class="headerlink" href="#8-matched-perturbation-and-response-comparison" title="Permanent link">&para;</a></h2>
+<p>The B2.d.9b campaign independently reaches the actual child-UM graph at
+<code>t=9.5</code> in each branch, before either pending SHA closure. The target remains
+the original B2.d.8 <code>H0,z0</code> derived at <code>t=6.5</code>, not the current post-UM
+reference. The three branches use unchanged defaults and seed <code>17</code>:</p>
+<ul>
+<li>U: no additional event.</li>
+<li>P: child VAL followed by IL, then canonical pressure refresh.</li>
+<li>F: the identical VAL/IL prefix, then child UM and pressure refresh.</li>
+</ul>
+<p>No pressure refresh is inserted between VAL and IL. Both word validators,
+actual retained per-target histories and live operator gates admit the
+declared words. Materialized initial states, controls and RNG provenance
+agree across all branches. P/F additionally have identical VAL/IL records
+and complete materialized states at the pre-feedback boundary. Every branch
+then runs twelve shared Euler intervals of <code>0.25</code> to <code>t=12.5</code>; child and
+parent SHA closures execute separately after measurement. All closures are
+admitted, and no clipping occurs in these retained runs.</p>
+<p>Default VAL changes child EPI from <code>1.140013776631149</code> to
+<code>1.2307331905030023</code> and capacity from <code>0.9539788735772974</code> to
+<code>1.0298941002448299</code>. IL changes stored pressure but preserves EPI and phase
+in this particular symmetric preparation; its general phase-update path
+is not absent from the operator. The following refresh is captured separately.
+Feedback UM changes child capacity to <code>1.0275152033332051</code> and neighboring
+phases at nodes <code>1,7</code> from approximately <code>(0.595761,5.687424)</code> to
+<code>(0.451913,5.831272)</code>. It adds no edges: all branches retain eleven edges.
+Neither a capacity-only perturbation nor an edge-addition explanation matches
+these actual writes.</p>
+<p>The common initial original-profile error is <code>0.14196498883949968</code>.
+The matched results and the conditional exact-model limits derived in
+section 9 are:</p>
+<table>
+<thead>
+<tr>
+<th>Branch</th>
+<th>Original-profile error at <code>12.5</code></th>
+<th>Held exact-model limiting error</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>U</td>
+<td><code>0.2564525415209221</code></td>
+<td><code>0.9461915126089225</code></td>
+</tr>
+<tr>
+<td>P</td>
+<td><code>0.2530099369965697</code></td>
+<td><code>0.9461612626392493</code></td>
+</tr>
+<tr>
+<td>F</td>
+<td><code>0.17618454861095278</code></td>
+<td><code>0.5998144725644323</code></td>
+</tr>
+</tbody>
+</table>
+<p>With <code>D=R_P-R_U</code>, <code>B=R_P-R_F</code> and <code>G=R_F-R_U</code>, exact arithmetic on the
+represented endpoints gives</p>
+<div class="highlight"><pre><span></span><code>D = -0.0034426045243524145
+B = +0.07682538838561694
+G = -0.08026799290996935
+D - B - G = 0 exactly (displayed decimal values are rounded).
+</code></pre></div>
+<p>Since <code>D&lt;0</code>, the predeclared classification is <strong>no damage in the fixed
+observable</strong>. UM has a positive finite response benefit relative to P and U;
+this is not a damage/repair result, and <code>B/D</code> is deliberately undefined.
+All three final errors remain above their common initial error. A lower
+matched endpoint error does not establish attraction or full-state recovery.</p>
+<p>VAL alone changes <code>R0</code> by <code>-0.0047656984792713</code>; IL and UM have zero immediate
+effect on <code>R0</code> because they leave EPI fixed. Subsequent flow accounts for the
+remaining change. The original-target and current-regime H-variance event/flow
+telescopes both close exactly. Current-regime Dirichlet budgets remain separate
+from H variance. The largest captured pressure and Euler endpoint defects are
+approximately <code>5.47e-18</code> and <code>1.11e-16</code>; these measurements are not solver-error
+bounds or evidence about an infinite trajectory.</p>
+<p>The campaign reuses <code>prepare_child_feedback_endpoint</code> and the shared interval
+helper in the earlier benchmark; its two old case payloads remain exactly
+unchanged. Reproduction:</p>
+<div class="highlight"><pre><span></span><code><span class="p">.</span><span class="n">venv313</span><span class="p">\</span><span class="n">Scripts</span><span class="p">\</span><span class="n">python</span><span class="p">.</span><span class="n">exe</span> <span class="n">-X</span> <span class="n">utf8</span> <span class="n">benchmarks</span><span class="p">/</span><span class="n">structural_perturbation_response</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+<p>The script writes the local ignored artifact
+<code>artifacts/research/structural_perturbation_response.json</code>, with actual source
+provenance, full endpoint captures and budgets. The
+<a href="../../tests/physics/test_structural_perturbation_response_runtime.py">runtime controls</a>
+cover target continuity, matched preparation, actual writes, independent energy
+identities, executor/history bindings, refusal and classification boundaries.
+This finite result closes B2.d.9b; it does not justify a factor or horizon search
+until recovery appears.</p>
+<h2 id="9-frozen-model-compatibility-with-the-original-target">9. Frozen-model compatibility with the original target<a class="headerlink" href="#9-frozen-model-compatibility-with-the-original-target" title="Permanent link">&para;</a></h2>
+<p>The existing references also give a mechanism discriminator without another
+trajectory or a new observable. Let <code>j</code> denote a post-event held model within
+the positive-capacity, connected reversible domain of
+<a href="../FORCED_SUPPORT_BALANCE/">the forced-support balance</a>. Its exact continuous
+solution has the form</p>
+<div class="arithmatex">\[
+x_j(t)=(m_j(0)+b_jt)\mathbf1+z_j+\exp(-A_jt)u_j(0),
+\qquad u_j(0)=P_jx_j(0)-z_j.
+\]</div>
+<p>Here <code>t</code> is elapsed time in the held post-event regime, <code>b_j</code> is its
+<code>mean_drift</code>, <code>A_j=e_j diag(nu_j) L_rw,j</code>, and <code>u_j(0)</code> is centered in the current
+metric <code>H_j</code>. Reversible connected diffusion with positive capacity makes
+this centered term tend to zero. The original projector <code>P0</code> annihilates
+the uniform drift, so the previously fixed observable has the limit</p>
+<div class="arithmatex">\[
+R_{*,j}=\lim_{t\to\infty}R_0(x_j(t))
+=\tfrac12\|P_0z_j-z_0\|_{H_0}^2.
+\]</div>
+<p>Compute this quantity by passing the current reference's <code>relative_profile</code>
+to <code>observe_forced_support_pattern(original_target, nodes=..., epi=...)</code>.
+The profile need not have zero mean in <code>H0</code>; the shared pattern observer
+performs the original projection. No second profile solver is needed.</p>
+<p>A positive <code>R_*,j</code> excludes asymptotic restoration of the original profile
+under that unchanged exact model. It does not exclude transient passage
+through the target or later recovery under a different admitted model.
+A zero value establishes target compatibility only. Neither value proves
+the asymptotics of clipped binary64 execution, future operator admission,
+full-state restoration or autonomous policy selection.</p>
+<p>Finite increments require a separate reading. For an actual represented EPI
+jump <code>d=x_after-x_before</code>, put <code>u=P0*x_before-z0</code> and <code>v=P0*d</code>. Then</p>
+<div class="arithmatex">\[
+R_0(x_{\rm after})-R_0(x_{\rm before})
+=\langle u,v\rangle_{H_0}+\tfrac12\|v\|_{H_0}^2.
+\]</div>
+<p>This same-target identity attributes an immediate change to the actual EPI
+write. Phase, capacity, conductance or pressure changes that leave EPI fixed
+have zero immediate contribution; they affect the following evolution.
+Read those following flow defects under each interval's current model using
+the existing step observer. Substituting the older recovery target as the
+current flow model would confuse two different contracts.</p>
+<p>If only child <code>c</code> changes EPI by <code>delta</code>, the same identity simplifies to</p>
+<div class="arithmatex">\[
+\Delta R_0=h_cu_c\delta+
+\tfrac12h_c\left(1-\frac{h_c}{Z_0}\right)\delta^2,
+\qquad Z_0=\sum_i h_i.
+\]</div>
+<p>The actual jump's alignment with the pre-event error determines its sign.
+An operator classified as a grammar destabilizer need not increase this
+particular target error. The named perturbation must therefore be measured
+before it can be classified as damage. This exact sign criterion is an
+observation, not a rule permitting ad hoc EPI writes or selection of a new
+operator factor after seeing the outcome.</p>
+<p>For the retained VAL event, <code>u_c=-0.10281937232096414</code> and
+<code>delta=0.09071941387185345</code>. Its exact H cross and quadratic terms are
+approximately <code>-0.008206125390920804</code> and <code>+0.003440426911649504</code>, summing
+to the recorded negative jump. With this fixed pre-event error and metric,
+positive single-child jumps below <code>-2*u_c/(1-h_c/Z0)</code>, approximately
+<code>0.21638445016881427</code>, reduce the target error. The actual default VAL jump
+lies inside that interval. This explains its immediate direction without
+choosing a new factor or claiming that the interval is a policy invariant.</p>
+<p>The calculation continued in section 10 concerns compatibility of the
+original target with a held post-event model. Equivalently to <code>P0*z_j=z0</code>, require</p>
+<div class="arithmatex">\[
+P_0\operatorname{diag}(\nu_j)
+\left[-e_jL_{{\rm rw},j}z_0+F_j\right]=0.
+\]</div>
+<p>Connected positive-capacity diffusion then identifies the unique relative
+profile modulo a uniform field. Every observed <code>R_*,j</code> above is positive:
+UM reduces the mismatch but does not remove it. A candidate restoring rule
+must explain how the canonical channels could satisfy this compatibility
+condition and control the old-target error. A repeated-policy theorem further
+requires an admitted full-state domain, its preservation and controlled
+execution defects. None follows from extending the observed word or horizon.</p>
+<h2 id="10-compatibility-channel-cancellation-and-the-old-metric">10. Compatibility, channel cancellation and the old metric<a class="headerlink" href="#10-compatibility-channel-cancellation-and-the-old-metric" title="Permanent link">&para;</a></h2>
+<p>The shared <a href="../../src/tnfr/physics/forced_support.py"><code>observe_forced_support_target</code></a>
+now evaluates that compatibility condition and the instantaneous signed balance
+at an explicit actual snapshot. Both references are rebuilt, the snapshot must
+match the current model, and all node orders must agree. Let</p>
+<div class="arithmatex">\[
+A=e\operatorname{diag}(\nu)D^{-1}B,\quad b=\operatorname{diag}(\nu)F,\quad
+r=P_0(b-Az_0),\quad m=P_0z-z_0.
+\]</div>
+<p>The current profile obeys <code>-A*z+b=mean_drift*1</code>. Since <code>A*1=0</code>,</p>
+<div class="arithmatex">\[
+r=P_0Am.
+\]</div>
+<p>This identity gives <code>r=0</code> if and only if <code>m=0</code>: if <code>P0*A*m=0</code>, then
+<code>A*m=c*1</code>; multiplying by the current metric weights <code>h^T</code> gives <code>c=0</code>
+because <code>h^T*A=0</code>. Connectivity makes <code>m</code> uniform, and its old-metric
+centering makes it zero. This proves relative-shape compatibility. It does
+not require zero mean drift. For example, P2 with <code>nu=(1,2)</code>, <code>e=1/2</code> and
+<code>F=(1,1/2)</code> preserves the zero relative profile while every EPI coordinate
+drifts at rate one. The existing scalar zero-pressure compatibility test and
+this vector target test answer different questions.</p>
+<p>For an actual old-target error <code>u=P0*x-z0</code>, the held model gives</p>
+<div class="arithmatex">\[
+\dot u=-P_0Au+r,\qquad
+\dot R_0=-u^\top H_0Au+u^\top H_0r.
+\]</div>
+<p>The first term is signed; an old metric need not make it nonpositive. A
+hand-solvable P3 counterexample has unit edge conductance, old capacities
+<code>(1,2,1)</code>, hence <code>H0=I</code>, current capacities <code>(1/8,1/8,4)</code>, <code>e=1</code>, and
+held <code>F=0</code> in both models. Both profiles are zero. At actual
+<code>x=(1/8,3/4,5/8)</code>, <code>u=(-3/8,1/4,1/8)</code>, compatibility holds but
+<code>dR0/dt=11/512&gt;0</code>. This is a detached coefficient control: its zero forcing
+is not the canonical default forcing for heterogeneous capacities.
+If instead <code>H0=c*H_current</code>, the same identity reduces to
+<code>dR0/dt=-c*e*u^T*B*u+u^T*H0*r</code>. With <code>r=0</code> it is strictly negative away
+from the target in this connected centered domain. Neither sufficient
+condition establishes future runtime admission or controls clipping.</p>
+<p><a href="../../src/tnfr/physics/forcing_realization.py"><code>decompose_non_epi_forcing</code></a>
+reuses the capture owner's exact phase/vf/topology products. It rebuilds
+support-gradient caches and checks that their sum equals the supplied forcing;
+it does not rerun or authenticate the nonlinear phase kernel. Project each
+target-pressure component through <code>P0*diag(nu)</code> to obtain <code>r_a</code>, including the
+EPI component. Then</p>
+<div class="arithmatex">\[
+r=\sum_a r_a,\quad G_{ab}=r_a^\top H_0r_b,\quad
+J_r=\tfrac12\|r\|_{H_0}^2
+=\tfrac12\sum_a G_{aa}+\sum_{a&lt;b}G_{ab}.
+\]</div>
+<p>Cross terms can cancel. Nonzero channel magnitudes alone do not establish
+incompatibility, and summing only their squares is incorrect. <code>J_r</code> is a
+derived diagnostic, not a new physical energy. In the hypothetical exact
+model initialized at <code>u=0</code>, <code>R0(t)=J_r*t^2+O(t^3)</code>, so zero instantaneous
+<code>dR0/dt</code> there does not imply a compatible target. No graph is assigned that
+hypothetical state by this observer.</p>
+<p>At the supplied actual EPI, the observer also separates the stored-pressure
+contribution <code>u^T*H0*diag(nu)*(p_stored-p_model)</code>. A kernel defect captured
+at another EPI cannot be reused as the defect at <code>z0</code>. Independent exact
+checks, including signed cancellation and stale-reference controls, are in
+<a href="../../tests/physics/test_forced_support_target.py"><code>test_forced_support_target.py</code></a>.</p>
+<h2 id="11-what-the-retained-upf-channels-explain">11. What the retained U/P/F channels explain<a class="headerlink" href="#11-what-the-retained-upf-channels-explain" title="Permanent link">&para;</a></h2>
+<p>The offline analysis in
+<a href="../../benchmarks/structural_target_compatibility.py"><code>structural_target_compatibility.py</code></a>
+reads the B2.d.9b captures without new trajectories or operator choices.
+It binds each current reference's EPI, capacity and stored pressure to the
+recorded actual post-event endpoint. U's first later forcing capture supplies
+only its checked held phase/capacity/support coefficients; its later EPI and
+kernel defect do not replace the earlier state. Parent evidence bytes and
+producer metadata are retained separately from the new analysis manifest.</p>
+<p>At the three post-event states at <code>t=9.5</code>, the exact-model read-outs are:</p>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th><code>J_r</code></th>
+<th>Homogeneous term</th>
+<th>Target-source term</th>
+<th>Total <code>dR0/dt</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>U</td>
+<td><code>0.0120728383</code></td>
+<td><code>-0.0396520771</code></td>
+<td><code>0.0761747684</code></td>
+<td><code>0.0365226913</code></td>
+</tr>
+<tr>
+<td>P</td>
+<td><code>0.0120906598</code></td>
+<td><code>-0.0389605486</code></td>
+<td><code>0.0759599729</code></td>
+<td><code>0.0369994243</code></td>
+</tr>
+<tr>
+<td>F</td>
+<td><code>0.0043113892</code></td>
+<td><code>-0.0389606073</code></td>
+<td><code>0.0468645978</code></td>
+<td><code>0.0079039905</code></td>
+</tr>
+</tbody>
+</table>
+<p>All targets remain incompatible, and all three instantaneous old-target
+rates remain positive. UM reduces the outward rate in this comparison;
+it does not reverse it. The stored-pressure contributions are approximately
+<code>2.25e-18</code>, <code>1.84e-18</code> and <code>9.55e-19</code>, recorded separately rather than
+silently included in the exact-model terms.</p>
+<p>The phase channel's own squared magnitude actually grows from about
+<code>0.0030834147</code> in P to <code>0.0032578705</code> in F. Nevertheless its cross term with
+the EPI channel changes from <code>+0.0037467097</code> to <code>-0.0042059349</code>.
+Better cancellation, not a decrease of every individual channel, explains
+the smaller combined incompatibility. These are projected target-rate
+channels, not an identity for every phase-gradient or tetrad diagnostic.</p>
+<p>For a symmetric accounting of the P-to-F change, define</p>
+<div class="arithmatex">\[
+\Delta J_a=\tfrac12(r_P+r_F)^\top H_0(r_{F,a}-r_{P,a}),\qquad
+J_F-J_P=\sum_a\Delta J_a.
+\]</div>
+<p>The phase, capacity and EPI allocations are approximately
+<code>-0.00777818875</code>, <code>-0.000001046589</code> and <code>-0.0000000352605</code>; topology is zero.
+Their exact sum equals the observed residual-energy change. This is a signed
+algebraic allocation of simultaneous writes, not a set of independently
+executed channel ablations or a universal causal ranking.</p>
+<p>Reproduce the detached analysis after generating or retaining its input:</p>
+<div class="highlight"><pre><span></span><code><span class="p">.</span><span class="n">venv313</span><span class="p">\</span><span class="n">Scripts</span><span class="p">\</span><span class="n">python</span><span class="p">.</span><span class="n">exe</span> <span class="n">-X</span> <span class="n">utf8</span> <span class="n">benchmarks</span><span class="p">/</span><span class="n">structural_target_compatibility</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+<p>The output <code>artifacts/research/structural_target_compatibility.json</code> is local
+and ignored. It records the input SHA-256, historical producer manifest and
+current analysis-source digest; it does not relabel the old trajectory as
+new execution. Its
+<a href="../../tests/physics/test_structural_target_compatibility_report.py">schema controls</a>
+reject stale endpoint sources, unmatched coefficients and overwritten input.</p>
+<h2 id="12-a-canonical-capacity-profile-family-and-its-obstruction">12. A canonical capacity-profile family and its obstruction<a class="headerlink" href="#12-a-canonical-capacity-profile-family-and-its-obstruction" title="Permanent link">&para;</a></h2>
+<p>A useful exact family requires connected simple undirected support with one
+common positive edge conductance, positive capacities, all represented phases
+equal to zero, and fixed channel coefficients <code>e&gt;0</code>, <code>w_vf&gt;0</code>, <code>w_topo=0</code>.
+These are declared restrictions; the zero topology weight and channel ratio
+are read from the existing defaults in the implementation controls. Equal
+conductance makes the unweighted capacity neighborhood agree with <code>L_rw</code>:</p>
+<div class="arithmatex">\[
+F=-w_{\nu}L_{\rm rw}\nu,\quad k=\frac{w_\nu}{e},\quad
+\dot x=-e\operatorname{diag}(\nu)L_{\rm rw}(x+k\nu).
+\]</div>
+<p>Here <code>k</code> is the ratio of existing channel coefficients, not a fitted factor.
+The common phase has zero phase forcing, and <code>d^T*F=0</code>. Therefore the held
+profile and mean drift are exactly</p>
+<div class="arithmatex">\[
+z=-kP_H\nu,\qquad \bar v=0.
+\]</div>
+<p>For original/current states inside this family with the same ratio,</p>
+<div class="arithmatex">\[
+P_0z-z_0=-kP_0(\nu-\nu_0).
+\]</div>
+<p>The original relative target is compatible exactly when the capacity
+increment is spatially uniform. Nonuniform capacities can support a
+nonuniform profile, but this identity alone does not explain how the
+capacity pattern is generated or maintained. Heterogeneous conductance or
+nonzero phase invalidates the simple formula; explicit counterexamples are
+retained in the controls below. The U/P/F preparation has nonuniform phases
+and unequal conductances, so this theorem is not substituted for section 11.</p>
+<p>The same formula exposes a reuse path: the detached coordinate <code>y=x+k*nu</code>
+has centered value <code>P_H*y=P_H*x-z</code>, exactly the existing forced-profile
+error. While capacity is held, <code>y</code> follows the same pure EPI diffusion.
+Across a capacity event, <code>Delta y=Delta x+k*Delta nu</code>. This is a change of
+analysis coordinates, not an extra engine state or an authorized EPI write.
+The coupled capacity/EPI model below reuses this coordinate and the existing
+event, metric and diffusion budgets; no parallel relaxation solver is needed.</p>
+<p>On P2, let the original capacity be <code>(c,c)</code>, and the actual new capacity
+be <code>(c+a,c)</code>, <code>a&gt;0</code>. With unit edge conductance,</p>
+<div class="arithmatex">\[
+m=(-ka/2,ka/2),\quad
+r=\frac{w_\nu a(2c+a)}2(-1,1),\quad
+R_* = \frac{k^2a^2}{4c}.
+\]</div>
+<p>A single default VAL with a positive capacity increment breaks compatibility.
+Under zero phase, IL preserves capacity/support and cannot remove that
+incompatibility after pressure refresh; its immediate stored-pressure
+contraction is a separate operator effect. Target-only UM has no new edge
+available on P2. Its ideal affine capacity rule reduces the gap by
+<code>a'=(1-gamma)*a</code>; binary64 execution must use its actually observed <code>a'</code>.
+For those represented endpoints, the exact-model limiting-error ratio is
+<code>(a'/a)^2</code>. A smaller positive gap gives a smaller positive mismatch, not
+complete restoration.</p>
+<p>The <a href="../../tests/physics/test_capacity_target_compatibility.py">capacity-family controls</a>
+include exact P2/P3 preparations and one actual default <code>VAL -&gt; IL -&gt; UM -&gt; SHA</code>
+word, with both word validators, live gates, histories and pressure refreshes.
+VAL breaks compatibility, IL leaves it broken, and UM reduces but does not
+eliminate the observed capacity gap. SHA is a separately checked closure;
+its EPI preservation is not recovery. No physical flow interval, repeated
+word, infinite-time binary64 theorem or invariant full-runtime domain is
+asserted by this finite control.</p>
+<p>B2.d.10 closes the target-residual decomposition and this restricted
+mechanism/obstruction. The coupled model below uses the same coordinate and
+event/flow owners. Admission, history, phase, support, clipping and numerical
+defects remain separate obligations for a complete runtime policy.</p>
+<h2 id="13-joint-capacity-and-form-evolution-on-synchronized-p2">13. Joint capacity and form evolution on synchronized P2<a class="headerlink" href="#13-joint-capacity-and-form-evolution-on-synchronized-p2" title="Permanent link">&para;</a></h2>
+<p>The conditional exact model in
+<a href="../../src/tnfr/physics/capacity_feedback.py"><code>capacity_feedback.py</code></a> retains the
+ordered target/neighbor support of section 12. Let their capacities be
+<code>(c+a,c)</code>, with <code>c&gt;0</code>, <code>0&lt;=a&lt;=A</code>, and set</p>
+<div class="arithmatex">\[
+k=w_\nu/e,\quad \rho=1-\gamma,\quad s=he,\quad
+d=x_0-x_1,\quad q=d+ka.
+\]</div>
+<p>Here <code>e&gt;0</code>, <code>w_nu&gt;=0</code> and <code>0&lt;gamma&lt;1</code> are declared pressure/operator
+coefficients; the runtime study below reads their existing defaults. The
+duration <code>h&gt;=0</code> and bounds <code>A,ell,U</code> specify numerical and state domains,
+not extra physical parameters. The zero-capacity case, changing support and
+nonzero phase forcing are outside this model.</p>
+<p>Target-only UM preserves EPI and changes <code>a</code> to <code>a'=rho*a</code>. Refreshed nodal
+pressure is then <code>p=(-e*(d+ka'), e*(d+ka'))</code>. A held-input Euler interval gives</p>
+<div class="arithmatex">\[
+a_{n+1}=\rho a_n,\qquad
+q_{n+1}=[1-s(2c+\rho a_n)](q_n-k\gamma a_n),\qquad
+d_{n+1}=q_{n+1}-ka_{n+1}.
+\]</div>
+<p>This is a coupled recurrence: treating the new capacity as merely a faster
+clock would omit its change to the forcing profile. The API evaluates
+detached rational data only; graph EPI still advances through the shared
+nodal integrator. Multiple exact internal Euler substeps with the same held
+pressure/capacity have this same total-duration endpoint. Their binary64
+rounding and any pressure refresh inside the interval require separate checks.</p>
+<p>A sufficient invariant domain is</p>
+<div class="arithmatex">\[
+0\le a\le A,\quad
+\ell\le x_0\le U-ka,\quad \ell+ka\le x_1\le U,
+\quad 0&lt;\ell\le U,\quad kA\le U-\ell,\quad
+s(c+\rho A)\le1.
+\]</div>
+<p>In lifted coordinates both components lie in
+<code>[ell+k(c+a), U+kc]</code>. The UM event subtracts <code>k*gamma*a</code> from <code>y0</code>
+and reduces the required lower bound by that amount; <code>y1</code> stays fixed.
+During flow the lifted update is row-stochastic, with mixing coefficients
+<code>s(c+a')</code> and <code>s*c</code>, so both coordinates remain in the interval. Converting
+back gives the same domain at <code>a'</code>. This proves exact-model positivity and
+bounded EPI over arbitrary finite repetitions. If the interval lies inside
+the configured hard clip range, exact clipping is inactive. Fitting this
+positive domain above the configured UM EPI/frequency thresholds is a
+sufficient scalar precondition, not a proof of full grammar/history admission.</p>
+<p>The box can be constructed from initial data without searching:
+<code>A=a0</code>, <code>ell=min(x0,x1-k*a0)</code>, <code>U=max(x0+k*a0,x1)</code>, provided the resulting
+lower bound is positive and the timestep/clip conditions hold. Mere convexity
+of the lifted flow is insufficient for arbitrary positive EPI: with
+<code>c=a=1</code>, <code>k=gamma=s=1/2</code>, initial <code>x=(3/16,3/16)</code> gives
+<code>x'=(0,5/16)</code>. These detached rational coefficients are a domain
+counterexample, not the default runtime fixture or a parameter fit.</p>
+<p>Define the uniform multiplier bound</p>
+<div class="arithmatex">\[
+\beta=\max\{|1-2sc|,\ |1-s(2c+\rho A)|\}\le1.
+\]</div>
+<p>The executable finite envelope is</p>
+<div class="arithmatex">\[
+|q_n|\le\beta^n|q_0|+
+k\gamma a_0\beta\sum_{j=0}^{n-1}\beta^{n-1-j}\rho^j,
+\qquad |d_n|\le |q_n|+ka_0\rho^n.
+\]</div>
+<p>The sum is <code>(beta^n-rho^n)/(beta-rho)</code> when the factors differ and
+<code>n*beta^(n-1)</code> when equal; zero cycles are handled separately. <code>beta&lt;1</code>
+implies decay of both capacity gap and spatial EPI disagreement. At <code>h=0</code>
+or the equal-capacity full-swap boundary the uniform bound can be one;
+neither boundary supplies that contraction conclusion.</p>
+<p>The mean is also accounted for. For <code>M=(x0+x1)/2</code>,</p>
+<div class="arithmatex">\[
+M_{n+1}-M_n=-\frac{s a_{n+1}}2(d_n+ka_{n+1}),\qquad
+|M_\infty-M_n|\le
+\frac{s(U-\ell)a_0\rho^{n+1}}{2\gamma}.
+\]</div>
+<p>The tail follows by summing the box bound on the lifted difference. Thus the
+arithmetic mean has a limit, but need not equal its initial value. For the
+current metric mean <code>mu=[c*x0+(c+a)*x1]/(2c+a)</code>, the same cycle gives</p>
+<div class="arithmatex">\[
+\mu_{n+1}-\mu_n=
+\frac{c\gamma a_n d_n}{(2c+a_n)(2c+\rho a_n)}.
+\]</div>
+<p>This is exactly a same-EPI metric reset followed by zero H-mean model drift,
+already owned by <code>observe_forced_support_reset</code> and
+<code>observe_forced_support_step</code>. With <code>beta&lt;1</code>, both EPI coordinates tend to
+the common arithmetic-mean limit; their endpoint error is bounded by half
+the disagreement envelope plus the mean-tail bound. This is an exact
+conditional relaxation theorem, not a formation mechanism for a persistent
+differentiated pattern. The
+<a href="../../tests/physics/test_capacity_feedback.py">exact controls</a> retain mean
+identities, boundary cases, the domain obstruction and invalid-input checks.</p>
+<h2 id="14-finite-admission-and-the-represented-capacity-obstruction">14. Finite admission and the represented capacity obstruction<a class="headerlink" href="#14-finite-admission-and-the-represented-capacity-obstruction" title="Permanent link">&para;</a></h2>
+<p>The supplied word <code>VAL IL UM UM ... SHA</code> fails the string-based canonical
+transition validator at <code>UM -&gt; UM</code>; the separate <code>ValidatedSequence</code> check
+alone accepts it. Both results are retained. No transition policy is changed
+to obtain a run. The declared finite study instead uses <code>VAL IL</code>, then sixteen
+<code>UM IL / refresh / Euler</code> blocks, and finally SHA after measurement. Within
+this zero-phase P2 fixture, each separator IL leaves EPI, capacity and support
+unchanged. Its raw pressure reduction is recorded, and fresh canonical
+pressure matches the pre-IL pressure exactly. This verified identity explains
+why the same coupled recurrence can be used as the block's exact reference.</p>
+<p><a href="../../benchmarks/capacity_feedback.py"><code>benchmarks/capacity_feedback.py</code></a> independently
+prepares two unit P2 graphs with EPI <code>(0.5,0.5)</code>, capacity <code>(1,1)</code>, zero phase
+and seed 17. All operator factors are the defaults. One branch applies those
+sixteen blocks; the other keeps the post-VAL/IL capacity during sixteen flow
+intervals. Both end at engine time <code>4</code>, with <code>h=0.25</code>, before their separate
+admitted SHA closures. This is a new restricted comparison, not another
+continuation of the nonuniform-phase U/P/F graph. No factor or horizon search
+is performed, and the original uniform profile and metric stay fixed.</p>
+<p>The data-derived positive box is approximately <code>[0.4746697041,0.5651190317]</code>,
+with <code>A=0.07957747155</code>; its additional capacity-dependent margins are checked
+at every recorded boundary. The exact reference has <code>beta=0.9084232738</code> and
+<code>rho=0.9204225285</code>. Both branches start after preparation at
+<code>R0=0.0003957858736</code>. Their pre-closure read-outs are:</p>
+<table>
+<thead>
+<tr>
+<th>Branch</th>
+<th>Actual capacity gap</th>
+<th>Actual <code>R0</code></th>
+<th>Conditional held-profile <code>R_*</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UM/IL blocks</td>
+<td><code>0.02111475158</code></td>
+<td><code>1.397878163e-7</code></td>
+<td><code>1.129307508e-5</code></td>
+</tr>
+<tr>
+<td>Held capacity</td>
+<td><code>0.07957747155</code></td>
+<td><code>3.718826587e-5</code></td>
+<td><code>1.604059727e-4</code></td>
+</tr>
+</tbody>
+</table>
+<p>The lower final error is a finite response benefit, not monotonic recovery:
+the coupled branch's sixteenth interval increases <code>R0</code> from approximately
+<code>4.802676566e-9</code> to <code>1.397878163e-7</code>. In both branches the final EPI lies
+closer to the original uniform target than the current conditional frozen
+profile does. A transient crossing must not be reported as a maintained
+equilibrium. The arithmetic mean changes from <code>0.5198943679</code> to
+<code>0.5193772453</code> in the coupled branch and <code>0.5188997311</code> in the control.</p>
+<p>Each flow uses the existing executor with four default internal Euler
+substeps and held pressure/capacity. The report binds actual endpoints to
+that executor's evidence, retains full materialized event records, checks
+the P2 family and domain at boundaries, and records diagnostics. It separates
+three signed endpoint contributions:</p>
+<ol>
+<li>The actual represented UM capacity gap versus <code>rho*a</code>, propagated through
+   the exact nodal endpoint map.</li>
+<li>Fresh binary64 pressure versus the exact modeled pressure at the actual
+   post-event capacity and EPI.</li>
+<li>The integrator endpoint versus the exact held stored-pressure update.</li>
+</ol>
+<p>Their exact sum is the actual endpoint minus the ideal cycle endpoint.
+All three contributions are nonzero in this run; none is rounded away to
+claim exact realization. Existing event and forced-step balances retain
+metric changes and pressure/execution effects on the mean. The exact-model
+repetition envelope is reported separately; no uniform runtime error bound
+is inferred from these finite defects or from finite domain membership.</p>
+<p>A decisive production-kernel control prevents that promotion. Let
+<code>nu0=1+2^-52</code>, <code>nu1=1</code>. The default <code>0&lt;gamma&lt;1/4</code> computes
+<code>nu0 + gamma*(nu1-nu0)</code> as the same binary64 <code>nu0</code>. The positive capacity gap
+is a represented fixed point, whereas the exact model would reduce it by
+<code>gamma*2^-52</code>. Default UM is actually admitted and executed in this control,
+and the capacity-supported relative profile remains nonzero. A positive
+exact contraction coefficient therefore cannot be transferred to the
+represented capacity gap. The control's actual EPI is still uniform: a
+nonzero conditional frozen-profile mismatch is not proof of a positive
+runtime EPI error floor. Small Euler increments can also round away. This
+obstruction concerns the capacity map; it does not assert a complete fixed
+EPI/phase/history runtime orbit.</p>
+<p>The <a href="../../tests/physics/test_capacity_feedback_runtime.py">runtime controls</a> cover
+matched preparations, the direct-word refusal, every UM/IL admission,
+refreshed separator identity, executor inputs, finite box membership, all
+three error sources, closure and the represented gap fixed point.
+Reproduce the finite record with:</p>
+<div class="highlight"><pre><span></span><code><span class="p">.</span><span class="n">venv313</span><span class="p">\</span><span class="n">Scripts</span><span class="p">\</span><span class="n">python</span><span class="p">.</span><span class="n">exe</span> <span class="n">-X</span> <span class="n">utf8</span> <span class="n">benchmarks</span><span class="p">/</span><span class="n">capacity_feedback</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+<p>Its local ignored artifact is <code>artifacts/research/capacity_feedback.json</code>.
+It carries its own source digest and runtime manifest; the earlier U/P/F
+artifacts retain their historical source identities. The SHA metric
+<code>time_to_collapse=+infinity</code> has an explicit <code>numeric_kind: positive_infinity</code>
+JSON tag; nonfinite structural state or defects still fail strict encoding.
+B2.d.11 closes this conditional joint recurrence, exact invariant box and
+finite comparison. The following restricted arithmetic result resolves the
+unit-capacity boundary without another long word. Full-state admission and
+action selection remain open. No laboratory correspondence has been tested.</p>
+<h2 id="15-the-represented-capacity-class-on-the-unit-interval">15. The represented capacity class on the unit interval<a class="headerlink" href="#15-the-represented-capacity-class-on-the-unit-interval" title="Permanent link">&para;</a></h2>
+<p>The same <a href="../../src/tnfr/physics/capacity_feedback.py">capacity-feedback owner</a>
+now supplies <code>derive_p2_binary64_coupling_lattice</code> and its detached endpoint
+observer. The production arithmetic has one shared owner,
+<code>coupling_capacity_blend</code> in the
+<a href="../../src/tnfr/operators/_coupling_stage_kernel.py">Coupling kernel</a>. Extraction
+preserves the existing neighbor mean, subtraction, multiplication and sum
+in their original order. The
+<a href="../../src/tnfr/_binary64.py">shared platform probe</a> also retains REMESH's former
+private alias; basic format probes are not an exhaustive hardware proof.</p>
+<p>Assume IEEE binary64 nearest-even arithmetic with separate operations, fixed
+neighbor capacity <code>c=1</code>, target capacity <code>1&lt;=v&lt;=2</code>, and a fixed represented
+factor <code>g</code>. Write</p>
+<div class="arithmatex">\[
+\delta=2^{-52},\quad u=2^{-53},\quad v=1+j\delta,
+\quad 0\le j\le2^{52},\qquad
+T(v)=\operatorname{RN}\!\left(v+
+\operatorname{RN}\!\left(g\operatorname{RN}(1-v)\right)\right).
+\]</div>
+<p>The executable reference verifies the strict inequalities</p>
+<div class="arithmatex">\[
+6g(1+u)&lt;\tfrac12,\qquad 7g(1-u)&gt;\tfrac12,\qquad
+g&lt;\tfrac18,\qquad g(1-u)&gt;\tfrac5{64}.
+\]</div>
+<p>The actual default factor
+<code>g=5734161139222659/72057594037927936</code> satisfies them. They define a proved
+coefficient class containing that default; they do not cover every allowed
+UM factor. <code>5/64</code> is a rational enclosure used in the proof, not a new
+coupling setting. The fixed unit interval is a numerical domain restriction,
+not a physical frequency scale or a scaling theorem for subnormal capacities.</p>
+<p>Subtraction is exact on this interval, and every positive product is normal.
+With <code>m=RN(g*j*delta)/delta</code>, the relative product bound gives
+<code>g(1-u)j&lt;=m&lt;=g(1+u)j</code>. Final rounding changes the real index <code>j-m</code> by at most
+one half. Hence indices <code>0,...,6</code> are fixed, and every index at least seven
+strictly decreases. To rule out skipping the terminal index, <code>g&lt;1/8</code> and
+representability of <code>j*delta/8</code> give <code>m&lt;=j/8</code> by monotonic rounding.
+For <code>j&gt;=8</code> the output index is at least seven; <code>j=7</code> maps to six. These
+arguments include the upper endpoint <code>v=2</code>. Halfway cases round the final
+capacity to even; rounding a decrement independently is not equivalent.</p>
+<p>The map preserves <code>[1,v]</code>. Its terminal index is therefore</p>
+<div class="arithmatex">\[
+j_\infty=\min(j_0,6).
+\]</div>
+<p>There is also a finite analytic bound. For <code>r=59/64</code>,</p>
+<div class="arithmatex">\[
+j_n\le\frac{32}{5}+r^n\left(j_0-\frac{32}{5}\right),\qquad
+59^{512}(5\cdot2^{52}-32)&lt;3\cdot64^{512}.
+\]</div>
+<p>The integer inequality puts the upper envelope below seven after 512
+numeric updates for every initial index in the class. Together with the
+no-skipping result, this proves arrival at six from above. It does not
+execute 512 graph cycles or admit a repeated UM word; the grammar refusal
+from section 14 remains unchanged. The result concerns only this fixed
+numeric capacity map. The
+<a href="../../tests/physics/test_binary64_capacity_feedback.py">42 lattice controls</a>
+cover independent endpoints, both directions of final halfway rounding,
+factor/platform restrictions, cache rebuilding and fabricated endpoint refusal.</p>
+<p>In the section 12 capacity-forcing family with independent uniform comparison
+metric <code>H0=I</code>, the terminal exact frozen-profile mismatch is</p>
+<div class="arithmatex">\[
+R_*^{\rm terminal}=\frac{k^2j_\infty^2\delta^2}{4}
+\le9k^2\delta^2.
+\]</div>
+<p>Equality holds for initial indices above six. This is a conditional profile
+calculation after holding the terminal capacities, not a positive lower bound
+on the EPI that the binary64 integrator will actually store.</p>
+<h2 id="16-uniform-stored-epi-despite-a-nonzero-exact-profile">16. Uniform stored EPI despite a nonzero exact profile<a class="headerlink" href="#16-uniform-stored-epi-despite-a-nonzero-exact-profile" title="Permanent link">&para;</a></h2>
+<p>The <a href="../../benchmarks/binary64_capacity_feedback.py">finite boundary benchmark</a>
+prepares five independent unit P2 graphs with zero phase, EPI <code>(0.5,0.5)</code> and
+capacity <code>(1+j*2^-52,1)</code>, for the declared indices <code>0,1,6,7,2^52</code>. Each graph
+executes one admitted default UM, one canonically refreshed Euler interval
+of duration <code>0.25</code> with four held-input internal substeps, and SHA after
+measurement. The uniform comparison reference is prepared independently;
+it is not an invented ancestor or evidence of a prior perturbation.</p>
+<table>
+<thead>
+<tr>
+<th>Input index</th>
+<th>Observed post-UM index</th>
+<th>Exact held-profile <code>R_*</code></th>
+<th>Observed post-flow <code>R0</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0</code></td>
+<td><code>0</code></td>
+<td><code>0</code></td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td><code>1</code></td>
+<td><code>1</code></td>
+<td><code>1.248880010e-33</code></td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td><code>6</code></td>
+<td><code>6</code></td>
+<td><code>4.495968036e-32</code></td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td><code>7</code></td>
+<td><code>6</code></td>
+<td><code>4.495968036e-32</code></td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td><code>2^52</code></td>
+<td><code>4145214556169080</code></td>
+<td><code>0.02145926008</code></td>
+<td><code>0.0003837216997</code></td>
+</tr>
+</tbody>
+</table>
+<p>For indices one and six, UM leaves a positive gap fixed. From seven it
+reaches six in the observed event. All three then retain EPI exactly
+<code>(0.5,0.5)</code> through the actual interval, although their refreshed nodal
+pressures and exact frozen profiles are nonzero. At index six the exact
+model predicts a total EPI change of about <code>(-1.94e-17,+1.94e-17)</code>.
+The represented pressure contribution plus the integrator endpoint defect
+cancel that model change exactly. These errors are kept as signed rational
+values, not discarded with a tolerance. Four smaller stored additions also
+remain below the local EPI rounding thresholds.</p>
+<p>There is no conflict between the two observations: the exact pressure model
+and finite-precision state storage are different maps. An unchanged EPI
+array is insufficient to infer zero structural pressure. Nor does unchanged
+primary EPI/capacity certify a full fixed runtime state: time, derivatives,
+histories and the later SHA closure have their own effects. The upper-boundary
+control does change EPI, ruling out a blanket classification of every case
+as numerical stasis. All cases retain actual gates, factor values, family
+checks, executor endpoint bindings, diagnostics and separate mean/defect budgets.</p>
+<p>The <a href="../../tests/physics/test_binary64_capacity_feedback_runtime.py">15 runtime controls</a>
+also verify strict JSON retention of the tiny nonzero profile mismatch.
+Generate the local artifact with:</p>
+<div class="highlight"><pre><span></span><code><span class="p">.</span><span class="n">venv313</span><span class="p">\</span><span class="n">Scripts</span><span class="p">\</span><span class="n">python</span><span class="p">.</span><span class="n">exe</span> <span class="n">-X</span> <span class="n">utf8</span> <span class="n">benchmarks</span><span class="p">/</span><span class="n">binary64_capacity_feedback</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+<p><code>artifacts/research/binary64_capacity_feedback.json</code> has its own source
+manifest. B2.d.11 and earlier artifacts remain historical; their source
+digests are not rewritten after the shared-kernel extraction. B2.d.12 closes
+this bounded numeric class and its finite EPI distinction, without generalizing
+to other capacity scales, kernels or complete-runtime invariant domains.</p>
+<h2 id="17-compatible-capacity-support-and-differentiated-prepared-regions">17. Compatible capacity support and differentiated prepared regions<a class="headerlink" href="#17-compatible-capacity-support-and-differentiated-prepared-regions" title="Permanent link">&para;</a></h2>
+<p>B2.d.13 addresses that structural question using the existing U3 gate and
+pressure law. Let <code>C</code> be the simple, reciprocal graph of neighbors actually
+selected by UM at the start of one simultaneous all-target stage. Every row
+must be nonempty. With its unweighted degree matrix <code>D_C</code>, unit-conductance
+Laplacian <code>B_C</code> and fixed factor <code>0&lt;gamma&lt;1</code>, the exact capacity proposal is</p>
+<div class="highlight"><pre><span></span><code>nu' = nu - gamma*D_C^-1*B_C*nu.
+</code></pre></div>
+<p>Thus <code>nu'=nu</code> if and only if capacity is constant on each connected component
+of <code>C</code>. Distinct components can retain distinct positive constants. Each
+component preserves its own <code>D_C</code>-weighted capacity mean. These are properties
+of the configured UM map; the factorization of the nodal equation alone does
+not select that map or its coefficient. The result concerns simultaneous
+snapshot proposals, not a sequence of single-target updates.</p>
+<p>There is a strict exact energy balance away from that componentwise fixed set.
+For <code>E_C(nu)=nu^T*B_C*nu/2</code>, <code>p=D_C^-1*B_C*nu</code> and
+<code>S=(B_C*nu)^T*D_C^-1*(B_C*nu)</code>,</p>
+<div class="highlight"><pre><span></span><code>E_C(nu') - E_C(nu) = -gamma*S + gamma^2*E_C(p)
+                   &lt;= -gamma*(1-gamma)*S.
+</code></pre></div>
+<p>The inequality follows edgewise from <code>(p_i-p_j)^2&lt;=2*(p_i^2+p_j^2)</code>, which
+gives <code>E_C(p)&lt;=p^T*D_C*p=S</code>. Positivity is preserved by convex averaging.
+On a fixed finite <code>C</code>, nonconstant normalized-Laplacian modes have multipliers
+<code>1-gamma*lambda</code>, of magnitude below one. Conditional repeated exact capacity
+updates therefore approach each component's conserved mean. Changing phases,
+new links, represented arithmetic and live grammar are outside that argument.</p>
+<p>The common readout is
+<a href="../../src/tnfr/physics/coupling_support.py"><code>observe_coupling_support</code></a>; its detached
+<code>derive_compatible_capacity_balance</code> reuses the existing transport energy and
+Laplacian kernels. The live reader uses the production phase selector and
+resolved factors, retains actual neighbor order, and checks reciprocity of the
+materialized rows. It includes zero-weight support edges in U3 selection even
+though they carry no EPI conductance. Empty selected rows are recorded as
+blocked targets with no all-target balance, never as admitted identity updates.
+Full operator admission remains a separate obligation.</p>
+<h3 id="a-connected-pressure-graph-with-two-compatible-components">A connected pressure graph with two compatible components<a class="headerlink" href="#a-connected-pressure-graph-with-two-compatible-components" title="Permanent link">&para;</a></h3>
+<p>The finite control prepares unit triangles <code>(0,1,2)</code> and <code>(3,4,5)</code> joined by
+edge <code>(2,3)</code>. EPI is initially <code>0.5</code> everywhere and capacities are
+<code>(1,1,1,2,2,2)</code>. In the split case, the first triangle has phase zero and the
+second the binary64 value <code>math.pi</code>. These phases and capacities are declared
+preparation; their formation has not been derived.</p>
+<p>The actual U3 selection excludes the bridge and all candidate cross-links.
+Both selected components are complete triangles, so no compatible missing
+links remain. One actual default all-target UM preserves phase, capacity,
+EPI and support. Its raw stored-pressure attenuation is recorded separately;
+canonical refresh restores the same pressure at unchanged primary inputs.
+The capacity energy on <code>C</code> is zero while that on the connected full pressure
+graph is <code>1/2</code>. Using one graph for both operations would miss this distinction.</p>
+<p>The captured canonical phasor channel is exactly zero at these represented
+inputs on the tested platform. This is verified from its actual realization,
+not inferred merely from regional synchronization or a symbolic <code>pi</code> label.
+The capacity gradient is <code>(0,0,1/3,-1/3,0,0)</code> and the topology weight is zero.
+With the captured <code>k=w_vf/e</code>, the existing held-profile theorem gives</p>
+<div class="highlight"><pre><span></span><code>H = diag(2,2,3,3/2,1,1),     mean_H(nu) = 4/3,
+z = (k/3,k/3,k/3,-2*k/3,-2*k/3,-2*k/3),
+x_infinity = 1/2 + z,       mean drift = 0.
+</code></pre></div>
+<p>For fixed coefficients, <code>y=x+k*nu</code> obeys EPI diffusion. The initial range
+<code>[1/2+k,1/2+2*k]</code> is convex-invariant under refreshed exact Euler steps
+<code>h&lt;=1/(e*max(nu))</code>. It yields <code>x_A in [1/2,1/2+k]</code> and
+<code>x_B in [1/2-k,1/2]</code>, inside the configured scalar interval at default <code>k</code>.
+These are conditional exact-model bounds, not a binary64 runtime invariant
+class or a guarantee of future word admission.</p>
+<h3 id="finite-runtime-discriminator">Finite runtime discriminator<a class="headerlink" href="#finite-runtime-discriminator" title="Permanent link">&para;</a></h3>
+<p><a href="../../benchmarks/compatible_capacity_regions.py"><code>compatible_capacity_regions.py</code></a>
+executes one all-target UM, one physical interval <code>h=0.25</code> with the shared
+default integrator's four held-pressure substeps, and an all-target SHA closure
+after measurement. Both full-word validators, actual target admissions,
+two-phase stage results, histories, raw/ refreshed pressure, event reference
+reset, signed flow defects and executor endpoints are retained. An independently
+reproduced UM proposal is explicitly labeled as a prediction and checked against
+the actual writes; the executor does not retain those UM proposals itself.</p>
+<table>
+<thead>
+<tr>
+<th>Prepared case</th>
+<th>New links</th>
+<th>Post-flow EPI, rounded for display</th>
+<th>Original-profile error, before -&gt; after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Split <code>0/math.pi</code></td>
+<td>0</td>
+<td><code>(0.5,0.5,0.504858,0.490283,0.5,0.5)</code></td>
+<td><code>0.118208 -&gt; 0.113675</code></td>
+</tr>
+<tr>
+<td>Aligned zero</td>
+<td>8</td>
+<td><code>(0.508745,0.508745,0.508501,0.483658,0.482510,0.482510)</code></td>
+<td><code>0.118208 -&gt; 0.099933</code></td>
+</tr>
+</tbody>
+</table>
+<p>The split case's conditional exact limit has EPI approximately <code>0.606103</code>
+in the first region and <code>0.287793</code> in the second. Only the displayed finite
+interval is executed; no numerical approach to that limit is claimed.</p>
+<p>The aligned control starts with the identical graph, EPI and capacity but
+phases zero everywhere. Its first capacity proposals use the original
+neighbors: only bridge endpoints change, with exact neighbor means <code>4/3</code>
+and <code>5/3</code> before binary64 rounding. Default functional links then add all eight
+missing edges, producing <code>K6</code>. This is a phase-controlled complete operator
+comparison with an observed topology change, not a fixed-topology ablation or
+evidence that one capacity mechanism alone causes the error difference.
+Both runs keep the original comparison profile; a changed current reference
+is separately accounted for.</p>
+<p>The mathematical and finite runtime controls live in
+<a href="../../tests/physics/test_coupling_support.py"><code>test_coupling_support.py</code></a> and
+<a href="../../tests/physics/test_compatible_capacity_regions_runtime.py"><code>test_compatible_capacity_regions_runtime.py</code></a>.
+Generate the separately manifested local artifact with:</p>
+<div class="highlight"><pre><span></span><code><span class="p">.</span><span class="n">venv313</span><span class="p">\</span><span class="n">Scripts</span><span class="p">\</span><span class="n">python</span><span class="p">.</span><span class="n">exe</span> <span class="n">-X</span> <span class="n">utf8</span> <span class="n">benchmarks</span><span class="p">/</span><span class="n">compatible_capacity_regions</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+<p>This closes a scoped maintenance discriminator: prepared phase compatibility
+can protect a capacity contrast while the connected nodal pressure law drives
+a differentiated EPI profile. Autonomous preparation, repeated complete-runtime
+maintenance and physical correspondence remain open. In particular, the P2
+UM/IL separator result cannot be transferred here: IL's phase-lock neighborhood
+is not UM's U3-selected neighborhood and includes the bridge. The next dependency
+is to derive which phase/support conditions survive a complete admitted policy,
+then connect its preparation to existing birth/attachment or winding mechanisms.
+No longer horizon, grammar change or fitted restoring pressure supplies that proof.</p>
+<h2 id="18-antipodal-phase-response-under-simultaneous-um-and-il">18. Antipodal phase response under simultaneous UM and IL<a class="headerlink" href="#18-antipodal-phase-response-under-simultaneous-um-and-il" title="Permanent link">&para;</a></h2>
+<p>B2.d.14 tests that next dependency. The exact phase fixed configuration from
+section 17 has a locally expanding mode when followed by the candidate IL
+separator. This is a limitation of this proposed maintenance mechanism, not a
+violation of IL's pressure-contraction contract or a universal impossibility
+result for differentiated TNFR structures.</p>
+<h3 id="exact-local-composition">Exact local composition<a class="headerlink" href="#exact-local-composition" title="Permanent link">&para;</a></h3>
+<p>Use lifted coordinates <code>(a,a,b,pi-b,pi-a,pi-a)</code> on the same two triangles and
+bridge. The base is the mathematical antipodal state <code>a=b=0</code>. In a sufficiently
+small neighborhood, U3 selects only the two triangles, their internal links
+already exist, and every missing cross-link remains incompatible. All relevant
+phasor resultants are nonzero. Reflection together with phase conjugation and
+the within-region interior swaps preserve this two-coordinate chart locally;
+this symmetry does not prove an invariant neighborhood under repetition.</p>
+<p>Let <code>t=UM_theta_push</code> and <code>alpha</code> be IL's phase-lock coefficient. Every
+bidirectional UM target reads the entire compatible triangle, including itself.
+Its exact phasor mean is <code>C=Arg(2*exp(i*a)+exp(i*b))</code>. Each receiving node gets
+three identical proposals, whose shortest-arc displacements are <strong>averaged</strong>.
+The derivative is consequently</p>
+<div class="highlight"><pre><span></span><code>       [ 1-t/3     t/3   ]
+U(t) = [                 ].
+       [ 2*t/3   1-2*t/3 ]
+</code></pre></div>
+<p>IL includes the bridge in its full neighborhood. The interior phasor mean has
+linear part <code>(a+b)/2</code>. The first bridge vertex sees
+<code>2*exp(i*a)-exp(-i*b)</code>, whose argument has linear part <code>2*a+b</code>. Therefore</p>
+<div class="highlight"><pre><span></span><code>           [ 1-alpha/2   alpha/2 ]
+M(alpha) = [                    ],       P = M(alpha)*U(t).
+           [ 2*alpha        1    ]
+
+det(I-P) = -alpha^2*(1-t) - 2*alpha*t/3.
+</code></pre></div>
+<p>For every <code>0&lt;alpha&lt;=1</code> and <code>0&lt;=t&lt;=1</code>, this determinant is negative. The real
+monic characteristic polynomial evaluated at one is negative and tends to
+positive infinity, so <code>P</code> has a real eigenvalue strictly above one. Thus even
+the preceding UM averaging cannot make this exact local phase fixed point
+attracting. This is an analytic characteristic-polynomial certificate, not an
+eigenvalue estimated from the finite probes. At <code>alpha=0</code>, the constant
+two-coordinate direction is neutral. The algebraic control <code>t=0</code> is excluded
+by canonical UM admission; no runtime coefficient is changed to obtain it.</p>
+<p>For the predeclared direction <code>a=b=epsilon</code>, UM is exact-real identity and
+the first-order IL response is <code>(epsilon,(1+2*alpha)*epsilon)</code>. The quadratic
+readout <code>Q=| (a,a,b,-b,-a,-a) |^2/2 = 2*a^2+b^2</code> therefore has linearized gain
+<code>1+4*alpha*(1+alpha)/3</code>, about <code>1.52</code> at the default coefficient. <code>Q</code> measures
+phase deviation from this base; it is neither EPI energy nor a claimed global
+Lyapunov function. Individual other directions can contract despite the
+existence of an expanding mode.</p>
+<p>The exact reference and tangent observer extend the existing
+<a href="../../src/tnfr/physics/coupling_support.py"><code>coupling_support.py</code></a> owner. They rebuild
+public reference caches, preserve exact or represented coefficient values and
+infer no graph or execution provenance. The unchanged IL default <code>0.3</code> now has
+one owner in
+<a href="../../src/tnfr/operators/_coherence_stage_kernel.py"><code>_coherence_stage_kernel.py</code></a>,
+shared by direct validation, direct proposals and simultaneous stages. This
+removes repeated defaults without claiming a new derivation of that coefficient.</p>
+<h3 id="finite-controls-and-the-pressure-distinction">Finite controls and the pressure distinction<a class="headerlink" href="#finite-controls-and-the-pressure-distinction" title="Permanent link">&para;</a></h3>
+<p><a href="../../benchmarks/antipodal_region_phase_response.py"><code>antipodal_region_phase_response.py</code></a>
+predeclares <code>epsilon=0,+/-2^-12,+/-2^-16</code>, regional phases
+<code>epsilon</code> and <code>pi-epsilon</code>, and otherwise the same preparation as section 17.
+Each case executes one all-target UM, refresh, one all-target IL, refresh, one
+<code>h=0.25</code> nodal interval and an all-target SHA closure after measurement. Both
+word validators, live admissions, an independent strict IL readiness check,
+actual two-phase stages, histories, metrics and proposal/endpoint comparisons
+are retained. Independent proposals are labeled predictions, not sealed
+executor-retained objects.</p>
+<table>
+<thead>
+<tr>
+<th>Prepared epsilon</th>
+<th>Observed post-IL bridge tangent, approximately</th>
+<th>Observed phase Q gain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>+2^-12</code></td>
+<td><code>+0.000390624965076</code></td>
+<td><code>1.519999847413</code></td>
+</tr>
+<tr>
+<td><code>-2^-12</code></td>
+<td><code>-0.000390624965076</code></td>
+<td><code>1.519999847413</code></td>
+</tr>
+<tr>
+<td><code>+2^-16</code></td>
+<td><code>+0.000024414062492</code></td>
+<td><code>1.519999999411</code></td>
+</tr>
+<tr>
+<td><code>-2^-16</code></td>
+<td><code>-0.000024414062492</code></td>
+<td><code>1.519999999411</code></td>
+</tr>
+</tbody>
+</table>
+<p>The exact local scalar response on this direction is
+<code>epsilon+alpha*(atan(3*tan(epsilon))-epsilon)</code>. The runtime controls compare
+against that independently evaluated expression as well as the linear model.
+Their observed-minus-linear residual includes nonlinear, binary64 and chart
+effects; two magnitudes are not a numerical proof of an asymptotic derivative.</p>
+<p>In the zero-input control, IL writes approximately <code>3.67e-17</code> to node 2's
+phase. This is a retained represented-arithmetic residue, not exact antipodal
+invariance; the initial zero phase energy makes its gain undefined (<code>None</code>).
+Its refreshed represented phase-pressure channel nevertheless remains zero.
+The symbolic base uses mathematical <code>pi</code>, not the stored value <code>math.pi</code>.</p>
+<p>In all four nonzero controls, IL increases canonical <code>C(t)</code> immediately by
+contracting stored pressure. After canonical refresh, <code>C(t)</code> instead falls
+below its pre-IL value because the changed phases produce new pressure. For
+<code>epsilon=+2^-12</code>, the three values are approximately
+<code>0.99352517 -&gt; 0.99508085 -&gt; 0.99351353</code>. This is consistent with the local
+operator contract: refresh is a separate pressure realization. Neither raw
+<code>C(t)</code> improvement nor preserved capacity proves preserved phase structure.
+Capacities, EPI and support remain unchanged through both stages; the following
+nodal interval changes EPI while holding the captured phase/capacity/support
+inputs fixed. Source decomposition and signed event/flow budgets retain that
+connection to <code>dEPI/dt=nu_f*DeltaNFR</code>.</p>
+<p>The <a href="../../tests/physics/test_coupling_support.py">exact controls</a> independently
+derive the six-node source/receiver tangent before comparing the reduction.
+The <a href="../../tests/physics/test_antipodal_region_phase_response_runtime.py">runtime controls</a>
+check both signs, scalar response, null residue, actual admission, shared
+defaults, coherence scopes, flow endpoints and strict artifact serialization.
+Generate the separately manifested local artifact with:</p>
+<div class="highlight"><pre><span></span><code><span class="p">.</span><span class="n">venv313</span><span class="p">\</span><span class="n">Scripts</span><span class="p">\</span><span class="n">python</span><span class="p">.</span><span class="n">exe</span> <span class="n">-X</span> <span class="n">utf8</span> <span class="n">benchmarks</span><span class="p">/</span><span class="n">antipodal_region_phase_response</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+<h3 id="consequence-for-the-next-structural-test">Consequence for the next structural test<a class="headerlink" href="#consequence-for-the-next-structural-test" title="Permanent link">&para;</a></h3>
+<p>This heading records the historical dependency developed in the following
+comparisons; it does not assign a current maintenance campaign.</p>
+<p>The mean-of-phasors derivative has entries
+<code>R_ij=cos(theta_j-m_i)/|sum_neighbors exp(i*theta)|</code> for neighbors,
+where <code>m_i</code> is their mean argument. Its rows sum to one but need not be
+nonnegative: the antipodal bridge has coefficients <code>(1,1,-1)</code>. Treating this
+response as ordinary positive diffusion would erase the expanding mode.
+The existing phase-pressure, winding and coupling-support work should share
+this local response description before another maintenance policy is proposed.</p>
+<p>The uniform-winding <code>C6</code> comparator under the default all-target bidirectional
+UM merge is now delivered in
+<a href="../COUPLING_WINDING_PERSISTENCE/#8-one-shared-local-response-for-circular-means">the cycle/winding owner</a>.
+The shared exact Gram/receiver response preserves the antipodal obstruction
+and gives C6 strict centered tangent contraction plus a separate exact
+phase-map invariant neighborhood. Its five finite default controls retain
+winding and nodal response. The same owner now supplies nonlinear phase
+oscillation contraction and a conditional exact joint phase/capacity/EPI
+reserve. In its strict Euler regime, EPI tends to its initial mean while
+phase approaches a rotated winding. Three finite two-cycle controls audit
+admission; the null retains a numerical phase residue that prevents a
+defect-free transfer of the homogeneous contraction bound. The additive
+extension now accounts for those retained errors with finite signed reserve
+and mean budgets. Its separate uniform range bound requires independently
+justified future error and signed mean-prefix hypotheses; it does not turn
+the six observed intervals into a runtime invariant class. The held Euler
+arithmetic now has an independent local rounding bound; exact addition cells
+explain the retained null EPI stasis despite nonzero pressure and changing
+phase. A zero-sum held-input fixture still produces mean drift. Those results
+resolve local integration arithmetic while leaving phase/pressure accuracy
+and uniform signed mean control open. The new opposite-pair continuation
+derives a finite nonlinear phase/EPI partial quotient and a distinct
+mean-preserving binary64 pure-channel class. The retained full winding
+execution fails its paired-pressure and common-binade premises, localizing
+the subsequent historical analysis to joint pressure-pair leakage and compatible rounding
+cells. A certified two-neighbor midpoint now centralizes the eligible IL
+and CPU phase-pressure realizations, correcting a retained phasor rounding
+error. The same finite comparison improves pressure-mean cancellation
+while retaining nonzero k1 EPI mean drift. Local accuracy does not supply
+a future signed-mean bound. Exact inverse pressure boxes now show that
+balanced pressures reproduce the same biased k1 trace, and a two-binade
+law explains that bias at EPI <code>0.5</code>. This rules out a pressure-only repair
+inside those boxes. A separate explicit remainder-carrying nodal reference
+now bounds executor mean error by the terminal rounding remainder,
+independently of the supplied finite step count. It preserves reconstructed
+mean under balanced nodal area; pressure-realization error still requires
+its own bound. Graph adoption requires explicit pressure-readout,
+operator/reset, history and certificate contracts (section 20). The
+restricted flow/event implementation supplies those contracts for
+EPI-preserving UM/IL/SHA with live visible-pressure refresh, persistent carry
+and whole-graph rollback (section 21). Its matched finite branch comparison
+separates actual source changes from executor rounding. Broader jumps and
+generated-pressure summability remain open. Section 22 now excludes an
+exact binary64 zero-pressure state throughout the EPI band for one retained
+fixed phase slice. Its carried-cell horizon separates a visible-state
+change from a band exit. Joint UM/IL trapping and signed source bounds
+remain open; fixed-phase nonconvergence does not decide them. The detailed
+phase continuation in section 23 reaches an exactly closed default UM/IL
+phase map from the inherited null, with a nonzero periodic source mean.
+The signed compensation required from refreshed EPI arithmetic is now
+explicit; phase closure alone does not provide it. The full
+local analysis in section 24 gives exact generated compensation on one
+finite cell prefix and its loss at the first refresh after a cell exit.
+Independent-coordinate traps and permanent residence in the 13-state
+control class are excluded under the declared per-step conditions;
+correlated trapping and full-state reachability remain open. The
+derivation is kept there rather than duplicated in this feedback note.
+Section 25 adds exact whole-itinerary carry compatibility: a feasible
+closed visible word is a carried cycle only when its total nodal area
+vanishes coordinatewise. Two derived cell boundaries show canonical
+pressure-mean sign reversals, while their carried path remains open.
+The four observed states retain strict negative node-1 pressure, excluding
+a carried cycle confined to them despite the changing mean source.
+Section 26 reaches positive node-1 pressure through a neighboring EPI
+transition with the inherited carry intact. It centralizes bounded
+cell-exit replay, derives uniform strict-sector residence bounds and
+separates index change into nodal area and carry transfer. The first
+positive-pressure hit still has negative accumulated node-1 area;
+section 27 follows its two positive steps to the next cell boundary,
+where pressure becomes negative again before compensating that area.
+The exact affine budget separates this observed prefix from a hypothetical
+four-step crossing. A two-level integer constraint rules out short exact
+return at the fixed step and capacity, without excluding a broader bounded
+class. Additional canonically reachable pressure levels and correlated
+trapping must pass the shared six-coordinate budget and carry checks.
+Section 28 reaches a third node-1 pressure in eleven steps. Node 1
+overshoots its earlier loss while the complete vector remains unbalanced.
+The three-level scalar length constraint is unchanged. Independently,
+node 4 retains a positive pressure across the three observed visible
+states, giving a uniform 43-step residence bound with the shared finite
+drift observer. A larger candidate class must change that drift or fail
+its confinement test, rather than rely on the recovered node-1 balance.
+Section 29 makes the frozen-stencil bound executable. A neighbor changes
+at step 15, ahead of the retained-carry center deadline 21, and lowers
+node 4's pressure while leaving it positive. The declared eight-boundary
+sign test ends censored at eighteen steps. The remaining exact gradient
+cut and the full nodal-area identity constrain any proposed coupled
+reachability argument. The shared gradient observer rejects uniform area
+errors that would be invisible to a Laplacian-only comparison.
+This supplies a return-class discriminator, not a longer live campaign
+or a stability conclusion; existential carry and reachability stay distinct.</p>
+<p><a href="../COUPLING_WINDING_PERSISTENCE/#30-a-coupled-profile-disagreement-tube-and-finite-numerical-band-horizon">Section 30</a>
+completes B2.d.32-B2.d.36
+through a canonical centered reference, a carried-step identity, exact
+spatial contraction, a uniform numerical-defect tube and a separate finite
+band budget. It reuses the forced-support Poisson solver for
+<code>w_epi*L*z=A-mean(A)*1</code> and verifies
+<code>y_next=(I-h*w_epi*L)*y+h*P*(w_epi*L*r+eta)</code> on all eighteen retained
+steps, where <code>P</code> removes the arithmetic mean, <code>y=P*X-z</code>, <code>X=x+r</code>, and
+<code>eta</code> contains the actual EPI-product and channel-assembly errors.
+At the unchanged default weight and <code>h=1/16</code>,
+the exact centered norm factor is <code>573161353023261791/2^59</code>; its square
+is the homogeneous energy factor. The uniform rounded-defect calculation
+gives the energy envelope a floor near <code>6.6560e-31</code> on <code>[3/8,5/8]</code>. Combining the
+spatial envelope and a distinct absolute mean bound proves a sufficient
+conditional numerical-band horizon of <code>196713720348826219</code> steps without
+executing them. This is a fixed-source numerical-map result, not a
+live phase/grammar or future-runtime certificate.</p>
+<p>The retained eighteen-step mean change is exactly <code>-131/(3*2^114)</code>,
+split into phase source <code>-3/2^113</code>, product/assembly rounding
+<code>-113/(3*2^114)</code> and zero carry feedback. That first shape envelope
+left the indefinite signed mean budget and node 4's nonpositive-pressure
+cut unresolved.</p>
+<p>B2.d.37-B2.d.40 now connect those questions through the same canonical
+pressure, carried-state and forced-profile owners. The
+<a href="../COUPLING_WINDING_PERSISTENCE/#31-b37-closing-the-spatial-and-rounding-bounds-on-each-other">self-consistent envelope</a>
+uses its own spatial restriction to close the rounding bound, giving
+an energy floor approximately <code>2.958228394578814e-31</code> and a uniform
+per-node product/assembly error bound <code>6.731922543446726e-32</code>.
+The
+<a href="../COUPLING_WINDING_PERSISTENCE/#32-b38-static-compensation-refutes-a-class-wide-linear-drift-argument">static seven-point certificate</a>
+admits seven states at exactly the retained endpoint's reconstructed mean
+and verifies a positive rational combination of their full pressure vectors
+equal to zero. This refutes a strictly signed fixed linear drift on that
+enclosed class; its algebraic coefficients do not define an executable
+switching rule or prove any of those points reachable.</p>
+<p>The
+<a href="../COUPLING_WINDING_PERSISTENCE/#33-b39-a-finite-first-passage-theorem-for-the-pressure-cut">finite passage theorem</a>
+shows that strictly positive node-4 pressure cannot persist through all
+first <code>30255</code> transitions: the derived centered growth would leave the
+spatial envelope while the independent finite band guarantee still holds.
+Thus a nonpositive readout must occur at an index no greater than <code>30254</code>,
+starting from the B31 endpoint. The
+<a href="../COUPLING_WINDING_PERSISTENCE/#34-b40-the-realized-first-passage-and-a-finite-mean-budget-reversal">decisive continuation</a>
+with its inherited carry reaches the first hit in 118 steps and 59 visible
+cell boundaries. Readouts <code>0..117</code> are positive; the endpoint has gradient
+index <code>-22</code> and pressure <code>-187043320717485/2^105</code>.</p>
+<p>The same finite run repays the B27 mean deficit by overshoot at step 59:
+its net mean area changes from <code>-1/(3*2^114)</code> to <code>1/2^113</code>.
+The final local mean area is <code>41/2^112</code>, split into phase source
+<code>-59/(3*2^113)</code>, product/assembly rounding <code>305/(3*2^113)</code> and zero
+carry feedback. Relative to B27 the final mean area is
+<code>217/(3*2^114)</code>, while every net coordinate area remains nonzero.
+This closes the declared finite sign and deficit-crossing questions,
+without an exact vector return or an infinite compensation theorem.</p>
+<p>B2.d.41 adds the
+<a href="../COUPLING_WINDING_PERSISTENCE/#35-b41-complete-carry-cells-cannot-provide-invariant-trapping">complete-cell obstruction</a>:
+any nonempty finite family in B37's gradient class fails forward invariance
+when each visible tuple admits its entire legal carry fiber. The theorem
+constructs an outward hypothetical carry; it does not continue or establish
+escape of the retained state. B2.d.42's stronger claim for B38's particular
+seven displayed rows comes from their
+<a href="../COUPLING_WINDING_PERSISTENCE/#36-b42-every-carry-leaves-the-seven-static-compensation-cells">exact temporal graph</a>.
+Only self-loops and the zero-based edge <code>5 -&gt; 4</code> are feasible. Every legal
+incoming carry leaves that family or fails band admission within 77 steps.
+Whole-band exit, entry from B40 and a general recurrence theorem are not
+implied. The static convex pressure balance therefore remains an algebraic
+certificate whose seven cells cannot themselves form a closed temporal class.</p>
+<p>B2.d.43's
+<a href="../COUPLING_WINDING_PERSISTENCE/#37-b43-a-finite-live-bridge-from-the-original-winding-preparation">finite live bridge</a>
+now executes the original null C6 preparation through 89 UM/IL pairs and
+terminal SHA, retaining 179 events and 356 pressure-refreshed carried flows.
+It reaches the same fixed phase source as B40 with its own actual EPI and
+carry: tail-entry offsets <code>(-3,0,2,-1,6,-5)</code> at time <code>22</code>, and offsets
+<code>(-3,0,2,0,8,-5)</code> immediately before SHA at <code>22.25</code>, all in units <code>2^-54</code>
+from <code>.5</code>. Every flow passes independent replay; all six nodal-balance
+residuals vanish and the accumulated mean area is <code>3293/(3*2^114)</code>.
+No detached remainder is imported or reset. SHA then changes capacity from
+one to <code>0.9204225284540524</code>, so the observed unit-capacity premise cannot be
+extended to a later live invocation. The finite bridge closes for this
+declared carried solver; it does not authenticate B27-B40's different
+historical detached state or prove indefinite trapping.</p>
+<p>The historical proposed extension was forward inclusion of carry subcells
+restricted jointly with visible shape and signed accumulated vector area,
+or a recurrent-budget obstruction. A continuation of the B43 branch would
+have to use its actual tail carry and closure under the fixed-map conditions;
+a B40 analysis must
+remain identified as a separate detached branch. Enlarging a complete-cell
+family inside the same gradient class
+cannot evade B41. Repeating the node-4 sign search or seeking a fixed strict
+linear separator over the full certified class cannot remove those
+obstructions. This is parked research, not the current G3 gate. Detailed
+proofs and shared owners remain centralized in the winding
+note; none of these blocks advances the saved B40 endpoint.
+B2.d.44 now excludes the
+<a href="../COUPLING_WINDING_PERSISTENCE/#38-b44-a-bounded-mean-interval-does-not-close-the-centered-energy-tube">local energy tube with independent mean bounds</a>
+around B43's actual pre-SHA mean. Opposite canonical mean increments and
+exact carry-cell translations provide hypothetical outward points at both
+boundaries. B2.d.45 preserves the
+<a href="../COUPLING_WINDING_PERSISTENCE/#39-b45-the-coordinate-arithmetic-class-does-not-rescue-local-mean-confinement">coordinate arithmetic restriction as well</a>:
+a derived affine carry lift keeps the requested mean and satisfies an analytic
+energy bound in a slightly smaller local window. Neither result advances the
+saved B43 state or proves escape of its actual trajectory. An admissible
+proposed trapping region must couple mean boundaries to shape and individual carries; the independent
+local mean interval is insufficient even after this arithmetic restriction.
+The earlier target-only winding theorem remains distinct. Represented joint
+invariance, autonomous preparation, physical correspondence, eventual
+antipodal U3 crossing and complete-runtime long-time behavior remain open;
+none of these open boundaries authorizes extending the failed nominal antipodal run.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../docs/assets/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+      
+    
+  </body>
+</html>

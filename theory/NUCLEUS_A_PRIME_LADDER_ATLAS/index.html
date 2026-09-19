@@ -1,0 +1,1851 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/NUCLEUS_A_PRIME_LADDER_ATLAS/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Nucleus A — Prime-Ladder Atlas (Internal Reproducibility Reference) - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#nucleus-a-prime-ladder-atlas-internal-reproducibility-reference" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Nucleus A — Prime-Ladder Atlas (Internal Reproducibility Reference)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/CLI_AND_SDK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI and SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FUNDAMENTAL_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NODAL_PARAMETER_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NODAL_RESEARCH_STRATEGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/FIVE_STAGE_EXECUTION_PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Active execution plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DERIVED_EPI_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/archive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Historical archive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../factorization-lab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Applications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Applications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../primality-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.github/WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-why-this-document-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Why this document exists
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-milestone-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Milestone map
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-smoothoscillatory-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The smooth/oscillatory boundary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-reproducing-each-milestone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Reproducing each milestone
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Reproducing each milestone">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-p12-tnfr-vm-on-operatornameres-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 P12 — TNFR vM ζ on \(\operatorname{Re}(s) &gt; 1\)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-p13-analytic-continuation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 P13 — Analytic continuation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-p14-prime-ladder-hamiltonian" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 P14 — Prime-ladder Hamiltonian
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-p15-weilguinand-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 P15 — Weil–Guinand verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-p16-likeiper-positivity-diagnostic-not-a-proof" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 P16 — Li–Keiper positivity (diagnostic, not a proof)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-p28-p30-supplied-smooth-targets-and-finite-congruence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 P28 / P30 — Supplied smooth targets and finite congruence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-honest-scope-and-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Honest scope and limitations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-value-as-internal-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Value as internal infrastructure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-possible-external-use-modest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Possible external use (modest)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-cross-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Cross-references
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="nucleus-a-prime-ladder-atlas-internal-reproducibility-reference">Nucleus A — Prime-Ladder Atlas (Internal Reproducibility Reference)<a class="headerlink" href="#nucleus-a-prime-ladder-atlas-internal-reproducibility-reference" title="Permanent link">&para;</a></h1>
+<p><strong>Status</strong>: Internal reproduction atlas for declared arithmetic constructions and finite numerical comparisons. Reported tolerances are historical observations, not universal certificates.
+<strong>Scope of value</strong>: Pedagogical / reproducibility / internal audit. <strong>NOT</strong> a claim of new mathematical results in classical analytic number theory.
+<strong>Review</strong>: 2026-09-19; historical results originally recorded May 27, 2026.
+<strong>Authority</strong>: Subordinate to the <a href="../TNFR_RIEMANN_RESEARCH_NOTES/">current Riemann scope memo</a>. The full chronological derivations and superseded claims remain in its archive.</p>
+<hr />
+<h2 id="1-why-this-document-exists">1. Why this document exists<a class="headerlink" href="#1-why-this-document-exists" title="Permanent link">&para;</a></h2>
+<p>This atlas collects finite prime-ladder, analytic-function and rescaling
+entry points. The former assertion that the CCET campaign exhausted the
+canonical routes is withdrawn; its conditional algebra and finite controls
+are scoped in <a href="../NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS/">Nucleus B</a>.</p>
+<p>Nucleus A makes no claim of a new theorem in analytic number theory. Its
+retained components are:</p>
+<ul>
+<li><strong>P12</strong> (TNFR vM ζ on <span class="arithmatex">\(\operatorname{Re}(s) &gt; 1\)</span>): reorganisation of the classical identity <span class="arithmatex">\(-\zeta'(s)/\zeta(s) = \sum_n \Lambda(n) n^{-s}\)</span> via the prime-ladder spectrum <span class="arithmatex">\(\{k \log p\}\)</span>.</li>
+<li><strong>P13</strong> (analytic continuation): standard analytic-number-theory content (Titchmarsh, Ivić).</li>
+<li><strong>P14</strong> (self-adjoint Hamiltonian with spectrum <span class="arithmatex">\(\{k \log p\}\)</span>): ad-hoc diagonal operator; not a geometric/dynamical realisation in the Berry–Keating / Connes sense.</li>
+<li><strong>P15</strong> (Weil–Guinand verification to <span class="arithmatex">\(\le 10^{-15}\)</span>): numerical control of a 1952 identity (Weil).</li>
+<li><strong>P28/P30</strong>: classical smooth-counting targets and a finite congruence
+  that installs a supplied positive target spectrum. No analytic
+  smooth/oscillatory range/kernel decomposition is established.</li>
+</ul>
+<p>Its internal uses are:</p>
+<ol>
+<li><strong>Reproduction entry points</strong>: source and demos are listed below. They
+   were not all rerun during this documentation audit; each current run must
+   report its actual environment, inputs and residuals.</li>
+<li><strong>Audit surface</strong>: finite explicit-formula residuals, truncated zero sums
+   and prime-ladder eigenvalue comparisons record separate construction checks.</li>
+<li><strong>Pedagogy</strong>: the current memo distinguishes the supplied arithmetic
+   inputs, classical identities and unresolved analytic bridge.</li>
+<li><strong>Boundary marker</strong>: separates a declared spectral construction from an
+   unproved analytic bridge. The argument term <span class="arithmatex">\(S(T)\)</span> is not itself an
+   RH-equivalent proposition without a precise additional quantified claim.</li>
+</ol>
+<hr />
+<h2 id="2-milestone-map">2. Milestone map<a class="headerlink" href="#2-milestone-map" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Milestone</th>
+<th>Module</th>
+<th>Demo</th>
+<th>Result</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>P12</strong> TNFR vM ζ on <span class="arithmatex">\(\operatorname{Re}(s) &gt; 1\)</span></td>
+<td><a href="../../src/tnfr/riemann/von_mangoldt.py">src/tnfr/riemann/von_mangoldt.py</a></td>
+<td><a href="../../examples/">examples/41_*.py</a></td>
+<td>Matches <span class="arithmatex">\(-\zeta'/\zeta\)</span> to machine precision on test grid</td>
+<td>CLOSED operationally</td>
+</tr>
+<tr>
+<td><strong>P13</strong> Analytic continuation</td>
+<td><a href="../../src/tnfr/riemann/analytic_continuation.py">src/tnfr/riemann/analytic_continuation.py</a></td>
+<td><a href="../../examples/">examples/42_*.py</a></td>
+<td>Uses classical meromorphic <span class="arithmatex">\(-\zeta'/\zeta\)</span>; selected critical-line pole comparisons</td>
+<td>Implemented comparison</td>
+</tr>
+<tr>
+<td><strong>P14</strong> Prime-ladder Hamiltonian (gap G1)</td>
+<td><a href="../../src/tnfr/riemann/prime_ladder_hamiltonian.py">src/tnfr/riemann/prime_ladder_hamiltonian.py</a></td>
+<td><a href="../../examples/">examples/43_*.py</a></td>
+<td>Self-adjoint, spectrum <span class="arithmatex">\(\{k\log p\}\)</span> to <span class="arithmatex">\(10^{-14}\)</span></td>
+<td>CLOSED operationally</td>
+</tr>
+<tr>
+<td><strong>P15</strong> Weil–Guinand verification (gap G3)</td>
+<td><a href="../../src/tnfr/riemann/weil_explicit_formula.py">src/tnfr/riemann/weil_explicit_formula.py</a></td>
+<td><a href="../../examples/">examples/44_*.py</a></td>
+<td>Residual <span class="arithmatex">\(\le 10^{-15}\)</span> for <span class="arithmatex">\(\sigma \in [3,18]\)</span></td>
+<td>CLOSED operationally</td>
+</tr>
+<tr>
+<td><strong>P16</strong> Truncated Li–Keiper sums</td>
+<td><a href="../../src/tnfr/riemann/li_keiper.py">src/tnfr/riemann/li_keiper.py</a></td>
+<td><a href="../../examples/03_riemann_zeta/45_li_keiper_demo.py">example 45</a></td>
+<td>Finite sums from supplied critical-line zeros or line-restricted peak coordinates; no certified tail</td>
+<td>Descriptive sign check</td>
+</tr>
+<tr>
+<td><strong>P28</strong> Smooth counting targets</td>
+<td><a href="../../src/tnfr/riemann/structural_zero_density.py">src/tnfr/riemann/structural_zero_density.py</a></td>
+<td>examples/57</td>
+<td>Scalar inversion of classical theta counting function</td>
+<td>Implemented target construction</td>
+</tr>
+<tr>
+<td><strong>P30</strong> Finite spectral rescaling</td>
+<td><a href="../../src/tnfr/riemann/admissible_rescaling.py">src/tnfr/riemann/admissible_rescaling.py</a></td>
+<td>examples/57</td>
+<td>Congruence installs supplied positive target spectrum</td>
+<td>Conditional finite identity</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-the-smoothoscillatory-boundary">3. The smooth/oscillatory boundary<a class="headerlink" href="#3-the-smoothoscillatory-boundary" title="Permanent link">&para;</a></h2>
+<p>P28 uses <span class="arithmatex">\(\overline N(T)=\theta(T)/\pi+1\)</span> from the classical
+Riemann–Siegel theta function. The leading expression
+<span class="arithmatex">\((T/2\pi)\log(T/(2\pi e))\)</span> is an asymptotic term, not that exact function.
+P30 then forms <span class="arithmatex">\(F=U\operatorname{diag}(\sqrt{\mu_i/\lambda_i})U^*\)</span>
+so that <span class="arithmatex">\(FHF^*=U\operatorname{diag}(\mu_i)U^*\)</span> on the retained subspace.
+This is a congruence with supplied targets; it does not independently predict
+them. With a proper retained subspace, <span class="arithmatex">\(F\)</span> has a kernel on its complement.</p>
+<p>No direct-sum decomposition of an analytic Hilbert–Pólya rescaling into
+smooth and oscillatory parts, placement of <span class="arithmatex">\(S(T)\)</span> in a REMESH kernel, or
+unreachability theorem for the full catalog is proved. The detailed current
+scope is centralized in <a href="../TNFR_RIEMANN_RESEARCH_NOTES/">the Riemann memo</a>.</p>
+<hr />
+<h2 id="4-reproducing-each-milestone">4. Reproducing each milestone<a class="headerlink" href="#4-reproducing-each-milestone" title="Permanent link">&para;</a></h2>
+<p>All commands assume the repo root and an activated compatible environment.
+The expectations below record earlier finite runs; they are not newly
+verified guarantees for every environment or parameter choice.</p>
+<h3 id="41-p12-tnfr-vm-on-operatornameres-1">4.1 P12 — TNFR vM ζ on <span class="arithmatex">\(\operatorname{Re}(s) &gt; 1\)</span><a class="headerlink" href="#41-p12-tnfr-vm-on-operatornameres-1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">examples</span><span class="p">/</span><span class="n">03_riemann_zeta</span><span class="p">/</span><span class="n">41_von_mangoldt_zeta_demo</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+<p>Expected: residual <span class="arithmatex">\(|\,\text{TNFR\_vM}(s) - (-\zeta'(s)/\zeta(s))\,| \le 10^{-12}\)</span> across the test grid.</p>
+<h3 id="42-p13-analytic-continuation">4.2 P13 — Analytic continuation<a class="headerlink" href="#42-p13-analytic-continuation" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">examples</span><span class="p">/</span><span class="n">03_riemann_zeta</span><span class="p">/</span><span class="n">42_riemann_zeros_as_resonances</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+<p>Expected: selected known critical-line zeros compared with poles of the
+classical evaluator. This does not locate every nontrivial zero.</p>
+<h3 id="43-p14-prime-ladder-hamiltonian">4.3 P14 — Prime-ladder Hamiltonian<a class="headerlink" href="#43-p14-prime-ladder-hamiltonian" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">examples</span><span class="p">/</span><span class="n">03_riemann_zeta</span><span class="p">/</span><span class="n">43_prime_ladder_hamiltonian_demo</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+<p>Expected: eigenvalues match <span class="arithmatex">\(\{k \log p : p \in \text{primes}, k \in \{1, \ldots, K\}\}\)</span> to <span class="arithmatex">\(10^{-14}\)</span>.</p>
+<h3 id="44-p15-weilguinand-verification">4.4 P15 — Weil–Guinand verification<a class="headerlink" href="#44-p15-weilguinand-verification" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">examples</span><span class="p">/</span><span class="n">03_riemann_zeta</span><span class="p">/</span><span class="n">44_weil_explicit_formula_demo</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+<p>Expected: residual <span class="arithmatex">\(\le 10^{-15}\)</span> for <span class="arithmatex">\(\sigma \in \{3, 5, 8, 12, 18\}\)</span> with the canonical test family.</p>
+<h3 id="45-p16-likeiper-positivity-diagnostic-not-a-proof">4.5 P16 — Li–Keiper positivity (diagnostic, not a proof)<a class="headerlink" href="#45-p16-likeiper-positivity-diagnostic-not-a-proof" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">examples</span><span class="p">/</span><span class="n">03_riemann_zeta</span><span class="p">/</span><span class="n">45_li_keiper_demo</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+<p>Historical runs reported positive truncated sums for the selected indices,
+using <code>mpmath.zetazero</code> as the zero source. This does not certify the signs of
+the complete Li coefficients. For any supplied <span class="arithmatex">\(\rho=1/2+it\)</span>, the factor
+<span class="arithmatex">\(1-1/\rho\)</span> has modulus one, so each conjugate-pair contribution is
+<span class="arithmatex">\(2[1-\cos(n\arg(1-1/\rho))]\geq0\)</span> in exact arithmetic. The optional P13 path
+also places every detected ordinate on this line before evaluating the sum.
+Its nonnegativity therefore cannot independently validate zero location.
+See the <a href="../TNFR_RIEMANN_RESEARCH_NOTES/#finite-zero-sums-and-the-li-criterion">current truncation boundary</a>.</p>
+<h3 id="46-p28-p30-supplied-smooth-targets-and-finite-congruence">4.6 P28 / P30 — Supplied smooth targets and finite congruence<a class="headerlink" href="#46-p28-p30-supplied-smooth-targets-and-finite-congruence" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">examples</span><span class="p">/</span><span class="n">03_riemann_zeta</span><span class="p">/</span><span class="n">57_admissible_rescaling_demo</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+<p>Expected: supplied smooth-counting targets and the finite congruence residual
+are reported. Their discrepancy from known zeros is descriptive, not a derived
+decomposition of the analytic oscillatory term.</p>
+<hr />
+<h2 id="5-honest-scope-and-limitations">5. Honest scope and limitations<a class="headerlink" href="#5-honest-scope-and-limitations" title="Permanent link">&para;</a></h2>
+<p>This section exists to prevent later overclaiming.</p>
+<ol>
+<li><strong>Nucleus A is not a proof of RH</strong>. No derived nodal Hilbert–Pólya
+   operator or analytic smooth/oscillatory decomposition has been supplied.</li>
+<li><strong>Nucleus A is not a new Hamiltonian for the Riemann zeros</strong>. P14 carries the <em>prime-ladder</em> spectrum, not the spectrum of zeros. The Berry–Keating / Connes program seeks a Hamiltonian whose spectrum <em>is</em> <span class="arithmatex">\(\{\gamma_n\}\)</span>; P14 is the dual object (primes side), and bridging the two is precisely the open T-HP problem.</li>
+<li><strong>P15 is a numerical verification of a 1952 identity</strong>. It is high-quality QA, not a theorem.</li>
+<li><strong>P28/P30 likely overlap with existing literature</strong>. A formal audit against Titchmarsh ch. 9, Ivić ch. 1, Meyer, Burnol, and Bombieri–Lagarias is required before any external publication claims novelty for the operator-level rescaling map.</li>
+<li><strong>No claim is made about GRH</strong> beyond the χ-twisted L-track parity (P32–P49), which mirrors Nucleus A for primitive real characters and inherits all the same limitations.</li>
+</ol>
+<hr />
+<h2 id="6-value-as-internal-infrastructure">6. Value as internal infrastructure<a class="headerlink" href="#6-value-as-internal-infrastructure" title="Permanent link">&para;</a></h2>
+<p>Even with the modest external-novelty assessment, Nucleus A provides:</p>
+<ul>
+<li><strong>A regression test surface</strong>: any future TNFR-Riemann extension can run P12/P14/P15 as integration checks.</li>
+<li><strong>A teaching reference</strong>: the current Riemann memo and examples 41–58
+  separate construction inputs from analytic conclusions; older derivations
+  remain in the explicitly historical notebook.</li>
+<li><strong>A comparison baseline</strong>: candidates can be compared with the same
+  supplied arithmetic data and finite diagnostics. This inventory is not a
+  proof of maximality or exhaustion of canonical constructions.</li>
+<li><strong>A concrete symmetry example</strong>: Nucleus B states the conditional
+  hypotheses needed to infer observation loss; it does not close all
+  extensions of this atlas.</li>
+</ul>
+<hr />
+<h2 id="7-possible-external-use-modest">7. Possible external use (modest)<a class="headerlink" href="#7-possible-external-use-modest" title="Permanent link">&para;</a></h2>
+<p>If at some point an external write-up is desired, the <strong>honest framing</strong> is:</p>
+<blockquote>
+<p><em>"Finite arithmetic trace comparisons, a declared prime-ladder Hamiltonian,
+and target-driven spectral congruence with explicit input provenance."</em></p>
+</blockquote>
+<p>No publication priority, venue recommendation or novelty claim is active.
+The <a href="../research/FIVE_STAGE_EXECUTION_PLAN/">single execution plan</a> owns priorities.</p>
+<hr />
+<h2 id="8-cross-references">8. Cross-references<a class="headerlink" href="#8-cross-references" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../TNFR_RIEMANN_RESEARCH_NOTES/">Current Riemann memo</a> — construction inputs, exact finite identities and unresolved analytic targets</li>
+<li><a href="../research/archive/RIEMANN_NOTEBOOK_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt">Historical notebook</a> — former P12–P49 derivations and CCET chronology; superseded universal claims and instructions are not current results</li>
+<li><a href="../NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS/">Conditional symmetry obstructions</a> — valid algebraic premises and limitations of the withdrawn universal no-go argument; no publication queue</li>
+<li><a href="../REMESH_INFINITY_DERIVATION/">REMESH_INFINITY_DERIVATION.md</a> — exact fixed-delay surrogate result and the unresolved status of any literal <span class="arithmatex">\(\tau_g\to\infty\)</span> operator or identification with <span class="arithmatex">\(S(T)\)</span></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../docs/assets/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+      
+    
+  </body>
+</html>

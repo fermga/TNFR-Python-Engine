@@ -1,0 +1,1870 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/examples/">
+      
+      
+        <link rel="prev" href="../theory/STRUCTURAL_RESEARCH_PROGRAM/">
+      
+      
+        <link rel="next" href="../benchmarks/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Examples - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tnfr-examples" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Examples
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/CLI_AND_SDK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI and SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../theory/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/FUNDAMENTAL_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/NODAL_PARAMETER_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/NODAL_RESEARCH_STRATEGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/research/FIVE_STAGE_EXECUTION_PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Active execution plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/DERIVED_EPI_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/research/archive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Historical archive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#start-with-the-intended-task" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Start with the intended task
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consolidated-demonstrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consolidated demonstrations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#diffusion-and-runtime-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diffusion and runtime evidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#geometry-and-phaseform-response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Geometry and phase/form response
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../factorization-lab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Applications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Applications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../primality-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.github/WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#start-with-the-intended-task" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Start with the intended task
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consolidated-demonstrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consolidated demonstrations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#diffusion-and-runtime-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diffusion and runtime evidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#geometry-and-phaseform-response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Geometry and phase/form response
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tnfr-examples">TNFR examples<a class="headerlink" href="#tnfr-examples" title="Permanent link">&para;</a></h1>
+<p>Examples demonstrate declared constructions, APIs and conditional results. Their
+numbers and historical filenames are discovery aids, not a ranking of scientific
+validity. The <a href="../theory/">theory index</a> owns claim status; the
+<a href="../theory/research/FIVE_STAGE_EXECUTION_PLAN/#current-g3-gate">execution plan</a>
+owns the active research queue. Running an example does not reopen a parked branch.</p>
+<h2 id="start-with-the-intended-task">Start with the intended task<a class="headerlink" href="#start-with-the-intended-task" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Directory</th>
+<th>Python files</th>
+<th>Use and authority</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>01_foundations</code></td>
+<td>5</td>
+<td>SDK and <a href="../theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE/">grammar scope</a></td>
+<td>Supplied preparations, words and state ensembles</td>
+</tr>
+<tr>
+<td><code>02_physics_regimes</code></td>
+<td>37</td>
+<td><a href="../theory/TNFR_DIFFUSION_STABILITY_THEOREM/">Diffusion certificates</a>, diagnostics and auxiliary models</td>
+<td>Read each model's hypotheses; a diagnostic decrease is not general stability</td>
+</tr>
+<tr>
+<td><code>03_riemann_zeta</code></td>
+<td>19</td>
+<td>Finite instruments in the <a href="../theory/TNFR_RIEMANN_RESEARCH_NOTES/">Riemann notebook</a></td>
+<td>Parked comparisons; disclose supplied zeros/primes</td>
+</tr>
+<tr>
+<td><code>04_riemann_L_twisted</code></td>
+<td>18</td>
+<td>Character/L-function instruments in the same <a href="../theory/TNFR_RIEMANN_RESEARCH_NOTES/">notebook</a></td>
+<td>Supplied arithmetic data and finite comparisons, not generalized RH</td>
+</tr>
+<tr>
+<td><code>05_type_hygiene</code></td>
+<td>13</td>
+<td><a href="../theory/CATALOG_TYPE_HYGIENE_PROGRAMME/">Catalog and state-type controls</a></td>
+<td>Finite representation probes; entropy does not determine state dimension</td>
+</tr>
+<tr>
+<td><code>06_navier_stokes</code></td>
+<td>1</td>
+<td><a href="../theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES/">Selected PDE correspondence</a></td>
+<td>Added models and unresolved continuum obligations</td>
+</tr>
+<tr>
+<td><code>07_number_theory</code></td>
+<td>15</td>
+<td><a href="../theory/TNFR_NUMBER_THEORY/">Arithmetic definitions</a>, residues and prime structure</td>
+<td>Disclose factorization, sieves and other construction inputs</td>
+</tr>
+<tr>
+<td><code>08_emergent_geometry</code></td>
+<td>47</td>
+<td><a href="../theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE/">Scale/geometry bridge</a>, spectra and auxiliary models</td>
+<td>Separate prescribed geometry, observed structure and autonomous generation</td>
+</tr>
+<tr>
+<td><code>09_millennium</code></td>
+<td>3</td>
+<td>Conditional algebraic comparisons; see the <a href="../theory/">theory index</a></td>
+<td>No solution to the named open problems is claimed</td>
+</tr>
+<tr>
+<td><code>10_applications</code></td>
+<td>6</td>
+<td><a href="../theory/research/PASSIVE_TRANSPORT_PROTOCOL/">Measurement protocol</a>, adapters and backend provenance</td>
+<td>Data admission and reserved prediction remain separate obligations</td>
+</tr>
+</tbody>
+</table>
+<p>The inventory contains 163 executable demonstrations and one shared support
+module, <code>_flat_grammar_model.py</code>. Counts describe files, not independent research
+lines. The grammar automaton examples reuse that module; arithmetic and physical
+examples reuse their package owners. A finite fixture may recur as a controlled
+comparison without constituting a second implementation of its governing law.</p>
+<p>Install the repository before running a selected entry point:</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+python<span class="w"> </span>examples/01_foundations/01_hello_world.py
+python<span class="w"> </span>examples/01_foundations/04_operator_sequences.py
+python<span class="w"> </span>examples/01_foundations/10_simplified_sdk_showcase.py
+</code></pre></div>
+<p>Example 01 is the minimal SDK entry point. Example 04 separates flat grammar
+admission from a deliberately illustrative pressure proxy. Example 10 surveys
+the topology builders and configured SDK operations. Example 07 is a larger
+prepared-state ensemble, not part of this introductory command list.</p>
+<p>For a retained declaration and finite execution report, use
+<a href="01_foundations/reproducible_study.py">reproducible_study.py</a> and the
+<a href="../docs/CLI_AND_SDK/">shared CLI/SDK guide</a>. The same declaration can be run
+through either interface; its export is not a complete resumable checkpoint.</p>
+<p>Optional dependencies vary by script. Plotting examples require <code>viz-basic</code>;
+examples 91 and 92 additionally require <code>scikit-learn</code>, and 92 downloads and
+caches UCI data. The Torch demonstration uses <code>compute-torch</code>. Read module
+docstrings and available <code>--help</code> before an explicit run; the directory is not an
+instruction to execute every file. Importing a demonstration does not start its
+command-line workflow. Some older examples still configure imports or plotting
+defaults at module scope, so this is not a promise of side-effect-free imports.
+Package ownership belongs to <a href="../ARCHITECTURE/">Architecture</a>, and verification
+requirements to <a href="../TESTING/">Testing</a>.</p>
+<h2 id="consolidated-demonstrations">Consolidated demonstrations<a class="headerlink" href="#consolidated-demonstrations" title="Permanent link">&para;</a></h2>
+<p>The former handwritten phase updates were removed because they presented
+<code>theta_dot</code> as the EPI nodal equation, used noncanonical pressure/coherence
+proxies, and duplicated the same kernels in several files. Their conceptual
+topics now point to the existing owners below; the old numerical outputs are
+not reinterpreted as canonical evidence.</p>
+<table>
+<thead>
+<tr>
+<th>Retired entry</th>
+<th>Reason and retained route</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>02_musical_resonance.py</code></td>
+<td>Handwritten phase synchronization; use <a href="08_emergent_geometry/179_phase_form_driven_response.py">179</a> for an explicitly prescribed phase/form response</td>
+</tr>
+<tr>
+<td><code>03_network_formation.py</code></td>
+<td>Handwritten connection rules and a private coherence score; use <a href="01_foundations/10_simplified_sdk_showcase.py">10</a> for supplied SDK topology construction</td>
+</tr>
+<tr>
+<td><code>05_coherence_evolution.py</code></td>
+<td>Phase update incorrectly attributed to the EPI law; use <a href="08_emergent_geometry/99_structural_diffusion.py">99</a> for the declared diffusion model</td>
+</tr>
+<tr>
+<td><code>06_network_topologies.py</code></td>
+<td>Duplicated private pressure/phase dynamics; use <a href="01_foundations/10_simplified_sdk_showcase.py">10</a> and <a href="08_emergent_geometry/99_structural_diffusion.py">99</a></td>
+</tr>
+<tr>
+<td><code>08_emergent_phenomena.py</code></td>
+<td>Ad hoc phase/frequency rules and collective-behavior claims; use <a href="01_foundations/07_phase_transitions.py">07</a> for prepared observations and <a href="08_emergent_geometry/179_phase_form_driven_response.py">179</a> for conditional response</td>
+</tr>
+<tr>
+<td><code>09_visualization_suite.py</code></td>
+<td>Plots of the duplicated substitute dynamics; use <a href="08_emergent_geometry/179_phase_form_driven_response.py">179</a> for exported plots of its declared model</td>
+</tr>
+<tr>
+<td><code>13_quantum_mechanics_demo.py</code></td>
+<td>Imposed energy targets and handwritten noisy updates, not a derived cavity spectrum; see the <a href="../theory/PHYSICAL_REGIME_CORRESPONDENCES/#44-validation-boundary">spectral validation boundary</a></td>
+</tr>
+<tr>
+<td><code>14_uncertainty_and_interference.py</code></td>
+<td>Raw-array Fourier widths and a forced wave grid without a canonical bridge or validated bound; see the <a href="../theory/PHYSICAL_REGIME_CORRESPONDENCES/#53-validation-boundary">Fourier scope</a></td>
+</tr>
+</tbody>
+</table>
+<p>The original bytes and retirement hashes are retained in the local audit
+artifacts under <code>artifacts/research/examples_consolidation_originals_2026_09_19/</code>.
+Example 01 now uses the public SDK directly. Examples 10 and 30 keep their
+command-line workflows behind <code>main()</code> instead of executing them on import.
+Example 109 retains its finite classical MAX-CUT baseline, with its supplied
+antialignment update distinguished from canonical TNFR phase pressure. None of
+these retirements introduces a replacement physical law or research branch.</p>
+<h2 id="diffusion-and-runtime-evidence">Diffusion and runtime evidence<a class="headerlink" href="#diffusion-and-runtime-evidence" title="Permanent link">&para;</a></h2>
+<p>These examples reuse the
+<a href="../theory/TNFR_DIFFUSION_STABILITY_THEOREM/">diffusion stability owner</a>.
+The table distinguishes an exact declared model from finite engine evidence.
+Detailed bounds and assumptions remain in that owner instead of being duplicated
+as a second theorem ledger here.</p>
+<table>
+<thead>
+<tr>
+<th>Entries in <code>02_physics_regimes/</code></th>
+<th>What they demonstrate</th>
+<th>Boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="02_physics_regimes/160_core_research_integration.py">160</a>, <a href="02_physics_regimes/161_core_research_trajectory.py">161</a>, <a href="02_physics_regimes/162_hybrid_epi_stability.py">162</a></td>
+<td>Restricted S16 and affine-reset controls</td>
+<td>Declared pure-EPI/hybrid models</td>
+</tr>
+<tr>
+<td><a href="02_physics_regimes/163_reception_runtime_bridge.py">163</a>, <a href="02_physics_regimes/164_resonance_runtime_bridge.py">164</a>, <a href="02_physics_regimes/165_operator_event_relaxation.py">165</a></td>
+<td>Local operator and event-time binding</td>
+<td>Captured runtime maps, not arbitrary operators</td>
+</tr>
+<tr>
+<td><a href="02_physics_regimes/166_event_remesh_reference_family.py">166</a>, <a href="02_physics_regimes/167_reversible_eigenmode_reference.py">167</a>, <a href="02_physics_regimes/168_runtime_reversible_eigenmode_reference.py">168</a></td>
+<td>Modal reference, Euler refinement and finite binary64 defects</td>
+<td>Conditional exact-real refinement differs from runtime convergence</td>
+</tr>
+<tr>
+<td><a href="02_physics_regimes/169_event_remesh_causal_runtime.py">169</a>, <a href="02_physics_regimes/170_runtime_remesh_block_margin.py">170</a></td>
+<td>Causal cycle receipts and finite block margins</td>
+<td>One invocation/block does not certify future stability</td>
+</tr>
+<tr>
+<td><a href="02_physics_regimes/171_remesh_schedule_policy_stability.py">171</a>, <a href="02_physics_regimes/172_runtime_remesh_relative_defect.py">172</a>, <a href="02_physics_regimes/173_binary64_remesh_relative_defect.py">173</a></td>
+<td>Conditional history envelopes and represented-number defects</td>
+<td>Required gain/defect hypotheses are separate from their finite measurements</td>
+</tr>
+<tr>
+<td><a href="02_physics_regimes/174_binary64_p2_reception_remesh_stability.py">174</a>, <a href="02_physics_regimes/175_runtime_p2_reception_stage.py">175</a>, <a href="02_physics_regimes/176_runtime_p2_reception_remesh_sequence.py">176</a>, <a href="02_physics_regimes/177_runtime_p2_reception_remesh_policy.py">177</a></td>
+<td>Restricted P2 half-Reception and alpha-one REMESH composition</td>
+<td>Numeric kernels, one stage, finite sequence and revalidated policy have distinct scopes</td>
+</tr>
+<tr>
+<td><a href="02_physics_regimes/178_half_alpha_antisymmetric_remesh_class.py">178</a></td>
+<td>Restricted antisymmetric binary64 REMESH class</td>
+<td>REMESH invariance alone is not complete-runtime invariance</td>
+</tr>
+</tbody>
+</table>
+<h2 id="geometry-and-phaseform-response">Geometry and phase/form response<a class="headerlink" href="#geometry-and-phaseform-response" title="Permanent link">&para;</a></h2>
+<p>The <a href="../theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE/">scale bridge</a> owns effective
+geometry and observation closure. The tetrad is a required diagnostic interface,
+not a proven complete state; reflection equivalence and loss of hidden state are
+separate questions. Auxiliary symplectic/U(2) demonstrations do not establish
+that engine operators are Hamiltonian or generate particles.</p>
+<p><a href="08_emergent_geometry/179_phase_form_driven_response.py">Example 179</a> checks a
+prescribed rotating phase contrast and its derived EPI response on the six-node
+prism. It evaluates detached analytic snapshots rather than a native trajectory.
+The <a href="../theory/NODAL_PARAMETER_FOUNDATIONS/#16-phase-and-form-directed-exchange-frames-and-the-moving-mean">phase/form owner</a>
+states the exact assumptions, moving mean and same-input contraction scope.
+The imposed phase clock is not a derived autonomous maintenance mechanism.</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>examples/08_emergent_geometry/179_phase_form_driven_response.py<span class="w"> </span>--output-dir<span class="w"> </span>docs/assets/phase_form_driven_response
+</code></pre></div>
+<p>Optional plots require the <code>viz-basic</code> extra. Retained outputs are the
+<a href="../docs/assets/phase_form_driven_response/phase_form_driven_response.png">figure</a>,
+<a href="../docs/assets/phase_form_driven_response/phase_form_driven_response.json">JSON</a>
+and <a href="../docs/assets/phase_form_driven_response/phase_form_driven_response.csv">CSV</a>.
+Their recorded residuals and refinements are finite evidence, not autonomous
+formation or a physical identification.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../docs/assets/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+      
+    
+  </body>
+</html>

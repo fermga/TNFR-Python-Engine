@@ -1,0 +1,3475 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/DERIVED_EPI_MEMORY/">
+      
+      
+        <link rel="prev" href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/">
+      
+      
+        <link rel="next" href="../research/archive/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Derived memory - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#memory-derived-by-observing-groups-of-epi-nodes" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Derived memory
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/CLI_AND_SDK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI and SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FUNDAMENTAL_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NODAL_PARAMETER_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NODAL_RESEARCH_STRATEGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/FIVE_STAGE_EXECUTION_PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Active execution plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived memory
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-is-derived-and-from-what" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What is derived, and from what
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-reversible-observation-geometry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The reversible observation geometry
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-exact-elimination-including-the-initial-hidden-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Exact elimination, including the initial hidden state
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-kernel-positivity-and-the-exact-closure-criterion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Kernel positivity and the exact closure criterion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-exact-zero-memory-control-p4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Exact zero-memory control: P4
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-exact-nonzero-memory-witness-p5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Exact nonzero-memory witness: P5
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-implementation-and-the-evidence-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Implementation and the evidence boundary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-finite-history-approximation-on-the-derived-p5-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Finite-history approximation on the derived P5 model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Finite-history approximation on the derived P5 model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-full-and-finite-history-equations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Full and finite-history equations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-exact-reference-and-omitted-forcing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Exact reference and omitted forcing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-positive-resolvent-and-the-uniform-trajectory-bound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Positive resolvent and the uniform trajectory bound
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#84-causal-and-decaying-error-bounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4 Causal and decaying error bounds
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#85-window-choice-limiting-controls-and-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.5 Window choice, limiting controls and scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#86-executable-rational-finite-history-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.6 Executable rational finite-history reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-nested-nodal-closure-and-the-remesh-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Nested nodal closure and the REMESH comparison
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Nested nodal closure and the REMESH comparison">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-a-causal-history-obstruction-to-direct-substitution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 A causal-history obstruction to direct substitution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92-the-memory-is-removed-by-a-genuine-nested-nodal-quotient" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 The memory is removed by a genuine nested nodal quotient
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93-minimality-of-the-retained-linear-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 Minimality of the retained linear state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#94-one-metric-and-an-exact-visiblediscarded-energy-split" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4 One metric and an exact visible/discarded energy split
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#95-exact-composition-with-a-declared-temporal-echo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.5 Exact composition with a declared temporal echo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#96-implementation-finite-runtime-defects-and-evidence-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.6 Implementation, finite runtime defects and evidence boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-exact-affine-closure-on-a-captured-forced-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Exact affine closure on a captured forced support
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Exact affine closure on a captured forced support">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-projected-autonomy-and-affine-lift-invariance-differ" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 Projected autonomy and affine lift invariance differ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-derived-memory-and-the-current-relative-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 Derived memory and the current relative profile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#103-observer-changes-at-a-structural-event" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.3 Observer changes at a structural event
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#104-implementation-and-evidence-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.4 Implementation and evidence boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-minimal-linear-state-retaining-a-declared-observation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Minimal linear state retaining a declared observation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11. Minimal linear state retaining a declared observation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#111-complete-level-stabilization-and-minimality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.1 Complete-level stabilization and minimality
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#112-exact-affine-realization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.2 Exact affine realization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#113-scope-and-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.3 Scope and implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#114-full-epi-euler-prediction-in-the-sufficient-coordinates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.4 Full-EPI Euler prediction in the sufficient coordinates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#115-a-held-model-forecast-versus-a-composite-runtime-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.5 A held-model forecast versus a composite runtime step
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#116-conditional-paired-evolution-under-common-coherence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.6 Conditional paired evolution under common Coherence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#117-epi-resets-with-pre-generated-pressure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.7 EPI resets with pre-generated pressure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/archive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Historical archive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../factorization-lab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Applications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Applications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../primality-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.github/WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-is-derived-and-from-what" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What is derived, and from what
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-reversible-observation-geometry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The reversible observation geometry
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-exact-elimination-including-the-initial-hidden-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Exact elimination, including the initial hidden state
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-kernel-positivity-and-the-exact-closure-criterion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Kernel positivity and the exact closure criterion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-exact-zero-memory-control-p4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Exact zero-memory control: P4
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-exact-nonzero-memory-witness-p5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Exact nonzero-memory witness: P5
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-implementation-and-the-evidence-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Implementation and the evidence boundary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-finite-history-approximation-on-the-derived-p5-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Finite-history approximation on the derived P5 model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Finite-history approximation on the derived P5 model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-full-and-finite-history-equations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Full and finite-history equations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-exact-reference-and-omitted-forcing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Exact reference and omitted forcing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-positive-resolvent-and-the-uniform-trajectory-bound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Positive resolvent and the uniform trajectory bound
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#84-causal-and-decaying-error-bounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4 Causal and decaying error bounds
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#85-window-choice-limiting-controls-and-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.5 Window choice, limiting controls and scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#86-executable-rational-finite-history-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.6 Executable rational finite-history reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-nested-nodal-closure-and-the-remesh-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Nested nodal closure and the REMESH comparison
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Nested nodal closure and the REMESH comparison">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-a-causal-history-obstruction-to-direct-substitution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 A causal-history obstruction to direct substitution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92-the-memory-is-removed-by-a-genuine-nested-nodal-quotient" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 The memory is removed by a genuine nested nodal quotient
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93-minimality-of-the-retained-linear-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 Minimality of the retained linear state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#94-one-metric-and-an-exact-visiblediscarded-energy-split" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4 One metric and an exact visible/discarded energy split
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#95-exact-composition-with-a-declared-temporal-echo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.5 Exact composition with a declared temporal echo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#96-implementation-finite-runtime-defects-and-evidence-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.6 Implementation, finite runtime defects and evidence boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-exact-affine-closure-on-a-captured-forced-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Exact affine closure on a captured forced support
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Exact affine closure on a captured forced support">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-projected-autonomy-and-affine-lift-invariance-differ" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 Projected autonomy and affine lift invariance differ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-derived-memory-and-the-current-relative-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 Derived memory and the current relative profile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#103-observer-changes-at-a-structural-event" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.3 Observer changes at a structural event
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#104-implementation-and-evidence-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.4 Implementation and evidence boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-minimal-linear-state-retaining-a-declared-observation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Minimal linear state retaining a declared observation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11. Minimal linear state retaining a declared observation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#111-complete-level-stabilization-and-minimality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.1 Complete-level stabilization and minimality
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#112-exact-affine-realization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.2 Exact affine realization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#113-scope-and-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.3 Scope and implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#114-full-epi-euler-prediction-in-the-sufficient-coordinates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.4 Full-EPI Euler prediction in the sufficient coordinates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#115-a-held-model-forecast-versus-a-composite-runtime-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.5 A held-model forecast versus a composite runtime step
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#116-conditional-paired-evolution-under-common-coherence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.6 Conditional paired evolution under common Coherence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#117-epi-resets-with-pre-generated-pressure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.7 EPI resets with pre-generated pressure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="memory-derived-by-observing-groups-of-epi-nodes">Memory derived by observing groups of EPI nodes<a class="headerlink" href="#memory-derived-by-observing-groups-of-epi-nodes" title="Permanent link">&para;</a></h1>
+<p><strong>Status:</strong> Exact fixed-generator elimination, captured-affine closure and minimal linear realizations,
+P5 finite-history error bounds, and nested P5 orbit closure with an obstruction to direct REMESH substitution;
+exact controls and finite numerical/runtime observations. General multichannel
+closure and broader memory-to-operator realizations remain open.
+<strong>Research links:</strong> B2/O4.a, S3, S8, S9 and S16.
+<strong>Updated:</strong> 2026-09-18.
+<strong>Implementation:</strong> <a href="../../src/tnfr/physics/epi_memory.py">epi_memory.py</a>, using the
+reversible partition geometry in
+<a href="../../src/tnfr/physics/structural_morphism.py">structural_morphism.py</a>.</p>
+<h2 id="1-what-is-derived-and-from-what">1. What is derived, and from what<a class="headerlink" href="#1-what-is-derived-and-from-what" title="Permanent link">&para;</a></h2>
+<p>The microscopic dynamics is the existing pure-EPI channel of the TNFR nodal
+equation. It contains no imposed delay or additional memory parameter:</p>
+<div class="arithmatex">\[
+\dot x_i=\nu_i\Delta\mathrm{NFR}_{\mathrm{epi},i},\qquad
+\Delta\mathrm{NFR}_{\mathrm{epi},i}
+=\frac{\sum_j W_{ij}x_j}{d_i}-x_i,
+\qquad d_i=\sum_jW_{ij}.
+\]</div>
+<p>Here <span class="arithmatex">\(x_i\)</span> is the real scalar EPI coordinate. Assume finite fixed effective
+conductance <span class="arithmatex">\(W=W^\top\geq0\)</span>, positive row strengths <span class="arithmatex">\(d_i&gt;0\)</span>, and fixed finite
+positive capacities <span class="arithmatex">\(\nu_i\)</span>. These are the hypotheses of this restricted
+channel, not conclusions about all TNFR executions. Set</p>
+<div class="arithmatex">\[
+D=\operatorname{diag}(d_i),\quad B=D-W,\quad
+H=\operatorname{diag}(d_i/\nu_i),\quad
+A=\operatorname{diag}(\nu_i)(I-D^{-1}W)=H^{-1}B.
+\]</div>
+<p>The nodal law is <span class="arithmatex">\(\dot x=-Ax\)</span>. In particular,
+<span class="arithmatex">\(A^\top H=HA=B\)</span>, and <span class="arithmatex">\(B\)</span> is positive semidefinite. Algebra in this note is over
+the exact real coefficients of the declared model. Floating-point construction
+and evaluation of the associated matrices have separate numerical residuals.</p>
+<p>An observer retains the weighted EPI means of a partition and discards the
+remaining within-block coordinates. The partition specifies which TNFR nodes
+are observed together; it is not an additional evolution law or a proof that
+nature selects those particular blocks. Eliminating the discarded coordinates
+derives the memory below from the same nodal law. It does not add a fundamental
+memory mechanism to that law.</p>
+<h2 id="2-the-reversible-observation-geometry">2. The reversible observation geometry<a class="headerlink" href="#2-the-reversible-observation-geometry" title="Permanent link">&para;</a></h2>
+<p>Let <span class="arithmatex">\(P\in\mathbb R^{n\times m}\)</span> lift one macro value to every node of its
+nonempty partition block: <span class="arithmatex">\(P_{i\alpha}=1\)</span> when node <span class="arithmatex">\(i\)</span> belongs to block
+<span class="arithmatex">\(\alpha\)</span>, and zero otherwise. Define</p>
+<div class="arithmatex">\[
+\bar H=P^\top HP,\qquad
+R=\bar H^{-1}P^\top H,\qquad Q=I-PR.
+\]</div>
+<p>Thus <span class="arithmatex">\(R\)</span> takes the <span class="arithmatex">\(H\)</span>-weighted block means, <span class="arithmatex">\(RP=I\)</span>, <span class="arithmatex">\(Q^2=Q\)</span>, <span class="arithmatex">\(RQ=0\)</span>, <span class="arithmatex">\(QP=0\)</span>,
+and <span class="arithmatex">\(Q^\top H=HQ\)</span>. The macro and hidden coordinates are</p>
+<div class="arithmatex">\[
+y=Rx,\qquad z=Qx,\qquad x=Py+z.
+\]</div>
+<p>The hidden subspace is <span class="arithmatex">\(\mathcal Z=\ker R=\operatorname{im}Q\)</span>. It is the
+<span class="arithmatex">\(H\)</span>-orthogonal complement of <span class="arithmatex">\(\operatorname{im}P\)</span>. The instantaneous macro
+generator is fixed by the same graph and capacities:</p>
+<div class="arithmatex">\[
+\bar A=RAP=\bar H^{-1}P^\top BP.
+\]</div>
+<p>This is the existing reversible quotient construction. Its off-diagonal macro
+conductances aggregate the microscopic conductances between blocks. When a
+macro node has positive external strength <span class="arithmatex">\(\bar d_\alpha\)</span>, its corresponding
+capacity is <span class="arithmatex">\(\bar\nu_\alpha=\bar d_\alpha/\bar H_{\alpha\alpha}\)</span>; it is not a
+separately fitted parameter. The shared implementation additionally requires a
+strict reduction to at least two blocks and connected macro support.</p>
+<h2 id="3-exact-elimination-including-the-initial-hidden-state">3. Exact elimination, including the initial hidden state<a class="headerlink" href="#3-exact-elimination-including-the-initial-hidden-state" title="Permanent link">&para;</a></h2>
+<p>Applying <span class="arithmatex">\(R\)</span> and <span class="arithmatex">\(Q\)</span> to the nodal equation gives</p>
+<div class="arithmatex">\[
+\dot y=-\bar A y-RAz,\qquad
+\dot z=-QAPy-QAQz.
+\]</div>
+<p>Let <span class="arithmatex">\(T=QAQ\)</span> and <span class="arithmatex">\(C=QAP\)</span>. The subspace <span class="arithmatex">\(\mathcal Z\)</span> is invariant under <span class="arithmatex">\(T\)</span>.
+Since <span class="arithmatex">\(z_0=Qx_0\)</span> and <span class="arithmatex">\(Cy(s)\)</span> lie in that subspace, variation of constants gives</p>
+<div class="arithmatex">\[
+z(t)=e^{-Tt}Qx_0-\int_0^t e^{-T(t-s)}Cy(s)\,ds.
+\]</div>
+<p>Substitution into the first equation proves the exact Volterra equation</p>
+<div class="arithmatex">\[
+\boxed{
+\dot y(t)=-\bar A y(t)
++\int_0^t K(t-s)y(s)\,ds+f(t)
+}
+\]</div>
+<p>with</p>
+<div class="arithmatex">\[
+\boxed{K(t)=RAe^{-Tt}C},\qquad
+\boxed{f(t)=-RAe^{-Tt}Qx_0}.
+\]</div>
+<p>The plus sign on the convolution follows from substituting the negative hidden
+forcing into <span class="arithmatex">\(-RAz\)</span>. The source <span class="arithmatex">\(f\)</span> is the contribution of the initial hidden
+state, not an external drive or random noise. Omitting it generally changes the
+solution. Conversely, <span class="arithmatex">\(Qx_0=0\)</span> removes this source but does not generally remove
+the convolution generated by later within-block evolution.</p>
+<p>Writing <span class="arithmatex">\(RAQ\)</span> instead of <span class="arithmatex">\(RA\)</span> is equivalent in these two expressions: the inputs
+to the exponential are hidden and the exponential preserves <span class="arithmatex">\(\mathcal Z\)</span>.
+Without that subspace fact, dropping projection factors would be unjustified.</p>
+<p>This equation reproduces <span class="arithmatex">\(y(t)=Re^{-At}x_0\)</span> for all <span class="arithmatex">\(t\geq0\)</span> and every initial
+state under the declared fixed-coefficient hypotheses. The converse follows by
+recovering <span class="arithmatex">\(z\)</span> from its formula: the reconstructed <span class="arithmatex">\(x=Py+z\)</span> solves the same
+linear initial-value problem. No empirical fitting or extra constitutive law
+enters this equivalence.</p>
+<h2 id="4-kernel-positivity-and-the-exact-closure-criterion">4. Kernel positivity and the exact closure criterion<a class="headerlink" href="#4-kernel-positivity-and-the-exact-closure-criterion" title="Permanent link">&para;</a></h2>
+<p>The hidden generator is self-adjoint and nonnegative in the <span class="arithmatex">\(H\)</span> metric:</p>
+<div class="arithmatex">\[
+T^\top H=HT,\qquad
+v^\top HTv=(Qv)^\top B(Qv)\geq0.
+\]</div>
+<p>Consequently <span class="arithmatex">\(H^{1/2}TH^{-1/2}\)</span> is symmetric positive semidefinite, and its
+exponential is symmetric positive definite at each finite <span class="arithmatex">\(t\geq0\)</span>. Using
+<span class="arithmatex">\(Q^\top H=HQ\)</span> and <span class="arithmatex">\(A^\top H=HA\)</span> gives</p>
+<div class="arithmatex">\[
+\boxed{\bar H K(t)=C^\top H e^{-Tt}C}.
+\]</div>
+<p>Indeed, <span class="arithmatex">\(C^\top H=P^\top HAQ\)</span> and <span class="arithmatex">\(Qe^{-Tt}C=e^{-Tt}C\)</span>. For every macro vector
+<span class="arithmatex">\(v\)</span>, this identity yields</p>
+<div class="arithmatex">\[
+v^\top\bar H K(t)v
+=(H^{1/2}Cv)^\top
+ e^{-H^{1/2}TH^{-1/2}t}(H^{1/2}Cv)\geq0.
+\]</div>
+<p>Thus <span class="arithmatex">\(K(t)\)</span> is self-adjoint and positive semidefinite in the macro metric. This
+does not assert that all its individual entries are nonnegative. At zero lag,
+<span class="arithmatex">\(\bar H K(0)=C^\top HC\)</span>, so positive definiteness of <span class="arithmatex">\(H\)</span> proves</p>
+<div class="arithmatex">\[
+\begin{aligned}
+K(0)=0
+&amp;\iff QAP=0\\
+&amp;\iff AP=P\bar A\\
+&amp;\iff RA=\bar A R.
+\end{aligned}
+\]</div>
+<p>For the final equivalence, <span class="arithmatex">\(QAP=0\)</span> says that the lifted block-constant subspace
+is invariant under <span class="arithmatex">\(A\)</span>. Self-adjointness in <span class="arithmatex">\(H\)</span> makes its orthogonal complement
+invariant too, hence <span class="arithmatex">\(RAQ=0\)</span> and <span class="arithmatex">\(RA=\bar A R\)</span>. Conversely, <span class="arithmatex">\(RAQ=0\)</span> has weighted
+adjoint <span class="arithmatex">\(QAP=0\)</span>. Therefore the kernel vanishes identically exactly when every
+microstate admits the autonomous macro law <span class="arithmatex">\(\dot y=-\bar A y\)</span>. In that case the
+initial hidden source also vanishes for every <span class="arithmatex">\(x_0\)</span>.</p>
+<p>Zero hidden source for one state or agreement of one initial derivative is a
+strictly weaker condition. A numerical residual below a tolerance is likewise
+not an exact zero-kernel proof.</p>
+<p>If microscopic positive-conductance support is connected, <span class="arithmatex">\(B\)</span> has only the
+constant null direction. Because <span class="arithmatex">\(\mathcal Z\)</span> is orthogonal to that direction,
+<span class="arithmatex">\(T\)</span> restricted to <span class="arithmatex">\(\mathcal Z\)</span> is positive definite. The ambient matrix <span class="arithmatex">\(T\)</span>
+still has the lifted macro subspace in its kernel. Connected macro support
+alone does not establish connected microscopic support, so it cannot justify
+the stronger hidden-space assertion for every accepted graph.</p>
+<p>The positive convolution sign does not create energy. The original nodal
+balance remains</p>
+<div class="arithmatex">\[
+\frac12 x^\top Hx
+=\frac12 y^\top\bar Hy+\frac12 z^\top Hz,\qquad
+\frac{d}{dt}\frac12 x^\top Hx=-x^\top Bx\leq0.
+\]</div>
+<p>The macro equation retains the influence of hidden coordinates of this same
+dissipative system. It does not establish a new source of sustained vibration.</p>
+<h2 id="5-exact-zero-memory-control-p4">5. Exact zero-memory control: P4<a class="headerlink" href="#5-exact-zero-memory-control-p4" title="Permanent link">&para;</a></h2>
+<p>Take the unweighted path <span class="arithmatex">\(0-1-2-3\)</span>, unit capacities and partition
+<span class="arithmatex">\(((0,3),(1,2))\)</span>. Here</p>
+<div class="arithmatex">\[
+a=(x_0+x_3)/2,\qquad b=(x_1+x_2)/2,\qquad
+\bar H=\operatorname{diag}(2,4).
+\]</div>
+<p>For every microscopic initial state, direct application of the nodal equation
+gives</p>
+<div class="arithmatex">\[
+\dot a=-a+b,\qquad \dot b=(a-b)/2,
+\qquad
+\bar A=\begin{pmatrix}1&amp;-1\\-1/2&amp;1/2\end{pmatrix}.
+\]</div>
+<p>Thus <span class="arithmatex">\(QAP=0\)</span>, <span class="arithmatex">\(K(t)=0\)</span>, and <span class="arithmatex">\(f(t)=0\)</span>. Reflection-antisymmetric hidden states
+can evolve, but they cannot affect these macro observations. Grouping nodes
+does not universally produce nonzero memory.</p>
+<h2 id="6-exact-nonzero-memory-witness-p5">6. Exact nonzero-memory witness: P5<a class="headerlink" href="#6-exact-nonzero-memory-witness-p5" title="Permanent link">&para;</a></h2>
+<p>Take the unweighted path <span class="arithmatex">\(0-1-2-3-4\)</span>, unit capacities and partition
+<span class="arithmatex">\(((0,4),(1,2,3))\)</span>. The reversible macro coordinates and one relevant hidden
+coordinate are</p>
+<div class="arithmatex">\[
+a=(x_0+x_4)/2,\quad b=(x_1+x_2+x_3)/3,\quad
+u=x_2-(x_1+x_3)/2.
+\]</div>
+<p>The full hidden subspace has dimension three, but its other two coordinates
+do not couple to these macro observations. No reflection-symmetry assumption
+on the initial state is required. Direct substitution proves</p>
+<div class="arithmatex">\[
+\begin{aligned}
+\dot a&amp;=-a+b-u/3,\\
+\dot b&amp;=(a-b)/3+u/9,\\
+\dot u&amp;=(b-a)/2-5u/3.
+\end{aligned}
+\]</div>
+<p>Therefore</p>
+<div class="arithmatex">\[
+\bar H=\operatorname{diag}(2,6),\qquad
+\bar A=\begin{pmatrix}1&amp;-1\\-1/3&amp;1/3\end{pmatrix},
+\]</div>
+<div class="arithmatex">\[
+K(t)=e^{-5t/3}
+\begin{pmatrix}1/6&amp;-1/6\\-1/18&amp;1/18\end{pmatrix},\qquad
+f(t)=u_0e^{-5t/3}\begin{pmatrix}-1/3\\1/9\end{pmatrix}.
+\]</div>
+<p>In particular,</p>
+<div class="arithmatex">\[
+\bar H K(t)=\frac{e^{-5t/3}}3
+\begin{pmatrix}1&amp;-1\\-1&amp;1\end{pmatrix}\succeq0.
+\]</div>
+<p>Three controls distinguish the claims:</p>
+<ol>
+<li><strong>Same macrostate, different initial rates.</strong> The nonnegative integer states
+   <span class="arithmatex">\(x^{(A)}=(0,1,1,1,0)\)</span> and <span class="arithmatex">\(x^{(B)}=(0,0,3,0,0)\)</span> both have <span class="arithmatex">\((a,b)=(0,1)\)</span>.
+   Their hidden coordinates are <span class="arithmatex">\(u_A=0\)</span> and <span class="arithmatex">\(u_B=3\)</span>, and their initial macro
+   rates are <span class="arithmatex">\((1,-1/3)\)</span> and <span class="arithmatex">\((0,0)\)</span>. No autonomous first-order right-hand side
+   depending only on <span class="arithmatex">\((a,b)\)</span> can represent both.</li>
+<li><strong>Zero source, nonzero generated memory.</strong> For <span class="arithmatex">\(x_0=P(1,0)\)</span>, <span class="arithmatex">\(u_0=0\)</span> and
+   <span class="arithmatex">\(f\)</span> vanishes. Nevertheless <span class="arithmatex">\(\dot u(0)=-1/2\)</span>. The second derivative differs
+   from the source-free autonomous quotient prediction by
+   <span class="arithmatex">\(K(0)y_0=(1/6,-1/18)^\top\)</span>. Thus removing the convolution is already wrong
+   at second order in time.</li>
+<li><strong>Relaxation, not an emergent harmonic wave.</strong> The contrast <span class="arithmatex">\(d=a-b\)</span> satisfies
+   <span class="arithmatex">\(\ddot d+3\dot d+2d=0\)</span>. Its two decay rates are 1 and 2. The added time
+   derivative is a reformulation of the eliminated hidden coordinate, not a
+   separately postulated inertia or proof of sustained oscillation.</li>
+</ol>
+<p>All these coefficients follow from the path, the partition and the existing
+unit-capacity nodal law. For a common fixed capacity <span class="arithmatex">\(\nu&gt;0\)</span>, the kernel is
+<span class="arithmatex">\(\nu^2 e^{-5\nu t/3}K_0\)</span>, with <span class="arithmatex">\(K_0\)</span> the displayed constant matrix, and the
+source is <span class="arithmatex">\(\nu u_0e^{-5\nu t/3}(-1/3,1/9)^\top\)</span>. The contrast decay rates are
+<span class="arithmatex">\(\nu\)</span> and <span class="arithmatex">\(2\nu\)</span>; no new relaxation parameter is fitted.</p>
+<h2 id="7-implementation-and-the-evidence-boundary">7. Implementation and the evidence boundary<a class="headerlink" href="#7-implementation-and-the-evidence-boundary" title="Permanent link">&para;</a></h2>
+<p><code>observe_epi_memory</code> in <a href="../../src/tnfr/physics/epi_memory.py">epi_memory.py</a> reads
+one fixed graph, partition and initial EPI state and samples the corresponding
+linear-model quantities. It reuses the existing reversible partition builder;
+it does not evolve the live graph or add an operator. Its binary64 matrices,
+matrix-exponential samples and reported residuals are finite numerical
+observations of the exact model derived here. They are not exact symbolic
+certificates, a validated matrix-exponential error bound, or a proof of a
+particular engine solver trajectory's accuracy.</p>
+<p>The P4/P5 formulas supply independent analytical controls.
+<a href="../../tests/physics/test_epi_memory.py">Tests</a> check
+both the initial hidden source and the driven hidden contribution, weighted
+kernel symmetry/positivity, shared-macrostate counterexamples, zero-memory
+closure, and failure to justify closure from a single block-constant initial
+state. A finite tolerance must remain visible when interpreting numerical
+agreement. Observed finite agreement does not establish asymptotic binary64
+convergence or every future execution.</p>
+<p>The observer keeps closure <code>tolerance</code> separate from <code>numerical_tolerance</code>.
+Before sampling, it checks relative constant-field and weighted-total defects
+in the represented fine generator. Each fine and Markov propagator is then
+checked for row-sum, nonnegativity and normalized stationary-weight defects.
+Samples outside this declared numerical policy are rejected. These are
+necessary diffusion identities, not a sufficient accuracy test: even a
+stochastic matrix with the right stationary measure can be the wrong flow.
+The checks catch an extreme-time P4 exponential drift that leaves the rate
+residual zero, and severe self-loop cancellation in generator construction,
+including when the only requested time is zero. Neither tolerance is a new
+physical parameter, and neither causes small memory terms to be discarded.</p>
+<p><a href="../../benchmarks/derived_epi_memory.py">derived_epi_memory.py</a> reproduces four
+deterministic P4/P5 controls at times <code>0, 0.125, 0.5, 1, 2</code>. It writes a local
+JSON artifact with the source revision, dirty-source digest, dependency
+versions, matrices, samples and omission errors through the existing
+<code>CoreExperimentManifest</code>. Its status is <strong>MEASURED</strong>, separate from the exact
+theorem above. It uses no random seed, runtime timestep or physical dataset.</p>
+<p>The older <a href="../../src/tnfr/physics/reduction_certificates.py">reduction_certificates.py</a>
+contains a related Kron reduction control for <span class="arithmatex">\(\dot x=-Bx\)</span>, including the
+initial kernel norm. That supplied-conductance model equals the nodal dynamics
+<span class="arithmatex">\(\dot x=-H^{-1}Bx\)</span> only under unit mobility <span class="arithmatex">\(H=I\)</span>, for example <span class="arithmatex">\(\nu_i=d_i\)</span>.
+It supplies a useful static-versus-dynamic reduction comparison, but does not
+replace the heterogeneous-capacity derivation above.</p>
+<p>The result is restricted to fixed-coefficient pure-EPI diffusion and a fixed
+partition. It does not prove closure for the nonlinear phasor channel, changing
+capacities, support, topology or observation partitions, arbitrary canonical
+operator sequences, grammar or complete runtime histories. It does not
+identify this continuous memory kernel with REMESH's configured temporal echo.</p>
+<p>No external physical mechanism, astronomical data or empirical outcome is used
+in the derivation. A future laboratory interpretation still needs a specified
+observation map, derived TNFR dynamics and a discriminating measurement. This
+result establishes an exact mathematical form of memory in grouped TNFR
+observations; it does not establish that physical reality or quantum behavior
+emerges from it.</p>
+<h2 id="8-finite-history-approximation-on-the-derived-p5-model">8. Finite-history approximation on the derived P5 model<a class="headerlink" href="#8-finite-history-approximation-on-the-derived-p5-model" title="Permanent link">&para;</a></h2>
+<p>The exact P5 kernel in section 6 decays with a rate already fixed by the nodal
+law. This permits a separate approximation question: how much older observed
+history can be omitted, and how much can that omission change the resulting
+macro trajectory? A bound on the omitted forcing alone does not answer the
+second question, because the approximate trajectory subsequently feeds back
+through its retained history. The following theorem controls that feedback.</p>
+<h3 id="81-full-and-finite-history-equations">8.1 Full and finite-history equations<a class="headerlink" href="#81-full-and-finite-history-equations" title="Permanent link">&para;</a></h3>
+<p>Keep the unweighted P5 graph, fixed partition and common positive capacity
+<span class="arithmatex">\(\nu\)</span> of section 6. Define the macro contrast and conserved mean by</p>
+<div class="arithmatex">\[
+d=a-b,\qquad m=(a+3b)/4,
+\]</div>
+<p>and set</p>
+<div class="arithmatex">\[
+\alpha=\frac{4\nu}{3},\qquad
+\beta=\frac{5\nu}{3},\qquad
+\gamma=\frac{2\nu^2}{9},\qquad
+k(t)=\gamma e^{-\beta t},\qquad
+g(t)=-\frac{4\nu u_0}{9}e^{-\beta t}.
+\]</div>
+<p>Here <span class="arithmatex">\(\alpha\)</span>, <span class="arithmatex">\(\beta\)</span> and <span class="arithmatex">\(\gamma\)</span> abbreviate derived coefficients; they are
+not configurable laws or the REMESH mixing coefficient. Taking the contrast
+of the exact macro equation gives</p>
+<div class="arithmatex">\[
+\dot d(t)=-\alpha d(t)+g(t)+\int_0^t k(t-s)d(s)\,ds.
+\]</div>
+<p>For a selected retention window <span class="arithmatex">\(\ell\geq0\)</span>, define <span class="arithmatex">\(d_\ell\)</span> by the same
+initial contrast and the same initial-hidden-state source:</p>
+<div class="arithmatex">\[
+\boxed{
+\dot d_\ell(t)=-\alpha d_\ell(t)+g(t)
++\int_{\max(0,t-\ell)}^t k(t-s)d_\ell(s)\,ds,
+\qquad d_\ell(0)=d_0.
+}
+\]</div>
+<p>Thus only the driven memory integral is shortened. The source <span class="arithmatex">\(g\)</span> is retained
+at every time; discarding it would define a different approximation requiring
+an additional error term. The window <span class="arithmatex">\(\ell\)</span> is an approximation resource
+chosen against an error target, not a new physical timescale. For each finite
+window the continuous Volterra equation has a unique continuous trajectory
+with the displayed derivative. No timestep or live-graph update is needed to
+define it.</p>
+<p>Both macro equations conserve the same <span class="arithmatex">\(m\)</span>: the row vector <span class="arithmatex">\((1,3)\)</span> annihilates
+the instantaneous generator, memory kernel and source. Consequently</p>
+<div class="arithmatex">\[
+y_\ell(t)-y(t)=
+\begin{pmatrix}3/4\\-1/4\end{pmatrix}
+\bigl(d_\ell(t)-d(t)\bigr),\qquad
+\|y_\ell(t)-y(t)\|_\infty=\frac34|d_\ell(t)-d(t)|.
+\]</div>
+<h3 id="82-exact-reference-and-omitted-forcing">8.2 Exact reference and omitted forcing<a class="headerlink" href="#82-exact-reference-and-omitted-forcing" title="Permanent link">&para;</a></h3>
+<p>The full contrast has the closed form</p>
+<div class="arithmatex">\[
+d(t)=c_1e^{-\nu t}+c_2e^{-2\nu t},\qquad
+c_1=\frac{2d_0}{3}-\frac{4u_0}{9},\quad
+c_2=\frac{d_0}{3}+\frac{4u_0}{9}.
+\]</div>
+<p>Its exact amplitude <span class="arithmatex">\(D=\sup_{t\geq0}|d(t)|\)</span> can be calculated without sampling.
+Under <span class="arithmatex">\(z=e^{-\nu t}\)</span>, the contrast is <span class="arithmatex">\(c_1z+c_2z^2\)</span> on the closed interval
+<span class="arithmatex">\([0,1]\)</span>. Therefore <span class="arithmatex">\(D\)</span> is the maximum of <span class="arithmatex">\(|d_0|\)</span> and, only when <span class="arithmatex">\(c_2\ne0\)</span> and
+<span class="arithmatex">\(z_*=-c_1/(2c_2)\in(0,1)\)</span>, the additional candidate
+<span class="arithmatex">\(|-c_1^2/(4c_2)|\)</span>. The omitted endpoint <span class="arithmatex">\(z=0\)</span> has value zero. The simpler
+<span class="arithmatex">\(D\leq |c_1|+|c_2|\)</span> supplies a conservative alternative. On a finite horizon
+<span class="arithmatex">\([0,T]\)</span>, the corresponding <span class="arithmatex">\(D_T\)</span> follows from the endpoints and any interior
+vertex of the same quadratic on <span class="arithmatex">\([e^{-\nu T},1]\)</span>.</p>
+<p>Write <span class="arithmatex">\(\delta=e^{-\beta\ell}\)</span> and <span class="arithmatex">\(q=t-\ell\)</span>. For <span class="arithmatex">\(t\leq\ell\)</span>, the omitted
+forcing <span class="arithmatex">\(r_\ell(t)\)</span> is zero. For <span class="arithmatex">\(t&gt;\ell\)</span>, its value on the full reference is</p>
+<div class="arithmatex">\[
+\begin{aligned}
+r_\ell(t)
+&amp;=\int_0^{t-\ell} k(t-s)d(s)\,ds\\
+&amp;=\delta\left[
+\frac{\nu c_1}{3}\bigl(e^{-\nu q}-e^{-5\nu q/3}\bigr)
++\frac{2\nu c_2}{3}\bigl(e^{-5\nu q/3}-e^{-2\nu q}\bigr)
+\right].
+\end{aligned}
+\]</div>
+<p>Direct integration also gives the sign-independent bound</p>
+<div class="arithmatex">\[
+|r_\ell(t)|\leq
+\frac{2\nu}{15}D\delta\bigl(1-e^{-\beta q}\bigr)
+\leq\frac{2\nu}{15}D\delta.
+\]</div>
+<p>These are statements about a forcing evaluated on the exact full trajectory.
+The error between the two actual solutions requires the next step.</p>
+<h3 id="83-positive-resolvent-and-the-uniform-trajectory-bound">8.3 Positive resolvent and the uniform trajectory bound<a class="headerlink" href="#83-positive-resolvent-and-the-uniform-trajectory-bound" title="Permanent link">&para;</a></h3>
+<p>Let <span class="arithmatex">\(k_\ell(t)=k(t)\mathbf1_{0\leq t\leq\ell}\)</span>, with causal convolution on
+<span class="arithmatex">\([0,\infty)\)</span>. The value at the window endpoint does not change its integral.
+Subtracting the two equations, <span class="arithmatex">\(e=d_\ell-d\)</span> satisfies</p>
+<div class="arithmatex">\[
+\dot e=-\alpha e+k_\ell*e-r_\ell,\qquad e(0)=0.
+\]</div>
+<p>Its impulse resolvent <span class="arithmatex">\(h_\ell\)</span> is nonnegative. To see this, set
+<span class="arithmatex">\(p(t)=e^{-\alpha t}\)</span> and <span class="arithmatex">\(j_\ell=p*k_\ell\)</span>. Variation of constants gives the
+nonnegative series</p>
+<div class="arithmatex">\[
+h_\ell=p+\sum_{n=1}^\infty j_\ell^{*n}*p.
+\]</div>
+<p>The series converges in <span class="arithmatex">\(L^1\)</span> because</p>
+<div class="arithmatex">\[
+\|j_\ell\|_1=
+\frac{\|k_\ell\|_1}{\alpha}&lt;1,
+\qquad
+\|k_\ell\|_1=\frac{2\nu}{15}(1-\delta).
+\]</div>
+<p>Nonnegativity permits integration term by term, yielding</p>
+<div class="arithmatex">\[
+\|h_\ell\|_1
+=\frac1{\alpha-\|k_\ell\|_1}
+=\frac{15}{2\nu(9+\delta)}.
+\]</div>
+<p>As <span class="arithmatex">\(e=-h_\ell*r_\ell\)</span>, the convolution inequality now proves</p>
+<div class="arithmatex">\[
+\boxed{
+\sup_{t\geq0}|d_\ell(t)-d(t)|
+\leq\frac{D\delta}{9+\delta},\qquad
+\sup_{t\geq0}\|y_\ell(t)-y(t)\|_\infty
+\leq\frac{3D\delta}{4(9+\delta)}.
+}
+\]</div>
+<p>This is a bound on the solution of the truncated equation, including its
+feedback through the retained history. It assumes no unproved bound on that
+approximate solution. For a finite horizon, <span class="arithmatex">\(D_T\)</span> can replace <span class="arithmatex">\(D\)</span> and the
+suprema can be restricted to <span class="arithmatex">\([0,T]\)</span>.</p>
+<h3 id="84-causal-and-decaying-error-bounds">8.4 Causal and decaying error bounds<a class="headerlink" href="#84-causal-and-decaying-error-bounds" title="Permanent link">&para;</a></h3>
+<p>The full-kernel resolvent is explicit:</p>
+<div class="arithmatex">\[
+h(t)=\frac23e^{-\nu t}+\frac13e^{-2\nu t}.
+\]</div>
+<p>Its Laplace transform is
+<span class="arithmatex">\((p+\beta)/((p+\nu)(p+2\nu))\)</span>, as follows directly from
+<span class="arithmatex">\(p+\alpha-\gamma/(p+\beta)\)</span>. Since <span class="arithmatex">\(0\leq k_\ell\leq k\)</span>, the positive
+resolvent series proves <span class="arithmatex">\(0\leq h_\ell\leq h\)</span>. For
+<span class="arithmatex">\(q=(t-\ell)_+\)</span>, integration gives</p>
+<div class="arithmatex">\[
+\int_0^q h(q-v)\bigl(1-e^{-\beta v}\bigr)\,dv
+=\frac{5}{6\nu}\bigl(1-e^{-\nu q}\bigr)^2.
+\]</div>
+<p>Combining this identity with the forcing estimate and the uniform bound gives</p>
+<div class="arithmatex">\[
+\boxed{
+|d_\ell(t)-d(t)|\leq
+D\delta\min\left\{
+\frac1{9+\delta},\;
+\frac{(1-e^{-\nu q})^2}{9}
+\right\}.
+}
+\]</div>
+<p>The macro infinity-norm bound is again three quarters of this expression.
+The error vanishes through time <span class="arithmatex">\(\ell\)</span> and its bound starts quadratically
+after that time. Thus <span class="arithmatex">\(\ell\geq T\)</span> gives exact agreement over <span class="arithmatex">\([0,T]\)</span>.</p>
+<p>A bound that also resolves late-time relaxation follows by convolving the
+absolute values of the two explicit forcing terms with <span class="arithmatex">\(h\)</span>. With
+<span class="arithmatex">\(s=\nu(t-\ell)_+\)</span>, both bracketed expressions below are nonnegative, and</p>
+<div class="arithmatex">\[
+|d_\ell(t)-d(t)|\leq\frac{2\delta}{9}\left[
+|c_1|e^{-s}(s-1+e^{-s})
++|c_2|\bigl(e^{-s}-(1+s)e^{-2s}\bigr)
+\right].
+\]</div>
+<p>This expression tends to zero as <span class="arithmatex">\(O((1+s)e^{-s})\)</span>. The truncated solution
+therefore converges to the same conserved macro mean, although its transient
+trajectory generally differs. This conclusion concerns this derived scalar
+P5 reduction with its retained source, not arbitrary memory truncations.</p>
+<h3 id="85-window-choice-limiting-controls-and-scope">8.5 Window choice, limiting controls and scope<a class="headerlink" href="#85-window-choice-limiting-controls-and-scope" title="Permanent link">&para;</a></h3>
+<p>For a prescribed positive contrast-error target <span class="arithmatex">\(\varepsilon\)</span>, a sufficient
+uniform window is</p>
+<div class="arithmatex">\[
+\ell_{\mathrm{req}}=
+\begin{cases}
+0,&amp;\varepsilon\geq D/10,\\[1mm]
+\dfrac{3}{5\nu}\log\dfrac{D-\varepsilon}{9\varepsilon},
+&amp;0&lt;\varepsilon&lt;D/10.
+\end{cases}
+\]</div>
+<p>This is obtained by solving <span class="arithmatex">\(D\delta/(9+\delta)\leq\varepsilon\)</span>; it is a
+sufficient budget, not a proof of a smallest possible window. For a macro
+infinity-norm target <span class="arithmatex">\(\varepsilon_y\)</span>, substitute <span class="arithmatex">\(4\varepsilon_y/3\)</span> for
+<span class="arithmatex">\(\varepsilon\)</span>. On a finite horizon, retaining
+<span class="arithmatex">\(\min(T,\ell_{\mathrm{req}})\)</span> suffices, since the <span class="arithmatex">\(T\)</span> branch is exact there.
+If <span class="arithmatex">\(D=0\)</span>, both <span class="arithmatex">\(d_0\)</span> and <span class="arithmatex">\(u_0\)</span> vanish, and every window is exact for these
+macro observations. A zero error target for a nonzero trajectory is not
+covered by the positive-target logarithmic formula.</p>
+<p>At the other boundary, <span class="arithmatex">\(\ell=0\)</span> removes the convolution but keeps the initial
+hidden source. Its solution is</p>
+<div class="arithmatex">\[
+d_{\ell=0}(t)=
+\left(d_0-\frac{4u_0}{3}\right)e^{-4\nu t/3}
++\frac{4u_0}{3}e^{-5\nu t/3}.
+\]</div>
+<p>This supplies an independent approximation control. In particular, it must
+not be confused with the source-free instantaneous quotient, which would
+give only <span class="arithmatex">\(d_0e^{-4\nu t/3}\)</span>. Changing the common capacity replaces time by
+<span class="arithmatex">\(\nu t\)</span> and the retention window by <span class="arithmatex">\(\nu\ell\)</span> throughout: the retention
+budget scales as <span class="arithmatex">\(1/\nu\)</span>, without an independently selected physical rate.</p>
+<p>The theorem is over exact real model coefficients and applies to every
+finite real initial P5 state, including states without reflection symmetry.
+Binary64 evaluation of its exponentials or bounds is not automatically a
+certified enclosure. In particular, exponential underflow to a displayed
+zero cannot prove exact zero omitted history. Exact zero for <span class="arithmatex">\(t\leq\ell\)</span>
+instead follows from the integration domain itself. Any executable rational
+reference must separately enclose the exponential evaluations and its
+finite-history solution.</p>
+<p>This approximation result neither evolves a live graph nor certifies a
+canonical operator sequence, REMESH history, numerical solver timestep,
+changing topology or empirical correspondence. Its memory and decay rates
+remain consequences of the fixed P5 nodal dynamics already derived above.</p>
+<h3 id="86-executable-rational-finite-history-reference">8.6 Executable rational finite-history reference<a class="headerlink" href="#86-executable-rational-finite-history-reference" title="Permanent link">&para;</a></h3>
+<p><a href="../../src/tnfr/physics/p5_memory_truncation.py"><code>bound_p5_memory_truncation</code></a>
+implements this fixed P5 reference from five explicit initial coordinates,
+the common capacity, a window and observation times. It accepts integers and
+Fractions exactly; other real inputs retain the shared materialized binary64
+rational value. It does not infer a P5 model from an arbitrary live graph.</p>
+<p>The finite-history solution itself has an exact finite formula. Set
+<code>sigma=nu*t</code>, <code>lambda=nu*ell</code>. Differentiating the derived convolution equation
+and retaining its source gives</p>
+<div class="arithmatex">\[
+d_\lambda''+3d_\lambda'+2d_\lambda
+=-\frac29e^{-5\lambda/3}
+d_\lambda(\sigma-\lambda)\mathbf1_{\sigma&gt;\lambda},
+\qquad d_\lambda'(0)=-4d_0/3-4u_0/9,
+\]</div>
+<p>where primes now use scaled time. The source remains in the initial
+derivative even though it cancels on differentiating the equation. This
+second derivative is a reformulation of projected diffusion, without an
+independently added inertia. The value of the right-hand side at its single
+switching time does not change the continuous solution.</p>
+<p>For <code>lambda&gt;0</code>, define polynomials for positive integers <code>p,q</code>:</p>
+<div class="arithmatex">\[
+P_{pq}(r)=\sum_{k=1}^{p}(-1)^{p-k}
+{p+q-k-1\choose p-k}\frac{r^{k-1}}{(k-1)!},\qquad
+Q_{pq}(r)=\sum_{k=1}^{q}(-1)^p
+{p+q-k-1\choose q-k}\frac{r^{k-1}}{(k-1)!}.
+\]</div>
+<p>Partial fractions show that
+<code>P_pq(r)*exp(-r)+Q_pq(r)*exp(-2r)</code> is the inverse Laplace transform of
+<code>1/((s+1)^p*(s+2)^q)</code>. The boundary cases are <code>P_10=1,Q_10=0</code> and
+<code>P_01=0,Q_01=1</code>. Expanding the delayed transfer equation gives</p>
+<div class="arithmatex">\[
+d_\lambda(\sigma)=
+\sum_{j=0}^{\lfloor\sigma/\lambda\rfloor}
+\left(-\frac29\right)^j
+\left[
+ (c_1P_{j+1,j}(r_j)+c_2P_{j,j+1}(r_j))
+ e^{-(\sigma+2j\lambda/3)}
++(c_1Q_{j+1,j}(r_j)+c_2Q_{j,j+1}(r_j))
+ e^{-(2\sigma-j\lambda/3)}
+\right],\quad r_j=\sigma-j\lambda.
+\]</div>
+<p>Equivalently, each term is a delayed convolution power of the second-order
+resolvent with the full reference. Terms with <code>j&gt;=1,r_j=0</code> vanish exactly.
+The implementation handles the zero-window formula in section 8.5 separately
+and uses the full reference unchanged when <code>t&lt;=ell</code>.</p>
+<p>Every coefficient and exponential argument in this formula is rational for
+rational inputs. The implementation reuses the rational negative-exponential
+enclosure from
+<a href="../../src/tnfr/physics/reversible_eigenmode_reference.py">reversible_eigenmode_reference.py</a>
+and its shared Taylor bound in <a href="../../src/tnfr/_exact_time.py">_exact_time.py</a>.
+Signed interval sums preserve rigorous endpoints and exact cancellation of
+equal exponents. Unlike the approximate matrix-exponential observer in section
+7, these results explicitly enclose evaluation uncertainty. No integration
+timestep or sampled-history interpolation error occurs in this formula.</p>
+<p>The output keeps three quantities separate: the omitted reference forcing,
+the error between full and truncated solutions, and the width of the numerical
+enclosure. The theorem's macro error bound is rounded upward with rational
+exponential bounds; the raw solution-error enclosure can be wider because
+interval evaluation is conservative. Integer/Fraction interval endpoints
+remain authoritative. The benchmark uses directed outward rounding for any
+displayed binary64 error bounds, rather than ordinary float casts.</p>
+<p>Resource admission currently allows at most 32 nonzero delayed corrections per
+sample and <code>nu*t&lt;=2048</code>, which keeps all required exponential arguments within
+the existing limit of 4096. These are workload and representation limits;
+neither is a physical scale or a bound on rational bit size. The theorem itself
+has no such finite-time cutoff. In particular, an extremely large window is
+handled by the exact <code>t&lt;=ell</code> branch without exponentiating the window.</p>
+<p><a href="../../tests/physics/test_p5_memory_truncation.py">Tests</a> compare the enclosures with
+independent high-precision full, zero-window and first-delay formulas, and
+compare later windows with a separate block-matrix method of steps. They also
+check the source, amplitude maximum, bounds, capacity scaling and resource
+boundaries. The existing
+<a href="../../benchmarks/derived_epi_memory.py">benchmark</a> now records three P5 initial
+states at windows <code>0,1/4,1/2,2</code> and times <code>0,1/8,1/2,1,2</code>. Its separate B2.b
+manifest labels the rational reference <strong>DERIVED</strong>, preserves exact endpoints
+and records the working-source digest. Physical correspondence remains
+untested.</p>
+<h2 id="9-nested-nodal-closure-and-the-remesh-comparison">9. Nested nodal closure and the REMESH comparison<a class="headerlink" href="#9-nested-nodal-closure-and-the-remesh-comparison" title="Permanent link">&para;</a></h2>
+<p>The derived history integral and the configured REMESH echo both involve past
+structure, but that description alone establishes no dynamical equivalence.
+The following comparison retains the same fixed unweighted P5, common positive
+capacity <code>nu</code>, and real scalar EPI channel. It separates a failure of direct
+substitution from an exact way to compose the two declared dynamics.</p>
+<h3 id="91-a-causal-history-obstruction-to-direct-substitution">9.1 A causal-history obstruction to direct substitution<a class="headerlink" href="#91-a-causal-history-obstruction-to-direct-substitution" title="Permanent link">&para;</a></h3>
+<p>Write the microscopic generator as <code>A5=nu*L_rw</code>. The reflection-even vector</p>
+<div class="arithmatex">\[
+v=(1,0,-1,0,1)^\top,\qquad A_5v=\nu v
+\]</div>
+<p>gives the exact nodal trajectory
+<code>x(t)=c0*1+epsilon*exp(-nu*t)*v</code>. Let <code>h&gt;0</code> be an observation interval and take
+the current state at zero together with its actual nodal past at
+<code>-tau_local*h</code> and <code>-tau_global*h</code>. For positive integer delays and
+<code>0&lt;alpha&lt;=1</code>, uniform unclipped REMESH uses</p>
+<div class="arithmatex">\[
+\beta=(1-\alpha)^2,\quad \gamma=\alpha(1-\alpha),\quad
+\delta=\alpha,\qquad \beta+\gamma+\delta=1.
+\]</div>
+<p>Its output is <code>c0*1+epsilon*r*v</code>, where</p>
+<div class="arithmatex">\[
+r=\beta+\gamma e^{\nu\tau_{\rm local}h}
+       +\delta e^{\nu\tau_{\rm global}h}&gt;1.
+\]</div>
+<p>The exact forward nodal state at time <code>h</code> instead has amplitude
+<code>exp(-nu*h)&lt;1</code>. Thus no coefficient in this class makes the complete REMESH
+map a forward nodal step on this same causal history. The original two-group
+projection also sees <code>v</code>, so projection does not remove the contradiction.
+Equivalently, no real decay factor <code>z</code> in <code>(0,1)</code> satisfies</p>
+<div class="arithmatex">\[
+z=\beta+\gamma z^{-\tau_{\rm local}}
+       +\delta z^{-\tau_{\rm global}}.
+\]</div>
+<p>This is not an argument based on fabricated constant past data. For any
+finite set of these samples, a finite baseline and amplitude can keep every
+coordinate nonnegative and inside one interval where clipping is inactive.
+Neither the observation interval nor that preparation is a new physical law.</p>
+<p>An exact dyadic control uses <code>nu=1</code>, <code>h=log(2)</code>, <code>c0=4</code>, <code>epsilon=1</code>,
+<code>alpha=1/2</code>, and delays <code>1,2</code>. Newest first, its three rows are
+<code>4*1+v</code>, <code>4*1+2*v</code>, <code>4*1+4*v</code>; every value lies in <code>[0,8]</code>. REMESH gives
+<code>r=11/4</code>, whereas forward diffusion gives <code>1/2</code>. The current microscopic
+disagreement energy rises from <code>2</code> to <code>121/8</code>. This does not contradict the
+existing augmented-history theorem: with stationary weights <code>(4/9,1/3,2/9)</code>,
+that energy decreases from <code>32/3</code> to <code>55/6</code>, an exact drop of <code>3/2</code>.</p>
+<p>The obstruction concerns direct substitution of the complete echo map for a
+forward nodal or projected evolution step. It does not rule out every possible
+derived embedding, discretization of the memory term, or larger drift-plus-echo
+construction. Such a construction would need its own exact observation map,
+history initialization and dynamical correspondence; none follows from this
+comparison, and fitting a coefficient to one trajectory would not prove it.</p>
+<h3 id="92-the-memory-is-removed-by-a-genuine-nested-nodal-quotient">9.2 The memory is removed by a genuine nested nodal quotient<a class="headerlink" href="#92-the-memory-is-removed-by-a-genuine-nested-nodal-quotient" title="Permanent link">&para;</a></h3>
+<p>Retain the reflection-orbit coordinates</p>
+<div class="arithmatex">\[
+q=(a,p,c)^\top,\qquad
+a=(x_0+x_4)/2,\quad p=(x_1+x_3)/2,\quad c=x_2.
+\]</div>
+<p>The associated projection and lift are</p>
+<div class="arithmatex">\[
+R_3=\begin{pmatrix}
+1/2&amp;0&amp;0&amp;0&amp;1/2\\
+0&amp;1/2&amp;0&amp;1/2&amp;0\\
+0&amp;0&amp;1&amp;0&amp;0
+\end{pmatrix},\qquad
+J=\begin{pmatrix}
+1&amp;0&amp;0\\0&amp;1&amp;0\\0&amp;0&amp;1\\0&amp;1&amp;0\\1&amp;0&amp;0
+\end{pmatrix}.
+\]</div>
+<p>This is the existing reversible quotient construction for the equitable
+partition <code>((0,4),(1,3),(2,))</code>. The quotient is a three-node path with
+conductance <code>2</code> on each edge, strengths <code>(2,4,2)</code> and capacity <code>nu</code> at every
+node. Direct application of the nodal law gives</p>
+<div class="arithmatex">\[
+A_3=\nu\begin{pmatrix}
+1&amp;-1&amp;0\\-1/2&amp;1&amp;-1/2\\0&amp;-1&amp;1
+\end{pmatrix},\qquad
+\dot q=-A_3q,\qquad
+R_3J=I,\quad R_3A_5=A_3R_3,\quad A_5J=JA_3.
+\]</div>
+<p>These identities hold for every microscopic initial state; reflection symmetry
+of that state is unnecessary. The original two-group observer is the further
+weighted merge</p>
+<div class="arithmatex">\[
+\begin{pmatrix}a\\b\end{pmatrix}
+=\begin{pmatrix}1&amp;0&amp;0\\0&amp;2/3&amp;1/3\end{pmatrix}q,\qquad
+b=(2p+c)/3,\quad u=c-p.
+\]</div>
+<p>Its projection is exactly this merge composed with <code>R3</code>. The first reduction
+closes without memory. The second merges two quotient nodes with distinct
+neighbor profiles, discards their contrast <code>u</code>, and produces the kernel of
+section 6. Thus the memory-producing step is identified inside the same
+hierarchy of TNFR node observations.</p>
+<p>The chart <code>(a,b,u)</code> is related to genuine quotient EPI values by
+<code>q=(a,b-u/3,b+2*u/3)</code>. Its generator is</p>
+<div class="arithmatex">\[
+A_{abu}=\nu\begin{pmatrix}
+1&amp;-1&amp;1/3\\-1/3&amp;1/3&amp;-1/9\\1/2&amp;-1/2&amp;5/3
+\end{pmatrix}.
+\]</div>
+<p>This is a coordinate change, not a proposal to treat <code>u</code> as a new TNFR node.
+In particular, its consensus direction is <code>(1,1,0)</code>, not <code>(1,1,1)</code>.</p>
+<h3 id="93-minimality-of-the-retained-linear-state">9.3 Minimality of the retained linear state<a class="headerlink" href="#93-minimality-of-the-retained-linear-state" title="Permanent link">&para;</a></h3>
+<p>Let <code>R2</code> denote the original two-group projection. Any autonomous linear state
+containing both its outputs for every microscopic initial state must have a
+row space containing <code>R2</code> and invariant under right multiplication by <code>A5</code>.
+It must therefore contain the two rows of <code>R2</code> and the first row of <code>R2*A5</code>.
+Their minor in columns <code>0,1,2</code> is</p>
+<div class="arithmatex">\[
+\det\begin{pmatrix}
+1/2&amp;0&amp;0\\0&amp;1/3&amp;1/3\\\nu/2&amp;-\nu/2&amp;0
+\end{pmatrix}=\frac{\nu}{12}&gt;0.
+\]</div>
+<p>At least three independent coordinates are required. The invariant
+three-coordinate quotient above attains that bound. This proves minimality
+within autonomous linear realizations containing <code>(a,b)</code>; it does not prove
+full microscopic observability, nonlinear state completeness, or minimality
+of every possible history representation.</p>
+<h3 id="94-one-metric-and-an-exact-visiblediscarded-energy-split">9.4 One metric and an exact visible/discarded energy split<a class="headerlink" href="#94-one-metric-and-an-exact-visiblediscarded-energy-split" title="Permanent link">&para;</a></h3>
+<p>The metrics are inherited from the same nodal capacity and conductance:</p>
+<div class="arithmatex">\[
+H_5=\frac1\nu\operatorname{diag}(1,2,2,2,1),\qquad
+H_3=J^\top H_5J=\frac1\nu\operatorname{diag}(2,4,2).
+\]</div>
+<p>Set <code>rho=(x0-x4)/2</code>, <code>sigma=(x1-x3)/2</code>, and
+<code>w=x-J*q=(rho,sigma,0,-sigma,-rho)</code>. The lift and discarded component are
+<code>H5</code>-orthogonal. The latter has zero weighted mean, while both <code>x</code> and <code>q</code>
+have mean <code>m=(a+2*p+c)/4=(a+3*b)/4</code>. Consequently the centered disagreement
+energy <code>E_H(x)=1/2*(x-m*1)^T*H*(x-m*1)</code> satisfies</p>
+<div class="arithmatex">\[
+E_{H_5}(x)=E_{H_3}(q)+\frac{\rho^2+2\sigma^2}{\nu},\qquad
+E_{H_3}(q)=\frac{3(a-b)^2}{4\nu}+\frac{2u^2}{3\nu}.
+\]</div>
+<p>In the <code>(a,b,u)</code> chart the induced diagonal metric is
+<code>diag(2,6,4/3)/nu</code>, but centering must remove the direction <code>(1,1,0)</code>.
+Applying an all-ones-centered node-energy routine directly to that chart would
+change the meaning of consensus. Existing REMESH certificates can instead
+read the genuine three-node <code>q</code> and <code>H3</code> without changing their semantics.</p>
+<p>The reduced nodal balance is</p>
+<div class="arithmatex">\[
+\frac{d}{dt}E_{H_3}(q)
+=-2(a-p)^2-2(p-c)^2\leq0.
+\]</div>
+<p>The two-coordinate contribution alone need not decrease. For example,
+<code>x0=(2,1,4,1,2)</code> has <code>a=b=2,u=3</code>: its visible contrast starts at zero and then
+becomes <code>(4/3)*(exp(-2*nu*t)-exp(-nu*t))</code>, through the hidden source. The full
+three-coordinate energy still decreases. Conversely, quotient consensus can
+hide nonzero microscopic disagreement in <code>w</code>.</p>
+<p>The distinction also affects rates. Quotient diffusion has eigenvalues
+<code>0,nu,2*nu</code> and centered energy gain <code>exp(-2*nu*h)</code> over an interval <code>h</code>.
+The discarded coordinates satisfy</p>
+<div class="arithmatex">\[
+\begin{pmatrix}\dot\rho\\\dot\sigma\end{pmatrix}
+=-\nu\begin{pmatrix}1&amp;-1\\-1/2&amp;1\end{pmatrix}
+\begin{pmatrix}\rho\\\sigma\end{pmatrix},
+\]</div>
+<p>with rates <code>nu*(1-1/sqrt(2))</code> and <code>nu*(1+1/sqrt(2))</code>. Therefore the faster
+quotient gain cannot be promoted to all microscopic disagreement. Both rates
+and the energy partition follow from the fixed P5 nodal generator.</p>
+<h3 id="95-exact-composition-with-a-declared-temporal-echo">9.5 Exact composition with a declared temporal echo<a class="headerlink" href="#95-exact-composition-with-a-declared-temporal-echo" title="Permanent link">&para;</a></h3>
+<p>Uniform scalar REMESH mixing commutes with <code>R3</code>:</p>
+<div class="arithmatex">\[
+R_3(\beta x_0+\gamma x_l+\delta x_g)
+=\beta R_3x_0+\gamma R_3x_l+\delta R_3x_g.
+\]</div>
+<p>History shifts likewise commute with applying <code>R3</code> to every retained row.
+The generator identities imply the same transport for exact diffusion
+segments and for a declared Euler map <code>I-h*A5</code>. Hence any finite composition
+of those fixed-support linear operations closes on <code>3*(m_delay+1)</code> state
+coordinates when <code>m_delay</code> is the largest active delay and corresponding
+fine/coarse history rows are supplied. This is a sufficient finite state
+dimension, not a new minimality theorem for temporal companions. On each
+diffusion segment, eliminating <code>u</code> recovers the derived memory with that
+segment's actual initial hidden coordinate.</p>
+<p>Adding a REMESH operation changes the trajectory; commutation proves that
+its effect can be represented by the same quotient, not that it was already
+present in the eliminated continuous dynamics. These claims require uniform
+mixing and matching delays across nodes. General node-dependent coefficients,
+clipping, changing support/capacity or other channels are outside this proof.</p>
+<p>For fixed REMESH coefficients and delays, let <code>pi</code> be the existing companion's
+stationary temporal weights. Summing the spatial identity in section 9.4
+over retained rows gives the exact augmented-history split</p>
+<div class="arithmatex">\[
+V_5=V_3+\sum_j\pi_j\frac{\rho_j^2+2\sigma_j^2}{\nu}.
+\]</div>
+<p>The before/after values and Jensen drops therefore split under one exact
+REMESH transition. This reuses the
+<a href="../../src/tnfr/physics/remesh_history_stability.py">uniform history theorem</a>.
+The <a href="../../src/tnfr/physics/remesh_schedule_policy_stability.py">schedule policy theorem</a>
+can separately use the quotient diffusion gain when its hypotheses and
+operation order are satisfied: it contracts a newly mixed head. It does not
+automatically apply that gain to a diffusion-before-mixing cycle or to the
+discarded microscopic modes. Neither theorem controls spatially uniform
+temporal means merely from a spatial-disagreement bound.</p>
+<h3 id="96-implementation-finite-runtime-defects-and-evidence-boundary">9.6 Implementation, finite runtime defects and evidence boundary<a class="headerlink" href="#96-implementation-finite-runtime-defects-and-evidence-boundary" title="Permanent link">&para;</a></h3>
+<p><a href="../../src/tnfr/physics/p5_reduction.py"><code>p5_reduction.py</code></a> materializes the exact
+fixed P5 geometry, verifies the intertwining identities and rank, and observes
+one supplied newest-first REMESH history. Its fine, quotient and discarded
+observations reuse the existing sealed history certificates. The shared
+<code>reduce_p5_state</code> also supplies the coordinate, contrast-coefficient and exact
+amplitude calculation used by
+<a href="../../src/tnfr/physics/p5_memory_truncation.py"><code>p5_memory_truncation.py</code></a>.
+Integers and Fractions remain exact; other accepted real inputs use the
+shared represented-binary64 rational rule. These detached observations do not
+bind input histories to a live executor or make <code>u</code> an additional operator.</p>
+<p><a href="../../tests/physics/test_p5_reduction.py">Exact tests</a> compare the quotient with
+the existing graph coarse-graining builder, verify the rank and energy split,
+and reproduce the causal decay-mode obstruction.
+<a href="../../tests/physics/test_p5_remesh_runtime_reduction.py">Production tests</a> exercise
+the actual delayed REMESH kernel on paired five- and three-node graphs. A
+dyadic witness gives exact commutation, including one declared refreshed
+nodal Euler segment followed by REMESH. A separate non-dyadic witness with
+represented <code>alpha=0.3</code> has a first-orbit commutation defect <code>2^-57</code>, entirely
+accounted for by the projected signed binary64 rounding defects. Exact-real
+intertwining therefore does not promise bitwise runtime equality.</p>
+<p>Clipping supplies an independent obstruction. At <code>alpha=1</code>, let an older
+history row have endpoint values <code>(4,-2)</code> and zero elsewhere, with hard target
+bounds <code>[-1,1]</code>. Clipping the microscopic endpoints gives mean zero; projecting
+first gives the endpoint mean one, which the quotient clip leaves unchanged.
+The first-orbit defect is <code>-1</code>, with zero rounding defect. The selected older
+row is deliberately outside the target interval. This example does not
+contradict the fact that an exact convex mixture of inputs all inside one
+common hard interval remains inside it.</p>
+<p>The causal decay fixture is also exercised by the production kernel with
+inactive <code>[0,8]</code> clipping. Its input values are analytically compatible with
+one exact nodal past, but direct caller-supplied history is not a sealed
+executor-owned causal-history certificate. These finite production checks
+establish neither repeated complete-runtime stability, solver convergence,
+generic grammar/event admission nor future binary64 commutation.</p>
+<p>The <a href="../../benchmarks/derived_epi_memory.py">reproducible benchmark</a> records the
+fixed-model reduction and causal-history comparison alongside the elimination
+and finite-window controls. The result identifies an exact synergy between
+nodal coarse-graining, retained structural information and declared temporal
+echoes. It supplies no physical dataset, laboratory confirmation or new
+fundamental parameter, and it leaves broader derived memory-to-operator
+realizations open.</p>
+<h2 id="10-exact-affine-closure-on-a-captured-forced-support">10. Exact affine closure on a captured forced support<a class="headerlink" href="#10-exact-affine-closure-on-a-captured-forced-support" title="Permanent link">&para;</a></h2>
+<p>The same projection criterion applies to the held canonical channels in
+<a href="../FORCED_SUPPORT_BALANCE/">FORCED_SUPPORT_BALANCE.md</a>. With that reference's
+independently captured forcing <code>F</code>, positive EPI coefficient <code>e</code>, positive
+capacities and connected symmetric conductance, write</p>
+<p><code>x' = -A*x+b</code>, <code>A=e*diag(nu)*D^-1*B</code>, <code>b=diag(nu)*F</code>, <code>H=diag(d/nu)</code>.</p>
+<p>All coefficients are exact rationals on the declared materialized inputs;
+<code>H*A=e*B</code>. In particular, constructing <code>A</code> does not require writing a rounded
+<code>e*nu</code> into a new graph. The partition geometry <code>P,R,Q</code> is that of Section 2,
+with <code>Hbar=P^T*H*P</code>. No forcing is inferred from a measured derivative.</p>
+<h3 id="101-projected-autonomy-and-affine-lift-invariance-differ">10.1 Projected autonomy and affine lift invariance differ<a class="headerlink" href="#101-projected-autonomy-and-affine-lift-invariance-differ" title="Permanent link">&para;</a></h3>
+<p>For <code>y=R*x</code> and <code>eta=Q*x</code>, direct projection gives</p>
+<div class="arithmatex">\[
+\dot y=-RAPy-RA\eta+Rb,\qquad
+\dot\eta=-QAPy-QAQ\eta+Qb.
+\]</div>
+<p>Therefore an affine law for <code>y</code> valid for <strong>every</strong> microscopic EPI state is
+available precisely when <code>R*A*Q=0</code>. The projected law is then
+<code>y'=-R*A*P*y+R*b</code>. A known constant <code>R*b</code> is allowed, and <code>Q*b</code> need not vanish:
+hidden coordinates may be driven without feeding back into the observed ones.
+By reversibility, <code>R*A*Q=0</code> is equivalent to <code>Q*A*P=0</code>, as in Section 4.
+In contrast, invariance of the entire lifted affine state space additionally
+requires <code>Q*b=0</code>. These are separate claims.</p>
+<p>If column <code>j</code> of <code>R*A*Q</code> is nonzero, choose <code>v=Q*e_j</code>, where <code>e_j</code> is a
+coordinate basis vector. The two detached states <code>x</code> and <code>x+v</code> satisfy</p>
+<div class="arithmatex">\[
+R(x+v)=Rx,\qquad
+R[-A(x+v)+b]-R[-Ax+b]=-RAQe_j\ne0.
+\]</div>
+<p>This gives an exact same-observation/different-rate obstruction. The witness
+belongs to the declared unrestricted scalar model; it is not a fabricated
+runtime history or a certificate of operator, clipping or chart admission.</p>
+<h3 id="102-derived-memory-and-the-current-relative-profile">10.2 Derived memory and the current relative profile<a class="headerlink" href="#102-derived-memory-and-the-current-relative-profile" title="Permanent link">&para;</a></h3>
+<p>Let <code>C=Q*A*P</code> and retain the zero-lag kernel <code>K(0)=R*A*Q*A*P</code>. The existing
+Section 4 identity becomes</p>
+<div class="arithmatex">\[
+\bar H K(0)=C^\top HC\succeq0.
+\]</div>
+<p>Positive <code>H</code> implies <code>K(0)=0</code> exactly when <code>C=0</code>. Thus a nonzero closure
+defect already establishes a nonzero derived memory kernel at zero lag,
+without a matrix exponential, fitted delay or extra constitutive term.
+It does not specify a finite-memory approximation or certify its error.</p>
+<p>For the current held reference, let <code>z</code> be its centered relative profile,
+<code>m_H(x)</code> its weighted mean, and <code>vbar</code> its mean drift. Its established balance
+<code>-A*z+b=vbar*1</code> implies</p>
+<p><code>u=x-m_H(x)*1-z</code>, <code>u'=-A*u</code>.</p>
+<p>Section 3's homogeneous elimination can therefore be used on <code>u</code> while keeping
+the captured forcing visible in the change of coordinates. Applying a pure-EPI
+memory formula directly to forced raw <code>x</code> would omit a real source. An older
+reference used to score retention is not substituted for the current model's
+centering: after a profile-changing event, that older error has its own source.</p>
+<h3 id="103-observer-changes-at-a-structural-event">10.3 Observer changes at a structural event<a class="headerlink" href="#103-observer-changes-at-a-structural-event" title="Permanent link">&para;</a></h3>
+<p>Across a same-EPI event that changes the metric, the family averages satisfy</p>
+<p><code>y1-y0=(R1-R0)*x</code>.</p>
+<p>This is a change of observation weights, not EPI motion. Current-model centered
+observations additionally change by the mean and profile reset:</p>
+<p><code>R1*u1-R0*u0=(R1-R0)*x-(m1-m0)*1-(R1*z1-R0*z0)</code>.</p>
+<p>These identities require the same ordered nodes and partition and the stated
+unchanged EPI. They do not certify an operator event or replace its retained
+execution evidence. The original <code>z0/H0</code> retention score remains a separate
+fixed observable throughout.</p>
+<p>The closure claim concerns this fixed affine EPI model. A closed macro NFR for
+phase, capacity, changing support and operator policy needs their corresponding
+closure results too. In particular, actual parent-child fibers have internal
+edges and can have unequal capacities; the sufficient phase-quotient hypotheses
+cannot be assumed merely because an EPI projection is defined.</p>
+<h3 id="104-implementation-and-evidence-boundary">10.4 Implementation and evidence boundary<a class="headerlink" href="#104-implementation-and-evidence-boundary" title="Permanent link">&para;</a></h3>
+<p><code>observe_forced_support_closure</code> in
+<a href="../../src/tnfr/physics/epi_memory.py"><code>epi_memory.py</code></a> rebuilds the reference through
+the existing forced-support owner and materializes the shared reversible
+geometry over exact fractions. It verifies the projection, weighted adjoint,
+Gram, affine-rate and current-profile identities and returns a deterministic
+same-observation/different-rate witness when closure fails. Its proper
+partition domain matches the existing EPI geometry: at least two nonempty
+blocks, strictly fewer blocks than nodes, and each ordered node used once.</p>
+<p>The observer reuses the existing rational matrix product and profile arithmetic.
+It neither changes the previous numerical memory API nor makes its approximate
+exponential a certified propagator. The floating-point projection/lift checks
+retain the existing structural-morphism residual and tolerance policy; their
+flags remain distinct from exact zero tests. No new delay, force, operator or
+runtime certificate is introduced.</p>
+<p><a href="../../tests/physics/test_forced_epi_closure.py">Exact controls</a> include both closed
+and nonclosed partitions, retained nonzero forcing, invalid domains and stale
+cached reference fields. An affine control with <code>R*A*Q=0</code> but <code>Q*b!=0</code> verifies
+that projected closure is not confused with lifted affine invariance. The
+actual generated-family application is owned by
+<a href="../THOL_BIRTH_AND_TRANSPORT/#14-state-sufficiency-of-actual-parent-child-families">THOL_BIRTH_AND_TRANSPORT.md</a>.</p>
+<h2 id="11-minimal-linear-state-retaining-a-declared-observation">11. Minimal linear state retaining a declared observation<a class="headerlink" href="#11-minimal-linear-state-retaining-a-declared-observation" title="Permanent link">&para;</a></h2>
+<p>The failure of instantaneous closure does not specify how much additional
+information is needed. For the same fixed affine nodal model <code>x'=-A*x+b</code>
+and declared affine observation <code>y=O*x+o0</code>, define the increasing row spaces</p>
+<div class="arithmatex">\[
+\mathcal O_k=\operatorname{rowspan}(O,OA,\ldots,OA^k).
+\]</div>
+<p>Every coefficient comes from the retained nodal generator and observation;
+these are derived observations, not added physical channels. The forcing <code>b</code>
+and output offset <code>o0</code> are known and fixed. They affect the reduced source and
+decoder, respectively, but not these spaces. Partition means are the special
+case <code>O=R,o0=0</code>. Stacking means and linear field observations uses this same
+construction; repeated, dependent and zero output rows are allowed.</p>
+<h3 id="111-complete-level-stabilization-and-minimality">11.1 Complete-level stabilization and minimality<a class="headerlink" href="#111-complete-level-stabilization-and-minimality" title="Permanent link">&para;</a></h3>
+<p>If <code>O_k=O_(k-1)</code>, right multiplication by <code>A</code> maps every generating row of
+<code>O_(k-1)</code> into <code>O_k</code>, so the stabilized space is invariant. No later power
+adds a direction. The check must process an entire level <code>O*A^k</code>; a dependent
+first row does not imply that the remaining rows are dependent. Finite
+dimension ensures stabilization, with rank at most the microscopic dimension
+<code>n</code>. For initial rank <code>r0&gt;0</code>, a complete no-growth level occurs by power
+<code>n-r0+1</code>. A rank-one observation can therefore require all <code>n+1</code> levels,
+including power <code>n</code>; partition means have at least two independent rows and
+retain their earlier bound. Rank zero is the constant-output case and is
+checked through power one without an inverse.</p>
+<p>Choose independent rows of the stabilized space to form <code>C</code>, with rank <code>r</code>.
+Consider any competing all-state linear observation <code>s_tilde=L*x</code> that retains
+the output and admits closed affine dynamics. Its identities must satisfy
+<code>O=D_tilde*L</code> and <code>L*A=G_tilde*L</code>; its constant source is <code>L*b</code>.
+Consequently its row space contains <code>O</code> and all <code>O*A^k</code>. Thus
+<code>rank(L)&gt;=r</code>. Constructing a closed observation of dimension <code>r</code> attains this
+bound. This extends the <a href="#93-minimality-of-the-retained-linear-state">P5 argument</a>
+to the admitted held references without a single-seed or scalar-moment proxy.</p>
+<h3 id="112-exact-affine-realization">11.2 Exact affine realization<a class="headerlink" href="#112-exact-affine-realization" title="Permanent link">&para;</a></h3>
+<p>Select <code>r</code> independent columns <code>J</code> of <code>C</code>. Let <code>I_J</code> embed the corresponding
+coordinate vectors into the microscopic state space and define</p>
+<div class="arithmatex">\[
+T=I_J(C_J)^{-1},\qquad G=CAT,\qquad D=OT.
+\]</div>
+<p>Then <code>C*T=I</code>. Row-space invariance and output inclusion give the full identities
+<code>C*A=G*C</code> and <code>O=D*C</code>. Therefore</p>
+<div class="arithmatex">\[
+s=Cx,\qquad \dot s=-Gs+Cb,\qquad y=Ds+o0.
+\]</div>
+<p>This realization is exact for all scalar initial states in the held model.
+The known source and offset need no extra fitted coefficient or added constant
+state. For <code>r=0</code>, <code>s</code> is empty and <code>y=o0</code> for every fine trajectory; the
+displayed inverse construction is unnecessary.
+If <code>r</code> equals the microscopic dimension, <code>C</code> is invertible: the realization
+is a change of coordinates, with no state compression. Otherwise, different
+microscopic states can share <code>s</code> while having identical output evolution.</p>
+<p>Rows selected from <code>O*A^k</code> can contain signed, nonlocal coefficients and
+different powers of the existing structural rate. They must not be read as
+ordinary new NFRs with an independently established phase/capacity triad.
+In particular, the pivot right inverse <code>T</code> is an algebraic section, not an
+automatically admissible graph state or an H-orthogonal nodal lift.</p>
+<h3 id="113-scope-and-implementation">11.3 Scope and implementation<a class="headerlink" href="#113-scope-and-implementation" title="Permanent link">&para;</a></h3>
+<p><code>observe_affine_nodal_realization</code> in
+<a href="../../src/tnfr/physics/epi_memory.py"><code>epi_memory.py</code></a> accepts finite exact or
+represented observation rows and known offsets for a rebuilt held nodal
+reference. It selects independent rows in deterministic power/row order,
+tests complete-level stabilization, selects pivot columns, and verifies the
+full realization identities. <code>observe_forced_support_realization</code> reuses
+the partition closure owner and delegates its means to the same algorithm;
+its public result fields, row ordering and resource accounting are preserved.
+The held generator/source assembly also has one owner. The shared
+<a href="../../src/tnfr/mathematics/krylov.py"><code>exact_rank</code></a>, rectangular matrix product
+and rational inverse supply the arithmetic. Numerical rank is not a fallback.</p>
+<p>The rank-call limit is an operational work guard, not a TNFR scale. Exhaustion
+must report incomplete computation and return no successful realization.
+Rank-call and matrix-product counts, processed levels and retained coefficient
+bit sizes describe the calculation; they do not bound every intermediate
+allocation or the cost inside rational elimination.</p>
+<p>Full rank excludes proper all-state linear compression preserving this exact
+<code>O</code> on this fixed model. It does not exclude approximate observations, restricted
+reachable-state descriptions, nonlinear reductions or a history representation.
+Nor does exact invertibility certify a well-conditioned numerical reconstruction.
+Changes of support, capacity or source need new model admission and separate
+event accounting. Autonomous maintenance and physical identification remain
+outside this theorem.</p>
+<p><a href="../../tests/physics/test_affine_observation_realization.py">Independent affine-output controls</a>
+cover offsets with nonzero forcing, redundant/zero rows, exact tiny independent
+rows, rank-one stabilization and the partition API. The
+<a href="../../src/tnfr/physics/geometry_realization.py">joint geometry adapter</a> derives
+its rows and offsets from the nodal pressure and inherited distance kernel;
+<a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/#joint-epipotential-realization-and-field-provenance">the scale bridge</a>
+owns that physical observation and its numerical boundary. The generic API
+does not make a caller-declared observation canonical by itself.</p>
+<h3 id="114-full-epi-euler-prediction-in-the-sufficient-coordinates">11.4 Full-EPI Euler prediction in the sufficient coordinates<a class="headerlink" href="#114-full-epi-euler-prediction-in-the-sufficient-coordinates" title="Permanent link">&para;</a></h3>
+<p>When <code>C</code> has full microscopic rank, all EPI coordinates are available without
+an approximation. For declared durations <code>h_k</code>, the shared Euler arithmetic
+gives a detached forecast</p>
+<div class="arithmatex">\[
+s_{k+1}=s_k+h_k(-Gs_k+Cb),\qquad
+x_{k+1}=Ts_{k+1}=(I-h_kA)x_k+h_kb.
+\]</div>
+<p><code>predict_forced_support_realization_euler</code> rebuilds the held reference and
+realization, requires full rank, and checks the encoding, rates, outputs and
+fine-coordinate recurrence at every frame. It reuses
+<a href="../../src/tnfr/dynamics/_euler_kernel.py"><code>euler_update</code></a> with rational operands;
+it neither writes a graph nor replaces the canonical runtime integrator.
+Known forcing remains explicit and no observed future endpoint is accepted
+as input. Durations are nonnegative, with zero giving an identity. A step
+outside the convex range still defines an exact Euler formula, with a false
+convex-step flag rather than a claim of stability. Bounded step materialization
+and the rank-call guard return no partial successful forecast on exhaustion.</p>
+<p>The forecast is exact for this declared discretization. It is not the exact
+continuous solution, a binary64 trajectory or a causal guarantee that a caller
+retained it before execution. A runtime comparison must separately establish
+chronology, model constancy and its actual numerical defects.</p>
+<p>For a matched held-model runtime segment, the existing
+<a href="../../src/tnfr/physics/forced_support.py"><code>observe_forced_support_step</code></a> separates
+the stored-pressure defect <code>epsilon_k</code> from the endpoint integration defect
+<code>delta_k</code>. With <code>M_k=I-h_k*A</code>, the actual endpoint obeys</p>
+<div class="arithmatex">\[
+x_{k+1}^{\rm run}=M_kx_k^{\rm run}+h_kb+r_k,\qquad
+r_k=h_k\operatorname{diag}(\nu)\epsilon_k+\delta_k.
+\]</div>
+<p>If the forecast starts at the same EPI, its discrepancy satisfies
+<code>e_0=0</code>, <code>e_(k+1)=M_k*e_k+r_k</code>. In the sufficient chart it is exactly <code>C*e_k</code>.
+This vector propagation is stronger information than an energy telescope;
+it does not erase a nonzero measured discrepancy or certify continuous-time
+solver accuracy. Graph-owned execution evidence supplies the runtime link.</p>
+<p>For two branches with the same held <code>A,b</code>, the source cancels in their
+difference <code>d=x_perturbed-x_control</code>:</p>
+<p><code>d_(k+1)=M_k*d_k+r_k_perturbed-r_k_control</code>.</p>
+<p>The H-weighted mean offset is conserved in the ideal recurrence because
+<code>(H*1)^T*M_k=(H*1)^T</code>. The centered spatial difference can contract while this offset
+persists. The original fixed-target error, full EPI separation, mean offset
+and centered energy are therefore distinct observables. A return in EPI also
+would not erase an operator's history or lineage metadata. Such calculations
+concern all EPI coordinates of a held model, not autonomous closure of the
+full phase/capacity/support/operator dynamics.</p>
+<p><a href="../../tests/physics/test_forced_epi_prediction.py">Prediction tests</a> use independent
+fine-coordinate rational updates, positive and zero steps, explicit forcing,
+incomplete observations and work-limit failures. The causal application is
+owned by <a href="../THOL_BIRTH_AND_TRANSPORT/#16-full-epi-response-to-one-child-emission">THOL full-state response</a>.</p>
+<h3 id="115-a-held-model-forecast-versus-a-composite-runtime-step">11.5 A held-model forecast versus a composite runtime step<a class="headerlink" href="#115-a-held-model-forecast-versus-a-composite-runtime-step" title="Permanent link">&para;</a></h3>
+<p>A full runtime step may apply glyphs and change phase, capacity or support.
+The old held forecast then remains a counterfactual, not a prediction of the
+changed dynamics. Its discrepancy must not be classified entirely as
+numerical error.</p>
+<p>On one unchanged ordered node space, let <code>x0</code> be the pre-step EPI, <code>xg</code> the
+actual integrator input, <code>xi</code> its output and <code>xf</code> the final runtime state.
+The frozen model supplies <code>f0(x)=-A0*x+b0</code>, <code>M0=I-h*A0</code> and
+<code>xhat=x0+h*f0(x0)</code>. Write <code>j=xg-x0</code>, let <code>rg=diag(nu_g)*p_stored</code> be the
+stored nodal base at integrator entry, and define <code>delta=xi-xg-h*rg</code> and
+<code>a=xf-xi</code>. Gamma or extended dynamics can contribute beyond that base.
+Direct substitution gives the exact vector identity</p>
+<div class="arithmatex">\[
+x_f-\widehat x=M_0j+h\{f_g(x_g)-f_0(x_g)\}
+ +h\{r_g-f_g(x_g)\}+\delta+a.
+\]</div>
+<p>Here <code>fg=diag(nu_g)*(e_g*grad_EPI+F_g)</code> is the current rate realization when
+the shared forcing observer admits its actual pre-integrator support, capacity
+and independently captured non-EPI channels. It needs no equilibrium/profile
+solve; a current relative profile can be unavailable while this rate is still
+defined. If <code>p_kernel</code> is the separately read fresh
+binary64 pressure and <code>p_model</code> its exact represented-coefficient model,
+the third term separates further into</p>
+<p><code>h*diag(nu_g)*(p_stored-p_kernel)</code> and
+<code>h*diag(nu_g)*(p_kernel-p_model)</code>.</p>
+<p>The first difference includes intentional glyph pressure writes and stale
+stored pressure; it is not merely rounding. The term <code>delta</code> is an integration
+residual until the actual solver, held inputs, clipping, Gamma and extended
+dynamics justify a narrower interpretation. The post-integrator term includes
+any later EPI writes. Later phase/capacity changes can affect future evolution
+even when this step's post-integrator EPI term is zero.</p>
+<p>If the current affine model is inadmissible but the node space remains the
+same, the coarser identity
+<code>xf-xhat=j+h*(rg-f0(x0))+delta+a</code> still holds. If node identity or order changes,
+neither vector comparison is silently extended by padding or an invented
+projection. These are finite algebraic accounts of observed boundaries,
+not causal ablation experiments, future stability bounds or a proof that
+runtime policies follow from the bare nodal equation. Multiplication by the
+original <code>C</code> merely expresses the same identity in its retained coordinates.</p>
+<h3 id="116-conditional-paired-evolution-under-common-coherence">11.6 Conditional paired evolution under common Coherence<a class="headerlink" href="#116-conditional-paired-evolution-under-common-coherence" title="Permanent link">&para;</a></h3>
+<p>For two branches on the same fixed support/capacity, suppose the actual
+pressure-generation boundary has the same EPI coefficient and non-EPI source,
+and each node subsequently receives exactly one IL with common retention
+<code>a</code>, followed by one Euler step of duration <code>h</code>. Between pressure generation
+and integration, no write changes EPI, capacity or support, and there is no
+intervening pressure refresh or pressure writer other than the declared IL.
+The existing IL pressure
+owner computes <code>p_after=RN(a*p_before)</code>; <code>a</code> is the configured operator factor,
+not a newly fitted coefficient or an actual capacity update.</p>
+<p>Let <code>p_before=-e*L*x+F+epsilon_p</code>, let <code>epsilon_IL</code> be the signed difference
+between stored post-IL pressure and exact <code>a*p_before</code>, and keep the actual
+integration remainder and post-integration EPI writes separate. Subtracting
+the two nodal updates gives</p>
+<div class="arithmatex">\[
+d_+=(I-haA)d+h\operatorname{diag}(\nu)
+       (a\Delta\epsilon_p+\Delta\epsilon_{\rm IL})
+       +\Delta\delta_{\rm int}+\Delta j_{\rm post},
+\qquad A=e\operatorname{diag}(\nu)L.
+\]</div>
+<p>The common forcing cancels at its actual generation boundary. Phase changes
+after generation do not retroactively refresh the stored pressure. A new
+step needs new admission of its generated source, policy, support and
+capacity; common endpoint phases alone do not authenticate those intermediate
+conditions. Unseparated Gamma, clipping or extended dynamics remain in the
+integration remainder, not silently in a rounding term.</p>
+<p>For the <a href="../THOL_BIRTH_AND_TRANSPORT/#17-one-native-composite-runtime-response">single native witness</a>,
+IL also leaves phase unchanged and the common captured source can be bound
+at integrator entry. The represented retention is exactly
+<code>854047988748571/1125899906842624</code> (about <code>0.7585469929947761</code>). Independent
+arithmetic checks the paired formula with maximum absolute residual
+<code>3.531e-17</code>, fully separated into its observed components. This conditional
+finite identity does not prove future class invariance, a uniform numerical
+error bound or maintenance of either individual target profile.</p>
+<p>When these conditions hold over a finite sequence, the same identity can be
+composed step by step, re-admitting each generated source and consumed state.
+No common source need be constant in time for it to cancel between branches.
+That cancellation says nothing about preservation of an individual fixed
+profile: its compatibility residual <code>P_H*(b_k-A_k*z0)</code> can change even when
+the two branches share <code>b_k</code> exactly. The target-compatibility observer in
+<a href="../../src/tnfr/physics/forced_support.py">forced_support.py</a> owns that separate
+test. IL scales the entire stored pressure in this restricted route, including
+both the EPI transport contribution and the common source. It is not an
+additional EPI reset, nor does its presence alone prove faster relaxation.</p>
+<h3 id="117-epi-resets-with-pre-generated-pressure">11.7 EPI resets with pre-generated pressure<a class="headerlink" href="#117-epi-resets-with-pre-generated-pressure" title="Permanent link">&para;</a></h3>
+<p>The same nodal accounting identifies a distinct conditional model when a
+glyph changes EPI but preserves pressure already generated at <code>x</code>.
+Suppose a declared ideal affine reset is <code>J(x)=S*x+c</code>, the ordered node space
+and capacity remain fixed, and the following Euler call consumes the original
+pressure for <code>f(x)=-A*x+b</code>. Before numerical and clipping defects,</p>
+<p><code>x_next=S*x+c+h*(-A*x+b)</code>.</p>
+<p>This follows by adding the reset displacement and the nodal increment.
+It is not Euler with refreshed pressure at <code>J(x)</code>. The pre-generated result
+minus the refreshed result is exactly <code>h*A*(J(x)-x)</code>. For two branches with
+the same admitted <code>S,c,A,b</code>,</p>
+<p><code>d_next=(S-h*A)*d</code>.</p>
+<p>For sequential Reception, <code>S</code> is the ordered product of the individual
+neighbor-blend rows, because later targets read earlier EPI writes. It is not
+the simultaneous immutable-snapshot stage matrix. For a common unclipped
+Emission boost, <code>S=I</code> and <code>c</code> cancels between branches, giving
+<code>d_next=(I-h*A)*d</code>. Neither expression is the pressure-scaled common-IL map.</p>
+<p>A runtime link still requires the actual per-node order, scalar chart, mix,
+neighbor readouts, clipping domain, unchanged pressure and integration
+boundaries. The observed reset defect and its propagation through later
+Reception rows, pressure-generation defect, integration remainder and later
+EPI writes remain separate. These formulas neither make the complete
+binary64 reset globally affine nor supply a global gain. The
+<a href="../THOL_BIRTH_AND_TRANSPORT/#18-five-additional-native-policy-steps">retained five-step window</a>
+provides candidate records for this next admission task; its current common-IL
+observer correctly declines the EN and AL steps.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../docs/assets/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+      
+    
+  </body>
+</html>

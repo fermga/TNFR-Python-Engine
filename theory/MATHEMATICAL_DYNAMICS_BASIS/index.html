@@ -1,0 +1,1726 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/MATHEMATICAL_DYNAMICS_BASIS/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Mathematical dynamics: state, evolution and diagnostic basis - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#mathematical-dynamics-state-evolution-and-diagnostic-basis" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Mathematical dynamics: state, evolution and diagnostic basis
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/CLI_AND_SDK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI and SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FUNDAMENTAL_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NODAL_PARAMETER_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NODAL_RESEARCH_STRATEGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/FIVE_STAGE_EXECUTION_PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Active execution plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DERIVED_EPI_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/archive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Historical archive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../factorization-lab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Applications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Applications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../primality-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.github/WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-state-and-directed-evolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. State and directed evolution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-circular-geometry-and-diagnostic-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Circular geometry and diagnostic scope
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-one-implementation-and-one-research-queue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. One implementation and one research queue
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="mathematical-dynamics-state-evolution-and-diagnostic-basis">Mathematical dynamics: state, evolution and diagnostic basis<a class="headerlink" href="#mathematical-dynamics-state-evolution-and-diagnostic-basis" title="Permanent link">&para;</a></h1>
+<p>This page routes foundational questions to their shared mathematical owners.
+The nodal equation <code>dEPI/dt=nu_f*DeltaNFR</code> is the starting premise; neither a
+diagnostic basis nor a storage representation completes the missing laws.</p>
+<h2 id="1-state-and-directed-evolution">1. State and directed evolution<a class="headerlink" href="#1-state-and-directed-evolution" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Definition and derivation owner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>What is EPI, and what type of object is its pressure?</td>
+<td><a href="../FUNDAMENTAL_THEORY/#24-physical-concepts-mathematical-types-and-implementation">Fundamental theory, sections 2.4-2.6</a></td>
+</tr>
+<tr>
+<td>Which parameter is a coordinate, observation or configured coefficient?</td>
+<td><a href="../NODAL_PARAMETER_FOUNDATIONS/">All-parameter foundations</a></td>
+</tr>
+<tr>
+<td>What changes with units, form chart and graph symmetry?</td>
+<td><a href="../NODAL_PARAMETER_FOUNDATIONS/#3-joint-changes-of-form-and-time-units">Covariance and conditional diffusion</a></td>
+</tr>
+<tr>
+<td>How do phase and capacity changes affect pressure and EPI acceleration?</td>
+<td><a href="../NODAL_PARAMETER_FOUNDATIONS/#10-joint-pressure-response-and-the-capacity-product-rule">Joint response and source compatibility</a></td>
+</tr>
+<tr>
+<td>Which capacities realize a held phase/source configuration, including positivity and bands?</td>
+<td><a href="../NODAL_PARAMETER_FOUNDATIONS/#11-finite-joint-phase-capacity-source-compatibility">Finite joint compatibility</a></td>
+</tr>
+<tr>
+<td>What restoring contribution would a compatible pattern require in the conditional passive model?</td>
+<td><a href="../TNFR_VARIATIONAL_PRINCIPLE/#135-necessary-restoring-contribution-on-the-compatible-p2-preparation">P2 stationarity and curvature requirements</a></td>
+</tr>
+<tr>
+<td>Can phase-like response and restoring pressure arise from internal EPI structure?</td>
+<td><a href="../NODAL_PARAMETER_FOUNDATIONS/#12-intrinsic-response-from-a-closed-fine-nodal-model">Induced shape, rate and internal-mode pushforward</a></td>
+</tr>
+<tr>
+<td>Does a closed macro evolution inherit the same pressure and tetrad?</td>
+<td><a href="../NODAL_PARAMETER_FOUNDATIONS/#13-faithful-macro-state-and-tetrad-inheritance-on-the-retained-prism">Minimal pressure state and inherited field kernels</a></td>
+</tr>
+<tr>
+<td>Can changing geometry or canonical sources sustain the internal form?</td>
+<td><a href="../NODAL_PARAMETER_FOUNDATIONS/#14-causal-support-versus-changing-geometry">Geometry work, cumulative exposure and internal phase source budgets</a></td>
+</tr>
+<tr>
+<td>When can an observed angle become a causal phase source?</td>
+<td><a href="../NODAL_PARAMETER_FOUNDATIONS/#15-when-an-observed-phase-can-be-a-causal-source">Vector-field matching, regularity and persistent directed work</a></td>
+</tr>
+<tr>
+<td>Which phase, capacity and topology laws are actually supplied?</td>
+<td><a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/#14-constitutive-closure-audit-from-the-nodal-law">Constitutive audit</a></td>
+</tr>
+<tr>
+<td>When does a reduced observation have its own closed evolution?</td>
+<td><a href="../DERIVED_EPI_MEMORY/">Derived EPI memory</a>, with continuous closure and event-intertwining conditions in the foundation owners</td>
+</tr>
+<tr>
+<td>When can a joint potential generate the stated channels?</td>
+<td><a href="../TNFR_VARIATIONAL_PRINCIPLE/">Variational scope</a></td>
+</tr>
+<tr>
+<td>Does nonlinear phase pressure have an intrinsic gradient representation?</td>
+<td><a href="../TNFR_VARIATIONAL_PRINCIPLE/#136-exact-state-dependent-metric-for-canonical-phase-pressure">State-dependent phase metric and joint-law boundary</a></td>
+</tr>
+<tr>
+<td>Does zero-pressure compatibility permit a stable joint stationary pattern?</td>
+<td><a href="../TNFR_VARIATIONAL_PRINCIPLE/#139-joint-source-compatibility-and-the-common-mean-saddle">Common-mean/phase saddle and repeated-triple boundary</a></td>
+</tr>
+<tr>
+<td>Can a moving pattern recur, and what work must sustain it?</td>
+<td><a href="../TNFR_VARIATIONAL_PRINCIPLE/#1310-persistent-motion-is-a-separate-dynamical-target">Gradient recurrence boundary and nodal cycle budgets</a></td>
+</tr>
+<tr>
+<td>Is alignment a clock, and can reparameterization repair a nodal mismatch?</td>
+<td><a href="../FORCED_SUPPORT_BALANCE/#25-relational-time-and-synchronization-are-separate-claims">Relational time and tangent admission</a></td>
+</tr>
+<tr>
+<td>Can a source/form loop be rejected before choosing its speed?</td>
+<td><a href="../TNFR_VARIATIONAL_PRINCIPLE/#1312-oriented-sourceform-work-without-a-selected-clock">Oriented work and reciprocal phase geometry</a></td>
+</tr>
+<tr>
+<td>Can a phase-from-form relation supply net cycle work?</td>
+<td><a href="../TNFR_VARIATIONAL_PRINCIPLE/#1313-work-pulled-back-to-a-proposed-geometric-phase-relation">Pullback exactness and geometric admission</a></td>
+</tr>
+<tr>
+<td>Does the existing pressure-dependent phase response close the source law?</td>
+<td><a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/#optional-pressure-composition-and-source-consistency">Optional pressure consistency</a> and <a href="../TNFR_VARIATIONAL_PRINCIPLE/#1314-existing-optional-feedback-pressure-consistency-before-recurrence">conditional phase dissipation</a></td>
+</tr>
+<tr>
+<td>How does primitive phase change internal form amplitude and orientation?</td>
+<td><a href="../NODAL_PARAMETER_FOUNDATIONS/#161-radial-and-angular-effects-of-an-actual-phase-source">Directed phase/form exchange</a></td>
+</tr>
+<tr>
+<td>Which angular changes depend on the frame, and why must the mean evolve?</td>
+<td><a href="../NODAL_PARAMETER_FOUNDATIONS/#162-internal-phase-requires-a-frame-and-transported-comparisons">Internal frames</a>, <a href="../NODAL_PARAMETER_FOUNDATIONS/#164-the-common-source-reveals-nonlinear-threefold-geometry">threefold mean geometry</a> and <a href="../NODAL_PARAMETER_FOUNDATIONS/#165-prescribed-rotating-phase-contrast-periodic-particular-response">driven circular response</a></td>
+</tr>
+<tr>
+<td>What converges under the same phase input, and does the complete response fit its EPI band?</td>
+<td><a href="../NODAL_PARAMETER_FOUNDATIONS/#167-same-input-response-theorem-and-an-all-time-band-bound">Conditional response and all-time bound</a>; <a href="../NODAL_PARAMETER_FOUNDATIONS/#168-reproduce-and-interpret-the-documented-result">reproducible illustration</a></td>
+</tr>
+<tr>
+<td>Can phase be an instantaneous function of form, and what state carries directed turning?</td>
+<td><a href="../NODAL_PARAMETER_FOUNDATIONS/#17-primitive-phase-origin-symmetry-retained-state-and-the-missing-row">Reflection obstruction and joint oriented area</a></td>
+</tr>
+<tr>
+<td>What would a joint phase law need for a local oscillatory mode, and can memory supply the missing law?</td>
+<td><a href="../NODAL_PARAMETER_FOUNDATIONS/#174-admission-conditions-for-a-joint-linear-response">Conditional linear classification</a> and <a href="../NODAL_PARAMETER_FOUNDATIONS/#175-memory-preserves-omitted-phase-information-it-does-not-derive-its-law">phase elimination</a></td>
+</tr>
+<tr>
+<td>Can nonlinear phase response create orientation that its linearization misses?</td>
+<td><a href="../NODAL_PARAMETER_FOUNDATIONS/#18-nonlinear-phase-response-oriented-area-and-tetrad-reuse">Complete projected response and sixth-order area production</a></td>
+</tr>
+<tr>
+<td>Does angular production imply sustained identity, and can the tetrad read that orientation?</td>
+<td><a href="../TNFR_VARIATIONAL_PRINCIPLE/#1315-full-repeated-triple-feedback-and-the-mean-work-term">Complete nonlinear mean-work balance</a> and <a href="../NODAL_PARAMETER_FOUNDATIONS/#183-the-same-oriented-area-is-readable-through-the-tetrad">restricted tetrad-area identity</a></td>
+</tr>
+<tr>
+<td>Can nonrepeated neighboring regions sustain the missing motion?</td>
+<td><a href="../NODAL_PARAMETER_FOUNDATIONS/#19-nonrepeated-neighbors-and-local-oriented-transfer">Actual regional orientation transfer</a>, <a href="../TNFR_VARIATIONAL_PRINCIPLE/#1316-full-prism-feedback-boundary-exchange-does-not-remove-all-dissipation">full-prism dissipation</a> and <a href="../TNFR_VARIATIONAL_PRINCIPLE/#1317-all-spatial-modes-and-local-nonlinear-attraction">all-mode local attraction</a></td>
+</tr>
+<tr>
+<td>Does an admissible Mutation occur, and does its phase reset hold the form?</td>
+<td><a href="../NODAL_PARAMETER_FOUNDATIONS/#20-phase-reset-source-work-and-actual-occurrence">Finite reset work and occurrence</a> and <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/#uniform-capacity-and-default-selector-reachability">uniform-capacity selector restriction</a></td>
+</tr>
+<tr>
+<td>Which pulse and memory mechanisms can be reused without changing their scope?</td>
+<td><a href="../NODAL_RESEARCH_STRATEGY/#resonant-persistence-and-pulse-audit">Resonant persistence and pulse audit</a></td>
+</tr>
+<tr>
+<td>Can a phase law emerge from fine form dynamics without being imposed?</td>
+<td><a href="../NODAL_PARAMETER_FOUNDATIONS/#211-directed-form-rotation-and-exact-eliminated-state-memory">Directed form phase and memory</a> and <a href="../NODAL_PARAMETER_FOUNDATIONS/#212-a-coupled-amplitude-and-phase-law-derived-from-fine-diffusion">derived coupled amplitude/phase law</a></td>
+</tr>
+<tr>
+<td>Can reciprocal support have a directional phase response, and does that select a wave?</td>
+<td><a href="../NODAL_PARAMETER_FOUNDATIONS/#213-canonical-phase-geometry-has-directed-sensitivity-on-reciprocal-support">Source-response cycle imbalance</a> and <a href="../NODAL_PARAMETER_FOUNDATIONS/#214-local-wave-realizability-does-not-select-a-wave-law">local wave lift freedom</a></td>
+</tr>
+<tr>
+<td>Does a regional angle becoming undefined require a structural event?</td>
+<td><a href="../NODAL_PARAMETER_FOUNDATIONS/#215-a-form-coordinate-boundary-need-not-require-an-operator">Regular full-state continuation through a form zero</a></td>
+</tr>
+<tr>
+<td>Can directional sensitivity itself maintain form, and what transfer would be necessary?</td>
+<td><a href="../TNFR_VARIATIONAL_PRINCIPLE/#136-exact-state-dependent-metric-for-canonical-phase-pressure">Complete metric differential</a> and <a href="../TNFR_VARIATIONAL_PRINCIPLE/#1318-source-sensitivity-joint-work-and-the-passive-transfer-limit">joint work and finite storage bounds</a></td>
+</tr>
+<tr>
+<td>Does native coordination replenish primitive phase contrast?</td>
+<td><a href="../NODAL_PARAMETER_FOUNDATIONS/#native-phase-contrast-budget">Full-phase contraction and finite intervening-write ledger</a></td>
+</tr>
+<tr>
+<td>Can another writer in the default runtime replenish that contrast?</td>
+<td><a href="../NODAL_PARAMETER_FOUNDATIONS/#native-phase-writer-closure">Actual dispatch atlas, unit-capacity closure and numerical boundaries</a></td>
+</tr>
+<tr>
+<td>Do power balance, locality or Hamiltonian structure determine the joint law?</td>
+<td><a href="../TNFR_VARIATIONAL_PRINCIPLE/#1319-structural-closure-tests-exchange-jacobi-and-the-remaining-potential">Intrinsic remaining directions, Jacobi obstruction and potential-family classification</a></td>
+</tr>
+<tr>
+<td>Does one-hop acceleration imply primitive phase locality, and does diffusion matching select the potential?</td>
+<td><a href="../TNFR_VARIATIONAL_PRINCIPLE/#1320-locality-and-exact-diffusion-compatibility">Edge-orbit freedom, exact diffusion embedding and primitive-locality obstruction</a></td>
+</tr>
+</tbody>
+</table>
+<p>Representation, constitutive closure, numerical execution and physical
+correspondence are separate obligations. An invertible change of coordinates
+can preserve a supplied law without deriving it. A lossy observation requires
+projectability before it can replace the full state.</p>
+<h2 id="2-circular-geometry-and-diagnostic-scope">2. Circular geometry and diagnostic scope<a class="headerlink" href="#2-circular-geometry-and-diagnostic-scope" title="Permanent link">&para;</a></h2>
+<p>The complex exponential has period <strong>2*pi</strong>, and principal wrapped angular
+separations have magnitude at most <strong>pi</strong> in the radian chart. This bounds the
+mean absolute phase mismatch and defined circular curvature. Curvature is a
+wrapped displacement from a phasor direction, not an arithmetic mean of angles.
+Its direction requires a nonzero resultant; numerical representation and
+undefined-resultant reporting must not be confused with a new physical law.</p>
+<p>The potential uses a chosen source-distance kernel. Coherence length uses an
+uncentered static product fit, with a distinct dimensionless spectral fallback.
+Their units, estimation conditions and policies differ from the exact angular
+bound. Neither phase wrapping nor the nodal product alone fixes these kernels,
+warning cuts or normalization coefficients.</p>
+<p>The four channels remain the canonical diagnostic interface. Grouping them by
+aggregation, local difference and correlation does not prove independence,
+minimality or complete state reconstruction. See
+<a href="../MINIMAL_STRUCTURAL_DEGREES/">Minimal Structural Degrees</a>.</p>
+<h2 id="3-one-implementation-and-one-research-queue">3. One implementation and one research queue<a class="headerlink" href="#3-one-implementation-and-one-research-queue" title="Permanent link">&para;</a></h2>
+<p>Use the <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/">structural-field guide</a> for current
+API definitions, numerical domains and provenance, and the
+<a href="../../src/tnfr/physics/fields.py">field implementation</a> for shared read-outs.
+This index does not repeat their thresholds or maintain another status table.</p>
+<p>The <a href="../research/FIVE_STAGE_EXECUTION_PLAN/">nodal execution plan</a> alone owns
+the active research sequence. Mathematical controls constrain admissible
+completions; empirical correspondence still requires independent measurements
+and reserved predictions under the supporting protocol.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../docs/assets/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,4009 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/TNFR_NUMBER_THEORY/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>TNFR Number Theory: Arithmetic Constructions and Structural Read-outs - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tnfr-number-theory-arithmetic-constructions-and-structural-read-outs" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              TNFR Number Theory: Arithmetic Constructions and Structural Read-outs
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/CLI_AND_SDK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI and SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FUNDAMENTAL_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NODAL_PARAMETER_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NODAL_RESEARCH_STRATEGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/FIVE_STAGE_EXECUTION_PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Active execution plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DERIVED_EPI_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/archive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Historical archive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../factorization-lab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Applications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Applications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../primality-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.github/WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introduction
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introduction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-arithmetic-networks-as-tnfr-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Arithmetic Networks as TNFR Systems
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Arithmetic Networks as TNFR Systems">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-network-construction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Network Construction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-sieve-based-computation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Sieve-Based Computation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-phase-assignment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Phase Assignment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-arithmetic-structural-triad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The Arithmetic Structural Triad
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. The Arithmetic Structural Triad">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-form-epin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Form: EPI(n)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-frequency-nu_fn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Frequency: \(\nu_f(n)\)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-pressure-deltamathrmnfrn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Pressure: \(\Delta\mathrm{NFR}(n)\)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-local-coherence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Local Coherence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-primality-as-structural-equilibrium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Primality as Structural Equilibrium
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Primality as Structural Equilibrium">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-the-fundamental-theorem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 The Fundamental Theorem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-coefficient-independence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Coefficient Independence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-computational-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Computational Properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-canonical-arithmetic-constants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Canonical Arithmetic Constants
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Canonical Arithmetic Constants">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-canonical-coefficients-are-unity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Canonical Coefficients Are Unity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-pressure-coefficients" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Pressure Coefficients
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-epi-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 EPI Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-frequency-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 Frequency Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#55-detection-thresholds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5 Detection Thresholds
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#56-derivation-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.6 Derivation Status
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-pressure-component-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Pressure Component Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Pressure Component Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-three-independent-pressure-channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Three Independent Pressure Channels
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6.1 Three Independent Pressure Channels">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#factorization-pressure-p_omega-zeta-cdot-omegan-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Factorization Pressure: \(P_{\Omega} = \zeta \cdot (\Omega(n) - 1)\)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#divisor-pressure-p_tau-eta-cdot-taun-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Divisor Pressure: \(P_{\tau} = \eta \cdot (\tau(n) - 2)\)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#abundance-pressure-p_sigma-theta-cdot-sigmann-11n" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Abundance Pressure: \(P_{\sigma} = \theta \cdot (\sigma(n)/n - (1+1/n))\)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-component-independence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Component Independence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-structural-pressure-landscape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Structural Pressure Landscape
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-the-arithmetic-tetrad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. The Arithmetic Tetrad
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. The Arithmetic Tetrad">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-structural-potential-phi_s" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Structural Potential: \(\Phi_s\)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-phase-gradient-nablaphi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Phase Gradient: \(|\nabla\phi|\)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-phase-curvature-k_phi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Phase Curvature: \(K_\phi\)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-coherence-length-xi_c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.4 Coherence Length: \(\xi_C\)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#75-tetrad-thresholds-on-the-arithmetic-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.5 Tetrad thresholds on the arithmetic network
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#76-the-arithmetic-nfr-and-its-emergent-geometry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.6 The Arithmetic NFR and its Emergent Geometry
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-dual-lever-decomposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Dual-Lever Decomposition
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Dual-Lever Decomposition">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-the-nodal-equation-in-arithmetic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 The Nodal Equation in Arithmetic
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-fixed-point-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Fixed Point Analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-experimental-confirmation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Experimental Confirmation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-factorization-as-spectral-decoding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Factorization as Spectral Decoding
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Factorization as Spectral Decoding">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-the-factorization-problem-in-tnfr-terms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 The Factorization Problem in TNFR Terms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92-spectral-paley-jacobi-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 Spectral Paley-Jacobi Method
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93-structural-verification-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 Structural Verification Criteria
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#94-pure-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4 Pure Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#95-three-sectors-of-primality-unification-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.5 Three Sectors of Primality (Unification — MEASURED)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#96-the-phase-sector-sector-b-extended-to-all-odd-primes-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.6 The Phase Sector — Sector B Extended to All Odd Primes (MEASURED)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#97-the-symmetry-wall-why-the-substrate-is-blind-and-the-spectrum-is-not-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.7 The Symmetry Wall — Why the Substrate Is Blind and the Spectrum Is Not (MEASURED)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#98-symmetry-breaking-controls-on-the-declared-residue-fixtures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.8 Symmetry-breaking controls on the declared residue fixtures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#99-phase-sector-periodicity-a-basis-invariant-read-of-the-crt-factor-coset-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.9 Phase-Sector Periodicity — a Basis-Invariant Read of the CRT Factor Coset (MEASURED)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#910-the-symmetry-sector-decomposition-the-general-principle-behind-the-whole-arc-measured-capstone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.10 The Symmetry-Sector Decomposition — the General Principle Behind the Whole Arc (MEASURED, CAPSTONE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#911-the-cyclotomy-law-proof-via-gauss-periods-proved" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.11 The Cyclotomy Law — Proof via Gauss Periods (PROVED)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#912-the-ontological-position-of-a-number-the-emergent-ladder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.12 The Ontological Position of a Number (the emergent ladder)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#913-the-arithmetic-pulse-two-declared-linear-responses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.13 The Arithmetic Pulse — two declared linear responses
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-prime-path-graphs-and-the-tnfr-riemann-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Prime Path Graphs and the TNFR-Riemann Connection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Prime Path Graphs and the TNFR-Riemann Connection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-the-discrete-tnfr-riemann-operator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 The Discrete TNFR-Riemann Operator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-critical-parameter-convergence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 Critical Parameter Convergence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#103-connection-to-the-riemann-hypothesis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.3 Connection to the Riemann Hypothesis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#104-tetrad-fields-on-the-prime-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.4 Tetrad Fields on the Prime Path
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#105-refactoring-the-riemann-attack-from-the-self-adjoint-prime-ladder-to-the-non-self-adjoint-phase-operator-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.5 Refactoring the Riemann Attack — From the Self-Adjoint Prime-Ladder to the Non-Self-Adjoint Phase Operator (MEASURED)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-worked-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Worked Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11. Worked Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#111-prime-detection-n-17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.1 Prime Detection: \(n = 17\)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#112-semiprime-n-15-3-times-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.2 Semiprime: \(n = 15 = 3 \times 5\)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#113-prime-power-n-8-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.3 Prime Power: \(n = 8 = 2^3\)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#114-squarefree-composite-n-30-2-times-3-times-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.4 Squarefree Composite: \(n = 30 = 2 \times 3 \times 5\)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-implementation-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Implementation Map
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="12. Implementation Map">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#121-source-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.1 Source Modules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#122-executable-demonstrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.2 Executable Demonstrations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#123-test-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.3 Test Coverage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-reference-questions-and-research-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Reference questions and research boundaries
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="13. Reference questions and research boundaries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#131-computational" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.1 Computational
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#132-theoretical" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.2 Theoretical
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#133-structural" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.3 Structural
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. References
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="14. References">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#internal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Internal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#external" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        External
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tnfr-number-theory-arithmetic-constructions-and-structural-read-outs">TNFR Number Theory: Arithmetic Constructions and Structural Read-outs<a class="headerlink" href="#tnfr-number-theory-arithmetic-constructions-and-structural-read-outs" title="Permanent link">&para;</a></h1>
+<p><strong>Status</strong>: Arithmetic construction reference; exact restricted identities and finite diagnostics, not a derived physical or autonomous nodal model
+<strong>Version source</strong>: <a href="../../pyproject.toml">pyproject.toml</a>
+<strong>Date</strong>: March 2026</p>
+<blockquote>
+<p><strong>Scope correction (2026-09-18).</strong> Arithmetic functions, modular arithmetic,
+graph constructors and assigned logarithmic frequencies are declared inputs.
+Conditional spectral consequences can be derived from those inputs; this is
+not a derivation of physical particles or of the arithmetic carrier itself
+from the nodal equation. The historical Riemann family in §§10.1–10.4 is
+superseded. General symmetry-complement and REMESH-infinity claims below are
+restricted by the current
+<a href="../TNFR_RIEMANN_RESEARCH_NOTES/">Riemann program memo</a>: no analytic location
+of <code>S(T)</code>, universal operator equivariance or RH result has been established.
+Historical numerical results are retained, not re-executed by this correction.</p>
+</blockquote>
+<hr />
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="#1-introduction">Introduction</a></li>
+<li><a href="#2-arithmetic-networks-as-tnfr-systems">Arithmetic Networks as TNFR Systems</a></li>
+<li><a href="#3-the-arithmetic-structural-triad">The Arithmetic Structural Triad</a></li>
+<li><a href="#4-primality-as-structural-equilibrium">Primality as Structural Equilibrium</a></li>
+<li><a href="#5-canonical-arithmetic-constants">Canonical Arithmetic Constants</a></li>
+<li><a href="#6-pressure-component-analysis">Pressure Component Analysis</a></li>
+<li><a href="#7-the-arithmetic-tetrad">The Arithmetic Tetrad</a></li>
+<li><a href="#8-dual-lever-decomposition">Dual-Lever Decomposition</a></li>
+<li><a href="#9-factorization-as-spectral-decoding">Factorization as Spectral Decoding</a></li>
+<li><a href="#10-prime-path-graphs-and-the-tnfr-riemann-connection">Prime Path Graphs and the TNFR-Riemann Connection</a></li>
+<li><a href="#11-worked-examples">Worked Examples</a></li>
+<li><a href="#12-implementation-map">Implementation Map</a></li>
+<li><a href="#13-reference-questions-and-research-boundaries">Reference Questions and Research Boundaries</a></li>
+<li><a href="#14-references">References</a></li>
+</ol>
+<hr />
+<h2 id="1-introduction">1. Introduction<a class="headerlink" href="#1-introduction" title="Permanent link">&para;</a></h2>
+<p>Arithmetic networks can be assigned TNFR-compatible coordinates and read-outs.
+Their relation to the nodal equation</p>
+<div class="arithmatex">\[\frac{\partial\mathrm{EPI}}{\partial t} = \nu_f \cdot \Delta\mathrm{NFR}(t)\]</div>
+<p>requires a separately declared evolution: assigning arithmetic functions to
+nodes and edges alone supplies a static state, not a trajectory. In the
+construction studied here:</p>
+<ul>
+<li><strong>Primes are the arithmetic pressure zero set</strong>: <span class="arithmatex">\(\Delta\mathrm{NFR}(p) = 0\)</span> for all primes <span class="arithmatex">\(p\)</span>.</li>
+<li><strong>Composites carry structural pressure</strong>: <span class="arithmatex">\(\Delta\mathrm{NFR}(n) &gt; 0\)</span> whenever <span class="arithmatex">\(n\)</span> is composite, with a magnitude determined by the three selected arithmetic descriptors.</li>
+<li><strong>Factorization as spectral decoding</strong>: discovering the factors of a composite can be framed as resolving the coherent sub-modes of its structural pressure field.</li>
+</ul>
+<p>This document formalizes these observations, expresses the arithmetic constants as canonical units (only <span class="arithmatex">\(\pi\)</span> is a genuine structural scale), and maps the theory to its implementations in the repository.</p>
+<h3 id="scope">Scope<a class="headerlink" href="#scope" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Description</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Primality</strong></td>
+<td>Deterministic prime detection via <span class="arithmatex">\(\Delta\mathrm{NFR}=0\)</span></td>
+<td><code>primality-test/</code>, <code>src/tnfr/mathematics/number_theory.py</code></td>
+</tr>
+<tr>
+<td><strong>Factorization</strong></td>
+<td>Spectral factor discovery via Paley-Jacobi graphs</td>
+<td><code>factorization-lab/</code></td>
+</tr>
+<tr>
+<td><strong>Riemann program</strong></td>
+<td>Declared arithmetic traces and finite pulse comparisons; historical prime-path prototype superseded</td>
+<td><code>src/tnfr/riemann/</code></td>
+</tr>
+</tbody>
+</table>
+<p>These layers reuse selected arithmetic functions, graph diagnostics and
+configured coefficients. This reuse does not establish a shared autonomous
+evolution or U1-U6 compliance. Grammar claims require an actual declared
+operator sequence and its checks; static primality and spectral calculations
+do not supply such a history.</p>
+<hr />
+<h2 id="2-arithmetic-networks-as-tnfr-systems">2. Arithmetic Networks as TNFR Systems<a class="headerlink" href="#2-arithmetic-networks-as-tnfr-systems" title="Permanent link">&para;</a></h2>
+<h3 id="21-network-construction">2.1 Network Construction<a class="headerlink" href="#21-network-construction" title="Permanent link">&para;</a></h3>
+<p>A TNFR arithmetic network <span class="arithmatex">\(G = (V, E)\)</span> is a directed graph where:</p>
+<ul>
+<li><strong>Nodes</strong> <span class="arithmatex">\(V = \{2, 3, \ldots, N\}\)</span> are natural numbers.</li>
+<li><strong>Edges</strong> encode two types of structural relationship:</li>
+<li><strong>Divisibility edges</strong>: <span class="arithmatex">\((d, n)\)</span> for each divisor <span class="arithmatex">\(d \mid n\)</span> with <span class="arithmatex">\(d &lt; n\)</span>.</li>
+<li><strong>GCD coupling edges</strong>: <span class="arithmatex">\((a, b)\)</span> when <span class="arithmatex">\(\gcd(a, b) &gt; 1\)</span>, weighted by <span class="arithmatex">\(\gcd(a, b) / \max(a, b)\)</span>.</li>
+</ul>
+<p>Each node <span class="arithmatex">\(n\)</span> is assigned the structural triad (EPI, <span class="arithmatex">\(\nu_f\)</span>, <span class="arithmatex">\(\phi\)</span>)
+from chosen arithmetic functions, together with a separate arithmetic pressure
+read-out <span class="arithmatex">\(\Delta\mathrm{NFR}(n)\)</span>. These assignments do not derive a capacity
+law, phase law or event schedule.</p>
+<h3 id="22-sieve-based-computation">2.2 Sieve-Based Computation<a class="headerlink" href="#22-sieve-based-computation" title="Permanent link">&para;</a></h3>
+<p>Efficient computation uses a Lowest Prime Factor (LPF) sieve:</p>
+<div class="arithmatex">\[\text{lpf}[n] = \min\{p \text{ prime} : p \mid n\}\]</div>
+<p>From the LPF array, factorization of any <span class="arithmatex">\(n \leq N\)</span> is <span class="arithmatex">\(O(\log n)\)</span>, enabling computation of all arithmetic functions (<span class="arithmatex">\(\Omega\)</span>, <span class="arithmatex">\(\tau\)</span>, <span class="arithmatex">\(\sigma\)</span>) for the entire network in <span class="arithmatex">\(O(N \log \log N)\)</span> sieve time plus <span class="arithmatex">\(O(N \log N)\)</span> factorization time.</p>
+<h3 id="23-phase-assignment">2.3 Phase Assignment<a class="headerlink" href="#23-phase-assignment" title="Permanent link">&para;</a></h3>
+<p>Phase is a declared read-out policy. <code>ArithmeticTNFRNetwork.compute_phase</code>
+defaults to the angle of a two-dimensional spectral layout, falling back to
+<code>logn</code>; it also supports capacity normalization (<code>nuf</code>). The <code>logn</code> policy is</p>
+<div class="arithmatex">\[\phi_n=2\pi\,\operatorname{frac}\!\left(\frac{\log n}{\log(N+1)}\right).\]</div>
+<p>The conservation/substrate adapters default to <code>logn</code>. A spectral-layout
+orientation is not an independently derived physical phase, and none of these
+static assignments supplies a phase evolution law. The former linear <code>n/N</code>
+formula did not describe this implementation.</p>
+<p>Coupling operations must separately check the wrapped U3 condition
+<span class="arithmatex">\(|\operatorname{wrap}(\phi_i-\phi_j)|\leq\Delta\phi_{\max}\)</span>. The arithmetic
+graph construction and phase assignment alone do not guarantee that every
+arithmetic edge satisfies that condition.</p>
+<hr />
+<h2 id="3-the-arithmetic-structural-triad">3. The Arithmetic Structural Triad<a class="headerlink" href="#3-the-arithmetic-structural-triad" title="Permanent link">&para;</a></h2>
+<p>The assigned triad is (EPI, <span class="arithmatex">\(\nu_f\)</span>, <span class="arithmatex">\(\phi\)</span>), with phase defined in §2.3.
+The form and capacity assignments below are followed by the separate pressure
+and coherence read-outs. For a fixed integer label these are static functions.</p>
+<h3 id="31-form-epin">3.1 Form: EPI(n)<a class="headerlink" href="#31-form-epin" title="Permanent link">&para;</a></h3>
+<p>The Primary Information Structure of a natural number measures its overall arithmetic complexity:</p>
+<div class="arithmatex">\[\mathrm{EPI}(n) = 1 + \alpha \cdot \Omega(n) + \beta \cdot \ln(\tau(n)) + \gamma_{\mathrm{epi}} \cdot \left(\frac{\sigma(n)}{n} - 1\right)\]</div>
+<p>where:
+- <span class="arithmatex">\(\alpha = 1\)</span> — factorization complexity weight (canonical unit, §5)
+- <span class="arithmatex">\(\beta = 1\)</span> — divisor complexity weight (canonical unit, §5)
+- <span class="arithmatex">\(\gamma_{\mathrm{epi}} = 1\)</span> — abundance deviation weight (canonical unit, §5)</p>
+<p><strong>Model interpretation</strong>: EPI(n) is a chosen scalar arithmetic-complexity
+coordinate. Calling it form does not derive an oscillator or a physical state
+space from the nodal equation.</p>
+<h3 id="32-frequency-nu_fn">3.2 Frequency: <span class="arithmatex">\(\nu_f(n)\)</span><a class="headerlink" href="#32-frequency-nu_fn" title="Permanent link">&para;</a></h3>
+<p>The reorganization capacity of a number measures how rapidly its structural form could evolve:</p>
+<div class="arithmatex">\[\nu_f(n) = \nu_0 \cdot \left(1 + \delta \cdot \frac{\tau(n)}{n} + \varepsilon \cdot \frac{\Omega(n)}{\ln(n)}\right)\]</div>
+<p>where:
+- <span class="arithmatex">\(\nu_0 = 1\)</span> — base frequency (canonical unit, §5)
+- <span class="arithmatex">\(\delta = 1\)</span> — divisor density modulation (canonical unit, §5)
+- <span class="arithmatex">\(\varepsilon = 1\)</span> — factorization complexity modulation (canonical unit, §5)</p>
+<p><strong>Model interpretation</strong>: This positive arithmetic function supplies a candidate
+capacity if an evolution is declared. Its definition alone specifies neither
+an observed reorganization rate nor a phase angular velocity.</p>
+<h3 id="33-pressure-deltamathrmnfrn">3.3 Pressure: <span class="arithmatex">\(\Delta\mathrm{NFR}(n)\)</span><a class="headerlink" href="#33-pressure-deltamathrmnfrn" title="Permanent link">&para;</a></h3>
+<p>The structural pressure equation is the central result of arithmetic TNFR:</p>
+<div class="arithmatex">\[\boxed{\Delta\mathrm{NFR}(n) = \zeta \cdot (\Omega(n) - 1) + \eta \cdot (\tau(n) - 2) + \theta \cdot \left(\frac{\sigma(n)}{n} - \left(1 + \frac{1}{n}\right)\right)}\]</div>
+<p>where <span class="arithmatex">\(\Omega(n)\)</span> is the prime factor count with multiplicity, <span class="arithmatex">\(\tau(n)\)</span> the divisor count, and <span class="arithmatex">\(\sigma(n)\)</span> the divisor sum. The coefficients are canonically <span class="arithmatex">\(\zeta = \eta = \theta = 1\)</span> (unit weights; see §5).</p>
+<p><strong>Model interpretation</strong>: This nonnegative arithmetic pressure vanishes exactly
+at primes under the stated positive coefficients. It is a selected measure of
+compositeness, not a derived metric distance or a signed restoring response to
+an EPI perturbation.</p>
+<h3 id="34-local-coherence">3.4 Local Coherence<a class="headerlink" href="#34-local-coherence" title="Permanent link">&para;</a></h3>
+<p>From the pressure, local coherence is derived:</p>
+<div class="arithmatex">\[C_{\text{local}}(n) = \frac{1}{1 + |\Delta\mathrm{NFR}(n)|}\]</div>
+<p>Primes have <span class="arithmatex">\(C_{\text{local}} = 1\)</span> (perfect coherence); composites have <span class="arithmatex">\(C_{\text{local}} &lt; 1\)</span>, decreasing with structural complexity.</p>
+<hr />
+<h2 id="4-primality-as-structural-equilibrium">4. Primality as Structural Equilibrium<a class="headerlink" href="#4-primality-as-structural-equilibrium" title="Permanent link">&para;</a></h2>
+<h3 id="41-the-fundamental-theorem">4.1 The Fundamental Theorem<a class="headerlink" href="#41-the-fundamental-theorem" title="Permanent link">&para;</a></h3>
+<p><strong>Theorem (TNFR Primality Criterion)</strong>: For any integer <span class="arithmatex">\(n \geq 2\)</span>:</p>
+<div class="arithmatex">\[n \text{ is prime} \iff \Delta\mathrm{NFR}(n) = 0\]</div>
+<p><strong>Proof</strong>: Each pressure component vanishes independently for primes and is strictly positive for composites:</p>
+<ol>
+<li>
+<p><strong>Factorization component</strong>: <span class="arithmatex">\(\Omega(p) = 1\)</span> for all primes <span class="arithmatex">\(p\)</span>, so <span class="arithmatex">\(\zeta \cdot (\Omega(p) - 1) = 0\)</span>. For composites, <span class="arithmatex">\(\Omega(n) \geq 2\)</span>, giving <span class="arithmatex">\(\zeta \cdot (\Omega(n) - 1) \geq \zeta &gt; 0\)</span>.</p>
+</li>
+<li>
+<p><strong>Divisor component</strong>: <span class="arithmatex">\(\tau(p) = 2\)</span> for all primes (divisors: 1 and <span class="arithmatex">\(p\)</span>), so <span class="arithmatex">\(\eta \cdot (\tau(p) - 2) = 0\)</span>. For composites, <span class="arithmatex">\(\tau(n) \geq 3\)</span>, giving <span class="arithmatex">\(\eta \cdot (\tau(n) - 2) \geq \eta &gt; 0\)</span>.</p>
+</li>
+<li>
+<p><strong>Abundance component</strong>: For primes, <span class="arithmatex">\(\sigma(p) = 1 + p\)</span>, so <span class="arithmatex">\(\sigma(p)/p = 1 + 1/p\)</span>, making <span class="arithmatex">\(\theta \cdot (\sigma(p)/p - (1 + 1/p)) = 0\)</span>. For composites <span class="arithmatex">\(n\)</span> with a proper divisor <span class="arithmatex">\(d \notin \{1, n\}\)</span>, <span class="arithmatex">\(\sigma(n) &gt; 1 + n\)</span>, giving <span class="arithmatex">\(\sigma(n)/n &gt; 1 + 1/n\)</span> and thus <span class="arithmatex">\(\theta \cdot (\sigma(n)/n - (1 + 1/n)) &gt; 0\)</span>.</p>
+</li>
+</ol>
+<p>Since all three terms vanish iff <span class="arithmatex">\(n\)</span> is prime, and all are non-negative, the equivalence holds. <span class="arithmatex">\(\square\)</span></p>
+<p><strong>Structural interpretation</strong>: The theorem identifies the pressure zero set
+with the prime labels. If this arithmetic pressure is held fixed in the
+unforced scalar nodal equation, it gives zero EPI rate at a prime for any finite
+capacity. It does not establish a fixed point of phase, capacity, support or
+the full operator dynamics. At a fixed composite label the static EPI(n)
+assignment has zero time derivative, whereas the assigned positive capacity
+and pressure have a positive product. An evolved EPI coordinate therefore
+cannot remain identical to that static arithmetic formula; §8 states the
+separate held-pressure model explicitly.</p>
+<h3 id="42-coefficient-independence">4.2 Coefficient Independence<a class="headerlink" href="#42-coefficient-independence" title="Permanent link">&para;</a></h3>
+<p>The primality criterion <span class="arithmatex">\(\Delta\mathrm{NFR}(n) = 0\)</span> is <strong>independent of the coefficient values</strong> <span class="arithmatex">\((\zeta, \eta, \theta)\)</span>, provided all three are positive. Each component vanishes individually for primes. The coefficients affect composite pressure magnitudes, not the arithmetic zero set.</p>
+<h3 id="43-computational-properties">4.3 Computational Properties<a class="headerlink" href="#43-computational-properties" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Determinism</strong></td>
+<td>100% (no probabilistic component)</td>
+</tr>
+<tr>
+<td><strong>Time complexity</strong></td>
+<td><span class="arithmatex">\(O(\sqrt{n})\)</span> per number (trial division for <span class="arithmatex">\(\Omega\)</span>, <span class="arithmatex">\(\tau\)</span>, <span class="arithmatex">\(\sigma\)</span>)</td>
+</tr>
+<tr>
+<td><strong>Space complexity</strong></td>
+<td><span class="arithmatex">\(O(1)\)</span> basic; <span class="arithmatex">\(O(\text{cache})\)</span> with memoization</td>
+</tr>
+<tr>
+<td><strong>Sieve mode</strong></td>
+<td><span class="arithmatex">\(O(N \log \log N)\)</span> for all primes up to <span class="arithmatex">\(N\)</span></td>
+</tr>
+<tr>
+<td><strong>Verified range</strong></td>
+<td><span class="arithmatex">\([2, 10^4]\)</span> exhaustive, <span class="arithmatex">\([10^4, 10^{10}]\)</span> selective</td>
+</tr>
+<tr>
+<td><strong>Accuracy</strong></td>
+<td>100% — 0 false positives, 0 false negatives</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-canonical-arithmetic-constants">5. Canonical Arithmetic Constants<a class="headerlink" href="#5-canonical-arithmetic-constants" title="Permanent link">&para;</a></h2>
+<h3 id="51-canonical-coefficients-are-unity">5.1 Canonical Coefficients Are Unity<a class="headerlink" href="#51-canonical-coefficients-are-unity" title="Permanent link">&para;</a></h3>
+<p>AGENTS.md §3 identifies <span class="arithmatex">\(\pi\)</span> as the exact phase-wrap scale; it does not prove
+that <span class="arithmatex">\(\pi\)</span> is the only possible structural constant or derive arithmetic weights
+from phase wrapping. This construction does not derive <span class="arithmatex">\(\varphi\)</span>, <span class="arithmatex">\(\gamma\)</span> or
+<span class="arithmatex">\(e\)</span> as structural scales. Earlier versions wrote the triad weights as
+<span class="arithmatex">\((\varphi, \gamma, \pi, e)\)</span> combinations, but that was a <em>post-hoc notational
+overlay</em> fitted to approximate empirical values (<span class="arithmatex">\(\zeta = 1.0\)</span>, <span class="arithmatex">\(\eta = 0.8\)</span>,
+<span class="arithmatex">\(\theta = 0.6\)</span>) — not a derivation.</p>
+<p>By the Coefficient Independence theorem (§4.2), the primality zero set is the
+same for <strong>any</strong> positive coefficients. That theorem does not select their
+magnitudes. The implementation chooses unit coefficients as the canonical
+parameter-free convention, so the arithmetic pressure introduces no additional
+scale; the structural content lives in <span class="arithmatex">\((\Omega, \tau, \sigma, n)\)</span>.</p>
+<h3 id="52-pressure-coefficients">5.2 Pressure Coefficients<a class="headerlink" href="#52-pressure-coefficients" title="Permanent link">&para;</a></h3>
+<div class="arithmatex">\[\boxed{\zeta = \eta = \theta = 1}\]</div>
+<p>The three pressure channels weigh equally: the factorization excess <span class="arithmatex">\(\Omega - 1\)</span>, the divisor excess <span class="arithmatex">\(\tau - 2\)</span> and the abundance excess <span class="arithmatex">\(\sigma/n - (1 + 1/n)\)</span> each contribute on the same unit scale. This is the configured unit-weight convention. Section 4.2 proves that the zero set does not depend on the choice of positive coefficients; it does <strong>not</strong> prove uniqueness of the unit convention.</p>
+<h3 id="53-epi-parameters">5.3 EPI Parameters<a class="headerlink" href="#53-epi-parameters" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Model meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(\alpha\)</span></td>
+<td><span class="arithmatex">\(1\)</span></td>
+<td>Factorization complexity weight</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\beta\)</span></td>
+<td><span class="arithmatex">\(1\)</span></td>
+<td>Divisor logarithmic weight</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\gamma_{\mathrm{epi}}\)</span></td>
+<td><span class="arithmatex">\(1\)</span></td>
+<td>Abundance deviation weight</td>
+</tr>
+</tbody>
+</table>
+<h3 id="54-frequency-parameters">5.4 Frequency Parameters<a class="headerlink" href="#54-frequency-parameters" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Model meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(\nu_0\)</span></td>
+<td><span class="arithmatex">\(1\)</span></td>
+<td>Base structural frequency</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\delta\)</span></td>
+<td><span class="arithmatex">\(1\)</span></td>
+<td>Divisor density modulation</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\varepsilon\)</span></td>
+<td><span class="arithmatex">\(1\)</span></td>
+<td>Factorization modulation</td>
+</tr>
+</tbody>
+</table>
+<h3 id="55-detection-thresholds">5.5 Detection Thresholds<a class="headerlink" href="#55-detection-thresholds" title="Permanent link">&para;</a></h3>
+<p>Primality is detected by the <strong>exact</strong> criterion <span class="arithmatex">\(\Delta\mathrm{NFR}(n) = 0\)</span> (§4.1); the only threshold is the floating-point zero tolerance.</p>
+<table>
+<thead>
+<tr>
+<th>Threshold</th>
+<th>Value</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Primality tolerance</td>
+<td><span class="arithmatex">\(10^{-10}\)</span></td>
+<td>Floating-point zero detection of <span class="arithmatex">\(\Delta\mathrm{NFR} = 0\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>Any wider "significance band" is an operational convenience, not a structural constant — only <span class="arithmatex">\(\pi\)</span> is a genuine structural scale (§5.1).</p>
+<h3 id="56-derivation-status">5.6 Derivation Status<a class="headerlink" href="#56-derivation-status" title="Permanent link">&para;</a></h3>
+<p>The 9 dynamical arithmetic parameters (3 pressure + 3 EPI + 3 frequency) are positive operational weights applied to arithmetic functions (canonical units; the prime ⟺ ΔNFR = 0 criterion is coefficient-independent, §4.2). The arithmetic network uses the same tetrad implementation and selected warning policies as other TNFR graphs; these policies are not graph-independent bounds. An earlier φ/γ/e "arithmetic recalibration" was removed; no domain-specific threshold tuning remains.</p>
+<hr />
+<h2 id="6-pressure-component-analysis">6. Pressure Component Analysis<a class="headerlink" href="#6-pressure-component-analysis" title="Permanent link">&para;</a></h2>
+<h3 id="61-three-independent-pressure-channels">6.1 Three Independent Pressure Channels<a class="headerlink" href="#61-three-independent-pressure-channels" title="Permanent link">&para;</a></h3>
+<p>The <span class="arithmatex">\(\Delta\mathrm{NFR}\)</span> equation decomposes structural pressure into three independent channels, each measuring a distinct aspect of compositeness:</p>
+<h4 id="factorization-pressure-p_omega-zeta-cdot-omegan-1">Factorization Pressure: <span class="arithmatex">\(P_{\Omega} = \zeta \cdot (\Omega(n) - 1)\)</span><a class="headerlink" href="#factorization-pressure-p_omega-zeta-cdot-omegan-1" title="Permanent link">&para;</a></h4>
+<p>Measures the <strong>total prime factor count with multiplicity</strong>. This is the most direct measure of compositeness: primes have <span class="arithmatex">\(\Omega = 1\)</span>, semiprimes have <span class="arithmatex">\(\Omega = 2\)</span>, prime powers <span class="arithmatex">\(p^k\)</span> have <span class="arithmatex">\(\Omega = k\)</span>.</p>
+<table>
+<thead>
+<tr>
+<th><span class="arithmatex">\(n\)</span></th>
+<th>Factorization</th>
+<th><span class="arithmatex">\(\Omega(n)\)</span></th>
+<th><span class="arithmatex">\(P_\Omega\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>7 (prime)</td>
+<td><span class="arithmatex">\(7\)</span></td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr>
+<td>15</td>
+<td><span class="arithmatex">\(3 \times 5\)</span></td>
+<td>2</td>
+<td>1</td>
+</tr>
+<tr>
+<td>8</td>
+<td><span class="arithmatex">\(2^3\)</span></td>
+<td>3</td>
+<td>2</td>
+</tr>
+<tr>
+<td>30</td>
+<td><span class="arithmatex">\(2 \times 3 \times 5\)</span></td>
+<td>3</td>
+<td>2</td>
+</tr>
+<tr>
+<td>360</td>
+<td><span class="arithmatex">\(2^3 \times 3^2 \times 5\)</span></td>
+<td>6</td>
+<td>5</td>
+</tr>
+</tbody>
+</table>
+<h4 id="divisor-pressure-p_tau-eta-cdot-taun-2">Divisor Pressure: <span class="arithmatex">\(P_{\tau} = \eta \cdot (\tau(n) - 2)\)</span><a class="headerlink" href="#divisor-pressure-p_tau-eta-cdot-taun-2" title="Permanent link">&para;</a></h4>
+<p>Measures the <strong>richness of the divisor lattice</strong>. Primes have exactly 2 divisors; highly composite numbers have many.</p>
+<table>
+<thead>
+<tr>
+<th><span class="arithmatex">\(n\)</span></th>
+<th><span class="arithmatex">\(\tau(n)\)</span></th>
+<th><span class="arithmatex">\(P_\tau\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>7 (prime)</td>
+<td>2</td>
+<td>0</td>
+</tr>
+<tr>
+<td>15</td>
+<td>4</td>
+<td>2</td>
+</tr>
+<tr>
+<td>8</td>
+<td>4</td>
+<td>2</td>
+</tr>
+<tr>
+<td>30</td>
+<td>8</td>
+<td>6</td>
+</tr>
+<tr>
+<td>360</td>
+<td>24</td>
+<td>22</td>
+</tr>
+</tbody>
+</table>
+<h4 id="abundance-pressure-p_sigma-theta-cdot-sigmann-11n">Abundance Pressure: <span class="arithmatex">\(P_{\sigma} = \theta \cdot (\sigma(n)/n - (1+1/n))\)</span><a class="headerlink" href="#abundance-pressure-p_sigma-theta-cdot-sigmann-11n" title="Permanent link">&para;</a></h4>
+<p>Measures the <strong>deviation of the divisor sum ratio from the prime pattern</strong>. This is the most sensitive to the internal structure of divisors.</p>
+<table>
+<thead>
+<tr>
+<th><span class="arithmatex">\(n\)</span></th>
+<th><span class="arithmatex">\(\sigma(n)/n\)</span></th>
+<th><span class="arithmatex">\(1+1/n\)</span></th>
+<th><span class="arithmatex">\(P_\sigma\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>7 (prime)</td>
+<td><span class="arithmatex">\(8/7 \approx 1.143\)</span></td>
+<td><span class="arithmatex">\(8/7\)</span></td>
+<td>0</td>
+</tr>
+<tr>
+<td>15</td>
+<td><span class="arithmatex">\(24/15 = 1.600\)</span></td>
+<td><span class="arithmatex">\(16/15 \approx 1.067\)</span></td>
+<td>0.533</td>
+</tr>
+<tr>
+<td>8</td>
+<td><span class="arithmatex">\(15/8 = 1.875\)</span></td>
+<td><span class="arithmatex">\(9/8 = 1.125\)</span></td>
+<td>0.750</td>
+</tr>
+<tr>
+<td>30</td>
+<td><span class="arithmatex">\(72/30 = 2.400\)</span></td>
+<td><span class="arithmatex">\(31/30 \approx 1.033\)</span></td>
+<td>1.367</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62-component-independence">6.2 Component Independence<a class="headerlink" href="#62-component-independence" title="Permanent link">&para;</a></h3>
+<p>The three pressure channels are <strong>functionally linearly independent</strong> — no linear (or affine) combination reproduces a third for all <span class="arithmatex">\(n\)</span>. This is proved <strong>exactly over <span class="arithmatex">\(\mathbb{Q}\)</span></strong> from the witness points <span class="arithmatex">\(p^2 \mapsto (1, 1, 1/p)\)</span> and <span class="arithmatex">\(pq \mapsto (1, 2, 1/p + 1/q)\)</span> (<code>prove_functional_independence</code>; the <span class="arithmatex">\(3\times 3\)</span> witness matrix has exact rank 3). They therefore form a <strong>linearly-independent diagnostic profile</strong> of compositeness through <span class="arithmatex">\(\Omega\)</span>, <span class="arithmatex">\(\tau\)</span>, <span class="arithmatex">\(\sigma\)</span> — <strong>not</strong> a minimal or complete basis: the set is <em>redundant</em> for primality (each channel alone is zero iff <span class="arithmatex">\(n\)</span> is prime, so one channel already suffices), and structural completeness (that no fourth independent pressure degree is relevant) is <strong>unproven</strong>. See <a href="../TNFR_ARITHMETIC_PRESSURE/">TNFR_ARITHMETIC_PRESSURE.md</a> (R7, NT-P07) for the independence proof, the redundancy result, and the closed fourth-channel gate.</p>
+<h3 id="63-structural-pressure-landscape">6.3 Structural Pressure Landscape<a class="headerlink" href="#63-structural-pressure-landscape" title="Permanent link">&para;</a></h3>
+<p>As <span class="arithmatex">\(n\)</span> grows, the expected pressure for a "random" composite scales as:</p>
+<div class="arithmatex">\[\mathbb{E}[\Delta\mathrm{NFR}(n)] \sim \ln\ln n + (\ln n)^{\ln 2} + \text{(abundance deviation)}\]</div>
+<p>by the Erdős-Kac theorem (<span class="arithmatex">\(\Omega(n) \sim \ln\ln n\)</span>) and divisor function asymptotics. Primes remain at exactly zero regardless of magnitude.</p>
+<hr />
+<h2 id="7-the-arithmetic-tetrad">7. The Arithmetic Tetrad<a class="headerlink" href="#7-the-arithmetic-tetrad" title="Permanent link">&para;</a></h2>
+<p>When the arithmetic network <span class="arithmatex">\(G\)</span> is constructed, the structural field tetrad (<span class="arithmatex">\(\Phi_s\)</span>, <span class="arithmatex">\(|\nabla\phi|\)</span>, <span class="arithmatex">\(K_\phi\)</span>, <span class="arithmatex">\(\xi_C\)</span>) can be computed using the centralized physics modules:</p>
+<h3 id="71-structural-potential-phi_s">7.1 Structural Potential: <span class="arithmatex">\(\Phi_s\)</span><a class="headerlink" href="#71-structural-potential-phi_s" title="Permanent link">&para;</a></h3>
+<div class="arithmatex">\[\Phi_s(n) = \sum_{m \neq n} \frac{\Delta\mathrm{NFR}(m)}{d(n, m)^2}\]</div>
+<p>where <span class="arithmatex">\(d(n,m)\)</span> uses the graph supplied to the field adapter and its declared
+path-length policy. Self, unreachable and zero-distance pairs contribute zero
+under the shared kernel convention. Explicit edge length, transport weight
+fallback and unit fallback must not be conflated. A prime
+contributes zero as a pressure <strong>source</strong>, but its potential value still
+aggregates pressure from other nodes. This static field does not make primes
+dynamical sinks or attractors.</p>
+<p><strong>Warning policy</strong>: <span class="arithmatex">\(|\Phi_s| &lt; \pi/4 \approx 0.785\)</span> is the shared selected per-node policy; it is not derived from arithmetic or phase wrapping.</p>
+<h3 id="72-phase-gradient-nablaphi">7.2 Phase Gradient: <span class="arithmatex">\(|\nabla\phi|\)</span><a class="headerlink" href="#72-phase-gradient-nablaphi" title="Permanent link">&para;</a></h3>
+<div class="arithmatex">\[|\nabla\phi|(n) = \frac{1}{|\mathcal{N}(n)|} \sum_{m \in \mathcal{N}(n)} |\operatorname{wrap}(\phi_n - \phi_m)|\]</div>
+<p>where <span class="arithmatex">\(\mathcal{N}(n)\)</span> is the neighborhood used by the field adapter, with zero
+at isolates. It measures the supplied phase differences; an arithmetic class
+interpretation requires evidence under that phase policy.</p>
+<p><strong>Scale</strong>: <span class="arithmatex">\(|\nabla\phi| \leq \pi\)</span> is the exact wrapped-angle bound. Any
+early-warning level is experiment-dependent; the measured synchronization
+onset near <span class="arithmatex">\(0.29\)</span> is not a universal stability threshold.</p>
+<h3 id="73-phase-curvature-k_phi">7.3 Phase Curvature: <span class="arithmatex">\(K_\phi\)</span><a class="headerlink" href="#73-phase-curvature-k_phi" title="Permanent link">&para;</a></h3>
+<div class="arithmatex">\[K_\phi(n) = \text{wrap\_angle}\!\left(\phi_n - \overline{\phi}_{\mathcal{N}(n)}\right)\]</div>
+<p>where <span class="arithmatex">\(\overline{\phi}_{\mathcal{N}(n)}\)</span> is the circular neighbor mean when
+available. Exact represented phasor cancellation gives unavailable curvature;
+the strict numeric owner raises rather than inventing a value. No generic
+prime/composite boundary interpretation follows from this definition.</p>
+<p><strong>Threshold</strong>: <span class="arithmatex">\(|K_\phi| &lt; 0.9\pi \approx 2.827\)</span>; this is an operational margin inside the exact wrapped bound.</p>
+<h3 id="74-coherence-length-xi_c">7.4 Coherence Length: <span class="arithmatex">\(\xi_C\)</span><a class="headerlink" href="#74-coherence-length-xi_c" title="Permanent link">&para;</a></h3>
+<div class="arithmatex">\[C(r) \approx A \cdot e^{-r/\xi_C}\]</div>
+<p>The coherence length estimates how far the configured structural-coherence
+field correlates across the arithmetic network. Its value is state- and
+estimator-dependent; no divergence at twin primes, prime gaps, or an arithmetic
+critical point is established here.</p>
+<h3 id="75-tetrad-thresholds-on-the-arithmetic-network">7.5 Tetrad thresholds on the arithmetic network<a class="headerlink" href="#75-tetrad-thresholds-on-the-arithmetic-network" title="Permanent link">&para;</a></h3>
+<p>The arithmetic network uses the same tetrad implementation and selected
+warning policies as any TNFR network:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Threshold</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(\Phi_s\)</span></td>
+<td>π/4 ≈ 0.785 (per-node), π/2 ≈ 1.571 (drift), both selected policies</td>
+<td><code>PHI_S_VON_KOCH_THRESHOLD</code>, <code>U6_STRUCTURAL_POTENTIAL_LIMIT</code></td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\lvert\nabla\phi\rvert\)</span></td>
+<td>≤ π (phase wrap); measured onset ≈0.29 is experiment-dependent</td>
+<td>canonical wrapping / measured protocol</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(K_\phi\)</span></td>
+<td>&lt; 0.9·π ≈ 2.827 (phase-wrap safety)</td>
+<td><code>K_PHI_CANONICAL_THRESHOLD</code></td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\xi_C\)</span></td>
+<td>path-unit static coherence-product fit; separate dimensionless spectral fallback from the smallest computed eigenvalue above <code>1e-9</code></td>
+<td>Estimator provenance required; selected value need not be the true <code>λ₂</code></td>
+</tr>
+</tbody>
+</table>
+<p>An earlier "arithmetic recalibration" introduced topology-specific thresholds
+expressed as φ/γ/e combinations (e.g. a <span class="arithmatex">\(K_\phi\)</span> threshold of 3.2275 that
+<em>exceeded</em> the π phase-wrap bound and was therefore unreachable). Those values
+were not structural scales and have been removed (audit 2026): the arithmetic
+network is governed by the same π-bounded phase sector as every other TNFR
+network.</p>
+<h3 id="76-the-arithmetic-nfr-and-its-emergent-geometry">7.6 The Arithmetic NFR and its Emergent Geometry<a class="headerlink" href="#76-the-arithmetic-nfr-and-its-emergent-geometry" title="Permanent link">&para;</a></h3>
+<p>The constructed arithmetic network supports a joint <strong>Fractal-Resonant Node</strong>
+(NFR; TNFR.pdf §1.4.1) read-out through <code>ArithmeticTNFRNetwork.nfr()</code>.
+Its following diagnostic facets do not prove spontaneous generation,
+self-similarity or persistent identity under an autonomous evolution:</p>
+<ul>
+<li><strong>Resonant.</strong> By the §4.1 primality theorem the pressure-equilibrium set
+  <span class="arithmatex">\(\{n : \Delta\mathrm{NFR}(n) = 0\}\)</span> is <em>exactly</em> the primes.
+  <code>equilibrium_fraction</code> is the prime density. The canonical static aggregate
+  <code>coherence</code> is
+  <span class="arithmatex">\(1/(1+\operatorname{mean}|\Delta\mathrm{NFR}|)\)</span> under the static
+  <span class="arithmatex">\(d\mathrm{EPI}=0\)</span> convention. <code>mean_local_coherence</code> retains the distinct
+  descriptive average
+  <span class="arithmatex">\(\operatorname{mean}_i[1/(1+|\Delta\mathrm{NFR}_i|)]\)</span>; the two generally
+  differ because the coherence kernel is nonlinear. The arithmetic pressure is
+  independent of EPI, so this identifies the arithmetic zero set, not full-state
+  fixed points, restoring attractors or basins. An empty domain reports these aggregates
+  as unavailable rather than assigning it zero coherence.</li>
+<li><strong>Geometric.</strong> <code>classify_nodal_topology</code> assigns a radial, annular or
+  multinodal diagnostic from the constructed potential. Its result depends
+  on the graph, pressure and classification policy; no universal arithmetic
+  center classification is established here.</li>
+<li><strong>Scale read-out.</strong> The available <span class="arithmatex">\(\xi_C\)</span> estimate is a correlation or
+  spectral statistic with recorded provenance, not proof of fractality or a
+  uniquely determined NFR region size.</li>
+</ul>
+<p>The arithmetic network exposes structural read-outs through <code>conservation()</code>
+and initializes the separate auxiliary harmonic model through
+<code>symplectic_substrate()</code>.  These diagnostics do not show that the arithmetic
+nodal dynamics generates a symplectic geometry:</p>
+<ul>
+<li>a <strong>Noether-like charge diagnostic</strong> <span class="arithmatex">\(Q = \sum_i (\Phi_s(i) + K_\phi(i))\)</span> and
+  the nonnegative structural <strong>energy candidate</strong>
+  <span class="arithmatex">\(E = \tfrac12 \sum_i (\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 + J_\phi^2 +
+  J_{\Delta\mathrm{NFR}}^2)\)</span>, with the potential sector <span class="arithmatex">\(\Phi_s\)</span> sourced by the
+  arithmetic <span class="arithmatex">\(\Delta\mathrm{NFR}\)</span> (the genuine invariants <span class="arithmatex">\(\Omega, \tau, \sigma\)</span>);</li>
+<li>an auxiliary <strong>symplectic substrate</strong> of dimension <span class="arithmatex">\(4N\)</span> with conjugate pairs
+  <span class="arithmatex">\((K_\phi, J_\phi)\)</span> and <span class="arithmatex">\((\Phi_s, J_{\Delta\mathrm{NFR}})\)</span>. The geometric sector
+  is populated by the <em>size / capacity</em> phase <span class="arithmatex">\(\phi(n) \propto \log n\)</span> (the monoid
+  homomorphism <span class="arithmatex">\((\mathbb{N},\times) \to (\mathbb{R},+)\)</span>), which is non-degenerate
+  on the dense divisibility graph. These extracted coordinates initialize the
+  harmonic substrate model; they do not prove that the arithmetic graph
+  trajectory remains in its realizable image.</li>
+</ul>
+<p>The pressure contributes to potential and the chosen phase contributes to the
+phase sector. Relative numerical magnitudes depend on input scales and policy;
+no universal potential-dominance theorem follows.</p>
+<hr />
+<h2 id="8-dual-lever-decomposition">8. Dual-Lever Decomposition<a class="headerlink" href="#8-dual-lever-decomposition" title="Permanent link">&para;</a></h2>
+<h3 id="81-the-nodal-equation-in-arithmetic">8.1 The Nodal Equation in Arithmetic<a class="headerlink" href="#81-the-nodal-equation-in-arithmetic" title="Permanent link">&para;</a></h3>
+<p>For a separately declared evolution initialized from the arithmetic assignment,
+write its evolving EPI coordinate as <span class="arithmatex">\(x_n(t)\)</span>:</p>
+<div class="arithmatex">\[\dot x_n(t) = \nu_f(n)\,\Delta\mathrm{NFR}(n),\qquad x_n(0)=\mathrm{EPI}(n).\]</div>
+<p>Holding those arithmetic capacity and pressure values fixed is an additional
+model assumption. The channel terminology then distinguishes:</p>
+<ul>
+<li><strong>Capacity lever</strong> (<span class="arithmatex">\(\nu_f\)</span>): How fast the number <em>can</em> reorganize. Depends on divisor structure and factorization complexity. Its primary operators are SHA, VAL and NUL.</li>
+<li><strong>Pressure lever</strong> (<span class="arithmatex">\(\Delta\mathrm{NFR}\)</span>): How much reorganization is <em>demanded</em>. Zero for primes, positive for composites. Its primary operators are IL, OZ, THOL and NAV.</li>
+<li><strong>Phase channel</strong> (<span class="arithmatex">\(\theta\)</span>): UM and ZHIR act primarily on phase.</li>
+<li><strong>Form channel</strong> (EPI): AL, EN, RA and REMESH write or transport form.</li>
+</ul>
+<h3 id="82-fixed-point-analysis">8.2 Fixed Point Analysis<a class="headerlink" href="#82-fixed-point-analysis" title="Permanent link">&para;</a></h3>
+<p>For primes: <span class="arithmatex">\(\Delta\mathrm{NFR}(p) = 0 \Rightarrow \dot x_p = 0\)</span> for any finite <span class="arithmatex">\(\nu_f(p)\)</span> in this unforced model.</p>
+<p>This is stationarity of the unforced EPI coordinate under the held-pressure
+model: perturbations to <span class="arithmatex">\(\nu_f\)</span> alone do not change its zero derivative. It is
+not a full-state fixed-point, stability or attraction theorem.</p>
+<p>For composites with the assigned positive capacity:
+<span class="arithmatex">\(\Delta\mathrm{NFR}(n) &gt; 0 \Rightarrow \dot x_n &gt; 0\)</span>.</p>
+<p>The evolved scalar <span class="arithmatex">\(x_n(t)\)</span> increases under this fixed positive
+pressure. Its sign does not prove simplification, attraction toward a prime,
+or stability. If capacity and arithmetic pressure remain fixed and positive,
+the nodal law gives linear drift rather than relaxation (§13.3).</p>
+<h3 id="83-experimental-confirmation">8.3 Experimental Confirmation<a class="headerlink" href="#83-experimental-confirmation" title="Permanent link">&para;</a></h3>
+<p>Operator-tetrad synergy experiments (examples 37-39) confirmed:</p>
+<ol>
+<li><span class="arithmatex">\(\Phi_s\)</span> responds <strong>linearly</strong> to <span class="arithmatex">\(\Delta\mathrm{NFR}\)</span> perturbations with <span class="arithmatex">\(|r| = 1.000\)</span> (perfect correlation), confirming the pressure lever's direct coupling to the structural potential field.</li>
+<li>Declared operator changes can affect capacity, pressure and the resulting
+   EPI rate. Phase and support also enter the tetrad directly; these dependencies
+   do not establish a closed causal chain through EPI rate alone.</li>
+<li>Finite operator trajectories expose measured changes in the tetrad energy
+  candidate. Grammar validity and the nominal multiplier <span class="arithmatex">\(\Pi\)</span> do not by
+  themselves prove <span class="arithmatex">\(dE/dt \leq 0\)</span>.</li>
+</ol>
+<hr />
+<h2 id="9-factorization-as-spectral-decoding">9. Factorization as Spectral Decoding<a class="headerlink" href="#9-factorization-as-spectral-decoding" title="Permanent link">&para;</a></h2>
+<h3 id="91-the-factorization-problem-in-tnfr-terms">9.1 The Factorization Problem in TNFR Terms<a class="headerlink" href="#91-the-factorization-problem-in-tnfr-terms" title="Permanent link">&para;</a></h3>
+<p>Given a composite <span class="arithmatex">\(n\)</span> with <span class="arithmatex">\(\Delta\mathrm{NFR}(n) &gt; 0\)</span>, factorization is the process of decomposing the structural pressure into coherent sub-modes, each corresponding to a prime factor.</p>
+<p><strong>Physical analogy</strong>: A composite number is like a coupled oscillator system with multiple resonant frequencies. Factorization identifies the individual frequencies (prime factors) from the combined signal.</p>
+<h3 id="92-spectral-paley-jacobi-method">9.2 Spectral Paley-Jacobi Method<a class="headerlink" href="#92-spectral-paley-jacobi-method" title="Permanent link">&para;</a></h3>
+<p>The implementation uses Paley graphs — algebraic constructions from quadratic residues:</p>
+<ol>
+<li>
+<p><strong>Graph construction</strong>: For modulus <span class="arithmatex">\(m\)</span> (chosen near <span class="arithmatex">\(n\)</span>), build the Paley graph <span class="arithmatex">\(G(m)\)</span> where nodes are <span class="arithmatex">\(\{0, \ldots, m-1\}\)</span> and edges connect quadratic residues.</p>
+</li>
+<li>
+<p><strong>Spectral decomposition</strong>: Compute the spectrum of the <strong>emergent structural-diffusion operator</strong> <span class="arithmatex">\(L_{rw} = I - D^{-1}W\)</span> (the canonical ΔNFR EPI channel; <code>_laplacian_eigenvalues</code> routes through <code>structural_diffusion_operator</code>). On the residue/Paley graph, which is <strong>regular</strong>, <span class="arithmatex">\(L_{rw}\)</span> shares eigenvectors with the classical Laplacian and the eigenvalues differ only by the degree (<span class="arithmatex">\(\lambda_{\text{classical}}=d\cdot\lambda_{rw}\)</span>), so the Fiedler-gap → prime-size map (a Paley Gauss-sum fact) is preserved while the operator provenance is the emergent TNFR transport operator.</p>
+</li>
+<li>
+<p><strong>Tetrad proxies</strong> (HONEST SCOPE): the factorizer operates on the spectrum, not on a node-level ΔNFR field, so it uses <strong>scalar proxies</strong> of the tetrad — <span class="arithmatex">\(\Phi_s\approx\)</span> normalized edge density, <span class="arithmatex">\(\xi_C\approx 1/(\nu_f\lambda_2)\)</span> (the emergent diffusion relaxation time). These are labelled proxies in code (<code>_structural_potential</code>, <code>_coherence_length</code>); in the symmetric-seed fixtures of example 117 the genuine per-node tetrad (<code>tnfr.physics.canonical</code>) does not distinguish the factor cosets. This is a result for that state/observer pair, not unconditional per-node blindness.</p>
+</li>
+<li>
+<p><strong>Operator sequence</strong>: Apply the canonical decoder <span class="arithmatex">\([\mathrm{UM}, \mathrm{RA}, \mathrm{IL}, \mathrm{THOL}]\)</span> per partition:</p>
+</li>
+<li><strong>UM</strong> (Coupling): Phase-gated coupling between quadratic residues (U3 verified)</li>
+<li><strong>RA</strong> (Resonance): Amplify coherent periodicity patterns</li>
+<li><strong>IL</strong> (Coherence): Stabilize the partitioned structure</li>
+<li>
+<p><strong>THOL</strong> (Self-organization): Preserve multi-scale identity (U5)</p>
+</li>
+<li>
+<p><strong>Factor inference</strong>: Detect periodicities in the stabilized partitions that correspond to <span class="arithmatex">\(n/p\)</span> for candidate factors <span class="arithmatex">\(p\)</span>.</p>
+</li>
+<li>
+<p><strong>TNFR certification</strong>: Verify each candidate against 8 structural criteria (§9.3).</p>
+</li>
+</ol>
+<h3 id="93-structural-verification-criteria">9.3 Structural Verification Criteria<a class="headerlink" href="#93-structural-verification-criteria" title="Permanent link">&para;</a></h3>
+<p>A factor candidate is TNFR-certified when <span class="arithmatex">\(\geq 4\)</span> of 8 criteria hold and <span class="arithmatex">\(\geq 50\%\)</span> of partition endorsements are positive:</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Threshold</th>
+<th>Configured feature interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(\Delta\mathrm{NFR}\)</span> gain</td>
+<td><span class="arithmatex">\(\geq 0.15\)</span> drop</td>
+<td>Selected heuristic drop, not a convergence theorem</td>
+</tr>
+<tr>
+<td>Coherence ratio</td>
+<td><span class="arithmatex">\(0.72 \leq r \leq 1.38\)</span></td>
+<td>Structural similarity</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\Phi_s\)</span> delta</td>
+<td><span class="arithmatex">\(\leq 0.35\)</span></td>
+<td>Selected factor-certification feature; not the canonical U6 <span class="arithmatex">\(\pi/2\)</span> drift policy</td>
+</tr>
+<tr>
+<td>Gradient delta</td>
+<td><span class="arithmatex">\(\leq 0.40\)</span></td>
+<td>Phase desynchronization limit</td>
+</tr>
+<tr>
+<td>Curvature delta</td>
+<td><span class="arithmatex">\(\leq 0.45\)</span></td>
+<td>Geometric stability</td>
+</tr>
+<tr>
+<td>Periodicity confidence</td>
+<td><span class="arithmatex">\(\geq 0.55\)</span></td>
+<td>Structural mode certainty</td>
+</tr>
+<tr>
+<td>Stabilized fraction</td>
+<td><span class="arithmatex">\(\geq 0.30\)</span></td>
+<td>Selected heuristic fraction; not a U5 proof</td>
+</tr>
+<tr>
+<td>Coverage fraction</td>
+<td><span class="arithmatex">\(\geq 0.15\)</span></td>
+<td>Spatial completeness</td>
+</tr>
+</tbody>
+</table>
+<h3 id="94-pure-mode">9.4 Pure Mode<a class="headerlink" href="#94-pure-mode" title="Permanent link">&para;</a></h3>
+<p>Setting <code>TNFR_PURE_MODE=1</code> requests the factorizer's structural-confidence policy. A positive heuristic label without arithmetic divisibility verification is not a mathematical factor certificate or proof of a TNFR-specific mechanism.</p>
+<h3 id="95-three-sectors-of-primality-unification-measured">9.5 Three Sectors of Primality (Unification — MEASURED)<a class="headerlink" href="#95-three-sectors-of-primality-unification-measured" title="Permanent link">&para;</a></h3>
+<p>The factorization machinery (§9.1–9.4), arithmetic pressure criterion (§4) and
+residue-graph diagnostics reuse selected arithmetic structures, but they have
+different inputs and observations. Example
+<a href="../../examples/08_emergent_geometry/117_emergent_geometry_residue_graph.py">117_emergent_geometry_residue_graph.py</a>
+and <code>benchmarks/primes_as_consequence.py</code> compare them. Using the same
+<code>L_rw</code> owner does not identify their full dynamics or prove one common carrier:</p>
+<table>
+<thead>
+<tr>
+<th>Sector</th>
+<th>Method</th>
+<th>Input</th>
+<th>Emergent?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A — Arithmetic</strong></td>
+<td><span class="arithmatex">\(\Delta\mathrm{NFR}(n)=0\)</span> (§4)</td>
+<td><span class="arithmatex">\(\Omega, \tau, \sigma\)</span> (the factorization)</td>
+<td><strong>re-expression</strong> (primes-IN; exact but circular as a derivation)</td>
+</tr>
+<tr>
+<td><strong>B — Spectral</strong></td>
+<td>Paley eigenvalue comparison with explicit normalization: <span class="arithmatex">\(d\lambda_2(L_{rw})\)</span> versus <span class="arithmatex">\((n-\sqrt n)/2\)</span> on the regular self-adjoint prime case</td>
+<td>prescribed modular arithmetic and residue graph</td>
+<td>Spectral diagnostic without factorization input; scope and prime-power controls in §§9.6–9.7</td>
+</tr>
+<tr>
+<td><strong>C — Representation</strong></td>
+<td>irreducibility (Schur <span class="arithmatex">\(\langle\chi,\chi\rangle=1\)</span>)</td>
+<td>a finite group</td>
+<td><strong>refuted</strong> (the dim-4 mode of <span class="arithmatex">\(K_5\)</span> is irreducible yet <span class="arithmatex">\(4=2\cdot 2\)</span>)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The unification, stated honestly:</strong></p>
+<ol>
+<li>
+<p><strong>Sector B avoids factorization input.</strong> The Paley comparison reads the
+   spectrum of a prescribed residue graph rather than supplying
+   <span class="arithmatex">\(\Omega,\tau,\sigma\)</span>. Its prime and prime-power distinctions must retain
+   the stated operator and finite controls (§9.6). Modular arithmetic and
+   the graph construction are still inputs; neither their physical realization
+   nor a generic mechanism generating primes follows from this diagnostic.</p>
+</li>
+<li>
+<p><strong>The measured factor signal is spectral in these fixtures.</strong> For a semiprime <span class="arithmatex">\(n=p\cdot q\)</span> the factor <span class="arithmatex">\(p\)</span> appears as an <strong>exact Fourier/coset mode</strong> of the emergent diffusion spectrum (<span class="arithmatex">\(\eta^2_{\text{coset}}\to 1\)</span>, collapsing under a node-label shuffle — example 117 Q2). The residue graph is <strong>regular/circulant</strong>, so the random-walk operator and classical Laplacian share eigenvectors: this is CRT structure re-expressed. For the symmetric-seed per-node substrate fixture, the tested fields do not distinguish the cosets (<span class="arithmatex">\(\eta^2\approx0\)</span>). Other non-invariant states or observers require separate tests.</p>
+</li>
+<li>
+<p><strong>The obstructions are not identified with one another.</strong> Directed spectra
+   retain information discarded by the tested self-adjoint comparison. Their
+   Gauss-sum phases have not been identified with analytic
+   <span class="arithmatex">\(S(T)=\pi^{-1}\arg\zeta(1/2+iT)\)</span>. The former equalities with a
+   REMESH-infinity kernel or a finite symmetry complement are withdrawn by
+   the Riemann memo's scope correction. Examples
+   <a href="../../examples/07_number_theory/94_generative_number_construction.py">94</a> and
+   <a href="../../examples/07_number_theory/97_goldbach_additive_multiplicative.py">97</a>
+   remain declared arithmetic constructions; they do not establish that all
+   factorization, additive or zeta questions share one missing operator.</p>
+</li>
+</ol>
+<p><strong>Net:</strong> sector B supplies conditional spectral information without factoring
+the input first. The per-node blindness measured for particular symmetric
+seeds does not exclude information in other states or observers. No physical
+entity-generation mechanism or analytic zeta bridge has been derived here.</p>
+<h3 id="96-the-phase-sector-sector-b-extended-to-all-odd-primes-measured">9.6 The Phase Sector — Sector B Extended to All Odd Primes (MEASURED)<a class="headerlink" href="#96-the-phase-sector-sector-b-extended-to-all-odd-primes-measured" title="Permanent link">&para;</a></h3>
+<p>The "partial" limitation of sector B (only <span class="arithmatex">\(n\equiv 1\pmod 4\)</span>, §9.5) is <strong>not</strong> a wall of TNFR — it is an artefact of restricting to the <em>real/self-adjoint</em> spectrum. Example <a href="../../examples/08_emergent_geometry/119_phase_sector_directed_residue.py">119_phase_sector_directed_residue.py</a> crosses it using the <strong>same canonical emergent operator</strong> on the <strong>directed</strong> residue graph.</p>
+<p><strong>The structural reason for the prime mod-4 split.</strong> For an odd prime
+<span class="arithmatex">\(p\equiv1\pmod4\)</span>, <span class="arithmatex">\(-1\)</span> is a quadratic residue and the regular residue graph
+is symmetric, with self-adjoint <span class="arithmatex">\(L_{rw}\)</span>. For an odd prime
+<span class="arithmatex">\(p\equiv3\pmod4\)</span>, the residue digraph is a Paley tournament: its circulant
+<span class="arithmatex">\(L_{rw}\)</span> is normal but not self-adjoint and has complex eigenvalues. These
+prime-specific statements do not follow from the congruence alone for
+arbitrary composite moduli. An eigenvalue's imaginary part is not itself the
+engine's nodal phase variable.</p>
+<p><strong>Scope.</strong> This is <code>structural_diffusion_operator</code> applied directly to a
+<code>networkx.DiGraph</code>, verified against a hand-built matrix
+(<span class="arithmatex">\(\max|\Delta|=0\)</span>). Its complex spectrum is a diagnostic of that directed
+linear transport operator; it is not the auxiliary symplectic substrate or a
+complete emergent geometry. The arithmetic input is <span class="arithmatex">\(x^2\bmod n\)</span>.</p>
+<p><strong>Measured (all reproducible in example 119):</strong></p>
+<ol>
+<li>
+<p><strong>Finite primality comparison.</strong> A three-distinct-eigenvalue rule matches
+   the prime labels in <strong>58/58</strong> tested odd integers in <code>[5,119]</code>. The
+   forward odd-prime count follows from §9.11; the finite comparison does
+   not prove the converse for all composite integers.</p>
+</li>
+<li>
+<p><strong>Prime powers resolved.</strong> The directed operator gives <strong>4+</strong> distinct eigenvalues for <span class="arithmatex">\(9=3^2\)</span>, <span class="arithmatex">\(25=5^2\)</span>, <span class="arithmatex">\(49=7^2\)</span>, <span class="arithmatex">\(121=11^2\)</span> — it <strong>separates</strong> primes from prime powers, which the real symmetric operator of example 117 could <strong>not</strong> (<span class="arithmatex">\(49\)</span> was rigid there, the honest §9.5 caveat). The phase channel removes that caveat.</p>
+</li>
+<li>
+<p><strong>The phase encodes <span class="arithmatex">\(\sqrt n\)</span>.</strong> For <span class="arithmatex">\(n\equiv 3\pmod 4\)</span> primes the imaginary spectrum is the Paley-tournament eigenvalue structure <span class="arithmatex">\((-1\pm i\sqrt n)/2\)</span> on the adjacency; the diffusion operator's <span class="arithmatex">\(\max|\mathrm{Im}(\lambda)|=\sqrt n/(n-1)\)</span> <strong>exactly</strong> (ratio <span class="arithmatex">\(1.000\)</span>) — a Gauss-sum fact carried in the <strong>phase</strong>.</p>
+</li>
+</ol>
+<p><strong>Honest scope.</strong> The finite comparisons improve the tested prime-power
+distinction without factorization input. The odd-prime rank is the classical
+Gauss-period result proved in §9.11; the finite converse tests are not a proof
+for every composite. These spectra have not been identified with the tetrad
+field <span class="arithmatex">\(\Psi=K_\phi+iJ_\phi\)</span>, an analytic symmetry complement or the zeta
+argument. No factoring speedup, particle mechanism or open-problem result follows.</p>
+<h3 id="97-the-symmetry-wall-why-the-substrate-is-blind-and-the-spectrum-is-not-measured">9.7 The Symmetry Wall — Why the Substrate Is Blind and the Spectrum Is Not (MEASURED)<a class="headerlink" href="#97-the-symmetry-wall-why-the-substrate-is-blind-and-the-spectrum-is-not-measured" title="Permanent link">&para;</a></h3>
+<p>§9.6 detects primality in a <strong>global diffusion spectrum</strong>; §9.5 and examples
+103/116 found the extracted per-node fields used to initialize the auxiliary
+substrate blind to arithmetic. These are different summaries of the same
+residue digraph, so their information content need not agree. Example
+<a href="../../examples/08_emergent_geometry/120_symmetry_wall_substrate_vs_spectrum.py">120_symmetry_wall_substrate_vs_spectrum.py</a>
+locates the finite observation loss at <strong>vertex-transitivity</strong>.</p>
+<p><strong>The mechanism.</strong> The residue digraph is a <strong>Cayley digraph</strong> of <span class="arithmatex">\(\mathbb{Z}_n\)</span> with connection set <span class="arithmatex">\(=\)</span> the quadratic residues. Translation preserves the difference <span class="arithmatex">\(j-i\)</span> and acts transitively. Consequently an equivariant per-node observer applied to an invariant input must be orbit-constant; this does not constrain an arbitrary symmetry-breaking input.</p>
+<ul>
+<li>In the symmetric-seed protocol, the per-node substrate output lies in the fixed sector and cannot distinguish nodes within the single orbit.</li>
+<li>The tested arithmetic distinction appears in the global spectrum (group-character / Gauss-sum eigenvalues). A scalar spectral rank is an invariant, not itself a vector in <span class="arithmatex">\(\mathrm{Fix}(G_{\mathrm{aut}})^\perp\)</span>.</li>
+</ul>
+<p><strong>The double dissociation (measured).</strong> Compare the Paley residue digraph (QR structure) against a <strong>random regular tournament</strong> of the same out-degree, both seeded identically and evolved by the canonical nodal equation <span class="arithmatex">\(\partial\mathrm{EPI}/\partial t=\nu_f\cdot\Delta\mathrm{NFR}\)</span>. Table regenerated after the 2026-09-04 canonicity audit fixed the directed ΔNFR orientation (default path previously computed <span class="arithmatex">\(L_{\mathrm{in}}\)</span> instead of the canonical <span class="arithmatex">\(L_{\mathrm{out}}\)</span> on digraphs; the eigenvalue columns are orientation-invariant and unchanged, only <span class="arithmatex">\(\sigma(\Phi_s)\)</span> shifted):</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;"><span class="arithmatex">\(n\)</span></th>
+<th style="text-align: right;">Paley distinct eig.</th>
+<th style="text-align: right;">random distinct eig.</th>
+<th style="text-align: right;">Paley <span class="arithmatex">\(\sigma(\Phi_s)\)</span></th>
+<th style="text-align: right;">random <span class="arithmatex">\(\sigma(\Phi_s)\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;"><strong>3</strong></td>
+<td style="text-align: right;">11.0</td>
+<td style="text-align: right;">0.376</td>
+<td style="text-align: right;">0.356</td>
+</tr>
+<tr>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;"><strong>3</strong></td>
+<td style="text-align: right;">23.0</td>
+<td style="text-align: right;">0.559</td>
+<td style="text-align: right;">0.533</td>
+</tr>
+<tr>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;"><strong>3</strong></td>
+<td style="text-align: right;">47.0</td>
+<td style="text-align: right;">0.978</td>
+<td style="text-align: right;">0.968</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Spectrum SEES the arithmetic</strong>: Paley is rigidly 3 distinct eigenvalues (the §9.6 prime signature); the random tournament has <span class="arithmatex">\(\sim n\)</span>. Swapping the QR structure for a random tournament changes the spectrum completely.</li>
+<li><strong>The tested substrate readout does not discriminate</strong>: the per-node <span class="arithmatex">\(\Phi_s\)</span> dispersion is similar for Paley and the random tournament in the recorded cases. This finite comparison is not an all-state impossibility theorem.</li>
+</ul>
+<p>Across odd <span class="arithmatex">\(n\)</span> the spectral test "<span class="arithmatex">\(3\)</span> distinct <span class="arithmatex">\(\iff\)</span> prime" is <strong>18/18 correct</strong>, while <span class="arithmatex">\(\sigma(\Phi_s)\)</span> grows monotonically with <span class="arithmatex">\(n\)</span> (graph size) and composites can exceed primes (e.g. <span class="arithmatex">\(25\)</span> vs <span class="arithmatex">\(29\)</span>) — the substrate tracks size, not primality.</p>
+<p><strong>Cross-program comparison.</strong> Vertex transitivity explains the fixed-sector limitation of the invariant-input residue fixtures. The paused TNFR-Riemann program has its own separately defined <span class="arithmatex">\(S_n\)</span> representation and oscillatory residue. The two settings share representation-theoretic language, but they are not thereby one obstruction or one state space.</p>
+<p><strong>Honest scope.</strong> This explains the recorded fixed-sector result for invariant
+inputs by vertex transitivity. It does not prove that every per-node observer or
+perturbed state is blind, does not identify the Riemann obstruction with this
+finite graph result, and closes no open problem.</p>
+<h3 id="98-symmetry-breaking-controls-on-the-declared-residue-fixtures">9.8 Symmetry-breaking controls on the declared residue fixtures<a class="headerlink" href="#98-symmetry-breaking-controls-on-the-declared-residue-fixtures" title="Permanent link">&para;</a></h3>
+<p>Example <a href="../../examples/08_emergent_geometry/121_canonical_symmetry_break_negative.py">121</a>
+compares a symmetric seed, capacities assigned from selected graph invariants,
+and an arithmetic capacity assignment with a shuffled control. It is a finite
+comparison on the chosen vertex-transitive residue graphs.</p>
+<p>The channel-weight dictionary is graph-level configuration. This does not mean
+the nodal equation has no local dependence: capacity, phase, EPI and edge
+conductance are node/edge data, and the pressure depends on them. A missing
+configuration slot is an implementation fact, not a physical impossibility
+theorem or proof that every possible local law needs an external axiom.</p>
+<table>
+<thead>
+<tr>
+<th>Lever</th>
+<th>Historical observation</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Symmetric seed</td>
+<td>Potential dispersion near numerical zero</td>
+<td>Consistent with an invariant state and equivariant read-out</td>
+</tr>
+<tr>
+<td>Degree/triangle-derived capacity</td>
+<td>Uniform capacity on these graphs</td>
+<td>A function of invariant bare-graph data is orbit-constant</td>
+</tr>
+<tr>
+<td>Arithmetic capacity and shuffle</td>
+<td>Dispersion ratio about 0.96–1.05</td>
+<td>The selected statistic did not separate those assignments in this sample</td>
+</tr>
+</tbody>
+</table>
+<p>The exact symmetry statement is conditional: a deterministic equivariant
+evolution with invariant full initial state cannot select a non-invariant state
+while its uniqueness/domain assumptions hold. It does not exclude symmetry
+breaking from an admitted non-invariant state, instability under perturbations,
+support changes, a different observable or a finer TNFR description. A uniform
+EPI field alone is not sufficient for zero multichannel pressure if phase,
+capacity or topology contributions differ.</p>
+<p>The previous universal conclusion “no canonical per-node lever exists” is
+withdrawn. These controls do not settle every endogenous selection mechanism
+and do not identify the Riemann obstruction with a finite fixed-sector result.</p>
+<h3 id="99-phase-sector-periodicity-a-basis-invariant-read-of-the-crt-factor-coset-measured">9.9 Phase-Sector Periodicity — a Basis-Invariant Read of the CRT Factor Coset (MEASURED)<a class="headerlink" href="#99-phase-sector-periodicity-a-basis-invariant-read-of-the-crt-factor-coset-measured" title="Permanent link">&para;</a></h3>
+<p>§9.6 (Reading B, real sector) recovered the factor coset <span class="arithmatex">\((i\bmod p)\)</span> of a semiprime <span class="arithmatex">\(n=p\cdot q\)</span> as a Fourier mode of the emergent diffusion spectrum. Example <a href="../../examples/08_emergent_geometry/122_factorization_phase_sector.py">122_factorization_phase_sector.py</a> reads that periodic structure with a <strong>basis-invariant</strong> observable and a <strong>derived-tolerance certificate</strong> — replacing an earlier, non-canonical single-eigenvector <span class="arithmatex">\(\eta^2&gt;0.9\)</span> decision rule (2026-09-04 canonicity audit).</p>
+<p><strong>The structural fact (CRT, present in both sectors).</strong> For <span class="arithmatex">\(n=p\cdot q\)</span> the factor coset <span class="arithmatex">\((i\bmod p)\)</span> corresponds to the Fourier frequencies <span class="arithmatex">\(k=\)</span> multiples of the cofactor <span class="arithmatex">\(q\)</span>. A pure Fourier mode <span class="arithmatex">\(\exp(2\pi i k j/n)\)</span> with <span class="arithmatex">\(k\)</span> a multiple of <span class="arithmatex">\(q\)</span> is <strong>constant within each coset</strong> <span class="arithmatex">\((i\bmod p)\)</span>, hence an <strong>exact eigenvector</strong> of the emergent operator (a circulant / Cayley digraph) — verified to machine precision (eigenvector residual <span class="arithmatex">\(\sim 10^{-14}\)</span>) for BOTH the undirected (real) and directed (complex) residue operator. The factor coset is CRT/circulant structure (<span class="arithmatex">\(\mathbb{Z}_n\cong\mathbb{Z}_p\times\mathbb{Z}_q\)</span>), present in both spectra.</p>
+<p><strong>Why a single-eigenvector <span class="arithmatex">\(\eta^2\)</span> is not canonical.</strong> A degenerate eigenvalue defines an <strong>eigenspace</strong>, not a privileged eigenvector: if <span class="arithmatex">\(Q_\lambda\)</span> spans it, so does <span class="arithmatex">\(Q_\lambda U\)</span> for any unitary <span class="arithmatex">\(U\)</span>. Any quantity read off individual eigenvector columns — e.g. the maximum <span class="arithmatex">\(\eta^2\)</span> of a single column, thresholded at <span class="arithmatex">\(0.9\)</span> — can change under that rotation while the operator is unchanged; it is an artefact of the eigensolver's basis. The audit exhibited explicit counterexamples (<span class="arithmatex">\(n=209,253,299\)</span>) where the <span class="arithmatex">\(0.9\)</span> threshold selects a <strong>false</strong> divisor.</p>
+<p><strong>The canonical, basis-invariant observable + certificate.</strong> Let <span class="arithmatex">\(C_d\)</span> be the subspace of vectors constant on classes <span class="arithmatex">\((i\bmod d)\)</span> with the constant direction removed, <span class="arithmatex">\(P_d\)</span> its projector, and <span class="arithmatex">\(\Pi_\lambda\)</span> the spectral projector of a (possibly degenerate) eigen-cluster. The score
+$<span class="arithmatex">\(\mathrm{score}(d,\lambda)=\lVert P_d\,\Pi_\lambda\rVert_2^2\)</span>$
+depends only on the two subspaces, hence is invariant under
+<span class="arithmatex">\(Q_\lambda\to Q_\lambda U\)</span>. The exact algebraic condition is
+<code>r(d)=0</code> if and only if the chosen subspace is invariant under <code>L</code>.
+The implementation instead accepts the <strong>numerical</strong> tolerance test
+$<span class="arithmatex">\(r(d)=\lVert (I-P_d)\,L\,Q_d\rVert_2 &lt; \tau,\qquad \tau=\sqrt{\varepsilon}\,\lVert L\rVert_2\)</span>$
+(a selected square-root-machine-epsilon scale times the operator norm).
+This is approximate invariant-subspace evidence. It is not an exact rational
+certificate or a universal equivalence between small residual and an integer
+being a divisor. A separate arithmetic check is needed for an actual factor.</p>
+<p><strong>Measured (seed-free; floating linear algebra).</strong></p>
+<table>
+<thead>
+<tr>
+<th><span class="arithmatex">\(n\)</span></th>
+<th>true <span class="arithmatex">\(p\)</span></th>
+<th>false <span class="arithmatex">\(d\)</span></th>
+<th><span class="arithmatex">\(\mathrm{score}(p)\)</span></th>
+<th><span class="arithmatex">\(\mathrm{score}(d)\)</span></th>
+<th><span class="arithmatex">\(r(p)\)</span></th>
+<th><span class="arithmatex">\(r(d)\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>209</td>
+<td>11</td>
+<td>3</td>
+<td>1.0000</td>
+<td>0.9162</td>
+<td><span class="arithmatex">\(1.6\times10^{-15}\)</span></td>
+<td><span class="arithmatex">\(3.9\times10^{-2}\)</span></td>
+</tr>
+<tr>
+<td>253</td>
+<td>11</td>
+<td>7</td>
+<td>1.0000</td>
+<td>0.9369</td>
+<td><span class="arithmatex">\(1.1\times10^{-15}\)</span></td>
+<td><span class="arithmatex">\(5.3\times10^{-2}\)</span></td>
+</tr>
+<tr>
+<td>299</td>
+<td>13</td>
+<td>7</td>
+<td>1.0000</td>
+<td>0.9373</td>
+<td><span class="arithmatex">\(1.2\times10^{-15}\)</span></td>
+<td><span class="arithmatex">\(4.8\times10^{-2}\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>The false candidate scores <strong>above <span class="arithmatex">\(0.9\)</span></strong> (so the withdrawn threshold mis-fires) yet its residual <span class="arithmatex">\(r(d)\gg\tau\)</span> <strong>rejects</strong> it; the true factor certifies (<span class="arithmatex">\(r(p)\sim10^{-15}&lt;\tau\)</span>). The projector score is invariant under a unitary rotation of a degenerate eigenspace (<span class="arithmatex">\(\Delta\sim10^{-16}\)</span>). A label shuffle drives <span class="arithmatex">\(r(p)\)</span> from <span class="arithmatex">\(\sim10^{-15}\)</span> to <span class="arithmatex">\(O(1)\)</span> — the signal is CRT/circulant structure, not an artefact.</p>
+<p><strong>Honest scope.</strong> This is a <strong>periodicity diagnostic</strong> of CRT structure in the canonical emergent spectrum — <strong>not</strong> a factoring algorithm. The residue (di)graph has <span class="arithmatex">\(n\)</span> nodes; building and diagonalizing it is <span class="arithmatex">\(\mathrm{poly}(n)=\mathrm{poly}(2^L)\)</span>, i.e. <strong>exponential in the input size</strong> <span class="arithmatex">\(L=\log_2 n\)</span> bits, and the candidate scan is <span class="arithmatex">\(O(\sqrt n)\)</span> prime divisors (the order of trial division). There is <strong>no speedup</strong> and <strong>no cryptographic consequence</strong>. The correction relative to earlier drafts: the read is expressed with a basis-invariant subspace score and a derived-tolerance certificate; the non-canonical <span class="arithmatex">\(\eta^2&gt;0.9\)</span> rule is withdrawn.</p>
+<h3 id="910-the-symmetry-sector-decomposition-the-general-principle-behind-the-whole-arc-measured-capstone">9.10 The Symmetry-Sector Decomposition — the General Principle Behind the Whole Arc (MEASURED, CAPSTONE)<a class="headerlink" href="#910-the-symmetry-sector-decomposition-the-general-principle-behind-the-whole-arc-measured-capstone" title="Permanent link">&para;</a></h3>
+<p>§9.7 located the residue-digraph wall at vertex-transitivity. Example <a href="../../examples/08_emergent_geometry/123_symmetry_sector_decomposition.py">123_symmetry_sector_decomposition.py</a> shows that is a <strong>special case</strong> of a general representation-theoretic principle of the canonical emergent operator — the single structure behind every wall in the §9.5–§9.9 arc (and the Riemann residual).</p>
+<p><strong>The principle (Schur, applied to the canonical emergent operator).</strong> For <strong>any</strong> graph <span class="arithmatex">\(G\)</span> with automorphism group <span class="arithmatex">\(\mathrm{Aut}(G)\)</span>, the canonical emergent operator <span class="arithmatex">\(L_{rw}=I-D^{-1}W\)</span> is <strong>equivariant</strong>: it commutes with the permutation representation of every automorphism, <span class="arithmatex">\(P_\sigma L_{rw}=L_{rw}P_\sigma\)</span> for all <span class="arithmatex">\(\sigma\in\mathrm{Aut}(G)\)</span>. By Schur's lemma an equivariant operator block-diagonalizes by the isotypic components (irreps) of <span class="arithmatex">\(\mathrm{Aut}(G)\)</span>. The coarsest split is</p>
+<div class="arithmatex">\[\mathbb{R}^N=\mathrm{Fix}(G)\ \oplus\ \mathrm{Fix}(G)^\perp,\]</div>
+<p>where <span class="arithmatex">\(\mathrm{Fix}(G)=\{\text{functions constant on the orbits of }\mathrm{Aut}(G)\}\)</span> is the trivial isotypic component and <span class="arithmatex">\(\dim\mathrm{Fix}(G)=\)</span> the number of vertex orbits. <span class="arithmatex">\(L_{rw}\)</span> preserves each block. An equivariant per-node map sends an invariant input to <span class="arithmatex">\(\mathrm{Fix}(G)\)</span> and is then constant within each orbit. Arbitrary inputs can have nontrivial components; global spectral invariants and nontrivial eigenspaces are separate objects.</p>
+<p><strong>Measured (five symmetry groups — cyclic, full-symmetric, star, path, product).</strong></p>
+<table>
+<thead>
+<tr>
+<th>Graph</th>
+<th style="text-align: right;"><span class="arithmatex">\(\lvert\mathrm{Aut}\rvert\)</span></th>
+<th style="text-align: right;">orbits</th>
+<th style="text-align: right;"><span class="arithmatex">\(\dim\mathrm{Fix}(G)\)</span></th>
+<th style="text-align: right;">equivariance</th>
+<th style="text-align: right;"><span class="arithmatex">\(L_{rw}\)</span> preserves <span class="arithmatex">\(\mathrm{Fix}(G)\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cycle <span class="arithmatex">\(C_8\)</span> (<span class="arithmatex">\(D_8\)</span>)</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;"><span class="arithmatex">\(0\)</span></td>
+<td style="text-align: right;"><span class="arithmatex">\(0\)</span></td>
+</tr>
+<tr>
+<td>complete <span class="arithmatex">\(K_6\)</span> (<span class="arithmatex">\(S_6\)</span>)</td>
+<td style="text-align: right;">720</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;"><span class="arithmatex">\(0\)</span></td>
+<td style="text-align: right;"><span class="arithmatex">\(\sim10^{-17}\)</span></td>
+</tr>
+<tr>
+<td>star <span class="arithmatex">\(K_{1,5}\)</span> (<span class="arithmatex">\(S_5\)</span>)</td>
+<td style="text-align: right;">120</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;"><span class="arithmatex">\(0\)</span></td>
+<td style="text-align: right;"><span class="arithmatex">\(\sim10^{-17}\)</span></td>
+</tr>
+<tr>
+<td>path <span class="arithmatex">\(P_6\)</span> (<span class="arithmatex">\(\mathbb{Z}_2\)</span>)</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;"><span class="arithmatex">\(0\)</span></td>
+<td style="text-align: right;"><span class="arithmatex">\(0\)</span></td>
+</tr>
+<tr>
+<td>torus <span class="arithmatex">\(C_3\square C_3\)</span></td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;"><span class="arithmatex">\(0\)</span></td>
+<td style="text-align: right;"><span class="arithmatex">\(0\)</span></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>M1</strong>: equivariance <span class="arithmatex">\(\lVert P_\sigma L_{rw}-L_{rw}P_\sigma\rVert=0\)</span> (machine zero) for <strong>every</strong> automorphism.</li>
+<li><strong>M2</strong>: <span class="arithmatex">\(\mathrm{rank}(P_{\mathrm{triv}})=\)</span> #orbits exactly (<span class="arithmatex">\(P_{\mathrm{triv}}=\)</span> mean of <span class="arithmatex">\(P_\sigma\)</span>).</li>
+<li><strong>M3</strong>: <span class="arithmatex">\(L_{rw}\)</span> preserves <span class="arithmatex">\(\mathrm{Fix}(G)\)</span> (<span class="arithmatex">\(\sim10^{-17}\)</span>): block-diagonal.</li>
+<li><strong>M4</strong>: the extracted per-node field vector used to initialize the auxiliary
+  substrate satisfies <span class="arithmatex">\(P_{\mathrm{triv}}v=v\)</span> for the symmetric seed
+  (orbit-constant); vertex-transitive <span class="arithmatex">\(\Rightarrow\)</span> <span class="arithmatex">\(\sigma(\Phi_s)=0\)</span> in this
+  declared construction.</li>
+<li><strong>M5</strong>: on vertex-transitive cases, the fixed sector consists only of
+  constants. On the star and path it has several dimensions, so nonconstant
+  orbit-constant modes also belong to that sector. Commuting projectors permit
+  a sector-adapted eigenbasis; an arbitrary basis in a degenerate eigenspace
+  need not consist of pure-sector vectors.</li>
+</ul>
+<p><strong>The comparison.</strong> Residue-graph symmetry, the measured substrate limitation,
+spectral primality and the Riemann programme can each be organized using a
+fixed/nontrivial-sector decomposition after their respective group actions are
+defined. This is a common method, not proof that their obstructions are the
+same object. On invariant inputs, star and path examples resolve orbit classes;
+arbitrary perturbed inputs fall outside that conclusion.</p>
+<p><strong>Honest scope.</strong> This is the representation theory of graph automorphisms (Schur's lemma applied to an equivariant operator) re-expressed in the canonical emergent operator. It <strong>explains and unifies</strong> the arc's walls; it is not new mathematics and closes no open problem.</p>
+<h3 id="911-the-cyclotomy-law-proof-via-gauss-periods-proved">9.11 The Cyclotomy Law — Proof via Gauss Periods (PROVED)<a class="headerlink" href="#911-the-cyclotomy-law-proof-via-gauss-periods-proved" title="Permanent link">&para;</a></h3>
+<p>§9.6 established the <strong>measured</strong> signature "<span class="arithmatex">\(3\)</span> distinct eigenvalues <span class="arithmatex">\(\iff\)</span> odd prime" for the quadratic-residue (<span class="arithmatex">\(k=2\)</span>) digraph. Example <a href="../../examples/07_number_theory/153_structural_frequency_rank_cyclotomy.py">153_structural_frequency_rank_cyclotomy.py</a> generalizes it to the <span class="arithmatex">\(k\)</span>-th power residue network and measures the <strong>cyclotomy law</strong> <span class="arithmatex">\(s_k(p)=\gcd(k,p-1)+1\)</span>. Unlike §9.5–§9.10 (all measured), this law is a <strong>theorem</strong> — it follows from classical Gauss-period theory, here proved for <strong>all</strong> <span class="arithmatex">\(k\)</span> and every odd prime <span class="arithmatex">\(p\)</span>.</p>
+<p><strong>Setup.</strong> Fix an odd prime <span class="arithmatex">\(p\)</span> and an integer <span class="arithmatex">\(k\ge 1\)</span>; let <span class="arithmatex">\(d=\gcd(k,p-1)\)</span> and <span class="arithmatex">\(\zeta=e^{2\pi i/p}\)</span>. Because <span class="arithmatex">\((\mathbb{Z}/p\mathbb{Z})^\times\)</span> is <strong>cyclic</strong> of order <span class="arithmatex">\(p-1\)</span>, the nonzero <span class="arithmatex">\(k\)</span>-th power residues <span class="arithmatex">\(R_k=\{x^k\bmod p\}\)</span> form the unique subgroup <span class="arithmatex">\(H\le(\mathbb{Z}/p\mathbb{Z})^\times\)</span> of index <span class="arithmatex">\(d\)</span> (the <span class="arithmatex">\(d\)</span>-th powers), with <span class="arithmatex">\(\lvert H\rvert=(p-1)/d=:f\)</span>. The structural rank <span class="arithmatex">\(s_k(p)\)</span> is the number of distinct eigenvalues of the canonical <span class="arithmatex">\(L_{rw}\)</span> on <span class="arithmatex">\(\mathrm{Cay}(\mathbb{Z}/p\mathbb{Z},R_k)\)</span>; since <span class="arithmatex">\(L_{rw}=I-A/f\)</span> is an affine image of the circulant adjacency <span class="arithmatex">\(A\)</span>, <span class="arithmatex">\(s_k(p)=\#\{\lambda(t):t\in\mathbb{Z}/p\mathbb{Z}\}\)</span> with
+$<span class="arithmatex">\(\lambda(t)=\sum_{r\in H}\zeta^{tr}.\)</span>$</p>
+<p><strong>Theorem (cyclotomy law).</strong> <span class="arithmatex">\(\;s_k(p)=d+1=\gcd(k,p-1)+1\)</span>.</p>
+<p><strong>Proof.</strong></p>
+<ol>
+<li>
+<p><em>Coset invariance.</em> For <span class="arithmatex">\(t\ne 0\)</span>, <span class="arithmatex">\(\lambda(t)\)</span> depends only on the coset <span class="arithmatex">\(tH\)</span>: if <span class="arithmatex">\(t'=th\)</span> with <span class="arithmatex">\(h\in H\)</span> then <span class="arithmatex">\(\{hr:r\in H\}=H\)</span> (group closure), so <span class="arithmatex">\(\lambda(t')=\sum_{r\in H}\zeta^{t(hr)}=\lambda(t)\)</span>. The cosets partition <span class="arithmatex">\((\mathbb{Z}/p\mathbb{Z})^\times\)</span> into <span class="arithmatex">\(d\)</span> classes, so over <span class="arithmatex">\(t\ne 0\)</span> the value <span class="arithmatex">\(\lambda(t)\)</span> takes the <span class="arithmatex">\(d\)</span> <strong>Gauss periods</strong> <span class="arithmatex">\(\eta_0,\dots,\eta_{d-1}\)</span> (one per coset); the remaining value is <span class="arithmatex">\(\lambda(0)=\lvert H\rvert=f\)</span>. Hence <span class="arithmatex">\(s_k(p)\le d+1\)</span>.</p>
+</li>
+<li>
+<p><em>The <span class="arithmatex">\(d\)</span> periods are distinct.</em> The only <span class="arithmatex">\(\mathbb{Z}\)</span>-linear relation among <span class="arithmatex">\(\{\zeta^i\}_{i=0}^{p-1}\)</span> is <span class="arithmatex">\(\sum_{i=0}^{p-1}\zeta^i=0\)</span>; restricted to two <span class="arithmatex">\(0/1\)</span>-supported sums on <span class="arithmatex">\(\{1,\dots,p-1\}\)</span>, <span class="arithmatex">\(\sum_{i\in S}\zeta^i=\sum_{i\in S'}\zeta^i\iff S=S'\)</span>. Therefore <span class="arithmatex">\(\sigma_a:\zeta\mapsto\zeta^a\)</span> fixes <span class="arithmatex">\(\eta_0=\sum_{r\in H}\zeta^r\)</span> iff <span class="arithmatex">\(aH=H\)</span> iff <span class="arithmatex">\(a\in H\)</span>. So the <span class="arithmatex">\(\mathrm{Gal}(\mathbb{Q}(\zeta)/\mathbb{Q})\cong(\mathbb{Z}/p\mathbb{Z})^\times\)</span> stabilizer of <span class="arithmatex">\(\eta_0\)</span> is exactly <span class="arithmatex">\(H\)</span>: <span class="arithmatex">\(\eta_0\)</span> generates the unique degree-<span class="arithmatex">\(d\)</span> subfield <span class="arithmatex">\(K_d=\mathbb{Q}(\zeta)^H\)</span>, and its <span class="arithmatex">\(d\)</span> Galois conjugates <span class="arithmatex">\(\eta_0,\dots,\eta_{d-1}\)</span> are <strong>distinct</strong>.</p>
+</li>
+<li>
+<p><em>No period equals the rational <span class="arithmatex">\(\lambda(0)\)</span>.</em> For <span class="arithmatex">\(d\ge 2\)</span>: the Galois group permutes <span class="arithmatex">\(\{\eta_j\}\)</span> <strong>transitively</strong> (through <span class="arithmatex">\((\mathbb{Z}/p\mathbb{Z})^\times/H\cong\mathbb{Z}/d\mathbb{Z}\)</span>); if some <span class="arithmatex">\(\eta_{j_0}=f\in\mathbb{Q}\)</span> then every conjugate would equal <span class="arithmatex">\(f\)</span> (Galois fixes <span class="arithmatex">\(\mathbb{Q}\)</span>), contradicting distinctness. For <span class="arithmatex">\(d=1\)</span>: <span class="arithmatex">\(H=(\mathbb{Z}/p\mathbb{Z})^\times\)</span>, so <span class="arithmatex">\(\eta_0=\sum_{i=1}^{p-1}\zeta^i=-1\ne p-1=f\)</span>. Either way no <span class="arithmatex">\(\eta_j\)</span> equals <span class="arithmatex">\(f\)</span>.</p>
+</li>
+<li>
+<p><em>Conclusion.</em> The distinct values are exactly <span class="arithmatex">\(\{f,\eta_0,\dots,\eta_{d-1}\}\)</span> — <span class="arithmatex">\((d+1)\)</span> of them — so <span class="arithmatex">\(s_k(p)=d+1=\gcd(k,p-1)+1\)</span>. <span class="arithmatex">\(\blacksquare\)</span></p>
+</li>
+</ol>
+<p><strong>Reading of the law.</strong> <span class="arithmatex">\(s_k(p)-1=\gcd(k,p-1)=[(\mathbb{Z}/p\mathbb{Z})^\times:H]=\)</span> the number of <span class="arithmatex">\(k\)</span>-th power classes <span class="arithmatex">\(=[K_d:\mathbb{Q}]\)</span>, the degree of the cyclotomic subfield carrying the periods. The maximal rank <span class="arithmatex">\(k+1\)</span> is attained <span class="arithmatex">\(\iff d=k\iff k\mid p-1\iff p\equiv 1\pmod k\iff p\)</span> splits completely in <span class="arithmatex">\(\mathbb{Q}(\zeta_k)\)</span>. The quadratic case is <span class="arithmatex">\(k=2\)</span> (<span class="arithmatex">\(\gcd(2,p-1)=2\)</span> for every odd <span class="arithmatex">\(p\)</span> <span class="arithmatex">\(\Rightarrow\)</span> the <strong>uniform rank 3</strong> of §9.6); the extreme <span class="arithmatex">\(d=p-1\)</span> (<span class="arithmatex">\(R_k=\{1\}\)</span>) is the directed <span class="arithmatex">\(p\)</span>-cycle, all <span class="arithmatex">\(p\)</span> characters distinct, <span class="arithmatex">\(s=p=(p-1)+1\)</span>.</p>
+<p><strong>Prime versus prime-power scope.</strong> The prime-field proof above also works
+at <code>p=2</code>: the nonzero power-residue set is <code>{1}</code>, the two-node Laplacian
+has eigenvalues <code>0,2</code>, and <code>gcd(k,1)+1=2</code>. It is therefore not an odd-only
+prime theorem. The separate conductor-annotated quadratic product formula
+over odd prime powers requires its own arithmetic stratification; cyclicity
+of the unit group alone does not extend the prime-field independence proof
+to higher powers. At <code>2^e</code>, the unit group is noncyclic for <code>e&gt;=3</code> and the
+quadratic strata differ. The recorded annotated counts <code>2,4,8,10,14,16,20</code>
+for <code>e=1,...,7</code> do not follow the odd-prime-power expression
+<code>e+ceil(e/2)+1</code>. That distinguishes the annotated prime-power formula from
+the prime-field cyclotomy theorem; it does not invalidate the latter at two.</p>
+<p><strong>Honest scope.</strong> The cyclotomy law is classical Gauss-period / cyclotomy theory (the <span class="arithmatex">\(k\)</span>-th power Cayley eigenvalues are Gauss periods of degree <span class="arithmatex">\(\gcd(k,p-1)\)</span>); the contribution is the <strong>TNFR structural-diffusion framing</strong> and the closed-form <code>power_residue_rank</code> — now a <strong>proved</strong> canonical fact, not a measured pattern. Verified computationally for <span class="arithmatex">\(k\le 40\)</span> across the primes <span class="arithmatex">\(p&lt;64\)</span> (680 cases, 0 failures) and proved for all <span class="arithmatex">\(k\)</span>. It detects primality/cyclotomy structurally; it does not factor, does not reach the continuous arg-<span class="arithmatex">\(\zeta\)</span> phase, and closes no open problem.</p>
+<h3 id="912-the-ontological-position-of-a-number-the-emergent-ladder">9.12 The Ontological Position of a Number (the emergent ladder)<a class="headerlink" href="#912-the-ontological-position-of-a-number-the-emergent-ladder" title="Permanent link">&para;</a></h3>
+<p>§9.5–9.7 compare which finite diagnostics distinguish primality. This
+subsection assembles them into a <strong>diagnostic profile</strong> for an integer, measured
+in example <a href="../../examples/08_emergent_geometry/155_ontological_position_of_numbers.py">155_ontological_position_of_numbers.py</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>What <span class="arithmatex">\(n\)</span> <strong>is</strong></th>
+<th>Mechanism</th>
+<th>Emergent?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 Substrate</td>
+<td>—</td>
+<td><span class="arithmatex">\(\mathbb{R}\)</span> continuum + <span class="arithmatex">\(\pi\)</span> (the one structural scale)</td>
+<td>assumed</td>
+</tr>
+<tr>
+<td>1 Cardinal</td>
+<td>a degeneracy <span class="arithmatex">\(=\dim\)</span> irrep of <span class="arithmatex">\(\mathrm{Aut}(G)\)</span></td>
+<td>Laplacian multiplicity</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>2 Operations</td>
+<td><span class="arithmatex">\(+, \times\)</span></td>
+<td>graph products (<span class="arithmatex">\(\square\!\to\!\sum\)</span> spectra, <span class="arithmatex">\(\otimes\!\to\!\prod\)</span> spectra)</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>3 Primality</td>
+<td><span class="arithmatex">\(\rho(n)=3\)</span></td>
+<td>directed residue operator (§9.6)</td>
+<td>✅ (Sector B)</td>
+</tr>
+<tr>
+<td>3′ Arithmetic</td>
+<td>the factorization type (<span class="arithmatex">\(\Omega, \tau\)</span>)</td>
+<td>the multiplicative rank <span class="arithmatex">\(\rho(n)\)</span></td>
+<td>✅ (this §)</td>
+</tr>
+<tr>
+<td>4 Missing bridge</td>
+<td>prime identities and analytic <span class="arithmatex">\(\arg\zeta\)</span></td>
+<td>No established common symmetry-complement representation</td>
+<td>Open, not an identified wall</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The annotated rank and sampled scalar coincidences.</strong> On the declared
+<strong>odd-modulus</strong> domain, §9.7 proves the conductor-annotated product law
+<span class="arithmatex">\(A(m)=\prod_{p^e\|m}(e+\lceil e/2\rceil+1)\)</span>, with local factors
+<span class="arithmatex">\(3,4,6,7,9,\ldots\)</span>. It is distinct from the unannotated scalar spectral rank
+<span class="arithmatex">\(\rho\)</span>. The historical small examples reported <span class="arithmatex">\(\rho(p)=3\)</span>,
+<span class="arithmatex">\(\rho(p^2)=4\)</span>, <span class="arithmatex">\(\rho(p^3)=6\)</span>, <span class="arithmatex">\(\rho(pq)=9\)</span>, <span class="arithmatex">\(\rho(p^2q)=12\)</span>, and no
+multiplicativity exceptions over that demo range. These are useful finite
+type distinctions, not a globally invertible code for <span class="arithmatex">\(\Omega\)</span> or <span class="arithmatex">\(\tau\)</span>.
+The formula implementation <code>quadratic_residue_annotated_rank</code> itself factors
+its argument; the separate graph-spectrum route constructs modular residues
+without supplying those factors. The two provenance paths must not be
+conflated when claiming a factorization-free diagnostic.</p>
+<p><strong>Diagnostic limits.</strong> The reported small examples distinguish certain types,
+not a complete factorization: <span class="arithmatex">\(\rho(15)=\rho(35)=9\)</span>, and <span class="arithmatex">\(\rho=36\)</span> is shared
+by <span class="arithmatex">\(p^3q^3\)</span> and <span class="arithmatex">\(p^2qr\)</span>. Thus scalar rank does not determine even the type
+globally. The unannotated rank also aliases at high prime powers: §9.7 /
+example 154 reports scalar <span class="arithmatex">\(191\)</span> versus annotated product <span class="arithmatex">\(192\)</span> for
+<span class="arithmatex">\(3^7\!\cdot5^2\!\cdot41^2\)</span>. The table is an organizing comparison, not a
+complete ontology theorem. The underlying integer/modular carrier, selected
+graph products and observation rules are supplied. No common obstruction
+identifies these information losses with analytic <span class="arithmatex">\(\arg\zeta\)</span>, and no
+physical particles have been generated or identified by these diagnostics.</p>
+<h3 id="913-the-arithmetic-pulse-two-declared-linear-responses">9.13 The Arithmetic Pulse — two declared linear responses<a class="headerlink" href="#913-the-arithmetic-pulse-two-declared-linear-responses" title="Permanent link">&para;</a></h3>
+<p>The same finite residue operator supports different <strong>declared</strong> models.
+The pure-EPI heat response is
+<span class="arithmatex">\(h(t)=e_o^*e^{-\nu_f L t}e_o\)</span>. On pointed circulants its visible recurrence
+order equals the number of distinct eigenvalues because every spectral
+projector has weight <span class="arithmatex">\(m_\lambda/n\)</span>. This exact scope is developed in
+<a href="../TNFR_ARITHMETIC_DYNAMICS/">TNFR_ARITHMETIC_DYNAMICS.md</a>.</p>
+<p>The separately chosen conservative graph wave uses <span class="arithmatex">\(\omega_k=\sqrt{\lambda_k}\)</span>
+only on its nonnegative self-adjoint domain. Its second-order law is not
+derived from the first-order diffusion identity. A directed complex spectrum
+does not supply a set of real conservative frequencies.</p>
+<p>For quadratic residues at an odd prime <span class="arithmatex">\(p\equiv1\pmod4\)</span>, the real Paley operator
+has one zero eigenvalue and two distinct positive eigenvalues, each nonzero
+one with multiplicity <span class="arithmatex">\((p-1)/2\)</span>. The wave consequently has a stationary mode
+and two nonzero frequencies. The zero mode must be distinguished from an
+oscillatory tone. The general prime cyclotomy count in §9.11 is a spectral
+count even when no conservative-wave interpretation is admitted.</p>
+<p><a href="../../benchmarks/emergent_arithmetic_pulse.py">emergent_arithmetic_pulse.py</a>
+records finite comparisons; its historical name does not derive an
+autonomous arithmetic oscillator. Composite counts and collisions in §9.12
+remain fixture-dependent diagnostics, not a complete factorization-type
+decoder or a proof that primes minimize every possible spectrum complexity.</p>
+<p>The graph, arithmetic carrier, initial excitation and chosen evolution are
+supplied. These results do not derive their occurrence, sustained maintenance,
+particle identity or an analytic zeta bridge.</p>
+<hr />
+<h2 id="10-prime-path-graphs-and-the-tnfr-riemann-connection">10. Prime Path Graphs and the TNFR-Riemann Connection<a class="headerlink" href="#10-prime-path-graphs-and-the-tnfr-riemann-connection" title="Permanent link">&para;</a></h2>
+<h3 id="101-the-discrete-tnfr-riemann-operator">10.1 The Discrete TNFR-Riemann Operator<a class="headerlink" href="#101-the-discrete-tnfr-riemann-operator" title="Permanent link">&para;</a></h3>
+<p><strong>Historical, superseded construction.</strong> Sections 10.1–10.4 retain the
+eliminated prime-path prototype for traceability. They are not the current
+program or evidence for an emergent critical line. The former family was</p>
+<div class="arithmatex">\[H^{(k)}_{\mathrm{TNFR}}(\sigma) = L_k + V_\sigma\]</div>
+<p>where:
+- <span class="arithmatex">\(L_k\)</span> is the graph Laplacian of the <strong>prime path graph</strong> <span class="arithmatex">\(G_k\)</span> (first <span class="arithmatex">\(k\)</span> primes <span class="arithmatex">\(p_1, p_2, \ldots, p_k\)</span> connected sequentially)
+- <span class="arithmatex">\(V_\sigma\)</span> is a <strong>structural potential</strong> parametrized by <span class="arithmatex">\(\sigma \in \mathbb{R}\)</span>:</p>
+<div class="arithmatex">\[V_\sigma(i) = (\sigma - \tfrac{1}{2}) \log(p_i)\]</div>
+<h3 id="102-critical-parameter-convergence">10.2 Critical Parameter Convergence<a class="headerlink" href="#102-critical-parameter-convergence" title="Permanent link">&para;</a></h3>
+<p>The historical report described the lowest-eigenvalue sign change as</p>
+<div class="arithmatex">\[\sigma_c^{(k)} = \frac{1}{2} + O\!\left(\frac{1}{\log k}\right) \quad \text{as } k \to \infty\]</div>
+<p>For the displayed construction with a symmetric positive-semidefinite graph
+Laplacian <span class="arithmatex">\(L_k\mathbf1=0\)</span> and <span class="arithmatex">\(p_i\ge2\)</span>, the sign change is already <strong>exactly
+at the inserted value <span class="arithmatex">\(1/2\)</span> for every finite size</strong>. At <span class="arithmatex">\(\sigma=1/2\)</span> the
+potential vanishes. Above it, adding the positive diagonal makes <span class="arithmatex">\(H\)</span> positive
+definite. Below it, the Rayleigh quotient of <span class="arithmatex">\(\mathbf1\)</span> is negative. This
+requires no prime-distribution theorem and works for any positive diagonal
+in place of <span class="arithmatex">\(\log p_i\)</span>. The old asymptotic wording therefore supplies no
+independent critical-line evidence or generative phase-transition result.</p>
+<h3 id="103-connection-to-the-riemann-hypothesis">10.3 Connection to the Riemann Hypothesis<a class="headerlink" href="#103-connection-to-the-riemann-hypothesis" title="Permanent link">&para;</a></h3>
+<p>At <span class="arithmatex">\(\sigma=1/2\)</span> this potential vanishes by definition; the transition does
+not constrain zeros of analytic <span class="arithmatex">\(\zeta\)</span>. The current
+<a href="../TNFR_RIEMANN_RESEARCH_NOTES/">Riemann program memo</a> supersedes this
+prototype and its former bridge interpretation. G4 = RH remains open.</p>
+<h3 id="104-tetrad-fields-on-the-prime-path">10.4 Tetrad Fields on the Prime Path<a class="headerlink" href="#104-tetrad-fields-on-the-prime-path" title="Permanent link">&para;</a></h3>
+<p>The historical prototype used the following eigenvector-variation diagnostics
+from <span class="arithmatex">\((\lambda_j,\phi_j)\)</span>. Here <span class="arithmatex">\(\phi_j\)</span> is an eigenvector, not an independently
+defined circular nodal phase; these expressions are not the canonical wrapped
+tetrad kernels:</p>
+<p><strong>Phase gradient</strong> (discrete):
+$<span class="arithmatex">\(|\nabla\phi|^{(j)} = \frac{1}{k-1}\sum_{i=1}^{k-1}|\phi_j(p_{i+1}) - \phi_j(p_i)|\)</span>$</p>
+<p><strong>Phase curvature</strong> (discrete):
+$<span class="arithmatex">\(K_\phi^{(j)} = \frac{1}{k-2}\sum_{i=2}^{k-1}|\phi_j(p_{i+1}) - 2\phi_j(p_i) + \phi_j(p_{i-1})|\)</span>$</p>
+<p><strong>Coherence length</strong> (from correlation decay):
+$<span class="arithmatex">\(C_j(r) \approx A_j \cdot e^{-r/\xi_C^{(j)}}\)</span>$</p>
+<p>These retained formulas record the old comparison only. They do not provide
+a state map, an operator correspondence or a physical particle prediction.</p>
+<h3 id="105-refactoring-the-riemann-attack-from-the-self-adjoint-prime-ladder-to-the-non-self-adjoint-phase-operator-measured">10.5 Refactoring the Riemann Attack — From the Self-Adjoint Prime-Ladder to the Non-Self-Adjoint Phase Operator (MEASURED)<a class="headerlink" href="#105-refactoring-the-riemann-attack-from-the-self-adjoint-prime-ladder-to-the-non-self-adjoint-phase-operator-measured" title="Permanent link">&para;</a></h3>
+<p>The prime-ladder P14 construction explicitly assigns prime labels and
+<span class="arithmatex">\(\nu_{f,(p,k)}=k\log p\)</span>. Its diagonal spectrum is an encoding of those
+inputs. Selected finite symmetry tests establish the conditional implication
+<span class="arithmatex">\([L,P]=0\Rightarrow[f(L),P]=0\)</span>. They do not establish that every canonical
+operator commutes with prime relabeling, that a scalar spectrum is a vector
+in a fixed sector, or that analytic <span class="arithmatex">\(S(T)\)</span> lies in its orthogonal complement.
+The current Riemann memo explicitly withdraws those historical promotions.</p>
+<p>The number-theory reframe (§9.6, §9.8) supplies a <strong>structurally different object</strong> for the same residue: the <strong>directed quadratic-residue diffusion operator</strong> <span class="arithmatex">\(L_{rw}=I-D^{-1}W\)</span> on the Paley tournament (<span class="arithmatex">\(n\equiv 3\pmod 4\)</span>). It is</p>
+<ul>
+<li><strong>non-self-adjoint but normal</strong>, since it is circulant; its complex
+  eigenvalues contain classical Gauss-sum information;</li>
+<li>associated with a separately specified modular graph and symmetry action.
+  A symmetry restriction proved for P14 cannot simply be transferred to it.</li>
+</ul>
+<p>Complex eigenvalues alone do not identify zeta ordinates, nodal phase
+evolution or a physical oscillatory entity.</p>
+<p>So the natural question is whether the attack should pivot from "build a <em>self-adjoint</em> operator with spectrum <span class="arithmatex">\(\{\gamma_n\}\)</span>" to "read the residue off the <em>non-self-adjoint</em> phase operator".</p>
+<p><strong>The pre-registered falsifier (MEASURED).</strong> <code>benchmarks/residue_phase_vs_riemann.py</code> tests it on primes <span class="arithmatex">\(p\equiv 3\pmod 4\)</span>:</p>
+<ul>
+<li><strong>F-GAUSS</strong> — <span class="arithmatex">\(\max|\mathrm{Im}(\lambda)|(p)=\sqrt p/(p-1)\)</span> <strong>exactly</strong> (ratio <span class="arithmatex">\(1.000000\)</span>, 15/15 primes): the phase content is the <strong>Paley Gauss-sum eigenvalue</strong>, a classical fact.</li>
+<li><strong>F-ALIGN</strong> — <span class="arithmatex">\(\mathrm{Pearson}\big(\max|\mathrm{Im}|(p_n),\,\gamma_n\big)=\mathbf{-0.9068}\)</span>: the residue phase content <strong>decreases</strong> like <span class="arithmatex">\(1/\sqrt p\)</span> while the zeros <span class="arithmatex">\(\gamma_n\)</span> <strong>increase</strong> — opposite trends.</li>
+<li><strong>Verdict:</strong> <code>GAUSS_CONFIRMED_RIEMANN_REFUTED</code>.</li>
+</ul>
+<p><strong>Honest net.</strong> The retained result rejects the tested direct alignment of
+Gauss-sum imaginary parts with zeta ordinates. It does not locate a universal
+symmetry obstruction, exclude other representations or prove a physical
+phase mechanism. G4 = RH remains open.</p>
+<p>The current finite pulse helper instead evaluates
+<span class="arithmatex">\(P_N(T)=\sum_{n=1}^N n^{-1/2}e^{-iT\log n}\)</span> with prescribed amplitudes,
+logarithmic frequencies and truncation. This is not an identity for analytic
+<span class="arithmatex">\(\zeta(1/2+iT)\)</span>: the ordinary infinite Dirichlet representation applies to
+<span class="arithmatex">\(\mathrm{Re}(s)&gt;1\)</span>, with analytic continuation elsewhere
+(<a href="https://dlmf.nist.gov/25.2">DLMF §25.2</a>). The functional-equation reflection
+axis (<a href="https://dlmf.nist.gov/25.4">DLMF §25.4</a>) is not a derived
+<span class="arithmatex">\(\Delta\mathrm{NFR}=0\)</span> locus. Finite nearest-dip matches are comparisons
+against known ordinates, not autonomous nodal generation or RH certificates.</p>
+<hr />
+<h2 id="11-worked-examples">11. Worked Examples<a class="headerlink" href="#11-worked-examples" title="Permanent link">&para;</a></h2>
+<h3 id="111-prime-detection-n-17">11.1 Prime Detection: <span class="arithmatex">\(n = 17\)</span><a class="headerlink" href="#111-prime-detection-n-17" title="Permanent link">&para;</a></h3>
+<div class="arithmatex">\[\Omega(17) = 1, \quad \tau(17) = 2, \quad \sigma(17) = 18\]</div>
+<div class="arithmatex">\[\Delta\mathrm{NFR}(17) = 1 \times (1-1) + 1 \times (2-2) + 1 \times \left(\frac{18}{17} - \frac{18}{17}\right) = 0\]</div>
+<p>Assigned coordinates and read-out: <span class="arithmatex">\(\mathrm{EPI}(17) \approx 2.75\)</span>, <span class="arithmatex">\(\nu_f(17) \approx 1.47\)</span>, <span class="arithmatex">\(C_{\text{local}} = 1.0\)</span>.</p>
+<p><strong>Interpretation</strong>: Zero arithmetic pressure and unit pressure-only coherence;
+the held-pressure unforced scalar model has zero EPI rate at this label.</p>
+<h3 id="112-semiprime-n-15-3-times-5">11.2 Semiprime: <span class="arithmatex">\(n = 15 = 3 \times 5\)</span><a class="headerlink" href="#112-semiprime-n-15-3-times-5" title="Permanent link">&para;</a></h3>
+<div class="arithmatex">\[\Omega(15) = 2, \quad \tau(15) = 4, \quad \sigma(15) = 24\]</div>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Calculation</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Factorization</td>
+<td><span class="arithmatex">\(1 \times (2-1)\)</span></td>
+<td>1</td>
+</tr>
+<tr>
+<td>Divisor</td>
+<td><span class="arithmatex">\(1 \times (4-2)\)</span></td>
+<td>2</td>
+</tr>
+<tr>
+<td>Abundance</td>
+<td><span class="arithmatex">\(1 \times (24/15 - 16/15)\)</span></td>
+<td>0.533</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td></td>
+<td><strong>3.533</strong></td>
+</tr>
+</tbody>
+</table>
+<p><span class="arithmatex">\(C_{\text{local}} = 1/(1+3.533) \approx 0.221\)</span>.</p>
+<h3 id="113-prime-power-n-8-23">11.3 Prime Power: <span class="arithmatex">\(n = 8 = 2^3\)</span><a class="headerlink" href="#113-prime-power-n-8-23" title="Permanent link">&para;</a></h3>
+<div class="arithmatex">\[\Omega(8) = 3, \quad \tau(8) = 4, \quad \sigma(8) = 15\]</div>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Calculation</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Factorization</td>
+<td><span class="arithmatex">\(1 \times (3-1)\)</span></td>
+<td>2</td>
+</tr>
+<tr>
+<td>Divisor</td>
+<td><span class="arithmatex">\(1 \times (4-2)\)</span></td>
+<td>2</td>
+</tr>
+<tr>
+<td>Abundance</td>
+<td><span class="arithmatex">\(1 \times (15/8 - 9/8)\)</span></td>
+<td>0.750</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td></td>
+<td><strong>4.750</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Using <span class="arithmatex">\(\Omega\)</span> (with multiplicity) rather than <span class="arithmatex">\(\omega\)</span> (distinct primes) gives prime powers a strong pressure signal: <span class="arithmatex">\(2^3\)</span> registers <span class="arithmatex">\(\Omega = 3\)</span>, not <span class="arithmatex">\(\omega = 1\)</span>.</p>
+<h3 id="114-squarefree-composite-n-30-2-times-3-times-5">11.4 Squarefree Composite: <span class="arithmatex">\(n = 30 = 2 \times 3 \times 5\)</span><a class="headerlink" href="#114-squarefree-composite-n-30-2-times-3-times-5" title="Permanent link">&para;</a></h3>
+<div class="arithmatex">\[\Omega(30) = 3, \quad \tau(30) = 8, \quad \sigma(30) = 72\]</div>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Calculation</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Factorization</td>
+<td><span class="arithmatex">\(1 \times (3-1)\)</span></td>
+<td>2</td>
+</tr>
+<tr>
+<td>Divisor</td>
+<td><span class="arithmatex">\(1 \times (8-2)\)</span></td>
+<td>6</td>
+</tr>
+<tr>
+<td>Abundance</td>
+<td><span class="arithmatex">\(1 \times (72/30 - 31/30)\)</span></td>
+<td>1.367</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td></td>
+<td><strong>9.367</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Structural triad: <span class="arithmatex">\(\mathrm{EPI}(30) \approx 7.48\)</span>, <span class="arithmatex">\(\nu_f(30) \approx 2.15\)</span>, <span class="arithmatex">\(C_{\text{local}} \approx 0.097\)</span>.</p>
+<hr />
+<h2 id="12-implementation-map">12. Implementation Map<a class="headerlink" href="#12-implementation-map" title="Permanent link">&para;</a></h2>
+<h3 id="121-source-modules">12.1 Source Modules<a class="headerlink" href="#121-source-modules" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Path</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Arithmetic network</strong></td>
+<td><code>src/tnfr/mathematics/number_theory.py</code></td>
+<td><code>ArithmeticTNFRNetwork</code>, <code>ArithmeticTNFRFormalism</code>, <code>PrimeCertificate</code></td>
+</tr>
+<tr>
+<td><strong>Primality testing</strong></td>
+<td><code>primality-test/tnfr_primality/core.py</code></td>
+<td>Standalone ΔNFR computation, validation</td>
+</tr>
+<tr>
+<td><strong>Canonical constants</strong></td>
+<td><code>primality-test/tnfr_primality/constants.py</code></td>
+<td>Arithmetic pressure coefficients (separate subproject)</td>
+</tr>
+<tr>
+<td><strong>Advanced integration</strong></td>
+<td><code>primality-test/tnfr_primality/advanced_core.py</code></td>
+<td>Full repo infrastructure bridge</td>
+</tr>
+<tr>
+<td><strong>Optimized batch</strong></td>
+<td><code>primality-test/tnfr_primality/optimized.py</code></td>
+<td>Caching, benchmarking, batch processing</td>
+</tr>
+<tr>
+<td><strong>Spectral factorization</strong></td>
+<td><code>factorization-lab/tnfr_factorization/spectral_paley.py</code></td>
+<td>Paley-Jacobi spectral decoder</td>
+</tr>
+<tr>
+<td><strong>Factorization API</strong></td>
+<td><code>factorization-lab/tnfr_factorization/api.py</code></td>
+<td>High-level <code>factorize()</code> function</td>
+</tr>
+<tr>
+<td><strong>Nodal-pulse foundation</strong></td>
+<td><code>src/tnfr/riemann/nodal_pulse.py</code></td>
+<td>Emergent prime-NFR nodal pulse (<span class="arithmatex">\(\nu_f = \log n\)</span>; zeros as destructive interference)</td>
+</tr>
+<tr>
+<td><strong>Prime-ladder Hamiltonian</strong></td>
+<td><code>src/tnfr/riemann/prime_ladder_hamiltonian.py</code></td>
+<td>Canonical <span class="arithmatex">\(\nu_f\)</span> prime-ladder (P14)</td>
+</tr>
+<tr>
+<td><strong>Canonical constants (repo)</strong></td>
+<td><code>src/tnfr/constants/canonical.py</code></td>
+<td>Repository-wide canonical constant definitions</td>
+</tr>
+</tbody>
+</table>
+<h3 id="122-executable-demonstrations">12.2 Executable Demonstrations<a class="headerlink" href="#122-executable-demonstrations" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Example</th>
+<th>Concept</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../examples/03_riemann_zeta/41_von_mangoldt_zeta_demo.py">41_von_mangoldt_zeta_demo.py</a></td>
+<td>Prime-ladder von Mangoldt series (P12)</td>
+</tr>
+<tr>
+<td><a href="../../examples/03_riemann_zeta/42_riemann_zeros_as_resonances.py">42_riemann_zeros_as_resonances.py</a></td>
+<td>Riemann zeros as resonance poles (P13)</td>
+</tr>
+<tr>
+<td><a href="../../examples/03_riemann_zeta/43_prime_ladder_hamiltonian_demo.py">43_prime_ladder_hamiltonian_demo.py</a></td>
+<td>Canonical νf prime-ladder Hamiltonian (P14)</td>
+</tr>
+<tr>
+<td><a href="../../examples/02_physics_regimes/31_mathematical_constants_basis.py">31_mathematical_constants_basis.py</a></td>
+<td>The structural scale π and the mathematical-constant basis</td>
+</tr>
+<tr>
+<td><a href="../../examples/07_number_theory/40_arithmetic_number_theory.py">40_arithmetic_number_theory.py</a></td>
+<td>Primality, triad, component analysis</td>
+</tr>
+<tr>
+<td><a href="../../examples/07_number_theory/94_generative_number_construction.py">94_generative_number_construction.py</a></td>
+<td>Compositional generation from prime atoms; U5 fractality; grammar certification</td>
+</tr>
+<tr>
+<td><a href="../../examples/07_number_theory/95_primes_from_spectral_waves.py">95_primes_from_spectral_waves.py</a></td>
+<td>Prime staircase ψ(x) as spectral-wave superposition; spectral coherence ⟺ RH (honest scope)</td>
+</tr>
+<tr>
+<td><a href="../../examples/07_number_theory/96_spectral_vibration_of_coherence.py">96_spectral_vibration_of_coherence.py</a></td>
+<td>Oscillatory residue S(T) as prime-ladder vibration {k·log p}; why aggregate C(t) is blind (honest scope)</td>
+</tr>
+<tr>
+<td><a href="../../examples/07_number_theory/97_goldbach_additive_multiplicative.py">97_goldbach_additive_multiplicative.py</a></td>
+<td>Goldbach phase-matching: negative structural result; additive/multiplicative orthogonality; B2/B3 ontological note</td>
+</tr>
+<tr>
+<td><a href="../../examples/07_number_theory/100_prime_families_orbits.py">100_prime_families_orbits.py</a></td>
+<td>Special prime families (twin, cousin, sexy, Sophie Germain, safe, Cunningham, Mersenne, constellations) as orbits and level-sets of arithmetic maps on the zero-pressure fixed-point set <span class="arithmatex">\(Z=\{\Delta\mathrm{NFR}=0\}\)</span>; three generator classes; detection exact, infinitude open (honest scope)</td>
+</tr>
+<tr>
+<td><a href="../../examples/07_number_theory/101_numbers_as_coupled_network.py">101_numbers_as_coupled_network.py</a></td>
+<td>Numbers as a coupled TNFR network: <span class="arithmatex">\(\Omega(n)\)</span> grades both the per-node pressure <span class="arithmatex">\(\Delta\mathrm{NFR}\)</span> and the divisibility/GCD transport centrality (<span class="arithmatex">\(r\approx 0.8\)</span>–<span class="arithmatex">\(0.9\)</span>); primes (<span class="arithmatex">\(\Omega{=}1\)</span>, <span class="arithmatex">\(\Delta\mathrm{NFR}{=}0\)</span>) are the transport periphery, large primes isolated; correspondence-through-<span class="arithmatex">\(\Omega\)</span> not identity, not scale-free (honest scope)</td>
+</tr>
+<tr>
+<td><a href="../../examples/07_number_theory/102_nodal_flow_primes_equilibria.py">102_nodal_flow_primes_equilibria.py</a></td>
+<td>The actual nodal flow <span class="arithmatex">\(\partial\mathrm{EPI}/\partial t=\nu_f\Delta\mathrm{NFR}\)</span> on numbers: primes are EXACTLY the equilibria (§4 theorem in motion, frozen) while composites drift <span class="arithmatex">\(\Omega\)</span>-graded; refines §7.1 — primes are static low-<span class="arithmatex">\(\Phi_s\)</span> sinks but NOT dynamical attractors (diffusion flow pulls primes UP toward the composite bulk)</td>
+</tr>
+<tr>
+<td><a href="../../examples/07_number_theory/146_primality_grammatical_inertness.py">146_primality_grammatical_inertness.py</a></td>
+<td>Tests the restricted scalar flow <span class="arithmatex">\(\mathrm{EPI}_{k+1}=\mathrm{EPI}_k+dt\,\nu_f\Delta\mathrm{NFR}_{\rm arith}\)</span> with arithmetic pressure held fixed. It verifies prime <span class="arithmatex">\(\iff\Delta\mathrm{NFR}_{\rm arith}=0\iff C=1\)</span>, zero prime drift for sampled positive capacities, and exact capacity scaling of composite drift. Because no canonical graph operator or grammar history is applied, it does not prove grammatical inertness. Fixed positive composite pressure also gives an unbounded infinite-time integral, so the fixture is not a U2-convergence result or attraction toward primality.</td>
+</tr>
+<tr>
+<td><a href="../../examples/07_number_theory/147_numbers_as_free_monoid_words.py">147_numbers_as_free_monoid_words.py</a></td>
+<td>Compares the classical free commutative monoid on the primes with the unit-coefficient arithmetic pressure. The exact content is the additive law for <span class="arithmatex">\(\Omega\)</span>, the coprime multiplicative laws for <span class="arithmatex">\(\tau\)</span> and <span class="arithmatex">\(\sigma\)</span>, and <span class="arithmatex">\(\Omega(n)=1\iff n\)</span> prime for <span class="arithmatex">\(n\ge2\)</span>. Count <span class="arithmatex">\(\Omega\)</span> and log-size give a declared analogy with pressure and capacity; integers are not operator-grammar words, and prime multiplication is not a canonical destabilizer.</td>
+</tr>
+<tr>
+<td><a href="../../examples/07_number_theory/148_capacity_arm_carries_von_mangoldt.py">148_capacity_arm_carries_von_mangoldt.py</a></td>
+<td>Uses the classical identities <code>log n = sum_(d divides n) Lambda(d)</code> and Mobius inversion. Assigned logarithmic capacity is an arithmetic coordinate. The continued <code>-zeta_prime/zeta</code> has residue minus the multiplicity at a zeta zero; no global pressure-versus-capacity observability dichotomy or analytic symmetry-complement result follows.</td>
+</tr>
+<tr>
+<td><a href="../../examples/07_number_theory/149_p14_is_the_capacity_arm_operator.py">149_p14_is_the_capacity_arm_operator.py</a></td>
+<td>Reads back supplied <code>nu_f=k*log(p)</code> entries in the decoupled P14 matrix. Its weighted finite trace agrees with the matching finite von Mangoldt sum; convergence to the classical infinite identity has domain <code>Re(s)&gt;1</code>. This is a declared arithmetic construction, not a derivation of prime labels, REMESH occurrence or a zero-spectrum Hamiltonian.</td>
+</tr>
+<tr>
+<td><a href="../../examples/07_number_theory/153_structural_frequency_rank_cyclotomy.py">153_structural_frequency_rank_cyclotomy.py</a></td>
+<td>Applies the structural-diffusion spectrum to power-residue Cayley graphs. The exact cyclotomy law <span class="arithmatex">\(s_k(p)=\gcd(k,p-1)+1\)</span> is proved for the declared odd-prime construction from classical Gauss-period theory and checked on a finite grid. Other correlations and squarefree grading observations in the example remain finite measurements; no restoring primality dynamics or open-problem result follows.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="123-test-coverage">12.3 Test Coverage<a class="headerlink" href="#123-test-coverage" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Test area</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Primality validation (10k range)</td>
+<td><code>primality-test/test_installation.py</code></td>
+</tr>
+<tr>
+<td>Arithmetic network construction</td>
+<td><code>tests/</code> (number_theory tests)</td>
+</tr>
+<tr>
+<td>Factorization spectral decoder</td>
+<td><code>factorization-lab/tests/test_spectral_paley.py</code></td>
+</tr>
+<tr>
+<td>Factorization verification</td>
+<td><code>factorization-lab/tests/test_verification_robustness.py</code></td>
+</tr>
+<tr>
+<td>Riemann operator spectral</td>
+<td><code>tests/</code> (riemann tests)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="13-reference-questions-and-research-boundaries">13. Reference questions and research boundaries<a class="headerlink" href="#13-reference-questions-and-research-boundaries" title="Permanent link">&para;</a></h2>
+<p>These questions are a secondary inventory, not an active task queue. The
+<a href="../research/FIVE_STAGE_EXECUTION_PLAN/">FIVE_STAGE_EXECUTION_PLAN.md</a> owns priorities;
+arithmetic reuse does not replace the current joint nodal emergence objective.</p>
+<h3 id="131-computational">13.1 Computational<a class="headerlink" href="#131-computational" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Sub-<span class="arithmatex">\(O(\sqrt{n})\)</span> primality</strong>: Can spectral methods on arithmetic networks detect primes faster than trial division?</li>
+<li><strong>Sieve optimization</strong>: Can the TNFR pressure landscape guide more efficient sieve algorithms?</li>
+<li><strong>Large-number factorization</strong>: Scaling the spectral Paley-Jacobi method to numbers beyond current computational limits.</li>
+</ul>
+<h3 id="132-theoretical">13.2 Theoretical<a class="headerlink" href="#132-theoretical" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>TNFR-Riemann bridge</strong>: Can a declared nodal construction support an
+  independently proved analytic correspondence? The historical <span class="arithmatex">\(H^{(k)}\)</span>
+  family is superseded (§10); no G4/RH bridge is established by its sign change.</li>
+<li><strong>Pressure distribution</strong>: What is the exact probability distribution of <span class="arithmatex">\(\Delta\mathrm{NFR}(n)\)</span> for "random" composites?</li>
+<li><strong>Goldbach connection</strong>: Can the additive decomposition of even numbers be formulated as a phase-matching problem (<span class="arithmatex">\(|\phi_p + \phi_q - \phi_{2n}| \leq \Delta\phi_{\max}\)</span>)?</li>
+<li><strong>Arithmetic coherence length</strong>: How does <span class="arithmatex">\(\xi_C\)</span> in the arithmetic network relate to the distribution of prime gaps?</li>
+</ul>
+<h3 id="133-structural">13.3 Structural<a class="headerlink" href="#133-structural" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Special prime families</strong> (PARTIALLY ADDRESSED — <a href="../../examples/07_number_theory/100_prime_families_orbits.py">100_prime_families_orbits.py</a>): twin, cousin, sexy, Sophie Germain, safe, Cunningham, Mersenne, and constellation families are organized as <strong>structured subsets of the zero-pressure fixed-point set</strong> <span class="arithmatex">\(Z=\{n\ge 2:\Delta\mathrm{NFR}(n)=0\}\)</span> (the primes), carved out by three classes of arithmetic map: additive-gap level-sets (<span class="arithmatex">\(S_g(p)=p+g\)</span>), affine-recurrence orbits (<span class="arithmatex">\(T(p)=2p+1\)</span>: Sophie Germain, safe, Cunningham chains), and exponential-form images (<span class="arithmatex">\(M(p)=2^p-1\)</span>: Mersenne). Detection/generation is exact via the verified <span class="arithmatex">\(\Delta\mathrm{NFR}=0\)</span> theorem; <strong>infinitude conjectures</strong> (twin-prime, Sophie Germain, Mersenne) remain OPEN — the same honest stance as Goldbach (§13.2). The witness pressure signatures (e.g. the twin witness <span class="arithmatex">\(p+1\)</span> divisible by 6) are faithful TNFR restatements of classical divisibility facts.</li>
+<li><strong>Arithmetic network as a coupled system</strong> (MEASURED — <a href="../../examples/07_number_theory/101_numbers_as_coupled_network.py">101_numbers_as_coupled_network.py</a>): on the divisibility/GCD network the prime-factor count <span class="arithmatex">\(\Omega(n)\)</span> is a <strong>common structural coordinate</strong> that grades both the per-node arithmetic pressure <span class="arithmatex">\(\Delta\mathrm{NFR}\)</span> (<span class="arithmatex">\(r(\Omega,\Delta\mathrm{NFR})\approx 0.94\)</span>) and the network-transport centrality (<span class="arithmatex">\(r(\Omega,\deg)\approx 0.75\)</span>), so the two pictures are linked (<span class="arithmatex">\(r(\Delta\mathrm{NFR},\deg)\approx 0.81\)</span>). Primes (<span class="arithmatex">\(\Omega{=}1\)</span>, <span class="arithmatex">\(\Delta\mathrm{NFR}{=}0\)</span>) form the <strong>transport periphery</strong> (≈ 0.18× the composite stationary mass, ≈ 2.4× effective resistance, and large primes <span class="arithmatex">\(p&gt;N/2\)</span> are literally isolated). Honest scope: a <strong>correspondence through <span class="arithmatex">\(\Omega\)</span>, not a dynamical identity</strong> — the per-node <span class="arithmatex">\(\Delta\mathrm{NFR}\)</span> is not the graph-diffusion Laplacian; the network is <strong>not scale-free</strong>; "primes peripheral" restates the classical <span class="arithmatex">\(\gcd(p,m)&gt;1\iff p\mid m\)</span> in transport language.</li>
+<li><strong>Held arithmetic-pressure flow</strong> (<a href="../../examples/07_number_theory/102_nodal_flow_primes_equilibria.py">example 102</a>):
+  positive fixed capacity and the assigned arithmetic pressure give zero EPI
+  rate at primes and constant positive drift at composites. There is no
+  restoring response because that pressure does not depend on evolving EPI.
+  A separate fixed-graph diffusion comparison relaxes toward its weighted
+  mean under its own hypotheses. Neither model proves that primes are
+  universal potential minima, attractors, or stable full-state NFRs.</li>
+<li><strong>Higher-order pressure</strong>: Are there fourth or fifth pressure components (beyond <span class="arithmatex">\(\Omega\)</span>, <span class="arithmatex">\(\tau\)</span>, <span class="arithmatex">\(\sigma\)</span>) that provide additional structural information?</li>
+<li><strong>Algebraic number fields</strong>: Extension of the arithmetic triad to Gaussian integers, Eisenstein integers, or general number fields.</li>
+<li><strong>p-adic structure</strong>: Connection between the arithmetic tetrad and p-adic analysis.</li>
+</ul>
+<hr />
+<h2 id="14-references">14. References<a class="headerlink" href="#14-references" title="Permanent link">&para;</a></h2>
+<h3 id="internal">Internal<a class="headerlink" href="#internal" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="../../AGENTS/">AGENTS.md</a> — Primary theoretical reference (TNFR framework)</li>
+<li><a href="../FUNDAMENTAL_THEORY/">FUNDAMENTAL_THEORY.md</a> — Nodal equation and structural field tetrad</li>
+<li><a href="../UNIFIED_GRAMMAR_RULES/">UNIFIED_GRAMMAR_RULES.md</a> — U1-U6 grammar derivations</li>
+<li><a href="../STRUCTURAL_OPERATORS/">STRUCTURAL_OPERATORS.md</a> — 13 canonical operators with tetrad synergies</li>
+<li><a href="../STRUCTURAL_CONSERVATION_THEOREM/">STRUCTURAL_CONSERVATION_THEOREM.md</a> — Conservation laws</li>
+<li><a href="../APPLIED_STRUCTURAL_ANALYSIS/">APPLIED_STRUCTURAL_ANALYSIS.md</a> — Spectral factorization verification</li>
+<li><a href="../TNFR_RIEMANN_RESEARCH_NOTES/">TNFR_RIEMANN_RESEARCH_NOTES.md</a> — Current arithmetic comparison scope and unresolved RH/Hilbert–Pólya boundary</li>
+<li><a href="../MATHEMATICAL_DYNAMICS_BASIS/">MATHEMATICAL_DYNAMICS_BASIS.md</a> — Structural-field tetrad and declared scale conventions</li>
+<li><a href="../GLOSSARY/">GLOSSARY.md</a> — Operational definitions</li>
+</ul>
+<h3 id="external">External<a class="headerlink" href="#external" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Hardy, G.H. &amp; Wright, E.M. — <em>An Introduction to the Theory of Numbers</em> (arithmetic functions)</li>
+<li>Erdős, P. &amp; Kac, M. — "The Gaussian Law of Errors in the Theory of Additive Number Theoretic Functions" (1940)</li>
+<li>Kuramoto, Y. — <em>Chemical Oscillations, Waves, and Turbulence</em> (phase synchronization)</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../docs/assets/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+      
+    
+  </body>
+</html>

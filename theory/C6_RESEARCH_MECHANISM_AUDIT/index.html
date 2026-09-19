@@ -1,0 +1,1920 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/C6_RESEARCH_MECHANISM_AUDIT/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Repository mechanisms for C6: B71 audit through B75 witness refinement - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#repository-mechanisms-for-c6-b71-audit-through-b75-witness-refinement" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Repository mechanisms for C6: B71 audit through B75 witness refinement
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/CLI_AND_SDK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI and SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FUNDAMENTAL_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NODAL_PARAMETER_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NODAL_RESEARCH_STRATEGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/FIVE_STAGE_EXECUTION_PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Active execution plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DERIVED_EPI_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/archive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Historical archive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../factorization-lab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Applications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Applications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../primality-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.github/WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#scope-and-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scope and evidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#b71-findings-and-their-status-after-b72" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B71 findings and their status after B72
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mechanisms-worth-reusing-and-their-conditions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mechanisms worth reusing, and their conditions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exact-controls-against-attractive-but-invalid-shortcuts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exact controls against attractive but invalid shortcuts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#centralization-priorities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Centralization priorities
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#b72-validation-and-measured-search-outcome" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B72 validation and measured search outcome
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#b73-feasibility-only-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B73 feasibility-only result
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coordinate-reuse-and-continuation-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coordinate reuse and continuation boundary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#b74-faithful-matrix-loading-and-a-complete-rejected-candidate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B74: faithful matrix loading and a complete rejected candidate
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#b75-witness-reuse-active-column-correction-and-solver-method-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B75: witness reuse, active-column correction and solver-method boundary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="repository-mechanisms-for-c6-b71-audit-through-b75-witness-refinement">Repository mechanisms for C6: B71 audit through B75 witness refinement<a class="headerlink" href="#repository-mechanisms-for-c6-b71-audit-through-b75-witness-refinement" title="Permanent link">&para;</a></h1>
+<p><strong>Status: retained conditional derivations and finite evidence; C6 campaign
+parked.</strong> The B75 boundary remains 41 of 56 first-exit labels excluded and 15
+open; global C6 stability is not proved. Dated priorities below record earlier
+research steps. Only the <a href="../research/FIVE_STAGE_EXECUTION_PLAN/">execution plan</a>
+owns current work; the <a href="./">mechanism audit</a> records
+verification fixes and supersession. Mathematical claims retain their local
+hypotheses and source-bound evidence.</p>
+<p>The repository contains useful mechanisms for the recorded C6 proof effort, but
+their hypotheses are more important than their names. This audit found two
+reproduced verification-boundary defects, a documentation overclaim, a stale
+root assumption, and concrete opportunities to share arithmetic. It found no
+new failure of the canonical nodal/pressure binding used by the normal B70
+validation. <strong>The result remains 41/56 first-exit labels excluded, 15 open.</strong></p>
+<h2 id="scope-and-evidence">Scope and evidence<a class="headerlink" href="#scope-and-evidence" title="Permanent link">&para;</a></h2>
+<p>The B71 static inventory covered <strong>308 Python files and 175,482 source lines</strong> in
+physics, mathematics, research, dynamics and operators. It records module
+summaries, declarations and 19 groups with identical multi-statement AST
+bodies. That is an inventory, not a claim to have semantically verified every
+line. Deeper tracing focused on the nodal integrator, pressure realization,
+mean/shape and spatial-envelope proofs, phase and symmetry reductions,
+history/return geometry, exact matrix/extremum owners, runtime provenance,
+and the B63–B70 evidence chain.</p>
+<p>Detailed receipts and narrower reviews are retained under <code>artifacts/research</code>:
+<code>c6_b71_mechanism_inventory.json</code>, <code>c6_b71_algebraic_structure.json</code>,
+<code>c6_b71_history_structure.json</code>, <code>c6_b71_verification_controls.json</code>,
+<code>c6_b71_nodal_scope_audit.md</code> and <code>c6_b71_verification_audit.md</code>.
+The checkpoint <code>b71_final_validation.json</code> binds the original audit to its
+unchanged B63 scientific source. B72 subsequently repairs four source files
+and adds the shared proof owner; its new source identity is recorded separately
+in <code>b72_final_validation.json</code>. Historical reports retain their original bytes.</p>
+<h2 id="b71-findings-and-their-status-after-b72">B71 findings and their status after B72<a class="headerlink" href="#b71-findings-and-their-status-after-b72" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Finding</th>
+<th>Evidence and scope</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Assertion-dependent artifact checks can accept a changed receipt under Python <code>-O</code>.</td>
+<td>At the archived B71 source, the same altered minimum is rejected normally and admitted by the assertion-based receipt checker with optimization enabled. The reusable B70 lower-bound kernel rejects it in both modes. This does not invalidate the recorded normal B70 run.</td>
+<td>Implemented in B72: shared admission and certificate checks use explicit exceptions; assertion-dependent exact-owner execution and evidence entry points refuse optimization. Tests exercise <code>-O</code> and <code>-OO</code>. Archived assertion-based scripts retain their historical execution boundary.</td>
+</tr>
+<tr>
+<td>Shared inverse/PSD helpers did not enforce their advertised exact-matrix domain.</td>
+<td>At the B71 source, inverse admitted floating, empty and nonsquare input. PSD accepted <code>[[1,10],[0,1]]</code>, although its quadratic form at <code>(1,-1)</code> is <code>-8</code>. Audited canonical callers constructed valid inputs.</td>
+<td>Repaired in B72 using the existing strict nonempty square Fraction validator, exact symmetry for PSD, and an exact boolean <code>strict</code> flag. Invalid types retain <code>TypeError</code>; invalid shapes, asymmetry and flags raise <code>ValueError</code>. The targeted matrix/caller suites passed 330 tests.</td>
+</tr>
+<tr>
+<td>Silence was described as guaranteeing future freezing.</td>
+<td>SHA preserves EPI at its event and attenuates capacity. The represented default changes capacity <code>1</code> to <code>0.9204225284540524</code>; a remaining nonzero <code>nu_f*DeltaNFR</code> can still change EPI later.</td>
+<td>AGENTS and its mirror were corrected in B71. B72 aligns contract metadata and module/glyph docstrings, with 42 existing tests passing. Runtime arithmetic is unchanged.</td>
+</tr>
+<tr>
+<td>A historical proposal assumes zero mean at history roots.</td>
+<td>The original B47 sentinel has zero relative coordinate, but the actual first-return root260 has <code>sum(k)=-4</code>, hence mean displacement <code>-1/(3*2^112)</code>. B69/B70 already use the correct nonzero root.</td>
+<td>The zero-history-root sentence in <code>c6_b62_nodal_synergies.md</code> is superseded for the current problem. Preserve its historical bytes; do not carry that premise into a new mean certificate.</td>
+</tr>
+</tbody>
+</table>
+<p>The matrix issue is a reusable-helper input-contract defect, not a demonstrated
+false certificate at its present canonical callers. The interpreter issue is
+an execution-mode defect, not evidence that normal arithmetic replay failed.
+Those distinctions prevent both silent reuse and unwarranted rejection of
+valid prior work.</p>
+<h2 id="mechanisms-worth-reusing-and-their-conditions">Mechanisms worth reusing, and their conditions<a class="headerlink" href="#mechanisms-worth-reusing-and-their-conditions" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Existing owner</th>
+<th>What it supplies</th>
+<th>Use in the present investigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../src/tnfr/dynamics/_euler_kernel.py">Shared nodal kernel</a>, <a href="../../src/tnfr/physics/nodal_remainder.py">remainder balances</a></td>
+<td>Exact accumulated represented nodal area, nearest-even cells and compatible finite itineraries.</td>
+<td>Keep one evolution law and one pressure/carry split. A proof coordinate must never reset carry or mean. Exact cell horizons can accelerate a genuinely held visible state; their pressure-constancy premise must be checked.</td>
+</tr>
+<tr>
+<td><a href="../../src/tnfr/physics/forcing_realization.py">Forcing realization</a>, <a href="../../src/tnfr/physics/forced_support.py">forced support</a>, <a href="../../src/tnfr/physics/c6_carried_profile.py">C6 profile</a></td>
+<td>Decomposition into EPI diffusion and explicit non-EPI source; exact relative Poisson profile and separate mean drift.</td>
+<td>Centralize the distinction between shape relaxation and accumulated mean change. The current finite pressure assembly and phase premise must remain attached.</td>
+</tr>
+<tr>
+<td><a href="../../src/tnfr/physics/c6_carried_closure.py">C6 spatial closure</a>, <a href="../../src/tnfr/physics/c6_carried_tube.py">carried tube</a></td>
+<td>A conditional centered-energy envelope derived from the represented pressure and rounding errors.</td>
+<td>Reuse spatial bounds in new proposal filters. Any additional quadratic restriction needs a relevance test against current guards and a matching exact oracle; a DBM-only extremum must not silently claim the intersection. The envelope alone does not confine the mean.</td>
+</tr>
+<tr>
+<td><a href="../../src/tnfr/physics/c6_carried_excursion.py">Exact extrema</a>, <a href="../../src/tnfr/research/history_affine.py">shared history-affine owner</a></td>
+<td>A matching exact linear minimum, attaining point and transport dual.</td>
+<td>The B72 owner reuses the established extremum arithmetic and replaces the active detached adapter. A violating point may be hypothetical. The at-most-12-edge fixed-sign transport graph is not an unknown-sign global LP.</td>
+</tr>
+<tr>
+<td><a href="../../src/tnfr/physics/c6_carried_return.py">Return/history owner</a>, B70 guard pool and facet certificate</td>
+<td>Full guarded transitions, source/target/sentinel coverage, exact DBM equality and sparse equivalent descriptions.</td>
+<td>Preserve history identities while sharing equal geometry. Keep direct transport on complete closed DBMs separate from reduced-facet path representations.</td>
+</tr>
+<tr>
+<td>B71 history graph audit</td>
+<td>Exact reachability sets, SCCs, and a constructive extension for omitted terminal histories.</td>
+<td>Optional discovery preprocessing saves 14 coefficients and 10 drift obligations. Final proof completion still satisfies the original full specification. The saving is modest; it does not justify a new long refinement campaign.</td>
+</tr>
+<tr>
+<td><a href="../../src/tnfr/physics/_cycle_algebra.py">Cycle algebra</a>, <a href="../../src/tnfr/physics/_exact_linear_algebra.py">exact matrix owner</a></td>
+<td>Centering, Laplacian actions, exact products and rational linear algebra.</td>
+<td>Reuse these operations with the repaired input checks. Do not independently recreate a floating mean/energy law in each experiment.</td>
+</tr>
+<tr>
+<td><a href="../../src/tnfr/physics/symmetry_sectors.py">Symmetry sectors</a>, <a href="../../src/tnfr/physics/pointed_symmetry.py">pointed symmetry</a></td>
+<td>Graph automorphisms and state/selector stabilizers.</td>
+<td>Test the entire prepared state and observations before quotienting. C6 topology has 12 automorphisms, but the exact current origin has only the identity stabilizer.</td>
+</tr>
+<tr>
+<td><a href="../../src/tnfr/physics/structural_morphism.py">Structural morphisms</a>, <a href="../../src/tnfr/physics/phase_quotient.py">phase quotient</a>, <a href="../../src/tnfr/physics/reduction_certificates.py">reduction certificates</a></td>
+<td>Intertwining, observer defects and scoped nonlinear phase closure checks.</td>
+<td>A smaller topology alone is insufficient. A reduction must preserve the current pressure, rounded cells, origin and target; existing real diffusion results do not automatically certify the carried full-channel map.</td>
+</tr>
+<tr>
+<td><a href="../../src/tnfr/physics/hybrid_operator_stability.py">Hybrid stability</a>, <a href="../../src/tnfr/physics/runtime_flow_stability.py">runtime flow stability</a></td>
+<td>Quotient gains, mean/reset terms and finite causal execution links.</td>
+<td>Reuse when promoting a proven numerical property back to a runtime family. Do not confuse a finite receipt or disagreement bound with future full-state stability.</td>
+</tr>
+<tr>
+<td><a href="../../src/tnfr/research/claims.py">Claim ledger</a>, <a href="../../src/tnfr/research/core_manifests.py">core manifests</a>, <a href="../../src/tnfr/research/evidence_sidecar.py">evidence sidecars</a></td>
+<td>Scope labels, source identity and evidence organization.</td>
+<td>Record exact, measured, negative and open results separately. A source hash or algebraic success flag does not establish canonical admission or original-target coverage.</td>
+</tr>
+</tbody>
+</table>
+<p>Auxiliary Hamiltonian, metriplectic and GKSL modules are not a missing shortcut
+to this C6 proof. Their model-specific assumptions and extra state variables
+are documented; importing their conservation or contraction results without
+a nodal/runtime bridge would change the problem. No such import is used here.</p>
+<h2 id="exact-controls-against-attractive-but-invalid-shortcuts">Exact controls against attractive but invalid shortcuts<a class="headerlink" href="#exact-controls-against-attractive-but-invalid-shortcuts" title="Permanent link">&para;</a></h2>
+<p>The 64 represented nodal increment vectors have <strong>rank six</strong>. Six rows
+(masks <code>0,1,2,3,4,6</code>) and their exact two-sided inverse certify this. Thus no
+nonzero common linear functional annihilates every increment in that table.
+Their sum signs are 5 negative, 4 zero and 55 positive. These counts are not
+visit frequencies, probabilities or a proof of net drift along the origin
+trajectory. They also do not refute conservation on a smaller reachable class.</p>
+<p>The history graph supplies a stronger, still scoped control. Choose signed
+spanning-tree displacements <code>T_v</code>. A common-gradient conserved quantity
+<code>c dot k+b_v</code> would require</p>
+<div class="highlight"><pre><span></span><code>c dot [s_e-(T_w-T_v)] = 0
+</code></pre></div>
+<p>on every arc. Six residuals, at original arc indices <code>3,10,11,13,16,17</code>,
+have an exact inverse and span all six coordinates. Hence such an exactly
+conserved form has <code>c=0</code> and constant offsets on the connected graph. This
+does not exclude monotone barriers, independent history gradients, nonlinear
+functions or a smaller reachable domain. Signed tree cycles are algebraic
+constraints, not asserted realizable trajectories.</p>
+<p>All 910 histories are reachable in the abstract graph from root260. Exactly
+908 can reach target180 and constitute a single strongly connected component.
+The remaining histories274/281 are terminal singleton components. Restricting
+discovery to the corridor leaves 908 blocks and 7,140 arcs; it does not
+decompose the difficult part into small independent subproblems. This confirms
+the earlier B62 component analysis on the sealed current specification; the
+large component is not a newly discovered decomposition.</p>
+<p>A corridor candidate can nevertheless be completed soundly: give both omitted
+sink histories zero gradient and a common constant <code>M</code> no smaller than the
+exact maxima of every incoming corridor form. Their bounded guards make such
+a finite rational <code>M</code> available. The original full checker must then accept
+all 7,150 arcs and 27 targets. This is a constructive preprocessing option,
+not a discovered positive barrier. Feasibility equivalence holds with
+unrestricted rational coefficient sizes; completion need not preserve a
+minimum norm or the 256-bit discovery cap. The graph audit checks 40 local
+completion witnesses, a separate full-verifier fixture and six rejection
+controls; these do not constitute a C6 corridor candidate.</p>
+<h2 id="centralization-priorities">Centralization priorities<a class="headerlink" href="#centralization-priorities" title="Permanent link">&para;</a></h2>
+<p>The static duplicate groups are candidates, not instructions for bulk
+replacement: function signatures, imported bindings and certificate-domain
+seals can differ despite equal bodies. Two concrete reusable seams are
+<code>event_runtime._exact_binary64_vector</code> versus
+<code>_exact_metric.finite_binary64_fraction_vector_or_none</code>, and
+<code>binary64_nodal_flow._float</code> versus <code>_euler_kernel._finite_binary64</code>.
+Readonly-array construction and finite matrix diagnostics also recur across
+quotient modules. Review caller contracts before consolidating them.</p>
+<p>B72 implements the highest-priority consolidation in
+<a href="../../src/tnfr/research/history_affine.py">history_affine.py</a>: one admitted
+specification and one signed, translated expression shared by candidate point
+rows, exact affine forms and final checking. The owner validates pooled DBMs
+once while retaining every obligation identity. It bounds rational text before
+parsing and checks exact numerator/denominator sizes afterward. Canonical bytes
+are hashed and privately decoded before admission. Owner-controlled snapshots
+detect subsequent mutations of exposed specifications, obligations and
+coefficients, including Fraction internals. This is an API integrity boundary,
+not a security boundary against modifying the module's private registry or code.</p>
+<p>Preserve deliberate independence: combining the producer and its separate
+Floyd/Bellman-Ford or primal/dual checkers into one unchecked arithmetic path
+would weaken evidence. Historical prototypes with negative results retain
+their role as reproducibility records; mark obsolete premises rather than
+deleting the records or using them as active implementations.</p>
+<h2 id="b72-validation-and-measured-search-outcome">B72 validation and measured search outcome<a class="headerlink" href="#b72-validation-and-measured-search-outcome" title="Permanent link">&para;</a></h2>
+<p>The repaired source passed <strong>451 tests</strong>: 330 matrix/caller tests, 42 operator
+tests and 79 shared-owner tests. An independent review additionally reproduced
+11 mutation/admission controls. Full-case preflight independently reconstructs
+all 7,177 drift/target forms and anchored rows, verifies the exact nonzero root,
+matches 62 archived local extrema, and compares both full constant controls
+with the historical checker. The root, pressure realization and target family
+remain unchanged; the new source identity is not represented as the old one.</p>
+<p>The recorded candidate LP has <strong>19,918 rows, 6,371 columns and 125,768 nonzero
+entries</strong>. Its one invocation reached the 20-second limit after 20,692 solver
+iterations, without returning a primal candidate. Total experiment time was
+23.305 seconds. No rational candidate, exact scan or new counterexample cut was
+produced. Consequently the conditional second proposal was not invoked. The
+independent validator checks the complete point-row construction, source
+bindings and resource ledger; it records zero exact receipts, not a successful
+barrier or an impossibility proof. <strong>Coverage remains 41/56, with 15 pending.</strong></p>
+<h2 id="b73-feasibility-only-result">B73 feasibility-only result<a class="headerlink" href="#b73-feasibility-only-result" title="Permanent link">&para;</a></h2>
+<p>B73 implements the proposed norm elimination with the shared owner. Its
+7,178 rows, 6,370 free variables and 100,288 nonzero entries preserve every
+anchored point condition. An independent preflight checks the full matrix,
+root and seven malformed-proposal controls. All 27 target identities remain
+present, although the anchored target evaluations have only 12 distinct exact
+rows. Coincident sample rows do not establish equal guarded obligations.</p>
+<p>The one zero-objective invocation reached its 20-second limit, taking
+20.0345207 seconds and 33,200 solver iterations without a primal candidate.
+No rational reconstruction, exact scan or new cut followed. The independent
+post-run check verifies the ledger and unchanged B72 source without a solver
+rerun. <strong>Coverage remains 41/56, with 15 pending.</strong> The previous 451 tests and
+62 local-extremum comparisons remain unchanged-source evidence; they were
+not rerun for this artifact-only experiment.</p>
+<h2 id="coordinate-reuse-and-continuation-boundary">Coordinate reuse and continuation boundary<a class="headerlink" href="#coordinate-reuse-and-continuation-boundary" title="Permanent link">&para;</a></h2>
+<p>The bounded diagnostic reuses two existing nodal/history descriptions:
+each history's first retained evaluation and the B71 signed spanning-tree
+displacements. With an integer center <code>t_v</code>, the proof identity
+<code>beta_v(k)=a_v dot (k-t_v)/N+b'_v</code>, <code>N=2^59</code>, has exact inverse
+<code>b_v=b'_v-a_v dot t_v/N</code>. It changes proof coordinates only. The root center
+is the actual nonzero root; no mean or carry is reset. Drift retains
+<code>s+t_source-t_target</code>, which need not vanish outside tree arcs.</p>
+<p>Such a translation preserves unrestricted finite point feasibility, but
+original coefficient size and denominator caps must be checked after the
+inverse transformation. Every one of the 7,178 translated rows lifts exactly
+to its original row. First-evaluation centers reduce nonzeros from 100,288
+to 59,682 and leave 2,454 zero gradient columns in the current point proposal;
+omitting these columns would leave 3,916 active variables. These gradients
+can still matter on unsampled guard points. The signed-tree chart leaves
+100,282 nonzeros and supplies almost no sparsity gain.</p>
+<p>The first chart's worst within-column nonzero magnitude ratio worsens from
+about <code>3.76e3</code> to <code>8.39e17</code>. Neither conditioning improvement nor solver speed
+has been established. The B74 gate below checks solver-row materialization,
+scaling, zero-column restoration and original-coordinate coefficient caps
+before its bounded proposal. Low observed ranks
+do not justify removing affine degrees from the full guarded problem.
+No second optimizer call or automatic time-limit increase is part of B73.</p>
+<p>A future candidate still requires all guarded exact minima and independent
+dual checking, followed by the retained canonical full-target bridge before
+any region promotion. The detailed result and diagnostic are retained in
+<code>artifacts/research/c6_b73_result_and_next_gate.md</code> and sealed by
+<code>artifacts/research/b73_final_validation.json</code>. Existence within this proof
+family and indefinite boundedness remain open.</p>
+<h2 id="b74-faithful-matrix-loading-and-a-complete-rejected-candidate">B74: faithful matrix loading and a complete rejected candidate<a class="headerlink" href="#b74-faithful-matrix-loading-and-a-complete-rejected-candidate" title="Permanent link">&para;</a></h2>
+<p>B74 implements the first-evaluation proposal with 3,916 active variables.
+The installed HiGHS loader discards sufficiently small matrix entries under
+its default threshold. A positive exact row scaling puts every nonzero inside
+declared computational guards: only 22 rows need the factor <code>2^39</code>, while
+the other 7,156, including the root, stay unchanged. A no-optimization model
+load preserves all 59,682 coefficient entries, indices, right-hand sides,
+free variable bounds and the zero objective byte for byte. This does not
+certify later internal numerical transformations or improved conditioning.</p>
+<p>Reconstruction restores all 6,370 slots, inverts the chart rationally, then
+limits denominators in ORIGINAL coordinates and checks the actual root and
+original size caps. Nine focused controls include exact cancellation and a
+tight target disrupted by denominator limiting. Independent preflight checks
+every row and inverse identity and rejects nine altered proposals.</p>
+<p>The one LP returns a candidate in 7.6290518 seconds. All 7,177 guarded exact
+minima are then computed, and independent primal/dual validation confirms
+5,949 failures: 5,922 drifts and all 27 targets. Total experiment time is
+18.5012193 seconds. The original coefficients fit the stated caps; the exact
+conditions reject the candidate. No further LP or new cut round ran.</p>
+<p>Solver success is weaker even than exact sampled feasibility: the exact
+binary64 lift has 1,688 negative anchored drifts, and the rational candidate
+has 1,546. Both have nonnegative target anchors, yet all complete target
+guards reject the candidate. Thus denser geometric sampling and numerical
+feasibility control are distinct needs. A negative attaining point is a
+guard witness, not a proven actual trajectory point. The count of 41 excluded
+labels and 15 pending labels is unchanged.</p>
+<p>The next bounded refinement should reuse verified attaining witnesses while
+preserving every original obligation. Keep all initial rows, include all
+27 target identities before selecting a bounded drift-witness subset, and
+recompute active columns and scaling rather than assuming the old zero
+columns remain zero. The complete original-coordinate checker remains the
+acceptance boundary. The current candidate does not refute the affine family.
+Details and receipts are owned by <code>artifacts/research/c6_b74_result_and_next_gate.md</code>
+and <code>artifacts/research/b74_final_validation.json</code>.</p>
+<h2 id="b75-witness-reuse-active-column-correction-and-solver-method-boundary">B75: witness reuse, active-column correction and solver-method boundary<a class="headerlink" href="#b75-witness-reuse-active-column-correction-and-solver-method-boundary" title="Permanent link">&para;</a></h2>
+<p>B75 reuses exactly 256 verified B74 witnesses, preserving every original
+sampled row and obligation. All 27 target identities remain even where point
+coordinates coincide. The extra points reactivate 134 columns, confirming
+that columns absent from the initial point matrix cannot be discarded from
+the full guarded proof problem. The enlarged 7,434-by-4,050 matrix has 62,379
+nonzeros. Independent full-row preflight and loaded-array checks pass;
+positive scaling now applies to 81 rows. No new physical parameter is added.</p>
+<p>The single LP times out after 20.023 solver seconds without a candidate.
+No exact scan, new extremum or region exclusion follows. The finite witness
+evaluations are unavailable. An intermediate nonfeasible iterate at timeout
+does not certify infeasibility. Independent post-validation preserves this
+boundary; source and regional coverage remain unchanged at 41/56, 15 pending.</p>
+<p>An installed-source audit intercepts public <code>highs</code> and <code>highs-ipm</code> calls
+before the native wrapper. All outgoing arrays match the frozen B75 model
+byte for byte; only the solver selector changes. The next controlled gate
+therefore uses one 20-second <code>highs-ipm</code> proposal on that same model, after
+preflight and with unchanged full exact acceptance. No further cuts or
+history are required for this comparison. Dispatch identity guarantees
+neither speed nor feasibility; the original native algorithm was not traced.
+Details and receipts are owned by <code>artifacts/research/c6_b75_result_and_next_gate.md</code>
+and <code>artifacts/research/b75_final_validation.json</code>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../docs/assets/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+      
+    
+  </body>
+</html>

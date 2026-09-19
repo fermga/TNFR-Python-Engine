@@ -1,0 +1,3036 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/CHANGELOG/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Changelog - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#changelog" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Changelog
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/CLI_AND_SDK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI and SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../theory/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/FUNDAMENTAL_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/NODAL_PARAMETER_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/NODAL_RESEARCH_STRATEGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/research/FIVE_STAGE_EXECUTION_PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Active execution plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/DERIVED_EPI_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/research/archive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Historical archive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../factorization-lab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Applications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Applications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../primality-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.github/WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#unreleased" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [Unreleased]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0036-2026-09-19-nodal-research-integration-and-documentation-consolidation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.0.3.6] - 2026-09-19 — Nodal research integration and documentation consolidation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.0.3.6] - 2026-09-19 — Nodal research integration and documentation consolidation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nodal-dynamics-and-research" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nodal dynamics and research
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-and-diagnostics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation and diagnostics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maintenance-and-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maintenance and compatibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evidence-and-open-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidence and open scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0035-2026-06-24-tetrad-correspondence-audit-emergent-redesign" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.0.3.5] - 2026-06-24 — Tetrad correspondence audit &amp; emergent redesign
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.0.3.5] - 2026-06-24 — Tetrad correspondence audit &amp; emergent redesign">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#corrected-canonicity-claims" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Corrected (canonicity claims)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changed-emergent-replacement-of-magic-thresholds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changed (emergent replacement of magic thresholds)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#consequences-audit-computational-impact-2026-06-21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consequences audit (computational impact, 2026-06-21)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#emergent-redesign-gauge-regimes-chemistry-excitation-2026-06-21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Emergent redesign (gauge regimes + chemistry excitation, 2026-06-21)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0034-2026-06-17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.0.3.4] - 2026-06-17
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.0.3.4] - 2026-06-17">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#symplectic-substrate-historical-entry-current-scope-corrected" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Symplectic Substrate (historical entry; current scope corrected)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#emergent-geometry-structural-diffusion-transport-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Emergent Geometry — Structural Diffusion (transport layer)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operator-contracts-energy-centralization-and-emergence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operator Contracts &amp; Energy — Centralization and Emergence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grammar-single-canonical-source-formal-language-characterization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Grammar — Single Canonical Source &amp; Formal-Language Characterization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#number-theory-the-dual-lever" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Number Theory &amp; the Dual-Lever
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#millennium-problem-programs-tnfr-native-reformulations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Millennium Problem Programs (TNFR-native reformulations)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-examples-repository-hygiene" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation, Examples &amp; Repository Hygiene
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#research-program-milestones-yangmills-y1y5-remesh-n15-navierstokes-n16n17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Research Program Milestones (Yang–Mills Y1–Y5, REMESH-∞ N15, Navier–Stokes N16–N17)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Research Program Milestones (Yang–Mills Y1–Y5, REMESH-∞ N15, Navier–Stokes N16–N17)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#y5-tnfryangmills-closure-obstruction-classification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Y5 — TNFR–Yang–Mills Closure / Obstruction Classification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#y4-tnfryangmills-finite-scaling-diagnostic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Y4 — TNFR–Yang–Mills Finite Scaling Diagnostic
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#y3-tnfryangmills-non-abelian-derivability-audit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Y3 — TNFR–Yang–Mills Non-Abelian Derivability Audit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#y2-tnfryangmills-u6-confinement-sweep" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Y2 — TNFR–Yang–Mills U6 Confinement Sweep
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#y1-tnfryangmills-finite-structural-gauge-gap-diagnostic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Y1 — TNFR–Yang–Mills Finite Structural Gauge Gap Diagnostic
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#n17-a-u3u5-k41-analytical-cascade-locality-analytical_consistent_conditional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        N17-A — U3+U5 → K41: Analytical Cascade Locality (ANALYTICAL_CONSISTENT_CONDITIONAL)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#n16-ns-g5-closure-2d-embedding-lemma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        N16 — NS-G5 Closure: 2D-Embedding Lemma
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#n15-remesh-fixed-delay-surrogate-corrected-historical-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        N15 REMESH fixed-delay surrogate — corrected historical record
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0033-2026-03-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.0.3.3] - 2026-03-07
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.0.3.3] - 2026-03-07">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documentation-audit-sessions-1-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Audit (Sessions 1-4)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0032-2026-03-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.0.3.2] - 2026-03-06
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.0.3.2] - 2026-03-06">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documentation-consistency-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation &amp; Consistency Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#003-2026-03-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.0.3] - 2026-03-05
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.0.3] - 2026-03-05">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#structural-conservation-theorem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structural Conservation Theorem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dissipative-conservation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dissipative Conservation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#closed-loop-integrity-monitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Closed-Loop Integrity Monitor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grammar-aware-dynamics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Grammar-Aware Dynamics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simple-sdk-research-grade-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Simple SDK — Research-Grade Access
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shared-test-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shared Test Infrastructure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Quality
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cross-codebase-constant-unification-round-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-Codebase Constant Unification (Round 1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-gradient-threshold-unification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase Gradient Threshold Unification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cross-codebase-constant-unification-round-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-Codebase Constant Unification (Round 2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-suite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Suite
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#002-2025-11-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.0.2] - 2025-11-29
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.0.2] - 2025-11-29">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tnfr-development-doctrine-establishment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TNFR Development Doctrine Establishment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complete-framework-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complete Framework Expansion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-academic-modernization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Academic Modernization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-suite-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Suite Optimization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#technical-enhancements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technical Enhancements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#970-2025-11-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [9.7.0] - 2025-11-29
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[9.7.0] - 2025-11-29">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#major-theoretical-enhancements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Major Theoretical Enhancements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#canonical-invariants-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Canonical Invariants Optimization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-modernization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Modernization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structural-field-tetrad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structural Field Tetrad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#development-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Development Infrastructure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#910-2025-11-14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [9.1.0] - 2025-11-14
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[9.1.0] - 2025-11-14">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#added" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#internal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Internal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deferred" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deferred
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integrity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integrity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#902" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [9.0.2]
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<p>All notable changes to this project will be documented in this file.</p>
+<h2 id="unreleased">[Unreleased]<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
+<h2 id="0036-2026-09-19-nodal-research-integration-and-documentation-consolidation">[0.0.3.6] - 2026-09-19 — Nodal research integration and documentation consolidation<a class="headerlink" href="#0036-2026-09-19-nodal-research-integration-and-documentation-consolidation" title="Permanent link">&para;</a></h2>
+<h3 id="nodal-dynamics-and-research">Nodal dynamics and research<a class="headerlink" href="#nodal-dynamics-and-research" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Integrated shared phase/form observations, geometry realization and joint
+  quotient contracts with explicit hypotheses and representation boundaries.</li>
+<li>Added finite-state, phase-origin, reflection, hidden-form, support and memory
+  regression cases; retained counterexamples and unavailable-field evidence.</li>
+<li>Unified signed scalar EPI admission and clarified continuous integration,
+  prescribed forcing, operator jumps and observed temporal evidence.</li>
+<li>Included the post-0.0.3.5 diffusion, finite REMESH/Reception, THOL and grammar
+  work already integrated on main. Its exact and finite-runtime claims retain
+  their specified domains; the current execution plan owns their detailed status.</li>
+</ul>
+<h3 id="documentation-and-diagnostics">Documentation and diagnostics<a class="headerlink" href="#documentation-and-diagnostics" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Consolidated theory, architecture, developer instructions and the research
+  queue; archived long historical notebooks and superseded proposals unchanged.</li>
+<li>Corrected unsupported conservation, complete-state, autonomous-emergence and
+  arithmetic claims in guides, source explanations and release metadata.</li>
+<li>Removed the educational manuscript and its site navigation; maintained
+  technical guides and examples own the current explanations.</li>
+<li>Generate the operator contract table from the registry and reject metadata
+  drift. Validate local/current-main references, directory fragments and
+  reference-style links; retain checks under optimized Python.</li>
+<li>Build one MkDocs site with working mathematical typesetting, diagrams,
+  current guide navigation and historical downloads.</li>
+</ul>
+<h3 id="maintenance-and-compatibility">Maintenance and compatibility<a class="headerlink" href="#maintenance-and-compatibility" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Added a shared SDK study API and the <code>tnfr network</code>, <code>operators</code> and
+  <code>sequences</code> commands, also available through <code>python -m tnfr</code>. Validated JSON
+  recipes use existing topology builders and operator words; reports retain
+  input state, versions, diagnostic availability and estimator provenance.</li>
+<li>Added a runnable study example and one CLI/SDK guide. Recipe cycles count
+  operator words, not physical time; recipes are not complete engine checkpoints.</li>
+<li>Keep CLI logs on stderr without replacing application logging handlers.
+  Structured stdout is portable to Windows code pages, and report files use
+  the shared atomic JSON writer. Reject conflicting inputs and invalid step
+  counts before execution. Remove unavailable legacy profiling commands.</li>
+<li>Removed dead workflow/profiler entry points and two obsolete benchmarks;
+  current owners and original/archive hashes are recorded in the retirement manifests.</li>
+<li>Reduced documentation dependencies to the active MkDocs toolchain and release
+  tooling to build/Twine. Removed unused, contradictory automatic-version settings.</li>
+<li>Retained the existing GitHub-release-triggered PyPI publication route.
+  Publication metadata and the release tag must match the package version.
+  Release preparation verifies the selected commit; the workflow itself does
+  not provide a numerical stability certificate or upload to Zenodo.</li>
+<li>Scalar-only operations explicitly reject complex/nonuniform EPI payloads.
+  Diagnostic thresholds, fitted coherence length and auxiliary models retain
+  their documented scope; review the current API contracts when upgrading.</li>
+<li>Repaired advanced primality CLI validation-schema handling and separated
+  human-readable progress from JSON output. These are interface corrections,
+  not changes to the primality calculations.</li>
+<li>Fixed a missing plotting-padding reference, preserved compatibility reexports
+  explicitly and applied the configured Python formatting tools.</li>
+<li>Declare SciPy as a core dependency for the SDK's spectral import path.
+  Missing optional system-memory telemetry no longer prevents CPU computation
+  interfaces from loading.</li>
+<li>Keep spectral-cache writes from signature readouts off the caller's graph,
+  including snapshot-only calls and graphs with an existing cache.</li>
+<li>Handle the empty disagreement sector explicitly in matrix-exponential and
+  transient-gain calculations. Accept UTC <code>Z</code> and variable-width fractional
+  seconds consistently on Python 3.10, preserving raw timestamps and truncating
+  to microseconds without rounding. Retain missing, nonmonotone and mixed-timezone
+  evidence. Compare FFT phase preservation by circular separation at the existing
+  tolerance.</li>
+<li>Make CLI byte-lineage tests independent of ignored historical artifacts,
+  remove a pytest-benchmark fixture-name collision and compare spectral
+  estimates against an analytic reference. CI retains per-Python JUnit reports.</li>
+<li>Classified the expensive C6 historical report producers as slow tests;
+  their lightweight input-validation and independent exact-model checks remain
+  in the default selection. No producer result is inferred from that classification.</li>
+<li>Retired self-contained toy tests, copied verifier criteria, duplicate test
+  runners and obsolete curvature/timing campaigns. Retained their useful
+  contracts in tests that call the actual engine and preserved retirement reasons.</li>
+<li>Replaced introductory toy dynamics with the shared SDK entry point. Removed
+  misleading standalone demonstrations and kept explicit model boundaries for
+  retained research examples.</li>
+<li>Centralized example loading and CLI checks; retained independent numerical
+  assertions while reducing duplicated cold-import processes. Parallel CI keeps
+  each test file together so module fixtures run once per worker.</li>
+<li>Reuse the temporal evaluation's existing window count instead of recomputing
+  its complete field series. Test report wiring separately from numerical work.</li>
+<li>Share diagnostic graph preparation while retaining fresh mutable graphs.
+  Remove ineffective test resets for absent subsystems and retain the actual
+  cache, callback, RNG and transaction isolation controls.</li>
+<li>Compose testing/development extras from their existing dependency groups.
+  <code>make test</code> follows the configured pytest suite; research producers have
+  separate explicit commands. Benchmark wrapper checks no longer accept arbitrary
+  exceptions as successful tests.</li>
+</ul>
+<h3 id="evidence-and-open-scope">Evidence and open scope<a class="headerlink" href="#evidence-and-open-scope" title="Permanent link">&para;</a></h3>
+<p>Release-specific validation belongs to the GitHub release notes and attached
+receipts. The scientific objective of deriving autonomous persistent patterns
+and connecting them to independently specified terrestrial measurements remains
+open. This release does not establish general C6 stability, a complete state
+basis, a Millennium conjecture or physical particle emergence.</p>
+<p>The detailed pre-release development log is preserved in the
+<a href="../theory/research/archive/DEVELOPMENT_LOG_PRE_0.0.3.6_2026-09-19.txt">historical snapshot</a>.
+Descriptions in older release entries below record their original context;
+current mathematical authority belongs to the <a href="../theory/">theory index</a>.</p>
+<h2 id="0035-2026-06-24-tetrad-correspondence-audit-emergent-redesign">[0.0.3.5] - 2026-06-24 — Tetrad correspondence audit &amp; emergent redesign<a class="headerlink" href="#0035-2026-06-24-tetrad-correspondence-audit-emergent-redesign" title="Permanent link">&para;</a></h2>
+<p>A computational audit of the "Universal Tetrahedral Correspondence" found that
+only <strong>π</strong> is a genuine structural scale; the four-constant correspondence
+(φ↔Φ_s, γ↔|∇φ|, e↔ξ_C) is mostly an <strong>organizing overlay</strong>. Several thresholds
+asserted as "derived" were empirical, inert (magic), or measured false. This
+work corrects the claims and replaces magic thresholds with emergent,
+system-measured quantities. The nodal equation, the 13 operators, and grammar
+U1–U6 are unchanged.</p>
+<h3 id="corrected-canonicity-claims">Corrected (canonicity claims)<a class="headerlink" href="#corrected-canonicity-claims" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Only π is a genuine structural scale</strong> — the phase-wrap bound shared by BOTH
+  <code>|∇φ|</code> and <code>K_φ</code> (both are means of wrapped angles, ≤ π). γ, e, φ are
+  recoverable as mathematical identities but are NOT the structural scales of
+  their tetrad fields. <code>K_φ</code> matches <code>L_rw·φ</code> only on a smooth, consistent
+  unwrapped branch with matching normalization; the reported correlation is a
+  finite-protocol measurement. The exact wrapped computation is nonlinear;
+  fitted <code>ξ_C</code> uses <code>1/√λ₂</code> as a spectral comparison/fallback (not base e).</li>
+<li><strong><code>|∇φ|</code> bound corrected</strong> from <code>γ/π ≈ 0.1837</code> to the phase-wrap bound <code>0.9π</code>
+  in <code>physics/variational.py</code>, symmetric with <code>K_φ</code>. The measured synchronization
+  onset is ≈ 0.29 and σ-dependent, NOT the constant γ/π; γ/π is retained
+  elsewhere only as a heuristic early-warning level, explicitly labelled
+  non-derived.</li>
+<li><strong><code>derive_tetrad_threshold_values</code></strong> rows re-statused: π <code>geometric</code>; φ, γ, e
+  <code>overlay</code> (recoverable identities, not structural scales).</li>
+<li><strong><code>ARCHITECTURE.md</code>, <code>.zenodo.json</code>, <code>CONTRIBUTING.md</code>, <code>theory/README.md</code>,
+  <code>docs/STRUCTURAL_FIELDS_TETRAD.md</code>, <code>constants/canonical.py</code></strong> — removed the
+  "Universal Tetrahedral Correspondence foundation / 100% derived / zero
+  empirical tuning / verified to machine precision" claims; replaced with the
+  honest tiering (π genuine; γ/e/φ notational overlay).</li>
+<li><strong>Second audit pass (repo-wide)</strong> — removed the remaining "Universal
+  Tetrahedral Correspondence / canonical derivation / Kuramoto critical
+  coupling" claims and internal contradictions across <code>ARCHITECTURE.md</code>
+  (the "Mathematical Purity / 497 magic numbers eliminated / zero empirical"
+  sections), <code>README.md</code>, <code>theory/FUNDAMENTAL_THEORY.md</code>, <code>theory/GLOSSARY.md</code>,
+  <code>theory/EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md</code>, <code>AGENTS.md</code> (+ mirror),
+  <code>docs/grammar/PHYSICS_VERIFICATION.md</code>, and the central constants modules
+  (<code>telemetry/constants.py</code>, <code>mathematics/unified_numerical.py</code>,
+  <code>config/defaults_core.py</code>, <code>physics/signatures.py</code>,
+  <code>operators/grammar_telemetry.py</code>, <code>physics/emergent_chemistry.py</code>) plus four
+  benchmarks. Exposed cosmetic "derivations" (e.g. <code>MIN_BUSINESS_SENSE_INDEX =
+  1/φ + 0.082 ≈ 0.700</code>, <code>⌊φ×10⌋ = 16</code>) as calibrated/notational values.</li>
+</ul>
+<h3 id="changed-emergent-replacement-of-magic-thresholds">Changed (emergent replacement of magic thresholds)<a class="headerlink" href="#changed-emergent-replacement-of-magic-thresholds" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>physics/phase_transition.py</code> redesigned</strong> around a standardized signed-mean
+  ratio. The "universal critical exponent γ_c = γ/π" was <strong>measured false</strong>
+  (the fitted exponent is protocol-dependent), and the classification noise
+  floor <code>(γ/π)²</code> was <strong>proven inert</strong> (it sat in a two-order-of-magnitude gap;
+  sweeping it changed no classification). Removed the magic constants <code>GAMMA_C</code>,
+  <code>ORDER_PARAMETER_NOISE_FLOOR</code>, <code>CHIRALITY_THRESHOLD</code> and the
+  <code>theoretical_exponent</code> field; added <code>symmetry_zscore(mean, var, n) =
+  |mean|/√(Var/N)</code> and the selected cut <code>Z_SIGNIFICANCE = 1</code>. The later S6
+  audit recorded above corrects its interpretation: coupled graph nodes do not
+  justify an independent-sample significance test, so the ratio is an
+  operational spatial-imbalance diagnostic.</li>
+<li><strong>Named γ/π constants relabelled</strong> as heuristic / non-derived in
+  <code>constants/canonical.py</code> (<code>CRITICAL_EXPONENT</code>, <code>GRAD_PHI_CANONICAL_THRESHOLD</code>,
+  <code>PHASE_GRADIENT_THRESHOLD_CANONICAL</code>) and <code>mathematics/unified_numerical.py</code>;
+  <code>gauge.py</code>, <code>emergent_chemistry.py</code>, <code>interactions.py</code> regime thresholds
+  marked calibrated/heuristic, not derived.</li>
+</ul>
+<h3 id="notes">Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Third audit pass (repo-wide, exhaustive)</strong> — removed the remaining
+  "Universal Tetrahedral Correspondence / canonical derivation / zero empirical
+  fitting" claims across the two subprojects (<code>primality-test/</code>,
+  <code>factorization-lab/</code>), examples, benchmarks, the <code>mathematical_purity</code> tests
+  (now check genuine bounds, not the refuted mapping), all theory docs
+  (<code>FUNDAMENTAL_THEORY.md §4</code> and <code>GLOSSARY</code> renamed to "structural-field
+  tetrad"), and ~40 in-code combo comments (<code>defaults_core.py</code>, <code>bifurcation.py</code>,
+  <code>cycle_detection.py</code>, <code>number_theory.py</code>, etc.) now marked notational. Exposed
+  the primality coefficients (ζ=φγ, η=(γ/φ)π, θ=1/φ) as combos chosen to
+  approximate the original empirical values (ζ=1.0, η=0.8, θ=0.6).</li>
+<li>The gauge force-regime classification and emergent-chemistry excitation scale
+  were flagged here for full emergent rework; that rework is now complete — see
+  "Emergent redesign" below.</li>
+<li>Full test suite green (2196 passed) after all three passes.</li>
+</ul>
+<h3 id="consequences-audit-computational-impact-2026-06-21">Consequences audit (computational impact, 2026-06-21)<a class="headerlink" href="#consequences-audit-computational-impact-2026-06-21" title="Permanent link">&para;</a></h3>
+<p>A measure-first review of whether <em>calculations</em> (not just narrative) depended
+on the refuted tetrad values. Main finding: <strong>the significant results are
+robust</strong>, because they emerge from STRUCTURE (integer orderings, exact zeros,
+relative scores) rather than the scale values (γ/π, etc.):</p>
+<ul>
+<li><strong>Emergent chemistry</strong> (periodic table, magic numbers 2/10/18/36/54/86,
+  octet): the aufbau filling order uses only the integers (n+l, n); the octet
+  is the exact ΔNFR=0 zero — both independent of any scale coefficient. The
+  <code>nu_excitation</code> (=γ/π), <code>nu_0</code>, <code>coherence_gap</code> fields were DEAD (defined,
+  never consumed) and were removed; only <code>theta_valence</code> enters, as a positive
+  scale (the zero is robust to its value).</li>
+<li><strong>Number-theory primality</strong> (n prime ⟺ ΔNFR=0): each pressure term vanishes
+  individually for primes (Ω−1, τ−2, σ/n−(1+1/n) are all 0), so the result is
+  independent of the coefficients ζ, η, θ.</li>
+<li><strong>Gauge interaction regimes</strong>: <code>dominant_regime</code> is decided by relative
+  scores, NOT the γ/π threshold; <code>above_threshold</code> (which used γ/π) is metadata.</li>
+<li><strong>Riemann ζ-bridge buffer</strong> γ/π: a regularisation shift whose exact value is
+  immaterial. <strong>K_φ asymptotic exponent</strong> α≈2.76: a measured fit, unrelated.</li>
+</ul>
+<p>Real consequences corrected:
+- <code>PHASE_CURVATURE_ABS_THRESHOLD = φ×π ≈ 5.083</code> was a <strong>non-physical</strong> K_φ bound
+  (|K_φ| ≤ π by phase wrap, so any check using it was a no-op); it was dead code,
+  corrected to <code>0.9π ≈ 2.827</code>.
+- <code>STRUCTURAL_STABILITY_AND_DYNAMICS.md §2.2</code> still described the old γ_c
+  classification table; updated to the emergent z-score rule.
+- Removed the dead chemistry scale parameters; fixed a residual
+  <code>MATHEMATICAL_DYNAMICS_BASIS.md</code> |∇φ| claim. Full suite green (2196 passed).</p>
+<h3 id="emergent-redesign-gauge-regimes-chemistry-excitation-2026-06-21">Emergent redesign (gauge regimes + chemistry excitation, 2026-06-21)<a class="headerlink" href="#emergent-redesign-gauge-regimes-chemistry-excitation-2026-06-21" title="Permanent link">&para;</a></h3>
+<p>Completed the full emergent rework of the two studies whose conceptual base was
+the (now-refuted) four-constant overlay. Both were rebuilt to rest on STRUCTURE
+alone (measure-first; no value replaced by another magic value):</p>
+<ul>
+<li><strong>Gauge interaction-regime classification</strong> (<code>physics/gauge.py</code>): removed the
+  three overlay threshold constants <code>REGIME_DOMINANCE_THRESHOLD</code> (1/φ),
+  <code>REGIME_STRONG_THRESHOLD</code> (γ/π, "Kuramoto critical coupling in gauge") and the
+  unused <code>REGIME_SECONDARY_THRESHOLD</code> (γ/(π+γ)). The per-sector <code>above_threshold</code>
+  activity flags now use a single parameter-free criterion: a sector is <em>active</em>
+  when its normalised score exceeds the equipartition share <code>1/N_REGIMES = 0.25</code>
+  (the maximum-entropy reference, derived from the number of gauge sectors — the
+  four structural channels of the tetrad). Uniform across all four sectors; no
+  overlay constant. New public symbols <code>N_REGIMES</code>, <code>REGIME_ACTIVITY_SHARE</code>
+  replace the removed thresholds. <code>dominant_regime</code> (relative <code>max</code> of scores)
+  is unchanged — it was already robust. Measured: the criterion always flags the
+  dominant sector and additionally marks genuine co-active secondaries.</li>
+<li><strong>Emergent-chemistry valence scale</strong> (<code>physics/emergent_chemistry.py</code>): removed
+  the last free scale parameter (<code>theta_valence = 1/φ</code>) and the now-trivial
+  <code>EmergentChemistryParameters</code> dataclass. <code>ΔNFR_chem(Z)</code> is now the <strong>integer</strong>
+  structural distance of the outer shell to a closed configuration, in natural
+  units (one subshell step = 1) — the exact chemical analogue of primality
+  <code>ΔNFR(n)=0</code>. Noble gases (2,10,18,36,54,86) → ΔNFR=0; halogens/alkali → 1;
+  oxygen → 2; carbon → 4. Magic numbers and the octet are unchanged (they always
+  emerged from the integer (n+l) ordering and the exact zero).</li>
+<li><strong>Measured (chemistry):</strong> tested whether the (n+l) filling order could emerge
+  from the raw Laplacian spectrum of a concentric multi-shell ("onion") manifold.
+  It does NOT — Madelung ordering reflects electron-electron screening absent
+  from a free graph Laplacian. (n+l) is therefore documented honestly as an
+  integer excitation-count rule (total radial+angular quanta), not a spectral
+  derivation and not a constant correspondence.</li>
+<li>Tests updated (<code>test_gauge.py</code>: <code>TestRegimeActivityCriterion</code>, equipartition
+  consistency). Full suite green (2195 passed, 2 skipped).</li>
+</ul>
+<h2 id="0034-2026-06-17">[0.0.3.4] - 2026-06-17<a class="headerlink" href="#0034-2026-06-17" title="Permanent link">&para;</a></h2>
+<p>This release consolidates the emergent-geometry program, centralizes the
+operator/grammar/contract layer onto single canonical sources, opens three new
+TNFR-native Millennium-problem programs, and refactors the documentation to the
+current engine state. The 13-operator catalog, grammar U1–U6, and the nodal
+equation are unchanged; everything below either <em>measures</em> structure the nodal
+equation already contains or removes duplication. Full suite: 2043 passed, 2
+skipped.</p>
+<h3 id="symplectic-substrate-historical-entry-current-scope-corrected">Symplectic Substrate (historical entry; current scope corrected)<a class="headerlink" href="#symplectic-substrate-historical-entry-current-scope-corrected" title="Permanent link">&para;</a></h3>
+<p>This release introduced an auxiliary ambient <strong>symplectic phase space</strong>
+initialized from graph-field snapshots. Later audits established that its exact
+harmonic-flow identities do not derive the full nodal equation or certify the
+engine operators.</p>
+<ul>
+<li><strong>New module</strong>: <code>src/tnfr/physics/symplectic_substrate.py</code> — phase space
+  <code>P = ℝ^{4N}</code> with conjugate pairs <code>(K_φ, J_φ)</code> (geometric) and <code>(Φ_s, J_ΔNFR)</code>
+  (potential); symplectic 2-form <code>ω</code> (antisymmetric, non-degenerate, closed);
+  canonical Poisson brackets; <code>H_sub = ½Σ(K_φ²+J_φ²+Φ_s²+J_ΔNFR²)</code> equal to the
+  structural-energy snapshot exactly after adding the held-fixed gradient
+  background; Liouville <code>div(X_H)=0</code> for the specified harmonic flow. Each
+  engine operator would require a separate Jacobian pullback test.</li>
+<li><strong>Auxiliary model structure tower</strong> (each measured to machine precision):
+  Noether charges (time-translation → <code>H_sub</code>; geometric U(1) → <code>E_geo = ½Σ|Ψ|²</code>;
+  potential U(1) → <code>E_pot</code>); the compatible Hermitian / flat-Kähler triple
+  <code>(ω, J, g)</code> with <code>J = −ω</code> — so the <code>i</code> in <code>Ψ = K_φ + i·J_φ</code> <em>is</em> the complex
+  structure the substrate induces; complete integrability (action–angle,
+  Liouville–Arnold); Poincaré–Cartan integral invariants; Marsden–Weinstein
+  symplectic reduction; and the hidden <strong>U(2) polarization symmetry</strong> whose
+  SU(2) part supplies three conserved <strong>Stokes parameters</strong> on the per-node
+  Poincaré sphere (classical wave polarization — Stokes 1852 / Poincaré 1892 —
+  not isospin or qubits).</li>
+<li><strong>Historical threshold overlay</strong>: <code>derive_tetrad_threshold_values</code> reconstructs
+  φ, γ, and e from chosen mathematical identities. They are organizational
+  overlays rather than derived TNFR field scales; π remains the phase primitive.</li>
+<li><strong>Consolidated entry point</strong>: <code>verify_substrate_geometry(G)</code> bundles all
+  certificates into a <code>SubstrateGeometryReport</code>.</li>
+<li><strong>SDK</strong>: <code>Network.symplectic_substrate()</code> + <code>SymplecticReport</code>, in
+  <code>TNFR.analyze()</code>.</li>
+<li><strong>Honest scope</strong>: a flat, constant-coefficient linear Kähler backbone — a
+  consolidation of geometry already implied by <code>conservation.py</code> +
+  <code>variational.py</code>; it does not resolve any open program.</li>
+<li><strong>Demonstrations</strong>: <code>examples/08_emergent_geometry/98</code>, <code>106</code>, <code>114</code>.</li>
+</ul>
+<h3 id="emergent-geometry-structural-diffusion-transport-layer">Emergent Geometry — Structural Diffusion (transport layer)<a class="headerlink" href="#emergent-geometry-structural-diffusion-transport-layer" title="Permanent link">&para;</a></h3>
+<p>The EPI channel of the canonical ΔNFR is the random-walk graph Laplacian
+<code>−L_rw·EPI</code> (verified to residual ~1e-16), so the nodal equation is literally a
+discrete diffusion equation with diffusivity <code>νf</code>. From this single identity the
+engine measures, in TNFR's own variables, a tower of empirically-established
+transport phenomena.</p>
+<ul>
+<li><strong>New module</strong>: <code>src/tnfr/physics/structural_diffusion.py</code> — six transport
+  layers: diffusion/synchronization (Fourier/Fick/Kuramoto), overdamped drift
+  (<code>q̇ = νf·F</code>, Stokes/Einstein mobility — corrects the prior "Newton's second
+  law" reading: the bare first-order nodal equation is overdamped, νf is mobility
+  not inverse mass), discrete standing-wave modes (bounded-manifold Laplacian
+  eigenmodes), structural-stability dispersion relation (<code>σ_k = r − νf·λ_k</code>, the
+  spectral form of U2), random walk + effective resistance (Ohm/Kirchhoff), and
+  structural flow (current, Kirchhoff continuity, Ohm).</li>
+<li><strong>Overdamped-projection bridge</strong>: the nodal equation is the strong-damping
+  limit of the substrate wave <code>q̈ + γq̇ + Lq = 0</code> with <code>νf = 1/γ</code>; the γ-dial
+  spans diffusion (γ→∞) to standing waves (γ→0).</li>
+<li><strong>Honest scope</strong>: the EPI-channel ↔ Laplacian identity is exact; the full ΔNFR
+  is multi-channel; <code>λ_2</code> is purely topological and does not encode any canonical
+  constant (measured negative result).</li>
+<li><strong>Demonstrations</strong>: <code>examples/08_emergent_geometry/99</code>, <code>113</code>, <code>134</code>, <code>135</code>.</li>
+</ul>
+<h3 id="operator-contracts-energy-centralization-and-emergence">Operator Contracts &amp; Energy — Centralization and Emergence<a class="headerlink" href="#operator-contracts-energy-centralization-and-emergence" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Canonical contract layer</strong>: new <code>src/tnfr/operators/operator_contracts.py</code> —
+  the single source of truth for what each operator does to node state, anchored
+  to the direct <code>_op_*</code> effect (TNFR.pdf §2.2.1). Each <code>OperatorContract</code> records
+  the public English name, the <code>primary_channel</code> (one nodal-equation channel:
+  EPI / νf / θ / ΔNFR), the <code>scale</code> (NODE for twelve operators, NETWORK for the
+  U5 operator REMESH), and a verifiable postcondition. The proactive audit
+  (<code>audit_operator_contracts</code>), the reactive integrity monitor (<code>POSTCONDITIONS</code>),
+  and the introspection metadata now all derive from this spec — eliminating the
+  historical drift where scattered copies disagreed (e.g. AL claiming "positive
+  ΔNFR" though <code>_op_AL</code> only raises EPI; RA checked for EPI increase though it
+  preserves identity; VAL/NUL checked |EPI| though they scale νf).</li>
+<li><strong>Public English names</strong>: the structural-operator name (Emission, Reception, …)
+  is canonical at the public level; the glyph code (AL, EN, …) is the internal
+  symbol.</li>
+<li><strong>Energy/coherence are emergent</strong>: the structural candidate energy
+  <code>E = ½Σ(Φ_s²+|∇φ|²+K_φ²+J_φ²+J_ΔNFR²)</code> contains no EPI or νf term (measured:
+  scaling EPI or νf leaves E unchanged). The per-operator Lyapunov role in
+  <code>physics/lyapunov.py</code> is therefore re-derived from the canonical grammar U2 role
+  (<code>config.physics_derivation</code>), not from a hardcoded energy algebra:
+  stabilisers {IL, THOL}, destabilisers {OZ, ZHIR, VAL}, the rest neutral. The
+  form-channel operators (AL, EN, RA, REMESH) leave a same-snapshot evaluation
+  unchanged when all derived fields are held fixed because EPI is absent from
+  the formula. This is a dependency statement, not an isometry or a conservation
+  law after pressure and fields are recomputed.</li>
+<li><strong>Dual-lever clarified</strong>: the two levers are the two right-hand-side factors of
+  the nodal equation — νf (capacity) and ΔNFR (pressure); operators that write
+  the form EPI (the LHS) sit on neither lever.</li>
+<li><strong>Demonstrations</strong>: <code>examples/08_emergent_geometry/152</code>,
+  <code>examples/02_physics_regimes/115</code>.</li>
+</ul>
+<h3 id="grammar-single-canonical-source-formal-language-characterization">Grammar — Single Canonical Source &amp; Formal-Language Characterization<a class="headerlink" href="#grammar-single-canonical-source-formal-language-characterization" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Centralization</strong>: the operator-classification sets (generators, closures,
+  stabilizers, destabilizers, transformers, bifurcation triggers/handlers) are
+  derived once in <code>config.physics_derivation</code> and re-exported by
+  <code>operators/grammar_types.py</code>. Every grammar consumer — the U1–U6 validator,
+  the secondary sequence validator, grammar_dynamics, the runtime preconditions,
+  the error factory, and the operator metadata — now reads the single source.
+  Parallel hardcoded copies (including a secondary validator that wrongly listed
+  NUL as a U2 destabilizer) were removed and pinned by
+  <code>tests/operators/test_grammar_canonical_consistency.py</code>.</li>
+<li><strong>Canonical grammar spec</strong>: new <code>operators/grammar_canon.py</code> materializes the
+  U1–U6 role table, the five-type structural typology, and the canonical glyphic
+  macros (anchored to TNFR.pdf §2.3), with a self-consistency check.</li>
+<li><strong>Formal-language thread</strong> (characterization, demos only): the flat,
+  non-nested default-depth history projection is represented by 320 reachable
+  states and a 52-state minimal complete DFA. Its numerical growth radius is
+  <code>10.9560791442</code>; both U2 and U4b reduce the radius. The 944-element syntactic
+  monoid is aperiodic (index 4), so this constructed flat language is star-free
+  / first-order definable. Nested <code>THOL[...]</code> syntax requires a context-free,
+  stack-like model, while runtime U3 and reference-dependent U6 remain outside
+  the DFA. The Parry process is a selected maximum-entropy Markov policy on the
+  dominant component, not a TNFR physical equilibrium or grammar validator.</li>
+<li><strong>Demonstrations</strong>: <code>examples/08_emergent_geometry/139</code>–<code>152</code>.</li>
+</ul>
+<h3 id="number-theory-the-dual-lever">Number Theory &amp; the Dual-Lever<a class="headerlink" href="#number-theory-the-dual-lever" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Prime families as orbits on the zero-pressure set <code>{ΔNFR = 0}</code>; numbers as a
+  coupled network (Ω-graded centrality, primes as the transport periphery); the
+  nodal flow on numbers (primes as equilibria, not attractors); primality as
+  grammatical inertness; numbers as free-monoid words with the dual-lever as the
+  two additive gradings (count Ω → ΔNFR pressure, size log → νf capacity); the
+  capacity arm carries von Mangoldt and the prime-ladder Hamiltonian P14 is the
+  capacity-arm operator — locating the Riemann oscillatory obstruction on the
+  capacity axis the per-node substrate is blind to.</li>
+<li><strong>Honest scope</strong>: these restate classical multiplicative number theory through
+  the grammar/dual-lever lens; they close no open problem.</li>
+<li><strong>Demonstrations</strong>: <code>examples/07_number_theory/94</code>–<code>97</code>, <code>100</code>–<code>102</code>,
+  <code>116</code>, <code>146</code>–<code>149</code>.</li>
+</ul>
+<h3 id="millennium-problem-programs-tnfr-native-reformulations">Millennium Problem Programs (TNFR-native reformulations)<a class="headerlink" href="#millennium-problem-programs-tnfr-native-reformulations" title="Permanent link">&para;</a></h3>
+<p>Three new programs join Riemann / Navier–Stokes / Yang–Mills. <strong>None claims a
+solution</strong> — each carries an explicit honest-scope statement and classified
+obstruction.</p>
+<ul>
+<li><strong>P vs NP (PNP-1)</strong> — the nodal equation is a gradient flow, so verifying a
+  configuration's coherence is <code>O(|E|)</code> but synthesizing a globally coherent one
+  by relaxation traps in dissonance basins (measured global-optimum hit rate
+  drops monotonically with problem size on frustrated MAX-CUT). Mirrors P≠NP;
+  Branch B open. <code>theory/TNFR_P_VS_NP_RESEARCH_NOTES.md</code>,
+  <code>examples/09_millennium/109</code>.</li>
+<li><strong>Birch–Swinnerton-Dyer (BSD-1)</strong> — <code>a_p = p+1−#E(F_p)</code> as structural pressure;
+  the accumulated product reproduces the original 1965 empirical rank separation
+  by brute-force point counting. GL(1)→GL(2) gap open; Branch B.
+  <code>theory/TNFR_BSD_RESEARCH_NOTES.md</code>, <code>examples/09_millennium/110</code>.</li>
+<li><strong>Hodge (HC-1, scope corrected under Unreleased)</strong> — an auxiliary simplicial
+  complex reproduces the standard finite Hodge decomposition and expected Betti
+  numbers. Canonical <code>|∇φ|</code> and <code>K_φ</code> are node summaries, not oriented edge and
+  face cochains, so no tetrad cochain tower has been derived. The <code>(p,p)</code> and
+  algebraicity gap remains outside this baseline. <code>theory/TNFR_HODGE_RESEARCH_NOTES.md</code>,
+  <code>examples/09_millennium/111</code>.</li>
+</ul>
+<h3 id="documentation-examples-repository-hygiene">Documentation, Examples &amp; Repository Hygiene<a class="headerlink" href="#documentation-examples-repository-hygiene" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>README + core theory docs</strong> refactored to the current engine state: corrected
+  a real API note (operators are callable, there is no <code>.apply()</code>), added the
+  emergent-geometry section to <code>theory/FUNDAMENTAL_THEORY.md</code>, rewrote the energy
+  classification in <code>theory/STRUCTURAL_OPERATORS.md</code> /
+  <code>theory/STRUCTURAL_STABILITY_AND_DYNAMICS.md</code> to the emergent/grammar-U2 frame,
+  and updated counts.</li>
+<li><strong>Examples reorganized</strong> into 10 thematic subfolders (<code>01_foundations</code> …
+  <code>10_applications</code>), resolving the prior 77–86 numbering collision; each file
+  keeps a stable global number. Foundational examples refactored to the canonical
+  Kuramoto phase-synchrony physics.</li>
+<li><strong>Documentation-integrity pass</strong>: repaired all dangling example/source/<code>.md</code>
+  links repo-wide, pruned 9 obsolete <code>docs/</code> files, rebuilt the <code>theory/</code> hub,
+  and resynced the derived <code>.github/agents/my-agent.md</code> mirror.</li>
+<li><strong>Deep repo cleanup</strong>: removed foreign GraphQL scratch JSONs, a CUDA debug
+  script, a backup test, an empty dead CLI module, and a stale task tracker; fixed
+  a dangling <code>tnfr-validate</code> console-script entry point in <code>pyproject.toml</code>.</li>
+<li><strong>Registry consolidation + lint</strong>: the SDK fluent glyph→operator map and the
+  lyapunov operator table now derive from the canonical registries; cleared a
+  small set of dead-code lint findings.</li>
+<li><strong>SDK fixes</strong>: repaired silent no-ops in <code>auto_optimize</code> and
+  <code>evolve_grammar_aware</code>; added a proactive measured operator-contract fidelity
+  audit (<code>net.audit_operators()</code>).</li>
+</ul>
+<h3 id="research-program-milestones-yangmills-y1y5-remesh-n15-navierstokes-n16n17">Research Program Milestones (Yang–Mills Y1–Y5, REMESH-∞ N15, Navier–Stokes N16–N17)<a class="headerlink" href="#research-program-milestones-yangmills-y1y5-remesh-n15-navierstokes-n16n17" title="Permanent link">&para;</a></h3>
+<p>The Yang–Mills (Y1–Y5) and REMESH-∞ / Navier–Stokes (N15–N17) program
+milestones below were developed earlier in the cycle and are part of this
+release. Each carries an explicit honest-scope statement; none resolves a Clay
+Millennium Problem.</p>
+<h4 id="y5-tnfryangmills-closure-obstruction-classification">Y5 — TNFR–Yang–Mills Closure / Obstruction Classification<a class="headerlink" href="#y5-tnfryangmills-closure-obstruction-classification" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Verdict</strong>: <code>BRANCH_B_OBSTRUCTION_CLASSIFIED</code> — Y1–Y4 establish a finite TNFR <code>U(1)</code> structural gauge diagnostic surface, but Clay-strength closure requires a new canonical non-Abelian derivation plus a continuum / thermodynamic lower-bound theorem.</li>
+<li><strong>New API</strong>: <code>classify_yang_mills_closure()</code> in <code>src/tnfr/yang_mills/closure.py</code>, exported from <code>tnfr.yang_mills</code> with <code>YangMillsClosureReport</code>.</li>
+<li><strong>Finite TNFR branch</strong>: <code>A_FINITE_U1_DIAGNOSTIC_SURFACE</code> when Y4 reports stable finite positive gaps.</li>
+<li><strong>Clay-strength branch</strong>: <code>B_REQUIRES_NEW_CANONICAL_NONABELIAN_DERIVATION</code> because Y3 remains <code>OPEN_DERIVABILITY_GAP</code>.</li>
+<li><strong>Scope discipline</strong>: <code>clay_problem_resolved = False</code>; the obstruction is localized, not removed.</li>
+<li><strong>Validation</strong>: 4 new tests in <code>tests/physics/test_yang_mills_closure.py</code> cover Branch-B classification, report reuse, sampled collapse handling, and package-root import. Y1–Y5 focused run: <code>33 passed</code>.</li>
+<li><strong>Next target</strong>: Y6 / Branch-B derivation search for a TNFR-native non-Abelian connection and non-commuting generator algebra. If no derivation exists without external group labels, the programme should pause at Branch B.</li>
+</ul>
+<h4 id="y4-tnfryangmills-finite-scaling-diagnostic">Y4 — TNFR–Yang–Mills Finite Scaling Diagnostic<a class="headerlink" href="#y4-tnfryangmills-finite-scaling-diagnostic" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Verdict surface</strong>: <code>FINITE_SCALING_EVIDENCE</code> or <code>GAP_COLLAPSE_OBSERVED</code> depending on sampled finite graph families. This is a finite diagnostic only, not a continuum theorem.</li>
+<li><strong>New API</strong>: <code>run_finite_scaling_study()</code> in <code>src/tnfr/yang_mills/scaling.py</code>, exported from <code>tnfr.yang_mills</code> with <code>FiniteScalingPoint</code> and <code>FiniteScalingReport</code>.</li>
+<li><strong>Scaling coordinate (historical name corrected under Unreleased)</strong>: graph node count <code>n</code> under fixed single-snapshot magnitude ratios <code>ρ_U6 = max_i |Φ_s(i)|/(π/2)</code>; this does not assess U6 drift. Grouped reports fit finite log-log slopes of mean gap versus <code>n</code>.</li>
+<li><strong>Scope discipline</strong>: Y4 runs while YMG-4 remains open. Therefore finite positive scaling evidence cannot be promoted to a Clay-strength Yang–Mills mass-gap claim.</li>
+<li><strong>Validation</strong>: 6 new tests in <code>tests/physics/test_yang_mills_scaling.py</code> cover report shape/scope, grouped finite scaling, reproducibility, sampled collapse classification, invalid input rejection, and package-root import. Y1–Y4 focused run: <code>29 passed</code>.</li>
+<li><strong>Next target</strong>: Y5 closure / obstruction classification, likely Branch B unless a later TNFR-native non-Abelian connection and generator algebra are derived.</li>
+</ul>
+<h4 id="y3-tnfryangmills-non-abelian-derivability-audit">Y3 — TNFR–Yang–Mills Non-Abelian Derivability Audit<a class="headerlink" href="#y3-tnfryangmills-non-abelian-derivability-audit" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Verdict</strong>: <code>OPEN_DERIVABILITY_GAP</code> — audited candidate routes for deriving a non-Abelian / multi-channel gauge sector from TNFR-internal data only; no route is promoted to canonical status.</li>
+<li><strong>New API</strong>: <code>audit_nonabelian_derivability()</code> in <code>src/tnfr/yang_mills/derivability.py</code>, exported from <code>tnfr.yang_mills</code> with <code>NonAbelianCandidateAudit</code> and <code>NonAbelianDerivabilityReport</code>.</li>
+<li><strong>Routes audited</strong>: U5 nested-EPI multiplets, THOL/REMESH operator-history internal spaces, and graph cycle-basis bundles.</li>
+<li><strong>Obstruction</strong>: current canonical <code>Ψ = K_φ + i·J_φ</code> gauge structure supplies a scalar local <code>U(1)</code> connection. Nested EPI or operator-history data do not yet derive component-mixing parallel transport or non-commuting generator algebra; cycle-basis routes require non-canonical basis/orientation selection.</li>
+<li><strong>Validation</strong>: 5 new tests in <code>tests/physics/test_yang_mills_derivability.py</code> cover baseline <code>U(1)</code> confirmation, nested-EPI obstruction, cycle-bundle rejection, unsupported route errors, and package-root import. Y1+Y2+Y3 focused run: <code>23 passed</code>.</li>
+<li><strong>Open boundary</strong>: YMG-4 remains open. Y4 scaling can proceed only as a conditional finite diagnostic; it cannot become a Clay-strength claim while non-Abelian derivability is unresolved.</li>
+</ul>
+<h4 id="y2-tnfryangmills-u6-confinement-sweep">Y2 — TNFR–Yang–Mills U6 Confinement Sweep<a class="headerlink" href="#y2-tnfryangmills-u6-confinement-sweep" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Verdict</strong>: <code>EMPIRICAL_FINITE_GRAPH_ONLY</code> — finite sweep surface created for testing how the Y1 structural gauge gap behaves across two groups of the single-snapshot potential-magnitude coordinate; the original U6 wording was corrected under Unreleased.</li>
+<li><strong>New API</strong>: <code>run_u6_confinement_sweep()</code> in <code>src/tnfr/yang_mills/u6_sweep.py</code>, exported from <code>tnfr.yang_mills</code>.</li>
+<li><strong>Sweep coordinate</strong>: legacy <code>ρ_U6 = max_i |Φ_s(i)|/(π/2)</code>; values below one mean below that magnitude scale, not U6-confined. A U6 drift verdict requires a reference snapshot.</li>
+<li><strong>Telemetry recorded</strong>: gap statistics, self-adjointness, seeded local-U(1)
+  spectral invariance, pure-gauge cycle-closure residuals, applicable snapshot
+  checks, legacy magnitude ratios, and finite-scope metadata. The cycle residual
+  is numerical error, not curvature activity.</li>
+<li><strong>Validation</strong>: 5 new tests in <code>tests/physics/test_yang_mills_u6_sweep.py</code> cover report shape/scope, U6 target tracking, gap contracts, reproducibility, invalid input rejection, and package-root import. Y1+Y2 focused run: <code>18 passed</code>.</li>
+<li><strong>Open boundary</strong>: Y2 does not prove a U6 lower-bound theorem and does not address non-Abelian derivability (YMG-4) or continuum scaling (YMG-5). Next target: Y3 derivability audit.</li>
+</ul>
+<h4 id="y1-tnfryangmills-finite-structural-gauge-gap-diagnostic">Y1 — TNFR–Yang–Mills Finite Structural Gauge Gap Diagnostic<a class="headerlink" href="#y1-tnfryangmills-finite-structural-gauge-gap-diagnostic" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Verdict</strong>: <code>DIAGNOSTIC_SURFACE_CREATED</code> — first TNFR-native Yang–Mills / structural mass-gap attack surface implemented as a finite-graph diagnostic, not a Clay-strength proof.</li>
+<li><strong>New package</strong>: <code>src/tnfr/yang_mills/</code> with <code>build_structural_gauge_graph()</code>, <code>build_structural_gauge_gap_operator()</code>, and <code>compute_structural_gauge_gap()</code>.</li>
+<li><strong>Operator (current notation)</strong>: <code>H_structural = L_A + V_F + V_Phi</code>, where
+  <code>A=d(arg Psi)</code> makes <code>L_A</code> unitarily equivalent to the ordinary weighted graph
+  Laplacian, <code>V_F</code> is analytically zero apart from numerical cycle-closure
+  residuals, and <code>V_Phi</code> is the selected single-snapshot magnitude penalty
+  <code>Phi_s²/(pi/2)²</code>; it is not a U6 test.</li>
+<li><strong>TNFR scope discipline</strong>: the reported number is the spectral gap of this
+  selected finite matrix. It is not evidence of dynamical gauge curvature,
+  confinement, a physical mass, or a continuum Yang–Mills mass gap.</li>
+<li><strong>Validation</strong>: 13 new tests in <code>tests/physics/test_yang_mills_structural_gap.py</code> cover graph construction, self-adjointness, non-negative finite gap reporting, seeded local-U(1) spectral invariance, reproducibility, package imports, and no EPI/phase mutation. Focused run: <code>13 passed</code>.</li>
+<li><strong>Open boundaries</strong>: non-Abelian derivability (YMG-4) and continuum / thermodynamic scaling (YMG-5) remain open.</li>
+<li><strong>Documentation</strong>: <code>theory/TNFR_YANG_MILLS_RESEARCH_NOTES.md</code> records the Y-series gap ledger and updates the next target to Y2 (U6 confinement sweep).</li>
+</ul>
+<h4 id="n17-a-u3u5-k41-analytical-cascade-locality-analytical_consistent_conditional">N17-A — U3+U5 → K41: Analytical Cascade Locality (ANALYTICAL_CONSISTENT_CONDITIONAL)<a class="headerlink" href="#n17-a-u3u5-k41-analytical-cascade-locality-analytical_consistent_conditional" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Verdict</strong>: <code>ANALYTICAL_CONSISTENT_CONDITIONAL</code> — K41 <span class="arithmatex">\(k^{-5/3}\)</span> spectrum derived conditionally from TNFR grammar rules U2+U3+U5+CDC; algebraically closed given the Cascade Development Condition.</li>
+<li><strong>Lemma U5-SS</strong> (U5 + U2 → scale self-similarity): U5-uniformity (same canonical operators and constants at every hierarchy level) + U2 force <span class="arithmatex">\(u_\ell = C(\varepsilon r_\ell)^{1/3}\)</span> in the inertial range. The K41 scaling emerges from grammar structure (U5 collapses the dimensionless ratio to a level-independent constant), not from external dimensional analysis.</li>
+<li><strong>Lemma U3-CL</strong> (U3 → cascade locality, conditional): Under Lemma U5-SS, U3 (phase-gated coupling, <span class="arithmatex">\(|\phi_i - \phi_j| \le \Delta\phi_{\max}\)</span>) blocks all inter-level interactions <strong>if and only if</strong> the Cascade Development Condition (CDC) holds → constant energy flux <span class="arithmatex">\(\Pi_\ell = u_\ell^3 / r_\ell = \varepsilon\)</span> across scales.</li>
+<li><strong>Theorem</strong> (U2 + U3 + U5 + CDC → K41): <span class="arithmatex">\(E(k_\ell) \sim \varepsilon^{2/3} k_\ell^{-5/3}\)</span> — proof: <span class="arithmatex">\(E_\ell \sim u_\ell^2 \sim \varepsilon^{2/3} r_\ell^{2/3}\)</span>, <span class="arithmatex">\(E(k_\ell) = E_\ell / \Delta k_\ell\)</span> with <span class="arithmatex">\(\Delta k_\ell \sim k_\ell\)</span> (log bands) → <span class="arithmatex">\(E(k_\ell) \sim \varepsilon^{2/3} k_\ell^{-5/3}\)</span>. □</li>
+<li><strong>CDC (irreducible gap)</strong>: CDC (adjacent cascade levels have <span class="arithmatex">\(|\phi_{\ell,i} - \phi_{\ell+1,j}| \ge \Delta\phi_{\max}\)</span> for all <span class="arithmatex">\(i,j\)</span>) is not derivable from U3, U5, or the nodal equation. It is the K41 locality hypothesis restated in TNFR language, and the structural analogue of <span class="arithmatex">\(S(T) = (1/\pi)\arg\zeta(\tfrac12 + iT)\)</span> in the Riemann programme — reachable only by a sufficiently developed turbulent cascade, not from the canonical operator catalog alone.</li>
+<li><strong>N17-A does not close NS-G1..G4</strong> — those gaps concern continuum-limit, uniform bounds, BKM criterion, and vortex stretching; not cascade locality.</li>
+<li><strong>N17-B pre-registered</strong> (deferred): empirical energy spectrum via <code>energy_spectrum_3d()</code> (to be implemented in <code>src/tnfr/navier_stokes/operator.py</code>), n ∈ {32, 48}, ν ∈ {0.01, 0.005}, T = 2.0. Expected verdict: <code>STEEPER_THAN_K41</code> (CDC not satisfied at Re_eff ≤ 500).</li>
+<li><strong>Documentation</strong>: <code>theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md</code> §20 (full lemmas, theorem, CDC gap analysis, verdict table, N17-B pre-registration spec).</li>
+</ul>
+<h4 id="n16-ns-g5-closure-2d-embedding-lemma">N16 — NS-G5 Closure: 2D-Embedding Lemma<a class="headerlink" href="#n16-ns-g5-closure-2d-embedding-lemma" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Verdict</strong>: NS-G5 <strong>CLOSED</strong> at the discrete-operator level via the <strong>2D-Embedding Lemma (Theorem NS-G5-TNFR)</strong>.</li>
+<li><strong>Algebraic proof</strong> (three steps using existing <code>TNFRNavierStokesOperator</code> methods on z-independent u = (u₀(x,y), u₁(x,y), 0)):</li>
+<li><code>vorticity_3d</code>: ω₀ = ω₁ = 0, ω₂ = ∂_x(v) − ∂_y(u)</li>
+<li><code>vortex_stretching_field</code>: S_a = ω₀·∂_x(u_a) + ω₁·∂_y(u_a) + ω₂·∂_z(u_a) = ω₂·0 = 0 for all a</li>
+<li><code>stretching_production</code>: = 0.0 exactly in IEEE 754</li>
+<li><strong>TNFR reading</strong>: z-channel decoupling → no cross-channel ΔNFR → enstrophy ≤ viscous dissipation (monotonically non-increasing) → discrete TNFR analogue of 2D NS global regularity.</li>
+<li><strong>Contrast with 3D</strong>: ∂_z(u_a) ≠ 0 activates cross-channel ΔNFR coupling → stretching production generically positive → U2 (convergence/boundedness) is not guaranteed → vortex stretching amplification is structurally active.</li>
+<li><strong>Empirical corroborator</strong>: <code>examples/85_navier_stokes_dimensional_asymmetry.py</code> — z-independence → <code>stretching_production</code> ≈ 0 at machine precision across all tested configurations (commit <code>1fac358b</code>).</li>
+<li><strong>Scope</strong>: NS-G5 closure does NOT affect NS-G1..G4 and does NOT address the Clay Millennium Problem (3D global regularity).</li>
+<li><strong>Documentation</strong>: <code>theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md</code> §19.</li>
+</ul>
+<h4 id="n15-remesh-fixed-delay-surrogate-corrected-historical-record">N15 REMESH fixed-delay surrogate — corrected historical record<a class="headerlink" href="#n15-remesh-fixed-delay-surrogate-corrected-historical-record" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Historical milestones</strong>: commits <code>a1f298fd</code>, <code>badac156</code>, and <code>48b0574a</code>
+  introduced a history-space projection, projected charge/energy claims, and
+  spectral comparisons under the label “REMESH-∞ closure.” The corrected
+  analysis is maintained in
+  <a href="../theory/REMESH_INFINITY_DERIVATION/">theory/REMESH_INFINITY_DERIVATION.md</a>
+  §§1–23.</li>
+<li><strong>Valid restricted result</strong>: on a finite cyclic history window, the unclipped
+  fixed-coefficient filter
+  <span class="arithmatex">\(F=\beta I+\gamma S^{\tau_l}+\delta S^{\tau_g}\)</span> is a normal contraction for
+  <span class="arithmatex">\(0&lt;\alpha&lt;1\)</span>. Its Cesàro averages converge to the orthogonal projection onto
+  <span class="arithmatex">\(\ker(I-F)\)</span>. The common fixed modes have period
+  <span class="arithmatex">\(\gcd(\tau_l,\tau_g)\)</span>; the former <code>lcm</code> lattice statement was incorrect.</li>
+<li><strong>Runtime boundary</strong>: <code>apply_network_remesh</code> is history-gated, configurable,
+  structurally clipped, and uses a snapshot whose location changes with
+  <span class="arithmatex">\(\tau_g\)</span>. The finite cyclic result does not establish its literal
+  <span class="arithmatex">\(\tau_g\to\infty\)</span> limit.</li>
+<li><strong>Invariant correction</strong>: convex EPI mixing is not an isometry. Orthogonal
+  projection contracts the surrogate history norm, but it neither proves
+  conservation of TNFR structural charge nor monotonicity of the structural
+  candidate energy. The former exact-conservation and universal <span class="arithmatex">\(O(1/n)\)</span> rate
+  claims are superseded.</li>
+<li><strong>Registry scope</strong>: the surrogate projection can be computed without adding
+  an implementation registry entry. This does not prove that the 13 registered
+  operators exhaust all admissible TNFR transformations; catalog completeness
+  remains open.</li>
+<li><strong>External-program scope</strong>: the finite surrogate does not advance RH,
+  Navier–Stokes regularity, K41, or an RMT correspondence. Historical branch
+  labels now apply only to comparisons made inside that declared surrogate.</li>
+</ul>
+<h2 id="0033-2026-03-07">[0.0.3.3] - 2026-03-07<a class="headerlink" href="#0033-2026-03-07" title="Permanent link">&para;</a></h2>
+<h3 id="documentation-audit-sessions-1-4">Documentation Audit (Sessions 1-4)<a class="headerlink" href="#documentation-audit-sessions-1-4" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Comprehensive tone audit</strong>: Removed speculative/grandiose language across 25+ files</li>
+<li><strong>TNFR_RIEMANN_RESEARCH_NOTES.md</strong>: Reduced from 2679 to 1499 lines (removed unfounded claims)</li>
+<li><strong>AGENTS.md</strong>: Fixed 'inevitability' → 'derivation strength', updated conservation test count (62 → 88), verified all 40+ cross-reference links</li>
+<li><strong>Synced .github/agents/my-agent.md</strong> with AGENTS.md corrections</li>
+<li><strong>Updated test counts</strong> to 1,655 across 8 files</li>
+<li><strong>Removed orphaned file</strong>: src/train_gmx_optimizer.py</li>
+<li><strong>Fixed contradictions</strong> between AGENTS.md and theory/ documents</li>
+<li><strong>Validated</strong>: 1653 passed, 2 skipped</li>
+</ul>
+<h2 id="0032-2026-03-06">[0.0.3.2] - 2026-03-06<a class="headerlink" href="#0032-2026-03-06" title="Permanent link">&para;</a></h2>
+<h3 id="documentation-consistency-fixes">Documentation &amp; Consistency Fixes<a class="headerlink" href="#documentation-consistency-fixes" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Corrected false Γ(4/3)/Γ(1/3) derivation</strong> in MINIMAL_STRUCTURAL_DEGREES.md and FUNDAMENTAL_THEORY.md (Γ(4/3)/Γ(1/3) = 1/3, not 0.7711)</li>
+<li><strong>Synchronized .github/agents/my-agent.md</strong> with AGENTS.md (K_φ threshold, MIN_BUSINESS_COHERENCE, THOL_MIN values)</li>
+<li><strong>Fixed CHANGELOG version</strong> to match pyproject.toml (0.0.3.2)</li>
+<li><strong>Fixed MIN_BUSINESS_COHERENCE precision</strong> in ARCHITECTURE.md and CONTRIBUTING.md (0.751 → 0.7506)</li>
+<li><strong>Resolved phantom docs/TNFR_FORCES_EMERGENCE.md</strong> references across 8+ files</li>
+<li><strong>Removed dead code</strong> src/tnfr/config.py (shadowed by config/ package)</li>
+<li><strong>Cleaned unused imports</strong> in sdk/simple.py</li>
+</ul>
+<h2 id="003-2026-03-05">[0.0.3] - 2026-03-05<a class="headerlink" href="#003-2026-03-05" title="Permanent link">&para;</a></h2>
+<h3 id="structural-conservation-theorem">Structural Conservation Theorem<a class="headerlink" href="#structural-conservation-theorem" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>conservation.py</strong>: Introduced a finite-trajectory structural-balance residual
+  and Noether-like vocabulary. Later audits established that U1-U6 do not imply
+  a vanishing residual or a universal conservation theorem.</li>
+<li>Added charge-density/current, structural-energy, Ward-residual, stability-policy,
+  and spectral diagnostics; these names do not by themselves establish conserved
+  charges, Noether hypotheses, or Lyapunov monotonicity.</li>
+<li>Two-sector structure: Potential (Φ_s ↔ J_ΔNFR) and Geometric (K_φ ↔ J_φ) coupled through Ψ = K_φ + i·J_φ</li>
+<li>62 validation tests, charge drift &lt; 0.03% across topologies</li>
+</ul>
+<h3 id="dissipative-conservation">Dissipative Conservation<a class="headerlink" href="#dissipative-conservation" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>dissipative_conservation.py</strong>: GPU-accelerated dissipative conservation analysis with PyTorch backend</li>
+<li>Phase field computation, dissipation rate tracking, and energy budget monitoring</li>
+</ul>
+<h3 id="closed-loop-integrity-monitor">Closed-Loop Integrity Monitor<a class="headerlink" href="#closed-loop-integrity-monitor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>integrity.py</strong>: <code>StructuralIntegrityMonitor</code> with complete postconditions for all 13 canonical operators</li>
+<li>Each operator (AL, EN, IL, OZ, UM, RA, SHA, VAL, NUL, THOL, ZHIR, NAV, REMESH) has verified pre/postcondition contracts</li>
+<li>Automatic violation detection and reporting</li>
+</ul>
+<h3 id="grammar-aware-dynamics">Grammar-Aware Dynamics<a class="headerlink" href="#grammar-aware-dynamics" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>grammar_dynamics.py</strong>: Bridge between grammar validation (U1-U6) and dynamic operator selection</li>
+<li>Incremental U1-U6 checks: <code>validate_candidate()</code>, <code>filter_candidates()</code>, <code>suggest_alternative()</code>, <code>enforce_grammar_on_glyph()</code></li>
+<li>Priority-based operator substitution with fallback logic</li>
+<li><strong>grammar_application.py</strong>: Pre-validation in <code>apply_glyph_with_grammar()</code> for grammar enforcement before operator application</li>
+<li><strong>selectors.py</strong>: <code>_soft_grammar_prefilter()</code> wired with grammar_dynamics for operator filtering</li>
+</ul>
+<h3 id="simple-sdk-research-grade-access">Simple SDK — Research-Grade Access<a class="headerlink" href="#simple-sdk-research-grade-access" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>simple.py</strong>: Upgraded with full Structural Field Tetrad, conservation laws, and unified telemetry access</li>
+<li><strong>TetradSnapshot</strong> dataclass: phi_s, grad_phi, k_phi, xi_c, j_phi, j_dnfr with <code>is_safe()</code> and <code>summary()</code></li>
+<li><strong>ConservationReport</strong> dataclass: noether_charge, energy, lyapunov_stable, lyapunov_derivative, conservation_quality with <code>summary()</code></li>
+<li><strong>10 new Network methods</strong>: <code>tetrad()</code>, <code>fields()</code>, <code>conservation()</code>, <code>telemetry()</code>, <code>tensor_invariants()</code>, <code>emergent_fields()</code>, <code>evolve_grammar_aware()</code>, <code>integrity_check()</code>, upgraded <code>results()</code> and <code>info()</code></li>
+<li><strong>TNFR.analyze()</strong>: One-shot comprehensive analysis (coherence, tetrad, conservation, tensor invariants, emergent fields, integrity)</li>
+<li>Feature-gated imports: <code>_HAS_FIELDS</code>, <code>_HAS_CONSERVATION</code>, <code>_HAS_INTEGRITY</code>, <code>_HAS_GRAMMAR_DYNAMICS</code></li>
+<li>29 new tests in <code>tests/sdk/test_simple_advanced.py</code></li>
+</ul>
+<h3 id="shared-test-infrastructure">Shared Test Infrastructure<a class="headerlink" href="#shared-test-infrastructure" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>tests/conftest.py</strong>: Centralized test fixtures (<code>make_ring_graph</code>, <code>make_node_data</code>, <code>ring3</code>, <code>ring5</code>, <code>small_graph</code>)</li>
+<li>DRY reduction across 16+ test files that previously duplicated <code>_make_graph</code> helpers</li>
+</ul>
+<h3 id="code-quality">Code Quality<a class="headerlink" href="#code-quality" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fixed bare <code>except:</code> clauses in grammar_dynamics.py (now <code>except Exception:</code>)</li>
+<li>NAV bypass fix for grammar validation edge case</li>
+<li>Redundancy elimination across physics helpers</li>
+<li>Rich operator postconditions (13/13 coverage)</li>
+</ul>
+<h3 id="cross-codebase-constant-unification-round-1">Cross-Codebase Constant Unification (Round 1)<a class="headerlink" href="#cross-codebase-constant-unification-round-1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>grammar_types.py</strong>: Eliminated duplicate operator sets (single canonical definition)</li>
+<li><strong>THOL_MIN_COLLECTIVE_COHERENCE</strong>: Unified to canonical 0.2413 (was 0.3)</li>
+<li><strong>MIN_BUSINESS_COHERENCE</strong>: Centralized to canonical formula (e×φ)/(π+e) ≈ 0.7506</li>
+<li><strong>health_analyzer.py / self_organization.py</strong>: Aligned fallback values to canonical</li>
+</ul>
+<h3 id="phase-gradient-threshold-unification">Phase Gradient Threshold Unification<a class="headerlink" href="#phase-gradient-threshold-unification" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Canonical value</strong>: γ/π ≈ 0.1837 (Kuramoto critical coupling in TNFR units)</li>
+<li><strong>Unified across 9 code files</strong>: Replaced competing values (0.2904, 0.2886, 0.2915, 0.38) with single canonical derivation</li>
+<li><strong>Updated 8 documentation files</strong>: Consistent threshold references throughout</li>
+</ul>
+<h3 id="cross-codebase-constant-unification-round-2">Cross-Codebase Constant Unification (Round 2)<a class="headerlink" href="#cross-codebase-constant-unification-round-2" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>compute_structural_potential_field</strong>: Added alias in physics/fields.py (was silently missing, imported in 2 files)</li>
+<li><strong>SHA_VF_FACTOR comment</strong>: Fixed from ≈ 0.8476 to correct ≈ 0.9015 in defaults_core.py</li>
+<li><strong>Operator fallback values</strong>: SHA (0.85→0.9015), NUL (0.85→0.9015), VAL (1.05→1.0676) aligned to canonical</li>
+<li><strong>K_φ hotspot formula</strong>: Fixed in conservation.py from 2π/√5 ≈ 2.8099 to canonical 0.9×π ≈ 2.8274</li>
+<li><strong>grammar_core.py K_φ default</strong>: Fixed from 3.0 to canonical 2.8274</li>
+<li><strong>telemetry/constants.py</strong>: Removed dead try/except ImportError fallback; direct canonical imports</li>
+<li><strong>config.py</strong>: Structural field thresholds now derive from constants.canonical (was hardcoded)</li>
+<li><strong>pyproject.toml</strong>: Added mpmath to core dependencies (was required but unlisted)</li>
+<li><strong>Documentation sync</strong>: Updated 7 doc files with correct threshold values and test counts</li>
+</ul>
+<h3 id="test-suite">Test Suite<a class="headerlink" href="#test-suite" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>1,655 tests</strong> (1,646 passing, 9 skipped), 0 failing</li>
+<li>Coverage spans operators, physics, dynamics, grammar, conservation, integrity, SDK, and factorization</li>
+</ul>
+<h2 id="002-2025-11-29">[0.0.2] - 2025-11-29<a class="headerlink" href="#002-2025-11-29" title="Permanent link">&para;</a></h2>
+<h3 id="tnfr-development-doctrine-establishment">TNFR Development Doctrine Establishment<a class="headerlink" href="#tnfr-development-doctrine-establishment" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Foundational Principle</strong>: Added TNFR Development Doctrine as core methodological commitment</li>
+<li><strong>Theoretical Integrity</strong>: Commitment to follow mathematics objectively from nodal equation ∂EPI/∂t = νf · ΔNFR(t)</li>
+<li><strong>Scientific Independence</strong>: Defend conclusions emerging rigorously from TNFR principles regardless of external paradigm alignment</li>
+<li><strong>Validation Criteria</strong>: Established 4-point validation framework (Derivable, Testable, Reproducible, Coherent)</li>
+</ul>
+<h3 id="complete-framework-expansion">Complete Framework Expansion<a class="headerlink" href="#complete-framework-expansion" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>29 New Examples</strong>: Comprehensive examples (11-39) covering physics, biology, cosmology, consciousness studies</li>
+<li><strong>TNFR-Riemann Program</strong>: Complete theoretical framework connecting discrete operators to Riemann Hypothesis</li>
+<li><strong>Advanced Physics Modules</strong>: Classical mechanics, quantum mechanics, symplectic integration implementations</li>
+<li><strong>Extensive Theory Documentation</strong>: 25+ specialized theoretical documents in theory/ directory</li>
+</ul>
+<h3 id="documentation-academic-modernization">Documentation Academic Modernization<a class="headerlink" href="#documentation-academic-modernization" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Unified Academic Tone</strong>: Systematic elimination of grandilocuent language across all documentation</li>
+<li><strong>README Gateway</strong>: Transformed main README into coherent documentation entry point</li>
+<li><strong>Consistent Terminology</strong>: Standardized "Primary theoretical reference" replacing "SINGLE SOURCE OF TRUTH"</li>
+<li><strong>Professional Presentation</strong>: Enhanced credibility through formal academic language standards</li>
+</ul>
+<h3 id="test-suite-optimization">Test Suite Optimization<a class="headerlink" href="#test-suite-optimization" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Major Cleanup</strong>: Removed 58 obsolete test files (82 → ~30 files)</li>
+<li><strong>100% Pass Rate</strong>: Achieved 173 passing, 7 skipped, 0 failing tests</li>
+<li><strong>Focused Validation</strong>: Retained only tests validating TNFR theoretical foundations</li>
+<li><strong>Core Coverage</strong>: Mathematics, operators, physics, validation maintained</li>
+</ul>
+<h3 id="technical-enhancements">Technical Enhancements<a class="headerlink" href="#technical-enhancements" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Enhanced N-body Dynamics</strong>: Improved TNFR integration with classical mechanics</li>
+<li><strong>Riemann Operator</strong>: Complete implementation with eigenvalue analysis capabilities</li>
+<li><strong>Type System</strong>: Enhanced type definitions and structural validation</li>
+<li><strong>Code Quality</strong>: Significant cleanup removing outdated components</li>
+</ul>
+<h2 id="970-2025-11-29">[9.7.0] - 2025-11-29<a class="headerlink" href="#970-2025-11-29" title="Permanent link">&para;</a></h2>
+<h3 id="major-theoretical-enhancements">Major Theoretical Enhancements<a class="headerlink" href="#major-theoretical-enhancements" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Universal Tetrahedral Correspondence</strong>: Complete mathematical framework establishing exact mapping between four universal constants (φ, γ, π, e) and four structural fields (Φ_s, |∇φ|, K_φ, ξ_C) <em>(later superseded — see the φ/γ/e purge under [Unreleased]: only π is a genuine structural scale)</em></li>
+<li><strong>Unified Field Framework</strong>: Mathematical unification discovering complex geometric field Ψ = K_φ + i·J_φ with emergent invariants</li>
+<li><strong>Self-Optimizing Engine</strong>: Self-optimization capabilities with unified field telemetry for automated structural optimization</li>
+<li><strong>Complete Academic Documentation</strong>: Comprehensive conversion to formal academic tone across entire documentation ecosystem</li>
+</ul>
+<h3 id="canonical-invariants-optimization">Canonical Invariants Optimization<a class="headerlink" href="#canonical-invariants-optimization" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Consolidated from 10 to 6 canonical invariants based on mathematical derivation from nodal equation</li>
+<li>Optimized invariants: Nodal Equation Integrity, Phase-Coherent Coupling, Multi-Scale Fractality, Grammar Compliance, Structural Metrology, Reproducible Dynamics</li>
+<li>Enhanced theoretical consistency and reduced redundancy</li>
+</ul>
+<h3 id="documentation-modernization">Documentation Modernization<a class="headerlink" href="#documentation-modernization" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>AGENTS.md</strong>: Complete academic conversion maintaining single source of truth status</li>
+<li><strong>README.md</strong>: Restructured with new Getting Started section and clear learning paths</li>
+<li><strong>GLOSSARY.md</strong>: Comprehensive expansion with Universal Tetrahedral Correspondence coverage</li>
+<li>Eliminated promotional language and emojis across entire ecosystem</li>
+<li>Updated all version references to 9.7.0</li>
+</ul>
+<h3 id="structural-field-tetrad">Structural Field Tetrad<a class="headerlink" href="#structural-field-tetrad" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Complete Mathematical Foundations</strong>: All four canonical fields now have rigorous mathematical derivations</li>
+<li><strong>CANONICAL Status</strong>: Φ_s, |∇φ|, K_φ, ξ_C all promoted to canonical status with theoretical validation</li>
+<li><strong>Unified Complex Geometry</strong>: Integration of curvature and transport via complex field Ψ</li>
+</ul>
+<h3 id="development-infrastructure">Development Infrastructure<a class="headerlink" href="#development-infrastructure" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Updated pyproject.toml to v9.7.0 with current dependency structure</li>
+<li>Modernized CONTRIBUTING.md with academic tone and current 6 invariants</li>
+<li>Enhanced TESTING.md with updated invariant validation framework</li>
+<li>Complete English-only policy implementation</li>
+</ul>
+<h2 id="910-2025-11-14">[9.1.0] - 2025-11-14<a class="headerlink" href="#910-2025-11-14" title="Permanent link">&para;</a></h2>
+<h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Phase 3 structural instrumentation:</li>
+<li><code>run_structural_validation</code> aggregator (grammar U1-U3 + field thresholds Φ_s, |∇φ|, K_φ, ξ_C, optional ΔΦ_s drift).</li>
+<li><code>compute_structural_health</code> with risk levels and recommendations.</li>
+<li><code>TelemetryEmitter</code> integration example (<code>examples/structural_health_demo.py</code>).</li>
+<li>Performance guardrails: <code>PerformanceRegistry</code>, <code>perf_guard</code>, <code>compare_overhead</code>.</li>
+<li>CLI: <code>scripts/structural_health_report.py</code> (on-demand health summaries).</li>
+<li>Docs: README Phase 3 section, CONTRIBUTING instrumentation notes, <code>docs/STRUCTURAL_HEALTH.md</code>.</li>
+<li>Glyph-aware grammar error factory (operator glyph → canonical name mapping).</li>
+</ul>
+<h3 id="tests">Tests<a class="headerlink" href="#tests" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Added unit tests for validation, health, grammar error factory, telemetry emitter, performance guardrails.</li>
+</ul>
+<h3 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Validation instrumentation overhead ~5.8% (moderate workload) below 8% guardrail.</li>
+</ul>
+<h3 id="internal">Internal<a class="headerlink" href="#internal" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Optional <code>perf_registry</code> parameter in <code>run_structural_validation</code> (read-only timing).</li>
+<li>Canonical operator registry frozen (removed dynamic auto-registration, cache
+  invalidation, metaclass telemetry, reload script). Attempting dynamic
+  registration now raises. Ensures strict adherence to unified grammar (U1-U4)
+  and prevents non-canonical transformations.</li>
+</ul>
+<h3 id="deferred">Deferred<a class="headerlink" href="#deferred" title="Permanent link">&para;</a></h3>
+<ul>
+<li>U4 bifurcation validation excluded pending dedicated handler reintroduction.</li>
+</ul>
+<h3 id="integrity">Integrity<a class="headerlink" href="#integrity" title="Permanent link">&para;</a></h3>
+<ul>
+<li>All changes preserve TNFR canonical invariants (no EPI mutation; phase verification intact; read-only telemetry/validation).</li>
+<li>Registry immutability strengthens invariants #1 (EPI only via operators), #4
+  (operator closure) and #5 (phase verification untouched). Tests updated:
+  removed dynamic registration tests; added <code>test_canonical_operator_set</code>.</li>
+</ul>
+<h2 id="902">[9.0.2]<a class="headerlink" href="#902" title="Permanent link">&para;</a></h2>
+<p>Previous release (see repository history) with foundational operators, unified grammar, metrics, and canonical field tetrad.</p>
+<hr />
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../docs/assets/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+      
+    
+  </body>
+</html>

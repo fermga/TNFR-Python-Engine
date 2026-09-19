@@ -1,0 +1,2322 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/research/PASSIVE_TRANSPORT_PROTOCOL/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Passive transport measurement protocol - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#passive-transport-measurement-protocol" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Passive transport measurement protocol
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/CLI_AND_SDK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI and SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../FUNDAMENTAL_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NODAL_PARAMETER_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NODAL_RESEARCH_STRATEGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FIVE_STAGE_EXECUTION_PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Active execution plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DERIVED_EPI_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../archive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Historical archive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../factorization-lab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Applications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Applications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../primality-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.github/WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#primary-source-inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Primary-source inventory
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Primary-source inventory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#follow-up-admission-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Follow-up admission search
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multinode-source-review-2026-09-18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multinode source review — 2026-09-18
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#computer-only-candidates-and-model-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Computer-only candidates and model selection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Computer-only candidates and model selection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#predeclared-volts-exploratory-delivery-before-decoding-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Predeclared Volts exploratory delivery (before decoding values)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#completed-exploratory-record-2026-09-18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Completed exploratory record — 2026-09-18
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#derived-fixed-reference-candidate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Derived fixed-reference candidate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reference-apparatus-and-canonical-equal-capacity-prediction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reference apparatus and canonical equal-capacity prediction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#state-clock-and-measurement-admission" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        State, clock and measurement admission
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#calibration-forecast-and-finite-decision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Calibration, forecast and finite decision
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implemented-continuous-time-uncertainty-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implemented continuous-time uncertainty boundary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implemented continuous-time uncertainty boundary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#continuous-capacity-distinct-from-the-euler-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Continuous capacity, distinct from the Euler control
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reserved-joint-outer-tube" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reserved joint outer tube
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#proposed-pilot-resources-not-instrument-tolerances" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Proposed pilot resources, not instrument tolerances
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evidence-bundle-and-current-exit-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidence bundle and current exit gate
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="passive-transport-measurement-protocol">Passive transport measurement protocol<a class="headerlink" href="#passive-transport-measurement-protocol" title="Permanent link">&para;</a></h1>
+<p><strong>Protocol version:</strong> draft 4, 2026-09-18. <strong>Admission:</strong> <code>not_admitted</code>.
+<strong>Physical protocol result:</strong> <code>not_tested</code>; no admitted measurement contract.
+<strong>Exploratory delivery:</strong> one predeclared public Volts continuation completed;
+the affine control has lower error. This does not supply physical admission.</p>
+<p><strong>Scheduling:</strong> supporting measurement branch, parked while the primary
+generative mechanism is studied. No automatic source search or Volts refit.
+<strong>Available resources:</strong> computer only, as confirmed by the user. When this
+branch resumes, its route is public terrestrial data. Building/acquiring a laboratory setup is
+not an active dependency; the apparatus below remains a reference design.
+The equal-capacity P2 model and a separately named fixed-reference variant
+are implemented through one shared rational log/exp owner. Finding a scalar
+dataset does not admit its physical mapping. The fixed-reference variant
+also supports the explicitly exploratory, single-curve computation below.</p>
+<p>This is the measurement annex for P2 in the
+<a href="../FIVE_STAGE_EXECUTION_PLAN/">five-stage execution plan</a>, under O6.a/O1.a
+and S3/S14/S15. It does not create another task queue. It specifies one
+finite, falsifiable laboratory mapping of the canonical EPI channel. A
+successful prediction would support that mapping within its measured domain;
+it would not establish the origin of physical reality or a unique explanation
+relative to other models with the same observable equation.</p>
+<h2 id="primary-source-inventory">Primary-source inventory<a class="headerlink" href="#primary-source-inventory" title="Permanent link">&para;</a></h2>
+<p>The bounded review used four search queries and inspected primary record
+pages and JSON metadata on 2026-09-17. No signal archive was downloaded,
+no signal was scored, and no outcome was used to choose a model. Publication,
+record-update and acquisition dates are different; an unknown acquisition
+date remains unknown.</p>
+<table>
+<thead>
+<tr>
+<th>Candidate and primary source</th>
+<th>License, access and dates</th>
+<th>Structure and channels</th>
+<th>Clock, calibration and holdout gate</th>
+<th>Status and reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://zenodo.org/records/3521009">Experimental networks of nonlinear oscillators, DOI 10.5281/zenodo.3521009</a></td>
+<td>CC-BY-4.0; open. Published 2019-10-28; record modified 2020-01-24. Acquisition dates not established.</td>
+<td>28 electronic Rössler oscillators, 20 wiring configurations, one recorded state variable per node; 30,000 samples, 101 coupling settings, three repetitions.</td>
+<td>Inspected metadata does not establish timestamp spacing, sensor calibration, complete hidden state, or an independent capacity/clock bridge. Whole repetitions could be reserved only after these gates and file identities are resolved.</td>
+<td><code>not_admitted</code>. Useful topology inventory; active multivariable dynamics cannot be assumed to be passive EPI diffusion. Coupling-setting labels are not calibrated canonical weights.</td>
+</tr>
+<tr>
+<td><a href="https://zenodo.org/records/11122666">Switched capacitor filter transient responses for fault detection, DOI 10.5281/zenodo.11122666</a></td>
+<td>CC-BY-4.0 declared; files restricted. Published 2024-05-06; created/modified 2024-05-08. Acquisition dates not established.</td>
+<td>Measured and simulated responses of second-order filters, with underdamped and overdamped cases. Exact wiring/channel map unavailable in inspected metadata.</td>
+<td>Nominal training responses and labeled nominal/fault test responses are declared. Sampling clock, switching input, sensor calibration and split independence require documentation. Simulations must stay distinct from measurements; fault labels cannot enter calibration.</td>
+<td><code>not_admitted</code>. Access and causal/model specification unresolved; a driven switched filter is not the proposed isolated P2 transport experiment.</td>
+</tr>
+</tbody>
+</table>
+<p>License and access statements were checked against the corresponding
+<a href="https://zenodo.org/api/records/3521009">3521009 metadata endpoint</a> and
+<a href="https://zenodo.org/api/records/11122666">11122666 metadata endpoint</a>.
+A declared license does not grant access to restricted files. Access was not
+requested and no account action was taken.</p>
+<p>The earlier local inspection of <code>3521009</code> retained metadata and only its
+9,991-byte <code>Structure.zip</code>: twenty connected 28-node, 42-edge graphs with
+the same labeled degree vector. It downloaded zero time-series files. Its
+local evidence is <code>artifacts/research/zenodo_3521009_admission/inspection.json</code>;
+that ignored artifact is not a portable public evidence bundle. The primary
+record advertises about 20.6 GB of files; this protocol does not authorize
+downloading that collection.</p>
+<p>No suitable simple passive RC or thermal time-series source was verified
+within this search budget. The previously cited
+<a href="https://bigwww.epfl.ch/publications/sierociuk1501.pdf">EPFL-hosted RC diffusion article</a>
+could not be retrieved during this review. It is a pending apparatus lead,
+not an admitted data source, license determination or checked calibration.</p>
+<h3 id="follow-up-admission-search">Follow-up admission search<a class="headerlink" href="#follow-up-admission-search" title="Permanent link">&para;</a></h3>
+<p>The second bounded review used eight targeted electrical/thermal queries and
+six primary-page inspections or retrieval attempts. It downloaded no signals,
+opened no reserved response and admitted no additional dataset. A failed page
+retrieval is an access limitation, not a finding about an unseen dataset.</p>
+<table>
+<thead>
+<tr>
+<th>Primary source</th>
+<th>Verified access or size</th>
+<th>Reason it does not supply this protocol</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://zenodo.org/records/19221698">Supercapacitor discharge measurements</a>, <a href="https://zenodo.org/api/records/19221698">metadata</a></td>
+<td>Open CC-BY-4.0; ZIP 78,858,190 bytes; published 2026-03-25</td>
+<td>Active constant-current electronic load, not isolated charge sharing between two measured storage nodes; full clock/calibration contract not established</td>
+</tr>
+<tr>
+<td><a href="https://zenodo.org/records/18348268">INRIM 1 F supercapacitor measurements</a>, <a href="https://zenodo.org/api/records/18348268">metadata</a></td>
+<td>Open CC-BY-4.0; 21 files, 274,853,203 bytes; published 2026-01-23</td>
+<td>One device with electrochemical test protocols; no verified simultaneous passive pair. The 270,585,991-byte training file alone exceeds the proposed download cap</td>
+</tr>
+<tr>
+<td><a href="https://physlab.org/experiment/data-analysis-with-capacitor/">PhysLab capacitor apparatus</a></td>
+<td>Public teaching page; open-data license and raw file sizes not verified</td>
+<td>One capacitor/resistor arrangement, not two observed storage coordinates; raw independent runs and instrument uncertainty not identified</td>
+</tr>
+<tr>
+<td><a href="https://doi.org/10.5066/P15LYZOT">USGS thermal equilibration record</a>, <a href="https://catalog.data.gov/dataset/data-for-examining-thermal-equilibration-rates-of-brook-trout-implanted-with-temperature-r">official catalog</a></td>
+<td>Catalog declares public access; DOI retrieval failed; file sizes/license not verified</td>
+<td>Bath-driven biological temperatures; isolated two-body/common-capacity assumptions unmet in the catalog description</td>
+</tr>
+<tr>
+<td><a href="https://ned3.uark.edu/datasets/">Han Hu Lab dataset inventory</a></td>
+<td>Search-index description advertises thermocouple measurements; direct retrieval returned HTTP 502</td>
+<td>Isolation, exact files, license, calibration and repeat identities remain unverified; not an admitted source</td>
+</tr>
+<tr>
+<td><a href="https://datadryad.org/dataset/doi:10.5061/dryad.34tmpg4rv">Dryad thermal electrosurgery record</a></td>
+<td>Public download links; advertised archive 273.22 MB; published 2024-08-16; license not verified in inspected content</td>
+<td>Driven tissue heating and additional dissipation; incompatible passive P2 scope and oversized pilot archive</td>
+</tr>
+</tbody>
+</table>
+<p>These exclusions concern the chosen experiment. They do not establish that
+other terrestrial TNFR mappings are impossible. Expanding the pressure law
+to use a convenient dataset would require a separately derived and admitted
+model; no such expansion is made here.</p>
+<h3 id="multinode-source-review-2026-09-18">Multinode source review — 2026-09-18<a class="headerlink" href="#multinode-source-review-2026-09-18" title="Permanent link">&para;</a></h3>
+<p>A bounded follow-up used four targeted queries and four primary-page
+inspections/retrieval attempts. The selection question was whether a source
+could support a frozen structural prediction across preparations or a declared
+observation reduction, rather than another isolated scalar curve. No signal
+files were downloaded or response plots/tables intentionally inspected.
+Search snippets exposed published qualitative summaries; those summaries
+were not used to choose a model or evaluation window.</p>
+<table>
+<thead>
+<tr>
+<th>New lead</th>
+<th>Verified metadata</th>
+<th>Admission gap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://projectswiki.eleceng.adelaide.edu.au/projects/index.php/Projects:2020s2-7511_SQL_Database_for_Experimental_Metadata">Adelaide RC-ladder/PicoScope project</a></td>
+<td>University project proposes measuring several RC ladder circuits with a PicoScope</td>
+<td>No downloadable measurements, completed results, explicit circuit/channel map, uncertainty specification or independent preparation identities in the inspected page</td>
+</tr>
+<tr>
+<td><a href="https://www.gitlab.ethz.ch/BMHT/publications/rcladder-id">ETH BMHT RC-Ladder System Identification</a>, <a href="https://www.gitlab.ethz.ch/explore/projects/starred?non_archived=true&amp;page=14&amp;sort=latest_activity_desc">official inventory</a></td>
+<td>Inventory describes analytical identification code, AGPL-3, linked to DOI <code>10.1109/TCSII.2023.3340505</code></td>
+<td>Direct repository retrieval failed; measured files, passive intervals, data license and independent preparations remain unverified. A code license is not a measurement-data contract</td>
+</tr>
+<tr>
+<td><a href="https://opendata.uni-kiel.de/receive/fdr_mods_00000330">Kiel spatial soil-temperature archive</a>, <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12926585/">authors' data article</a></td>
+<td>Thermocouple time series and fixed sensor positions under controlled steady/cyclic loading around an electrical heater</td>
+<td>Driven spatial transport is outside the current isolated pure-EPI model. Sensor positions do not specify a sufficient finite nodal state. Archive retrieval failed; exact files, sizes, calibration and independent preparations unverified</td>
+</tr>
+</tbody>
+</table>
+<p>No new candidate is admitted by this review. A failed retrieval gives no
+finding about unseen file contents. A future multinode protocol must retain
+enough initial-state information for prediction; hiding an indispensable
+sensor is not a valid test of emergent dynamics. This inventory starts no
+additional experiment or pressure-law extension.</p>
+<h2 id="computer-only-candidates-and-model-selection">Computer-only candidates and model selection<a class="headerlink" href="#computer-only-candidates-and-model-selection" title="Permanent link">&para;</a></h2>
+<p>The focused scalar-data search retained two actionable leads. A single
+recorded curve is not two independent preparations.</p>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>Pinned observation metadata</th>
+<th>Remaining admission gaps</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://raw.githubusercontent.com/statmanrobin/Stat2Data/3fe987c7e1813fd9960a3ca9293873359c1e07e9/man/Volts.Rd">Stat2Data / Volts manual</a>, <a href="https://raw.githubusercontent.com/statmanrobin/Stat2Data/3fe987c7e1813fd9960a3ca9293873359c1e07e9/DESCRIPTION">package/license</a></td>
+<td>Package 2.0.0, GPL-3; 50 author-measured voltage/time observations, nominal 0.02-second spacing; one documented capacitor discharge after battery charging. Author-repository commit <code>3fe987c7e1813fd9960a3ca9293873359c1e07e9</code>; <code>data/Volts.rda</code>, 767 bytes, Git blob SHA-1 <code>6602a54be75afdec50b3a179457fc2af483bf29c</code></td>
+<td>No documented discharge wiring/source isolation, fixed-reference verification, voltmeter/clock accuracy, or independent run identities. Accessible exploratory candidate, not a reserved physical-validation dataset</td>
+</tr>
+<tr>
+<td><a href="https://github.com/duerrfk/low-energy-meter">Low-Energy-Meter</a>, <a href="https://api.github.com/repos/duerrfk/low-energy-meter/contents/data">directory metadata</a></td>
+<td><code>no_load-f1Hz.csv</code>, 614,400 bytes; Git blob SHA-1 <code>c2ea34ca95407bdccb7e82f55b192f68094d4adb</code>. README describes nanosecond timestamps, discharge-cycle IDs and ADC counts; the no-load file concerns leakage/instrument loading</td>
+<td>No explicit data license or verified independent repeat count, sensor/clock bounds or constant-reference evidence. README contains contradictory inverse versus proportional count-to-voltage formulas. Published README outcome summaries have been seen; this is not an untouched blind source</td>
+</tr>
+</tbody>
+</table>
+<p>The Volts file is fixed at
+<a href="https://raw.githubusercontent.com/statmanrobin/Stat2Data/3fe987c7e1813fd9960a3ca9293873359c1e07e9/data/Volts.rda">its exact revision</a>.
+Admission preparation selects only this 767-byte file for caching now, with
+a 1,024-byte transfer cap and a Git-blob identity check before retention.
+The initial cache was not parsed, fitted or scored. That byte/provenance record
+is <code>artifacts/research/stat2data_volts_admission/inspection.json</code>;
+it records the actual raw-data SHA-256 without admitting a physical mapping.
+The retained 767 bytes have SHA-256
+<code>e50e505783dbf9b6d477165c92328e805e5d8bb0d27e3458862e2d5ba7f00a52</code>.
+The initial cache delivery performed no conversion/decoding. Draft 4 now
+permits the bounded exploratory decoding specified below. Nominal sample
+spacing is not clock accuracy.</p>
+<p>The pinned package <code>DESCRIPTION</code> and the
+<a href="https://stat.ethz.ch/CRAN/web/packages/Stat2Data/index.html">official CRAN index</a>
+declare GPL-3. The generated
+<a href="https://search.r-project.org/CRAN/refmans/Stat2Data/html/Stat2Data-package.html">package overview</a>
+still says GPL-2; retain the pinned release declaration rather than silently
+mixing these metadata versions. The follow-up primary-source review did not
+resolve the apparatus, uncertainty or independent-preparation gaps.</p>
+<p>Do not repair missing independent preparations by splitting this one curve
+and calling its windows independent runs. It can support a separately labeled
+exploratory study only after its narrower observation/model scope is declared.
+Physical P3 admission retains its missing calibration and independence gates.</p>
+<h3 id="predeclared-volts-exploratory-delivery-before-decoding-values">Predeclared Volts exploratory delivery (before decoding values)<a class="headerlink" href="#predeclared-volts-exploratory-delivery-before-decoding-values" title="Permanent link">&para;</a></h3>
+<p>This is a single fixed computation inside P2.3, not physical P3 admission.
+The mathematical fixed-reference implementation is reusable; the following
+observation map remains a conditional hypothesis for this incompletely
+documented source. Stop after this one specification, including an unfavorable
+or unavailable result. No reference, split, horizon or error allowance is
+selected after looking at the curve.</p>
+<ul>
+<li>Verify the pinned SHA-256 and 767-byte file before decoding. Bound expanded
+  serialization to 65,536 bytes. Use a data-only R serialization decoder, not
+  R evaluation. Require exactly one <code>Volts</code> data frame, 50 finite numeric rows,
+  <code>Voltage</code> and <code>Time</code> columns, and increasing times. No downloads, gap
+  interpolation, smoothing, row deletion or synthetic replacement in the run.</li>
+<li>Read voltages as nominal scalar EPI coordinates (unit scale, zero offset)
+  and reported seconds as nominal structural time (bridge one). These are
+  stated chart/clock conventions, not sensor or physical-clock calibration.
+  Set the candidate constant reference to zero before decoding; this is an
+  unverified fixed-reference hypothesis, never a fitted asymptote.</li>
+<li>Fit only the first and 25th samples (zero-based indices 0 and 24) using
+  the continuous fixed-reference logarithmic identity. The first 25 rows
+  are calibration; rows 25 through 49 are the continuation comparison.
+  Interior calibration values may be used only by the declared comparison
+  baseline, not to select another nodal model or rate after evaluation.
+  Unresolved sign/decay or invalid times ends the specified nodal analysis.</li>
+<li>Freeze the nominal rate enclosure and save a content-hashed continuation
+  from the 25th value at the remaining reported timestamps before scoring
+  continuation voltages. Reading that time schedule is declared metadata
+  access, not evidence that these public samples were acquired prospectively.
+  Predict through the existing rational exponential owner; no nodal Euler
+  trajectory is invented or fitted to the continuation.</li>
+<li>Compare coordinate RMSE/maximum absolute error and unchanged-initial-value
+  persistence; include a calibration-only affine AR-1 baseline if its fit is
+  identifiable, otherwise report baseline unavailability. These are descriptive
+  controls, not additions to TNFR pressure. Save every specified result.</li>
+<li>Instrument error, clock error, physical-reference adequacy and a physical
+  acceptance threshold remain <strong>unknown</strong>, not zero. A rational enclosure of
+  nominal arithmetic is not a measurement confidence interval. No numerical
+  error, favorable baseline comparison or within-curve continuation closes
+  the independent-preparation or physical-admission gates.</li>
+</ul>
+<p>The saved protocol hash and result must retain <code>within_single_acquisition</code>,
+<code>physical_status=not_admitted</code> and <code>measurement_verdict=not_assessed</code>.
+The original byte-only inspection remains unchanged as historical evidence.</p>
+<p><a id="volts-exploratory-record"></a></p>
+<h3 id="completed-exploratory-record-2026-09-18">Completed exploratory record — 2026-09-18<a class="headerlink" href="#completed-exploratory-record-2026-09-18" title="Permanent link">&para;</a></h3>
+<p>The <a href="../../../benchmarks/volts_data.py">bounded reader</a> and
+<a href="../../../benchmarks/volts_fixed_reference_exploration.py">fixed-design benchmark</a>
+executed the specification above without scientific changes. The archive
+expands to 1,016 bytes, R serialization version 2. Only one nominal rate was
+estimated: <code>nu</code> lies in the arithmetic interval
+<code>[2.1590717641670265, 2.159071764167027]</code> per reported second. This narrow
+interval encloses numerical arithmetic, not measurement uncertainty.
+The forecast starts at row 24 (<code>t=0.48 s</code>, <code>V=3.2682 V</code>); scoring uses only
+the 25 later observations through <code>t=0.98 s</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Frozen predictor</th>
+<th style="text-align: right;">Continuation RMSE (V)</th>
+<th style="text-align: right;">Maximum absolute error (V)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pure-EPI fixed-reference P2</td>
+<td style="text-align: right;">0.0769495843</td>
+<td style="text-align: right;">0.129818675</td>
+</tr>
+<tr>
+<td>Persistence at the initial value</td>
+<td style="text-align: right;">1.3676904144</td>
+<td style="text-align: right;">2.028000000</td>
+</tr>
+<tr>
+<td>Prefix-only affine AR-1 control</td>
+<td style="text-align: right;">0.0255576220</td>
+<td style="text-align: right;">0.046371615</td>
+</tr>
+</tbody>
+</table>
+<p>The nodal continuation improves on persistence but is less accurate than the
+declared affine control. This is not evidence of a predictive advantage for
+TNFR on this trace. It neither identifies the cause of the residual nor
+rejects all TNFR realizations: the observation map, constant reference,
+apparatus and error bounds remain unverified. No offset, rate, reference,
+split or pressure law was changed after scoring. Do not mine this curve for
+a replacement model and call the same continuation newly reserved.</p>
+<p>The decoder initially stopped on historical unmarked text encoding, before
+issuing or scoring a forecast. A synthetic-tested strict ASCII metadata
+fallback repaired ingestion; it changed no measurements or scientific
+settings. Preserve this failed attempt alongside the successful execution.
+The whole archive was decoded before issue; the predictor received only
+prefix values and the reported future time schedule. This is explicitly
+<code>within_single_acquisition</code>, not blind prospective evidence. All physical
+statuses remain <code>not_admitted</code> / <code>not_assessed</code>.</p>
+<p>Local retained bundle: <code>artifacts/research/volts_exploration_2026_09_18/</code>.
+The exact pre-value protocol/specification snapshots are immutable:</p>
+<ul>
+<li><code>protocol_before_values.md</code>, SHA-256
+  <code>e2b584003c2e5605ae786a533a48cb067a002e67f00a5ba9de2be8fc1f1c0124</code>.</li>
+<li><code>spec_before_values.json</code>, SHA-256
+  <code>b6a56c8856ea339778c6d6dfffd4f256a03f1fa2ce2a5e398aefb457afe41da0</code>.</li>
+<li><code>attempt_01.json</code>: decoder stop; no forecast or score.</li>
+<li><code>run_v2/</code>: raw data, copied protocol/specification, ingestion metadata,
+  issued forecast, complete residuals and byte-checked evidence envelope.
+  Forecast content hash:
+  <code>sha256:57bb1e059470d80dbd6e685c6b5458857f702390018ccb31e080656f6102990c</code>.</li>
+</ul>
+<p>These are local ignored artifacts, not a published bundle or an independently
+authenticated timestamp. Python &gt;=3.11 and <code>pip install -e ".[research-data]"</code>
+provide the pinned decoder. A replay uses the retained inputs and a fresh
+output directory; it cannot become a new blind study:</p>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">-X</span> <span class="n">utf8</span> <span class="n">benchmarks</span><span class="p">/</span><span class="n">volts_fixed_reference_exploration</span><span class="p">.</span><span class="n">py</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-data</span> <span class="n">artifacts</span><span class="p">/</span><span class="n">research</span><span class="p">/</span><span class="n">stat2data_volts_admission</span><span class="p">/</span><span class="n">Volts</span><span class="p">.</span><span class="n">rda</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-spec</span> <span class="n">artifacts</span><span class="p">/</span><span class="n">research</span><span class="p">/</span><span class="n">volts_exploration_2026_09_18</span><span class="p">/</span><span class="n">spec_before_values</span><span class="p">.</span><span class="n">json</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-protocol</span> <span class="n">artifacts</span><span class="p">/</span><span class="n">research</span><span class="p">/</span><span class="n">volts_exploration_2026_09_18</span><span class="p">/</span><span class="n">protocol_before_values</span><span class="p">.</span><span class="nb">md </span><span class="p">`</span>
+  <span class="p">-</span><span class="n">-expected-spec-hash</span> <span class="n">b6a56c8856ea339778c6d6dfffd4f256a03f1fa2ce2a5e398aefb457afe41da0</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-output</span> <span class="n">artifacts</span><span class="p">/</span><span class="n">research</span><span class="p">/</span><span class="n">volts_exploration_2026_09_18</span><span class="p">/</span><span class="n">replay</span>
+</code></pre></div>
+<p>The combined focused suite passes 174 tests: both mathematical models,
+the unchanged equal-capacity acquisition contract, bounded ingestion,
+prefix isolation, baseline failures and complete evidence recording.
+The source-bound local checkpoint is
+<code>artifacts/research/fixed_reference_volts_validation_2026_09_18.json</code>.
+Tests validate these software contracts, not the physical hypotheses.</p>
+<h3 id="derived-fixed-reference-candidate">Derived fixed-reference candidate<a class="headerlink" href="#derived-fixed-reference-candidate" title="Permanent link">&para;</a></h3>
+<p>On the same fixed symmetric positive P2 support, select <strong>pure EPI pressure</strong>
+and capacities <code>(nu,0)</code>, with <code>nu&gt;0</code>. All other pressure channels are inactive;
+otherwise the capacity difference itself could contribute another channel.
+The canonical nodal equation gives</p>
+<div class="highlight"><pre><span></span><code>p = (r-x, x-r),           x' = nu*(r-x),           r' = 0
+d = x-r,                 d' = -nu*d
+x(t) = exp(-nu*t)*x(0) + (1-exp(-nu*t))*r.
+</code></pre></div>
+<p>This follows from the nodal law without importing the circuit or cooling
+equation. The arithmetic mean is NOT conserved; the reference <code>r</code> is.
+An inactive node may retain nonzero pressure: stationarity is not structural
+equilibrium. The existing diffusion energy owner accepts degenerate mobility;
+positive-capacity certificates using <code>d_i/nu_i</code> do not cover this boundary.</p>
+<p>Physical use requires an independently specified constant reference and
+support, adequate state observation and bounded external loading. Flat bath
+measurements do not prove that a bath is a zero-capacity TNFR node; an active
+controller may instead be an external input. A varying reference requires a
+distinct driven model and its complete input history, not a fitted final
+asymptote. No held-out value may estimate <code>r</code> or the clock conversion.</p>
+<p>For this candidate, existing log/exp enclosures can be reused with contrast
+<code>x-r</code> and decay factor <code>exp(-nu*t)</code>. The capacity ratio divides by elapsed
+time, not twice elapsed time. There is no constant-mean rejection rule.
+Do not fabricate a second observed channel or reuse the equal-capacity
+adapter unchanged. The mathematical implementation now lives in
+<a href="../../../src/tnfr/physics/p2_transport_reference.py">p2_transport_reference.py</a>:
+<code>bound_fixed_reference_capacity</code> and <code>bound_fixed_reference_transport</code> reuse
+the same contrast/log, decay/exp and convex interval kernels as the equal-
+capacity model. The reference may be a declared interval and the initial
+contrast may have either strict sign. The returned outer intervals do not
+prove one common latent fit. These functions do not mutate a live graph or
+admit empirical observations. Physical admission still requires the source
+contract; this remains one candidate within P2.3, not another queue.</p>
+<h2 id="reference-apparatus-and-canonical-equal-capacity-prediction">Reference apparatus and canonical equal-capacity prediction<a class="headerlink" href="#reference-apparatus-and-canonical-equal-capacity-prediction" title="Permanent link">&para;</a></h2>
+<p>The reference design uses two nominally equivalent capacitive elements, observed
+simultaneously, prepared separately and then interconnected through one
+fixed passive link. Charging sources are disconnected before the declared
+observation interval. Record wiring, switch timing, sensor input loading,
+component characterization and ambient conditions. Equivalence and negligible
+external forcing over the finite interval require measured bounds; component
+labels alone do not establish them. The initial experiment changes only the
+prepared contrast, keeping the link and apparatus fixed.</p>
+<p>The hardware is a candidate realization, not an imported circuit law.
+The proposed TNFR model is the isolated EPI channel on fixed P2 support,
+with one common positive capacity and no active phase or capacity-feedback
+channel. Each physical voltage is mapped to a signed EPI coordinate <code>x_i</code>
+by a fixed sensor scale and offset. Both channels must share the same
+structural unit after independently calibrated sensor correction. Define
+structural time by <code>t = b * (tau - tau_0)</code>, where <code>tau</code> is the independently
+checked acquisition clock and <code>b &gt; 0</code> is fixed before capacity estimation.
+A declared unit convention for <code>b</code> is permitted if labeled as a convention;
+it is not evidence of a universal physical-to-structural conversion.</p>
+<p>The <a href="../../../src/tnfr/physics/structural_diffusion.py">canonical diffusion owner</a>
+then gives, without using a circuit governing law as an axiom,</p>
+<div class="highlight"><pre><span></span><code>p_1 = x_2 - x_1,                 p_2 = x_1 - x_2
+dx_1/dt = nu * p_1,              dx_2/dt = nu * p_2,       nu &gt; 0
+m = (x_1 + x_2)/2,               d = x_1 - x_2
+dm/dt = 0,                      dd/dt = -2 * nu * d
+d(t) = d(0) * exp(-2 * nu * t)
+x_1(t) = m(0) + d(t)/2,          x_2(t) = m(0) - d(t)/2
+</code></pre></div>
+<p>These are predictions of the stated nodal model. Pressure is calculated
+from the two observed coordinates, never defined as a measured derivative
+divided by fitted capacity. Only the product <code>nu * b</code> is identifiable from
+a physical-time contrast trace if both are unknown. Fixing the clock bridge
+is therefore an admission condition, not a second fit parameter. Estimate
+one positive <code>nu</code> from calibration runs alone and freeze its uncertainty
+set. Nonpositive or unidentifiable capacity blocks this positive-capacity
+model; it is not clipped into its domain.</p>
+<p>For P2, uniformly scaling the single positive edge weight leaves <code>L_rw</code>
+unchanged. Changing a resistor or link strength cannot be represented merely
+by rescaling that edge at fixed capacity. This first protocol consequently
+does not sweep link strength or infer a universal relation between capacity
+and hardware component values. An intervention is a recorded preparation,
+not automatically a canonical glyph or a U3 certificate.</p>
+<h2 id="state-clock-and-measurement-admission">State, clock and measurement admission<a class="headerlink" href="#state-clock-and-measurement-admission" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Required frozen specification</th>
+<th>Current missing evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>State map</td>
+<td>Two sensor identities; common EPI unit; fixed offsets/scales; range and linearity bounds</td>
+<td>Apparatus and sensor calibration absent</td>
+</tr>
+<tr>
+<td>Time</td>
+<td>Raw timestamps, synchronization/skew bounds, finite positive bridge, origin rule and gap policy</td>
+<td>Physical clock, sampling period and uncertainty absent</td>
+</tr>
+<tr>
+<td>Support and input</td>
+<td>Known P2 wiring, fixed link, source disconnection, observation interval and loading/leakage bounds</td>
+<td>Wiring and external-input characterization absent</td>
+</tr>
+<tr>
+<td>Capacity</td>
+<td>Calibration-only common positive rate and identified uncertainty; no outcome-dependent choice</td>
+<td>No calibration runs</td>
+</tr>
+<tr>
+<td>Phase</td>
+<td>Unavailable as an oscillatory observable; phase channel explicitly inactive in the selected model</td>
+<td>Physical adequacy of that restriction untested</td>
+</tr>
+<tr>
+<td>State sufficiency</td>
+<td>Actual generator and observation map; distinguish unknown source terms from measurement noise</td>
+<td>Model-specific apparatus check pending</td>
+</tr>
+<tr>
+<td>Reserved observations</td>
+<td>Disjoint preparation/run IDs, hashes, initial-sample allowance and fixed forecast horizon</td>
+<td>No acquired runs or reserved data</td>
+</tr>
+<tr>
+<td>Decision</td>
+<td>Predeclared joint finite-trajectory acceptance tube, rejection and abstention rules</td>
+<td>Instrument, calibration and numerical error budgets unset</td>
+</tr>
+</tbody>
+</table>
+<p>With both EPI coordinates measured, the selected two-state model has
+observation matrix <code>C = I</code>. Its algebraic state observability is immediate;
+this does not prove that the apparatus has only those two relevant states.
+With contrast alone, the mean is hidden but the contrast equation closes
+under the common-capacity hypotheses. Do not promote that to a full-state
+claim. Reuse <a href="../../../src/tnfr/physics/observability.py">observability</a> on the
+actual generator and observation map, and the hidden-source distinction in
+<a href="../../../src/tnfr/physics/epi_memory.py">derived EPI memory</a> if a reduction is
+proposed. An algebraic rank result supplies neither noise conditioning nor
+an instrument error bound. A material unmodeled leakage/loading contribution
+requires a revised admitted model, not a retrospectively invented pressure.</p>
+<h2 id="calibration-forecast-and-finite-decision">Calibration, forecast and finite decision<a class="headerlink" href="#calibration-forecast-and-finite-decision" title="Permanent link">&para;</a></h2>
+<p>Use separate whole preparations for calibration and evaluation. Calibration
+may estimate only the declared common capacity after sensor and clock
+mapping are fixed. Freeze the fit rule, accepted domain, parameter interval,
+data identities and code revision. No graph, normalization, filter, channel,
+capacity, tolerance or horizon is selected using a reserved outcome.</p>
+<p>The evaluation initialization allowance is the first synchronized sensor
+pair, with its uncertainty, at a predeclared forecast origin after the
+switching interval. Choose this origin from the hardware timing/calibration
+rule, not from the later relaxation trace. Forecast all subsequent requested
+timestamps before reading their values. No full-record centering, Hilbert
+transform, interpolation across unexplained gaps or future-aware smoothing
+is needed for this prediction.</p>
+<p>Primary observation: the held-out contrast trajectory under the frozen
+capacity and clock bridge. The constant-mean prediction is a separately
+reported check of the same admitted model, not an ignored nuisance when it
+fails. Construct a simultaneous finite-trajectory tube from the declared
+initial-state, sensor, time, capacity and numerical uncertainty. A collection
+of pointwise confidence intervals is not automatically such a tube. If the
+uncertainty cannot be bounded at the declared scope, report <code>inconclusive</code>.
+Exceeding the frozen acceptance rule rejects this mapping on these runs;
+agreement supports only its declared finite domain. Report every reserved
+run, including failures, missing samples and exclusions with reasons.</p>
+<h2 id="implemented-continuous-time-uncertainty-boundary">Implemented continuous-time uncertainty boundary<a class="headerlink" href="#implemented-continuous-time-uncertainty-boundary" title="Permanent link">&para;</a></h2>
+<p>The numerical part of admission now has an executable owner:
+<a href="../../../src/tnfr/physics/p2_transport_reference.py">p2_transport_reference.py</a>,
+with measurement/run integration in
+<a href="../../../src/tnfr/validation/p2_transport.py">validation/p2_transport.py</a>.
+It uses the existing rational logarithm and negative-exponential enclosures;
+it introduces no pressure term, circuit governing law or new nodal solver.
+All uncertainty bounds below are supplied hypotheses. Their instrumental
+justification is still missing and remains a physical admission gate.</p>
+<h3 id="continuous-capacity-distinct-from-the-euler-control">Continuous capacity, distinct from the Euler control<a class="headerlink" href="#continuous-capacity-distinct-from-the-euler-control" title="Permanent link">&para;</a></h3>
+<p>The earlier P1 finite-increment fit remains an engineering control. Even for
+an ideal noiseless P2 trajectory sampled at a common structural step <code>h</code>,
+its fitted coefficient is</p>
+<div class="highlight"><pre><span></span><code>nu_Euler = (1 - exp(-2*nu*h)) / (2*h) &lt; nu,     nu&gt;0, h&gt;0.
+</code></pre></div>
+<p>It cannot be silently relabeled as the continuous physical rate. Irregular
+pooled increments do not in general have this single-step conversion.
+The new calibration uses each declared run's fixed first and last samples;
+interior samples are not fitted, and endpoint consistency does not validate
+the whole calibration trajectory. Durations and endpoint selection must not
+be changed after opening reserved outcomes.</p>
+<p>After fixed sensor conversion, suppose the initial and final contrast have
+one resolved common sign. Reverse both signs if negative, giving positive
+intervals <code>D0=[a,b]</code> and <code>D1=[c,d]</code>. For elapsed structural time
+<code>T=[sL,sU]</code>, <code>sL&gt;0</code>, require resolved decay <code>d/a&lt;1</code>. Then</p>
+<div class="highlight"><pre><span></span><code>r = D1 / D0 is enclosed by [c/b, d/a] = [rL,rU]
+nu is enclosed by [-log(rU)/(2*sU), -log(rL)/(2*sL)].
+</code></pre></div>
+<p>Rational log bounds round the interval outward. Initial/final mean intervals
+must overlap. Each run must resolve nonzero contrast and positive decay;
+incompatible, sign-ambiguous or unidentifiable inputs raise explicit errors.
+Intersect all run capacity enclosures. A nonempty intersection is a necessary
+outer consistency condition, not proof of one joint latent fit. Finally round
+the capacity bounds outward to binary64 rational endpoints to limit arithmetic
+growth; a lost positive lower bound or infinite upper bound blocks this path.
+This computational enclosure is separate from measurement uncertainty.</p>
+<h3 id="reserved-joint-outer-tube">Reserved joint outer tube<a class="headerlink" href="#reserved-joint-outer-tube" title="Permanent link">&para;</a></h3>
+<p><code>P2MeasurementBounds</code> freezes two offsets/scales, total EPI-coordinate errors,
+timestamp error and a positive structural-time bridge interval. Coordinate
+errors include uncertainty in the sensor conversion itself. A bound <code>eps_t</code>
+on each timestamp gives elapsed-time error <code>2*eps_t</code>; time zero is the same
+initial event, so its duration interval is exactly zero. Unresolved positive
+durations are rejected. The declared sensor/clock bounds must hold jointly
+throughout the full finite experiment; no confidence level is inferred.
+Both channels in each pair must represent the same latent observation time.
+Acquisition skew needs synchronization evidence or an independently derived
+coordinate-error allowance for time alignment. Timestamp error alone cannot
+align asynchronous channels or justify their constant-mean test.</p>
+<p>For capacity in <code>[nuL,nuU]</code> and elapsed time in <code>[tL,tU]</code>, the decay lies in
+<code>[exp(-2*nuU*tU), exp(-2*nuL*tL)]</code>, evaluated with rational enclosures.
+Coordinates use the positive semigroup directly:</p>
+<div class="highlight"><pre><span></span><code>x1(t) = ((1+e)*x1(0) + (1-e)*x2(0))/2
+x2(t) = ((1-e)*x1(0) + (1+e)*x2(0))/2,   e=exp(-2*nu*t).
+</code></pre></div>
+<p>Monotonicity in the initial coordinates and corner extrema in <code>e</code> give
+sound boxes while preserving the mean/contrast dependency. The mean and
+contrast are also retained as separate observable tests. The shared exponent
+cap is 4096 and the reference accepts at most 10,000 samples; these are
+computation guards, not physical constants. Rational output endpoints must
+not be converted to ordinary floats and called certified bounds.</p>
+<p><code>calibrate_p2_transport</code> checks the known undirected two-node positive edge;
+<code>forecast_p2_transport</code> consumes only frozen calibration, reserved identities,
+initial measurements and timestamps. The latter must be a predeclared schedule
+or clock metadata available without inspecting future response values.
+<code>write_p2_transport_forecast</code> saves exact rational endpoints as hexadecimal
+numerator/denominator strings; retain its content hash before opening outcomes.
+<code>score_p2_transport</code> reuses the whole-acquisition separation and requires that
+issued hash, matching units/times and unchanged initialization.</p>
+<p>Disjoint coordinate, mean or contrast boxes give
+<code>incompatible_with_declared_bounds</code>. If every outer box overlaps, the result
+is only <code>not_falsified_by_enclosures</code>: different boxes may admit different
+latent parameters. That is neither a joint-feasibility proof nor statistical
+acceptance. The physical status remains <code>not_admitted_by_this_score</code> in both
+cases. Excessive tube width requires a preregistered resolution/power decision;
+it cannot become positive evidence just because all observations overlap.</p>
+<p>Independent analytic/Decimal fixtures and wrong-mean, wrong-identity and
+changed-forecast controls exercise this boundary. These are software/model
+tests, not measured data. Existing manifest/sidecar owners can bind the saved
+bytes without acquiring a second evidence ledger. P1's Euler tests and their
+historical checkpoint remain unchanged.</p>
+<h2 id="proposed-pilot-resources-not-instrument-tolerances">Proposed pilot resources, not instrument tolerances<a class="headerlink" href="#proposed-pilot-resources-not-instrument-tolerances" title="Permanent link">&para;</a></h2>
+<p>The following are provisional engineering caps for admission planning.
+They do not authorize acquisition with unresolved physical tolerances and
+are not TNFR constants or a statistical power calculation.
+Under the computer-only constraint these apparatus/preparation rows are
+requirements a matching public archive would need to document, not tasks
+for the user to build or acquire equipment.</p>
+<table>
+<thead>
+<tr>
+<th>Resource</th>
+<th>Proposed cap and stop rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Apparatus</td>
+<td>One P2 setup, two synchronized observation channels, one unchanged link</td>
+</tr>
+<tr>
+<td>Preparations</td>
+<td>Two calibration runs at one nonzero prepared contrast; two held-out contrast conditions with three independent preparations each: eight total</td>
+</tr>
+<tr>
+<td>Record size</td>
+<td>At most 10,000 paired samples per run and 100 MiB for the complete raw/calibration/prediction bundle</td>
+</tr>
+<tr>
+<td>Acquisition duration</td>
+<td>At most 30 minutes per run; choose a shorter fixed horizon only from apparatus/calibration evidence before held-out acquisition</td>
+</tr>
+<tr>
+<td>Data search/download</td>
+<td>This metadata review is complete. Before any later signal download, pin exact files and compressed/expanded bounds; proposed pilot caps 100 MiB compressed and 250 MiB expanded</td>
+</tr>
+<tr>
+<td>Computation</td>
+<td>One frozen calibration specification and one prediction per reserved preparation; no automatic refitting or larger campaign after rejection/inconclusiveness</td>
+</tr>
+</tbody>
+</table>
+<p>Sampling interval, voltage/temperature limits, switch settling allowance,
+clock accuracy, sensor skew, error bars and acceptance thresholds remain
+unset. They must be supplied by the selected instrument and calibration,
+not by these sample/storage budgets. If an adequate record cannot fit the
+caps, revise and version the protocol before observing reserved outcomes.</p>
+<h2 id="evidence-bundle-and-current-exit-gate">Evidence bundle and current exit gate<a class="headerlink" href="#evidence-bundle-and-current-exit-gate" title="Permanent link">&para;</a></h2>
+<p>Reuse <a href="../../../src/tnfr/research/core_manifests.py">CoreExperimentManifest</a>
+and <a href="../../../src/tnfr/research/evidence_sidecar.py">EvidenceSidecar</a>. Retain
+this annex, exact raw/calibration/evaluation file identities, source revision,
+raw timestamps/masks, immutable fit, forecasts and complete result ledger in
+one accessible bundle. <code>validate_metadata()</code> checks declarations only;
+<code>validate_for_admission(root_dir=...)</code> additionally checks real file bytes.
+Neither establishes physical adequacy, temporal commitment or scientific
+truth. Preserve an independently auditable pre-evaluation forecast record;
+a later digest alone cannot prove when a prediction was issued.</p>
+<p>Declare the five measurement-provenance questions explicitly: future
+samples, outcome-derived wiring, fitting on evaluation data, evaluation
+labels and post-selection. An affirmative answer can describe exploratory
+evidence but cannot silently become prospective validation. Numerical
+certificate tolerance is separate from the instrument/statistical budget.</p>
+<p>P2 remains <code>not_admitted</code> until one accessible public-data choice resolves
+the missing table, freezes all tolerances and resources, and passes the
+state/clock/identifiability gate. Volts is now a completed exploratory record,
+with an unfavorable comparison against the affine control, and is not reserved
+data for a later redesign. The execution plan owns when this parked branch resumes;
+another fit to this same curve cannot supply missing apparatus evidence or
+independent preparations. No apparatus purchase/acquisition is requested.
+No admitted physical prediction has yet been tested.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../../docs/assets/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+      
+    
+  </body>
+</html>

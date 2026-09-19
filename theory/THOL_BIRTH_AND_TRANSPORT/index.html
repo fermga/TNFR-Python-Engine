@@ -1,0 +1,4302 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/THOL_BIRTH_AND_TRANSPORT/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Causal THOL birth and an admitted transport connection - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#causal-thol-birth-and-an-admitted-transport-connection" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Causal THOL birth and an admitted transport connection
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/CLI_AND_SDK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI and SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FUNDAMENTAL_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NODAL_PARAMETER_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NODAL_RESEARCH_STRATEGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/FIVE_STAGE_EXECUTION_PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Active execution plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DERIVED_EPI_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/archive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Historical archive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../factorization-lab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Applications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Applications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../primality-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.github/WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-deriving-a-birth-trigger-from-actual-nodal-evolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Deriving a birth trigger from actual nodal evolution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-a-bounded-preparation-with-the-unchanged-default-threshold" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. A bounded preparation with the unchanged default threshold
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-birth-creates-a-node-coupling-must-supply-an-actual-edge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Birth creates a node; Coupling must supply an actual edge
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-what-the-new-edge-changes-in-the-canonical-pressure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. What the new edge changes in the canonical pressure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-connection-has-an-exact-energy-reset-not-a-conservation-claim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Connection has an exact energy reset, not a conservation claim
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-a-precise-boundary-for-the-connected-patterns-next-evolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. A precise boundary for the connected pattern's next evolution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-shared-observations-and-falsification-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Shared observations and falsification criteria
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-selection-actual-dispatch-and-the-unique-parent-obstruction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Selection, actual dispatch and the unique-parent obstruction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-set-valued-eligibility-and-explicit-finite-dispatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Set-valued eligibility and explicit finite dispatch
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-preparation-dependence-and-distributed-explicit-birth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Preparation dependence and distributed explicit birth
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-distributed-generated-support-and-pressure-feedback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Distributed generated support and pressure feedback
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11. Distributed generated support and pressure feedback">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#energy-accounting-and-the-capacity-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Energy accounting and the capacity source
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#retained-finite-outcome-and-next-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Retained finite outcome and next boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-fixed-original-model-profile-under-a-later-um-stage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Fixed original model profile under a later UM stage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="12. Fixed original model profile under a later UM stage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#finite-comparison-and-immediate-rate-decomposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finite comparison and immediate rate decomposition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reproduction-and-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reproduction and validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-lineage-scoped-coordination-on-the-generated-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Lineage-scoped coordination on the generated support
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="13. Lineage-scoped coordination on the generated support">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#matched-outcome-and-the-child-ring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Matched outcome and the child ring
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evidence-and-reproduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidence and reproduction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#131-full-triad-identity-and-boundary-exchange-on-the-retained-child-ring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.1 Full-triad identity and boundary exchange on the retained child ring
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-state-sufficiency-of-actual-parent-child-families" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. State sufficiency of actual parent-child families
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="14. State sufficiency of actual parent-child families">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exact-obstruction-and-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exact obstruction and memory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#source-centering-and-observer-resets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source, centering and observer resets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-evidence-and-reproduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation, evidence and reproduction
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#15-minimal-sufficient-linear-state-for-the-retained-family-observations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. Minimal sufficient linear state for the retained family observations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="15. Minimal sufficient linear state for the retained family observations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rank-and-sufficient-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rank and sufficient state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-this-resolves-for-the-generative-route" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What this resolves for the generative route
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-evidence-and-reproduction_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation, evidence and reproduction
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#16-full-epi-response-to-one-child-emission" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16. Full-EPI response to one child Emission
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="16. Full-EPI response to one child Emission">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#declared-intervention-and-reserved-prediction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Declared intervention and reserved prediction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#response-observables-and-claim-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Response observables and claim boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#measured-finite-response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Measured finite response
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evidence-and-reproduction_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidence and reproduction
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#17-one-native-composite-runtime-response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        17. One native composite runtime response
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="17. One native composite runtime response">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#predeclared-protocol-and-interpretation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Predeclared protocol and interpretation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#measured-response-and-actual-active-mechanisms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Measured response and actual active mechanisms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shared-implementation-evidence-and-reproduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shared implementation, evidence and reproduction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#global-phase-direction-near-the-symmetric-input" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Global phase direction near the symmetric input
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#18-five-additional-native-policy-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        18. Five additional native policy steps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="18. Five additional native policy steps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed-protocol-and-shared-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed protocol and shared implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#actual-response-and-policy-gates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Actual response and policy gates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reproduction-and-retained-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reproduction and retained evidence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#19-retained-reset-accounting-and-phase-conditioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        19. Retained reset accounting and phase conditioning
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="19. Retained reset accounting and phase conditioning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sequential-enal-and-the-pressure-actually-consumed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sequential EN/AL and the pressure actually consumed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#one-held-gain-phase-calculation-and-its-ordering-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One held-gain phase calculation and its ordering control
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evidence-and-return-to-the-generative-question" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidence and return to the generative question
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="causal-thol-birth-and-an-admitted-transport-connection">Causal THOL birth and an admitted transport connection<a class="headerlink" href="#causal-thol-birth-and-an-admitted-transport-connection" title="Permanent link">&para;</a></h1>
+<p><strong>Status:</strong> Exact finite acceleration, edge-reset and declared-action selection
+obstructions, with bounded canonical runtime controls. The selection/dispatch
+audit is complete in its stated scope; autonomous generation and persistent
+self-restoring localization remain open.
+<strong>Research links:</strong> B2.d.6/O3.a, S3, S8, S9, S10 and S16.</p>
+<h2 id="1-deriving-a-birth-trigger-from-actual-nodal-evolution">1. Deriving a birth trigger from actual nodal evolution<a class="headerlink" href="#1-deriving-a-birth-trigger-from-actual-nodal-evolution" title="Permanent link">&para;</a></h2>
+<p>Consider a fixed simple unit cycle with uniform held capacity <code>nu&gt;0</code>, scalar
+EPI <code>x</code>, and a regular phase twist strictly inside the effective U3 gate
+and the neighbor semicircle boundary. Its phase, capacity and topology
+pressure gradients vanish. With the existing fully normalized EPI weight
+<code>e=w_epi&gt;0</code>, define <code>c=e*nu</code> and <code>L=I-W/2</code>. The canonical nodal equation is</p>
+<div class="arithmatex">\[
+\dot x=-cLx.
+\]</div>
+<p>Two successive exact refreshed Euler segments of positive durations
+<code>h1,h2</code> give</p>
+<div class="arithmatex">\[
+x_1=(I-ch_1L)x_0,\qquad
+x_2=(I-ch_2L)x_1.
+\]</div>
+<p>Their secants satisfy <code>s1=-c*L*x0</code> and <code>s2=-c*L*x1</code>. The same three-point
+acceleration used by
+<a href="../../src/tnfr/operators/nodal_equation.py"><code>compute_d2epi_dt2</code></a> therefore has
+the exact reference identity</p>
+<div class="arithmatex">\[
+\widehat A=\frac{2(s_2-s_1)}{h_1+h_2}
+=\frac{2h_1c^2}{h_1+h_2}L^2x_0.
+\]</div>
+<p>The first duration occurs in the numerator because the second refreshed
+rate is evaluated at the endpoint of the first Euler segment. This is
+a finite solver identity, not an asserted exact second derivative of
+the continuous exponential trajectory. The sufficient convex conditions
+<code>c*h_j&lt;=1</code> keep all EPI endpoints in the convex hull of the initial field;
+clipping and runtime arithmetic still require observed residuals.</p>
+<p>On an even cycle let <code>v_i=(-1)^i</code>, so <code>Lv=2v</code>, and prepare
+<code>x0=b*1+a*v</code>. Then</p>
+<div class="arithmatex">\[
+\widehat A_i=
+\frac{8h_1c^2a}{h_1+h_2}v_i.
+\]</div>
+<p>The default THOL magnitude threshold is crossed when</p>
+<div class="arithmatex">\[
+\frac{8h_1(e\nu)^2|a|}{h_1+h_2}&gt;\tau.
+\]</div>
+<p>This is a derived sufficient preparation condition. It leaves the
+existing threshold and operator coefficients unchanged and supplies no
+independent acceleration law. Runtime admission additionally requires
+the actual operator grammar and parent domain checks.</p>
+<h2 id="2-a-bounded-preparation-with-the-unchanged-default-threshold">2. A bounded preparation with the unchanged default threshold<a class="headerlink" href="#2-a-bounded-preparation-with-the-unchanged-default-threshold" title="Permanent link">&para;</a></h2>
+<p>The finite C8 preparation uses alternating EPI levels <code>2</code> and <code>1/2</code>,
+unit capacity and winding one. Its scalar chart bounds are explicitly
+<code>[-4,4]</code>; these are declared experiment bounds rather than the default
+<code>[-1,1]</code> bounds. Here <code>b=5/4</code>, <code>a=3/4</code>. Two refreshed segments of duration
+<code>h1=h2=1/4</code> give</p>
+<div class="arithmatex">\[
+\widehat A_i=3e^2v_i,\qquad
+x_2=\frac54\mathbf1+
+\frac34(1-e/2)^2v.
+\]</div>
+<p>Using the materialized default normalized coefficient
+<code>e=0.18315345241335917</code>, the positive trigger is approximately
+<code>0.1006355614</code>, above the unchanged default <code>tau=0.1</code>. The Euler
+coefficients are below <code>1/2</code>, so this exact reference remains within the
+initial interval <code>[1/2,2]</code> and inside the declared chart bounds. The
+threshold margin is finite; the runtime comparison records its actual
+three samples and arithmetic residual rather than assuming equality
+with the symbolic calculation.</p>
+<p>Actual Coherence/Dissonance preparation supplies the required operator
+context. Canonical pressure is refreshed before the two physical
+segments. The three samples are consequently generated by those executed
+segments, rather than inserted as a desired threshold-crossing history.
+Choosing one high-EPI parent for THOL remains an explicit target policy;
+it is not a claim that the location emerged by spontaneous symmetry
+breaking.</p>
+<h2 id="3-birth-creates-a-node-coupling-must-supply-an-actual-edge">3. Birth creates a node; Coupling must supply an actual edge<a class="headerlink" href="#3-birth-creates-a-node-coupling-must-supply-an-actual-edge" title="Permanent link">&para;</a></h2>
+<p>The distinction established in
+<a href="../THOL_PRESSURE_FEEDBACK/">THOL pressure feedback</a> remains essential:
+public THOL creates an initially isolated child with a triad and hierarchy
+metadata. The node does not enter its parent's neighbor-pressure walk
+through the metadata alone. Its initial pressure is zero, capacity is
+the existing <code>0.95</code> multiple of the parent capacity, and phase is inherited.
+Its EPI is the bounded output of the existing metabolic amplitude map.</p>
+<p>This isolated birth also has an exact transport-energy boundary. Old EPI and
+conductance remain fixed, so for the Dirichlet matrix <code>B=D-W</code>,</p>
+<div class="arithmatex">\[
+B^+=\operatorname{diag}(B,0),\qquad x^+=(x,x_h),\qquad
+E_D(x^+)=\tfrac12(x^+)^T B^+x^+=E_D(x).
+\]</div>
+<p>The edge-based energy cannot see the isolated child's form. This is not a
+zero physical cost of creation. Although its capacity is positive, its
+reversible weight <code>d_h/nu_h</code> is zero until attachment; the connected,
+positive-metric forced-profile theorem cannot be applied at this intermediate
+state. The <a href="../../tests/physics/test_thol_birth_transport_energy_scope.py">isolated-birth energy test</a>
+checks the zero-block identity and rejects use of the same-support reset
+observer across the dimensional jump. After birth, that existing observer
+can account for UM on two snapshots of the same enlarged node set.</p>
+<p>An actual graph-backed Coupling operation can subsequently consider the
+child as a functional-link candidate. The candidate inventory must
+include the new node; a retained prebirth sample of graph nodes need
+not do so. The candidate must pass both the U3 phase condition and the
+existing compatibility threshold. There is no automatic parent-child
+edge implied by THOL's hierarchy.</p>
+<p>The parent target must already have a compatible neighbor when the
+hard U3 gate is checked, before functional candidates are considered.
+Targeting the isolated child, or including it as a target in an all-node
+stage, fails that gate despite its inherited phase alignment. The
+successful route targets the parent with its existing cycle neighbors.</p>
+<p>The
+<a href="../../src/tnfr/operators/_coupling_stage_kernel.py">Coupling proposal kernel</a>
+computes link weight from final merged phases and the snapshot EPI/sense
+inputs. In its scalar regime this has the form</p>
+<div class="arithmatex">\[
+\omega=\tfrac12\left(1-\frac{|\operatorname{wrap}
+(\phi_i-\phi_j)|}{\pi}\right)
++\tfrac14\left(1-\frac{|x_i-x_j|}
+{|x_i|+|x_j|+\epsilon}\right)
++\tfrac14(1-|S_i-S_j|),
+\]</div>
+<p>with the existing epsilon and sense-index conventions. The implementation
+evaluates the EPI ratio with scaling to preserve its numeric domain.
+The default compatibility threshold is <code>pi/(pi+1)</code>. The resulting
+positive conductance is an operator-derived weight, not an independently
+fitted parent-child coupling strength.
+Inherited equal phase alone is insufficient: the EPI and sense-index
+terms can still place the candidate below the compatibility threshold.</p>
+<p>Parent-target UM computes its phase, capacity and direct pressure
+proposals from the old compatible neighborhood before adding the
+functional edge. The newly considered child is therefore not silently
+included in that same call's original neighbor capacity mean. Default
+bidirectional UM can also change the parent's old neighbors' phases.
+The full before/after triads and the subsequent pressure refresh must
+be observed; a pure edge-only model does not describe every UM channel.</p>
+<h2 id="4-what-the-new-edge-changes-in-the-canonical-pressure">4. What the new edge changes in the canonical pressure<a class="headerlink" href="#4-what-the-new-edge-changes-in-the-canonical-pressure" title="Permanent link">&para;</a></h2>
+<p>Keep scalar EPI fixed across a new undirected edge <code>i-j</code> with positive
+weight <code>omega</code>. For endpoint <code>i</code>, let <code>d_i</code> be its old weighted strength
+and <code>mx_i</code> its old weighted EPI neighbor mean. If <code>d_i&gt;0</code>, the change of
+the normalized EPI gradient is</p>
+<div class="arithmatex">\[
+g^+_{x,i}-g^-_{x,i}
+=\frac{\omega}{d_i+\omega}(x_j-mx_i).
+\]</div>
+<p>For a former isolate, the new single-neighbor gradient is instead
+<code>g_x^+=x_j-x_i</code>, independently of the strictly positive incident weight.
+This is normalization of the actual adjacency, not infinite coupling.</p>
+<p>The capacity channel uses the <strong>unweighted unique neighbor support</strong>.
+With old neighbor count <code>k_i&gt;0</code> and mean capacity <code>bar_nu_i</code>, its edge-only
+change is</p>
+<div class="arithmatex">\[
+g^+_{\nu,i}-g^-_{\nu,i}
+=\frac{\nu_j-\bar\nu_i}{k_i+1}.
+\]</div>
+<p>A former isolate gets <code>nu_j-nu_i</code>. Zero-weight support edges can affect
+capacity, phase and topology while contributing no EPI conductance;
+the weighted EPI walk cannot replace those other channel conventions.
+If UM also changes capacity, evaluate these support-only identities on
+one declared held triad and account for the capacity write separately.</p>
+<p>For the actual unit-cycle parent joined to one isolated child, denote
+the parent's EPI by <code>H</code>, its old two neighbors' common EPI by <code>J</code>, and
+the child's EPI by <code>z</code>. For the ideal closed-form reference with parent
+capacity one and child capacity <code>19/20</code>, the endpoint gradients are</p>
+<div class="arithmatex">\[
+g_{x,p}^+=\frac{2J+\omega z}{2+\omega}-H,\qquad
+g_{x,c}^+=H-z,\qquad
+g_{\nu,p}^+=-\frac1{60},\qquad
+g_{\nu,c}^+=\frac1{20}.
+\]</div>
+<p>The symmetric parent-target phase update leaves the child and parent
+phases equal in the exact preparation. Their phase pressures vanish,
+so the refreshed child pressure is</p>
+<div class="arithmatex">\[
+p_c=e(H-z)+\frac{w_{\nu}}{20}.
+\]</div>
+<p>The production damping coefficient is binary64 <code>0.95</code>, not the exact
+rational <code>19/20</code>. For its exact represented capacity difference
+<code>delta=1-Fraction(float(0.95))</code>, replace <code>-1/60</code> and <code>1/20</code> by
+<code>-delta/3</code> and <code>delta</code>, respectively, including the pressure formula.</p>
+<p>The default topology weight is zero. For a configured nonzero topology
+channel, the new degree-neighbor gradients are <code>-4/3</code> at the parent,
+<code>2</code> at the child, <code>1/2</code> at each old neighbor of the parent, and zero
+elsewhere. These formulas use a simple unit undirected cycle; arbitrary
+weighted or parallel-edge graphs require the implementation's actual
+degree and unique-support conventions.</p>
+<p>The old neighbors can acquire nonzero phase pressure after bidirectional
+UM. The newly connected whole graph therefore need not follow pure EPI
+diffusion, even when the parent and child formulas above simplify.
+Likewise the previous cycle coordinate <code>x+(w_vf/e)*nu</code> does not generally
+cancel pressure once weighted EPI transport and unweighted capacity
+transport differ.</p>
+<h2 id="5-connection-has-an-exact-energy-reset-not-a-conservation-claim">5. Connection has an exact energy reset, not a conservation claim<a class="headerlink" href="#5-connection-has-an-exact-energy-reset-not-a-conservation-claim" title="Permanent link">&para;</a></h2>
+<p>On fixed ordered support, let <code>W</code> be symmetric conductance, <code>D</code> its
+strength diagonal and <code>B=D-W</code>. The existing EPI Dirichlet diagnostic is</p>
+<div class="arithmatex">\[
+F_W(x)=\tfrac12x^\top Bx
+=\tfrac12\sum_{\{i,j\}}w_{ij}(x_i-x_j)^2.
+\]</div>
+<p>Compare the graph <strong>after birth but before UM</strong> with the graph after
+the edge commit, including the child in both node orders. If UM leaves
+EPI unchanged, its exact edge reset is</p>
+<div class="arithmatex">\[
+F_{W^+}(x)-F_{W^-}(x)
+=\tfrac12\sum_{\{i,j\}}(w^+_{ij}-w^-_{ij})(x_i-x_j)^2.
+\]</div>
+<p>For the single new parent-child edge this is
+<code>omega*(H-z)^2/2&gt;=0</code>. The change reflects a new conductance in the
+diagnostic while EPI is fixed; it is not proof of conserved energy or
+new EPI creation. It is also not a birth-energy theorem across different
+node supports.</p>
+<p>After the edge commit, a held-support nodal rate <code>r=diag(nu)*p</code> has</p>
+<div class="arithmatex">\[
+\dot F=(Bx)^\top r.
+\]</div>
+<p>The EPI-channel contribution alone is
+<code>-e*(Bx)^T*diag(nu_i/d_i)*(Bx)&lt;=0</code>, with zero mobility at isolates.
+The capacity, phase and topology terms keep their own signs; a full
+multichannel decrease does not follow from the EPI term. A subsequent
+exact held-input Euler interval has the finite identity</p>
+<div class="arithmatex">\[
+F(x+h r)-F(x)=h(Bx)^\top r+\tfrac12h^2r^\top Br.
+\]</div>
+<p>These identities reuse the existing
+<a href="../../src/tnfr/physics/structural_diffusion.py">conductance and diffusion geometry</a>.
+They measure how a created child becomes dynamically connected and how
+the changed structure enters the nodal channels.</p>
+<h2 id="6-a-precise-boundary-for-the-connected-patterns-next-evolution">6. A precise boundary for the connected pattern's next evolution<a class="headerlink" href="#6-a-precise-boundary-for-the-connected-patterns-next-evolution" title="Permanent link">&para;</a></h2>
+<p>Freeze the connected post-UM support, capacities and phases before any
+later Silence or structural event. Assume positive capacities and fixed
+symmetric conductance on a connected graph. With <code>D=diag(d_i)</code>, define
+the held non-EPI pressure contribution</p>
+<div class="arithmatex">\[
+F=w_{\nu}g_{\nu}+w_{\phi}g_{\phi}+w_{\mathrm{topo}}g_{\mathrm{topo}}.
+\]</div>
+<p>The refreshed canonical model, while its scalar chart remains valid, is</p>
+<div class="arithmatex">\[
+\dot x=\operatorname{diag}(\nu)(-eD^{-1}Bx+F).
+\]</div>
+<p>A zero-pressure equilibrium requires <code>e*B*x=D*F</code>. Since the symmetric
+connected Laplacian has kernel <code>span{1}</code>, the necessary and sufficient
+compatibility condition is</p>
+<div class="arithmatex">\[
+\mathbf1^\top DF=\sum_i d_iF_i=0.
+\]</div>
+<p>This is an exact balance condition for the actual channel conventions.
+It is not implied by each channel separately resembling neighbor
+averaging: the EPI channel's stationary weights are the conductance
+strengths, while the capacity channel uses unweighted support.</p>
+<p>In the ideal reflected C8 preparation, the parent-target bidirectional
+UM preserves reflection symmetry of the graph and capacities. Its phase
+gradient is antisymmetric under that reflection, with zero at the
+fixed nodes, so <code>sum(d_i*g_phi_i)=0</code> inside the strict chart. With the
+default zero topology weight and ideal child capacity <code>19/20</code>, the
+capacity contribution gives</p>
+<div class="arithmatex">\[
+\sum_i d_iF_i
+=w_{\nu}\left[-\frac{2+\omega}{60}+\frac{\omega}{20}\right]
+=\frac{w_{\nu}(\omega-1)}{30}&lt;0.
+\]</div>
+<p>Here the observed link has <code>0&lt;omega&lt;1</code>. Consequently this frozen ideal
+structure has no zero-pressure stationary EPI. Reflection cancellation
+is an exact-model statement; the actual binary64 weighted phase
+contribution must be measured as a residual.
+For the exact represented capacity difference <code>delta</code> above, the
+weighted capacity contribution is instead
+<code>2*w_vf*(omega-1)*delta/3</code>, with the same strictly negative sign.</p>
+<p>The captured connected state confirms that sign: the weighted capacity
+pressure is approximately <code>-0.0003191519727040398</code>, while the weighted
+stored pressure is <code>-0.0003191519727039513</code>. Their weighted phase and
+arithmetic remainder is approximately <code>8.86e-17</code>. The corresponding
+instantaneous represented nodal mean rate is <code>-1.8015381161580725e-5</code>.
+These quantities are read before the subsequent flow and final SHA;
+they are not observations of a future limiting drift.</p>
+<p>There is a different conditional possibility. Define</p>
+<div class="arithmatex">\[
+\bar v=\frac{\sum_i d_iF_i}{\sum_i d_i/\nu_i}.
+\]</div>
+<p>The weighted EPI mean has derivative <code>bar_v</code>. The equation</p>
+<div class="arithmatex">\[
+eBz=DF-\bar v\,(d_i/\nu_i)_i
+\]</div>
+<p>is compatible and determines a relative profile <code>z</code> up to a constant.
+Then <code>x(t)=bar_v*t*1+z</code> solves the held model. Subtracting that solution
+leaves homogeneous fixed-capacity EPI diffusion, so relative deviations
+decay on a connected graph. This conclusion concerns an unrestricted
+scalar chart with fixed coefficients. A nonzero mean drift eventually
+encounters finite EPI bounds; it gives no asymptotic claim for a clipped
+runtime or for a later UM/SHA policy.</p>
+<p>The next bounded question is therefore to distinguish a held-support
+relative profile with mean drift from restoration under further admitted
+structural operations. The <a href="../FORCED_SUPPORT_BALANCE/">frozen-support follow-up</a>
+now implements the exact relative-profile reference, nonlinear forcing
+read-out and finite comparison. A repeated-policy theorem remains open. Neither
+birth, one successful connection nor this compatibility calculation
+establishes a persistent self-restoring localized entity.</p>
+<h2 id="7-shared-observations-and-falsification-criteria">7. Shared observations and falsification criteria<a class="headerlink" href="#7-shared-observations-and-falsification-criteria" title="Permanent link">&para;</a></h2>
+<p><a href="../../src/tnfr/physics/support_transport.py"><code>support_transport.py</code></a> centralizes
+the finite reference budgets on the engine's materialized conductance:</p>
+<ul>
+<li><code>observe_support_transport</code> reads weighted EPI transport, unweighted
+  capacity and topology gradients, Dirichlet energy, and the exact product
+  of represented capacity with <strong>stored</strong> pressure. It does not refresh
+  pressure or identify its remainder as a canonical phase contribution.</li>
+<li><code>observe_support_transport_reset</code> verifies the same-EPI conductance
+  reset on one aligned node set. The child must already be present in
+  both observations; birth itself is outside that identity.</li>
+<li><code>observe_support_transport_euler</code> separates the held-input drift,
+  quadratic Euler term and observed endpoint defect on fixed conductance
+  and capacity. It recomputes detached state fields before checking the
+  identity; publicly constructible observations carry no causal seal.</li>
+</ul>
+<p>These APIs reuse the existing conductance reader and scalar EPI chart.
+Effective binary64 weights and state values are treated as exact real
+coefficients after materialization. A zero budget residual proves the
+displayed algebra for those inputs, not that the caller executed a
+particular solver, refreshed pressure or preserved a future trajectory.</p>
+<p>The bounded campaign in
+<a href="../../benchmarks/thol_birth_transport.py"><code>thol_birth_transport.py</code></a> keeps
+the complete parent-target word <code>IL, OZ, THOL, UM, SHA</code>, checks both
+whole-word validators and the live gate before each public application,
+and records the actual graph mutations. Its birth samples come from
+one executor-owned refreshed physical partition. Its later fixed-support
+Euler intervals have explicit canonical refreshes at the captured live
+endpoints; the final parent SHA follows the measured transport endpoint.
+Atomicity belongs to each executor invocation, rather than to this
+entire changing-node orchestration.</p>
+<p>The recorded attached case has the following finite results; displayed
+decimals summarize the captured binary64 states and exact rational budgets.</p>
+<table>
+<thead>
+<tr>
+<th>Quantity</th>
+<th>Observed value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Physical acceleration before THOL</td>
+<td><code>0.10063556139279584</code></td>
+</tr>
+<tr>
+<td>Default birth threshold</td>
+<td><code>0.1</code></td>
+</tr>
+<tr>
+<td>Committed parent-child conductance</td>
+<td><code>0.8357695998168526</code></td>
+</tr>
+<tr>
+<td>Refreshed connected child pressure</td>
+<td><code>0.2743391213451684</code></td>
+</tr>
+<tr>
+<td>Child EPI at times <code>0.5, 0.75, 1.0</code></td>
+<td><code>0.3869753, 0.4521308, 0.5118328</code></td>
+</tr>
+<tr>
+<td>Same-EPI support energy reset</td>
+<td><code>+0.9177477068340985</code></td>
+</tr>
+<tr>
+<td>Two subsequent flow energy changes</td>
+<td><code>-1.2273590449, -1.0125654108</code></td>
+</tr>
+</tbody>
+</table>
+<p>The support reset and both Euler energy decompositions have exactly zero
+rational identity residual. The largest captured attached Euler state
+defect is <code>15/144115188075855872</code>, approximately <code>1.04e-16</code>; it is retained
+in the energy accounting rather than set to zero. These are finite
+observations, not uniform numerical-error bounds.
+The observed acceleration differs from the exact represented reference
+<code>3*e^2</code> by approximately <code>-2.04e-15</code>. Full states, fractions and source
+provenance are retained locally in
+<code>artifacts/research/thol_birth_transport.json</code>. Regenerate this ignored
+artifact with <code>python benchmarks/thol_birth_transport.py</code>.</p>
+<p>The paired controls disable functional linking or retain the prebirth
+candidate sample. They preserve the same birth preparation while
+testing whether an actual transport edge is needed. A successful child
+creation must not be reported as successful coupling in either control.
+Both controls keep the child pressure zero and its EPI exactly at the
+birth value through the measured intervals. The 22 independent exact
+observer tests are in
+<a href="../../tests/physics/test_support_transport.py"><code>test_support_transport.py</code></a>;
+the 17 bounded runtime checks are in the
+<a href="../../tests/physics/test_thol_birth_transport_runtime.py">runtime test suite</a>.</p>
+<p>The proposed mechanism would be contradicted by a claimed causal birth
+whose live history fails the unchanged acceleration threshold, a claimed
+connection absent from the actual UM commit, or child transport without
+a pressure-producing adjacency change under the stated isolated control.
+A disagreement with the exact edge/Euler identities requires checking
+the captured state, support and numerical defect rather than inferring
+new dynamics. Persistent restoration requires additional evidence after
+the finite birth/attachment sequence and must distinguish the mean-drift
+obstruction in Section 6 from a zero-pressure localized equilibrium.</p>
+<h2 id="8-selection-actual-dispatch-and-the-unique-parent-obstruction">8. Selection, actual dispatch and the unique-parent obstruction<a class="headerlink" href="#8-selection-actual-dispatch-and-the-unique-parent-obstruction" title="Permanent link">&para;</a></h2>
+<p>The bounded <a href="../../benchmarks/selection_birth_closure.py">selection audit</a> reuses
+<code>prepare_birth_selection_source</code> from the existing birth benchmark. Every
+branch executes a fresh IL/OZ and two-segment physical preparation; no history
+is invented, removed or copied from a postbirth graph. Its target zero is an
+explicit mark. Observed states are declared projections, not seals of the
+complete runtime state.</p>
+<p>The ordinary runtime refreshes pressure and computes Si before asking its
+actual built-in selector. Both <code>DefaultGlyphSelector</code> and
+<code>ParametricGlyphSelector</code> propose IL at all eight nodes in this preparation;
+the recorded commits are also IL, with eight nodes remaining. Si is
+<code>0.9417004454081352</code>, above the unchanged selector <code>si_hi=0.5</code>, even though
+the parent's three-sample acceleration is above the public birth threshold.
+The selector's cached acceleration (<code>0.10063556139279795</code>) and the public
+operator's three-point result (<code>0.10063556139279584</code>) are recorded separately.
+Neither value is overwritten to obtain a desired decision.</p>
+<p>Thus the birth trigger is not sufficient for birth under either tested
+built-in policy. This is a counterexample to sufficiency for this preparation,
+not a proof that no other state can select THOL. The heuristic selector
+thresholds, weights, hysteresis and grammar remain configured constitutive
+choices; this audit does not derive them uniquely from the nodal equation.</p>
+<p>Separate explicitly requested THOL controls show the dispatch distinction:</p>
+<table>
+<thead>
+<tr>
+<th>Parent intervention</th>
+<th>Nodes after dispatch</th>
+<th>Pressure used by held Euler</th>
+<th>Pressure used after canonical refresh</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>None</td>
+<td>8</td>
+<td><code>-0.22671636673672074</code></td>
+<td><code>-0.22671636673672074</code></td>
+</tr>
+<tr>
+<td>Primitive <code>apply_glyph(..., "THOL")</code></td>
+<td>8</td>
+<td><code>-0.21870804321347506</code></td>
+<td><code>-0.22671636673672074</code></td>
+</tr>
+<tr>
+<td>Public <code>SelfOrganization()</code></td>
+<td>9, with one isolated child</td>
+<td><code>-0.21870804321347506</code></td>
+<td><code>-0.22671636673672074</code></td>
+</tr>
+</tbody>
+</table>
+<p>These controls start at the same recorded source. Both THOL routes update
+parent pressure; only the public route creates a child. With duration <code>1/4</code>,
+the held-pressure parent endpoint is <code>1.8142476224736617</code>; a refresh restores
+the control endpoint <code>1.8122455415928502</code>. The public child has zero pressure
+and unchanged EPI in both isolated cases. Exact held-input predictions and
+binary64 residuals are retained. The three existing transport controls then
+verify that a public UM connection and a sample containing the child are
+needed for its observed positive transport response. That positive word
+remains an explicit intervention, not an output of the tested selectors.</p>
+<p>An independent exact obstruction clarifies what selecting one parent requires.
+For a deterministic equivariant selection <code>s(gX)=g s(X)</code>, let <code>H_X</code> be the
+subgroup preserving the declared state and relations. For every <code>g in H_X</code>,</p>
+<div class="arithmatex">\[s(X)=s(gX)=g s(X).\]</div>
+<p>Therefore the selected candidate must be fixed by <strong>every</strong> element of <code>H_X</code>.
+If the invariant candidate set has no such point, a deterministic equivariant
+single choice is impossible on that state orbit. An orbit or candidate set
+can still be selected; this argument does not forbid distributed activation,
+equivariant random distributions, or selection after an explicitly declared
+asymmetry. Their execution laws would require their own derivations.</p>
+<p><a href="../../src/tnfr/physics/selector_symmetry.py"><code>derive_selector_symmetry</code></a> checks a
+supplied finite permutation group, exact nodal labels and optional exact
+directed relation matrix, then computes the joint stabilizer, candidate
+orbits and fixed candidates. Candidate membership must itself be invariant;
+an asymmetric restriction must first be declared as state information.
+Incomplete supplied groups, nonexact labels and exhausted validation budgets
+fail without a partial result. A smaller supplied group can prove an
+obstruction, but absence of an obstruction cannot exclude missing symmetries.</p>
+<p>For the detached uniform C8 example with empty histories, uniform triad and
+all dihedral actions, the eight candidates form one orbit and none is fixed.
+Adding a parent mark at zero leaves fixed vertices zero and four. This removes
+that obstruction without deriving a unique selector. These examples are not
+the wound, IL/OZ-marked runtime source. Topology symmetry alone would omit
+phase, history, target, sample order and policy information.</p>
+<p>The <a href="../../tests/physics/test_thol_birth_relabeling.py">extended relabeling test</a>
+compares two independent marked preparations under one explicit label map,
+extending it to newborns by parent and birth ordinal. It checks raw/refreshed
+birth and coupling, all node attributes except declared wall-clock telemetry,
+edge attributes, neighbor order, hierarchy, causal histories and the value
+projection of authenticated preparation receipts. The later SHA timestamp is
+checked for format rather than equality. This finite test retains insertion
+order and the unlimited-candidate policy; it does not establish all-state
+covariance. Its closure follows UM directly, without the two later transport
+intervals of Section 7. The old four-channel comparisons alone could not test
+this newborn correspondence.</p>
+<p>Reproduce the audit with <code>python benchmarks/selection_birth_closure.py</code>.
+Its source-bound local report is
+<code>artifacts/research/selection_birth_closure_2026_09_18.json</code>; the versioned
+<a href="../../tests/physics/test_selection_birth_closure.py">integration tests</a> and
+<a href="../../tests/physics/test_selector_symmetry.py">exact action tests</a> preserve the
+contracts. The report records two actual selector branches, six explicit
+dispatch/refresh controls, three transport controls and two detached exact
+examples. It is a completed mechanism audit with scoped obstructions and
+positive marked controls. Autonomous generation, active maintenance and
+physical identification remain open. The sole task queue remains the
+<a href="../research/FIVE_STAGE_EXECUTION_PLAN/">execution plan</a>.</p>
+<h2 id="9-set-valued-eligibility-and-explicit-finite-dispatch">9. Set-valued eligibility and explicit finite dispatch<a class="headerlink" href="#9-set-valued-eligibility-and-explicit-finite-dispatch" title="Permanent link">&para;</a></h2>
+<p><a href="../../src/tnfr/operators/self_organization_selection.py"><code>observe_self_organization_eligibility</code></a>
+implements the all-current-node relation implied by the preceding audit. For
+the complete declared graph state <code>X</code>, its eligible set is</p>
+<p><code>E(X) = {v : A_v and G_v and P_v and B_v}</code>,</p>
+<p>where <code>A_v</code> is an available three-sample acceleration strictly above the
+resolved threshold in magnitude, <code>G_v</code> is incremental THOL grammar admission,
+<code>P_v</code> is the public application's configured precondition check, and <code>B_v</code>
+is a valid complete public proposal containing an actual child. The last
+condition includes depth, hierarchy, amplitude, metric-input and structural
+checks; an executable pressure-only THOL is not a birth candidate. The result
+preserves the independent checks and errors instead of reducing them to one
+score. Grammar admission alone does not check a complete future word.</p>
+<p>Physical history precedence, endpoint matching and unavailable acceleration
+come from the shared observation owner. Public application preconditions and
+<code>SelfOrganization._prepare_execution</code> retain their existing implementations.
+In particular, the optional gate is active only when both its graph switch
+and the request switch are enabled. The execution <code>window</code> controls history
+retention; it does not replace the runtime grammar's own recent-context window.
+Neither invalid nor short histories are replaced with desired samples.</p>
+<p>The relation returns all candidates in snapshot rank, with set-valued
+membership. It does not choose a single representative. On the eligible
+subset, observation and execution reuse one private merge/validation owner
+in <a href="../../src/tnfr/operators/network_stage.py">network_stage.py</a>: child-name
+collisions are allocated in snapshot rank and the merged hierarchy/support
+is checked on a detached graph. Empty eligibility is vacuously jointly viable
+but causes no stage execution. Joint planning does not invoke monitors and
+cannot guarantee later execution checks will succeed.</p>
+<p>The separate <code>execute_eligible_self_organization_stage</code> function implements
+the explicit policy <strong>all eligible parents once</strong>. It captures graph-owned
+state before materializing its restricted options mapping, freezes option
+values once, restores input side effects, and recomputes the relation. It
+does not accept a caller-supplied observation as authorization. One built-in
+two-phase public THOL stage performs the actual commit; fallback schedules
+are rejected. Successful dispatch checks exactly one new isolated child per
+eligible parent and unchanged original node/edge support, including directed
+and parallel-edge identities. This is not a check of every old attribute.
+Failures restore graph-owned state, including late monitor failures. External
+I/O and resources outside that ownership are not covered. Empty dispatch
+skips even the stage's schedule metadata writes.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">observe_self_organization_eligibility</span><span class="p">,</span>
+    <span class="n">execute_eligible_self_organization_stage</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">observation</span> <span class="o">=</span> <span class="n">observe_self_organization_eligibility</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+<span class="c1"># Explicitly chosen policy; the function rechecks the current graph itself.</span>
+<span class="n">dispatch</span> <span class="o">=</span> <span class="n">execute_eligible_self_organization_stage</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+</code></pre></div>
+<p>The bounded <a href="../../benchmarks/thol_eligibility_dispatch.py">C8 study</a> reuses the
+unchanged causal IL/OZ preparation and its actual physical samples from
+Section 8. It makes no post-dispatch pressure refresh, UM connection or flow.</p>
+<table>
+<thead>
+<tr>
+<th>Evidence</th>
+<th>Configured public policy</th>
+<th>Explicit counterfactual enabling the optional gate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nodes with observed magnitude above <code>tau=0.1</code></td>
+<td>All eight</td>
+<td>All eight</td>
+</tr>
+<tr>
+<td>Complete proposals containing a child</td>
+<td>All eight</td>
+<td>All eight, independently of gate admission</td>
+</tr>
+<tr>
+<td>Incremental THOL grammar admits</td>
+<td>Node <code>0</code> only</td>
+<td>Node <code>0</code> only</td>
+</tr>
+<tr>
+<td>Application preconditions admit</td>
+<td>All eight; optional gate disabled</td>
+<td>Odd nodes only; node <code>0</code> has negative pressure</td>
+</tr>
+<tr>
+<td>Eligible set</td>
+<td><code>{0}</code></td>
+<td>Empty</td>
+</tr>
+<tr>
+<td>Actual dispatch</td>
+<td>One child <code>0_sub_0</code>, degree zero; 9 nodes</td>
+<td>No stage, no child; 8 nodes</td>
+</tr>
+</tbody>
+</table>
+<p>The marked parent's stored pressure is <code>-0.22671636673672074</code>, so forcing
+positive-pressure preconditions would change the tested public policy.
+The counterfactual declares that change explicitly. It does not lower a
+threshold, invent history, choose a replacement parent or dispatch IL instead.
+Both observations preserve the captured structural state and all nodal data.
+The live positive dispatch obtains its own fresh relation inside its transaction.</p>
+<p>These results establish a finite eligibility/dispatch contract, <strong>not an
+endogenous generation law</strong>. Node zero already carries the preparation's
+IL/OZ history. Executing the eligible set remains a supplied policy, and
+isolated creation does not establish active transport or persistence.
+The <a href="../../tests/operators/test_self_organization_selection.py">adapter tests</a>
+also check finite relabelings with transported histories/marks, simultaneous
+multiple parents, name collisions, stale observations, late failures and
+input side effects. Their supplied-state fixtures are distinct from the causal
+C8 experiment; neither group proves all-state numerical covariance.</p>
+<p>Reproduce the source-bound report with
+<code>python benchmarks/thol_eligibility_dispatch.py</code>; its default local output is
+<code>artifacts/research/thol_eligibility_dispatch.json</code>. The
+<a href="../../tests/physics/test_thol_eligibility_dispatch.py">study tests</a> retain the
+eight-proposals/one-admission distinction and the empty-policy control.
+The unresolved origin of preparation asymmetry and dispatch choice is now
+explicit; the next bounded discriminator remains in the sole execution plan.</p>
+<p>The retained run is
+<code>artifacts/research/thol_eligibility_dispatch_2026_09_18.json</code>, with SHA-256
+<code>f16d65ec2ed3e84cc540ecf2acbee2184896ac97ee6e9b92783a0c2dd726ffa5</code>.
+Its manifest identifies the dirty source scope and records both finite branches.
+The delivery passed 200 targeted operator/API/integration tests; validation
+metadata is retained in <code>artifacts/research/thol_eligibility_validation_2026_09_18.json</code>.
+These ignored local artifacts are reproducible outputs, not dependencies of
+the versioned implementation or proofs of future execution.</p>
+<h2 id="10-preparation-dependence-and-distributed-explicit-birth">10. Preparation dependence and distributed explicit birth<a class="headerlink" href="#10-preparation-dependence-and-distributed-explicit-birth" title="Permanent link">&para;</a></h2>
+<p>The <a href="../../benchmarks/thol_preparation_policy.py">bounded preparation study</a>
+compares three actual prefixes on the same initial C8: none, IL/OZ on one
+parent, and IL on all eight nodes followed by OZ on all eight nodes. Each
+all-node operator uses the existing simultaneous public stage, with live
+incremental admission. No history is assigned. The shared
+<a href="../../benchmarks/thol_birth_transport.py"><code>prepare_birth_selection_source</code></a>
+retains the initial checkerboard, capacity, phase, support, factors, birth
+threshold and refreshed physical partition <code>(0.25, 0.25)</code>. Each continuation
+executes its preparation independently; source projections must match before
+the policy comparison proceeds.</p>
+<table>
+<thead>
+<tr>
+<th>Real preparation</th>
+<th>Above-threshold complete birth proposals</th>
+<th>Grammar-admitted / eligible parents</th>
+<th>Explicit all-eligible births</th>
+<th>Default / Parametric runtime births</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No IL/OZ prefix</td>
+<td>8</td>
+<td>None</td>
+<td>0</td>
+<td>0 / 0</td>
+</tr>
+<tr>
+<td>Single-parent IL/OZ</td>
+<td>8</td>
+<td>Prepared parent only</td>
+<td>1</td>
+<td>0 / 0</td>
+</tr>
+<tr>
+<td>Common all-node IL/OZ</td>
+<td>8</td>
+<td>All eight</td>
+<td>8</td>
+<td>0 / 0</td>
+</tr>
+</tbody>
+</table>
+<p>The public optional precondition gate remains disabled, as configured in the
+retained preparation. The observed reference-parent acceleration remains
+<code>0.10063556139279584</code>, above the unchanged <code>tau=0.1</code>. Every case has three
+executor-recorded physical samples. In this fixture the post-preparation EPI,
+capacity, pressure and acceleration vectors agree across the three prefixes.
+IL nevertheless changes a phase representation from <code>0</code> to represented
+<code>2*pi</code>; node data and grammar histories also differ. A real prefix is therefore
+a joint physical/history intervention, not a general guarantee of phase
+neutrality or a synthetic change to grammar marks alone.</p>
+<p>The all-node case commits eight public births in one two-phase stage. Each
+parent receives one isolated child; the graph grows from 8 to 16 nodes with
+its original edges intact. This removes the need to nominate a unique parent
+for this preparation and dispatch policy. It does not derive the common
+prefix, the initial nonuniform state, or the decision to dispatch. Both actual
+built-in selectors still propose and commit IL on every original node, in
+all three preparations. Eligibility is consequently distinct from execution
+under either built-in policy; no Si value, threshold or factor was tuned to
+obtain a birth.</p>
+<p>Each case is repeated under <code>i -&gt; (i+3) mod 8</code>, transporting the initialized
+triad, mark and insertion/neighbor order before execution histories. Initial
+pressure construction has already populated rebuildable caches; rotation
+uses detached cache ownership and recomputes that initial pressure. Both
+graph-copy operations can rebuild undirected adjacency order, so the helper
+explicitly preserves the original neighbor order. The finite checks find
+exact binary64 equality of the declared source/eligibility projections,
+explicit dispatch states, runtime proposals, pre-integrator states and
+whole-step endpoints after inverse transport. Newborn names are compared
+by parent lineage. This is one transported-label control, not phase-gauge
+invariance, arbitrary insertion-order invariance or a complete-state theorem.</p>
+<p>The source and immediate dispatch boundary are at <code>t=0.5</code>. Ordinary runtime
+also advances one Euler step and updates phase/capacity, ending at <code>t=0.75</code>;
+its endpoint is not compared as though it had the same horizon as immediate
+public birth. The policy record now includes those phase/capacity settings
+and the actual prefix/target set, reusing the existing selector instrumentation.
+The accompanying backend check found and repaired a separate phase update
+discrepancy: the NumPy path used unwrapped target differences where the scalar
+path used circular differences. Both now use the existing circular-difference
+owners. This restores the same phase convention without changing the selected
+forces or introducing a new dynamical term.</p>
+<p>The delivery is complete with preparation dependence and explicit distributed
+birth <strong>supported in this finite scope</strong>. The claim that threshold crossing
+or eligibility suffices for these built-in policies to generate children is
+<strong>rejected in this scope</strong>. Autonomous initiation, distributed newborn transport/feedback,
+active maintenance, perturbation recovery and physical identification remain
+separate open obligations. The <a href="../research/FIVE_STAGE_EXECUTION_PLAN/">sole queue</a>
+places the next bounded test at the newborn-support/pressure feedback boundary.</p>
+<p>Reproduce with <code>python benchmarks/thol_preparation_policy.py</code>. The default
+source-bound local artifact is
+<code>artifacts/research/thol_preparation_policy_2026_09_18.json</code>; the
+<a href="../../tests/physics/test_thol_preparation_policy.py">preparation/policy tests</a>
+preserve source replay, real prefixes, all-node dispatch, selector controls
+and transported finite projections. Earlier artifacts retain their original
+source identities and are not recertified by the phase repair.</p>
+<p>The retained report has SHA-256
+<code>57fc31c4dc368d2245af00f060db2828acbadd01e8e6182b40616a03bbd145b5</code>.
+Its scoped dirty-source identity is
+<code>sha256:a17a8669065aeb0869e627dcc023bd3ce29e2334d1383e28bdd8781ed3bcc398</code>.
+The delivery passes 135 distinct preparation, transport, selector and circular
+phase tests. Validation metadata, including the exact commands and checked
+documentation links, is retained in
+<code>artifacts/research/thol_preparation_policy_validation_2026_09_18.json</code>.</p>
+<h2 id="11-distributed-generated-support-and-pressure-feedback">11. Distributed generated support and pressure feedback<a class="headerlink" href="#11-distributed-generated-support-and-pressure-feedback" title="Permanent link">&para;</a></h2>
+<p>The distributed continuation starts from Section 10's actual common IL/OZ
+preparation and all-eligible public birth stage. Its eight parents remain the
+UM targets; the eight new children enter the refreshed candidate inventory.
+An isolated child cannot itself be an initial UM target because the existing
+neighbor phase gate precedes functional-link proposals. The pure production
+proposal and the actual simultaneous public stage are recorded separately;
+no edge or preferred child is assigned by the experiment.</p>
+<p>The unchanged default policy produces 16 new edges. Every child is linked
+to its own parent. Each child of an even parent also links to the two adjacent
+odd parents; these children have degree three, while children of odd parents
+have degree one. The original parents consequently have degrees three and
+five, respectively. The resulting 16-node graph has 24 edges. Distributed
+attachment is therefore not eight independent copies of the single-parent
+control: the same compatibility kernel admits cross-parent links.</p>
+<p>Disabling functional links or retaining the pre-birth candidate sample gives
+no new edges. Both controls still execute UM's phase, capacity and direct
+pressure path on the original parents. The isolated children's freshly
+computed default pressure is zero in every channel. An explicit new
+fixed-support physical partition follows structural execution, with boundaries
+at <code>0.5</code>, <code>0.75</code> and <code>1.0</code>. The pre-birth eight-node execution certificate is
+not reused to claim evolution on the new sixteen-node support.</p>
+<h3 id="energy-accounting-and-the-capacity-source">Energy accounting and the capacity source<a class="headerlink" href="#energy-accounting-and-the-capacity-source" title="Permanent link">&para;</a></h3>
+<p>The isolated birth extends the old Dirichlet form by eight zero blocks, while
+preserving the original EPI coordinates and conductance. Its energy is
+unchanged. The separate same-node-support reset from after birth to after UM
+uses Section 5's exact sum over <strong>all</strong> new conductances. It is not a
+conservation claim or a valuation of the new nodes. Each subsequent Euler
+budget keeps the held initial pressure, refreshed endpoint pressure and
+binary64 state defect distinct.</p>
+<p>The observed support also exposes a useful exact channel identity. Let every
+original parent have capacity one, every child have the same represented
+capacity <code>c=Fraction(float(0.95))</code>, and <code>delta=1-c</code>. Each parent has two old
+unit-weight neighbors, <code>m_i</code> new child neighbors and total new conductance
+<code>s_i</code>. The children have only parent neighbors. UM's first capacity blend
+uses the old parent neighborhood, so these capacities are unchanged in this
+stage. The shared unweighted support convention gives</p>
+<p><code>g_vf(parent_i) = -delta*m_i/(2+m_i)</code> and <code>g_vf(child) = delta</code>.</p>
+<p>For strengths <code>d_i</code> and the represented capacity-channel coefficient <code>w_vf</code>,
+the weighted source is exactly</p>
+<div class="arithmatex">\[
+\sum_i d_i F_{\nu,i}
+=2w_{\nu}\delta\sum_{i\in\mathrm{parents}}
+\frac{s_i-m_i}{2+m_i}.
+\]</div>
+<p>Every admitted new conductance is below one in this finite witness; <code>w_vf&gt;0</code>,
+<code>c&lt;1</code> and at least one new edge make this capacity-channel sum strictly
+negative. It follows from weighted EPI
+transport and unweighted capacity neighborhoods; no extra force is introduced.
+It is not the full pressure sum: the canonical phase channel and pressure
+assembly error must retain their separate measured contributions. The
+topology coefficient is zero in the retained configuration.</p>
+<p>On the connected positive-capacity support, <code>H_i=d_i/nu_i</code>. In a declared
+fixed-coefficient reference, the weighted mean rate is
+<code>sum(d_i*F_i)/sum(H_i)</code> because the symmetric EPI diffusion contribution
+cancels. This identity identifies possible collective drift; finite transport
+does not imply a zero-pressure equilibrium or recovery of a fixed pattern.
+The existing non-EPI forcing capture derives its channels from phase, capacity
+and support, independently of stored pressure or a measured EPI derivative.
+The existing forced-support balance and fixed-target observers remain the
+owners for subsequent persistence and recovery questions.</p>
+<h3 id="retained-finite-outcome-and-next-boundary">Retained finite outcome and next boundary<a class="headerlink" href="#retained-finite-outcome-and-next-boundary" title="Permanent link">&para;</a></h3>
+<p>The <a href="../../benchmarks/thol_distributed_transport.py">distributed study</a> gives the
+following results over the two post-UM Euler segments. Parent parity refers
+to the original C8 labels; all eight children are retained in every control.</p>
+<table>
+<thead>
+<tr>
+<th>Observation</th>
+<th>Refreshed candidates, links enabled</th>
+<th>Links disabled</th>
+<th>Pre-birth sample retained</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>New UM edges</td>
+<td>16</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Child degree, even / odd parent</td>
+<td>3 / 1</td>
+<td>0 / 0</td>
+<td>0 / 0</td>
+</tr>
+<tr>
+<td>Child EPI change, even / odd parent</td>
+<td><code>+0.0574718321 / +0.0209938443</code></td>
+<td><code>0 / 0</code></td>
+<td><code>0 / 0</code></td>
+</tr>
+<tr>
+<td>Parent EPI change, even / odd parent</td>
+<td><code>-0.1166867145 / +0.0350430770</code></td>
+<td><code>-0.1081676977 / +0.1081676977</code></td>
+<td>Same as disabled links</td>
+</tr>
+<tr>
+<td>UM conductance-energy reset</td>
+<td><code>+3.9581016870</code></td>
+<td><code>0</code></td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td>Subsequent two-step Dirichlet-energy change</td>
+<td><code>-2.2444930823</code></td>
+<td><code>-1.9551208711</code></td>
+<td>Same as disabled links</td>
+</tr>
+</tbody>
+</table>
+<p>Every reset and segment accounting residual is exactly zero as a rational
+identity on the represented data. Actual Euler state defects are retained;
+the largest coordinate defect is about <code>1.04e-16</code>. Executor-owned binary64
+held-input replays are identified. Exact-affine identification, pure EPI
+diffusion and a global disagreement contraction are not certified by these
+multichannel observations. The enclosing preparation/birth/UM/flow chain is
+not one transaction; the new physical invocation has its own graph-owned
+transaction and finite causal evidence.</p>
+<p>The connected case's exact capacity-weighted source is approximately
+<code>-0.0032498335468833964</code>. Its contribution to the instantaneous H-weighted
+mean rate is <code>-7.382632026173776e-5</code>; the phase, topology and EPI weighted
+source sums are exactly zero in this captured witness. Kernel assembly adds
+about <code>5.676e-18</code> to that rate, and the refreshed stored-pressure residual
+is zero. The captured non-EPI coefficients are unchanged at the end of the
+two-step partition. These results exhibit collective drift alongside local
+child growth; they do not establish an equilibrium. The full disconnected
+controls explicitly have no positive-H reference, since their isolated
+children have zero degree. They are not reduced to their old component to
+force admission to the connected theorem.</p>
+<p>This closes the <strong>finite distributed birth -&gt; support -&gt; refreshed-pressure
+response</strong> test. The explicit preparation, birth policy and UM target policy
+remain premises. Persistent nonuniform identity, fixed-target recovery and
+autonomous operation remain open. Section 12 freezes a reference before an
+additional admitted event, keeping shape recovery distinct from mean drift;
+the sole task queue remains the <a href="../research/FIVE_STAGE_EXECUTION_PLAN/">execution plan</a>.</p>
+<p>Reproduce with <code>python benchmarks/thol_distributed_transport.py</code>. The retained
+source-bound output is <code>artifacts/research/thol_distributed_transport_2026_09_18.json</code>,
+SHA-256 <code>51a8ce4db20c6aa1291fae36beefb83bb4819e8b15b94ac2871532774baa9880</code>,
+with source identity
+<code>sha256:e3247f76dd1b94347ac0a6e84dd272915ca0944cf5806418cc8142580233e3b7</code>.
+The <a href="../../tests/physics/test_thol_distributed_transport.py">integration tests</a>
+independently check actual topology, full retained support, causal boundaries,
+Euler/energy accounting and channel-source identities. These local artifacts
+are reproducible outputs, not a physical measurement or a future guarantee.</p>
+<p>The delivery passes 125 distinct focused tests: 30 distributed integration
+and accounting cases, plus 95 shared support, forcing, coupling-stage and
+physical-partition cases. Validation metadata is retained in
+<code>artifacts/research/thol_distributed_transport_validation_2026_09_18.json</code>.</p>
+<h2 id="12-fixed-original-model-profile-under-a-later-um-stage">12. Fixed original model profile under a later UM stage<a class="headerlink" href="#12-fixed-original-model-profile-under-a-later-um-stage" title="Permanent link">&para;</a></h2>
+<p>The <a href="../../benchmarks/thol_distributed_target.py">fixed-target study</a> continues the
+same connected sixteen-node case. It reuses the
+<a href="../FORCED_SUPPORT_BALANCE/#2-compatibility-mean-drift-and-the-unique-relative-profile">relative-profile derivation</a>
+and <a href="../CHILD_COUPLING_FEEDBACK/#9-frozen-model-compatibility-with-the-original-target">original-target compatibility calculus</a>.
+It adds no pressure law, recovery score or replacement profile solver.</p>
+<p>At the first refreshed post-UM boundary, <code>t=0.5</code>, the independently captured
+phase/capacity/topology channels determine one exact held-model reference.
+Its centered relative profile <code>z0</code>, metric <code>H0</code> and predicted collective drift
+are fixed and content-addressed <strong>before</strong> the baseline flow. The profile is
+the relative equilibrium of that declared model. It is not the EPI pattern
+actually created by THOL; the initial difference is explicitly measured.</p>
+<p>Each branch independently replays the preparation, birth, first UM and common
+physical partition to <code>t=1.0</code>. The frozen references, complete retained prefix
+records and declared baseline projections must agree before branching. One
+branch continues without another operator. The other executes one actual
+simultaneous UM stage on all sixteen current nodes, with refreshed candidates,
+live admission and unchanged factors. Both then execute just one further
+<code>(0.25, 0.25)</code> physical partition, ending at <code>t=1.5</code>.</p>
+<p>The original score is always</p>
+<p><code>R0(x) = 1/2 * ||P0*x-z0||^2_H0</code>,</p>
+<p>where <code>P0</code> removes the original H-weighted mean. New references describe the
+post-event held model and its event/flow accounting, but do not replace <code>z0</code>
+or <code>H0</code>. In particular, UM's zero EPI jump leaves the immediate original
+score and original mean unchanged even when capacity, support and the current
+model's coordinates change. A change in a current-model error at that event
+is not measured recovery of the original shape.</p>
+<p>The existing target observer evaluates the current model's residual at <code>z0</code>:</p>
+<p><code>r = P0 * (diag(nu_current)*F_current - A_current*z0)</code>.</p>
+<p>Nonzero <code>r</code> excludes compatibility with the old relative profile in that
+unchanged exact model. It can coexist with a decreasing finite <code>R0</code>, because
+the evolving state can initially approach an incompatible old target. Zero
+<code>r</code> does not require zero collective drift and does not certify future
+runtime persistence. The signed old-metric rate split, channel cross terms,
+pressure realization and Euler defects retain their separate meanings.</p>
+<h3 id="finite-comparison-and-immediate-rate-decomposition">Finite comparison and immediate rate decomposition<a class="headerlink" href="#finite-comparison-and-immediate-rate-decomposition" title="Permanent link">&para;</a></h3>
+<p>The same initial error is <code>R0(0.5)=7.9301241975</code>. The baseline flow reduces
+it to <code>R0(1.0)=6.2231811440</code> in both independently executed branches. The
+second UM adds eight actual edges, bringing the support to 32 edges. It is
+admitted without changing the configured factors or reconstructing history.</p>
+<table>
+<thead>
+<tr>
+<th>Observation</th>
+<th>No second event</th>
+<th>All-node second UM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Immediate original-target error at <code>t=1.0</code></td>
+<td><code>6.2231811440</code></td>
+<td><code>6.2231811440</code></td>
+</tr>
+<tr>
+<td>Original-target error at <code>t=1.5</code></td>
+<td><code>4.8924378794</code></td>
+<td><code>5.0044383605</code></td>
+</tr>
+<tr>
+<td>Current held model compatible with <code>z0</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Exact compatibility energy, displayed approximately</td>
+<td><code>0</code></td>
+<td><code>5.6844308511e-7</code></td>
+</tr>
+<tr>
+<td>Current relative profile's error in the original metric</td>
+<td><code>0</code></td>
+<td><code>1.5067976770e-5</code></td>
+</tr>
+<tr>
+<td>Current model's uniform drift coefficient</td>
+<td><code>-7.3826320262e-5</code></td>
+<td><code>-4.7603761320e-5</code></td>
+</tr>
+<tr>
+<td>Total original-metric mean change, <code>0.5</code> to <code>1.5</code></td>
+<td><code>-7.3826320262e-5</code></td>
+<td><code>-0.0064284882</code></td>
+</tr>
+</tbody>
+</table>
+<p>The current-profile error is an algebraic mismatch between two derived
+relative equilibria. It is the limiting error only under the corresponding
+exact held-model convergence assumptions; it is not a forecast certified for
+the future binary64 runtime. The original-metric mean uses <code>H0</code>, whereas the
+changed model's drift coefficient uses its own <code>H1</code>. The event observer retains
+the mean reweighting, and each physical step separates its current-model drift,
+pressure realization and Euler defects. These two mean quantities must not
+be equated after the event.</p>
+<p>The unchanged state at the event also allows an exact signed comparison of
+the old-target energy rates. The stored nodal rate changes from approximately
+<code>-2.9140469721</code> to <code>-2.6594895413</code>, a change of <code>+0.2545574308</code>: it remains
+negative but is less negative immediately after UM. The shared target observer
+splits this change as follows:</p>
+<table>
+<thead>
+<tr>
+<th>Signed contribution to the rate change</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Homogeneous generator term in the original metric</td>
+<td><code>+0.2540293456</code></td>
+</tr>
+<tr>
+<td>Original-target source term</td>
+<td><code>+0.0005280852</code></td>
+</tr>
+<tr>
+<td>Stored-pressure realization defect term</td>
+<td><code>+1.5201530622e-16</code></td>
+</tr>
+</tbody>
+</table>
+<p>Their sum equals the total exactly as rational arithmetic on the represented
+inputs. The change in the homogeneous term dominates this <strong>instantaneous</strong>
+comparison. It does not assign the finite endpoint difference to a separately
+executed channel intervention. The compatibility-energy allocation is also
+signed: the EPI and capacity contributions are about <code>-2.0009575391e-6</code> and
+<code>+2.5694006242e-6</code>, respectively, with exact zero phase/topology contributions.
+Cross terms are retained; these are algebraic contributions, not ablations.</p>
+<p>This completes the finite test. The later all-node UM fails original-profile
+compatibility despite reducing the short-horizon error. The no-event branch's
+compatibility and error decrease do not establish autonomous maintenance.
+The useful next discriminator is the scale of the actual UM dispatch, using
+the original-parent and generated-child cohorts supplied by retained THOL
+ancestry. Its execution and acceptance conditions belong only to the plan.</p>
+<h3 id="reproduction-and-validation">Reproduction and validation<a class="headerlink" href="#reproduction-and-validation" title="Permanent link">&para;</a></h3>
+<p>Run <code>python benchmarks/thol_distributed_target.py</code>. The source-bound output is
+<code>artifacts/research/thol_distributed_target_2026_09_18.json</code>, SHA-256
+<code>09757606385536245ae35b2224d0d1932e8f33b465f37ab22209ef7dd6689574</code>, with source
+identity <code>sha256:848d7de8343b5d35703e9bc0a64c429199848c7e42a0294074bb15cedef733f9</code>.
+The original reference has SHA-256
+<code>0adabc2cc60bf03d898b84af1d2b88774d1b7b77de02dc67685fc220c24af27b</code> in both
+independent branches. The earlier Section 11 artifact keeps its historical
+source identity; the preparation/flow helper is now shared by both studies.</p>
+<p>The <a href="../../tests/physics/test_thol_distributed_target.py">new integration tests</a>
+independently check the Poisson/gauge references, fixed original metric,
+matched causal sources, actual event, exact reset and eight step budgets,
+signed channel/rate identities and complete JSON serialization. Serialization
+reuses the existing literal projection, preserving deque contents and retention
+limits. Fourteen new cases, 30 prior distributed cases after the shared-helper
+refactor, and 83 shared forced-support/event/target cases pass: <strong>127 distinct
+focused tests</strong>. Validation metadata is retained in
+<code>artifacts/research/thol_distributed_target_validation_2026_09_18.json</code>.</p>
+<p>No long campaign, threshold search, independent physical observation or new
+pressure law is part of this result. The declared preparation and dispatch
+policies remain supplied inputs. Live admission/read-out failure aborts the
+bounded study without a tuned retry.</p>
+<h2 id="13-lineage-scoped-coordination-on-the-generated-support">13. Lineage-scoped coordination on the generated support<a class="headerlink" href="#13-lineage-scoped-coordination-on-the-generated-support" title="Permanent link">&para;</a></h2>
+<p>The <a href="../../benchmarks/thol_lineage_coordination.py">lineage study</a> asks whether the second UM response depends on
+coordinating the original nodes, their generated children, or both together.
+The two cohorts come from the actual THOL birth pairs and retained parentage;
+they are disjoint and exhaust the sixteen-node support. Cohort choice is a
+declared intervention, not an autonomously selected law.</p>
+<p>Each new branch reuses the causal preparation, reference freeze at <code>t=0.5</code>
+and baseline flow to <code>t=1.0</code> from Section 12. The original <code>z0/H0</code> remain
+fixed. The retained no-event and all-node controls are historical evidence
+with their original producer identity; they are usable only after exact
+agreement of the new branch's complete retained baseline and observation
+inputs. The two additional interventions target either every original parent
+or every actual child once, with unchanged factors, fresh candidate sampling,
+live admission and one subsequent <code>(0.25, 0.25)</code> refreshed physical partition.</p>
+<p>Target membership and write scope are different. UM capacity updates belong
+to selected targets, but bidirectional phase proposals can write neighboring
+nodes outside that set. Simultaneous execution merges overlapping proposals
+from one immutable snapshot. An all-node stage is therefore not assumed to
+equal a sequential or additive composition of the two cohort stages. Raw
+phase writes and wrapped circular changes must also remain distinct at the
+represented <code>0/2*pi</code> boundary.</p>
+<p>This comparison contributes to the primary generation/persistence question:
+it tests the effect of coordination scope after genuine node birth and support
+formation. Creating a child ring, retaining a derived relative profile,
+restoring a damaged pattern and maintaining it autonomously are separate
+claims. Interaction laws and independently tested physical identification
+remain later obligations in the single execution plan.</p>
+<h3 id="matched-outcome-and-the-child-ring">Matched outcome and the child ring<a class="headerlink" href="#matched-outcome-and-the-child-ring" title="Permanent link">&para;</a></h3>
+<p>Both new branches pass the actual admission gates and reach <code>t=1.5</code>. Their
+complete retained baselines and original references match both historical
+controls. Every selected target's local proposal also matches its corresponding
+proposal in the all-node control, before the simultaneous merge. The unchanged
+pre-event original error is <code>6.2231811440</code> in all four cases.</p>
+<table>
+<thead>
+<tr>
+<th>Observation</th>
+<th>No event, retained</th>
+<th>Parents only</th>
+<th>Children only</th>
+<th>All nodes, retained</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>New edges</td>
+<td><code>0</code></td>
+<td><code>0</code></td>
+<td><code>8</code></td>
+<td><code>8</code></td>
+</tr>
+<tr>
+<td>Original-target error at <code>t=1.5</code></td>
+<td><code>4.8924378794</code></td>
+<td><code>4.8939252624</code></td>
+<td><code>5.0030976710</code></td>
+<td><code>5.0044383605</code></td>
+</tr>
+<tr>
+<td>Current held model compatible with original profile</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Compatibility energy</td>
+<td><code>0</code></td>
+<td><code>2.0900858401e-7</code></td>
+<td><code>1.7504227884e-7</code></td>
+<td><code>5.6844308511e-7</code></td>
+</tr>
+<tr>
+<td>Current-profile mismatch in original metric</td>
+<td><code>0</code></td>
+<td><code>2.4075802416e-6</code></td>
+<td><code>5.7409527832e-6</code></td>
+<td><code>1.5067976770e-5</code></td>
+</tr>
+<tr>
+<td>Current model's uniform drift coefficient</td>
+<td><code>-7.3826320262e-5</code></td>
+<td><code>-7.1234944722e-5</code></td>
+<td><code>-4.9530683966e-5</code></td>
+<td><code>-4.7603761320e-5</code></td>
+</tr>
+</tbody>
+</table>
+<p>The child-only stage creates the same eight child-child edges as the all-node
+stage, each with represented weight <code>0.871053763203346</code>. Those edges form a
+connected degree-two ring on the eight children. Parent-only targets cannot
+propose an edge with two child endpoints because a candidate edge must have
+a selected source. They create no new edge in this execution. This identifies
+a structural consequence of the declared target set, rather than selecting
+the target set by its eventual score.</p>
+<p>Parent-only UM decreases the capacities of even/odd original parents by about
+<code>0.0013262912 / 0.0023873241</code>, respectively, while child capacities stay fixed.
+Child-only UM increases every child capacity by about <code>0.0039788736</code>, while
+parent capacities stay fixed. Phase proposals reach all eight untargeted nodes
+in each branch; there are twelve multiply proposed phase recipients in the
+parent branch and four in the child branch. In both executions, the only raw
+phase differences are the parent-zero/child-zero writes from <code>0</code> to represented
+<code>2*pi</code>. Their wrapped differences are about <code>-2.4493e-16</code>, not a large circular
+phase displacement. The exact raw writes remain retained rather than erased.</p>
+<p>EPI and its original-target score do not jump at either UM event. The original
+mean likewise stays fixed immediately, while a current-metric mean can change
+by reweighting. The total original-metric mean changes from <code>t=0.5</code> to <code>1.5</code>
+are about <code>-6.6998959883e-5</code> for parents and <code>-0.0064446596</code> for children;
+neither is silently substituted for the current-model drift coefficient.</p>
+<p>At the same pre/post-event EPI, the change in the original-target nodal energy
+rate separates exactly into the following signed terms:</p>
+<table>
+<thead>
+<tr>
+<th>Rate change</th>
+<th>Parents only</th>
+<th>Children only</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Homogeneous generator term</td>
+<td><code>+0.0033640238</code></td>
+<td><code>+0.2506653218</code></td>
+</tr>
+<tr>
+<td>Original-target source term</td>
+<td><code>+0.0001999095</code></td>
+<td><code>+0.0006907930</code></td>
+</tr>
+<tr>
+<td>Stored-pressure realization defect</td>
+<td><code>+3.8818e-17</code></td>
+<td><code>+1.1512e-16</code></td>
+</tr>
+<tr>
+<td>Total</td>
+<td><code>+0.0035639333</code></td>
+<td><code>+0.2513561149</code></td>
+</tr>
+</tbody>
+</table>
+<p>All sums are exact rational identities on represented values; the table rounds
+their display. Both rates remain negative but become less negative at that
+event. This is instantaneous accounting, not a channel-isolated causal
+explanation of the finite endpoint differences. Profile mismatches are
+conditional held-model limiting discrepancies, not pointwise error floors or
+guarantees about future clipped execution.</p>
+<p>The declared cohort comparison is complete. Neither additional cohort preserves
+compatibility with the original profile; neither supplies recovery or autonomous
+maintenance. No-event has the smallest finite endpoint error in this comparison.
+That does not turn inaction into an autonomous generation law, nor does the
+rejection cover all possible schedules or target sets. Further subset search
+would not by itself resolve the macro question. Section 14 instead tests the
+sufficient observed state of actual parent-child families using the existing
+quotient and derived-memory identities.</p>
+<h3 id="evidence-and-reproduction">Evidence and reproduction<a class="headerlink" href="#evidence-and-reproduction" title="Permanent link">&para;</a></h3>
+<p>The output <code>artifacts/research/thol_lineage_coordination_2026_09_18.json</code> has
+SHA-256 <code>8b7d6e3e217d57566788350955aa8afbba747add07a49b341167c0626b0b848a</code> and
+source identity <code>sha256:30b40b98e87b1ad9026e5932338965e640562b7a55b886141246c0ad23a8adaa</code>.
+It retains the Section 12 control file's exact SHA-256, producer manifest and
+source scope. Only the two new cohort trajectories execute; historical control
+outcomes are not assigned the new producer's identity.</p>
+<p>Run <code>python benchmarks/thol_lineage_coordination.py</code> when the pinned Section 12
+artifact is available. In a fresh checkout without local artifacts, generate
+complete new controls and explicitly declare their new byte identity:</p>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">benchmarks</span><span class="p">/</span><span class="n">thol_distributed_target</span><span class="p">.</span><span class="n">py</span> <span class="p">-</span><span class="n">-output</span> <span class="n">artifacts</span><span class="p">/</span><span class="n">research</span><span class="p">/</span><span class="n">target_controls_reproduced</span><span class="p">.</span><span class="n">json</span>
+<span class="nv">$controlDigest</span> <span class="p">=</span> <span class="p">(</span><span class="nb">Get-FileHash</span> <span class="n">-Algorithm</span> <span class="n">SHA256</span> <span class="n">-LiteralPath</span> <span class="n">artifacts</span><span class="p">/</span><span class="n">research</span><span class="p">/</span><span class="n">target_controls_reproduced</span><span class="p">.</span><span class="n">json</span><span class="p">).</span><span class="n">Hash</span><span class="p">.</span><span class="n">ToLowerInvariant</span><span class="p">()</span>
+<span class="n">python</span> <span class="n">benchmarks</span><span class="p">/</span><span class="n">thol_lineage_coordination</span><span class="p">.</span><span class="n">py</span> <span class="p">-</span><span class="n">-controls</span> <span class="n">artifacts</span><span class="p">/</span><span class="n">research</span><span class="p">/</span><span class="n">target_controls_reproduced</span><span class="p">.</span><span class="n">json</span> <span class="p">-</span><span class="n">-expected-control-sha256</span> <span class="nv">$controlDigest</span>
+</code></pre></div>
+<p>Those regenerated controls have their own producer identity; they do not
+replace the historical file. The CLI refuses to overwrite its control input.
+Digest admission alone is insufficient: full retained baseline and observer
+comparison still applies. Per-node grammar, hard U3 and enabled optional-gate
+refusals are recorded without another event or continuation. Joint-stage
+refusals and unexpected implementation/accounting failures abort the study;
+they are not converted into ordinary rejected branches.</p>
+<p>The <a href="../../tests/physics/test_thol_lineage_coordination.py">integration tests</a>
+generate portable real control fixtures rather than requiring ignored historical
+artifacts. They check ancestry and refusal boundaries, complete source matching,
+actual stage effects and independent exact profile/event/step accounting. The
+historical artifact has a separate read-only rational recount and retains its
+original identity. Validation covers 35 new lineage cases, 14 prior fixed-target
+cases after the shared refactor, and 81 shared coupling/event/target cases:
+<strong>130 distinct focused tests pass</strong>. Validation metadata is recorded in
+<code>artifacts/research/thol_lineage_coordination_validation_2026_09_18.json</code>.</p>
+<h3 id="131-full-triad-identity-and-boundary-exchange-on-the-retained-child-ring">13.1 Full-triad identity and boundary exchange on the retained child ring<a class="headerlink" href="#131-full-triad-identity-and-boundary-exchange-on-the-retained-child-ring" title="Permanent link">&para;</a></h3>
+<p>The <a href="../../benchmarks/thol_child_ring_identity_audit.py">read-only cohort audit</a>
+reuses Section 13's child-only UM branch and its authenticated no-event
+control. Their complete pre-event state at <code>t=1</code> agrees. It runs no producer,
+operator, pressure-generation kernel, phase evolution or new trajectory.
+The historical manifests retain their original source identities.</p>
+<p>Exact record admission is centralized in
+<a href="../../src/tnfr/research/recorded_support.py">recorded_support.py</a>. It rebuilds
+support, forcing and held references through the existing physics owners and
+checks every archived field. The earlier family/regional readers use
+compatibility wrappers, so historical and new audits share those checks.
+Raw represented triad values are distinct from exact rational coefficient
+records: booleans, nonfinite values and textual raw phase coercion are refused.
+A separate detached graph view supplies the current winding and tetrad
+read-outs. The historical record did not contain a complete tetrad: these
+are explicitly offline observations, including correlation-fit/fallback
+provenance and neighbor order reconstructed from saved edges.</p>
+<table>
+<thead>
+<tr>
+<th>Observation</th>
+<th>Immediately after child UM, <code>t=1</code></th>
+<th>Retained endpoint, <code>t=1.5</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Numerical child-cycle winding</td>
+<td><code>+1</code></td>
+<td><code>+1</code></td>
+</tr>
+<tr>
+<td>Child capacity</td>
+<td><code>0.9539788735772974</code></td>
+<td>Same represented value</td>
+</tr>
+<tr>
+<td>Child H-weighted mean EPI in the post-event metric</td>
+<td>Approximately <code>0.43906174</code></td>
+<td>Approximately <code>0.46065218</code></td>
+</tr>
+<tr>
+<td>Child centered variance in the fixed post-event full-graph metric</td>
+<td>Approximately <code>0.00065625348</code></td>
+<td>Approximately <code>0.00410622688</code></td>
+</tr>
+<tr>
+<td>Projection on the actual post-event centered form, in the common pre-event metric</td>
+<td><code>1</code></td>
+<td>Approximately <code>2.50141449</code></td>
+</tr>
+</tbody>
+</table>
+<p>The phase pattern is inherited and its cycle is newly connected. Before UM,
+child-cycle winding is undefined, not zero. UM immediately leaves EPI
+unchanged, raises child capacity from <code>0.95</code>, and adds eight internal child
+edges. The subsequent form is nearly proportional to the post-event child
+shape, but not exactly: the squared orthogonal residual divided by the
+squared form norm in that common metric is approximately <code>4.19086e-30</code>. Exact represented arithmetic
+retains that positive residual. This projection is a descriptive amplitude
+measurement, not a selected dynamical gain, acceptance threshold or proof of
+an NFR identity. Actual form drift from the first attached preparation remains
+separate from error relative to the original solved profile <code>z0</code>.</p>
+<p>The existing full-graph regional owner explains the increase. At the two
+Euler segment starts, its variance-rate terms are approximately:</p>
+<table>
+<thead>
+<tr>
+<th>Start</th>
+<th>Internal dissipation, subtracted</th>
+<th>Parent-boundary contribution</th>
+<th>Explicit non-EPI source</th>
+<th>Stored nodal variance rate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>1</code></td>
+<td><code>0.00024351903</code></td>
+<td><code>+0.00436140411</code></td>
+<td><code>+0.00006485451</code></td>
+<td><code>+0.00418273959</code></td>
+</tr>
+<tr>
+<td><code>1.25</code></td>
+<td><code>0.00078611839</code></td>
+<td><code>+0.00731692546</code></td>
+<td><code>+0.00011652462</code></td>
+<td><code>+0.00664733169</code></td>
+</tr>
+</tbody>
+</table>
+<p>Represented-pressure discrepancies remain separate, of order <code>1e-19</code> in
+these rates. Both exact finite regional mass/variance balances close with
+zero residual. The two-step child variance increase is approximately
+<code>0.00344997340</code>, while full-graph Dirichlet energy decreases approximately
+<code>1.60652170</code>. Thus global relaxation and increasing regional contrast coexist:
+the parent boundary supplies variation while internal child edges dissipate
+it. Finite Euler terms are held-step accounting, not exact continuous-time
+integrated fluxes. The fixed-metric assumption applies after the event;
+the UM metric/support reset is retained separately.</p>
+<p>The no-event comparison also nearly preserves its normalized centered shape
+direction, while its amplitude changes. Its final
+original-model target error is about <code>4.89243788</code>, compared with <code>5.00309767</code>
+for child UM. Neither number measures recovery of the born pattern. The audit
+compares actual form using one common frozen regional metric, rather than
+comparing the unequal post-event metrics as if they were the same score.
+Against the actual initial attached form, the ring's centered-error measure
+is smaller instead: which branch is closer depends on the reference and
+quantity being compared. Neither comparison establishes restoration.
+The distinctive topological evidence is created cyclic support carrying
+inherited winding. A matched damage/recovery
+trial is absent for this ring-connected branch; later regional-restoration
+records have different support/history and cannot fill that gap.</p>
+<p>Evidence: <code>artifacts/research/thol_child_ring_identity_2026_09_19.json</code>.
+Integration validation: <strong>341 passing tests in 11 modules, including 98 new
+controls</strong>; two optional pinned-history tests were explicitly excluded.
+The shared-reader, exact shape, record-mismatch and regional-continuity
+controls are portable and do not require ignored research artifacts.
+Checkpoint: <code>artifacts/research/cohort_identity_integration_validation_2026_09_19.json</code>.
+The <a href="../research/FIVE_STAGE_EXECUTION_PLAN/#current-g3-gate">single G3 gate</a>
+owns any prospective finite-identity protocol. This result supplies no new
+force or autonomous phase/event law, and establishes neither future
+maintenance nor physical-particle correspondence.</p>
+<h2 id="14-state-sufficiency-of-actual-parent-child-families">14. State sufficiency of actual parent-child families<a class="headerlink" href="#14-state-sufficiency-of-actual-parent-child-families" title="Permanent link">&para;</a></h2>
+<p>The completed analytical comparison uses the four retained held references: the
+original no-event model and the parent-only, child-only and all-node post-UM
+models. No runtime trajectory, partition search or parameter fit is added.
+One family consists of each actual parent and its actual THOL child, as
+recorded by birth receipts and retained parentage. These eight disjoint pairs
+are a declared observation partition, not an assumed set of autonomous objects.</p>
+<p>The shared <a href="../DERIVED_EPI_MEMORY/#10-exact-affine-closure-on-a-captured-forced-support">exact affine closure criterion</a>
+retains the canonical forcing and asks whether the H-weighted family means
+determine their own derivatives for every microscopic EPI state. A negative
+answer means the chosen aggregate omits dynamically relevant information;
+it does not reject the complete nodal dynamics or establish a physical memory
+law by analogy. Current-model coordinates used for this calculation remain
+separate from the frozen original profile used to score retention in Sections
+12-13.</p>
+<h3 id="exact-obstruction-and-memory">Exact obstruction and memory<a class="headerlink" href="#exact-obstruction-and-memory" title="Permanent link">&para;</a></h3>
+<p>All four models have nonzero <code>R*A*Q</code> and <code>Q*A*P</code>, so none closes on the eight
+family means for all real scalar EPI states. Each exact observation retains a
+deterministic witness <code>delta=Q*e_0</code>: the states <code>x</code> and <code>x+delta</code> have identical
+<code>R*x</code>, but different projected derivatives. These detached rational states
+need not satisfy a live graph's chart, clipping or grammar constraints. The
+result rejects all-state affine closure of this observation; it is not a
+pair of newly executed trajectories.</p>
+<p>The source of the obstruction is already visible in the original support.
+Parent 1 has neighbors in other families, whereas its child connects only to
+that parent. Applying <code>A</code> to the indicator of family 0 gives approximately
+<code>-0.0726326622</code> at parent 1 and exactly zero at its child. Thus a lifted family
+field does not remain block-constant. Reversibility converts this failure into
+the nonzero projected hidden-state term.</p>
+<p>For every model the exact Gram identity
+<code>Hbar*K(0)=(Q*A*P)^T*H*(Q*A*P)</code> also holds, with <code>K(0) != 0</code>.
+The table displays rounded values from the exact rational matrices.
+Here <code>RAQ_inf</code> is the maximum absolute row sum, and <code>K0_max</code> is the largest
+absolute entry, not a matrix norm. The separate binary64 cross-check uses
+the existing spectral 2-norm residual diagnostics and does not decide exact closure.</p>
+<table>
+<thead>
+<tr>
+<th>Held model</th>
+<th>Eight-mean affine closure</th>
+<th style="text-align: right;"><code>RAQ_inf</code></th>
+<th style="text-align: right;"><code>K0_max</code></th>
+<th style="text-align: right;">Maximum absolute same-EPI change in family observation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Original</td>
+<td>Rejected</td>
+<td style="text-align: right;"><code>0.0508396000</code></td>
+<td style="text-align: right;"><code>0.00312297573</code></td>
+<td style="text-align: right;"><code>0</code></td>
+</tr>
+<tr>
+<td>Parent-only UM</td>
+<td>Rejected</td>
+<td style="text-align: right;"><code>0.0506375593</code></td>
+<td style="text-align: right;"><code>0.00310284723</code></td>
+<td style="text-align: right;"><code>0.000433054959</code></td>
+</tr>
+<tr>
+<td>Child-only UM</td>
+<td>Rejected</td>
+<td style="text-align: right;"><code>0.0206040003</code></td>
+<td style="text-align: right;"><code>0.000256228121</code></td>
+<td style="text-align: right;"><code>0.171042708165</code></td>
+</tr>
+<tr>
+<td>All-node UM</td>
+<td>Rejected</td>
+<td style="text-align: right;"><code>0.0205261381</code></td>
+<td style="text-align: right;"><code>0.000251303493</code></td>
+<td style="text-align: right;"><code>0.170629235097</code></td>
+</tr>
+</tbody>
+</table>
+<p>These numbers are not an improvement ranking: the model, metric and observer
+change between rows. The exact nonzero decision is the closure result. The
+zero-lag identity identifies a derived-memory coupling; no history kernel is
+fitted, truncated or evaluated with a matrix exponential in this study.</p>
+<h3 id="source-centering-and-observer-resets">Source, centering and observer resets<a class="headerlink" href="#source-centering-and-observer-resets" title="Permanent link">&para;</a></h3>
+<p>Every model retains its captured <code>b=diag(nu)*F</code>. Known constant forcing is
+compatible with a closed affine projection when <code>R*A*Q=0</code>; <code>Q*b=0</code> is the
+additional condition for invariance of the lifted affine subspace, not an
+extra requirement for projected autonomy. The implementation checks this
+distinction with a positive test control.</p>
+<p>The homogeneous error coordinates use each model's own relative profile and
+weighted mean: <code>u=x-m_H(x)*1-z</code>, giving <code>u'=-A*u</code>. The original frozen <code>z0/H0</code>
+score from Sections 12-13 remains a separate read-out. At the retained UM
+boundary the fine EPI is identical across models, while their family means
+change by exactly <code>(R1-R0)*x</code>. The corresponding current-H global mean resets
+are <code>+9.5688660174e-5</code>, <code>-0.108022140967</code> and <code>-0.107841721248</code> for parent,
+child and all-node UM. These are changes of weighting at fixed EPI, not elapsed
+drift or a nodal EPI jump. The centered reset also subtracts the change of
+global mean and the projected relative-profile shift; all residuals are zero.</p>
+<p>Section 15 determines the minimal sufficient linear observation that retains
+these means, using existing invariant row-space and P5 minimality tools.
+Extra coordinates may be internal or nonlocal contrasts. They do not alone
+establish autonomous entities, full macro-triad dynamics, recovery or physical
+correspondence. The sole execution plan owns the next gate.</p>
+<h3 id="implementation-evidence-and-reproduction">Implementation, evidence and reproduction<a class="headerlink" href="#implementation-evidence-and-reproduction" title="Permanent link">&para;</a></h3>
+<p>The shared <a href="../../src/tnfr/physics/epi_memory.py">exact observer</a>
+<code>observe_forced_support_closure</code> rebuilds the forced-support reference and
+checks projection, reversibility, memory Gram and current-rate identities.
+The <a href="../../benchmarks/thol_family_closure.py">detached study</a> authenticates both
+historical input files, producer identities, actual ancestry, complete common
+state and captured forcing. It does not construct a new graph or run a solver.
+Its manifest therefore has no new seed or timestep.</p>
+<p>With both pinned historical artifacts available:</p>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">benchmarks</span><span class="p">/</span><span class="n">thol_family_closure</span><span class="p">.</span><span class="n">py</span> <span class="p">-</span><span class="n">-output</span> <span class="n">artifacts</span><span class="p">/</span><span class="n">research</span><span class="p">/</span><span class="n">thol_family_closure_2026_09_18</span><span class="p">.</span><span class="n">json</span>
+</code></pre></div>
+<p>For a fresh checkout, regenerate the Section 12 controls and Section 13 lineage
+comparison first, using explicit new output paths and the controls' new digest.
+Then pass both new paths with <code>--controls</code> and <code>--lineage</code>, and declare their
+byte identities with <code>--expected-control-sha256</code> and <code>--expected-lineage-sha256</code>.
+The study retains those producers rather than claiming they are the historical
+ones. It rejects an output path equal to either input. No ignored artifact is
+required by the portable integration-test fixtures.</p>
+<p>The completed report <code>artifacts/research/thol_family_closure_2026_09_18.json</code>
+has SHA-256 <code>13642d936260e849ac5e588f32a6ea6716b74d733ab8232e4376f5f48d621ae1</code>
+and source identity
+<code>sha256:c3b5cea441d735fa28b06cd943e0b4677fbbe769926aa85a1c789085169e2263</code>.
+It preserves both input hashes and producer manifests from Sections 12-13.
+Independent rational reconstruction verifies the generator, projection, Gram
+identity, profiles, four witnesses and four observer resets without importing
+the producing calculations. Review corrected a numerical-output label:
+the shared diagnostic measures the matrix spectral 2-norm, not the infinity
+norm. This changed labels and added a regression, not the exact decision.</p>
+<p>The <a href="../../tests/physics/test_forced_epi_closure.py">exact-observer tests</a> and
+<a href="../../tests/physics/test_thol_family_closure.py">study tests</a> cover independent
+matrix reconstruction, positive closure and affine-source controls, hidden
+witnesses, stale/malformed input, ancestry, model-state admission, observer
+reset and CLI behavior. Existing memory/morphism regressions remain included.
+Validation covers <strong>147 distinct focused tests</strong>: 33 exact-observer cases,
+28 study cases and 86 existing memory/morphism cases. The initial combined
+run passed 146; after the norm-label correction, all 28 study cases passed.
+Validation metadata is retained at
+<code>artifacts/research/thol_family_closure_validation_2026_09_18.json</code>.</p>
+<h2 id="15-minimal-sufficient-linear-state-for-the-retained-family-observations">15. Minimal sufficient linear state for the retained family observations<a class="headerlink" href="#15-minimal-sufficient-linear-state-for-the-retained-family-observations" title="Permanent link">&para;</a></h2>
+<p>The <a href="../DERIVED_EPI_MEMORY/#11-minimal-linear-state-retaining-a-declared-observation">minimal-state construction</a>
+resolves how much extra information Section 14's eight family means need.
+It keeps the same actual ancestry partition, four held models and captured
+forcing. Each model supplies an exact <code>A</code>, <code>b</code> and <code>R</code>; no new graph, trajectory,
+partition, target or fitted coefficient is introduced.</p>
+<h3 id="rank-and-sufficient-state">Rank and sufficient state<a class="headerlink" href="#rank-and-sufficient-state" title="Permanent link">&para;</a></h3>
+<p>All four models give the same sequence of exact row-space ranks:</p>
+<table>
+<thead>
+<tr>
+<th>Included observations</th>
+<th style="text-align: right;">Original</th>
+<th style="text-align: right;">Parent-only UM</th>
+<th style="text-align: right;">Child-only UM</th>
+<th style="text-align: right;">All-node UM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>R</code></td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr>
+<td><code>R, R*A</code></td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr>
+<td><code>R, R*A, R*A^2</code></td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">16</td>
+</tr>
+<tr>
+<td>Through <code>R*A^3</code></td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">16</td>
+</tr>
+</tbody>
+</table>
+<p>The complete third-power level adds no rank. Deterministic row selection
+retains all eight rows of <code>R</code>, rows 0 through 6 of <code>R*A</code>, and row 0 of
+<code>R*A^2</code>. These sixteen rows form <code>C</code>; every microscopic column is a pivot.
+The realized state <code>s=C*x</code> satisfies <code>s'=-G*s+C*b</code> and recovers the family
+observation through <code>R*x=D*s</code>. Exact identities <code>C*T=I</code>, <code>C*A=G*C</code> and
+<code>R=D*C</code> are checked on full matrices. Here <code>T=C^(-1)</code> because the rank equals
+the microscopic dimension, and <code>D</code> selects the first eight coordinates.</p>
+<p>Thus <strong>eight additional linear coordinates are necessary and sufficient</strong>
+for every model in the stated all-state domain. This is an exact change of
+coordinates, not a reduction of the sixteen-dimensional EPI state. The
+extra rows are algebraic observations of EPI derived from its generator;
+they are not independent forces or eight newly discovered physical objects.
+For example, <code>R*A*x</code> is related to the projected nodal derivative by
+<code>R*A*x=R*b-y'</code>; this identity does not claim that such derivatives have been
+measured independently.</p>
+<p>The minimality proof covers every linear observation retaining these family
+means and closing for every scalar initial state of the held affine model.
+It does not rule out an approximation with a quantified error, a reduction
+on a justified restricted state class, or a description retaining history.
+It also gives no robustness guarantee for reconstruction from noisy data.</p>
+<h3 id="what-this-resolves-for-the-generative-route">What this resolves for the generative route<a class="headerlink" href="#what-this-resolves-for-the-generative-route" title="Permanent link">&para;</a></h3>
+<p>Birth and ancestry do not alone justify replacing each family by a single
+autonomous scalar. The exact state requirement is now known for all four
+retained models, so repeating an exact compression search on those same
+observations would add nothing. The derived-memory representation remains
+available as an alternative way of retaining the missing information.
+The formation, persistence/recovery and interaction questions still concern
+the actual TNFR dynamics. Physical correspondence requires its separate
+independent observation and prediction protocol.</p>
+<h3 id="implementation-evidence-and-reproduction_1">Implementation, evidence and reproduction<a class="headerlink" href="#implementation-evidence-and-reproduction_1" title="Permanent link">&para;</a></h3>
+<p>The shared <a href="../../src/tnfr/physics/epi_memory.py">realization observer</a>
+<code>observe_forced_support_realization</code> reuses the prior closure geometry,
+rectangular exact products, rational rank and inverse. Every model needs
+49 rank calls and nine matrix products in the realization stage. Maximum
+materialized coefficient bit sizes are respectively 582, 635, 828 and 884;
+these counters exclude reference/closure reconstruction and internal
+elimination costs. The operational rank-call limit is 4096 per model, and
+exhaustion returns no partial certificate or approximate substitute.</p>
+<p>The <a href="../../benchmarks/thol_family_realization.py">detached study</a> authenticates
+the Section 14 report and both of its input files, replays its entire scientific
+payload, and compares every retained model, witness and observer reset. Input
+file locations may move; byte identities and historical producer metadata
+remain fixed. The new manifest marks the realization as <code>derived</code>, with no
+new seed or timestep.</p>
+<p>With the three pinned historical input files available:</p>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">benchmarks</span><span class="p">/</span><span class="n">thol_family_realization</span><span class="p">.</span><span class="n">py</span> <span class="p">-</span><span class="n">-output</span> <span class="n">artifacts</span><span class="p">/</span><span class="n">research</span><span class="p">/</span><span class="n">thol_family_realization_2026_09_18</span><span class="p">.</span><span class="n">json</span>
+</code></pre></div>
+<p>A fresh checkout can regenerate Sections 12-14 first. Supply their explicit
+paths with <code>--controls</code>, <code>--lineage</code>, and <code>--family</code>, together with the three
+corresponding <code>--expected-*-sha256</code> values. Regenerated inputs retain their own
+producer identities. Output cannot overwrite any input, and admission or
+resource failure does not produce a successful partial report.</p>
+<p>The completed report <code>artifacts/research/thol_family_realization_2026_09_18.json</code>
+has SHA-256 <code>cf83a848f753c55c307bded156fda635441d735924ea178a777042af6e2e5daa</code>
+and source identity
+<code>sha256:b65a48f9bc51c3b977ee91b7b9a8b593501af93195159f3c4fa012be0b25c407</code>.
+Independent Fraction arithmetic reconstructs every generator and observation
+from retained conductances/capacities, repeats row selection and rank, and
+checks all four realizations and projected rates without importing production
+calculations.</p>
+<p>The <a href="../../tests/physics/test_forced_epi_realization.py">owner tests</a> include
+an exactly closed quotient, the existing minimal P5 reduction, full-rank
+controls, tiny rational symmetry breaking, complete-level stopping, affine
+forcing and work-limit failure. The
+<a href="../../tests/physics/test_thol_family_realization.py">study tests</a> use portable
+fixtures and check complete replay, rejected tampering, relocated inputs,
+CLI behavior and unchanged historical metadata. The final combined run passes
+<strong>210 tests</strong>, including 63 new cases and the prior closure, family,
+memory and morphism regressions. A separate baseline run also passes the
+55 existing P5 reduction cases. Validation metadata is retained at
+<code>artifacts/research/thol_family_realization_validation_2026_09_18.json</code>.</p>
+<h2 id="16-full-epi-response-to-one-child-emission">16. Full-EPI response to one child Emission<a class="headerlink" href="#16-full-epi-response-to-one-child-emission" title="Permanent link">&para;</a></h2>
+<p>The exact additional coordinates from Section 15 are already available.
+Retaining them permits a mechanism test without first quantifying the error
+of omitting them. The optional eight-mean approximation study is parked.
+Here "full state" means all sixteen EPI coordinates of the held affine model;
+phase, capacity, support, operator policy and lineage remain separately
+recorded parts of the engine state.</p>
+<h3 id="declared-intervention-and-reserved-prediction">Declared intervention and reserved prediction<a class="headerlink" href="#declared-intervention-and-reserved-prediction" title="Permanent link">&para;</a></h3>
+<p>The protocol selects two independently prepared branches of the existing
+distributed THOL/first-UM source. Both use the same refreshed <code>(.25,.25)</code>
+baseline to the common physical boundary <code>t=1</code>. One branch has no event;
+the other requests one default public simultaneous Emission on the eight
+actual born children. No response score selects the operator, cohort,
+factor or horizon. The source's original <code>z0/H0</code> reference stays fixed.</p>
+<p>Emission is used because its canonical direct structural write is EPI; it
+preserves capacity, phase and stored pressure. Live grammar and preconditions
+still decide admission, and its actual clipped jump and lineage metadata
+must be retained. The shared strict precondition reads <code>EPI_LATENT_MAX</code> and
+<code>VF_BASAL_THRESHOLD</code> from configuration; their current defaults are both
+<code>0.5</code>. The actual children at the retained boundary have EPI about <code>0.43-0.44</code>
+and capacity <code>0.95</code>. No gate is weakened to obtain a perturbation. A refusal
+or absence of fixed-target damage remains a valid result.</p>
+<p>The native pointwise receipt's stronger full-network affine certification is
+not required for this child-only intervention. That flag also requires every
+graph node to be targeted and zero exact affine realization defect. The study
+retains its actual value and failed conditions, verifies the receipt seal and
+proposal/gate replay, binds every before/after EPI by node, and independently
+checks the represented affine jump plus its signed rounding residual. It does
+not promote a partial finite stage to a global jump-gain certificate.</p>
+<p>After the event, a read-only kernel capture verifies that phase, capacity, support,
+EPI coefficient and independently captured forcing agree with the
+original model. The
+<a href="../DERIVED_EPI_MEMORY/#114-full-epi-euler-prediction-in-the-sufficient-coordinates">full-EPI forecast</a>
+then fixes the next two <code>.25</code> steps from the actual post-event initial state,
+before that branch's runtime continuation advances to <code>t=1.5</code>.
+Every predicted EPI coordinate follows the same derived <code>C/T/G/Cb</code> realization;
+the reference, source and coefficients are not fitted to the endpoint.</p>
+<p>This forecasts the declared Euler discretization. Actual pressure realization,
+rounding and clipping remain separate measured defects, propagated through
+the complete Euler matrices. The graph itself is evolved only through the
+existing pressure-refreshed executor. Its first boundary refresh replaces the
+stored pre-event pressure; the forecast does not mistake that stale value for
+the new model pressure. Each physical partition receives its
+fresh entry snapshot; a frozen reference's earlier EPI is not its entry state.</p>
+<h3 id="response-observables-and-claim-boundary">Response observables and claim boundary<a class="headerlink" href="#response-observables-and-claim-boundary" title="Permanent link">&para;</a></h3>
+<p>Let <code>d=x_AL-x_control</code> on the common held support and let
+<code>m_d=sum(h_i*d_i)/sum(h_i)</code>, with <code>H=diag(h_i)</code> from the original model.
+The full separation, mean offset, and centered spatial energy
+<code>E_d=1/2*sum(h_i*(d_i-m_d)^2)</code> answer different questions. In ideal arithmetic
+the common forcing cancels, <code>d_next=(I-h*A)*d</code>, and <code>m_d</code> is conserved.
+The spatial difference can decrease while a uniform offset persists.
+Runtime defects and their propagated effects are reported separately.</p>
+<p>The same energy can be expressed through the complete chart using the
+inherited metric <code>T^T*H*T</code>. An unweighted Euclidean norm of <code>C*x</code> would mix
+coordinate scales and is not substituted for the nodal energy. Each branch
+also keeps its original-target error, positive capacity and actual nodal
+activity. If AL immediately reduces target error, the event has not damaged
+that target and its continuation cannot be called recovery from such damage.</p>
+<p>Finite attenuation of an actual perturbation is a test of the held nodal
+response. It does not erase the Emission history, prove absolute-state return,
+derive autonomous maintenance under changing support/phase/capacity, or
+establish physical particles. These distinctions keep the experiment connected
+to the macro objective without promoting a limited result beyond its evidence.</p>
+<h3 id="measured-finite-response">Measured finite response<a class="headerlink" href="#measured-finite-response" title="Permanent link">&para;</a></h3>
+<p>Both independent preparations agree in every retained common-source field.
+Strict and native admission accept AL on all eight children. Their represented
+EPI increments are approximately <code>0.0795774715459476</code>; no clipping acts and
+every unselected EPI stays unchanged. The native full-network affine flag is
+false for its two stated reasons: partial target coverage and a nonzero exact
+affine rounding residual. The finite event evidence above remains valid.</p>
+<table>
+<thead>
+<tr>
+<th>Observable</th>
+<th style="text-align: right;">Immediately after event, <code>t=1</code></th>
+<th style="text-align: right;">Endpoint, <code>t=1.5</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Paired centered H energy</td>
+<td style="text-align: right;">0.030645699389185228</td>
+<td style="text-align: right;">0.02348125740481349</td>
+</tr>
+<tr>
+<td>Paired full H energy</td>
+<td style="text-align: right;">0.045497084867582895</td>
+<td style="text-align: right;">0.03833264288321107</td>
+</tr>
+<tr>
+<td>Paired H-weighted mean offset</td>
+<td style="text-align: right;">0.02597607536317475</td>
+<td style="text-align: right;">0.025976075363174672</td>
+</tr>
+<tr>
+<td>Original-target error, control</td>
+<td style="text-align: right;">6.22318114397756</td>
+<td style="text-align: right;">4.892437879433556</td>
+</tr>
+<tr>
+<td>Original-target error, AL branch</td>
+<td style="text-align: right;">5.747522706029956</td>
+<td style="text-align: right;">4.503852112409268</td>
+</tr>
+</tbody>
+</table>
+<p>The centered difference energy decreases by <strong>23.3783%</strong>, while full EPI
+separation persists. The measured mean-offset change is about
+<code>-7.70e-17</code>; the ideal held-model recurrence preserves this mean exactly.
+All sixteen nodes retain positive capacity and nonzero refreshed nodal rate
+at each reported activity boundary. This is active finite response under
+held coefficients, not freezing.</p>
+<p>The maximum absolute EPI discrepancy over both forecast frames is
+<code>1.414e-16</code> for the control and <code>6.227e-17</code> for the AL branch. Independently
+propagated pressure-realization and integrator defects account for every
+coordinate exactly. These observations are not a uniform floating-point
+error bound or a continuous-time solver accuracy estimate.</p>
+<p>AL immediately changes the fixed-target error by <code>-0.47565843794760393</code>.
+It improves this particular score rather than damaging it, so neither its
+further reduction nor its lower final value establishes recovery from a
+damaged pattern. The target and outcome rule were fixed before this result.
+The finite response/forecast delivery is complete and supported in its stated
+scope; autonomous maintenance and physical correspondence remain untested.</p>
+<h3 id="evidence-and-reproduction_1">Evidence and reproduction<a class="headerlink" href="#evidence-and-reproduction_1" title="Permanent link">&para;</a></h3>
+<p>The <a href="../../benchmarks/thol_full_state_response.py">paired study</a> reuses the actual
+distributed birth/transport preparation, public stage executor, exact
+forced-support/event observers and full-state prediction owner. It does not
+implement a second graph integrator. AL's complex lifecycle metadata now uses
+the existing exact <a href="../../benchmarks/thol_preparation_policy.py">metadata projection</a>,
+extended with separately retained binary64 real and imaginary components.
+Configured AL thresholds replace stale hardcoded examples in the operator
+docstrings; operator behavior is unchanged.</p>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">benchmarks</span><span class="p">/</span><span class="n">thol_full_state_response</span><span class="p">.</span><span class="n">py</span> <span class="p">-</span><span class="n">-output</span> <span class="n">artifacts</span><span class="p">/</span><span class="n">research</span><span class="p">/</span><span class="n">thol_full_state_response_2026_09_18</span><span class="p">.</span><span class="n">json</span>
+</code></pre></div>
+<p>The completed report has SHA-256
+<code>5d95176d28ac633351337d90f3bac0c0fc7edd3e24cf68cc04a5df7de125987e</code>
+and source identity
+<code>sha256:bfd61a88c903ef3b2f4f72a087bb6bf21ddacf100cbdde4501c4e507c09c7052</code>.
+The <a href="../../tests/physics/test_forced_epi_prediction.py">prediction tests</a> and
+<a href="../../tests/physics/test_thol_full_state_response.py">causal study tests</a> verify
+the rational recurrence, prediction-before-continuation order, complete
+paired preparation, partial-stage evidence, actual defects and refusal path.
+The final validation passes <strong>53 new tests</strong> and <strong>210 existing regressions</strong>
+(263 distinct cases). A separate standard-library Fraction audit reconstructs
+the model from raw conductance, capacity and forcing, checks all forecast
+frames and actual defect recurrences, and recomputes paired/target metrics:
+<strong>281 exact checks pass</strong>. The detached audit does not authenticate serialized
+runtime seals or independently prove execution chronology; the instrumented
+runtime tests supply the chronology check.
+Validation metadata and the independent audit are retained in
+<code>artifacts/research/thol_full_state_response_validation_2026_09_18.json</code> and
+<code>artifacts/research/thol_full_state_response_independent_check_2026_09_18.json</code>.</p>
+<h2 id="17-one-native-composite-runtime-response">17. One native composite runtime response<a class="headerlink" href="#17-one-native-composite-runtime-response" title="Permanent link">&para;</a></h2>
+<h3 id="predeclared-protocol-and-interpretation">Predeclared protocol and interpretation<a class="headerlink" href="#predeclared-protocol-and-interpretation" title="Permanent link">&para;</a></h3>
+<p>Section 16 establishes a finite response with phase, capacity and support
+held. The next bounded test retains both actual causal preparations and runs
+exactly one existing native runtime step from each endpoint at <code>t=1.5</code>, with
+<code>dt=.25</code>, <code>use_Si=True</code> and <code>apply_glyphs=True</code>. Both prior scientific branch
+payloads must replay before either continuation. Defaults, selector, histories and
+stable counters remain as produced; there is no threshold, operator, cohort
+or horizon search. The original target <code>z0/H0</code> is never replaced to improve
+the score.</p>
+<p>Emission records a fresh UTC activation label in addition to the graph's
+structural clock. Historical replay therefore preserves and compares old/new
+UTC labels at explicitly identified child lifecycle paths, checks their
+internal alias/origin consistency, and requires exact equality elsewhere.
+Physical <code>_t</code>, timestamped EPI history, activation counts and all nodal state
+remain part of exact replay admission. No wall-clock label is rewritten on
+the graph, and no generic timestamp field is silently dropped. Agreement
+modulo those declared labels is not byte equality of the complete report.</p>
+<p>Before each step, the existing full-EPI predictor freezes one held-model
+Euler counterfactual. Read-only trace wrappers then observe the actual native
+schedule: callbacks, sampling/history boundaries, pressure and Si preparation,
+selector decisions and actual glyph application, integration, clamps, phase
+coordination, capacity adaptation, optional math engine, REMESH history and
+decision, validators and final callbacks. Instrumentation delegates each
+operation once to its existing owner and restores the wrapped call sites.
+It is not a new integrator, selector or transaction around the entire step.</p>
+<p>The prepared Si is evaluated before glyphs. Capacity adaptation later reads
+that retained Si and the then-stored pressure; it does not perform a fresh
+endpoint coherence test. Its configured thresholds and counters are part of
+the declared policy, not new constants derived by this experiment.</p>
+<p>The <a href="../DERIVED_EPI_MEMORY/#115-a-held-model-forecast-versus-a-composite-runtime-step">exact counterfactual ledger</a>
+separates pre-integrator EPI writes, changed current-model rates, stored versus
+fresh pressure, pressure realization, integration residual and later EPI
+writes. Report the old-target score only while its original node space remains
+available. A changed phase, capacity or support is a model boundary even if
+the same EPI coordinates still permit a score; changed node identity/order
+makes the old vector comparison unavailable. A valid refusal, inactive
+mechanism, worsening or changed domain is retained, not tuned away.</p>
+<p>This tests one execution of the existing composite state-dependent policy.
+It can locate active feedback and its immediate consequences. It cannot
+isolate one mechanism causally, establish autonomous generation or indefinite
+maintenance, or establish recovery from damage that the AL event did not
+cause. Physical correspondence remains a separate open obligation.</p>
+<h3 id="measured-response-and-actual-active-mechanisms">Measured response and actual active mechanisms<a class="headerlink" href="#measured-response-and-actual-active-mechanisms" title="Permanent link">&para;</a></h3>
+<p>Both native steps complete at <code>t=1.75</code>. Each freshly computes Si, makes sixteen
+outer selector decisions and commits Coherence (IL) once at every node. The
+resolver's nested internal calls are retained separately; they are not extra
+decisions or operator executions. Actual IL changes stored pressure only in
+this witness. There is no EPI jump before integration or afterward, and the
+clamp interval between integration and phase coordination has zero EPI change.</p>
+<table>
+<thead>
+<tr>
+<th>Observable</th>
+<th style="text-align: right;">Control: before -&gt; after</th>
+<th style="text-align: right;">Child Emission: before -&gt; after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Original <code>z0/H0</code> error</td>
+<td style="text-align: right;">4.892437879433556 -&gt; 4.470889149742858</td>
+<td style="text-align: right;">4.503852112409268 -&gt; 4.111168480693482</td>
+</tr>
+<tr>
+<td>Stored-state total coherence <code>C(t)</code></td>
+<td style="text-align: right;">0.8360164407909924 -&gt; 0.8736409592473426</td>
+<td style="text-align: right;">0.8439378325321703 -&gt; 0.8800051393409857</td>
+</tr>
+<tr>
+<td>Capacity and support</td>
+<td style="text-align: right;">Preserved</td>
+<td style="text-align: right;">Preserved</td>
+</tr>
+<tr>
+<td>Phase and captured non-EPI forcing</td>
+<td style="text-align: right;">Changed</td>
+<td style="text-align: right;">Changed</td>
+</tr>
+</tbody>
+</table>
+<p>Paired centered H energy decreases from <code>0.02348125740481349</code> to
+<code>0.021254184497818077</code>, a further <strong>9.48447%</strong> over this one step. The mean
+offset remains approximately <code>0.02597607536</code>; no full EPI return occurs.
+Coherence above reads the actual stored pressure and derivative. It is not
+a claim that fresh kernel pressure after phase motion equals the stored one.</p>
+<p>At integrator entry, the exact current model still agrees with the original
+model. IL's intentional stored-pressure contraction supplies the dominant
+departure from the frozen Euler counterfactual: maximum absolute nodal
+impulses about <code>0.011256</code> and <code>0.011011</code>. Fresh-kernel realization terms are
+below <code>7.0e-18</code>, and the generic integration remainders are below <code>8.4e-17</code>.
+The exact full-vector ledger closes for each branch. Calling the roughly
+<code>0.011</code> displacement a floating-point error would therefore misidentify the
+mechanism. Subsequent global phase coordination changes phase by up to
+<code>0.1672005576644261</code> radians and changes the forcing for future evolution.</p>
+<p>Si was absent at entry and is populated by the native preparation, with
+ranges approximately <code>[0.9312,0.9836]</code> and <code>[0.9346,0.9811]</code>. Capacity adaptation
+nevertheless remains inactive: every absolute stored pressure exceeds its
+actual <code>0.001</code> stability threshold (minimum <code>0.03598</code> and <code>0.02640</code>), so every
+stable counter is zero afterward. Its configured count requirement is five
+consecutive qualifying evaluations. No counter or gate was adjusted. The
+math-engine and REMESH stages introduce no structural change here, and the
+callback registry is empty. Their trace records preserve those negative
+observations rather than claiming they were never considered.</p>
+<p>This locates actual state-dependent negative feedback and phase evolution in
+the generated structure, while identifying dormant capacity feedback. It is
+still one finite invocation of a supplied policy. The prior AL event improved
+the target score, so this continuation does not establish damage recovery.</p>
+<p>The endpoint phase arrays and independently captured forcing are exactly
+equal across the two branches. Their common source cancels in a paired rate
+comparison. This does not preserve the original individual relative profile:
+the exact endpoint residual <code>P_H0*(diag(nu)*F_end-A0*z0)</code> has maximum absolute
+component <code>0.03145148206669386</code>, with the same nonzero vector in both branches.
+Its uncentered uniform rate is approximately <code>0.00027302155397510133</code>.
+Thus decreasing finite old-target error and compatibility of that target are
+different facts here as well. A persistent evolving pattern need not be a
+fixed EPI profile; any alternative notion of identity still needs an explicit
+derived observation and prospective test, not a retrospectively moved target.</p>
+<h3 id="shared-implementation-evidence-and-reproduction">Shared implementation, evidence and reproduction<a class="headerlink" href="#shared-implementation-evidence-and-reproduction" title="Permanent link">&para;</a></h3>
+<p>The <a href="../../benchmarks/thol_native_runtime_response.py">native study</a> uses
+<code>replay_response_branch</code> from the preceding study to obtain the real live
+endpoint. The old mapping-only API remains unchanged. The same shared
+predictor, forcing readout, fixed-target pattern observer and exact metadata
+projection are reused. Structural tetrad telemetry is evaluated on detached
+copies and checked not to alter the live trace.</p>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">benchmarks</span><span class="p">/</span><span class="n">thol_native_runtime_response</span><span class="p">.</span><span class="n">py</span> <span class="p">-</span><span class="n">-output</span> <span class="n">artifacts</span><span class="p">/</span><span class="n">research</span><span class="p">/</span><span class="n">thol_native_runtime_response_2026_09_18</span><span class="p">.</span><span class="n">json</span>
+</code></pre></div>
+<p>The default input is the pinned Section 16 artifact. To use a relocated or
+regenerated prior report, pass <code>--prior-input</code> and <code>--expected-prior-sha256</code>;
+historical producer metadata is retained. Output cannot overwrite that input.
+The final native report has SHA-256
+<code>71252d116d8933d15a797707ed9f44ed865406422da6db492b48f6989d739c95</code>
+and source identity
+<code>sha256:724ec096bb2a361ee49fa12b5a6f06665d469a34a21826e8e6320a69e959fc96</code>.</p>
+<p><a href="../../tests/physics/test_thol_native_runtime_response.py">Native study tests</a>
+cover the exact discrepancy ledger, actual chronology, source and capture
+binding, narrow UTC exception, node-space boundaries, refused partial calls,
+same-time paired admission and serialization. <strong>35 new tests and 22 prior
+response tests pass</strong>; a separate <strong>56-test baseline</strong> passes for native
+pressure refresh, stability-gated adaptation and phase coordination. The
+113 distinct cases do not constitute an exhaustive engine audit.
+An independent standard-library audit passes <strong>25,410 exact/structural
+checks</strong>, reconstructing raw-state ledgers, replay admission, paired energies
+and endpoint target compatibility without importing production calculations.
+It also verifies the
+<a href="../DERIVED_EPI_MEMORY/#116-conditional-paired-evolution-under-common-coherence">conditional common-IL paired map</a>
+with maximum absolute paired residual <code>3.531e-17</code>. This is finite evidence
+for the recorded common-policy witness, not a repeated-runtime theorem.
+The independent report and overall validation are retained at
+<code>artifacts/research/thol_native_runtime_response_independent_check_2026_09_18.json</code>
+and <code>artifacts/research/thol_native_runtime_response_validation_2026_09_18.json</code>.</p>
+<h3 id="global-phase-direction-near-the-symmetric-input">Global phase direction near the symmetric input<a class="headerlink" href="#global-phase-direction-near-the-symmetric-input" title="Permanent link">&para;</a></h3>
+<p>A read-only follow-up identifies a conditioning boundary in this retained
+trajectory. In the ideal duplicated regular twist <code>phi_k=k*pi/4</code>, opposite
+unit phasors cancel exactly, so the global resultant is zero and has no
+direction. The stored binary64 angles are distinct exact real inputs; their
+transcendental resultant is not assumed zero. Canonical phase normalization
+also occurs between the entry record and actual coordination input.</p>
+<p>For each exact represented angle <code>x</code>, rational Taylor polynomials through
+degrees 80 for cosine and 81 for sine enclose their real values with errors
+at most <code>abs(x)^82/82!</code> and <code>abs(x)^83/83!</code>, respectively. The next odd/even
+coefficient vanishes, and every real sine/cosine derivative has magnitude at
+most one. Summing these intervals gives a rectangle excluding zero at both
+recorded boundaries. At actual coordination input its midpoint has mean
+approximately <code>(-4.15476e-17, -9.38127e-17)</code>, norm <code>1.02601e-16</code>, and direction
+<code>-1.98771</code> radians. Re-evaluating the NumPy trigonometric/reduction path on
+those same angles gives direction <code>-2.03444</code>; the scalar compensated readout
+gives <code>-2.01397</code>. Norms and angles here are approximate midpoint/readout
+displays; the retained rational rectangles are the exact enclosures.</p>
+<p>For nonzero resultant <code>z</code>, the differential of <code>arg(z)</code> has norm <code>1/abs(z)</code>.
+Consequently the observed small resultant is strongly sensitive to input,
+trigonometric and reduction changes. This does not invalidate the recorded
+native calls or their common-source paired identity. It does prevent treating
+the common phase trajectory as demonstrated robust symmetry breaking.
+The engine was not changed and no threshold, alternate direction or new
+trajectory was introduced by this audit. Its read-only helper and evidence
+are retained at <code>artifacts/research/analyze_thol_phase_resultant.py</code> and
+<code>artifacts/research/thol_phase_resultant_audit_2026_09_18.json</code>. Numerical
+phase-direction robustness must be addressed before promoting the individual
+phase evolution to a structurally persistent mechanism.</p>
+<h2 id="18-five-additional-native-policy-steps">18. Five additional native policy steps<a class="headerlink" href="#18-five-additional-native-policy-steps" title="Permanent link">&para;</a></h2>
+<h3 id="fixed-protocol-and-shared-implementation">Fixed protocol and shared implementation<a class="headerlink" href="#fixed-protocol-and-shared-implementation" title="Permanent link">&para;</a></h3>
+<p>The predeclared window extends both authenticated Section 17 endpoints from
+<code>t=1.75</code> by exactly five additional <code>.25</code> native calls, with unchanged
+configuration, selector, capacities and retained history. Its length was
+chosen from the observed <code>VF_ADAPT_TAU=5</code> before the results, without assuming
+that the stability gate would qualify. A refused call would stop that branch
+with its actual partial state; no retry, retuning or horizon extension is
+permitted. Both prior scientific replays are admitted before either new
+window begins, retaining only the enumerated actual-child UTC-origin
+exception and preserving the original input bytes.</p>
+<p>The <a href="../../benchmarks/thol_native_policy_window.py">window runner</a> reuses the
+existing native trace owner. An opt-in observation captures the generated
+pressure immediately after native preparation, separately from pressure
+consumed by the integrator; the previous runner's default trace schema and
+behavior are unchanged.
+The live continuation entry checks its complete projected endpoint record,
+including configuration and counters. Opaque resources retain explicit
+unavailable markers, rather than a claim of complete internal serialization.
+The shared forcing, target-compatibility, pattern and tetrad observers remain
+the calculation owners. All original-target comparisons retain <code>z0/H0</code>.</p>
+<p>Repeated JSON trees are stored once in a SHA-256-addressed record pool.
+Expansion validates content digests and returns detached values; each produced
+step is checked against its complete uncompressed record. This preserves
+inactive stages, refused calls and exact scalar literals. The report contains
+9,511 pooled records and occupies 13,209,097 bytes, including the replayed
+native steps and all ten new calls.</p>
+<h3 id="actual-response-and-policy-gates">Actual response and policy gates<a class="headerlink" href="#actual-response-and-policy-gates" title="Permanent link">&para;</a></h3>
+<p>Both branches complete all five calls through <code>t=3.0</code>. The same glyph is
+applied to all sixteen nodes at each step, in the existing sequential runtime
+order. The observed sequence is <code>IL, IL, EN, IL, AL</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Endpoint time</th>
+<th>Actual glyph</th>
+<th>Paired centered H0 energy</th>
+<th>Original-target error, control</th>
+<th>Original-target error, prior child AL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.75 (entry)</td>
+<td>Previous IL</td>
+<td>0.02125418450</td>
+<td>4.470889150</td>
+<td>4.111168481</td>
+</tr>
+<tr>
+<td>2.00</td>
+<td>IL</td>
+<td>0.01924351210</td>
+<td>4.077236952</td>
+<td>3.743658257</td>
+</tr>
+<tr>
+<td>2.25</td>
+<td>IL</td>
+<td>0.01742768716</td>
+<td>3.712979695</td>
+<td>3.403352021</td>
+</tr>
+<tr>
+<td>2.50</td>
+<td>EN</td>
+<td>0.00643978687</td>
+<td>1.563335194</td>
+<td>1.421563646</td>
+</tr>
+<tr>
+<td>2.75</td>
+<td>IL</td>
+<td>0.00585202028</td>
+<td>1.424752976</td>
+<td>1.293568728</td>
+</tr>
+<tr>
+<td>3.00</td>
+<td>AL</td>
+<td>0.00515489141</td>
+<td>1.265146793</td>
+<td>1.147332908</td>
+</tr>
+</tbody>
+</table>
+<p>Paired centered energy falls <strong>75.74646%</strong> over this window. Its weighted
+mean offset is approximately <code>0.02597607536</code> before EN and <code>0.02701964019</code>
+after EN; it remains nonzero. Neither full EPI equality nor equality modulo
+a uniform offset is attained. Both original-target errors decrease at every
+recorded endpoint, while the original profile remains incompatible throughout.
+Its common endpoint compatibility residual has maximum absolute value
+<code>0.07990084718</code> at <code>t=3.0</code>. Improvement in the fixed score is therefore not
+preservation of that relative equilibrium.</p>
+<p>The changes of glyph have a concrete policy source. In
+<a href="../../src/tnfr/dynamics/selectors.py">the native selector</a>, lag counters increment
+before decisions: <code>since_EN&gt;EN_MAX_LAG=3</code> forces EN at <code>t=2.5</code>, and
+<code>since_AL&gt;AL_MAX_LAG=5</code> forces AL at <code>t=3.0</code>. Those steps have no outer selector
+requests; the three IL steps have sixteen each. These are configured
+history-driven actions, not evidence of a newly derived phase transition or
+autonomous initiation. No new node or edge is created in the window.</p>
+<p>Capacity adaptation never qualifies: every actual stored-pressure magnitude
+at its gate exceeds <code>.001</code>, although Si is high. The closest observed
+magnitude is approximately <code>0.00116717</code> in the prior-AL branch at <code>t=2.75</code>.
+All stability counters remain zero, no capacity update becomes eligible, and
+support/capacity stay fixed. Si and pressure still come from different stages
+as documented in Section 17. Stored-state coherence is not monotone: it falls
+at the EN and final AL calls, with endpoint values approximately <code>0.899716</code>
+and <code>0.904565</code>. This diagnostic uses the retained pressure/rate, not a pressure
+refresh after the later phase motion.</p>
+<p>The <a href="../DERIVED_EPI_MEMORY/#116-conditional-paired-evolution-under-common-coherence">conditional IL identity</a>
+is admitted at <code>t=2.0, 2.25, 2.75</code>, with generated source, actual retention
+multiplication, consumed pressure and EPI-write boundaries checked separately.
+Its maximum combined paired residual is below <code>1.78e-16</code> in those three
+records, with exact zero accounting residual. The checker explicitly abstains
+at EN and AL: both write EPI while leaving the generated pressure unchanged.
+Their sequential reset and held-pressure integration need their own existing
+operator contracts; substituting a common-IL map would be false.
+Generation and endpoint phase/forcing arrays agree exactly across branches
+at all five steps, as do the captured support, capacities and EPI coefficient.
+AL adds the same represented <code>0.07957747154594763</code> to each EPI in both branches;
+EN has different sequential per-node jumps. No post-reset pressure refresh
+occurs in either step. The accounting in Section 19 therefore preserves the
+pre-reset drive, rather than inserting a freshly evaluated drive at the reset EPI.</p>
+<p>The result establishes a finite response under the actual configured policy.
+It does not close indefinite maintenance, generative initiation, a phase
+transition or empirical emergence. The near-singular initial phase-direction
+conditioning in Section 17 also remains relevant to any robustness claim.</p>
+<h3 id="reproduction-and-retained-evidence">Reproduction and retained evidence<a class="headerlink" href="#reproduction-and-retained-evidence" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">benchmarks</span><span class="p">/</span><span class="n">thol_native_policy_window</span><span class="p">.</span><span class="n">py</span> <span class="p">-</span><span class="n">-output</span> <span class="n">artifacts</span><span class="p">/</span><span class="n">research</span><span class="p">/</span><span class="n">thol_native_policy_window_2026_09_18</span><span class="p">.</span><span class="n">json</span>
+</code></pre></div>
+<p>Both input artifacts are pinned by digest; relocation/regeneration requires
+the explicit CLI input and expected-digest arguments. Output cannot overwrite
+either historical input. The window artifact has SHA-256
+<code>37907325606a10551c65302fcbc18ef0fc23e0f46868cc222b3bc524b0faeedb</code>, with source
+identity <code>sha256:084a85f74d66f5f6a89a3646c1930e304725fb60b95c1f82b17d42544cba310e</code>.</p>
+<p>The independent standard-library audit authenticates all 9,511 pooled records
+and passes 1,628,987 exact/structural checks, mostly complete replay and codec
+field comparisons. It independently reconstructs target compatibility,
+paired energies, admitted IL ledgers, forced lag decisions and stability
+counters. This is finite retained-evidence validation, not an exhaustive
+runtime audit. Its report is
+<code>artifacts/research/thol_native_policy_window_independent_check_2026_09_18.json</code>.</p>
+<p><a href="../../tests/physics/test_thol_native_policy_window.py">Portable window tests</a>
+cover the exact horizon, adjoining live records, mixed-policy admission,
+old-target domains, narrow UTC exception, ancestry, refusal, frozen-history
+protection and lossless serialization. The validation summary is retained at
+<code>artifacts/research/thol_native_policy_window_validation_2026_09_18.json</code>.
+Validation covers <strong>43 new tests, 35 previous native-response tests and a
+56-test runtime baseline</strong>, totaling 134 distinct cases. Two initial failures
+were synthetic test-fixture mistakes; their four affected guard/refusal
+controls pass after correction, without changing or rerunning the measured
+trajectory. These cases do not constitute an exhaustive engine audit.</p>
+<h2 id="19-retained-reset-accounting-and-phase-conditioning">19. Retained reset accounting and phase conditioning<a class="headerlink" href="#19-retained-reset-accounting-and-phase-conditioning" title="Permanent link">&para;</a></h2>
+<p>This closes the supporting interpretation block using the authenticated
+Sections 17-18 records. No native step, longer trajectory, alternate forcing,
+threshold change or engine modification is introduced. The existing canonical
+operators remain the transformations under study; their selection and timing
+are separate from their action contracts.</p>
+<h3 id="sequential-enal-and-the-pressure-actually-consumed">Sequential EN/AL and the pressure actually consumed<a class="headerlink" href="#sequential-enal-and-the-pressure-actually-consumed" title="Permanent link">&para;</a></h3>
+<p>The <a href="../../benchmarks/thol_retained_reset_audit.py">offline reset audit</a> binds
+the historical artifacts and original target, checks complete retained
+boundary continuity, and reads the generated pressure before the glyphs.
+It evaluates each recorded scalar EN/AL kernel on its actual detached input,
+including neighbor order, configured factors and clipping. A later EN sees
+the preceding node's EPI write. These are sequential calls, not a simultaneous
+snapshot stage.</p>
+<p>Let the generated drive be <code>-A*x+b</code>, and let <code>S*x+c</code> denote the composed
+affine reset built from the shared represented coefficients. Every local
+kernel-evaluation and clipping defect is retained and propagated through the
+later reset rows. Binary64 row coefficients are rationalized as represented;
+the audit does not assume that the resulting <code>S</code> is exactly stochastic. The
+subsequent nodal integration still consumes the pre-reset pressure:</p>
+<div class="highlight"><pre><span></span><code>x_after = (S - h*A)*x_before + c + h*b
+          + propagated_reset_defect + pressure_term
+          + integration_remainder + postintegration_change.
+</code></pre></div>
+<p>The integration remainder is observed, not assumed to consist only of
+rounding. Source capture comes from the independent channel readout;
+pressure is never reconstructed from the observed endpoint to fit a model.
+All four branch vector identities and the two paired identities close with
+exact zero rational accounting residual. For the two branches, common
+<code>S,c,A,b</code> give the paired map <code>S-h*A</code>; common AL has <code>S=I</code>. This implements
+the already derived
+<a href="../DERIVED_EPI_MEMORY/#117-epi-resets-with-pre-generated-pressure">pre-generated-pressure identity</a>
+on these records, without claiming a general runtime theorem.</p>
+<table>
+<thead>
+<tr>
+<th>Retained step</th>
+<th>Paired centered H0 energy before reset</th>
+<th>After reset</th>
+<th>Native endpoint</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EN, endpoint t=2.5</td>
+<td>0.0174276871647</td>
+<td>0.00783124789728</td>
+<td>0.00643978686669</td>
+</tr>
+<tr>
+<td>AL, endpoint t=3.0</td>
+<td>0.00585202027919</td>
+<td>0.00585202027919</td>
+<td>0.00515489141424</td>
+</tr>
+</tbody>
+</table>
+<p>EN itself increases the paired mean offset by approximately
+<code>0.00104356482712</code>: the branches have unequal mean reset jumps,
+<code>-0.00927390658874</code> and <code>-0.00823034176162</code>. Their final mean offset is
+approximately <code>0.02701964019</code>. The all-node AL jump is identical and uniform
+in both branches, so its immediate paired mean and centered-energy changes
+are exactly zero. The later energy reduction belongs to the consumed drive
+and its measured defects, not to a differential AL reset. Maximum propagated
+EN reset defects are below <code>1.75e-16</code>; AL defects are approximately
+<code>4.16334e-17</code> in each branch. All 64 local clipping defects are exactly zero.
+Retaining the kernel-evaluation defects is what permits exact
+accounting; small defects alone would not prove the identities.</p>
+<p>Thus EN explains the large local attenuation and the mean-offset change;
+common AL does not erase the remaining branch difference. The configured
+lag counters explain why these actions occurred. They do not derive that
+schedule from coherence dynamics or establish maintenance of the original
+incompatible profile.</p>
+<h3 id="one-held-gain-phase-calculation-and-its-ordering-control">One held-gain phase calculation and its ordering control<a class="headerlink" href="#one-held-gain-phase-calculation-and-its-ordering-control" title="Permanent link">&para;</a></h3>
+<p>The <a href="../../benchmarks/thol_retained_phase_audit.py">phase audit</a> makes the earlier
+rational resultant enclosure reusable and selects the first retained native
+coordination boundary. It reconstructs only the fields needed by detached
+coordination and diagnostics. Effective gains are held at the captured
+values <code>kG=0.05929429797231117</code>, <code>kL=0.1496560821254262</code>. The baseline NumPy
+calculation must reproduce the archived phase endpoint exactly. This binds
+the calculation, not a replay of adaptive history or a complete native step.</p>
+<p>The predetermined rotation is <code>k -&gt; k+1</code> on the eight parents and their
+actual children. All comparisons map phases and per-node diagnostics back
+to the original labels. Two distinct ordering controls are retained:</p>
+<ul>
+<li>Transporting both labels and node/neighbor enumeration gives exact
+  node-aligned phase equality. A label change alone does not fail this test.</li>
+<li>Rebuilding the same relabeled mathematical input in the original canonical
+  node enumeration, with transported neighbor order, changes the global
+  reduction order. Its anchor phase shift is approximately <code>0.02749166</code>
+  radians, but the maximum residual between anchor-relative patterns is
+  <code>0.372557061819</code> radians. This is not merely a common phase rotation.</li>
+</ul>
+<p>The global direction changes from approximately <code>-2.03444</code> to <code>-pi/2</code>.
+At original parent 2 and its child, the wrapped global displacement changes
+branch; the relative residual is approximately <code>-2*pi*kG</code>. Shared readouts
+also change: maximum aligned gradient and curvature differences are
+<code>0.149022824728</code> and <code>0.203531276820</code>, respectively. Structural potential
+is unchanged; the coherence-length difference is about <code>4.44e-16</code>.</p>
+<p>The scalar arithmetic comparison instead has a common shift of approximately
+<code>0.00121371</code> radians and a maximum relative residual of <code>4.44e-16</code>.
+Gradient/curvature differences are at rounding scale. This comparison
+switches the coordination/trigonometric arithmetic only; it is not a
+NumPy-free whole-engine trajectory or an exact gauge-invariance theorem.</p>
+<p>Exact Taylor bounds certify a nonzero resultant for the represented input,
+with midpoint norm approximately <code>1.026e-16</code>. The ideal regular twist has
+exactly zero resultant. These are different mathematical inputs. The tested
+ordering sensitivity rejects robustness of this particular numerical phase
+pattern; it does not establish that every phase preparation or canonical
+operator is unstable. No arbitrary zero-resultant epsilon or replacement
+phase force is introduced.</p>
+<h3 id="evidence-and-return-to-the-generative-question">Evidence and return to the generative question<a class="headerlink" href="#evidence-and-return-to-the-generative-question" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">benchmarks</span><span class="p">/</span><span class="n">thol_retained_reset_audit</span><span class="p">.</span><span class="n">py</span>
+<span class="n">python</span> <span class="n">benchmarks</span><span class="p">/</span><span class="n">thol_retained_phase_audit</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+<p>The outputs are local research artifacts under <code>artifacts/research/</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Report</th>
+<th>SHA-256</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>thol_retained_reset_audit_2026_09_18.json</code></td>
+<td><code>6257b5ce03a8620afe7c982f68cf2913c4b6759610a99ef047f2c878818310ec</code></td>
+</tr>
+<tr>
+<td><code>thol_retained_phase_audit_2026_09_18.json</code></td>
+<td><code>b9e957bbfbc21ac68c3dfa31c818a9d46db3dbae08da3879b6d33c7991f7371a</code></td>
+</tr>
+</tbody>
+</table>
+<p>The reset and phase source identities are respectively
+<code>sha256:3df78190f7088ca9b36ae40655b9f2081068004d15711b8dd6037f08cdd60c8f</code>
+and <code>sha256:0954e6149032793e9137db562b6df74e97572568dfefae55dcf0d1e2e89c1355</code>.
+Historical input bytes remain unchanged. Portable
+<a href="../../tests/physics/test_thol_retained_reset_audit.py">reset controls</a> and
+<a href="../../tests/physics/test_thol_retained_phase_audit.py">phase controls</a> retain
+admission, arithmetic and label/order boundaries without running a native
+trajectory. The local validation summary is
+<code>artifacts/research/thol_retained_mechanism_validation_2026_09_18.json</code>.
+Validation passes 33 new tests and 41 Reception/Emission/phase regression
+tests, totaling 74 distinct cases. An initial reset-test fixture encoded
+exact component values incorrectly; the corrected final 16-test reset suite
+passes, including its independent retained-record arithmetic check. No
+measured trajectory was rerun to fix those synthetic fixtures. These artifacts
+and tests do not constitute a whole-repository or empirical validation.</p>
+<p>This supporting block is complete. The principal unresolved chain is how an
+existing nodal configuration requires a transformation that generates and
+sustains a new coherence region. Canonical action contracts are retained;
+activation, targets and ordering still need their structural justification.
+The <a href="../research/FIVE_STAGE_EXECUTION_PLAN/#2-one-status-board-and-dependency-chain">single execution plan</a>
+owns that bounded derivation or underdetermination test. No longer native
+window follows automatically from the present result.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../docs/assets/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+      
+    
+  </body>
+</html>

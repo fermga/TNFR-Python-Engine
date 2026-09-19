@@ -1,0 +1,461 @@
+"""REMESH-Window-Type Signature diagnostic for the T-REMESH-window conjecture.
+
+This module implements a finite **REMESH-Window-Type Signature**
+:math:`\\mathcal{S}_{\\tau}`. It records how the current runtime stores
+the delay pair and how three adjacent integer-delay experiments differ.
+The measurement describes the implemented history lookup; it cannot decide
+whether a continuous or fractional memory model is mathematically necessary.
+
+Methodological scope (mandatory honesty)
+----------------------------------------
+This module is a *diagnostic only*. It does **not** construct or promote a
+memory kernel, modify an operator, prove catalog completeness, or advance
+G4 = RH. The legacy conjecture and verdict labels are retained for API and
+research-record compatibility.
+
+The diagnostic probes two orthogonal axes:
+
+1. **Integer-index storage axis** — the fraction of REMESH-bearing
+   parameter observations for which both runtime delay slots contain strict
+   positive integers. The default and bracket setup use integers, so the
+   expected value is 1.0. A lower value predicts rejection by the runtime
+   planner; it is never silently truncated.
+2. **Window-refinement sensitivity axis** — variance of the
+   post-REMESH per-node EPI snapshot across a small bracket of
+   adjacent integer windows
+   :math:`\\{(\\tau_l + j, \\tau_g + j) : j = 0, 1, 2\\}`,
+   normalised to :math:`[0, 1]`. Low variance says only that these
+   three finite integer-delay experiments have similar final states.
+   Three samples neither establish Lipschitz regularity between delays
+   nor prove that a continuous kernel is unnecessary.
+
+A high :math:`\\mathcal{S}_{\\tau}` says only that adjacent integer
+windows produce substantially different post-REMESH states. It can motivate
+a richer follow-up model, but it does **not** prove that the REMESH window
+requires a continuous kernel.
+
+A low signature plus a unit integer-storage fraction is the empirically expected
+outcome. It is consistent with the strict domain
+(tau_l, tau_g) in positive integers and with the indexed delayed access owned by
+tnfr.operators.remesh.plan_network_remesh. It supplies no statement about a
+literal tau_g to infinity runtime limit. The corrected N15 record proves a
+separate Cesaro projection theorem only for a finite cyclic filter with fixed
+delays; its fixed modes are governed by gcd(tau_l, tau_g).
+
+References
+----------
+- ``theory/TNFR_RIEMANN_RESEARCH_NOTES.md`` §13quadraginta-tertia
+- ``theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`` §4 row B4
+- ``theory/REMESH_INFINITY_DERIVATION.md`` §§1–8 (corrected finite
+  fixed-delay cyclic surrogate and runtime-limit boundary)
+- ``src/tnfr/operators/remesh.py:1212::apply_network_remesh``
+  (canonical integer-indexed implementation)
+- ``src/tnfr/config/defaults_core.py:221–222`` (canonical defaults
+  ``REMESH_TAU_GLOBAL: int = 8``, ``REMESH_TAU_LOCAL: int = 4``)
+"""
+
+from __future__ import annotations
+
+import math
+from dataclasses import dataclass, field
+from typing import Any
+
+import numpy as np
+
+__all__ = [
+    "RemeshWindowTypeSignatureCertificate",
+    "compute_remesh_window_type_signature",
+]
+
+
+def _wrap_to_pi(angle: float) -> float:
+    """Wrap ``angle`` to the canonical fundamental domain ``[-π, π]``."""
+    return (float(angle) + math.pi) % (2.0 * math.pi) - math.pi
+
+
+def _is_strict_positive_integer_payload(value: Any) -> bool:
+    """Return whether value is a strict positive integer payload.
+
+    Python and NumPy integer scalars are accepted. Booleans, floating-point
+    values (including integral-valued floats), arrays, text and non-positive
+    integers are rejected exactly as by the delayed REMESH planner.
+    """
+
+    if isinstance(value, (bool, np.bool_)):
+        return False
+    return isinstance(value, (int, np.integer)) and int(value) > 0
+
+
+def _build_canonical_demo_graph(n_nodes: int, seed: int) -> Any:
+    """Build a small canonical ring graph for the REMESH-window probe.
+
+    Uses :func:`tnfr.sdk.TNFR.create` to obtain a TNFR network with
+    canonical defaults and a fixed ring topology so the diagnostic is
+    deterministic given the seed.  The initial phase / EPI / νf
+    distributions are deterministic mild perturbations so canonical
+    evolution starts away from a trivial symmetric fixed point.
+    """
+    from ..sdk import TNFR
+
+    net = TNFR.create(int(n_nodes)).ring()
+    G = net.G
+    rng = np.random.default_rng(int(seed))
+    for node in list(G.nodes()):
+        G.nodes[node]["EPI"] = float(0.5 + 0.05 * (rng.random() - 0.5))
+        G.nodes[node]["theta"] = _wrap_to_pi(
+            float(2.0 * math.pi * (rng.random() - 0.5))
+        )
+        current_vf = float(G.nodes[node].get("nu_f", 1.0))
+        G.nodes[node]["nu_f"] = max(0.05, current_vf + 0.05 * (rng.random() - 0.5))
+    return G
+
+
+def _read_epi_snapshot(G: Any, nodes: list[Any]) -> np.ndarray:
+    """Return per-node EPI vector in deterministic ``nodes`` order."""
+    out = np.zeros(len(nodes), dtype=float)
+    for i, node in enumerate(nodes):
+        out[i] = float(G.nodes[node].get("EPI", 0.0))
+    return out
+
+
+def _inspect_tau_storage(G: Any) -> tuple[int, int]:
+    """Inspect raw ``REMESH_TAU_*`` payloads stored on ``G.graph``.
+
+    Returns
+    -------
+    n_integer : int
+        Number of canonical window slots (out of 2) whose raw payload
+        is a strict positive integer.
+    n_total : int
+        Total number of canonical window slots inspected (2 per call).
+    """
+    n_total = 2
+    n_integer = 0
+    raw_l = G.graph.get("REMESH_TAU_LOCAL")
+    raw_g = G.graph.get("REMESH_TAU_GLOBAL")
+    if raw_l is not None and _is_strict_positive_integer_payload(raw_l):
+        n_integer += 1
+    if raw_g is not None and _is_strict_positive_integer_payload(raw_g):
+        n_integer += 1
+    return n_integer, n_total
+
+
+def _evolve_to_steady_history(G: Any, warmup_steps: int) -> None:
+    """Run ``warmup_steps`` canonical steps so ``_epi_hist`` is populated."""
+    from ..constants import inject_defaults
+    from ..dynamics import step
+
+    inject_defaults(G)
+    for _ in range(int(warmup_steps)):
+        step(G)
+
+
+def _run_remesh_bracket(
+    n_nodes: int,
+    seed: int,
+    warmup_steps: int,
+    tau_l_base: int,
+    tau_g_base: int,
+    n_events: int,
+) -> tuple[np.ndarray, list[Any], int, int, int]:
+    """Run delayed REMESH attempts for each integer window bracket.
+
+    Each bracket member starts from an identically seeded, independently warmed
+    graph. The function counts strict-integer delay observations, total delay
+    observations and successful delayed operations separately. An
+    insufficient-history result is an attempt but is not an applied event.
+
+    Returns the three final EPI vectors, canonical node order, integer reads,
+    total reads and applied-event count.
+    """
+    from ..operators.remesh import apply_network_remesh
+
+    epi_bracket = np.zeros((3, int(n_nodes)), dtype=float)
+    n_integer_samples = 0
+    n_total_samples = 0
+    n_applied_events = 0
+    nodes_canonical: list[Any] | None = None
+    for j in range(3):
+        G_j = _build_canonical_demo_graph(n_nodes, seed)
+        _evolve_to_steady_history(G_j, warmup_steps)
+        nodes_j = list(G_j.nodes())
+        if nodes_canonical is None:
+            nodes_canonical = nodes_j
+        G_j.graph["REMESH_TAU_LOCAL"] = int(tau_l_base + j)
+        G_j.graph["REMESH_TAU_GLOBAL"] = int(tau_g_base + j)
+        for _ in range(int(n_events)):
+            n_int, n_tot = _inspect_tau_storage(G_j)
+            n_integer_samples += n_int
+            n_total_samples += n_tot
+            result = apply_network_remesh(G_j)
+            n_applied_events += int(result.applied)
+        epi_bracket[j, :] = _read_epi_snapshot(G_j, nodes_j)
+    assert nodes_canonical is not None
+    return (
+        epi_bracket,
+        nodes_canonical,
+        n_integer_samples,
+        n_total_samples,
+        n_applied_events,
+    )
+
+
+def _window_refinement_signature(
+    epi_bracket: np.ndarray, *, eps: float = 1e-12
+) -> tuple[float, float]:
+    """Compute the normalised per-node EPI variance across the integer-window bracket.
+
+    For each node, compute the variance of EPI across the three
+    bracket windows, divide by the per-node mean absolute EPI plus
+    ``eps`` (scale invariance), and average across nodes.  The result
+    is clipped to ``[0, 1]`` by squashing through
+    :math:`\\tanh(\\cdot)` so it is comparable to the B0/B1/B2/B3
+    signatures.
+
+    Returns
+    -------
+    signature : float
+        Squashed signature in ``[0, 1]``.
+    raw_relative_variance : float
+        Raw per-node mean of variance/mean-abs-EPI (before squashing).
+    """
+    if epi_bracket.shape[0] < 2:
+        return 0.0, 0.0
+    per_node_var = np.var(epi_bracket, axis=0, ddof=0)
+    per_node_scale = np.mean(np.abs(epi_bracket), axis=0) + eps
+    rel_var = per_node_var / per_node_scale
+    raw_mean = float(np.mean(rel_var))
+    signature = float(math.tanh(raw_mean))
+    return signature, raw_mean
+
+
+@dataclass(frozen=True)
+class RemeshWindowTypeSignatureCertificate:
+    """Result of the REMESH-Window-Type Signature diagnostic on a canonical network.
+
+    Attributes
+    ----------
+    signature : float
+        :math:`\\mathcal{S}_{\\tau} \\in [0, 1]`.  ``0`` means
+        integer-window-adequate (the three bracket windows produce
+        essentially identical post-REMESH EPI snapshots); ``1`` means
+        adjacent integer windows produce maximally different
+        snapshots. The legacy verdict label may then mention a continuous
+        kernel, but the measurement alone cannot establish its necessity.
+    integer_storage_fraction : float
+        Fraction of inspected delay slots holding strict positive integers.
+        A value below one predicts rejection by the delayed REMESH planner.
+    noninteger_storage_count : int
+        Absolute number of window-slot reads that stored a non-integer
+        payload (total inspected reads minus integer_storage_count).
+    n_remesh_events : int
+        Number of delayed REMESH operations whose result reports applied.
+        Insufficient-history attempts are excluded.
+    n_nodes : int
+        Number of nodes in the diagnostic graph.
+    tau_l : int
+        Base canonical local window τ_l used as bracket anchor.
+    tau_g : int
+        Base canonical global window τ_g used as bracket anchor.
+    bracket : tuple[int, int, int]
+        The three integer offsets applied to ``(τ_l, τ_g)``: ``(0, 1, 2)``.
+    raw_relative_variance : float
+        Pre-squash per-node mean of variance/mean-abs-EPI across the
+        bracket (in EPI units).
+    bracket_mean_l2 : float
+        Mean across nodes of :math:`\\ell^2` distance between the
+        baseline window's EPI snapshot and the ``+1`` and ``+2``
+        windows' snapshots (advisory; complements
+        ``raw_relative_variance``).
+    verdict : str
+        One of ``"INTEGER_WINDOW_ADEQUATE"`` (signature <
+        ``scalar_threshold`` AND integer storage fraction == 1.0),
+        legacy ``"CONTINUOUS_KERNEL_NECESSARY"`` (signature >
+        ``continuous_threshold`` OR integer storage fraction < 1.0),
+        or ``"INDETERMINATE"``. These are compatibility labels for
+        threshold outcomes, not mathematical necessity claims.
+    diagnostics : dict
+        Auxiliary fields (bracket EPI matrices, thresholds, seed,
+        warmup steps, raw counters).
+    """
+
+    signature: float
+    integer_storage_fraction: float
+    noninteger_storage_count: int
+    n_remesh_events: int
+    n_nodes: int
+    tau_l: int
+    tau_g: int
+    bracket: tuple[int, int, int]
+    raw_relative_variance: float
+    bracket_mean_l2: float
+    verdict: str
+    diagnostics: dict[str, Any] = field(default_factory=dict)
+
+    def summary(self) -> str:
+        lines = [
+            "REMESH-Window-Type Signature certificate "
+            "(diagnostic only — §13quadraginta-tertia.5)",
+            f"  signature S_tau          : {self.signature:.6f}   "
+            "(0 = bracket-flat, 1 = bracket-saturated)",
+            f"  integer storage fraction : {self.integer_storage_fraction:.4f}"
+            f"  ({self.noninteger_storage_count} non-integer reads / "
+            f"{self.diagnostics.get('total_window_reads', 0)} total reads)",
+            f"  raw relative variance    : {self.raw_relative_variance:.6e}"
+            f" (per-node Var(EPI)/<|EPI|> across bracket)",
+            f"  bracket mean L2          : {self.bracket_mean_l2:.6f}"
+            f" (baseline vs +1, +2 EPI snapshots)",
+            f"  bracket windows          : (tau_l, tau_g) in "
+            f"{{({self.tau_l}, {self.tau_g}),"
+            f" ({self.tau_l + 1}, {self.tau_g + 1}),"
+            f" ({self.tau_l + 2}, {self.tau_g + 2})}}",
+            f"  graph                    : {self.n_nodes} nodes,"
+            f" {self.n_remesh_events} applied REMESH events",
+            f"  verdict                  : {self.verdict}",
+            "  scope: finite adjacent-window diagnostic; legacy verdict "
+            "labels do not prove a continuous kernel",
+        ]
+        return "\n".join(lines)
+
+
+def compute_remesh_window_type_signature(
+    *,
+    n_nodes: int = 24,
+    warmup_steps: int = 16,
+    tau_l: int = 4,
+    tau_g: int = 8,
+    remesh_events_per_window: int = 8,
+    seed: int = 17,
+    scalar_threshold: float = 0.15,
+    continuous_threshold: float = 0.5,
+) -> RemeshWindowTypeSignatureCertificate:
+    """Compute the REMESH-Window-Type Signature on a canonical TNFR ring evolution.
+
+    Parameters
+    ----------
+    n_nodes : int, default 24
+        Size of the ring graph used as the canonical probe.
+    warmup_steps : int, default 16
+        Number of canonical evolution steps before the REMESH bracket starts.
+        It should provide at least max(tau_l, tau_g) + 3 snapshots so all three
+        offset windows can apply. Shorter histories produce explicit no-op
+        results that are excluded from n_remesh_events.
+    tau_l : int, default 4 (canonical default of
+        ``REMESH_TAU_LOCAL``)
+        Base local memory window τ_l used as bracket anchor.
+    tau_g : int, default 8 (canonical default of
+        ``REMESH_TAU_GLOBAL``)
+        Base global memory window τ_g used as bracket anchor.
+    remesh_events_per_window : int, default 8
+        Number of delayed REMESH attempts per bracket member. The certificate
+        counts only results reporting applied as events.
+    seed : int, default 17
+        Deterministic seed for the initial phase / EPI / νf
+        perturbation.
+    scalar_threshold : float, default 0.15
+        Below this signature value AND with integer storage fraction
+        equal to ``1.0``, the verdict is ``"INTEGER_WINDOW_ADEQUATE"``.
+    continuous_threshold : float, default 0.5
+        Above this signature value OR with integer storage fraction
+        below ``1.0``, the verdict is
+        the legacy label ``"CONTINUOUS_KERNEL_NECESSARY"``. This label
+        records a threshold crossing; it does not prove necessity.
+
+    Returns
+    -------
+    RemeshWindowTypeSignatureCertificate
+        Diagnostic certificate.
+
+    Notes
+    -----
+    The diagnostic uses two orthogonal axes:
+
+    - **Integer-index storage axis**: before each delayed REMESH attempt,
+      inspect the raw local and global delay payloads. The runtime planner
+      accepts strict positive integers and rejects booleans, fractions and
+      text without coercion. The measured integer-storage fraction is thus a
+      domain diagnostic, while applied-event counts come from the returned
+      immutable execution result.
+    - **Window-refinement sensitivity axis**: for each of three
+      adjacent integer windows
+      :math:`\\{(\\tau_l + j, \\tau_g + j) : j = 0, 1, 2\\}`,
+      rebuild and warm an identically seeded graph, fire
+      :func:`apply_network_remesh` ``remesh_events_per_window``
+      times, and record the final per-node EPI snapshot.  Compute
+      the per-node variance across the bracket, normalise by per-
+      node mean absolute EPI (scale invariance), and squash through
+      :math:`\\tanh` to ``[0, 1]``.  A low signature means the three
+      adjacent integer windows produce essentially identical post-
+      REMESH states over this finite bracket. It does not establish
+      smoothness between integer delays and cannot select or exclude a
+      continuous kernel :math:`K(t, s)`.
+
+    The diagnostic preserves the canonical implementation entirely
+    (no monkey-patching, no operator modification, no parameter
+    coercion bypass). It is a finite probe of TNFR evolution at three
+    integer windows.
+
+    Empirical baseline
+    ------------------
+    Under canonical defaults (``τ_l = 4``, ``τ_g = 8``,
+    ``α = 0.5``) on a ring graph with mild deterministic initial
+    perturbation, the expected outcome is
+    ``integer_storage_fraction == 1.0`` (structural) and
+    ``signature ∈ [0, scalar_threshold)`` (empirical), yielding
+    verdict ``"INTEGER_WINDOW_ADEQUATE"``.
+    """
+    epi_bracket, nodes, n_int, n_tot, n_applied = _run_remesh_bracket(
+        n_nodes=int(n_nodes),
+        seed=int(seed),
+        warmup_steps=int(warmup_steps),
+        tau_l_base=int(tau_l),
+        tau_g_base=int(tau_g),
+        n_events=int(remesh_events_per_window),
+    )
+    signature, raw_var = _window_refinement_signature(epi_bracket)
+    integer_storage_fraction = float(n_int) / float(n_tot) if n_tot > 0 else 0.0
+    noninteger_storage_count = int(n_tot - n_int)
+    n_remesh_attempts = 3 * int(remesh_events_per_window)
+    n_remesh_events = n_applied
+
+    # Advisory L2 distance: baseline vs (+1, +2) windows.
+    baseline = epi_bracket[0]
+    l2_p1 = float(np.linalg.norm(epi_bracket[1] - baseline)) / max(1, baseline.size)
+    l2_p2 = float(np.linalg.norm(epi_bracket[2] - baseline)) / max(1, baseline.size)
+    bracket_mean_l2 = 0.5 * (l2_p1 + l2_p2)
+
+    if signature < scalar_threshold and integer_storage_fraction >= 1.0 - 1e-12:
+        verdict = "INTEGER_WINDOW_ADEQUATE"
+    elif signature > continuous_threshold or integer_storage_fraction < 1.0 - 1e-12:
+        verdict = "CONTINUOUS_KERNEL_NECESSARY"
+    else:
+        verdict = "INDETERMINATE"
+
+    diagnostics: dict[str, Any] = {
+        "epi_bracket": epi_bracket.tolist(),
+        "bracket_l2_per_offset": (l2_p1, l2_p2),
+        "scalar_threshold": float(scalar_threshold),
+        "continuous_threshold": float(continuous_threshold),
+        "seed": int(seed),
+        "warmup_steps": int(warmup_steps),
+        "remesh_events_per_window": int(remesh_events_per_window),
+        "remesh_attempts": n_remesh_attempts,
+        "remesh_noop_count": n_remesh_attempts - n_applied,
+        "integer_storage_count": int(n_int),
+        "total_window_reads": int(n_tot),
+    }
+
+    return RemeshWindowTypeSignatureCertificate(
+        signature=signature,
+        integer_storage_fraction=integer_storage_fraction,
+        noninteger_storage_count=noninteger_storage_count,
+        n_remesh_events=n_remesh_events,
+        n_nodes=int(n_nodes),
+        tau_l=int(tau_l),
+        tau_g=int(tau_g),
+        bracket=(0, 1, 2),
+        raw_relative_variance=raw_var,
+        bracket_mean_l2=bracket_mean_l2,
+        verdict=verdict,
+        diagnostics=diagnostics,
+    )
