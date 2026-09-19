@@ -17,13 +17,12 @@ import logging
 from dataclasses import dataclass, field, replace
 from typing import Any, Callable
 
-import psutil
-
 from ...config import get_config
 
 # Unified mathematics backend integration
 from ...mathematics.backend import get_backend
 from ...mathematics.unified_numerical import np
+from ...utils import cached_import
 
 logger = logging.getLogger(__name__)
 
@@ -702,14 +701,19 @@ class TNFRUnifiedGPUSystem:
         return self._available_devices.copy()
 
     def get_memory_info(self) -> dict[str, Any]:
-        """Get detailed memory usage information."""
+        """Read memory telemetry, leaving system memory unknown without psutil."""
+        psutil = cached_import("psutil", emit="log")
         info = {
             "total_devices": len(self._available_devices),
             "current_device": (
                 self._current_device.name if self._current_device else None
             ),
             "active_allocations": self._active_allocations.copy(),
-            "system_memory_mb": psutil.virtual_memory().total / (1024 * 1024),
+            "system_memory_mb": (
+                psutil.virtual_memory().total / (1024 * 1024)
+                if psutil is not None
+                else None
+            ),
         }
 
         if self._current_device:

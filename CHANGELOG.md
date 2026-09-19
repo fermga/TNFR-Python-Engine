@@ -50,6 +50,9 @@ All notable changes to this project will be documented in this file.
   not changes to the primality calculations.
 - Fixed a missing plotting-padding reference, preserved compatibility reexports
   explicitly and applied the configured Python formatting tools.
+- Declare SciPy as a core dependency for the SDK's spectral import path.
+  Missing optional system-memory telemetry no longer prevents CPU computation
+  interfaces from loading.
 - Classified the expensive C6 historical report producers as slow tests;
   their lightweight input-validation and independent exact-model checks remain
   in the default selection. No producer result is inferred from that classification.
