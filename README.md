@@ -5,69 +5,80 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-TNFR is a Python framework for coherent-pattern analysis on graph-coupled
-networks. Every node carries form (EPI), structural frequency (`nu_f`, in
-`Hz_str`), and phase. Its evolution is organized by the nodal equation
+TNFR is a Python research framework for coherent patterns on graph-coupled
+networks. It provides network construction, 13 registered structural operators,
+U1-U6 grammar, numerical evolution and diagnostics through Python and a CLI.
+
+Each node carries form (EPI), reorganization capacity (`nu_f`) and circular
+phase. The unforced nodal relation is
 
 $$
 \frac{\partial \mathrm{EPI}}{\partial t}=\nu_f\,\Delta\mathrm{NFR}(t).
 $$
 
-In plain text: `dEPI/dt = nu_f * DeltaNFR`.
+In plain text: `dEPI/dt = nu_f * DeltaNFR` — form changes at a rate given by
+capacity times structural pressure. A runnable model also needs explicit
+pressure, phase, capacity, support and input laws. The equation alone does not
+select them. Structural time requires a declared clock; comparison with
+laboratory seconds requires an independent measurement bridge.
 
-The repository implements 13 canonical structural operators, grammar U1-U6,
-network telemetry, the structural-field tetrad, and research programs built on
-those primitives. [AGENTS.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md) is the canonical synthesized reference.
-Mathematical scope and counterexamples are stated explicitly in the linked
-theory documents.
+Use the engine to execute declared operator studies, observe structural fields
+and examine scoped mathematical models. Autonomous persistent patterns and
+their correspondence with physical entities remain research objectives.
 
-The graph engine's scalar EPI chart accepts a raw real value or the equivalent
-uniform-real `BEPIElement` representation. Its scalar projection retains the
-sign; `abs(EPI)` remains the nonnegative Banach-envelope magnitude. Genuinely
-nonuniform or complex BEPI payloads keep that magnitude projection for generic
-read-outs and are rejected by canonical glyphs that require a real scalar EPI
-coordinate, pure-EPI diffusion and scalar certificates.
+## Installation
+
+Python 3.10 or later is required. Install the published package:
 
 ```bash
-pip install tnfr
+python -m pip install tnfr
+python -m tnfr --version
 ```
+
+To use the current checkout instead, run `python -m pip install -e .` from the
+repository root. Core dependencies include NumPy, SciPy and NetworkX. Optional
+extras enable additional tools:
+
+```bash
+python -m pip install -e ".[test,docs]"     # repository tests and documentation
+python -m pip install -e ".[compute-jax]"   # optional JAX backend
+python -m pip install -e ".[compute-torch]" # optional Torch numerical backend
+```
+
+[Package metadata](https://github.com/fermga/TNFR-Python-Engine/blob/main/pyproject.toml)
+owns versions and dependency groups. The repository can be ahead of PyPI; use
+an explicit release tag when comparing results. The Torch extra supplies a
+numerical backend, without promising CUDA acceleration for every engine path.
 
 ## Quick start
 
 ```python
 from tnfr.sdk import TNFR
 
-net = TNFR.create(20).ring().evolve(5)
+net = TNFR.create(20, seed=42).ring()
+net.evolve(steps=5, sequence="basic_activation")
 print(net.results().summary())
 print(net.tetrad().summary())
-print(net.tetrad().is_safe())
 ```
 
-Current deterministic output for this uniform initial state:
+Output for the declared uniform preparation in the checked environment:
 
 ```text
 C=1.000, Si=1.000, N=20, E=20, rho=0.105
 Phi_s=0.0000, |grad_phi|=0.0000, |K_phi|=0.0000, xi_C=4.5201 (N=20)
-{'phi_s_safe': True, 'grad_phi_safe': True, 'k_phi_safe': True, 'xi_c_safe': True, 'overall': True}
 ```
 
-The same network exposes the principal read-outs:
+This creates a ring with supplied `EPI=0`, `nu_f=1` and phase zero, then runs
+five complete operator words. It does not demonstrate spontaneous pattern
+formation. Coherence and sense index are diagnostics; a high value is not a
+proof of stability. The tetrad's safety flags, available separately through
+`is_safe()`, apply configured policies.
 
-```python
-net.conservation()
-net.symplectic_substrate()
-net.rhythm()
-net.resonance()
-net.telemetry()
-net.audit_operators()
-analysis = TNFR.analyze(net)
-```
-
-Grammar-aware evolution validates operator composition before applying it:
-
-```python
-net.evolve_grammar_aware(steps=10)
-```
+For stored-pressure observations with independent field availability, use
+`diagnose_network(net)` from `tnfr.sdk`. It reads a detached graph copy and
+retains unavailable-field reasons and coherence-length provenance. The
+[CLI and SDK guide](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/CLI_AND_SDK.md)
+explains these reports, seed ownership and advanced execution routes.
 
 ## Command line and reproducible studies
 
@@ -88,6 +99,12 @@ for equivalent Python examples, field availability and reproducibility scope.
 
 ## Canonical structure
 
+The scalar engine accepts signed real EPI or its uniform-real `BEPIElement`
+embedding. Scalar-only operators and diffusion reject genuinely complex or
+nonuniform payloads; their magnitude is not a signed form coordinate. Detailed
+state and execution boundaries belong to
+[API contracts](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/API_CONTRACTS.md).
+
 The nodal identity organizes the model; it does not uniquely supply the phase,
 capacity, support or pressure laws. Each experiment must declare those inputs
 and distinguish continuous flow from named operator jumps.
@@ -101,9 +118,9 @@ and distinguish continuous flow from named operator jumps.
 
 Explicit edge `length` determines field path geometry; `weight` is a compatibility
 fallback. Diffusion uses `weight` as conductance. The phase-wrap bounds are exact;
-warning thresholds are configured policies. The xi fallback reads the first
-spectral value above `1e-9`, equaling `1/sqrt(lambda_2)` only under its stated
-spectral conditions. The tetrad does not reconstruct the complete nodal state.
+warning thresholds are configured policies. The fitted coherence length and
+spectral fallback have different assumptions; reports identify the estimator
+used. The tetrad does not reconstruct the complete nodal state.
 Definitions, numerical boundaries and availability rules are centralized in
 [Structural Fields](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/STRUCTURAL_FIELDS_TETRAD.md).
 
@@ -114,36 +131,23 @@ Grammar admission, live preconditions and trajectory stability are different
 claims. Si is configured telemetry used by some controllers; that use is not a
 derivation of spontaneous operator selection.
 
-### Mutation temporal evidence
-
-Mutation needs live signed EPI-change evidence and grammar context. An
-instantaneous nodal-product prediction does not substitute for the observed
-secant. Details belong to [API contracts](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/API_CONTRACTS.md) and
-[operator semantics](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/STRUCTURAL_OPERATORS.md).
-
-### Operator-event time
-
-Named events are declared hybrid jumps. Continuous solver spans use the shared
-nodal integrator and explicit capacity/pressure; accumulated change includes
-both flow and jumps. Shared all-target stages validate immutable proposals and
-commit graph-owned state atomically. Their target-order scope does not establish
-relabeling symmetry or future stability. Node-level Recursivity is advisory;
-the separate network REMESH operation mixes delayed EPI. The execution and
-certificate boundaries are specified once in [API contracts](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/API_CONTRACTS.md).
+Named operators can introduce declared hybrid jumps; continuous solver spans
+use the shared nodal integrator. Immutable all-target proposals and atomic
+graph-owned commits have their own execution scope. Live temporal evidence,
+network REMESH history and rollback boundaries are specified in the
+[API contracts](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/API_CONTRACTS.md),
+which owns these details rather than duplicating them here.
 
 ## Mathematical scope
 
 The repository contains useful conditional results and explicit counterexamples:
 
 - Fixed reversible pure-EPI diffusion has a Dirichlet dissipation law and
-  componentwise consensus under positive capacity. Directed, forced and time-varying models
+  componentwise consensus under fixed positive capacities. Directed, forced and time-varying models
   require additional hypotheses: [diffusion theorem](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_DIFFUSION_STABILITY_THEOREM.md).
 - Projecting out nodal state can create memory. Mean closure need not preserve
   potential or coherence length: [derived memory](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/DERIVED_EPI_MEMORY.md)
   and [scale/geometry bridge](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md).
-- The exact P5 reflection quotient removes a discrete reflection ambiguity;
-  it retains five continuous dimensions. Its hidden-form controls distinguish
-  xi fits from the spectral fallback. This is a restricted model result.
 - A prescribed phase motion can produce a conditional periodic form response;
   autonomous generation of that motion remains open:
   [phase/form foundations](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md).
@@ -165,25 +169,11 @@ the [execution plan](https://github.com/fermga/TNFR-Python-Engine/blob/main/theo
 is the sole active queue. The main objective remains a predictive generative
 account of coherent patterns, with a separate reserved-data measurement bridge.
 
-## Installation
-
-```bash
-pip install tnfr
-pip install -e ".[dev-minimal]"   # local development
-pip install -e ".[test-all]"      # complete test tooling
-pip install -e ".[compute-jax]"   # optional JAX backend
-pip install -e ".[compute-torch]" # optional Torch numerical backend
-pip install -e ".[docs]"          # documentation build
-```
-
-The Torch extra provides a supported numerical backend. TNFR does not currently
-ship a dedicated `TNFRGPUEngine` or promise CUDA speedups.
-
 ## Repository map
 
 ```text
 src/tnfr/
-├── config/          # runtime configuration and physics-derived classifications
+├── config/          # runtime configuration and declared policy classifications
 ├── constants/       # canonical and operational constants
 ├── operators/       # operator implementations, contracts, grammar and execution
 ├── dynamics/        # Delta NFR computation and nodal integration
@@ -191,7 +181,8 @@ src/tnfr/
 ├── metrics/         # coherence, sense index and telemetry kernels
 ├── core/            # service protocols, defaults and dependency container
 ├── services/        # orchestration facade
-├── sdk/             # simple and fluent public APIs
+├── sdk/             # public network APIs, study declarations and reports
+├── cli/             # command adapters, including the shared SDK study runner
 ├── engines/         # optimization and computation services
 ├── mathematics/     # numerical backends and arithmetic structures
 └── research areas   # riemann, navier_stokes, yang_mills and related modules
@@ -220,11 +211,12 @@ requirements.
 
 | Resource | Purpose |
 | --- | --- |
-| [AGENTS.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md) | Canonical synthesized TNFR reference and agent doctrine |
+| [AGENTS.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md) | Working definitions, invariants and agent guidance |
 | [ARCHITECTURE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/ARCHITECTURE.md) | Implemented package boundaries and data flow |
 | [docs/README.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/README.md) | Technical documentation hub |
 | [theory/README.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md) | Theory and research-program index |
-| [docs/API_CONTRACTS.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/API_CONTRACTS.md) | Operator contract reference |
+| [docs/CLI_AND_SDK.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/CLI_AND_SDK.md) | Shared execution, recipes, diagnostics and export |
+| [docs/API_CONTRACTS.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/API_CONTRACTS.md) | Operator and execution contracts |
 | [docs/STRUCTURAL_FIELDS_TETRAD.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/STRUCTURAL_FIELDS_TETRAD.md) | Field definitions and safety-policy scope |
 | [examples/README.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/README.md) | Executable examples |
 

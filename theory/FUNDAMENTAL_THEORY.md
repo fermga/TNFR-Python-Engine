@@ -1,7 +1,7 @@
 # TNFR Fundamental Theory
 
 **Status**: Canonical reference
-**Version**: 0.0.3.5
+**Version source**: [pyproject.toml](../pyproject.toml)
 **Origin**: March 2026
 **Scope review**: September 19, 2026
 

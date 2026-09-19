@@ -201,8 +201,9 @@ See [regime comparisons](https://github.com/fermga/TNFR-Python-Engine/blob/main/
 
 The registry is the semantic interface for named transformations. Catalog
 completeness and a uniquely derived autonomous selection law remain open.
-Lowercase English names are execution tokens, title-case names are display/class
-names, and glyphs are internal symbols.
+Read executable tokens from `TNFR.operators()`'s `token` field; `name` is the
+display name and `glyph` the internal symbol. Do not infer a token by lowercasing
+a display/class name. The catalog describes contracts, not live-state admission.
 
 | Operator | Glyph | Primary channel | Direct contract or execution boundary |
 | --- | --- | --- | --- |
@@ -312,12 +313,47 @@ changes against the affected contract and evidence: destabilization, negative
 results or corrected diagnostics need not increase C. Never hide a contradiction
 by relabeling telemetry or adjusting a reserved response after evaluation.
 
+### Shared public execution and observations
+
+For a declared finite operator study, use `StudySpec` and `run_study` from
+`tnfr.sdk`. The CLI `tnfr network` (also `python -m tnfr network`) delegates to
+that same owner in [sdk/study.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/sdk/study.py).
+Extend the shared model before adding separate CLI validation, simulation or
+serialization logic. `TNFR.operators()` and `list_sequences()` expose existing
+registries; do not maintain a second operator catalog or word table.
+
+`StudySpec.cycles` and this CLI's `--steps`/`--cycles` count complete requested
+operator words, not seconds. The report records the requested word and observed
+endpoints, not every realized per-node glyph; inherited grammar policy and live
+preconditions remain active. The supplied zero-form baseline is initialization,
+not spontaneous substrate creation. The study runner sets both the topology
+seed and graph `RANDOM_SEED`; direct `TNFR.create(..., seed=...)` sets only the
+topology seed. Other engine configuration is inherited, so retain relevant
+configuration and runtime provenance when comparing runs.
+
+Use `diagnose_network(network)` for detached stored-state observations. It does
+not refresh pressure, evolve the graph or invent missing temporal evidence.
+Preserve independent field availability, per-node undefined curvature and xi
+estimator provenance. Its nodal product is a model-rate read-out, not a measured
+derivative or permission to execute Mutation. Diagnostic values do not select
+the next operator in the shared study runner.
+
+`StudySpec.from_dict` validates a construction recipe and rejects unknown keys.
+`StudyResult.to_dict()` returns detached report data; the shared `export_to_json`
+writer saves it. Neither a recipe nor this scalar state/support projection is
+a complete resumable checkpoint. `import_from_json` reads data without restoring
+callbacks, histories or a live graph. Usage and schema details belong to the
+[CLI and SDK guide](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/CLI_AND_SDK.md).
+
 ## 10. Development workflow
 
 Inspect repository instructions, local changes and relevant source/tests before
 editing. Preserve unrelated work. Keep definitions centralized and APIs stable
 or explicitly migrated. Documentation should identify current owners rather
-than duplicate derivations and delivery histories.
+than duplicate derivations and delivery histories. The documentation map owns
+navigation and responsibilities; the example and benchmark indexes identify
+maintained entry points and their scope. Historical paths or retired notebooks
+are evidence to inspect, not current instructions to restore automatically.
 
 ### Commit / PR templates
 
@@ -332,6 +368,17 @@ postconditions, unsupported domains, numerical/representation boundaries and
 provenance where relevant. Do not assume RA always increases synchronization,
 OZ always produces a bifurcation, or every valid sequence is monotone. A test
 suite checks finite cases and implementations, not unrestricted theorems.
+Exercise the actual shared owner with an independent expected result or a
+meaningful boundary; assigning fixture literals and asserting those same values
+does not test nodal dynamics. Reuse an expensive producer's report through a
+module fixture while retaining distinct assertions. Test CLI/report wiring
+separately when it needs no new scientific execution; preserve independently
+necessary cold-import, atomicity and provenance checks. See the
+[core contract map](https://github.com/fermga/TNFR-Python-Engine/blob/main/tests/core_physics/README.md)
+for the tests that retain the behavior of retired introductory illustrations.
+Default test selection, dependencies and parallel scheduling have their owners
+in test configuration and the workflow guide; do not duplicate those settings
+here or regenerate historical research artifacts for an unrelated change.
 See [TESTING.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/TESTING.md).
 
 ## 11. Troubleshooting
@@ -365,13 +412,14 @@ the plan rather than appending milestones here.
 
 | Owner | Responsibility |
 | --- | --- |
-| `dynamics/` | Pressure realization, phase/capacity evolution and shared integration |
+| `dynamics/` | Configured pressure and phase/capacity maps; shared integration |
 | `operators/` | Named transformations, grammar, stages and causal execution |
 | `physics/` | Fields, model theorems, reductions and scope-aware observations |
 | `metrics/` | Shared coherence, sense and diagnostic kernels |
 | `config/`, `constants/` | Declared defaults, policy calibration and classifications |
 | `mathematics/` | Numerical backends, exact helpers and arithmetic constructions |
-| `sdk/` | Public network interfaces |
+| `sdk/` | Public networks, validated study recipes and detached diagnostic reports |
+| `cli/` | Command adapters; study execution and catalogs reuse SDK owners |
 | `research/` and domain packages | Scoped experiments and analysis |
 
 See [ARCHITECTURE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/ARCHITECTURE.md),
@@ -379,6 +427,9 @@ See [ARCHITECTURE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/ARC
 [examples](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/README.md).
 Historical examples can illustrate an auxiliary model without proving physical
 emergence; consult the current theoretical owner before reusing a conclusion.
+Choose the current entry point from the example index rather than assuming an
+old numbered filename still exists. Examples and benchmarks are not an
+instruction to execute every file or reopen parked research branches.
 
 ## 14. Philosophy & excellence standards
 

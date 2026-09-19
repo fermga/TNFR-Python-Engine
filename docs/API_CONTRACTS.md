@@ -1,7 +1,7 @@
 # TNFR Operator API Contracts
 
 **Status:** Active normative view
-**Repository version:** 0.0.3.5
+**Version source:** [package metadata](../pyproject.toml)
 **Owner:** [`tnfr.operators.operator_contracts`](../src/tnfr/operators/operator_contracts.py)
 
 This document is a readable view of the canonical operator contracts. The code

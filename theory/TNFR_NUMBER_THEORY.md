@@ -1,7 +1,7 @@
 # TNFR Number Theory: Arithmetic Constructions and Structural Read-outs
 
 **Status**: Arithmetic construction reference; exact restricted identities and finite diagnostics, not a derived physical or autonomous nodal model
-**Version**: 0.0.3.5
+**Version source**: [pyproject.toml](../pyproject.toml)
 **Date**: March 2026
 
 > **Scope correction (2026-09-18).** Arithmetic functions, modular arithmetic,
@@ -221,7 +221,13 @@ The primality criterion $\Delta\mathrm{NFR}(n) = 0$ is **independent of the coef
 
 ### 5.1 Canonical Coefficients Are Unity
 
-Per AGENTS.md §3 the only genuine structural constant is $\pi$; $\varphi$, $\gamma$ and $e$ are not structural scales. Earlier versions wrote the triad weights as $(\varphi, \gamma, \pi, e)$ combinations, but that was a *post-hoc notational overlay* fitted to approximate empirical values ($\zeta = 1.0$, $\eta = 0.8$, $\theta = 0.6$) — not a derivation.
+AGENTS.md §3 identifies $\pi$ as the exact phase-wrap scale; it does not prove
+that $\pi$ is the only possible structural constant or derive arithmetic weights
+from phase wrapping. This construction does not derive $\varphi$, $\gamma$ or
+$e$ as structural scales. Earlier versions wrote the triad weights as
+$(\varphi, \gamma, \pi, e)$ combinations, but that was a *post-hoc notational
+overlay* fitted to approximate empirical values ($\zeta = 1.0$, $\eta = 0.8$,
+$\theta = 0.6$) — not a derivation.
 
 By the Coefficient Independence theorem (§4.2), the primality zero set is the
 same for **any** positive coefficients. That theorem does not select their
@@ -1117,8 +1123,8 @@ arithmetic reuse does not replace the current joint nodal emergence objective.
 - [STRUCTURAL_OPERATORS.md](STRUCTURAL_OPERATORS.md) — 13 canonical operators with tetrad synergies
 - [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) — Conservation laws
 - [APPLIED_STRUCTURAL_ANALYSIS.md](APPLIED_STRUCTURAL_ANALYSIS.md) — Spectral factorization verification
-- [TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md) — TNFR-Riemann program (18 sections + 11 appendices)
-- [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) — The structural-field tetrad; the one structural scale (π)
+- [TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md) — Current arithmetic comparison scope and unresolved RH/Hilbert–Pólya boundary
+- [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) — Structural-field tetrad and declared scale conventions
 - [GLOSSARY.md](GLOSSARY.md) — Operational definitions
 
 ### External
@@ -1126,7 +1132,3 @@ arithmetic reuse does not replace the current joint nodal emergence objective.
 - Hardy, G.H. & Wright, E.M. — *An Introduction to the Theory of Numbers* (arithmetic functions)
 - Erdős, P. & Kac, M. — "The Gaussian Law of Errors in the Theory of Additive Number Theoretic Functions" (1940)
 - Kuramoto, Y. — *Chemical Oscillations, Waves, and Turbulence* (phase synchronization)
-
----
-
-**Version**: 0.0.3.5 | **Status**: Canonical | **Authority**: [AGENTS.md](../AGENTS.md)

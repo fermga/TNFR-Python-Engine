@@ -5,7 +5,7 @@
 **Status**: CANONICAL registry specification; generative completeness over an
 independently defined admissible-transformation space remains open
 **Date**: March 2026  
-**Version**: 0.0.3.5
+**Version source**: [pyproject.toml](../pyproject.toml)
 **Prerequisite**: [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §2 (Nodal Equation), [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) (Grammar U1–U6)
 
 ---

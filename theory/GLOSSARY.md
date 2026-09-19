@@ -2,7 +2,7 @@
 
 **Purpose**: Operational quick reference for the Resonant Fractal Nature Theory (TNFR)
 **Status**: Operational reference; mathematical scope follows the current foundation audit
-**Version**: 0.0.3.5
+**Version source**: [pyproject.toml](../pyproject.toml)
 **Authority**: Mathematical premises and executable contracts, indexed by [AGENTS.md](../AGENTS.md); historical source discrepancies are documented in the foundation audit
 
 **Scope**: API-focused definitions for developers implementing TNFR networks — the
@@ -1137,11 +1137,7 @@ When adding new functionality:
 7. **Write comprehensive tests**: Cover invariants and operator contracts
 
 **Development Workflow:**
-1. Read [AGENTS.md](../AGENTS.md) completely - **SINGLE SOURCE OF TRUTH**
-2. Study [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) for physics foundations
+1. Use [AGENTS.md](../AGENTS.md) as the working reference and follow its linked owners; resolve claims against explicit mathematical premises and executable contracts.
+2. Study [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) for rule definitions and their mathematical scope
 3. Follow [CONTRIBUTING.md](../CONTRIBUTING.md) for detailed guidelines
 4. Test with [TESTING.md](../TESTING.md) requirements
-
-**Version**: 0.0.3.5 (June 2026)
-**Status**: Canonical operational reference, aligned with the current engine, AGENTS.md and TNFR.pdf
-**Language**: English only (canonical documentation policy)
