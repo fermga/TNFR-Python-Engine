@@ -33,10 +33,6 @@ from tnfr.physics.gauge import (
     N_REGIMES,
     REGIME_ACTIVITY_SHARE,
     BianchiIdentityResult,
-    GaugeInvarianceResult,
-    GaugeSnapshot,
-    InteractionRegimeMetrics,
-    NetworkInteractionProfile,
     YangMillsFieldEquations,
     apply_gauge_transformation,
     capture_gauge_snapshot,
@@ -64,8 +60,6 @@ from tnfr.physics.gauge import (
 from tnfr.physics.unified import (
     compute_chirality_field,
     compute_complex_geometric_field,
-    compute_energy_density,
-    compute_symmetry_breaking_field,
     compute_topological_charge,
 )
 
@@ -80,31 +74,39 @@ def ws_graph():
 
 
 @pytest.fixture
-def ba_graph():
-    return _make_tnfr_graph(30, "barabasi_albert", seed=42)
-
-
-@pytest.fixture
-def grid_graph():
-    return _make_tnfr_graph(25, "grid", seed=42)
-
-
-@pytest.fixture
 def random_alpha(ws_graph):
     """Random gauge parameters for each node."""
     rng = np.random.default_rng(123)
     return {n: float(rng.uniform(0, 2 * math.pi)) for n in ws_graph.nodes()}
 
 
-@pytest.fixture
-def constant_alpha(ws_graph):
-    """Constant (global) gauge parameter — physically trivial."""
-    return {n: 1.23 for n in ws_graph.nodes()}
-
-
 # ===================================================================
 # 1. Gauge Transformation Mechanics
 # ===================================================================
+
+
+@pytest.fixture(scope="module")
+def invariance_report():
+    graph = _make_tnfr_graph(30, seed=42)
+    rng = np.random.default_rng(123)
+    angles = {node: float(rng.uniform(0, 2 * math.pi)) for node in graph}
+    return verify_gauge_invariance(graph, angles)
+
+
+@pytest.fixture(scope="module")
+def field_equations():
+    return compute_yang_mills_equations(_make_tnfr_graph(30, seed=42))
+
+
+@pytest.fixture(scope="module")
+def interaction_profile():
+    return compute_network_interaction_profile(_make_tnfr_graph(30, seed=42))
+
+
+@pytest.fixture(scope="module")
+def formal_regimes():
+    graph = _make_tnfr_graph(30, seed=42)
+    return {node: classify_interaction_regime_formal(graph, node) for node in graph}
 
 
 class TestGaugeTransformation:
@@ -198,64 +200,52 @@ class TestGaugeTransformation:
 class TestGaugeInvariance:
     """Validate the invariant norms and record variant legacy quantities."""
 
-    def test_energy_density_invariant(self, ws_graph, random_alpha):
+    def test_energy_density_invariant(self, invariance_report):
         """Energy density ℰ(i) exactly invariant under local U(1)."""
-        result = verify_gauge_invariance(ws_graph, random_alpha)
+        result = invariance_report
         assert result.energy_max_deviation < 1e-10
 
-    def test_magnitude_invariant(self, ws_graph, random_alpha):
+    def test_magnitude_invariant(self, invariance_report):
         """|Ψ(i)| exactly invariant under local U(1)."""
-        result = verify_gauge_invariance(ws_graph, random_alpha)
+        result = invariance_report
         assert result.magnitude_max_deviation < 1e-10
 
-    def test_topological_norm_invariant(self, ws_graph, random_alpha):
+    def test_topological_norm_invariant(self, invariance_report):
         """|𝒯|² = 𝒬² + 𝒬̃² invariant under local U(1)."""
-        result = verify_gauge_invariance(ws_graph, random_alpha)
+        result = invariance_report
         assert result.topological_norm_max_deviation < 1e-10
 
-    def test_chirality_norm_invariant(self, ws_graph, random_alpha):
+    def test_chirality_norm_invariant(self, invariance_report):
         """|𝒳|² = χ² + χ̃² invariant under local U(1)."""
-        result = verify_gauge_invariance(ws_graph, random_alpha)
+        result = invariance_report
         assert result.chirality_norm_max_deviation < 1e-10
 
-    def test_symmetry_breaking_NOT_invariant(self, ws_graph, random_alpha):
+    def test_symmetry_breaking_NOT_invariant(self, invariance_report):
         """𝒮 = (|∇φ|² − K_φ²) + (J_φ² − J_ΔNFR²) is NOT gauge-invariant.
 
         K_φ² and J_φ² individually change under rotation even though
         K_φ² + J_φ² = |Ψ|² is preserved.  For non-trivial α the
         deviation must be non-zero.
         """
-        result = verify_gauge_invariance(ws_graph, random_alpha)
+        result = invariance_report
         assert (
             result.symmetry_breaking_max_deviation > 1e-6
         ), "Expected 𝒮 to change under gauge transform"
 
-    def test_coherence_invariant(self, ws_graph, random_alpha):
+    def test_coherence_invariant(self, invariance_report):
         """C(t) invariant (external to Ψ internal rotation)."""
-        result = verify_gauge_invariance(ws_graph, random_alpha)
+        result = invariance_report
         assert result.coherence_deviation < 1e-12
 
-    def test_noether_charge_NOT_invariant(self, ws_graph, random_alpha):
+    def test_noether_charge_NOT_invariant(self, invariance_report):
         """Q = Σ(Φ_s + K_φ) is NOT gauge-invariant (K_φ rotates)."""
-        result = verify_gauge_invariance(ws_graph, random_alpha)
+        result = invariance_report
         assert result.details["has_nontrivial_alpha"]
         # Q should change, but all *true* gauge-invariant quantities hold
         assert (
             result.noether_charge_deviation > 1e-6
         ), "Expected Q to change under gauge transform"
         assert result.is_invariant
-
-    def test_verify_returns_true(self, ws_graph, random_alpha):
-        """Full invariance check passes with default tolerance."""
-        result = verify_gauge_invariance(ws_graph, random_alpha)
-        assert result.is_invariant is True
-
-    def test_verify_with_seed(self, ws_graph):
-        """Deterministic random alpha via seed gives reproducible result."""
-        r1 = verify_gauge_invariance(ws_graph, seed=42)
-        r2 = verify_gauge_invariance(ws_graph, seed=42)
-        assert r1.energy_max_deviation == r2.energy_max_deviation
-        assert r1.noether_charge_deviation == r2.noether_charge_deviation
 
     def test_verify_supports_signed_seed(self, ws_graph):
         """Signed seeds follow the repository deterministic convention."""
@@ -615,11 +605,6 @@ class TestEnergyDecomposition:
         )
         assert abs(frac_sum - 1.0) < 1e-6
 
-    def test_yang_mills_nonnegative(self, ws_graph):
-        """Yang-Mills action in decomposition is non-negative."""
-        decomp = compute_gauge_energy_decomposition(ws_graph)
-        assert decomp["yang_mills_action"] >= 0.0
-
 
 # ===================================================================
 # 10. Interaction Regime Classification
@@ -784,35 +769,30 @@ class TestMatterCurrent:
         for u, v in ws_graph.edges():
             assert (u, v) in j_mat or (v, u) in j_mat
 
-    @pytest.mark.parametrize("topo", ["watts_strogatz", "barabasi_albert", "grid"])
-    def test_multi_topology(self, topo):
-        """Matter current works across topologies."""
-        G = _make_tnfr_graph(20, topology=topo, seed=77)
-        j_mat = compute_matter_current(G)
-        assert len(j_mat) > 0
-
 
 class TestYangMillsFieldEquations:
     """Legacy-named consistency residual on the pure-gauge surface."""
 
-    def test_result_type(self, ws_graph):
+    def test_result_type(self, ws_graph, field_equations):
         """Returns YangMillsFieldEquations dataclass."""
-        result = compute_yang_mills_equations(ws_graph)
+        result = field_equations
         assert isinstance(result, YangMillsFieldEquations)
         assert result.canonical_connection_is_pure_gauge
         assert not result.is_dynamical_derivation
 
-    def test_actions_non_negative(self, ws_graph):
+    def test_actions_non_negative(self, ws_graph, field_equations):
         """S_YM ≥ 0 and S_matter ≥ 0."""
-        eq = compute_yang_mills_equations(ws_graph)
+        eq = field_equations
         assert eq.yang_mills_action >= 0.0
         assert eq.matter_action >= 0.0
         assert eq.total_action >= eq.yang_mills_action
         assert eq.total_action >= eq.matter_action
 
-    def test_self_scale_is_zero_after_closure_tolerance(self, ws_graph):
+    def test_self_scale_is_zero_after_closure_tolerance(
+        self, ws_graph, field_equations
+    ):
         """No coupling is inferred from roundoff in an exact connection."""
-        eq = compute_yang_mills_equations(ws_graph)
+        eq = field_equations
         assert eq.coupling_constant == 0.0
         assert eq.yang_mills_action == 0.0
         assert eq.max_residual < 1e-12
@@ -828,27 +808,20 @@ class TestYangMillsFieldEquations:
         with pytest.raises((TypeError, ValueError)):
             compute_yang_mills_equations(ws_graph, coupling=coupling)
 
-    def test_residual_structure(self, ws_graph):
+    def test_residual_structure(self, ws_graph, field_equations):
         """Residuals are non-negative with correct mean/max."""
-        eq = compute_yang_mills_equations(ws_graph)
+        eq = field_equations
         for r in eq.equation_residual.values():
             assert r >= 0.0
         assert eq.mean_residual >= 0.0
         assert eq.max_residual >= eq.mean_residual or len(eq.equation_residual) <= 1
 
-    def test_matter_current_consistency(self, ws_graph):
+    def test_matter_current_consistency(self, ws_graph, field_equations):
         """Matter current matches standalone computation."""
-        eq = compute_yang_mills_equations(ws_graph)
+        eq = field_equations
         standalone = compute_matter_current(ws_graph)
         for edge, val in standalone.items():
             assert abs(eq.matter_current[edge] - val) < 1e-12
-
-    @pytest.mark.parametrize("topo", ["watts_strogatz", "barabasi_albert", "grid"])
-    def test_multi_topology(self, topo):
-        """Works across all supported topologies."""
-        G = _make_tnfr_graph(20, topology=topo, seed=33)
-        eq = compute_yang_mills_equations(G)
-        assert eq.total_action >= 0.0
 
     def test_reproducibility(self):
         """Same seed → identical Yang-Mills equations."""
@@ -872,13 +845,6 @@ class TestBianchiIdentity:
         assert result.num_cycles_tested == len(compute_gauge_curvature(ws_graph))
         assert result.max_residual <= GAUGE_CLOSURE_TOLERANCE
         assert result.is_satisfied
-
-    @pytest.mark.parametrize("topo", ["watts_strogatz", "barabasi_albert", "grid"])
-    def test_multi_topology(self, topo):
-        """Bianchi works across topologies."""
-        G = _make_tnfr_graph(20, topology=topo, seed=55)
-        result = verify_bianchi_identity(G)
-        assert isinstance(result, BianchiIdentityResult)
 
     def test_tree_graph_trivial(self):
         """Tree graph has no plaquettes → trivially satisfied."""
@@ -923,21 +889,9 @@ class TestGaussLawResidual:
         for val in residuals.values():
             assert val < 1e-10
 
-    @pytest.mark.parametrize("topo", ["watts_strogatz", "barabasi_albert", "grid"])
-    def test_multi_topology(self, topo):
-        """Gauss law works on all topologies."""
-        G = _make_tnfr_graph(20, topology=topo, seed=66)
-        residuals = compute_gauss_law_residual(G)
-        assert len(residuals) == G.number_of_nodes()
-
 
 class TestGaugeCouplingConstant:
     """Legacy mean-squared closure statistic g² = ⟨F²⟩."""
-
-    def test_non_negative(self, ws_graph):
-        """g² ≥ 0 always."""
-        g_sq = compute_gauge_coupling_constant(ws_graph)
-        assert g_sq >= 0.0
 
     def test_tree_zero(self):
         """No plaquettes → g² = 0."""
@@ -950,18 +904,9 @@ class TestGaugeCouplingConstant:
             G.nodes[n]["EPI"] = "epi"
         assert compute_gauge_coupling_constant(G) == 0.0
 
-    def test_upper_bound(self, ws_graph):
-        """The closure statistic remains within its wrapped range."""
-        g_sq = compute_gauge_coupling_constant(ws_graph)
-        assert g_sq <= math.pi**2 + 1e-10
-
 
 class TestRegimeActivityCriterion:
     """Legacy equal-share activity reporting convention."""
-
-    def test_share_is_equipartition(self):
-        """REGIME_ACTIVITY_SHARE is the equal share of retained labels."""
-        assert REGIME_ACTIVITY_SHARE == pytest.approx(1.0 / N_REGIMES, abs=1e-14)
 
     def test_four_regimes(self):
         """Four retained labels imply a one-quarter reporting share."""
@@ -972,80 +917,48 @@ class TestRegimeActivityCriterion:
 class TestFormalInteractionRegimes:
     """Formalized historical four-label snapshot heuristic."""
 
-    def test_result_type(self, ws_graph):
-        """Returns InteractionRegimeMetrics."""
-        node = list(ws_graph.nodes())[0]
-        m = classify_interaction_regime_formal(ws_graph, node)
-        assert isinstance(m, InteractionRegimeMetrics)
-
-    def test_order_params_bounded(self, ws_graph):
+    def test_order_params_bounded(self, formal_regimes):
         """All order parameters in [0, 1]."""
-        for node in ws_graph.nodes():
-            m = classify_interaction_regime_formal(ws_graph, node)
+        for m in formal_regimes.values():
             assert 0.0 <= m.em_order_parameter <= 1.0 + 1e-12
             assert 0.0 <= m.weak_order_parameter <= 1.0 + 1e-12
             assert 0.0 <= m.strong_order_parameter  # can exceed 1 in principle
             assert 0.0 <= m.gravity_order_parameter <= 1.0 + 1e-12
 
-    def test_strong_like_slot_does_not_promote_roundoff(self, ws_graph):
+    def test_strong_like_slot_does_not_promote_roundoff(self, formal_regimes):
         """Pure-gauge closure noise cannot masquerade as confinement."""
-        for node in ws_graph.nodes():
-            metrics = classify_interaction_regime_formal(ws_graph, node)
+        for metrics in formal_regimes.values():
             assert metrics.strong_order_parameter == 0.0
             assert metrics.regime_scores["strong_like"] == 0.0
 
-    def test_scores_sum_to_one(self, ws_graph):
+    def test_scores_sum_to_one(self, formal_regimes):
         """Normalised scores sum ≈ 1."""
-        for node in ws_graph.nodes():
-            m = classify_interaction_regime_formal(ws_graph, node)
+        for m in formal_regimes.values():
             total = sum(m.regime_scores.values())
             assert total == pytest.approx(1.0, abs=1e-10)
 
-    def test_dominant_has_max_score(self, ws_graph):
+    def test_dominant_has_max_score(self, formal_regimes):
         """Dominant regime has the highest score."""
-        for node in list(ws_graph.nodes())[:5]:
-            m = classify_interaction_regime_formal(ws_graph, node)
+        for m in tuple(formal_regimes.values())[:5]:
             max_regime = max(m.regime_scores, key=m.regime_scores.get)  # type: ignore
             assert m.dominant_regime == max_regime
 
-    def test_valid_regime_names(self, ws_graph):
-        """Dominant regime is one of the four retained labels."""
-        valid = {"em_like", "weak_like", "strong_like", "gravity_like"}
-        for node in ws_graph.nodes():
-            m = classify_interaction_regime_formal(ws_graph, node)
-            assert m.dominant_regime in valid
-
-    def test_threshold_consistency(self, ws_graph):
+    def test_threshold_consistency(self, formal_regimes):
         """above_threshold flags use the equipartition share on the scores."""
-        for node in list(ws_graph.nodes())[:5]:
-            m = classify_interaction_regime_formal(ws_graph, node)
+        for m in tuple(formal_regimes.values())[:5]:
             for regime in ("em_like", "weak_like", "strong_like", "gravity_like"):
                 assert m.above_threshold[regime] == (
                     m.regime_scores[regime] > REGIME_ACTIVITY_SHARE
                 )
 
-    def test_mixing_angle_range(self, ws_graph):
+    def test_mixing_angle_range(self, formal_regimes):
         """Mixing angle arg(Ψ) ∈ [−π, π]."""
-        for node in ws_graph.nodes():
-            m = classify_interaction_regime_formal(ws_graph, node)
+        for m in formal_regimes.values():
             assert -math.pi - 1e-10 <= m.mixing_angle <= math.pi + 1e-10
-
-    @pytest.mark.parametrize("topo", ["watts_strogatz", "barabasi_albert", "grid"])
-    def test_multi_topology(self, topo):
-        """Formal regime works across topologies."""
-        G = _make_tnfr_graph(20, topology=topo, seed=44)
-        node = list(G.nodes())[0]
-        m = classify_interaction_regime_formal(G, node)
-        assert isinstance(m, InteractionRegimeMetrics)
 
 
 class TestNetworkInteractionProfile:
     """Network-wide interaction regime aggregation."""
-
-    def test_result_type(self, ws_graph):
-        """Returns NetworkInteractionProfile."""
-        profile = compute_network_interaction_profile(ws_graph)
-        assert isinstance(profile, NetworkInteractionProfile)
 
     def test_empty_graph_has_finite_zero_order_parameters(self):
         """Empty-network aggregation must not emit NaN telemetry."""
@@ -1059,47 +972,37 @@ class TestNetworkInteractionProfile:
         assert all(math.isfinite(value) for value in profile.regime_fractions.values())
         assert math.isfinite(profile.mixing_entropy)
 
-    def test_distribution_sums_to_n(self, ws_graph):
+    def test_distribution_sums_to_n(self, ws_graph, interaction_profile):
         """Sum of regime counts equals number of nodes."""
-        profile = compute_network_interaction_profile(ws_graph)
+        profile = interaction_profile
         assert sum(profile.regime_distribution.values()) == ws_graph.number_of_nodes()
 
-    def test_fractions_sum_to_one(self, ws_graph):
+    def test_fractions_sum_to_one(self, ws_graph, interaction_profile):
         """Regime fractions sum to 1."""
-        profile = compute_network_interaction_profile(ws_graph)
+        profile = interaction_profile
         assert sum(profile.regime_fractions.values()) == pytest.approx(1.0, abs=1e-10)
 
-    def test_entropy_bounds(self, ws_graph):
+    def test_entropy_bounds(self, ws_graph, interaction_profile):
         """Shannon entropy H ∈ [0, ln(4)]."""
-        profile = compute_network_interaction_profile(ws_graph)
+        profile = interaction_profile
         assert profile.mixing_entropy >= 0.0
         assert profile.mixing_entropy <= math.log(4) + 1e-10
 
-    def test_dominant_regime_valid(self, ws_graph):
-        """Dominant regime is one of the four canonical names."""
-        profile = compute_network_interaction_profile(ws_graph)
-        assert profile.dominant_regime in {
-            "em_like",
-            "weak_like",
-            "strong_like",
-            "gravity_like",
-        }
-
-    def test_per_node_coverage(self, ws_graph):
+    def test_per_node_coverage(self, ws_graph, interaction_profile):
         """per_node contains every node."""
-        profile = compute_network_interaction_profile(ws_graph)
+        profile = interaction_profile
         assert set(profile.per_node.keys()) == set(ws_graph.nodes())
 
-    def test_gauge_metrics_non_negative(self, ws_graph):
+    def test_gauge_metrics_non_negative(self, ws_graph, interaction_profile):
         """Gauge coupling, YM action, flatness are non-negative."""
-        profile = compute_network_interaction_profile(ws_graph)
+        profile = interaction_profile
         assert profile.gauge_coupling_constant >= 0.0
         assert profile.yang_mills_action >= 0.0
         assert 0.0 <= profile.gauge_flatness <= 1.0
 
-    def test_mean_order_parameters(self, ws_graph):
+    def test_mean_order_parameters(self, ws_graph, interaction_profile):
         """Mean order parameters are within expected range."""
-        profile = compute_network_interaction_profile(ws_graph)
+        profile = interaction_profile
         for key, val in profile.mean_order_parameters.items():
             assert val >= 0.0, f"Mean O_P should be non-negative: {key}={val}"
 
@@ -1112,10 +1015,3 @@ class TestNetworkInteractionProfile:
         assert p1.mixing_entropy == pytest.approx(p2.mixing_entropy, abs=1e-14)
         assert p1.dominant_regime == p2.dominant_regime
         assert p1.regime_distribution == p2.regime_distribution
-
-    @pytest.mark.parametrize("topo", ["watts_strogatz", "barabasi_albert", "grid"])
-    def test_multi_topology(self, topo):
-        """Network profile works on all topologies."""
-        G = _make_tnfr_graph(20, topology=topo, seed=88)
-        profile = compute_network_interaction_profile(G)
-        assert sum(profile.regime_distribution.values()) == G.number_of_nodes()

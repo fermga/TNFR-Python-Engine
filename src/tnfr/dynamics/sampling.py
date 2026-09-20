@@ -19,9 +19,10 @@ def update_node_sample(G: TNFRGraph, *, step: int) -> None:
     is non‑positive, the full node set is used and sampling is effectively
     disabled. A snapshot of nodes is cached via the NodeCache helper from
     ``tnfr.utils`` stored in
-    ``G.graph['_node_list_cache']`` and reused across steps; it is only refreshed
-    when the graph size changes. Sampling operates directly on the cached
-    tuple of nodes.
+    ``G.graph['_node_list_cache']`` and reused across steps, with node identity
+    and ordering checked by that owner. Sampling operates directly on the cached
+    tuple of nodes. ``step`` is the runtime's admitted invocation ordinal,
+    independent of telemetry retention and of the physical time increment.
     """
     graph = G.graph
     seed = base_seed(G)

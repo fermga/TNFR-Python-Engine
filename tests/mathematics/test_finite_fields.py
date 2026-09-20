@@ -24,23 +24,18 @@ from tnfr.mathematics.finite_fields import (
     prime_field_matches_cyclotomy,
 )
 
-PRIMES = [5, 7, 11, 13, 17]
-POWERS = [1, 2, 3, 4]
-
-# Exact measured distinct-period counts for small extensions (p, f, k).
+# Distinct small extension supports (p, f, k). Powers with the same gcd(k,q-1)
+# generate the same subgroup, so redundant copies are omitted. The table keeps
+# characteristic two, degrees two/three and strict trace-collision controls.
 EXTENSION_COUNTS = {
     (2, 2, 2): 2,
     (2, 2, 3): 2,
-    (2, 2, 4): 2,
     (2, 3, 2): 2,
-    (2, 3, 3): 2,
-    (2, 3, 4): 2,
     (3, 2, 2): 3,
     (3, 2, 3): 2,
     (3, 2, 4): 2,
     (3, 3, 2): 3,
     (3, 3, 3): 2,
-    (3, 3, 4): 3,
     (5, 2, 2): 3,
     (5, 2, 3): 3,
     (5, 2, 4): 5,
@@ -125,42 +120,39 @@ def test_gauss_period_at_zero_is_set_size():
 # --------------------------------------------------------------------------- #
 # Required test 1: prime-field regression (R2)
 # --------------------------------------------------------------------------- #
-@pytest.mark.parametrize("p", PRIMES)
-@pytest.mark.parametrize("k", POWERS)
+@pytest.mark.parametrize("p,k", [(5, 1), (7, 2), (7, 3), (13, 4)])
 def test_prime_field_reproduces_cyclotomy(p, k):
-    assert prime_field_matches_cyclotomy(p, k)
     F = FiniteField(p, 1)
     assert distinct_period_count(F, k) == cyclotomic_period_count(p, k)
+
+
+def test_prime_field_comparison_wrapper():
+    assert prime_field_matches_cyclotomy(7, 3)
 
 
 # --------------------------------------------------------------------------- #
 # Required test 2: extension-field exact small cases
 # --------------------------------------------------------------------------- #
-@pytest.mark.parametrize("key", list(EXTENSION_COUNTS))
-def test_extension_field_exact_counts(key):
-    p, f, k = key
-    F = FiniteField(p, f)
-    assert distinct_period_count(F, k) == EXTENSION_COUNTS[key]
+@pytest.fixture(scope="module", params=list(EXTENSION_COUNTS))
+def extension_periods(request):
+    p, f, k = request.param
+    field = FiniteField(p, f)
+    return request.param, field, distinct_period_count(field, k)
 
 
-@pytest.mark.parametrize("key", list(EXTENSION_COUNTS))
-def test_period_and_explicit_spectrum_agree(key):
-    p, f, k = key
-    F = FiniteField(p, f)
-    assert distinct_period_count(F, k) == explicit_cayley_spectrum_count(F, k)
+def test_extension_field_counts_and_collision_boundary(extension_periods):
+    key, field, count = extension_periods
+    assert count == EXTENSION_COUNTS[key]
+    bound = cyclotomic_period_count(field.q, key[2])
+    assert count <= bound
+    if key in {(2, 2, 3), (3, 2, 4), (5, 2, 3), (7, 2, 4)}:
+        # Independent negative controls: the prime-field equality fails here.
+        assert count < bound
 
 
-@pytest.mark.parametrize("p,f,k", [(2, 2, 2), (3, 2, 2), (5, 2, 4), (7, 2, 2)])
-def test_distinct_count_is_upper_bounded_by_cyclotomy(p, f, k):
-    F = FiniteField(p, f)
-    assert distinct_period_count(F, k) <= cyclotomic_period_count(F.q, k)
-
-
-@pytest.mark.parametrize("p,f,k", [(2, 2, 3), (3, 2, 4), (5, 2, 3), (7, 2, 4)])
-def test_extension_collisions_exist(p, f, k):
-    # the prime-field formula does NOT transfer: strict drop for these cases.
-    F = FiniteField(p, f)
-    assert distinct_period_count(F, k) < cyclotomic_period_count(F.q, k)
+def test_period_and_explicit_spectrum_agree(extension_periods):
+    key, field, count = extension_periods
+    assert count == explicit_cayley_spectrum_count(field, key[2])
 
 
 # --------------------------------------------------------------------------- #

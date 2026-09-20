@@ -6,11 +6,14 @@ import inspect
 import math
 import sys
 from collections import deque
-from collections.abc import Iterable, Mapping, MutableMapping
+from collections.abc import Mapping, MutableMapping
 from copy import deepcopy
+from itertools import islice
 from numbers import Integral, Real
 from typing import Any, cast
 
+from .._exact_time import finite_represented_real
+from .._runtime_steps import prepare_runtime_step, runtime_step_scope
 from .._spectral_expectation import (
     finite_spectral_real,
     resolve_compatibility_value,
@@ -19,16 +22,19 @@ from .._spectral_expectation import (
     validate_spectral_operator,
 )
 from ..alias import _bepi_to_float, get_attr
+from ..config.defaults_metric import METRIC_DEFAULTS
 from ..config.operator_names import BIFURCATION_WINDOW
-from ..constants import get_graph_param
+from ..constants import get_graph_param, get_param
 from ..errors import TNFRValueError
 from ..glyph_history import ensure_history
+from ..metrics.coherence import _stability_observation_revision
 from ..metrics.sense_index import compute_Si
 from ..operators import apply_remesh_if_globally_stable
 from ..telemetry import publish_graph_cache_metrics
 from ..types import HistoryState, NodeId, TNFRGraph
 from ..utils import CallbackEvent, callback_manager, normalize_optional_int
 from ..validation import apply_canonical_clamps
+from ..validation.window import validate_window
 from . import adaptation, coordination, integrators, selectors
 from .aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_THETA, ALIAS_VF
 
@@ -474,6 +480,35 @@ def _resolve_integrator_instance(G: TNFRGraph) -> integrators.AbstractIntegrator
     return instance
 
 
+def _preflight_runtime_parameters(
+    G: TNFRGraph,
+    *,
+    dt: float | None,
+    job_overrides: Mapping[str, Any],
+) -> None:
+    """Reject invalid supplied built-in policies before beginning a step.
+
+    The component owners validate again when consumed: callbacks can change
+    configuration in between. This is not full-step rollback and does not
+    instantiate or constrain an arbitrary custom integrator or its factory.
+    """
+    vf_jobs = _resolve_jobs_override(
+        job_overrides,
+        "VF_ADAPT",
+        G.graph.get("VF_ADAPT_N_JOBS"),
+        allow_non_positive=False,
+    )
+    adaptation._validated_parameters(G, vf_jobs)
+    coordination._read_adaptive_params(G.graph)
+    candidate = G.graph.get("integrator")
+    if (
+        candidate is None
+        or candidate is integrators.DefaultIntegrator
+        or type(candidate) is integrators.DefaultIntegrator
+    ):
+        integrators.prepare_integration_params(G, dt=dt)
+
+
 def _run_before_callbacks(
     G: TNFRGraph,
     *,
@@ -609,8 +644,8 @@ def _update_nodes(
     _update_node_sample(G, step=step_idx)
     overrides = job_overrides or {}
     _prepare_dnfr(G, use_Si=use_Si, job_overrides=overrides)
-    selector = selectors._apply_selector(G)
     if apply_glyphs:
+        selector = selectors._apply_selector(G)
         selectors._apply_glyphs(G, selector, hist)
         _record_mutation_flow_boundary(G)
     _dt = get_graph_param(G, "DT") if dt is None else float(dt)
@@ -1030,6 +1065,19 @@ def step(
     therefore reads retained inputs, not diagnostics of the terminal state.
     Native phase coordination acts once per invocation, independently of ``dt``.
 
+    Supplied built-in selector, phase and capacity policies are validated before
+    history creation, callbacks or nodal writes. The default integrator's clock
+    and method are also prevalidated. Consumption-time checks remain active for
+    changes made by callbacks; this does not promise full-step rollback or
+    impose the default integration scheme on custom integrators.
+
+    The zero-based callback/sampling ordinal is owned by the runtime, not by
+    metric history or physical time. The first tracked invocation starts a new
+    epoch at zero. Admission failure reserves nothing; once admitted, even a
+    later failed invocation consumes its ordinal because partial state changes
+    can remain. Both callback boundaries see the same active ordinal. Recursive
+    execution on this graph is rejected; this counter does not imply rollback.
+
     Examples
     --------
     Register a hook that records phase synchrony while using the parametric
@@ -1051,32 +1099,83 @@ def step(
     True
     """
     job_overrides = _normalize_job_overrides(n_jobs)
+    step_idx = prepare_runtime_step(G.graph)
+    _preflight_runtime_parameters(G, dt=dt, job_overrides=job_overrides)
     hist = ensure_history(G)
-    step_idx = len(hist.setdefault("C_steps", []))
-    _run_before_callbacks(
-        G, step_idx=step_idx, dt=dt, use_Si=use_Si, apply_glyphs=apply_glyphs
+    with runtime_step_scope(G.graph, step_idx):
+        _run_before_callbacks(
+            G, step_idx=step_idx, dt=dt, use_Si=use_Si, apply_glyphs=apply_glyphs
+        )
+        _update_nodes(
+            G,
+            dt=dt,
+            use_Si=use_Si,
+            apply_glyphs=apply_glyphs,
+            step_idx=step_idx,
+            hist=hist,
+            job_overrides=job_overrides,
+        )
+        resolved_dt = get_graph_param(G, "DT") if dt is None else float(dt)
+        _advance_math_engine(
+            G,
+            dt=resolved_dt,
+            step_idx=step_idx,
+            hist=hist,
+        )
+        _update_epi_hist(G)
+        _maybe_remesh(G)
+        _run_validators(G)
+        _run_after_callbacks(G, step_idx=step_idx)
+        publish_graph_cache_metrics(G)
+
+
+def _resolve_early_stop(G: TNFRGraph) -> tuple[int, float] | None:
+    """Validate the configured stopping policy before any runtime progress."""
+    config = get_param(G, "STOP_EARLY")
+    if config is None:
+        return None
+    if not isinstance(config, Mapping):
+        raise TypeError("STOP_EARLY must be a mapping or None")
+    defaults = METRIC_DEFAULTS["STOP_EARLY"]
+    enabled = config.get("enabled", defaults["enabled"])
+    boolean_types = (bool,) if np is None else (bool, np.bool_)
+    if not isinstance(enabled, boolean_types):
+        raise TypeError("STOP_EARLY.enabled must be Boolean")
+    if not enabled:
+        return None
+    window = validate_window(config.get("window", defaults["window"]), positive=True)
+    fraction, _ = finite_represented_real(
+        config.get("fraction", defaults["fraction"]), "STOP_EARLY.fraction"
     )
-    _update_nodes(
-        G,
-        dt=dt,
-        use_Si=use_Si,
-        apply_glyphs=apply_glyphs,
-        step_idx=step_idx,
-        hist=hist,
-        job_overrides=job_overrides,
+    if not 0.0 <= fraction <= 1.0:
+        raise ValueError("STOP_EARLY.fraction must be in [0, 1]")
+    return window, fraction
+
+
+def _stability_series(G: TNFRGraph) -> list | tuple | deque:
+    """Read retained samples without creating or normalizing other history."""
+    history = G.graph.get("history")
+    series = (
+        dict.get(history, "stable_frac")
+        if isinstance(history, dict)
+        else history.get("stable_frac") if isinstance(history, Mapping) else None
     )
-    resolved_dt = get_graph_param(G, "DT") if dt is None else float(dt)
-    _advance_math_engine(
-        G,
-        dt=resolved_dt,
-        step_idx=step_idx,
-        hist=hist,
-    )
-    _update_epi_hist(G)
-    _maybe_remesh(G)
-    _run_validators(G)
-    _run_after_callbacks(G, step_idx=step_idx)
-    publish_graph_cache_metrics(G)
+    return series if isinstance(series, (list, tuple, deque)) else ()
+
+
+def _stable_tail(series: list | tuple | deque, window: int, fraction: float) -> bool:
+    """Require a contiguous valid tail; missing observations break the window."""
+    if len(series) < window:
+        return False
+    tail = islice(reversed(series), window)
+    for raw in tail:
+        try:
+            value, _ = finite_represented_real(raw, "stable_frac observation")
+        except (TypeError, ValueError, OverflowError):
+            return False
+        if not fraction <= value <= 1.0:
+            return False
+    return True
 
 
 def run(
@@ -1114,6 +1213,17 @@ def run(
     None
         The graph ``G`` is updated in place.
 
+    Notes
+    -----
+    Enabled ``STOP_EARLY`` is a configured stopping policy, not a convergence
+    certificate. It requires a newly recorded stability observation and a
+    contiguous valid tail at the configured fraction. Missing or invalid
+    samples break the window; retained telemetry alone cannot stop a new run.
+    The built-in producer advances an observation revision even when a bounded
+    history is full. Custom growing series can signal an append by increasing
+    their length; replacing retained data alone does not establish freshness.
+    The policy is validated and fixed for this invocation.
+
     Raises
     ------
     ValueError
@@ -1144,14 +1254,14 @@ def run(
     steps_int = int(steps)
     if steps_int < 0:
         raise ValueError("'steps' must be a non-negative integer")
-    stop_cfg = get_graph_param(G, "STOP_EARLY", dict)
-    stop_enabled = False
-    if stop_cfg and stop_cfg.get("enabled", False):
-        w = max(1, int(stop_cfg.get("window", 25)))
-        frac = float(stop_cfg.get("fraction", 0.90))
-        stop_enabled = True
+    stop_policy = _resolve_early_stop(G)
     job_overrides = _normalize_job_overrides(n_jobs)
     for _ in range(steps_int):
+        previous_series = _stability_series(G) if stop_policy is not None else ()
+        previous_length = len(previous_series)
+        previous_revision = (
+            _stability_observation_revision(G) if stop_policy is not None else 0
+        )
         step(
             G,
             dt=dt,
@@ -1159,15 +1269,14 @@ def run(
             apply_glyphs=apply_glyphs,
             n_jobs=job_overrides,
         )
-        if stop_enabled:
-            history = ensure_history(G)
-            raw_series = dict.get(history, "stable_frac", [])
-            if not isinstance(raw_series, Iterable):
-                series = []
-            elif isinstance(raw_series, list):
-                series = raw_series
-            else:
-                series = list(raw_series)
-            numeric_series = [v for v in series if isinstance(v, Real)]
-            if len(numeric_series) >= w and all(v >= frac for v in numeric_series[-w:]):
+        if stop_policy is not None:
+            series = _stability_series(G)
+            # Bounded histories retain their identity and length when full.
+            # Their producer revision proves an append; copying or normalizing
+            # an old series does not. Keep length growth for custom producers.
+            fresh = (
+                _stability_observation_revision(G) > previous_revision
+                or len(series) > previous_length
+            )
+            if fresh and _stable_tail(series, *stop_policy):
                 break

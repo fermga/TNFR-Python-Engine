@@ -34,18 +34,6 @@ from ..types import FloatArray, NodeId, Phase, TNFRGraph
 from ..utils import angle_diff, resolve_chunk_size
 
 _DequeT = TypeVar("_DequeT")
-_ADAPTIVE_DEFAULTS = {
-    "R_hi": 0.90,
-    "R_lo": 0.60,
-    "disr_hi": 0.50,
-    "disr_lo": 0.25,
-    "kG_min": 0.01,
-    "kG_max": 0.20,
-    "kL_min": 0.05,
-    "kL_max": 0.25,
-    "up": 0.10,
-    "down": 0.07,
-}
 
 ChunkArgs = tuple[
     Sequence[NodeId],
@@ -113,16 +101,20 @@ def _ensure_hist_deque(
 
 def _read_adaptive_params(
     g: Mapping[str, Any],
-    *,
-    exact: bool = False,
 ) -> tuple[Mapping[str, Any], float, float]:
     """Obtain configuration and current values for phase adaptation."""
 
-    cfg = g.get("PHASE_ADAPT", DEFAULTS.get("PHASE_ADAPT", {}))
-    reader = _finite_gain if exact else float
-    kG = reader(g.get("PHASE_K_GLOBAL", DEFAULTS["PHASE_K_GLOBAL"]))
-    kL = reader(g.get("PHASE_K_LOCAL", DEFAULTS["PHASE_K_LOCAL"]))
-    return cast(Mapping[str, Any], cfg), kG, kL
+    supplied = g.get("PHASE_ADAPT", {})
+    if not isinstance(supplied, Mapping):
+        raise TNFRValueError("PHASE_ADAPT must be a mapping")
+    cfg = {**DEFAULTS["PHASE_ADAPT"], **supplied}
+    if not isinstance(cfg["enabled"], bool):
+        raise TNFRValueError("PHASE_ADAPT['enabled'] must be a boolean")
+    if cfg["enabled"]:
+        cfg.update(_finite_adaptive_config(cfg))
+    kG = _finite_gain(g.get("PHASE_K_GLOBAL", DEFAULTS["PHASE_K_GLOBAL"]))
+    kL = _finite_gain(g.get("PHASE_K_LOCAL", DEFAULTS["PHASE_K_LOCAL"]))
+    return cfg, kG, kL
 
 
 def _finite_gain(value: Any) -> float:
@@ -131,23 +123,36 @@ def _finite_gain(value: Any) -> float:
 
 def _finite_adaptive_config(cfg: Mapping[str, Any]) -> Mapping[str, Any]:
     """Validate only numeric parameters consumed by the existing active policy."""
-    return {
-        key: _finite_gain(cfg.get(key, default))
-        for key, default in _ADAPTIVE_DEFAULTS.items()
+    resolved = {
+        key: _finite_gain(cfg[key])
+        for key in DEFAULTS["PHASE_ADAPT"]
+        if key != "enabled"
     }
+    for key in ("R_hi", "R_lo", "disr_hi", "disr_lo", "up", "down"):
+        if not 0.0 <= resolved[key] <= 1.0:
+            raise TNFRValueError(f"PHASE_ADAPT[{key!r}] must be in [0, 1]")
+    for lower, upper in (
+        ("R_lo", "R_hi"),
+        ("disr_lo", "disr_hi"),
+        ("kG_min", "kG_max"),
+        ("kL_min", "kL_max"),
+    ):
+        if not 0.0 <= resolved[lower] <= resolved[upper]:
+            raise TNFRValueError(f"PHASE_ADAPT requires 0 <= {lower} <= {upper}")
+    return resolved
 
 
 def _compute_state(G: TNFRGraph, cfg: Mapping[str, Any]) -> tuple[str, float, float]:
-    """Return the canonical network state and supporting metrics."""
+    """Return the configured controller state and supporting metrics."""
 
     R = kuramoto_order(G)
     dist = glyph_load(G, window=DEFAULT_GLYPH_LOAD_SPAN)
     disr = float(dist.get("_disruptors", 0.0)) if dist else 0.0
 
-    R_hi = float(cfg.get("R_hi", _ADAPTIVE_DEFAULTS["R_hi"]))
-    R_lo = float(cfg.get("R_lo", _ADAPTIVE_DEFAULTS["R_lo"]))
-    disr_hi = float(cfg.get("disr_hi", _ADAPTIVE_DEFAULTS["disr_hi"]))
-    disr_lo = float(cfg.get("disr_lo", _ADAPTIVE_DEFAULTS["disr_lo"]))
+    R_hi = cfg["R_hi"]
+    R_lo = cfg["R_lo"]
+    disr_hi = cfg["disr_hi"]
+    disr_lo = cfg["disr_lo"]
     if (R >= R_hi) and (disr <= disr_lo):
         state = STATE_STABLE
     elif (R <= R_lo) or (disr >= disr_hi):
@@ -162,29 +167,39 @@ def _smooth_adjust_k(
 ) -> tuple[float, float]:
     """Smoothly update kG/kL toward targets according to state."""
 
-    kG_min = float(cfg.get("kG_min", _ADAPTIVE_DEFAULTS["kG_min"]))
-    kG_max = float(cfg.get("kG_max", _ADAPTIVE_DEFAULTS["kG_max"]))
-    kL_min = float(cfg.get("kL_min", _ADAPTIVE_DEFAULTS["kL_min"]))
-    kL_max = float(cfg.get("kL_max", _ADAPTIVE_DEFAULTS["kL_max"]))
+    kG_min = cfg["kG_min"]
+    kG_max = cfg["kG_max"]
+    kL_min = cfg["kL_min"]
+    kL_max = cfg["kL_max"]
 
     state = normalise_state_token(state)
 
+    def midpoint(lower: float, upper: float) -> float:
+        candidate = 0.5 * (lower + upper)
+        # Nonnegative finite bounds have a finite midpoint even if their sum
+        # overflows. Preserve ordinary arithmetic away from that boundary.
+        return candidate if math.isfinite(candidate) else lower / 2 + upper / 2
+
     if state == STATE_DISSONANT:
         kG_t = kG_max
-        kL_t = 0.5 * (kL_min + kL_max)  # keep kL mid-range to preserve local plasticity
+        kL_t = midpoint(kL_min, kL_max)
     elif state == STATE_STABLE:
         kG_t = kG_min
         kL_t = kL_min
     else:
-        kG_t = 0.5 * (kG_min + kG_max)
-        kL_t = 0.5 * (kL_min + kL_max)
+        kG_t = midpoint(kG_min, kG_max)
+        kL_t = midpoint(kL_min, kL_max)
 
-    up = float(cfg.get("up", _ADAPTIVE_DEFAULTS["up"]))
-    down = float(cfg.get("down", _ADAPTIVE_DEFAULTS["down"]))
+    up = cfg["up"]
+    down = cfg["down"]
 
     def _step(curr: float, target: float, mn: float, mx: float) -> float:
         gain = up if target > curr else down
         nxt = curr + gain * (target - curr)
+        if not math.isfinite(nxt):
+            # Opposite-sign finite endpoints can overflow their difference.
+            # The admitted gain is in [0, 1], so this convex form stays finite.
+            nxt = (1.0 - gain) * curr + gain * target
         return max(mn, min(mx, nxt))
 
     return _step(kG, kG_t, kG_min, kG_max), _step(kL, kL_t, kL_min, kL_max)
@@ -251,6 +266,12 @@ def coordinate_global_local_phase(
     model in ``phase_evolution.propose_u3_gated_phase_step``; the nodal EPI
     equation alone does not select either phase law. See
     ``theory/FORCED_SUPPORT_BALANCE.md`` section 23.
+
+    Both reductions validate authoritative raw phases before history/cache
+    work and all represented proposals before the first phase write. Only the
+    exact reduction additionally restores caches, histories and arbitrary
+    graph-owned setter side effects after a late failure. Neighbors are unique
+    outgoing support neighbors, irrespective of conductance or parallel edges.
 
     Parameters
     ----------
@@ -347,6 +368,36 @@ def _coordinate_global_local_phase(
 ) -> GlobalPhaseCoordinationEvidence | None:
     """Shared adaptive/local algorithm for legacy and opt-in global reduction."""
     g = cast(dict[str, Any], G.graph)
+    nodes: list[NodeId] = [cast(NodeId, node) for node in G.nodes()]
+    # The trig cache is a permissive observation reader. Admit its primitive
+    # source first so a bad primary cannot become a fallback, text-derived
+    # number or a zero before execution checks it.
+    theta_vals = [
+        get_theta_attr(
+            G.nodes[node],
+            0.0,
+            strict=True,
+            conv=lambda value: finite_represented_real(value, "primitive phase")[0],
+        )
+        for node in nodes
+    ]
+    # Resolve the consumed policy before allocating histories or writing gains.
+    # A partial mapping means a default overlay, never a legacy policy switch.
+    fixed_override = global_force is not None or local_force is not None
+    cfg: Mapping[str, Any] = {}
+    if not fixed_override:
+        cfg, kG, kL = _read_adaptive_params(g)
+    else:
+        kG = _finite_gain(
+            global_force
+            if global_force is not None
+            else g.get("PHASE_K_GLOBAL", DEFAULTS["PHASE_K_GLOBAL"])
+        )
+        kL = _finite_gain(
+            local_force
+            if local_force is not None
+            else g.get("PHASE_K_LOCAL", DEFAULTS["PHASE_K_LOCAL"])
+        )
     hist = cast(dict[str, Any], g.setdefault("history", {}))
     maxlen = int(g.get("PHASE_HISTORY_MAXLEN", METRIC_DEFAULTS["PHASE_HISTORY_MAXLEN"]))
     hist_state = cast(deque[str], _ensure_hist_deque(hist, "phase_state", maxlen))
@@ -358,30 +409,15 @@ def _coordinate_global_local_phase(
     hist_R = cast(deque[float], _ensure_hist_deque(hist, "phase_R", maxlen))
     hist_disr = cast(deque[float], _ensure_hist_deque(hist, "phase_disr", maxlen))
 
-    reader = _finite_gain if exact else float
     requested_global = requested_local = None
     gain_mode = "configured_fixed"
-    if (global_force is not None) or (local_force is not None):
+    if fixed_override:
         gain_mode = "fixed_override"
-        kG = reader(
-            global_force
-            if global_force is not None
-            else g.get("PHASE_K_GLOBAL", DEFAULTS["PHASE_K_GLOBAL"])
-        )
-        kL = reader(
-            local_force
-            if local_force is not None
-            else g.get("PHASE_K_LOCAL", DEFAULTS["PHASE_K_LOCAL"])
-        )
         requested_global = kG if global_force is not None else None
         requested_local = kL if local_force is not None else None
     else:
-        cfg, kG, kL = _read_adaptive_params(g, exact=exact)
-
-        if bool(cfg.get("enabled", False)):
+        if cfg["enabled"]:
             gain_mode = "adaptive"
-            if exact:
-                cfg = _finite_adaptive_config(cfg)
             state, R, disr = _compute_state(G, cfg)
             kG, kL = _smooth_adjust_k(kG, kL, state, cfg)
 
@@ -410,7 +446,6 @@ def _coordinate_global_local_phase(
     if np is not None:
         jobs = None
 
-    nodes: list[NodeId] = [cast(NodeId, node) for node in G.nodes()]
     num_nodes = len(nodes)
 
     def evidence(
@@ -458,7 +493,7 @@ def _coordinate_global_local_phase(
         return evidence("empty_graph")
 
     trig = get_trig_cache(G)
-    theta_map = cast(dict[NodeId, Phase], trig.theta)
+    theta_map = cast(dict[NodeId, Phase], dict(zip(nodes, theta_vals)))
     cos_map = cast(dict[NodeId, float], trig.cos)
     sin_map = cast(dict[NodeId, float], trig.sin)
 
@@ -470,35 +505,20 @@ def _coordinate_global_local_phase(
         except KeyError:
             neighbors_map[n] = ()
 
-    def _theta_value(node: NodeId) -> float:
-        cached = theta_map.get(node)
-        if cached is not None:
-            return (
-                finite_represented_real(cached, "primitive phase")[0]
-                if exact
-                else float(cached)
-            )
-        attr_val = get_theta_attr(G.nodes[node], 0.0)
-        value = attr_val if attr_val is not None else 0.0
-        return (
-            finite_represented_real(value, "primitive phase")[0]
-            if exact
-            else float(value)
-        )
-
     def component(value: Any) -> float:
-        return (
-            finite_represented_real(value, "materialized trig component")[0]
-            if exact
-            else float(value)
+        return finite_represented_real(value, "materialized trig component")[0]
+
+    def commit_phases(proposals: Sequence[float]) -> None:
+        # Admit every proposal first, including the legacy and worker routes.
+        values = tuple(
+            finite_represented_real(value, "raw phase proposal")[0]
+            for value in proposals
         )
+        if len(values) != num_nodes:
+            raise TNFRValueError("phase proposal set must cover every node")
+        for node, value in zip(nodes, values):
+            set_theta(G, node, value)
 
-    def write_phase(node: NodeId, value: float) -> None:
-        if exact:
-            value = finite_represented_real(value, "raw phase proposal")[0]
-        set_theta(G, node, value)
-
-    theta_vals = [_theta_value(n) for n in nodes]
     cos_vals = [
         component(cos_map.get(n, math.cos(theta_vals[idx])))
         for idx, n in enumerate(nodes)
@@ -507,6 +527,8 @@ def _coordinate_global_local_phase(
         component(sin_map.get(n, math.sin(theta_vals[idx])))
         for idx, n in enumerate(nodes)
     ]
+    cos_map = dict(zip(nodes, cos_vals))
+    sin_map = dict(zip(nodes, sin_vals))
     resultant = reduce_phasor_components(zip(cos_vals, sin_vals)) if exact else None
     thG: float | None = None
     if resultant is not None and kG != 0.0:
@@ -540,8 +562,7 @@ def _coordinate_global_local_phase(
             for idx, n in enumerate(nodes)
         ]
         neighbor_arr = cast(FloatArray, np.fromiter(neighbor_means, dtype=float))
-        # Match the scalar angle_diff owner, including its signed antipodal
-        # ties. The modulo-based angle_diff_array has a different +pi tie.
+        # Use the scalar/vector circular owner, including signed antipodal ties.
         global_difference = (
             np.zeros_like(theta_arr)
             if thG is None
@@ -549,8 +570,7 @@ def _coordinate_global_local_phase(
         )
         local_difference = compute_phase_difference(neighbor_arr, theta_arr)
         theta_updates = theta_arr + kG * global_difference + kL * local_difference
-        for idx, node in enumerate(nodes):
-            write_phase(node, float(theta_updates[int(idx)]))
+        commit_phases(tuple(map(float, theta_updates)))
         return evidence(
             "numpy",
             phases=theta_vals,
@@ -567,26 +587,12 @@ def _coordinate_global_local_phase(
         thG = math.atan2(mean_sin, mean_cos)
 
     if jobs is None:
-        targets, proposals = [], []
-        for node in nodes:
-            th = float(theta_map.get(node, 0.0))
-            neigh = neighbors_map.get(node, ())
-            if neigh:
-                thL = neighbor_phase_mean_list(
-                    neigh,
-                    cos_map,
-                    sin_map,
-                    fallback=th,
-                )
-            else:
-                thL = th
-            dG = 0.0 if thG is None else angle_diff(thG, th)
-            dL = angle_diff(thL, th)
-            proposal = float(th + kG * dG + kL * dL)
-            write_phase(node, proposal)
-            if exact:
-                targets.append(float(thL))
-                proposals.append(proposal)
+        updates = _phase_adjust_chunk(
+            (nodes, theta_map, cos_map, sin_map, neighbors_map, thG, kG, kL)
+        )
+        proposals = tuple(float(value) for _, value, _ in updates)
+        targets = tuple(float(target) for _, _, target in updates)
+        commit_phases(proposals)
         return evidence(
             "scalar_sequential",
             phases=theta_vals,
@@ -624,14 +630,10 @@ def _coordinate_global_local_phase(
             for node, value, target in res:
                 results[node] = value
                 local_results[node] = target
-    proposals = []
-    for node in nodes:
-        new_theta = results.get(node)
-        base_theta = theta_map.get(node, 0.0)
-        proposal = float(new_theta if new_theta is not None else base_theta)
-        write_phase(node, proposal)
-        if exact:
-            proposals.append(proposal)
+    if set(results) != set(nodes) or set(local_results) != set(nodes):
+        raise TNFRValueError("phase worker proposals must cover every node")
+    proposals = tuple(float(results[node]) for node in nodes)
+    commit_phases(proposals)
     return evidence(
         "scalar_multiprocessing",
         phases=theta_vals,

@@ -31,23 +31,24 @@ except ImportError:
 
 # We use mpmath for high precision (FFT-based arithmetic for large numbers)
 try:
-    from mpmath import fabs as mp_fabs
-    from mpmath import gamma as mp_gamma
-    from mpmath import log as mp_log
-    from mpmath import mp
-    from mpmath import pi as mp_pi
-    from mpmath import power as mp_power
-    from mpmath import sin as mp_sin
-    from mpmath import zeta as mp_zeta
-    from mpmath import zetazero as mp_zetazero
+    from mpmath import mp as _mp
+
+    # Retain the declared 25-digit arithmetic without changing caller precision.
+    # Bind every function to this context rather than mpmath's shared singleton.
+    mp = _mp.clone()
+    mp.dps = 25
+    mp_fabs = mp.fabs
+    mp_gamma = mp.gamma
+    mp_log = mp.log
+    mp_pi = mp.pi
+    mp_power = mp.power
+    mp_sin = mp.sin
+    mp_zeta = mp.zeta
+    mp_zetazero = mp.zetazero
 
     HAS_MPMATH = True
 except ImportError:
     HAS_MPMATH = False
-
-# Default precision
-if HAS_MPMATH:
-    mp.mp.dps = 25
 
 
 def _ensure_complex(s: Any) -> Any:

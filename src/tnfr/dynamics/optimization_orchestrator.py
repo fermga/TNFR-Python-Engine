@@ -24,10 +24,11 @@ from typing import Any
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_EPI, ALIAS_VF
 from ..errors import TNFRValueError
+from ..mathematics._neighbor_differences import edge_mean_differences
 from ..mathematics.unified_numerical import np
 from ..operators.network_stage import GraphTransactionSnapshot
 from ..operators.nodal_equation import DEFAULT_NODAL_EQUATION_TOLERANCE
-from ..physics.structural_diffusion import structural_diffusion_operator
+from ..physics._conductance import read_conductance
 from ..types import real_scalar_epi
 
 try:
@@ -315,10 +316,7 @@ class TNFROptimizationOrchestrator:
 
         # Basic graph metrics
         num_nodes = len(G.nodes())
-        num_edges = len(G.edges())
-        edge_density = (
-            (2 * num_edges) / (num_nodes * (num_nodes - 1)) if num_nodes > 1 else 0.0
-        )
+        edge_density = float(nx.density(G))
 
         # Determine available strategies based on graph properties
         available_strategies = []
@@ -365,10 +363,17 @@ class TNFROptimizationOrchestrator:
         The compatibility name is retained; without a representative baseline
         this method selects a candidate and does not certify global optimality.
         """
+        if force_strategy is not None and not isinstance(
+            force_strategy, OptimizationStrategy
+        ):
+            raise TNFRValueError("force_strategy must be an OptimizationStrategy")
         if (
             force_strategy is not None
-            and force_strategy in profile.available_strategies
+            and force_strategy is not OptimizationStrategy.AUTO
         ):
+            # Profile size/density bands are automatic preferences, not an
+            # authorization to substitute a different requested computation.
+            # The selected engine owns actual execution-domain admission.
             return force_strategy
 
         # Performance-based selection using historical data
@@ -430,8 +435,8 @@ class TNFROptimizationOrchestrator:
         ):  # ≈ 0.7006 → canonical
             if OptimizationStrategy.HYBRID in profile.available_strategies:
                 return OptimizationStrategy.HYBRID
-            else:
-                return OptimizationStrategy.NODAL_VECTORIZED  # Compatibility fallback
+            if best_strategy == OptimizationStrategy.AUTO:
+                raise TNFRValueError("No executable optimization strategy is available")
 
         return best_strategy
 
@@ -629,8 +634,8 @@ class TNFROptimizationOrchestrator:
             proposal_metadata = {}
         proposal_metadata = dict(proposal_metadata)
 
-        nodes, laplacian = structural_diffusion_operator(G)
-        node_order = tuple(nodes)
+        conductance = read_conductance(G)
+        node_order = tuple(conductance.nodes)
         complete = set(proposals) == set(node_order) and len(proposals) == len(
             node_order
         )
@@ -655,7 +660,12 @@ class TNFROptimizationOrchestrator:
             ],
             dtype=float,
         )
-        pressure = -(np.asarray(laplacian, dtype=float) @ epi)
+        # Verify against the same declared pressure realization as the proposal.
+        # Rounded Laplacian entries can invent a residual at exact consensus.
+        # The observed endpoint difference below remains independent evidence.
+        pressure = edge_mean_differences(
+            epi, conductance.source, conductance.target, conductance.weight
+        )
         residuals: list[float] = []
         finite_phase = True
         if complete:
@@ -718,6 +728,7 @@ class TNFROptimizationOrchestrator:
                 },
                 "accuracy_verification": {
                     "basis": "epi_diffusion_nodal_residual_and_finite_phase",
+                    "pressure_realization": "shared_edge_differences",
                     "complete_node_coverage": complete,
                     "max_nodal_residual": max_residual,
                     "tolerance": residual_tolerance,
@@ -1029,13 +1040,9 @@ class TNFROptimizationOrchestrator:
             strategy = OptimizationStrategy.AUTO
 
         profile = self.analyze_optimization_profile(G, operation)
-        # An explicit FFT request is a physical-model request, so preserve it and
-        # let the prewrite dispatcher guard accept or reject it deterministically.
-        selected_strategy = (
-            strategy
-            if strategy == OptimizationStrategy.SPECTRAL_FFT
-            else self.select_optimal_strategy(profile, strategy)
-        )
+        # Preserve every explicit service request. Different services need not
+        # implement interchangeable models or produce interchangeable outputs.
+        selected_strategy = self.select_optimal_strategy(profile, strategy)
 
         return self.execute_optimization(G, operation, selected_strategy, **kwargs)
 

@@ -415,7 +415,10 @@ def _add_epi_validate_parser(sub: argparse._SubParsersAction) -> None:
         "--tolerance",
         type=float,
         default=1e-6,
-        help="Numerical tolerance for validation checks",
+        help=(
+            "Finite nonnegative tolerance for numeric diagnostics; "
+            "does not widen the U3 phase gate"
+        ),
     )
 
     p_epi.set_defaults(func=cmd_epi_validate)

@@ -13,10 +13,8 @@ used by the separate geometry-realization observer.
 
 import math
 
-import networkx as nx
-
 from ..mathematics.unified_numerical import np
-from ._edge_semantics import effective_edge_length, structural_path_weight
+from ._edge_semantics import structural_distance_rows, validate_structural_graph
 from ._helpers import finite_real_scalar
 
 DISTANCE_DESCRIPTION = (
@@ -31,12 +29,15 @@ FIT_DESCRIPTION = (
 
 
 def coherence_sources(nodes, precision_mode):
-    """Select the same declared source sample independently of backend."""
+    """Select the declared source sample independently of backend and mode.
+
+    The mode argument is retained for caller compatibility. Once ``n>=1000``,
+    ``n//20>=50`` already exceeds both historical mode-dependent minima.
+    """
     nodes = tuple(nodes)
     if len(nodes) < 1000:
         return nodes
-    minimum = 30 if precision_mode == "research" else 20
-    count = max(minimum, len(nodes) // 20)
+    count = len(nodes) // 20
     return nodes[:: max(1, len(nodes) // count)]
 
 
@@ -51,13 +52,7 @@ def coherence_sample_description(graph, nodes, sources):
 
 
 def _validate_graph(graph, nodes):
-    if len(set(nodes)) != len(nodes) or set(nodes) != set(graph):
-        raise ValueError(
-            "coherence node order must contain every graph node exactly once"
-        )
-    # Validate every component, including unreachable and unsampled edges.
-    for _, _, attributes in graph.edges(data=True):
-        effective_edge_length(attributes)
+    validate_structural_graph(graph, nodes)
 
 
 def _distance_array(values, size, directed):
@@ -84,14 +79,7 @@ def _distance_array(values, size, directed):
 
 
 def _graph_distance_rows(graph, sources):
-    weight = structural_path_weight(graph)
-    for source in sources:
-        row = nx.single_source_dijkstra_path_length(graph, source, weight=weight)
-        if any(not math.isfinite(distance) for distance in row.values()):
-            raise ValueError(
-                "reachable path distance exceeds the finite represented range"
-            )
-        yield source, row
+    yield from structural_distance_rows(graph, sources)
 
 
 def _fit_products(pairs):

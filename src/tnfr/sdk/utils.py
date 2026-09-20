@@ -10,8 +10,8 @@ import json
 from pathlib import Path
 from typing import Any
 
-from ..mathematics.unified_numerical import NUMPY_AVAILABLE as HAS_NUMPY
-from ..mathematics.unified_numerical import np
+from .._exact_time import finite_represented_real
+from ..metrics.common import finite_mean, finite_population_std
 from ..utils.io import json_dumps, safe_write
 
 __all__ = [
@@ -60,14 +60,12 @@ def compare_networks(
 
         if "avg_si" in metrics:
             si_values = list(results.sense_indices.values())
-            comparison[name]["avg_si"] = (
-                sum(si_values) / len(si_values) if si_values else 0.0
-            )
+            comparison[name]["avg_si"] = finite_mean(si_values, name="Si")
 
         if "avg_delta_nfr" in metrics:
             dnfr_values = list(results.delta_nfr.values())
-            comparison[name]["avg_delta_nfr"] = (
-                sum(dnfr_values) / len(dnfr_values) if dnfr_values else 0.0
+            comparison[name]["avg_delta_nfr"] = finite_mean(
+                dnfr_values, name="DeltaNFR"
             )
 
         if "node_count" in metrics:
@@ -106,28 +104,18 @@ def compute_network_statistics(results: Any) -> dict[str, float]:
     }
 
     if si_values:
-        stats["avg_si"] = sum(si_values) / len(si_values)
+        stats["avg_si"] = finite_mean(si_values, name="Si")
         stats["min_si"] = min(si_values)
         stats["max_si"] = max(si_values)
 
-        if HAS_NUMPY:
-            stats["std_si"] = float(np.std(si_values))
-        else:
-            mean_si = stats["avg_si"]
-            variance = sum((x - mean_si) ** 2 for x in si_values) / len(si_values)
-            stats["std_si"] = variance**0.5
+        stats["std_si"] = finite_population_std(si_values, name="Si")
 
     if dnfr_values:
-        stats["avg_delta_nfr"] = sum(dnfr_values) / len(dnfr_values)
+        stats["avg_delta_nfr"] = finite_mean(dnfr_values, name="DeltaNFR")
         stats["min_delta_nfr"] = min(dnfr_values)
         stats["max_delta_nfr"] = max(dnfr_values)
 
-        if HAS_NUMPY:
-            stats["std_delta_nfr"] = float(np.std(dnfr_values))
-        else:
-            mean_dnfr = stats["avg_delta_nfr"]
-            variance = sum((x - mean_dnfr) ** 2 for x in dnfr_values) / len(dnfr_values)
-            stats["std_delta_nfr"] = variance**0.5
+        stats["std_delta_nfr"] = finite_population_std(dnfr_values, name="DeltaNFR")
 
     if results.avg_vf is not None:
         stats["avg_vf"] = results.avg_vf
@@ -143,7 +131,11 @@ def export_to_json(
     filepath: Path | str,
     indent: int = 2,
 ) -> None:
-    """Export network data to JSON file.
+    """Export network data without overwriting reports on serialization errors.
+
+    Non-string keys retain the standard JSON encoder's conversions, but two
+    distinct keys that become the same JSON object name are rejected, including
+    inside nested objects. Existing Python-dictionary key loss cannot be undone.
 
     Parameters
     ----------
@@ -178,8 +170,23 @@ def export_to_json(
         data,
         indent=indent,
         ensure_ascii=False,
+        allow_nan=False,
         separators=(",", ": ") if indent is not None else (", ", ": "),
     )
+
+    def reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> None:
+        names: set[str] = set()
+        for name, _ in pairs:
+            if name in names:
+                raise ValueError(
+                    f"JSON object keys collide after serialization: {name!r}"
+                )
+            names.add(name)
+
+    # Check actual encoded names recursively instead of duplicating the
+    # encoder's int/float/bool/None conversion rules. The hook need not retain
+    # a second decoded object tree, and validation precedes any file writes.
+    json.loads(payload, object_pairs_hook=reject_duplicate_keys)
     safe_write(filepath, lambda stream: stream.write(payload))
 
 
@@ -214,7 +221,7 @@ def format_comparison_table(
     comparison: dict[str, dict[str, float]],
     metrics: list[str] | None = None,
 ) -> str:
-    """Format network comparison as a readable table.
+    """Format a comparison without replacing unavailable measurements by zero.
 
     Parameters
     ----------
@@ -241,7 +248,7 @@ def format_comparison_table(
 
     # Get all available metrics if not specified
     if metrics is None:
-        metrics = list(next(iter(comparison.values())).keys())
+        metrics = list(dict.fromkeys(key for row in comparison.values() for key in row))
 
     # Build table
     lines = []
@@ -253,7 +260,15 @@ def format_comparison_table(
 
     # Data rows
     for network_name, data in sorted(comparison.items()):
-        values = " ".join(f"{data.get(m, 0.0):>12.3f}" for m in metrics)
+        formatted = []
+        for metric in metrics:
+            try:
+                value = finite_represented_real(data.get(metric), metric)[0]
+            except (TypeError, ValueError):
+                formatted.append(f"{'unavailable':>12}")
+            else:
+                formatted.append(f"{value:>12.3f}")
+        values = " ".join(formatted)
         lines.append(f"{network_name:<20} {values}")
 
     return "\n".join(lines)

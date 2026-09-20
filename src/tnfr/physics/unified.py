@@ -32,10 +32,20 @@ Algebraic scope:
 from __future__ import annotations
 
 import math
+import sys
+from collections.abc import Mapping
 from dataclasses import dataclass
+from fractions import Fraction
 from typing import Any
 
+from .._exact_time import finite_represented_real
+from ..mathematics._exact_weighted import exact_weighted_sum_ratio
 from ..mathematics.unified_numerical import np
+from ..metrics.common import (
+    finite_mean,
+    finite_pearson_correlation,
+    finite_population_std,
+)
 
 # Import canonical fields (Layer 1)
 from .canonical import (
@@ -124,6 +134,88 @@ def _energy_density_from_fields(
         )
         for n in phi_s
     }
+
+
+def _total_energy_from_fields(
+    phi_s: dict[Any, float],
+    grad_phi: dict[Any, float],
+    k_phi: dict[Any, float],
+    j_phi: dict[Any, float],
+    j_dnfr: dict[Any, float],
+) -> float:
+    """Return the normalized quadratic total without premature range loss.
+
+    Ordinary-range inputs retain the raw-density arithmetic followed by half
+    the compensated sum. Exceptional-range inputs use the exact sum of squares
+    of the represented fields, across all nodes, and normalize before rounding.
+    A nonzero total lost to binary64 zero or an overflowing total is unavailable
+    and raises ValueError. This is an algebraic readout, not a decay theorem.
+
+    Raw density is a distinct output: its materialized values can underflow or
+    overflow even when the normalized total remains representable. Do not
+    reconstruct this total from those already-rounded densities in that case.
+    """
+    supplied = (phi_s, grad_phi, k_phi, j_phi, j_dnfr)
+    labels = ("Phi_s", "grad_phi", "K_phi", "J_phi", "J_DeltaNFR")
+    nodes = tuple(phi_s)
+    node_set = set(nodes)
+    if any(set(field) != node_set for field in supplied[1:]):
+        raise ValueError("energy fields must have identical node support")
+    try:
+        materialized = tuple(
+            {
+                node: finite_represented_real(field[node], f"{label}[{node!r}]")[0]
+                for node in nodes
+            }
+            for field, label in zip(supplied, labels)
+        )
+    except (TypeError, ValueError) as exc:
+        raise ValueError(str(exc)) from exc
+    components = tuple(abs(field[node]) for node in nodes for field in materialized)
+    exceptional = any(
+        value != 0.0
+        and (value * value < sys.float_info.min or not math.isfinite(value * value))
+        for value in components
+    )
+    if not exceptional:
+        try:
+            raw = _energy_density_from_fields(*materialized)
+            total = 0.5 * math.fsum(raw.values())
+        except OverflowError:
+            pass
+        else:
+            if math.isfinite(total) and (total == 0.0 or total >= sys.float_info.min):
+                return total
+
+    numerator, denominator = exact_weighted_sum_ratio(components, components)
+    try:
+        total = float(Fraction(numerator, 2 * denominator))
+    except OverflowError as exc:
+        raise ValueError("normalized total energy must remain finite") from exc
+    if not math.isfinite(total):
+        raise ValueError("normalized total energy must remain finite")
+    if numerator != 0 and total == 0.0:
+        raise ValueError("nonzero normalized total energy underflows to zero")
+    return total
+
+
+def _total_charge_from_density(charge: Mapping[Any, float]) -> float:
+    """Sum represented charges consistently, retaining extreme cancellation."""
+    try:
+        values = tuple(
+            finite_represented_real(value, "charge density")[0]
+            for value in charge.values()
+        )
+        try:
+            total = math.fsum(values)
+        except OverflowError:
+            numerator, denominator = exact_weighted_sum_ratio(
+                (1.0,) * len(values), values
+            )
+            total = Fraction(numerator, denominator)
+        return finite_represented_real(total, "total charge")[0]
+    except TypeError as exc:
+        raise ValueError(str(exc)) from exc
 
 
 def _action_density_from_fields(
@@ -266,6 +358,9 @@ def compute_energy_density(G: Any) -> dict[Any, float]:
     The ½ factor is the conventional Hamiltonian normalisation (like
     ½(E² + B²) in electrodynamics).  This function returns the **raw**
     quadratic form without the ½ so that callers can apply it as needed.
+    These are algebraic identities. Rounded raw densities can lose tiny terms
+    or overflow before normalization; the conservation total evaluates the
+    represented fields directly in those exceptional ranges.
 
     See Also
     --------
@@ -336,8 +431,9 @@ def compute_unified_field_suite(G: Any) -> dict[str, Any]:
 
     Returns derived fields, quadratic/bilinear coordinates, and finite balance
     diagnostics from one local collection of the five required base fields.
-    Conservation density uses :mod:`tnfr.physics.conservation`; scalar totals
-    are reduced from the same returned density maps.
+    Conservation density uses :mod:`tnfr.physics.conservation`. The energy total
+    uses the same captured fields before exceptional-range density rounding;
+    it need not be reconstructible from the materialized raw density map.
 
     The caller must hold topology, attributes and configuration fixed during
     the call. Returned maps are detached; capture is not atomic with concurrent
@@ -398,8 +494,10 @@ def _unified_field_suite_from_fields(
 
     # Scalar snapshot totals
     results["conservation_metrics"] = {
-        "noether_charge": sum(results["charge_density"].values()),
-        "structural_energy": 0.5 * sum(results["energy_density"].values()),
+        "noether_charge": _total_charge_from_density(results["charge_density"]),
+        "structural_energy": _total_energy_from_fields(
+            phi_s, grad_phi, k_phi, j_phi, j_dnfr
+        ),
     }
 
     return results
@@ -420,7 +518,7 @@ def analyze_field_correlations(
     Pairs with fewer than two samples or a constant member are omitted because
     Pearson correlation is undefined there.
     """
-    fields: dict[str, Any] = {}
+    fields: dict[str, tuple[float, ...]] = {}
     first_field = next((v for v in results.values() if isinstance(v, dict) and v), None)
     if first_field is None:
         return {}
@@ -429,49 +527,54 @@ def analyze_field_correlations(
     for name, data in results.items():
         if not isinstance(data, dict) or set(data) != set(sample_nodes):
             continue
-        values = np.asarray([data[node] for node in sample_nodes])
-        if np.iscomplexobj(values):
-            continue
         try:
-            real_values = np.asarray(values, dtype=float)
+            real_values = tuple(
+                finite_represented_real(data[node], f"{name}[{node!r}]")[0]
+                for node in sample_nodes
+            )
         except (TypeError, ValueError):
             continue
-        if real_values.ndim == 1 and bool(np.all(np.isfinite(real_values))):
-            fields[name] = real_values
+        fields[name] = real_values
 
     correlations: dict[str, float] = {}
     names = list(fields.keys())
     for i, n1 in enumerate(names):
-        for j, n2 in enumerate(names):
-            if i < j:
-                left, right = fields[n1], fields[n2]
-                if (
-                    left.size < 2
-                    or float(np.std(left)) == 0.0
-                    or float(np.std(right)) == 0.0
-                ):
-                    continue
-                raw = float(np.corrcoef(left, right)[0, 1])
-                if math.isfinite(raw):
-                    correlations[f"{n1}_vs_{n2}"] = raw
+        for n2 in names[i + 1 :]:
+            raw = finite_pearson_correlation(fields[n1], fields[n2])
+            if raw is not None:
+                correlations[f"{n1}_vs_{n2}"] = raw
     return correlations
 
 
 def summary_statistics(
     results: dict[str, dict[Any, float]],
-) -> dict[str, dict[str, float]]:
-    """Summary statistics (mean, std, min, max, range) per field."""
-    stats: dict[str, Any] = {}
+) -> dict[str, dict[str, float | None]]:
+    """Summarize complete finite scalar fields without filtering their samples.
+
+    Empty, nonmapping or invalid fields are omitted independently. NumPy and
+    other real scalars share the represented-value admission; truth values,
+    text and nonfinite values do not become a smaller apparently valid sample.
+    Mean and population spread use the shared stable reducers. If the range
+    itself exceeds binary64, only ``range`` is unavailable (``None``).
+    """
+    stats: dict[str, dict[str, float | None]] = {}
     for name, data in results.items():
-        if isinstance(data, dict):
-            vals = [v for v in data.values() if isinstance(v, (int, float))]
-            if vals:
-                arr = np.array(vals)
-                stats[name] = {
-                    "mean": float(np.mean(arr)),
-                    "std": float(np.std(arr)),
-                    "min": float(np.min(arr)),
-                    "max": float(np.max(arr)),
-                    "range": float(np.max(arr) - np.min(arr)),
-                }
+        if not isinstance(data, Mapping) or not data:
+            continue
+        try:
+            values = tuple(
+                finite_represented_real(value, f"{name}[{node!r}]")[0]
+                for node, value in data.items()
+            )
+        except (TypeError, ValueError):
+            continue
+        low, high = min(values), max(values)
+        spread = high - low
+        stats[name] = {
+            "mean": finite_mean(values, name=name),
+            "std": finite_population_std(values, name=name),
+            "min": low,
+            "max": high,
+            "range": spread if math.isfinite(spread) else None,
+        }
     return stats

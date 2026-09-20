@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from fractions import Fraction
 
 import networkx as nx
 import pytest
@@ -47,10 +48,12 @@ def _graph_metadata_without_adapter_cache(graph: nx.Graph) -> dict:
         ("IL", "IL_dnfr_factor", 1.1),
         ("OZ", "OZ_dnfr_factor", 0.9),
         ("SHA", "SHA_vf_factor", 1.1),
+        ("SHA", "SHA_vf_factor", Fraction(1, 2**2000)),
         ("VAL", "VAL_scale", 0.9),
         ("NUL", "NUL_scale", 0.0),
         ("THOL", "THOL_accel", -0.1),
         ("NAV", "NAV_eta", 1.1),
+        ("NAV", "NAV_jitter", Fraction(-1, 2**2000)),
     ],
 )
 def test_used_invalid_factor_rejects_before_any_mutation(glyph, key, value):

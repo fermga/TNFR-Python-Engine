@@ -249,12 +249,13 @@ def test_joint_kernel_accounting_does_not_certify_a_nonzero_phase_resultant():
     )
 
     # Signed finite phase representatives are admitted by the captured NumPy
-    # branch. At this exact represented cancellation it uses atan2(0,0), while
-    # the geometric reader correctly reports no available circular curvature.
+    # branch. Exact represented cancellation uses the explicit zero-pressure
+    # extension, while the geometric reader has no available circular curvature.
     # This is neither a strict-U3 fixture nor a transcendental-zero proof.
     center = next(row for row in observe_phase_curvature(graph).rows if row.node == 0)
     assert center.status == "undefined_represented_resultant"
     assert center.resultant.joint_zero and center.curvature is None
-    assert result.counted_phase_gradient[0] != 0
+    assert result.counted_phase_gradient[0] == 0
+    assert result.fine_capture.phase_gradient[0] == 0
     assert "not certified" in result.phase_geometry_scope
-    assert "atan2(0,0)" in result.phase_geometry_scope
+    assert "zero phase-pressure extension" in result.phase_geometry_scope

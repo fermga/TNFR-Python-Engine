@@ -168,6 +168,9 @@ conditional results, finite evidence and historical work. The
 the [execution plan](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 is the sole active queue. The main objective remains a predictive generative
 account of coherent patterns, with a separate reserved-data measurement bridge.
+Foundational choices remain open to revision. Current priority is to identify
+the smallest justified model and a discriminating prediction, retaining useful
+conditional results without requiring the configured C5 maintenance route.
 
 ## Repository map
 
@@ -185,10 +188,10 @@ src/tnfr/
 ├── cli/             # command adapters, including the shared SDK study runner
 ├── engines/         # optimization and computation services
 ├── mathematics/     # numerical backends and arithmetic structures
-└── research areas   # riemann, navier_stokes, yang_mills and related modules
+└── research areas   # riemann, factorization and evidence infrastructure
 ```
 
-Executable demonstrations are grouped into ten thematic folders under
+Executable demonstrations are grouped into eight thematic folders under
 [`examples/`](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/README.md). The full architecture and source-of-truth map
 are documented in [ARCHITECTURE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/ARCHITECTURE.md).
 
@@ -226,7 +229,7 @@ workflow: [TNFR documentation](https://fermga.github.io/TNFR-Python-Engine/).
 ## Citation
 
 The DOI below identifies the project across versions. Cite the version and its
-[release tag](https://github.com/fermga/TNFR-Python-Engine/releases/tag/v0.0.3.6)
+[release tag](https://github.com/fermga/TNFR-Python-Engine/releases/tag/v0.0.3.7)
 for the exact software snapshot.
 
 ```bibtex
@@ -234,7 +237,7 @@ for the exact software snapshot.
   author = {Martinez Gamo, F. F.},
   title = {TNFR-Python-Engine: Resonant Fractal Nature Theory Implementation},
   year = {2026},
-  version = {0.0.3.6},
+  version = {0.0.3.7},
   doi = {10.5281/zenodo.17602860},
   url = {https://github.com/fermga/TNFR-Python-Engine}
 }

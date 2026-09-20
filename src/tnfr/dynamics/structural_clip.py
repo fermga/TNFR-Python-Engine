@@ -11,14 +11,16 @@ knee.
 from __future__ import annotations
 
 import math
+from collections.abc import Mapping
 from typing import Any, Literal
 
-from ..config.defaults_core import CoreDefaults
+from ..config.defaults_core import CORE_DEFAULTS, CoreDefaults
 from ..mathematics.unified_numerical import np
 
 __all__ = [
     "structural_clip",
     "structural_clip_array",
+    "resolve_clip_policy",
     "StructuralClipStats",
     "get_clip_stats",
     "reset_clip_stats",
@@ -124,6 +126,24 @@ def _validated_contract(
     if steepness <= 0.0:
         raise ValueError("k must be greater than zero")
     return lower, upper, mode, steepness
+
+
+def resolve_clip_policy(
+    configuration: Mapping[str, Any],
+) -> tuple[float, float, Literal["hard", "soft"], float]:
+    """Resolve and validate the configured scalar EPI boundary policy.
+
+    Numerical execution and held-step observations use the same defaults and
+    validation, including when a frozen row needs no projection. This helper
+    reads configuration only: it neither clips state nor records an intervention.
+    Invalid settings are rejected rather than selecting a different policy.
+    """
+    return _validated_contract(
+        configuration.get("EPI_MIN", CORE_DEFAULTS["EPI_MIN"]),
+        configuration.get("EPI_MAX", CORE_DEFAULTS["EPI_MAX"]),
+        configuration.get("CLIP_MODE", CORE_DEFAULTS["CLIP_MODE"]),
+        configuration.get("CLIP_SOFT_K", CORE_DEFAULTS["CLIP_SOFT_K"]),
+    )
 
 
 def _interval_geometry(lo: float, hi: float) -> tuple[float, float]:

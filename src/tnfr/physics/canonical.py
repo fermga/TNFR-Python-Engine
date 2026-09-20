@@ -62,8 +62,10 @@ from ..mathematics.unified_numerical import np
 from ._edge_semantics import (
     has_explicit_edge_lengths,
     has_nonpositive_edge_length,
-    structural_path_weight,
+    structural_distance_rows,
+    validate_structural_graph,
 )
+from ._potential_kernel import potential_row_sum
 from .phase_curvature import (
     PhaseCurvatureNodeObservation,
     PhaseCurvatureObservation,
@@ -189,21 +191,22 @@ def _get_precision_dtype() -> type:
 
     Notes
     -----
-    Physics invariant: dtype affects numeric accuracy, never semantics.
-    Grammar (U1-U6) decisions must be identical across all dtypes.
+    The dtype does not redefine a field or a policy cut. Rounded read-outs can
+    differ at a cut; identical grammar/diagnostic decisions are not certified.
+    ``longdouble`` can have the same precision as binary64 on some platforms.
     """
     mode = get_precision_mode()
     if mode == "research":
-        # Use extended precision if available (typically 80-bit on x86)
+        # Request platform longdouble; additional precision is not guaranteed.
         return np.longdouble
     else:
         # Standard and high both use float64
-        # High mode uses refined algorithms, not different dtype
+        # The high label does not by itself promise a refined algorithm.
         return np.float64
 
 
 # Centralised helpers — single source of truth in _helpers.py
-from ._helpers import compensated_sum  # noqa: E402
+from ._helpers import finite_real_scalar  # noqa: E402
 from ._helpers import get_dnfr as _get_dnfr  # noqa: E402
 from ._helpers import get_phase as _get_phase  # noqa: E402,F401 - compatibility import
 from ._helpers import (  # noqa: E402,F401 - compatibility import
@@ -290,6 +293,8 @@ def compute_structural_potential(
     if nx is None:
         raise RuntimeError("networkx required for structural potential computation")
     nodes = tuple(G.nodes())
+    validate_structural_graph(G, nodes)
+    alpha = finite_real_scalar(alpha, "potential alpha")
     pressure = tuple(_get_dnfr(G, node) for node in nodes)
     return dict(
         _structural_potential_cached(
@@ -403,6 +408,8 @@ def _compute_phi_s_exact(
     G: Any, nodes: list[Any], delta_nfr: dict[Any, float], alpha: float
 ) -> dict[Any, float]:
     """Exact distances with a small dense path or streamed BFS/Dijkstra."""
+    validate_structural_graph(G, nodes)
+    alpha = finite_real_scalar(alpha, "potential alpha")
     if (
         _VECTORIZATION_AVAILABLE
         and len(nodes) <= 50
@@ -423,26 +430,16 @@ def _compute_phi_s_optimized(
     edge attributes. Compensated float sums reduce cancellation for signed
     pressure; research mode retains the configured extended scalar dtype.
     """
-    has_lengths = any(
-        "length" in data or "weight" in data for _, _, data in G.edges(data=True)
-    )
     mode = get_precision_mode()
     dtype = _get_precision_dtype() if mode == "research" else float
     potential: dict[Any, float] = {}
-    for source in nodes:
-        lengths = (
-            nx.single_source_dijkstra_path_length(
-                G, source, weight=structural_path_weight(G)
-            )
-            if has_lengths
-            else nx.single_source_shortest_path_length(G, source)
-        )
-        contributions = (
-            dtype(delta_nfr[target]) / dtype(distance) ** alpha
+    for source, lengths in structural_distance_rows(G, nodes):
+        pairs = (
+            (delta_nfr[target], distance)
             for target, distance in lengths.items()
-            if target != source and math.isfinite(distance) and distance > 0.0
+            if target != source and distance > 0.0
         )
-        potential[source] = compensated_sum(contributions, dtype=dtype)
+        potential[source] = potential_row_sum(pairs, alpha, dtype=dtype)
     return potential
 
 
@@ -456,11 +453,7 @@ def _landmark_distance_maps(
     outward_key = (topology, tuple(landmarks), "outward")
     outward = _PHI_S_DISTANCE_CACHE.get(outward_key)
     if outward is None:
-        path_weight = structural_path_weight(G)
-        outward = {
-            node: nx.single_source_dijkstra_path_length(G, node, weight=path_weight)
-            for node in landmarks
-        }
+        outward = dict(structural_distance_rows(G, landmarks))
         _PHI_S_DISTANCE_CACHE[outward_key] = outward
     if not G.is_directed():
         return landmarks, outward, outward
@@ -468,13 +461,7 @@ def _landmark_distance_maps(
     inward = _PHI_S_DISTANCE_CACHE.get(inward_key)
     if inward is None:
         reverse = G.reverse(copy=False)
-        reverse_weight = structural_path_weight(reverse)
-        inward = {
-            node: nx.single_source_dijkstra_path_length(
-                reverse, node, weight=reverse_weight
-            )
-            for node in landmarks
-        }
+        inward = dict(structural_distance_rows(reverse, landmarks))
         _PHI_S_DISTANCE_CACHE[inward_key] = inward
     return landmarks, outward, inward
 
@@ -503,18 +490,27 @@ def _compute_phi_s_landmarks(
         )
     potential: dict[Any, float] = {}
     for source in nodes:
-        contributions = []
+        pairs = []
         for target in nodes:
             if source == target:
                 continue
-            distance = min(
-                inward[landmark].get(source, math.inf)
-                + outward[landmark].get(target, math.inf)
+            legs = [
+                (
+                    inward[landmark].get(source, math.inf),
+                    outward[landmark].get(target, math.inf),
+                )
                 for landmark in landmarks
-            )
+            ]
+            distance = min(first + second for first, second in legs)
+            if not math.isfinite(distance) and any(
+                math.isfinite(first) and math.isfinite(second) for first, second in legs
+            ):
+                raise ValueError(
+                    "reachable landmark path distance exceeds the finite represented range"
+                )
             if math.isfinite(distance) and distance > 0.0:
-                contributions.append(delta_nfr[target] / distance**alpha)
-        potential[source] = math.fsum(contributions)
+                pairs.append((delta_nfr[target], distance))
+        potential[source] = potential_row_sum(pairs, alpha)
     return potential
 
 
@@ -604,6 +600,7 @@ def _estimate_coherence_length_autocorr(G: Any) -> float:
     from ._coherence_fit import coherence_sources
 
     nodes = tuple(G.nodes())
+    validate_structural_graph(G, nodes)
     sources = coherence_sources(nodes, get_precision_mode())
     pressure = tuple(_get_dnfr(G, node) for node in nodes)
     # The topology hash is order-independent, but a large-graph source sample

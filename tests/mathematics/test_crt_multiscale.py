@@ -5,8 +5,10 @@ operator factor exactly:
 
     L_ab = I − (I − L_a) ⊗ (I − L_b)      (over ℚ, residual 0),
 
-with parent spectrum the child eigenvalue composition ``λ + μ − λμ`` and the U5
-gap bound ``λ₂(ab) ≤ min(λ₂(a), λ₂(b))``.  The unrestricted (non-unit) residue
+with parent spectrum the child eigenvalue composition ``λ + μ − λμ``. The
+retained gap wrapper compares smallest nonzero eigenvalue moduli; this is not
+a U5 certificate or, for directed operators, a heat-decay rate. The unrestricted
+(non-unit) residue
 set is the non-factorizing control: it does **not** CRT-factor.  The theorem is a
 *structural* branch — it uses the known factors ``a, b`` to assemble sub-networks
 and makes no factoring/complexity/crypto claim.
@@ -35,34 +37,29 @@ from tnfr.mathematics.crt_multiscale import (
 from tnfr.mathematics.number_theory import power_residue_set, unit_power_residue_set
 from tnfr.physics.spectral_projectors import derived_tolerance
 
-# Coprime moduli (mix of prime and prime-power) and powers.
-COPRIME_PAIRS = [
-    (3, 5),
-    (5, 7),
-    (3, 7),
-    (4, 9),
-    (5, 9),
-    (7, 8),
-    (3, 11),
-    (5, 11),
-    (8, 9),
-    (9, 11),
+# Cover distinct support regimes instead of a Cartesian prime sweep: full
+# units, quadratic/cubic images, odd prime powers and noncyclic even units.
+COPRIME_CASES = [
+    (3, 5, 1),
+    (3, 5, 2),
+    (5, 7, 3),
+    (4, 9, 2),
+    (8, 9, 3),
+    (5, 9, 2),
 ]
-POWERS = [1, 2, 3]
-COPRIME_CASES = [(a, b, k) for (a, b) in COPRIME_PAIRS for k in POWERS]
+COPRIME_PAIRS = sorted({(a, b) for a, b, _ in COPRIME_CASES})
 
 
 # --------------------------------------------------------------------------- #
 # unit_power_residue_set: the units-only restriction
 # --------------------------------------------------------------------------- #
-@pytest.mark.parametrize("p", [5, 7, 11, 13, 17, 19, 23])
-@pytest.mark.parametrize("k", POWERS)
+@pytest.mark.parametrize("p,k", [(5, 1), (7, 2), (7, 3)])
 def test_unit_and_full_coincide_for_primes(p, k):
     # For prime p every nonzero residue is a unit, so the two sets coincide.
     assert unit_power_residue_set(p, k) == power_residue_set(p, k)
 
 
-@pytest.mark.parametrize("m,k", [(15, 2), (35, 2), (21, 2), (33, 2)])
+@pytest.mark.parametrize("m,k", [(15, 2)])
 def test_unit_strictly_subset_for_composites(m, k):
     # For composite m the unit set drops the non-unit powers.
     u = unit_power_residue_set(m, k)
@@ -93,14 +90,9 @@ def test_unit_power_residue_set_rejects_nonpositive_power():
 # CRT ordering (permutation)
 # --------------------------------------------------------------------------- #
 @pytest.mark.parametrize("a,b", COPRIME_PAIRS)
-def test_crt_ordering_is_a_permutation(a, b):
+def test_crt_ordering_is_a_congruence_preserving_permutation(a, b):
     perm = crt_ordering(a, b)
     assert sorted(perm) == list(range(a * b))
-
-
-@pytest.mark.parametrize("a,b", COPRIME_PAIRS)
-def test_crt_ordering_respects_congruences(a, b):
-    perm = crt_ordering(a, b)
     for i in range(a):
         for j in range(b):
             r = perm[i * b + j]
@@ -120,7 +112,9 @@ def test_crt_ordering_requires_coprime(a, b):
 @pytest.mark.parametrize("a,b,k", COPRIME_CASES)
 def test_crt_kronecker_identity_is_exact(a, b, k):
     # L_ab = I − (I−L_a)⊗(I−L_b) up to the CRT permutation, exactly over ℚ.
-    assert crt_kronecker_residual(a, b, k) == Fraction(0)
+    residual = crt_kronecker_residual(a, b, k)
+    assert isinstance(residual, Fraction)
+    assert residual == Fraction(0)
 
 
 @pytest.mark.parametrize("a,b,k", COPRIME_CASES)
@@ -164,10 +158,10 @@ def test_composed_spectrum_cardinality():
 
 
 # --------------------------------------------------------------------------- #
-# Required test 3: U5 telemetry (spectral-gap bound across scales)
+# Retained gap comparison: embedding bounds the nonzero spectral modulus
 # --------------------------------------------------------------------------- #
 @pytest.mark.parametrize("a,b,k", COPRIME_CASES)
-def test_u5_gap_bound_holds(a, b, k):
+def test_child_mode_embedding_bounds_nonzero_spectral_modulus(a, b, k):
     gap_ab, gap_a, gap_b, bounded = u5_spectral_gap_composition(a, b, k)
     assert bounded is True
     tol = derived_tolerance(
@@ -178,25 +172,26 @@ def test_u5_gap_bound_holds(a, b, k):
     assert gap_ab <= min(gap_a, gap_b) + tol
 
 
-def test_spectral_gap_positive_and_below_trivial_mode():
-    # The constant mode is a zero eigenvalue; the gap is the next smallest |λ|.
-    L = unit_power_residue_laplacian(7, 2)
-    gap = spectral_gap(L)
-    assert gap > 0.0
+def test_spectral_gap_excludes_zero_and_below_tolerance_modes():
+    # The retained reader selects a modulus above its numerical cutoff.
+    matrix = [
+        [Fraction(0), Fraction(0), Fraction(0)],
+        [Fraction(0), Fraction(1, 10**12), Fraction(0)],
+        [Fraction(0), Fraction(0), Fraction(3, 2)],
+    ]
+    assert spectral_gap(matrix, tol=1e-9) == 1.5
 
 
 # --------------------------------------------------------------------------- #
 # Required test 4: non-factorizing control branch
 # --------------------------------------------------------------------------- #
-@pytest.mark.parametrize(
-    "a,b,k", [(3, 5, 2), (5, 7, 2), (4, 9, 2), (3, 8, 2), (5, 9, 2)]
-)
+@pytest.mark.parametrize("a,b,k", [(3, 5, 2), (4, 9, 2)])
 def test_full_residue_set_does_not_factor(a, b, k):
     # The unrestricted (non-unit) set breaks the CRT product structure.
     assert residue_set_factors(a, b, k, unit=False) is False
 
 
-@pytest.mark.parametrize("a,b,k", [(3, 5, 2), (5, 7, 2), (4, 9, 2), (5, 9, 2)])
+@pytest.mark.parametrize("a,b,k", [(3, 5, 2), (4, 9, 2)])
 def test_full_residue_kronecker_identity_fails(a, b, k):
     # The Kronecker identity that is exact for the unit set does NOT hold for
     # the unrestricted control operator.
@@ -219,15 +214,10 @@ def test_full_residue_kronecker_identity_fails(a, b, k):
 # --------------------------------------------------------------------------- #
 # Structural exactness: the whole identity chain is rational (no float)
 # --------------------------------------------------------------------------- #
-@pytest.mark.parametrize("a,b,k", [(3, 5, 2), (4, 9, 2), (5, 9, 3)])
+@pytest.mark.parametrize("a,b,k", [(3, 5, 2), (4, 9, 2)])
 def test_operator_entries_are_rational(a, b, k):
     L = unit_power_residue_laplacian(a * b, k)
     assert all(isinstance(x, Fraction) for row in L for x in row)
-
-
-@pytest.mark.parametrize("a,b,k", [(3, 5, 2), (5, 7, 2)])
-def test_kron_residual_is_a_fraction(a, b, k):
-    assert isinstance(crt_kronecker_residual(a, b, k), Fraction)
 
 
 def test_module_exports_complete():

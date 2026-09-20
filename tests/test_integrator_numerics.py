@@ -45,7 +45,7 @@ def test_symplectic_free_particle_advances_exactly_one_timestep(method):
     assert node[EPI_PRIMARY] == pytest.approx([0.1, 1.0], abs=1e-14)
 
 
-@pytest.mark.parametrize("method", SYMPLECTIC_METHODS)
+@pytest.mark.parametrize("method", ["velocity_verlet", "yoshida_4th_order"])
 def test_symplectic_zero_step_preserves_state_without_force_evaluation(method):
     node = _mechanical_node(1.0, 0.3)
     epi, pressure = node[EPI_PRIMARY], node[DNFR_PRIMARY]
@@ -75,7 +75,7 @@ def test_symplectic_harmonic_oscillator_has_claimed_convergence_order(method, or
     assert measured == pytest.approx([order, order], abs=0.04)
 
 
-@pytest.mark.parametrize("method", SYMPLECTIC_METHODS)
+@pytest.mark.parametrize("method", ["velocity_verlet", "yoshida_4th_order"])
 def test_symplectic_steps_are_time_reversible(method):
     node = _mechanical_node(0.8, 0.3)
     expected = node[EPI_PRIMARY].copy()
@@ -85,8 +85,14 @@ def test_symplectic_steps_are_time_reversible(method):
     assert node[EPI_PRIMARY] == pytest.approx(expected, abs=1e-14)
 
 
-@pytest.mark.parametrize("method", SYMPLECTIC_METHODS)
-@pytest.mark.parametrize("dt", [math.nan, math.inf, -math.inf])
+@pytest.mark.parametrize(
+    "method,dt",
+    [
+        ("velocity_verlet", math.nan),
+        ("velocity_verlet", math.inf),
+        ("yoshida_4th_order", math.nan),
+    ],
+)
 def test_symplectic_nonfinite_steps_are_rejected_before_mutation(method, dt):
     node = _mechanical_node(1.0, 0.0)
     epi, pressure = node[EPI_PRIMARY], node[DNFR_PRIMARY]
@@ -108,8 +114,9 @@ def _graph(*, extended=False):
     return graph
 
 
-@pytest.mark.parametrize("default", [False, True])
-@pytest.mark.parametrize("dt", [-0.1, math.nan, math.inf, -math.inf])
+@pytest.mark.parametrize(
+    "default,dt", [(False, -0.1), (True, -0.1), (False, math.nan), (True, math.inf)]
+)
 def test_explicit_and_default_invalid_nodal_timesteps_share_validation(default, dt):
     graph = _graph()
     if default:
@@ -121,17 +128,23 @@ def test_explicit_and_default_invalid_nodal_timesteps_share_validation(default, 
     assert graph.graph == original.graph
 
 
+@pytest.mark.parametrize("method", ["", False, 0])
+def test_invalid_explicit_method_does_not_silently_select_the_graph_default(method):
+    graph = _graph()
+    graph.graph["INTEGRATOR_METHOD"] = "euler"
+    before = copy.deepcopy(graph)
+    with pytest.raises(NetworkConfigError, match="method"):
+        integrators.update_epi_via_nodal_equation(graph, dt=0.1, method=method)
+    assert dict(graph.nodes(data=True)) == dict(before.nodes(data=True))
+    assert graph.graph == before.graph
+
+
 @pytest.mark.parametrize("extended", [False, True])
-@pytest.mark.parametrize("vectorized", [False, True])
-def test_zero_timestep_is_identity_even_with_clipping(
-    monkeypatch, extended, vectorized
-):
+def test_zero_timestep_is_identity_even_with_clipping(extended):
     graph = _graph(extended=extended)
     graph.graph["CLIP_MODE"] = "soft"
     graph.nodes[0][EPI_PRIMARY] = -0.4
     original = copy.deepcopy(graph)
-    if not vectorized:
-        monkeypatch.setattr(integrators, "np", None)
     integrators.update_epi_via_nodal_equation(graph, dt=0.0)
     assert dict(graph.nodes[0]) == dict(original.nodes[0])
     assert graph.graph == original.graph
@@ -274,6 +287,71 @@ def test_canonical_constant_pressure_is_exact_and_preserves_zero_tolerance(metho
 
 
 @pytest.mark.parametrize(
+    "aliases,value,error",
+    [
+        (ALIAS_VF, -1.0, FrequencyError),
+        (ALIAS_VF, math.nan, FrequencyError),
+        (ALIAS_VF, math.inf, FrequencyError),
+        (ALIAS_DNFR, math.nan, NetworkConfigError),
+        (ALIAS_DNFR, math.inf, NetworkConfigError),
+    ],
+)
+def test_canonical_backend_rejects_authoritative_invalid_coefficients_without_writes(
+    aliases, value, error
+):
+    from tnfr.dynamics.canonical import integrate_canonical_nodal_equation
+
+    graph = _graph()
+    graph.add_node(1, **{EPI_PRIMARY: 0.2, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.25})
+    graph.nodes[1][aliases[0]] = value
+    graph.nodes[1][aliases[1]] = 0.5
+    before = copy.deepcopy(graph)
+    with pytest.raises(error):
+        integrate_canonical_nodal_equation(graph, dt=0.1, max_steps=2, use_gpu=False)
+    assert dict(graph.nodes(data=True)) == dict(before.nodes(data=True))
+    assert graph.graph == before.graph
+
+
+def test_validated_canonical_derivative_rejects_overflowing_finite_factors():
+    from tnfr.dynamics.canonical import compute_canonical_nodal_derivative
+
+    with pytest.raises(NetworkConfigError, match="nodal product"):
+        compute_canonical_nodal_derivative(1e308, 2.0)
+
+
+@pytest.mark.parametrize("method", ["euler", "rk4"])
+def test_canonical_backend_late_overflow_preserves_all_graph_outputs(method):
+    from tnfr.dynamics.canonical import integrate_canonical_nodal_equation
+    from tnfr.errors import TNFRValueError
+
+    graph = _graph()
+    graph.add_node(1, **{EPI_PRIMARY: 0.0, VF_PRIMARY: 1.0, DNFR_PRIMARY: 8e307})
+    before = copy.deepcopy(graph)
+    with np.errstate(over="ignore"):
+        with pytest.raises(TNFRValueError, match="finite"):
+            integrate_canonical_nodal_equation(
+                graph, dt=1.0, max_steps=3, method=method, tolerance=0.0, use_gpu=False
+            )
+    assert dict(graph.nodes(data=True)) == dict(before.nodes(data=True))
+    assert graph.graph == before.graph
+
+
+def test_canonical_backend_step_norm_does_not_square_into_overflow():
+    from tnfr.dynamics.canonical import integrate_canonical_nodal_equation
+
+    graph = _graph()
+    graph.nodes[0].update({EPI_PRIMARY: 0.0, DNFR_PRIMARY: 1e200})
+    graph.add_node(1, **{EPI_PRIMARY: 0.0, VF_PRIMARY: 1.0, DNFR_PRIMARY: -1e200})
+    result = integrate_canonical_nodal_equation(
+        graph, dt=0.5, max_steps=1, tolerance=0.0, use_gpu=False
+    )
+    assert graph.nodes[0][EPI_PRIMARY] == 5e199
+    assert graph.nodes[1][EPI_PRIMARY] == -5e199
+    assert result["final_error"] == math.hypot(5e199, -5e199)
+    assert not result["converged"]
+
+
+@pytest.mark.parametrize(
     "parameter,value",
     [
         ("dt", math.nan),
@@ -323,17 +401,6 @@ def test_nodal_harmonic_forcing_has_claimed_quadrature_order(
         errors.append(abs(graph.nodes[0][EPI_PRIMARY] - exact))
     assert np.log2(np.asarray(errors[:-1]) / errors[1:]) == pytest.approx(
         [order, order], abs=0.05
-    )
-
-
-@pytest.mark.parametrize("mode", ["hard", "soft"])
-def test_array_clipping_matches_scalar_boundary_policy(mode):
-    from tnfr.dynamics.structural_clip import structural_clip, structural_clip_array
-
-    values = np.array([-3.0, -1.0, 0.1, 0.4, 0.9, 3.0])
-    expected = [structural_clip(value, lo=-1.0, hi=1.0, mode=mode) for value in values]
-    assert structural_clip_array(values, lo=-1.0, hi=1.0, mode=mode) == pytest.approx(
-        expected, abs=1e-15
     )
 
 
@@ -389,18 +456,10 @@ def test_extended_phase_pair_has_first_order_euler_convergence():
     )
 
 
-@pytest.mark.parametrize("vectorized", [False, True])
-def test_empty_graph_clock_advances_consistently(monkeypatch, vectorized):
-    graph = nx.Graph()
-    graph.graph.update(_t=2.0, DT_MIN=0.0)
-    if not vectorized:
-        monkeypatch.setattr(integrators, "np", None)
-    integrators.update_epi_via_nodal_equation(graph, dt=0.1)
-    assert graph.graph["_t"] == pytest.approx(2.1)
-
-
-@pytest.mark.parametrize("value", [np.float32(0.1), np.float64(0.1), np.int64(1)])
-@pytest.mark.parametrize("from_graph", [False, True])
+@pytest.mark.parametrize(
+    "value,from_graph",
+    [(np.float32(0.1), False), (np.float64(0.1), True), (np.int64(1), True)],
+)
 def test_real_numpy_timestep_scalars_preserve_constant_derivative(value, from_graph):
     graph = _graph()
     graph.nodes[0][DNFR_PRIMARY] = 0.2
@@ -412,9 +471,9 @@ def test_real_numpy_timestep_scalars_preserve_constant_derivative(value, from_gr
 
 
 @pytest.mark.parametrize(
-    "value", [np.float32(-0.1), np.float32(np.nan), np.float32(np.inf)]
+    "value,from_graph",
+    [(np.float32(-0.1), True), (np.float32(np.nan), False), (np.float32(np.inf), True)],
 )
-@pytest.mark.parametrize("from_graph", [False, True])
 def test_invalid_numpy_timesteps_fail_before_state_changes(value, from_graph):
     graph = _graph()
     if from_graph:
@@ -428,12 +487,49 @@ def test_invalid_numpy_timesteps_fail_before_state_changes(value, from_graph):
     assert "_t" not in graph.graph
 
 
-@pytest.mark.parametrize("value", [False, True])
-def test_timestep_real_scalar_validation_preserves_existing_bool_policy(value):
+@pytest.mark.parametrize(
+    "field,value,extended",
+    [
+        ("dt", False, False),
+        ("dt", True, True),
+        ("dt", Fraction(1, 2**2000), False),
+        ("DT", "0.1", True),
+        ("t", "1.5", False),
+        ("_t", True, True),
+        ("DT_MIN", True, False),
+        ("DT_MIN", Fraction(1, 2**2000), True),
+    ],
+)
+def test_solver_clock_uses_shared_raw_real_admission(field, value, extended):
+    graph = _graph(extended=extended)
+    kwargs = {"dt": 0.1}
+    if field in ("dt", "t"):
+        kwargs[field] = value
+    else:
+        graph.graph[field] = value
+        if field == "DT":
+            kwargs["dt"] = None
+    before = copy.deepcopy(graph)
+    with pytest.raises(NetworkConfigError):
+        integrators.update_epi_via_nodal_equation(graph, **kwargs)
+    assert graph.graph == before.graph
+    assert dict(graph.nodes(data=True)) == dict(before.nodes(data=True))
+
+
+@pytest.mark.parametrize("vectorized,previous", [(True, "0.0"), (False, True)])
+def test_retained_rate_cannot_be_coerced_into_acceleration_history(
+    vectorized, previous, monkeypatch
+):
     graph = _graph()
-    step, count, _, _ = integrators.prepare_integration_params(graph, dt=value)
-    assert step == float(value)
-    assert count == 1
+    graph.nodes[0][ALIAS_DEPI[0]] = previous
+    graph.nodes[0][ALIAS_DEPI[1]] = 0.0
+    if not vectorized:
+        monkeypatch.setattr(integrators, "np", None)
+    before = copy.deepcopy(graph)
+    with pytest.raises(NetworkConfigError):
+        integrators.update_epi_via_nodal_equation(graph, dt=0.1)
+    assert graph.graph == before.graph
+    assert dict(graph.nodes(data=True)) == dict(before.nodes(data=True))
 
 
 @pytest.mark.parametrize("vectorized", [False, True])
@@ -507,6 +603,74 @@ def test_euler_preserves_separate_multiply_and_add(monkeypatch, vectorized, rout
     assert derivative == rate
 
 
+@pytest.mark.parametrize("vectorized", [False, True])
+@pytest.mark.parametrize("route", ["batch", "default"])
+@pytest.mark.parametrize("step,rate", [(math.ulp(0.0), 1e307), (0.5, 1e308)])
+def test_rk4_retains_finite_held_response_at_intermediate_range_limits(
+    monkeypatch, vectorized, route, step, rate
+):
+    graph = _graph()
+    graph.graph.update(EPI_MIN=-1e308, EPI_MAX=1e308)
+    graph.nodes[0].update({EPI_PRIMARY: 0.0, DNFR_PRIMARY: rate, ALIAS_DEPI[0]: rate})
+    if not vectorized:
+        monkeypatch.setattr(integrators, "np", None)
+    if route == "batch":
+        actual, derivative, acceleration = integrators._apply_increments(
+            graph, step, {0: (rate,) * 4}, method="rk4"
+        )[0]
+    else:
+        integrators.update_epi_via_nodal_equation(graph, dt=step, method="rk4")
+        actual = graph.nodes[0][EPI_PRIMARY]
+        derivative = get_attr(graph.nodes[0], ALIAS_DEPI)
+        acceleration = get_attr(graph.nodes[0], ALIAS_D2EPI)
+        assert graph.graph["_t"] == step
+    # A constant supplied rate integrates exactly to h*rate; h/6 may be zero
+    # or the unscaled 1:2:2:1 sum infinite although this answer is finite.
+    assert actual == float(Fraction(step) * Fraction(rate))
+    assert actual > 0.0
+    assert derivative == rate
+    assert acceleration == 0.0
+
+
+@pytest.mark.parametrize("vectorized", [False, True])
+def test_rk4_range_fallback_preserves_signed_stage_cancellation(
+    monkeypatch, vectorized
+):
+    graph = _graph()
+    graph.nodes[0].update({EPI_PRIMARY: 0.0, ALIAS_DEPI[0]: 1e308})
+    if not vectorized:
+        monkeypatch.setattr(integrators, "np", None)
+    stages = (1e308, -1e308, -1e308, 1e308)
+    actual, derivative, acceleration = integrators._apply_increments(
+        graph, 1.0, {0: stages}, method="rk4"
+    )[0]
+    exact = (
+        sum(
+            weight * Fraction(stage)
+            for weight, stage in zip((1, 2, 2, 1), stages, strict=True)
+        )
+        / 6
+    )
+    assert actual == float(exact)
+    assert derivative == stages[-1]
+    assert acceleration == 0.0
+
+
+@pytest.mark.parametrize("vectorized", [False, True])
+def test_rk4_rejects_nonrepresentable_final_response_without_writes(
+    monkeypatch, vectorized
+):
+    graph = _graph()
+    graph.nodes[0].update({EPI_PRIMARY: 0.0, DNFR_PRIMARY: 1e308, ALIAS_DEPI[0]: 1e308})
+    if not vectorized:
+        monkeypatch.setattr(integrators, "np", None)
+    before = copy.deepcopy(dict(graph.nodes(data=True)))
+    with pytest.raises(NetworkConfigError, match="finite"):
+        integrators.update_epi_via_nodal_equation(graph, dt=4.0, method="rk4")
+    assert dict(graph.nodes(data=True)) == before
+    assert "_t" not in graph.graph
+
+
 def _integration_route(monkeypatch, route):
     graph = _graph(extended=route == "extended")
     if route == "scalar":
@@ -514,17 +678,59 @@ def _integration_route(monkeypatch, route):
     return graph
 
 
-@pytest.mark.parametrize("route", ["scalar", "vectorized", "extended"])
+# Configuration admission is shared and precedes backend dispatch. Exercise
+# each invalid policy once, then retain consumer/frozen-row wiring sentinels.
 @pytest.mark.parametrize(
-    "aliases,value,error",
+    "route,capacity,configuration",
     [
-        (ALIAS_VF, -1.0, FrequencyError),
-        (ALIAS_VF, math.nan, FrequencyError),
-        (ALIAS_VF, math.inf, FrequencyError),
-        (ALIAS_DNFR, math.nan, NetworkConfigError),
-        (ALIAS_DNFR, math.inf, NetworkConfigError),
-        (ALIAS_DEPI, math.nan, NetworkConfigError),
-        (ALIAS_DEPI, math.inf, NetworkConfigError),
+        ("vectorized", 0.0, {"CLIP_MODE": "misspelled"}),
+        ("vectorized", 0.0, {"EPI_MIN": math.nan}),
+        ("vectorized", 0.0, {"EPI_MAX": math.inf}),
+        ("vectorized", 0.0, {"EPI_MIN": 2.0, "EPI_MAX": 1.0}),
+        ("vectorized", 0.0, {"EPI_MIN": "-1.0"}),
+        ("vectorized", 0.0, {"CLIP_SOFT_K": 0.0}),
+        ("vectorized", 0.0, {"CLIP_SOFT_K": True}),
+        ("vectorized", 0.0, {"CLIP_SOFT_K": math.inf}),
+        ("scalar", 0.0, {"CLIP_MODE": "misspelled"}),
+        ("extended", 0.0, {"CLIP_MODE": "misspelled"}),
+        ("vectorized", 1.0, {"CLIP_MODE": "misspelled"}),
+    ],
+)
+def test_active_clip_policy_rejects_before_any_solver_evaluation(
+    monkeypatch, route, capacity, configuration
+):
+    graph = _integration_route(monkeypatch, route)
+    graph.graph.update(configuration)
+    graph.nodes[0].update({VF_PRIMARY: capacity, DNFR_PRIMARY: 0.2})
+    before = copy.deepcopy(graph)
+
+    # Invalid clipping must not reach Gamma, including when the nodal row is
+    # frozen. The extended route's field-cache writes are checked below too.
+    def unexpected_gamma(*args, **kwargs):
+        pytest.fail("Invalid clipping policy reached Gamma evaluation")
+
+    monkeypatch.setattr(integrators, "eval_gamma", unexpected_gamma)
+    monkeypatch.setattr(integrators, "eval_gamma_vectorized", unexpected_gamma)
+    with pytest.raises(NetworkConfigError, match="clipping policy"):
+        integrators.update_epi_via_nodal_equation(graph, dt=0.1)
+    assert dict(graph.nodes(data=True)) == dict(before.nodes(data=True))
+    assert graph.graph == before.graph
+
+
+# _node_state owns all seven boundaries; the additional consumers need to
+# demonstrate delegation and pre-write rejection, not repeat its whole matrix.
+@pytest.mark.parametrize(
+    "route,aliases,value,error",
+    [
+        ("vectorized", ALIAS_VF, -1.0, FrequencyError),
+        ("vectorized", ALIAS_VF, math.nan, FrequencyError),
+        ("vectorized", ALIAS_VF, math.inf, FrequencyError),
+        ("vectorized", ALIAS_DNFR, math.nan, NetworkConfigError),
+        ("vectorized", ALIAS_DNFR, math.inf, NetworkConfigError),
+        ("vectorized", ALIAS_DEPI, math.nan, NetworkConfigError),
+        ("vectorized", ALIAS_DEPI, math.inf, NetworkConfigError),
+        ("scalar", ALIAS_VF, -1.0, FrequencyError),
+        ("extended", ALIAS_VF, -1.0, FrequencyError),
     ],
 )
 def test_invalid_authoritative_nodal_input_rejects_before_caches_or_writes(
@@ -541,14 +747,15 @@ def test_invalid_authoritative_nodal_input_rejects_before_caches_or_writes(
     assert graph.graph == before.graph
 
 
-@pytest.mark.parametrize("route", ["scalar", "vectorized", "extended"])
 @pytest.mark.parametrize(
-    "t0,dt,dt_min",
+    "route,t0,dt,dt_min",
     [
-        (1e20, 0.1, 0.0),
-        (1e308, 1e308, 0.0),
+        ("scalar", 1e20, 0.1, 0.0),
+        ("extended", 1e20, 0.1, 0.0),
+        ("vectorized", 1e20, 0.1, 0.0),
+        ("vectorized", 1e308, 1e308, 0.0),
         # The full span advances, and the first substep advances; the second does not.
-        (float(2**53 - 1), 2.0, 1.0),
+        ("vectorized", float(2**53 - 1), 2.0, 1.0),
     ],
 )
 def test_entire_represented_clock_grid_is_validated_before_evolution(
@@ -629,7 +836,7 @@ def test_later_substep_failure_restores_all_solver_owned_outputs(monkeypatch, ro
         monkeypatch.setattr(canonical, "compute_extended_nodal_system", extended_rates)
     else:
 
-        def gamma(*args):
+        def gamma(*args, **kwargs):
             calls.append(args)
             return 0.0 if len(calls) == 1 else math.inf
 

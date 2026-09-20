@@ -1192,11 +1192,12 @@ canonical refresh restores the same pressure at unchanged primary inputs.
 The capacity energy on `C` is zero while that on the connected full pressure
 graph is `1/2`. Using one graph for both operations would miss this distinction.
 
-The captured canonical phasor channel is exactly zero at these represented
-inputs on the tested platform. This is verified from its actual realization,
-not inferred merely from regional synchronization or a symbolic `pi` label.
-The capacity gradient is `(0,0,1/3,-1/3,0,0)` and the topology weight is zero.
-With the captured `k=w_vf/e`, the existing held-profile theorem gives
+The symbolic antipodal preparation does not guarantee an exactly zero
+represented phasor channel. The current producer retains that channel and
+reports whether the zero-phase premise actually holds; neither regional
+synchronization nor a `math.pi` label establishes it. The capacity gradient is
+`(0,0,1/3,-1/3,0,0)` and the topology weight is zero. For the separate
+capacity-only held model, with captured `k=w_vf/e`, the existing theorem gives
 
 ```text
 H = diag(2,2,3,3/2,1,1),     mean_H(nu) = 4/3,
@@ -1210,6 +1211,14 @@ For fixed coefficients, `y=x+k*nu` obeys EPI diffusion. The initial range
 `x_B in [1/2-k,1/2]`, inside the configured scalar interval at default `k`.
 These are conditional exact-model bounds, not a binary64 runtime invariant
 class or a guarantee of future word admission.
+
+The report's `capacity_only_profile_prediction` labels this model explicitly.
+Its `applies_to_full_forcing` flag requires the extra forcing to vanish exactly.
+The actual full-forcing reference remains independently retained, including
+the exact phase contribution, profile difference and weighted mean drift.
+Even a small nonzero constant drift precludes promoting the capacity-only
+absolute limiting state to a limit of that full held model. The shared forced
+balance, rather than a relaxed zero test, supplies the full reference.
 
 ### Finite runtime discriminator
 
@@ -1227,9 +1236,10 @@ the actual writes; the executor does not retain those UM proposals itself.
 | Split `0/math.pi` | 0 | `(0.5,0.5,0.504858,0.490283,0.5,0.5)` | `0.118208 -> 0.113675` |
 | Aligned zero | 8 | `(0.508745,0.508745,0.508501,0.483658,0.482510,0.482510)` | `0.118208 -> 0.099933` |
 
-The split case's conditional exact limit has EPI approximately `0.606103`
-in the first region and `0.287793` in the second. Only the displayed finite
-interval is executed; no numerical approach to that limit is claimed.
+The split case's capacity-only conditional exact limit has EPI approximately
+`0.606103` in the first region and `0.287793` in the second. It is not the
+absolute limit of full represented forcing with nonzero mean drift. Only the
+displayed finite interval is executed; no numerical approach to a limit is claimed.
 
 The aligned control starts with the identical graph, EPI and capacity but
 phases zero everywhere. Its first capacity proposals use the original
@@ -1262,8 +1272,8 @@ No longer horizon, grammar change or fitted restoring pressure supplies that pro
 
 ## 18. Antipodal phase response under simultaneous UM and IL
 
-B2.d.14 tests that next dependency. The exact phase fixed configuration from
-section 17 has a locally expanding mode when followed by the candidate IL
+B2.d.14 tests that next dependency. The ideal exact antipodal configuration
+underlying section 17 has a locally expanding mode under the candidate IL
 separator. This is a limitation of this proposed maintenance mechanism, not a
 violation of IL's pressure-contraction contract or a universal impossibility
 result for differentiated TNFR structures.
@@ -1356,7 +1366,9 @@ effects; two magnitudes are not a numerical proof of an asymptotic derivative.
 In the zero-input control, IL writes approximately `3.67e-17` to node 2's
 phase. This is a retained represented-arithmetic residue, not exact antipodal
 invariance; the initial zero phase energy makes its gain undefined (`None`).
-Its refreshed represented phase-pressure channel nevertheless remains zero.
+Its represented phase-pressure channel can already have a small nonzero
+residue before IL, and refresh retains the post-event residue as well. Both
+are compared with the declared finite arithmetic budget, not coerced to zero.
 The symbolic base uses mathematical `pi`, not the stored value `math.pi`.
 
 In all four nonzero controls, IL increases canonical `C(t)` immediately by

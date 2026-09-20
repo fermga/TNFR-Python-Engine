@@ -26,9 +26,11 @@ from .support_transport import (
 __all__ = [
     "NonEpiForcingObservation",
     "ForcingDirichletBalance",
+    "ForcingMeanBalance",
     "capture_non_epi_forcing",
     "decompose_non_epi_forcing",
     "observe_forcing_dirichlet_balance",
+    "observe_forcing_mean_balance",
     "ForcingCapacityDifference",
     "observe_forcing_capacity_difference",
 ]
@@ -81,6 +83,45 @@ class ForcingDirichletBalance:
     stored_residual_rate: Fraction
     stored_rate: Fraction
     identity_residual: Fraction
+
+
+@dataclass(frozen=True)
+class ForcingMeanBalance:
+    """Instantaneous fixed-strength form mean and its explicit rate channels.
+
+    ``mean=sum(s_i*x_i)/sum(s_i)`` uses actual transport strengths and
+    ``s_i*nu_i/sum(s_i)`` pairs pressure with its nodal mean rate. Unlike
+    the held-capacity reversible mean, these weights do not change when
+    capacity changes. Heterogeneous diffusion can nevertheless move this
+    mean; there is no general conservation or future boundedness claim.
+    Zero-strength isolates have zero weight; positive total strength is
+    required, while connectivity and strictly positive capacities are not.
+    """
+
+    source: SupportTransportSnapshot
+    strengths: Vector
+    total_strength: Fraction
+    mean: Fraction
+    diffusion_rate: Fraction
+    channel_rates: tuple[tuple[str, Fraction], ...]
+    source_rate: Fraction
+    modeled_rate: Fraction
+    kernel_defect_rate: Fraction
+    fresh_rate: Fraction
+    stored_residual_rate: Fraction
+    stored_rate: Fraction
+    identity_residual: Fraction
+    scope: tuple[str, ...] = (
+        "instantaneous_exact_balance_of_supplied_represented_pressure_data",
+        "actual_symmetric_transport_strengths_and_positive_total_strength",
+        "fixed_conductance_mean_distinct_from_capacity_dependent_reversible_mean",
+        "capacity_only_jumps_at_unchanged_form_and_conductance_leave_mean_unchanged",
+        "modeled_fresh_kernel_and_stored_pressure_rates_remain_separate",
+        "stored_rate_is_declared_nodal_product_not_a_measured_derivative",
+        "no_Gamma_conductance_rate_or_direct_form_jump_terms_included",
+        "no_conservation_clipping_trajectory_or_future_absolute_form_bound",
+        "no_graph_write_pressure_refresh_or_authenticated_execution_provenance",
+    )
 
 
 def _represented_vector(values, label):
@@ -180,6 +221,33 @@ def _validated_pressure_realization(observation):
     return source, channels, weights, modeled, full, kernel, stored
 
 
+def _paired_pressure_rates(realization, score, stored_rate):
+    """Contract one validated pressure decomposition with a declared covector."""
+    source, channels, weights, _, full_pressure, kernel_defect, stored_residual = (
+        realization
+    )
+    epi_pressure = tuple(weights["epi"] * value for value in source.epi_gradient)
+    diffusion_rate = dot(score, epi_pressure)
+    channel_rates = tuple((name, dot(score, values)) for name, values in channels)
+    source_rate = sum((rate for _, rate in channel_rates), Fraction(0))
+    modeled_rate = diffusion_rate + source_rate
+    kernel_defect_rate = dot(score, kernel_defect)
+    stored_residual_rate = dot(score, stored_residual)
+    return {
+        "diffusion_rate": diffusion_rate,
+        "channel_rates": channel_rates,
+        "source_rate": source_rate,
+        "modeled_rate": modeled_rate,
+        "kernel_defect_rate": kernel_defect_rate,
+        "fresh_rate": dot(score, full_pressure),
+        "stored_residual_rate": stored_residual_rate,
+        "stored_rate": stored_rate,
+        "identity_residual": (
+            stored_rate - modeled_rate - kernel_defect_rate - stored_residual_rate
+        ),
+    }
+
+
 def observe_forcing_dirichlet_balance(observation) -> ForcingDirichletBalance:
     """Pair existing pressure channels with the heterogeneous nodal mobility.
 
@@ -194,36 +262,62 @@ def observe_forcing_dirichlet_balance(observation) -> ForcingDirichletBalance:
     work gives the held rate. An observed Euler interval keeps its quadratic
     and endpoint defects in ``observe_support_transport_euler`` separately.
     """
-    source, channels, weights, _, full_pressure, kernel_defect, stored_residual = (
-        _validated_pressure_realization(observation)
-    )
-    epi_pressure = tuple(weights["epi"] * value for value in source.epi_gradient)
+    realization = _validated_pressure_realization(observation)
+    source = realization[0]
     score = tuple(
         gradient * capacity
         for gradient, capacity in zip(
             source.dirichlet_gradient, source.capacity, strict=True
         )
     )
-    diffusion_rate = dot(score, epi_pressure)
-    channel_rates = tuple((name, dot(score, values)) for name, values in channels)
-    source_rate = sum((rate for _, rate in channel_rates), Fraction(0))
-    modeled_rate = diffusion_rate + source_rate
-    kernel_defect_rate = dot(score, kernel_defect)
-    fresh_rate = dot(score, full_pressure)
-    stored_residual_rate = dot(score, stored_residual)
-    stored_rate = source.energy_rate
     return ForcingDirichletBalance(
         source=source,
-        diffusion_rate=diffusion_rate,
-        channel_rates=channel_rates,
-        source_rate=source_rate,
-        modeled_rate=modeled_rate,
-        kernel_defect_rate=kernel_defect_rate,
-        fresh_rate=fresh_rate,
-        stored_residual_rate=stored_residual_rate,
-        stored_rate=stored_rate,
-        identity_residual=(
-            stored_rate - modeled_rate - kernel_defect_rate - stored_residual_rate
+        **_paired_pressure_rates(realization, score, source.energy_rate),
+    )
+
+
+def observe_forcing_mean_balance(observation) -> ForcingMeanBalance:
+    """Read the actual-strength form mean and its instantaneous nodal balance.
+
+    For fixed symmetric conductance, s_i=sum_j W_ij, S=sum_i s_i>0 and
+    m=s.T*x/S, the unforced nodal row gives m'=sum_i s_i*nu_i*p_i/S.
+    Pair this same covector with the explicit EPI, phase, capacity and
+    topology pressure channels. Reconstruct fresh-kernel and stored-pressure
+    residuals through their shared owner rather than trusting cached defects.
+    The stored total is independently read from the rebuilt nodal-rate vector.
+
+    No inverse capacity appears, so zero capacities and disconnected support
+    remain admitted when total strength is positive. A zero-strength isolate
+    has no contribution. Capacity-only jumps leave this m unchanged at fixed
+    EPI and conductance, although they can change its subsequent rate. This
+    differs from reweighting the reversible metric s/nu at a capacity event.
+
+    In general diffusion contributes -e*nu.T*B*x/S and need not vanish.
+    The balance is instantaneous: pressure inputs remain declared data, not
+    measured derivatives or authenticated kernel calls. Changing conductance,
+    Gamma, direct EPI jumps, clipping and future evolution require separate
+    terms or evidence. No graph is read, refreshed or evolved here.
+    """
+    realization = _validated_pressure_realization(observation)
+    source = realization[0]
+    strengths = [Fraction(0) for _ in source.nodes]
+    for i, _, weight in source.conductance:
+        strengths[i] += weight
+    strengths = tuple(strengths)
+    total_strength = sum(strengths, Fraction(0))
+    if total_strength <= 0:
+        raise ValueError("mean balance requires positive total transport strength")
+    score = tuple(
+        strength * capacity / total_strength
+        for strength, capacity in zip(strengths, source.capacity, strict=True)
+    )
+    return ForcingMeanBalance(
+        source=source,
+        strengths=strengths,
+        total_strength=total_strength,
+        mean=dot(strengths, source.epi) / total_strength,
+        **_paired_pressure_rates(
+            realization, score, dot(strengths, source.rate) / total_strength
         ),
     )
 
@@ -363,9 +457,9 @@ def capture_non_epi_forcing(G) -> NonEpiForcingObservation:
 
     Scope is effective symmetric conductance and the default NumPy, non-JIT
     branch with at most 100 directed unique-support entries. A disabled NumPy
-    branch or configured custom pressure callback is rejected. The fallback
-    branch's small-resultant phase policy and Numba fastmath are not identified
-    with this kernel. No live EPI, pressure, configuration or cache is changed.
+    branch or configured custom pressure callback is rejected. Alternative
+    accumulation paths are not identified as numerically equal to this kernel.
+    No live EPI, pressure, configuration or cache is changed.
 
     Phase uses the actual unweighted neighbor phasors, including zero-weight
     support edges, in the runtime's neighbor insertion order. Neither channel
@@ -375,7 +469,7 @@ def capture_non_epi_forcing(G) -> NonEpiForcingObservation:
     """
     if dnfr.np is None or fused_dnfr.np is None:
         raise ValueError("forcing read-out requires the NumPy pressure branch")
-    if G.graph.get("vectorized_dnfr") is False:
+    if not dnfr._should_vectorize(G, dnfr.np):
         raise ValueError("forcing read-out excludes the fallback pressure branch")
     callback = G.graph.get("compute_delta_nfr")
     if callback is not None and callback is not dnfr.default_compute_delta_nfr:

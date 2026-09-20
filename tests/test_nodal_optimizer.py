@@ -131,6 +131,48 @@ def test_nodal_proposal_matches_pointwise_heterogeneous_lrw_oracle() -> None:
     assert proposal["isolated"][0] == pytest.approx(4.0)
 
 
+def test_nodal_proposal_retains_pressure_lost_by_rounded_matrix_coefficients() -> None:
+    graph = nx.DiGraph()
+    graph.add_edge(0, 1, weight=1e308)
+    graph.add_edge(0, 2, weight=1e-308)
+    for node in graph:
+        graph.nodes[node].update(EPI=1e308 if node == 2 else 0.0, nu_f=1.0, theta=0.0)
+
+    optimizer = NodalEquationOptimizer(enable_cache=True)
+    proposal = optimizer.compute_vectorized_nodal_evolution(graph, 1.0)
+
+    # (tiny conductance * large form) / large conductance is representable;
+    # materializing the tiny transition probability first erases it.
+    assert proposal[0][0] == 1e-308
+    assert proposal[1][0] == 0.0
+    assert proposal[2][0] == 1e308
+
+    # Even when the rounded matrix cache key is unchanged, pressure uses the
+    # current effective conductance rather than a cached zero probability.
+    matrix_before = structural_diffusion_operator(graph)[1]
+    graph.edges[0, 2]["weight"] = 2e-308
+    np.testing.assert_array_equal(
+        structural_diffusion_operator(graph)[1], matrix_before
+    )
+    assert optimizer.compute_vectorized_nodal_evolution(graph, 1.0)[0][0] == 2e-308
+
+
+@pytest.mark.parametrize("attribute", ["nu_f", "theta"])
+@pytest.mark.parametrize("value", [True, "1.0"])
+def test_nodal_optimizer_does_not_coerce_state_before_scalar_validation(
+    attribute, value
+):
+    graph = nx.path_graph(2)
+    for node in graph:
+        graph.nodes[node].update(EPI=0.0, nu_f=1.0, theta=0.0)
+    graph.nodes[0][attribute] = value
+
+    with pytest.raises(TNFRValueError, match="finite real scalar"):
+        NodalEquationOptimizer(enable_cache=False).compute_vectorized_nodal_evolution(
+            graph, 0.1
+        )
+
+
 def test_nodal_cache_reads_live_frequency_and_invalidates_on_weight_change() -> None:
     graph = _irregular_weighted_graph()
     optimizer = NodalEquationOptimizer(enable_cache=True)

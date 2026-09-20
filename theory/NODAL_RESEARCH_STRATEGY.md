@@ -16,6 +16,46 @@ investigative objective, not an established consequence of the nodal identity.
 Implemented operators, rich telemetry and increasing code coverage do not by
 themselves supply missing constitutive laws or physical validation.
 
+### Revisable foundations and the positive core
+
+The research objective is to discover defensible predictive nodal models, not
+to make a historical implementation produce a predetermined identity. The
+nodal interpretation, state chart, pressure realization and companion laws
+are reviewable. Their revision must be explicit: old results retain their old
+premises, and a proposed replacement needs independent justification and a
+prospective discriminator. No historical use of "canonical" settles that choice.
+
+Underdetermination is a result about available premises, not a proof that TNFR
+is useless or a requirement to derive one unique universal law before doing
+useful science. A justified family can support robust conditional emergence.
+Conversely, expressing an added law using TNFR variables does not derive it.
+Mathematical emergence from a supplied finer model, actual autonomous formation
+and identification with measured physical entities are separate claims.
+
+| Existing result | What follows | Replaceable premise or excluded promotion | Decision |
+| --- | --- | --- | --- |
+| [Diffusion and maximum principle](NODAL_PARAMETER_FOUNDATIONS.md#4-what-locality-and-symmetry-can-derive) | Relaxation, conditional dissipation and an obstruction to differentiated stationary form | Local affine response, uniform equilibria, positivity and related covariance/regularity premises are additional to the nodal product | Retain the theorem; reconsider an unjustified premise before interpreting its obstruction as universal |
+| [Exact projection and memory](DERIVED_EPI_MEMORY.md) | Eliminating fine state induces a memory kernel and a hidden-initial-state source | A chosen fine law and observation map; passive REMESH is not automatically the eliminated kernel | Reuse this constructive emergence mechanism before adding another fundamental field |
+| [Joint geometry and effective mobility](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) | Restricted coarse laws inherit support counts, mobility and missing-state terms | Effective transport mobility is not automatically primitive capacity or an angular clock; the K3 control disproves that substitution | Keep distinct semantic quantities and reuse the actual reduction |
+| [Phase direction versus current](NODAL_PARAMETER_FOUNDATIONS.md#43-phase-domain-orientation-and-a-discriminating-structural-response) | Existing acute controls distinguish two responses with the same coherent linearization | Circular symmetry and common linear response do not select one nonlinear law | Use the existing discriminator; do not retune coefficients to erase its difference |
+| [Conditional locks, winding and C5 feedback](FORCED_SUPPORT_BALANCE.md) | Prepared models can restore phase/form or retain geometry; the first capacity update reduces a recorded bias | Supplied support, phase law, capacities and schedule are not autonomous formation; smaller bias is not cancellation | Retain as conditional witnesses; continued C5 admission is not mandatory |
+| [Auxiliary harmonic substrate](TNFR_VARIATIONAL_PRINCIPLE.md#37-p2-read-out-realizability-obstruction-and-derived-flow) | Its ambient Hamiltonian flow has its own exact invariants | The P2 graph-field constraint is generally not preserved; the decoupled product does not generate missing feedback | Require a justified graph-state lift before using this as native dynamics |
+| Operator grammar and topology/tetrad readouts | Reproducible event contracts and descriptive fields | Admission does not select occurrence; a topology-profile label is not a generated geometry or physical object | Centralize implementation and expose unavailable observations; retain policy provenance |
+
+This is an admission ledger, not a new result archive or task queue. The
+[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) selects
+the next bounded comparison. The old requirement to continue the same C5
+pressure gate is superseded. Improving its bound would answer a conditional
+controller question; it is not a prerequisite for revising that controller's
+foundations or using a different independently justified identity.
+
+Three recurring dead ends now have explicit stop rules: extending an already
+excluded stationary target without changing its premises; expecting ambient
+geometry to supply graph dynamics despite failed tangency; and using a lossy
+diagnostic as a closed state. Reuse their existing counterexamples. A revised
+law may be investigated as a declared hypothesis, but success at producing the
+wanted pattern is not its independent justification.
+
 ### Effective substrate and the scope of the primary hypothesis
 
 A fine model can induce a coarser nodal law without importing an external force.
@@ -60,6 +100,10 @@ owners. Establish state and observation sufficiency before a forecast; expose
 missing inputs before inventing feedback; assess actual retained evidence
 before replaying historical producers. This is a resource-aware research choice,
 not a proof that the sequence uniquely optimizes discovery.
+The revised first comparison carries the existing phase direction/amplitude
+distinction into a finite form response. It asks which information a proposed
+pressure law uses; no controller, independently generated phase source or
+physical selection is inferred. The plan owns its fixed design and stop rule.
 
 ## 2. What must actually follow from the nodal structure
 
@@ -189,10 +233,55 @@ The [weighted-C5 contract](FORCED_SUPPORT_BALANCE.md#42-a-geometric-identity-con
 now makes one such family explicit. Existing cycle bounds control its centered
 phase deformation separately from common rotation and governed uniform-form
 drift. Its local orbital stability holds at fixed capacity/support inside a
-common acute domain. This completes identity admission for that conditional
-model; the next response-class gate asks which local restoring property is
-shared by existing candidate laws. Neither result selects their autonomous
-occurrence. The execution plan remains the sole queue.
+common acute domain. The
+[positive-response class](FORCED_SUPPORT_BALANCE.md#43-a-positive-local-response-supplies-the-cycle-restoring-mechanism)
+now isolates a restoring sign and persistent-strength condition shared by the
+existing current and a separately supplied pressure response. Their metrics
+and sharp rates remain distinct. This completes that conditional mechanism
+gate; it selects no new phase law or autonomous occurrence. The capacity budget
+below addresses differences as a forcing of the same geometry, reusing the
+existing averaging writer and its actual eligibility/time boundaries. The
+execution plan remains the sole queue.
+
+The [subsequent synergy review](FORCED_SUPPORT_BALANCE.md#44-reusing-phase-geometry-and-capacity-energy-without-adding-a-law)
+sharpens that budget through existing owners. Full cycle curvature reconstructs
+the centered phase deformation only with support and winding retained; this
+does not justify a global tetrad state reduction. The separately supplied
+pressure-rate response has an augmented conserved mean and an exact prospective
+uniform EPI limit, which the sine law generally lacks. Neither observation
+selects a physical constitutive law. One capacity Dirichlet energy controls
+both phase detuning and capacity pressure, including ideal partial averaging.
+Use the existing fixed-conductance form energy when capacity changes. Actual
+rounding can stop eligible averaging before consensus, so this capacity budget
+retains a residual tube and physical event times instead of assigning a positive
+runtime decay rate from the configured mixing factor. No new primitive,
+quotient, solver or independent campaign is needed for these connections.
+
+The [capacity-interval tube](FORCED_SUPPORT_BALANCE.md#45-a-capacity-interval-gives-a-prospective-winding-retention-tube)
+now supplies that conditional budget. Comparison with the already admitted
+unforced phase reference retains the actual initial geometry and avoids an
+overly restrictive centered-norm ball. A single 32-interval execution with
+fresh default gates confirms a real limitation: only an already uniform local
+capacity neighborhood becomes eligible, leaving the perturbation unchanged.
+The result bounds phase deformation and EPI contrast despite persistent
+detuning; it does not prove capacity consensus or exact return to the original
+shape. The uniform EPI mode needs its own balance: a contrast bound alone
+cannot certify absolute form retention or prevent future clipping.
+The [absolute-form result](FORCED_SUPPORT_BALANCE.md#46-absolute-form-a-finite-bound-and-an-interval-law-obstruction)
+now provides finite-prefix scalar control and an exact obstruction to the
+stronger interval-only claim. An admitted phase lock can have positive source
+compatibility and a linearly drifting form mean. This is a counterexample
+within the exact interval class, not a prediction that default adaptation
+freezes those capacities. The
+[first-feedback result](FORCED_SUPPORT_BALANCE.md#47-actual-capacity-feedback-reduces-the-locked-source-without-cancelling-it)
+now admits the unchanged writer on that prepared lock after five fresh
+calls. Its first nontrivial update reduces the bias without cancelling it;
+the resulting phase readjustment initially contributes with the same sign.
+A shared signed geometry contraction explains both effects while retaining
+metric reweighting and numerical defects. Capacity smoothing alone has no
+general source-compatibility monotonicity. If this deferred branch is reopened,
+its next gate concerns persistent fresh-pressure admission. That is not the
+current priority. No mean-removal rule or supporting force is introduced.
 
 **The ordinary scheduler does not exercise every available mechanism.** The
 [default selector](../src/tnfr/dynamics/selectors.py) reaches IL/OZ/ZHIR/NAV/RA,
@@ -261,235 +350,28 @@ physical identification. This conclusion does not negate the conditional
 positive results in the table. Source recovery is required when claiming
 restoration of that source; it is not a universal definition of every NFR.
 
-For the last row, the declared maps separate as
+The matrix is the decision summary. Detailed positive results, negative
+controls and numeric balances belong to their linked owners; the preceding
+chronology is retained in the [planning archive](research/archive/README.md).
+The optimized nodal/FFT form row is isolated EPI diffusion, so its separately
+evolved phase cannot maintain EPI through an absent pressure channel. The
+opt-in P2 composition instead joins phase motion to fresh multichannel pressure,
+but still supplies its phase law, capacity contrast and support. Those are
+different admitted models, not contradictory executions of one model.
 
-```text
-x_next     = (I - h*diag(nu)*L_rw) x,
-theta_next = F_G(theta, nu; h, coupling_strength).
-```
+The joint K3 and regional results retain inherited neighbor counts, internal
+state and the complete mean. They distinguish effective mobility from intrinsic
+capacity and temporary regional organization from an indefinitely maintained
+object. These constructive reductions and their omission bounds are stronger
+reuse candidates than repeating a failed native stationary-profile test.
 
-The [nodal optimizer](../src/tnfr/dynamics/nodal_optimizer.py) and
-[FFT engine](../src/tnfr/dynamics/fft_engine.py) use the shared transport
-operator and [phase proposal](../src/tnfr/dynamics/phase_evolution.py).
-Their mathematical EPI map therefore agrees for the same form, capacity,
-support and step under different phases, even when the phase proposals differ.
-Finite spectral reconstruction and arithmetic residuals remain separate.
-Fresh canonical multichannel pressure can distinguish those phase states when
-its phase channel is active. The missing feedback belongs to these optimized
-execution models; the result does not say that phase is dynamically irrelevant
-throughout TNFR. Nor does arbitrary-step Euler execution inherit continuous
-diffusion stability without its own step condition.
-
-An explicit opt-in [P2 composition](../src/tnfr/physics/p2_phase_form.py) now
-pairs that phase proposal with fresh multichannel pressure and the existing
-nodal integrator. The [conditional theorem](FORCED_SUPPORT_BALANCE.md#26-conditional-phase-locking-and-form-restoration-on-fixed-p2)
-derives a phase lock, a differentiated EPI target, the compatible pressure
-chain rule and restoration bounds before execution. Its
-[controls](../tests/physics/test_p2_phase_form.py) perturb both phase and form
-and remove the phase source while preserving effective remaining coefficients.
-This closes the conditional composition question without changing either
-optimized consumer or installing a default runtime mode.
-
-The supporting premises remain explicit: fixed positive capacities and support,
-the free angular-rate identification `omega=nu`, and configured sine coupling.
-Only phase drives form in this model; form does not select or restore capacity
-or phase. The differentiated target depends on capacity contrast and disappears
-when capacities agree. A supplied pulse, a positive diagnostic or a finite
-restoring trajectory does not derive these supporting laws. None of the scoped
-obstructions rules out all candidate laws.
-
-The [finite capacity-policy audit](FORCED_SUPPORT_BALANCE.md#27-capacity-adaptation-moves-the-conditional-p2-target)
-now closes one concrete compatibility question: the existing stability-gated
-writer reduces the supporting capacity difference at the prepared nonzero P2
-lock. The new lock remains available, but its predicted form differs from the
-original reference. At zero capacity-channel pressure weight, an immediate
-pressure check misses this: phase changes first and form responds through the
-next refreshed pressure. Fresh Si, actual gate counters and an inactive-writer
-control are retained. This result does not make Si a derived sustaining law or
-justify retaining the old fixed-capacity invariant across the capacity event.
-
-The [joint evolving K3 quotient](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#joint-evolving-phaseform-reduction-on-fixed-k3)
-closes the geometric normalization question on its declared symmetric subspace.
-Cross-block mobility differs between the two groups, while both inherit the
-same microscopic free angular rate. The inherited neighbor counts also alter
-phase coupling, including internal neighbors in its denominator. The resulting
-relative phase relaxes to zero and EPI to its conserved mean. Geometric mobility
-heterogeneity alone therefore cannot replace the supporting detuning of the P2
-model. The [joint proposal](../src/tnfr/physics/joint_quotient.py) and
-[fine/coarse controls](../tests/physics/test_joint_phase_evolution.py) reuse the
-phase, pressure and integrator owners with separate numerical defects.
-
-The [K3 transverse result](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#transverse-restoration-and-omission-error-on-the-same-k3)
-extends this comparison beyond exact pair equality. Hidden phase changes the
-projected phase rate through a cosine factor, and hence the later form response.
-The restricted model restores internal equality and admits an explicit absolute
-omission budget. Macro phase/form errors are quadratic in the initial hidden
-phase, while fine reconstruction and pressure/potential can retain first-order
-loss. Attraction alone does not distinguish a pair in a permutation-symmetric
-triangle. This closes the bounded K3 reduction question without supplying
-autonomous region selection or a maintained nonuniform identity.
-
-The [unit-barbell regional window](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#a-prospective-regional-window-on-the-unit-barbell)
-now provides a bounded positive case of geometry-selected temporary organization.
-A frozen joint prediction passed three reserved finite observations: faster
-disturbances subside while a slow contrast remains. Bridge endpoints remain
-distinct within each region; four fibers retain this shape whereas two regional
-averages are not closed. The nonlinear phase source also moves the weighted
-form mean, which is accounted for instead of removed from the comparison.
-This result reuses the spectral, phase-response, closure and regional exchange
-owners. Its regional-lock extension below uses supplied capacity contrast,
-while leaving the origin of that contrast and the phase law open. The sole next
-task and its admission criteria belong to the execution plan.
-
-The [regional lock](FORCED_SUPPORT_BALANCE.md#28-geometry-limited-regional-phase-locking-on-the-unit-barbell)
-now unifies that geometry with the earlier conditional capacity-detuning
-mechanism. Cut balance supplies an overload obstruction; the actual phasor
-source predicts a differentiated stationary profile below the strict threshold.
-An independent full six-node finite perturbation recovers toward its frozen
-target within predeclared bounds. Mean conservation requires source symmetry
-and is not generalized from this witness. This closes the conditional regional
-maintenance question without deriving the persistent contrast of capacities.
-The [graph-independent lock/source constraint](FORCED_SUPPORT_BALANCE.md#29-graph-independent-locking-and-phase-source-constraints)
-now classifies this mechanism beyond the prepared graphs. Under full admission
-and acute edge gaps, common capacity makes the locked phase source vanish.
-This excludes differentiated stationary scalar EPI driven only by that source
-on connected positive transport. It does not exclude a nonuniform phase
-identity: winding retains phase geometry with zero phase source. Conversely,
-heterogeneous capacity does not by itself ensure stationary-form compatibility.
-The source observer keeps actual pressure and numerical lock residuals distinct.
-
-This distinction prevents making capacity contrast a universal requirement for
-all NFR identity. The [acute cycle-sector classification](FORCED_SUPPORT_BALANCE.md#30-acute-phase-locks-are-circulation-states-with-integral-cycle-periods)
-now gives the exact circulation and integer-period conditions for that same
-law, including uniqueness within a sector. Short-cycle-generated supports
-exclude nonuniform acute locks; a cycle with trees has the explicit integer
-twist family. The implementation reconstructs exact declared phases and proves
-a sufficient odd-cancellation subset, while exposing its unresolved cases.
-
-Continuous branch-safe dynamics on fixed support cannot change winding.
-Sector creation therefore requires preparation, an antipodal phase encounter
-or a support event that introduces the relevant cycle. Crossing U3 alone is
-not such an encounter. The [one-chord reset](FORCED_SUPPORT_BALANCE.md#31-one-added-chord-extends-the-cycle-lattice-not-a-phase-generation-law)
-now identifies inherited and created cycle coordinates through exact integer
-basis maps. The actual default Coupling event closes a prepared path into an
-acute wound cycle; a Si-only control suppresses that link. This explicitly
-admits policy-selected sector birth while rejecting an endogenous-selection
-interpretation of the witness. No telemetry term has been promoted to a new
-fundamental dynamics.
-
-The created state has nonzero phase source and unequal phase currents. The
-[post-event theorem](FORCED_SUPPORT_BALANCE.md#32-acute-cycle-relaxation-retains-phase-winding-while-form-relaxes)
-now proves conditional maintenance of its acute winding sector under the
-supplied sine law. Relative gaps approach the allowed twist, phase pressure
-decays, and EPI approaches a uniform value at a potentially shifted weighted
-mean. Actual nonunit conductance remains in every form bound. A frozen finite
-continuation passes prospective envelopes using the production phase,
-pressure and integrator owners; it is not an infinite binary64 certificate.
-
-This closes post-event maintenance in that domain and clarifies the identity
-being maintained: phase geometry, without differentiated asymptotic scalar
-form. It does not explain the wound preparation, select support endogenously
-or derive the phase law.
-
-The [common-chart result](FORCED_SUPPORT_BALANCE.md#33-a-common-phase-semicircle-obstructs-winding-generation-by-the-existing-maps)
-now locates a formation obstruction for the existing Coupling/sine composition.
-Its exact convex proposals, overlapping merge and common-capacity flow preserve
-an initial open semicircle, so every cycle period remains zero even after link
-creation. The prepared wound path was already outside that class. Finite
-production controls certify their endpoint charts separately from this exact
-composition theorem. A shared arithmetic correction prevents equal-capacity
-Coupling from introducing a spurious rounding contrast.
-
-With heterogeneous capacities the same geometry bounds phase-diameter growth
-by accumulated capacity contrast. Exceeding the necessary chart-escape budget
-is not sufficient for a nonzero winding or its maintenance. Supplying that
-contrast does not derive its source. The theorem also does not rule out other
-kinds of coherent organization. The
-[native-step integration](FORCED_SUPPORT_BALANCE.md#34-native-runtime-admission-uses-relaxation-not-the-supplied-sine-clock)
-now closes the corresponding equal-capacity default route: its ideal
-coordinator contracts the chart, admitted native glyphs preserve the relevant
-channels, and adaptation preserves common capacity. Two finite whole-step
-controls retain those outcomes while exposing stored diagnostic timing and
-REMESH abstention. Arithmetic drift in adaptation and centered clamps has
-been corrected; it supplies no physical contrast-generation mechanism.
-
-Native coordination has no capacity-driven angular advance. Merely importing
-heterogeneous oscillator rates would therefore change the law being studied.
-The [heterogeneous admission study](FORCED_SUPPORT_BALANCE.md#35-heterogeneous-capacity-opens-a-conditional-mutation-admission-gate)
-now resolves that occurrence question for one finite case: a default native
-prefix generates the actual IL/OZ history and positive growth needed for a
-subsequent selected Mutation. A supplied-history P4 endpoint separately proves
-outward-jump compatibility. These are different results: the executed prefix's
-Mutation aligns its target toward neighbors, and its initial phase geometry
-was outside a common semicircle. Neither demonstrates spontaneous creation
-or continued renewal of differentiated identity.
-
-The [retained action/source balance](FORCED_SUPPORT_BALANCE.md#36-native-mutation-and-coordination-in-the-dirichlet-source-budget)
-now shows that both phase actions lower the prospective fresh energy rate.
-Actual held-pressure integration nevertheless increases EPI energy in the
-heterogeneous case. The exact ledger retains other glyphs' pressure writes,
-heterogeneous mobility, quadratic energy and the combined endpoint defect.
-The phase events themselves have zero instantaneous EPI-energy jump. This
-resolves the apparent sign conflict without assigning maintenance to Mutation.
-
-The [reference-clipping result](FORCED_SUPPORT_BALANCE.md#37-separate-the-frozen-hard-rail-reference-from-its-represented-endpoint)
-closes this numerical interpretation on the same interval. Exact bounded held
-flow gains about `0.11344` energy; the remaining runtime energy discrepancy is
-about `3.16e-15`. The uniform control loses about `0.10799`. Common hard clipping
-reduces energy relative to the unbounded held endpoint, but cannot remove the
-heterogeneous case's positive change from its starting state. Exact composition
-over fixed-velocity substeps holds; binary64 partition invariance does not follow.
-This closes the endpoint attribution task without further simulation or a
-different refresh policy. It leaves the source of differentiated restoration
-open: a transient increase, especially under a configured selector, does not
-establish a feedback law that maintains or recovers an identity.
-
-The [capacity recovery obstruction](FORCED_SUPPORT_BALANCE.md#38-default-capacity-writers-cannot-restore-an-inward-contracted-profile)
-now closes one necessary condition for the admitted initialized default route.
-Fresh selection limits the otherwise amplifying RA primitive, while adaptation
-mixes an arbitrary eligible subset toward its neighbors. In the declared exact
-model these writers preserve the current global capacity interval. Contracting
-a positive nonuniform target toward its own mean therefore prevents restoration
-of its original capacity profile, even allowing a common positive rescaling.
-The shared evaluator gives a sharp positive separation bound. This does not
-forbid local contrasts from growing or reject identities that discard capacity.
-A represented adaptation defect that could create a new extremum from adjacent
-values has been corrected; the full selector theorem retains its exact-model
-scope. The next task must respect this distinction between full-triad recovery
-and a reduced identity, rather than extend the same native trace indefinitely.
-
-The [stationary reduced-identity result](FORCED_SUPPORT_BALANCE.md#39-the-same-stationary-reduced-identity-constrains-capacity-differences)
-now resolves that distinction for fixed connected reciprocal support and an
-active capacity-pressure channel. Keeping the same EPI shape and phase geometry
-at zero fresh pressure requires capacities to differ only by a common additive
-offset. Unequal transport weights do not remove this constraint: the capacity
-source uses unweighted support neighbors. The inward-contracted interval excludes
-that additive family as well. Prospectively specified unequal-weight P3 captures
-verify the predicted nonzero pressure, including numerical baseline and assembly
-residuals; disconnected and inactive-channel controls preserve their exceptions.
-This is a stationary realizability result, not a claim about every moving pattern.
-The [phase-compensation result](FORCED_SUPPORT_BALANCE.md#40-static-phase-compensation-and-the-native-direction-obstruction)
-now closes that native candidate on the same P3. Static balance requires a
-larger phase gap, while the default coordinator contracts it. Actual fresh
-selection admits IL in both tested preparations. Existing capacity-interval
-and phase bounds also exclude stationary realization of the old form throughout
-the stated exact source class, without a longer trajectory. This does not
-exclude other phase geometries, source laws or moving identities.
-
-The mechanism admission table above now consolidates the evidence. The plan
-records the completed weighted-C5 identity contract and owns the next local
-restoring-response gate. Tangency and joint-law nonuniqueness are already established;
-repeating them would not provide the missing source-restoration law. Such a law
-need not contain reciprocal EPI feedback: an autonomous attracting source can
-drive form restoration. Its own state, dynamics and perturbable inputs must
-nevertheless be justified independently of the desired pattern.
-
-The remaining endogenous-mechanism obligation is a specified state and law
-that generate the sustaining structural contribution and restore a declared
-differentiated identity after perturbation. Its phase, capacity, support,
-boundary and history dependencies must be accounted for independently of the
-desired response. Existing support-imprinted restoration is a valid baseline;
-it does not establish recovery of every supplied original pattern.
+Weighted-C5 identity, the positive-response class, capacity tube, absolute-form
+obstruction and first-feedback balance remain in forced-support sections 42–47.
+Further pressure admission is deferred until a model dependency justifies it.
+A source-restoration law need not contain reciprocal EPI feedback, but its
+state, dynamics and perturbable inputs require independent justification.
+Tangency and joint-law nonuniqueness are already established; recalculating
+them under identical premises would not supply the missing closure.
 
 ### Phase/form exchange and coordinate scope
 
@@ -527,11 +409,13 @@ pressure from the response being evaluated.
 
 ### Cross-domain reuse for the generative hypothesis
 
-Arithmetic, spectral and Millennium studies offer algebraic controls and
-obstructions. They do not independently establish native phase evolution,
-particle generations, Euclidean geometry, a quantum state or solutions to the
-external problems. The [domain index](README.md) points to current conditional
-results; old proposals and supplied graph constructions stay historical or auxiliary.
+Retained arithmetic and spectral studies offer conditional algebraic controls
+and obstructions. They do not independently establish native phase evolution,
+particle generations, Euclidean geometry or a quantum state. Unsupported
+external-programme wrappers have been retired; their
+[negative boundaries](research/archive/RETIRED_PROGRAMME_BOUNDARIES.md) preserve
+the useful lessons without continuing those campaigns. The
+[domain index](README.md) points to current conditional results.
 
 ### Module reuse for set-valued generation
 

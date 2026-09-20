@@ -12,6 +12,7 @@ from operator import ge, le
 from statistics import StatisticsError, fmean
 from typing import Any, Callable, Iterable, cast
 
+from .._runtime_steps import resolve_runtime_step_index
 from ..alias import get_attr
 from ..constants import (
     STATE_DISSONANT,
@@ -22,7 +23,7 @@ from ..constants import (
     normalise_state_token,
 )
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_VF
-from ..glyph_history import append_metric, ensure_history
+from ..glyph_history import append_metric, current_step_idx, ensure_history
 from ..mathematics.unified_numerical import np
 from ..types import (
     DiagnosisNodeData,
@@ -786,13 +787,15 @@ def dissonance_events(G: TNFRGraph, ctx: DiagnosisSharedState | None = None) -> 
     Events are recorded as ``"dissonance_start"`` and ``"dissonance_end"``.
     """
 
-    del ctx
-
+    step_idx = (
+        resolve_runtime_step_index(next_index=ctx["step"])
+        if ctx is not None and "step" in ctx
+        else current_step_idx(G)
+    )
     hist = ensure_history(G)
     # Dissonance events are recorded in ``history['events']``
     norms = G.graph.get("_sel_norms", {})
     dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
-    step_idx = len(hist.get("C_steps", []))
     nodes: list[NodeId] = list(G.nodes())
     coherence_nodes, weights = coherence_matrix(G, _record_history=False)
     weight_index = (

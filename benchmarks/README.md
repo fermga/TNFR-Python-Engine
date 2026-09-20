@@ -13,8 +13,8 @@ for the active queue. A filename containing `emergent`, `conservation`,
 | Nodal support and regional identity | `thol_*.py`, [forced support](forced_support_balance.py), [capacity](capacity_localization.py), [memory](derived_epi_memory.py), [selection](selection_birth_closure.py) | Finite trajectories, exact declared-model calculations or read-only retained-record audits; distinguish these in each module |
 | C6 winding | `c6_winding_*.py` | Parked carried-map and regional controls; retain evidence without automatically continuing campaigns |
 | Directed transport | [dynamics](directed_nonnormal_dynamics.py), [metrics](directed_u2_metrics.py), [transients](directed_transient_u2.py), [time](directed_structural_time.py), [capacity boundary](heterogeneous_vf_boundary.py) | Conditional matrix/metric results and finite controls; [owner](../theory/TNFR_DIRECTED_NONNORMAL_DYNAMICS.md) |
-| Field diagnostics | [balance](conservation_law_validation.py), [circular methods](field_methods_battery.py), [potential](phi_s_confinement_investigation.py), [joint statistics](integrated_force_regime_study.py) | Diagnostics and historical heuristic protocols; [field scope](../docs/STRUCTURAL_FIELDS_TETRAD.md) and [balance scope](../theory/STRUCTURAL_CONSERVATION_THEOREM.md) |
-| Arithmetic and classical problems | `arithmetic_*.py`, `*_bridge.py`, residue/prime/word controls, [Riemann scope](../theory/TNFR_RIEMANN_RESEARCH_NOTES.md) | Supplied encodings and conditional algebraic comparisons; [arithmetic owner](../theory/TNFR_NUMBER_THEORY.md); Millennium campaigns parked |
+| Field diagnostics | [circular methods](field_methods_battery.py), [potential](phi_s_confinement_investigation.py) | Diagnostics and historical heuristic protocols; [field scope](../docs/STRUCTURAL_FIELDS_TETRAD.md) and [balance scope](../theory/STRUCTURAL_CONSERVATION_THEOREM.md) |
+| Arithmetic and spectra | `arithmetic_*.py`, [commutant](commutant_bridge.py), [Paley](paley_bridge.py), residue/prime/word controls | Supplied encodings and conditional algebraic comparisons; [arithmetic owner](../theory/TNFR_NUMBER_THEORY.md) and [Riemann scope](../theory/TNFR_RIEMANN_RESEARCH_NOTES.md) |
 | REMESH/Riemann projections | `remesh_infinity_riemann_*.py` | Parked finite projection/spectral controls, not proof of RH or generic runtime stability |
 | Auxiliary geometry and physical comparisons | `emergent_*.py` | Explicit graph, mode, wave or potential constructions; [ontology scope](../theory/EMERGENT_ONTOLOGY.md); no automatic physical identification |
 | Observation and applications | [static interface](structural_interface_benchmark.py), [temporal](temporal_interface_benchmark.py), [multichannel](multichannel_interface_benchmark.py), [Volts](volts_fixed_reference_exploration.py), [external phase gate](external_phase_gate_validation.py), [U2 comparison](u2_destabilization_irreversibility.py) | Measurement mappings and evaluation controls; [empirical protocol](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md) |
@@ -35,19 +35,34 @@ rg --files benchmarks -g '*.py'
   A producer can regenerate a different causal run; validating an existing
   record's contents is a different operation. A content hash does not establish
   the identity of a producer or the truth of declared acquisition conditions.
-- `emergent_atom_dynamics.py` supplies separate diffusion and wave models;
-  `emergent_screening.py` supplies a density-feedback iteration. Neither derives
-  its added law from the form-rate identity alone.
+- [Wave/particle comparisons](emergent_wave_particle_correspondence.py) retain
+  declared graph-wave models and negative controls. Supplied waves, standing
+  modes or winding numbers do not by themselves identify physical particles.
 - `emergent_simplex_dimension.py`, `emergent_fractal_simplex_dimension.py` and
   `emergent_generation_count.py` retain useful graph/spectral comparisons. Their
   clique size, gluing, scale ratio or potential well are inputs. They do not
   select physical dimension or particle generations.
-- `emergent_mass_charge_spectrum.py` compares separately prepared fields. Static
-  energy ordering is not an observed fission trajectory, force or mass law.
+
+The retired particle/shell, chemical lookup and PDE recipe producers added
+potential wells, screening, shell order or fluid equations without deriving
+those laws from the nodal product. Shared graph waves, diffusion and winding
+remain available through their mathematical owners; removing the unsupported
+identifications does not retire those scoped calculations.
+The [scope record](../theory/research/archive/README.md#foundation-reassessment-2026-09-20)
+owns the retirement list and API migrations.
 
 The obsolete magnitude-only, out-of-range curvature-zone and orphan timing-
 clustering campaigns are removed. Timing clusters and in-sample field
 correlations do not establish physical universality or held-out prediction.
+The legacy fast coherence-length sweep is also retired: its nominal intensity
+never entered preparation or dynamics, so repairing its obsolete API calls
+would not make the comparison an intensity-response experiment.
+The unused universality aggregator, integrated force-regime producer and
+nodal-position/prime comparison are also retired. Their missing-data pairing,
+invented events, cancelling scores or disconnected supplied formulas did not
+provide a predictive nodal study. Use shared study execution and diagnostics
+for actual operator responses; retained winding, graph-wave and arithmetic
+comparisons keep their explicit auxiliary scope.
 Current form and field-domain controls are the
 [signed-form admission tests](../tests/test_nodal_solver_epi_scope.py),
 [storage/entropy scope tests](../tests/test_epi_type_signature_scope.py),

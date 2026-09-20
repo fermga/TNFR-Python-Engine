@@ -87,10 +87,13 @@ The geometric sum describes a scalar recurrence with unit forcing and
 criterion for integrability of a sustained forcing. Mapping its floor to a
 count of destabilizing operators is the engine's calibration choice.
 
-The actual functions also retain their finite fallbacks: a nonpositive q returns
-a one-operation window, and the search stops at 64; nonpositive ν_f dt returns
-zero debt capacity. These are compatibility policies, not stability results for
-the corresponding Euler modes.
+The helpers admit finite positive nonboolean inputs only when their represented
+product satisfies `0 < nu_f*dt <= 1`. Rational evaluation then uses that
+binary64 product and the represented target band. The exact `q=0` surrogate
+crosses in one step; negative or invalid multipliers are rejected. The U4
+search remains capped at 64 positions even when the target is not reached.
+U2 evaluates the reciprocal floor exactly, including subnormal rates. These
+are scalar grammar calibrations, not stability results for graph Euler modes.
 
 **Finite-graph witness.** On the 21-node unweighted path,
 
@@ -305,6 +308,18 @@ The present scope clarification changes no runtime behavior. For the primary
 research line, retain Si as a read-out; do not use its weights, thresholds or
 counter policy to fill an unexplained causal step. Its existing controllers
 remain available as explicitly conditional engineering models.
+
+The built-in selectors validate the stored decision inputs and use one shared
+snapshot/kernel across execution backends. Each new batch renews its pressure
+and acceleration normalizers and score weights; engine-owned snapshots are
+released even after failure. This prevents past maxima from silently changing
+a later decision, but does not recompute the underlying pressure or Si. Missing
+Si retains the explicit baseline 0.5; missing pressure/acceleration retains zero.
+Finite Si is clipped to [0,1]. These defaults, thresholds, hysteresis, repetition
+and lag rules remain controller choices, not deductions from the nodal equation.
+The [decision controls](../tests/test_selector_decision_admission.py) test this
+boundary and scalar/worker agreement without treating a candidate as a live
+operator-admission certificate.
 
 The corresponding reusable constraint is the
 [source-tangency identity](FORCED_SUPPORT_BALANCE.md#22-source-tangency-without-a-telemetry-controller):

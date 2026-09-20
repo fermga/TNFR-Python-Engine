@@ -1,9 +1,11 @@
 """Core constants.
 
-AUDIT 2026: only π (the phase-wrap bound) is a genuine structural scale. The
-earlier φ/γ/e "tetrahedral correspondence" overlay was an anti-magic-number
+The exact phase-wrap bound is π; graph-dependent scales need their own
+derivation and domain. The earlier φ/γ/e "tetrahedral correspondence" overlay
+was an anti-magic-number
 naming convention, NOT a derivation from the nodal equation; it has been
-removed and the thresholds below are plain calibrated parameters.
+removed and the thresholds below are configured parameters, not automatically
+empirically calibrated or derived from the nodal equation.
 The ξ_C estimator has a state-dependent fit and a spectral fallback (1/√λ₂).
 See AGENTS.md §3 and CHANGELOG (tetrad
 correspondence audit).
@@ -70,10 +72,10 @@ SELECTOR_THRESHOLD_DEFAULTS: Mapping[str, float] = MappingProxyType(
     {
         "si_hi": 0.5,  # unit midpoint (Si selector upper)
         "si_lo": 0.25,  # unit quarter (Si selector lower)
-        "dnfr_hi": 0.133,  # operational |ΔNFR| selector upper (pressure-magnitude scale, not coherence)
-        "dnfr_lo": 0.068,  # operational |ΔNFR| selector lower (pressure-magnitude scale, not coherence)
-        "accel_hi": 0.276,  # operational acceleration selector upper (∂²EPI scale, not coherence)
-        "accel_lo": 0.114,  # operational acceleration selector lower (∂²EPI scale, not coherence)
+        "dnfr_hi": 0.133,  # upper cut for |pressure| / declared network maximum
+        "dnfr_lo": 0.068,  # lower cut for normalized pressure, not EPS_DNFR_STABLE
+        "accel_hi": 0.276,  # upper cut for normalized absolute acceleration
+        "accel_lo": 0.114,  # lower cut for normalized absolute acceleration
     }
 )
 
@@ -88,14 +90,14 @@ class CoreDefaults:
 
     DT: float = DT_CANONICAL  # = 0.5 (configured explicit step, not a stability bound)
     INTEGRATOR_METHOD: str = "euler"
-    DT_MIN: float = DT_MIN_CANONICAL  # = 1/16 ≈ 0.0625 (minimal temporal resolution)
+    DT_MIN: float = DT_MIN_CANONICAL  # = 1/16 (floor when subdivision is active)
     EPI_MIN: float = EPI_MIN_CANONICAL  # = -1.0 (unit form bound)
     EPI_MAX: float = EPI_MAX_CANONICAL  # = 1.0 (unit form bound)
     VF_MIN: float = VF_MIN_CANONICAL  # 0.0 (inactive unforced EPI channel)
     VF_MAX: float = VF_MAX_CANONICAL  # = 2π ≈ 6.283 (configured capacity ceiling)
     THETA_WRAP: bool = True
     CLIP_MODE: str = "hard"
-    CLIP_SOFT_K: float = PI  # π ≈ 3.14159 (geometric steepness for smooth transitions)
+    CLIP_SOFT_K: float = PI  # selected soft-clipping steepness in this scalar chart
     DNFR_WEIGHTS: dict[str, float] = field(
         default_factory=lambda: {
             # Configured hierarchy, normalized in real arithmetic: phase ≻ EPI ≻ νf.
@@ -144,7 +146,7 @@ class CoreDefaults:
     AL_MAX_LAG: int = 5
     EN_MAX_LAG: int = 3
     GLYPH_SELECTOR_MARGIN: float = (
-        GLYPH_SELECTOR_MARGIN_CANONICAL  # ≈ 0.0418 (boundary precision)
+        GLYPH_SELECTOR_MARGIN_CANONICAL  # ≈ 0.0398 (selected hysteresis margin)
     )
     VF_ADAPT_TAU: int = 5
     VF_ADAPT_MU: float = VF_ADAPT_MU_CANONICAL  # = 0.10 (adaptation)
@@ -164,8 +166,8 @@ class CoreDefaults:
             "SHA_vf_factor": SHA_VF_FACTOR,  # 1 − 1/(4π) ≈ 0.9204 (silence νf step)
             "VAL_scale": VAL_SCALE_FACTOR,  # 1 + 1/(4π) ≈ 1.0796 (gentle νf expansion step)
             "NUL_scale": NUL_SCALE_FACTOR,  # 1 − 1/(4π) ≈ 0.9204 (gentle νf contraction step)
-            # NUL ΔNFR densification = 1/λ (geometric volume ratio): contracting
-            # ν_f/volume by λ=NUL_scale concentrates structural pressure by 1/λ.
+            # Selected reciprocal pressure rescaling. Capacity is a rate;
+            # no identification with geometric volume follows from this choice.
             "NUL_densification_factor": NUL_DENSIFICATION_FACTOR,  # 1/λ ≈ 1.0865
             "THOL_accel": COUPLING_GENTLE,  # 1/(4π) ≈ 0.0796 (self-organisation acceleration)
             # ZHIR uses canonical transformation by default (θ → θ' based on ΔNFR);
@@ -181,7 +183,7 @@ class CoreDefaults:
             "hi": 0.5,  # unit midpoint (coherence hysteresis upper)
             "lo": 0.25,  # unit quarter (coherence hysteresis lower)
             "dnfr": 1e-3,
-        }  # π-derived hi/lo (unit-coherence fractions)
+        }  # Selected hysteresis cuts; not derived physical thresholds.
     )
     NAV_RANDOM: bool = True
     NAV_STRICT: bool = False
@@ -193,9 +195,9 @@ class CoreDefaults:
     )
     GRAMMAR: dict[str, Any] = field(
         default_factory=lambda: {
-            # repeat-avoidance window = the structural relaxation window: do not
-            # re-fire a destabilizer/transformer before its |ΔNFR| perturbation
-            # relaxes into the coherence band (derived; = 3 for νf=1, dt=0.5).
+            # Repeat-avoidance window from a unit-rate relaxation surrogate.
+            # The default is 3 invocations, not a topology-independent physical
+            # relaxation time or a general convergence certificate.
             "window": derive_bifurcation_window_from_physics(),
             "avoid_repeats": ["ZHIR", "OZ", "THOL"],
             "force_dnfr": MID_COHERENCE_THRESHOLD,  # 2/π ≈ 0.6366 (force threshold)
@@ -205,7 +207,7 @@ class CoreDefaults:
     )
     SELECTOR_WEIGHTS: dict[str, float] = field(
         default_factory=lambda: {
-            # Coherence-band hierarchy (π-derived): Si ≻ ΔNFR ≻ acceleration.
+            # Configured hierarchy: Si ≻ normalized pressure ≻ acceleration.
             "w_si": CHANNEL_WEIGHT_PRIMARY,  # π/(π+1) ≈ 0.7585
             "w_dnfr": CHANNEL_WEIGHT_SECONDARY,  # π/(π+1)² ≈ 0.1832
             "w_accel": CHANNEL_WEIGHT_TERTIARY,  # 1/(π+1)² ≈ 0.0583
@@ -308,11 +310,11 @@ CORE_DEFAULTS = MappingProxyType(_core_defaults)
 REMESH_DEFAULTS = MappingProxyType(_remesh_defaults)
 
 # ============================================================================
-# STRUCTURAL FIELD CONSTANTS (operational thresholds; audit 2026: not derived — only π phase-wrap is genuine)
+# STRUCTURAL FIELD DEFAULTS (auxiliary fit and diagnostic policies)
 # ============================================================================
 
 # Structural Field Thresholds (Research Constants)
-K_PHI_ASYMPTOTIC_ALPHA = 2.76  # Power-law exponent for multiscale K_φ variance
+K_PHI_ASYMPTOTIC_ALPHA = 2.76  # selected fit-comparison hint, not a universal exponent
 # Tetrad thresholds: alias the single canonical source (constants.canonical)
 K_PHI_CURVATURE_THRESHOLD = (
     K_PHI_CANONICAL_THRESHOLD  # 0.9×π ≈ 2.8274 (90% of theoretical maximum)
@@ -323,14 +325,14 @@ PHASE_GRADIENT_THRESHOLD = GRAD_PHI_CANONICAL_THRESHOLD  # heuristic early-warni
 MIN_BUSINESS_COHERENCE = MIN_BUSINESS_COHERENCE_CANONICAL  # = 0.75 (operational)
 MIN_BUSINESS_SENSE_INDEX = round(
     0.700034, 3
-)  # ≈ 0.700 (CALIBRATED target; an empirical value, not derived)
+)  # ≈ 0.700 (selected domain target; no empirical calibration is established here)
 
 # Statistical Analysis Constants
-STATISTICAL_SIGNIFICANCE_THRESHOLD = 0.5  # R² threshold for regression validity
+STATISTICAL_SIGNIFICANCE_THRESHOLD = 0.5  # selected R² fit cut, not a significance test
 EXPONENT_TOLERANCE = 0.1  # Tolerance for critical exponent classification
 ISING_2D_TOLERANCE = 0.15  # Larger tolerance for 2D Ising (nu ≈ 1.0)
 
-# Critical Exponents (Universal Scaling)
+# External reference values for auxiliary comparisons, not derived TNFR exponents.
 MEAN_FIELD_EXPONENT = 0.5  # Mean-field critical exponent
 ISING_3D_EXPONENT = 0.63  # 3D Ising universality class
 ISING_2D_EXPONENT = 1.0  # 2D Ising universality class

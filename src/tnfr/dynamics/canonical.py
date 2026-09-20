@@ -15,9 +15,9 @@ Where:
   - ΔNFR: Nodal gradient (reorganization operator)
   - t: Declared evolution coordinate; a physical-clock bridge is separate
 
-This implementation ensures theoretical fidelity to the TNFR paradigm by:
+This implementation supplies numerical evaluation of the stated row by:
   1. Making the canonical equation explicit in code
-  2. Checking finite inputs and nonnegative structural capacity
+  2. Checking finite inputs/output and nonnegative structural capacity
   3. Providing clear mapping between theory and implementation
   4. Maintaining reproducibility and traceability
 
@@ -32,8 +32,8 @@ EPI equation, not a derivation of the remaining nodal channel laws. Numeric
 validation does not establish units calibration or preservation of invariants.
 
 References:
-  - TNFR.pdf: Canonical nodal equation specification
-  - AGENTS.md: Section 3 (Canonical invariants)
+  - theory/FUNDAMENTAL_THEORY.md: Scalar chart and nodal equation scope
+  - AGENTS.md: Foundations and canonical invariants
 """
 
 from __future__ import annotations
@@ -42,10 +42,10 @@ import math
 from numbers import Integral
 from typing import TYPE_CHECKING, Any, NamedTuple
 
+from .._exact_time import finite_represented_real
 from ..alias import get_attr, set_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from ..errors.contextual import FrequencyError, NetworkConfigError, TNFRValueError
-from ..mathematics.unified_numerical import np
 from ..types import require_finite_real_scalar_epi
 
 if TYPE_CHECKING:
@@ -69,7 +69,7 @@ class NodalEquationResult(NamedTuple):
         derivative: ∂EPI/∂t computed from νf · ΔNFR(t)
         nu_f: Structural frequency (Hz_str) used in computation
         delta_nfr: Nodal gradient (ΔNFR) used in computation
-        validated: Whether the selected finite-input and capacity-sign checks ran
+        validated: Whether finite-input/output and capacity-sign checks ran
     """
 
     derivative: float
@@ -98,14 +98,16 @@ def compute_canonical_nodal_derivative(
     Args:
         nu_f: Structural frequency in Hz_str (must be non-negative)
         delta_nfr: Nodal gradient (reorganization operator)
-        validate_units: If True, checks finite inputs and nonnegative capacity
+        validate_units: If True, checks finite inputs/output and nonnegative capacity
         graph: Optional graph for context-aware validation
 
     Returns:
         NodalEquationResult containing the computed derivative and metadata
 
     Raises:
-        TNFRValueError: If validation is enabled and inputs are invalid
+        FrequencyError: If validation is enabled and capacity is invalid
+        NetworkConfigError: If validation is enabled and pressure or the product is invalid
+        TNFRValueError: If validate_units is not a boolean
 
     Notes:
         - This function is the canonical reference implementation
@@ -131,6 +133,8 @@ def compute_canonical_nodal_derivative(
         >>> result.validated
         True
     """
+    if not isinstance(validate_units, bool):
+        raise TNFRValueError("validate_units must be a boolean")
     validated = False
 
     if validate_units:
@@ -140,6 +144,12 @@ def compute_canonical_nodal_derivative(
 
     # Canonical TNFR nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
     derivative = float(nu_f) * float(delta_nfr)
+    if validate_units and not math.isfinite(derivative):
+        raise NetworkConfigError(
+            parameter="dEPI_dt",
+            value=derivative,
+            reason="The nodal product must be finite in the represented scalar chart",
+        )
 
     return NodalEquationResult(
         derivative=derivative,
@@ -154,38 +164,32 @@ def validate_structural_frequency(
     *,
     graph: GraphLike | None = None,
 ) -> float:
-    """Validate that structural frequency is in valid range.
+    """Validate nonnegative represented structural capacity.
 
     Structural frequency (νf) must satisfy TNFR constraints:
       - Non-negative (νf ≥ 0)
-      - Expressed in Hz_str (structural hertz)
-      - Finite and well-defined
+      - Finite real scalar, excluding boolean/text coercions
+      - Nonzero input must not underflow to represented zero
 
     Args:
         nu_f: Structural frequency to validate
-        graph: Optional graph for context-aware bounds checking
+        graph: Reserved graph context; does not select numerical bounds
 
     Returns:
         Validated structural frequency value
 
     Raises:
-        FrequencyError: If nu_f is negative, infinite, or NaN
-        TypeError: If nu_f cannot be converted to float
+        FrequencyError: If capacity fails real-scalar, representation or sign admission
 
     Notes:
-        - νf = 0 is valid and represents structural silence
-        - Units must be Hz_str (not classical Hz)
-        - For Hz↔Hz_str conversion, use tnfr.units module
+        - νf = 0 is valid and suppresses the unforced nodal product.
+        - No finite upper cutoff is imposed; products still require validation.
+        - Numeric admission does not calibrate structural or physical units.
     """
     try:
-        value = float(nu_f)
+        value, _ = finite_represented_real(nu_f, "nu_f")
     except (TypeError, ValueError) as exc:
-        # Non-convertible type or invalid string
-        raise FrequencyError(vf=float("nan"), operation="validation") from exc
-
-    # Check for NaN or infinity using math.isfinite
-    if not math.isfinite(value):
-        raise FrequencyError(vf=value, operation="validation")
+        raise FrequencyError(vf=nu_f, operation="validation") from exc
 
     if value < 0:
         raise FrequencyError(vf=value, operation="validation")
@@ -214,8 +218,7 @@ def validate_nodal_gradient(
         Validated nodal gradient value
 
     Raises:
-        NetworkConfigError: If delta_nfr is infinite or NaN
-        TypeError: If delta_nfr cannot be converted to float
+        NetworkConfigError: If pressure fails real-scalar or representation admission
 
     Notes:
         - With positive capacity, the sign selects the positive or negative
@@ -226,23 +229,17 @@ def validate_nodal_gradient(
         - Do NOT reinterpret as classical "error gradient"
         - Semantics: operator over EPI, not optimization target
     """
+    return _validate_real_parameter(delta_nfr, "delta_nfr")
+
+
+def _validate_real_parameter(value: Any, parameter: str) -> float:
+    """Apply shared real-scalar admission with this API's contextual error."""
     try:
-        value = float(delta_nfr)
+        return finite_represented_real(value, parameter)[0]
     except (TypeError, ValueError) as exc:
-        # Non-convertible type or invalid string
         raise NetworkConfigError(
-            parameter="delta_nfr",
-            value=delta_nfr,
-            reason="Nodal gradient must be numeric",
+            parameter=parameter, value=value, reason=str(exc)
         ) from exc
-
-    # Check for NaN or infinity using math.isfinite
-    if not math.isfinite(value):
-        raise NetworkConfigError(
-            parameter="delta_nfr", value=value, reason="Nodal gradient must be finite"
-        )
-
-    return value
 
 
 # Extended TNFR dynamics with canonical flux fields
@@ -264,7 +261,7 @@ class ExtendedNodalEquationResult(NamedTuple):
         j_phi: Phase current J_φ used in computation
         j_dnfr_divergence: ∇·J_ΔNFR divergence used
         coupling_strength: Local network coupling coefficient
-        validated: Whether the selected numeric input checks passed
+        validated: Whether numeric input and finite-output checks passed
     """
 
     classical_derivative: float  # ∂EPI/∂t = νf·ΔNFR
@@ -322,14 +319,16 @@ def compute_extended_nodal_system(
         j_phi: Phase current (from compute_phase_current)
         j_dnfr_divergence: Divergence ∇·J_ΔNFR (from compute_dnfr_flux)
         coupling_strength: Nonnegative local transport coefficient; values above one allowed
-        validate_units: If True, checks numeric input domains (not unit calibration)
+        validate_units: If True, checks numeric inputs/outputs (not unit calibration)
         graph: Optional graph for context-aware validation
 
     Returns:
         ExtendedNodalEquationResult with all derivatives and metadata
 
     Raises:
-        TNFRValueError: If selected numeric input checks fail
+        FrequencyError: If validated capacity is invalid
+        NetworkConfigError: If another validated input or derivative is invalid
+        TNFRValueError: If validate_units is not a boolean
 
     Notes:
         - Zero supplied flux/divergence leaves the original EPI product and
@@ -356,122 +355,72 @@ def compute_extended_nodal_system(
         >>> result.coupling_strength   # Should reflect input
         0.8
     """
-    validated = False
+    nodal = compute_canonical_nodal_derivative(
+        nu_f, delta_nfr, validate_units=validate_units, graph=graph
+    )
+    nu_f, delta_nfr = nodal.nu_f, nodal.delta_nfr
 
     if validate_units:
-        # Validate classical parameters (existing functions)
-        nu_f = validate_structural_frequency(nu_f, graph=graph)
-        delta_nfr = validate_nodal_gradient(delta_nfr, graph=graph)
-
         # Validate extended parameters
         theta = _validate_phase(theta)
         j_phi = _validate_flux_field(j_phi, "J_φ")
         j_dnfr_divergence = _validate_flux_divergence(j_dnfr_divergence)
         coupling_strength = _validate_coupling_strength(coupling_strength)
 
-        validated = True
-
-    # 1. Classical TNFR nodal equation (unchanged)
-    classical_derivative = float(nu_f) * float(delta_nfr)
-
     # 2. Extended phase evolution with J_φ transport
-    phase_derivative = _compute_phase_transport_derivative(
-        nu_f, delta_nfr, theta, j_phi, coupling_strength
-    )
+    try:
+        phase_derivative = _compute_phase_transport_derivative(
+            nu_f, delta_nfr, theta, j_phi, coupling_strength
+        )
+    except (OverflowError, ValueError) as exc:
+        if not validate_units:
+            raise
+        raise NetworkConfigError(
+            parameter="dtheta_dt",
+            value=(nu_f, delta_nfr, j_phi, coupling_strength),
+            reason="The configured phase response must be representable and finite",
+        ) from exc
 
     # 3. Optional scaled-divergence pressure response
     dnfr_derivative = _compute_dnfr_conservation_derivative(j_dnfr_divergence)
+    if validate_units:
+        phase_derivative = _validate_real_parameter(phase_derivative, "dtheta_dt")
+        dnfr_derivative = _validate_real_parameter(dnfr_derivative, "ddelta_nfr_dt")
 
     return ExtendedNodalEquationResult(
-        classical_derivative=classical_derivative,
+        classical_derivative=nodal.derivative,
         phase_derivative=phase_derivative,
         dnfr_derivative=dnfr_derivative,
         j_phi=j_phi,
         j_dnfr_divergence=j_dnfr_divergence,
         coupling_strength=coupling_strength,
-        validated=validated,
+        validated=nodal.validated,
     )
 
 
 def _validate_phase(theta: float) -> float:
     """Validate phase parameter for extended dynamics."""
-    try:
-        value = float(theta)
-    except (TypeError, ValueError) as exc:
-        raise NetworkConfigError(
-            parameter="phase", value=theta, reason="Phase θ must be numeric"
-        ) from exc
+    value = _validate_real_parameter(theta, "phase")
 
-    if not math.isfinite(value):
-        raise NetworkConfigError(
-            parameter="phase", value=value, reason="Phase θ must be finite"
-        )
-
-    # Normalize to [0, 2π] range
+    # Normalize to [0, 2π) range.
     normalized = value % (2 * math.pi)
     return normalized
 
 
 def _validate_flux_field(flux: float, field_name: str) -> float:
     """Validate flux field (J_φ, J_ΔNFR) for extended dynamics."""
-    try:
-        value = float(flux)
-    except (TypeError, ValueError) as exc:
-        raise NetworkConfigError(
-            parameter=field_name,
-            value=flux,
-            reason=f"Flux field {field_name} must be numeric",
-        ) from exc
-
-    if not math.isfinite(value):
-        raise NetworkConfigError(
-            parameter=field_name,
-            value=value,
-            reason=f"Flux field {field_name} must be finite",
-        )
-
     # Flux fields can be positive (source) or negative (sink)
-    return value
+    return _validate_real_parameter(flux, field_name)
 
 
 def _validate_flux_divergence(div_j: float) -> float:
     """Validate flux divergence ∇·J for conservation equations."""
-    try:
-        value = float(div_j)
-    except (TypeError, ValueError) as exc:
-        raise NetworkConfigError(
-            parameter="flux_divergence",
-            value=div_j,
-            reason="Flux divergence must be numeric",
-        ) from exc
-
-    if not math.isfinite(value):
-        raise NetworkConfigError(
-            parameter="flux_divergence",
-            value=value,
-            reason="Flux divergence must be finite",
-        )
-
-    return value
+    return _validate_real_parameter(div_j, "flux_divergence")
 
 
 def _validate_coupling_strength(kappa: float) -> float:
     """Validate coupling strength for transport efficiency."""
-    try:
-        value = float(kappa)
-    except (TypeError, ValueError) as exc:
-        raise NetworkConfigError(
-            parameter="coupling_strength",
-            value=kappa,
-            reason="Coupling strength must be numeric",
-        ) from exc
-
-    if not math.isfinite(value):
-        raise NetworkConfigError(
-            parameter="coupling_strength",
-            value=value,
-            reason="Coupling strength must be finite",
-        )
+    value = _validate_real_parameter(kappa, "coupling_strength")
 
     if value < 0:
         raise NetworkConfigError(
@@ -562,9 +511,9 @@ def integrate_canonical_nodal_equation(
     """Integrate the stored constant-frequency, constant-pressure nodal field.
 
     This convenience API holds nu_f and DeltaNFR fixed throughout its loop.
-    Both accepted method names therefore give the exact constant-derivative
-    update. It does not recompute pressure from changing EPI or supersede the
-    runtime integrator's time-dependent forcing and boundary policies.
+    Both accepted method names therefore use the same represented Euler map
+    for this constant derivative. It does not recompute pressure from changing
+    EPI or supersede the runtime integrator's forcing and boundary policies.
 
     Parameters
     ----------
@@ -592,6 +541,12 @@ def integrate_canonical_nodal_equation(
     ``final_error`` is the norm of the most recent EPI increment. ``converged``
     reports that step-change criterion, not DeltaNFR equilibrium. No convergence
     assessment is made when dt is zero (steps=0, converged=False).
+    The compatibility fallback for absent capacity is 1.0; absent form and
+    pressure default to zero. These are supplied initialization policies.
+    Invalid authoritative inputs and nonfinite candidate output reject before
+    any EPI is committed. This API writes neither a clock nor derivative history.
+    Numeric controls use the shared finite-real representation contract; returned
+    parameters record those materialized values rather than their input objects.
     """
     from ..backend_config import get_config
 
@@ -606,14 +561,17 @@ def integrate_canonical_nodal_equation(
     use_gpu = use_gpu if use_gpu is not None else (config.gpu_mode != "disabled")
 
     # Validate inputs
-    dt_resolved = float(dt)
-    tolerance_resolved = float(tolerance)
-    if not math.isfinite(dt_resolved) or dt_resolved < 0:
-        raise TNFRValueError(
-            f"Integration timestep must be finite and nonnegative, got {dt}",
-            context={"dt": dt},
-            suggestion="Set a finite timestep (dt >= 0).",
-        )
+    def nonnegative_parameter(value: Any, label: str) -> float:
+        try:
+            resolved, _ = finite_represented_real(value, label)
+        except (TypeError, ValueError) as exc:
+            raise TNFRValueError(str(exc), context={label: value}) from exc
+        if resolved < 0:
+            raise TNFRValueError(f"{label} must be nonnegative", context={label: value})
+        return resolved
+
+    dt_resolved = nonnegative_parameter(dt, "dt")
+    tolerance_resolved = nonnegative_parameter(tolerance, "tolerance")
     if (
         isinstance(max_steps, bool)
         or not isinstance(max_steps, Integral)
@@ -625,11 +583,8 @@ def integrate_canonical_nodal_equation(
             suggestion="set max_steps to a positive integer.",
         )
 
-    if not math.isfinite(tolerance_resolved) or tolerance_resolved < 0:
-        raise TNFRValueError(
-            "Convergence tolerance must be finite and nonnegative",
-            context={"tolerance": tolerance},
-        )
+    if not isinstance(use_gpu, bool):
+        raise TNFRValueError("use_gpu must be a boolean", context={"use_gpu": use_gpu})
     if method not in ("euler", "rk4"):
         raise TNFRValueError(
             "Integration method must be 'euler' or 'rk4'", context={"method": method}
@@ -674,10 +629,10 @@ def integrate_canonical_nodal_equation(
     # Add metadata
     result["backend_used"] = backend_used
     result["parameters"] = {
-        "dt": dt,
+        "dt": dt_resolved,
         "method": method,
-        "max_steps": max_steps,
-        "tolerance": tolerance,
+        "max_steps": max_steps_resolved,
+        "tolerance": tolerance_resolved,
     }
 
     return result
@@ -688,6 +643,8 @@ def _integrate_with_backend(
 ) -> dict[str, Any]:
     """Internal integration implementation using specified backend."""
     import time
+
+    from ._euler_kernel import euler_update
 
     start_time = time.perf_counter()
 
@@ -712,15 +669,29 @@ def _integrate_with_backend(
             for node in nodes
         ]
     )
-    vf_values = backend.as_array(
-        [get_attr(G.nodes[node], ALIAS_VF, 1.0) for node in nodes]
-    )
-    dnfr_values = backend.as_array(
-        [get_attr(G.nodes[node], ALIAS_DNFR, 0.0) for node in nodes]
-    )
-
-    # The stored fields are frozen, so every RK4 stage has this same slope.
-    derivatives = vf_values * dnfr_values
+    # Validate authoritative aliases before device arithmetic can hide invalid
+    # capacity, pressure or an overflowing nodal product.
+    derivative_values = [
+        compute_canonical_nodal_derivative(
+            get_attr(
+                G.nodes[node],
+                ALIAS_VF,
+                1.0,
+                strict=True,
+                conv=validate_structural_frequency,
+            ),
+            get_attr(
+                G.nodes[node],
+                ALIAS_DNFR,
+                0.0,
+                strict=True,
+                conv=validate_nodal_gradient,
+            ),
+        ).derivative
+        for node in nodes
+    ]
+    # The stored fields are frozen, so the legacy RK4 name uses this same slope.
+    derivatives = backend.as_array(derivative_values)
     converged = False
     final_error = float("inf")
 
@@ -728,23 +699,27 @@ def _integrate_with_backend(
         # Store previous values
         epi_prev = epi_values
 
-        epi_values = epi_prev + dt * derivatives
-
-        # Check convergence
-        if hasattr(backend, "norm"):
-            error = backend.norm(epi_values - epi_prev)
-            final_error = backend.to_numpy(error).item()
-        else:
-            # Fallback norm calculation
-            diff = backend.to_numpy(epi_values - epi_prev)
-            final_error = float(np.linalg.norm(diff))
+        epi_values = euler_update(epi_prev, dt, derivatives)
+        # Stage and check every node before the final graph-owned commit.
+        epi_final = tuple(
+            require_finite_real_scalar_epi(value)
+            for value in backend.to_numpy(epi_values)
+        )
+        # hypot avoids overflow from squaring otherwise representable increments.
+        diff = backend.to_numpy(epi_values - epi_prev)
+        final_error = math.hypot(*(float(value) for value in diff))
+        if not math.isfinite(final_error):
+            raise NetworkConfigError(
+                parameter="final_error",
+                value=final_error,
+                reason="The represented step-change norm must be finite",
+            )
 
         if final_error < tolerance:
             converged = True
             break
 
     # Update graph with final values (canonical alias-aware write)
-    epi_final = backend.to_numpy(epi_values)
     for i, node in enumerate(nodes):
         set_attr(G.nodes[node], ALIAS_EPI, float(epi_final[i]))
 

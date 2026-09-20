@@ -15,6 +15,7 @@ from functools import lru_cache
 from types import MappingProxyType
 from typing import Any, Callable, NamedTuple
 
+from ._exact_time import finite_represented_real
 from .alias import get_theta_attr
 from .constants import DEFAULTS
 from .metrics.trig_cache import get_trig_cache
@@ -53,19 +54,21 @@ def _default_gamma_spec() -> tuple[bytes, str]:
 
 
 def _ensure_kuramoto_cache(G: TNFRGraph, t: float | int) -> None:
-    """Cache ``(R, ψ)`` for the current step ``t`` using ``edge_version_cache``."""
+    """Cache order for the actual phases, even when the requested time repeats."""
     checksum = G.graph.get("_dnfr_nodes_checksum")
     if checksum is None:
         # reuse checksum from cached_nodes_and_A when available
         checksum = node_set_checksum(G)
     nodes_sig = (len(G), checksum)
     max_steps = int(G.graph.get("KURAMOTO_CACHE_STEPS", 1))
+    trig = get_trig_cache(G, cache_size=max_steps)
+    phase_signature = tuple(trig.theta_checksums[node] for node in trig.order)
 
     def builder() -> dict[str, float]:
-        R, psi = kuramoto_R_psi(G)
+        R, psi = _kuramoto_from_trig(trig)
         return {"R": R, "psi": psi}
 
-    key = (t, nodes_sig)
+    key = (t, nodes_sig, phase_signature)
     entry = edge_version_cache(G, key, builder, max_entries=max_steps)
     G.graph["_kuramoto_cache"] = entry
 
@@ -74,6 +77,11 @@ def kuramoto_R_psi(G: TNFRGraph) -> tuple[float, float]:
     """Return ``(R, ψ)`` for Kuramoto order using θ from all nodes."""
     max_steps = int(G.graph.get("KURAMOTO_CACHE_STEPS", 1))
     trig = get_trig_cache(G, cache_size=max_steps)
+    return _kuramoto_from_trig(trig)
+
+
+def _kuramoto_from_trig(trig: Any) -> tuple[float, float]:
+    """Reduce one phase-aware trigonometric snapshot to global order."""
     n = len(trig.theta)
     if n == 0:
         return 0.0, 0.0
@@ -97,17 +105,21 @@ def _kuramoto_common(
     cache = G.graph.get("_kuramoto_cache", {})
     R = float(cache.get("R", 0.0))
     psi = float(cache.get("psi", 0.0))
-    th_val = get_theta_attr(G.nodes[node], 0.0)
-    th_i = float(th_val if th_val is not None else 0.0)
+    th_i = get_theta_attr(
+        G.nodes[node],
+        0.0,
+        strict=True,
+        conv=lambda raw: _gamma_real(raw, "Gamma phase"),
+    )
     return th_i, R, psi
 
 
 def _read_gamma_raw(G: TNFRGraph) -> GammaSpec | None:
     """Return raw Γ specification from ``G.graph['GAMMA']``.
 
-    The returned value is the direct contents of ``G.graph['GAMMA']`` when
-    it is a mapping or the result of :func:`get_graph_mapping` if a path is
-    provided.  Final validation and caching are handled elsewhere.
+    The returned value is the mapping in ``G.graph['GAMMA']`` or the fallback
+    from :func:`get_graph_mapping`. This compatibility loader does not
+    load a filesystem path. Strict execution rejects invalid containers.
     """
 
     raw = G.graph.get("GAMMA")
@@ -120,22 +132,24 @@ def _read_gamma_raw(G: TNFRGraph) -> GammaSpec | None:
     )
 
 
-def _get_gamma_spec(G: TNFRGraph) -> GammaSpec:
-    """Return validated Γ specification caching results.
+def _get_gamma_spec(G: TNFRGraph, *, strict: bool = False) -> GammaSpec:
+    """Return the loaded Γ specification with content-aware caching.
 
     The raw value from ``G.graph['GAMMA']`` is cached together with the
-    normalized specification and its hash. When the raw value is unchanged,
+    loaded specification and its hash. When the raw value is unchanged,
     the cached spec is returned without re-reading or re-validating,
     preventing repeated warnings or costly hashing.
     """
 
     raw = G.graph.get("GAMMA")
+    if strict and raw is not None and not isinstance(raw, Mapping):
+        raise ValueError("GAMMA must be a mapping or None")
     cached_raw = G.graph.get("_gamma_raw")
     cached_spec = G.graph.get("_gamma_spec")
     cached_hash = G.graph.get("_gamma_spec_hash")
 
     def _hash_mapping(mapping: GammaSpec) -> str:
-        dumped = json_dumps(mapping, sort_keys=True, to_bytes=True)
+        dumped = json_dumps(dict(mapping), sort_keys=True, to_bytes=True)
         return hashlib.blake2b(dumped, digest_size=16).hexdigest()
 
     mapping_hash: str | None = None
@@ -165,7 +179,7 @@ def _get_gamma_spec(G: TNFRGraph) -> GammaSpec:
             spec = DEFAULT_GAMMA
             _, cur_hash = _default_gamma_spec()
 
-    # Store raw input, validated spec and its hash for future calls
+    # Loading does not validate the registry entry or its numerical parameters.
     G.graph["_gamma_raw"] = raw
     G.graph["_gamma_spec"] = spec
     G.graph["_gamma_spec_hash"] = cur_hash
@@ -181,15 +195,26 @@ def _gamma_params(cfg: GammaSpec, **defaults: float) -> tuple[float, ...]:
     """Return normalized Γ parameters from ``cfg``.
 
     Parameters are retrieved from ``cfg`` using the keys in ``defaults`` and
-    converted to ``float``. If a key is missing, its value from ``defaults`` is
-    used. Values convertible to ``float`` (e.g. strings) are accepted.
+    validated as finite represented real scalars. If a key is missing, its
+    value from ``defaults`` is used. Text and booleans are not rate parameters.
 
     Example
     -------
     >>> beta, R0 = _gamma_params(cfg, beta=0.0, R0=0.0)
     """
 
-    return tuple(float(cfg.get(name, default)) for name, default in defaults.items())
+    return tuple(
+        _gamma_real(cfg.get(name, default), f"Gamma {name}")
+        for name, default in defaults.items()
+    )
+
+
+def _gamma_real(value: Any, label: str) -> float:
+    """Use the shared represented-real boundary before any coercion."""
+    try:
+        return finite_represented_real(value, label)[0]
+    except (TypeError, ValueError) as exc:
+        raise ValueError(str(exc)) from exc
 
 
 # -----------------
@@ -306,6 +331,24 @@ GAMMA_REGISTRY: dict[str, GammaEntry] = {
     "harmonic": GammaEntry(gamma_harmonic, True),
 }
 
+# Keep the original implementations distinct from user replacements under a
+# built-in name: only these entries have the array formulas implemented below.
+_BUILTIN_GAMMA_ENTRIES = GAMMA_REGISTRY.copy()
+
+
+def _resolve_gamma_entry(spec: GammaSpec) -> GammaEntry:
+    """Resolve the live registry entry without silently disabling a source."""
+    spec_type = spec.get("type", "none")
+    if not isinstance(spec_type, str) or spec_type not in GAMMA_REGISTRY:
+        raise ValueError(f"Unknown GAMMA type: {spec_type!r}")
+    return GAMMA_REGISTRY[spec_type]
+
+
+def _uses_builtin_gamma(spec: GammaSpec) -> bool:
+    """Whether detached array evaluation implements the live registered entry."""
+    entry = _resolve_gamma_entry(spec)
+    return entry == _BUILTIN_GAMMA_ENTRIES.get(spec.get("type", "none"))
+
 
 def eval_gamma(
     G: TNFRGraph,
@@ -319,28 +362,21 @@ def eval_gamma(
 
     If ``strict`` is ``True`` exceptions raised during evaluation are
     propagated instead of returning ``0.0``. Likewise, if the specified
-    Γ type is not registered a warning is emitted (or ``ValueError`` in
-    strict mode) and ``gamma_none`` is used.
+    Γ type is not registered, permissive evaluation logs the failure and
+    returns zero. Runtime execution uses strict evaluation. Neither mode
+    admits booleans/text as rates or built-in numerical parameters.
 
     ``log_level`` controls the logging level for captured errors when
     ``strict`` is ``False``. If omitted, ``logging.ERROR`` is used in
     strict mode and ``logging.DEBUG`` otherwise.
     """
-    spec = _get_gamma_spec(G)
-    spec_type = spec.get("type", "none")
-    reg_entry = GAMMA_REGISTRY.get(spec_type)
-    if reg_entry is None:
-        msg = f"Unknown GAMMA type: {spec_type}"
-        if strict:
-            raise ValueError(msg)
-        logger.warning(msg)
-        entry = GammaEntry(gamma_none, False)
-    else:
-        entry = reg_entry
-    if entry.needs_kuramoto:
-        _ensure_kuramoto_cache(G, t)
     try:
-        return float(entry.fn(G, node, t, spec))
+        spec = _get_gamma_spec(G, strict=strict)
+        entry = _resolve_gamma_entry(spec)
+        t = _gamma_real(t, "Gamma time")
+        if entry.needs_kuramoto:
+            _ensure_kuramoto_cache(G, t)
+        return _gamma_real(entry.fn(G, node, t, spec), "Gamma rate")
     except (ValueError, TypeError, ArithmeticError) as exc:
         level = (
             log_level
@@ -365,6 +401,8 @@ def eval_gamma_vectorized(
     theta_arr: Any,
     t: float,
     np_mod: Any,
+    *,
+    strict: bool = False,
 ) -> Any:
     """Evaluate Γi for all nodes using vectorized operations.
 
@@ -373,15 +411,46 @@ def eval_gamma_vectorized(
         theta_arr: NumPy array of node phases (θ).
         t: Current time.
         np_mod: The NumPy module.
+        strict: Propagate invalid source configuration/evaluation instead of
+            returning zero, matching :func:`eval_gamma`. Integrators use True.
 
     Returns:
         NumPy array of Γ values.
-    """
-    spec = _get_gamma_spec(G)
-    spec_type = spec.get("type", "none")
 
-    if spec_type == "none":
-        return np_mod.zeros_like(theta_arr)
+    Registered custom entries are evaluated once per node in graph order via
+    the scalar owner. Their graph reads are not simulated array-stage states.
+    """
+    try:
+        spec = _get_gamma_spec(G, strict=strict)
+        t = _gamma_real(t, "Gamma time")
+        if not _uses_builtin_gamma(spec):
+            return np_mod.asarray(
+                [eval_gamma(G, node, t, strict=strict) for node in G], dtype=float
+            )
+        if spec.get("type", "none") == "none":
+            return np_mod.zeros(len(G), dtype=float)
+        raw_phases = np_mod.asarray(theta_arr, dtype=object)
+        if raw_phases.ndim != 1 or len(raw_phases) != len(G):
+            raise ValueError("Gamma phases must have one scalar per graph node")
+        theta_arr = np_mod.asarray(
+            [_gamma_real(value, "Gamma phase") for value in raw_phases], dtype=float
+        )
+        result = _eval_builtin_gamma_vectorized(spec, theta_arr, t, np_mod)
+        if not np_mod.isfinite(result).all():
+            raise ValueError("Gamma rate must be finite")
+        return result
+    except (ValueError, TypeError, ArithmeticError):
+        if strict:
+            raise
+        logger.debug("Failed to evaluate vectorized Gamma", exc_info=True)
+        return np_mod.zeros(len(G), dtype=float)
+
+
+def _eval_builtin_gamma_vectorized(
+    spec: GammaSpec, theta_arr: Any, t: float, np_mod: Any
+) -> Any:
+    """Array formulas for the unchanged built-in entries only."""
+    spec_type = spec.get("type", "none")
 
     # Precompute Kuramoto order if needed
     # For vectorized, we assume theta_arr contains all nodes in order
@@ -424,6 +493,4 @@ def eval_gamma_vectorized(
         # beta * sin(omega * t + phi) * cos(theta - psi)
         return beta * np_mod.sin(omega * t + phi) * np_mod.cos(theta_arr - psi)
 
-    else:
-        logger.warning(f"Vectorized gamma not implemented for {spec_type}, using zeros")
-        return np_mod.zeros_like(theta_arr)
+    raise ValueError(f"No array formula for Gamma type {spec_type!r}")

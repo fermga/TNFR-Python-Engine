@@ -4,12 +4,13 @@ This module provides optimized NumPy implementations of structural field computa
 to replace slow Python loops in canonical.py.
 """
 
-import math
 from typing import Any
 
-from ..mathematics.unified_numerical import np
-from ._edge_semantics import has_explicit_edge_lengths, structural_path_weight
-from ._helpers import compensated_sum
+from ..mathematics._neighbor_differences import edge_mean_differences
+from ..mathematics.unified_numerical import compute_phase_difference, np
+from ._edge_semantics import structural_distance_rows, validate_structural_graph
+from ._helpers import finite_real_scalar
+from ._potential_kernel import potential_row_sum
 
 try:
     import networkx as nx
@@ -26,81 +27,54 @@ def compute_phi_s_exact_vectorized(
     distance_matrix: np.ndarray | None = None,
 ) -> dict[Any, float]:
     """Exact-distance Φ_s, with compensated rows for signed pressure."""
+    from ._coherence_fit import _distance_array
 
-    # Get adjacency matrix or distance matrix
-    # For small N, Floyd-Warshall is fine
-    # For larger N, we might need Johnson's or repeated Dijkstra
-    # But if we are here, N is likely small (< 500)
-
-    try:
-        if distance_matrix is not None:
-            D = distance_matrix.copy()
-        elif has_explicit_edge_lengths(G):
-            # Floyd-Warshall's public weight argument is an attribute name, so
-            # use the shared callable fallback when per-edge ``length`` must
-            # take precedence over the legacy ``weight`` channel.
+    validate_structural_graph(G, nodes)
+    alpha = finite_real_scalar(alpha, "potential alpha")
+    for node in nodes:
+        finite_real_scalar(delta_nfr[node], "potential pressure")
+    if distance_matrix is not None:
+        D = _distance_array(distance_matrix, len(nodes), G.is_directed()).copy()
+    elif any("length" in data or "weight" in data for _, _, data in G.edges(data=True)):
+        # The shared path owner validates metric and reachable path overflow.
+        return _compute_phi_s_exact_python_fallback(G, nodes, delta_nfr, alpha, dtype)
+    else:
+        try:
+            D = nx.floyd_warshall_numpy(G, nodelist=nodes)
+        except Exception:
             return _compute_phi_s_exact_python_fallback(
                 G, nodes, delta_nfr, alpha, dtype
             )
-        else:
-            # Use networkx floyd_warshall_numpy if available
-            # It returns a matrix of distances
-            D = nx.floyd_warshall_numpy(G, nodelist=nodes)
-    except Exception:
-        # Fallback if graph is disconnected or other issue
-        # Or if we want to support weighted graphs explicitly
-        # Construct manually via Dijkstra if FW fails or is too slow?
-        # For N < 500, FW is fast.
-        return _compute_phi_s_exact_python_fallback(G, nodes, delta_nfr, alpha, dtype)
-
-    # Cast before exponentiation so a genuinely extended dtype retains its
-    # intermediate range as well as its accumulator precision.
     D = np.asarray(D, dtype=dtype)
-    # Mask diagonal (self-interaction)
     np.fill_diagonal(D, np.inf)
-
-    # Compute potential
-    # Φ_i = Σ_j ΔNFR_j / D_ij^α
-
-    # Only reachable, positive distances contribute, as in the scalar kernel.
-    # A finite substitute for infinity invents cross-component interaction.
     valid_distances = np.isfinite(D) & (D > 0.0)
-
-    # ΔNFR vector
-    dnfr_vec = np.array([delta_nfr[node] for node in nodes], dtype=dtype)
-
-    if np.any(dnfr_vec < 0.0) and np.any(dnfr_vec > 0.0):
-        # A dot product may lose a residual such as 1e30 + 1 - 1e30.
-        # Use the same compensated reduction as streamed BFS/Dijkstra.
-        return {
-            node: compensated_sum(
-                dnfr_vec[valid_distances[i]] / D[i, valid_distances[i]] ** alpha,
-                dtype=dtype,
-            )
-            for i, node in enumerate(nodes)
-        }
-
-    # Matrix-vector product
-    inv_D = np.zeros_like(D, dtype=dtype)
-    inv_D[valid_distances] = 1.0 / (D[valid_distances] ** alpha)
-    phi_vec = inv_D @ dnfr_vec
-
-    return {node: float(phi_vec[i]) for i, node in enumerate(nodes)}
+    return {
+        node: potential_row_sum(
+            (
+                (delta_nfr[target], D[i, j])
+                for j, target in enumerate(nodes)
+                if valid_distances[i, j]
+            ),
+            alpha,
+            dtype=dtype,
+        )
+        for i, node in enumerate(nodes)
+    }
 
 
 def _compute_phi_s_exact_python_fallback(G, nodes, delta_nfr, alpha, dtype):
-    """Fallback for when vectorization fails."""
+    """Use the same distance and reduction owners when dense paths are unsuitable."""
     potential = {}
-    for src in nodes:
-        lengths = nx.single_source_dijkstra_path_length(
-            G, src, weight=structural_path_weight(G)
+    for source, lengths in structural_distance_rows(G, nodes):
+        potential[source] = potential_row_sum(
+            (
+                (delta_nfr[target], distance)
+                for target, distance in lengths.items()
+                if target != source and distance > 0.0
+            ),
+            alpha,
+            dtype=dtype,
         )
-        contributions = (
-            dtype(delta_nfr[dst]) / dtype(distance) ** alpha
-            for dst, distance in lengths.items()
-            if dst != src and math.isfinite(distance) and distance > 0.0
-        )
-        potential[src] = compensated_sum(contributions, dtype=dtype)
     return potential
 
 
@@ -127,6 +101,10 @@ def compute_phi_s_landmarks_vectorized(
     they are computed here when the optional maps are omitted. Scalar and
     vectorized callers therefore use the same outgoing-path convention.
     """
+    validate_structural_graph(G, nodes)
+    alpha = finite_real_scalar(alpha, "potential alpha")
+    for node in nodes:
+        finite_real_scalar(delta_nfr[node], "potential pressure")
     num_nodes = len(nodes)
     if not nodes:
         return {}
@@ -135,13 +113,9 @@ def compute_phi_s_landmarks_vectorized(
     if reverse_landmark_distances is None:
         if G.is_directed():
             reverse = G.reverse(copy=False)
-            reverse_weight = structural_path_weight(reverse)
-            reverse_landmark_distances = {
-                node: nx.single_source_dijkstra_path_length(
-                    reverse, node, weight=reverse_weight
-                )
-                for node in landmarks
-            }
+            reverse_landmark_distances = dict(
+                structural_distance_rows(reverse, landmarks)
+            )
         else:
             reverse_landmark_distances = landmark_distances
 
@@ -168,14 +142,24 @@ def compute_phi_s_landmarks_vectorized(
     for start in range(0, num_nodes, batch_size):
         end = min(start + batch_size, num_nodes)
         distances = np.full((end - start, num_nodes), np.inf, dtype=dtype)
+        reachable = np.zeros(distances.shape, dtype=bool)
         for index in range(len(landmarks)):
-            through_landmark = inward[index, start:end, None] + outward[index, None, :]
+            first = inward[index, start:end, None]
+            second = outward[index, None, :]
+            reachable |= np.isfinite(first) & np.isfinite(second)
+            with np.errstate(over="ignore"):
+                through_landmark = first + second
             np.minimum(distances, through_landmark, out=distances)
+        if np.any(reachable & ~np.isfinite(distances)):
+            raise ValueError(
+                "reachable landmark path distance exceeds the finite represented range"
+            )
         distances[np.arange(end - start), np.arange(start, end)] = np.inf
         valid = np.isfinite(distances) & (distances > 0.0)
-        inverse = np.zeros_like(distances)
-        inverse[valid] = 1.0 / distances[valid] ** alpha
-        potential[start:end] = inverse @ pressure
+        for i in range(end - start):
+            potential[start + i] = potential_row_sum(
+                zip(pressure[valid[i]], distances[i, valid[i]]), alpha, dtype=dtype
+            )
     return {node: float(potential[index]) for index, node in enumerate(nodes)}
 
 
@@ -286,11 +270,9 @@ def compute_phase_current_vectorized(
     np.ndarray
         Phase current for each node.
     """
-    # θ_j - θ_i
-    diffs = theta_arr[edge_src] - theta_arr[edge_dst]
-
-    # Wrap to [-π, π]
-    wrapped_diffs = (diffs + np.pi) % (2 * np.pi) - np.pi
+    # Retain the signed branch and tiny displacements; adding pi first
+    # erases sub-ULP gaps and flips the represented positive half-turn.
+    wrapped_diffs = compute_phase_difference(theta_arr[edge_src], theta_arr[edge_dst])
 
     # sin(Δθ)
     sines = np.sin(wrapped_diffs)
@@ -318,7 +300,7 @@ def compute_dnfr_flux_vectorized(
     degrees: np.ndarray,
     dtype: type = np.float64,
 ) -> np.ndarray:
-    """Vectorized computation of ΔNFR Flux J_ΔNFR.
+    """Read binary64 mean-neighbor pressure contrast through the shared reducer.
 
     J_ΔNFR(i) = mean(ΔNFR_j - ΔNFR_i) for j in neighbors(i)
               = mean(ΔNFR_j) - ΔNFR_i
@@ -332,31 +314,27 @@ def compute_dnfr_flux_vectorized(
     edge_dst : np.ndarray
         Indices of center nodes (i).
     degrees : np.ndarray
-        Degree of each node.
+        Unique outgoing-neighbor counts, including a self-loop once. Must
+        agree with the supplied incidences; conductance is not a weight here.
 
     Returns
     -------
     np.ndarray
-        ΔNFR flux for each node.
+        ΔNFR flux for each node, stored in ``dtype``. The shared binary64
+        reduction retains finite differences and signed cancellation; a
+        mathematically unrepresentable final flux is rejected.
     """
-    # Sum ΔNFR_j for all neighbors
-    neighbor_sums = np.zeros(len(dnfr_arr), dtype=dtype)
-    np.add.at(neighbor_sums, edge_dst, dnfr_arr[edge_src])
-
-    # Mean neighbor ΔNFR
-    with np.errstate(divide="ignore", invalid="ignore"):
-        neighbor_means = neighbor_sums / degrees
-
-    # Fix isolated nodes
-    neighbor_means[degrees == 0] = 0.0
-
-    # J = Mean(Neighbors) - Self
-    # For isolated nodes, neighbor_means is 0, so result is -Self.
-    # However, the original code says: "if not neighbors: flux[i] = 0.0"
-    # So we must mask isolated nodes explicitly.
-    result = neighbor_means - dnfr_arr
-    result[degrees == 0] = 0.0
-
+    counts = np.bincount(edge_dst, minlength=len(dnfr_arr))
+    if not np.array_equal(counts, degrees):
+        raise ValueError("neighbor counts must match pressure-flux incidence")
+    # This API names neighbors 'source' and centers 'destination'; the shared
+    # transport reducer uses the opposite names for outgoing incidence rows.
+    with np.errstate(over="ignore", invalid="ignore"):
+        result = np.asarray(
+            edge_mean_differences(dnfr_arr, edge_dst, edge_src), dtype=dtype
+        )
+    if not np.all(np.isfinite(result)):
+        raise ValueError("pressure flux exceeds the selected output dtype range")
     return result
 
 

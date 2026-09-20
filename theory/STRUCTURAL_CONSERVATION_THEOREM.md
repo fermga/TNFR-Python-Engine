@@ -244,6 +244,33 @@ is a **hypothesis requiring a specified graph sequence and uniform analytical
 bounds**. It is not established by U1–U6, by one finite-size fit, or by the
 identity defining $\mathcal S$. No continuum-limit theorem is claimed.
 
+The two-snapshot observer requires nonempty identical node support, complete
+finite maps for the requested observation, and a finite positive `dt`. Snapshot
+objects do not contain a clock: direct pair calls use their explicit interval
+(default one declared time unit). `ConservationTracker` derives that interval
+from strictly increasing retained timestamps. Rejected samples leave its retained
+state unchanged. A birth or deletion needs explicit correspondence and source
+accounting outside this observer; comparing only common nodes or inventing
+missing-node zeros would conceal that change.
+
+Temporal differences share one scalar secant reader. An overflowing
+intermediate subtraction is recovered from the exact represented operands
+when its final rate fits binary64; a nonzero rate that cannot be represented
+rejects instead of becoming zero balance. Candidate-energy nonincrease compares
+the captured endpoint energies, independently of a tolerance alert. Public
+tracker snapshots and report containers are detached from retained evidence.
+The SDK's combined balance/energy observation validates both before retaining
+the sample; a balance-only observation has its narrower admission contract.
+
+Live fields and captured fields share normalized-total energy arithmetic. At
+exceptional magnitudes it sums the exact represented squares across all nodes
+and applies the factor one half before rounding. This can recover a finite
+total when individual squares overflow, or a positive total when separately
+rounded squares disappear. A genuinely unrepresentable total rejects. Raw
+per-node density has its own numerical range and need not give a bitwise equal
+total after separate rounding. This preserves the declared quadratic form;
+it supplies no energy-descent law.
+
 *Historical heuristic and numerical scope.*
 
 The following steps document the heuristic that motivated the diagnostics.
@@ -320,6 +347,15 @@ levels, not admitted analytical bounds on every valid trajectory.
 
 The full measured balance decomposes into two residual channels:
 
+Capture evaluates the same graph divergence separately on `J_phi` and
+`J_DeltaNFR`, retaining `divergence_phi` and `divergence_dnfr` in each snapshot.
+Their sum supplies the total divergence. Each residual below uses the
+trapezoidal average of its actual component at the interval endpoints.
+Splitting total divergence in proportion to local current magnitudes is not
+this linear decomposition and can even reverse a component's sign. Older
+snapshots without the component maps remain constructible, but sector analysis
+requires recapture; it cannot infer the missing fields from the total alone.
+
 ### 5.1 Potential Sector
 
 $$\frac{\partial \Phi_s}{\partial t} + \nabla \cdot J_{\Delta\text{NFR}} = \mathcal{S}_{\text{pot}}$$
@@ -346,11 +382,18 @@ The diagnostic reports their finite **cross-sector correlation** as
 
 $$\kappa = \text{corr}\!\left(\mathcal{S}_{\text{pot}}, \mathcal{S}_{\text{geo}}\right)$$
 
-The recorded example-17 fixture gives a value in the range
-$\kappa \approx 0.6$–$0.7$. This single-protocol association neither proves
-that the sectors are dynamically dependent nor measures a causal coupling.
+Compute the value from the actual component residuals of the declared
+trajectory; historical numbers from a magnitude-weighted split are not
+reference values for this corrected observer. A single-protocol association
+neither proves that the sectors are dynamically dependent nor measures a causal coupling.
 It also does not prove the algebraic complex-field construction
 $\Psi = K_\phi + i J_\phi$, which is defined independently.
+
+The corrected seeded example-17 observation gives component RMS values
+approximately `0.391535` and `0.415118`, with correlation `+0.0289` and
+asymmetry `1.060`. These belong to that finite auxiliary trajectory, not a
+universal correlation target. Its Ward calculation uses the same declared
+`dt=0.01` as its evolution and other interval diagnostics.
 
 ---
 
@@ -449,6 +492,13 @@ This unweighted sum is not a time integral when interval lengths differ, so it
 should be compared only within a declared sampling protocol. Whether it is
 small is measured. U1 closure and U2 debt balance do not prove cancellation
 of the independently defined tetrad residual.
+
+An empty sequence reports `sample_available=False` and does not pass the
+aggregate balance alert. The legacy charge-character label `exact` denotes a
+numerical-tolerance classification, not an exact identity. Likewise,
+`LyapunovResult.is_stable` is a tolerance-based alert;
+`energy_nonincreasing` separately tests the represented sign. These fields
+do not prove a Lyapunov theorem between or beyond the sampled endpoints.
 
 **Experimental note (observational readout chain)**: The operator-specific
 measurements in §7.2 can be organized as
@@ -742,8 +792,13 @@ retains failures as negative evidence instead of treating them as warnings.
 
 - Report the actual topology, seed, time step and auxiliary update rule.
 - Treat quality $q=1/(1+\mathrm{RMS})$ as a normalized residual score, not a
-  direct coherence, grammar or convergence metric.
+  direct coherence, grammar or convergence metric. Binary64 rounding can give
+  `q=1` for a nonzero RMS; inspect the residual itself to test represented zero.
 - Treat cross-sector correlation as a finite association.
+- Correlation uses shared centered/scaled paired arithmetic. Sector reports
+  retain the legacy minimum of three nodes and dispersion cut `1e-15`, with
+  explicit availability; a compatibility zero below that cut is not measured
+  decorrelation. An unrepresentable sector-asymmetry ratio is unavailable.
 - Treat sampled energy descent as evidence only for the recorded intervals.
 
 ### 10.4 Finite-size fit
@@ -893,7 +948,6 @@ identify an operator outside that finite model and state family.
 | `verify_sequence_ward_identity(...)` | Finite-sequence aggregate and legacy threshold alert |
 | `compute_lyapunov_derivative(...)` | Sampled candidate $dE/dt$ and descent readout $D[G]$ |
 | `compute_spectral_conservation(...)` | Static spectral activity proxy |
-| `compute_conservation_scaling(...)` | Historical finite $q(N)$ ansatz fit |
 
 **U2 Policy and Spectral Context Module** (`src/tnfr/physics/lyapunov.py`;
 legacy names retained):
@@ -922,9 +976,15 @@ is returned without a declared map between those clocks.
 - `tests/core_physics/test_lyapunov_operators.py` — compatibility multipliers,
   spectral gap and sequence diagnostics
 
-### 13.3 Benchmark
+### 13.3 Retired duplicate validation
 
-**File**: `benchmarks/conservation_law_validation.py`
+The former standalone benchmark and `compute_conservation_scaling` helper
+used a handwritten phase/pressure smoother that did not integrate EPI. They
+have been removed; neither supplied a nodal conservation theorem. The
+[retirement record](research/archive/README.md#foundation-reassessment-2026-09-20)
+identifies the removed APIs. Production snapshot and trajectory diagnostics
+remain in the shared module. Example 34 retains the explicitly auxiliary,
+seeded negative controls described in Section 10; it is not an engine law.
 
 ### 13.4 Example
 

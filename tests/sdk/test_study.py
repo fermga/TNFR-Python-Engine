@@ -5,6 +5,7 @@ import math
 import threading
 from copy import deepcopy
 from dataclasses import FrozenInstanceError
+from fractions import Fraction
 
 import networkx as nx
 import pytest
@@ -169,6 +170,34 @@ def test_report_is_detached_and_exports_through_existing_writer(tmp_path):
         StudyResult({"value": math.nan})
     with pytest.raises(TypeError, match="mapping"):
         StudyResult([])
+
+
+@pytest.mark.parametrize("mapping", [{1: "integer", "1": "string"}, {"nested": {1: 2}}])
+def test_report_constructor_rejects_nonstring_keys_before_json_can_merge_them(mapping):
+    with pytest.raises(TypeError, match="keys must be strings"):
+        StudyResult(mapping)
+
+
+def test_diagnostic_json_admission_preserves_unrepresentable_source_unavailability():
+    tiny_source = Fraction(1, 10**400)
+    observed = study._capture(lambda: tiny_source)
+    assert observed["available"] is False
+    assert observed["value"] is None
+    assert observed["error"]["type"] == "ValueError"
+    assert "underflows" in observed["error"]["message"]
+    with pytest.raises(ValueError, match="underflows"):
+        StudyResult({"value": tiny_source})
+
+
+def test_report_and_capture_share_admission_for_representable_real_sources():
+    tiny = float.fromhex("0x0.0000000000001p-1022")
+    source = Fraction.from_float(tiny)
+    observed = study._capture(lambda: source)
+    assert observed["available"] is True
+    assert observed["value"] == tiny
+    assert (
+        StudyResult({"nested": {"value": source}}).to_dict()["nested"]["value"] == tiny
+    )
 
 
 def _prepared_network():

@@ -10,12 +10,13 @@ from __future__ import annotations
 import math
 from collections.abc import Mapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
-from numbers import Integral, Real
+from numbers import Integral
 from typing import Any
 
+from .._exact_time import finite_represented_real
 from ..alias import set_vf
+from ..config.selector_thresholds import resolve_selector_thresholds
 from ..constants import get_param
-from ..constants.canonical import DYNAMICS_SI_HI_THRESHOLD_CANONICAL
 from ..metrics.common import ensure_neighbors_map
 from ..types import TNFRGraph
 from ..utils import clamp, resolve_chunk_size
@@ -36,14 +37,10 @@ def _finite_real(
 ) -> float:
     """Return one finite real scalar within optional closed bounds."""
 
-    if isinstance(value, bool) or not isinstance(value, Real):
-        raise ValueError(f"{label} must be a finite real number")
     try:
-        normalized = float(value)
-    except (OverflowError, TypeError, ValueError):
-        raise ValueError(f"{label} must be a finite real number") from None
-    if not math.isfinite(normalized):
-        raise ValueError(f"{label} must be a finite real number")
+        normalized, _ = finite_represented_real(value, label)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(str(exc)) from exc
     if minimum is not None and normalized < minimum:
         raise ValueError(f"{label} must be >= {minimum}")
     if maximum is not None and normalized > maximum:
@@ -60,14 +57,6 @@ def _integer_at_least(value: Any, label: str, minimum: int) -> int:
     if normalized < minimum:
         raise ValueError(f"{label} must be an integer >= {minimum}")
     return normalized
-
-
-def _mapping(value: Any, label: str) -> Mapping[str, Any]:
-    """Return one configuration mapping without coercing other containers."""
-
-    if not isinstance(value, Mapping):
-        raise ValueError(f"{label} must be a mapping")
-    return value
 
 
 def _first_alias_value(
@@ -161,26 +150,7 @@ def _validated_parameters(
         minimum=0.0,
     )
 
-    selector_thresholds = _mapping(
-        get_param(G, "SELECTOR_THRESHOLDS"),
-        "SELECTOR_THRESHOLDS",
-    )
-    fallback_thresholds = _mapping(
-        get_param(G, "GLYPH_THRESHOLDS"),
-        "GLYPH_THRESHOLDS",
-    )
-    si_hi = _finite_real(
-        selector_thresholds.get(
-            "si_hi",
-            fallback_thresholds.get(
-                "hi",
-                DYNAMICS_SI_HI_THRESHOLD_CANONICAL,
-            ),
-        ),
-        "SELECTOR_THRESHOLDS['si_hi']",
-        minimum=0.0,
-        maximum=1.0,
-    )
+    si_hi = resolve_selector_thresholds(G)["si_hi"]
 
     vf_min = _finite_real(get_param(G, "VF_MIN"), "VF_MIN", minimum=0.0)
     vf_max = _finite_real(get_param(G, "VF_MAX"), "VF_MAX", minimum=0.0)
@@ -280,6 +250,8 @@ def adapt_vf_after_structural_stability(
     than EPS_DNFR_STABLE and Si is at least the configured si_hi threshold.
     After VF_ADAPT_TAU consecutive qualifying evaluations, its frequency moves
     by VF_ADAPT_MU toward the immutable-snapshot mean of its neighbors.
+    These are unique outgoing support neighbors; parallel edges and transport
+    weights do not multiply their contributions, and zero-weight edges remain.
     Comparison guards keep the represented mean inside its neighbor range
     and the represented update between the current capacity and that mean.
     Thus any eligibility subset preserves the incoming capacity interval;
@@ -299,6 +271,8 @@ def adapt_vf_after_structural_stability(
     canonical total coherence C(t). All parameters and node scalars are
     validated before mutation. Stable counters and frequency updates commit as
     one transaction; any proposal, worker, or setter failure restores both.
+    Numeric admission shares the represented-real boundary: a nonzero supplied
+    scalar cannot silently become zero before a gate or bound is evaluated.
 
     Parameters
     ----------

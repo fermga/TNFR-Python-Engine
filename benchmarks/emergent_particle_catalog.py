@@ -20,7 +20,7 @@ winding, or identify any winding sector with a physical particle species.
 Run:
     python benchmarks/emergent_particle_catalog.py
 
-Theoretical anchor: theory/EMERGENT_ONTOLOGY.md Sec.9.1 (open physical map) and
+Theoretical anchor: theory/EMERGENT_ONTOLOGY.md (open physical map) and
 emergent_particles.py (declared-cycle winding certificate).
 Status: RESEARCH (finite winding-sector diagnostic).
 """
@@ -38,6 +38,7 @@ _SRC = pathlib.Path(__file__).resolve().parents[1] / "src"
 if str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
 
+from tnfr.mathematics.unified_numerical import compute_phase_difference  # noqa: E402
 from tnfr.physics.emergent_particles import (  # noqa: E402
     classify_winding_sector,
     winding_number,
@@ -75,8 +76,9 @@ def _finite_control(value: object, *, name: str, positive: bool) -> float:
 
 
 def _wrap_pi_array(x: np.ndarray) -> np.ndarray:
-    """Wrap angles to [-pi, pi)."""
-    return (x + math.pi) % _TWO_PI - math.pi
+    """Use shared represented-trigonometric wrapping, with a half-open cut."""
+    wrapped = compute_phase_difference(x, 0.0)
+    return np.where(wrapped == math.pi, -math.pi, wrapped)
 
 
 def ring_phase_gradient_mean(phases: np.ndarray) -> float:

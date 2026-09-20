@@ -1,8 +1,8 @@
 """Canonical consistency of the operator-classification sets (single source).
 
 These tests guard the SINGLE SOURCE OF TRUTH for the U1-U6 operator
-classification.  Every grammar set is derived from the per-operator
-nodal-equation predicates in ``tnfr.config.physics_derivation`` and re-exported
+classification. Every grammar set collects the declared per-operator role
+predicates in ``tnfr.config.physics_derivation`` and is re-exported
 by ``tnfr.operators.grammar_types``.  All other modules that carry a copy of
 these sets (config.operator_names graduated taxonomy, math.grammar_validators
 glyph sets) must agree with the canonical source — these tests fail loudly if any
@@ -17,11 +17,16 @@ whether NAV/EN provide U4b bifurcation context.  These tests pin the resolution.
 
 from __future__ import annotations
 
+import math
+from fractions import Fraction
+
+import pytest
+
 from tnfr.config import physics_derivation as pd
 from tnfr.operators import grammar_types as gt
 
 # ---------------------------------------------------------------------------
-# Canonical values (the absolute truth, derived from the nodal equation)
+# Registered role-policy values (not theorems from the nodal product)
 # ---------------------------------------------------------------------------
 
 CANONICAL_GENERATORS = {"emission", "transition", "recursivity"}  # AL,NAV,REMESH
@@ -70,8 +75,8 @@ class TestPhysicsDerivationIsTheSource:
         assert gt.BIFURCATION_HANDLERS == CANONICAL_HANDLERS
 
 
-class TestBifurcationWindowEmergent:
-    """The U4b window is DERIVED from the pulse relaxation (not a magic 3)."""
+class TestScalarGrammarCalibration:
+    """Compatibility calibration of the U4b window to a scalar surrogate."""
 
     def test_canonical_window_is_three(self) -> None:
         # the derivation evaluates to the canonical U4b window (nu_f=1, dt=0.5)
@@ -99,9 +104,9 @@ class TestBifurcationWindowEmergent:
             dt=0.25
         ) > pd.derive_bifurcation_window_from_physics(dt=0.5)
 
-    def test_single_emergent_window_for_all_destabilizers(self) -> None:
+    def test_single_policy_window_for_all_destabilizers(self) -> None:
         # the graduated split is dropped: every destabilizer shares the SINGLE
-        # emergent window (topology-independent relaxation, rho = trace/N = 1).
+        # configured window; rho=1 is a mean-rate surrogate, not every mode.
         # The strong/moderate/weak partition and BIFURCATION_WINDOWS dict are
         # removed -- DESTABILIZERS + BIFURCATION_WINDOW are the single sources.
         from tnfr.config import operator_names as on
@@ -129,13 +134,85 @@ class TestBifurcationWindowEmergent:
 
     def test_grammar_repeat_window_is_the_relaxation_window(self) -> None:
         # the GRAMMAR repeat-avoidance window (don't re-fire a destabilizer
-        # before its perturbation relaxes) = the same derived relaxation window
+        # within the configured recency horizon) uses the same policy window
         from tnfr.config.defaults_core import CoreDefaults
 
         assert (
             CoreDefaults().GRAMMAR["window"]
             == pd.derive_bifurcation_window_from_physics()
         )
+
+    @pytest.mark.parametrize("rate", [1.0, 0.75, 0.5, 0.25, 0.1])
+    def test_window_is_first_crossing_for_admitted_scalar_rates(self, rate) -> None:
+        window = pd.derive_bifurcation_window_from_physics(rate, 1.0)
+        q = 1 - Fraction.from_float(rate)
+        band = Fraction.from_float(1.0 / (math.pi + 1.0))
+        assert q**window < band
+        assert window == 1 or q ** (window - 1) >= band
+
+    def test_window_cap_is_not_a_decay_certificate(self) -> None:
+        rate = 2.0**-10
+        window = pd.derive_bifurcation_window_from_physics(rate, 1.0)
+        q = 1 - Fraction.from_float(rate)
+        band = Fraction.from_float(1.0 / (math.pi + 1.0))
+        assert window == 64
+        assert q**window > band
+
+    @pytest.mark.parametrize("rate", [0.1, math.nextafter(0.1, 0.0), 0.5, 1.0])
+    def test_debt_floor_bounds_the_exact_represented_scalar_sum(self, rate) -> None:
+        capacity = pd.derive_u2_debt_capacity_from_physics(rate, 1.0)
+        exact_rate = Fraction.from_float(rate)
+        assert capacity * exact_rate <= 1 < (capacity + 1) * exact_rate
+
+    def test_float_reciprocal_cannot_round_up_the_debt_floor(self) -> None:
+        # Binary64 0.1 is just above 1/10, although float(1/0.1) rounds to 10.
+        assert 1.0 / 0.1 == 10.0
+        assert pd.derive_u2_debt_capacity_from_physics(0.1, 1.0) == 9
+
+    def test_subnormal_relaxation_has_no_reciprocal_overflow(self) -> None:
+        rate = math.ulp(0.0)
+        assert pd.derive_u2_debt_capacity_from_physics(rate, 1.0) == 2**1074
+        assert pd.derive_bifurcation_window_from_physics(rate, 1.0) == 64
+
+    @pytest.mark.parametrize(
+        "calibrate",
+        [
+            pd.derive_bifurcation_window_from_physics,
+            pd.derive_u2_debt_capacity_from_physics,
+        ],
+    )
+    @pytest.mark.parametrize("parameter", ["nu_f", "dt"])
+    @pytest.mark.parametrize(
+        "invalid",
+        [0, -1, True, False, float("nan"), float("inf"), -float("inf"), "0.5", 1j],
+    )
+    def test_invalid_inputs_do_not_become_calibrated_policies(
+        self, calibrate, parameter, invalid
+    ) -> None:
+        with pytest.raises(ValueError, match="finite positive real"):
+            calibrate(**{parameter: invalid})
+
+    @pytest.mark.parametrize(
+        "calibrate",
+        [
+            pd.derive_bifurcation_window_from_physics,
+            pd.derive_u2_debt_capacity_from_physics,
+        ],
+    )
+    @pytest.mark.parametrize(
+        ("nu_f", "dt"),
+        [
+            (math.ulp(0.0), 0.5),
+            (1e308, 1e308),
+            (1.0, math.nextafter(1.0, math.inf)),
+            (2.0, 1.0),
+        ],
+    )
+    def test_represented_product_must_belong_to_nonnegative_surrogate(
+        self, calibrate, nu_f, dt
+    ) -> None:
+        with pytest.raises(ValueError, match="represented nu_f\\*dt"):
+            calibrate(nu_f, dt)
 
 
 class TestPredicateGrounding:

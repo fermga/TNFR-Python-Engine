@@ -1,26 +1,29 @@
 """TNFR Canonical Operator-Contract Specification — the single source of truth.
 
-This module is the authoritative, physics-grounded, TNFR.pdf-anchored
-specification of the **contracts** of the 13 structural operators: what each
-operator does to the node state while remaining compatible with the nodal
-equation ``∂EPI/∂t = νf · ΔNFR``, expressed as a verifiable postcondition.
+This module records the **contracts** of the 13 registered structural
+operators: named event effects on node state and their declared postconditions.
+Continuous intervals obey ``∂EPI/∂t = νf · ΔNFR`` separately. An event's finite
+state change is not a continuous rate or a derivation of its occurrence.
 
 It is the contract-layer companion of :mod:`grammar_canon` (which owns the U1-U6
-*grammatical role* layer). Together they fully specify each operator:
+*grammatical role* layer). Together they classify each operator; live admission,
+secondary writes and atomic-stage scope remain execution-path contracts:
 
     grammar_canon      → U1-U6 roles    (generator / stabilizer / destabilizer …)
     operator_contracts → state effects  (which nodal channel, which direction)
 
-Ground truth (doctrinal)
-------------------------
+Executable evidence and historical references
+----------------------------------------------
 The executable ground truth of an operator contract is **the direct effect the
 glyph has on the node state** — the deterministic mutation applied by the
 ``_op_*`` handlers in :mod:`tnfr.operators`. That mutation must remain
-compatible with ``∂EPI/∂t = νf · ΔNFR``; the equation alone does not determine
-all four state-channel updates. The three sources checked together are: (1) the
-nodal equation, (2) the ``_op_*`` direct effects, and (3) TNFR.pdf §2.2.1
-"Matriz operativa de los símbolos nodales" (the per-glyph formal expressions,
-e.g. ``A'L ⇒ ∂EPI/∂t > 0, νf ≈ ν₀⁺``; ``I'L ⇒ ∂Wᵢ/∂t → 0, νf = const``).
+compatible with the declared hybrid execution; the nodal equation alone does
+not determine all four state-channel updates. ``pdf_reference`` retains the
+historical source. ``nodal_expression`` describes the current event and its
+scope, rather than repeating a source formula as an unproved rate theorem.
+Here a prime in an event expression denotes the post-event value, not a time
+derivative. Auxiliary writes can differ between direct glyphs, public classes
+and atomic stages; this metadata does not replace those path contracts.
 
 The unifying structure (synergies)
 -----------------------------------
@@ -154,9 +157,9 @@ class OperatorScale(Enum):
 class EffectDirection(Enum):
     """The canonical direction of an operator's primary channel effect."""
 
-    INCREASE = "increase"  # channel magnitude rises (∂ > 0)
-    DECREASE = "decrease"  # channel magnitude falls (∂ < 0)
-    PRESERVE = "preserve"  # channel held (∂ ≈ 0, e.g. freeze)
+    INCREASE = "increase"  # ordered event effect; not a continuous rate
+    DECREASE = "decrease"  # ordered event effect; not a continuous rate
+    PRESERVE = "preserve"  # channel held at the event
     REORGANIZE = "reorganize"  # channel reshaped toward a target (mix/sync)
     TRANSFORM = "transform"  # channel crosses a threshold (θ → θ')
 
@@ -222,7 +225,8 @@ class OperatorContract:
     context : ContractContext
         Where the contract canonically manifests (example 115).
     nodal_expression : str
-        The TNFR.pdf §2.2.1 formal expression of the operator's effect.
+        Current event effect with its scope; not a continuous-time theorem
+        or a verbatim historical quotation. A prime means post-event state.
     pdf_reference : str
         The TNFR.pdf section anchoring the operator.
     """
@@ -290,7 +294,10 @@ OPERATOR_CONTRACTS: dict[str, OperatorContract] = {
         scale=OperatorScale.NODE,
         postcondition="EPI not decreased; νf, phase and ΔNFR unchanged",
         context=ContractContext.NETWORK,
-        nodal_expression="A'L ⇒ ∂EPI/∂t > 0, νf ≈ ν₀⁺",
+        nodal_expression=(
+            "A'L: EPI' = clip(EPI + boost); νf, ΔNFR and phase unchanged; "
+            "no positive continuous-rate assertion"
+        ),
         pdf_reference="TNFR.pdf §2.2.1 (1) A'L — Emisión fundacional",
     ),
     RECEPTION: OperatorContract(
@@ -305,7 +312,10 @@ OPERATOR_CONTRACTS: dict[str, OperatorContract] = {
             "Immediate operator-local C(t) unchanged; ΔNFR and dEPI unchanged"
         ),
         context=ContractContext.NETWORK,
-        nodal_expression="E'N ⇒ coherent input → modulation of Wᵢ(t)",
+        nodal_expression=(
+            "E'N: EPI' = clip((1-mix)·EPI + mix·neighbor_mean); "
+            "stored ΔNFR and dEPI unchanged"
+        ),
         pdf_reference="TNFR.pdf §2.2.1 (2) E'N — Recepción estructural",
     ),
     RESONANCE: OperatorContract(
@@ -318,7 +328,10 @@ OPERATOR_CONTRACTS: dict[str, OperatorContract] = {
         scale=OperatorScale.NODE,
         postcondition="EPI structural identity (sign/kind) preserved",
         context=ContractContext.IDENTITY,
-        nodal_expression="R'A ⇒ EPI propagation with amplified νf",
+        nodal_expression=(
+            "R'A: U3-compatible EPI blend preserving sign/kind; "
+            "direct-path νf amplification and phase writes are conditional"
+        ),
         pdf_reference="TNFR.pdf §2.2.1 R'A — Resonancia",
     ),
     # ── νf channel (frequency/mobility, capacity arm): SHA, VAL, NUL ────────
@@ -332,33 +345,35 @@ OPERATOR_CONTRACTS: dict[str, OperatorContract] = {
         scale=OperatorScale.NODE,
         postcondition="νf not increased; EPI, ΔNFR and phase unchanged during SHA",
         context=ContractContext.NETWORK,
-        nodal_expression="SH'A: νf'=α νf; later ∂EPI/∂t=0 requires νf·ΔNFR=0",
+        nodal_expression=(
+            "SH'A: νf'=α νf, EPI'=EPI; later unforced ∂EPI/∂t=0 " "requires νf·ΔNFR=0"
+        ),
         pdf_reference="TNFR.pdf §2.2.1 SH'A — Silencio",
     ),
     EXPANSION: OperatorContract(
         name=EXPANSION,
         english_name="Expansion",
         glyph="VAL",
-        purpose="Adds reorganization capacity (νf), raising structural complexity.",
+        purpose="Scales reorganization capacity (νf) without a state-dimension claim.",
         primary_channel=StateChannel.NU_F,
         primary_direction=EffectDirection.INCREASE,
         scale=OperatorScale.NODE,
         postcondition="νf not decreased (capacity added)",
         context=ContractContext.NETWORK,
-        nodal_expression="VA'L ⇒ νf ↑ (structural complexity)",
+        nodal_expression="VA'L: νf' ≥ νf; no state-dimension increase follows",
         pdf_reference="TNFR.pdf §2.2.1 VA'L — Expansión",
     ),
     CONTRACTION: OperatorContract(
         name=CONTRACTION,
         english_name="Contraction",
         glyph="NUL",
-        purpose="Removes capacity (νf ↓) and concentrates pressure (ΔNFR ↑).",
+        purpose="Reduces capacity and scales pressure magnitude under its configured map.",
         primary_channel=StateChannel.NU_F,
         primary_direction=EffectDirection.DECREASE,
         scale=OperatorScale.NODE,
         postcondition="νf not increased (capacity removed)",
         context=ContractContext.NETWORK,
-        nodal_expression="NU'L ⇒ νf ↓, ΔNFR densified",
+        nodal_expression="NU'L: νf' ≤ νf; ΔNFR' = densification_factor·ΔNFR",
         pdf_reference="TNFR.pdf §2.2.1 NU'L — Contracción",
     ),
     # ── θ channel (phase → |∇φ|, K_φ): Coupling, Mutation ───────────────────
@@ -399,7 +414,10 @@ OPERATOR_CONTRACTS: dict[str, OperatorContract] = {
         scale=OperatorScale.NODE,
         postcondition="|ΔNFR| not increased and C(t) not decreased",
         context=ContractContext.NETWORK,
-        nodal_expression="I'L ⇒ ∂Wᵢ/∂t → 0, νf = const",
+        nodal_expression=(
+            "I'L: ΔNFR' = factor·ΔNFR, 0 ≤ factor ≤ 1; "
+            "no future-flow convergence assertion"
+        ),
         pdf_reference="TNFR.pdf §2.2.1 (3) I'L — Coherencia estructural",
     ),
     DISSONANCE: OperatorContract(
@@ -412,7 +430,10 @@ OPERATOR_CONTRACTS: dict[str, OperatorContract] = {
         scale=OperatorScale.NODE,
         postcondition="|ΔNFR| not decreased",
         context=ContractContext.NODE,
-        nodal_expression="O'Z ⇒ |ΔNFR| ↑ (may trigger ∂²EPI/∂t² > τ)",
+        nodal_expression=(
+            "O'Z: local |ΔNFR| not decreased in amplification mode; "
+            "no continuous acceleration or bifurcation assertion"
+        ),
         pdf_reference="TNFR.pdf §2.2.1 O'Z — Disonancia",
     ),
     SELF_ORGANIZATION: OperatorContract(
@@ -428,7 +449,10 @@ OPERATOR_CONTRACTS: dict[str, OperatorContract] = {
             "acceleration; nested child creation preserves parent identity"
         ),
         context=ContractContext.NETWORK,
-        nodal_expression="T'HOL ⇒ ΔNFR += κ·∂²EPI/∂t² (sub-EPIs)",
+        nodal_expression=(
+            "T'HOL: ΔNFR' = ΔNFR + κ·a_history; "
+            "child creation is a separate configured public-operator path"
+        ),
         pdf_reference="TNFR.pdf §2.2.1 T'HOL — Autoorganización",
     ),
     TRANSITION: OperatorContract(
@@ -457,8 +481,10 @@ OPERATOR_CONTRACTS: dict[str, OperatorContract] = {
         postcondition="node-level advisory; network effect = EPI mixed toward "
         "temporal/multi-scale history",
         context=ContractContext.ADVISORY,
-        nodal_expression="RE'MESH ⇒ EPI_new = (1-α)²·EPI(t) + α(1-α)·EPI(t-τ_l) "
-        "+ α·EPI(t-τ_g)",
+        nodal_expression=(
+            "RE'MESH network map: EPI_raw = (1-α)²·EPI(t) "
+            "+ α(1-α)·EPI(t-τ_l) + α·EPI(t-τ_g); EPI'=clip(EPI_raw)"
+        ),
         pdf_reference="TNFR.pdf §2.2.1 RE'MESH — Recursividad",
     ),
 }

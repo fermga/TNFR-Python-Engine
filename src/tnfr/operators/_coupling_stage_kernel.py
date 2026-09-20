@@ -15,9 +15,10 @@ import math
 from collections import defaultdict
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from numbers import Integral, Real
+from numbers import Integral
 from typing import Any
 
+from .._exact_time import finite_represented_real
 from ..alias import get_attr
 from ..constants import DEFAULTS
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_THETA, ALIAS_VF
@@ -124,24 +125,13 @@ class CouplingStageProposal:
 
 
 def _finite_real(value: Any, label: str) -> float:
-    if isinstance(value, bool) or not isinstance(value, Real):
-        raise TNFRValueError(
-            f"Coupling {label} must be a finite real scalar",
-            context={"operator": "Coupling", "field": label, "value": repr(value)},
-        )
     try:
-        resolved = float(value)
+        return finite_represented_real(value, f"Coupling {label}")[0]
     except (OverflowError, TypeError, ValueError) as exc:
         raise TNFRValueError(
-            f"Coupling {label} must be representable as a finite scalar",
+            str(exc),
             context={"operator": "Coupling", "field": label, "value": repr(value)},
         ) from exc
-    if not math.isfinite(resolved):
-        raise TNFRValueError(
-            f"Coupling {label} must remain finite",
-            context={"operator": "Coupling", "field": label, "value": repr(value)},
-        )
-    return resolved
 
 
 def _nonnegative_real(value: Any, label: str) -> float:

@@ -5,12 +5,11 @@ This module provides non-physical runtime configuration for:
 - Telemetry density (low/medium/high)
 - Diagnostics level (off/basic/rich)
 
-CRITICAL CONSTRAINTS:
-- Must NOT alter TNFR physics or grammar semantics (U1-U6)
-- Must NOT change operator contracts or coherence evolution
-- Only adjusts numeric details (dtypes, algorithms) and observational richness
-
-These settings tune HOW we measure and report, never WHAT the physics does.
+These settings do not redefine pressure laws, grammar policies or operator
+contracts. Supported readers may change arithmetic or observational richness.
+Different rounding near a strict cut can change a diagnostic flag; this API
+does not certify identical decisions or trajectories across modes. A controller
+that consumes those diagnostics needs its own numerical boundary analysis.
 """
 
 from __future__ import annotations
@@ -45,8 +44,9 @@ def set_precision_mode(mode: PrecisionMode) -> None:
     Parameters
     ----------
     mode : PrecisionMode
-        Target mode: "standard" (default), "high" (extended precision),
-        or "research" (maximum precision for publication-grade numerics).
+        Target mode: "standard" (default), "high", or "research". Current field
+        dtypes are binary64 for standard/high; research requests ``longdouble``
+        where supported. Its extra precision is platform-dependent.
 
     Raises
     ------
@@ -55,12 +55,9 @@ def set_precision_mode(mode: PrecisionMode) -> None:
 
     Notes
     -----
-    Physics invariant: Changing precision mode must not alter:
-    - Grammar validation (U1-U6)
-    - Operator contracts
-    - Coherence evolution semantics
-
-    Only affects numeric implementation details (dtypes, algorithms).
+    Modes preserve the specified mathematical definitions and policy cuts,
+    not necessarily their rounded values or boundary decisions. No mode label
+    supplies a validated error bound or a higher-precision execution theorem.
     """
     global _precision_mode
     valid_modes: tuple[PrecisionMode, ...] = ("standard", "high", "research")

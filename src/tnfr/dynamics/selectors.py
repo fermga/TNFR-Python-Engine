@@ -1,4 +1,9 @@
-"""Glyph selection helpers for TNFR dynamics."""
+"""Configured glyph policies over admitted stored metrics and histories.
+
+Selection uses the declared Si/pressure/acceleration bands, score overrides and
+hysteresis. These policies do not derive an autonomous selection law. Grammar
+and operator live-state admission remain separate at execution.
+"""
 
 from __future__ import annotations
 
@@ -10,22 +15,23 @@ from concurrent.futures import ProcessPoolExecutor
 from operator import itemgetter
 from typing import Any, cast
 
-from ..alias import collect_attr, get_attr
+from .._exact_time import finite_represented_real
+from ..alias import get_attr
 from ..compat.dataclass import dataclass
 from ..constants import get_graph_param, get_param
-from ..glyph_history import ensure_history
 from ..mathematics.unified_numerical import np
-from ..metrics.common import compute_dnfr_accel_max, merge_and_normalize_weights
+from ..metrics.common import merge_and_normalize_weights
 from ..operators import apply_glyph
 from ..selector import (
     _apply_selector_hysteresis,
     _calc_selector_score,
+    _selector_margin,
     _selector_norms,
     _selector_parallel_jobs,
     _selector_thresholds,
 )
 from ..types import Glyph, GlyphCode, GlyphSelector, HistoryState, NodeId, TNFRGraph
-from ..utils import clamp01, resolve_chunk_size
+from ..utils import clamp01, is_non_string_sequence, resolve_chunk_size
 from ..validation import (
     GrammarContext,
     StructuralGrammarError,
@@ -80,17 +86,15 @@ class AbstractSelector(ABC):
 def _default_selector_logic(G: TNFRGraph, n: NodeId) -> GlyphCode:
     nd = G.nodes[n]
     thr = _selector_thresholds(G)
+    Si, dnfr, _ = _selector_normalized_metrics(nd, _selector_norms(G))
+    return _default_selector_base_choice(Si, dnfr, thr)
+
+
+def _default_selector_base_choice(
+    Si: float, dnfr: float, thr: Mapping[str, float]
+) -> GlyphCode:
+    """One owner of the configured default selector's comparison order."""
     hi, lo, dnfr_hi = itemgetter("si_hi", "si_lo", "dnfr_hi")(thr)
-
-    norms = G.graph.get("_sel_norms")
-    if norms is None:
-        norms = compute_dnfr_accel_max(G)
-        G.graph["_sel_norms"] = norms
-    dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
-
-    Si = clamp01(get_attr(nd, ALIAS_SI, 0.5))
-    dnfr = abs(get_attr(nd, ALIAS_DNFR, 0.0)) / dnfr_max
-
     if Si >= hi:
         return "IL"
     if Si <= lo:
@@ -116,12 +120,40 @@ def _soft_grammar_prefilter(
 def _selector_normalized_metrics(
     nd: Mapping[str, Any], norms: Mapping[str, float]
 ) -> tuple[float, float, float]:
-    dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
-    acc_max = float(norms.get("accel_max", 1.0)) or 1.0
-    Si = clamp01(get_attr(nd, ALIAS_SI, 0.5))
-    dnfr = abs(get_attr(nd, ALIAS_DNFR, 0.0)) / dnfr_max
-    accel = abs(get_attr(nd, ALIAS_D2EPI, 0.0)) / acc_max
-    return Si, dnfr, accel
+    dnfr_max, acc_max = _selector_divisors(norms)
+    si, pressure, acceleration = _selector_metric_inputs(nd)
+    return clamp01(si), abs(pressure) / dnfr_max, abs(acceleration) / acc_max
+
+
+def _metric_value(nd: Mapping[str, Any], aliases, default: float) -> float:
+    """Validate the authoritative value before alias fallback or array coercion."""
+    return get_attr(
+        nd,
+        aliases,
+        default,
+        strict=True,
+        conv=lambda value: finite_represented_real(value, aliases[0])[0],
+    )
+
+
+def _selector_metric_inputs(nd: Mapping[str, Any]) -> tuple[float, float, float]:
+    # Missing-channel values are configured selector baselines, not observations
+    # of equilibrium. Finite Si keeps its historical [0,1] saturation policy.
+    return (
+        _metric_value(nd, ALIAS_SI, 0.5),
+        _metric_value(nd, ALIAS_DNFR, 0.0),
+        _metric_value(nd, ALIAS_D2EPI, 0.0),
+    )
+
+
+def _selector_divisors(norms: Mapping[str, float]) -> tuple[float, float]:
+    values = tuple(
+        finite_represented_real(norms.get(key, 1.0), key)[0]
+        for key in ("dnfr_max", "accel_max")
+    )
+    if any(value < 0.0 for value in values):
+        raise ValueError("selector normalization maxima must be nonnegative")
+    return values[0] or 1.0, values[1] or 1.0
 
 
 def _selector_base_choice(
@@ -159,18 +191,27 @@ def _compute_selector_score(
     dnfr: float,
     accel: float,
     cand: GlyphCode,
+    *,
+    weights: Mapping[str, float] | None = None,
 ) -> float:
-    W = G.graph.get("_selector_weights")
-    if W is None:
-        W = _configure_selector_weights(G)
+    W = _configure_selector_weights(G) if weights is None else weights
     score = _calc_selector_score(Si, dnfr, accel, cast(Mapping[str, float], W))
     hist_prev = nd.get("glyph_history")
     if hist_prev and hist_prev[-1] == cand:
-        delta_si = get_attr(nd, ALIAS_DSI, 0.0)
-        h = ensure_history(G)
+        delta_si = _metric_value(nd, ALIAS_DSI, 0.0)
+        h = G.graph.get("history", {})
+        if not isinstance(h, Mapping):
+            raise ValueError("selector history must be a mapping")
         sig = h.get("sense_sigma_mag", [])
-        delta_sigma = sig[-1] - sig[-2] if len(sig) >= 2 else 0.0
-        if delta_si <= 0.0 and delta_sigma <= 0.0:
+        if not is_non_string_sequence(sig):
+            raise ValueError("sense_sigma_mag must be a numeric history sequence")
+        sigma_nonincreasing = (
+            finite_represented_real(sig[-1], "sense_sigma_mag latest")[0]
+            <= finite_represented_real(sig[-2], "sense_sigma_mag previous")[0]
+            if len(sig) >= 2
+            else True
+        )
+        if delta_si <= 0.0 and sigma_nonincreasing:
             score -= 0.05
     return float(score)
 
@@ -189,11 +230,9 @@ def _apply_score_override(
 def _parametric_selector_logic(G: TNFRGraph, n: NodeId) -> GlyphCode:
     nd = G.nodes[n]
     thr = _selector_thresholds(G)
-    margin: float | None = get_graph_param(G, "GLYPH_SELECTOR_MARGIN")
-
-    norms = cast(Mapping[str, float] | None, G.graph.get("_sel_norms"))
-    if norms is None:
-        norms = _selector_norms(G)
+    margin = _selector_margin(G)
+    weights = _configure_selector_weights(G)
+    norms = _selector_norms(G)
     Si, dnfr, accel = _selector_normalized_metrics(nd, norms)
 
     cand = _selector_base_choice(Si, dnfr, accel, thr)
@@ -202,7 +241,7 @@ def _parametric_selector_logic(G: TNFRGraph, n: NodeId) -> GlyphCode:
     if hist_cand is not None:
         return hist_cand
 
-    score = _compute_selector_score(G, nd, Si, dnfr, accel, cand)
+    score = _compute_selector_score(G, nd, Si, dnfr, accel, cand, weights=weights)
 
     cand = _apply_score_override(cand, score, dnfr, thr["dnfr_lo"])
 
@@ -218,6 +257,7 @@ class _SelectorPreselection:
     base_choices: Mapping[Any, GlyphCode]
     thresholds: Mapping[str, float] | None = None
     margin: float | None = None
+    weights: Mapping[str, float] | None = None
 
 
 def _build_default_preselection(
@@ -228,7 +268,7 @@ def _build_default_preselection(
     if not node_list:
         return _SelectorPreselection("default", {}, {}, thresholds=thresholds)
 
-    norms = G.graph.get("_sel_norms") or _selector_norms(G)
+    norms = _selector_norms(G)
     n_jobs = _selector_parallel_jobs(G)
     metrics = _collect_selector_metrics(G, node_list, norms, n_jobs=n_jobs)
     base_choices = _compute_default_base_choices(metrics, thresholds)
@@ -242,13 +282,14 @@ def _build_param_preselection(
 ) -> _SelectorPreselection:
     node_list = list(nodes)
     thresholds = _selector_thresholds(G)
-    margin: float | None = get_graph_param(G, "GLYPH_SELECTOR_MARGIN")
+    margin = _selector_margin(G)
+    weights = _configure_selector_weights(G)
     if not node_list:
         return _SelectorPreselection(
-            "param", {}, {}, thresholds=thresholds, margin=margin
+            "param", {}, {}, thresholds=thresholds, margin=margin, weights=weights
         )
 
-    norms = G.graph.get("_sel_norms") or _selector_norms(G)
+    norms = _selector_norms(G)
     n_jobs = _selector_parallel_jobs(G)
     metrics = _collect_selector_metrics(G, node_list, norms, n_jobs=n_jobs)
     base_choices = _compute_param_base_choices(metrics, thresholds, n_jobs)
@@ -258,11 +299,17 @@ def _build_param_preselection(
         base_choices,
         thresholds=thresholds,
         margin=margin,
+        weights=weights,
     )
 
 
 class DefaultGlyphSelector(AbstractSelector):
-    """Selector implementing the legacy default glyph heuristic."""
+    """Configured default heuristic with an explicit prepared-batch snapshot.
+
+    Without prepare, each call reads current metrics and normalizers. A manual
+    prepare remains frozen until the next prepare or clear; engine batches
+    clear it on exit. Selection alone does not certify live operator admission.
+    """
 
     __slots__ = ("_preselection", "_prepared_graph_id")
 
@@ -273,11 +320,17 @@ class DefaultGlyphSelector(AbstractSelector):
     def prepare(self, graph: TNFRGraph, nodes: Sequence[NodeId]) -> None:
         """Precompute default selector metrics for ``nodes``."""
 
+        self.clear()
         self._preselection = _build_default_preselection(graph, nodes)
         self._prepared_graph_id = id(graph)
 
+    def clear(self) -> None:
+        """End the prepared batch so later calls read the current graph."""
+        self._preselection = None
+        self._prepared_graph_id = None
+
     def select(self, graph: TNFRGraph, node: NodeId) -> GlyphCode:
-        """Return the canonical glyph for ``node`` using cached metrics when available."""
+        """Return the configured glyph, using an explicitly prepared snapshot."""
 
         if self._prepared_graph_id == id(graph):
             preselection = self._preselection
@@ -289,7 +342,7 @@ class DefaultGlyphSelector(AbstractSelector):
 
 
 class ParametricGlyphSelector(AbstractSelector):
-    """Selector exposing the parametric scoring pipeline."""
+    """Configured score policy with the same explicit batch lifecycle as default."""
 
     __slots__ = ("_preselection", "_prepared_graph_id")
 
@@ -300,10 +353,14 @@ class ParametricGlyphSelector(AbstractSelector):
     def prepare(self, graph: TNFRGraph, nodes: Sequence[NodeId]) -> None:
         """Precompute parametric selector metrics and hysteresis thresholds."""
 
-        _selector_norms(graph)
-        _configure_selector_weights(graph)
+        self.clear()
         self._preselection = _build_param_preselection(graph, nodes)
         self._prepared_graph_id = id(graph)
+
+    def clear(self) -> None:
+        """End the prepared batch so later calls read the current graph."""
+        self._preselection = None
+        self._prepared_graph_id = None
 
     def select(self, graph: TNFRGraph, node: NodeId) -> GlyphCode:
         """Return the parametric glyph decision for ``node``."""
@@ -377,34 +434,25 @@ def _collect_selector_metrics(
         return {}
 
     dynamics_module = sys.modules.get("tnfr.dynamics")
-    dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
-    accel_max = float(norms.get("accel_max", 1.0)) or 1.0
+    dnfr_max, accel_max = _selector_divisors(norms)
+    inputs = [_selector_metric_inputs(G.nodes[node]) for node in nodes]
+    si_values, dnfr_values, accel_values = (list(values) for values in zip(*inputs))
 
     if np is not None:
-        si_seq_np = cast(Any, collect_attr(G, nodes, ALIAS_SI, 0.5)).astype(float)
+        si_seq_np = np.asarray(si_values, dtype=float)
         si_seq_np = np.clip(si_seq_np, 0.0, 1.0)
-        dnfr_seq_np = (
-            np.abs(cast(Any, collect_attr(G, nodes, ALIAS_DNFR, 0.0)).astype(float))
-            / dnfr_max
-        )
-        accel_seq_np = (
-            np.abs(cast(Any, collect_attr(G, nodes, ALIAS_D2EPI, 0.0)).astype(float))
-            / accel_max
-        )
+        dnfr_seq_np = np.abs(np.asarray(dnfr_values, dtype=float)) / dnfr_max
+        accel_seq_np = np.abs(np.asarray(accel_values, dtype=float)) / accel_max
 
         si_seq = si_seq_np.tolist()
         dnfr_seq = dnfr_seq_np.tolist()
         accel_seq = accel_seq_np.tolist()
     else:
-        si_values = collect_attr(G, nodes, ALIAS_SI, 0.5)
-        dnfr_values = collect_attr(G, nodes, ALIAS_DNFR, 0.0)
-        accel_values = collect_attr(G, nodes, ALIAS_D2EPI, 0.0)
-
         worker_count = n_jobs if n_jobs is not None and n_jobs > 1 else None
         if worker_count is None:
-            si_seq = [clamp01(float(v)) for v in si_values]
-            dnfr_seq = [abs(float(v)) / dnfr_max for v in dnfr_values]
-            accel_seq = [abs(float(v)) / accel_max for v in accel_values]
+            si_seq, dnfr_seq, accel_seq = _selector_metrics_chunk(
+                (si_values, dnfr_values, accel_values, dnfr_max, accel_max)
+            )
         else:
             approx_chunk = (
                 math.ceil(len(nodes) / worker_count) if worker_count else None
@@ -458,19 +506,10 @@ def _compute_default_base_choices(
     metrics: Mapping[Any, tuple[float, float, float]],
     thresholds: Mapping[str, float],
 ) -> dict[Any, str]:
-    si_hi = float(thresholds.get("si_hi", 0.66))
-    si_lo = float(thresholds.get("si_lo", 0.33))
-    dnfr_hi = float(thresholds.get("dnfr_hi", 0.50))
-
-    base: dict[Any, str] = {}
-    for node, (Si, dnfr, _) in metrics.items():
-        if Si >= si_hi:
-            base[node] = "IL"
-        elif Si <= si_lo:
-            base[node] = "OZ" if dnfr > dnfr_hi else "ZHIR"
-        else:
-            base[node] = "NAV" if dnfr > dnfr_hi else "RA"
-    return base
+    return {
+        node: _default_selector_base_choice(Si, dnfr, thresholds)
+        for node, (Si, dnfr, _) in metrics.items()
+    }
 
 
 def _param_base_worker(
@@ -557,8 +596,6 @@ def _resolve_preselected_glyph(
         Si, dnfr, accel = metrics
         thresholds = preselection.thresholds or _selector_thresholds(G)
         margin: float | None = preselection.margin
-        if margin is None:
-            margin = get_graph_param(G, "GLYPH_SELECTOR_MARGIN")
 
         cand = preselection.base_choices.get(n)
         if cand is None:
@@ -569,7 +606,9 @@ def _resolve_preselected_glyph(
         if hist_cand is not None:
             return hist_cand
 
-        score = _compute_selector_score(G, nd, Si, dnfr, accel, cand)
+        score = _compute_selector_score(
+            G, nd, Si, dnfr, accel, cand, weights=preselection.weights
+        )
         cand = _apply_score_override(cand, score, dnfr, thresholds["dnfr_lo"])
         return _soft_grammar_prefilter(G, n, cand)
 
@@ -591,6 +630,17 @@ def _glyph_proposal_worker(
 
 
 def _apply_glyphs(G: TNFRGraph, selector: GlyphSelector, hist: HistoryState) -> None:
+    """Apply one decision batch, then release built-in prepared observations."""
+    try:
+        _apply_glyph_batch(G, selector, hist)
+    finally:
+        if isinstance(selector, (DefaultGlyphSelector, ParametricGlyphSelector)):
+            selector.clear()
+
+
+def _apply_glyph_batch(
+    G: TNFRGraph, selector: GlyphSelector, hist: HistoryState
+) -> None:
     """Apply glyph decisions across the graph updating hysteresis trackers."""
 
     window = int(get_param(G, "GLYPH_HYSTERESIS_WINDOW"))
@@ -776,12 +826,7 @@ def _apply_selector(G: TNFRGraph) -> GlyphSelector:
     elif callable(raw_selector):
         selector = cast(GlyphSelector, raw_selector)
     else:
-        selector = default_glyph_selector
-
-    if (
-        isinstance(selector, ParametricGlyphSelector)
-        or selector is parametric_glyph_selector
-    ):
-        _selector_norms(G)
-        _configure_selector_weights(G)
+        raise TypeError(
+            "glyph_selector must be a selector, selector class, callable or None"
+        )
     return selector

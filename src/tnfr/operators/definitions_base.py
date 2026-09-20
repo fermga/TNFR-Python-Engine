@@ -164,6 +164,10 @@ class Operator(metaclass=OperatorMetaAuto):
 
         Public calls enter through ``__call__`` so argument, hard-invariant,
         precondition and grammar rejection precede subclass metadata writes.
+        The optional held-step comparison runs after the event; its supplied
+        interval is not a derived event duration. This generic hook does not
+        roll back a completed glyph when that comparison fails. Atomic subclasses
+        provide their own transaction and preflight guarantees.
         """
         # Capture state before operator application for metrics and validation
         collect_metrics = kw.get("collect_metrics", False) or G.graph.get(
@@ -215,11 +219,12 @@ class Operator(metaclass=OperatorMetaAuto):
         if _integrity_monitor is not None:
             _integrity_monitor.after_operator(G, node, self.name)
 
-        # Optional nodal equation validation (∂EPI/∂t = νf · ΔNFR(t))
+        # Optional post-event comparison with a declared held unforced step.
+        # Agreement does not identify this hybrid jump with continuous flow.
         if validate_equation and state_before is not None:
             from .nodal_equation import validate_nodal_equation
 
-            dt = float(kw.get("dt", 1.0))  # discrete time step
+            dt = kw.get("dt", 1.0)  # Preserve raw input for shared validation.
             strict = G.graph.get("NODAL_EQUATION_STRICT", False)
             epi_after = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
 

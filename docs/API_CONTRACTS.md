@@ -29,6 +29,101 @@ The channel classification does not replace grammar roles. For example,
 Mutation acts primarily on phase while also being a U2 destabilizer and U4
 transformer.
 
+The optional `validate_nodal_equation` helper compares supplied EPI endpoints
+with one unforced Euler step holding the current capacity and pressure fixed.
+THOL proposal validation reuses this same arithmetic and configuration owner.
+It neither authenticates an executed interval nor converts a named operator
+jump into continuous nodal flow. A boundary-clipped match can occur with no EPI
+motion despite a nonzero unprojected rate. The shared default tolerance is
+`NODAL_EQUATION_TOLERANCE`; compatibility units are EPI for clip-aware comparison
+and EPI/time for rate comparison. Invalid time, coefficients or active policy
+raise errors. See the [parameter foundations](../theory/NODAL_PARAMETER_FOUNDATIONS.md#11-thresholds-constants-and-numerical-settings-have-different-duties)
+for numerical-policy scope and ownership.
+The generic public-operator comparison runs after its event and supplies no
+rollback guarantee; THOL checks its detached proposal before committing it.
+
+Positive-duration default and extended integration resolve the same clipping
+policy through `dynamics.structural_clip.resolve_clip_policy`. Invalid modes,
+bounds or soft-knee gain reject before rate evaluation, including on frozen
+rows; an invalid mode never silently selects hard clipping. Zero-duration
+execution retains its no-op contract.
+
+The detached `TNFRUnifiedBackend` nodal proposal uses the shared rate/Euler
+arithmetic. It reports `epi_step_scope="unforced_unclipped_proposal"` and
+`stability_not_certified=True`: it does not execute Gamma, clipping or history
+writes. Stored-state fields must retain their scalar numeric types; Boolean
+and textual values are rejected before coercion. Finite inputs with a
+nonrepresentable rate or endpoint reject instead of returning a successful
+infinite state. A temporal integration request has its own full integrator
+contract; it is not this detached proposal.
+
+Validated nodal scalar inputs use the shared represented-real admission:
+Boolean/text values and nonzero values that disappear during binary64
+materialization reject. Capacity admits zero and has no arbitrary finite upper
+cutoff; the supplied product and returned derivatives must still be finite.
+The extended model reuses the same EPI derivative owner. Validation certifies
+these numeric domains, not the model's physical derivation; an explicitly
+unchecked call does not acquire that certificate.
+
+Default pressure and optional EPI/capacity hooks reuse nodal capacity admission;
+phase pressure admits the authoritative finite phase before trigonometric
+conversion. Malformed primary aliases cannot be replaced by a valid secondary
+spelling. Invalid state rejects before stored pressure is written, including
+after cache reuse and on isolates. Preparation caches are not a rollback
+boundary. The phase-only hook requires only its consumed phase coordinates.
+The finite forcing observer uses the runtime's own vectorization predicate to
+exclude every disabled NumPy route; alternative accumulation paths are not
+silently identified with its certified numerical kernel.
+
+Default pressure mixtures and selector score weights use the same strict
+nonnegative represented-real normalization. Invalid coefficient types or
+negative values reject rather than becoming zero or a different default mix.
+Large finite coefficients retain a finite normalized mixture even when their
+raw sum overflows. An all-zero mix still selects uniform weights by explicit
+compatibility policy; it is not a request to disable the corresponding model.
+
+Phase coordination validates every proposed phase before its first phase
+write on NumPy, scalar and worker paths. Only its exact-reduction transaction
+also restores graph-owned caches/history after a late failure. Capacity
+adaptation applies raw represented-real admission before eligibility checks;
+neither change selects a phase law or derives its configured diagnostic gates.
+
+Coherence and equilibrium observations apply this admission before scalar or
+array coercion. Stored pressure/rate/capacity readers honor the first present
+alias: an invalid authoritative value cannot fall through to a later alias or
+become zero. Missing attributes retain their documented defaults. Stability
+tolerances must be finite nonnegative real values even on empty support;
+their positive cuts describe a diagnostic neighborhood, not exact equilibrium.
+Sense-index normalization shares these reads on Python and NumPy paths,
+including cache refresh. This changes invalid-input handling, not the Si law
+or its status as a configured diagnostic used by existing controllers.
+
+The older `integrate_canonical_nodal_equation` convenience API also uses the
+shared derivative/Euler arithmetic but holds pressure and capacity throughout
+its loop. Both accepted method names describe that same constant-slope map;
+its step-change stopping criterion is not equilibrium. Its legacy missing-value
+defaults (unit capacity, zero form/pressure) are initialization policies, and
+it writes neither the runtime clock nor derivative history. Invalid candidate
+states reject before commit. The default runtime's `rk4` path, in contrast,
+samples the declared Gamma forcing at the quadrature times while holding the
+nodal base fixed. Shared quadrature handles exceptional floating-point ranges;
+this does not establish fourth-order accuracy for arbitrary changing pressure.
+
+The default additive-forcing integrator evaluates declared Gamma sources strictly
+on positive-duration calls:
+an invalid source cannot silently become the unforced model on one backend.
+The live Gamma registry owns dispatch. Built-in array formulas apply only to
+their unchanged registered implementations; custom or replaced entries use
+the staged scalar path, once per node and quadrature sample. These callbacks
+read the live graph, not hypothetical intermediate EPI states. Kuramoto-based
+forcing refreshes its phase-dependent cache even when the requested time is
+unchanged. The permissive public `eval_gamma(..., strict=False)` read retains
+its explicit zero-on-error compatibility behavior; it is not solver admission.
+Callback effects outside the integrator's documented write boundary are not
+made transactional by these changes.
+The opt-in extended EPI/phase/pressure model is a separate unforced law; these
+Gamma dispatch rules do not add a source to that model.
+
 `Scale` is the U5 fractality axis: `node` acts at the current fiber/level and
 `network` denotes the multi-scale REMESH echo. It is not an execution-footprint
 field. Coupling remains node-scale on this axis even though one application may
@@ -36,6 +131,16 @@ write neighbouring phases and edge support; those overlaps belong to the
 separate stage contract.
 
 ## Canonical contracts
+
+Direct and staged Emission/Silence share structural and lifecycle proposals.
+Emission rejects a configured clipped result that would decrease the supplied
+EPI before writing form or lifecycle metadata. For example, soft clipping of
+`-0.99 + 0.001` produces approximately `-0.995113`, outside AL's nondecrease
+contract; hard clipping admits the corresponding `-0.989` result. The selected
+clipping law itself is unchanged. Silence validates nonnegative raw capacity
+even when its attenuation factor is zero. Expansion/Contraction likewise
+validate consumed raw state and any active telemetry sink before primary
+writes. These preflights do not make arbitrary later callback failures atomic.
 
 This table is generated from the registry, including its declared measurement
 context. Refresh it with `python scripts/check_documentation.py --write-generated`;
@@ -111,8 +216,12 @@ The shared [nodal integrator](../src/tnfr/dynamics/integrators.py) reads the
 authoritative capacity, pressure and previous derivative aliases: invalid
 provided values cannot fall through to a later alias or a zero default.
 Capacity must be finite and nonnegative; pressure and retained derivatives
-must be finite. Missing values retain the documented defaults. Zero-duration
-calls remain no-ops, and the existing boolean timestep compatibility is retained.
+must be finite represented reals. Missing values retain the documented defaults.
+The step, initial time and minimum step use the same raw scalar admission:
+Boolean/text inputs and nonzero values lost to zero during conversion reject.
+This retires the previous Boolean-timestep compatibility; use explicit numeric
+`0.0` or `1.0` when those durations are intended. Admitted zero-duration calls
+remain no-ops.
 
 Every positive internal substep must advance a finite represented clock;
 checking only the requested final duration is insufficient under subdivision.
@@ -124,6 +233,26 @@ this local restoration. Event execution below supplies its broader transaction.
 Clipping still separates the stored unconstrained rate from the realized EPI
 secant. These checks establish neither solver accuracy nor a physical clock.
 Controls: [integrator numerics](../tests/test_integrator_numerics.py).
+
+Active built-in Gamma sources validate authoritative phase aliases before
+trigonometric caching or array conversion. A vector source requires one phase
+per node; a malformed primary alias cannot be hidden by a valid secondary one.
+Scalar and array Gamma APIs validate the supplied clock. The unforced `none`
+source does not consume phase, and custom registry entries retain their declared
+input dependencies. The shared trigonometric cache validates current raw phase
+values on every read, including when they would coerce to a cached value.
+
+U3 phase/limit admission, Coupling coefficients and consumed known numeric glyph
+factors use the shared represented-real boundary. A tiny nonzero factor cannot
+silently select a zero-valued policy; unknown extension keys remain outside
+the canonical factor schema. Direct and simultaneous Resonance reuse one capacity proposal: finite
+nonnegative capacity is required even when amplification is inactive. Graphless
+unidirectional Coupling updates only the target phase. On graph paths, UM/RA
+means use unique outgoing support neighbors, including zero-weight edges;
+parallel multiplicity and incoming arcs do not supply additional samples.
+These remain operator policies, distinct from weighted EPI transport. The
+[coupled-state controls](../tests/operators/test_coupled_state_admission.py)
+also verify support-cache invalidation after functional-link creation.
 
 ## Operator-event timeline
 

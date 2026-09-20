@@ -89,7 +89,7 @@ def demo_balance_tracking() -> None:
     Q0 = compute_noether_charge(G)
     E0 = compute_energy_functional(G)
 
-    print(f"Network: Watts-Strogatz(30, k=4, p=0.3)")
+    print("Network: Watts-Strogatz(30, k=4, p=0.3)")
     print(f"Initial charge candidate Q = {Q0:.6f}")
     print(f"Initial energy candidate E = {E0:.6f}")
     print()
@@ -167,7 +167,7 @@ def demo_ward_identities() -> None:
         before = capture_conservation_snapshot(G)
         _evolve_step(G, dt=0.01)
         after = capture_conservation_snapshot(G)
-        ward = compute_ward_identity(before, after, operator_name=label)
+        ward = compute_ward_identity(before, after, operator_name=label, dt=0.01)
         identities.append(ward)
 
     print(
@@ -213,8 +213,8 @@ def demo_candidate_energy_trend() -> None:
         lyap = compute_lyapunov_derivative(before, after, dt=0.01)
         energies.append(lyap.energy_after)
 
-        status = "DESCENT" if lyap.is_stable else "INCREASE"
-        if lyap.is_stable:
+        status = "NON-INCREASE" if lyap.energy_nonincreasing else "INCREASE"
+        if lyap.energy_nonincreasing:
             stable_count += 1
         print(
             f"  Step {step + 1:2d}: E = {lyap.energy_after:.4f}, "

@@ -1975,6 +1975,9 @@ class EdgeCacheManager:
     def __init__(self, graph: MutableMapping[str, Any]) -> None:
         self.graph: MutableMapping[str, Any] = graph
         self._manager = _graph_cache_manager(graph)
+        self._source_snapshot: Any = None
+        self._source_references: tuple[Any, ...] = ()
+        self._source_version: int | None = None
 
         def _encode_state(state: EdgeCacheState) -> Mapping[str, Any]:
             if not isinstance(state, EdgeCacheState):
@@ -2123,6 +2126,89 @@ class EdgeCacheManager:
 
         self._manager.clear(self._STATE_KEY)
 
+    def ensure_current_source(self, G: nx.Graph) -> bool:
+        """Observe direct NetworkX edits before reusing any edge artifact.
+
+        This takes O(V+E) work for scalar edge channels. Explicit version
+        updates still invalidate immediately; an observed edit under an
+        unchanged version uses that same invalidation owner. Unreadable edge
+        metadata disables reuse rather than imposing a new numerical domain.
+        """
+        observed = _edge_source_snapshot(G)
+        version = get_graph_version(self.graph, "_edge_version")
+        if observed is None:
+            _reset_edge_caches(self.graph, G)
+            self._source_snapshot = None
+            self._source_references = ()
+            self._source_version = version
+            return False
+        snapshot, references = observed
+        if self._source_snapshot is None:
+            # Restored/persistent cache entries have no live source witness.
+            _reset_edge_caches(self.graph, G)
+        elif snapshot != self._source_snapshot and version == self._source_version:
+            increment_edge_version(G)
+            version = get_graph_version(self.graph, "_edge_version")
+        self._source_snapshot = snapshot
+        self._source_references = references
+        self._source_version = version
+        return True
+
+
+def _edge_source_snapshot(G: nx.Graph) -> tuple[Any, tuple[Any, ...]] | None:
+    """Capture ordered support identity and the two declared edge channels.
+
+    Labels and parallel keys are retained by identity, without sorting or
+    calling their repr/equality. The shared structural signature preserves raw
+    weight/length values, including malformed values a particular reader may
+    legitimately ignore. Node values and other edge annotations remain the
+    responsibility of each cache key or an explicit version update.
+    """
+    from ._structural_signature import (
+        StructuralSignatureError,
+        structural_proof_signature,
+    )
+
+    multiple = G.is_multigraph()
+    references: list[Any] = []
+    rows = []
+    channels = []
+    for node, adjacency in G.adjacency():
+        references.append(node)
+        neighbors = []
+        for neighbor, data in adjacency.items():
+            references.append(neighbor)
+            entries = data.items() if multiple else ((None, data),)
+            keys = []
+            for key, attributes in entries:
+                if multiple:
+                    references.append(key)
+                keys.append(id(key))
+                if "weight" in attributes or "length" in attributes:
+                    channels.append(
+                        (
+                            len(rows),
+                            len(neighbors),
+                            len(keys) - 1,
+                            "weight" in attributes,
+                            attributes.get("weight"),
+                            "length" in attributes,
+                            attributes.get("length"),
+                        )
+                    )
+            neighbors.append((id(neighbor), tuple(keys)))
+        rows.append((id(node), tuple(neighbors)))
+    try:
+        channel_signature = structural_proof_signature(
+            tuple(channels), _retained_references=references
+        )
+    except StructuralSignatureError:
+        return None
+    return (
+        (G.is_directed(), multiple, tuple(rows), channel_signature),
+        tuple(references),
+    )
+
 
 def edge_version_cache(
     G: Any,
@@ -2131,11 +2217,17 @@ def edge_version_cache(
     *,
     max_entries: int | None | object = CacheManager._MISSING,
 ) -> T:
-    """Return cached ``builder`` output tied to the edge version of ``G``.
+    """Return cached ``builder`` output tied to the edge source of ``G``.
 
     NetworkX views share their parent's metadata dictionary and may expose a
     different node/edge set. They compute fresh values instead of reading or
     writing that shared cache. Ordinary graph copies receive their own manager.
+    NetworkX graphs also validate ordered support, node/key identity and raw
+    weight/length channels, so direct edits cannot bypass invalidation. This
+    check is O(V+E) for scalar edge channels. Other source dependencies require
+    an appropriate key or explicit version update. Metadata-only/other graph
+    adapters retain the explicit-version contract; concurrent mutation during
+    a read is not supported.
     """
 
     if isinstance(G, nx.Graph) and getattr(G, "_graph", None) is not None:
@@ -2146,6 +2238,9 @@ def edge_version_cache(
     if not isinstance(manager, EdgeCacheManager) or manager.graph is not graph:
         manager = EdgeCacheManager(graph)
         graph["_edge_cache_manager"] = manager
+
+    if isinstance(G, nx.Graph) and not manager.ensure_current_source(G):
+        return builder()
 
     resolved = manager.resolve_max_entries(max_entries)
     if resolved == 0:
@@ -2199,14 +2294,14 @@ def cached_nodes_and_A(
     prefer_sparse: bool = False,
     nodes: tuple[Any, ...] | None = None,
 ) -> tuple[tuple[Any, ...], Any]:
-    """Return cached nodes tuple and adjacency matrix for ``G``.
+    """Return cached node order and binary outgoing-support adjacency for ΔNFR.
 
-        When ``prefer_sparse`` is true the adjacency matrix construction is skipped
-        unless a caller later requests it explicitly.  This lets ΔNFR reuse the
-        edge-index buffers stored on :class:`~tnfr.dynamics.dnfr.DnfrCache` without
-        paying for `
-    x.to_numpy_array`` on sparse graphs while keeping the
-        canonical cache interface unchanged.
+    Parallel edges count once, including zero-conductance edges: the phase,
+    capacity and topology channels use unique outgoing neighbors. The separate
+    EPI reducer reads live conductances, including parallel-edge sums.
+
+    ``prefer_sparse`` skips matrix construction so ΔNFR can reuse its edge-index
+    buffers without allocating dense adjacency.
     """
 
     if nodes is None:
@@ -2232,6 +2327,8 @@ def cached_nodes_and_A(
         if np is None or prefer_sparse:
             return nodes, None
         A = nx.to_numpy_array(G, nodelist=nodes, weight=None, dtype=float)
+        if G.is_multigraph():
+            np.minimum(A, 1.0, out=A)
         return nodes, A
 
     nodes, A = edge_version_cache(G, key, builder, max_entries=cache_size)

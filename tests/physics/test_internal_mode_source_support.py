@@ -17,6 +17,7 @@ from tests.physics._internal_mode_fixture import (
     _graph,
     _inner,
 )
+from tests.physics.test_joint_quotient_contract import _ordered_phasor_gradient
 from tnfr.physics.forcing_realization import (
     capture_non_epi_forcing,
     decompose_non_epi_forcing,
@@ -173,22 +174,46 @@ def test_prepared_internal_phase_source_can_exceed_passive_loss_instantaneously(
         for u, v in graph.edges
     )
     observed = _prepare_fresh_pressure(graph)
-    coefficient = Q(1501199875790165, 2**55)
-    assert _apply(PROJECTION, observed.forcing) == (coefficient, 0, coefficient, 0)
+    # The ideal direction is pi/6, but three-neighbor accumulation has no
+    # exact midpoint certificate. Retain its represented ordered phasors.
+    phase_gradient = _ordered_phasor_gradient(
+        tuple(graph.nodes[node]["theta"] for node in NODES),
+        tuple(tuple(NODES.index(other) for other in graph[node]) for node in NODES),
+    )
+    forcing = tuple(value / 4 for value in phase_gradient)
+    inherited = (Q(-1, 32), Q(1, 32), Q(0)) * 2
+    fresh_pressure = tuple(
+        Q(float(drift) + float(force))
+        for drift, force in zip(inherited, forcing, strict=True)
+    )
+    kernel_defect = tuple(
+        fresh - drift - force
+        for fresh, drift, force in zip(fresh_pressure, inherited, forcing, strict=True)
+    )
+    assert observed.phase_gradient == phase_gradient
+    assert observed.forcing == forcing
+    assert _apply(PROJECTION, observed.forcing) == _apply(PROJECTION, forcing)
+    assert observed.full_kernel_pressure == fresh_pressure
     channels = dict(decompose_non_epi_forcing(observed))
     assert channels["phase"] == observed.forcing
     assert channels["vf"] == channels["topo"] == (0,) * 6
-    assert sum(observed.forcing) == 0
-    assert observed.kernel_pressure_defect == (0,) * 6
+    assert observed.kernel_pressure_defect == kernel_defect
     norm, loss, source, defect, rate = _unit_capacity_budget(observed)
     assert norm == Q(1, 64)
     assert loss == Q(-1, 64)
-    assert source == Q(1501199875790165, 2**56) > -loss
-    assert defect == 0
-    assert rate == Q(375299968947541, 2**56) > 0
+    centered_form = (Q(1, 16), Q(-1, 16), Q(0)) * 2
+    expected_source = 2 * sum(
+        y * force for y, force in zip(centered_form, forcing, strict=True)
+    )
+    expected_defect = 2 * sum(
+        y * error for y, error in zip(centered_form, kernel_defect, strict=True)
+    )
+    assert source == expected_source > -loss
+    assert defect == expected_defect
+    assert rate == expected_source + expected_defect - Q(1, 64) > 0
     # Ideal phases give g=(1/6,-1/6,0) per fiber, hence S'=1/192.
-    # Represented phase arithmetic is retained even though assembly is exact.
-    assert rate - Q(1, 192) == Q(-1, 3 * 2**56)
+    # Exact represented source and assembly discrepancies remain separate.
+    assert rate - Q(1, 192) == expected_source - Q(1, 48) + expected_defect
     # The primitive phase profile is prepared, not a derived maintained state.
     # Positive work at this snapshot is neither a trajectory nor persistence.
 

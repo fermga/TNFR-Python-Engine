@@ -25,7 +25,7 @@ Run:
 
 Theoretical anchor: AGENTS.md (emergent symplectic substrate; U(2));
 symplectic_substrate.py (H_sub = sum of decoupled oscillators);
-benchmarks/emergent_shell_cardinals.py (the symmetry-cardinal chain).
+theory/TNFR_VARIATIONAL_PRINCIPLE.md (auxiliary model and missing nodal bridge).
 Status: RESEARCH (scoped correspondence check).
 """
 

@@ -184,7 +184,7 @@ from functools import partial
 from time import perf_counter
 from typing import Any, Callable, Iterable, Iterator, Mapping, MutableMapping, cast
 
-from ..alias import get_attr, set_attr
+from ..alias import set_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_SI, ALIAS_VF
 from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
@@ -202,6 +202,7 @@ from .buffer_cache import ensure_numpy_buffers
 from .common import (
     _coerce_jobs,
     _get_vf_dnfr_max,
+    _stored_metric_scalar,
     ensure_neighbors_map,
     merge_graph_weights,
 )
@@ -244,12 +245,12 @@ class _SiStructuralCache:
             return self.vf_values, self.dnfr_values
 
         vf_arr = np.fromiter(
-            (float(get_attr(node_data[n], ALIAS_VF, 0.0)) for n in node_tuple),
+            (_stored_metric_scalar(node_data[n], ALIAS_VF) for n in node_tuple),
             dtype=float,
             count=count,
         )
         dnfr_arr = np.fromiter(
-            (float(get_attr(node_data[n], ALIAS_DNFR, 0.0)) for n in node_tuple),
+            (_stored_metric_scalar(node_data[n], ALIAS_DNFR) for n in node_tuple),
             dtype=float,
             count=count,
         )
@@ -272,10 +273,10 @@ class _SiStructuralCache:
 
         for idx, node in enumerate(node_tuple):
             nd = node_data[node]
-            vf = cast(float, get_attr(nd, ALIAS_VF, 0.0))
+            vf = _stored_metric_scalar(nd, ALIAS_VF)
             if vf != self.vf_snapshot[idx]:
                 return self.rebuild(node_tuple, node_data)
-            dnfr = cast(float, get_attr(nd, ALIAS_DNFR, 0.0))
+            dnfr = _stored_metric_scalar(nd, ALIAS_DNFR)
             if dnfr != self.dnfr_snapshot[idx]:
                 return self.rebuild(node_tuple, node_data)
 
@@ -569,10 +570,10 @@ def compute_Si_node(
     if phase_dispersion is None:
         raise TypeError("Missing required keyword-only argument: 'phase_dispersion'")
 
-    vf = get_attr(nd, ALIAS_VF, 0.0)
+    vf = _stored_metric_scalar(nd, ALIAS_VF)
     vf_norm = clamp01(abs(vf) / vfmax)
 
-    dnfr = get_attr(nd, ALIAS_DNFR, 0.0)
+    dnfr = _stored_metric_scalar(nd, ALIAS_DNFR)
     dnfr_norm = clamp01(abs(dnfr) / dnfrmax)
 
     Si = alpha * vf_norm + beta * (1.0 - phase_dispersion) + gamma * (1.0 - dnfr_norm)
@@ -680,8 +681,8 @@ def _iter_python_payload_chunks(
     buffer: list[tuple[Any, tuple[Any, ...], float, float, float]] = []
     for node, data in nodes_data:
         theta = thetas.get(node, 0.0)
-        vf = float(get_attr(data, ALIAS_VF, 0.0))
-        dnfr = float(get_attr(data, ALIAS_DNFR, 0.0))
+        vf = _stored_metric_scalar(data, ALIAS_VF)
+        dnfr = _stored_metric_scalar(data, ALIAS_DNFR)
         neigh = tuple(neighbors[node])
         buffer.append((node, neigh, theta, vf, dnfr))
         if len(buffer) >= chunk_size:

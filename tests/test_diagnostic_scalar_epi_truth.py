@@ -9,9 +9,12 @@ import networkx as nx
 import numpy as np
 import pytest
 
-from tnfr.dynamics import emergent_centralization as centralization_module
 from tnfr.dynamics import self_optimizing_engine as self_optimization_module
 from tnfr.dynamics.emergent_centralization import TNFREmergentCentralizationEngine
+from tnfr.dynamics.optimization_orchestrator import (
+    OptimizationResult,
+    OptimizationStrategy,
+)
 from tnfr.dynamics.self_optimizing_engine import (
     OptimizationExperience,
     SelfOptimizationResult,
@@ -256,11 +259,13 @@ class _EvidenceOrchestrator:
         return SimpleNamespace(edge_density=nx.density(graph))
 
     def execute_optimization(self, graph, operation, strategy, **kwargs):
-        return SimpleNamespace(
+        return OptimizationResult(
+            strategy_used=strategy,
             execution_time=0.01,
             speedup_factor=1.0,
             memory_used_mb=0.0,
             cache_hits=0,
+            cache_misses=0,
             accuracy_preserved=True,
             details={
                 "performance_measurements": self.performance,
@@ -282,8 +287,13 @@ def test_self_optimizer_does_not_learn_legacy_performance_sentinels(
         {"speedup_factor": None, "memory_used_mb": None}, None
     )
 
-    engine.optimize_automatically(graph, "diagnostic")
+    result = engine.optimize_automatically(graph, "diagnostic")
 
+    assert result["learning_updated"] is True
+    assert len(engine.experience_history) == 1
+    assert engine.experience_history[-1].strategy_used == (
+        OptimizationStrategy.NODAL_VECTORIZED.value
+    )
     assert engine.experience_history[-1].performance_metrics == {
         "execution_time": pytest.approx(0.01)
     }
@@ -302,8 +312,13 @@ def test_self_optimizer_records_authoritative_performance_measurements(
         {"speedup_factor": 2.0, "memory_used_mb": 3.5}, 4
     )
 
-    engine.optimize_automatically(graph, "diagnostic")
+    result = engine.optimize_automatically(graph, "diagnostic")
 
+    assert result["learning_updated"] is True
+    assert len(engine.experience_history) == 1
+    assert engine.experience_history[-1].strategy_used == (
+        OptimizationStrategy.NODAL_VECTORIZED.value
+    )
     assert engine.experience_history[-1].performance_metrics == {
         "execution_time": pytest.approx(0.01),
         "speedup_factor": pytest.approx(2.0),

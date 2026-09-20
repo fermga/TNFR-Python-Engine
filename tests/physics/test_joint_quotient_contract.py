@@ -13,12 +13,39 @@ from dataclasses import FrozenInstanceError
 from fractions import Fraction as F
 
 import networkx as nx
+import numpy as np
 import pytest
 
 from tnfr.dynamics.dnfr import default_compute_delta_nfr
 from tnfr.physics.joint_quotient import observe_joint_nodal_quotient
 
 EQUAL_WEIGHTS = {"phase": 0.25, "epi": 0.25, "vf": 0.25, "topo": 0.25}
+
+
+def _ordered_phasor_gradient(phases, neighbor_rows):
+    """Independent represented phasor arithmetic for degree-above-two fixtures.
+
+    Evaluate NumPy trigonometric primitives in the declared array shape and
+    accumulate each row sequentially. No pressure, quotient or midpoint owner
+    is called; no exact-real symmetry is assumed to survive materialization.
+    """
+    phase = np.asarray(phases, dtype=float)
+    cosine, sine = np.cos(phase), np.sin(phase)
+    real, imaginary = np.zeros(len(phase)), np.zeros(len(phase))
+    assert len(neighbor_rows) == len(phase)
+    for row, neighbors in enumerate(neighbor_rows):
+        assert len(neighbors) > 2
+        for other in neighbors:
+            real[row] += cosine[other]
+            imaginary[row] += sine[other]
+    assert np.all((real != 0) | (imaginary != 0))
+    direction = np.arctan2(imaginary, real)
+    center = phase.copy()
+    outside = np.abs(center) > math.pi
+    center[outside] = np.arctan2(sine[outside], cosine[outside])
+    difference = direction - center
+    gradient = np.arctan2(np.sin(difference), np.cos(difference)) / math.pi
+    return tuple(F(float(value)) for value in gradient)
 
 
 def _prepared(
@@ -274,7 +301,7 @@ def test_hidden_epi_changes_do_not_refit_or_change_the_held_macro_prediction():
 
 def test_fixed_k9_keeps_nonzero_grouped_phase_defect_separate_from_stale_pressure():
     # Interleaved fibers give a fixed adversarial summation order. The
-    # different exact coefficient below is numerical materialization, not
+    # ordered-phasor difference below is numerical materialization, not
     # unresolved EPI memory or a new constitutive source.
     blocks = ((0, 3, 6), (1, 4, 7), (2, 5, 8))
     graph = _prepared(
@@ -287,10 +314,32 @@ def test_fixed_k9_keeps_nonzero_grouped_phase_defect_separate_from_stale_pressur
     )
     for node in graph:
         graph.nodes[node]["delta_nfr"] = 7.0
+
+    membership = {node: a for a, block in enumerate(blocks) for node in block}
+    fine = _ordered_phasor_gradient(
+        tuple(graph.nodes[node]["theta"] for node in graph),
+        tuple(tuple(graph[node]) for node in graph),
+    )
+    counted = _ordered_phasor_gradient(
+        tuple(graph.nodes[block[0]]["theta"] for block in blocks),
+        tuple(
+            tuple(sorted(membership[node] for node in graph[block[0]]))
+            for block in blocks
+        ),
+    )
+    expected = tuple(fine[node] - counted[membership[node]] for node in graph)
+    expected_rate = _project(
+        graph,
+        blocks,
+        tuple(F(graph.nodes[node]["nu_f"]) * expected[node] / 4 for node in graph),
+    )
     result = observe_joint_nodal_quotient(graph, blocks)
-    expected = tuple(F(-1, 2**52) if i == 4 else F(0) for i in range(9))
+    assert result.fine_capture.phase_gradient == fine
+    assert result.counted_phase_gradient == counted
     assert result.counted_phase_materialization_defect == expected
-    assert result.phase_materialization_rate_defect == (0, F(-1, 6 * 2**52), 0)
+    assert any(expected)
+    assert result.phase_materialization_rate_defect == expected_rate
+    assert any(expected_rate)
     assert result.projected_model_rate != result.effective_rate
     assert any(result.projected_stored_rate_residual)
     assert result.closure.all_state_affine_closed

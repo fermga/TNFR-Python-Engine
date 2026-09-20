@@ -186,7 +186,6 @@ from .conservation import (
     analyze_sector_coupling,
     capture_conservation_snapshot,
     compute_charge_density,
-    compute_conservation_scaling,
     compute_current_divergence,
     compute_energy_functional,
     compute_grammar_conservation_bounds,
@@ -906,11 +905,13 @@ from .forced_support import (
 from .forcing_realization import (
     ForcingCapacityDifference,
     ForcingDirichletBalance,
+    ForcingMeanBalance,
     NonEpiForcingObservation,
     capture_non_epi_forcing,
     decompose_non_epi_forcing,
     observe_forcing_capacity_difference,
     observe_forcing_dirichlet_balance,
+    observe_forcing_mean_balance,
 )
 from .capacity_feedback import (
     CapacityIntervalRecoveryBound,
@@ -1127,11 +1128,13 @@ __all__ = [
     "observe_forced_support_target",
     "NonEpiForcingObservation",
     "ForcingDirichletBalance",
+    "ForcingMeanBalance",
     "ForcingCapacityDifference",
     "observe_forcing_capacity_difference",
     "capture_non_epi_forcing",
     "decompose_non_epi_forcing",
     "observe_forcing_dirichlet_balance",
+    "observe_forcing_mean_balance",
     "P2CapacityFeedbackBound",
     "CapacityIntervalRecoveryBound",
     "derive_capacity_interval_recovery_bound",
@@ -1380,7 +1383,6 @@ __all__ = [
     "verify_sequence_ward_identity",
     "compute_lyapunov_derivative",
     "compute_spectral_conservation",
-    "compute_conservation_scaling",
     # --- Constitutive coherence geometry ---
     "CoherenceLevelSetCertificate",
     "CrossPolytopeStratification",

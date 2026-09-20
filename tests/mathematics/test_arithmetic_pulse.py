@@ -10,6 +10,7 @@ Composites are controls outside the theorem.
 from __future__ import annotations
 
 from fractions import Fraction
+from functools import lru_cache
 from math import gcd
 
 import numpy as np
@@ -38,9 +39,23 @@ from tnfr.mathematics.krylov import (
 from tnfr.mathematics.number_theory import arithmetic_cayley_digraph, power_residue_set
 from tnfr.physics.structural_diffusion import structural_diffusion_operator
 
-PRIMES = [5, 7, 11, 13, 17, 19, 23]
-POWERS = [1, 2, 3, 4, 6]
-PRIME_CASES = [(p, k) for p in PRIMES for k in POWERS]
+# Distinct ranks/supports: full units, directed and reciprocal quadratics,
+# cubic/quartic/sextic images, and a singleton connection (full cycle rank).
+PRIME_CASES = [(5, 1), (5, 2), (7, 2), (7, 3), (11, 3), (13, 4), (19, 6), (7, 6)]
+
+
+@pytest.fixture(scope="module")
+def pulse_ranks():
+    """Compute the two independent exact producers once per requested network."""
+
+    @lru_cache(maxsize=None)
+    def observe(modulus, power):
+        return (
+            pointed_pulse_hankel_rank(modulus, power),
+            pointed_pulse_krylov_dimension(modulus, power),
+        )
+
+    return observe
 
 
 def test_shared_cayley_builder_matches_arithmetic_pulse():
@@ -169,25 +184,34 @@ def test_hankel_equals_krylov_on_a_small_operator():
 
 
 @pytest.mark.parametrize("p,k", PRIME_CASES)
-def test_pulse_rank_equals_cyclotomy_for_primes(p, k):
-    assert pulse_recurrence_matches_cyclotomy(p, k)
-    assert pointed_pulse_hankel_rank(p, k) == gcd(k, p - 1) + 1
+def test_pulse_rank_equals_cyclotomy_for_primes(p, k, pulse_ranks):
+    hankel, _ = pulse_ranks(p, k)
+    assert hankel == gcd(k, p - 1) + 1
 
 
 @pytest.mark.parametrize("p,k", PRIME_CASES)
-def test_hankel_equals_krylov(p, k):
-    assert pointed_pulse_hankel_rank(p, k) == pointed_pulse_krylov_dimension(p, k)
+def test_hankel_equals_krylov(p, k, pulse_ranks):
+    hankel, krylov = pulse_ranks(p, k)
+    assert hankel == krylov
+
+
+@pytest.mark.parametrize("modulus,power,expected", [(7, 3, True), (9, 2, False)])
+def test_pulse_comparison_wrapper_retains_prime_and_composite_scope(
+    modulus, power, expected
+):
+    assert pulse_recurrence_matches_cyclotomy(modulus, power) is expected
 
 
 @pytest.mark.parametrize("p,k", [(7, 2), (11, 3), (13, 4), (19, 6)])
-def test_spectral_agreement(p, k):
+def test_spectral_agreement(p, k, pulse_ranks):
     """Krylov dimension == number of distinct eigenvalues (e0 excites all
     Fourier modes of the circulant)."""
     _, L = structural_diffusion_operator(
         arithmetic_cayley_digraph(p, power_residue_set(p, k))
     )
     distinct = len(np.unique(np.round(np.linalg.eigvals(L), 6)))
-    assert pointed_pulse_krylov_dimension(p, k) == distinct
+    _, krylov = pulse_ranks(p, k)
+    assert krylov == distinct
 
 
 @pytest.mark.parametrize("p,k", [(11, 2), (13, 3), (17, 4)])
@@ -206,10 +230,11 @@ def test_point_relabel_equivalence(p, k):
 # --- composite controls (outside the theorem) ---------------------------------
 
 
-@pytest.mark.parametrize("n,k", [(9, 2), (15, 2), (21, 2), (25, 3)])
-def test_composite_controls_are_kronecker_but_not_cyclotomic(n, k):
+@pytest.mark.parametrize("n,k", [(9, 2), (15, 2), (25, 3)])
+def test_composite_controls_are_kronecker_but_not_cyclotomic(n, k, pulse_ranks):
     # Kronecker (Hankel == Krylov) still holds for composites ...
-    assert pointed_pulse_hankel_rank(n, k) == pointed_pulse_krylov_dimension(n, k)
+    hankel, krylov = pulse_ranks(n, k)
+    assert hankel == krylov
     # ... but the cyclotomy value gcd(k, n-1)+1 does NOT: the identity is
     # prime-specific (this is a control, not a primality test).
-    assert pointed_pulse_hankel_rank(n, k) != cyclotomic_rank(n, k)
+    assert hankel != cyclotomic_rank(n, k)

@@ -28,7 +28,7 @@ import logging
 import math
 import threading
 import warnings
-from collections import OrderedDict, defaultdict, deque
+from collections import Counter, OrderedDict, defaultdict, deque
 from collections.abc import Mapping, MutableMapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass, field, replace
@@ -103,6 +103,7 @@ from ._recursivity_stage_kernel import RecursivityAdvisoryProposal
 from ._resonance_identity import (
     RA_RUNTIME_AMPLIFICATION_TRIGGER,
     normalize_resonance_epi_kind,
+    resonance_capacity_proposal,
     resonance_identity_failures,
     resonance_neighbor_circular_mean,
     resonance_proposed_epi_kind,
@@ -234,6 +235,7 @@ _CALLBACK_SPEC_PROTOCOL_BINDINGS = tuple(
     (name, CallbackSpec.__dict__[name]) for name in ("__new__", "__getnewargs__")
 )
 _NODE_CACHE_PROTOCOL_BINDINGS = (("__reduce__", NodeCache.__dict__["__reduce__"]),)
+_COUNTER_PROTOCOL_BINDINGS = (("__reduce__", Counter.__dict__["__reduce__"]),)
 _BEPI_ELEMENT_PROTOCOL_BINDINGS = tuple(
     (name, BEPIElement.__dict__[name])
     for name in ("__delattr__", "__getstate__", "__setattr__", "__setstate__")
@@ -742,6 +744,11 @@ def _validate_runtime_deepcopy_protocol(
     elif kind is BEPIElement:
         trusted_bindings = _BEPI_ELEMENT_PROTOCOL_BINDINGS
         trusted_name = "BEPIElement"
+    elif kind is Counter:
+        # HistoryDict stores usage counts in this exact standard-library type.
+        # Subclasses and modified instance/class protocols remain untrusted.
+        trusted_bindings = _COUNTER_PROTOCOL_BINDINGS
+        trusted_name = "Counter"
     if trusted_bindings is not None:
         trusted_namespace = _runtime_class_namespace(kind)
         declared = frozenset(
@@ -4419,6 +4426,8 @@ def _restore_detached_neighbor_order(
 def _detached_stage_graph(graph: Any) -> Any:
     """Return a complete detached logical graph for immutable stage reads."""
 
+    from ..glyph_history import HistoryDict
+
     layout = _networkx_runtime_layout(graph)
     if layout.directed:
         snapshot = nx.MultiDiGraph() if layout.multigraph else nx.DiGraph()
@@ -4429,8 +4438,26 @@ def _detached_stage_graph(graph: Any) -> Any:
         id(layout.graph_mapping): snapshot.graph,
     }
     graph_mapping_items = _runtime_mapping_items(layout.graph_mapping)
+    # Canonical bounded histories are ordinary stage data, not opaque custom
+    # mapping resources. Sharing them would let validation appends mutate the
+    # live event stream. Preserve aliases/cycles through one plain snapshot.
+    bounded_histories: dict[int, tuple[Any, dict[Any, Any], dict[Any, Any]]] = {}
+    for _key, value in graph_mapping_items:
+        if type(value) is HistoryDict and id(value) not in bounded_histories:
+            _validate_runtime_deepcopy_protocol(value)
+            source = dict(_runtime_mapping_items(value))
+            detached: dict[Any, Any] = {}
+            bounded_histories[id(value)] = (value, source, detached)
+            copy_memo[id(value)] = detached
     detached_search_roots: list[tuple[Any, Any]] = [
-        (("graph-metadata", index), value)
+        (
+            ("graph-metadata", index),
+            (
+                bounded_histories[id(value)][1]
+                if id(value) in bounded_histories
+                else value
+            ),
+        )
         for index, (key, value) in enumerate(graph_mapping_items)
         if not _is_runtime_graph_key(key)
     ]
@@ -4446,9 +4473,9 @@ def _detached_stage_graph(graph: Any) -> Any:
     )
     manual_state_items = _discover_runtime_manual_state_items(
         tuple(detached_search_roots),
-        protected_values=_graph_transaction_protected_values(
-            graph,
-            _layout=layout,
+        protected_values=(
+            *_graph_transaction_protected_values(graph, _layout=layout),
+            *(original for original, _source, _detached in bounded_histories.values()),
         ),
     )
     copy_memo.update({id(value): value for _path, value in manual_state_items})
@@ -4460,6 +4487,8 @@ def _detached_stage_graph(graph: Any) -> Any:
         _seed_runtime_resource_memo(data, copy_memo)
     for edge in layout.edges:
         _seed_runtime_resource_memo(edge[-1], copy_memo)
+    for _original, source, detached in bounded_histories.values():
+        detached.update(deepcopy(source, copy_memo))
     for key, value in graph_mapping_items:
         if _is_runtime_graph_key(key):
             continue
@@ -4717,23 +4746,12 @@ def _propose_resonance(
             },
         )
 
-    vf_before = _finite_scalar(
-        _raw_alias(snapshot, node, ALIAS_VF, 0.0),
-        operator="Resonance",
-        label="nu_f state",
-    )
     amplification_active = abs(epi_bar) > RA_RUNTIME_AMPLIFICATION_TRIGGER
-    vf_after = vf_before * (1.0 + vf_boost) if amplification_active else vf_before
-    vf_after = _finite_scalar(vf_after, operator="Resonance", label="capacity proposal")
-    if vf_after < vf_before:
-        raise TNFRValueError(
-            "Resonance capacity proposal must be nondecreasing",
-            context={
-                "operator": "Resonance",
-                "vf_before": vf_before,
-                "vf_proposed": vf_after,
-            },
-        )
+    vf_before, vf_after = resonance_capacity_proposal(
+        _raw_alias(snapshot, node, ALIAS_VF, 0.0),
+        vf_boost,
+        active=amplification_active,
+    )
 
     return NeighborStageProposal(
         node=node,
@@ -6767,7 +6785,8 @@ def execute_recursivity_stage(
 
     The node-level Recursivity glyph is intentionally advisory-only. Every
     target is preflighted against one detached graph, while one graph-level
-    proposal is shared and committed at most once for the telemetry step.
+    proposal is shared and committed at most once for the runtime ordinal
+    (or the retained-sample index when no runtime epoch has been established).
     Histories, metrics and monitor calls retain requested target order.
     Structural EPI, nu_f, phase, DeltaNFR and topology remain unchanged before
     the opaque pressure-refresh callback. Explicit delayed EPI mixing remains

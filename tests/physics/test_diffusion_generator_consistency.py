@@ -35,6 +35,13 @@ def test_heterogeneous_rates_use_actual_nodal_generator():
     assert instability_threshold(graph) == pytest.approx(2.0)
 
 
+@pytest.mark.parametrize("reaction_rate", [float("nan"), float("inf"), "0.5"])
+def test_dispersion_requires_a_supplied_finite_real_reaction_rate(reaction_rate):
+    graph = _triad(nx.path_graph(3), [1.0, 1.0, 1.0])
+    with pytest.raises(ValueError, match="reaction_rate.*finite real"):
+        dispersion_relation(graph, reaction_rate)
+
+
 def test_frequency_change_invalidates_rates_without_changing_geometry():
     graph = _triad(nx.path_graph(3), [1.0, 1.0, 1.0])
     assert relaxation_spectrum(graph) == pytest.approx([0.0, 1.0, 2.0], abs=1e-12)

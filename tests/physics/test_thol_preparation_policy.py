@@ -341,11 +341,33 @@ def test_real_prefix_phase_effect_is_recorded_instead_of_assuming_unchanged_stat
         assert actual["initial"]["phase"][0] == 0.0
         assert actual["after_prefix"]["phase"][0] == 2 * math.pi
         assert actual["after_prefix"]["phase"] != actual["initial"]["phase"]
-        # This finite result does not assert that arbitrary IL/OZ prefixes are flow-neutral.
-        assert actual["before_birth"]["epi"] == none["before_birth"]["epi"]
-        assert (
-            actual["before_birth"]["physical_epi_history"]
-            == none["before_birth"]["physical_epi_history"]
+        # Represented 2*pi need not be exactly neutral in the pressure kernel.
+        # Each retained boundary must still realize its own refreshed Euler row.
+        boundaries = actual["physical_boundaries"]
+        for before, after in zip(boundaries, boundaries[1:]):
+            dt = after["time"] - before["time"]
+            assert dt == 0.25
+            assert before["pressure_only_refresh"]
+            assert after["epi"] == tuple(
+                float(Fraction(x) + Fraction(dt) * Fraction(p))
+                for x, p in zip(before["epi"], before["pressure"], strict=True)
+            )
+        assert boundaries[-1]["epi"] == actual["before_birth"]["epi"]
+        reference = actual["checkerboard_reference"]
+        baseline = none["checkerboard_reference"]
+        assert reference["exact_model_endpoint"] == baseline["exact_model_endpoint"]
+        assert tuple(
+            Fraction(a) - Fraction(b)
+            for a, b in zip(
+                actual["before_birth"]["epi"], none["before_birth"]["epi"], strict=True
+            )
+        ) == tuple(
+            a - b
+            for a, b in zip(
+                reference["exact_endpoint_residual"],
+                baseline["exact_endpoint_residual"],
+                strict=True,
+            )
         )
 
 

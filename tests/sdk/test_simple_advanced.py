@@ -105,15 +105,38 @@ class TestConservationReport:
         assert report.balance_quality is None
         assert "UNSAMPLED" in report.summary()
 
-    def test_exact_candidate_trend_is_separate_from_legacy_tolerance(self):
+    @pytest.mark.parametrize("after_value", [1.0 + 1e-7, 1.0, 0.5])
+    def test_exact_candidate_trend_is_separate_from_legacy_tolerance(self, after_value):
+        from tnfr.physics.conservation import (
+            ConservationSnapshot,
+            compute_lyapunov_derivative,
+        )
+
+        def snapshot(value):
+            return ConservationSnapshot(
+                charge_density={0: value},
+                phi_s={0: value},
+                k_phi={0: 0.0},
+                j_phi={0: 0.0},
+                j_dnfr={0: 0.0},
+                grad_phi={0: 0.0},
+                divergence={0: 0.0},
+            )
+
+        lyapunov = compute_lyapunov_derivative(snapshot(1.0), snapshot(after_value))
+        expected_derivative = (after_value**2 - 1.0) / 2.0
+        assert lyapunov.energy_derivative == pytest.approx(expected_derivative)
         report = ConservationReport(
-            lyapunov_stable=True,
-            lyapunov_derivative=1e-7,
+            lyapunov_stable=lyapunov.is_stable,
+            lyapunov_derivative=lyapunov.energy_derivative,
             sample_available=True,
         )
-        assert report.candidate_energy_nonincreasing is False
+        assert report.candidate_energy_nonincreasing is (expected_derivative <= 0.0)
         assert report.candidate_energy_within_numerical_tolerance is True
-        assert "INCREASING" in report.summary()
+        if expected_derivative > 0.0:
+            assert "NON-INCREASING" not in report.summary()
+        else:
+            assert "NON-INCREASING" in report.summary()
 
     def test_nonfinite_candidate_derivative_has_no_trend_verdict(self):
         report = ConservationReport(
@@ -180,6 +203,53 @@ class TestNetworkFields:
 class TestNetworkConservation:
     """Finite structural-balance integration in Network."""
 
+    @pytest.mark.parametrize("dt", [True, np.bool_(True), "1"])
+    @pytest.mark.parametrize("reader", ["conservation", "balance_alerts"])
+    def test_invalid_interval_is_not_a_clock(self, small_ring, dt, reader):
+        with pytest.raises(ValueError, match="dt"):
+            getattr(small_ring, reader)(dt=dt)
+        assert small_ring._tracker is None
+
+    def test_failed_energy_admission_does_not_commit_a_combined_report(self):
+        import networkx as nx
+
+        graph = nx.path_graph(2)
+        for node in graph:
+            graph.nodes[node].update(EPI=0.0, nu_f=1.0, theta=0.0, delta_nfr=0.0)
+        network = Network(graph)
+        network.conservation()
+        retained = network._tracker.report()
+        for node in graph:
+            graph.nodes[node]["delta_nfr"] = 1e-150
+
+        # Charge rate 1e-250 is representable; energy rate 1e-400 is not.
+        with pytest.raises(ValueError, match="energy derivative.*underflow"):
+            network.conservation(dt=1e100)
+        assert network._tracker.report() == retained
+        assert len(network._tracker._snapshots) == 1
+        assert network.balance_alerts(dt=1e100)["sample_available"] is True
+
+    def test_energy_and_balance_use_the_same_represented_interval(self, small_ring):
+        from tnfr.physics.conservation import (
+            ConservationTracker,
+            compute_energy_functional,
+        )
+
+        small_ring._tracker = ConservationTracker(small_ring.G)
+        small_ring._tracker.record(1e16)
+        initial_energy = compute_energy_functional(small_ring.G)
+        small_ring.G.nodes[0]["delta_nfr"] = 1.0
+        report = small_ring.conservation(dt=3.0)
+        times = small_ring._tracker.report().times
+        represented_interval = times[-1] - times[-2]
+        assert represented_interval == 4.0
+        assert report.lyapunov_derivative == pytest.approx(
+            (report.energy - initial_energy) / represented_interval
+        )
+        assert report.lyapunov_derivative != pytest.approx(
+            (report.energy - initial_energy) / 3.0
+        )
+
     def test_conservation_report_keys(self, small_ring: Network):
         c = small_ring.conservation()
         assert hasattr(c, "noether_charge")
@@ -228,18 +298,65 @@ class TestNetworkConservation:
 
 
 class TestGrammarAwareDynamics:
-    """Grammar-aware evolution preserves coherence."""
+    """Incremental selection preserves admission and exposes execution failures."""
 
     def test_evolve_grammar_aware_returns_self(self, small_ring: Network):
         result = small_ring.evolve_grammar_aware(steps=2)
         assert result is small_ring
 
-    def test_evolve_grammar_aware_maintains_coherence(self, small_ring: Network):
-        c_before = small_ring.coherence()
-        small_ring.evolve_grammar_aware(steps=3)
-        c_after = small_ring.coherence()
-        # Should not catastrophically break (allow some tolerance)
-        assert c_after >= c_before * 0.5
+    @pytest.mark.parametrize("steps", [-1, True])
+    def test_invalid_count_rejects_before_selection(
+        self, small_ring, steps, monkeypatch
+    ):
+        def forbidden(*args):
+            pytest.fail("selection must not run for an invalid count")
+
+        monkeypatch.setattr("tnfr.sdk.simple.filter_candidates", forbidden)
+        with pytest.raises(ValueError, match="non-negative integer"):
+            small_ring.evolve_grammar_aware(steps=steps)
+
+    @pytest.mark.parametrize("candidates", [["emission", "unknown"], "emission"])
+    def test_candidate_preflight_precedes_selection(
+        self, small_ring, candidates, monkeypatch
+    ):
+        def forbidden(*args):
+            pytest.fail("selection must not run before candidate admission")
+
+        monkeypatch.setattr("tnfr.sdk.simple.filter_candidates", forbidden)
+        with pytest.raises(ValueError):
+            small_ring.evolve_grammar_aware(candidates=candidates)
+
+    def test_selected_operator_failure_propagates(self, small_ring, monkeypatch):
+        def admitted(*args):
+            return ["AL"]
+
+        def failed_operator(*args):
+            raise RuntimeError("live operator failed")
+
+        monkeypatch.setattr("tnfr.sdk.simple.filter_candidates", admitted)
+        monkeypatch.setattr("tnfr.operators.apply_glyph", failed_operator)
+        with pytest.raises(RuntimeError, match="live operator failed"):
+            small_ring.evolve_grammar_aware(candidates=["emission"])
+
+    def test_missing_grammar_never_substitutes_a_different_word(
+        self, small_ring, monkeypatch
+    ):
+        monkeypatch.setattr("tnfr.sdk.simple._HAS_GRAMMAR_DYNAMICS", False)
+        with pytest.raises(ImportError, match="unavailable"):
+            small_ring.evolve_grammar_aware()
+
+    def test_new_support_is_visited_on_the_next_pass(self, monkeypatch):
+        net = TNFR.create(1)
+        visited = []
+
+        def add_child(graph, node, glyph):
+            visited.append(node)
+            graph.add_node("child")
+
+        monkeypatch.setattr("tnfr.sdk.simple.filter_candidates", lambda *args: ["AL"])
+        monkeypatch.setattr("tnfr.operators.apply_glyph", add_child)
+        net.evolve_grammar_aware(steps=2, candidates=["emission"])
+        assert visited == [0, 0, "child"]
 
 
 # ---------------------------------------------------------------------------
@@ -560,29 +677,14 @@ class TestResearchFunctions:
         assert info["has_stabilizer"] is True
 
 
-class TestEmergentOntologyAndNumberTheory:
-    """Emergent ontology + number theory functions (unified dNFR=0 template)."""
+class TestStructuralAndArithmeticReadouts:
+    """Distinct winding, spectral, auxiliary gauge and arithmetic read-outs."""
 
     def test_primes_matches_known(self):
         result = TNFR.primes(30)
         assert result["primes"] == [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
         assert result["count"] == 10
         assert result["max_number"] == 30
-
-    def test_magic_numbers_noble_gases(self):
-        magic = TNFR.magic_numbers()
-        assert magic[:6] == [2, 10, 18, 36, 54, 86]
-
-    def test_element_noble_gas_zero_dnfr(self):
-        neon = TNFR.element(10)
-        assert neon["closed_shell"] is True
-        assert neon["reactivity"] == 0.0
-        assert neon["delta_nfr"] == 0.0
-
-    def test_element_reactive_nonzero_dnfr(self):
-        sodium = TNFR.element(11)
-        assert sodium["closed_shell"] is False
-        assert sodium["reactivity"] > 0.0
 
     def test_network_particle(self, small_ring: Network):
         winding = small_ring.winding()
@@ -593,13 +695,9 @@ class TestEmergentOntologyAndNumberTheory:
         assert small_ring.particle() == winding
 
     @pytest.mark.parametrize("value", [True, 10.9, float("nan")])
-    def test_count_apis_reject_lossy_or_nonfinite_values(self, value):
+    def test_prime_count_rejects_lossy_or_nonfinite_values(self, value):
         with pytest.raises((TypeError, ValueError)):
             TNFR.primes(value)
-        with pytest.raises((TypeError, ValueError)):
-            TNFR.magic_numbers(value)
-        with pytest.raises((TypeError, ValueError)):
-            TNFR.element(value)
 
     def test_network_phase(self, small_ring: Network):
         ph = small_ring.phase()
@@ -658,13 +756,6 @@ class TestEmergentOntologyAndNumberTheory:
         assert spectrum["coherence_length"] == pytest.approx(
             1.0 / math.sqrt(geometry_gap)
         )
-
-    def test_symbolic_layer_reads_shared_scalar_predicate(self):
-        """The shell distance reuses only the scalar equilibrium predicate."""
-        from tnfr.metrics.common import is_structural_equilibrium
-
-        assert is_structural_equilibrium(TNFR.element(10)["delta_nfr"])  # Ne
-        assert not is_structural_equilibrium(TNFR.element(11)["delta_nfr"])  # Na
 
 
 class TestStructuralEquilibriumPrimitive:

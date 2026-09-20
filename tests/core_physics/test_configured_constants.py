@@ -8,6 +8,10 @@ composition is tested through execution contracts in tests/operators.
 from __future__ import annotations
 
 import math
+import subprocess
+import sys
+
+import pytest
 
 from tnfr.constants.canonical import (
     CHANNEL_WEIGHT_PRIMARY,
@@ -23,6 +27,23 @@ from tnfr.constants.canonical import (
     MID_COHERENCE_THRESHOLD,
     PI,
 )
+
+
+@pytest.mark.parametrize("precision", [15, 80])
+def test_import_preserves_caller_precision_and_binary64_constants(precision):
+    """Configuration imports must not alter an ongoing numerical experiment."""
+    program = f"""
+import mpmath as mp
+mp.mp.dps = {precision}
+from tnfr.constants.canonical import PI, LN_2
+assert mp.mp.dps == {precision}, mp.mp.dps
+assert PI.hex() == '0x1.921fb54442d18p+1'
+assert LN_2.hex() == '0x1.62e42fefa39efp-1'
+"""
+    result = subprocess.run(
+        [sys.executable, "-c", program], capture_output=True, text=True, check=False
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
 
 
 class TestConfiguredCoherenceBand:

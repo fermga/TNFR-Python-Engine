@@ -8,7 +8,6 @@ of autonomous pattern formation. Diagnostic values never select the next operato
 from __future__ import annotations
 
 import json
-import math
 import platform
 from collections.abc import Mapping
 from dataclasses import InitVar, asdict, dataclass, field, fields
@@ -95,8 +94,6 @@ class StudySpec:
         if not 0 <= seed < 2**32:
             raise ValueError("seed must satisfy 0 <= seed < 2**32")
         object.__setattr__(self, "seed", seed)
-        if isinstance(self.probability, bool):
-            raise ValueError("probability must be a finite real number, not a boolean")
         object.__setattr__(self, "probability", probability(self.probability))
         list_sequences(self.sequence)
         if not isinstance(self.name, str) or not self.name.strip():
@@ -122,6 +119,8 @@ class StudyResult:
     """Immutable JSON report carrier; each ``to_dict`` returns detached data.
 
     Use the existing ``export_to_json(result, path)`` atomic writer to save it.
+    All report object keys must already be strings; unsupported keys cannot be
+    merged by JSON coercion. Scalars share diagnostic represented-real admission.
     The structural projection excludes history, callbacks, caches and graph
     metadata, so importing this report does not restore a runnable graph.
     """
@@ -133,7 +132,7 @@ class StudyResult:
         if not isinstance(report, Mapping):
             raise TypeError("A study report must be a mapping")
         object.__setattr__(
-            self, "_payload_json", json_dumps(dict(report), allow_nan=False)
+            self, "_payload_json", json_dumps(_json_value(report), allow_nan=False)
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -147,10 +146,7 @@ def _json_value(value: Any) -> Any:
     if isinstance(value, Integral):
         return int(value)
     if isinstance(value, Real):
-        result = float(value)
-        if not math.isfinite(result):
-            raise ValueError("Diagnostic value is not finite")
-        return result
+        return finite_represented_real(value, "Diagnostic value")[0]
     if isinstance(value, Mapping):
         if not all(isinstance(key, str) for key in value):
             raise TypeError("Diagnostic object keys must be strings")

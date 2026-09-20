@@ -10,6 +10,7 @@ import pytest
 import tnfr.mathematics.unified_numerical as unified_numerical
 from tnfr.errors import TNFRValueError
 from tnfr.mathematics.unified_numerical import CONSTANTS, TNFRNumericalUtilities
+from tnfr.utils.numeric import angle_diff, angle_diff_array
 
 
 def test_zero_seed_is_preserved_and_reproducible():
@@ -112,3 +113,49 @@ def test_statistics_identify_uninstrumented_compatibility_counters():
     assert statistics["statistics_collected"] is False
     assert statistics["operation_count"] == 0
     assert statistics["total_time"] == 0.0
+
+
+@pytest.mark.parametrize("numpy_available", [True, False])
+@pytest.mark.parametrize("bad", [True, "0.1", 0.1 + 0j, math.inf, math.nan])
+def test_circular_mean_raw_admission_agrees_across_backends(
+    monkeypatch, numpy_available, bad
+):
+    monkeypatch.setattr(unified_numerical, "NUMPY_AVAILABLE", numpy_available)
+    with pytest.raises(TNFRValueError, match="finite real"):
+        TNFRNumericalUtilities(seed=0).compute_circular_mean([0.0, bad])
+
+
+@pytest.mark.parametrize("numpy_available", [True, False])
+@pytest.mark.parametrize("iterable", [True, False])
+def test_unrepresentable_phase_difference_is_rejected_across_backends(
+    monkeypatch, numpy_available, iterable
+):
+    monkeypatch.setattr(unified_numerical, "NUMPY_AVAILABLE", numpy_available)
+    first, second = ([1e308], [-1e308]) if iterable else (1e308, -1e308)
+    with pytest.raises(TNFRValueError, match="differences must be finite"):
+        TNFRNumericalUtilities(seed=0).compute_phase_difference(first, second)
+
+
+def test_vector_phase_difference_preserves_small_separations_and_signed_cut():
+    phases = np.array([1e-16, -1e-16, math.pi, -math.pi, 1e308])
+    differences = angle_diff_array(phases, 0.0, np=np)
+    expected = [math.atan2(math.sin(p), math.cos(p)) for p in phases]
+    assert differences == pytest.approx(expected, rel=2e-15, abs=0.0)
+    assert differences[:4].tolist() == phases[:4].tolist()
+    assert differences.tolist() == [angle_diff(p, 0.0) for p in phases]
+
+
+def test_vector_phase_difference_mask_preserves_output_and_skips_invalid_pairs():
+    output = np.array([7.0, 8.0])
+    result = angle_diff_array(
+        [1e-16, 1e308], [0.0, -1e308], np=np, out=output, where=[True, False]
+    )
+    assert result is output
+    assert result.tolist() == [1e-16, 8.0]
+    before = output.copy()
+    with pytest.raises(TNFRValueError, match="where mask"):
+        angle_diff_array([1.0, 2.0], 0.0, np=np, out=output, where=[True])
+    assert np.array_equal(output, before)
+    with pytest.raises(TNFRValueError, match="differences must be finite"):
+        angle_diff_array([1.0, 1e308], [0.0, -1e308], np=np, out=output)
+    assert np.array_equal(output, before)

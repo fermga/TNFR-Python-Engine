@@ -1,6 +1,6 @@
 # TNFR Python Engine Architecture
 
-**Version:** 0.0.3.6
+**Version:** 0.0.3.7
 **Status:** Implemented architecture reference
 
 This document describes the repository as implemented. Mathematical claims are
@@ -8,6 +8,15 @@ owned by the scoped specifications under
 [`theory/`](theory/README.md); [AGENTS](AGENTS.md) summarizes working conventions.
 This guide links to those sources rather than
 strengthening their claims.
+
+Shared edge artifacts are owned by `utils.cache.edge_version_cache`. For
+NetworkX graphs it checks ordered support, node/parallel-key identity and raw
+`weight`/`length` channels before reuse, so direct edits with unchanged graph
+size cannot retain old neighbor arrays, pressure preparation or Si inputs.
+That check costs O(V+E) per access for scalar edge channels; it is a correctness
+boundary, not a measured speedup. Other state/configuration dependencies remain
+part of each consumer's key or explicit invalidation contract. Graph views use
+fresh computations; concurrent mutation during a read is unsupported.
 
 ## Implementation owners
 
@@ -19,8 +28,13 @@ strengthening their claims.
 | Grammar specification | [`grammar_canon.py`](src/tnfr/operators/grammar_canon.py) |
 | Grammar validation facade | [`grammar.py`](src/tnfr/operators/grammar.py) |
 | Canonical and operational constants | [`constants/`](src/tnfr/constants/) |
+| Shared selector and Si threshold resolution | [`selector_thresholds.py`](src/tnfr/config/selector_thresholds.py) |
+| U3 admission limits and phase-neighbor selection | [`_phase_gate.py`](src/tnfr/operators/_phase_gate.py) |
+| Resonance capacity proposal and identity predicates | [`_resonance_identity.py`](src/tnfr/operators/_resonance_identity.py) |
 | Nodal pressure computation | [`dnfr.py`](src/tnfr/dynamics/dnfr.py) |
 | Nodal integration | [`integrators.py`](src/tnfr/dynamics/integrators.py) |
+| Runtime invocation ordinals | [`_runtime_steps.py`](src/tnfr/_runtime_steps.py); separate from physical time, operator counts and retained metric samples |
+| Represented-real scalar admission | [`_exact_time.py`](src/tnfr/_exact_time.py), reused by clocks, phases, rates and operator gates |
 | Active acceleration history and detached evidence | [`nodal_equation.py`](src/tnfr/operators/nodal_equation.py), `observe_structural_acceleration` |
 | Optional THOL preconditions and threshold resolution | [`preconditions/self_organization.py`](src/tnfr/operators/preconditions/self_organization.py), [`_thol_config.py`](src/tnfr/operators/_thol_config.py) |
 | Public THOL birth proposals | [`self_organization.py`](src/tnfr/operators/self_organization.py) |
@@ -35,17 +49,19 @@ identifies the single maintained guide for each responsibility.
 
 ## Nodal execution flow
 
+The ordinary runtime composes the following configured operations. The diagram
+does not assert that their laws or invocation schedule emerge from one another.
+
 ```mermaid
 flowchart TD
-    A[Graph and nodal triad] --> B[Delta NFR channels]
-    B --> C[Nodal equation integrator]
-    C --> D[Updated EPI and derivatives]
-    D --> E[Coherence and tetrad telemetry]
-    E --> F[SDK, services and reports]
-    G[Canonical operator request] --> H[Grammar and precondition checks]
-    H --> I[Operator implementation]
-    I --> B
-    I --> D
+    A[Graph, configuration and integrator] --> P[Preflight built-in policy and integrator settings]
+    P --> B[Refresh pressure and optional Si]
+    B --> G[Optional glyph selection and execution]
+    G --> C[Integrate held post-glyph pressure]
+    C --> D[Phase coordination]
+    D --> E[Capacity adaptation using retained pressure and Si]
+    E --> F[History, optional REMESH, validators and callbacks]
+    F -.-> R[Read-only metrics, tetrad and reports]
 ```
 
 1. Nodes store EPI, structural frequency, phase, pressure, and trace metadata.
@@ -61,6 +77,81 @@ flowchart TD
    checks. Direct glyphs, public classes and atomic stages have distinct
    secondary effects; a low-level map is not a full sequence certificate.
    Coupling and Resonance retain their path-specific circular U3 checks.
+
+[`runtime.step`](src/tnfr/dynamics/runtime.py) rejects malformed initial
+selector, capacity and phase policies before callbacks or state evolution.
+The default integrator additionally preflights its own numerical parameters.
+This is not validation of every configuration field or a transaction covering
+arbitrary callbacks, custom integrators or later
+configuration changes; consumption-time validation remains necessary.
+Setting `apply_glyphs=False` also skips selector construction. Pressure/Si
+freshness is explicit: the native capacity gate reads retained inputs after
+integration and phase coordination. Research compositions that refresh them
+at a later boundary implement a different declared schedule and must not
+transfer their conclusions to this path automatically.
+
+Built-in glyph selectors share one validated metric snapshot and decision
+kernel across scalar, vector and worker paths. Standalone decisions and each
+new `prepare` read current stored metrics, normalizers and score weights.
+Engine-owned batches release their snapshot on success or failure; a manually
+prepared selector stays frozen until `prepare` or `clear`. Snapshot freshness
+does not itself refresh pressure or Si. Live operator admission remains separate.
+
+### Foundational integration boundaries
+
+The [parameter ledger](theory/NODAL_PARAMETER_FOUNDATIONS.md#11-thresholds-constants-and-numerical-settings-have-different-duties)
+owns the mathematical status and units of thresholds. The principal engine
+uses shared configuration for selector decisions, capacity admission and Si
+aggregation; partial phase policies inherit the same defaults as complete
+ones. CLI and structural U3 diagnostics read the same hard gate as operators,
+without adding numerical slack. Operator preconditions retain independent
+state requirements; a diagnostic warning is not a new physical selection law.
+
+Temporal parameters and consumed phase/rate aliases retain their raw type until
+shared admission. Trigonometric caches cannot hide an invalid current phase.
+Generic error guidance describes these domains and points to current references;
+it supplies neither arbitrary global EPI/pressure/capacity bounds nor universal
+coherence monotonicity. Consumer-specific bounds remain explicit configuration.
+
+Nodal held-step validation and THOL proposal validation share a comparison
+kernel and the configured tolerance/clipping policy. They check a supplied
+single held-input step; they do not authenticate pressure provenance, account
+for an undeclared Gamma input or turn an instantaneous operator event into a
+continuous solution. Actual integration and the exact event certificates
+remain the owners of their stronger execution evidence.
+
+The clipping resolver in `dynamics/structural_clip.py` owns numerical-policy
+admission for execution and held-step comparisons. The shared Euler arithmetic
+also serves detached proposals; their unforced/unclipped scope does not include
+the runtime's forcing, projection or history effects. Optimized pure-EPI
+proposals and graph/dense CPU adapters reuse
+`mathematics/_neighbor_differences.py` rather than average absolute form or
+multiply rounded transition probabilities. Spectral matrices remain separate
+representations with their own rounding scope. Dense DNFR support counts each
+neighbor once; parallel edges contribute multiplicity only to conductance.
+
+Gamma dispatch is registry-owned for both scalar and array execution. Runtime
+evaluation is strict, and custom/replaced entries take the staged scalar path;
+a fast path cannot silently omit a declared source. The Kuramoto cache follows
+phase content as well as time. Structural path admission and distance-weighted
+source accumulation also have shared owners across dense/streamed field paths.
+SDK summaries reuse stable metric reductions and one circular-mean availability
+adapter; they do not install another phase or pressure law.
+
+Tetrad reports preserve unavailable values and estimator provenance. A fitted
+coherence length uses the same length-aware geometry as its comparison;
+dimensionless spectral fallback is not silently compared with path lengths.
+A multiscale curvature fit cannot override a measured variance-cut violation.
+These are diagnostic consistency requirements, not a complete state basis or
+a stability proof. Numerical precision settings preserve intended definitions
+but do not guarantee identical rounded decisions at every strict threshold.
+
+The unforced product, conditional diffusion identities, named operator
+contracts and coherent diagnostics are implemented foundations. Unique phase,
+capacity, support-formation and autonomous operator-selection laws remain
+constitutive research obligations; the implementation does not label those
+supplied policies as derived emergence. The sole research queue remains the
+[execution plan](theory/research/FIVE_STAGE_EXECUTION_PLAN.md).
 
 For THOL, grammar admission, the optional public precondition gate, acceleration
 threshold crossing and a viable birth proposal are distinct checks. The public
@@ -128,10 +219,14 @@ or second transport law is introduced.
 
 ### Domain and research modules
 
-`tnfr.riemann`, `tnfr.navier_stokes`, `tnfr.yang_mills`,
-`tnfr.factorization`, and arithmetic modules under `tnfr.mathematics` apply the
-same nodal vocabulary to bounded research programs. They do not redefine the
-canonical operator catalog, grammar, coherence kernel, or tetrad.
+`tnfr.riemann`, `tnfr.factorization`, and arithmetic modules under
+`tnfr.mathematics` supply explicitly constructed arithmetic/spectral models.
+`tnfr.research` owns reusable evidence and admission infrastructure. These
+modules do not redefine the operator catalog, grammar, coherence kernel or
+tetrad. Added fluid, chemistry and physical-gap programmes have been
+[retired](theory/research/archive/README.md#foundation-reassessment-2026-09-20);
+retained graph diffusion, phase geometry and conditional algebra remain in
+their shared owners.
 
 ## Structural fields and scope
 
@@ -223,6 +318,14 @@ implemented engine and SDK paths. It is an adaptive strategy layer. The current
 implementation does not expose a general structural-manifold gradient, so it
 must not be documented as a proved gradient-descent method. Its operational
 parameters live in `tnfr.constants.operational`.
+
+Registered strategy tokens and explicit legacy hints resolve to computation
+services. An explicit service request is preserved even outside automatic
+size/density preferences; the service admits or rejects its actual domain.
+Automatic selection stays within its available candidates. Learning records
+the executed strategy, while reports retain the requested strategy separately.
+Timing history and configured scores select candidates, not a globally optimal
+algorithm or an emergent TNFR evolution law.
 
 ## Documentation architecture
 

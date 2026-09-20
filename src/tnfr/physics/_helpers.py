@@ -15,7 +15,7 @@ from numbers import Real
 from typing import Any, Iterable
 
 from .._exact_time import finite_represented_real
-from ..mathematics.unified_numerical import kahan_sum_nd, np
+from ..mathematics.unified_numerical import compute_phase_difference, kahan_sum_nd, np
 
 # Import TNFR aliases
 try:
@@ -106,8 +106,16 @@ def finite_real_series(
 
 
 def wrap_angle(angle: float) -> float:
-    """Map *angle* to the half-open interval [-π, π)."""
-    return (angle + math.pi) % (2 * math.pi) - math.pi
+    """Return represented-trig displacement in the half-open [-pi, pi) chart.
+
+    This uses atan2(sin(angle), cos(angle)), mapping an exactly returned +pi
+    to -pi. It is not modulo arithmetic with the represented constant 2*pi:
+    rounded multiples can fall on either side of the cut, especially for large
+    coordinates. Exact period invariance is not a binary64 guarantee; this
+    half-open reader also does not promise signed antisymmetry at the cut.
+    """
+    wrapped = float(compute_phase_difference(angle, 0.0))
+    return -math.pi if wrapped == math.pi else wrapped
 
 
 def get_phase(G: Any, node: Any) -> float:

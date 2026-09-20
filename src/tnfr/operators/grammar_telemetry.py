@@ -9,10 +9,13 @@ Terminology (TNFR semantics):
 
 from __future__ import annotations
 
+import math
 from typing import Any
 
-from ..config.defaults_core import (  # 0.9×π ≈ 2.827 canonical threshold
+from ..config.defaults_core import (
+    K_PHI_ASYMPTOTIC_ALPHA,
     K_PHI_CURVATURE_THRESHOLD,
+    STATISTICAL_SIGNIFICANCE_THRESHOLD,
 )
 from ..constants.canonical import (
     GRAD_PHI_CANONICAL_THRESHOLD,  # heuristic ≈ 0.196 (π/16)
@@ -86,9 +89,9 @@ def warn_phase_curvature_telemetry(
     *,
     abs_threshold: float = K_PHI_CURVATURE_THRESHOLD,
     multiscale_check: bool = True,
-    alpha_hint: float | None = 2.76,
+    alpha_hint: float | None = K_PHI_ASYMPTOTIC_ALPHA,
     tolerance_factor: float = 2.0,
-    fit_min_r2: float = 0.5,
+    fit_min_r2: float = STATISTICAL_SIGNIFICANCE_THRESHOLD,
 ) -> tuple[bool, dict[str, float | int | bool], str, list[Any]]:
     """Emit non-blocking telemetry warning for K_φ (phase curvature).
 
@@ -98,6 +101,9 @@ def warn_phase_curvature_telemetry(
 
     Returns (safe, stats, message, hotspots).
     Safe if no local hotspots and multiscale safety passes. Non-blocking.
+    ``alpha_hint=None`` omits comparison to a selected exponent.
+    ``tolerance_factor`` is an inert legacy argument retained for compatibility;
+    it does not change a threshold or the multiscale verdict.
     """
     try:
         from ..physics.fields import compute_phase_curvature, k_phi_multiscale_safety
@@ -166,73 +172,83 @@ def warn_coherence_length_telemetry(
     *,
     regime_multipliers: tuple[float, float] = (1.0, 3.0),
 ) -> tuple[bool, dict[str, float | str], str]:
-    """Emit non-blocking telemetry warning for ξ_C (coherence length).
+    """Compare the fitted static ξ_C to its own structural path geometry.
 
-    Classifies regimes based on ξ_C relative to graph distances:
+    These are selected advisory labels, not predictions of a transition:
     - stable: ξ_C < mean_path_length
     - watch: mean_path_length ≤ ξ_C ≤ 3×mean_path_length
     - alert: ξ_C > 3×mean_path_length
     - critical: ξ_C ≥ system_diameter
 
-    Returns (safe, stats, message). Always non-blocking.
+    Uses positive reachable outgoing pair distances with ``length``, else
+    ``weight``, else unit length, as in the fit. The spectral fallback is a
+    dimensionless mode scale and is reported as not comparable to path length.
+    Missing estimates are unavailable, never a passing zero. Returns
+    (safe, stats, message); ``safe=False`` can mean unavailable evidence and
+    does not certify physical instability. Always non-blocking.
     """
     try:
-        import networkx as nx  # type: ignore
-
-        from ..physics.fields import estimate_coherence_length
+        from ..physics._coherence_fit import DISTANCE_DESCRIPTION, _graph_distance_rows
+        from ..physics.canonical import estimate_coherence_length_with_provenance
     except Exception:  # pragma: no cover
         return (
-            True,
-            {"xi_c": 0.0, "severity": "unknown"},
+            False,
+            {"xi_c": math.nan, "severity": "unavailable"},
             ("U6 (ξ_C): telemetry unavailable (skipping)"),
         )
 
-    xi_c = float(estimate_coherence_length(G))
-
-    # Compute mean shortest path length (by component) and system diameter
-    def _mean_path_length(H: Any) -> float:
-        try:
-            if nx.is_connected(H):  # type: ignore[attr-defined]
-                return float(nx.average_shortest_path_length(H))  # type: ignore[attr-defined]
-        except Exception:
-            pass
-        # For disconnected graphs: weighted average over components
-        m = 0.0
-        total = 0
-        for comp in nx.connected_components(H):  # type: ignore[attr-defined]
-            CC = H.subgraph(comp)
-            n = CC.number_of_nodes()
-            if n >= 2:
-                try:
-                    m_comp = float(nx.average_shortest_path_length(CC))  # type: ignore[attr-defined]
-                except Exception:
-                    m_comp = 0.0
-                m += m_comp * n
-                total += n
-        return float(m / total) if total > 0 else 0.0
-
-    def _diameter(H: Any) -> float:
-        try:
-            if nx.is_connected(H):  # type: ignore[attr-defined]
-                return float(nx.diameter(H))  # type: ignore[attr-defined]
-        except Exception:
-            pass
-        # For disconnected, take max of component diameters
-        diam = 0.0
-        for comp in nx.connected_components(H):  # type: ignore[attr-defined]
-            CC = H.subgraph(comp)
-            try:
-                d_comp = float(nx.diameter(CC))  # type: ignore[attr-defined]
-            except Exception:
-                d_comp = 0.0
-            diam = max(diam, d_comp)
-        return diam
-
-    mpl = _mean_path_length(G)
-    diam = _diameter(G)
-
-    # Regime multipliers
     base, watch_mult = regime_multipliers
+    if (
+        isinstance(base, bool)
+        or isinstance(watch_mult, bool)
+        or not math.isfinite(base)
+        or not math.isfinite(watch_mult)
+        or not 0.0 < base <= watch_mult
+    ):
+        raise ValueError("regime multipliers must be finite and 0 < base <= watch")
+
+    estimate = estimate_coherence_length_with_provenance(G)
+    xi_c = float(estimate.value)
+    stats: dict[str, float | str] = {
+        "xi_c": xi_c,
+        "method": estimate.method,
+        "distance_weighting": estimate.distance_weighting,
+        "mean_path_length": math.nan,
+        "diameter": math.nan,
+    }
+    if not math.isfinite(xi_c) or xi_c <= 0.0:
+        stats["severity"] = "unavailable"
+        return False, stats, "U6 (ξ_C): unavailable; no admissible estimate."
+    if estimate.method != "autocorrelation_fit":
+        stats["severity"] = "not_comparable"
+        return (
+            False,
+            stats,
+            "U6 (ξ_C): not assessed against path distances; "
+            "spectral fallback is a dimensionless mode scale.",
+        )
+
+    # Stream the same outgoing shortest-path rows as the fitting owner. Online
+    # averaging avoids an O(N²) retained distance matrix and overflowing sums.
+    count = 0
+    mpl = 0.0
+    diam = 0.0
+    for source, row in _graph_distance_rows(G, tuple(G)):
+        for target, distance in row.items():
+            if source == target or distance <= 0.0:
+                continue
+            count += 1
+            mpl += (distance - mpl) / count
+            diam = max(diam, distance)
+    if not count:
+        stats["severity"] = "unavailable"
+        return False, stats, "U6 (ξ_C): unavailable; no positive reachable distances."
+    stats.update(
+        mean_path_length=mpl,
+        diameter=diam,
+        reference_geometry=DISTANCE_DESCRIPTION,
+    )
+
     watch_thr = float(base * mpl)  # typically 1×
     alert_thr = float(watch_mult * mpl)  # typically 3×
 
@@ -253,28 +269,23 @@ def warn_coherence_length_telemetry(
     if severity == "stable":
         msg = (
             f"U6 (ξ_C): PASS - ξ_C={xi_c:.2f} < mean_path_length≈{mpl:.2f} "
-            f"(stable regime)."
+            f"(below the selected warning cut)."
         )
     elif severity == "watch":
         msg = (
             f"U6 (ξ_C): WARN - ξ_C={xi_c:.2f} ≥ mean_path_length≈{mpl:.2f}. "
-            f"Long-range correlations emerging. Monitor closely."
+            f"Selected static length warning."
         )
     elif severity == "alert":
         msg = (
             f"U6 (ξ_C): WARN - ξ_C={xi_c:.2f} > {watch_mult:.1f}×mean_path_length≈{mpl:.2f}. "
-            f"Strong long-range correlations. Potential transition."
+            f"Selected static length alert."
         )
     else:  # critical
         msg = (
             f"U6 (ξ_C): WARN - ξ_C={xi_c:.2f} ≥ system_diameter≈{diam:.2f}. "
-            f"Critical approach: system-wide reorganization imminent."
+            f"Selected finite-size flag; no transition prediction."
         )
 
-    stats = {
-        "xi_c": xi_c,
-        "mean_path_length": mpl,
-        "diameter": diam,
-        "severity": severity,
-    }
+    stats["severity"] = severity
     return safe, stats, msg

@@ -1,4 +1,4 @@
-.PHONY: help clean test examples docs all hello grammar sdk visualization lint format security security-audit security-setup dev-setup dev-test validate riemann-benchmark factorization-full-spectrum self-optimize self-optimize-validate
+.PHONY: help clean test test-all examples docs all hello grammar sdk visualization lint format security security-audit security-setup dev-setup dev-test validate riemann-benchmark factorization-full-spectrum self-optimize self-optimize-validate
 
 SELF_OPT_MANIFEST ?= tests/data/self_optimization/test_run/_manifest.json
 SELF_OPT_MANIFEST_SUMMARY ?= tests/data/self_optimization/test_run/_manifest_summary.json
@@ -8,7 +8,8 @@ SELF_OPT_VALIDATION_REPORT ?= results/self_optimization_validation.json
 
 help:
 	@echo "TNFR development targets"
-	@echo "  test        Run the configured pytest suite"
+	@echo "  test        Run the routine engine/API test gate"
+	@echo "  test-all    Include retained research suites (slow cases still opt-in)"
 	@echo "  examples    Run the maintained introductory examples"
 	@echo "  docs        Validate and build the documentation site"
 	@echo "  validate    Run documentation and SDK validation"
@@ -21,6 +22,9 @@ clean:
 
 test:
 	@python -m pytest
+
+test-all:
+	@python -m pytest tests
 
 riemann-benchmark:
 	@python benchmarks/riemann_program.py

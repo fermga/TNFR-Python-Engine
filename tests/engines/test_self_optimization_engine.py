@@ -2,15 +2,77 @@
 
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import networkx as nx
 import pytest
 
+from tnfr.dynamics.optimization_orchestrator import (
+    OptimizationResult,
+    OptimizationStrategy,
+)
 from tnfr.dynamics.self_optimizing_engine import (
     OptimizationExperience,
     SelfOptimizationResult,
 )
 from tnfr.engines.self_optimization import TNFRSelfOptimizingEngine
+
+
+@pytest.mark.parametrize(
+    "recommendation,requested",
+    [
+        ("nodal_vec", OptimizationStrategy.NODAL_VECTORIZED),
+        ("spectral_fft", OptimizationStrategy.SPECTRAL_FFT),
+        ("use_spectral_methods", OptimizationStrategy.SPECTRAL_FFT),
+        ("inspect_spectral_diagnostic", OptimizationStrategy.AUTO),
+    ],
+)
+def test_automatic_dispatch_uses_registered_tokens_and_records_executed_service(
+    recommendation, requested, monkeypatch
+):
+    import tnfr.dynamics.self_optimizing_engine as implementation
+
+    monkeypatch.setattr(implementation, "HAS_CONSERVATION", False)
+    engine = object.__new__(TNFRSelfOptimizingEngine)
+    recommendations = SimpleNamespace(
+        recommended_strategies=[recommendation], mathematical_insights={}
+    )
+    engine.recommend_optimization_strategy = lambda *_: recommendations
+    admitted_nodes = []
+    engine._prepare_sequence_validation = lambda *_, **kw: admitted_nodes.append(
+        kw["node"]
+    )
+    actual = (
+        OptimizationStrategy.STRUCTURAL_MEMO
+        if requested is OptimizationStrategy.AUTO
+        else requested
+    )
+    dispatched = []
+
+    def execute(graph, operation, strategy, **kwargs):
+        dispatched.append((strategy, kwargs))
+        return OptimizationResult(
+            strategy_used=actual,
+            execution_time=0.0,
+            speedup_factor=1.0,
+            cache_hits=0,
+            cache_misses=0,
+            memory_used_mb=0.0,
+            accuracy_preserved=True,
+            details={"performance_measurements": {}},
+        )
+
+    engine.orchestrator = SimpleNamespace(
+        analyze_optimization_profile=lambda *_: SimpleNamespace(edge_density=0.0),
+        execute_optimization=execute,
+    )
+    experiences = []
+    engine.learn_from_experience = experiences.append
+    result = engine.optimize_automatically(nx.path_graph(2), node=0, node_id=1)
+    assert dispatched == [(requested, {})]
+    assert admitted_nodes == [0]
+    assert result["requested_strategy"] == requested.value
+    assert result["strategy_used"] == experiences[0].strategy_used == actual.value
 
 
 def _read_signature(signature_path: Path) -> str:

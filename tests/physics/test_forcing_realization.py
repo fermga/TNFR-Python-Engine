@@ -6,6 +6,7 @@ from dataclasses import FrozenInstanceError, replace
 from fractions import Fraction
 
 import networkx as nx
+import numpy as np
 import pytest
 
 from tnfr.alias import get_attr
@@ -233,14 +234,15 @@ def test_kernel_reads_actual_neighbor_insertion_order(monkeypatch):
     assert seen and all(edges == expected for edges in seen)
 
 
-def test_materialized_fused_cancellation_is_not_the_fallback_small_resultant_rule():
+@pytest.mark.parametrize("disabled", [False, 0, np.bool_(False)])
+def test_fused_cancellation_readout_excludes_runtime_fallback(disabled):
     graph = nx.star_graph(2)
     for node, phase in enumerate((0.0, 0.0, math.pi)):
         graph.nodes[node].update(EPI=0.0, nu_f=1.0, theta=phase, delta_nfr=0.0)
     result = capture_non_epi_forcing(graph)
     # The binary64 phasor sum has positive tiny sine and zero cosine.
     assert result.phase_gradient[0] == F(1, 2)
-    graph.graph["vectorized_dnfr"] = False
+    graph.graph["vectorized_dnfr"] = disabled
     with pytest.raises(ValueError, match="fallback"):
         capture_non_epi_forcing(graph)
 

@@ -16,9 +16,12 @@ transition, a universal exponent or divergence of correlation length. Those
 claims require a declared control parameter, finite-size scaling, uncertainty
 intervals and replication across graph families.
 
-The implementation remains anchored to the nodal equation through the unified
-fields. Its NON_LIFE/CRITICAL/LIFE names are operational classifications, not
-biological or metaphysical conclusions.
+The implementation reads the shared structural fields; it does not select an
+operator or supply an evolution law. Its NON_LIFE/CRITICAL/LIFE names are
+operational classifications, not biological or metaphysical conclusions.
+In exact arithmetic, duplicating disconnected copies multiplies these
+imbalances by sqrt(copy count), so a label can change without changing any
+component's local dynamics. The labels do not certify autonomous formation.
 
 See Also
 --------
@@ -35,14 +38,24 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Sequence
 
+from .._exact_time import finite_represented_real
 from ..mathematics.unified_numerical import np
+from ..metrics.common import (
+    finite_mean,
+    finite_mean_absolute,
+    finite_pearson_correlation,
+    finite_population_std,
+)
 
 try:
     import networkx as nx
 except ImportError:  # pragma: no cover
     nx = None
 
-from .canonical import estimate_coherence_length
+from .canonical import (
+    CoherenceLengthEstimate,
+    estimate_coherence_length_with_provenance,
+)
 
 # Delegate to authoritative field computations (single source of truth)
 from .unified import compute_chirality_field, compute_symmetry_breaking_field
@@ -73,18 +86,33 @@ def symmetry_zscore(mean_abs: float, variance: float, n: int) -> float:
     """
     if isinstance(n, bool) or not isinstance(n, (int, np.integer)) or n < 0:
         raise ValueError("n must be a non-negative integer")
-    mean_value = float(mean_abs)
-    variance_value = float(variance)
+    mean_value = finite_represented_real(mean_abs, "mean_abs")[0]
+    variance_value = finite_represented_real(variance, "variance")[0]
     if not math.isfinite(mean_value) or mean_value < 0.0:
         raise ValueError("mean_abs must be finite and non-negative")
     if not math.isfinite(variance_value) or variance_value < 0.0:
         raise ValueError("variance must be finite and non-negative")
     if n == 0:
         return 0.0
-    se = math.sqrt(variance_value / n)
-    if se == 0.0:
-        return 0.0 if mean_value == 0.0 else math.inf
-    return mean_value / se
+    return _standardized_imbalance(mean_value, math.sqrt(variance_value), n)
+
+
+def _standardized_imbalance(mean_abs: float, std: float, n: int) -> float:
+    """Evaluate the selected ratio without dividing a tiny variance by N."""
+    if n == 0 or mean_abs == 0.0:
+        return 0.0
+    if std == 0.0:
+        return math.inf
+    mean_mantissa, mean_exponent = math.frexp(mean_abs)
+    std_mantissa, std_exponent = math.frexp(std)
+    try:
+        coefficient = mean_mantissa / std_mantissa * math.sqrt(n)
+    except OverflowError as exc:
+        raise ValueError("n exceeds the finite numerical count range") from exc
+    try:
+        return math.ldexp(coefficient, mean_exponent - std_exponent)
+    except OverflowError:
+        return math.inf
 
 
 # ============================================================================
@@ -128,7 +156,7 @@ class PhaseTransitionTelemetry:
     susceptibility : np.ndarray
         χ_𝒮(t) = N · Var(𝒮) — finite-sample fluctuation susceptibility.
     coherence_length : np.ndarray
-        ξ_C(t) — measured spatial correlation scale.
+        ξ_C(t) — static fit or tagged spectral fallback; NaN when unavailable.
     phase_classification : list[Phase]
         Phase assignment per time step.
     order_zscore : np.ndarray
@@ -140,7 +168,9 @@ class PhaseTransitionTelemetry:
         susceptibility peaks unsuitable for finite-size inference.
     transition_time : float | None
         First structural time where the order z-score crosses one, with linear
-        interpolation. The resulting phase may be CRITICAL or LIFE.
+        interpolation, or the first observation if already above the cut.
+        Initial occupation is not evidence of a newly observed transition.
+        The resulting phase may be CRITICAL or LIFE.
     critical_time : float | None
         Time of maximum sampled susceptibility.
     measured_exponent : float | None
@@ -149,6 +179,9 @@ class PhaseTransitionTelemetry:
         explicitly related to a declared control parameter.
     exponent_fit_r_squared : float | None
         Coefficient of determination R² for the power-law fit.
+    coherence_length_provenance : list[CoherenceLengthEstimate]
+        Per-state static-fit, spectral-fallback or unavailable evidence.
+        Fit lengths and spectral scales have different declared units.
     """
 
     times: list[float]
@@ -166,6 +199,14 @@ class PhaseTransitionTelemetry:
     order_zscore: np.ndarray = field(default_factory=lambda: np.array([]))
     chirality_zscore: np.ndarray = field(default_factory=lambda: np.array([]))
     node_count: np.ndarray = field(default_factory=lambda: np.array([], dtype=int))
+    coherence_length_provenance: list[CoherenceLengthEstimate] = field(
+        default_factory=list
+    )
+
+    @property
+    def coherence_length_available(self) -> np.ndarray:
+        """Availability of either estimator, without identifying their units."""
+        return np.isfinite(self.coherence_length) & (self.coherence_length > 0.0)
 
 
 @dataclass
@@ -181,12 +222,18 @@ class PhaseSnapshot:
     chirality_mean: float  # ⟨χ⟩
     chirality_abs_mean: float  # ⟨|χ|⟩
     susceptibility: float  # N · Var(𝒮)
-    coherence_length: float  # ξ_C
+    coherence_length: float  # ξ_C, with NaN for an unavailable estimator
     phase: Phase  # Classified phase
     has_homochirality: bool  # Operational chirality classification
     order_zscore: float = 0.0  # Standardized spatial imbalance of 𝒮
     chirality_zscore: float = 0.0  # Standardized spatial imbalance of χ
     node_count: int = 0
+    coherence_length_provenance: CoherenceLengthEstimate | None = None
+
+    @property
+    def coherence_length_available(self) -> bool:
+        """Whether a finite positive fit or spectral estimate is available."""
+        return math.isfinite(self.coherence_length) and self.coherence_length > 0.0
 
 
 # ============================================================================
@@ -213,31 +260,19 @@ def compute_order_parameter(G: Any) -> dict[str, float]:
     -------
     dict[str, float]
         Keys: 'mean', 'abs_mean', 'variance', 'susceptibility',
-        'max', 'min', 'n_nodes'.
+        'max', 'min', 'n_nodes', 'standardized_imbalance'. The imbalance is
+        computed before squaring the field scale; a rounded zero variance
+        must not make a nonconstant sample appear uniform. Variance and
+        susceptibility may round below binary64 range; overflow is rejected.
+        Susceptibility combines N before final rounding, so its represented
+        value need not equal N times the separately rounded variance.
     """
     S_field = compute_symmetry_breaking_field(G)
-    values = np.array(list(S_field.values()))
-    N = len(values)
-    if N == 0:
-        return {
-            "mean": 0.0,
-            "abs_mean": 0.0,
-            "variance": 0.0,
-            "susceptibility": 0.0,
-            "max": 0.0,
-            "min": 0.0,
-            "n_nodes": 0,
-        }
-    mean = float(np.mean(values))
-    return {
-        "mean": mean,
-        "abs_mean": float(np.mean(np.abs(values))),
-        "variance": float(np.var(values)),
-        "susceptibility": float(N * np.var(values)),
-        "max": float(np.max(values)),
-        "min": float(np.min(values)),
-        "n_nodes": N,
-    }
+    statistics, std = _field_statistics(S_field.values(), "order parameter")
+    statistics["susceptibility"] = _squared_spread(
+        std, statistics["n_nodes"], "susceptibility"
+    )
+    return statistics
 
 
 def compute_chirality_statistics(G: Any) -> dict[str, float]:
@@ -254,33 +289,56 @@ def compute_chirality_statistics(G: Any) -> dict[str, float]:
     Returns
     -------
     dict[str, float]
-        Keys: 'mean', 'abs_mean', 'variance', 'max_abs', 'n_nodes'.
+        Keys: 'mean', 'abs_mean', 'variance', 'max_abs', 'n_nodes',
+        'standardized_imbalance'. The selected imbalance retains variation
+        even when the dimensional variance rounds below binary64 range.
     """
     chi_field = compute_chirality_field(G)
-    values = np.array(list(chi_field.values()))
-    N = len(values)
-    if N == 0:
-        return {
-            "mean": 0.0,
-            "abs_mean": 0.0,
-            "variance": 0.0,
-            "max_abs": 0.0,
-            "n_nodes": 0,
-        }
+    statistics, _ = _field_statistics(chi_field.values(), "chirality")
+    statistics["max_abs"] = max(abs(statistics.pop("min")), abs(statistics.pop("max")))
+    return statistics
+
+
+def _squared_spread(std: float, count: int, name: str) -> float:
+    """Round count*std**2 once its scale has been combined, or reject overflow."""
+    mantissa, exponent = math.frexp(std)
+    try:
+        return math.ldexp(count * mantissa * mantissa, 2 * exponent)
+    except OverflowError as exc:
+        raise ValueError(f"{name} exceeds the finite numerical range") from exc
+
+
+def _field_statistics(values, name: str) -> tuple[dict[str, float], float]:
+    """Shared signed-field reduction; rescaling is numerical, not a new law."""
+    samples = tuple(finite_represented_real(value, name)[0] for value in values)
+    count = len(samples)
+    magnitude = max(map(abs, samples), default=0.0)
+    exponent = math.frexp(magnitude)[1]
+    # Power-of-two scaling preserves adjacent large inputs and rescales wholly
+    # subnormal fields before mean/variance materialization. Widely separated
+    # scales still undergo ordinary binary64 rounding in the normalized chart.
+    normalized = tuple(math.ldexp(value, -exponent) for value in samples)
+    normalized_mean = finite_mean(normalized, name=name)
+    normalized_std = finite_population_std(normalized, name=name)
+    std = finite_population_std(samples, name=name)
     return {
-        "mean": float(np.mean(values)),
-        "abs_mean": float(np.mean(np.abs(values))),
-        "variance": float(np.var(values)),
-        "max_abs": float(np.max(np.abs(values))),
-        "n_nodes": N,
-    }
+        "mean": finite_mean(samples, name=name),
+        "abs_mean": finite_mean_absolute(samples, name=name),
+        "variance": _squared_spread(std, 1, "variance"),
+        "max": max(samples, default=0.0),
+        "min": min(samples, default=0.0),
+        "n_nodes": count,
+        "standardized_imbalance": _standardized_imbalance(
+            abs(normalized_mean), normalized_std, count
+        ),
+    }, std
 
 
 def classify_phase(
     order_z: float,
     chirality_z: float,
 ) -> Phase:
-    r"""Classify the structural phase from emergent z-scores.
+    r"""Classify a snapshot using the configured spatial-imbalance cut.
 
     The phase is decided by an operational standardized spatial imbalance.
     With ``order_z = |⟨𝒮⟩|/sqrt(Var(𝒮)/N)`` and the analogous chirality ratio
@@ -305,8 +363,10 @@ def classify_phase(
     Phase
         NON_LIFE, CRITICAL, or LIFE.
     """
-    order_value = float(order_z)
-    chirality_value = float(chirality_z)
+    # Positive infinity represents a constant nonzero field. Other inputs
+    # follow strict raw-real admission rather than bool/text coercion.
+    order_value = _classification_ratio(order_z, "order_z")
+    chirality_value = _classification_ratio(chirality_z, "chirality_z")
     if math.isnan(order_value) or order_value < 0.0:
         raise ValueError("order_z must be non-negative and not NaN")
     if math.isnan(chirality_value) or chirality_value < 0.0:
@@ -316,6 +376,12 @@ def classify_phase(
     if chirality_value > Z_SIGNIFICANCE:
         return Phase.LIFE
     return Phase.CRITICAL
+
+
+def _classification_ratio(value, name: str) -> float:
+    if isinstance(value, (float, np.floating)) and value == math.inf:
+        return math.inf
+    return finite_represented_real(value, name)[0]
 
 
 def capture_phase_snapshot(G: Any) -> PhaseSnapshot:
@@ -333,13 +399,11 @@ def capture_phase_snapshot(G: Any) -> PhaseSnapshot:
     """
     op = compute_order_parameter(G)
     chi = compute_chirality_statistics(G)
-    xi = estimate_coherence_length(G)
-    if math.isnan(xi):
-        xi = 0.0
+    xi = estimate_coherence_length_with_provenance(G)
 
     n_nodes = op["n_nodes"]
-    order_z = symmetry_zscore(abs(op["mean"]), op["variance"], n_nodes)
-    chirality_z = symmetry_zscore(abs(chi["mean"]), chi["variance"], n_nodes)
+    order_z = op["standardized_imbalance"]
+    chirality_z = chi["standardized_imbalance"]
     phase = classify_phase(order_z, chirality_z)
 
     return PhaseSnapshot(
@@ -348,12 +412,13 @@ def capture_phase_snapshot(G: Any) -> PhaseSnapshot:
         chirality_mean=chi["mean"],
         chirality_abs_mean=chi["abs_mean"],
         susceptibility=op["susceptibility"],
-        coherence_length=xi,
+        coherence_length=xi.value,
         phase=phase,
         has_homochirality=chirality_z > Z_SIGNIFICANCE,
         order_zscore=order_z,
         chirality_zscore=chirality_z,
         node_count=int(n_nodes),
+        coherence_length_provenance=xi,
     )
 
 
@@ -380,7 +445,8 @@ def detect_phase_transition(
     Parameters
     ----------
     graph_sequence : Sequence[nx.Graph]
-        Time-ordered TNFR network states.
+        Time-ordered supplied TNFR network states. This reader does not verify
+        that an engine trajectory connects the supplied states.
     times : Sequence[float]
         Finite, strictly increasing structural times corresponding one-to-one
         with the graph states.
@@ -407,30 +473,22 @@ def detect_phase_transition(
     chirality_z_series = np.zeros(n)
     node_counts = np.zeros(n, dtype=int)
     phases: list[Phase] = []
+    xi_provenance: list[CoherenceLengthEstimate] = []
 
     for i, G in enumerate(graph_sequence):
-        op = compute_order_parameter(G)
-        chi = compute_chirality_statistics(G)
-        xi = estimate_coherence_length(G)
-        if math.isnan(xi):
-            xi = 0.0
-
-        order_param[i] = op["mean"]
-        order_param_abs[i] = abs(op["mean"])
-        chi_mean[i] = chi["mean"]
-        chi_abs_mean[i] = chi["abs_mean"]
-        suscept[i] = op["susceptibility"]
-        xi_c[i] = xi
-
-        n_nodes = op["n_nodes"]
-        order_z = symmetry_zscore(abs(op["mean"]), op["variance"], n_nodes)
-        chirality_z = symmetry_zscore(abs(chi["mean"]), chi["variance"], n_nodes)
-        order_z_series[i] = order_z
-        chirality_z_series[i] = chirality_z
-        node_counts[i] = int(n_nodes)
-
-        phase = classify_phase(order_z, chirality_z)
-        phases.append(phase)
+        snapshot = capture_phase_snapshot(G)
+        order_param[i] = snapshot.order_parameter
+        order_param_abs[i] = snapshot.order_parameter_abs
+        chi_mean[i] = snapshot.chirality_mean
+        chi_abs_mean[i] = snapshot.chirality_abs_mean
+        suscept[i] = snapshot.susceptibility
+        xi_c[i] = snapshot.coherence_length
+        order_z_series[i] = snapshot.order_zscore
+        chirality_z_series[i] = snapshot.chirality_zscore
+        node_counts[i] = snapshot.node_count
+        phases.append(snapshot.phase)
+        assert snapshot.coherence_length_provenance is not None
+        xi_provenance.append(snapshot.coherence_length_provenance)
 
     # Interpolate the finite standardized-imbalance crossing. The cut is an
     # operational classifier policy, not a statistical significance level.
@@ -463,6 +521,7 @@ def detect_phase_transition(
         order_zscore=order_z_series,
         chirality_zscore=chirality_z_series,
         node_count=node_counts,
+        coherence_length_provenance=xi_provenance,
     )
 
 
@@ -507,9 +566,15 @@ def fit_critical_exponent(
         the exponent is a measured observable, not a derived constant.
     """
     validated_times = _validate_times(times)
-    order_abs = np.asarray(order_parameter_abs, dtype=float)
-    if order_abs.ndim != 1:
+    raw_order = np.asarray(order_parameter_abs, dtype=object)
+    if raw_order.ndim != 1:
         raise ValueError("order_parameter_abs must be a one-dimensional series")
+    order_abs = np.array(
+        [
+            finite_represented_real(value, "order_parameter_abs")[0]
+            for value in raw_order
+        ]
+    )
     if len(validated_times) != len(order_abs):
         raise ValueError(
             "times and order_parameter_abs must contain the same number of entries"
@@ -520,12 +585,9 @@ def fit_critical_exponent(
         raise ValueError("order_parameter_abs cannot contain negative values")
     parsed_critical_time: float | None = None
     if critical_time is not None:
-        try:
-            parsed_critical_time = float(critical_time)
-        except (TypeError, ValueError, OverflowError) as exc:
-            raise ValueError("critical_time must be finite when provided") from exc
-        if not math.isfinite(parsed_critical_time):
-            raise ValueError("critical_time must be finite when provided")
+        parsed_critical_time = finite_represented_real(critical_time, "critical_time")[
+            0
+        ]
 
     exponent, r_sq = _fit_critical_exponent(
         validated_times, order_abs, parsed_critical_time
@@ -543,9 +605,7 @@ def fit_critical_exponent(
 
 def _validate_times(times: Sequence[float]) -> list[float]:
     """Return finite, strictly increasing structural-time coordinates."""
-    validated = [float(value) for value in times]
-    if not all(math.isfinite(value) for value in validated):
-        raise ValueError("times must contain only finite values")
+    validated = [finite_represented_real(value, "times")[0] for value in times]
     if any(right <= left for left, right in zip(validated, validated[1:])):
         raise ValueError("times must be strictly increasing")
     return validated
@@ -561,8 +621,12 @@ def _find_crossing_time(
     Uses linear interpolation between adjacent time steps for precision.
     """
     n = len(values)
-    if n < 2:
+    if n == 0:
         return None
+    # Initial occupation precedes every later recrossing, even in a one-state
+    # report. It is not evidence that a transition occurred before observation.
+    if values[0] > threshold:
+        return times[0]
 
     for i in range(n - 1):
         if values[i] <= threshold < values[i + 1]:
@@ -570,14 +634,11 @@ def _find_crossing_time(
                 return times[i + 1]
             # Linear interpolation
             dv = values[i + 1] - values[i]
-            if abs(dv) < 1e-15:
-                return times[i]
             alpha = (threshold - values[i]) / dv
-            return times[i] + alpha * (times[i + 1] - times[i])
-
-    # Already above threshold from start
-    if values[0] > threshold:
-        return times[0]
+            gap = times[i + 1] - times[i]
+            if math.isfinite(gap):
+                return times[i] + alpha * gap
+            return (1.0 - alpha) * times[i] + alpha * times[i + 1]
 
     return None
 
@@ -595,36 +656,35 @@ def _fit_critical_exponent(
     if t_c is None:
         return None, None
 
-    t_arr = np.array(times, dtype=float)
-    dt = np.abs(t_arr - t_c)
-
-    # Select post-candidate points with non-trivial order parameter.
-    mask = (dt > 1e-12) & (order_abs > 1e-15) & (t_arr >= t_c)
-    if np.sum(mask) < 3:
+    # Positivity is the admission contract; a fixed coordinate-size cutoff
+    # would change availability merely by changing time or field units.
+    pairs = [
+        (time, value)
+        for time, value in zip(times, order_abs)
+        if time > t_c and value > 0.0
+    ]
+    if len(pairs) < 3:
         return None, None
-
-    log_dt = np.log(dt[mask])
-    log_S = np.log(order_abs[mask])
-
-    # Linear regression: log|S| = p_fit · log|t − t_c| + const
-    A = np.vstack([log_dt, np.ones_like(log_dt)]).T
-    try:
-        result = np.linalg.lstsq(A, log_S, rcond=None)
-        coeffs = result[0]
-        exponent = float(coeffs[0])
-
-        # R² computation
-        predicted = A @ coeffs
-        ss_res = float(np.sum((log_S - predicted) ** 2))
-        ss_tot = float(np.sum((log_S - np.mean(log_S)) ** 2))
-        if ss_tot <= 1e-15:
-            r_squared = 1.0 if ss_res <= 1e-15 else 0.0
-        else:
-            r_squared = 1.0 - ss_res / ss_tot
-
-        return exponent, r_squared
-    except (np.linalg.LinAlgError, ValueError):
+    log_dt = []
+    for time, _ in pairs:
+        distance = time - t_c
+        log_dt.append(
+            math.log(distance)
+            if math.isfinite(distance)
+            else math.log(time / 2.0 - t_c / 2.0) + math.log(2.0)
+        )
+    log_order = [math.log(value) for _, value in pairs]
+    time_std = finite_population_std(log_dt)
+    if time_std == 0.0:
+        # Distinct input times can lose separation after represented logs.
         return None, None
+    order_std = finite_population_std(log_order)
+    if order_std == 0.0:
+        return 0.0, 1.0
+    correlation = finite_pearson_correlation(log_dt, log_order)
+    assert correlation is not None
+    exponent = correlation * (order_std / time_std)
+    return exponent, correlation * correlation
 
 
 # ============================================================================

@@ -1,5 +1,5 @@
 {
-  "scope": "Full text captured before consolidating each live document; archival instructions and conclusions are historical, not current authority.",
+  "scope": "Historical capture metadata. Listed snapshot files were retired from the working tree on 2026-09-20; recover their Git blobs from the stated revision. Captured-byte digests describe the original working-tree captures and need not equal normalized Git blobs.",
   "snapshots": [
     {
       "original_path": "theory/research/FIVE_STAGE_EXECUTION_PLAN.md",
@@ -55,5 +55,7 @@
       "bytes": 8164,
       "sha256": "6430d811f2418f33c5daf198cdcd21f3f88023fb8b6cff3da5d9d730d334fb77"
     }
-  ]
+  ],
+  "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+  "current_retirement_manifest": "RETIRED_SCOPE_2026-09-20.json"
 }

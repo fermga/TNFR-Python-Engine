@@ -35,27 +35,15 @@ from tnfr.mathematics.padic_tower import (
 )
 from tnfr.physics.spectral_projectors import derived_tolerance
 
-# Small primes and low exponents; both a single-generator base and the units.
-PRIMES = [2, 3, 5, 7]
-LEVELS = [1, 2]
-BASES = {
-    2: [frozenset({1})],
-    3: [frozenset({1}), frozenset({1, 2})],
-    5: [frozenset({1}), frozenset({1, 2, 3, 4})],
-    7: [frozenset({1}), frozenset({1, 2, 3, 4, 5, 6})],
-}
-
-
-def _cases():
-    for p in PRIMES:
-        for e in LEVELS:
-            if p ** (e + 1) > 128:
-                continue
-            for base in BASES[p]:
-                yield p, e, base
-
-
-CASES = list(_cases())
+# Characteristic two, single/multiple generators, and successive levels cover
+# the construction branches without repeating dense 125-node rational products.
+CASES = [
+    (2, 2, frozenset({1})),
+    (3, 1, frozenset({1})),
+    (3, 1, frozenset({1, 2})),
+    (3, 2, frozenset({1, 2})),
+    (5, 1, frozenset({1})),
+]
 
 
 # --------------------------------------------------------------------------- #
@@ -128,28 +116,39 @@ def test_surviving_spectrum_containment(p, e, base):
 
 
 # --------------------------------------------------------------------------- #
-# Required test 3: scale reproducibility (deterministic, exact)
+# Transport coefficients and spectral scale telemetry
 # --------------------------------------------------------------------------- #
-@pytest.mark.parametrize("p,e,base", CASES)
-def test_transport_is_deterministic(p, e, base):
-    c = compatible_connection_set(p, e, base)
-    P1 = padic_transition(p, e, c)
-    P2 = padic_transition(p, e, c)
-    assert P1 == P2
-    assert all(isinstance(x, Fraction) for row in P1 for x in row)
+def test_transport_matches_declared_uniform_fibers():
+    connection = compatible_connection_set(3, 2, frozenset({1}))
+    assert connection == {1, 4, 7}
+    transition = padic_transition(3, 2, connection)
+    assert transition[0] == [
+        Fraction(0),
+        Fraction(1, 3),
+        Fraction(0),
+        Fraction(0),
+        Fraction(1, 3),
+        Fraction(0),
+        Fraction(0),
+        Fraction(1, 3),
+        Fraction(0),
+    ]
+    assert all(sum(row) == Fraction(1) for row in transition)
+    assert all(isinstance(value, Fraction) for row in transition for value in row)
 
 
-def test_spectral_gaps_are_stable_and_reproducible():
-    g1 = padic_spectral_gaps(3, 3, frozenset({1}))
-    g2 = padic_spectral_gaps(3, 3, frozenset({1}))
-    assert g1 == g2
-    assert [e for e, _ in g1] == [1, 2, 3]
+def test_spectral_gap_reports_cycle_modulus_and_fiber_modes():
+    gaps = padic_spectral_gaps(3, 3, frozenset({1}))
+    assert [level for level, _ in gaps] == [1, 2, 3]
+    # The directed three-cycle has nonzero eigenvalue moduli sqrt(3); added
+    # fiber modes have Laplacian eigenvalue 1. This is not a heat-decay rate.
+    assert [gap for _, gap in gaps] == pytest.approx([3**0.5, 1.0, 1.0])
 
 
 # --------------------------------------------------------------------------- #
 # Control: a non-uniform fine set breaks commutation
 # --------------------------------------------------------------------------- #
-@pytest.mark.parametrize("p,e", [(3, 2), (5, 2), (2, 3)])
+@pytest.mark.parametrize("p,e", [(3, 2), (2, 3)])
 def test_non_uniform_fine_set_breaks_commutation(p, e):
     base = frozenset(range(1, p))
     R = projective_scale_map(p, e)

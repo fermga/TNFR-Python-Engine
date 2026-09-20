@@ -30,19 +30,20 @@ their magnitude read-out must not silently replace the evolved state.
 from __future__ import annotations
 
 import math
+import sys
 from abc import ABC, abstractmethod
 from collections.abc import Iterable, Iterator, Mapping
 from concurrent.futures import ProcessPoolExecutor
 from contextlib import contextmanager
+from fractions import Fraction
 from multiprocessing import get_context
-from numbers import Real
 from typing import Any, Literal, cast
 
 import networkx as nx
 
 from .._compat import TypeAlias
+from .._exact_time import finite_represented_real
 from ..alias import get_attr, get_attr_str, set_attr, set_attr_str
-from ..config.defaults_core import PI
 from ..constants import DEFAULTS
 from ..constants.aliases import (
     ALIAS_D2EPI,
@@ -54,19 +55,24 @@ from ..constants.aliases import (
     ALIAS_VF,
 )
 from ..constants.canonical import (
-    INTEGRATORS_CLIP_SOFT_K_CANONICAL,
     INTEGRATORS_DNFR_BOUNDS_CANONICAL,
     INTEGRATORS_HALF_STEP_CANONICAL,
     INTEGRATORS_RK4_SIXTH_CANONICAL,
     INTEGRATORS_SIGMOID_OFFSET_CANONICAL,
 )
 from ..errors.contextual import NetworkConfigError, TNFRUserError, TNFRValueError
-from ..gamma import _get_gamma_spec, eval_gamma, eval_gamma_vectorized
+from ..gamma import (
+    _get_gamma_spec,
+    _uses_builtin_gamma,
+    eval_gamma,
+    eval_gamma_vectorized,
+)
+from ..mathematics._exact_weighted import exact_weighted_sum_ratio
 from ..mathematics.unified_numerical import np
 from ..types import NodeId, TNFRGraph, require_finite_real_scalar_epi
 from ..utils import resolve_chunk_size
 from ._euler_kernel import euler_update
-from .structural_clip import structural_clip, structural_clip_array
+from .structural_clip import resolve_clip_policy, structural_clip, structural_clip_array
 
 __all__ = (
     "AbstractIntegrator",
@@ -87,6 +93,8 @@ NodalUpdate: TypeAlias = dict[NodeId, tuple[float, float, float]]
 IntegratorMethod: TypeAlias = Literal["euler", "rk4"]
 """Supported explicit integration schemes for nodal updates."""
 
+ClipPolicy: TypeAlias = tuple[float, float, Literal["hard", "soft"], float]
+
 _PARALLEL_GRAPH: TNFRGraph | None = None
 
 
@@ -105,13 +113,29 @@ def _read_scalar_epi(nd: dict[str, Any]) -> float:
 
 
 def _finite_output(value: Any, parameter: str = "derivative") -> float:
-    """Reject nonfinite solver state and metadata before committing them."""
-    result = float(value)
-    if not math.isfinite(result):
+    """Admit represented-real solver scalars before coercion or commit."""
+    try:
+        return finite_represented_real(value, parameter)[0]
+    except (TypeError, ValueError) as exc:
         raise NetworkConfigError(
-            parameter=parameter, value=result, reason="Solver output must be finite"
-        )
-    return result
+            parameter=parameter, value=value, reason=str(exc)
+        ) from exc
+
+
+def _integration_clip_policy(graph: TNFRGraph) -> ClipPolicy:
+    """Validate the active boundary policy before any solver-side evaluation."""
+    try:
+        return resolve_clip_policy(graph.graph)
+    except ValueError as exc:
+        raise NetworkConfigError(
+            parameter="EPI clipping policy",
+            value={
+                key: graph.graph[key]
+                for key in ("EPI_MIN", "EPI_MAX", "CLIP_MODE", "CLIP_SOFT_K")
+                if key in graph.graph
+            },
+            reason=str(exc),
+        ) from exc
 
 
 def _validate_clock_grid(t0: float, dt_step: float, steps: int, method: str) -> float:
@@ -175,7 +199,10 @@ def _gamma_worker(task: tuple[list[NodeId], float]) -> list[tuple[NodeId, float]
     chunk, t = task
     if _PARALLEL_GRAPH is None:
         raise RuntimeError("Parallel Γ worker initialised without graph reference")
-    return [(node, float(eval_gamma(_PARALLEL_GRAPH, node, t))) for node in chunk]
+    return [
+        (node, float(eval_gamma(_PARALLEL_GRAPH, node, t, strict=True)))
+        for node in chunk
+    ]
 
 
 def _normalise_jobs(n_jobs: int | None, total: int) -> int | None:
@@ -199,6 +226,56 @@ def _chunk_nodes(nodes: list[NodeId], chunk_size: int) -> Iterable[list[NodeId]]
         yield nodes[idx : idx + chunk_size]
 
 
+def _exact_rk4_update(epi: float, dt_step: float, stages: tuple[float, ...]) -> float:
+    """Round a range-limited quadrature after exact represented-input arithmetic."""
+    before = _finite_output(epi, "EPI")
+    step = _finite_output(dt_step, "dt")
+    rates = tuple(_finite_output(stage, "RK4 stage") for stage in stages)
+    numerator, denominator = exact_weighted_sum_ratio(
+        (1.0, 2.0, 2.0, 1.0), rates, normalize=True
+    )
+    exact = Fraction(before) + Fraction(step) * Fraction(numerator, denominator)
+    try:
+        result = float(exact)
+    except OverflowError as exc:
+        raise NetworkConfigError(
+            parameter="EPI", value="out of range", reason="Solver output must be finite"
+        ) from exc
+    return _finite_output(result, "EPI")
+
+
+def _rk4_update(epi: Any, dt_step: float, stages: tuple[Any, ...]) -> Any:
+    """Apply one shared 1:2:2:1 quadrature to scalar or array supplied rates.
+
+    Ordinary values retain the existing separate arithmetic order. If h/6 is
+    subnormal or a weighted sum/proposal overflows, reuse the exact weighted
+    reducer and round the final represented-input expression for that row.
+    This avoids losing a finite response to an intermediate range limit; it
+    does not recompute state-dependent stages or add an evolution law.
+    """
+    k1, k2, k3, k4 = stages
+    factor = dt_step / INTEGRATORS_RK4_SIXTH_CANONICAL
+    factor_underflow = dt_step != 0.0 and abs(factor) < sys.float_info.min
+    if np is not None and isinstance(epi, np.ndarray):
+        with np.errstate(over="ignore", invalid="ignore", under="ignore"):
+            weighted = k1 + 2 * k2 + 2 * k3 + k4
+            result = epi + factor * weighted
+        exceptional = ~np.isfinite(weighted) | ~np.isfinite(result)
+        if factor_underflow:
+            exceptional = np.ones_like(result, dtype=bool)
+        for index in np.flatnonzero(exceptional):
+            result[index] = _exact_rk4_update(
+                epi[index], dt_step, tuple(stage[index] for stage in stages)
+            )
+        return result
+
+    weighted = k1 + 2 * k2 + 2 * k3 + k4
+    result = epi + factor * weighted
+    if factor_underflow or not math.isfinite(weighted) or not math.isfinite(result):
+        return _exact_rk4_update(epi, dt_step, stages)
+    return result
+
+
 def _apply_increment_chunk(
     chunk: list[tuple[NodeId, float, float, tuple[float, ...]]],
     dt_step: float,
@@ -211,11 +288,8 @@ def _apply_increment_chunk(
 
     for node, epi_i, dEPI_prev, ks in chunk:
         if method == "rk4":
-            k1, k2, k3, k4 = ks
-            epi = epi_i + (dt_step / INTEGRATORS_RK4_SIXTH_CANONICAL) * (
-                k1 + 2 * k2 + 2 * k3 + k4
-            )
-            dEPI_dt = k4
+            epi = _rk4_update(epi_i, dt_step, ks)
+            dEPI_dt = ks[3]
         else:
             (k1,) = ks
             epi = euler_update(epi_i, dt_step, k1)
@@ -244,9 +318,12 @@ def _evaluate_gamma_map(
 ) -> GammaMap:
     """Return Γ evaluations for ``nodes`` at time ``t`` respecting parallelism."""
 
-    workers = _normalise_jobs(n_jobs, len(nodes))
+    # Arbitrary callbacks may read graph state or keep invocation-side evidence;
+    # execute them once on the live staged path, not on process-local copies.
+    builtin = _uses_builtin_gamma(_get_gamma_spec(G, strict=True))
+    workers = _normalise_jobs(n_jobs, len(nodes)) if builtin else None
     if workers is None:
-        return {n: float(eval_gamma(G, n, t)) for n in nodes}
+        return {n: float(eval_gamma(G, n, t, strict=True)) for n in nodes}
 
     approx_chunk = math.ceil(len(nodes) / (workers * 4)) if workers > 0 else None
     chunk_size = resolve_chunk_size(
@@ -279,7 +356,9 @@ def prepare_integration_params(
 ) -> tuple[float, int, float, Literal["euler", "rk4"]]:
     """Validate and normalise ``dt``, ``t`` and ``method`` for integration.
 
-    Explicit and graph-default timesteps must be finite and nonnegative.
+    Explicit and graph-default timesteps must be finite nonnegative reals.
+    Boolean/text values and nonzero inputs lost in materialization reject for
+    the step, initial clock and minimum step alike.
     Invalid parameters raise :class:`NetworkConfigError`. When ``dt``
     exceeds a positive ``DT_MIN`` stored on ``G`` the span is deterministically
     subdivided into integer steps so that the resulting ``dt_step`` never falls
@@ -291,24 +370,22 @@ def prepare_integration_params(
     """
     if dt is None:
         dt = G.graph.get("DT", DEFAULTS.get("DT", 0.1))
-    if not isinstance(dt, Real):
-        raise NetworkConfigError(
-            parameter="dt", value=dt, reason="Time step must be numeric"
-        )
-    dt = float(dt)
+    dt = _finite_output(dt, "dt")
     if not math.isfinite(dt) or dt < 0:
         raise NetworkConfigError(
             parameter="dt", value=dt, reason="Time step must be finite and non-negative"
         )
 
-    t = float(G.graph.get("_t", 0.0) if t is None else t)
+    t = _finite_output(G.graph.get("_t", 0.0) if t is None else t, "t")
     if not math.isfinite(t):
         raise NetworkConfigError(
             parameter="t", value=t, reason="Initial time must be finite"
         )
 
-    method_value = method or G.graph.get(
-        "INTEGRATOR_METHOD", DEFAULTS.get("INTEGRATOR_METHOD", "euler")
+    method_value = (
+        G.graph.get("INTEGRATOR_METHOD", DEFAULTS.get("INTEGRATOR_METHOD", "euler"))
+        if method is None
+        else method
     )
     method_value = (
         method_value.lower() if isinstance(method_value, str) else method_value
@@ -320,7 +397,9 @@ def prepare_integration_params(
             reason="Integration method must be 'euler' or 'rk4'",
         )
 
-    dt_min = float(G.graph.get("DT_MIN", DEFAULTS.get("DT_MIN", 0.0)))
+    dt_min = _finite_output(
+        G.graph.get("DT_MIN", DEFAULTS.get("DT_MIN", 0.0)), "DT_MIN"
+    )
     if not math.isfinite(dt_min) or dt_min < 0:
         raise NetworkConfigError(
             parameter="DT_MIN",
@@ -380,12 +459,11 @@ def _apply_increments(
                     suggestion="Check integrator implementation logic",
                     context={"shape": str(k_arr.shape)},
                 )
-            dt_factor = dt_step / INTEGRATORS_RK4_SIXTH_CANONICAL
             k1 = k_arr[:, 0]
             k2 = k_arr[:, 1]
             k3 = k_arr[:, 2]
             k4 = k_arr[:, 3]
-            epi = epi_arr + dt_factor * (k1 + 2 * k2 + 2 * k3 + k4)
+            epi = _rk4_update(epi_arr, dt_step, (k1, k2, k3, k4))
             dEPI_dt = k4
         else:
             if k_arr.ndim == 1:
@@ -572,13 +650,13 @@ def _build_gamma_increments(
             suggestion="Use 'euler' or 'rk4' as the integration method.",
         )
 
-    gamma_spec = _get_gamma_spec(G)
+    gamma_spec = _get_gamma_spec(G, strict=True)
 
     gamma_type = ""
     if isinstance(gamma_spec, Mapping):
         gamma_type = str(gamma_spec.get("type", ""))
 
-    if gamma_type == "none":
+    if gamma_type == "none" and _uses_builtin_gamma(gamma_spec):
         gamma_maps: tuple[GammaMap, ...] = tuple(
             cast(GammaMap, {}) for _ in range(gamma_count)
         )
@@ -657,12 +735,14 @@ def _integrate_vectorized_step(
     t0: float,
     method: str,
     np: Any,
+    clip_policy: ClipPolicy,
+    states: list[tuple[float, float, float, float]],
 ) -> float:
     """Perform full integration steps using vectorized operations.
 
     Returns the final time t_local.
     """
-    from ..alias import collect_theta_attr
+    from ..alias import get_theta_attr
 
     nodes = list(G.nodes)
     n_nodes = len(nodes)
@@ -670,26 +750,33 @@ def _integrate_vectorized_step(
         return _validate_clock_grid(t0, dt_step, steps, method)
 
     # 1. Extract state into arrays
-    states = [_node_state(G.nodes[node]) for node in nodes]
     vf, dnfr, dEPI, epi = (
         np.asarray([state[column] for state in states], dtype=float)
         for column in range(4)
     )
 
-    # For gamma, we need theta
-    theta = collect_theta_attr(G, nodes, 0.0)
+    # The unforced row consumes no phase. Active built-ins validate raw aliases
+    # before array coercion, matching the scalar trigonometric-cache owner.
+    if _get_gamma_spec(G, strict=True).get("type", "none") == "none":
+        theta = np.zeros(n_nodes)
+    else:
+        theta = np.asarray(
+            [
+                get_theta_attr(
+                    G.nodes[node],
+                    0.0,
+                    strict=True,
+                    conv=lambda raw: _finite_output(raw, "Gamma phase"),
+                )
+                for node in nodes
+            ]
+        )
 
     # Base term: dEPI/dt = vf * dnfr
     # Assumed constant during the step (dnfr doesn't change)
     base = vf * dnfr
 
-    # Prepare clipping params
-    epi_min = float(G.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)))
-    epi_max = float(G.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)))
-    clip_mode = str(G.graph.get("CLIP_MODE", "hard"))
-    if clip_mode not in ("hard", "soft"):
-        clip_mode = "hard"
-    clip_k = float(G.graph.get("CLIP_SOFT_K", PI))
+    epi_min, epi_max, clip_mode, clip_k = clip_policy
 
     t_local = t0
 
@@ -702,12 +789,16 @@ def _integrate_vectorized_step(
 
         if method == "rk4":
             # k1
-            gamma1 = eval_gamma_vectorized(G, theta, t_local, np)
+            gamma1 = eval_gamma_vectorized(G, theta, t_local, np, strict=True)
             k1 = base + gamma1
 
             # k2
             gamma2 = eval_gamma_vectorized(
-                G, theta, t_local + dt_step / INTEGRATORS_HALF_STEP_CANONICAL, np
+                G,
+                theta,
+                t_local + dt_step / INTEGRATORS_HALF_STEP_CANONICAL,
+                np,
+                strict=True,
             )
             k2 = base + gamma2
 
@@ -716,17 +807,15 @@ def _integrate_vectorized_step(
             k3 = base + gamma3
 
             # k4
-            gamma4 = eval_gamma_vectorized(G, theta, t_local + dt_step, np)
+            gamma4 = eval_gamma_vectorized(G, theta, t_local + dt_step, np, strict=True)
             k4 = base + gamma4
 
             # Update
-            epi = epi + (dt_step / INTEGRATORS_RK4_SIXTH_CANONICAL) * (
-                k1 + 2 * k2 + 2 * k3 + k4
-            )
+            epi = _rk4_update(epi, dt_step, (k1, k2, k3, k4))
             dEPI = k4
 
         else:  # Euler
-            gamma = eval_gamma_vectorized(G, theta, t_local, np)
+            gamma = eval_gamma_vectorized(G, theta, t_local, np, strict=True)
             k1 = base + gamma
             epi = euler_update(epi, dt_step, k1)
             dEPI = k1
@@ -809,25 +898,18 @@ class DefaultIntegrator(AbstractIntegrator):
         if dt_step == 0.0:
             return
 
-        if np is not None:
+        clip_policy = _integration_clip_policy(graph)
+        # Validate all nodal inputs before resolving forcing can populate caches.
+        states = [_node_state(nd) for nd in graph.nodes.values()]
+        builtin_gamma = _uses_builtin_gamma(_get_gamma_spec(graph, strict=True))
+        if np is not None and builtin_gamma:
             t_final = _integrate_vectorized_step(
-                graph, dt_step, steps, t0, resolved_method, np
+                graph, dt_step, steps, t0, resolved_method, np, clip_policy, states
             )
             graph.graph["_t"] = t_final
             return
 
-        # Validate the complete input before Gamma can populate graph caches.
-        for nd in graph.nodes.values():
-            _node_state(nd)
-
-        epi_min = float(graph.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)))
-        epi_max = float(graph.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)))
-        clip_mode = str(graph.graph.get("CLIP_MODE", "hard"))
-        if clip_mode not in ("hard", "soft"):
-            clip_mode = "hard"
-        clip_k = float(
-            graph.graph.get("CLIP_SOFT_K", INTEGRATORS_CLIP_SOFT_K_CANONICAL)
-        )
+        epi_min, epi_max, clip_mode, clip_k = clip_policy
 
         owned_keys = ALIAS_EPI + ALIAS_EPI_KIND + ALIAS_DEPI + ALIAS_D2EPI
         t_local = t0
@@ -1009,17 +1091,11 @@ def _update_extended_nodal_system(
     if dt_step == 0.0:
         return
 
+    epi_min, epi_max, clip_mode, clip_k = _integration_clip_policy(G)
     # Validate the full nodal input before field readers populate graph caches.
     for nd in G.nodes.values():
         _node_state(nd)
         get_attr(nd, ALIAS_THETA, 0.0, strict=True, conv=_finite_output)
-
-    epi_min = float(G.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)))
-    epi_max = float(G.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)))
-    clip_mode = str(G.graph.get("CLIP_MODE", "hard"))
-    if clip_mode not in ("hard", "soft"):
-        clip_mode = "hard"
-    clip_k = float(G.graph.get("CLIP_SOFT_K", INTEGRATORS_CLIP_SOFT_K_CANONICAL))
 
     owned_keys = (
         ALIAS_EPI
@@ -1055,7 +1131,7 @@ def _update_extended_nodal_system(
                 d2epi = _finite_output(
                     (rate - previous_derivative) / dt_step, "d2EPI_dt2"
                 )
-                new_epi = _finite_output(epi + rate * dt_step, "EPI")
+                new_epi = _finite_output(euler_update(epi, dt_step, rate), "EPI")
                 if new_epi != epi:
                     new_epi = structural_clip(
                         new_epi,

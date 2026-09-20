@@ -12,6 +12,7 @@ from tnfr.dynamics.unified_backend import (
     TNFRUnifiedBackend,
     UnifiedComputationRequest,
 )
+from tnfr.errors.contextual import NetworkConfigError, TNFRValueError
 
 
 def _uniform_graph() -> nx.Graph:
@@ -46,6 +47,83 @@ def test_default_nodal_backend_never_substitutes_epi_diffusion_for_live_pressure
     assert result["detached"] is True
     assert result["nodal_states"][0][0] == pytest.approx(0.54)
     assert result["nodal_states"][1][0] == pytest.approx(0.54)
+    assert result["epi_step_scope"] == "unforced_unclipped_proposal"
+    assert result["stability_not_certified"] is True
+
+
+def test_stored_proposal_forms_nodal_rate_before_multiplying_by_time() -> None:
+    graph = _uniform_graph()
+    for node in graph:
+        graph.nodes[node].update(
+            {ALIAS_EPI[0]: 0.0, ALIAS_VF[0]: 1e308, ALIAS_DNFR[0]: 1e-308}
+        )
+
+    result = TNFRUnifiedBackend().execute_computation(_request(graph, dt=1e308))
+
+    # nu_f * pressure is approximately one. The former dt * nu_f * pressure
+    # ordering overflowed before applying the small pressure factor.
+    for epi, _ in result.results["nodal_states"].values():
+        assert epi == pytest.approx(1e308, rel=2e-15)
+    assert graph.nodes[0]["EPI"] == 0.0
+
+
+@pytest.mark.parametrize(
+    ("epi", "capacity", "pressure", "dt", "error", "diagnostic"),
+    [
+        pytest.param(
+            0.0,
+            1e308,
+            1e308,
+            1e-308,
+            NetworkConfigError,
+            "nodal product must be finite",
+            id="rate-overflow",
+        ),
+        pytest.param(
+            1e308,
+            1.0,
+            1e308,
+            1.0,
+            TNFRValueError,
+            "EPI proposal must remain finite",
+            id="endpoint-overflow",
+        ),
+    ],
+)
+def test_stored_proposal_rejects_unrepresentable_rate_or_endpoint(
+    epi: float,
+    capacity: float,
+    pressure: float,
+    dt: float,
+    error: type[Exception],
+    diagnostic: str,
+) -> None:
+    graph = _uniform_graph()
+    graph.nodes[0].update(
+        {ALIAS_EPI[0]: epi, ALIAS_VF[0]: capacity, ALIAS_DNFR[0]: pressure}
+    )
+    before = dict(graph.nodes[0])
+    backend = TNFRUnifiedBackend()
+
+    # The canonical derivative rejects rate overflow before the facade reaches
+    # its separate endpoint check; both failures must propagate without fallback.
+    with pytest.raises(error, match=diagnostic):
+        backend.execute_computation(_request(graph, dt=dt))
+
+    assert dict(graph.nodes[0]) == before
+    assert backend.get_performance_statistics()["total_computations"] == 0
+
+
+@pytest.mark.parametrize(
+    "attribute", [ALIAS_EPI[0], ALIAS_VF[0], ALIAS_DNFR[0], ALIAS_THETA[0]]
+)
+@pytest.mark.parametrize("value", [True, "1.0"])
+def test_stored_proposal_preserves_the_scalar_input_boundary(attribute, value) -> None:
+    graph = _uniform_graph()
+    graph.nodes[0][attribute] = value
+
+    with pytest.raises((TypeError, ValueError)):
+        TNFRUnifiedBackend().execute_computation(_request(graph))
 
 
 def test_epi_diffusion_requires_explicit_model_and_keeps_uniform_field_fixed() -> None:

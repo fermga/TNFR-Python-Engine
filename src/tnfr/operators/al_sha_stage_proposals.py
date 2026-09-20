@@ -27,6 +27,7 @@ from dataclasses import dataclass, field
 from numbers import Integral
 from typing import Any
 
+from .._exact_time import finite_represented_real
 from ..alias import get_attr, set_attr_str
 from ..constants.aliases import ALIAS_EMISSION_TIMESTAMP, ALIAS_EPI, ALIAS_VF
 from ..constants.canonical import COUPLING_GENTLE, SHA_VF_FACTOR
@@ -42,8 +43,10 @@ __all__ = [
     "commit_emission_structure",
     "commit_silence_lifecycle",
     "commit_silence_structure",
+    "emission_epi_proposal",
     "propose_emission_stage",
     "propose_silence_stage",
+    "silence_capacity_proposal",
 ]
 
 
@@ -208,17 +211,13 @@ def propose_emission_stage(
     """
 
     timestamp = _require_timestamp(timestamp, operator="Emission")
-    from . import _finite_operator_scalar, _validated_epi_assignment_value, get_factor
+    from . import get_factor
 
-    epi_before = require_real_scalar_epi(
-        _raw_alias(graph, node, ALIAS_EPI, 0.0),
-        operator="Emission",
-        label="target EPI state",
-    )
     boost = get_factor(dict(factors), "AL_boost", COUPLING_GENTLE)
-    raw_proposal = _finite_operator_scalar(epi_before + boost, "AL EPI proposal")
-    epi_after = _validated_epi_assignment_value(
-        _GraphBoundsView(graph.graph), raw_proposal
+    epi_before, epi_after = emission_epi_proposal(
+        graph.graph,
+        _raw_alias(graph, node, ALIAS_EPI, 0.0),
+        boost,
     )
     (
         clear_keys,
@@ -256,12 +255,13 @@ def propose_silence_stage(
     """Build a read-only SHA proposal from one stage-start graph."""
 
     timestamp = _require_timestamp(timestamp, operator="Silence")
-    from . import _finite_operator_scalar, get_factor
+    from . import get_factor
 
     data = graph.nodes[node]
-    vf_before = _finite_operator_scalar(get_attr(data, ALIAS_VF, 0.0), "SHA nu_f state")
     factor = get_factor(dict(factors), "SHA_vf_factor", SHA_VF_FACTOR)
-    vf_after = _finite_operator_scalar(factor * vf_before, "SHA nu_f proposal")
+    vf_before, vf_after = silence_capacity_proposal(
+        _raw_alias(graph, node, ALIAS_VF, 0.0), factor
+    )
     preserved_epi = float(get_attr(data, ALIAS_EPI, 0.0))
     return SilenceStageProposal(
         node=node,
@@ -271,6 +271,43 @@ def propose_silence_stage(
         preserved_epi=preserved_epi,
         was_initial_on_silence=abs(preserved_epi) < 1e-6,
     )
+
+
+def emission_epi_proposal(
+    graph_attributes: Mapping[str, Any], value: Any, boost: float
+) -> tuple[float, float]:
+    """Apply the admitted boost and enforce AL's postcondition after projection.
+
+    A positive boost followed by a configured soft projection can decrease a
+    negative EPI near the lower boundary. Reject that incompatible result;
+    changing the boundary policy or the requested boost is the caller's choice.
+    """
+    from . import _finite_operator_scalar, _validated_epi_assignment_value
+
+    before = require_real_scalar_epi(
+        value, operator="Emission", label="target EPI state"
+    )
+    raw = _finite_operator_scalar(before + boost, "AL EPI proposal")
+    after = _validated_epi_assignment_value(_GraphBoundsView(graph_attributes), raw)
+    if after < before:
+        raise TNFRValueError(
+            "Emission boundary projection must not decrease EPI",
+            context={"operator": "Emission", "epi_before": before, "epi_after": after},
+        )
+    return before, after
+
+
+def silence_capacity_proposal(value: Any, factor: float) -> tuple[float, float]:
+    """Validate raw capacity before the already admitted SHA factor acts."""
+    try:
+        before = finite_represented_real(value, "SHA nu_f state")[0]
+    except (TypeError, ValueError) as exc:
+        raise TNFRValueError(str(exc)) from exc
+    if before < 0.0:
+        raise TNFRValueError("SHA nu_f state must be nonnegative")
+    # The factor belongs to [0,1); the represented product is finite,
+    # nonnegative and no larger than this admitted capacity.
+    return before, factor * before
 
 
 def commit_emission_lifecycle(

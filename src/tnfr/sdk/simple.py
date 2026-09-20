@@ -40,23 +40,26 @@ from __future__ import annotations
 
 import math
 from collections.abc import Mapping
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from typing import Any
 
 import networkx as nx
 
-from ..alias import get_attr
+from .._exact_time import finite_represented_real
 from ..constants import DEFAULTS
 from ..constants.aliases import ALIAS_DEPI, ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ..constants.canonical import HIGH_COHERENCE_THRESHOLD as COHERENCE_STRONG
 from ..constants.canonical import ZHIR_THRESHOLD_XI_CANONICAL
 from ..errors import TNFRValueError
-from ..mathematics.unified_numerical import compute_circular_mean, np
+from ..mathematics._neighbor_differences import mean_neighbor_difference
+from ..mathematics.unified_numerical import np
 from ..metrics.coherence import compute_coherence
 from ..metrics.common import (
+    finite_mean,
     finite_mean_absolute,
     is_structural_equilibrium,
     structural_coherence,
+    validate_structural_coherence,
 )
 from ..metrics.sense_index import compute_Si
 from ..operators.nodal_equation import (
@@ -72,7 +75,7 @@ from ..physics.mutation_trigger import (
 # TNFR core imports
 from ..structural import create_nfr
 from ..types import BEPIProtocol, require_finite_real_scalar_epi
-from ._state import copy_graph_state
+from ._state import copy_graph_state, observed_mean_phase, stored_phase
 from ._topology import grid_edges, nonnegative_integer
 from ._topology import probability as validate_probability
 from ._topology import ring_edges, small_world_edges
@@ -273,6 +276,23 @@ except Exception:
     _HAS_PRIMALITY = False
 
 
+def _available_readout_scalar(value: Any, name: str) -> float | None:
+    """Normalize diagnostic evidence without converting absence to zero."""
+    try:
+        return finite_represented_real(value, name)[0]
+    except (TypeError, ValueError):
+        return None
+
+
+def _diagnostic_verdict(value: Any, name: str) -> bool | None:
+    """Preserve unavailable verdicts without applying Python truthiness."""
+    if value is None:
+        return None
+    if not isinstance(value, (bool, np.bool_)):
+        raise TypeError(f"{name} must be a boolean or None")
+    return bool(value)
+
+
 @dataclass
 class TetradSnapshot:
     """Structural Field Tetrad snapshot — four canonical fields.
@@ -305,16 +325,26 @@ class TetradSnapshot:
     j_dnfr: dict[Any, float] = field(default_factory=dict)
 
     def summary(self) -> str:
-        """One-line summary of tetrad fields."""
-        n = len(self.phi_s)
+        """Summarize each available field on its own supplied node support."""
+        n = len(set(self.phi_s) | set(self.grad_phi) | set(self.k_phi))
         if n == 0:
             return "Tetrad: empty"
-        phi_s_mean = sum(self.phi_s.values()) / n
-        grad_mean = sum(self.grad_phi.values()) / n
-        k_mean = sum(abs(v) for v in self.k_phi.values()) / n
+
+        def field_mean(data, *, magnitude=False):
+            if not data:
+                return "UNAVAILABLE"
+            try:
+                reducer = finite_mean_absolute if magnitude else finite_mean
+                value = reducer(data.values(), name="tetrad field")
+            except (TypeError, ValueError):
+                return "UNAVAILABLE"
+            return f"{value:.4f}"
+
+        xi = _available_readout_scalar(self.xi_c, "xi_C")
+        xi_text = f"{xi:.4f}" if xi is not None and xi >= 0.0 else "UNAVAILABLE"
         return (
-            f"Phi_s={phi_s_mean:.4f}, |grad_phi|={grad_mean:.4f}, "
-            f"|K_phi|={k_mean:.4f}, xi_C={self.xi_c:.4f} (N={n})"
+            f"Phi_s={field_mean(self.phi_s)}, |grad_phi|={field_mean(self.grad_phi)}, "
+            f"|K_phi|={field_mean(self.k_phi, magnitude=True)}, xi_C={xi_text} (N={n})"
         )
 
     def is_safe(self) -> dict[str, bool]:
@@ -322,7 +352,8 @@ class TetradSnapshot:
 
         Returns dict with keys: phi_s_safe, grad_phi_safe, k_phi_safe,
         xi_c_safe, and overall. Unavailable correlation length fails this
-        advisory check; these booleans do not authorize operator execution.
+        advisory check. Overall safety also requires nonempty matching local
+        field support; these booleans do not authorize operator execution.
         """
         from ..constants.canonical import (
             GRAD_PHI_CANONICAL_THRESHOLD,
@@ -330,37 +361,40 @@ class TetradSnapshot:
             PHI_S_VON_KOCH_THRESHOLD,
         )
 
-        phi_s_safe = (
-            all(
-                math.isfinite(v) and abs(v) < PHI_S_VON_KOCH_THRESHOLD
-                for v in self.phi_s.values()
+        def field_within(data, threshold, *, nonnegative=False):
+            if not data:
+                return False
+            values = [
+                _available_readout_scalar(value, "tetrad field")
+                for value in data.values()
+            ]
+            return all(
+                value is not None
+                and (not nonnegative or value >= 0.0)
+                and abs(value) < threshold
+                for value in values
             )
-            if self.phi_s
-            else True
+
+        phi_s_safe = field_within(self.phi_s, PHI_S_VON_KOCH_THRESHOLD)
+        grad_safe = field_within(
+            self.grad_phi, GRAD_PHI_CANONICAL_THRESHOLD, nonnegative=True
         )
-        grad_safe = (
-            all(
-                math.isfinite(v) and 0.0 <= v < GRAD_PHI_CANONICAL_THRESHOLD
-                for v in self.grad_phi.values()
-            )
-            if self.grad_phi
-            else True
-        )
-        k_safe = (
-            all(
-                math.isfinite(v) and abs(v) < K_PHI_CANONICAL_THRESHOLD
-                for v in self.k_phi.values()
-            )
-            if self.k_phi
-            else True
-        )
-        xi_safe = math.isfinite(self.xi_c) and self.xi_c >= 0.0
+        k_safe = field_within(self.k_phi, K_PHI_CANONICAL_THRESHOLD)
+        xi = _available_readout_scalar(self.xi_c, "xi_C")
+        xi_safe = xi is not None and xi >= 0.0
+        matching_support = bool(self.phi_s) and set(self.phi_s) == set(
+            self.grad_phi
+        ) == set(self.k_phi)
         return {
             "phi_s_safe": phi_s_safe,
             "grad_phi_safe": grad_safe,
             "k_phi_safe": k_safe,
             "xi_c_safe": xi_safe,
-            "overall": phi_s_safe and grad_safe and k_safe and xi_safe,
+            "overall": matching_support
+            and phi_s_safe
+            and grad_safe
+            and k_safe
+            and xi_safe,
         }
 
 
@@ -392,44 +426,59 @@ class ConservationReport:
     @property
     def candidate_energy_nonincreasing(self) -> bool | None:
         """Finite-step energy result, or ``None`` before an interval exists."""
-        if not self.sample_available:
-            return None
-        if not np.isfinite(self.lyapunov_derivative):
-            return None
-        return self.lyapunov_derivative <= 0.0
+        rate = self.candidate_energy_derivative
+        return None if rate is None else rate <= 0.0
 
     @property
     def candidate_energy_within_numerical_tolerance(self) -> bool | None:
         """Historical Lyapunov classification, including its tolerance."""
-        return self.lyapunov_stable if self.sample_available else None
+        if self.candidate_energy_derivative is None or not isinstance(
+            self.lyapunov_stable, (bool, np.bool_)
+        ):
+            return None
+        return bool(self.lyapunov_stable)
 
     @property
     def candidate_energy_derivative(self) -> float | None:
         """Sampled candidate-energy derivative, unavailable on first capture."""
-        return self.lyapunov_derivative if self.sample_available else None
+        if self.sample_available is not True:
+            return None
+        return _available_readout_scalar(
+            self.lyapunov_derivative, "candidate energy rate"
+        )
 
     @property
     def balance_quality(self) -> float | None:
         """Finite-step balance quality, unavailable on first capture."""
-        return self.conservation_quality if self.sample_available else None
+        if self.sample_available is not True:
+            return None
+        quality = _available_readout_scalar(
+            self.conservation_quality, "balance quality"
+        )
+        return quality if quality is not None and 0.0 <= quality <= 1.0 else None
 
     def summary(self) -> str:
         """One-line scoped balance and candidate-energy summary."""
-        if not self.sample_available:
-            return (
-                f"Q_candidate={self.noether_charge:.4f}, "
-                f"E_candidate={self.energy:.4f}, interval=UNSAMPLED"
-            )
+        charge = _available_readout_scalar(self.noether_charge, "structural charge")
+        energy = _available_readout_scalar(self.energy, "candidate energy")
+        charge_text = f"{charge:.4f}" if charge is not None else "UNAVAILABLE"
+        energy_text = (
+            f"{energy:.4f}" if energy is not None and energy >= 0.0 else "UNAVAILABLE"
+        )
+        prefix = f"Q_candidate={charge_text}, E_candidate={energy_text}"
+        if self.sample_available is not True:
+            return prefix + ", interval=UNSAMPLED"
         exact_trend = self.candidate_energy_nonincreasing
         if exact_trend is None:
             trend = "UNDEFINED"
         else:
             trend = "NON-INCREASING" if exact_trend else "INCREASING"
+        rate, quality = self.candidate_energy_derivative, self.balance_quality
+        rate_text = f"{rate:.4f}" if rate is not None else "UNAVAILABLE"
+        quality_text = f"{quality:.3f}" if quality is not None else "UNAVAILABLE"
         return (
-            f"Q_candidate={self.noether_charge:.4f}, "
-            f"E_candidate={self.energy:.4f}, "
-            f"candidate dE/dt={self.lyapunov_derivative:.4f} ({trend}), "
-            f"balance_quality={self.conservation_quality:.3f}"
+            prefix
+            + f", candidate dE/dt={rate_text} ({trend}), balance_quality={quality_text}"
         )
 
 
@@ -576,6 +625,9 @@ class NodalStateReport:
     identifies three-sample acceleration evidence. The legacy ``d2epi_dt2``
     remains zero when that evidence is unavailable; use
     ``observed_d2epi_dt2`` to distinguish absence from a measured zero.
+    Logical report values retain ``None`` as unavailable; malformed truthy
+    values are rejected when reporting. Directly supplied local coherence is
+    a finite represented read-out in [0, 1], not a signed magnitude.
     """
 
     node: Any
@@ -587,21 +639,21 @@ class NodalStateReport:
     expected_depi_dt: float
     d2epi_dt2: float
     degree: int
-    equilibrium: bool
-    active: bool
-    near_bifurcation: bool
+    equilibrium: bool | None
+    active: bool | None
+    near_bifurcation: bool | None
     observed_depi_dt: float | None = None
     predicted_crossed: bool | None = None
     observed_crossed: bool | None = None
-    evidence_available: bool = False
-    evidence_valid: bool = False
+    evidence_available: bool | None = False
+    evidence_valid: bool | None = False
     source: str | None = None
     time_basis: str | None = None
-    physical_time_resolved: bool = False
+    physical_time_resolved: bool | None = False
     current_endpoint_matches_state: bool | None = None
     reason: str | None = None
     rate_gap: float | None = None
-    mutation_threshold_satisfied: bool = False
+    mutation_threshold_satisfied: bool | None = False
     acceleration_observation: StructuralAccelerationObservation | None = None
 
     @property
@@ -622,15 +674,52 @@ class NodalStateReport:
     def __post_init__(self) -> None:
         """Keep the legacy prediction alias coherent for direct construction."""
 
-        if self.predicted_crossed is None:
-            self.predicted_crossed = bool(self.near_bifurcation)
-        else:
-            self.predicted_crossed = bool(self.predicted_crossed)
-            self.near_bifurcation = self.predicted_crossed
+        prediction = (
+            self.near_bifurcation
+            if self.predicted_crossed is None
+            else self.predicted_crossed
+        )
+        self.predicted_crossed = _diagnostic_verdict(prediction, "predicted_crossed")
+        self.near_bifurcation = self.predicted_crossed
+
+    def _coherence_value(self) -> float:
+        """Admit the supplied local read-out, without replacing it by a magnitude."""
+        value = finite_represented_real(self.coherence, "local coherence")[0]
+        return validate_structural_coherence(value, name="local coherence")
+
+    def _verdicts(self) -> dict[str, bool | None]:
+        """Read mutable report metadata strictly at each reporting boundary."""
+        names = (
+            "equilibrium",
+            "active",
+            "near_bifurcation",
+            "predicted_crossed",
+            "observed_crossed",
+            "evidence_available",
+            "evidence_valid",
+            "physical_time_resolved",
+            "current_endpoint_matches_state",
+            "mutation_threshold_satisfied",
+        )
+        verdicts = {
+            name: _diagnostic_verdict(getattr(self, name), name) for name in names
+        }
+        if verdicts["near_bifurcation"] is not verdicts["predicted_crossed"]:
+            raise ValueError("near_bifurcation and predicted_crossed must agree")
+        return verdicts
 
     def summary(self) -> str:
-        state = "active" if self.active else "inactive"
-        eq = "equilibrium" if self.equilibrium else "driven"
+        verdicts = self._verdicts()
+        state = (
+            "activity unavailable"
+            if verdicts["active"] is None
+            else "active" if verdicts["active"] else "inactive"
+        )
+        eq = (
+            "equilibrium unavailable"
+            if verdicts["equilibrium"] is None
+            else "equilibrium" if verdicts["equilibrium"] else "driven"
+        )
         acceleration = (
             f"{self.observed_d2epi_dt2:.4g}"
             if self.acceleration_available
@@ -647,7 +736,7 @@ class NodalStateReport:
             "epi": float(self.epi),
             "nu_f": float(self.nu_f),
             "delta_nfr": float(self.delta_nfr),
-            "coherence": float(self.coherence),
+            "coherence": self._coherence_value(),
             "phase": float(self.phase),
             "expected_depi_dt": float(self.expected_depi_dt),
             "d2epi_dt2": float(self.d2epi_dt2),
@@ -659,23 +748,14 @@ class NodalStateReport:
                 else None
             ),
             "degree": int(self.degree),
-            "equilibrium": bool(self.equilibrium),
-            "active": bool(self.active),
-            "near_bifurcation": bool(self.near_bifurcation),
+            **self._verdicts(),
             "observed_depi_dt": (
                 None if self.observed_depi_dt is None else float(self.observed_depi_dt)
             ),
-            "predicted_crossed": bool(self.predicted_crossed),
-            "observed_crossed": self.observed_crossed,
-            "evidence_available": bool(self.evidence_available),
-            "evidence_valid": bool(self.evidence_valid),
             "source": self.source,
             "time_basis": self.time_basis,
-            "physical_time_resolved": bool(self.physical_time_resolved),
-            "current_endpoint_matches_state": self.current_endpoint_matches_state,
             "reason": self.reason,
             "rate_gap": None if self.rate_gap is None else float(self.rate_gap),
-            "mutation_threshold_satisfied": bool(self.mutation_threshold_satisfied),
         }
 
 
@@ -685,7 +765,9 @@ class NodalDynamicsReport:
 
     Its total coherence aggregates pressure and predicted EPI-rate magnitudes
     before applying the nonlinear constitutive kernel. ``mean_local_coherence``
-    remains available as a distinct descriptive statistic.
+    remains available as a distinct descriptive statistic. Verdict counts
+    separate true and unavailable observations. String-key export rejects
+    colliding node labels rather than silently dropping a node.
     """
 
     nodes: dict[Any, NodalStateReport] = field(default_factory=dict)
@@ -718,25 +800,44 @@ class NodalDynamicsReport:
 
         if not self.nodes:
             return 0.0
-        return finite_mean_absolute(
-            (state.coherence for state in self.nodes.values()),
+        return finite_mean(
+            (state._coherence_value() for state in self.nodes.values()),
             name="scan local coherence",
         )
+
+    def _verdict_counts(self) -> dict[str, int]:
+        """Count true and unavailable metadata separately, without caching."""
+        verdicts = [state._verdicts() for state in self.nodes.values()]
+        counts = {}
+        for label, key in (
+            ("active", "active"),
+            ("equilibrium", "equilibrium"),
+            ("bifurcation", "predicted_crossed"),
+        ):
+            counts[f"{label}_count"] = sum(v[key] is True for v in verdicts)
+            counts[f"{label}_unavailable_count"] = sum(v[key] is None for v in verdicts)
+        return counts
 
     def summary(self) -> str:
         n = len(self.nodes)
         if n == 0:
             return "Nodal dynamics: empty"
-        values = list(self.nodes.values())
-        active = sum(1 for state in values if state.active)
-        equilibrium = sum(1 for state in values if state.equilibrium)
-        bifurcation = sum(1 for state in values if state.near_bifurcation)
+        counts = self._verdict_counts()
+        active = counts["active_count"]
+        equilibrium = counts["equilibrium_count"]
+        bifurcation = counts["bifurcation_count"]
+        unavailable = ", ".join(
+            f"{key}={count}"
+            for key, count in counts.items()
+            if key.endswith("_unavailable_count") and count
+        )
         _, mean_abs_rate = self._channel_means()
         coherence = self.total_coherence()
         return (
             f"NodalDynamics(N={n}, active={active}, equilibrium={equilibrium}, "
             f"bifurcation={bifurcation}, C={coherence:.3f}, "
-            f"mean|∂EPI/∂t|={mean_abs_rate:.4g})"
+            f"mean|∂EPI/∂t|={mean_abs_rate:.4g}"
+            f"{', ' + unavailable if unavailable else ''})"
         )
 
     def top_pressure_nodes(self, k: int = 5) -> list[NodalStateReport]:
@@ -748,9 +849,17 @@ class NodalDynamicsReport:
 
     def near_equilibrium_nodes(self) -> list[NodalStateReport]:
         """Nodes whose pressure and predicted rate meet the fixed-point cut."""
-        return [state for state in self.nodes.values() if state.equilibrium]
+        return [
+            state
+            for state in self.nodes.values()
+            if state._verdicts()["equilibrium"] is True
+        ]
 
     def to_dict(self) -> dict[str, Any]:
+        """Export detached rows; reject node labels that collide as string keys."""
+        labels = [str(node) for node in self.nodes]
+        if len(set(labels)) != len(labels):
+            raise ValueError("distinct node labels collide as string report keys")
         values = list(self.nodes.values())
         n = len(values)
         mean_abs_pressure, mean_abs_rate = self._channel_means()
@@ -760,16 +869,10 @@ class NodalDynamicsReport:
         return {
             "equilibrium_tolerance": float(self.equilibrium_tolerance),
             "bifurcation_threshold": float(self.bifurcation_threshold),
-            "nodes": {
-                str(node): report.to_dict() for node, report in self.nodes.items()
-            },
+            "nodes": {label: report.to_dict() for label, report in zip(labels, values)},
             "aggregate": {
                 "count": n,
-                "active_count": sum(1 for s in values if s.active),
-                "equilibrium_count": sum(1 for s in values if s.equilibrium),
-                "bifurcation_count": sum(
-                    1 for state in values if state.near_bifurcation
-                ),
+                **self._verdict_counts(),
                 "coherence": self.total_coherence(),
                 "mean_local_coherence": self.mean_local_coherence(),
                 "mean_abs_dnfr": float(mean_abs_pressure),
@@ -1408,11 +1511,8 @@ class Network:
         return finite_mean_absolute(values, name="network Si") if values else 0.0
 
     def density(self) -> float:
-        """Network density [0,1]."""
-        n = len(self.G.nodes())
-        if n < 2:
-            return 0.0
-        return 2 * len(self.G.edges()) / (n * (n - 1))
+        """NetworkX edge density; loops and parallel edges can exceed one."""
+        return float(nx.density(self.G))
 
     def avg_phase(self) -> float | None:
         """Circular mean in [0, 2π), or None for an undefined direction.
@@ -1420,27 +1520,7 @@ class Network:
         Empty and numerically vanishing resultants have no mean direction.
         The shared circular-mean owner defines the degeneracy tolerance.
         """
-        if not self.G.nodes():
-            return None
-        phases = [
-            next(
-                (self.G.nodes[n][key] for key in ALIAS_THETA if key in self.G.nodes[n]),
-                0.0,
-            )
-            for n in self.G.nodes()
-        ]
-        try:
-            result = compute_circular_mean(phases)
-        except TNFRValueError:
-            # Invalid phase values remain errors; only the shared owner's
-            # undefined finite-resultant case is represented as unavailable.
-            if all(math.isfinite(phase) for phase in phases):
-                return None
-            raise
-        period = 2.0 * math.pi
-        normalized = float(result) % period
-        # Binary64 modulo may round a tiny negative angle to the upper endpoint.
-        return 0.0 if normalized == period else normalized
+        return observed_mean_phase(self.G)
 
     # === NODAL DYNAMICS ===
 
@@ -1477,7 +1557,7 @@ class Network:
         epi_raw = _raw_alias_value(nd, ALIAS_EPI)
         nu_f_raw = _raw_alias_value(nd, ALIAS_VF)
         delta_nfr_raw = _raw_alias_value(nd, ALIAS_DNFR)
-        phase = float(get_attr(nd, ALIAS_THETA, 0.0) or 0.0)
+        phase = stored_phase(nd)
 
         xi_raw = (
             bifurcation_threshold
@@ -1513,8 +1593,8 @@ class Network:
             equilibrium=is_structural_equilibrium(
                 delta_nfr,
                 trigger.predicted_depi_dt,
-                eps_dnfr=float(equilibrium_tolerance),
-                eps_depi=float(equilibrium_tolerance),
+                eps_dnfr=equilibrium_tolerance,
+                eps_depi=equilibrium_tolerance,
             ),
             active=trigger.capacity_active,
             near_bifurcation=trigger.predicted_crossed,
@@ -1544,6 +1624,11 @@ class Network:
 
         Useful for research diagnostics, bifurcation watch, and pressure maps.
         """
+        is_structural_equilibrium(
+            0.0,
+            eps_dnfr=equilibrium_tolerance,
+            eps_depi=equilibrium_tolerance,
+        )
         xi_raw = (
             bifurcation_threshold
             if bifurcation_threshold is not None
@@ -1670,23 +1755,28 @@ class Network:
 
     # === STRUCTURAL-BALANCE DIAGNOSTICS ===
 
-    def _sample_structural_balance(self, dt: float = 1.0) -> Any:
+    def _sample_structural_balance(
+        self, dt: float = 1.0, *, _require_energy: bool = False
+    ) -> Any:
         """Record one read-only snapshot and return the latest interval.
 
         ``ConservationTracker`` stores timestamp/snapshot pairs. Centralizing
         sampling here keeps :meth:`conservation` and :meth:`balance_alerts`
         consistent and prevents diagnostic methods from modifying graph state.
         """
-        dt = float(dt)
-        if not np.isfinite(dt) or dt <= 0.0:
-            raise TNFRValueError("dt must be finite and positive")
+        from ..physics.conservation import _positive_interval
+
+        try:
+            dt = _positive_interval(dt)
+        except (TypeError, ValueError) as exc:
+            raise TNFRValueError(str(exc)) from exc
         if self._tracker is None:
             self._tracker = ConservationTracker(self.G)
         if self._tracker._snapshots:
             sample_time = float(self._tracker._snapshots[-1][0]) + dt
         else:
             sample_time = 0.0
-        self._tracker.record(t=sample_time)
+        self._tracker.record(t=sample_time, _require_energy=_require_energy)
         return self._tracker.latest_balance
 
     def conservation(self, dt: float = 1.0) -> ConservationReport:
@@ -1695,7 +1785,9 @@ class Network:
         Computes a Noether-like tetrad charge, a non-negative energy candidate,
         and an observed finite-step balance between the two most recent
         diagnostic snapshots. ``dt`` is the declared time between consecutive
-        samples from :meth:`conservation` or :meth:`balance_alerts`. The first
+        samples from :meth:`conservation` or :meth:`balance_alerts`. Both
+        diagnostics use the interval represented by the retained timestamps;
+        an increment too small to advance the timestamp is rejected. The first
         call establishes a baseline and
         reports ``sample_available=False``. Grammar labels alone do not imply
         a zero residual or a monotone candidate-energy trajectory.
@@ -1709,19 +1801,23 @@ class Network:
         """
         if not _HAS_CONSERVATION:
             return ConservationReport()
-        Q = compute_noether_charge(self.G)
-        E = compute_energy_functional(self.G)
+        from ..physics.conservation import _energy_from_snapshot
+
         # Candidate-energy change and balance require two snapshots.
         lyap_stable = True
         lyap_deriv = 0.0
         quality = 1.0
-        balance = self._sample_structural_balance(dt=dt)
+        balance = self._sample_structural_balance(dt=dt, _require_energy=True)
+        _, current = self._tracker._snapshots[-1]
+        Q = self._tracker._series.total_charge[-1]
+        E = _energy_from_snapshot(current)
         sample_available = balance is not None
         if balance is not None:
             quality = balance.conservation_quality
-            _, previous = self._tracker._snapshots[-2]
-            _, current = self._tracker._snapshots[-1]
-            lyap = compute_lyapunov_derivative(previous, current, dt=dt)
+            t_before, previous = self._tracker._snapshots[-2]
+            t_after, current = self._tracker._snapshots[-1]
+            # Balance and energy use the same represented timestamp interval.
+            lyap = compute_lyapunov_derivative(previous, current, dt=t_after - t_before)
             lyap_stable = lyap.is_stable
             lyap_deriv = lyap.energy_derivative
         return ConservationReport(
@@ -1865,17 +1961,33 @@ class Network:
             ``"life"``),
             ``is_life`` (bool), the order parameter ``order_parameter`` (<S>),
             ``chirality_mean`` (<chi>), ``coherence_length`` (xi_C) and
-            ``has_homochirality`` (bool).
+            ``has_homochirality`` (bool). The xi read-out preserves
+            ``coherence_length_available`` and estimator provenance; an
+            unavailable value remains NaN. ``order_zscore``,
+            ``chirality_zscore`` and ``node_count`` expose the supplied
+            classifier inputs without treating them as a significance test.
         """
         from ..physics.phase_transition import Phase, capture_phase_snapshot
 
         snap = capture_phase_snapshot(self.G)
+        provenance = (
+            asdict(snap.coherence_length_provenance)
+            if snap.coherence_length_provenance is not None
+            else None
+        )
+        if provenance is not None:
+            provenance.pop("value", None)
         return {
             "phase": snap.phase.value,
             "is_life": snap.phase is Phase.LIFE,
             "order_parameter": float(snap.order_parameter),
             "chirality_mean": float(snap.chirality_mean),
             "coherence_length": float(snap.coherence_length),
+            "coherence_length_available": snap.coherence_length_available,
+            "coherence_length_provenance": provenance,
+            "order_zscore": float(snap.order_zscore),
+            "chirality_zscore": float(snap.chirality_zscore),
+            "node_count": int(snap.node_count),
             "has_homochirality": bool(snap.has_homochirality),
         }
 
@@ -1947,22 +2059,13 @@ class Network:
         }
 
     def nfr(self) -> dict[str, Any]:
-        """Characterize the network as a Fractal-Resonant Node (NFR).
+        """Observe stored nodal state and geometry without establishing an NFR.
 
-        Per TNFR.pdf section 1.4.1, an NFR is "a region of structural coherence
-        coupled to a network", defined by the triad (EPI, nu_f, phase) with a
-        nodal topology and the multiescalar (fractal) + autopoietic properties.
-        This surfaces the NFR as the joint read-out of its three emergent
-        facets, each from canonical quantities:
-
-        - RESONANT: measured proximity to the zero-pressure fixed-point set;
-          dynamic equilibrium additionally checks a recorded dEPI value or
-          the explicitly labeled nodal-equation prediction
-          (:func:`~tnfr.metrics.common.is_structural_equilibrium`).
-        - GEOMETRIC: the nodal topology radial / annular / multinodal
-          (:func:`~tnfr.physics.fields.classify_nodal_topology`, read from the
-          structural-potential geometry).
-        - FRACTAL: the multi-scale coherence range xi_C (region size).
+        The configured pressure/rate tolerance predicate, unit-source
+        potential-profile classifier and static coherence-length estimator
+        provide separate read-outs. A geometry label does not prove graph
+        symmetry; xi_C does not measure fractality or a maintained region.
+        Formation, full-state identity and persistence need trajectory evidence.
 
         Uniform attraction is proved only for the restricted fixed, connected
         pure-EPI diffusion model. Missing nodal telemetry is reported as
@@ -1980,11 +2083,28 @@ class Network:
             ``zero_pressure_fraction`` and ``equilibrium_fraction``
             (resonance, when available);
             ``depi_dt_source`` identifies whether the rate was recorded or
-            evaluated from the nodal equation;
-            ``coherence_length`` (xi_C, fractal/region scale); ``triad`` (mean
+            evaluated from the nodal equation; ``depi_dt_status`` distinguishes
+            absent/invalid channels from an unrepresentable nodal product;
+            ``coherence_length`` (the shared static fit or tagged spectral
+            fallback), ``coherence_length_available`` and
+            ``coherence_length_provenance``; ``triad`` (mean
             EPI, nu_f and the Kuramoto phase synchrony); ``n_nodes``.
+
+        With all rate aliases absent, the fallback is the unforced nodal product,
+        not a measured derivative or the extended row including Gamma. Recorded
+        rate aliases are not checked against the current pressure or clock;
+        partial or invalid recorded rates remain unavailable rather than being
+        replaced. No pressure is refreshed and no controller is executed.
+        The fallback delegates to the canonical rounded nodal product. A
+        nonzero product lost to underflow is unavailable for this observation;
+        this does not change the engine's represented multiplication contract.
         """
-        from ..physics.fields import classify_nodal_topology
+        from ..dynamics.canonical import compute_canonical_nodal_derivative
+        from ..errors import NetworkConfigError
+        from ..physics.fields import (
+            classify_nodal_topology,
+            estimate_coherence_length_with_provenance,
+        )
 
         topo = classify_nodal_topology(self.G)
         nodes = list(self.G.nodes())
@@ -1994,13 +2114,17 @@ class Network:
             values: list[float] = []
             for node in nodes:
                 raw = _raw_alias_value(self.G.nodes[node], aliases)
-                if raw is None:
+                if (
+                    raw is None
+                    or isinstance(raw, bool)
+                    or (np is not None and isinstance(raw, np.bool_))
+                ):
                     return None
                 try:
                     value = (
                         require_finite_real_scalar_epi(raw, "nfr EPI")
                         if aliases == ALIAS_EPI
-                        else float(raw)
+                        else finite_represented_real(raw, "nfr stored channel")[0]
                     )
                 except (TypeError, ValueError, OverflowError):
                     if aliases == ALIAS_EPI:
@@ -2008,26 +2132,65 @@ class Network:
                     return None
                 if not math.isfinite(value):
                     return None
+                if aliases == ALIAS_VF and value < 0.0:
+                    return None
                 values.append(value)
             return values
 
         dnfr = complete_values(ALIAS_DNFR) if n else None
         recorded_depi = complete_values(ALIAS_DEPI) if n else None
+        any_recorded_rate = any(
+            any(alias in self.G.nodes[node] for alias in ALIAS_DEPI) for node in nodes
+        )
         epis = complete_values(ALIAS_EPI) if n else None
         frequencies = complete_values(ALIAS_VF) if n else None
         thetas = complete_values(ALIAS_THETA) if n else None
 
         pressure_available = dnfr is not None
+        rate_status = "unavailable"
         if recorded_depi is not None and dnfr is not None:
             depi = recorded_depi
             depi_dt_source = "recorded"
-        elif dnfr is not None and frequencies is not None:
-            # Evaluate the missing rate from the canonical nodal equation.
-            depi = [vf * pressure for vf, pressure in zip(frequencies, dnfr)]
-            depi_dt_source = "nodal_equation"
+            rate_status = "available"
+        elif not any_recorded_rate and dnfr is not None and frequencies is not None:
+            # Only the unforced nodal product; Gamma is a separate declared law.
+            try:
+                depi = [
+                    compute_canonical_nodal_derivative(vf, pressure).derivative
+                    for vf, pressure in zip(frequencies, dnfr)
+                ]
+            except (TypeError, ValueError, OverflowError, NetworkConfigError):
+                depi = None
+                rate_status = "nodal_product_unrepresentable"
+            if depi is not None and any(
+                rate == 0.0 and vf != 0.0 and pressure != 0.0
+                for vf, pressure, rate in zip(frequencies, dnfr, depi)
+            ):
+                # Runtime multiplication may round to zero. An observation
+                # must not present a lost nonzero product as available zero.
+                depi = None
+                rate_status = "nodal_product_underflow"
+            if depi is not None:
+                depi_dt_source = "nodal_equation"
+                rate_status = "available"
+            else:
+                depi_dt_source = None
         else:
             depi = None
             depi_dt_source = None
+            rate_status = (
+                "empty_support"
+                if not n
+                else (
+                    "pressure_unavailable"
+                    if dnfr is None
+                    else (
+                        "recorded_rate_unavailable"
+                        if any_recorded_rate
+                        else "capacity_unavailable"
+                    )
+                )
+            )
         dynamic_available = dnfr is not None and depi is not None
         triad_available = (
             epis is not None and frequencies is not None and thetas is not None
@@ -2047,8 +2210,12 @@ class Network:
             if dynamic_available and n
             else None
         )
+        mean_abs_dnfr = (
+            finite_mean_absolute(dnfr, name="nfr dnfr")
+            if pressure_available and n
+            else None
+        )
         if dynamic_available and n:
-            mean_abs_dnfr = finite_mean_absolute(dnfr, name="nfr dnfr")
             mean_abs_depi = finite_mean_absolute(depi, name="nfr depi")
             coherence = structural_coherence(mean_abs_dnfr, mean_abs_depi)
             mean_local_coherence = finite_mean_absolute(
@@ -2059,26 +2226,40 @@ class Network:
                 name="nfr local coherence",
             )
         else:
-            mean_abs_dnfr = None
             mean_abs_depi = None
             coherence = None
             mean_local_coherence = None
-        epi_mean = sum(epis) / n if epis is not None and n else None
-        vf_mean = sum(frequencies) / n if frequencies is not None and n else None
+        epi_mean = (
+            mean_neighbor_difference(0.0, epis) if epis is not None and n else None
+        )
+        vf_mean = (
+            finite_mean_absolute(frequencies, name="nfr capacity")
+            if frequencies is not None and n
+            else None
+        )
         phase_sync = (
             float(abs(np.mean(np.exp(1j * np.asarray(thetas)))))
             if thetas is not None and n and np is not None
             else None
         )
         try:
-            # Topology-only spectral comparison/fallback 1/sqrt(lambda_2).
-            # The primary fitted xi_C is state-dependent and may be undefined
-            # at a uniform DeltaNFR=0 equilibrium.
-            xi_c = float(self.spectrum()["coherence_length"])
-        except Exception:
+            # Reuse the tetrad owner; isolate its internal caches from live state.
+            estimate = estimate_coherence_length_with_provenance(
+                copy_graph_state(self.G)
+            )
+            xi_c = float(estimate.value)
+            xi_provenance = asdict(estimate)
+            xi_provenance.pop("value")
+        except Exception as error:
             xi_c = float("nan")
+            xi_provenance = {
+                "method": "unavailable",
+                "error": {"type": type(error).__name__, "message": str(error)},
+            }
         return {
             "topology": topo["topology"],
+            "topology_available": topo["available"],
+            "topology_status": topo["status"],
             "centers": topo["centers"],
             "concentration": topo["concentration"],
             "coherence": coherence,
@@ -2090,14 +2271,23 @@ class Network:
             "pressure_telemetry_available": pressure_available,
             "dynamic_telemetry_available": dynamic_available,
             "depi_dt_source": depi_dt_source,
+            "depi_dt_status": rate_status,
             "triad_available": triad_available,
             "coherence_length": xi_c,
+            "coherence_length_available": math.isfinite(xi_c) and xi_c > 0.0,
+            "coherence_length_provenance": xi_provenance,
             "triad": {
                 "epi_mean": epi_mean,
                 "vf_mean": vf_mean,
                 "phase_sync": phase_sync,
             },
             "n_nodes": n,
+            "scope": (
+                "Stored pressure/rate tolerance observations, configured geometric "
+                "profile and static fit or spectral fallback. Neither an autonomous "
+                "NFR, a fractal dimension, full-state equilibrium nor persistence "
+                "is established. Missing rates use only the unforced nodal product."
+            ),
         }
 
     def nfr_observation(self):
@@ -2112,6 +2302,7 @@ class Network:
             equilibrium_tolerance=_EPS_DNFR_STABLE_DEFAULT,
             scope="graph NFR observation",
             value=self.nfr(),
+            _identity_labels=tuple(self.G),
         )
 
     def rhythm(self) -> dict[str, Any]:
@@ -2325,15 +2516,19 @@ class Network:
         steps: int = 5,
         candidates: list[str] | None = None,
     ) -> Network:
-        """Evolve network with proactive grammar validation (U1-U6).
+        """Apply the first candidate admitted by incremental grammar checks.
 
-        Each step selects from grammar-valid operators only, preventing
-        violations before they corrupt graph state.
+        Candidate order is a supplied selection policy, not a derived law or
+        a guarantee of coherence growth. Live operator preconditions remain
+        separate and execution errors propagate. Nodes with no admitted
+        candidate abstain. This sequential direct-glyph path does not provide
+        the whole-stage rollback contract of :meth:`evolve`; earlier successful
+        operations remain applied when a later operation fails.
 
         Parameters
         ----------
         steps : int
-            Number of evolution steps.
+            Nonnegative number of passes over the network's nodes.
         candidates : list[str] | None
             Operator NAMES to consider (the canonical public identifiers,
             AGENTS.md §5). Defaults to the stabilizer-leaning set
@@ -2345,8 +2540,9 @@ class Network:
         Network
             self (for chaining).
         """
+        step_count = nonnegative_integer(steps, "steps")
         if not _HAS_GRAMMAR_DYNAMICS:
-            return self.evolve(steps)
+            raise ImportError("Grammar-aware dynamics are unavailable")
         if candidates is None:
             candidates = [
                 "coherence",
@@ -2355,23 +2551,20 @@ class Network:
                 "dissonance",
                 "coupling",
             ]
-        # Public API speaks operator NAMES; the grammar machinery
-        # (filter_candidates/apply_glyph) operates on glyph codes. Translate
-        # names -> glyphs here (legacy codes pass through unchanged).
-        from ..operators import apply_glyph
-        from ..operators.grammar_types import function_name_to_glyph
+        # Resolve the complete candidate list before any state can change,
+        # through the same registered-glyph owner as direct execution.
+        from ..operators import _resolve_glyph_operation, apply_glyph
 
-        glyphs = [function_name_to_glyph(c, default=c) for c in candidates]
-        for _step in range(steps):
-            for node in self.G.nodes():
+        if isinstance(candidates, (str, bytes)):
+            raise TNFRValueError("candidates must be a sequence of operator names")
+        glyphs = [_resolve_glyph_operation(c)[0] for c in candidates]
+        for _step in range(step_count):
+            # A direct glyph can add children; admit those on the next pass.
+            for node in tuple(self.G):
                 valid = filter_candidates(self.G, node, glyphs)
                 if not valid:
                     continue
-                glyph_code = valid[0]  # safest first
-                try:
-                    apply_glyph(self.G, node, glyph_code)
-                except Exception:
-                    continue
+                apply_glyph(self.G, node, valid[0])
         return self
 
     # === OPERATOR-CONTRACT AND BALANCE-ALERT MONITORING ===
@@ -3019,72 +3212,6 @@ class TNFR:
             "primes": primes,
             "count": len(primes),
         }
-
-    @staticmethod
-    def magic_numbers(max_n: int = 7) -> list[int]:
-        """Closure counts from the assumption-explicit structural shell model.
-
-        The closed-shell counts (2, 10, 18, 36, 54, 86, ...) combine two
-        ingredients of *different* status:
-
-        - a constructed S² graph numerically approximates multiplicities
-          ``2l+1``;
-        - occupation capacities ``2(2l+1)`` are assumed, including the factor
-          two;
-        - the ``(n+l)`` filling order is an **assumed** integer count rule
-          (Madelung), retained because the free manifold spectrum does not by
-          itself reproduce it.
-
-        A closed shell is ``ΔNFR_chem = 0``
-        (:func:`tnfr.metrics.common.is_structural_equilibrium`): the chemical
-        zero-pressure state of this shell-filling model. It shares an abstract
-        predicate with arithmetic equilibrium but not its state space or
-        dynamics.
-
-        Parameters
-        ----------
-        max_n : int
-            Highest principal shell index to fill.
-
-        Returns
-        -------
-        list[int]
-            The model closure counts used for noble-gas comparison.
-        """
-        from ..physics.emergent_chemistry import emergent_magic_numbers
-
-        return [int(z) for z in emergent_magic_numbers(max_n=max_n)]
-
-    @staticmethod
-    def element(Z: int, *, max_n: int = 7) -> dict[str, Any]:
-        """Structural characterization of the element with count Z.
-
-        Structural shell-model characterization: configuration, valence count
-        and distance ``ΔNFR_chem`` to a declared closure. The constructed S²
-        graph supplies a numerical ``2l+1`` comparison; capacities
-        ``2(2l+1)``, the ``(n+l)`` order and duet/octet closures are assumed.
-        A closed shell is ``ΔNFR_chem(Z) = 0``
-        within the chemical model. The arithmetic criterion
-        ``ΔNFR_arith(n) = 0`` uses the same shared numerical predicate on a
-        different state space; this does not identify the two dynamics.
-
-        Parameters
-        ----------
-        Z : int
-            Positive integer count allocated through the declared shell capacities.
-        max_n : int
-            Highest principal shell index available.
-
-        Returns
-        -------
-        dict
-            Z, configuration, valence_electrons, outer_shell_n, delta_nfr,
-            closure_distance, closed_shell, magic_number, the legacy
-            reactivity alias, and config_label.
-        """
-        from ..physics.emergent_chemistry import classify_element
-
-        return classify_element(Z, max_n=max_n).as_dict()
 
     @staticmethod
     def guide() -> str:

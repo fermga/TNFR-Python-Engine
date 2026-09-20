@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+import warnings
 from argparse import Namespace
 
 import networkx as nx
@@ -26,7 +27,10 @@ from tnfr.operators.metrics_structural import (
 from tnfr.operators.network_analysis.source_detection import detect_emission_sources
 from tnfr.operators.postconditions import OperatorContractViolation
 from tnfr.operators.postconditions.mutation import verify_phase_transformed
-from tnfr.operators.preconditions.resonance import diagnose_resonance_readiness
+from tnfr.operators.preconditions.resonance import (
+    diagnose_resonance_readiness,
+    validate_resonance_strict,
+)
 from tnfr.operators.remesh import StructuralIdentity
 from tnfr.physics.cell import apply_membrane_flux
 from tnfr.utils import angle_diff
@@ -107,12 +111,25 @@ def test_source_detection_distinguishes_wrap_equivalence_from_antiphase() -> Non
     assert sources[2] == pytest.approx(0.0)
 
 
-def test_resonance_diagnostic_uses_the_same_canonical_u3_default() -> None:
+@pytest.mark.parametrize("override, warning", [(None, False), (1.0, True)])
+def test_resonance_readiness_and_validator_share_phase_warning_policy(
+    override: float | None, warning: bool
+) -> None:
     graph = _phase_graph([0.0, 1.2])
+    if override is not None:
+        graph.graph["RA_MAX_PHASE_DIFF"] = override
 
     diagnostic = diagnose_resonance_readiness(graph, 0)
+    with warnings.catch_warnings(record=True) as emitted:
+        warnings.simplefilter("always")
+        validate_resonance_strict(graph, 0)
 
-    assert diagnostic["checks"]["phase_alignment"] == "passed"
+    assert diagnostic["checks"]["phase_alignment"] == (
+        "warning" if warning else "passed"
+    )
+    assert (
+        any("RA phase misalignment" in str(item.message) for item in emitted) is warning
+    )
 
 
 def test_structural_identity_rejects_antiphase_multiturn_representative() -> None:
@@ -173,3 +190,56 @@ def test_cli_epi_validation_enforces_wrapped_u3_gate(
     )
 
     assert cli_execution.cmd_epi_validate(args) == expected_status
+
+
+@pytest.mark.parametrize(
+    "gate", [True, -0.1, math.nan, math.inf, math.pi, "bad", 10**1000]
+)
+@pytest.mark.parametrize("with_edge", [True, False])
+def test_cli_epi_validation_rejects_invalid_graph_phase_gate(
+    monkeypatch, gate, with_edge
+) -> None:
+    graph = _phase_graph([0.0, 0.1]) if with_edge else nx.Graph()
+    graph.graph["DELTA_PHI_MAX"] = gate
+    monkeypatch.setattr(cli_execution, "_run_cli_program", lambda _args: (0, graph))
+    args = Namespace(check_coherence=False, check_frequency=False, check_phase=True)
+
+    assert cli_execution.cmd_epi_validate(args) == 1
+
+
+@pytest.mark.parametrize("phase", [None, True, math.nan, math.inf, "bad"])
+def test_cli_epi_validation_rejects_unavailable_edge_phase(monkeypatch, phase):
+    graph = nx.Graph([(0, 1)])
+    graph.nodes[0]["theta"] = 0.0
+    if phase is not None:
+        graph.nodes[1]["theta"] = phase
+    monkeypatch.setattr(cli_execution, "_run_cli_program", lambda _args: (0, graph))
+    args = Namespace(check_coherence=False, check_frequency=False, check_phase=True)
+
+    assert cli_execution.cmd_epi_validate(args) == 1
+
+
+def test_cli_validation_tolerance_cannot_weaken_configured_u3_gate(monkeypatch):
+    graph = _phase_graph([0.0, 0.100001])
+    graph.graph["DELTA_PHI_MAX"] = 0.1
+    monkeypatch.setattr(cli_execution, "_run_cli_program", lambda _args: (0, graph))
+    args = Namespace(
+        check_coherence=False,
+        check_frequency=False,
+        check_phase=True,
+        tolerance=1.0,
+    )
+
+    assert cli_execution.cmd_epi_validate(args) == 1
+
+
+@pytest.mark.parametrize(
+    "tolerance",
+    [True, False, None, -1e-6, math.nan, math.inf, -math.inf, "bad", 10**1000],
+)
+def test_cli_rejects_invalid_tolerance_before_executing_program(monkeypatch, tolerance):
+    def unexpected_execution(_args):
+        pytest.fail("invalid tolerance must be rejected before executing a program")
+
+    monkeypatch.setattr(cli_execution, "_run_cli_program", unexpected_execution)
+    assert cli_execution.cmd_epi_validate(Namespace(tolerance=tolerance)) == 1

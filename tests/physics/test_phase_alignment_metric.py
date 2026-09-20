@@ -131,10 +131,11 @@ def test_half_turn_zero_ideal_torque_is_not_zero_canonical_phase_pressure():
     # Exact antipodal phasors have V=2, gradient V=0 and |S|=1.
     resultant = reduce_phasor_components(((-1.0, 0.0),))
     assert not resultant.joint_zero and resultant.angle == pi
-    assert captured.phase_gradient == (Q(-1), Q(-1))
+    assert captured.phase_gradient == (Q(1), Q(-1))
     assert all(0 < abs(value) < 2e-16 for value in current.values())
-    # sin(represented pi) is not exactly zero; wrapping both endpoint gaps
-    # to -pi produces tiny signed currents, not the ideal zero torque.
+    # sin(represented pi) is not exactly zero; the signed atan2 branch preserves
+    # opposite endpoint orientations, with tiny currents rather than ideal zero.
+    assert current[0] == -current[1] and current[0] > 0.0
     assert all(isfinite(value) for value in current.values())
     assert max(abs(float(value)) for value in captured.phase_gradient) == 1
     # The regular positive metric excludes this cut: finite mobility cannot

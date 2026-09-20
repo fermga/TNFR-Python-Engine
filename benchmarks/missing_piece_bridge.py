@@ -11,8 +11,7 @@ objects act on different spaces and cannot be identified by this construction.
 They do not model an RH residual or a Yang--Mills mass-gap target, prove that
 either object is required by those problems, or establish a shared obstruction
 or a shared non-derivability cause. The ``log(p)`` diagonal, SU(2) generators,
-group actions and tensor-product model are all selected inputs. The optional
-repository audit is reported independently.
+group actions and tensor-product model are all selected inputs.
 
 The imported function ``canonical_per_node_diagonal`` retains its historical
 API name; its result is treated here only as a supplied diagonal.
@@ -48,14 +47,6 @@ from commutant_bridge import (  # noqa: E402
 from composition_arithmetic import automorphism_matrices  # noqa: E402
 
 assert canonical_per_node_diagonal is selected_per_node_diagonal
-
-# Optional repository audit, reported as an independent model output.
-try:  # pragma: no cover - exercised only when the package is importable
-    from tnfr.yang_mills import audit_nonabelian_derivability  # noqa: E402
-
-    _HAVE_AUDIT = True
-except Exception:  # pragma: no cover
-    _HAVE_AUDIT = False
 
 TOL = 1e-9
 _NONZERO = 1e-3
@@ -241,11 +232,11 @@ def test_tensor_factor_separation():
 
 
 # --------------------------------------------------------------------------- #
-# TEST 4 -- report input provenance and the independent repository audit
+# TEST 4 -- report the provenance of the two supplied matrix inputs
 # --------------------------------------------------------------------------- #
-def test_input_and_audit_provenance():
+def test_input_provenance():
     print("=" * 78)
-    print("TEST 4 -- PROVENANCE: supplied diagonal and independent audit output")
+    print("TEST 4 -- PROVENANCE: independently supplied diagonal and generators")
     print("=" * 78)
     n = 5
     G = nx.complete_graph(n)
@@ -261,26 +252,7 @@ def test_input_and_audit_provenance():
     tx, ty, _tz = su2_generators()
     fibre_break = commutator_norm(tx, ty)
 
-    verdict_line = "audit unavailable; finite algebra only"
-    canon_ok = True
-    if _HAVE_AUDIT:
-        try:
-            report = audit_nonabelian_derivability()
-            any_noncomm = any(c.has_noncommuting_generators for c in report.candidates)
-            verdict_line = (
-                f"{report.verdict} ; "
-                f"non-commuting generators on any route = {any_noncomm}"
-            )
-            canon_ok = report.verdict == "OPEN_DERIVABILITY_GAP" and not any_noncomm
-        except Exception as exc:  # pragma: no cover
-            verdict_line = f"(repository audit unavailable: {exc})"
-
-    ok = (
-        base_break > _NONZERO
-        and fibre_break > _NONZERO
-        and input_recognized
-        and canon_ok
-    )
+    ok = base_break > _NONZERO and fibre_break > _NONZERO and input_recognized
     print(f"  base input   : D = diag({d_label})")
     print(
         f"                  breaks S_n (||[D,P_s]|| = {base_break:.2f}) but "
@@ -288,11 +260,9 @@ def test_input_and_audit_provenance():
     )
     print("                  (the values are supplied before the matrix checks).")
     print(f"  fibre input  : non-commuting [T_x,T_y] (= {fibre_break:.3f})")
-    print("  independent repository audit:")
-    print(f"                  {verdict_line}")
     print(
         f"  VERDICT: {'PASS' if ok else 'FAIL'} -- input provenance and the "
-        "reported audit condition match this finite protocol"
+        "finite matrix checks match this protocol"
     )
     print("  The protocol does not prove a shared derivation or obstruction.")
     print()
@@ -303,7 +273,7 @@ def test_input_and_audit_provenance():
 test_escapes_not_identical = test_base_fibre_inputs_differ
 test_same_structural_recipe = test_independent_commutator_properties
 test_one_ingredient_two_complements = test_tensor_factor_separation
-test_shared_nonderivability = test_input_and_audit_provenance
+test_shared_nonderivability = test_input_provenance
 
 
 def main():
@@ -311,7 +281,7 @@ def main():
     t1 = test_base_fibre_inputs_differ()
     t2 = test_independent_commutator_properties()
     t3 = test_tensor_factor_separation()
-    t4 = test_input_and_audit_provenance()
+    t4 = test_input_provenance()
 
     print("=" * 78)
     print("SUMMARY")
@@ -329,7 +299,7 @@ def main():
         f"{'PASS' if t3 else 'FAIL'}"
     )
     print(
-        f"  TEST 4 input and audit provenance                       : "
+        f"  TEST 4 supplied input provenance                        : "
         f"{'PASS' if t4 else 'FAIL'}"
     )
     structural = t1 and t2 and t3 and t4

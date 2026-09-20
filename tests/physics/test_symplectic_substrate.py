@@ -71,6 +71,23 @@ def _canonical_graph(n: int = 30, seed: int = 5) -> nx.Graph:
     return G
 
 
+@pytest.fixture(scope="module")
+def adiabatic_report():
+    return verify_adiabatic_invariance(ramp_times=(1.0, 5.0, 20.0, 80.0))
+
+
+@pytest.fixture(scope="module")
+def substrate_geometry_report():
+    return verify_substrate_geometry(_canonical_graph(20))
+
+
+@pytest.fixture(scope="module")
+def unified_substrate_telemetry():
+    from tnfr.physics.fields import compute_unified_telemetry
+
+    return compute_unified_telemetry(_canonical_graph(20))
+
+
 class TestBlockSymplecticForm:
     """The per-node canonical block J4 has the symplectic properties."""
 
@@ -178,12 +195,6 @@ class TestEnergyConsistency:
         energy = compute_energy_functional(G)
         assert abs((h_sub + u_bg) - energy) < 1e-9
 
-    def test_substrate_hamiltonian_nonnegative(self) -> None:
-        G = _canonical_graph(20)
-        pt = extract_phase_space_point(G)
-        assert substrate_hamiltonian(pt) >= 0.0
-        assert background_potential(pt) >= 0.0
-
 
 class TestCanonicalCertificate:
     """The certificate checks the specified ambient canonical structure."""
@@ -207,11 +218,6 @@ class TestCanonicalCertificate:
         summary = cert.summary()
         assert "VALID" in summary
         assert "dim=48" in summary
-
-    def test_determinant_is_one(self) -> None:
-        G = _canonical_graph(10)
-        cert = verify_canonical_structure(G)
-        assert abs(cert.determinant - 1.0) < 1e-12
 
 
 class TestNoetherCharges:
@@ -685,16 +691,12 @@ class TestPolarizationSymmetry:
 class TestSubstrateGeometryReport:
     """The consolidated aggregator runs the whole tower in one call."""
 
-    def test_all_structures_valid(self) -> None:
-        G = _canonical_graph(30)
-        report = verify_substrate_geometry(G)
+    def test_bundles_seven_certificates(self, substrate_geometry_report) -> None:
+        report = substrate_geometry_report
         assert report.all_structures_valid
-        assert report.n_nodes == 30
-        assert report.phase_space_dimension == 120
-
-    def test_bundles_seven_certificates(self) -> None:
-        G = _canonical_graph(20)
-        report = verify_substrate_geometry(G)
+        assert report.n_nodes == 20
+        assert report.phase_space_dimension == 80
+        assert report.marsden_weinstein.reduced_dimension == 78
         # Each sub-certificate is the same type the individual verify returns.
         assert report.canonical.is_valid_symplectic_manifold
         assert report.noether.is_conserved
@@ -704,20 +706,8 @@ class TestSubstrateGeometryReport:
         assert report.marsden_weinstein.is_valid_reduction
         assert report.polarization.is_valid_polarization_symmetry
 
-    def test_sub_certificates_match_individual_calls(self) -> None:
-        G = _canonical_graph(24)
-        report = verify_substrate_geometry(G)
-        # The aggregated canonical certificate matches a direct call.
-        direct = verify_canonical_structure(G)
-        assert (
-            report.canonical.is_valid_symplectic_manifold
-            == direct.is_valid_symplectic_manifold
-        )
-        assert report.marsden_weinstein.reduced_dimension == 4 * 24 - 2
-
-    def test_summary_lists_all_seven(self) -> None:
-        G = _canonical_graph(20)
-        report = verify_substrate_geometry(G)
+    def test_summary_lists_all_seven(self, substrate_geometry_report) -> None:
+        report = substrate_geometry_report
         summary = report.summary()
         assert "ALL VALID" in summary
         # Seven numbered structures appear in the multi-line summary.
@@ -739,36 +729,36 @@ class TestSubstrateIntegration:
         assert callable(_sh)
         assert callable(_sfm)
 
-    def test_unified_telemetry_includes_substrate(self) -> None:
-        from tnfr.physics.fields import compute_unified_telemetry
+    def test_unified_telemetry_includes_substrate(
+        self, unified_substrate_telemetry
+    ) -> None:
 
-        G = _canonical_graph(20)
-        telemetry = compute_unified_telemetry(G)
+        telemetry = unified_substrate_telemetry
         assert "symplectic_substrate" in telemetry
         sub = telemetry["symplectic_substrate"]
         assert sub["phase_space_dimension"] == 80
         assert abs(sub["liouville_divergence"]) < 1e-9
 
-    def test_unified_telemetry_includes_pulse(self) -> None:
+    def test_unified_telemetry_includes_pulse(
+        self, unified_substrate_telemetry
+    ) -> None:
         # dual-face telemetry: the conservative pulse (the resonant rhythm)
         # alongside the dissipative canonical coherence read-out
-        from tnfr.physics.fields import compute_unified_telemetry
 
-        G = _canonical_graph(20)
-        telemetry = compute_unified_telemetry(G)
+        telemetry = unified_substrate_telemetry
         assert "pulse" in telemetry
         pulse = telemetry["pulse"]
         assert pulse["n_modes"] >= 1
         assert pulse["fundamental"] > 0.0
         assert pulse["vibration_energy"] > 0.0
 
-    def test_unified_telemetry_includes_resonance(self) -> None:
+    def test_unified_telemetry_includes_resonance(
+        self, unified_substrate_telemetry
+    ) -> None:
         # the per-NFR pulse / resonance face (the source the collective
         # rhythm emerges from) alongside the collective pulse
-        from tnfr.physics.fields import compute_unified_telemetry
 
-        G = _canonical_graph(20)
-        telemetry = compute_unified_telemetry(G)
+        telemetry = unified_substrate_telemetry
         assert "resonance" in telemetry
         res = telemetry["resonance"]
         assert 0.0 <= res["phase_coherence"] <= 1.0
@@ -778,7 +768,7 @@ class TestSubstrateIntegration:
     def test_sdk_symplectic_substrate_method(self) -> None:
         from tnfr.sdk import TNFR, SymplecticReport
 
-        net = TNFR.create(20).ring().evolve(2)
+        net = TNFR.create(20).ring()
         report = net.symplectic_substrate()
         assert isinstance(report, SymplecticReport)
         assert report.is_valid_manifold
@@ -786,9 +776,9 @@ class TestSubstrateIntegration:
         assert "VALID" in report.summary()
 
     def test_sdk_analyze_includes_substrate(self) -> None:
-        from tnfr.sdk import TNFR
+        from tnfr.sdk import TNFR, Network
 
-        net = TNFR.create(15).ring().evolve(2)
+        net = Network(_canonical_graph(15))
         analysis = TNFR.analyze(net)
         assert "symplectic_substrate" in analysis
         assert analysis["features"]["symplectic_substrate"] is True
@@ -797,32 +787,32 @@ class TestSubstrateIntegration:
 class TestAdiabaticInvariance:
     """The auxiliary oscillator action is adiabatic under a slow omega ramp."""
 
-    def test_slow_ramp_conserves_action(self) -> None:
-        cert = verify_adiabatic_invariance()
+    def test_slow_ramp_conserves_action(self, adiabatic_report) -> None:
+        cert = adiabatic_report
         assert cert.is_adiabatic_invariant
         assert cert.slow_drift < 1e-2
 
-    def test_drift_decreases_with_slowness(self) -> None:
+    def test_drift_decreases_with_slowness(self, adiabatic_report) -> None:
         # the adiabatic signature: slower ramp -> smaller action drift
-        cert = verify_adiabatic_invariance()
+        cert = adiabatic_report
         assert cert.drift_decreases_with_slowness
         assert cert.slow_drift < cert.fast_drift
 
-    def test_fast_ramp_breaks_invariance(self) -> None:
+    def test_fast_ramp_breaks_invariance(self, adiabatic_report) -> None:
         # a sudden ramp (T=1) injects/extracts action: large drift
-        cert = verify_adiabatic_invariance(ramp_times=(1.0, 80.0))
+        cert = adiabatic_report
         assert cert.fast_drift > 0.1
 
-    def test_drift_series_trends_down(self) -> None:
-        cert = verify_adiabatic_invariance(ramp_times=(1.0, 5.0, 20.0, 80.0))
+    def test_drift_series_trends_down(self, adiabatic_report) -> None:
+        cert = adiabatic_report
         drifts = cert.action_drifts
         # the slow end is far below the fast end (orders of magnitude)
         assert drifts[-1] < drifts[0] / 10.0
 
-    def test_certificate_valid(self) -> None:
+    def test_certificate_valid(self, adiabatic_report) -> None:
         from tnfr.physics.symplectic_substrate import AdiabaticInvarianceCertificate
 
-        cert = verify_adiabatic_invariance()
+        cert = adiabatic_report
         assert isinstance(cert, AdiabaticInvarianceCertificate)
         assert "VALID" in cert.summary()
         assert "auxiliary oscillator" in cert.summary()

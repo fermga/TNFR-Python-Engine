@@ -59,7 +59,8 @@ def _manual(phases):
 
 
 def _wrap(angle):
-    return (angle + math.pi) % (2 * math.pi) - math.pi
+    value = math.atan2(math.sin(angle), math.cos(angle))
+    return -math.pi if value == math.pi else value
 
 
 def test_nonzero_small_resultant_uses_direction_without_angle_mean():
@@ -278,3 +279,23 @@ def test_nonrepresentable_phase_difference_is_explicitly_rejected():
     )
     with pytest.raises(ValueError, match="differences must be finite"):
         observe_phase_curvature(graph)
+
+
+def test_tiny_phase_separation_is_not_erased_by_half_open_wrapping():
+    row = _row(_star((1e-16,), center=0.0))
+    assert row.gradient == 1e-16
+    assert row.curvature == -1e-16
+
+
+@pytest.mark.parametrize("phase", [1e20, -1e20, 1e308, -1e308])
+def test_uniform_unwrapped_phase_has_no_spurious_curvature(phase):
+    row = _row(_star((phase, phase), center=phase))
+    assert row.gradient == 0.0
+    assert row.curvature == pytest.approx(0.0, abs=5e-16)
+
+
+@pytest.mark.parametrize("phase", [math.pi, -math.pi])
+def test_curvature_retains_half_open_antipodal_convention(phase):
+    row = _row(_star((0.0,), center=phase))
+    assert row.gradient == math.pi
+    assert row.curvature == -math.pi

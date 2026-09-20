@@ -2,8 +2,8 @@
 
 This module implements the core :class:`TNFRNetwork` class that provides
 a user-friendly, chainable interface for working with TNFR networks. The
-API hides low-level complexity while maintaining full theoretical fidelity
-to TNFR invariants and structural operators.
+API delegates execution and observations to shared engine owners; configured
+operator contracts and diagnostic scope remain active.
 
 Examples
 --------
@@ -26,7 +26,6 @@ Chain operations for rapid prototyping:
 
 from __future__ import annotations
 
-import math
 from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
@@ -35,18 +34,19 @@ from typing import Any
 import networkx as nx
 
 from ..alias import get_attr
-from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from ..constants.canonical import FRAGMENTATION_THRESHOLD as COHERENCE_FRAGMENTATION
 from ..constants.canonical import HIGH_COHERENCE_THRESHOLD as COHERENCE_STRONG
 from ..constants.canonical import PI as _PI
 from ..constants.canonical import ZHIR_THRESHOLD_XI_CANONICAL
 from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import NUMPY_AVAILABLE as _HAS_NUMPY
-from ..mathematics.unified_numerical import compute_circular_mean, np
+from ..mathematics.unified_numerical import np
 from ..metrics.coherence import compute_coherence
+from ..metrics.common import finite_mean
 from ..metrics.sense_index import compute_Si
 from ..structural import create_nfr, run_sequence
-from ._state import copy_graph_state
+from ._state import copy_graph_state, observed_mean_phase
 from ._topology import nonnegative_integer, probability, ring_edges, small_world_edges
 
 # ---------------------------------------------------------------------------
@@ -372,11 +372,11 @@ class NetworkResults:
     coherence : float
         Global coherence C(t) of the network.
     sense_indices : dict[str, float]
-        Sense index Si for each node, measuring stable reorganization capacity.
+        Configured sense-index diagnostic Si for each node.
     delta_nfr : dict[str, float]
-        Internal reorganization gradient ΔNFR for each node.
+        Stored reorganization pressure ΔNFR for each node.
     graph : TNFRGraph
-        The underlying NetworkX graph with full TNFR state.
+        Detached graph used to compute this observation.
     avg_vf : float, optional
         Average structural frequency across all nodes.
     avg_phase : float, optional
@@ -385,6 +385,9 @@ class NetworkResults:
     mutation_workflows : list[dict[str, Any]], optional
         Evidence-gated high-level Mutation decisions. Each record states
         whether ZHIR ran or the workflow abstained into controlled exploration.
+    unified_fields_error : dict[str, str], optional
+        Exception type and message when the optional unified suite failed.
+        Core metric failures propagate instead of creating a partial result.
     """
 
     coherence: float
@@ -397,6 +400,12 @@ class NetworkResults:
         None  # Nov 28, 2025 - unified field telemetry
     )
     mutation_workflows: list[dict[str, Any]] | None = None
+    unified_fields_error: dict[str, str] | None = None
+
+    @property
+    def unified_fields_available(self) -> bool:
+        """Whether the optional suite completed; individual fields retain scope."""
+        return bool(self.unified_fields) and self.unified_fields_error is None
 
     def summary(self) -> str:
         """Generate human-readable summary of network results.
@@ -409,27 +418,35 @@ class NetworkResults:
         si_values = list(self.sense_indices.values())
         dnfr_values = list(self.delta_nfr.values())
 
-        avg_si = sum(si_values) / len(si_values) if si_values else 0.0
-        avg_dnfr = sum(dnfr_values) / len(dnfr_values) if dnfr_values else 0.0
+        avg_si = finite_mean(si_values, name="Si")
+        avg_dnfr = finite_mean(dnfr_values, name="DeltaNFR")
 
         # Unified fields summary (if available)
         unified_summary = ""
-        if self.unified_fields:
-            try:
-                cf = self.unified_fields.get("complex_field", {})
-                correlation = cf.get("correlation", 0.0)
-                ti = self.unified_fields.get("tensor_invariants", {})
-                conservation = ti.get("conservation_quality")
-                conservation_text = (
-                    "unavailable (single snapshot)"
-                    if conservation is None
-                    else f"{conservation:.3f}"
-                )
-                unified_summary = f"""
-  • K_φ ↔ J_φ Correlation: {correlation:.3f}
+        if self.unified_fields_error is not None:
+            error = self.unified_fields_error
+            unified_summary = (
+                "\n  • Unified Field Telemetry: unavailable "
+                f"({error['type']}: {error['message']})"
+            )
+        elif self.unified_fields_available:
+            cf = self.unified_fields.get("complex_field", {})
+            correlation = cf.get("correlation")
+            correlation_text = (
+                "unavailable" if correlation is None else f"{correlation:.3f}"
+            )
+            ti = self.unified_fields.get("tensor_invariants", {})
+            conservation = ti.get("conservation_quality")
+            conservation_text = (
+                "unavailable (single snapshot)"
+                if conservation is None
+                and ti.get("conservation_scope")
+                == "single_snapshot_no_temporal_balance"
+                else "unavailable" if conservation is None else f"{conservation:.3f}"
+            )
+            unified_summary = f"""
+  • K_φ ↔ J_φ Correlation: {correlation_text}
   • Conservation Quality: {conservation_text}"""
-            except Exception:
-                pass
 
         def measured_average(value: float | None, unit: str) -> str:
             return (
@@ -464,7 +481,10 @@ TNFR Network Results:
 """.strip()
 
     def to_dict(self) -> dict[str, Any]:
-        """Convert results to serializable dictionary.
+        """Export detached scalar metrics and optional-suite availability.
+
+        Raw unified arrays and graph state remain on this result; this metric
+        projection is not their JSON serialization or a resumable checkpoint.
 
         Returns
         -------
@@ -476,15 +496,15 @@ TNFR Network Results:
 
         return {
             "coherence": self.coherence,
-            "sense_indices": self.sense_indices,
-            "delta_nfr": self.delta_nfr,
+            "sense_indices": dict(self.sense_indices),
+            "delta_nfr": dict(self.delta_nfr),
             "mutation_workflows": deepcopy(self.mutation_workflows or []),
+            "unified_fields_available": self.unified_fields_available,
+            "unified_fields_error": deepcopy(self.unified_fields_error),
             "summary_stats": {
                 "node_count": len(self.sense_indices),
-                "avg_si": sum(si_values) / len(si_values) if si_values else 0.0,
-                "avg_delta_nfr": (
-                    sum(dnfr_values) / len(dnfr_values) if dnfr_values else 0.0
-                ),
+                "avg_si": finite_mean(si_values, name="Si"),
+                "avg_delta_nfr": finite_mean(dnfr_values, name="DeltaNFR"),
                 "avg_vf": self.avg_vf,
                 "avg_phase": self.avg_phase,
             },
@@ -1060,7 +1080,10 @@ class TNFRNetwork:
         Computes coherence C(t), sense indices Si, and ΔNFR values for
         all nodes, plus aggregate statistics. The returned result contains a
         detached graph-data snapshot; subsequent evolution does not rewrite it.
-        Runtime caches are rebuilt. Registered callback specs, functions and
+        All observations run on that copy, rebuilding runtime caches without
+        changing the live graph. Core metric errors propagate; a failed optional
+        unified-field suite retains its error separately from measured values.
+        Registered callback specs, functions and
         exact external resources accepted by the transaction boundary retain
         identity; callable objects stored as ordinary data follow Python
         deepcopy semantics and may be detached. Aliases crossing external
@@ -1092,63 +1115,53 @@ class TNFRNetwork:
         if self._graph is None or self._graph.number_of_nodes() == 0:
             raise ValueError("No network created. Use add_nodes() first.")
 
+        observed_graph = copy_graph_state(self._graph)
+
         # Compute coherence C(t)
-        coherence = compute_coherence(self._graph)
+        coherence = compute_coherence(observed_graph)
 
         # Compute sense indices Si for all nodes
-        si_dict = compute_Si(self._graph, inplace=False)
+        si_dict = compute_Si(observed_graph, inplace=False)
 
         # Extract ΔNFR values
         delta_nfr_dict = {}
-        for node_id in self._graph.nodes():
+        for node_id in observed_graph.nodes():
             delta_nfr_dict[node_id] = get_attr(
-                self._graph.nodes[node_id], ALIAS_DNFR, 0.0
+                observed_graph.nodes[node_id], ALIAS_DNFR, 0.0
             )
 
         # Compute aggregate statistics
-        vf_sum = 0.0
-        phases = []
-        node_count = self._graph.number_of_nodes()
-
-        for node_id in self._graph.nodes():
-            node_data = self._graph.nodes[node_id]
-            vf_sum += get_attr(node_data, ALIAS_VF, 0.0)
-            phases.append(get_attr(node_data, ALIAS_THETA, 0.0))
-
-        avg_vf = vf_sum / node_count if node_count > 0 else 0.0
-        phase_resultant = complex(
-            math.fsum(math.cos(phase) for phase in phases),
-            math.fsum(math.sin(phase) for phase in phases),
+        avg_vf = finite_mean(
+            (
+                get_attr(data, ALIAS_VF, 0.0, strict=True, conv=lambda value: value)
+                for _, data in observed_graph.nodes(data=True)
+            ),
+            name="nu_f",
         )
-        # Unit-circle contributions carry floating-point rounding error. A
-        # vanishing resultant defines no direction, including antipodal pairs.
-        avg_phase = (
-            None
-            if abs(phase_resultant) <= node_count * math.ulp(1.0)
-            else float(compute_circular_mean(phases)) % (2.0 * _PI)
-        )
+        avg_phase = observed_mean_phase(observed_graph)
 
         # Unified field telemetry (Nov 28, 2025 - comprehensive audit integration)
-        unified_telemetry = {}
+        unified_telemetry = None
+        unified_error = None
         try:
             from ..physics.fields import compute_unified_telemetry
 
-            unified_telemetry = compute_unified_telemetry(self._graph)
-        except (ImportError, Exception):
-            # Graceful degradation if unified fields not available
-            pass
+            unified_telemetry = compute_unified_telemetry(observed_graph)
+        except Exception as error:
+            unified_error = {"type": type(error).__name__, "message": str(error)}
 
         # Create and cache results
         self._results = NetworkResults(
             coherence=coherence,
             sense_indices=si_dict,
             delta_nfr=delta_nfr_dict,
-            graph=copy_graph_state(self._graph),
+            graph=observed_graph,
             avg_vf=avg_vf,
             avg_phase=avg_phase,
             unified_fields=unified_telemetry,  # New field for unified telemetry
+            unified_fields_error=unified_error,
             mutation_workflows=deepcopy(
-                self._graph.graph.get(_MUTATION_WORKFLOW_LOG_KEY, [])
+                observed_graph.graph.get(_MUTATION_WORKFLOW_LOG_KEY, [])
             ),
         )
 
@@ -1494,7 +1507,7 @@ class TNFRNetwork:
         Returns
         -------
         float
-            Network density between 0 and 1.
+            NetworkX density; loops and parallel edges can exceed one.
 
         Raises
         ------
@@ -1503,12 +1516,7 @@ class TNFRNetwork:
         """
         if self._graph is None:
             raise ValueError("No network created. Use add_nodes() first.")
-        n = self._graph.number_of_nodes()
-        if n <= 1:
-            return 0.0
-        m = self._graph.number_of_edges()
-        max_edges = n * (n - 1) / 2
-        return m / max_edges if max_edges > 0 else 0.0
+        return float(nx.density(self._graph))
 
     def clone(self) -> TNFRNetwork:
         """Copy graph data and continue the current RNG in an independent network.

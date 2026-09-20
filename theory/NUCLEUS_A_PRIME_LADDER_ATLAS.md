@@ -182,6 +182,6 @@ The [single execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md) owns prioriti
 ## 8. Cross-references
 
 - [Current Riemann memo](TNFR_RIEMANN_RESEARCH_NOTES.md) — construction inputs, exact finite identities and unresolved analytic targets
-- [Historical notebook](research/archive/RIEMANN_NOTEBOOK_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt) — former P12–P49 derivations and CCET chronology; superseded universal claims and instructions are not current results
+- [Historical notebook recovery](research/archive/README.md) — former P12–P49 derivations and CCET chronology; superseded universal claims and instructions are not current results
 - [Conditional symmetry obstructions](NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md) — valid algebraic premises and limitations of the withdrawn universal no-go argument; no publication queue
 - [REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md) — exact fixed-delay surrogate result and the unresolved status of any literal $\tau_g\to\infty$ operator or identification with $S(T)$

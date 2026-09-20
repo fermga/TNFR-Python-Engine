@@ -49,6 +49,14 @@ $$
 | **Sign convention** | Positive means the neighbor-average pressure exceeds the node pressure; negative means the reverse |
 | **Engine status** | Canonical diagnostic definition |
 
+Like the phase current, this contrast uses unique outgoing support neighbors,
+including zero-conductance edges. It reads stored pressure without refreshing
+it. Scalar and array paths reuse the stable neighbor-difference reducer: a
+uniform field has zero contrast even near the binary64 range limit, and
+signed cancellation is retained. Unrepresentable final values raise. Cached
+maps are detached from their public returns and bind admitted state and
+neighbor order. These arithmetic and cache contracts add no pressure law.
+
 ### 1.3 Research-Level Fields
 
 Additional fields under investigation (not yet canonical):

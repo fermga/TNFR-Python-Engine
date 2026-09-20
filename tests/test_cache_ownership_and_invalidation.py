@@ -129,6 +129,124 @@ def test_adjacency_key_preserves_explicit_node_order():
     )
 
 
+@pytest.mark.parametrize(
+    "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+)
+def test_shared_edge_cache_detects_same_count_direct_rewiring(graph_type):
+    from tnfr.metrics.common import ensure_neighbors_map
+
+    graph = graph_type()
+    graph.add_edges_from([(0, 0), (0, 1), (1, 2)])
+    if graph.is_multigraph():
+        graph.add_edge(0, 1)
+    cached_nodes_and_A(graph)
+    ensure_neighbors_map(graph)
+    before_count = graph.number_of_edges()
+
+    graph.remove_edge(0, 1)
+    graph.add_edge(0, 2)
+    nodes, observed = cached_nodes_and_A(graph)
+    expected = np.array(
+        [[1.0, float(graph.is_multigraph()), 1.0], [0, 0, 1], [0, 0, 0]]
+    )
+    if not graph.is_directed():
+        expected = np.maximum(expected, expected.T)
+    assert graph.number_of_edges() == before_count
+    np.testing.assert_array_equal(observed, expected)
+    assert dict(ensure_neighbors_map(graph)) == {
+        node: tuple(graph.neighbors(node)) for node in nodes
+    }
+
+
+def test_shared_edge_cache_tracks_weight_and_length_channels_separately():
+    graph = nx.MultiDiGraph()
+    graph.add_edge(0, 0, key="loop", weight=3.0, length=1.0)
+    graph.add_edge(0, 1, key="a", weight=1.0, length=2.0)
+    graph.add_edge(0, 1, key="b", weight=2.0, length=5.0)
+
+    def matrix():
+        return nx.to_numpy_array(graph, nodelist=(0, 1), weight="weight")
+
+    def distance():
+        return nx.shortest_path_length(graph, 0, 1, weight="length")
+
+    initial = edge_version_cache(graph, "weighted_matrix", matrix)
+    assert edge_version_cache(graph, "distance", distance) == 2.0
+    graph[0][1]["a"]["weight"] = 4.0
+    updated = edge_version_cache(graph, "weighted_matrix", matrix)
+    np.testing.assert_array_equal(initial, [[3.0, 3.0], [0.0, 0.0]])
+    np.testing.assert_array_equal(updated, [[3.0, 6.0], [0.0, 0.0]])
+    assert edge_version_cache(graph, "distance", distance) == 2.0
+
+    graph[0][1]["a"]["length"] = 7.0
+    assert edge_version_cache(graph, "distance", distance) == 5.0
+    np.testing.assert_array_equal(
+        edge_version_cache(graph, "weighted_matrix", matrix), updated
+    )
+
+
+def test_rewiring_refreshes_sense_and_pressure_consumers_without_manual_invalidation():
+    from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_THETA, ALIAS_VF
+    from tnfr.dynamics.dnfr import default_compute_delta_nfr
+    from tnfr.metrics.sense_index import compute_Si
+
+    graph = nx.path_graph(3)
+    graph.graph["DNFR_WEIGHTS"] = dict(phase=1.0, epi=0.0, vf=0.0, topo=0.0)
+    graph.graph["dnfr_force_dense"] = True
+    for node, phase in enumerate((0.0, 0.3, 2.0)):
+        graph.nodes[node].update({ALIAS_THETA[0]: phase, ALIAS_VF[0]: 1.0})
+    before_sense = compute_Si(graph, inplace=False)
+    default_compute_delta_nfr(graph)
+    graph.remove_edge(0, 1)
+    graph.add_edge(0, 2)
+
+    default_compute_delta_nfr(graph)
+    # Every new neighborhood fits one open semicircle: its circular center is
+    # the scalar midpoint, and the configured channel is wrap(center-phase)/pi.
+    np.testing.assert_allclose(
+        [graph.nodes[node][ALIAS_DNFR[0]] for node in graph],
+        np.array([2.0, 1.7, -1.85]) / np.pi,
+        rtol=1e-14,
+    )
+    observed_sense = compute_Si(graph, inplace=False)
+    cold = nx.Graph()
+    cold.add_nodes_from((node, dict(data)) for node, data in graph.nodes(data=True))
+    cold.add_edges_from(graph.edges())
+    assert observed_sense == pytest.approx(compute_Si(cold, inplace=False))
+    assert observed_sense != before_sense
+
+
+def test_direct_node_reordering_refreshes_trigonometric_array_order():
+    from tnfr.metrics.trig_cache import get_trig_cache
+
+    graph = nx.path_graph(3)
+    nx.set_node_attributes(graph, {0: 0.1, 1: 0.2, 2: 0.3}, "theta")
+    original = get_trig_cache(graph)
+    graph.remove_node(1)
+    graph.add_node(1, theta=0.2)
+    graph.add_edges_from([(0, 1), (1, 2)])
+    refreshed = get_trig_cache(graph)
+    assert original.order == (0, 1, 2)
+    assert refreshed.order == (0, 2, 1)
+    np.testing.assert_allclose(refreshed.theta_values, [0.1, 0.3, 0.2])
+    assert get_trig_cache(graph) is refreshed
+
+
+def test_explicit_edge_invalidation_does_not_double_increment_observed_version():
+    graph = nx.path_graph(2)
+    first = edge_version_cache(graph, "token", object)
+    graph.add_edge(0, 0)
+    increment_edge_version(graph)
+    version = graph.graph["_edge_version"]
+    second = edge_version_cache(graph, "token", object)
+    assert second is not first
+    assert graph.graph["_edge_version"] == version
+    # Node values are separate source dependencies, not an excuse to rebuild
+    # an unchanged edge artifact or to lose scratch-buffer reuse.
+    graph.nodes[0]["theta"] = 0.5
+    assert edge_version_cache(graph, "token", object) is second
+
+
 @pytest.mark.parametrize("weighted", [False, True])
 def test_lru_clear_releases_capacity_and_removal_resources(weighted):
     removed = []

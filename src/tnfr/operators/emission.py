@@ -8,13 +8,9 @@ Emission structural operator (AL) - Foundational activation of nodal resonance.
 
 from __future__ import annotations
 
-import warnings
 from typing import Any, ClassVar
 
-from ..alias import get_attr
 from ..config.operator_names import EMISSION
-from ..constants.aliases import ALIAS_EPI
-from ..dynamics.feedback import StructuralFeedbackLoop
 from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
 
@@ -125,172 +121,28 @@ class Emission(Operator):
     glyph: ClassVar[Glyph] = Glyph.AL
 
     def _execute(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
-        """Apply AL with structural irreversibility tracking.
+        """Validate the shared AL proposal before activation metadata changes.
 
-        Records activation lineage after preflight and before glyph execution.
-        The metadata implements the traceability aspect of TNFR.pdf §2.2.1;
-        it does not derive a physical arrow of time.
-
-        Parameters
-        ----------
-        G : TNFRGraph
-            Graph storing TNFR nodes and structural operator history.
-        node : Any
-            Identifier or object representing the target node within ``G``.
-        **kw : Any
-            Additional keyword arguments forwarded to the grammar layer.
-        """
-        # Check and clear latency state if reactivating from silence
-        self._check_reactivation(G, node)
-
-        # Preflight succeeded; record lineage before applying the selected glyph.
-        self._mark_irreversibility(G, node)
-
-        # Execute the selected glyph and its base telemetry.
-        super()._execute(G, node, **kw)
-
-    def _check_reactivation(self, G: TNFRGraph, node: Any) -> None:
-        """Check and clear latency state when reactivating from silence.
-
-        When AL (Emission) is applied to a node in latent state (from SHA),
-        this validates the reactivation and clears the latency attributes.
-
-        Parameters
-        ----------
-        G : TNFRGraph
-            Graph containing the node.
-        node : Any
-            Target node being reactivated.
-
-        Warnings
-        --------
-        - Warns if node is reactivated after extended silence (duration check)
-        - Warns if EPI has drifted from preserved value during silence
-        """
-        if G.nodes[node].get("latent", False):
-            # Node is in latent state, reactivating from silence
-            silence_duration = G.nodes[node].get("silence_duration", 0.0)
-
-            # Get max silence duration threshold from graph config
-            max_silence = G.graph.get("MAX_SILENCE_DURATION", float("inf"))
-
-            # Validate reactivation timing
-            if silence_duration > max_silence:
-                warnings.warn(
-                    f"Node {node} reactivating after extended silence "
-                    f"(duration: {silence_duration:.2f}, "
-                    f"max: {max_silence:.2f})",
-                    stacklevel=3,
-                )
-
-            # Check EPI preservation integrity
-            preserved_epi = G.nodes[node].get("preserved_epi")
-            if preserved_epi is not None:
-                # get_attr already imported at module top
-
-                current_epi = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
-                epi_drift = abs(current_epi - preserved_epi)
-
-                # Enhanced tolerance for initial nodes and dynamic networks
-                # For initial nodes (preserved_epi ≈ 0), use absolute threshold
-                # For established nodes, use relative threshold
-                if abs(preserved_epi) < 1e-6:  # Initial node
-                    # Tolerance is an operational value (not derived)
-                    # EPI_THRESHOLD ≈ 0.330 (operational tolerance)
-                    # This respects TNFR nodal dynamics: ∂EPI/∂t = νf · ΔNFR
-                    # Initial nodes can evolve according to canonical limits
-                    tolerance = StructuralFeedbackLoop.EPI_THRESHOLD  # ≈ 0.330
-                    should_warn = epi_drift > tolerance
-                else:  # Established node
-                    # Use 1% relative tolerance for established nodes
-                    tolerance = 0.01 * abs(preserved_epi)
-                    should_warn = epi_drift > tolerance
-
-                if should_warn:
-                    # Different message based on node type
-                    node_type = (
-                        "initial" if abs(preserved_epi) < 1e-6 else "established"
-                    )
-                    warnings.warn(
-                        f"Node {node} ({node_type}) EPI drifted during silence "
-                        f"(preserved: {preserved_epi:.3f}, "
-                        f"current: {current_epi:.3f}, "
-                        f"drift: {epi_drift:.3f}, tolerance: {tolerance:.3f})",
-                        stacklevel=3,
-                    )
-
-            # Clear latency state
-            del G.nodes[node]["latent"]
-            if "latency_start_time" in G.nodes[node]:
-                del G.nodes[node]["latency_start_time"]
-            if "preserved_epi" in G.nodes[node]:
-                del G.nodes[node]["preserved_epi"]
-            if "silence_duration" in G.nodes[node]:
-                del G.nodes[node]["silence_duration"]
-            if "was_initial_on_silence" in G.nodes[node]:
-                del G.nodes[node]["was_initial_on_silence"]
-
-    def _mark_irreversibility(self, G: TNFRGraph, node: Any) -> None:
-        """Mark structural irreversibility for AL operator.
-
-        According to TNFR.pdf §2.2.1, AL (Emission) is structurally
-        irreversible:
-        "Una vez activado, AL reorganiza el campo. No puede deshacerse."
-
-        This method establishes:
-        - Temporal marker: ISO timestamp of first emission
-        - Activation flag: Persistent boolean indicating AL was activated
-        - Structural lineage: Genealogical record for EPI traceability
-
-        Parameters
-        ----------
-        G : TNFRGraph
-            Graph containing the node.
-        node : Any
-            Target node for emission marking.
-
-        Notes
-        -----
-        On first activation:
-        - Sets emission_timestamp (ISO format)
-        - Sets _emission_activated = True (immutable)
-        - Sets _emission_origin (timestamp copy for preservation)
-        - Initializes _structural_lineage dict
-
-        On re-activation:
-        - Preserves original timestamp
-        - Increments activation_count in lineage
+        This preflight shares lifecycle arithmetic with network stages. The
+        ordinary glyph path and its monitor callbacks remain responsible for
+        the eventual live write; this is not an arbitrary-callback transaction.
         """
         from datetime import datetime, timezone
 
-        from ..alias import set_attr_str
-        from ..constants.aliases import ALIAS_EMISSION_TIMESTAMP
+        from .al_sha_stage_proposals import (
+            commit_emission_lifecycle,
+            propose_emission_stage,
+        )
+        from .factor_contracts import resolve_runtime_operator_factors
 
-        # Check if this is first activation
-        if "_emission_activated" not in G.nodes[node]:
-            # Generate UTC timestamp in ISO format
-            emission_timestamp = datetime.now(timezone.utc).isoformat()
-
-            # set canonical timestamp using alias system (string values)
-            set_attr_str(G.nodes[node], ALIAS_EMISSION_TIMESTAMP, emission_timestamp)
-
-            # set persistent activation flag (immutable marker)
-            G.nodes[node]["_emission_activated"] = True
-
-            # Preserve origin timestamp (never overwritten)
-            G.nodes[node]["_emission_origin"] = emission_timestamp
-
-            # Initialize structural lineage for genealogical traceability
-            G.nodes[node]["_structural_lineage"] = {
-                "origin": emission_timestamp,
-                "activation_count": 1,
-                "derived_nodes": [],  # Nodes that emerge from this emission
-                "parent_emission": None,  # If derived from another node
-            }
-        else:
-            # Re-activation: increment counter, keep original timestamp
-            if "_structural_lineage" in G.nodes[node]:
-                G.nodes[node]["_structural_lineage"]["activation_count"] += 1
+        factors = resolve_runtime_operator_factors(
+            G.graph.get("GLYPH_FACTORS"), self.glyph, G.graph
+        )
+        proposal = propose_emission_stage(
+            G, node, factors, timestamp=datetime.now(timezone.utc).isoformat()
+        )
+        commit_emission_lifecycle(G, proposal)
+        super()._execute(G, node, **kw)
 
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
         """Validate AL-specific preconditions with strict canonical checks.

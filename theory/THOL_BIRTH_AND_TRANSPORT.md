@@ -667,10 +667,13 @@ the policy comparison proceeds.
 The public optional precondition gate remains disabled, as configured in the
 retained preparation. The observed reference-parent acceleration remains
 `0.10063556139279584`, above the unchanged `tau=0.1`. Every case has three
-executor-recorded physical samples. In this fixture the post-preparation EPI,
-capacity, pressure and acceleration vectors agree across the three prefixes.
-IL nevertheless changes a phase representation from `0` to represented
-`2*pi`; node data and grammar histories also differ. A real prefix is therefore
+executor-recorded physical samples. The preparations share the same exact
+checkerboard-mode reference and capacity. Their represented EPI, pressure and
+acceleration need not agree exactly: IL changes a phase representation from
+`0` to represented `2*pi`, and finite pressure arithmetic can retain that
+difference. The report keeps each refreshed Euler boundary and the signed
+endpoint defect relative to the common exact reference; no bitwise neutrality
+is assumed. Node data and grammar histories also differ. A real prefix is therefore
 a joint physical/history intervention, not a general guarantee of phase
 neutrality or a synthetic change to grammar marks alone.
 

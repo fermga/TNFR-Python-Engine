@@ -226,11 +226,12 @@ def test_declared_linear_action_and_binary64_residuals_remain_separate(cases):
     assert all(
         abs(float(value)) <= ANGLE_TOLERANCE for value in null["observed_minus_linear"]
     )
-    # The midpoint path resolves phase pressure below the old phasor/wrap
-    # cancellation scale. The nominal null is not a full numeric fixed point.
+    # The midpoint and phasor paths retain pressure below the old wrap
+    # cancellation scale, even before the event. The nominal null is not a
+    # full numeric fixed point; both recorded defects use the declared budget.
     before = dict(null["forcing_components_before"])
     after = dict(null["forcing_components_after"])
-    assert not any(before["phase"])
+    assert max(map(abs, before["phase"])) <= ANGLE_TOLERANCE
     assert any(after["phase"])
     assert max(map(abs, after["phase"])) <= ANGLE_TOLERANCE
     assert before["vf"] == after["vf"] and before["topo"] == after["topo"]

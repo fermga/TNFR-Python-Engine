@@ -1,10 +1,41 @@
 """Detached SDK graph data; runtime caches are rebuilt by their owners."""
 
+import math
 from copy import deepcopy
 
 import networkx as nx
 
+from .._exact_time import finite_represented_real
+from ..alias import get_attr
+from ..constants.aliases import ALIAS_THETA
+from ..errors import TNFRValueError
+from ..mathematics.unified_numerical import compute_circular_mean
 from ..utils.cache import GRAPH_RUNTIME_CACHE_KEYS
+
+
+def stored_phase(data) -> float:
+    """Read the authoritative phase without repairing malformed stored values."""
+    raw = get_attr(data, ALIAS_THETA, 0.0, strict=True, conv=lambda value: value)
+    try:
+        return finite_represented_real(raw, "phase")[0]
+    except (TypeError, ValueError) as exc:
+        raise TNFRValueError(str(exc)) from exc
+
+
+def observed_mean_phase(graph: nx.Graph) -> float | None:
+    """Use the shared circular-mean tolerance for both public SDK interfaces."""
+    phases = [stored_phase(data) for _, data in graph.nodes(data=True)]
+    if not phases:
+        return None
+    try:
+        mean = compute_circular_mean(phases)
+    except TNFRValueError:
+        # Input has already been validated. The remaining rejection is the
+        # shared owner's undefined finite resultant, not missing/invalid data.
+        return None
+    period = 2.0 * math.pi
+    normalized = mean % period
+    return 0.0 if normalized == period else normalized
 
 
 def copy_graph_state(graph: nx.Graph) -> nx.Graph:

@@ -1,58 +1,19 @@
-"""Canonical operator name constants and physics-derived operator sets.
+"""Public operator names and shared grammatical role sets.
 
-This module defines operator names and derives valid start/end operator sets
-from TNFR physical principles rather than arbitrary lists.
+``physics_derivation`` owns the predicates used to materialize U1 start/end
+roles and the configured U2/U4 scalar-surrogate calibration. The historical
+function names are compatibility identifiers, not proofs that the nodal
+product uniquely determines event roles, timing or selection.
 
-Physics-Based Derivation
-------------------------
-The sets VALID_START_OPERATORS and VALID_END_OPERATORS are derived from the
-fundamental TNFR nodal equation:
+Emission sources form on an existing node with basal capacity; it preserves
+stored capacity and pressure. Transition and Recursivity have declared
+initiation/closure roles whose actual state effects depend on the execution
+path. Signed scalar form is allowed, and neither role guarantees awakening
+zero capacity. Silence's rate consequence depends on its configured capacity
+update and excludes additive forcing; a terminal word need not be stationary.
 
-    ∂EPI/∂t = νf · ΔNFR(t)
-
-Where:
-    - EPI: Primary Information Structure (coherent form)
-    - νf: Structural frequency (reorganization rate, Hz_str)
-    - ΔNFR: Internal reorganization operator/gradient
-
-Start Operators (Activation)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-An operator can START a sequence if it can either:
-
-1. **Generate EPI from zero form** (EPI=0 with pre-existing basal νf):
-   - emission: Proposes a positive EPI source increment and commits bounded,
-     nondecreasing EPI while preserving νf and ΔNFR
-
-2. **Activate latent EPI** (νf≈0, but EPI>0):
-   - recursivity: Replicates/echoes existing patterns across scales
-   - transition: Activates node from another phase/regime
-
-Physical justification: U1a records an explicit source or activation boundary.
-It does not imply that every generator writes structural capacity. Emission
-requires basal capacity and writes only the EPI channel.
-
-End Operators (Closure)
-~~~~~~~~~~~~~~~~~~~~~~~~
-An operator can END a sequence if it can either:
-
-1. **Stabilize reorganization** (∂EPI/∂t → 0):
-   - silence: Forces νf → 0, causing ∂EPI/∂t → 0 while preserving EPI
-
-2. **Achieve operational closure**:
-   - transition: Hands off to next phase (completes current cycle)
-   - recursivity: Fractal echo creates self-similar closure
-   - dissonance: Postponed conflict / contained tension (questionable)
-
-Physical justification: Terminal operators must either freeze evolution
-(νf → 0) or complete an operational cycle with clear boundary.
-
-For detailed physics derivation logic, see:
-    tnfr.config.physics_derivation
-
-References
-----------
-- TNFR.pdf: Section 2.1 (Nodal Equation)
-- AGENTS.md: Section 3 (Canonical Invariants)
+Use the operator-contract registry for effects, ``physics_derivation`` for role
+predicates, and ``theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md`` for mathematical scope.
 """
 
 from __future__ import annotations
@@ -107,9 +68,7 @@ ALL_OPERATOR_NAMES = CANONICAL_OPERATOR_NAMES
 # Backward-compatible alias; values are lowercase public executable identifiers.
 ENGLISH_OPERATOR_NAMES = CANONICAL_OPERATOR_NAMES
 
-# Physics-derived operator sets (derived from TNFR canonical principles)
-# Import here to avoid issues, but actual derivation is in physics_derivation module
-# These are computed at module load time from TNFR physical principles
+# Materialize shared declared role predicates; do not maintain another list.
 VALID_START_OPERATORS = derive_start_operators_from_physics()
 INTERMEDIATE_OPERATORS = frozenset({DISSONANCE, COUPLING, RESONANCE})
 VALID_END_OPERATORS = derive_end_operators_from_physics()
@@ -119,31 +78,24 @@ SELF_ORGANIZATION_CLOSURES = frozenset({SILENCE, CONTRACTION})
 # CANONICAL destabilizer set = {OZ, ZHIR, VAL} (dissonance, mutation, expansion),
 # matching tnfr.operators.grammar_types.DESTABILIZERS (single source of truth,
 # derived in physics_derivation.increases_structural_pressure).  These three
-# operators raise |ΔNFR|; NAV (controlled transition) and EN (reception) do NOT
-# and are therefore NOT destabilizers — see validate_physics_derivation().
+# roles act on pressure (OZ), phase (ZHIR), and capacity (VAL), respectively.
+# Membership records U2 debt, not a guaranteed increase in every pressure field.
 DESTABILIZERS = derive_destabilizers_from_physics()
 TRANSFORMERS = derive_transformers_from_physics()
-# Canonical U4b window: DERIVED from the pulse relaxation, not assumed. A
-# destabilizer's |ΔNFR| perturbation relaxes geometrically under the discrete
-# nodal step EPI += dt·νf·ΔNFR; the window is the number of steps for it to
-# relax into the coherence band 1/(π+1) (π the sole structural scale -- no 'e',
-# no magic 3). For the canonical νf=1, dt=0.5 this evaluates to 3.
+# U4b recency policy calibrated to the scalar surrogate q=1-nu_f*dt.
+# The first n with q**n < 1/(pi+1) is 3 at nu_f=1, dt=0.5. This counts
+# operator positions; it does not bound every graph mode's relaxation time.
 BIFURCATION_WINDOW = derive_bifurcation_window_from_physics()
-# U2 convergence debt capacity: the SAME relaxation read as a capacity instead
-# of a time -- the geometric absorption 1/(1−q) = 1/(νf·dt·ρ) of sustained
-# destabilization (max uncompensated destabilizers before the bounded-integral
-# convergence fails). For the canonical νf=1, dt=0.5 this evaluates to 2.
+# U2 bookkeeping capacity uses floor(1/(nu_f*dt)) from the same surrogate,
+# giving 2 at the defaults. This selected debt limit is not a physical pressure
+# bound or a necessary/sufficient condition for convergence of the nodal integral.
 U2_DEBT_CAPACITY = derive_u2_debt_capacity_from_physics()
 
 # Every destabilizer in DESTABILIZERS = {OZ, ZHIR, VAL} shares the SINGLE
-# emergent window BIFURCATION_WINDOW. The earlier graduated reach split
-# (strong=4 / moderate=2) was a heuristic the dynamics does NOT support: the
-# structural-pressure relaxation time is topology-independent (the mean L_rw
-# eigenvalue is exactly trace/N = 1), so there is no graduated reach (measured:
-# OZ's direct ΔNFR injection and VAL/ZHIR's field perturbations do not order as
-# 4 > 2). DESTABILIZERS is the single membership source; the strong/moderate/
-# weak partition, its DESTABILIZERS_ALL union, and the BIFURCATION_WINDOWS dict
-# are removed in favour of DESTABILIZERS + BIFURCATION_WINDOW.
+# configured window BIFURCATION_WINDOW. The earlier graduated reach split is
+# retired. On a loopless graph without isolates trace(L_rw)/N=1 is only a mean
+# eigenvalue; actual relaxation depends on the relevant spectrum and model.
+# DESTABILIZERS and BIFURCATION_WINDOW own membership and the recency policy.
 
 
 def canonical_operator_name(name: str) -> str:
@@ -190,11 +142,10 @@ __all__ = [
 
 
 def validate_physics_derivation() -> dict[str, Any]:
-    """Validate that operator sets are consistent with TNFR physics derivation.
+    """Check that public role sets agree with their shared predicate owner.
 
-    This function verifies that VALID_START_OPERATORS and VALID_END_OPERATORS
-    match what would be derived from first principles using the physics_derivation
-    module.
+    This is an implementation-consistency check, not an independent physical
+    derivation of those roles from the nodal equation.
 
     Returns
     -------
@@ -212,7 +163,7 @@ def validate_physics_derivation() -> dict[str, Any]:
     -----
     This function is primarily for testing and validation. It ensures that
     any manual updates to VALID_START_OPERATORS or VALID_END_OPERATORS remain
-    consistent with TNFR canonical physics.
+    consistent with the declared shared predicates.
 
     If discrepancies are found, the function logs warnings but does not raise
     exceptions, allowing for intentional overrides with clear audit trail.

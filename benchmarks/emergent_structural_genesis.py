@@ -11,9 +11,9 @@ controls rather than a demonstrated causal genesis:
   its live stage list. Its seeded fixture shows increasing mean absolute EPI.
   The change cannot be attributed to Emission alone because the complete mixed
   word is executed.
-* M3 reads canonical C(t) and winding after those cycles. A single state with
-  C(t) = 1 and winding zero does not establish an attractor, a vacuum phase, or
-  a symmetry-breaking transition.
+* M3 reads canonical C(t) and winding after those cycles. The measured
+  coherence and zero winding do not establish an attractor, a vacuum phase,
+  or a symmetry-breaking transition.
 * M4 constructs winding_ring(n, 1) directly and checks its integer winding and
   compatibility classifier. It is not produced from M3 by an engine
   trajectory. No Kibble dynamics, bifurcation, particle creation, or winding
@@ -89,11 +89,14 @@ def main() -> None:
     n = 12
 
     print("\n[M1] SDK zero-form initialization.")
-    net = TNFR.create(n, seed=0).ring()
+    seed = 0
+    net = TNFR.create(n, seed=seed).ring()
+    net.G.graph["RANDOM_SEED"] = seed
     initial_epi = epi_magnitude(net)
     initial_vf = {float(net.G.nodes[node][VF_KEY]) for node in net.G.nodes()}
     print(f"     mean |EPI| = {initial_epi:.4f}")
     print(f"     initialized nu_f values = {sorted(initial_vf)} Hz_str")
+    print(f"     topology seed = engine RANDOM_SEED = {seed}")
     print("     U1 requires a generator to open a standalone operator word.")
     assert initial_epi < 1e-6
     assert initial_vf == {1.0}
@@ -124,7 +127,7 @@ def main() -> None:
     print(f"     canonical C(t) = {final_coherence:.4f}")
     print(f"     phase winding W = {zero_winding:+d}")
     assert zero_winding == 0
-    print("     -> PASS: the selected snapshot has C(t) = 1 and W = 0.")
+    print("     -> PASS: the selected snapshot has W = 0.")
     print("        One snapshot is not an attractor or phase-transition proof.")
 
     print("\n[M4] Directly constructed unit-winding control.")

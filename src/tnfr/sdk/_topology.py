@@ -27,7 +27,12 @@ def positive_integer(value: Any, name: str) -> int:
 
 
 def probability(value: Any) -> float:
-    if not isinstance(value, Real) or not math.isfinite(value) or not 0 <= value <= 1:
+    if (
+        isinstance(value, bool)
+        or not isinstance(value, Real)
+        or not math.isfinite(value)
+        or not 0 <= value <= 1
+    ):
         raise ValueError("connection probability must be finite and between 0 and 1")
     return float(value)
 

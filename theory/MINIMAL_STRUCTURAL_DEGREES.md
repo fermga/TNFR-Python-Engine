@@ -186,8 +186,10 @@ trigonometric singularity or a singularity of a continuous manifold.
 
 The current estimator first fits decay of a pressure-derived coherence
 correlation against graph distance. If that fit is unsuitable, it uses a
-spectral reference from the graph. On a connected undirected graph this is
-1/√λ₂. A fitted correlation length need not equal that reference for every
+spectral reference from the graph: the inverse square root of its smallest
+normalized-Laplacian eigenvalue above `1e-9`. On an admitted connected undirected
+graph this is 1/√λ₂ only when that gap clears the numerical cutoff. A fitted
+correlation length need not equal that reference for every
 state; exponential spatial decay is itself a fitting assumption.
 
 On disconnected graphs, a second-smallest eigenvalue and a smallest positive

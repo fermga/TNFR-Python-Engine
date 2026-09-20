@@ -1749,6 +1749,10 @@ def diagnose_euler_relaxation_window(
     this diagnostic does not modify or validate grammar U4. ``tolerance`` is a
     dimensionless relative cutoff against the fastest decay rate; it is not an
     absolute rate in ``Hz_str``.
+
+    Symmetry concerns effective conductance, not the graph container type.
+    Reciprocal directed representations are admitted under the same positive,
+    connected transport check; asymmetric effective weights are rejected.
     """
     import math
 
@@ -1756,8 +1760,6 @@ def diagnose_euler_relaxation_window(
     if target_fraction is not None:
         _reject_boolean_numeric(target_fraction, "target_fraction")
     _reject_boolean_numeric(tolerance, "tolerance")
-    if G.is_directed():
-        raise ValueError("Euler modal diagnostic requires symmetric transport")
     if not np.isfinite(dt) or dt <= 0.0:
         raise ValueError("dt must be finite and positive")
     if target_fraction is None:
@@ -2887,11 +2889,16 @@ def compute_emergent_pulse(G: Any, n_modes: int = 8) -> dict[str, Any]:
     -------
     dict
         ``resonant_spectrum`` (leading :math:`\omega_k = \sqrt{\lambda_k}`),
-        ``fundamental`` (the slowest non-uniform resonance), ``dominant_beat``
-        (the slowest beat = smallest positive :math:`\omega_j - \omega_k`),
+        ``fundamental`` (the smallest retained frequency with eigenvalue
+        strictly above the selected cutoff ``1e-9``), ``dominant_beat``
+        (the smallest adjacent retained frequency gap strictly above ``1e-9``),
         ``spectral_multiplicity`` (largest multiplicity after the implemented
         eigenvalue rounding), ``vibration_energy`` (legacy key for
-        :math:`\tfrac12\sum\lambda_k`, not measured state energy), ``n_modes``.
+        :math:`\tfrac12\sum\lambda_k`, not measured state energy), ``n_modes``
+        (count above the eigenvalue cutoff). The eigenvalue and frequency-gap
+        cuts have different units in the supplied wave model; they are numerical
+        read-out policies. A zero reported fundamental or beat can mean that
+        positive values were excluded, not that all physical motion is absent.
     """
     from numbers import Integral
 
@@ -2901,7 +2908,7 @@ def compute_emergent_pulse(G: Any, n_modes: int = 8) -> dict[str, Any]:
     eigvals = _cached_eigenvalues(G)
     eigvals = np.asarray(eigvals, dtype=float)
     omega = np.sqrt(np.clip(eigvals, 0.0, None))
-    nz = np.sort(omega[eigvals > 1e-9])  # exclude the uniform (lambda~0) mode
+    nz = np.sort(omega[eigvals > 1e-9])  # selected positive-mode resolution
     beats = np.diff(nz) if nz.size > 1 else np.asarray([])
     pos = beats[beats > 1e-9] if beats.size else beats
     _, counts = np.unique(np.round(eigvals, 9), return_counts=True)
@@ -3150,16 +3157,17 @@ def dispersion_relation(G: Any, reaction_rate: float = 0.0) -> Any:
     ----------
     G : TNFRGraph
     reaction_rate : float, optional
-        A local growth/decay rate r added to every mode (the operators
-        supply it: stabilizers lower r, destabilizers raise it).
+        A supplied finite local growth/decay rate r added to every mode.
+        The operator catalog and grammar do not derive this auxiliary reaction
+        law or identify an arbitrary operator with a change in r.
 
     Returns
     -------
     np.ndarray
         Growth rates sorted by ascending nodal decay rate.
     """
-    _reject_boolean_numeric(reaction_rate, "reaction_rate")
-    return float(reaction_rate) - relaxation_spectrum(G)
+    rate = finite_real_scalar(reaction_rate, "reaction_rate")
+    return rate - relaxation_spectrum(G)
 
 
 def instability_threshold(G: Any) -> float:

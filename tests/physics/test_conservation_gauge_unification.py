@@ -24,6 +24,7 @@ from tests.diagnostic_graph_fixtures import (
     make_diagnostic_field_graph as _make_tnfr_graph,
 )
 from tnfr.constants import inject_defaults
+from tnfr.operators._phase_gate import U3PhaseGateError, resolve_u3_phase_neighbors
 from tnfr.physics.conservation import capture_conservation_snapshot
 from tnfr.physics.conservation_gauge_unification import (
     ActionEnergyConsistency,
@@ -143,16 +144,49 @@ class TestGrammarSymmetryMapping:
         assert not u3.is_applicable
         assert u3.assessment_status == "not_assessed"
 
-    @pytest.mark.parametrize("bad_gate", [True, -0.1, float("inf"), "0.2", 10**1000])
+    @pytest.mark.parametrize(
+        "bad_gate", [True, -0.1, float("inf"), float("nan"), "bad", 10**1000, math.pi]
+    )
     def test_u3_is_unassessed_when_phase_gate_is_invalid(self, bad_gate):
         graph = nx.path_graph(2)
         inject_defaults(graph)
         graph.nodes[0]["phase"] = 0.0
         graph.nodes[1]["phase"] = 0.1
-        graph.graph["delta_phi_max"] = bad_gate
+        graph.graph["DELTA_PHI_MAX"] = bad_gate
         u3 = next(m for m in compute_grammar_symmetry_mapping(graph) if m.rule == "U3")
         assert not u3.is_applicable
-        assert "delta_phi_max" in u3.required_evidence
+        assert "DELTA_PHI_MAX" in u3.required_evidence
+
+    @pytest.mark.parametrize("gate", [0.1, "0.1"])
+    def test_u3_tightened_graph_gate_matches_live_rejection(self, gate):
+        graph = nx.path_graph(2)
+        inject_defaults(graph)
+        graph.nodes[0]["phase"] = 0.0
+        graph.nodes[1]["phase"] = 0.5
+        graph.graph.update(DELTA_PHI_MAX=gate, delta_phi_max=3.0)
+        u3 = next(m for m in compute_grammar_symmetry_mapping(graph) if m.rule == "U3")
+        assert u3.is_applicable
+        assert not u3.is_satisfied
+        assert u3.diagnostic_value == pytest.approx(0.4)
+        with pytest.raises(U3PhaseGateError, match="no compatible neighbor"):
+            resolve_u3_phase_neighbors(
+                graph.graph,
+                0.0,
+                (1,),
+                phase_getter=lambda node: graph.nodes[node]["phase"],
+                operator_code="RA",
+            )
+
+    def test_u3_lowercase_legacy_key_cannot_weaken_live_default(self):
+        graph = nx.path_graph(2)
+        inject_defaults(graph)
+        graph.nodes[0]["phase"] = 0.0
+        graph.nodes[1]["phase"] = 2.0
+        graph.graph["delta_phi_max"] = 3.0
+        u3 = next(m for m in compute_grammar_symmetry_mapping(graph) if m.rule == "U3")
+        assert u3.is_applicable
+        assert not u3.is_satisfied
+        assert u3.diagnostic_value == pytest.approx(2.0 - math.pi / 2)
 
     def test_u3_reports_phase_failure_from_current_edges(self):
         graph = nx.Graph()
@@ -160,7 +194,7 @@ class TestGrammarSymmetryMapping:
         inject_defaults(graph)
         graph.nodes[0]["phase"] = 0.0
         graph.nodes[1]["phase"] = math.pi
-        graph.graph["delta_phi_max"] = math.pi / 4
+        graph.graph["DELTA_PHI_MAX"] = math.pi / 4
         u3 = next(m for m in compute_grammar_symmetry_mapping(graph) if m.rule == "U3")
         assert u3.is_applicable
         assert not u3.is_satisfied
@@ -173,7 +207,7 @@ class TestGrammarSymmetryMapping:
         inject_defaults(graph)
         graph.nodes[0]["phase"] = 0.0
         graph.nodes[1]["phase"] = 4 * math.pi + 0.1
-        graph.graph["delta_phi_max"] = 0.2
+        graph.graph["DELTA_PHI_MAX"] = 0.2
         u3 = next(m for m in compute_grammar_symmetry_mapping(graph) if m.rule == "U3")
         assert u3.is_satisfied
         assert u3.diagnostic_value == 0.0
@@ -668,7 +702,7 @@ class TestCoherentGraph:
             G.nodes[node]["frequency"] = rng.uniform(0.1, 1.0)
             G.nodes[node]["delta_nfr"] = rng.uniform(-0.1, 0.1)
             G.nodes[node]["EPI"] = f"epi_{node}"
-        G.graph["delta_phi_max"] = math.pi / 4
+        G.graph["DELTA_PHI_MAX"] = math.pi / 4
         return G
 
     def test_only_u3_is_assessed_and_satisfied(self, coherent_graph):
@@ -714,7 +748,17 @@ class TestPhysicsImport:
             SymplecticGaugeCompatibility,
         )
 
-        assert GrammarSymmetryMapping is not None
+        assert all(
+            isinstance(value, type)
+            for value in (
+                ActionEnergyConsistency,
+                ConservationGaugeUnification,
+                GaugeConservationCoupling,
+                GrammarSymmetryMapping,
+                NoetherGaugeDecomposition,
+                SymplecticGaugeCompatibility,
+            )
+        )
 
     def test_import_functions(self):
         from tnfr.physics import (
@@ -726,4 +770,14 @@ class TestPhysicsImport:
             verify_symplectic_gauge_compatibility,
         )
 
-        assert callable(run_conservation_gauge_unification)
+        assert all(
+            callable(value)
+            for value in (
+                compute_gauge_conservation_coupling,
+                compute_grammar_symmetry_mapping,
+                compute_noether_gauge_decomposition,
+                run_conservation_gauge_unification,
+                verify_action_energy_consistency,
+                verify_symplectic_gauge_compatibility,
+            )
+        )

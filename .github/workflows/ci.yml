@@ -89,7 +89,7 @@ jobs:
         continue-on-error: true
 
   tests:
-    name: Python ${{ matrix.python-version }} tests
+    name: Python ${{ matrix.python-version }} engine tests
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -117,11 +117,11 @@ jobs:
         continue-on-error: true
         run: python -m pydocstyle src/tnfr
 
-      - name: Run unit tests
+      - name: Run routine engine and API tests
         if: matrix.python-version != '3.11'
         run: python -m pytest -n 2 --dist loadfile --junitxml=test-results/pytest.xml
 
-      - name: Run unit tests with coverage
+      - name: Run routine engine and API tests with coverage
         if: matrix.python-version == '3.11'
         run: >-
           python -m pytest -n 2 --dist loadfile

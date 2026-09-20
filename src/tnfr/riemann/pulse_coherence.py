@@ -125,22 +125,47 @@ def prime_side_fluctuation(t: float, n_primes: int = 60, max_k: int = 6) -> floa
 
 @dataclass(frozen=True)
 class PulseCoherenceCertificate:
-    """Certificate that the pulse phase reproduces S(T) and the zero count."""
+    """Finite pulse comparison with a declared error tolerance and oracle status."""
 
     n_heights: int
-    max_abs_s_error: float
+    max_abs_s_error: float | None
     zero_count_matches: bool
     coherence_axis_is_minimal: bool
+    s_tolerance: float = 0.05
+    independent_oracle_available: bool = True
+
+    @property
+    def s_tolerance_satisfied(self) -> bool:
+        """Whether a nonempty independent comparison meets the declared cut."""
+        return (
+            self.independent_oracle_available
+            and self.n_heights > 0
+            and self.max_abs_s_error is not None
+            and math.isfinite(self.max_abs_s_error)
+            and math.isfinite(self.s_tolerance)
+            and self.s_tolerance >= 0.0
+            and 0.0 <= self.max_abs_s_error <= self.s_tolerance
+        )
 
     def summary(self) -> str:
         status = (
             "PASS"
-            if (self.zero_count_matches and self.coherence_axis_is_minimal)
+            if (
+                self.s_tolerance_satisfied
+                and self.zero_count_matches
+                and self.coherence_axis_is_minimal
+            )
             else "PARTIAL"
+        )
+        error = (
+            "unavailable"
+            if self.max_abs_s_error is None
+            else f"{self.max_abs_s_error:.3f}"
         )
         return (
             f"PulseCoherenceCertificate[{status}]: {self.n_heights} heights; "
-            f"max|ΔS|={self.max_abs_s_error:.3f} (off zeros); "
+            f"max|ΔS|={error} (off zeros), tolerance={self.s_tolerance:g}, "
+            f"independent oracle={self.independent_oracle_available}; "
             f"N(T) counts zeros={self.zero_count_matches}; "
             f"coherence axis minimal at σ=1/2={self.coherence_axis_is_minimal}"
         )
@@ -153,42 +178,60 @@ def verify_pulse_coherence(
 ) -> PulseCoherenceCertificate:
     r"""Verify the pulse-phase layer against the numerical oracle.
 
-    Checks, at heights chosen away from zeros: (i) ``S(T)`` from the pulse phase
-    matches ``(1/π) arg ζ`` within ``s_tol``; (ii) ``round(N(T))`` equals the true
-    number of zeros below ``T``; (iii) the coherence defect is minimal on
-    ``σ = 1/2`` (vs ``0.6, 0.7``).
+    At heights chosen away from zeros, report (i) the maximum discrepancy of
+    the pulse phase from ``(1/π) arg ζ``; (ii) whether ``round(N(T))`` matches
+    the retained reference zero count; (iii) whether the coherence defect is
+    minimal on ``σ = 1/2`` compared with ``0.6, 0.7``. ``s_tol`` must be finite,
+    nonnegative and nonboolean. A PASS additionally requires a nonempty
+    independent comparison with maximum error at most ``s_tol``. If mpmath is
+    unavailable, the report is explicitly partial with no measured error;
+    comparing the pulse with itself cannot supply oracle evidence.
+    Arithmetic uses a temporary 25-digit context, restored even on failure.
     """
+    if isinstance(s_tol, (bool, np.bool_)):
+        raise ValueError("s_tol must be finite, nonnegative and nonboolean")
+    try:
+        tolerance = float(s_tol)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError("s_tol must be finite, nonnegative and nonboolean") from exc
+    if not math.isfinite(tolerance) or tolerance < 0.0:
+        raise ValueError("s_tol must be finite, nonnegative and nonboolean")
+
     try:
         import mpmath as mp
+    except ImportError:
+        return PulseCoherenceCertificate(
+            n_heights=len(heights),
+            max_abs_s_error=None,
+            zero_count_matches=False,
+            coherence_axis_is_minimal=False,
+            s_tolerance=tolerance,
+            independent_oracle_available=False,
+        )
 
-        mp.mp.dps = 25
+    with mp.workdps(25):
+        max_s_err = 0.0
+        counts_ok = True
+        for t in heights:
+            true_s = float(mp.arg(mp.zeta(mp.mpf("0.5") + 1j * t)) / mp.pi)
+            error = abs(argument_fluctuation(t) - true_s)
+            max_s_err = max(max_s_err, error) if math.isfinite(error) else math.inf
+            n_est = round(zero_count(t))
+            true_count = sum(1 for g in KNOWN_RIEMANN_ZEROS if g < t)
+            counts_ok &= n_est == true_count
 
-        def _true_s(t: float) -> float:
-            return float(mp.arg(mp.zeta(mp.mpf("0.5") + 1j * t)) / mp.pi)
+        axis_minimal = True
+        for t in heights:
+            d_half = coherence_defect(t, 0.5)
+            axis_minimal &= d_half <= coherence_defect(
+                t, 0.6
+            ) and d_half <= coherence_defect(t, 0.7)
 
-    except ImportError:  # pragma: no cover
-
-        def _true_s(t: float) -> float:
-            return argument_fluctuation(t)
-
-    max_s_err = 0.0
-    counts_ok = True
-    for t in heights:
-        max_s_err = max(max_s_err, abs(argument_fluctuation(t) - _true_s(t)))
-        n_est = round(zero_count(t))
-        true_count = sum(1 for g in KNOWN_RIEMANN_ZEROS if g < t)
-        counts_ok &= n_est == true_count
-
-    axis_minimal = True
-    for t in heights:
-        d_half = coherence_defect(t, 0.5)
-        axis_minimal &= d_half <= coherence_defect(
-            t, 0.6
-        ) and d_half <= coherence_defect(t, 0.7)
-
-    return PulseCoherenceCertificate(
-        n_heights=len(heights),
-        max_abs_s_error=float(max_s_err),
-        zero_count_matches=bool(counts_ok),
-        coherence_axis_is_minimal=bool(axis_minimal),
-    )
+        return PulseCoherenceCertificate(
+            n_heights=len(heights),
+            max_abs_s_error=float(max_s_err),
+            zero_count_matches=bool(counts_ok),
+            coherence_axis_is_minimal=bool(axis_minimal),
+            s_tolerance=tolerance,
+            independent_oracle_available=True,
+        )

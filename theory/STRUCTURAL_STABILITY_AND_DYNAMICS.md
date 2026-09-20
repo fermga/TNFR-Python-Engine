@@ -956,6 +956,19 @@ symmetry breaking because opposite signs may cancel.
 | **LIFE** | $z > 1$ AND $z_\chi > 1$ | both signed-imbalance ratios exceed the selected cut |
 | **CRITICAL** | $z > 1$ AND $z_\chi \le 1$ | order imbalance without a chirality-ratio crossing |
 
+The classifier evaluates the ratio in scaled coordinates before dimensional
+variance can underflow. Snapshot and series share that capture path and retain
+coherence-length availability/provenance; unavailable xi is not rewritten to
+zero. Unrepresentable variance or susceptibility rejects explicitly.
+
+A negative control demonstrates the size boundary: on P3 with phases
+`[0, 0.2, 0.6]` and stored pressure `[0, 0.3, 0.6]`, the label is `NON_LIFE`.
+The disjoint union of two identical copies is labelled `LIFE`: the local
+fields and component dynamics are unchanged, but both ratios acquire a
+factor `sqrt(2)`. This is the declared normalization, not autonomous formation.
+No production selector consumes these labels. The
+[phase controls](../tests/physics/test_phase_transition.py) retain this witness.
+
 ### 2.3 Effective time-series exponent fit
 
 `fit_critical_exponent` and `detect_phase_transition` fit the diagnostic model
@@ -969,6 +982,12 @@ largest sampled susceptibility, when that maximum is positive. The fit uses
 only positive samples strictly after $t_c$; it never substitutes earlier
 samples. It returns `exponent`/`measured_exponent` and $R^2$, or `None` when fewer
 than three eligible post-$t_c$ samples exist.
+
+Positivity, rather than a fixed amplitude/time epsilon, determines eligibility.
+Centered shared correlation supplies the fit quality; a tiny imperfect response
+does not become a perfect fit through an absolute residual cutoff. An initially
+above-threshold sample takes precedence over a later recrossing when reporting
+the first observed crossing.
 
 The neutral symbol $p_{\mathrm{fit}}$ avoids assigning competing $\beta$ and
 $\gamma$ names to the same implemented regression. The result is

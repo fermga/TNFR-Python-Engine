@@ -33,7 +33,6 @@ from .learning_metrics import (
 from .observations import (
     StructuralObservation,
     observe_arithmetic_nfr,
-    observe_emergent_element,
     observe_graph_tetrad,
 )
 from .phase_compatibility import (
@@ -92,5 +91,4 @@ __all__ = (
     "StructuralObservation",
     "observe_graph_tetrad",
     "observe_arithmetic_nfr",
-    "observe_emergent_element",
 )

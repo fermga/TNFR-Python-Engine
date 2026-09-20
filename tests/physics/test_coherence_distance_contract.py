@@ -7,6 +7,7 @@ import networkx as nx
 import numpy as np
 import pytest
 
+from tnfr.operators.grammar_telemetry import warn_coherence_length_telemetry
 from tnfr.physics import _coherence_fit as coherence_fit
 from tnfr.physics import canonical
 from tnfr.physics.telemetry import compute_structural_telemetry
@@ -19,6 +20,14 @@ def _clear_field_cache():
     reset_global_cache()
     yield
     reset_global_cache()
+
+
+@pytest.mark.parametrize("mode", ["standard", "high", "research"])
+@pytest.mark.parametrize("size", [999, 1000, 1019])
+def test_source_sample_boundary_is_independent_of_precision_label(mode, size):
+    nodes = tuple(range(size))
+    expected = nodes if size < 1000 else tuple(range(0, size, 20))
+    assert coherence_fit.coherence_sources(nodes, mode) == expected
 
 
 def _exponential_star(
@@ -95,6 +104,49 @@ def test_rescaling_declared_distances_rescales_fit_length_and_invalidates_cache(
     assert first.method == after.method == "autocorrelation_fit"
     assert first.value == pytest.approx(2.0, rel=2e-14)
     assert after.value == pytest.approx(6.0, rel=2e-14)
+
+
+@pytest.mark.parametrize("directed", (False, True))
+def test_length_warning_uses_fit_geometry_and_is_invariant_to_length_units(directed):
+    graph = _exponential_star(leaves=16, directed=directed)
+    safe, before, _ = warn_coherence_length_telemetry(graph)
+    expected_mean = 2.5 if directed else 80.0 / 17.0
+    expected_diameter = 4.0 if directed else 8.0
+    assert safe
+    assert before["method"] == "autocorrelation_fit"
+    assert before["xi_c"] == pytest.approx(2.0)
+    assert before["mean_path_length"] == pytest.approx(expected_mean)
+    assert before["diameter"] == pytest.approx(expected_diameter)
+
+    for _, _, attributes in graph.edges(data=True):
+        attributes["length"] *= 3.0
+    still_safe, after, _ = warn_coherence_length_telemetry(graph)
+    assert still_safe == safe
+    assert after["severity"] == before["severity"]
+    for key in ("xi_c", "mean_path_length", "diameter"):
+        assert after[key] == pytest.approx(3.0 * before[key])
+
+
+@pytest.mark.parametrize("size", [0, 1])
+def test_missing_coherence_length_never_passes_a_warning_cut(size):
+    safe, stats, message = warn_coherence_length_telemetry(nx.empty_graph(size))
+    assert not safe
+    assert math.isnan(stats["xi_c"])
+    assert stats["method"] == "unavailable"
+    assert stats["severity"] == "unavailable"
+    assert "PASS" not in message
+
+
+def test_spectral_fallback_is_not_compared_to_a_physical_path_length():
+    graph = nx.path_graph(3)
+    nx.set_edge_attributes(graph, 10.0, "length")
+    safe, stats, message = warn_coherence_length_telemetry(graph)
+    assert not safe
+    assert math.isfinite(stats["xi_c"])
+    assert stats["method"] == "spectral_gap"
+    assert stats["severity"] == "not_comparable"
+    assert math.isnan(stats["mean_path_length"])
+    assert "dimensionless" in message
 
 
 def test_explicit_metric_makes_fitted_length_independent_of_transport_conductance():

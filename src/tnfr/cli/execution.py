@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import math
 from collections import deque
 from collections.abc import Iterable, Mapping, Sized
 from copy import deepcopy
@@ -24,7 +25,6 @@ from ..alias import get_attr
 from ..config import apply_config
 from ..config.presets import PREFERRED_PRESET_NAMES, get_preset
 from ..constants import METRIC_DEFAULTS, VF_PRIMARY, get_aliases, get_param
-from ..constants.canonical import DELTA_PHI_MAX
 from ..dynamics import default_glyph_selector, parametric_glyph_selector, run
 from ..execution import CANONICAL_PRESET_NAME, play
 from ..flatten import parse_program_tokens
@@ -46,6 +46,11 @@ from ..metrics import (
 )
 from ..metrics.core import _metrics_step
 from ..ontosim import prepare_network
+from ..operators._phase_gate import (
+    U3PhaseGateError,
+    resolve_u3_phase_limits,
+    select_u3_phase_neighbors,
+)
 from ..sdk._topology import nonnegative_integer
 from ..sense import register_sigma_callback
 from ..trace import register_trace
@@ -470,7 +475,7 @@ def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
             next_cfg["window"] = int(stop_window)
         if stop_fraction is not None:
             next_cfg["fraction"] = float(stop_fraction)
-        next_cfg.setdefault("enabled", True)
+        next_cfg["enabled"] = True
         G.graph["STOP_EARLY"] = next_cfg
 
 
@@ -832,9 +837,23 @@ def cmd_math_run(args: argparse.Namespace) -> int:
 def cmd_epi_validate(args: argparse.Namespace) -> int:
     """Execute ``tnfr epi.validate`` returning the exit status.
 
-    This command validates EPI structural integrity, coherence preservation,
-    and operator closure according to TNFR canonical invariants.
+    This command checks the selected stored-state diagnostics. Its all-edge
+    U3 read-out uses the configured hard graph gate without numerical slack;
+    it does not certify a word or a future operator's complete admission.
     """
+
+    raw_tolerance = getattr(args, "tolerance", 1e-6)
+    try:
+        if isinstance(raw_tolerance, (bool, np.bool_)):
+            raise ValueError("boolean tolerance")
+        tolerance = float(raw_tolerance)
+        if not math.isfinite(tolerance) or tolerance < 0.0:
+            raise ValueError("nonfinite or negative tolerance")
+    except (TypeError, ValueError, OverflowError):
+        logger.error(
+            "[EPI.VALIDATE] tolerance must be finite, nonnegative and nonboolean"
+        )
+        return 1
 
     code, graph = _run_cli_program(args)
     if code != 0:
@@ -845,7 +864,6 @@ def cmd_epi_validate(args: argparse.Namespace) -> int:
         return 1
 
     # Validation checks
-    tolerance = getattr(args, "tolerance", 1e-6)
     check_coherence = getattr(args, "check_coherence", True)
     check_frequency = getattr(args, "check_frequency", True)
     check_phase = getattr(args, "check_phase", True)
@@ -914,15 +932,39 @@ def cmd_epi_validate(args: argparse.Namespace) -> int:
     # Check phase synchrony in couplings
     if check_phase:
         edges = list(_iter_graph_edges(graph))
-        if edges:
-            phase_gate = float(graph.graph.get("DELTA_PHI_MAX", DELTA_PHI_MAX))
+        try:
+            phase_gate, _ = resolve_u3_phase_limits(graph.graph, operator_code="RA")
+        except U3PhaseGateError as exc:
+            validation_passed = False
+            validation_summary.append(f"  [FAIL] U3 configuration: {exc}")
+        else:
             phase_violations = []
+            invalid_phase_count = 0
+
+            def raw_phase(node):
+                data = graph.nodes[node]
+                return next(
+                    (data[key] for key in THETA_ALIAS_KEYS if key in data), None
+                )
+
             for u, v in edges:
-                theta_u = float(get_attr(graph.nodes[u], THETA_ALIAS_KEYS, 0.0))
-                theta_v = float(get_attr(graph.nodes[v], THETA_ALIAS_KEYS, 0.0))
-                phase_diff = abs(angle_diff(theta_u, theta_v))
-                if phase_diff > phase_gate + tolerance:
-                    phase_violations.append((u, v, phase_diff))
+                try:
+                    theta_u, compatible, _ = select_u3_phase_neighbors(
+                        raw_phase(u),
+                        (v,),
+                        phase_getter=raw_phase,
+                        phase_limit=phase_gate,
+                        require_compatible=False,
+                    )
+                except U3PhaseGateError as exc:
+                    invalid_phase_count += 1
+                    validation_passed = False
+                    if invalid_phase_count <= 5:
+                        validation_summary.append(f"  [FAIL] Edge ({u},{v}): {exc}")
+                    continue
+                if not compatible:
+                    theta_v = float(raw_phase(v))
+                    phase_violations.append((u, v, abs(angle_diff(theta_u, theta_v))))
 
             if phase_violations:
                 validation_passed = False
@@ -935,13 +977,13 @@ def cmd_epi_validate(args: argparse.Namespace) -> int:
                     validation_summary.append(
                         f"  ... and {len(phase_violations) - 5} more edges"
                     )
-            else:
+            elif edges and not invalid_phase_count:
                 validation_summary.append(
                     f"  [PASS] U3 phase gate satisfied across {len(edges)} edges "
                     f"(Δφ_max={phase_gate:.6f})"
                 )
-        else:
-            validation_summary.append("  [SKIP] No edges to validate")
+            elif not edges:
+                validation_summary.append("  [SKIP] No edges to validate")
 
     # Log validation results
     logger.info("[EPI.VALIDATE] Validation Summary:")

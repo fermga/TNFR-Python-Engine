@@ -802,82 +802,24 @@ class SelfOrganization(Operator):
         )
         if not active:
             return
-        dt = finite_real(
-            kw.get("dt", 1.0),
-            operator=_OPERATOR,
-            label="dt",
-            lower=math.nextafter(0.0, math.inf),
-        )
-        tolerance = finite_real(
-            G.graph.get("NODAL_EQUATION_TOLERANCE", 1e-3),
-            operator=_OPERATOR,
-            label="NODAL_EQUATION_TOLERANCE",
-            lower=0.0,
-        )
-        clip_aware = strict_bool(
-            G.graph.get("NODAL_EQUATION_CLIP_AWARE", True),
-            operator=_OPERATOR,
-            label="NODAL_EQUATION_CLIP_AWARE",
-        )
-        strict = strict_bool(
-            G.graph.get("NODAL_EQUATION_STRICT", False),
-            operator=_OPERATOR,
-            label="NODAL_EQUATION_STRICT",
-        )
-        measured = finite_real(
-            (epi_after - epi_before) / dt,
-            operator=_OPERATOR,
-            label="measured nodal derivative proposal",
-        )
-        expected = _checked_product(vf, dnfr, "expected nodal derivative proposal")
-        if clip_aware:
-            epi_min, epi_max = _configured_epi_bounds(G.graph)
-            theoretical = _checked_sum(
-                epi_before,
-                _checked_product(expected, dt, "nodal EPI increment proposal"),
-                "theoretical EPI proposal",
-            )
-            mode = str(G.graph.get("CLIP_MODE", "hard")).lower()
-            if mode not in ("hard", "soft"):
-                mode = "hard"
-            from ..dynamics.structural_clip import structural_clip
+        from ..errors import TNFRValueError
+        from .nodal_equation import _validate_held_nodal_step
 
-            expected_epi = finite_real(
-                structural_clip(theoretical, lo=epi_min, hi=epi_max, mode=mode),
-                operator=_OPERATOR,
-                label="bounded nodal EPI proposal",
+        try:
+            _validate_held_nodal_step(
+                G.graph,
+                epi_before=epi_before,
+                epi_after=epi_after,
+                dt=kw.get("dt", 1.0),
+                vf=vf,
+                dnfr=dnfr,
+                operator_name=self.name,
+                strict=G.graph.get("NODAL_EQUATION_STRICT", False),
             )
-            error = finite_real(
-                abs(epi_after - expected_epi),
-                operator=_OPERATOR,
-                label="nodal equation EPI error",
-                lower=0.0,
-            )
-        else:
-            error = finite_real(
-                abs(measured - expected),
-                operator=_OPERATOR,
-                label="nodal equation derivative error",
-                lower=0.0,
-            )
-        if strict and error > tolerance:
-            from .nodal_equation import NodalEquationViolation
-
-            raise NodalEquationViolation(
-                operator=self.name,
-                measured_depi_dt=measured,
-                expected_depi_dt=expected,
-                tolerance=tolerance,
-                details={
-                    "epi_before": epi_before,
-                    "epi_after": epi_after,
-                    "dt": dt,
-                    "vf": vf,
-                    "dnfr": dnfr,
-                    "error": error,
-                    "clip_aware": clip_aware,
-                },
-            )
+        except TNFRValueError as exc:
+            # Preserve the public operator's preflight error type while sharing
+            # all arithmetic, defaults and clipping semantics with the observer.
+            reject_operator_argument(_OPERATOR, str(exc))
 
     def _commit_primary_channels(
         self, G: TNFRGraph, node: Any, proposal: _ExecutionProposal
