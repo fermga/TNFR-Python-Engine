@@ -12,11 +12,8 @@ from tnfr.dynamics.propagation import propagate_dissonance
 from tnfr.mathematics import number_theory
 from tnfr.mathematics.number_theory import ArithmeticTNFRNetwork
 from tnfr.multiscale.hierarchical import HierarchicalTNFRNetwork, ScaleDefinition
+from tnfr.operators._phase_gate import U3PhaseGateError, resolve_u3_phase_neighbors
 from tnfr.physics.integrity import _postcond_transition
-from tnfr.riemann.delta_phi_max_type_signature import (
-    _u3_scalar_verdict,
-    _wrapped_abs_diff,
-)
 from tnfr.validation.invariants import Invariant5_ExplicitPhaseChecks
 
 
@@ -102,12 +99,17 @@ def test_phase_invariant_detects_antiphase_multiturn_representative() -> None:
     assert edge_violations[0].actual_value == pytest.approx(math.pi)
 
 
-def test_type_signature_u3_rejects_multiturn_antiphase() -> None:
+def test_shared_u3_gate_rejects_multiturn_antiphase() -> None:
     theta_i = 4.0 * math.pi
     theta_j = math.pi
-
-    assert _wrapped_abs_diff(theta_i, theta_j) == pytest.approx(math.pi)
-    assert not _u3_scalar_verdict(theta_i, theta_j, math.pi / 2.0)
+    with pytest.raises(U3PhaseGateError, match="no compatible neighbor"):
+        resolve_u3_phase_neighbors(
+            {"DELTA_PHI_MAX": math.pi / 2.0},
+            theta_i,
+            (1,),
+            phase_getter=lambda node: theta_j,
+            operator_code="UM",
+        )
 
 
 def test_arithmetic_network_u3_rejects_multiturn_antiphase() -> None:

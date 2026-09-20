@@ -1,0 +1,674 @@
+{
+  "date": "2026-09-20",
+  "scope": "Authorized foundation reassessment. Deletions remove unsupported bridges, false validation, circular probes and duplicate historical copies; retained conditional mathematics is not promoted to universal physical law.",
+  "recovery": "Read a recorded path using git show <recovery_commit>:<path>; hashes describe Git-normalized bytes.",
+  "api_scope": "README.md#intentional-api-removals",
+  "files": [
+    {
+      "path": "benchmarks/conservation_law_validation.py",
+      "group": "false_validation",
+      "reason": "Duplicate handwritten phase/pressure smoothing never integrates EPI; shared production trajectory diagnostics remain.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "83b3f4becef1841f5b31e574dc98ca932b1c84fa",
+      "git_bytes": 8956,
+      "git_sha256": "c9e0aba541c6b40baf5cf32aee425b2b512e9e47688ce398e4c2a69b92fae319"
+    },
+    {
+      "path": "benchmarks/emergent_atom_dynamics.py",
+      "group": "imposed_physical_mapping",
+      "reason": "Supplied chemistry, oscillator or particle targets were not derived nodal dynamics; redundant/unconsumed physical comparison retired.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "008f8cd74062f4cf977145df17521e0539aa5a4d",
+      "git_bytes": 9001,
+      "git_sha256": "15258ff6fd101138ee346d9fd40c3b1b4a373597f7c8563cf780dd3b6fd4d920"
+    },
+    {
+      "path": "benchmarks/emergent_atomic_shells.py",
+      "group": "imposed_physical_mapping",
+      "reason": "Supplied chemistry, oscillator or particle targets were not derived nodal dynamics; redundant/unconsumed physical comparison retired.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "cd7c899aff24026c9b2c05e2d00d709054c776ef",
+      "git_bytes": 7775,
+      "git_sha256": "d1f7cd34f94d9180036e936350a1ccdc60a419736e44102e7d69b3ee4aac1854"
+    },
+    {
+      "path": "benchmarks/emergent_generation_phase_circle.py",
+      "group": "imposed_physical_mapping",
+      "reason": "Supplied chemistry, oscillator or particle targets were not derived nodal dynamics; redundant/unconsumed physical comparison retired.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "66dff3b27d047fb2eba49a9978d03242543d9b86",
+      "git_bytes": 8445,
+      "git_sha256": "f554fbbf874466a02c8f885d76c00df5c2df90e5a0a41c27bb060927f61bd2cd"
+    },
+    {
+      "path": "benchmarks/emergent_internal_quantum_numbers.py",
+      "group": "imposed_physical_mapping",
+      "reason": "Supplied chemistry, oscillator or particle targets were not derived nodal dynamics; redundant/unconsumed physical comparison retired.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "84677fac40d08db58f6719f1fc857bf9c2da599e",
+      "git_bytes": 7338,
+      "git_sha256": "e074850aa90a9cc79473610137fbd764539f284d470358e04ad1be7f751817a6"
+    },
+    {
+      "path": "benchmarks/emergent_mass_charge_spectrum.py",
+      "group": "imposed_physical_mapping",
+      "reason": "Supplied chemistry, oscillator or particle targets were not derived nodal dynamics; redundant/unconsumed physical comparison retired.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "05e2d3e13bc4421ca05a78edd26300f15bb790dc",
+      "git_bytes": 8889,
+      "git_sha256": "78a2ced6f0b096d35bfe4dab2a3fe7dbbc054966103d6adac96c590c84ef1326"
+    },
+    {
+      "path": "benchmarks/emergent_screening.py",
+      "group": "imposed_physical_mapping",
+      "reason": "Supplied chemistry, oscillator or particle targets were not derived nodal dynamics; redundant/unconsumed physical comparison retired.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "d48d966cafa0c7203a99acfe8f9879a004e85204",
+      "git_bytes": 8566,
+      "git_sha256": "262762193d23a9b2429b06fa09d4141f6fa9c5c16652e721f8992a47f88369e0"
+    },
+    {
+      "path": "benchmarks/emergent_shell_cardinals.py",
+      "group": "imposed_physical_mapping",
+      "reason": "Supplied chemistry, oscillator or particle targets were not derived nodal dynamics; redundant/unconsumed physical comparison retired.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "b5be6f893996b9feeb220739e1f530a0a759526d",
+      "git_bytes": 6514,
+      "git_sha256": "eebe27ab583281fa0ab6bb6e222332eaddaaeb7aab00295fc4e0211edfc09ef0"
+    },
+    {
+      "path": "benchmarks/emergent_shell_ordering.py",
+      "group": "imposed_physical_mapping",
+      "reason": "Supplied chemistry, oscillator or particle targets were not derived nodal dynamics; redundant/unconsumed physical comparison retired.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "857b23441de687bf278d6dd119d4a2e59fd9e1fa",
+      "git_bytes": 16618,
+      "git_sha256": "196b3f223a60290250a565e0b27b841f1479a4f1badacbcf55596a3b9ce77ec7"
+    },
+    {
+      "path": "benchmarks/navier_stokes_recipe_bridge.py",
+      "group": "external_programme",
+      "reason": "Externally supplied PDE, physical-gap matrix, arithmetic labels or independent complex; no necessary engine dependency.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "4e06c80b8ca577d515dc6e615bfdd2bd9a81215d",
+      "git_bytes": 23356,
+      "git_sha256": "7001404bb6dc24ca75ce7a226fc4fca4cc760ed548f4ba105d360140c0a5858d"
+    },
+    {
+      "path": "benchmarks/ns_moment_hierarchy_cascade.py",
+      "group": "external_programme",
+      "reason": "Externally supplied PDE, physical-gap matrix, arithmetic labels or independent complex; no necessary engine dependency.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "2bf2e02cdde4bcb8ae2ff445eff99b9147305a0d",
+      "git_bytes": 5907,
+      "git_sha256": "8660b32c56cb4c7c22fab866738db38c5c9a0c57f03a843a305d839e797721d5"
+    },
+    {
+      "path": "examples/05_type_hygiene/78_nuf_type_signature_demo.py",
+      "group": "circular_signature_probe",
+      "reason": "Selected fixture, entropy cutoff or surrogate permutation does not establish a state type, engine closure or covariance; use real contract controls.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "882b83c769819d9b15fcd759cb3e65ef28fa3703",
+      "git_bytes": 2082,
+      "git_sha256": "7cc4106da7d73526910fcbfe5c78d94b1b53cc6193eccdcd1c1ef1414a1e7f88"
+    },
+    {
+      "path": "examples/05_type_hygiene/80_phi_type_signature_demo.py",
+      "group": "circular_signature_probe",
+      "reason": "Selected fixture, entropy cutoff or surrogate permutation does not establish a state type, engine closure or covariance; use real contract controls.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "96c0591928ed85d447245777f06eb9afcaa01955",
+      "git_bytes": 2149,
+      "git_sha256": "9c5f701d34a752002f3f15e6f8c28d9be5ccffacf258b2d72de3e76d301e0d15"
+    },
+    {
+      "path": "examples/05_type_hygiene/81_dnfr_type_signature_demo.py",
+      "group": "circular_signature_probe",
+      "reason": "Selected fixture, entropy cutoff or surrogate permutation does not establish a state type, engine closure or covariance; use real contract controls.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "4aa769ebe3bf215c9ec66f63265c9d1a68cd8b82",
+      "git_bytes": 2184,
+      "git_sha256": "df5163687f1bbb1d588c3932f65a323c4b0e2f747af8e66385fe528128e223b8"
+    },
+    {
+      "path": "examples/05_type_hygiene/83_delta_phi_max_type_signature_demo.py",
+      "group": "circular_signature_probe",
+      "reason": "Selected fixture, entropy cutoff or surrogate permutation does not establish a state type, engine closure or covariance; use real contract controls.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "0f112d87d64c31654c442352086f89a2974e7b86",
+      "git_bytes": 2699,
+      "git_sha256": "b8552259137d6d8df0be22abdbc57ae397505add57b69cf5e304a465be6dc76a"
+    },
+    {
+      "path": "examples/05_type_hygiene/84_coupling_weights_type_signature_demo.py",
+      "group": "circular_signature_probe",
+      "reason": "Selected fixture, entropy cutoff or surrogate permutation does not establish a state type, engine closure or covariance; use real contract controls.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "0ec06ec74d144a45155d76430d744b022d4c1a6e",
+      "git_bytes": 2402,
+      "git_sha256": "2fe09510ee70a612f45b92af7244aba8d429b40802160e02d697c1e7bb2de855"
+    },
+    {
+      "path": "examples/05_type_hygiene/85_tetrad_closure_signature_demo.py",
+      "group": "circular_signature_probe",
+      "reason": "Selected fixture, entropy cutoff or surrogate permutation does not establish a state type, engine closure or covariance; use real contract controls.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "477e5a3c1f1af1187675aee208d3dc3120c68613",
+      "git_bytes": 3047,
+      "git_sha256": "95fa056afd9167f20eb67623804ae0d9ed0d06781d36401a58387526886f3fb9"
+    },
+    {
+      "path": "examples/05_type_hygiene/86_currents_closure_signature_demo.py",
+      "group": "circular_signature_probe",
+      "reason": "Selected fixture, entropy cutoff or surrogate permutation does not establish a state type, engine closure or covariance; use real contract controls.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "86b6da74fea50f42eb03db12bb784180f4b74699",
+      "git_bytes": 3046,
+      "git_sha256": "19f41dcf71fdfde355ed5aa45cdafae7389527dd766862aca98db9c4c23d89ce"
+    },
+    {
+      "path": "examples/05_type_hygiene/87_aggregates_closure_signature_demo.py",
+      "group": "circular_signature_probe",
+      "reason": "Selected fixture, entropy cutoff or surrogate permutation does not establish a state type, engine closure or covariance; use real contract controls.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "d30dfdd6f1cac5a5e933677fc51e90a1134225eb",
+      "git_bytes": 3305,
+      "git_sha256": "008db8011f2b6a96380a06fdef3c8f9c5839223e43a5fb4922d4fd1558f57928"
+    },
+    {
+      "path": "examples/05_type_hygiene/88_urules_consistency_signature_demo.py",
+      "group": "circular_signature_probe",
+      "reason": "Selected fixture, entropy cutoff or surrogate permutation does not establish a state type, engine closure or covariance; use real contract controls.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "9098bf9a02616bfe6728a13022760d77228a789a",
+      "git_bytes": 1998,
+      "git_sha256": "d809fc229e7d1c1c38de3b6cc6f64bbc64fce2f57de59a08c56aacda43ec3136"
+    },
+    {
+      "path": "examples/06_navier_stokes/158_navier_stokes_two_face_refounded.py",
+      "group": "external_programme",
+      "reason": "Externally supplied PDE, physical-gap matrix, arithmetic labels or independent complex; no necessary engine dependency.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "47b5fb0547fcebb5ca7e3c0b6149dfc65aea8139",
+      "git_bytes": 4129,
+      "git_sha256": "636cbd3dae9c621213300efe90771db73f28d8bb37f7344e2eeef7298cff8c23"
+    },
+    {
+      "path": "examples/07_number_theory/emergent_chemistry_particles_demo.py",
+      "group": "imposed_physical_mapping",
+      "reason": "Supplied chemistry, oscillator or particle targets were not derived nodal dynamics; redundant/unconsumed physical comparison retired.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "7c0085e75adbbf6052f939e8b80af684c9421515",
+      "git_bytes": 6177,
+      "git_sha256": "856a9117332cc500b6e338d3cf59802a7171664d1de474097ec34b64b995d0ea"
+    },
+    {
+      "path": "examples/09_millennium/109_p_vs_np_coherence_synthesis.py",
+      "group": "external_programme",
+      "reason": "Externally supplied PDE, physical-gap matrix, arithmetic labels or independent complex; no necessary engine dependency.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "68ced04d5bae313a57149afb8de151e9724427bc",
+      "git_bytes": 6120,
+      "git_sha256": "89b78af887202591bad4670b2440fda776cb55d1e73f7db68ac90a6f4e86618c"
+    },
+    {
+      "path": "examples/09_millennium/110_bsd_rank_structural_pressure.py",
+      "group": "external_programme",
+      "reason": "Externally supplied PDE, physical-gap matrix, arithmetic labels or independent complex; no necessary engine dependency.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "84a7abdb6ab3672d2ad09ec2568765484c7a84a4",
+      "git_bytes": 8753,
+      "git_sha256": "963c6ed08c6a702f7ca93aa64ef3605fb3a4ca4f7e5d68a5718662114f9874f5"
+    },
+    {
+      "path": "examples/09_millennium/111_hodge_discrete_and_honest_gap.py",
+      "group": "external_programme",
+      "reason": "Externally supplied PDE, physical-gap matrix, arithmetic labels or independent complex; no necessary engine dependency.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "3cd915502bb2b361d50854bc1e98829c91601f1b",
+      "git_bytes": 8158,
+      "git_sha256": "ce75cbf78d9290614481602a93abbde6df65d993522c05350a2ae5648dc69c9a"
+    },
+    {
+      "path": "scripts/validate_conservation_law.py",
+      "group": "false_validation",
+      "reason": "Announced a verified theorem despite failure of its own conservation criterion on a supplied manual trajectory.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "c692f7537da2c90830f90bad16ef79211c1517b6",
+      "git_bytes": 3281,
+      "git_sha256": "4ba020eec660118cd938847d7f072fc980bb4c1aa8ef99e7fe7faa2bb635a6fa"
+    },
+    {
+      "path": "src/tnfr/navier_stokes/__init__.py",
+      "group": "external_programme",
+      "reason": "Externally supplied PDE, physical-gap matrix, arithmetic labels or independent complex; no necessary engine dependency.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "bdced557de42ad63da60109914be8664b74e497f",
+      "git_bytes": 1688,
+      "git_sha256": "e57e63bbdf3e13b4836fad327aa8f9076cf8f450b39a0dbb7bf570be918fb812"
+    },
+    {
+      "path": "src/tnfr/navier_stokes/conservative_face.py",
+      "group": "external_programme",
+      "reason": "Externally supplied PDE, physical-gap matrix, arithmetic labels or independent complex; no necessary engine dependency.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "652810849d9effc860b883e4baab76760256ef02",
+      "git_bytes": 15210,
+      "git_sha256": "4935f948fbe58d8a76b36f74042f41af3f6375761af668e585f1c5825d572658"
+    },
+    {
+      "path": "src/tnfr/navier_stokes/operator.py",
+      "group": "external_programme",
+      "reason": "Externally supplied PDE, physical-gap matrix, arithmetic labels or independent complex; no necessary engine dependency.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "e66c8740f45aa64cc642c0520b50c8702143c6f4",
+      "git_bytes": 11149,
+      "git_sha256": "21c47c8afefefb24339148ae711204e6a4d6fe7417bdfb2ae79f3602489bc81a"
+    },
+    {
+      "path": "src/tnfr/physics/emergent_chemistry.py",
+      "group": "imposed_physical_mapping",
+      "reason": "Supplied chemistry, oscillator or particle targets were not derived nodal dynamics; redundant/unconsumed physical comparison retired.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "fe4284b7216daf872df001816b644f44a1d789b9",
+      "git_bytes": 15228,
+      "git_sha256": "8c08adff31589ecf5d61dd29140a5e99c56fefdf097c6f829acffae67b20f938"
+    },
+    {
+      "path": "src/tnfr/physics/quantum_mechanics.py",
+      "group": "imposed_physical_mapping",
+      "reason": "Supplied chemistry, oscillator or particle targets were not derived nodal dynamics; redundant/unconsumed physical comparison retired.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "eb639f0c023f786e5eecfc0c75ae1ca936ee3ea9",
+      "git_bytes": 3191,
+      "git_sha256": "9bafa1b112dc85a210bfc5c3d75ffc8f22a74b1b739bdecca94e540f7d79a179"
+    },
+    {
+      "path": "src/tnfr/riemann/aggregates_closure_signature.py",
+      "group": "circular_signature_probe",
+      "reason": "Selected fixture, entropy cutoff or surrogate permutation does not establish a state type, engine closure or covariance; use real contract controls.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "438127f84ea486df79a93bf8bc86d22a3a1e7308",
+      "git_bytes": 14895,
+      "git_sha256": "2b86123295ff32b243f047b7f1608472b8e23af99294ad53a6b01852492ba14c"
+    },
+    {
+      "path": "src/tnfr/riemann/coupling_weights_type_signature.py",
+      "group": "circular_signature_probe",
+      "reason": "Selected fixture, entropy cutoff or surrogate permutation does not establish a state type, engine closure or covariance; use real contract controls.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "5bd4372224f25df087022e35314327cb2c761e84",
+      "git_bytes": 18208,
+      "git_sha256": "88a451e5c018015c21004cc532f840e02182f800c1b4dadf583368a16a1ec6cf"
+    },
+    {
+      "path": "src/tnfr/riemann/currents_closure_signature.py",
+      "group": "circular_signature_probe",
+      "reason": "Selected fixture, entropy cutoff or surrogate permutation does not establish a state type, engine closure or covariance; use real contract controls.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "7c6a5794800713a8060844f8547960c567e89d4b",
+      "git_bytes": 14018,
+      "git_sha256": "cb3004ec2c536bb6ca6bc8a456972f1d861185ed135f688bd2f89efafb0b53a8"
+    },
+    {
+      "path": "src/tnfr/riemann/delta_phi_max_type_signature.py",
+      "group": "circular_signature_probe",
+      "reason": "Selected fixture, entropy cutoff or surrogate permutation does not establish a state type, engine closure or covariance; use real contract controls.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "1531620749e255b5a4b9a96bd2103b4273440159",
+      "git_bytes": 21196,
+      "git_sha256": "d861946f35847abeb930e8731d3bf0373d4d92fa58366526d6c19a1f33b0d819"
+    },
+    {
+      "path": "src/tnfr/riemann/dnfr_type_signature.py",
+      "group": "circular_signature_probe",
+      "reason": "Selected fixture, entropy cutoff or surrogate permutation does not establish a state type, engine closure or covariance; use real contract controls.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "ebb5dec0883e56892867fc6f103a906cd2b31902",
+      "git_bytes": 19414,
+      "git_sha256": "7343c3d00f5edb3e8f2f9d23b9b184ea6503395d6a3c5154b103fc2d879107a4"
+    },
+    {
+      "path": "src/tnfr/riemann/nuf_type_signature.py",
+      "group": "circular_signature_probe",
+      "reason": "Selected fixture, entropy cutoff or surrogate permutation does not establish a state type, engine closure or covariance; use real contract controls.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "6bbcc6de69e784ceb24cdf5998b785111f305767",
+      "git_bytes": 8860,
+      "git_sha256": "76e7bb2de33a3793a478049239802ce19f8b8d0b0c6db6ea0fe97c2a50f4268c"
+    },
+    {
+      "path": "src/tnfr/riemann/phi_type_signature.py",
+      "group": "circular_signature_probe",
+      "reason": "Selected fixture, entropy cutoff or surrogate permutation does not establish a state type, engine closure or covariance; use real contract controls.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "fbcd99eefa153818941742f913af83c5a060d605",
+      "git_bytes": 18467,
+      "git_sha256": "6cceb47581151556aa95795deae62513593fc2dc836e6629b7cddb49656d94ef"
+    },
+    {
+      "path": "src/tnfr/riemann/tetrad_closure_signature.py",
+      "group": "circular_signature_probe",
+      "reason": "Selected fixture, entropy cutoff or surrogate permutation does not establish a state type, engine closure or covariance; use real contract controls.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "03048368d3cedd08d5238a0e1ccbcacf3792350f",
+      "git_bytes": 17672,
+      "git_sha256": "118c2f48205cc55c201cc82ac973be88c88b482150d51a2cfe61f5fd237a07fa"
+    },
+    {
+      "path": "src/tnfr/riemann/urules_consistency_signature.py",
+      "group": "circular_signature_probe",
+      "reason": "Selected fixture, entropy cutoff or surrogate permutation does not establish a state type, engine closure or covariance; use real contract controls.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "997f2b1b345f54c2bebd31405c93e2b0f3da8db1",
+      "git_bytes": 13691,
+      "git_sha256": "fabd1c126eeda1c88911a4d5ae7a1dcacd5084b37556064d9010763f9aa4123c"
+    },
+    {
+      "path": "src/tnfr/yang_mills/__init__.py",
+      "group": "external_programme",
+      "reason": "Externally supplied PDE, physical-gap matrix, arithmetic labels or independent complex; no necessary engine dependency.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "511e68220b48fb7e4c39437ed5239ed9cfd16cd7",
+      "git_bytes": 2473,
+      "git_sha256": "19694332e6fc2141236daa058b399d871163c4c5687919d023eca922ea889716"
+    },
+    {
+      "path": "src/tnfr/yang_mills/closure.py",
+      "group": "external_programme",
+      "reason": "Externally supplied PDE, physical-gap matrix, arithmetic labels or independent complex; no necessary engine dependency.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "545e1cb2dbd84780b586d85532eefdb870903e47",
+      "git_bytes": 9691,
+      "git_sha256": "752957df700450a36288010535e3ffa433cea763f358a485f7d3d640a62dbd47"
+    },
+    {
+      "path": "src/tnfr/yang_mills/derivability.py",
+      "group": "external_programme",
+      "reason": "Externally supplied PDE, physical-gap matrix, arithmetic labels or independent complex; no necessary engine dependency.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "de90c8145a4d599777a93ce083c5a003294e2956",
+      "git_bytes": 12042,
+      "git_sha256": "768fe1d7b8b28c9a27e0f4b504cea7bafda343e8aedc14253f6c518378769d0d"
+    },
+    {
+      "path": "src/tnfr/yang_mills/scaling.py",
+      "group": "external_programme",
+      "reason": "Externally supplied PDE, physical-gap matrix, arithmetic labels or independent complex; no necessary engine dependency.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "541da40b00808df055a1a21f6b9876af8c76482c",
+      "git_bytes": 14810,
+      "git_sha256": "b5064cd1b2a17b04a17b2ae34a600bb0b9dfae215a764d3713e20d67335d1164"
+    },
+    {
+      "path": "src/tnfr/yang_mills/structural_gap.py",
+      "group": "external_programme",
+      "reason": "Externally supplied PDE, physical-gap matrix, arithmetic labels or independent complex; no necessary engine dependency.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "66ce170210a5cec66a05399c7d145184ef81205b",
+      "git_bytes": 25193,
+      "git_sha256": "b4fd95b99c35b915ec8e801d95856771aa1b5e1967c85ac5cb1d3f8c739758a0"
+    },
+    {
+      "path": "src/tnfr/yang_mills/u6_sweep.py",
+      "group": "external_programme",
+      "reason": "Externally supplied PDE, physical-gap matrix, arithmetic labels or independent complex; no necessary engine dependency.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "ce59f23e20fc82972076462edf5fd81e69307000",
+      "git_bytes": 22917,
+      "git_sha256": "8b83a50b8a76847da59b34859adf248e07274de24c790a3baca6edddb969e1c5"
+    },
+    {
+      "path": "tests/mathematics/test_navier_stokes_refounded.py",
+      "group": "external_programme",
+      "reason": "Externally supplied PDE, physical-gap matrix, arithmetic labels or independent complex; no necessary engine dependency.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "7afe95d7fa9120a2aca19935c3fcaf1701cd9c5b",
+      "git_bytes": 4862,
+      "git_sha256": "2b92e1c605364f4c9d81c69b3c0351f4bad4dc3ead6a26fe947c064a8a4faa70"
+    },
+    {
+      "path": "tests/physics/test_emergent_chemistry.py",
+      "group": "imposed_physical_mapping",
+      "reason": "Supplied chemistry, oscillator or particle targets were not derived nodal dynamics; redundant/unconsumed physical comparison retired.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "f1a9bf1ebfbbe01e7ab4edd805ef64ab56eaadd6",
+      "git_bytes": 8325,
+      "git_sha256": "cca34465a0e497d36cafae518bc327d6d40a41bfc8b91ad3464c678ce96228ef"
+    },
+    {
+      "path": "tests/physics/test_yang_mills_closure.py",
+      "group": "external_programme",
+      "reason": "Externally supplied PDE, physical-gap matrix, arithmetic labels or independent complex; no necessary engine dependency.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "1c01aa08898ea844940d02b91aa2a1027be94125",
+      "git_bytes": 3152,
+      "git_sha256": "c0bd38b4c59795bb4aea1f36a5e9b578c2979f1966e4af5bb750c284f92326da"
+    },
+    {
+      "path": "tests/physics/test_yang_mills_derivability.py",
+      "group": "external_programme",
+      "reason": "Externally supplied PDE, physical-gap matrix, arithmetic labels or independent complex; no necessary engine dependency.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "811590404a23f0184e460f102237f9a3a49bc093",
+      "git_bytes": 2871,
+      "git_sha256": "59ca5ef06f2edefd6dfe6c946ad824fc19474b540abfd6c3a2e87efa7c0afa45"
+    },
+    {
+      "path": "tests/physics/test_yang_mills_scaling.py",
+      "group": "external_programme",
+      "reason": "Externally supplied PDE, physical-gap matrix, arithmetic labels or independent complex; no necessary engine dependency.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "ec2000b1bc505c46df76cf5a869850996b29180f",
+      "git_bytes": 5418,
+      "git_sha256": "27418f5153c842e8d614041906ae2d0abe54b63abbc02b0db07568dcc6a48edd"
+    },
+    {
+      "path": "tests/physics/test_yang_mills_structural_gap.py",
+      "group": "external_programme",
+      "reason": "Externally supplied PDE, physical-gap matrix, arithmetic labels or independent complex; no necessary engine dependency.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "c632aa48e3fe2ea50afd3f1c0b0e95357af1768f",
+      "git_bytes": 11808,
+      "git_sha256": "36293d48a7ff6e32b4f4bc7abdd91396f22e073fa5b517aa2d9b5c8358ff370d"
+    },
+    {
+      "path": "tests/physics/test_yang_mills_u6_sweep.py",
+      "group": "external_programme",
+      "reason": "Externally supplied PDE, physical-gap matrix, arithmetic labels or independent complex; no necessary engine dependency.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "a45657b79c749451a7ff5c63d7323c5c7c0a89ec",
+      "git_bytes": 6699,
+      "git_sha256": "562a382ac009b65f87732fee0cd994c294bed5878fc22afd3cb4d2b070e9fc30"
+    },
+    {
+      "path": "theory/TNFR_BSD_RESEARCH_NOTES.md",
+      "group": "external_programme",
+      "reason": "External programme without a derived nodal bridge; consolidated negative boundary retained in RETIRED_PROGRAMME_BOUNDARIES.md.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "36cb7fffcb685f3bd4be63a2a3b6fcc3a2cd7a25",
+      "git_bytes": 7425,
+      "git_sha256": "f10ad30209b97bb232157450e40d602da87f65b1caf872806ff72600e6cc687d"
+    },
+    {
+      "path": "theory/TNFR_HODGE_RESEARCH_NOTES.md",
+      "group": "external_programme",
+      "reason": "External programme without a derived nodal bridge; consolidated negative boundary retained in RETIRED_PROGRAMME_BOUNDARIES.md.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "e961b0c75e68bd0c6e5c3c15ea07dd33c26e490a",
+      "git_bytes": 7105,
+      "git_sha256": "73249f87fea67feeae550087e3af0d83fbab030bd7dcd62b4a3aa8a473965115"
+    },
+    {
+      "path": "theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md",
+      "group": "external_programme",
+      "reason": "External programme without a derived nodal bridge; consolidated negative boundary retained in RETIRED_PROGRAMME_BOUNDARIES.md.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "f9235475068bb1989b7e7ad1ea5940e5d2890d2e",
+      "git_bytes": 10858,
+      "git_sha256": "c8505574320c0544efa94a91473c9938192d707c78dfd22ee701c8feb173ca3d"
+    },
+    {
+      "path": "theory/TNFR_P_VS_NP_RESEARCH_NOTES.md",
+      "group": "external_programme",
+      "reason": "External programme without a derived nodal bridge; consolidated negative boundary retained in RETIRED_PROGRAMME_BOUNDARIES.md.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "c4fe8ccae4bcaeb7b1599181335be97403665f0b",
+      "git_bytes": 8686,
+      "git_sha256": "f28b75aa3962ac1e2e467a30d024924be5b1ce40a2d7fd7ea4d6b617c9f0bd92"
+    },
+    {
+      "path": "theory/TNFR_YANG_MILLS_RESEARCH_NOTES.md",
+      "group": "external_programme",
+      "reason": "External programme without a derived nodal bridge; consolidated negative boundary retained in RETIRED_PROGRAMME_BOUNDARIES.md.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "6469ae31cc25526ca0c122074363c03aa695ed1d",
+      "git_bytes": 21197,
+      "git_sha256": "ccb085e3027cd77ef30e446bcc359c7e449600b580fb0521c06371dc2deb207b"
+    },
+    {
+      "path": "theory/research/archive/AGENT_SYNTHESIS_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt",
+      "group": "duplicate_historical_capture",
+      "reason": "Duplicate obsolete notebook or planning text; preserve recovery from its existing Git revision.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "3829ddd2f07dd74b46fbe52c4b347316bf13cc8e",
+      "git_bytes": 131015,
+      "git_sha256": "4df5dc37151263d91cdb2a827373802f48bf9a53aec5349548bf74e35bb29097"
+    },
+    {
+      "path": "theory/research/archive/APPLIED_ANALYSIS_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt",
+      "group": "duplicate_historical_capture",
+      "reason": "Duplicate obsolete notebook or planning text; preserve recovery from its existing Git revision.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "bae47bc4354fa914e2b4244b5e0aa7d03e294e23",
+      "git_bytes": 8164,
+      "git_sha256": "6430d811f2418f33c5daf198cdcd21f3f88023fb8b6cff3da5d9d730d334fb77"
+    },
+    {
+      "path": "theory/research/archive/CATALOG_PROGRAM_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt",
+      "group": "duplicate_historical_capture",
+      "reason": "Duplicate obsolete notebook or planning text; preserve recovery from its existing Git revision.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "162a1564579e28ffb7e172887835bad2f1611676",
+      "git_bytes": 35360,
+      "git_sha256": "4766d2886df6cd5ef4740bb5a48af20dd9ed99da0f0f982120119038d93136fb"
+    },
+    {
+      "path": "theory/research/archive/CORE_PROGRAM_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt",
+      "group": "duplicate_historical_capture",
+      "reason": "Duplicate obsolete notebook or planning text; preserve recovery from its existing Git revision.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "20fc3be433b6ea6913d0cee481085096b615fea4",
+      "git_bytes": 177456,
+      "git_sha256": "df25bcaf411a6fd36d8b45d273b839030b05490cb0a8436835428b87d4579e54"
+    },
+    {
+      "path": "theory/research/archive/DEVELOPMENT_LOG_PRE_0.0.3.6_2026-09-19.txt",
+      "group": "duplicate_historical_capture",
+      "reason": "Duplicate obsolete notebook or planning text; preserve recovery from its existing Git revision.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "860cc69e228040cfaf26865e8bc81425d7b4e550",
+      "git_bytes": 142615,
+      "git_sha256": "5620d27a7b7c062ef547c3fd31a3736d252b0d03a87daba3562574f821c9fc4a"
+    },
+    {
+      "path": "theory/research/archive/EXECUTION_PLAN_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt",
+      "group": "duplicate_historical_capture",
+      "reason": "Duplicate obsolete notebook or planning text; preserve recovery from its existing Git revision.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "a993dd07ee982c1b498fbfe77e26ec431cd8c599",
+      "git_bytes": 211122,
+      "git_sha256": "689526cd7f7161ca30255f326697e046333ef6a31c46bf646cc73b858c3f0928"
+    },
+    {
+      "path": "theory/research/archive/NUCLEUS_B_PROPOSAL_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt",
+      "group": "duplicate_historical_capture",
+      "reason": "Duplicate obsolete notebook or planning text; preserve recovery from its existing Git revision.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "06c6480b22e15b517d76084dfefabe202c21b22f",
+      "git_bytes": 16471,
+      "git_sha256": "2089674b511a70f4db7a358ca7bdc1e454d9ea3aadf57606041f7cf80ad90b74"
+    },
+    {
+      "path": "theory/research/archive/PORTFOLIO_PRE_COHORT_CONSOLIDATION_2026-09-19.txt",
+      "group": "duplicate_historical_capture",
+      "reason": "Duplicate obsolete notebook or planning text; preserve recovery from its existing Git revision.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "7035609ed2bfb6443ddb7172f88efb1168cc169b",
+      "git_bytes": 77083,
+      "git_sha256": "ea3e09f936ed4a05a0b1ef72a1d5a9beef08fea5103517e73cb53d24f18f3034"
+    },
+    {
+      "path": "theory/research/archive/README_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt",
+      "group": "duplicate_historical_capture",
+      "reason": "Duplicate obsolete notebook or planning text; preserve recovery from its existing Git revision.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "dafaaa868ae7debeeead538dc38f8b3f2ffe273a",
+      "git_bytes": 66673,
+      "git_sha256": "51d48ca862987e7509b286873260467c43eb8ffaf9d9ba4a6df3b8ba70df1de7"
+    },
+    {
+      "path": "theory/research/archive/RIEMANN_NOTEBOOK_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt",
+      "group": "duplicate_historical_capture",
+      "reason": "Duplicate obsolete notebook or planning text; preserve recovery from its existing Git revision.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "564233b0f32d0add5b7e4022104e9cd9c622ebeb",
+      "git_bytes": 827771,
+      "git_sha256": "e2426dc5c78bebdd1dbe4410476c18e9a95548638b28b0298e1cfc10b2548a65"
+    },
+    {
+      "path": "theory/research/archive/ROADMAP_PRE_FIVE_STAGE_2026-09-17.txt",
+      "group": "duplicate_historical_capture",
+      "reason": "Duplicate obsolete notebook or planning text; preserve recovery from its existing Git revision.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "03dea216d8d25a4f5f73a25de747baf144ef9822",
+      "git_bytes": 346377,
+      "git_sha256": "e4daa01310051fef3162dc1b2a16ba22d712dd51f22ecb87c3d49e3e7fb486a9"
+    },
+    {
+      "path": "theory/research/archive/STRATEGY_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt",
+      "group": "duplicate_historical_capture",
+      "reason": "Duplicate obsolete notebook or planning text; preserve recovery from its existing Git revision.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "1fae0e48c215fc43e2c6a04d79b17dae640a939f",
+      "git_bytes": 147937,
+      "git_sha256": "32ebfe4b5af1283cd3bf99de22e3232c64d3f69a4ad1c9e2a9f87ae1560cbc81"
+    },
+    {
+      "path": "benchmarks/xi_c_fast_experiment.py",
+      "group": "false_validation",
+      "reason": "The nominal swept intensity is never used by graph preparation or dynamics. Repeated unseeded preparations are grouped by inert labels; obsolete field APIs fail and exceptions become NaN. Shared field estimators and independent regression controls remain.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "7ef85e52b99430050f692730d8bbba54d1fe821d",
+      "git_bytes": 9543,
+      "git_sha256": "39e82505b69825b603738a8f8e444e4960ed0665370c9a9f8878635fec38bb3d"
+    },
+    {
+      "path": "benchmarks/analyze_tetrad_universality.py",
+      "group": "invalid_aggregation",
+      "reason": "The historical passive aggregator drops missing values independently per field before pairing, manufacturing correlations from different observations. CSV numeric text is not parsed. Shared field readers and observation provenance remain; this unused producer has no unique mathematical kernel.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "b3a673590a332969572d2bc31a241f3a63bb9445",
+      "git_bytes": 7330,
+      "git_sha256": "e801ec3a233e3aa0a71421c3747cc4f113ce8eede907d2c648e133f6b891483f"
+    },
+    {
+      "path": "benchmarks/integrated_force_regime_study.py",
+      "group": "invented_operator_protocol",
+      "reason": "Supplied operator-like formulas replace registered engine events, randomized stored pressure is not refreshed, and mean-standardized field scores cancel identically. Intensity changes the topology seed and short periodic lag scans do not supply predictive temporal evidence. Shared execution and field diagnostics remain.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "dd1fc03f8bb4728587ca27bc2426e119053fbb4c",
+      "git_bytes": 22402,
+      "git_sha256": "f4a8750deac072cdd89e9ea9f125696606075b062428878e0dbf9ae37b83ce35"
+    },
+    {
+      "path": "benchmarks/emergent_nfr_where.py",
+      "group": "unconnected_comparison",
+      "reason": "Independent prepared cosine zero locations and a prime sieve/PNT comparison have no nodal evolution or justified bridge. Shared graph spectra, winding and arithmetic owners retain the useful mathematics.",
+      "recovery_commit": "a8f49c036d00cd81d6a84a3db6049537bdf8852f",
+      "git_blob": "e721e5f1de4e62fd0ac8e4f500ef8b6b817106e7",
+      "git_bytes": 4336,
+      "git_sha256": "6b3bb3c35ffe9a8ea825d67fa31fbc27fdbe2c381403e1c822b4e3b3debc4abc"
+    }
+  ]
+}

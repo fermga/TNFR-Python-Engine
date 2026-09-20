@@ -42,6 +42,15 @@ requiring resonance with a neighbor can fail on an isolated node in a random
 graph. A topology seed makes the random construction repeatable within its
 runtime; it does not make an inadmissible preparation valid.
 
+`evolve_grammar_aware` is a separate sequential direct-glyph policy. It resolves
+the complete candidate list before selection, uses the supplied order to choose
+the first incrementally admitted glyph and abstains when none is admitted.
+Live operator failures propagate; filtering does not guarantee state admission,
+coherence growth or a complete valid word. Earlier successful operations remain
+applied if a later operation fails; this path has no whole-stage rollback.
+New support is visited on the next pass. Missing grammar support raises rather
+than substituting a different word.
+
 `diagnose_network` observes a detached graph copy. It reads the stored pressure;
 it does not refresh pressure, evolve the network, infer a phase law, or supply
 missing temporal observations. A nodal product `nu_f * DeltaNFR` is a model-rate
@@ -54,6 +63,28 @@ product-fit length from the separate spectral fallback. See the
 [tetrad owner](STRUCTURAL_FIELDS_TETRAD.md) for definitions and units. Diagnostic
 flags are observations or policies, not authorization to execute an operator
 or a guarantee of future stability.
+
+Both SDK interfaces share the circular-mean availability policy: a vanishing
+finite resultant has no mean direction, while an invalid authoritative phase
+raises instead of falling through to another alias. The global mean's numerical
+tolerance is distinct from the tetrad curvature's exact represented-resultant
+criterion. Signed pressure means and population spreads reuse stable shared
+reductions, so an overflowing intermediate sum cannot turn a finite constant
+sample into infinite dispersion. Density follows the graph's directedness;
+loops and parallel edges can give density above one.
+
+Fluent `measure()` computes its metrics on one detached graph snapshot. Core
+metric failures propagate; optional unified-field failures retain explicit
+`unified_fields_available` and `unified_fields_error` metadata. Exported scalar
+maps are detached from the result. Comparison tables display unavailable
+measurements as unavailable and include columns present in any supplied row.
+
+`StructuralObservation` detaches payloads on construction and export, validates
+provenance and optional tolerance, and retains Python value types. The graph
+adapters preserve opaque node-label identity while copying field containers.
+Nested payloads are not recursively frozen and the envelope is not itself a
+JSON encoder. `StudyResult` instead enforces its string-key JSON schema and
+rejects invalid numerical values before constructing a retained report.
 
 ## Run and export the same study from either interface
 
@@ -115,6 +146,13 @@ JSON to standard output and sends messages to standard error. An output path
 receives the report instead. Retain the declaration together with the report
 when comparing studies.
 
+JSON export rejects nonfinite numerical payloads before replacing the
+destination. Represent unavailable observations with their availability record
+and `null`, not a nonstandard `NaN` or `Infinity` token.
+The generic exporter also rejects recursively colliding encoded object keys
+(for example integer `1` and string `"1"`) before replacing the destination.
+Non-colliding key conversions retain the existing JSON encoder's behavior.
+
 | Report key | Content |
 | --- | --- |
 | `spec` | Validated declaration, including the seed and requested cycles |
@@ -153,6 +191,59 @@ policies from mathematical stability results.
 
 ## Reproducibility and scope
 
+`Network.nodal_scan()` returns supplied prediction/readout records. Their
+`mean_local_coherence` averages admitted local values in [0,1]; it does not
+replace invalid negative values by magnitudes. Total coherence still aggregates
+the supplied pressure/rate channels independently. Logical verdicts accept
+booleans or unavailable `None`, with separate `active_unavailable_count`,
+`equilibrium_unavailable_count` and `bifurcation_unavailable_count` totals.
+Truthy strings/numbers and contradictory prediction aliases reject at report
+consumption. Export keeps the existing string-keyed node mapping, but raises
+when distinct labels such as `1` and `"1"` collide instead of dropping a node.
+These checks do not authenticate a manually constructed report as a live state.
+
+`Network.conservation()` uses strictly increasing retained observation times.
+Its balance and candidate-energy secant use the same represented interval;
+missing intervals remain unavailable. `candidate_energy_nonincreasing` reads
+the admitted secant's sign, which agrees with the captured endpoint ordering;
+`candidate_energy_within_numerical_tolerance` retains the separate numerical
+alert. A small positive energy change is still an increase even when it passes
+that alert. Nonzero unrepresentable temporal rates reject instead of reporting
+perfect balance. Failed combined observations do not append partial evidence;
+returned tracker snapshots and reports are detached from retained data.
+Neither observation establishes general dynamical stability.
+
+`Network.nfr()` is a stored-state observation, not a certificate that an NFR
+has formed. Its radial/annular/multinodal labels classify the unit-source
+potential centrality profile under a configured policy; a uniform profile
+does not establish a literal ring or rotational symmetry. Empty or unsupported
+geometry returns `topology="unavailable"`, `topology_available=False` and an
+explicit `topology_status`. Consumers must handle that availability state.
+An all-zero centrality profile caused by numeric underflow reports
+`centrality_below_represented_range`; it cannot establish annular geometry.
+
+Its `coherence_length` now uses the shared tetrad estimator, with
+`coherence_length_available` and `coherence_length_provenance`, instead of the
+old untagged topology-only spectral proxy. A fitted length has structural
+distance units; the spectral fallback is a separate dimensionless scale.
+Neither is a fractal dimension. Pressure observations remain available even
+when rate/capacity information is missing. Partial or invalid stored rates do
+not become equilibrium evidence; only absent rate telemetry permits the
+explicitly labelled unforced nodal-product prediction. It does not infer Gamma,
+refresh pressure, establish full-state equilibrium or measure persistence.
+
+`depi_dt_status` records rate availability. The nodal-product fallback reuses
+the canonical derivative; if two nonzero factors produce a rounded zero, it
+reports `nodal_product_underflow` rather than certifying observed stationarity.
+This observation rule does not alter runtime product rounding. Tetrad summaries
+retain unavailable fields, and their overall safety advisory requires matching
+nonempty local field support; an empty snapshot cannot pass it.
+
+`Network.phase()` exposes the classifier's actual imbalance ratios, node count,
+and coherence-length availability/provenance. Its historical phase labels are
+configured, size-sensitive diagnostics, not autonomous events or a biological
+claim. See the [phase classification scope](../theory/STRUCTURAL_STABILITY_AND_DYNAMICS.md#22-phase-classification).
+
 | Retained item | What it establishes | What it does not establish |
 | --- | --- | --- |
 | Declaration and seed | Supplied preparation, word and requested cycle count | Autonomous selection of those inputs |
@@ -179,6 +270,42 @@ specialized execution/configuration paths. Their `--help` output owns the
 available flags. They are not aliases for `network`, and their history formats
 are not `StudySpec` declarations. Prefer `network` for the shared SDK/CLI study
 workflow and use a specialized route when its actual configuration is needed.
+
+On `run`, explicit `--stop-early-window` or `--stop-early-fraction` options enable
+the stopping policy. The runtime requires a Boolean `enabled`, a positive
+integer window and a finite real fraction in `[0, 1]`; inactive window/fraction
+fields are not consumed. The policy is fixed for the invocation. Stopping
+requires new observations and a complete consecutive window of valid recorded
+stability fractions. Invalid/missing samples break that window; older retained
+telemetry alone cannot stop a new invocation. The built-in metric producer
+tracks a sample revision, including with bounded histories. Custom growing
+series can signal new samples by increasing their length. An uninstrumented
+fixed-size custom buffer supplies no freshness evidence. Only the required
+tail is inspected, rather than rescanning the full history after each step.
+This remains a configured finite-observation stopping rule, not a proof of
+convergence or full-state equilibrium.
+
+`HISTORY_MAXLEN` bounds each retained metric series, not the number of metric
+names. Resizing a bound preserves the newest samples; disabling it restores
+growing lists. Explicit least-used-key removal remains a separate operation.
+Runtime callbacks and candidate sampling share a zero-based execution ordinal,
+independent of retained metrics and physical time. Both callback boundaries see
+the same index. `current_step_idx` reads that active index during execution and
+the next index between calls. The first tracked invocation starts at zero;
+old metrics do not reconstruct unobserved runtime history. Admission failure
+reserves no index, while an admitted call that later fails consumes its index
+because partial state changes may remain. Same-graph recursive calls reject.
+Standalone graphs without runtime markers retain their documented history-index
+fallbacks; those are not lifetime execution counts. Physical-time observations
+continue to use the separately declared clock.
+
+REMESH cooldown uses the runtime ordinal after an epoch has been established;
+standalone calls keep their stable-sample-count basis. The stored basis prevents
+subtracting those different quantities during migration. The first eligible
+successful operation establishes the new basis, while the physical-time
+cooldown remains independent. Limiting history does not remove metric names or
+prevent bounded REMESH transactions, and detached stage validation cannot append
+advisory events into the live history.
 
 The [example index](../examples/README.md) classifies the other demonstrations.
 The SDK's fluent builders, auxiliary physics adapters and optimizer policies

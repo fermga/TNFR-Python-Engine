@@ -24,10 +24,31 @@ of the whole repository.
 Aggregate extras reference the smaller groups so their dependency bounds have
 one owner; the compatibility alias does not maintain another dependency list.
 
-The default configuration sets `pythonpath = ["src"]`, `testpaths = ["tests"]`
-and `addopts = "-m 'not slow'"`. Pytest imports the working source tree and
-excludes tests marked slow. It does not enable strict markers, benchmark skipping
-or short tracebacks automatically.
+The default `testpaths` in [pyproject.toml](pyproject.toml) selects the routine
+engine gate: nodal execution, operator/grammar contracts, numerical admission,
+public diagnostics, caches, CLI and SDK. It includes the complete operator and
+SDK directories and the listed production-field owners. The broad historical
+research/certificate directories are not part of every routine run.
+`pythonpath = ["src"]` imports the working tree, and `addopts = "-m 'not slow'"`
+excludes marked slow cases. No custom collection plugin or second test registry
+is involved. The test dependency requires pytest 7.4 or newer, supporting the
+[standard testpaths wildcard configuration](https://docs.pytest.org/en/7.4.x/reference/reference.html#confval-testpaths).
+
+Use the explicit root path for the complete retained inventory, or a research
+module/directory when its owner changes:
+
+```sh
+python -m pytest tests --collect-only -q
+python -m pytest tests -q
+python -m pytest tests/physics/test_phase_alignment_metric.py -q
+python -m pytest tests/mathematics -q
+```
+
+Explicit paths take precedence over `testpaths`. Research tests remain
+executable evidence for retained conditional results; they have not been
+declared obsolete merely because they are outside the routine gate. Add a new
+production-field regression to `testpaths` when it belongs in that gate. A
+routine pass is not a claim that every mathematical campaign was replayed.
 
 Local execution is serial by default. To use the main CI scheduling policy,
 run `python -m pytest -n 2 --dist loadfile`; this keeps the same `not slow`
@@ -46,7 +67,7 @@ python -m pytest tests/cli -q
 python -m pytest tests/sdk --collect-only -q
 ```
 
-To include slow tests, use `python -m pytest -o addopts=""` with intended paths.
+To include all retained slow tests, use `python -m pytest tests -o addopts=""`.
 To select only marked slow tests, use `python -m pytest -m slow` with those
 paths. Inspect `python -m pytest --markers` and collection before treating
 a marker-selected run as coverage: a registered marker can select no tests.
@@ -68,6 +89,15 @@ output replacement and logging isolation. Catalog checks do not execute a study.
 [conftest.py](tests/conftest.py) and [utils.py](tests/utils.py) own shared helpers.
 The [core scope map](tests/core_physics/README.md) identifies the engine tests
 that replace retired self-contained illustrations.
+
+Consolidation removes work, not just collected test identifiers. Test each
+invalid boundary at its shared owner, then retain distinct consumer-wiring,
+rollback and representation cases instead of repeating the entire Cartesian
+product at every wrapper. Reuse an expensive producer only when its results
+are read without mutation; keep independent numerical oracles and negative
+controls. Do not turn removed parameter grids into hidden loops or replace
+meaningful assertions with finiteness checks. Operator labels alone do not
+justify energy-sign or conservation assertions with arbitrary tolerances.
 
 The separately packaged arithmetic applications have their own test paths:
 
@@ -94,7 +124,8 @@ a sentinel protocol and synthetic report, without rerunning a scientific produce
 cold import orders for the P2/REMESH example families; those checks still use
 fresh processes and resolve the actual public APIs.
 
-The [Makefile](Makefile) target `make test` uses the configured pytest selection;
+The [Makefile](Makefile) target `make test` uses the routine engine selection;
+`make test-all` includes the retained research suites, still excluding `slow`.
 `make dev-test` adds coverage over `src`, including compatibility shims. Research
 producers run through their explicit targets, such as `make riemann-benchmark`.
 `make validate` checks importability, references, documentation integrity and
@@ -234,8 +265,9 @@ The union/history report tests that reconstruct the retained B54/B55 lineage
 are marked `slow`, including tests whose shared fixtures perform that work.
 During the 2026-09-19 release check, one union-report fixture consumed more
 than 20 minutes of CPU time. This observed cost is not a runtime ceiling.
-Lightweight lineage and output-overwrite rejection tests remain in the default
-suite; the finite-state union oracles run independently of the retained campaign.
+Lightweight lineage and output-overwrite rejection tests remain available when
+their research paths are selected; the finite-state union oracles run
+independently of the retained campaign. C6 is outside the routine engine gate.
 
 Select the expensive report checks explicitly:
 

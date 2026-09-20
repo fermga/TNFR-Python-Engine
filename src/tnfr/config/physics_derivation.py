@@ -1,9 +1,10 @@
 """Canonical operator-role predicates and physics-motivated grammar calibration.
 
-This module derives which operators can validly start or end sequences from
-their declared nodal-channel contracts. Consumers share these predicates rather
-than duplicating operator lists. The numerical recency/debt formulas calibrate
-grammar policies to a scalar relaxation surrogate; they are not universal
+This module collects declared initiation, closure and stabilization roles.
+Consumers share these predicates rather than duplicating operator lists. Role
+membership is a grammar policy, not a derivation of autonomous event selection.
+The numerical recency/debt formulas calibrate grammar policies to a scalar
+relaxation surrogate; they are not universal
 trajectory bounds. See ``theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md``.
 
 Core TNFR Equation
@@ -17,8 +18,9 @@ Where:
 
 Operator Activation Contracts
 ---------------------------
-Active reorganization requires nonzero νf and ΔNFR. Initialization and latent
-form thresholds are additional operator contracts. The nodal derivative is
+The unforced continuous nodal row is nonzero only when νf and ΔNFR are nonzero.
+Initialization and latent form thresholds are additional operator contracts.
+The nodal derivative is
 well-defined at EPI=0 whenever νf and ΔNFR are finite; the generator requirement
 is not a consequence of a singular derivative at zero.
 
@@ -31,6 +33,10 @@ convergence require separate trajectory assumptions.
 """
 
 from __future__ import annotations
+
+import math
+from fractions import Fraction
+from numbers import Real
 
 __all__ = [
     "derive_start_operators_from_physics",
@@ -54,15 +60,47 @@ __all__ = [
 ]
 
 
+def _scalar_relaxation(nu_f: float, dt: float | None) -> Fraction:
+    """Admit the shared nonnegative scalar surrogate, not a graph trajectory.
+
+    The binary64 product is the configured relaxation coefficient. Subsequent
+    rational arithmetic prevents cancellation, reciprocal overflow and integer
+    boundary rounding from changing the specified scalar policy.
+    """
+    if dt is None:
+        from ..constants.canonical import DT_CANONICAL
+
+        dt = DT_CANONICAL
+    values = []
+    for name, value in (("nu_f", nu_f), ("dt", dt)):
+        if isinstance(value, bool) or not isinstance(value, Real):
+            raise ValueError(f"{name} must be a finite positive real number")
+        try:
+            scalar = float(value)
+        except (OverflowError, TypeError, ValueError) as exc:
+            raise ValueError(f"{name} must be a finite positive real number") from exc
+        if not math.isfinite(scalar) or scalar <= 0.0:
+            raise ValueError(f"{name} must be a finite positive real number")
+        values.append(scalar)
+    relax = values[0] * values[1]
+    if not math.isfinite(relax) or not 0.0 < relax <= 1.0:
+        raise ValueError(
+            "The represented nu_f*dt must lie in (0, 1] for the "
+            "nonnegative scalar relaxation surrogate"
+        )
+    return Fraction.from_float(relax)
+
+
 def derive_bifurcation_window_from_physics(
     nu_f: float = 1.0, dt: float | None = None
 ) -> int:
     r"""Return the U4b recency policy calibrated to a scalar decay surrogate.
 
     The calibration uses ``q = 1 - nu_f*dt*rho`` with fixed ``rho = 1`` and
-    selects the first step with ``q**n < 1/(pi+1)``. At ``nu_f=1, dt=0.5``
-    the result is the canonical **3-operation** window, shared by every
-    destabilizer. The public function name and numerical behavior are retained.
+    selects the first step with ``q**n < 1/(pi+1)``, capped at 64 operator
+    positions. At ``nu_f=1, dt=0.5`` the result is the canonical
+    **3-operation** window, shared by every
+    destabilizer. The historical public function name is retained.
 
     On loopless graphs without isolates, ``trace(L_rw)/N = 1`` is the mean
     eigenvalue, not the rate of each pressure perturbation. An Euler diffusion
@@ -70,36 +108,38 @@ def derive_bifurcation_window_from_physics(
     mode needs 231 steps to reach the target at the canonical frequency and
     step. Thus this policy is not a topology-independent modal relaxation bound.
 
-    The ``q <= 0`` one-step return and the 64-step cap are compatibility
-    fallbacks. A negative modal multiplier can oscillate or grow; these
-    branches do not certify Euler stability. See
+    Finite positive inputs must give a represented ``0 < nu_f*dt <= 1``;
+    zero capacity has no finite relaxation time, and negative multipliers
+    belong to a different surrogate. The admitted ``q=0`` case needs one step.
+    Rational comparisons use the represented product and represented band;
+    the 64-position policy cap need not satisfy the decay inequality. None of
+    these scalar calculations certifies graph Euler stability. See
     ``theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md`` for assumptions and witnesses.
 
     Parameters
     ----------
     nu_f : float
-        Structural frequency (reorganisation capacity).  Default ``1.0``.
+        Finite positive structural frequency. Default ``1.0``.
     dt : float, optional
-        Integration step.  Defaults to the canonical ``DT_CANONICAL`` (0.5).
+        Finite positive step. Defaults to ``DT_CANONICAL`` (0.5).
 
     Returns
     -------
     int
         Calibrated U4b recency-window length in operator positions.
+
+    Raises
+    ------
+    ValueError
+        If either input or its represented product is outside the surrogate's
+        domain. Booleans, nonfinite values and underflowed products are rejected.
     """
-    import math
-
-    if dt is None:
-        from ..constants.canonical import DT_CANONICAL
-
-        dt = DT_CANONICAL
-    rho = 1.0  # fixed mean-rate surrogate; not every graph mode's rate
-    q = 1.0 - float(nu_f) * float(dt) * rho  # scalar calibration multiplier
-    if q <= 0.0:
-        return 1  # compatibility floor, not a modal-stability certificate
-    band = 1.0 / (math.pi + 1.0)  # the coherence-band fraction (π only)
+    q = 1 - _scalar_relaxation(nu_f, dt)
+    band = Fraction.from_float(1.0 / (math.pi + 1.0))
     n = 1
-    while q**n >= band and n < 64:
+    remaining = q
+    while remaining >= band and n < 64:
+        remaining *= q
         n += 1
     return n
 
@@ -119,42 +159,42 @@ def derive_u2_debt_capacity_from_physics(
     every graph mode, and does not prove convergence of the nodal integral
     under sustained forcing. Grammar debt counts declared operator obligations;
     a trajectory bound additionally needs feedback, gains, time steps, and a
-    norm. The nonpositive-rate return and all numerical behavior are retained.
+    norm. Inputs share the finite positive domain of the U4b calibration and
+    must give a represented product in ``(0,1]``. The exact reciprocal floor of
+    that binary64 product avoids overflow at subnormal values and incorrect
+    integer-boundary rounding. Invalid inputs do not become zero debt.
     See ``theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md`` for the analytic distinction.
 
     Parameters
     ----------
     nu_f : float
-        Structural frequency (reorganisation capacity).  Default ``1.0``.
+        Finite positive structural frequency. Default ``1.0``.
     dt : float, optional
-        Integration step.  Defaults to the canonical ``DT_CANONICAL`` (0.5).
+        Finite positive step. Defaults to ``DT_CANONICAL`` (0.5).
 
     Returns
     -------
     int
-        Operator-bookkeeping capacity ``floor(1/(nu_f*dt*rho))`` for positive
-        ``nu_f*dt``, otherwise zero; a grammar policy rather than a theorem.
+        Operator-bookkeeping capacity ``floor(1/(nu_f*dt*rho))`` within the
+        admitted scalar domain; a grammar policy rather than a theorem.
+
+    Raises
+    ------
+    ValueError
+        If either input or its represented product is outside the surrogate's
+        domain. Booleans, nonfinite values and underflowed products are rejected.
     """
-    import math
-
-    if dt is None:
-        from ..constants.canonical import DT_CANONICAL
-
-        dt = DT_CANONICAL
-    rho = 1.0  # fixed mean-rate surrogate; not every graph mode's rate
-    relax = float(nu_f) * float(dt) * rho  # = 1 - q (the per-step relaxation)
-    if relax <= 0.0:
-        return 0
-    return int(math.floor(1.0 / relax))
+    relax = _scalar_relaxation(nu_f, dt)
+    return relax.denominator // relax.numerator
 
 
 def can_generate_epi_from_null(operator: str) -> bool:
-    """Check if operator can generate EPI from null/zero state.
+    """Check the registered standalone EPI-generator role.
 
-    This predicate concerns the EPI coordinate: an operator generates from
-    null when it can source positive form at ``EPI = 0``. It does not claim
-    that the same operator creates capacity or pressure. In particular, AL
-    requires pre-existing basal νf and leaves νf and ΔNFR unchanged.
+    AL supplies its own form increment at ``EPI = 0``. This role does not
+    exhaust maps that can move a zero local coordinate: Reception can import
+    neighboring form. It does not claim that a generator creates capacity or
+    pressure. AL requires basal νf and leaves νf and ΔNFR unchanged.
 
     Parameters
     ----------
@@ -164,7 +204,7 @@ def can_generate_epi_from_null(operator: str) -> bool:
     Returns
     -------
     bool
-        True if operator can create EPI from null state
+        True if the operator has the standalone EPI-generator role
 
     Notes
     -----
@@ -175,46 +215,24 @@ def can_generate_epi_from_null(operator: str) -> bool:
     - Does not directly write νf, phase, or ΔNFR
     - Active capacity/pressure and the nodal update remain separate conditions
 
-    **RECEPTION (EN)**: ✗ Cannot generate from null
-    - Requires external coherence to capture
-    - Needs existing EPI > 0 to anchor incoming energy
-    - Cannot create structure from absolute void
+    **RECEPTION (EN)**: ✗ Not assigned the generator role
+    - Blends existing neighboring EPI; it has no independent source term
+    - A zero local coordinate can nevertheless receive nonzero neighboring form
+    - U1 membership does not classify every possible local state change
     """
     # Physical generators: create EPI via field emission
     return operator == "emission"
 
 
 def can_activate_latent_epi(operator: str) -> bool:
-    """Check if operator can activate pre-existing latent EPI.
+    """Check the registered U1 activation/handoff role.
 
-    Some operators can't create EPI from absolute zero but can activate
-    structure that already exists in dormant/latent form (νf ≈ 0, but EPI > 0).
-
-    Parameters
-    ----------
-    operator : str
-        Canonical operator name
-
-    Returns
-    -------
-    bool
-        True if operator can activate latent structure
-
-    Notes
-    -----
-    Physical Rationale:
-
-    **RECURSIVITY (REMESH)**: ✓ Can activate latent
-    - Echoes/replicates existing patterns
-    - Requires source EPI > 0 to replicate
-    - Its network realization mixes present and delayed EPI; it does not
-      directly increase νf
-    - Fractality: can activate nested EPIs
-
-    **TRANSITION (NAV)**: ✓ Can activate latent
-    - Moves node from one phase to another
-    - Can transition from dormant (νf ≈ 0) to active (νf > 0)
-    - Requires EPI > 0 in target phase
+    The historical predicate name does not promise a positive capacity update
+    or departure from zero nodal rate. REMESH's node glyph is advisory; its
+    separately invoked network realization mixes signed present/delayed form.
+    NAV's direct and public paths have different auxiliary effects and live
+    admission. Neither membership requires a positive sign for scalar EPI.
+    Actual form, capacity and temporal evidence belong to the executing path.
     """
     return operator in {"recursivity", "transition"}
 
@@ -293,19 +311,11 @@ def achieves_operational_closure(operator: str) -> bool:
     - But typically leads to further transformation
     - Controversial as general terminator
     """
-    # Operators that naturally close cycles
-    closures = {"transition", "recursivity"}
-
-    # DISSONANCE is currently in VALID_END_OPERATORS but questionable
-    # Include it for backward compatibility but flag for review
-    # Physical justification: postponed conflict, contained tension
-    questionable = {"dissonance"}
-
-    return operator in closures or operator in questionable
+    return operator in {"transition", "recursivity", "dissonance"}
 
 
 def derive_start_operators_from_physics() -> frozenset[str]:
-    """Derive valid start operators from TNFR physical principles.
+    """Collect registered U1 initiation roles from the declared contracts.
 
     A sequence can start with an operator if it satisfies at least one:
     1. Can generate EPI from null state (generative capacity)
@@ -328,32 +338,31 @@ def derive_start_operators_from_physics() -> frozenset[str]:
 
     Notes
     -----
-    **Derived Start Operators:**
+    **Registered Start Operators:**
 
     1. **emission** - EPI generator
        - Creates EPI from null via field emission
-       - Generates νf > 0 and ΔNFR > 0
-       - Physical: outward coherence pulse
+       - Requires supplied basal capacity; does not write νf or ΔNFR
+       - Acts on existing nodal support
 
     2. **recursivity** - EPI activator
        - Replicates existing/latent patterns
        - Echoes structure across scales
        - Physical: fractal activation
 
-    3. **transition** - Phase activator
-       - Activates node from different phase
-       - Moves from dormant to active
-       - Physical: regime hand-off
+    3. **transition** - Registered activation/handoff boundary
+       - State changes depend on direct/public path and admission
+       - Membership alone does not guarantee a capacity increase
 
-    **Why Others Cannot Start:**
+    **Other labels are outside the U1 initiation policy:**
 
     - **reception**: Blends existing EPI fields and has no generative term
     - **coherence**: Stabilizes existing form, cannot create from null
-    - **dissonance**: Perturbs existing structure, needs EPI > 0
-    - **coupling**: Links existing nodes, requires both nodes active
-    - **resonance**: Amplifies existing coherence, needs EPI > 0
+    - **dissonance**: Perturbs existing pressure
+    - **coupling**: Links compatible existing nodes
+    - **resonance**: Blends admitted signed form over compatible neighbors
     - **silence**: Suspends reorganization, needs active νf to suspend
-    - **expansion/contraction**: Transform existing structure dimensionally
+    - **expansion/contraction**: Adjust existing capacity and pressure
     - **self_organization**: Creates sub-EPIs from existing structure
     - **mutation**: Transforms across thresholds, needs base structure
 
@@ -362,16 +371,11 @@ def derive_start_operators_from_physics() -> frozenset[str]:
     can_generate_epi_from_null : Check generative capacity
     can_activate_latent_epi : Check activation capacity
     """
-    # Import here to avoid circular dependency
-    from .operator_names import EMISSION, RECURSIVITY, TRANSITION
-
-    generators = {EMISSION}  # Can create EPI from null
-    activators = {RECURSIVITY, TRANSITION}  # Can activate latent EPI
-
-    # A valid start operator must be either a generator or activator
-    valid_starts = generators | activators
-
-    return frozenset(valid_starts)
+    return frozenset(
+        op
+        for op in _all_canonical_operator_names()
+        if can_generate_epi_from_null(op) or can_activate_latent_epi(op)
+    )
 
 
 def derive_end_operators_from_physics() -> frozenset[str]:
@@ -421,14 +425,14 @@ def derive_end_operators_from_physics() -> frozenset[str]:
        - Physical: contained instability
        - Included for backward compatibility
 
-    **Why Others Cannot End:**
+    **Other labels are outside the U1 endpoint policy:**
 
-    - **emission**: Generates activation (∂EPI/∂t > 0), not closure
+    - **emission**: Sources an EPI jump; it does not imply a later positive rate
     - **reception**: Captures input (ongoing process)
     - **coherence**: Reduces ΔNFR but doesn't force ∂EPI/∂t = 0
     - **coupling**: Creates links (ongoing connection)
     - **resonance**: Amplifies coherence (active propagation)
-    - **expansion**: Increases dimensionality (active growth)
+    - **expansion**: Raises capacity; state dimension need not change
     - **contraction**: Concentrates trajectories (active compression)
     - **self_organization**: Creates cascades (ongoing emergence)
     - **mutation**: Crosses thresholds (active transformation)
@@ -438,19 +442,11 @@ def derive_end_operators_from_physics() -> frozenset[str]:
     can_stabilize_reorganization : Check stabilization capacity
     achieves_operational_closure : Check closure capacity
     """
-    # Import here to avoid circular dependency
-    from .operator_names import DISSONANCE, RECURSIVITY, SILENCE, TRANSITION
-
-    stabilizers = {SILENCE}  # Registered νf-side rate suppression
-    closures = {TRANSITION, RECURSIVITY}  # Completes operational cycles
-
-    # DISSONANCE is questionable but included for backward compatibility
-    # Represents postponed conflict / contained tension patterns
-    questionable = {DISSONANCE}
-
-    valid_ends = stabilizers | closures | questionable
-
-    return frozenset(valid_ends)
+    return frozenset(
+        op
+        for op in _all_canonical_operator_names()
+        if can_stabilize_reorganization(op) or achieves_operational_closure(op)
+    )
 
 
 # ===========================================================================

@@ -2,7 +2,7 @@
 
 The script places four finite observations beside one another:
 
-M1. Dirichlet energy decreases under fixed pure-EPI diffusion.
+M1. Dirichlet energy decreases under the selected fixed unit-edge diffusion step.
 M2. A selected same-sign component count falls in this seeded diffusion run.
 M3. The number of graph-wave amplitudes above a declared threshold grows over
     selected times on a chain.
@@ -17,7 +17,7 @@ thermodynamics, spacetime, expansion, or the fate of a physical system.
 Run:
     python benchmarks/emergent_structural_cosmology.py
 
-Anchor: theory/EMERGENT_ONTOLOGY.md sections 2.5, 4.4 and 5.1.
+Anchor: theory/EMERGENT_ONTOLOGY.md and theory/TNFR_VARIATIONAL_PRINCIPLE.md.
 Status: RESEARCH COMPARISON.
 """
 
@@ -33,6 +33,7 @@ _SRC = pathlib.Path(__file__).resolve().parents[1] / "src"
 if str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
 
+from tnfr.dynamics._euler_kernel import euler_update  # noqa: E402
 from tnfr.physics.structural_diffusion import (  # noqa: E402
     structural_diffusion_operator,
     symmetric_normalized_laplacian,
@@ -40,13 +41,16 @@ from tnfr.physics.structural_diffusion import (  # noqa: E402
 
 
 def dirichlet_energy(G, nodes, epi) -> float:
-    """Return the selected fixed-graph Dirichlet functional."""
+    """Return half the squared edge differences on the supplied unit-edge graph.
+
+    This comparison uses an unweighted grid; edge conductances are not read here.
+    """
     idx = {n: i for i, n in enumerate(nodes)}
     return 0.5 * sum((epi[idx[u]] - epi[idx[v]]) ** 2 for u, v in G.edges())
 
 
 def coherent_domains(G, nodes, epi) -> int:
-    """Coarse count of coherent domains (connected same-sign regions)."""
+    """Count connected same-sign regions, not regions certified by coherence C."""
     idx = {n: i for i, n in enumerate(nodes)}
     H = nx.Graph()
     H.add_nodes_from(nodes)
@@ -54,6 +58,15 @@ def coherent_domains(G, nodes, epi) -> int:
         if (epi[idx[u]] >= 0) == (epi[idx[v]] >= 0):
             H.add_edge(u, v)
     return nx.number_connected_components(H)
+
+
+def diffusion_step(epi, lrw, nu_f, dt):
+    """Advance the supplied fixed matrix law through shared Euler arithmetic.
+
+    This auxiliary pure-EPI comparison supplies its matrix, capacity and step;
+    it does not execute the full engine or promise decay at an arbitrary step.
+    """
+    return euler_update(epi, dt, -nu_f * (lrw @ epi))
 
 
 def main() -> None:
@@ -87,7 +100,7 @@ def main() -> None:
         dom_series.append(dom)
         print(f"     {t:>11.1f} {F:>12.4f} {dom:>17d}")
         for _ in range(40):
-            epi = epi - dt * nu_f * (lrw @ epi)
+            epi = diffusion_step(epi, lrw, nu_f, dt)
     assert all(
         F_series[i + 1] <= F_series[i] + 1e-9 for i in range(len(F_series) - 1)
     ), "Dirichlet energy increased under the fixed diffusion step"

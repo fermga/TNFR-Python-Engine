@@ -1,6 +1,6 @@
 # TNFR: Resonant Fractal Nature Theory
 
-**Working reference for the TNFR Python Engine, version 0.0.3.6.**
+**Working reference for the TNFR Python Engine, version 0.0.3.7.**
 This synthesis states current definitions, contracts and mathematical boundaries.
 Guide responsibilities belong to the [documentation map](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/README.md).
 Detailed derivations belong to the [theory index](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md);
@@ -29,6 +29,11 @@ that the hypothesis is physically established.
 A contradiction is resolved by examining the mathematics and actual execution;
 neither a historical label of "canonical" nor a passing test makes an unsupported
 theorem true. Update this file as a coherent reference, not a session log.
+Foundational definitions and constitutive premises are revisable hypotheses.
+State an old/new model boundary when revising them, retain valid conditional
+results, and prefer a discriminating prediction over extending a branch whose
+premises already impose its obstruction. A useful model family need not be the
+unique possible completion of the nodal identity.
 
 ### Communication policy
 
@@ -79,10 +84,24 @@ Named transformations use their operator contracts. Declared numerical solvers
 advance EPI through the shared nodal integrator with explicit capacity, pressure,
 clock and provenance or residual. Initialization is distinct from evolution.
 Full closure also needs justified phase, capacity, support and input laws.
+Validated nodal arithmetic and diagnostic scalar admission share the
+represented-real boundary: invalid types or nonzero inputs lost during
+materialization cannot certify equilibrium or a valid trajectory. Capacity
+admits zero; finite inputs still require representable output arithmetic.
+Pressure preparation and phase/capacity execution enforce that boundary before
+coercion. Temporal observers reject nonzero unrepresentable rates and retain
+detached evidence; an energy tolerance alert is not endpoint nonincrease.
+Solver clocks and retained rates use the same raw scalar admission; Boolean
+durations are not clocks. Consumed phases remain validated before caching and
+array conversion. A coordinate not consumed by a declared model need not be
+invented or coerced to execute that model.
 The optional Gamma registry supplies an additional rate in the extended row
 `dx/dt=nu_f*p+Gamma`; nonzero Gamma can move EPI at zero capacity. It is declared
 forcing, not a derivation from the nodal product. Unforced certificates require
 Gamma to be absent/zero; see [integrators](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/dynamics/integrators.py).
+The additive integrator evaluates sources strictly through the live registry;
+invalid declarations or an array fast path cannot silently remove a source.
+The opt-in extended coupled model has a separate unforced scope.
 
 ### The fractal-resonant node (NFR)
 
@@ -101,12 +120,16 @@ test does not exclude every NFR; a snapshot match or low global phase order
 does not decide the presence or absence of coherent geometric identity. See
 [research scope](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_RESEARCH_STRATEGY.md#closure-audit-equations-events-and-identity).
 
-The radial/annular/multinodal classifier is a calibrated read-out of potential
-geometry. It does not derive a universal geometry or select Platonic solids.
-`Network.nfr()` exposes this read-out. `structural_coherence` and
+The radial/annular/multinodal classifier reads the unit-source potential
+centrality profile under a calibrated policy. Unsupported geometry is explicitly
+unavailable; a uniform profile does not prove rotational graph symmetry.
+It does not derive a universal geometry or select Platonic solids.
+`Network.nfr()` exposes this scope and the shared coherence-length estimator's
+fit/fallback provenance; it does not certify formation or fractality.
+`structural_coherence` and
 `is_structural_equilibrium` in `metrics/common.py` are shared diagnostic kernels;
-reusing them across arithmetic, graph and chemical models does not identify
-those models' dynamics. See [foundations](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md).
+reusing them across graph and arithmetic models does not identify those
+models' dynamics. See [foundations](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md).
 
 ### Accumulated evolution and the convergence policy
 
@@ -217,6 +240,12 @@ operator labels alone do not make it vanish. The nonnegative sum-of-squares
 field energy is a Lyapunov candidate until monotonicity is proved for a stated
 law or observed on a specified trace. Read the precise hypotheses in
 [conservation](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/STRUCTURAL_CONSERVATION_THEOREM.md).
+
+Temporal balance requires nonempty matching node support and a finite positive
+interval. Each sector uses its captured graph divergence; current magnitudes
+cannot reconstruct that decomposition. Missing intervals are unavailable, not
+successful conservation. A numerical-tolerance energy alert is distinct from
+the sign of the observed energy change.
 
 Single-snapshot tensor telemetry reports conservation quality as unavailable;
 node-label ordering cannot supply a time derivative or graph divergence.
@@ -334,6 +363,18 @@ that dependency is not an emergent selection law. The auxiliary affinity
 availability, stored versus refreshed pressure and xi fit/fallback provenance.
 Do not treat undefined or unsupported observations as successful zero values.
 
+Automatic candidates use admitted stored metrics, current normalization and an
+explicit batch lifetime; operator admission remains independent. Configured
+phase labels depend on sample size and cannot establish autonomous formation.
+An incomplete tetrad cannot certify even the configured overall safety advisory.
+
+Thresholds must retain their units and actual consumer: normalized selector
+pressure is distinct from absolute adaptation pressure. Shared default
+resolution must agree across selection, adaptation and diagnostics. A pi-based
+formula or a legacy `CANONICAL` name does not derive a policy; numerical
+tolerances and inactive compatibility exports supply no physical theorem.
+See the [threshold ledger](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md#11-thresholds-constants-and-numerical-settings-have-different-duties).
+
 ## 8. Canonical invariants
 
 1. Preserve continuous nodal flow and declared hybrid jumps with their provenance.
@@ -420,6 +461,9 @@ for the tests that retain the behavior of retired introductory illustrations.
 Default test selection, dependencies and parallel scheduling have their owners
 in test configuration and the workflow guide; do not duplicate those settings
 here or regenerate historical research artifacts for an unrelated change.
+The default run is the routine engine/API gate, not the full research inventory.
+Select the affected research owner explicitly when changing its model or claim;
+report that scope rather than presenting a routine pass as complete coverage.
 See [TESTING.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/TESTING.md).
 
 ## 11. Troubleshooting
@@ -438,8 +482,10 @@ classifies primary, supporting and parked work. The
 is the sole task queue; the
 [strategy](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_RESEARCH_STRATEGY.md)
 explains its rationale. Conditional core results, finite C6 evidence, arithmetic
-models and Millennium notes retain their own scope and do not constitute
-additional active campaigns. Historical instructions are preserved in the
+models and scoped auxiliary algebra retain their own hypotheses and do not
+constitute additional active campaigns. Unsupported physical-programme
+wrappers and circular type probes are retired; their boundaries and intentional
+API removals are recorded in the
 [archive](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/research/archive/README.md).
 
 The primary objective is a predictive generative account of coherence patterns.

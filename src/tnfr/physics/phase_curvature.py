@@ -21,7 +21,7 @@ from ..mathematics.phasor_resultant import (
     RepresentedPhasorResultant,
     reduce_phasor_components,
 )
-from ..mathematics.unified_numerical import np
+from ..mathematics.unified_numerical import compute_phase_difference, np
 from ._helpers import wrap_angle
 
 __all__ = (
@@ -96,6 +96,9 @@ def _observe_neighborhoods(nodes, neighbors, phases, *, dtype, precision_mode):
     phases = _materialize_phases(phases)
     theta = np.asarray(phases, dtype=np.float64)
     cosines, sines = np.cos(theta), np.sin(theta)
+    centers = theta.copy()
+    outside = np.abs(centers) > math.pi
+    centers[outside] = np.arctan2(sines[outside], cosines[outside])
     components = tuple((float(c), float(s)) for c, s in zip(cosines, sines))
     rows = []
     neighbor_order = tuple(tuple(nodes[j] for j in indices) for indices in neighbors)
@@ -112,21 +115,18 @@ def _observe_neighborhoods(nodes, neighbors, phases, *, dtype, precision_mode):
                 )
             )
             continue
-        # Preserve wrapped angular separation, independently of whether a
-        # circular mean exists. A finite subtraction outside binary64's
-        # range is rejected rather than silently producing NaN telemetry.
-        with np.errstate(over="ignore", invalid="ignore"):
-            differences = theta[i] - theta[list(indices)]
-        if not np.all(np.isfinite(differences)):
-            raise ValueError("phase differences must be finite binary64 values")
-        wrapped = (differences + np.pi) % (2 * np.pi) - np.pi
+        # The shared signed wrap preserves tiny separations and rejects
+        # subtraction overflow independently of circular-mean availability.
+        wrapped = compute_phase_difference(theta[i], theta[list(indices)])
         gradient = float(np.mean(np.abs(wrapped), dtype=dtype))
         resultant = reduce_phasor_components(components[j] for j in indices)
         if resultant.joint_zero:
             curvature = None
             status = "undefined_represented_resultant"
         else:
-            displacement = phases[i] - resultant.angle
+            # Compare the center phasor with the neighbor direction. A huge
+            # unwrapped phase would erase the O(1) resultant angle on subtraction.
+            displacement = centers[i] - resultant.angle
             if not math.isfinite(displacement):
                 raise ValueError("phase curvature displacement must be finite")
             curvature = float(wrap_angle(displacement))
@@ -142,7 +142,7 @@ def _observe_neighborhoods(nodes, neighbors, phases, *, dtype, precision_mode):
             )
         )
     return PhaseCurvatureObservation(
-        version="phase_curvature_exact_components_v1",
+        version="phase_curvature_exact_components_v2",
         nodes=tuple(nodes),
         neighbor_order=neighbor_order,
         primitive_phases=phases,

@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import math
+
 import networkx as nx
 import pytest
 
 from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY, inject_defaults
 from tnfr.dynamics import integrators
+from tnfr.gamma import eval_gamma
 
 
 def _graph() -> nx.Graph:
@@ -64,3 +67,16 @@ def test_live_gamma_configuration_invalidates_cached_none(
 
     assert graph.nodes[0][EPI_PRIMARY] == pytest.approx(0.525)
     assert graph.graph["_gamma_spec"]["type"] == "kuramoto_linear"
+
+
+def test_repeated_requested_time_does_not_reuse_stale_global_phase_order():
+    graph = nx.path_graph(2)
+    graph.graph["GAMMA"] = {"type": "kuramoto_linear", "beta": 1.0}
+    for node in graph:
+        graph.nodes[node]["theta"] = 0.0
+    assert eval_gamma(graph, 0, 0.0, strict=True) == 1.0
+
+    graph.nodes[1]["theta"] = math.pi / 2
+    # R*cos(theta_i-psi) equals the projection of the mean unit phasor
+    # onto node 0's direction: (1 + cos(pi/2))/2.
+    assert eval_gamma(graph, 0, 0.0, strict=True) == pytest.approx(0.5)

@@ -4,6 +4,14 @@ Tests here exercise the implemented nodal pressure, integration and diagnostic
 contracts. The suite does not establish the ontology or dimensional completeness
 of TNFR. [TESTING.md](../../TESTING.md) owns execution instructions.
 
+The current balance tests retain actual divergence, temporal secants, sector
+decomposition and operator-to-tracker wiring. A historical appended campaign
+with arbitrary energy/drift tolerances was removed: U2 role labels do not
+derive those bounds. The retained P3 divergence counterexample also distinguishes
+an unweighted sum from the degree-weighted cancellation identity. Policy-factor
+tests verify the shared registry without repeating equivalent spellings and
+fixture-only finiteness assertions across large grids.
+
 ## Retired self-contained illustrations
 
 The 2026-09-19 audit removed `test_nodal_equation.py` and

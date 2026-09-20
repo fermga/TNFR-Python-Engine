@@ -11,6 +11,7 @@ from numbers import Real
 import networkx as nx
 import pytest
 
+from tnfr._runtime_steps import RUNTIME_STEP_NEXT_KEY, runtime_step_scope
 from tnfr.errors import TNFRValueError
 from tnfr.mathematics.unified_numerical import np
 from tnfr.operators import (
@@ -524,6 +525,114 @@ def test_stability_gate_does_not_consume_cooldown_on_history_noop() -> None:
 
     assert "_last_remesh_step" not in graph.graph
     assert "_last_remesh_ts" not in graph.graph
+    assert "_last_remesh_step_basis" not in graph.graph
+
+
+def test_raw_remesh_retains_metric_keys_and_bounds_event_samples() -> None:
+    graph = _graph(current=(0.5, 0.2), past=(0.5, 0.2), log_events=True)
+    graph.graph.update(
+        HISTORY_MAXLEN=2,
+        history={"C_steps": [0.8, 0.9], "stable_frac": [1.0, 1.0], "phase_sync": [1.0]},
+    )
+
+    for ordinal in range(3):
+        with runtime_step_scope(graph.graph, ordinal):
+            result = apply_network_remesh(graph)
+        assert result.applied
+        assert result.metadata["step"] == ordinal
+
+    history = graph.graph["history"]
+    assert set(history) == {"C_steps", "stable_frac", "phase_sync", "remesh_events"}
+    assert [event["step"] for event in history["remesh_events"]] == [1, 2]
+    assert all(series.maxlen == 2 for series in history.values())
+
+    graph.graph["HISTORY_MAXLEN"] = 0
+    apply_network_remesh(graph)
+    history = graph.graph["history"]
+    assert type(history) is dict
+    assert isinstance(history["remesh_events"], list)
+    assert [event["step"] for event in history["remesh_events"]] == [1, 2, 3]
+
+    graph.graph["HISTORY_MAXLEN"] = 1
+    apply_network_remesh(graph)
+    assert set(graph.graph["history"]) == set(history)
+    assert all(series.maxlen == 1 for series in graph.graph["history"].values())
+
+
+def test_runtime_remesh_cooldown_progresses_with_bounded_samples_and_migrates_basis() -> (
+    None
+):
+    graph = _graph(current=(0.5, 0.2), past=(0.5, 0.2), log_events=True)
+    graph.graph.update(
+        HISTORY_MAXLEN=2,
+        REMESH_STABILITY_WINDOW=2,
+        REMESH_REQUIRE_STABILITY=True,
+        REMESH_COOLDOWN_WINDOW=2,
+        REMESH_COOLDOWN_TS=0.0,
+        FRACTION_STABLE_REMESH=0.9,
+        _last_remesh_step=100,
+        history={
+            "stable_frac": [1.0, 1.0],
+            "phase_sync": [1.0, 1.0],
+            "glyph_load_disr": [0.0, 0.0],
+            "sense_sigma_mag": [1.0, 1.0],
+            "kuramoto_R": [1.0, 1.0],
+            "Si_hi_frac": [1.0, 1.0],
+        },
+    )
+
+    with runtime_step_scope(graph.graph, 0):
+        remesh_module.apply_remesh_if_globally_stable(graph)
+    assert graph.graph["_last_remesh_step"] == 0
+    assert graph.graph["_last_remesh_step_basis"] == "runtime"
+    with runtime_step_scope(graph.graph, 1):
+        remesh_module.apply_remesh_if_globally_stable(graph)
+    assert graph.graph["_last_remesh_step"] == 0
+    with runtime_step_scope(graph.graph, 2):
+        remesh_module.apply_remesh_if_globally_stable(graph)
+    assert graph.graph["_last_remesh_step"] == 2
+    assert [event["step"] for event in graph.graph["history"]["remesh_events"]] == [
+        0,
+        2,
+    ]
+
+
+def test_standalone_remesh_cooldown_keeps_stable_sample_count() -> None:
+    graph = _graph(current=(0.5, 0.2), past=(0.5, 0.2))
+    graph.graph.update(
+        REMESH_STABILITY_WINDOW=1,
+        REMESH_REQUIRE_STABILITY=False,
+        REMESH_COOLDOWN_WINDOW=2,
+        REMESH_COOLDOWN_TS=0.0,
+        FRACTION_STABLE_REMESH=0.9,
+        _last_remesh_step=1,
+        history={"stable_frac": [1.0, 1.0]},
+    )
+    remesh_module.apply_remesh_if_globally_stable(graph)
+    assert graph.graph["_last_remesh_step"] == 1
+    graph.graph["history"]["stable_frac"].append(1.0)
+    remesh_module.apply_remesh_if_globally_stable(graph)
+    assert graph.graph["_last_remesh_step"] == 3
+    assert graph.graph["_last_remesh_step_basis"] == "stable_samples"
+    assert RUNTIME_STEP_NEXT_KEY not in graph.graph
+
+
+def test_first_runtime_cooldown_basis_has_no_synthetic_previous_event() -> None:
+    graph = _graph(current=(0.5, 0.2), past=(0.5, 0.2))
+    graph.graph.update(
+        REMESH_STABILITY_WINDOW=1,
+        REMESH_REQUIRE_STABILITY=False,
+        REMESH_COOLDOWN_WINDOW=10**12,
+        REMESH_COOLDOWN_TS=1e15,
+        FRACTION_STABLE_REMESH=0.9,
+        _last_remesh_step=100,
+        history={"stable_frac": [1.0]},
+    )
+    with runtime_step_scope(graph.graph, 0):
+        remesh_module.apply_remesh_if_globally_stable(graph)
+    assert graph.graph["_last_remesh_step"] == 0
+    assert graph.graph["_last_remesh_step_basis"] == "runtime"
+    assert graph.graph["_last_remesh_ts"] == 0.0
 
 
 @pytest.mark.parametrize("hard_override", [1, 0, "false", None])
@@ -818,9 +927,13 @@ def test_direct_remesh_preserves_just_appended_canonical_telemetry() -> None:
 def test_ordinary_runtime_remesh_updates_authoritative_epi_time_tail(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    from tnfr.constants import inject_defaults
     from tnfr.dynamics import runtime as runtime_module
 
     graph = _graph(current=(2.0, 0.0), past=(0.0, 2.0))
+    # The runtime boundary validates built-in policies even when the nodal
+    # work below is replaced to isolate REMESH's authoritative history write.
+    inject_defaults(graph)
     graph.graph["_epi_hist"] = deque([{0: 0.0, 1: 2.0}], maxlen=64)
     graph.graph.update(
         _t=0.0,

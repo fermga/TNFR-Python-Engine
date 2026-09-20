@@ -455,6 +455,28 @@ def test_euler_window_uses_actual_heterogeneous_spectrum():
     )
 
 
+def test_euler_window_uses_effective_symmetry_with_loops_and_parallel_edges():
+    graph = nx.MultiGraph()
+    graph.add_edge(0, 0, weight=2.0)
+    graph.add_edge(0, 1, key="first", weight=0.5)
+    graph.add_edge(0, 1, key="second", weight=1.5)
+    _set_state(graph, [0.0, 1.0], [1.0, 3.0])
+    reciprocal = graph.to_directed()
+    # A directed zero arc is support, but adds no EPI transport conductance.
+    reciprocal.add_edge(1, 1, weight=0.0)
+    undirected = diagnose_euler_relaxation_window(graph, dt=0.1, target_fraction=0.2)
+    directed = diagnose_euler_relaxation_window(reciprocal, dt=0.1, target_fraction=0.2)
+    # diag(1,3)*L_rw = [[.5,-.5],[-3,3]] has rates 0 and 3.5.
+    assert directed.decay_rates == pytest.approx([3.5])
+    assert directed.decay_rates == pytest.approx(undirected.decay_rates)
+    assert directed.maximum_modal_factor == pytest.approx(0.65)
+    assert directed.euler_stability_limit == pytest.approx(4.0 / 7.0)
+    assert directed.modal_steps == undirected.modal_steps == 4
+    reciprocal.remove_edge(0, 1, key="first")
+    with pytest.raises(ValueError, match="symmetric adjacency"):
+        diagnose_euler_relaxation_window(reciprocal, dt=0.1)
+
+
 def test_euler_spectral_cutoff_is_relative_to_global_frequency_scale():
     base_frequency = np.array([0.2, 0.7, 1.3, 2.1])
     graph = _set_state(

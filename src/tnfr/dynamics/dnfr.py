@@ -14,11 +14,11 @@ import math
 import sys
 from collections.abc import Callable, Iterator, Mapping, MutableMapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
-from copy import deepcopy
 from time import perf_counter
 from types import ModuleType
 from typing import Any, cast
 
+from .._exact_time import finite_represented_real
 from ..alias import get_attr, get_theta_attr, set_dnfr
 from ..constants import DEFAULTS, get_param
 from ..constants.aliases import ALIAS_EPI, ALIAS_VF
@@ -29,7 +29,11 @@ from ..mathematics._neighbor_differences import (
 )
 from ..mathematics._phase_midpoint import certified_two_neighbor_phase
 from ..mathematics.unified_numerical import compute_phase_difference, np
-from ..metrics.common import merge_and_normalize_weights, merge_graph_weights
+from ..metrics.common import (
+    _materialize_weight_mapping,
+    merge_and_normalize_weights,
+    merge_graph_weights,
+)
 from ..metrics.trig_cache import compute_theta_trig
 from ..types import (
     DeltaNFRHook,
@@ -53,10 +57,12 @@ from ..utils import (
     normalize_weights,
     resolve_chunk_size,
 )
+from .canonical import validate_structural_frequency
 from .fused_dnfr import compute_fused_gradients_symmetric
 
 _SPARSE_DENSITY_THRESHOLD = 0.25
 _DNFR_APPROX_BYTES_PER_EDGE = 48
+_DNFR_CHANNELS = ("phase", "epi", "vf", "topo")
 
 
 def _should_vectorize(G: TNFRGraph, np_module: ModuleType | None) -> bool:
@@ -360,19 +366,27 @@ def _resolve_dnfr_weights(G) -> Mapping[str, float]:
     """
     cached = G.graph.get("_dnfr_weights")
     source = G.graph.get("_dnfr_weights_source")
-    configured = merge_graph_weights(G, "DNFR_WEIGHTS")
-    if cached is not None and (source is None or source == configured):
-        return cached
-    return merge_and_normalize_weights(
-        G, "DNFR_WEIGHTS", ("phase", "epi", "vf", "topo"), default=0.0
+    configured = _materialize_weight_mapping(
+        merge_graph_weights(G, "DNFR_WEIGHTS", strict=True),
+        _DNFR_CHANNELS,
+        name="DNFR_WEIGHTS",
     )
+    if cached is not None and (source is None or source == configured):
+        return _materialize_weight_mapping(
+            cached, _DNFR_CHANNELS, name="cached DNFR weights"
+        )
+    return merge_and_normalize_weights(G, "DNFR_WEIGHTS", _DNFR_CHANNELS, default=0.0)
 
 
 def _configure_dnfr_weights(G) -> Mapping[str, float]:
     """Store the effective mix and a detached snapshot of its public source."""
     weights = _resolve_dnfr_weights(G)
     G.graph["_dnfr_weights"] = weights
-    G.graph["_dnfr_weights_source"] = deepcopy(merge_graph_weights(G, "DNFR_WEIGHTS"))
+    G.graph["_dnfr_weights_source"] = _materialize_weight_mapping(
+        merge_graph_weights(G, "DNFR_WEIGHTS", strict=True),
+        _DNFR_CHANNELS,
+        name="DNFR_WEIGHTS",
+    )
     return weights
 
 
@@ -380,6 +394,23 @@ def _read_scalar_epi(nd: Mapping[str, Any]) -> float:
     """Read the finite signed scalar chart required by this pressure model."""
     return get_attr(
         nd, ALIAS_EPI, 0.0, strict=True, conv=require_finite_real_scalar_epi
+    )
+
+
+def _read_capacity(nd: Mapping[str, Any], default: float = 0.0) -> float:
+    """Apply nodal capacity admission before any alias or float coercion."""
+    return get_attr(
+        nd, ALIAS_VF, default, strict=True, conv=validate_structural_frequency
+    )
+
+
+def _read_phase(nd: Mapping[str, Any]) -> float:
+    """Read the authoritative finite phase before building trigonometric data."""
+    return get_theta_attr(
+        nd,
+        0.0,
+        strict=True,
+        conv=lambda raw: finite_represented_real(raw, "pressure phase")[0],
     )
 
 
@@ -767,7 +798,7 @@ def _refresh_dnfr_vectors(
 ) -> None:
     """Update cached angle and state vectors for ΔNFR."""
     np_module = np
-    trig = compute_theta_trig(((n, G.nodes[n]) for n in nodes))
+    trig = compute_theta_trig((n, _read_phase(G.nodes[n])) for n in nodes)
     use_numpy = _should_vectorize(G, np_module)
     node_count = len(nodes)
     trig_theta = getattr(trig, "theta_values", None)
@@ -792,7 +823,7 @@ def _refresh_dnfr_vectors(
                 count=node_count,
             )
             vf_arr = np_module.fromiter(
-                (get_attr(G.nodes[node], ALIAS_VF, 0.0) for node in nodes),
+                (_read_capacity(G.nodes[node]) for node in nodes),
                 dtype=float,
                 count=node_count,
             )
@@ -838,7 +869,7 @@ def _refresh_dnfr_vectors(
             nd = G.nodes[node_id]
             cache.theta[i] = trig.theta[node_id]
             cache.epi[i] = _read_scalar_epi(nd)
-            cache.vf[i] = get_attr(nd, ALIAS_VF, 0.0)
+            cache.vf[i] = _read_capacity(nd)
             cache.cos_theta[i] = trig.cos[node_id]
             cache.sin_theta[i] = trig.sin[node_id]
         if use_numpy and np_module is not None:
@@ -2603,7 +2634,7 @@ def _compute_dnfr(
 
     np_module = np
     data["dnfr_numpy_available"] = bool(np_module)
-    vector_disabled = G.graph.get("vectorized_dnfr") is False
+    vector_disabled = not _should_vectorize(G, np_module)
     prefer_dense = np_module is not None and not vector_disabled
     if use_numpy is True and np_module is not None:
         prefer_dense = True
@@ -2826,6 +2857,19 @@ def set_delta_nfr_hook(
         G.graph["_DNFR_META"] = meta
 
 
+def _weighted_hook_gradient(
+    func: Callable[[TNFRGraph, NodeId, Mapping[str, Any]], float],
+    G: TNFRGraph,
+    node: NodeId,
+    nd: Mapping[str, Any],
+    coefficient: float,
+) -> float:
+    """Apply linear coefficients before the final difference is materialized."""
+    if isinstance(func, _NeighborAverageGradient):
+        return func(G, node, nd, coefficient=coefficient)
+    return coefficient * float(func(G, node, nd))
+
+
 def _dnfr_hook_chunk_worker(
     G: TNFRGraph,
     node_ids: Sequence[NodeId],
@@ -2846,9 +2890,9 @@ def _dnfr_hook_chunk_worker(
         nd = G.nodes[node]
         total = 0.0
         for name, func in grad_items:
-            w = weights.get(name, 0.0)
+            w = float(weights.get(name, 0.0))
             if w:
-                total += w * float(func(G, node, nd))
+                total += _weighted_hook_gradient(func, G, node, nd, w)
         results.append((node, total))
     return results
 
@@ -2897,14 +2941,12 @@ def _apply_dnfr_hook(
             if w == 0.0:
                 continue
             values = np_module.fromiter(
-                (float(func(G, n, nd)) for n, nd in nodes_data),
+                (_weighted_hook_gradient(func, G, n, nd, w) for n, nd in nodes_data),
                 dtype=float,
                 count=len(nodes_data),
             )
-            if w == 1.0:
+            with np_module.errstate(over="ignore", invalid="ignore"):
                 np_module.add(totals, values, out=totals)
-            else:
-                np_module.add(totals, values * w, out=totals)
         _require_finite_pressure(totals)
         for idx, (n, _) in enumerate(nodes_data):
             set_dnfr(G, n, float(totals[idx]))
@@ -2948,9 +2990,9 @@ def _apply_dnfr_hook(
         for n, nd in nodes_data:
             total = 0.0
             for name, func in grads.items():
-                w = weights.get(name, 0.0)
+                w = float(weights.get(name, 0.0))
                 if w:
-                    total += w * float(func(G, n, nd))
+                    total += _weighted_hook_gradient(func, G, n, nd, w)
             results.append((n, total))
 
     _require_finite_pressure([value for _, value in results])
@@ -2966,15 +3008,17 @@ def _apply_dnfr_hook(
 class _PhaseGradient:
     """Callable computing the phase contribution using cached trig values."""
 
-    __slots__ = ("cos", "sin")
+    __slots__ = ("cos", "sin", "theta")
 
     def __init__(
         self,
         cos_map: Mapping[NodeId, float],
         sin_map: Mapping[NodeId, float],
+        theta_map: Mapping[NodeId, float],
     ) -> None:
         self.cos: Mapping[NodeId, float] = cos_map
         self.sin: Mapping[NodeId, float] = sin_map
+        self.theta: Mapping[NodeId, float] = theta_map
 
     def __call__(
         self,
@@ -2982,14 +3026,13 @@ class _PhaseGradient:
         n: NodeId,
         nd: Mapping[str, Any],
     ) -> float:
-        theta_val = get_theta_attr(nd, 0.0)
-        th_i = float(theta_val if theta_val is not None else 0.0)
+        th_i = self.theta[n]
         neighbors = list(G.neighbors(n))
         if len(neighbors) == 2:
             certified = certified_two_neighbor_phase(
                 th_i,
-                float(get_theta_attr(G.nodes[neighbors[0]], 0.0)),
-                float(get_theta_attr(G.nodes[neighbors[1]], 0.0)),
+                self.theta[neighbors[0]],
+                self.theta[neighbors[1]],
             )
             if certified is not None:
                 return certified.delta / math.pi
@@ -3018,13 +3061,13 @@ class _NeighborAverageGradient:
         G: TNFRGraph,
         n: NodeId,
         nd: Mapping[str, Any],
+        *,
+        coefficient: float = 1.0,
     ) -> float:
         val = self.values.get(n)
         if val is None:
             val = (
-                _read_scalar_epi(nd)
-                if self.alias == ALIAS_EPI
-                else float(get_attr(nd, self.alias, 0.0))
+                _read_scalar_epi(nd) if self.alias == ALIAS_EPI else _read_capacity(nd)
             )
             self.values[n] = val
         neighbors = list(G.neighbors(n))
@@ -3037,11 +3080,11 @@ class _NeighborAverageGradient:
                 neigh_val = (
                     _read_scalar_epi(G.nodes[neigh])
                     if self.alias == ALIAS_EPI
-                    else float(get_attr(G.nodes[neigh], self.alias, val))
+                    else _read_capacity(G.nodes[neigh], val)
                 )
                 self.values[neigh] = neigh_val
             values.append(neigh_val)
-        return mean_neighbor_difference(val, values)
+        return mean_neighbor_difference(val, values, coefficient=coefficient)
 
 
 def dnfr_phase_only(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
@@ -3059,8 +3102,8 @@ def dnfr_phase_only(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
         serial execution.
     """
 
-    trig = compute_theta_trig(G.nodes(data=True))
-    g_phase = _PhaseGradient(trig.cos, trig.sin)
+    trig = compute_theta_trig((n, _read_phase(nd)) for n, nd in G.nodes(data=True))
+    g_phase = _PhaseGradient(trig.cos, trig.sin, trig.theta)
     _apply_dnfr_hook(
         G,
         {"phase": g_phase},
@@ -3087,7 +3130,7 @@ def dnfr_epi_vf_mixed(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
     """
 
     epi_values = {n: _read_scalar_epi(nd) for n, nd in G.nodes(data=True)}
-    vf_values = {n: float(get_attr(nd, ALIAS_VF, 0.0)) for n, nd in G.nodes(data=True)}
+    vf_values = {n: _read_capacity(nd) for n, nd in G.nodes(data=True)}
     grads = {
         "epi": _NeighborAverageGradient(ALIAS_EPI, epi_values),
         "vf": _NeighborAverageGradient(ALIAS_VF, vf_values),
@@ -3122,7 +3165,7 @@ def dnfr_laplacian(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
     wV = float(weights_cfg.get("vf", DEFAULTS["DNFR_WEIGHTS"]["vf"]))
 
     epi_values = {n: _read_scalar_epi(nd) for n, nd in G.nodes(data=True)}
-    vf_values = {n: float(get_attr(nd, ALIAS_VF, 0.0)) for n, nd in G.nodes(data=True)}
+    vf_values = {n: _read_capacity(nd) for n, nd in G.nodes(data=True)}
     grads = {
         "epi": _NeighborAverageGradient(ALIAS_EPI, epi_values),
         "vf": _NeighborAverageGradient(ALIAS_VF, vf_values),

@@ -6,7 +6,9 @@ The optimizer computes the simultaneous node-space product
 
 and delegates phase proposals to the shared U3-gated kernel. A spectral basis is
 available as an explicit comparison API, but the nodal step itself uses the
-dense live random-walk operator and makes no unmeasured speedup claim.
+shared live edge-difference pressure and makes no unmeasured speedup claim.
+The cached random-walk matrix is a spectral/algebraic representation; its
+rounded matrix product is not substituted for the shared pressure realization.
 The two proposals are dynamically separate: phase does not enter EPI pressure,
 and EPI does not enter the phase proposal. Calculated phase synchronization
 therefore supplies no form-maintenance mechanism in this model. Capacity and
@@ -26,6 +28,7 @@ from typing import Any, Mapping
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ..errors import TNFRValueError
+from ..mathematics._neighbor_differences import edge_mean_differences
 from ..mathematics.unified_numerical import np
 from ..operators.grammar_types import (
     COUPLING_RESONANCE,
@@ -33,8 +36,10 @@ from ..operators.grammar_types import (
     STABILIZERS,
     glyph_function_name,
 )
+from ..physics._conductance import read_conductance
 from ..physics.structural_diffusion import structural_diffusion_operator
 from ..types import real_scalar_epi
+from ._euler_kernel import euler_update
 from .phase_evolution import propose_u3_gated_phase_step
 
 
@@ -309,7 +314,7 @@ class NodalEquationOptimizer:
     ) -> NodalEvolutionProposal:
         """Return one simultaneous nodal proposal from the current graph snapshot.
 
-        The EPI channel is exactly
+        The EPI channel has the exact-real model
         x_next = x - dt * diag(nu_f) * L_rw * x. The method returns detached
         proposals and never commits them to the graph. Its metadata records
         that arbitrary-dt explicit Euler stability is not certified.
@@ -350,7 +355,13 @@ class NodalEquationOptimizer:
         phase_vector = np.array(
             [
                 _finite_real(
-                    get_attr(G.nodes[node], ALIAS_THETA, 0.0, strict=True),
+                    get_attr(
+                        G.nodes[node],
+                        ALIAS_THETA,
+                        0.0,
+                        strict=True,
+                        conv=lambda value: value,
+                    ),
                     f"node {node!r} phase",
                 )
                 for node in nodes
@@ -364,7 +375,7 @@ class NodalEquationOptimizer:
         )
         with np.errstate(over="ignore", invalid="ignore"):
             depi_dt = vf_vector * dnfr_vector
-            new_epi_vector = epi_vector + dt_value * depi_dt
+            new_epi_vector = euler_update(epi_vector, dt_value, depi_dt)
         if not np.all(np.isfinite(depi_dt)) or not np.all(np.isfinite(new_epi_vector)):
             raise TNFRValueError("Nodal EPI proposal must remain finite.")
         new_phase_vector = self._predict_phase_evolution(
@@ -388,7 +399,13 @@ class NodalEquationOptimizer:
         values = np.array(
             [
                 _finite_real(
-                    get_attr(G.nodes[node], ALIAS_VF, 1.0, strict=True),
+                    get_attr(
+                        G.nodes[node],
+                        ALIAS_VF,
+                        1.0,
+                        strict=True,
+                        conv=lambda value: value,
+                    ),
                     f"node {node!r} structural frequency",
                 )
                 for node in nodes
@@ -406,10 +423,13 @@ class NodalEquationOptimizer:
         epi_vector: np.ndarray,
         phase_vector: np.ndarray,
     ) -> np.ndarray:
-        """Return the exact isolated EPI pressure -L_rw @ EPI.
+        """Return the shared isolated EPI pressure with stable differences.
 
         phase_vector is retained in the private signature for compatibility
         with older instrumented callers; phase is a separate pressure channel.
+        The model is -L_rw @ EPI in exact arithmetic. Evaluating rounded matrix
+        entries can lose consensus or tiny representable pressure, so the
+        pressure realization retains original effective edge conductances.
         """
         del phase_vector
         operator = opt_state.diffusion_operator
@@ -426,8 +446,10 @@ class NodalEquationOptimizer:
             raise TNFRValueError(
                 "Cached nodal diffusion operator does not match the live graph."
             )
-        with np.errstate(over="ignore", invalid="ignore"):
-            pressure = -(current_values @ epi_vector)
+        conductance = read_conductance(G, list(opt_state.node_order))
+        pressure = edge_mean_differences(
+            epi_vector, conductance.source, conductance.target, conductance.weight
+        )
         if not np.all(np.isfinite(pressure)):
             raise TNFRValueError("Nodal EPI pressure must remain finite.")
         return np.asarray(pressure, dtype=float)

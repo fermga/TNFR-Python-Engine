@@ -22,6 +22,7 @@ if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
 
 from ..alias import set_attr
+from ..config.defaults_core import CORE_DEFAULTS
 from ..constants.aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from ..errors import TNFRValueError
 from ..types import BEPIProtocol, scalarize_epi
@@ -36,8 +37,8 @@ __all__ = [
 ]
 
 # Default tolerance for nodal equation validation
-DEFAULT_NODAL_EQUATION_TOLERANCE = 1e-3
-DEFAULT_NODAL_EQUATION_CLIP_AWARE = True
+DEFAULT_NODAL_EQUATION_TOLERANCE = CORE_DEFAULTS["NODAL_EQUATION_TOLERANCE"]
+DEFAULT_NODAL_EQUATION_CLIP_AWARE = CORE_DEFAULTS["NODAL_EQUATION_CLIP_AWARE"]
 
 
 class NodalEquationViolation(Exception):
@@ -76,12 +77,18 @@ class NodalEquationViolation(Exception):
         self.tolerance = tolerance
         self.details = details or {}
 
-        error = abs(measured_depi_dt - expected_depi_dt)
+        error = self.details.get("error", abs(measured_depi_dt - expected_depi_dt))
+        unit = self.details.get("error_unit", "EPI/time")
+        comparison = (
+            "|EPI_after - EPI_expected|"
+            if unit == "EPI"
+            else "|measured_rate - expected_rate|"
+        )
         super().__init__(
-            f"Nodal equation violation in {operator}: "
-            f"|∂EPI/∂t_measured - νf·ΔNFR| = {error:.3e} > {tolerance:.3e}\n"
-            f"  Measured: {measured_depi_dt:.6f}\n"
-            f"  Expected: {expected_depi_dt:.6f}"
+            f"Declared held-step comparison failed in {operator}: "
+            f"{comparison} = {error:.3e} > {tolerance:.3e} ({unit})\n"
+            f"  Measured rate: {measured_depi_dt:.6f}\n"
+            f"  Expected unprojected rate: {expected_depi_dt:.6f}"
         )
 
 
@@ -129,172 +136,141 @@ def validate_nodal_equation(
     strict: bool = False,
     clip_aware: bool | None = None,
 ) -> bool:
-    """Validate that EPI change respects the nodal equation.
+    """Compare a supplied endpoint with a declared unforced held Euler step.
 
-    Verifies that the change in EPI between before and after states
-    matches the prediction from the nodal equation:
+    Capacity and pressure are read from the current node. This comparison
+    neither authenticates their use over an interval nor turns a named hybrid
+    event into continuous flow. It is opt-in, read-only and excludes Gamma.
 
-        ∂EPI/∂t = νf · ΔNFR(t)
+    ``dt`` must be finite and strictly positive; EPI, capacity and pressure
+    must be finite real scalar data, with nonnegative capacity. Malformed
+    flags, tolerances and active clipping policies raise ``TNFRValueError``.
+    This corrects the former zero-rate fallback for nonpositive time and the
+    silent fallback from an invalid clipping mode to hard clipping.
 
-    Parameters
-    ----------
-    G : TNFRGraph
-        Graph containing the node
-    node : NodeId
-        Node that underwent transformation
-    epi_before : float
-        EPI value before operator application
-    epi_after : float
-        EPI value after operator application
-    dt : float
-        Time step (typically 1.0 for discrete operator applications)
-    operator_name : str, optional
-        Name of the operator for error reporting
-    tolerance : float, optional
-        Absolute tolerance for equation validation.
-        If None, uses graph configuration or default (1e-3).
-    strict : bool, default False
-        If True, raises NodalEquationViolation on failure.
-        If False, returns validation result without raising.
-    clip_aware : bool, optional
-        If True, validates using structural_clip to account for boundary
-        preservation: EPI_expected = structural_clip(EPI_theoretical).
-        If False, uses classic mode without clip adjustment.
-        If None, uses graph configuration or default (True).
+    The default tolerance comes from ``CORE_DEFAULTS`` (currently 1e-9),
+    overridden by ``NODAL_EQUATION_TOLERANCE`` or the explicit argument.
+    For compatibility, its units remain EPI when ``clip_aware=True`` and
+    EPI/time otherwise. Strict failures record ``error_unit`` accordingly.
+    A negative or nonfinite tolerance is invalid, including boolean inputs.
 
-    Returns
-    -------
-    bool
-        True if equation is satisfied within tolerance, False otherwise
-
-    Raises
-    ------
-    NodalEquationViolation
-        If strict=True and validation fails
-
-    Notes
-    -----
-    The nodal equation is validated using the post-transformation νf and ΔNFR
-    values, as these represent the structural state after the operator effect.
-
-    For discrete operator applications, dt is typically 1.0, making the
-    validation equivalent to: (epi_after - epi_before) ≈ νf_after · ΔNFR_after
-
-    **Clip-aware mode** (default): When structural_clip intervenes to preserve
-    boundaries, the actual EPI differs from the theoretical prediction. This
-    mode accounts for boundary preservation by applying structural_clip to the
-    theoretical value before comparison:
-
-        EPI_expected = structural_clip(EPI_before + νf · ΔNFR · dt)
-
-    This ensures validation passes when clip interventions are legitimate parts
-    of the operator's structural boundary preservation.
-
-    **Classic mode** (clip_aware=False): Validates without clip adjustment,
-    useful for detecting when unexpected clipping occurs.
-
-    Examples
-    --------
-    >>> from tnfr.structural import create_nfr
-    >>> G, node = create_nfr("test", epi=0.5, vf=1.0, dnfr=0.1)
-    >>> epi_before = G.nodes[node]["EPI"]
-    >>> # Apply some transformation...
-    >>> epi_after = G.nodes[node]["EPI"]
-    >>> is_valid = validate_nodal_equation(G, node, epi_before, epi_after, dt=1.0)
+    Clip-aware comparison uses ``EPI_MIN``, ``EPI_MAX``, ``CLIP_MODE`` and
+    ``CLIP_SOFT_K`` from the declared configuration. Like ``DefaultIntegrator``,
+    it preserves EPI when the represented Euler proposal equals its old value,
+    including zero capacity and rounded-away increments; it does not apply
+    a soft knee repeatedly to an unchanged coordinate. A classic comparison
+    instead checks the unprojected rate. No graph or clip statistics are written.
     """
-    if tolerance is None:
-        # Try graph configuration first, then use default constant
-        tolerance = float(
-            G.graph.get("NODAL_EQUATION_TOLERANCE", DEFAULT_NODAL_EQUATION_TOLERANCE)
-        )
+    data = G.nodes[node]
+    return _validate_held_nodal_step(
+        G.graph,
+        epi_before=epi_before,
+        epi_after=epi_after,
+        dt=dt,
+        vf=_first_present(data, ALIAS_VF),
+        dnfr=_first_present(data, ALIAS_DNFR),
+        operator_name=operator_name,
+        tolerance=tolerance,
+        strict=strict,
+        clip_aware=clip_aware,
+    )
 
+
+def _validate_held_nodal_step(
+    configuration: Mapping[str, Any],
+    *,
+    epi_before: Any,
+    epi_after: Any,
+    dt: Any,
+    vf: Any,
+    dnfr: Any,
+    operator_name: str = "unknown",
+    tolerance: Any = None,
+    strict: Any = False,
+    clip_aware: Any = None,
+) -> bool:
+    """Pure common comparison for current node data and uncommitted proposals.
+
+    All inputs are caller-supplied; agreement is not causal execution evidence.
+    This is the held unforced Euler map with the engine's represented no-change
+    boundary rule, not a solver, pressure refresh or generic operator contract.
+    """
+    from ..dynamics._euler_kernel import euler_update
+
+    before = _canonical_epi_scalar(epi_before, "epi_before")
+    after = _canonical_epi_scalar(epi_after, "epi_after")
+    step = _finite_real_scalar(dt, "dt")
+    capacity = _finite_real_scalar(vf, "vf")
+    pressure = _finite_real_scalar(dnfr, "dnfr")
+    if step <= 0.0:
+        raise TNFRValueError("dt must be strictly positive.")
+    if capacity < 0.0:
+        raise TNFRValueError("vf must be nonnegative.")
+    if tolerance is None:
+        tolerance = configuration.get(
+            "NODAL_EQUATION_TOLERANCE", DEFAULT_NODAL_EQUATION_TOLERANCE
+        )
+    tolerance = _finite_real_scalar(tolerance, "NODAL_EQUATION_TOLERANCE")
+    if tolerance < 0.0:
+        raise TNFRValueError("NODAL_EQUATION_TOLERANCE must be nonnegative.")
     if clip_aware is None:
-        # Try graph configuration first, then use default
-        clip_aware = G.graph.get(
+        clip_aware = configuration.get(
             "NODAL_EQUATION_CLIP_AWARE", DEFAULT_NODAL_EQUATION_CLIP_AWARE
         )
+    for flag, label in ((strict, "strict"), (clip_aware, "NODAL_EQUATION_CLIP_AWARE")):
+        if not isinstance(flag, bool):
+            raise TNFRValueError(f"{label} must be a boolean.")
 
-    # Measured rate of EPI change
-    measured_depi_dt = (epi_after - epi_before) / dt if dt > 0 else 0.0
-
-    # Expected rate from nodal equation: νf · ΔNFR
-    # Use post-transformation values as they represent the new structural state
-    expected_depi_dt = compute_expected_depi_dt(G, node)
-
+    measured = _finite_real_scalar((after - before) / step, "measured rate")
+    expected = _finite_real_scalar(capacity * pressure, "expected rate")
+    theoretical = _finite_real_scalar(
+        euler_update(before, step, expected), "Euler EPI proposal"
+    )
+    expected_epi = theoretical
     if clip_aware:
-        # Clip-aware mode: apply structural_clip to theoretical EPI before comparison
-        from ..dynamics.structural_clip import structural_clip
+        from ..dynamics.structural_clip import resolve_clip_policy, structural_clip
 
-        # Get structural boundaries from graph configuration
-        epi_min = float(G.graph.get("EPI_MIN", -1.0))
-        epi_max = float(G.graph.get("EPI_MAX", 1.0))
-        clip_mode = G.graph.get("CLIP_MODE", "hard")
-
-        # Compute theoretical EPI based on nodal equation
-        epi_theoretical = epi_before + (expected_depi_dt * dt)
-
-        # Validate and normalize clip_mode
-        clip_mode_str = str(clip_mode).lower()
-        if clip_mode_str not in ("hard", "soft"):
-            clip_mode_str = "hard"  # Default to safe fallback
-
-        # Apply structural_clip to get expected EPI (what the operator should produce)
-        epi_expected = structural_clip(
-            epi_theoretical, lo=epi_min, hi=epi_max, mode=clip_mode_str  # type: ignore[arg-type]
-        )
-
-        # Validate against clipped expected value
-        error = abs(epi_after - epi_expected)
-        is_valid = error <= tolerance
-
-        if not is_valid and strict:
-            vf = _get_node_attr(G, node, ALIAS_VF)
-            dnfr = _get_node_attr(G, node, ALIAS_DNFR)
-
-            raise NodalEquationViolation(
-                operator=operator_name,
-                measured_depi_dt=measured_depi_dt,
-                expected_depi_dt=expected_depi_dt,
-                tolerance=tolerance,
-                details={
-                    "epi_before": epi_before,
-                    "epi_after": epi_after,
-                    "epi_theoretical": epi_theoretical,
-                    "epi_expected": epi_expected,
-                    "dt": dt,
-                    "vf": vf,
-                    "dnfr": dnfr,
-                    "error": error,
-                    "clip_aware": True,
-                    "clip_intervened": abs(epi_theoretical - epi_expected) > 1e-10,
-                },
+        try:
+            lower, upper, mode, steepness = resolve_clip_policy(configuration)
+            projected = structural_clip(
+                theoretical,
+                lo=lower,
+                hi=upper,
+                mode=mode,
+                k=steepness,
+                record_stats=False,
             )
+        except ValueError as exc:
+            raise TNFRValueError(f"Invalid held-step clipping policy: {exc}") from exc
+        expected_epi = before if theoretical == before else projected
+        error = abs(after - expected_epi)
+        unit = "EPI"
     else:
-        # Classic mode: validate rate of change directly
-        error = abs(measured_depi_dt - expected_depi_dt)
-        is_valid = error <= tolerance
-
-        if not is_valid and strict:
-            vf = _get_node_attr(G, node, ALIAS_VF)
-            dnfr = _get_node_attr(G, node, ALIAS_DNFR)
-
-            raise NodalEquationViolation(
-                operator=operator_name,
-                measured_depi_dt=measured_depi_dt,
-                expected_depi_dt=expected_depi_dt,
-                tolerance=tolerance,
-                details={
-                    "epi_before": epi_before,
-                    "epi_after": epi_after,
-                    "dt": dt,
-                    "vf": vf,
-                    "dnfr": dnfr,
-                    "error": error,
-                    "clip_aware": False,
-                },
-            )
-
-    return is_valid
+        error = abs(measured - expected)
+        unit = "EPI/time"
+    error = _finite_real_scalar(error, "held-step comparison error")
+    valid = error <= tolerance
+    if strict and not valid:
+        raise NodalEquationViolation(
+            operator=operator_name,
+            measured_depi_dt=measured,
+            expected_depi_dt=expected,
+            tolerance=tolerance,
+            details={
+                "epi_before": before,
+                "epi_after": after,
+                "epi_theoretical": theoretical,
+                "epi_expected": expected_epi,
+                "dt": step,
+                "vf": capacity,
+                "dnfr": pressure,
+                "error": error,
+                "error_unit": unit,
+                "clip_aware": clip_aware,
+                "clip_intervened": theoretical != expected_epi,
+            },
+        )
+    return valid
 
 
 @dataclass(frozen=True, slots=True)

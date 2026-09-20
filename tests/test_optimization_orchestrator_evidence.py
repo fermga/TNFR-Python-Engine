@@ -9,11 +9,55 @@ import networkx as nx
 import numpy as np
 import pytest
 
+from tnfr.dynamics.nodal_optimizer import NodalEquationOptimizer
 from tnfr.dynamics.optimization_orchestrator import (
+    OptimizationProfile,
     OptimizationResult,
     OptimizationStrategy,
     TNFROptimizationOrchestrator,
 )
+
+
+def test_explicit_service_survives_automatic_size_preferences():
+    orchestrator = _bare(nodal_optimizer=_NodalProposal())
+    graph = _graph(2)
+    profile = orchestrator.analyze_optimization_profile(graph, "general")
+    assert OptimizationStrategy.NODAL_VECTORIZED not in profile.available_strategies
+    result = orchestrator.optimize_graph_operation(
+        graph, "general", strategy=OptimizationStrategy.NODAL_VECTORIZED, dt=0.1
+    )
+    assert result.strategy_used is OptimizationStrategy.NODAL_VECTORIZED
+    assert result.accuracy_preserved is True
+    assert result.details["state_committed"] is False
+
+
+def test_unavailable_requested_service_is_not_replaced_by_another_computation():
+    orchestrator = _bare()
+    result = orchestrator.optimize_graph_operation(
+        _graph(), "general", strategy=OptimizationStrategy.ADELIC_CACHE
+    )
+    assert result.strategy_used is OptimizationStrategy.ADELIC_CACHE
+    assert result.accuracy_preserved is False
+    assert "not available" in result.details["error"]
+
+
+def test_directed_density_and_automatic_sentinel_keep_their_meaning():
+    orchestrator = _bare()
+    graph = nx.DiGraph([(0, 1), (1, 2)])
+    assert orchestrator.analyze_optimization_profile(graph).edge_density == nx.density(
+        graph
+    )
+    profile = OptimizationProfile(
+        available_strategies=[OptimizationStrategy.STRUCTURAL_MEMO]
+    )
+    assert (
+        orchestrator.select_optimal_strategy(profile, OptimizationStrategy.AUTO)
+        is OptimizationStrategy.STRUCTURAL_MEMO
+    )
+    with pytest.raises(ValueError, match="No executable"):
+        orchestrator.select_optimal_strategy(
+            OptimizationProfile(available_strategies=[])
+        )
 
 
 def _graph(size: int = 2) -> nx.Graph:
@@ -114,6 +158,30 @@ def test_nodal_route_rejects_a_finite_but_incorrect_proposal() -> None:
     assert result.details["accuracy_verification"]["passed"] is False
     assert result.details["accuracy_verification"]["max_nodal_residual"] > 0.1
     assert orchestrator.strategy_performance == {}
+
+
+@pytest.mark.parametrize("epi", [1e308, -1e308])
+def test_nodal_verifier_preserves_large_uniform_form_consensus(epi) -> None:
+    graph = nx.complete_graph(4)
+    for node in graph:
+        graph.nodes[node].update(EPI=epi, nu_f=1.0, theta=0.0)
+    orchestrator = _bare(nodal_optimizer=NodalEquationOptimizer(enable_cache=False))
+
+    result = orchestrator.execute_optimization(
+        graph,
+        "nodal_evolution",
+        OptimizationStrategy.NODAL_VECTORIZED,
+        dt=0.1,
+    )
+
+    # Every edge difference is exactly zero. A rounded matrix with thirds
+    # previously invented a huge residual for this unchanged equilibrium.
+    verification = result.details["accuracy_verification"]
+    assert result.accuracy_preserved is True
+    assert verification["pressure_realization"] == "shared_edge_differences"
+    assert verification["max_nodal_residual"] == 0.0
+    assert result.details["state_committed"] is False
+    assert all(graph.nodes[node]["EPI"] == epi for node in graph)
 
 
 def _entry(*, xi_c: float = 0.0):

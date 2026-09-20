@@ -217,7 +217,7 @@ from collections.abc import Hashable, Iterable, Mapping, MutableMapping, Sequenc
 from dataclasses import dataclass, field
 from fractions import Fraction
 from functools import cache
-from itertools import combinations
+from itertools import combinations, islice
 from operator import ge, le
 from statistics import StatisticsError, fmean
 from types import ModuleType
@@ -227,6 +227,11 @@ from .._compat import TypeAlias
 from .._remesh_contract import (
     DelayedRemeshConfiguration,
     materialize_delayed_remesh_configuration,
+)
+from .._runtime_steps import (
+    RUNTIME_STEP_NEXT_KEY,
+    RUNTIME_STEP_UNSET,
+    resolve_runtime_step_index,
 )
 from ..alias import get_attr, set_attr
 from ..constants import DEFAULTS, REMESH_DEFAULTS, get_param
@@ -1871,7 +1876,14 @@ def _ensure_raw_remesh_history(
     replaced = False
     if maxlen == 0:
         if type(history) is HistoryDict:
-            history = dict(_runtime_mapping_items(history))
+            history = {
+                key: (
+                    list(deque.__iter__(value))
+                    if deque in _runtime_class_mro(type(value))
+                    else value
+                )
+                for key, value in _runtime_mapping_items(history)
+            }
             replaced = True
         elif not present or history is None:
             history = {}
@@ -1889,14 +1901,28 @@ def _ensure_raw_remesh_history(
             safe_source: dict[Any, Any] = {}
             for key, value in source_items:
                 owners = _runtime_class_mro(type(value))
-                safe_source[key] = (
-                    list(list.__iter__(value)) if list in owners else value
-                )
+                if list in owners:
+                    safe_source[key] = list(list.__iter__(value))
+                elif deque in owners:
+                    safe_source[key] = list(deque.__iter__(value))
+                else:
+                    safe_source[key] = value
             history = HistoryDict(safe_source, maxlen=maxlen)
             replaced = True
-        excess = len(_runtime_mapping_items(history)) - maxlen
-        if excess > 0:
-            history.pop_least_used_batch(excess)
+        else:
+            # Raw writes can insert a new list without HistoryDict's normal
+            # access path. Bound each such series, never the number of keys.
+            for key, value in _runtime_mapping_items(history):
+                owners = _runtime_class_mro(type(value))
+                if list in owners:
+                    series = deque(list.__iter__(value), maxlen=maxlen)
+                elif deque in owners:
+                    if deque.maxlen.__get__(value) == maxlen:
+                        continue
+                    series = deque(deque.__iter__(value), maxlen=maxlen)
+                else:
+                    continue
+                _set_runtime_mapping_item(history, key, series)
     if replaced:
         _set_runtime_mapping_item(graph_mapping, "history", history)
     if history is None:
@@ -1905,8 +1931,31 @@ def _ensure_raw_remesh_history(
     return history
 
 
-def _raw_current_step_idx(history: MutableMapping[Any, Any]) -> int:
-    """Read the telemetry step without graph or mapping virtual methods."""
+def _raw_runtime_step_marker(
+    graph_mapping: MutableMapping[Any, Any],
+) -> Any:
+    """Read the ordinal marker without dispatching custom scalar conversions."""
+
+    present, raw = _raw_string_entry(
+        graph_mapping, RUNTIME_STEP_NEXT_KEY, RUNTIME_STEP_UNSET
+    )
+    if (
+        present
+        and type(raw) is not int
+        and type(raw) not in _NUMPY_EXACT_INTEGER_SCALAR_TYPES
+    ):
+        raise TNFRValueError(f"{RUNTIME_STEP_NEXT_KEY} must be a nonnegative integer")
+    return raw
+
+
+def _raw_current_step_idx(
+    graph_mapping: MutableMapping[Any, Any], history: MutableMapping[Any, Any]
+) -> int:
+    """Read execution chronology, with retained samples as a legacy fallback."""
+
+    next_index = _raw_runtime_step_marker(graph_mapping)
+    if next_index is not RUNTIME_STEP_UNSET:
+        return resolve_runtime_step_index(next_index)
 
     present, steps = _raw_string_entry(history, "C_steps", None)
     if not present or steps is None:
@@ -1917,12 +1966,14 @@ def _raw_current_step_idx(history: MutableMapping[Any, Any]) -> int:
 def _append_raw_history_event(
     history: MutableMapping[Any, Any],
     meta: RemeshMeta,
+    *,
+    maxlen: int,
 ) -> Any:
     """Append one event through built-in list/deque primitives."""
 
     present, events = _raw_string_entry(history, "remesh_events", None)
     if not present:
-        events = []
+        events = deque(maxlen=maxlen) if maxlen else []
         _set_runtime_mapping_item(history, "remesh_events", events)
     owners = _runtime_class_mro(type(events))
     record = dict(meta)
@@ -1965,7 +2016,9 @@ def _log_remesh_event(
             graph_mapping,
             maxlen=history_maxlen,
         )
-        logged_events = _append_raw_history_event(logged_history, meta)
+        logged_events = _append_raw_history_event(
+            logged_history, meta, maxlen=history_maxlen
+        )
         try:
             logged_signature = structural_proof_signature(
                 logged_events,
@@ -2312,7 +2365,7 @@ def apply_network_remesh(
             layout.graph_mapping,
             maxlen=history_maxlen,
         )
-        step_idx = _raw_current_step_idx(history)
+        step_idx = _raw_current_step_idx(layout.graph_mapping, history)
         raw_mean_after = _finite_remesh_mean(
             tuple(proposal.raw_epi for proposal in plan.proposals),
             label="raw REMESH proposal mean",
@@ -2858,6 +2911,14 @@ def apply_topological_remesh(
         G.add_edges_from(new_edges)
 
 
+def _retained_tail(series: Sequence[float], window: int) -> Sequence[float]:
+    """Read a chronological sample window from lists or bounded deques."""
+
+    if isinstance(series, deque):
+        return tuple(islice(reversed(series), window))[::-1]
+    return series[-window:]
+
+
 def _extra_gating_ok(
     hist: MutableMapping[str, Sequence[float]],
     cfg: Mapping[str, RemeshConfigValue],
@@ -2874,7 +2935,7 @@ def _extra_gating_ok(
     for hist_key, cfg_key, op in checks:
         series = hist.get(hist_key)
         if series is not None and len(series) >= w_estab:
-            win = series[-w_estab:]
+            win = _retained_tail(series, w_estab)
             avg = sum(win) / len(win)
             threshold = _as_float(cfg[cfg_key])
             if not op(avg, threshold):
@@ -2887,7 +2948,13 @@ def apply_remesh_if_globally_stable(
     stable_step_window: int | None = None,
     **kwargs: Any,
 ) -> None:
-    """Trigger remeshing when global stability indicators satisfy thresholds."""
+    """Trigger remeshing when global stability indicators satisfy thresholds.
+
+    Cooldown counts runtime ordinals when the runtime has established an epoch.
+    Standalone callers retain the historical stable-sample-count convention.
+    Changing between these incomparable bases starts a fresh cooldown on the
+    next successful application; physical-time cooldown remains independent.
+    """
 
     from ..glyph_history import ensure_history
 
@@ -2951,25 +3018,31 @@ def apply_remesh_if_globally_stable(
     sf = hist.setdefault("stable_frac", [])
     if len(sf) < w_estab:
         return
-    win_sf = sf[-w_estab:]
+    win_sf = _retained_tail(sf, w_estab)
     if not all(v >= frac_req for v in win_sf):
         return
     if cfg["REMESH_REQUIRE_STABILITY"] and not _extra_gating_ok(hist, cfg, w_estab):
         return
 
-    last = G.graph.get("_last_remesh_step", -(10**9))
-    step_idx = len(sf)
-    if step_idx - last < cfg[COOLDOWN_KEY]:
-        return
+    next_index = _raw_runtime_step_marker(G.graph)
+    runtime_basis = next_index is not RUNTIME_STEP_UNSET
+    step_idx = resolve_runtime_step_index(next_index, fallback=len(sf))
+    step_basis = "runtime" if runtime_basis else "stable_samples"
+    last_basis = G.graph.get("_last_remesh_step_basis", "stable_samples")
+    if last_basis == step_basis and "_last_remesh_step" in G.graph:
+        if step_idx - G.graph["_last_remesh_step"] < cfg[COOLDOWN_KEY]:
+            return
     t_now = _as_float(G.graph.get("_t", 0.0))
-    last_ts = _as_float(G.graph.get("_last_remesh_ts", -1e12))
-    if cfg["REMESH_COOLDOWN_TS"] > 0 and (t_now - last_ts) < cfg["REMESH_COOLDOWN_TS"]:
-        return
+    if cfg["REMESH_COOLDOWN_TS"] > 0 and "_last_remesh_ts" in G.graph:
+        last_ts = _as_float(G.graph["_last_remesh_ts"])
+        if (t_now - last_ts) < cfg["REMESH_COOLDOWN_TS"]:
+            return
 
     result = apply_network_remesh(G)
     if not result.applied:
         return
     G.graph["_last_remesh_step"] = step_idx
+    G.graph["_last_remesh_step_basis"] = step_basis
     G.graph["_last_remesh_ts"] = t_now
 
 

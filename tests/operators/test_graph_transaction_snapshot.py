@@ -7,7 +7,7 @@ import io
 import logging
 import re
 import threading
-from collections import defaultdict, deque
+from collections import Counter, defaultdict, deque
 from datetime import date, datetime, time, timedelta, timezone
 from decimal import Decimal
 from enum import Enum
@@ -19,13 +19,77 @@ import networkx as nx
 import pytest
 
 from tnfr.errors import TNFRValueError
+from tnfr.glyph_history import HistoryDict
 from tnfr.operators.event_runtime import execute_operator_event_schedule
 from tnfr.operators.event_timing import (
     build_operator_event_schedule,
     build_physical_flow_partition,
 )
-from tnfr.operators.network_stage import GraphTransactionSnapshot
+from tnfr.operators.network_stage import GraphTransactionSnapshot, _detached_stage_graph
 from tnfr.utils import CallbackEvent, CallbackSpec, callback_manager
+
+
+def test_snapshot_restores_bounded_history_and_its_counter_state() -> None:
+    graph = nx.Graph()
+    history = HistoryDict({"C_steps": [0.7, 0.8]}, maxlen=2)
+    graph.graph["history"] = history
+    snapshot = GraphTransactionSnapshot(graph)
+
+    history.get_increment("C_steps").append(0.9)
+    snapshot.restore(graph)
+
+    assert graph.graph["history"] is history
+    assert list(history["C_steps"]) == [0.7, 0.8]
+    assert history._counts == Counter({"C_steps": 0})
+
+
+def test_stage_detaches_canonical_history_without_breaking_aliases_or_cycles() -> None:
+    graph = nx.Graph()
+    history = HistoryDict({"C_steps": [0.7, 0.8]}, maxlen=2)
+    history["self"] = history
+    graph.graph.update(history=history, history_alias=history)
+
+    snapshot = _detached_stage_graph(graph)
+    detached = snapshot.graph["history"]
+    assert detached is not history
+    assert snapshot.graph["history_alias"] is detached
+    assert detached["self"] is detached
+    detached["C_steps"].append(0.9)
+    assert list(history["C_steps"]) == [0.7, 0.8]
+
+
+def test_snapshot_rejects_counter_subclass_copy_hook_without_invocation() -> None:
+    calls = []
+
+    class CustomCounts(Counter):
+        def __reduce__(self):
+            calls.append("reduce")
+            return Counter, ()
+
+    graph = nx.Graph()
+    history = HistoryDict({"C_steps": [0.7]}, maxlen=2)
+    history._counts = CustomCounts(history._counts)
+    graph.graph["history"] = history
+    with pytest.raises(TNFRValueError, match="cannot be snapshotted"):
+        GraphTransactionSnapshot(graph)
+    assert calls == []
+
+
+def test_snapshot_rejects_modified_counter_protocol_without_invocation(
+    monkeypatch,
+) -> None:
+    calls = []
+    graph = nx.Graph()
+    graph.graph["history"] = HistoryDict({"C_steps": [0.7]}, maxlen=2)
+
+    def custom_reduce(self):
+        calls.append("reduce")
+        return Counter, ()
+
+    monkeypatch.setattr(Counter, "__reduce__", custom_reduce)
+    with pytest.raises(TNFRValueError, match="cannot be snapshotted"):
+        GraphTransactionSnapshot(graph)
+    assert calls == []
 
 
 @pytest.mark.parametrize(

@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-import math
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
 from typing import Any
 
+from .._exact_time import finite_represented_real
 from ..constants.canonical import DELTA_PHI_MAX
-from ..mathematics.unified_numerical import np
 from ..utils import angle_diff
 
 __all__ = [
@@ -41,24 +40,13 @@ class U3PhaseNeighborSet:
 
 
 def _finite_real(value: Any, label: str, condition: str) -> float:
-    if isinstance(value, (bool, np.bool_)):
-        raise U3PhaseGateError(
-            f"{label} must be a finite real scalar, not boolean",
-            failed_condition=condition,
-        )
     try:
-        resolved = float(value)
+        return finite_represented_real(value, label)[0]
     except (OverflowError, TypeError, ValueError) as exc:
         raise U3PhaseGateError(
-            f"{label} must be a finite real scalar",
+            str(exc),
             failed_condition=condition,
         ) from exc
-    if not math.isfinite(resolved):
-        raise U3PhaseGateError(
-            f"{label} must be a finite real scalar",
-            failed_condition=condition,
-        )
-    return resolved
 
 
 def phase_limit_is_canonical(

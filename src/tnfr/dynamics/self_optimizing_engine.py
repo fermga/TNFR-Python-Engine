@@ -985,21 +985,21 @@ class TNFRSelfOptimizingEngine:
         self, G: Any, operation_type: str = "general", **kwargs
     ) -> dict[str, Any]:
         """
-        Automatically apply best optimization strategy.
+        Apply one configured recommendation through the computation dispatcher.
 
-        Uses learned policies and mathematical analysis to select and apply
-        the optimal strategy.
+        Registered strategy tokens and explicit legacy hints are executable;
+        other diagnostic hints defer to the orchestrator's automatic policy.
+        This selects a candidate, not a proved optimal or emergent nodal law.
         """
         exec_kwargs = dict(kwargs)
         dry_run = bool(exec_kwargs.pop("dry_run", False))
         capture_snapshots = bool(exec_kwargs.pop("capture_snapshots", dry_run))
         seed_value = exec_kwargs.pop("seed", exec_kwargs.pop("random_seed", None))
-        node_label = (
-            exec_kwargs.pop("node", None)
-            or exec_kwargs.pop("node_id", None)
-            or exec_kwargs.pop("target_node", None)
-            or exec_kwargs.pop("focus_node", None)
-        )
+        node_aliases = [
+            exec_kwargs.pop(key, None)
+            for key in ("node", "node_id", "target_node", "focus_node")
+        ]
+        node_label = next((value for value in node_aliases if value is not None), None)
         partition_label = exec_kwargs.pop("partition_id", None)
         report_label = partition_label if partition_label is not None else node_label
         output_dir = exec_kwargs.pop("output_dir", _DEFAULT_OUTPUT_DIR)
@@ -1067,21 +1067,25 @@ class TNFRSelfOptimizingEngine:
         if recommendations.recommended_strategies and self.orchestrator:
             best_strategy = recommendations.recommended_strategies[0]
 
-            # Map strategy name to OptimizationStrategy enum
+            # Learned experiences store enum values. Resolve those exact tokens
+            # first; substring matches previously lost nodal_vec/spectral_fft
+            # and could execute an unrelated service from a descriptive hint.
             strategy_mapping = {
-                "spectral_methods": OptimizationStrategy.SPECTRAL_FFT,
-                "vectorized": OptimizationStrategy.NODAL_VECTORIZED,
-                "cache": OptimizationStrategy.ADELIC_CACHE,
-                "structural": OptimizationStrategy.STRUCTURAL_MEMO,
-                "hybrid": OptimizationStrategy.HYBRID,
+                strategy.value: strategy for strategy in OptimizationStrategy
             }
-
-            # Find matching strategy
-            optimization_strategy = OptimizationStrategy.AUTO
-            for name_part, strategy in strategy_mapping.items():
-                if name_part in best_strategy.lower():
-                    optimization_strategy = strategy
-                    break
+            strategy_mapping.update(
+                {
+                    "spectral_methods": OptimizationStrategy.SPECTRAL_FFT,
+                    "use_spectral_methods": OptimizationStrategy.SPECTRAL_FFT,
+                    "vectorized": OptimizationStrategy.NODAL_VECTORIZED,
+                    "cache": OptimizationStrategy.ADELIC_CACHE,
+                    "structural": OptimizationStrategy.STRUCTURAL_MEMO,
+                    "hybrid": OptimizationStrategy.HYBRID,
+                }
+            )
+            optimization_strategy = strategy_mapping.get(
+                best_strategy, OptimizationStrategy.AUTO
+            )
 
             # Capture a baseline for finite structural-balance diagnostics.
             conservation_before = None
@@ -1175,7 +1179,7 @@ class TNFRSelfOptimizingEngine:
                         "density": profile.edge_density,
                     },
                     operation_type=operation_type,
-                    strategy_used=optimization_strategy.value,
+                    strategy_used=result.strategy_used.value,
                     parameters=exec_kwargs,
                     performance_metrics=perf_metrics,
                     timestamp=time.time(),
@@ -1189,7 +1193,8 @@ class TNFRSelfOptimizingEngine:
                 )
                 return {
                     "optimization_result": result,
-                    "strategy_used": optimization_strategy.value,
+                    "strategy_used": result.strategy_used.value,
+                    "requested_strategy": optimization_strategy.value,
                     "recommendations": recommendations,
                     "learning_updated": True,
                     "balance_diagnostics": conservation_result,

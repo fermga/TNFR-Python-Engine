@@ -8,6 +8,7 @@ import networkx as nx
 import pytest
 
 from tnfr.physics import forcing_realization as realization
+from tnfr.physics._cycle_algebra import dirichlet_energy, dot, laplacian_action
 from tnfr.physics.forcing_realization import (
     capture_non_epi_forcing,
     observe_forcing_capacity_difference,
@@ -155,6 +156,111 @@ def test_disabled_capacity_channel_does_not_imply_constant_capacity_differences(
     assert result.capacity_change == (0, 1, -1)
     assert result.capacity_pressure_change == (0, 0, 0)
     assert result.component_capacity_offsets == (None,)
+
+
+@pytest.mark.parametrize("closing_weight", (F(3, 4), F(1), F(5, 4)))
+def test_capacity_smoothing_can_create_nonzero_signed_source_compatibility(
+    closing_weight,
+):
+    """A declared convex map is neither writer admission nor a prepared lock."""
+    graph = nx.cycle_graph(5)
+    graph.edges[0, 4]["weight"] = float(closing_weight)
+    width, mu = F(1, 4096), F(1, 2)
+    capacity = (F(1), F(1), 1 + width, F(1), F(1))
+    # Exact full-support half-averaging on one center bump. These are
+    # independently supplied detached states; no policy gate is executed.
+    following = (F(1), 1 + width / 4, 1 + width / 2, 1 + width / 4, F(1))
+    common = dict(
+        graph=graph,
+        epi=(F(1, 8),) * 5,
+        phase=(0.0,) * 5,
+        stored=(0.0,) * 5,
+        weights={"phase": 0.5, "epi": 0.25, "vf": 0.25, "topo": 0.0},
+    )
+    before, after = _capture(capacity, **common), _capture(following, **common)
+    result = observe_forcing_capacity_difference(before, after)
+    f = dict(before.normalized_weights)["vf"]
+    assert f == F(1, 4)
+    assert result.before.capacity == capacity and result.after.capacity == following
+    assert result.epi_offset == result.phase_offset == 0
+    assert not any(result.phase_realization_change)
+    assert max(following) - min(following) == width / 2
+    assert max(capacity) - min(capacity) == width
+    assert dirichlet_energy(capacity) == width**2
+    assert dirichlet_energy(following) == width**2 / 8
+
+    # Endpoint strengths differ from the unique-support degree two. The
+    # capacity source is zero-sum only in the latter, unweighted measure.
+    strengths = tuple(
+        sum(weight for i, _, weight in result.before.conductance if i == node)
+        for node in range(5)
+    )
+    assert strengths == (1 + closing_weight, F(2), F(2), F(2), 1 + closing_weight)
+    b_before = dot(strengths, result.modeled_pressure_before)
+    b_after = dot(strengths, result.modeled_pressure_after)
+    assert b_before == 0
+    assert b_after == mu * f * (closing_weight - 1) * width / 2
+    assert b_after - b_before == dot(strengths, result.capacity_pressure_change)
+    assert result.identity_residual == result.stored_identity_residual == (0,) * 5
+    if closing_weight == F(3, 4):
+        assert b_after == -mu * f * width / 8 < 0
+        assert abs(b_after) > abs(b_before)
+    elif closing_weight == 1:
+        assert b_after == 0
+    else:
+        assert b_after > 0
+
+
+def test_masked_capacity_compatibility_change_uses_a_signed_geometry_covector():
+    """The compatibility cross term differs from capacity-energy dissipation."""
+    graph = nx.cycle_graph(5)
+    graph.edges[0, 4]["weight"] = 0.75
+    capacity = (F(1), F(9, 8), F(17, 16), F(1), F(5, 4))
+    eligible, mu = {0, 2, 4}, F(1, 2)
+    support_action = laplacian_action(capacity)
+    masked_action = tuple(
+        value if i in eligible else F(0) for i, value in enumerate(support_action)
+    )
+    following = tuple(
+        value - mu * action
+        for value, action in zip(capacity, masked_action, strict=True)
+    )
+    common = dict(
+        graph=graph,
+        epi=(0.125,) * 5,
+        phase=(0.0,) * 5,
+        stored=(0.0,) * 5,
+        weights={"phase": 0.5, "epi": 0.25, "vf": 0.25, "topo": 0.0},
+    )
+    before, after = _capture(capacity, **common), _capture(following, **common)
+    result = observe_forcing_capacity_difference(before, after)
+    strengths = tuple(
+        sum(weight for i, _, weight in result.before.conductance if i == node)
+        for node in range(5)
+    )
+    assert strengths == (F(7, 4), F(2), F(2), F(2), F(7, 4))
+    capacity_weight = dict(before.normalized_weights)["vf"]
+    compatibility_change = dot(
+        strengths,
+        tuple(
+            right - left
+            for left, right in zip(
+                result.modeled_pressure_before,
+                result.modeled_pressure_after,
+                strict=True,
+            )
+        ),
+    )
+    assert compatibility_change == mu * capacity_weight * dot(
+        laplacian_action(strengths), masked_action
+    )
+    assert compatibility_change == dot(strengths, result.capacity_pressure_change)
+    assert compatibility_change != 0
+    assert result.epi_offset == result.phase_offset == 0
+    assert not any(result.phase_realization_change)
+    # The averaging mask and blend are mathematical inputs, not an observed
+    # outcome of freshness, Si eligibility, counters or physical timing.
+    assert result.identity_residual == result.stored_identity_residual == (0,) * 5
 
 
 def test_snapshot_and_pressure_caches_are_rebuilt(observations):

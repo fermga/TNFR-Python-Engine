@@ -21,7 +21,7 @@ Common Key Prefixes
 - ``_coherence_temp``: Coherence matrix temporary buffers
 - ``_dnfr_prep_buffers``: ΔNFR preparation workspace
 
-See docs/CACHING_STRATEGY.md for complete cache documentation.
+See ARCHITECTURE.md and tnfr.utils.cache for cache ownership and invalidation.
 """
 
 from __future__ import annotations

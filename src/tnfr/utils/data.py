@@ -409,6 +409,17 @@ def normalize_weights(
     )
     if not keys_list:
         return {}
+    if not math.isfinite(total):
+        # Positive finite coefficients can have an unrepresentable raw sum.
+        # Normalize in scaled coordinates only on this exceptional path,
+        # preserving the historical ordinary-range operation order.
+        if any(not math.isfinite(w) or w < 0.0 for w in weights.values()):
+            raise TNFRValueError("Weight normalization requires finite coefficients")
+        scale = max(weights.values())
+        if scale > 0.0:
+            scaled = {key: value / scale for key, value in weights.items()}
+            scaled_total = math.fsum(scaled.values())
+            return {key: value / scaled_total for key, value in scaled.items()}
     if total <= 0:
         uniform = 1.0 / len(keys_list)
         return {k: uniform for k in keys_list}

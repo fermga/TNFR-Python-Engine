@@ -11,7 +11,7 @@ claimed Riemann/Yang--Mills bridge. It checks four independent facts:
 * an externally supplied ``log(p)`` diagonal produces a complex unitary after
   applying ``exp(i t nu_f)``;
 * applying ``exp(i M)`` to a selected real-symmetric matrix gives unit-circle
-  eigenvalues, while a separate repository audit reports its own model status.
+  eigenvalues.
 
 These facts compare different operator classes. They do not characterize the
 engine's reachable set, define a map from ``S(T)`` into a graph state, locate an
@@ -55,14 +55,6 @@ try:  # pragma: no cover - exercised only when the package is importable
     _HAVE_ADELIC = True
 except Exception:  # pragma: no cover
     _HAVE_ADELIC = False
-
-# Optional repository audit, reported without identifying its model with RH.
-try:  # pragma: no cover
-    from tnfr.yang_mills import audit_nonabelian_derivability  # noqa: E402
-
-    _HAVE_AUDIT = True
-except Exception:  # pragma: no cover
-    _HAVE_AUDIT = False
 
 TOL = 1e-9
 _ZERO_EIG = 1e-6  # eigenvalues below this have undefined phase
@@ -323,7 +315,7 @@ def test_selected_unitary_input():
 
 
 # --------------------------------------------------------------------------- #
-# TEST 4 -- one selected exponential construction plus an independent audit
+# TEST 4 -- one selected exponential construction
 # --------------------------------------------------------------------------- #
 def test_selected_exponential_map():
     print("=" * 78)
@@ -347,22 +339,7 @@ def test_selected_exponential_map():
     circ_dist = distance_from_real_axis(circ_phases)
     contains_off_axis = circ_dist > 0.3
 
-    # (c) Report the independent repository audit without equating its domain.
-    verdict_line = "audit unavailable; finite matrix comparison only"
-    canon_ok = True
-    if _HAVE_AUDIT:
-        try:
-            report = audit_nonabelian_derivability()
-            any_noncomm = any(c.has_noncommuting_generators for c in report.candidates)
-            verdict_line = (
-                f"{report.verdict} ; "
-                f"non-commuting generators on any route = {any_noncomm}"
-            )
-            canon_ok = report.verdict == "OPEN_DERIVABILITY_GAP" and not any_noncomm
-        except Exception as exc:  # pragma: no cover
-            verdict_line = f"(repository audit unavailable: {exc})"
-
-    ok = real_axis and contains_off_axis and canon_ok
+    ok = real_axis and contains_off_axis
     print(
         f"  (a) phi.A + gamma.L + pi.L^2 + e.exp(-L/2) real-symmetric : "
         f"herm = {m_herm:.2e}, arg-dist = {m_dist:.2e}  (stays on axis)"
@@ -371,7 +348,6 @@ def test_selected_exponential_map():
         f"  (b) exp(i M) has unit-circle eigenvalues                  : "
         f"max arg-dist = {circ_dist:.3f}"
     )
-    print(f"  (c) independent repository audit: {verdict_line}")
     print(
         f"  VERDICT: {'PASS' if ok else 'FAIL'} -- this real combination stays "
         "on {0,pi}, while the explicitly applied exponential does not"

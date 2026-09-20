@@ -41,6 +41,7 @@ from .coherence import (
     _update_sigma,
     register_coherence_callbacks,
 )
+from .common import _equilibrium_tolerances
 from .diagnosis import register_diagnosis_callbacks
 from .glyph_timing import GlyphMetricsHistory, _compute_advanced_metrics
 from .reporting import (
@@ -228,6 +229,9 @@ def _metrics_step(G: TNFRGraph, ctx: dict[str, Any] | None = None) -> None:
         return
 
     spec = _resolve_metrics_verbosity(cfg)
+    eps_dnfr, eps_depi = _equilibrium_tolerances(
+        get_param(G, "EPS_DNFR_STABLE"), get_param(G, "EPS_DEPI_STABLE")
+    )
     # Invalid capacity/time/sample chronology must fail before any history
     # or per-node diagnostic write. The callback does not alter sampled state
     # between this preflight and the private tracker commit below.
@@ -262,8 +266,6 @@ def _metrics_step(G: TNFRGraph, ctx: dict[str, Any] | None = None) -> None:
     # Configured operation-time diagnostics below retain DT. Capacity secants
     # in _track_stability instead use explicitly recorded runtime timestamps.
     dt = float(get_param(G, "DT"))
-    eps_dnfr = float(get_param(G, "EPS_DNFR_STABLE"))
-    eps_depi = float(get_param(G, "EPS_DEPI_STABLE"))
     t = float(G.graph.get("_t", 0.0))
 
     raw_jobs = cfg.get("n_jobs")

@@ -17,16 +17,18 @@ and [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md).
 
 ### Fractal-Resonant Node (NFR)
 
-**What:** **Nodo Fractal Resonante** — a *region of structural coherence coupled to a
-network* (TNFR.pdf §1.4.1), the fundamental entity of TNFR. The structural triad
-(EPI, νf, φ) **defines** it; it is read out as a whole by `Network.nfr()`.
+**What:** **Nodo Fractal Resonante** — modeled as a *region of structural coherence
+coupled to a network*, carrying the structural triad (EPI, νf, φ).
+`Network.nfr()` reports stored state, availability and configured geometric
+read-outs; it does not by itself establish formation or persistent identity.
 **Properties:** **multiscalar** (an NFR can nest other NFRs — operational fractality),
 **autopoietic** (autonomous formation/maintenance is the research requirement;
 an invoked creation operator alone does not prove it), **relational**
 (exists only by coupling) and **temporal** (persists while it reorganizes its coherence).
 **Nodal topology:** **radial** (one central nucleus), **annular** (passive center,
 peripheral ring) or **multinodal** (several centers), classified from the
-structural-potential geometry by `classify_nodal_topology(G)`.
+configured unit-source potential profile by `classify_nodal_topology(G)`.
+The labels do not prove that a nucleus or a particular graph symmetry emerged.
 **Equilibrium:** `ΔNFR = 0` gives zero instantaneous unforced EPI rate; it does
 not establish a full phase/capacity/support fixed point or persistence. For the
 restricted pure-EPI model on a fixed connected symmetric graph with positive
@@ -132,7 +134,7 @@ difference needs its own branch convention.
 **Code:** `is_structural_equilibrium(dnfr, depi=0, *, eps_dnfr, eps_depi)` → bool
 **What:** The shared **pressure/rate tolerance test**: \(|\Delta\text{NFR}| \le\)
 `eps_dnfr` and \(|d\text{EPI}| \le\) `eps_depi` (default
-`EPS_DNFR_STABLE = 1e-3`). Graph, arithmetic and chemical models may reuse this
+`EPS_DNFR_STABLE = 1e-3`). Graph and arithmetic models reuse this
 predicate for their own pressure fields; it does not test phase, capacity,
 support evolution or the equality of stored rate to current `nu_f*DeltaNFR`.
 Positive tolerances do not certify an exact fixed point. The tolerance is declared per domain (1e-12
@@ -503,30 +505,26 @@ Expose in telemetry:
 
 ---
 
-## Domain Neutrality & the Two-Layer Ontology
+## Domain-specific observations and their scope
 
 TNFR is **domain-neutral**: the structural operators apply to graph-coupled networks
 without a built-in application domain. For positive capacity, `ΔNFR = 0`
 is equivalent to zero instantaneous unforced EPI rate, not full-state equilibrium.
 Domain models can share the
 numeric kernel `structural_coherence` and predicate `is_structural_equilibrium`
-while using different state spaces, pressures and dynamics. Around that condition the read-outs span a
-**spectrum of emergence**, contrasted as two layers:
+while using different state spaces, pressures and dynamics. Two retained
+observations illustrate this distinction:
 
 - **Closed-loop phase read-out:** the winding `W ∈ ℤ` is a topological invariant of a
   declared single-valued phase loop. The implementation reports neutral, unit-winding
   and higher-winding sectors; these are structural classes, not particle species
   (`tnfr.physics.emergent_particles`). A prepared loop supplies the winding, so this
   read-out does not show that nodal dynamics creates it.
-- **Symbolic / informational domains — numbers, chemistry:** a structural prime is
-  `ΔNFR_arith = 0` and a noble gas model has `ΔNFR_chem = 0`. These share the abstract
-  zero-pressure predicate while using different state spaces and evolution laws. The
-  per-node arithmetic/chemical ΔNFR **consumes** its domain data (divisibility τ/σ/ω; the
-  aufbau order) — the informational shadow of the structural grammar, not a direct
-  *topological* emergence.
+- **Arithmetic read-out:** the supplied divisor-function construction gives
+  `ΔNFR_arith = 0` at primes. It consumes arithmetic data such as τ, σ and Ω;
+  the identity is not a derivation of primality from graph dynamics or grammar.
 
-**Refinement — emergence is a spectrum, not a clean binary.** The symbolic layer is not
-uniformly "consuming". Per [TNFR_NUMBER_THEORY.md §9.5](TNFR_NUMBER_THEORY.md), primality
+**Distinct arithmetic evidence.** Per [TNFR_NUMBER_THEORY.md §9.5](TNFR_NUMBER_THEORY.md), primality
 has three sectors: **A** (arithmetic `ΔNFR = 0`, what the SDK `primes()`/`primality()`
 expose) is an exact but *circular* re-expression that consumes Ω/τ/σ; **B** (spectral — the
 Paley/residue Fiedler gap, input only `x² mod n`) is a **non-circular spectral diagnostic
@@ -534,12 +532,12 @@ under its stated graph family** (primes-OUT); **C** (representation-theoretic
 irreducibility) is *refuted*. Sector B is partial (the real spectrum reaches only
 `n ≡ 1 (mod 4)`) and never lives in the per-node substrate. Its remaining
 `Fix(G)^⊥` projection obstruction is analogous to, but not identified with, the paused
-TNFR-Riemann obstruction. The two-layer split is the SDK-level contrast; the trichotomy
-is the precise account.
+TNFR-Riemann obstruction. These are different evidence classes, not a demonstrated
+ontology of physical entities.
 
-The graph and arithmetic paths reuse `structural_coherence`; the shell model reuses
-only `is_structural_equilibrium` on its independently defined distance. Each domain
-realizes its own ΔNFR and state space.
+The graph and arithmetic paths reuse `structural_coherence`. Each domain retains
+its own ΔNFR and state space; a shared scalar predicate does not identify their
+mechanisms.
 
 **Guideline:** avoid domain-specific hard-coding in the core engine; be honest about the
 evidence type (declared-cycle topological / non-circular spectral / divisibility-consuming) per
@@ -828,18 +826,12 @@ continuous-model phase transition.
 
 ---
 
-## Assumption-explicit shell-model correspondence
+## Graph-field probe signatures and compatibility labels
 
-**Technical approach:** a constructed Fibonacci-sphere graph supplies a reproducible
-numerical comparison with low-lying angular multiplicities `2l+1`. Occupation capacities
-`2(2l+1)`, the Madelung `(n+l, n)` filling order and the selected duet/octet closures are
-declared shell-model inputs; they are not derived from the graph spectrum or the nodal
-equation. The domain field `ΔNFR_chem(Z)` is defined as the count distance to that one
-centralized closure set, so `ΔNFR_chem(Z) = 0` exactly when `Z` belongs to the declared
-set. Reuse of `is_structural_equilibrium` is a scalar-predicate analogy and does not imply
-a chemical relaxation law, force or common state space with arithmetic. See
-[src/tnfr/physics/emergent_chemistry.py](../src/tnfr/physics/emergent_chemistry.py)
-and the SDK `TNFR.element(Z)` / `TNFR.magic_numbers()`.
+These retained APIs measure configured graph responses. They do not provide
+chemical shell filling or a particle catalog. The supplied shell-counting
+module and its SDK methods have been retired; graph-field observations remain
+in [signatures.py](../src/tnfr/physics/signatures.py).
 
 ### Graph-field probe signatures
 
@@ -847,7 +839,8 @@ and the SDK `TNFR.element(Z)` / `TNFR.magic_numbers()`.
 **What:** A diagnostic tuple computed from the supplied graph and, by default,
 its response to the declared detached probe word
 `[Emission, Coherence, Silence]`.
-**Metrics:** fitted ξ_C; mean |∇φ|; mean and maximum |K_φ|; and the maximum
+**Metrics:** the shared ξ_C estimate (fit or spectral fallback); mean |∇φ|;
+mean and maximum |K_φ|; and the maximum
 and mean absolute nodewise Φ_s drift caused by that probe.
 **API:** `compute_element_signature(G)`, `compute_au_like_signature(G)`
 (the element-oriented names are compatibility APIs).
@@ -860,38 +853,18 @@ satisfied.
 
 ### Au-like compatibility label
 
-**Symbol:** Au (from Latin *aurum*)
 **What:** Historical boolean label over the same graph-field probe response.
-**Criteria:** medium/extended fitted ξ_C or the legacy `n > 50` size branch;
+**Criteria:** medium/extended ξ_C category or the legacy `n > 50` size branch;
 mean |∇φ| < π/2; maximum |K_φ| < 0.95π; and Φ_s probe drift below the U6
 policy threshold.
 **Detection:** `compute_au_like_signature()["is_au_like"]`
 **Scope:** No atomic identity, metallic property, chemical stability, or
 optimality follows from this label.
 
-### Coupling analogy
-
-**TNFR read-out:** Phase-compatible graph coupling with U3 verification: |wrap(φᵢ - φⱼ)| ≤ Δφ_max
-**API:** Coupling operators with phase compatibility check
-**Scope:** The implementation supplies no chemical bond-energy or bond-strength model
-
-### Operator-sequence analogy
-
-**TNFR:** Validated operator sequences can model abstract structural reorganization.
-**Grammar:** Any example must satisfy the applicable U1–U6 rules; no fixed word is assigned to a chemical reaction.
-**API:** Sequence validation via `grammar.py`
-**Scope:** The shell-model module implements no reaction kinetics or transition-state model.
-
-### Geometry boundary
-
-TNFR can measure graph topology, phase gradients and structural pressure on a supplied
-network. The shell-model correspondence does not infer molecular geometry, VSEPR,
-hybridization or stable molecular configurations from those quantities.
-
-**Implementation:** the shell-model correspondence is implemented in
-[src/tnfr/physics/emergent_chemistry.py](../src/tnfr/physics/emergent_chemistry.py).
-The independent graph-field probe API is implemented in
-[src/tnfr/physics/signatures.py](../src/tnfr/physics/signatures.py).
+The selected category cuts and compatibility labels are diagnostic policies.
+They do not establish chemical bonds, reaction kinetics, molecular geometry
+or the persistence of a coherent pattern. The ordinary operator and tetrad
+contracts remain the owners of their actual graph effects.
 
 ## Self-Optimizing Engine
 
@@ -1086,7 +1059,7 @@ the auxiliary graph wave has frequencies $\sqrt{\lambda_k}$. This does not
 identify capacity with Fourier frequency, derive a universal EPI-capacity
 uncertainty constant, or establish particle emergence. Directed and nonlinear
 dynamics need separate analysis.
-**API:** `tnfr.physics.structural_diffusion`, `tnfr.physics.quantum_mechanics`
+**API:** `tnfr.physics.structural_diffusion`, `tnfr.physics.winding_certificates`
 
 ---
 

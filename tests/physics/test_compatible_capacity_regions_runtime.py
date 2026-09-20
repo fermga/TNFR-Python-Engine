@@ -1,6 +1,7 @@
 """Prepared U3 components and actual simultaneous capacity mixing stay distinct."""
 
 import math
+from dataclasses import replace
 from fractions import Fraction
 
 import networkx as nx
@@ -36,7 +37,6 @@ def test_full_pressure_support_is_connected_in_both_preparations(cases):
         assert graph.number_of_nodes() == 6 and graph.number_of_edges() == 7
         assert initial["snapshot"]["epi"] == (F(1, 2),) * 6
         assert initial["snapshot"]["capacity"] == (1, 1, 1, 2, 2, 2)
-        assert initial["phase_gradient"] == (0,) * 6
         assert record["full_support_capacity_energy_before"] == F(1, 2)
         assert record["word"]["string_validator_passed"]
         assert record["word"]["instance_validator_passed"]
@@ -48,6 +48,7 @@ def test_full_pressure_support_is_connected_in_both_preparations(cases):
         == (F(0),) * 3 + (F(math.pi),) * 3
     )
     assert cases["aligned_phase"]["initial_capture"]["phase"] == (0,) * 6
+    assert cases["aligned_phase"]["initial_capture"]["phase_gradient"] == (0,) * 6
 
 
 def test_split_u3_components_have_zero_capacity_energy_despite_the_pressure_bridge(
@@ -144,19 +145,110 @@ def test_split_forced_profile_has_independently_derived_metric_and_center(cases)
     assert reference["metric_weights"] == (2, 2, 3, F(3, 2), 1, 1)
     assert sum(reference["metric_weights"]) == F(21, 2)
     profile = (k / 3,) * 3 + (-2 * k / 3,) * 3
-    assert reference["relative_profile"] == profile
-    assert reference["mean_drift"] == reference["compatibility_residual"] == 0
     assert reference["profile_residual"] == (0,) * 6
     assert reference["profile_center_residual"] == 0
-    prediction = record["fixed_profile_prediction"]
-    assert all(prediction["checks"].values())
+    prediction = record["capacity_only_profile_prediction"]
+    assert prediction["model"] == "capacity_only_held_forcing"
+    assert all(
+        value
+        for name, value in prediction["checks"].items()
+        if name != "zero_phase_pressure"
+    )
+    ideal = prediction["capacity_only_reference"]
+    assert ideal["relative_profile"] == profile
+    assert ideal["mean_drift"] == ideal["compatibility_residual"] == 0
+    assert ideal["forcing"] == tuple(
+        weights["vf"] * value for value in (0, 0, F(1, 3), F(-1, 3), 0, 0)
+    )
     assert prediction["capacity_mean"] == F(4, 3)
     assert prediction["relative_profile"] == profile
     assert prediction["conditional_exact_limit"] == tuple(
         F(1, 2) + value for value in profile
     )
-    assert record["initial_fixed_target_error"]["error_variance"] == 7 * k**2 / 6
-    assert record["initial_fixed_target_error"]["error_dirichlet_energy"] == k**2 / 2
+    assert sum(h * z**2 for h, z in zip(ideal["metric_weights"], profile)) / 2 == (
+        7 * k**2 / 6
+    )
+    assert sum((profile[i] - profile[j]) ** 2 for i, j in campaign.EDGES) / 2 == (
+        k**2 / 2
+    )
+    # Actual target-error observations use the full represented forcing profile.
+    full_profile = reference["relative_profile"]
+    assert (
+        record["initial_fixed_target_error"]["error_variance"]
+        == sum(h * z**2 for h, z in zip(reference["metric_weights"], full_profile)) / 2
+    )
+    assert (
+        record["initial_fixed_target_error"]["error_dirichlet_energy"]
+        == sum((full_profile[i] - full_profile[j]) ** 2 for i, j in campaign.EDGES) / 2
+    )
+
+
+def test_capacity_only_prediction_retains_actual_phase_forcing_and_mean_drift(cases):
+    for record in cases.values():
+        capture, full = record["post_um_capture"], record["post_um_reference"]
+        prediction = record["capacity_only_profile_prediction"]
+        ideal = prediction["capacity_only_reference"]
+        delta = prediction["full_forcing_difference"]
+        phase_weight = dict(capture["normalized_weights"])["phase"]
+        expected = tuple(phase_weight * g for g in capture["phase_gradient"])
+        assert delta["forcing"] == expected
+        assert tuple(a + b for a, b in zip(ideal["forcing"], expected)) == (
+            full["forcing"]
+        )
+        assert prediction["checks"]["zero_phase_pressure"] == (
+            capture["phase_gradient"] == (0,) * 6
+        )
+        assert prediction["applies_to_full_forcing"] == (not any(expected))
+        degree = tuple(len(row) for row in capture["snapshot"]["support_neighbors"])
+        drift = sum(d * f for d, f in zip(degree, expected)) / sum(
+            full["metric_weights"]
+        )
+        assert delta["mean_drift"] == full["mean_drift"] == drift
+        assert full["compatibility_residual"] == sum(
+            d * f for d, f in zip(degree, expected)
+        )
+        assert (
+            tuple(
+                a + b
+                for a, b in zip(ideal["relative_profile"], delta["relative_profile"])
+            )
+            == full["relative_profile"]
+        )
+        # Independently check the exact Poisson equation for the retained difference.
+        z = delta["relative_profile"]
+        for i, neighbors in enumerate(capture["snapshot"]["support_neighbors"]):
+            assert capture["epi_weight"] * sum(z[i] - z[j] for j in neighbors) == (
+                degree[i] * expected[i] - drift * full["metric_weights"][i]
+            )
+        assert sum(h * value for h, value in zip(full["metric_weights"], z)) == 0
+
+
+def test_nonzero_phase_channel_does_not_receive_the_capacity_only_limit():
+    # This detached supplied channel is a deterministic arithmetic control,
+    # not a claim that a graph phase preparation realizes this coefficient.
+    capture = campaign.capture_non_epi_forcing(
+        campaign.prepare_capacity_regions("aligned_phase")
+    )
+    weights = dict(capture.normalized_weights)
+    phase = (0, 0, F(1, 8), 0, 0, 0)
+    extra = tuple(weights["phase"] * value for value in phase)
+    supplied = replace(
+        capture,
+        phase_gradient=phase,
+        forcing=tuple(a + b for a, b in zip(capture.forcing, extra)),
+    )
+    full = campaign._reference(supplied)
+    prediction = campaign._fixed_profile(supplied, full)
+    assert not prediction["checks"]["zero_phase_pressure"]
+    assert not prediction["applies_to_full_forcing"]
+    delta = prediction["full_forcing_difference"]
+    assert delta["forcing"] == extra
+    assert delta["mean_drift"] == 2 * extra[2] / 7
+    assert delta["relative_profile"] == tuple(
+        F(value, 147) * extra[2] / capture.epi_weight
+        for value in (5, 5, 89, -58, -100, -100)
+    )
+    assert full.forcing == supplied.forcing and supplied.phase_gradient == phase
 
 
 def test_aligned_control_activates_bridge_and_keeps_default_functional_links(cases):

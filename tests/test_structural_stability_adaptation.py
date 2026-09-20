@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 import math
+from fractions import Fraction
 
 import networkx as nx
 import pytest
@@ -154,19 +155,16 @@ def test_si_threshold_requires_a_finite_unit_interval_value(si_hi) -> None:
     assert dict(graph.nodes(data=True)) == before
 
 
-def test_fallback_si_threshold_is_validated_before_state_changes() -> None:
+def test_glyph_thresholds_do_not_supply_the_capacity_sense_gate() -> None:
     graph = _stable_pair()
     graph.graph["SELECTOR_THRESHOLDS"] = {}
     graph.graph["GLYPH_THRESHOLDS"] = {"hi": float("inf")}
-    before = copy.deepcopy(dict(graph.nodes(data=True)))
 
-    with pytest.raises(ValueError, match="si_hi"):
-        adapt_vf_after_structural_stability(graph)
-
-    assert dict(graph.nodes(data=True)) == before
+    adapt_vf_after_structural_stability(graph)
+    assert all(graph.nodes[node]["stable_count"] == 2 for node in graph)
 
 
-@pytest.mark.parametrize("key", ["SELECTOR_THRESHOLDS", "GLYPH_THRESHOLDS"])
+@pytest.mark.parametrize("key", ["SELECTOR_THRESHOLDS"])
 def test_threshold_containers_must_be_mappings(key: str) -> None:
     graph = _stable_pair()
     graph.graph[key] = []
@@ -209,6 +207,25 @@ def test_invalid_node_state_is_rejected_without_partial_counter_updates(
         adapt_vf_after_structural_stability(graph)
 
     assert dict(graph.nodes(data=True)) == before
+
+
+@pytest.mark.parametrize("location", ["capacity", "pressure", "mu"])
+def test_nonzero_underflow_is_rejected_before_adaptation_can_silence_it(location):
+    graph = _stable_pair()
+    graph.graph["VF_MIN"] = 0.0
+    tiny = Fraction(1, 2**2000)
+    if location == "capacity":
+        graph.nodes["right"]["νf"] = -tiny
+    elif location == "pressure":
+        graph.nodes["right"]["ΔNFR"] = tiny
+    else:
+        graph.graph["VF_ADAPT_MU"] = tiny
+    before_nodes = copy.deepcopy(dict(graph.nodes(data=True)))
+    before_graph = copy.deepcopy(graph.graph)
+    with pytest.raises(ValueError, match="underflows"):
+        adapt_vf_after_structural_stability(graph)
+    assert dict(graph.nodes(data=True)) == before_nodes
+    assert graph.graph == before_graph
 
 
 def test_failed_frequency_commit_rolls_back_counters_values_and_cache(

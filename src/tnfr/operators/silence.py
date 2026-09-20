@@ -13,9 +13,7 @@ from __future__ import annotations
 
 from typing import Any, ClassVar
 
-from ..alias import get_attr
 from ..config.operator_names import SILENCE
-from ..constants.aliases import ALIAS_EPI
 from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
 
@@ -34,29 +32,23 @@ class Silence(Operator):
     glyph: ClassVar[Glyph] = Glyph.SHA
 
     def _execute(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
-        """Mark latency then apply base operator."""
-        # Grammar and preconditions already passed at the public entry point.
-        self._mark_latency_state(G, node)
-
-        # Apply the selected glyph with latency metadata ready for metrics.
-        super()._execute(G, node, **kw)
-
-    def _mark_latency_state(self, G: TNFRGraph, node: Any) -> None:
-        """set latent flag, timestamp, preserved epi, duration=0.0.
-
-        Enhanced for initial nodes: respects TNFR nodal dynamics while
-        providing appropriate EPI preservation tracking.
-        """
+        """Validate the shared SHA proposal before recording latency."""
         from datetime import datetime, timezone
 
-        G.nodes[node]["latent"] = True
-        G.nodes[node]["latency_start_time"] = datetime.now(timezone.utc).isoformat()
-        epi_value = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
-        G.nodes[node]["preserved_epi"] = epi_value
-        G.nodes[node]["silence_duration"] = 0.0
+        from .al_sha_stage_proposals import (
+            commit_silence_lifecycle,
+            propose_silence_stage,
+        )
+        from .factor_contracts import resolve_runtime_operator_factors
 
-        # Mark initial node status for enhanced tolerance
-        G.nodes[node]["was_initial_on_silence"] = abs(epi_value) < 1e-6
+        factors = resolve_runtime_operator_factors(
+            G.graph.get("GLYPH_FACTORS"), self.glyph, G.graph
+        )
+        proposal = propose_silence_stage(
+            G, node, factors, timestamp=datetime.now(timezone.utc).isoformat()
+        )
+        commit_silence_lifecycle(G, proposal)
+        super()._execute(G, node, **kw)
 
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
         """Validate SHA-specific preconditions."""

@@ -17,6 +17,8 @@ Physics Invariance:
 
 from __future__ import annotations
 
+import math
+from dataclasses import asdict
 from typing import TYPE_CHECKING, Any
 
 from ..config import get_telemetry_density
@@ -25,7 +27,7 @@ from ..physics.canonical import (
     compute_phase_curvature,
     compute_phase_gradient,
     compute_structural_potential,
-    estimate_coherence_length,
+    estimate_coherence_length_with_provenance,
 )
 
 if TYPE_CHECKING:
@@ -54,12 +56,13 @@ def collect_tetrad_snapshot(
         - 'phase_grad': Phase gradient statistics
         - 'phase_curv': Phase curvature statistics
         - 'xi_c': Coherence length (scalar or None)
-        - 'metadata': Timestamp, telemetry_density, node_count
+        - 'xi_c_available', 'xi_c_provenance', 'xi_c_error': Estimator evidence
+        - 'metadata': telemetry_density, node_count
 
     Notes
     -----
     This function is PURELY OBSERVATIONAL:
-    - Does NOT modify G or any node attributes
+    - Does NOT evolve nodal state; field owners may maintain graph caches
     - Does NOT affect operator sequences or grammar (U1-U6)
     - Does NOT change C(t), Si, or structural dynamics
     """
@@ -80,6 +83,9 @@ def collect_tetrad_snapshot(
         "phase_grad": _field_statistics(grad_values, density, include_histograms),
         "phase_curv": _field_statistics(curv_values, density, include_histograms),
         "xi_c": None,  # Filled below
+        "xi_c_available": False,
+        "xi_c_provenance": None,
+        "xi_c_error": None,
         "metadata": {
             "telemetry_density": density,
             "node_count": G.number_of_nodes(),
@@ -88,10 +94,20 @@ def collect_tetrad_snapshot(
 
     # Coherence length (expensive, single global value)
     try:
-        xi_c = estimate_coherence_length(G)
-        snapshot["xi_c"] = float(xi_c) if np.isfinite(xi_c) else None
-    except Exception:
-        snapshot["xi_c"] = None
+        estimate = estimate_coherence_length_with_provenance(G)
+        provenance = asdict(estimate)
+        xi_c = provenance.pop("value")
+        snapshot["xi_c_provenance"] = provenance
+        if math.isfinite(xi_c) and xi_c > 0.0:
+            snapshot["xi_c"] = float(xi_c)
+            snapshot["xi_c_available"] = True
+        else:
+            snapshot["xi_c_error"] = {
+                "type": "UnavailableCoherenceLength",
+                "message": "Estimator supplied no finite positive correlation scale",
+            }
+    except Exception as error:
+        snapshot["xi_c_error"] = {"type": type(error).__name__, "message": str(error)}
 
     return snapshot
 
@@ -101,7 +117,7 @@ def _field_statistics(
     density: str,
     include_histograms: bool,
 ) -> dict[str, Any]:
-    """Compute statistics for a field based on telemetry density.
+    """Summarize complete admitted fields; never filter out invalid nodes.
 
     Parameters
     ----------
@@ -115,44 +131,79 @@ def _field_statistics(
     Returns
     -------
     dict
-        Statistics appropriate for density level
+        Statistics appropriate for density level. Optional numerical results
+        outside finite range are None with per-statistic unavailability evidence.
     """
-    if not values:
-        return {"mean": None, "max": None, "min": None}
+    # Import locally: unified fields reuse metrics.common during package startup.
+    from ..physics.unified import summary_statistics
 
-    arr = np.array(list(values.values()), dtype=np.float64)
-    arr = arr[np.isfinite(arr)]  # Filter out nan/inf
-
-    if len(arr) == 0:
-        return {"mean": None, "max": None, "min": None}
+    basic = summary_statistics({"field": values}).get("field")
+    if basic is None:
+        return {
+            "mean": None,
+            "max": None,
+            "min": None,
+            "std": None,
+            "available": False,
+            "error": {
+                "type": "UnavailableFieldStatistics",
+                "message": (
+                    "Empty field"
+                    if not values
+                    else "Invalid field; no nodes were filtered"
+                ),
+            },
+        }
 
     # Basic statistics (all density levels)
-    stats: dict[str, Any] = {
-        "mean": float(np.mean(arr)),
-        "max": float(np.max(arr)),
-        "min": float(np.min(arr)),
-        "std": float(np.std(arr)),
-    }
+    stats: dict[str, Any] = {key: basic[key] for key in ("mean", "max", "min", "std")}
+    stats.update(available=True, error=None)
+    arr = np.array(list(values.values()), dtype=np.float64)
+    unavailable: dict[str, dict[str, str]] = {}
 
     # Medium: Add quartiles
+    percentiles = []
     if density in ("medium", "high"):
-        stats["p25"] = float(np.percentile(arr, 25))
-        stats["p50"] = float(np.percentile(arr, 50))
-        stats["p75"] = float(np.percentile(arr, 75))
+        percentiles.extend((25, 50, 75))
 
     # High: Add tail percentiles
     if density == "high":
-        stats["p10"] = float(np.percentile(arr, 10))
-        stats["p90"] = float(np.percentile(arr, 90))
-        stats["p99"] = float(np.percentile(arr, 99))
+        percentiles.extend((10, 90, 99))
+    if percentiles:
+        with np.errstate(over="ignore", invalid="ignore"):
+            quantiles = np.percentile(arr, percentiles)
+        for percentile, value in zip(percentiles, quantiles):
+            key = f"p{percentile}"
+            if math.isfinite(value):
+                stats[key] = float(value)
+            else:
+                stats[key] = None
+                unavailable[key] = {
+                    "type": "UnrepresentablePercentileArithmetic",
+                    "message": "Configured percentile calculation produced a nonfinite result",
+                }
 
     # Histograms (if requested)
     if include_histograms:
-        counts, edges = np.histogram(arr, bins=20)
-        stats["histogram"] = {
-            "counts": counts.tolist(),
-            "edges": edges.tolist(),
-        }
+        try:
+            with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
+                counts, edges = np.histogram(arr, bins=20)
+            if not bool(np.all(np.isfinite(edges))) or not bool(
+                np.all(edges[1:] > edges[:-1])
+            ):
+                raise ValueError("Histogram edges are not finite distinct boundaries")
+            if int(counts.sum()) != len(arr):
+                raise ValueError("Histogram did not retain all field samples")
+            stats["histogram"] = {"counts": counts.tolist(), "edges": edges.tolist()}
+        except (ValueError, OverflowError, FloatingPointError, IndexError) as error:
+            stats["histogram"] = None
+            unavailable["histogram"] = {
+                "type": type(error).__name__,
+                "message": str(error),
+            }
+
+    if unavailable:
+        stats["unavailable_statistics"] = unavailable
 
     return stats
 

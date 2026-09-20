@@ -18,6 +18,7 @@ from dataclasses import dataclass, field, replace
 from typing import Any, Callable
 
 from ...config import get_config
+from ...mathematics._neighbor_differences import edge_mean_differences
 
 # Unified mathematics backend integration
 from ...mathematics.backend import get_backend
@@ -134,21 +135,14 @@ def _normalize_dense_nodal_inputs(
 def _dense_epi_pressure_from_arrays(
     weights: np.ndarray, field: np.ndarray
 ) -> np.ndarray:
-    """Return row-normalized neighbour mean minus self from validated arrays."""
+    """Use the shared pressure reducer on the dense input's positive edges.
 
-    pressure = np.zeros_like(field, dtype=float)
-    if field.size == 0:
-        return pressure
-    row_scale = np.max(weights, axis=1)
-    active = row_scale > 0.0
-    if not bool(np.any(active)):
-        return pressure
-    normalized = np.zeros_like(weights, dtype=float)
-    normalized[active] = weights[active] / row_scale[active, None]
-    row_sum = np.sum(normalized[active], axis=1)
-    neighbor_mean = (normalized[active] @ field) / row_sum
-    pressure[active] = neighbor_mean - field[active]
-    return pressure
+    Averaging an absolute field first can overflow or erase a small difference
+    under a common offset. The shared edge kernel retains the original weights
+    for its range-limited fallback and gives zero at isolates and consensus.
+    """
+    source, target = np.nonzero(weights > 0.0)
+    return edge_mean_differences(field, source, target, weights[source, target])
 
 
 @dataclass
@@ -461,10 +455,9 @@ class TNFRUnifiedGPUSystem:
     def compute_delta_nfr_from_graph(self, graph: Any) -> GraphDeltaNFRResult:
         """Read the canonical EPI-channel ΔNFR from a TNFR graph.
 
-        The dense low-level GPU kernel predates the graph transport contract
-        and cannot represent all directed, weighted and parallel-edge
-        conventions.  Until that kernel has semantic parity, this public graph
-        adapter delegates to the shared CPU structural-diffusion oracle.  The
+        The graph adapter reads effective conductances, including direction,
+        parallel edges and self-loops, and uses the same CPU edge-difference
+        reducer as the dense adapter. No accelerated graph kernel is claimed. The
         returned mapping retains ``backend_used`` and ``fallback_used`` so the
         caller can distinguish this compatibility fallback from acceleration.
 
@@ -477,17 +470,18 @@ class TNFRUnifiedGPUSystem:
         -------
         GraphDeltaNFRResult
             Node-to-pressure mapping with backend provenance.  Values are the
-            pure EPI channel ``-L_rw @ EPI``; νf remains the separate capacity
-            multiplier in the nodal equation.
+            pure EPI channel (``-L_rw @ EPI`` in exact arithmetic); νf remains
+            the separate capacity multiplier in the nodal equation.
         """
-        from ...physics.structural_diffusion import (
-            structural_diffusion_operator,
-            structural_field,
-        )
+        from ...physics._conductance import read_conductance
+        from ...physics.structural_diffusion import structural_field
 
-        nodes, laplacian = structural_diffusion_operator(graph)
+        conductance = read_conductance(graph)
+        nodes = conductance.nodes
         epi_field = structural_field(graph, nodes)
-        pressure = -(laplacian @ epi_field)
+        pressure = edge_mean_differences(
+            epi_field, conductance.source, conductance.target, conductance.weight
+        )
         stats = getattr(self, "_operation_stats", None)
         if isinstance(stats, dict):
             stats["total_operations"] = stats.get("total_operations", 0) + 1

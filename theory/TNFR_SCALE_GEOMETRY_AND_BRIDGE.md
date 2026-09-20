@@ -227,9 +227,9 @@ phase implementation.
 from the fine neighbor order. The observer keeps that unit-phase defect,
 its projected rate contribution, fresh pressure assembly error and stale
 stored-pressure residual separately. Its exact rational identities connect
-those represented-coefficient models. The inherited NumPy `atan2(0,0)`
-policy can also return a pressure coefficient where the geometric curvature
-reader reports an undefined represented resultant. The explicit
+those represented-coefficient models. The inherited NumPy kernel uses an
+explicit zero phase-pressure extension at a represented zero resultant,
+where the geometric curvature reader reports an unavailable direction. The explicit
 `phase_geometry_scope` retains that distinction; successful rate identities
 do not certify geometric phase availability. They are not a certificate of exact
 transcendental evaluation, continuous phase evolution or repeated runtime

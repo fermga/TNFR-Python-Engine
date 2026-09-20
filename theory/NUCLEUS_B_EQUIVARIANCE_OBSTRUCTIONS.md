@@ -93,10 +93,8 @@ claims that do not follow.
 ## 4. Historical finite controls
 
 The May proposal recorded finite augmented-graph, product, line-graph and
-tensor-lift comparisons. Those records are preserved in
-[NUCLEUS_B_PROPOSAL_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt](research/archive/NUCLEUS_B_PROPOSAL_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt)
-and the full
-[Riemann notebook archive](research/archive/RIEMANN_NOTEBOOK_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt).
+tensor-lift comparisons. The proposal and full Riemann notebook remain
+recoverable from Git through the [retirement record](research/archive/README.md).
 
 A verdict named INDETERMINATE_DEGENERATE_CONSTRUCTION means that the selected
 statistic failed to distinguish that construction from its control within

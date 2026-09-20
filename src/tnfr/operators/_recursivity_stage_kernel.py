@@ -1,8 +1,9 @@
 """Immutable advisory proposal shared by direct and staged Recursivity.
 
 The canonical node-level REMESH glyph is an advisory. It records one
-graph-level request per telemetry step and leaves every structural channel
-unchanged. Explicit delayed EPI mixing remains the separate
+graph-level request per runtime ordinal (legacy retained-sample index outside
+the runtime) and leaves every structural channel unchanged. Explicit delayed
+EPI mixing remains the separate
 apply_network_remesh network operation.
 """
 

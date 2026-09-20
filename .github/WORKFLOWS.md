@@ -10,7 +10,6 @@ not establish current GitHub run health, branch protection or enabled secrets.
 | Workflow | Trigger and configured scope |
 | --- | --- |
 | [ci.yml](workflows/ci.yml) | Push and PR to main/master. Blocking formatting hooks, flake8 and default pytest selection on Python 3.10–3.13 with two pytest-xdist workers; combined coverage report on 3.11. Pydocstyle, mypy, pyright and vulture report advisories. |
-| [tests.yml](workflows/tests.yml) | Push and PR to main. Focused SDK tests on Python 3.11; overlaps the broader CI selection. |
 | [docs.yml](workflows/docs.yml) | Filtered push/PR to main and manual invocation. References, documentation integrity, staging and strict MkDocs build; publishes Pages only on pushes to main. |
 | [verify-references.yml](workflows/verify-references.yml) | Filtered Markdown/notebook changes on PRs and pushes to main/develop. Independent local Markdown target and fragment check. |
 | [pip-audit.yml](workflows/pip-audit.yml) | Push/PR to main/master, Monday 05:00 UTC and manual invocation. Audits the installed core, test-all and serialization environment; captures available reports and fails when the JSON audit fails. |
@@ -19,8 +18,10 @@ not establish current GitHub run health, branch protection or enabled secrets.
 | [code-review.yml](workflows/code-review.yml) | PR opened, synchronized or reopened on main. Advisory Black/mypy checks and an automated PR comment; no external code-review service is implemented. |
 | [copilot-setup-steps.yml](workflows/copilot-setup-steps.yml) | Manual invocation or edits to its own workflow. Installs a Python 3.11 development/test environment and verifies importability. |
 
-The default pytest selection excludes slow tests as configured in
-[pyproject.toml](../pyproject.toml). CI does not declare a universal coverage
+The default pytest selection is the routine engine/API gate and excludes slow
+tests as configured in [pyproject.toml](../pyproject.toml). The full retained
+research inventory is explicitly selected with `pytest tests`; it is not
+replayed by every CI job. CI does not declare a universal coverage
 percentage, prove physical theorems or certify every optional backend. Audit
 coverage excludes optional compute, documentation and deployment environments
 unless their dependencies happen to be installed through the declared groups.
@@ -64,7 +65,7 @@ invocation builds/checks only; its existing force-publish input enables publishi
 
 Publishing a GitHub release therefore also requests PyPI publication. Before
 that trigger, review validation runs for the exact commit being released:
-blocking CI formatting/static checks and its test matrix, focused SDK tests,
+blocking CI formatting/static checks and its test matrix (including SDK tests),
 the dependency audit, and the documentation/reference checks selected by that
 commit's paths. Check the workflow-invocation lint result when it is triggered.
 A skipped, cancelled or absent run is not a passing result, and success on an
@@ -76,6 +77,10 @@ integration may archive a release; this workflow does not upload an archive or
 verify a DOI. No GitHub/PyPI/Zenodo settings are inferred from this file.
 
 ## Retired automation
+
+The test consolidation removed `tests.yml`, which repeated the complete SDK
+suite on Python 3.11 already included in `ci.yml`. The main matrix retains the
+SDK assertions, environment checks and JUnit/coverage reporting.
 
 The second documentation cleanup removed stale workflows after preserving their
 original files under

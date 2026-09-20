@@ -40,10 +40,23 @@ References
 from __future__ import annotations
 
 import math
+from collections.abc import Mapping
+from copy import deepcopy
 from dataclasses import dataclass, field
+from dataclasses import fields as dataclass_fields
+from dataclasses import replace
+from fractions import Fraction
 from typing import Any, Sequence
 
+from .._exact_time import finite_represented_real
+from ..mathematics._exact_weighted import exact_weighted_sum_ratio
+from ..mathematics._neighbor_differences import mean_neighbor_difference
 from ..mathematics.unified_numerical import np
+from ..metrics.common import (
+    finite_mean_absolute,
+    finite_pearson_correlation,
+    finite_population_std,
+)
 
 try:
     import networkx as nx
@@ -55,10 +68,14 @@ from ..constants.canonical import (
     PI,
     U6_STRUCTURAL_POTENTIAL_LIMIT,
 )
+from ._helpers import finite_real_scalar
 from .canonical import compute_phase_curvature, compute_structural_potential
 from .extended import compute_dnfr_flux, compute_phase_current
-from .unified import _capture_structural_fields, _energy_density_from_fields
-from .unified import compute_energy_density as _raw_energy_density
+from .unified import (
+    _capture_structural_fields,
+    _total_charge_from_density,
+    _total_energy_from_fields,
+)
 
 # ---------------------------------------------------------------------------
 # Conservation diagnostic alert levels
@@ -119,6 +136,10 @@ class ConservationSnapshot:
         Phase gradient |∇φ| per node.
     divergence : dict[Any, float]
         Discrete divergence div(J) at each node.
+    divergence_phi, divergence_dnfr : dict or None
+        Captured applications of that same graph operator to each current.
+        Legacy manually constructed snapshots may omit them; their sector
+        decomposition is then unavailable, rather than inferred from magnitudes.
     """
 
     charge_density: dict[Any, float]
@@ -128,6 +149,78 @@ class ConservationSnapshot:
     j_dnfr: dict[Any, float]
     grad_phi: dict[Any, float]
     divergence: dict[Any, float]
+    divergence_phi: dict[Any, float] | None = None
+    divergence_dnfr: dict[Any, float] | None = None
+
+
+def _observed_scalar(value: Any, name: str) -> float:
+    """Admit represented evidence, retaining this module's ValueError API."""
+    try:
+        return finite_represented_real(value, name)[0]
+    except TypeError as exc:
+        raise ValueError(str(exc)) from exc
+
+
+def _positive_interval(dt: float) -> float:
+    value = _observed_scalar(dt, "dt")
+    if value <= 0.0:
+        raise ValueError("dt must be strictly positive")
+    return value
+
+
+def _observed_secant(before: float, after: float, dt: float, name: str) -> float:
+    """Compute a finite represented secant without false zero or range loss.
+
+    Ordinary differences retain their historical rounding. Exceptional
+    subtraction/division uses the shared exact difference kernel and rounds
+    only the final quotient; a nonzero unrepresentable rate is unavailable.
+    """
+    before = _observed_scalar(before, name)
+    after = _observed_scalar(after, name)
+    result = (after - before) / dt
+    if math.isfinite(result) and (result != 0.0 or before == after):
+        return result
+    numerator, denominator = exact_weighted_sum_ratio(
+        (1.0,), (after,), center=before, normalize=False
+    )
+    time_num, time_den = dt.as_integer_ratio()
+    return _observed_scalar(
+        Fraction(numerator * time_den, denominator * time_num), name
+    )
+
+
+def _snapshot_nodes(snapshot: ConservationSnapshot, fields: Sequence[str]) -> tuple:
+    """Admit complete finite maps without fabricating missing observations."""
+    if not isinstance(snapshot, ConservationSnapshot):
+        raise TypeError("expected a ConservationSnapshot")
+    nodes = tuple(snapshot.charge_density)
+    if not nodes:
+        raise ValueError("conservation observations require nonempty node support")
+    support = set(nodes)
+    for name in fields:
+        values = getattr(snapshot, name)
+        if not isinstance(values, Mapping) or set(values) != support:
+            raise ValueError(f"snapshot {name} must match the complete node support")
+        for node in nodes:
+            _observed_scalar(values[node], f"snapshot {name}[{node!r}]")
+    return nodes
+
+
+def _snapshot_pair_nodes(before, after, fields: Sequence[str]) -> tuple:
+    nodes = _snapshot_nodes(before, fields)
+    if set(nodes) != set(_snapshot_nodes(after, fields)):
+        raise ValueError("snapshot comparison requires identical node support")
+    return nodes
+
+
+def _rms(values: Sequence[float]) -> float:
+    """Reduce finite residuals without squaring their absolute scale."""
+    scale = max(map(abs, values), default=0.0)
+    if scale == 0.0:
+        return 0.0
+    return scale * math.sqrt(
+        math.fsum((value / scale) ** 2 for value in values) / len(values)
+    )
 
 
 @dataclass
@@ -140,8 +233,9 @@ class ConservationBalance:
     * ``residual[i] = Δρ(i)/Δt + ½[div J_before(i) + div J_after(i)]``
       — a finite-interval balance diagnostic, not a grammar validator.
     * ``mean_residual``, ``max_residual`` — aggregate diagnostics.
-    * ``conservation_quality`` — scalar in [0, 1]; 1 means zero measured RMS
-      residual for this finite interval.
+    * ``conservation_quality`` — represented ``1/(1+RMS)`` in [0, 1].
+      Rounding can produce one for a small nonzero residual; inspect the RMS
+      itself when testing represented zero.
     * ``grammar_violation_index`` — legacy name for the mean absolute residual;
       zero does not certify grammar compliance.
     """
@@ -301,24 +395,22 @@ def _current_divergence_from_fields(
     G: Any, j_phi: dict[Any, float], j_dnfr: dict[Any, float]
 ) -> dict[Any, float]:
     """Apply the existing neighbor-mean divergence to recorded currents."""
-    nodes = list(G.nodes())
+    phase, pressure = _current_divergence_components_from_fields(G, j_phi, j_dnfr)
+    return {node: phase[node] + pressure[node] for node in phase}
 
-    divergence: dict[Any, float] = {}
+
+def _current_divergence_components_from_fields(G, j_phi, j_dnfr):
+    """Read each linear current channel on the actual graph neighborhood."""
+    nodes = tuple(G.nodes())
+    phase, pressure = {}, {}
     for i in nodes:
         neighbors = list(G.neighbors(i))
-        if not neighbors:
-            divergence[i] = 0.0
-            continue
-
-        deg = len(neighbors)
         # Legacy neighbor-minus-center (inward-flux / -L_rw) convention.
-        div_j_phi = sum(j_phi.get(j, 0.0) - j_phi.get(i, 0.0) for j in neighbors) / deg
-        div_j_dnfr = (
-            sum(j_dnfr.get(j, 0.0) - j_dnfr.get(i, 0.0) for j in neighbors) / deg
+        phase[i] = mean_neighbor_difference(j_phi[i], [j_phi[j] for j in neighbors])
+        pressure[i] = mean_neighbor_difference(
+            j_dnfr[i], [j_dnfr[j] for j in neighbors]
         )
-        divergence[i] = div_j_phi + div_j_dnfr
-
-    return divergence
+    return phase, pressure
 
 
 # ---------------------------------------------------------------------------
@@ -349,7 +441,8 @@ def capture_conservation_snapshot(G: Any) -> ConservationSnapshot:
     j_phi, j_dnfr = fields.j_phi, fields.j_dnfr
 
     charge = _charge_density_from_fields(phi_s, k_phi)
-    div_j = _current_divergence_from_fields(G, j_phi, j_dnfr)
+    div_phi, div_dnfr = _current_divergence_components_from_fields(G, j_phi, j_dnfr)
+    div_j = {node: div_phi[node] + div_dnfr[node] for node in div_phi}
 
     return ConservationSnapshot(
         charge_density=charge,
@@ -359,6 +452,8 @@ def capture_conservation_snapshot(G: Any) -> ConservationSnapshot:
         j_dnfr=j_dnfr,
         grad_phi=grad_phi,
         divergence=div_j,
+        divergence_phi=div_phi,
+        divergence_dnfr=div_dnfr,
     )
 
 
@@ -387,9 +482,16 @@ def verify_conservation_balance(
     error, changing topology or node support, source terms, or a failure of the
     assumed balance. Their cause requires separate investigation.
 
-    All inputs use a common declared normalization and time convention. The
+    Requires nonempty identical node support, complete finite charge/divergence
+    maps and a finite positive interval. A support change needs explicit source
+    and correspondence accounting outside this observer; it is never filled
+    with missing-node zeros. All inputs use a common declared normalization
+    and time convention. The
     routine does not convert the raw units of potential, curvature, currents
     or ``dt``; a small numeric residual alone does not validate those units.
+    A nonzero rate outside binary64 range raises instead of becoming a zero
+    residual. Recoverable intermediate subtraction overflow uses an exact
+    represented difference before the final quotient is rounded.
 
     Parameters
     ----------
@@ -405,50 +507,49 @@ def verify_conservation_balance(
     ConservationBalance
         Finite-interval structural-balance diagnostics.
     """
-    nodes = list(after.charge_density.keys())
+    dt = _positive_interval(dt)
+    nodes = _snapshot_pair_nodes(before, after, ("charge_density", "divergence"))
 
     delta_rho: dict[Any, float] = {}
     residual: dict[Any, float] = {}
+    average_divergence: dict[Any, float] = {}
 
     for n in nodes:
-        rho_before = before.charge_density.get(n, 0.0)
-        rho_after = after.charge_density.get(n, 0.0)
-        d_rho = (rho_after - rho_before) / dt
+        rho_before = before.charge_density[n]
+        rho_after = after.charge_density[n]
+        d_rho = _observed_secant(rho_before, rho_after, dt, "charge rate")
         delta_rho[n] = d_rho
 
         # Crank-Nicolson: trapezoidal average of divergence at both endpoints
-        div_j = 0.5 * (before.divergence.get(n, 0.0) + after.divergence.get(n, 0.0))
+        div_j = mean_neighbor_difference(
+            0.0, (before.divergence[n], after.divergence[n])
+        )
+        average_divergence[n] = div_j
         # Continuity: ∂ρ/∂t + div J = S  →  residual = ∂ρ/∂t + div J
-        residual[n] = d_rho + div_j
+        residual[n] = finite_real_scalar(d_rho + div_j, "balance residual")
 
-    residual_vals = np.array(list(residual.values()))
-
-    mean_res = float(np.mean(residual_vals)) if len(residual_vals) > 0 else 0.0
-    std_res = float(np.std(residual_vals)) if len(residual_vals) > 0 else 0.0
-    max_res = float(np.max(np.abs(residual_vals))) if len(residual_vals) > 0 else 0.0
-    rms_res = (
-        float(np.sqrt(np.mean(residual_vals**2))) if len(residual_vals) > 0 else 0.0
-    )
+    residual_vals = tuple(residual.values())
+    mean_res = mean_neighbor_difference(0.0, residual_vals)
+    std_res = finite_population_std(residual_vals, name="balance residual")
+    max_res = max(map(abs, residual_vals))
+    rms_res = _rms(residual_vals)
 
     # Conservation quality: 1/(1 + RMS) maps [0, ∞) → (0, 1]
     quality = 1.0 / (1.0 + rms_res)
 
     # Legacy field name. This is only the mean absolute balance residual and
     # has no rule-classification semantics.
-    gvi = float(np.mean(np.abs(residual_vals))) if len(residual_vals) > 0 else 0.0
+    gvi = finite_mean_absolute(residual_vals, name="balance residual")
 
     # Total charge tracking
-    q_before = sum(before.charge_density.values())
-    q_after = sum(after.charge_density.values())
-    charge_drift = abs(q_after - q_before)
+    q_before = _total_charge_from_density(before.charge_density)
+    q_after = _total_charge_from_density(after.charge_density)
+    charge_drift = finite_real_scalar(abs(q_after - q_before), "charge drift")
 
     return ConservationBalance(
         residual=residual,
         delta_rho=delta_rho,
-        divergence_after={
-            n: 0.5 * (before.divergence.get(n, 0.0) + after.divergence.get(n, 0.0))
-            for n in nodes
-        },
+        divergence_after=average_divergence,
         mean_residual=mean_res,
         std_residual=std_res,
         max_residual=max_res,
@@ -486,27 +587,40 @@ class ConservationTracker:
         self._snapshots: list[tuple[float, ConservationSnapshot]] = []
         self._series = ConservationTimeSeries()
 
-    def record(self, t: float = 0.0) -> ConservationSnapshot:
+    def record(
+        self, t: float = 0.0, *, _require_energy: bool = False
+    ) -> ConservationSnapshot:
         """Capture current state and compute balance against previous snapshot.
 
         Parameters
         ----------
         t : float
-            Structural time stamp for this snapshot.
+            Finite timestamp, strictly greater than the previous timestamp.
+            Equal timestamps do not imply an invented unit-duration step.
 
         Returns
         -------
         ConservationSnapshot
-            The captured snapshot (also stored internally).
+            A detached copy of the captured snapshot. Editing it cannot alter
+            the tracker's retained evidence.
+
+        Rejected samples leave the retained snapshots and series unchanged.
+        The private energy flag lets the SDK admit its combined balance/energy
+        report before commit; pure balance tracking does not require energy.
         """
+        t = _observed_scalar(t, "snapshot timestamp")
+        if self._snapshots:
+            t_prev, snap_prev = self._snapshots[-1]
+            dt = _positive_interval(t - t_prev)
         snap = capture_conservation_snapshot(self._G)
-        self._snapshots.append((t, snap))
+        _snapshot_nodes(snap, ("charge_density", "divergence"))
 
-        if len(self._snapshots) >= 2:
-            t_prev, snap_prev = self._snapshots[-2]
-            dt = t - t_prev if t != t_prev else 1.0
+        if self._snapshots:
             balance = verify_conservation_balance(snap_prev, snap, dt=dt)
-
+            if _require_energy:
+                compute_lyapunov_derivative(snap_prev, snap, dt=dt)
+            # Commit only after timestamp, capture and interval admission pass.
+            self._snapshots.append((t, snap))
             self._series.times.append(t)
             self._series.total_charge.append(balance.total_charge_after)
             self._series.mean_residuals.append(balance.mean_residual)
@@ -516,7 +630,10 @@ class ConservationTracker:
             self._series.charge_drift.append(balance.charge_drift)
         else:
             # First snapshot — record initial charge only
-            q_total = sum(snap.charge_density.values())
+            if _require_energy:
+                _energy_from_snapshot(snap)
+            q_total = _total_charge_from_density(snap.charge_density)
+            self._snapshots.append((t, snap))
             self._series.times.append(t)
             self._series.total_charge.append(q_total)
             self._series.mean_residuals.append(0.0)
@@ -525,11 +642,20 @@ class ConservationTracker:
             self._series.grammar_violation_index.append(0.0)
             self._series.charge_drift.append(0.0)
 
-        return snap
+        # Copy maps without copying node identifiers: labels may use object
+        # identity, and they must still address the caller's original nodes.
+        return replace(
+            snap,
+            **{
+                descriptor.name: dict(values)
+                for descriptor in dataclass_fields(snap)
+                if (values := getattr(snap, descriptor.name)) is not None
+            },
+        )
 
     def report(self) -> ConservationTimeSeries:
-        """Return the accumulated time-series diagnostics."""
-        return self._series
+        """Return detached accumulated diagnostics, not editable retained evidence."""
+        return deepcopy(self._series)
 
     @property
     def latest_balance(self) -> ConservationBalance | None:
@@ -538,7 +664,7 @@ class ConservationTracker:
             return None
         t_prev, snap_prev = self._snapshots[-2]
         t_curr, snap_curr = self._snapshots[-1]
-        dt = t_curr - t_prev if t_curr != t_prev else 1.0
+        dt = t_curr - t_prev
         return verify_conservation_balance(snap_prev, snap_curr, dt=dt)
 
 
@@ -565,6 +691,9 @@ def decompose_conservation_residual(
 
     Divergence is evaluated using the **Crank-Nicolson (trapezoidal)**
     average of the before and after snapshots for O(Δt²) accuracy.
+    Its sector components are captured independently on the graph. Local
+    current magnitudes cannot recover their divergences or even their signs.
+    Snapshots missing this component evidence must be recaptured.
 
     Returns
     -------
@@ -576,7 +705,18 @@ def decompose_conservation_residual(
         'potential_residual' : ΔΦ_s/Δt + div(J_ΔNFR)  [potential sector]
         'geometric_residual' : ΔK_φ/Δt + div(J_φ)     [geometric sector]
     """
-    nodes = list(after.phi_s.keys())
+    dt = _positive_interval(dt)
+    if any(
+        getattr(snapshot, field) is None
+        for snapshot in (before, after)
+        for field in ("divergence_phi", "divergence_dnfr")
+    ):
+        raise ValueError("sector divergences are unavailable; recapture both snapshots")
+    nodes = _snapshot_pair_nodes(
+        before,
+        after,
+        ("phi_s", "k_phi", "divergence_phi", "divergence_dnfr"),
+    )
 
     phi_s_drift: dict[Any, float] = {}
     k_phi_drift: dict[Any, float] = {}
@@ -587,28 +727,27 @@ def decompose_conservation_residual(
 
     for n in nodes:
         # Rate of change of each charge component
-        d_phi_s = (after.phi_s.get(n, 0.0) - before.phi_s.get(n, 0.0)) / dt
-        d_k_phi = (after.k_phi.get(n, 0.0) - before.k_phi.get(n, 0.0)) / dt
+        d_phi_s = _observed_secant(
+            before.phi_s[n], after.phi_s[n], dt, "potential rate"
+        )
+        d_k_phi = _observed_secant(
+            before.k_phi[n], after.k_phi[n], dt, "curvature rate"
+        )
         phi_s_drift[n] = d_phi_s
         k_phi_drift[n] = d_k_phi
 
-        # Crank-Nicolson: trapezoidal average of divergence
-        div_j = 0.5 * (before.divergence.get(n, 0.0) + after.divergence.get(n, 0.0))
-        # Approximate split: use field magnitudes as proxy (averaged)
-        j_phi_n = 0.5 * (before.j_phi.get(n, 0.0) + after.j_phi.get(n, 0.0))
-        j_dnfr_n = 0.5 * (before.j_dnfr.get(n, 0.0) + after.j_dnfr.get(n, 0.0))
-        total_j = abs(j_phi_n) + abs(j_dnfr_n) + 1e-15
-        j_phi_fraction = abs(j_phi_n) / total_j
-        j_dnfr_fraction = abs(j_dnfr_n) / total_j
-
-        j_phi_div[n] = div_j * j_phi_fraction
-        j_dnfr_div[n] = div_j * j_dnfr_fraction
-
-        # Sector residuals (the key physics insight):
-        # Potential sector: Φ_s is driven by ΔNFR distribution → coupled to J_ΔNFR
-        # Geometric sector: K_φ is driven by phase dynamics → coupled to J_φ
-        potential_residual[n] = d_phi_s + j_dnfr_div[n]
-        geometric_residual[n] = d_k_phi + j_phi_div[n]
+        j_phi_div[n] = mean_neighbor_difference(
+            0.0, (before.divergence_phi[n], after.divergence_phi[n])
+        )
+        j_dnfr_div[n] = mean_neighbor_difference(
+            0.0, (before.divergence_dnfr[n], after.divergence_dnfr[n])
+        )
+        potential_residual[n] = finite_real_scalar(
+            d_phi_s + j_dnfr_div[n], "potential residual"
+        )
+        geometric_residual[n] = finite_real_scalar(
+            d_k_phi + j_phi_div[n], "geometric residual"
+        )
 
     return {
         "phi_s_drift": phi_s_drift,
@@ -729,6 +868,9 @@ def detect_grammar_violations_from_conservation(
     threshold = U6_STRUCTURAL_POTENTIAL_LIMIT
     if bounds is not None:
         threshold = bounds.get("max_allowed_residual", U6_STRUCTURAL_POTENTIAL_LIMIT)
+    threshold = _observed_scalar(threshold, "max_allowed_residual")
+    if threshold <= 0.0:
+        raise ValueError("max_allowed_residual must be strictly positive")
 
     alert_types: list[str] = []
     nodes_alerted: list[Any] = []
@@ -807,7 +949,7 @@ def compute_noether_charge(G: Any) -> float:
         Total structural-charge candidate.
     """
     charge = compute_charge_density(G)
-    return sum(charge.values())
+    return _total_charge_from_density(charge)
 
 
 def compute_energy_functional(G: Any) -> float:
@@ -816,16 +958,20 @@ def compute_energy_functional(G: Any) -> float:
     E = (1/2) Σ_i ℰ(i)
 
     where ℰ(i) = Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR² is the raw
-    energy density from :func:`unified.compute_energy_density`
-    (CANONICAL SOURCE).
+    energy density defined by :func:`unified.compute_energy_density`.
 
     **Single source of truth**: delegates to
-    ``unified.compute_energy_density`` for the per-node quadratic form,
-    then applies the ½ normalisation and sums.
+    the shared normalized-total helper in ``unified`` for the same quadratic
+    form and ½ normalization. It avoids materializing unrepresentable squares
+    when the final total remains representable.
 
-    **Consistency contracts**:
-        ``E == sum(variational.compute_hamiltonian_density(G).values())``
-        ``E == 0.5 * sum(unified.compute_energy_density(G).values())``
+    **Mathematical normalization**:
+        ``E = sum(variational.compute_hamiltonian_density(G).values())``
+        ``E = 0.5 * sum(unified.compute_energy_density(G).values())``
+
+    These equalities identify the real quadratic form, not bitwise equality
+    after independent per-node rounding. Raw densities can underflow/overflow
+    even when the normalized network total is representable.
 
     The result is non-negative.  It is a Lyapunov candidate only: U2 validity
     alone does not prove ``dE/dt <= 0`` for an arbitrary pressure law or
@@ -845,8 +991,10 @@ def compute_energy_functional(G: Any) -> float:
     unified.compute_energy_density : Raw ℰ(i) per node.
     variational.compute_hamiltonian_density : H(i) = ½·ℰ(i) per node.
     """
-    raw = _raw_energy_density(G)
-    return 0.5 * sum(raw.values())
+    fields = _capture_structural_fields(G)
+    return _total_energy_from_fields(
+        fields.phi_s, fields.grad_phi, fields.k_phi, fields.j_phi, fields.j_dnfr
+    )
 
 
 def _energy_from_snapshot(snapshot: ConservationSnapshot) -> float:
@@ -856,14 +1004,14 @@ def _energy_from_snapshot(snapshot: ConservationSnapshot) -> float:
     the live graph): both evaluate the same canonical quadratic form, so the
     energy-density definition lives in one place rather than being inlined.
     """
-    raw = _energy_density_from_fields(
+    _snapshot_nodes(snapshot, ("phi_s", "grad_phi", "k_phi", "j_phi", "j_dnfr"))
+    return _total_energy_from_fields(
         snapshot.phi_s,
         snapshot.grad_phi,
         snapshot.k_phi,
         snapshot.j_phi,
         snapshot.j_dnfr,
     )
-    return 0.5 * sum(raw.values())
 
 
 # ---------------------------------------------------------------------------
@@ -875,7 +1023,7 @@ def analyze_sector_coupling(
     before: ConservationSnapshot,
     after: ConservationSnapshot,
     dt: float = 1.0,
-) -> dict[str, float]:
+) -> dict[str, Any]:
     r"""Analyze coupling between potential and geometric conservation sectors.
 
     The measured balance decomposes into two residual sectors:
@@ -894,7 +1042,10 @@ def analyze_sector_coupling(
 
     The cross-correlation summarizes co-variation between the two residual
     channels. It does not establish a causal coupling or derive the complex
-    field ``Psi = K_phi + i*J_phi``.
+    field ``Psi = K_phi + i*J_phi``. The legacy three-sample and 1e-15
+    dispersion cuts are retained as observation policies, not physical bounds.
+    An unavailable correlation keeps its compatibility zero but is explicitly
+    tagged; a nonrepresentable asymmetry ratio is returned as None.
 
     Parameters
     ----------
@@ -915,17 +1066,27 @@ def analyze_sector_coupling(
     decomp = decompose_conservation_residual(before, after, dt=dt)
     nodes = list(decomp["potential_residual"].keys())
 
-    pot_res = np.array([decomp["potential_residual"][n] for n in nodes])
-    geo_res = np.array([decomp["geometric_residual"][n] for n in nodes])
+    pot_res = [float(decomp["potential_residual"][n]) for n in nodes]
+    geo_res = [float(decomp["geometric_residual"][n]) for n in nodes]
 
-    rms_pot = float(np.sqrt(np.mean(pot_res**2)))
-    rms_geo = float(np.sqrt(np.mean(geo_res**2)))
+    rms_pot = _rms(pot_res)
+    rms_geo = _rms(geo_res)
 
     # Cross-coupling: correlation between sector residuals
-    if len(nodes) > 2 and np.std(pot_res) > 1e-15 and np.std(geo_res) > 1e-15:
-        cross_corr = float(np.corrcoef(pot_res, geo_res)[0, 1])
+    if len(nodes) <= 2:
+        correlation_status = "insufficient_samples"
+        cross_corr = None
+    elif (
+        finite_population_std(pot_res) <= 1e-15
+        or finite_population_std(geo_res) <= 1e-15
+    ):
+        correlation_status = "below_legacy_dispersion_cut"
+        cross_corr = None
     else:
-        cross_corr = 0.0
+        cross_corr = finite_pearson_correlation(pot_res, geo_res)
+        correlation_status = (
+            "available" if cross_corr is not None else "constant_sample"
+        )
 
     # Determine dominant sector
     if rms_pot > _SECTOR_IMBALANCE_RATIO * rms_geo:
@@ -940,9 +1101,12 @@ def analyze_sector_coupling(
     return {
         "potential_sector_residual": rms_pot,
         "geometric_sector_residual": rms_geo,
-        "cross_coupling_strength": cross_corr,
+        "cross_coupling_strength": cross_corr if cross_corr is not None else 0.0,
+        "cross_coupling_available": cross_corr is not None,
+        "cross_coupling_status": correlation_status,
         "dominant_sector": dominant,
-        "sector_asymmetry": asymmetry,
+        "sector_asymmetry": asymmetry if math.isfinite(asymmetry) else None,
+        "sector_asymmetry_available": math.isfinite(asymmetry),
     }
 
 
@@ -1005,9 +1169,10 @@ def compute_ward_identity(
 ) -> WardIdentity:
     r"""Compute a legacy-named Ward diagnostic for one observed step.
 
-    Measures how the supplied snapshots changed structural charge and the
-    energy candidate. The labels are finite threshold classifications and
-    contain no grammar verdict.
+    Measures structural-charge change from the supplied snapshots. Energy
+    also comes from those snapshots unless both optional graphs are supplied.
+    The labels are finite threshold classifications and contain no grammar
+    verdict.
 
     Parameters
     ----------
@@ -1016,8 +1181,12 @@ def compute_ward_identity(
     operator_name : str
         Name/glyph of the operator that was applied (e.g. "AL", "IL").
     G_before, G_after : TNFRGraph, optional
-        Graph objects for energy computation.  If ``None``, energy change
-        is estimated from snapshot fields.
+        If both are supplied, they provide the energy endpoints. Correspondence
+        of those graph states to the charge snapshots is the caller's unverified
+        responsibility; neither support nor field equality is checked. Supplying
+        only one graph retains the legacy snapshot-energy fallback. Snapshot
+        energy evaluates the same declared quadratic form, not an estimate of
+        an independently supplied graph.
     dt : float
         Time step between snapshots (default 1.0).
     threshold : float
@@ -1029,7 +1198,7 @@ def compute_ward_identity(
     """
     if not isinstance(operator_name, str) or not operator_name.strip():
         raise ValueError("operator_name must be a non-empty string")
-    if isinstance(threshold, bool):
+    if isinstance(threshold, (bool, np.bool_)):
         raise TypeError("threshold must be a finite positive real number")
     threshold = float(threshold)
     if not np.isfinite(threshold) or threshold <= 0.0:
@@ -1108,9 +1277,22 @@ def verify_sequence_ward_identity(
         'sequence_conserved' : legacy alias for a threshold comparison
         'operator_summary' : dict[str, int] — count by charge_character
     """
-    total_source = sum(w.mean_source for w in identities)
-    total_dq = sum(w.delta_charge for w in identities)
-    total_de = sum(w.delta_energy for w in identities)
+    total_source = finite_real_scalar(
+        math.fsum(finite_real_scalar(w.mean_source, "mean source") for w in identities),
+        "total source",
+    )
+    total_dq = finite_real_scalar(
+        math.fsum(
+            finite_real_scalar(w.delta_charge, "charge change") for w in identities
+        ),
+        "total charge change",
+    )
+    total_de = finite_real_scalar(
+        math.fsum(
+            finite_real_scalar(w.delta_energy, "energy change") for w in identities
+        ),
+        "total energy change",
+    )
 
     summary: dict[str, int] = {}
     for w in identities:
@@ -1120,12 +1302,12 @@ def verify_sequence_ward_identity(
     if alert_level is None:
         threshold = U6_STRUCTURAL_POTENTIAL_LIMIT / n_steps
     else:
-        if isinstance(alert_level, bool):
+        if isinstance(alert_level, (bool, np.bool_)):
             raise TypeError("alert_level must be a finite positive real number")
         threshold = float(alert_level)
         if not np.isfinite(threshold) or threshold <= 0.0:
             raise ValueError("alert_level must be finite and strictly positive")
-    within_alert = abs(total_source) < threshold
+    within_alert = bool(identities) and abs(total_source) < threshold
 
     return {
         "total_source": total_source,
@@ -1138,6 +1320,7 @@ def verify_sequence_ward_identity(
         "grammar_validation_applicable": False,
         "grammar_validated": False,
         "diagnostic_scope": "finite_sequence_balance_aggregate",
+        "sample_available": bool(identities),
         "operator_summary": summary,
     }
 
@@ -1166,7 +1349,8 @@ class LyapunovResult:
     dissipation : float
         D[G] = max(0, -dE/dt) — structural dissipation rate.
     is_stable : bool
-        True when dE/dt ≤ 0 (energy non-increasing).
+        Compatibility alert: dE/dt <= the configured nonnegative tolerance.
+        Use ``energy_nonincreasing`` for the captured endpoint-energy comparison.
     is_strongly_stable : bool
         True when dE/dt < -ε (energy strictly decreasing).
     """
@@ -1177,6 +1361,11 @@ class LyapunovResult:
     dissipation: float
     is_stable: bool
     is_strongly_stable: bool
+
+    @property
+    def energy_nonincreasing(self) -> bool:
+        """Compare the captured endpoint energies, independently of rate rounding."""
+        return self.energy_after <= self.energy_before
 
 
 def compute_lyapunov_derivative(
@@ -1201,16 +1390,22 @@ def compute_lyapunov_derivative(
     dt : float
         Time step (default 1.0).
     stability_threshold : float
-        Minimum |dE/dt| to classify as "strongly stable" (default 1e-6).
+        Nonnegative numerical allowance for ``is_stable`` and the minimum
+        decrease for ``is_strongly_stable`` (default 1e-6). It is not a theorem.
 
     Returns
     -------
     LyapunovResult
     """
+    dt = _positive_interval(dt)
+    stability_threshold = _observed_scalar(stability_threshold, "stability_threshold")
+    if stability_threshold < 0.0:
+        raise ValueError("stability_threshold must be nonnegative")
+    _snapshot_pair_nodes(before, after, ("charge_density",))
     e_before = _energy_from_snapshot(before)
     e_after = _energy_from_snapshot(after)
 
-    de_dt = (e_after - e_before) / dt
+    de_dt = _observed_secant(e_before, e_after, dt, "energy derivative")
     dissipation = max(0.0, -de_dt)
 
     return LyapunovResult(
@@ -1354,110 +1549,6 @@ def compute_spectral_conservation(
 
 
 # ---------------------------------------------------------------------------
-# Historical conservation-quality scaling fit
-# ---------------------------------------------------------------------------
-
-
-def compute_conservation_scaling(
-    topologies: Sequence[tuple[Any, str]],
-    dt: float = 0.01,
-    n_steps: int = 10,
-    seed: int = 42,
-) -> dict[str, Any]:
-    r"""Measure conservation quality scaling with network size.
-
-    Fits the historical finite-sample ansatz:
-
-        q(N) ~ 1 - C/√N
-
-    The returned fit and R² describe only the supplied graph family and
-    evolution procedure. They do not prove a continuum limit or exact
-    conservation as ``N -> infinity``.
-
-    Parameters
-    ----------
-    topologies : Sequence[tuple[graph, label]]
-        list of (graph, label) pairs at different sizes.
-    dt : float
-        Integration time step per evolution step.
-    n_steps : int
-        Number of evolution steps per graph.
-    seed : int
-        Random seed for reproducibility.
-
-    Returns
-    -------
-    dict with:
-        'sizes' : list[int]
-        'qualities' : list[float]
-        'labels' : list[str]
-        'fit_C' : float — estimated C from q(N) ≈ 1 - C/√N
-        'fit_R2' : float — goodness of fit
-    """
-    rng = np.random.default_rng(seed)
-    sizes: list[int] = []
-    qualities: list[float] = []
-    labels: list[str] = []
-
-    for G, label in topologies:
-        n = G.number_of_nodes()
-        # Ensure canonical attributes
-        for nd in G.nodes():
-            if "phase" not in G.nodes[nd]:
-                G.nodes[nd]["phase"] = rng.uniform(0, 2 * math.pi)
-            if "delta_nfr" not in G.nodes[nd]:
-                G.nodes[nd]["delta_nfr"] = rng.uniform(-0.5, 0.5)
-            if "frequency" not in G.nodes[nd]:
-                G.nodes[nd]["frequency"] = rng.uniform(0.1, 1.0)
-
-        tracker = ConservationTracker(G)
-        tracker.record(t=0.0)
-
-        # Simple nodal evolution (phase + ΔNFR diffusion)
-        for step in range(n_steps):
-            for nd in G.nodes():
-                nu_f = G.nodes[nd].get("frequency", 1.0)
-                dnfr = G.nodes[nd].get("delta_nfr", 0.0)
-                G.nodes[nd]["phase"] += dt * nu_f * dnfr * 0.1
-                nbrs = list(G.neighbors(nd))
-                if nbrs:
-                    mean_dnfr = float(
-                        np.mean([G.nodes[j].get("delta_nfr", 0.0) for j in nbrs])
-                    )
-                    G.nodes[nd]["delta_nfr"] += dt * 0.1 * (mean_dnfr - dnfr)
-            tracker.record(t=(step + 1) * dt)
-
-        report = tracker.report()
-        sizes.append(n)
-        qualities.append(report.mean_quality)
-        labels.append(label)
-
-    # Fit q(N) ≈ 1 - C/√N  →  (1 - q) ≈ C/√N
-    # Linear regression: y = C * x where y = 1-q, x = 1/√N
-    x = np.array([1.0 / math.sqrt(s) for s in sizes])
-    y = np.array([1.0 - q for q in qualities])
-
-    # Least-squares: C = Σ(x·y) / Σ(x²)
-    xx = float(np.sum(x * x))
-    xy = float(np.sum(x * y))
-    fit_C = xy / xx if xx > 1e-15 else 0.0
-
-    # R² goodness of fit
-    y_pred = fit_C * x
-    ss_res = float(np.sum((y - y_pred) ** 2))
-    ss_tot = float(np.sum((y - np.mean(y)) ** 2))
-    fit_R2 = 1.0 - ss_res / ss_tot if ss_tot > 1e-15 else 0.0
-
-    return {
-        "sizes": sizes,
-        "qualities": qualities,
-        "labels": labels,
-        "fit_C": fit_C,
-        "fit_R2": fit_R2,
-    }
-
-
-# ---------------------------------------------------------------------------
 #  Public API
 # ---------------------------------------------------------------------------
 
@@ -1492,6 +1583,4 @@ __all__ = [
     "compute_lyapunov_derivative",
     # Spectral conservation
     "compute_spectral_conservation",
-    # Scaling analysis
-    "compute_conservation_scaling",
 ]

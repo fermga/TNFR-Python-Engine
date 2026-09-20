@@ -3,7 +3,8 @@
 TNFR Canonical Constants
 ========================
 
-Single source of truth for TNFR constants. Nodal equation:
+Shared mathematical values and compatibility names for configured TNFR defaults.
+Subsystem configuration remains owned by ``tnfr.config``. Nodal equation:
 
 ∂EPI/∂t = νf · ΔNFR(t)
 
@@ -18,10 +19,11 @@ on pressure and the graph kernel B_G. The π/4 per-node and π/2 U6 drift values
 are selected safety policies, not consequences of phase wrapping. See
 ``theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md`` for exact hypotheses and witnesses.
 
-Every other value here is one of:
-- a mathematical quantity with a stated nodal or spectral derivation;
-- a free simulation / operator parameter — a clean structural default (unit,
-  π-fraction, or plain value) labeled tunable, NOT a derived constant.
+These names include mathematical quantities, selected model/diagnostic
+parameters, numerical-method coefficients and inactive compatibility exports.
+Their role follows the documented consumer, not this module's historical name.
+The classification and unit-change duties are centralized in
+``theory/NODAL_PARAMETER_FOUNDATIONS.md`` section 1.1.
 
 Operational engine-tuning knobs (cache sizes, FFT / optimization tuning,
 performance / memory estimates, engine scoring weights) carry no nodal-physics
@@ -40,22 +42,17 @@ Date: November 29, 2025 (φ/γ/e purge 2026-06)
 
 import math
 
-import mpmath as mp
-
-# set high precision for canonical derivations
-mp.mp.dps = 35
-
 # ============================================================================
-# FUNDAMENTAL TNFR CONSTANTS (Canonical - Never Change)
+# MATHEMATICAL CONSTANTS (represented binary64 values)
 # ============================================================================
 
 # Exact circular scale in radians: π, shared by the |∇φ| and |K_φ| bounds.
 # This angular bound supplies neither a time unit nor a unique dynamical gain.
 # The remaining values have mathematical or operational roles documented below.
-PI = float(mp.pi)  # Pi π ≈ 3.141592653589793
-LN_2 = float(
-    mp.log(2)
-)  # Natural log of 2 ≈ 0.693147180559945 (binary information unit)
+# Standard-library values preserve the binary64 constants without changing a
+# caller's arbitrary-precision context merely by importing configuration.
+PI = math.pi  # Pi π ≈ 3.141592653589793
+LN_2 = math.log(2)  # Natural log of 2 ≈ 0.693147180559945 (binary information unit)
 
 # Inverse constants
 INV_PI = 1.0 / PI  # 1/π ≈ 0.318309886183791
@@ -177,7 +174,7 @@ STRUCTURAL_ESCAPE_THRESHOLD_THEORETICAL = 2.0  # EPI span (unit form range)
 # νf·dt·λ_max < 2 for fixed homogeneous pure-EPI diffusion. A default step
 # alone does not certify stability of an arbitrary configured model.
 DT_CANONICAL = 1.0 / 2.0  # configured explicit step (tunable parameter)
-DT_MIN_CANONICAL = 1.0 / 16.0  # minimal adaptive-step floor (tunable)
+DT_MIN_CANONICAL = 1.0 / 16.0  # configured subdivision floor when subdivision is active
 
 # Selected scalar-chart clipping bounds; the nodal product does not derive them.
 EPI_MAX_CANONICAL = 1.0  # unit form-magnitude bound
@@ -209,10 +206,8 @@ NUL_EPI_THRESHOLD_CANONICAL = 0.5  # contraction safety EPI threshold (tunable)
 # not a structural constant; centralizing it prevents runtime/SDK drift.
 ZHIR_THRESHOLD_XI_CANONICAL = 0.1
 
-# Margin and selector constants (canonical selection boundaries)
-GLYPH_SELECTOR_MARGIN_CANONICAL = (
-    KL_MIN_CANONICAL  # = 1/(8π) (selection boundary precision)
-)
+# Configured selector hysteresis margin; not floating-point precision.
+GLYPH_SELECTOR_MARGIN_CANONICAL = KL_MIN_CANONICAL  # = 1/(8π) (selected score margin)
 
 # ============================================================================
 # TOPOLOGY AND SPECTRAL CONSTANTS (Phase 3 Canonicalization)
@@ -257,7 +252,8 @@ MATH_DELTA_NFR_THRESHOLD_2X_CANONICAL = (
 DYNAMICS_ADELIC_DRIFT_CANONICAL = 0.1  # adelic drift (tunable)
 DYNAMICS_ADELIC_DT_STEP_CANONICAL = 1.0 / 16.0  # adelic timestep = DT_MIN (tunable)
 
-# Dynamics/Adaptation Constants (adaptive structural evolution)
+# Legacy compatibility value. Current adaptation reads SELECTOR_THRESHOLDS;
+# this is not its default Si cut and must not act as a second fallback owner.
 DYNAMICS_SI_HI_THRESHOLD_CANONICAL = (
     HIGH_COHERENCE_THRESHOLD  # π/(π+1) high-coherence Si gate
 )
@@ -309,7 +305,7 @@ FEEDBACK_LEARNING_RATE = (
 # (operational, ~110 constants) → moved to tnfr.constants.operational (audit 2026).
 
 # ============================================================================
-# TELEMETRY CONSTANTS (Classical Mathematical Derivations)
+# TELEMETRY DEFAULTS (selected diagnostic policies)
 # ============================================================================
 
 # --- Canonical Structural Field Tetrad Thresholds ---
@@ -340,11 +336,14 @@ XI_C_WATCH_RATIO = PI  # selected watch multiplier for mean node eccentricity
 # PHASE AND RESONANCE CONSTANTS
 # ============================================================================
 
-# Phase coupling thresholds
+# Selected U3 admission ceiling, not the kinematic pi wrap bound. The runtime
+# shared resolver may tighten it; admission alone does not imply phase motion.
 DELTA_PHI_MAX = PI / 2  # π/2 ≈ 1.5708 rad (90° maximum phase mismatch for U3 coupling)
-PHASE_SYNC_THRESHOLD = math.sin(PI / 6)  # sin(π/6) = 0.5 (30° tolerance)
-PHASE_DESYNC_LIMIT = math.cos(PI / 3)  # cos(π/3) = 0.5 (60° limit)
-ANTIPHASE_THRESHOLD = math.cos(2 * PI / 3)  # cos(2π/3) ≈ -0.5 (120° destructive)
+# Legacy exported trigonometric score cuts, currently not consumed by live
+# phase admission. These dimensionless sine/cosine values are not angles.
+PHASE_SYNC_THRESHOLD = math.sin(PI / 6)  # approximately 0.5, not 30 degrees
+PHASE_DESYNC_LIMIT = math.cos(PI / 3)  # approximately 0.5, not 60 degrees
+ANTIPHASE_THRESHOLD = math.cos(2 * PI / 3)  # approximately -0.5
 
 # NOTE: the νf (structural-frequency) bounds are VF_MIN_CANONICAL = 0 and
 # VF_MAX_CANONICAL = 2π (defined above). The former MIN/MAX_STRUCTURAL_FREQUENCY
@@ -357,11 +356,14 @@ ANTIPHASE_THRESHOLD = math.cos(2 * PI / 3)  # cos(2π/3) ≈ -0.5 (120° destruc
 # Grammar validation
 # Selected U6 drift policy, not a phase-wrap theorem.
 U6_STRUCTURAL_POTENTIAL_LIMIT = PI / 2
-GRAMMAR_TOLERANCE = 1e-10  # Numerical precision for grammar checks
-PHASE_VERIFICATION_TOLERANCE = PI / 180  # 1° tolerance for phase coupling
+# Inert compatibility exports; current grammar/U3 consumers do not read these.
+# In particular, U3 does not silently add a one-degree acceptance margin.
+GRAMMAR_TOLERANCE = 1e-10
+PHASE_VERIFICATION_TOLERANCE = PI / 180
 
-# Convergence criteria
-INTEGRAL_CONVERGENCE_TOLERANCE = 1e-8  # For ∫νf·ΔNFR convergence
+# Legacy finite-comparison tolerance, currently unused. No finite tolerance
+# decides convergence of an improper integral or supplies a tail bound.
+INTEGRAL_CONVERGENCE_TOLERANCE = 1e-8
 BIFURCATION_DETECTION_SENSITIVITY = 1e-6  # ∂²EPI/∂t² threshold detection
 # Deprecated inert compatibility cut; no stability theorem.
 COHERENCE_PRESERVATION_MINIMUM = 0.1

@@ -15,7 +15,8 @@ import math
 from fractions import Fraction
 from typing import Any
 
-from ..mathematics.unified_numerical import np
+from ..mathematics._neighbor_differences import mean_neighbor_difference
+from ..mathematics.unified_numerical import compute_phase_difference, np
 from ..metrics.common import finite_population_std
 from ._edge_semantics import structural_path_weight
 from ._helpers import finite_real_scalar
@@ -131,10 +132,7 @@ def _phase_current_cached(G, node_order, neighbor_order, phase_values):
 
         # Phase current as mean of sine differences (captures flow direction)
         neighbor_phases = np.array([phases_dict[j] for j in neighbors])
-        phase_diffs = neighbor_phases - phi_i
-
-        # Wrap differences to [-π, π] for proper sine calculation
-        wrapped_diffs = (phase_diffs + np.pi) % (2 * np.pi) - np.pi
+        wrapped_diffs = compute_phase_difference(neighbor_phases, phi_i)
 
         # Current = mean sine (positive = inward flow, negative = outward)
         current[i] = float(np.mean(np.sin(wrapped_diffs)))
@@ -152,6 +150,9 @@ def compute_dnfr_flux(G: Any) -> dict[Any, float]:
     neighbors. It contains no capacity or time factor and does not specify
     pressure evolution, physical transport or a sustaining interaction.
     Correlation with structural potential cannot establish those laws.
+    The stable binary64 neighbor-difference owner is shared with linear
+    pressure arithmetic. An unrepresentable final contrast raises instead of
+    caching infinity or NaN; reusing arithmetic does not install a pressure law.
 
     Parameters
     ----------
@@ -204,20 +205,10 @@ def _dnfr_flux_cached(G, node_order, neighbor_order, pressure_values):
 
     dnfr_values = dict(zip(nodes, pressure_values))
 
-    for i in nodes:
-        neighbors = list(G.neighbors(i))
-        if not neighbors:
-            flux[i] = 0.0
-            continue
-
-        dnfr_i = dnfr_values[i]
-
-        # ΔNFR flux as mean difference (captures pressure gradients)
-        neighbor_dnfr = np.array([dnfr_values[j] for j in neighbors])
-        dnfr_diffs = neighbor_dnfr - dnfr_i
-
-        # Flux = mean difference (positive = inward pressure, negative = outward)
-        flux[i] = float(np.mean(dnfr_diffs))
+    for i, neighbors in zip(nodes, neighbor_order):
+        flux[i] = mean_neighbor_difference(
+            dnfr_values[i], [dnfr_values[j] for j in neighbors]
+        )
 
     return flux
 

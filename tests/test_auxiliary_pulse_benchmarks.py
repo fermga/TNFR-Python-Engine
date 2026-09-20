@@ -71,3 +71,46 @@ def test_nested_order_hierarchy_already_holds_without_phase_evolution():
     assert group_order == pytest.approx(np.sqrt(0.5))
     assert whole_order == pytest.approx(0.0, abs=1e-15)
     assert leaf_order > group_order > whole_order
+
+
+def test_winding_comparison_preserves_tiny_phase_response():
+    catalog = _load("emergent_particle_catalog")
+    phases = np.array([0.0, 1e-16, 0.0])
+    assert catalog.ring_phase_gradient_mean(phases) == pytest.approx(2e-16 / 3, abs=0.0)
+    updated, report = catalog.relax_phase_ring(phases, dt=0.1, steps=1)
+    np.testing.assert_allclose(updated, [5e-18, 9e-17, 5e-18], atol=0.0, rtol=1e-15)
+    assert report["path_windings"] == (0, 0)
+    assert report["minimum_branch_margin"] > 0.0
+
+
+def test_winding_comparison_keeps_half_open_antipodal_boundary():
+    catalog = _load("emergent_particle_catalog")
+    np.testing.assert_array_equal(
+        catalog._wrap_pi_array(np.array([np.pi, -np.pi])), [-np.pi, -np.pi]
+    )
+    with pytest.raises(ValueError, match="wrap branch boundary"):
+        catalog.relax_phase_ring(np.array([0.0, np.pi, 0.0]), steps=0)
+
+
+def test_fixed_diffusion_comparison_uses_shared_step_with_declared_time(monkeypatch):
+    comparison = _load("emergent_structural_cosmology")
+    actual_euler = comparison.euler_update
+    observed_steps = []
+
+    def record_euler(epi, dt, rate):
+        observed_steps.append(dt)
+        return actual_euler(epi, dt, rate)
+
+    monkeypatch.setattr(comparison, "euler_update", record_euler)
+    graph = nx.path_graph(2)
+    nodes, lrw = comparison.structural_diffusion_operator(graph)
+    initial = np.array([1.0, -1.0])
+    updated = comparison.diffusion_step(initial, lrw, 1.0, 0.25)
+    np.testing.assert_array_equal(updated, [0.5, -0.5])
+    assert comparison.dirichlet_energy(graph, nodes, initial) == 2.0
+    assert comparison.dirichlet_energy(graph, nodes, updated) == 0.5
+    # Shared arithmetic does not make an excessive explicit step stable.
+    overshot = comparison.diffusion_step(initial, lrw, 1.0, 1.25)
+    np.testing.assert_array_equal(overshot, [-1.5, 1.5])
+    assert comparison.dirichlet_energy(graph, nodes, overshot) == 4.5
+    assert observed_steps == [0.25, 1.25]

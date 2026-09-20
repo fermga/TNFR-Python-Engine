@@ -88,7 +88,7 @@ def reset_global_state():
     """Reset the selected mutable process caches used by these tests.
 
     Logging flags, callback limits, backend/cache managers, immutable-value
-    checks, selector thresholds and RNG caches have explicit resets below.
+    checks and RNG caches have explicit resets below.
     Import caches are intentionally retained; reset_cached_import owns opt-in
     clearing. Graph-owned callbacks, observers and integrators require fresh
     graph fixtures. This is not a claim to reset every possible global object.
@@ -157,14 +157,6 @@ def _reset_all_state() -> None:
         from tnfr import immutable as immutable_module
 
         immutable_module._IMMUTABLE_CACHE.clear()
-    except (ImportError, AttributeError):
-        pass
-
-    # Reset selector threshold cache
-    try:
-        from tnfr import selector as selector_module
-
-        selector_module._SELECTOR_THRESHOLD_CACHE.clear()
     except (ImportError, AttributeError):
         pass
 

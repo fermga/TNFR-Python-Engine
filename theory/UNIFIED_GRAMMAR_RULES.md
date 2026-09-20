@@ -197,7 +197,8 @@ decays by 1 − ν_f dt λ_k. On a 21-node path the Fiedler mode retains about
 0.981646 of its amplitude after three such steps and requires 231 steps to
 fall below 1/(π+1). Thus the grammar window is a recency policy calibrated to a
 surrogate, not a uniform relaxation time for all graphs and perturbations.
-Function fallback branches likewise carry no Euler-stability guarantee.
+The calibration admits only a finite positive represented rate at most one;
+its 64-position cap carries no Euler-stability or target-crossing guarantee.
 See [the scope note, §2](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#2-modal-relaxation-and-the-grammar-calibration).
 
 ## 6. U5 — Multi-scale coherence

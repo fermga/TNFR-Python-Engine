@@ -19,6 +19,7 @@ from tests.physics._internal_mode_fixture import (
     _exact_generator,
     _graph,
 )
+from tests.physics.test_joint_quotient_contract import _ordered_phasor_gradient
 from tnfr.physics.forced_support import (
     derive_forced_support_balance,
     observe_forced_support_shape,
@@ -62,8 +63,9 @@ def _modeled_rate(observation):
 
 def test_prepared_phase_source_fails_the_retained_fine_pushforward_identity():
     graph = _source()
+    phases = (0.0, pi / 3, pi / 6)
     for a, i in NODES:
-        graph.nodes[a, i]["theta"] = (0.0, pi / 3, pi / 6)[i]
+        graph.nodes[a, i]["theta"] = phases[i]
     observation = capture_non_epi_forcing(graph)
     inherited = _apply(PROJECTION, _inherited_rate(observation))
     induced = tuple(
@@ -71,16 +73,41 @@ def test_prepared_phase_source_fails_the_retained_fine_pushforward_identity():
     )
     assert inherited == induced == (Q(-1, 32), 0, Q(-1, 32), 0)
     added = _apply(PROJECTION, observation.forcing)
-    coefficient = Q(1501199875790165, 2**55)
-    assert added == (coefficient, 0, coefficient, 0)
-    assert observation.kernel_pressure_defect == (0,) * 6
+    # Ideal symmetry does not certify correctly rounded three-neighbor means.
+    # Build the represented source from primitive ordered phasors instead.
+    phase_gradient = _ordered_phasor_gradient(
+        tuple(graph.nodes[node]["theta"] for node in NODES),
+        tuple(tuple(NODES.index(other) for other in graph[node]) for node in NODES),
+    )
+    forcing = tuple(value / 4 for value in phase_gradient)
+    fine_inherited = (Q(-1, 32), Q(1, 32), Q(0)) * 2
+    fresh_pressure = tuple(
+        Q(float(drift) + float(force))
+        for drift, force in zip(fine_inherited, forcing, strict=True)
+    )
+    kernel_defect = tuple(
+        fresh - drift - force
+        for fresh, drift, force in zip(
+            fresh_pressure, fine_inherited, forcing, strict=True
+        )
+    )
+    assert observation.phase_gradient == phase_gradient
+    assert observation.forcing == forcing
+    assert added == _apply(PROJECTION, forcing)
+    assert any(added)
+    assert observation.full_kernel_pressure == fresh_pressure
+    assert observation.kernel_pressure_defect == kernel_defect
+    projected_defect = _apply(PROJECTION, kernel_defect)
     claimed = _apply(PROJECTION, observation.full_kernel_pressure)
-    assert claimed == _apply(PROJECTION, _modeled_rate(observation))
-    assert tuple(b - a for a, b in zip(inherited, claimed, strict=True)) == added
-    assert claimed == (Q(375299968947541, 2**55), 0) * 2
+    modeled = _apply(PROJECTION, _modeled_rate(observation))
+    assert modeled == tuple(a + b for a, b in zip(inherited, added, strict=True))
+    assert claimed == tuple(
+        a + b for a, b in zip(modeled, projected_defect, strict=True)
+    )
+    assert tuple(b - a for a, b in zip(inherited, modeled, strict=True)) == added
     assert claimed[0] > 0 > inherited[0]
     # Ideal source projection is (1/24,0,1/24,0), giving u'=1/96.
-    assert coefficient - Q(1, 24) == Q(-1, 3 * 2**55)
+    assert claimed[0] - Q(1, 96) == added[0] - Q(1, 24) + projected_defect[0]
     # Choosing theta' afterward cannot remove this existing EPI-row defect.
 
 

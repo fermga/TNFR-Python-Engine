@@ -2,15 +2,12 @@
 
 The scalar wrappers here (``clamp``, ``clamp01``, ``within_range``,
 ``kahan_sum_nd``, …) are thin compatibility shims that delegate to the canonical
-:mod:`tnfr.mathematics.unified_numerical`.  The phase-difference helpers
-``angle_diff`` and ``angle_diff_array`` are **defined here** (they are not part
-of ``unified_numerical``) and are re-exported as the canonical public API via
+:mod:`tnfr.mathematics.unified_numerical`. The phase-difference helpers also
+delegate to its signed circular difference and are re-exported publicly via
 :mod:`tnfr.utils` — prefer ``from tnfr.utils import angle_diff``.
 """
 
 from __future__ import annotations
-
-import math
 
 # import warnings
 from collections.abc import Iterable, Sequence
@@ -86,14 +83,19 @@ def angle_diff_array(
     out: "np.ndarray | None" = None,  # noqa: F821
     where: "np.ndarray | None" = None,  # noqa: F821
 ) -> "np.ndarray":  # noqa: F821
-    """Vectorised :func:`angle_diff` compatible with NumPy arrays."""
+    """Vectorised :func:`angle_diff`, retaining its signed atan2 branch.
+
+    Only entries selected by ``where`` are evaluated. Output and mask domains
+    are checked before writing, and unselected output entries are preserved.
+    """
+    from ..mathematics.unified_numerical import compute_phase_difference
 
     if np is None:
         raise TypeError("angle_diff_array requires a NumPy module")
 
-    kwargs = {"where": where} if where is not None else {}
-    minuend = np.asarray(a, dtype=float)
-    subtrahend = np.asarray(b, dtype=float)
+    minuend, subtrahend = np.broadcast_arrays(
+        np.asarray(a, dtype=float), np.asarray(b, dtype=float)
+    )
     if out is None:
         out = np.empty_like(minuend, dtype=float)
         if where is not None:
@@ -109,8 +111,8 @@ def angle_diff_array(
                 suggestion="Ensure output array has correct shape.",
             )
 
-    np.subtract(minuend, subtrahend, out=out, **kwargs)
-    np.add(out, math.pi, out=out, **kwargs)
+    if not np.can_cast(np.dtype(float), out.dtype, casting="same_kind"):
+        raise TNFRValueError("out must accept floating-point phase differences")
     if where is not None:
         mask = np.asarray(where, dtype=bool)
         if mask.shape != out.shape:
@@ -119,10 +121,8 @@ def angle_diff_array(
                 context={"mask_shape": mask.shape, "expected": out.shape},
                 suggestion="Ensure mask array has correct shape.",
             )
-        selected = out[mask]
-        if selected.size:
-            out[mask] = np.remainder(selected, math.tau)
+        selected = compute_phase_difference(minuend[mask], subtrahend[mask])
+        out[mask] = selected
     else:
-        np.remainder(out, math.tau, out=out)
-    np.subtract(out, math.pi, out=out, **kwargs)
+        np.copyto(out, compute_phase_difference(minuend, subtrahend))
     return out

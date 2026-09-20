@@ -38,8 +38,9 @@ from numbers import Real
 from typing import Any
 
 from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA
-from ..constants.canonical import DELTA_PHI_MAX, U6_STRUCTURAL_POTENTIAL_LIMIT
+from ..constants.canonical import U6_STRUCTURAL_POTENTIAL_LIMIT
 from ..mathematics.unified_numerical import np
+from ..utils import angle_diff
 
 # Canonical fields
 from .canonical import (
@@ -454,7 +455,10 @@ def compute_grammar_symmetry_mapping(
     """Return six legacy correspondence rows with scoped rule assessments.
 
     A current graph snapshot with explicit finite edge phases can assess U3
-    edge-phase compatibility. It
+    edge-phase compatibility against the shared ``DELTA_PHI_MAX`` graph gate.
+    As in execution, the lowercase ``delta_phi_max`` spelling is not a graph
+    configuration key. This all-edge read-out does not assess an operator's
+    compatible-neighbor selection or its optional UM-only tightening. It
     cannot assess U1 sequence boundaries, U2 debt/history, U4 trigger/handler
     context, or U5 nesting. U6 is assessed only when ``reference_graph`` or
     ``reference_snapshot`` supplies the earlier structural potential and the
@@ -479,6 +483,8 @@ def compute_grammar_symmetry_mapping(
     list[GrammarSymmetryMapping]
         One entry per grammar rule.
     """
+    from ..operators._phase_gate import U3PhaseGateError, resolve_u3_phase_limits
+
     if reference_graph is not None and reference_snapshot is not None:
         raise ValueError("provide at most one U6 reference source")
 
@@ -500,18 +506,21 @@ def compute_grammar_symmetry_mapping(
             break
         phase_values[node] = phase
 
-    delta_phi_raw = G.graph.get("delta_phi_max", DELTA_PHI_MAX)
-    parsed_delta_phi = _as_finite_real(delta_phi_raw)
-    if not u3_issue:
-        if parsed_delta_phi is None or parsed_delta_phi < 0.0:
-            u3_issue = "delta_phi_max must be a finite nonnegative real number"
-    delta_phi_max = parsed_delta_phi if not u3_issue else float(DELTA_PHI_MAX)
+    # Use the same graph key, numeric conversion and hard-bound validation as
+    # the live operators. Invalid configuration is unavailable evidence, not
+    # permission to fall back to a wider phase gate.
+    delta_phi_max = 0.0
+    try:
+        delta_phi_max, _ = resolve_u3_phase_limits(G.graph, operator_code="RA")
+    except U3PhaseGateError as exc:
+        if not u3_issue:
+            u3_issue = str(exc)
 
     max_phase_diff = 0.0
     for u, v in edge_list if not u3_issue else ():
         phi_u = phase_values[u]
         phi_v = phase_values[v]
-        diff = abs((phi_u - phi_v + math.pi) % (2 * math.pi) - math.pi)
+        diff = abs(angle_diff(phi_u, phi_v))
         max_phase_diff = max(max_phase_diff, diff)
 
     # U6 requires a reference field because the policy concerns drift, not

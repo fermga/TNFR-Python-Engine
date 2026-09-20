@@ -1,6 +1,6 @@
 [project]
 name = "tnfr"
-version = "0.0.3.6"
+version = "0.0.3.7"
 description = "TNFR (Resonant Fractal Nature Theory): a mathematical framework for modeling coherent patterns in complex systems through resonance-based dynamics on networks."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -68,7 +68,7 @@ docs = [
 ]
 # Testing - modular groups
 test-unit = [
-  "pytest>=7,<10",
+  "pytest>=7.4,<10",
   "pytest-cov>=4,<8",
   "pytest-timeout>=2,<3",
 ]
@@ -185,7 +185,54 @@ exclude = [
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
-testpaths = ["tests"]
+# Routine engine gate. Explicit paths still select their complete local scope;
+# `pytest tests` includes the retained research/certificate suites as well.
+testpaths = [
+  "tests/test_*.py",
+  "tests/core_physics",
+  "tests/operators",
+  "tests/sdk",
+  "tests/cli",
+  "tests/engines",
+  "tests/parallel",
+  "tests/scripts",
+  "tests/mathematics/test_backends.py",
+  "tests/mathematics/test_epi.py",
+  "tests/mathematics/test_unified_numerical.py",
+  "tests/mathematics/test_validator.py",
+  "tests/physics/test_coherence_distance_contract.py",
+  "tests/physics/test_coherence_geometry.py",
+  "tests/physics/test_coherence_spectral_selection_scope.py",
+  "tests/physics/test_conductance_readout_synergy.py",
+  "tests/physics/test_conservation_observation_admission.py",
+  "tests/physics/test_curvature_multiscale.py",
+  "tests/physics/test_diffusion_energy_balance.py",
+  "tests/physics/test_diffusion_generator_consistency.py",
+  "tests/physics/test_directed_metrics.py",
+  "tests/physics/test_directed_transition_consistency.py",
+  "tests/physics/test_dnfr_canonical_orientation.py",
+  "tests/physics/test_epi_scalarization.py",
+  "tests/physics/test_extended_pressure_feedback_scope.py",
+  "tests/physics/test_field_*.py",
+  "tests/physics/test_mutation_trigger.py",
+  "tests/physics/test_native_phase_writer_boundaries.py",
+  "tests/physics/test_nodal_foundation_scope.py",
+  "tests/physics/test_nodal_pulse_scope.py",
+  "tests/physics/test_performance_evidence_truth.py",
+  "tests/physics/test_phase_curvature_resultant.py",
+  "tests/physics/test_potential_observation_admission.py",
+  "tests/physics/test_random_walk_consistency.py",
+  "tests/physics/test_readout_reuse.py",
+  "tests/physics/test_spectral_observables.py",
+  "tests/physics/test_structural_diffusion.py",
+  "tests/physics/test_structural_integrity.py",
+  "tests/physics/test_structural_potential_accuracy.py",
+  "tests/physics/test_structural_state_distance.py",
+  "tests/physics/test_structural_time.py",
+  "tests/physics/test_tetrad_bounds.py",
+  "tests/physics/test_tetrad_geometry_scope.py",
+  "tests/physics/test_xi_c_parity.py",
+]
 addopts = "-m 'not slow'"
 markers = [
   "slow: marks tests as slow (deselect with '-m \"not slow\"')",

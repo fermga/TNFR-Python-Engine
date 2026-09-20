@@ -47,11 +47,18 @@ canonical sources.
 | `replay/register_manifest.py` | Register replay metadata for a stored run. |
 | `run_self_optimization.py` | Execute the manifest-driven self-optimization workflow. |
 | `run_self_opt_validation.py` | Validate outputs produced by the self-optimization workflow. |
-| `validate_conservation_law.py` | Run the structural conservation-law validation program. |
 | `tnfr_is_prime.py` | Compatibility entry point for the TNFR primality tool. |
 
 Use `--help` on scripts that expose command-line options. Reproducible runs must
 record their seed, inputs, operator sequence, and generated manifest.
+
+Structural-balance checks use the shared
+[conservation diagnostics](../src/tnfr/physics/conservation.py) and
+[contract tests](../tests/core_physics/test_conservation_laws.py). A measured
+nonzero residual must remain a nonzero residual; a private phase/pressure
+smoothing script cannot verify the nodal law or a general conservation theorem.
+The [scope record](../theory/research/archive/README.md#foundation-reassessment-2026-09-20)
+owns the retired validation entry point and its replacement.
 
 ## Related commands
 

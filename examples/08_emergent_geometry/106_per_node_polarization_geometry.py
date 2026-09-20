@@ -20,7 +20,7 @@ under ``evolve_substrate_flow`` itself.  Experiment 2 instead applies each
 engine operator once to one seeded fixture and compares the extracted
 before/after vectors.  That table is a finite response audit, not a general
 classification of induced symplectic maps or grammar-valid words.  Experiment
-3 uses explicit encodings for three domain fixtures and reports read-outs; it
+3 uses explicit encodings for two arithmetic fixtures and reports read-outs; it
 does not derive those encodings from the nodal equation.
 
 References
@@ -28,11 +28,10 @@ References
 - examples/08_emergent_geometry/98_emergent_symplectic_substrate.py (substrate + polarization)
 - examples/08_emergent_geometry/103_emergent_substrate_meets_riemann.py
   (constructed P14 phase encoding)
-- examples/08_emergent_geometry/104_navier_stokes_is_not_riemann.py (NS adapter)
 - examples/07_number_theory/101_numbers_as_coupled_network.py (primes = low-coupling periphery)
 - src/tnfr/physics/symplectic_substrate.py (polarization_density,
   polarization_vector, evolve_substrate_flow)
-- AGENTS.md §"Emergent Symplectic Substrate" (polarization symmetry U(2))
+- AGENTS.md §"Auxiliary symplectic substrate" (polarization symmetry U(2))
 """
 
 import copy
@@ -119,7 +118,7 @@ def experiment_1_intrinsic():
     res = float(np.max(np.abs(dens["radius"] - dens["energy"])))
     unit = float(np.max(np.abs(np.linalg.norm(dens["poincare"], axis=0) - 1)))
     print("A. Poincaré sphere: each node is fully polarized, radius = energy")
-    print(f"   max |radius − energy| = {res:.1e}  (machine zero → EXACT)")
+    print(f"   max |radius − energy| = {res:.1e}  (finite binary64 residual)")
     print(f"   Poincaré vectors are unit:  max ||p|−1| = {unit:.1e}")
     print()
 
@@ -250,7 +249,7 @@ def experiment_2_operators():
 # EXPERIMENT 3 (direction 1): the polarization field in the studied networks
 # ============================================================================
 def experiment_3_networks():
-    """Geometric-sector polarization energy in P14, arithmetic, and NS."""
+    """Geometric-sector polarization energy in two supplied arithmetic graphs."""
     print("=" * 72)
     print("EXPERIMENT 3: The Polarization Field in the Networks We Studied")
     print("=" * 72)
@@ -299,26 +298,6 @@ def experiment_3_networks():
     print("      No population-wide or causal claim follows from this encoding.")
     print()
 
-    # Navier–Stokes
-    from tnfr.navier_stokes.operator import (
-        build_torus_graph_3d,
-        taylor_green_initial_condition_3d,
-    )
-
-    Gn = build_torus_graph_3d(8)
-    u, _v, _w = taylor_green_initial_condition_3d(Gn, 1.0)
-    for i, nd in enumerate(list(Gn.nodes)):
-        encoded_phase = float(u[i] % (2 * math.pi))
-        Gn.nodes[nd]["phase"] = encoded_phase
-        Gn.nodes[nd]["theta"] = encoded_phase
-    pt, eg = _geo_polarization_energy(Gn)
-    print(
-        f"  NS (3D Taylor–Green): total geo polariz. energy Σe_geo = "
-        f"{float(np.sum(eg)):.2f}"
-    )
-    print("    → after velocity is encoded as phase, the auxiliary geometric")
-    print("      sector supplies the displayed derived texture (Ex 104).")
-    print()
     print("  SCOPE: each row maps an explicitly prepared graph snapshot to the")
     print("  auxiliary field doublet. It re-expresses those inputs in classical")
     print("  polarization language and adds no new domain closure.")

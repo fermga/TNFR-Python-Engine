@@ -12,10 +12,10 @@ from __future__ import annotations
 import math
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
-from numbers import Real
 from types import MappingProxyType
 from typing import Any
 
+from .._exact_time import finite_represented_real
 from ..types import Glyph
 
 __all__ = (
@@ -172,19 +172,10 @@ def canonical_glyph_factor_defaults() -> dict[str, float]:
 
 
 def _coerce_known_factor(key: str, value: Any) -> float:
-    if isinstance(value, bool) or not isinstance(value, Real):
-        raise GlyphFactorValidationError(
-            f"{key} must be a finite real scalar, got {value!r}"
-        )
     try:
-        resolved = float(value)
+        return finite_represented_real(value, key)[0]
     except (OverflowError, TypeError, ValueError) as exc:
-        raise GlyphFactorValidationError(
-            f"{key} must be representable as a finite real scalar, got {value!r}"
-        ) from exc
-    if not math.isfinite(resolved):
-        raise GlyphFactorValidationError(f"{key} must be finite, got {value!r}")
-    return resolved
+        raise GlyphFactorValidationError(str(exc)) from exc
 
 
 def validate_glyph_factor(key: str, value: Any) -> float:

@@ -14,10 +14,10 @@ records the corresponding binary64 coefficient identity.
 
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass
 from typing import Any, Literal
 
+from .._exact_time import finite_represented_real
 from ..dynamics.structural_clip import structural_clip
 from ..errors import TNFRValueError
 from ..types import Glyph
@@ -103,18 +103,12 @@ def _finite_scalar(value: Any, label: str) -> float:
     """Materialize one finite runtime scalar with operator diagnostics."""
 
     try:
-        resolved = float(value)
+        return finite_represented_real(value, label)[0]
     except (OverflowError, TypeError, ValueError) as exc:
         raise TNFRValueError(
-            f"{label} must be representable as a finite scalar",
+            str(exc),
             context={"field": label, "value": repr(value)},
         ) from exc
-    if not math.isfinite(resolved):
-        raise TNFRValueError(
-            f"{label} must remain finite",
-            context={"field": label, "value": repr(value)},
-        )
-    return resolved
 
 
 def compute_val_edge_aware_scale(
@@ -176,6 +170,8 @@ def propose_scale_operator(
     factor_key = "VAL_scale" if glyph is Glyph.VAL else "NUL_scale"
     resolved_factor = validate_glyph_factor(factor_key, factor)
     resolved_vf_before = _finite_scalar(vf_before, "nu_f before scale operator")
+    if resolved_vf_before < 0.0:
+        raise TNFRValueError("Scale operators require nonnegative structural frequency")
     vf_after = _finite_scalar(
         resolved_vf_before * resolved_factor,
         f"{glyph.value} nu_f proposal",

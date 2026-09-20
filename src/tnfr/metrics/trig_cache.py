@@ -11,6 +11,7 @@ import math
 import struct
 from typing import Any, Iterable, Mapping
 
+from .._exact_time import finite_represented_real
 from ..alias import get_theta_attr
 from ..compat.dataclass import dataclass
 from ..mathematics.unified_numerical import np
@@ -40,13 +41,18 @@ class TrigCache:
 def _iter_theta_pairs(
     nodes: Iterable[tuple[Any, NodeAttrMap | float]],
 ) -> Iterable[tuple[Any, float]]:
-    """Yield ``(node, θ)`` pairs from ``nodes``."""
+    """Read authoritative represented-real phases before caching or coercion."""
 
     for n, data in nodes:
         if isinstance(data, Mapping):
-            yield n, get_theta_attr(data, 0.0) or 0.0
+            yield n, get_theta_attr(
+                data,
+                0.0,
+                strict=True,
+                conv=lambda raw: finite_represented_real(raw, "phase")[0],
+            )
         else:
-            yield n, float(data)
+            yield n, finite_represented_real(data, "phase")[0]
 
 
 def _compute_trig_python(

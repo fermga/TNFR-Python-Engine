@@ -11,6 +11,23 @@ The four channels are structural potential Φ_s, phase-gradient magnitude
 structural triad and global C(t)/Si measurements. They do not by themselves
 reconstruct every graph state or determine its evolution.
 
+`metrics.collect_tetrad_snapshot` reuses the unified field-summary owner for
+finite means and population spreads. An invalid node value makes that whole
+field summary unavailable; it is not silently removed from the sample. Optional
+percentiles and histograms retain their existing numerical algorithms, and
+unrepresentable results carry `None` with `unavailable_statistics`. Coherence
+length retains the shared estimator's fit/fallback provenance through
+`xi_c_available`, `xi_c_provenance` and `xi_c_error`. The readout does not evolve
+nodal state, although field owners may maintain graph caches.
+
+`compute_unified_telemetry` retains independent `optional_sector_status` records
+for the auxiliary symplectic substrate, graph-wave pulse and nodal resonance
+readout. Each records availability, its source and scope, and the exact owner
+error when unavailable. The legacy empty payload remains for compatibility;
+it must not be interpreted as a measured zero. Successful optional readout is
+not evidence that the engine trajectory follows the auxiliary model. Required
+canonical and derived-field failures still propagate.
+
 Exact closure of a coarse nodal evolution does not automatically preserve
 these field formulas on the coarse graph. In particular, aggregating fine
 potential can retain sources inside each coarse node that the self-excluded
@@ -73,6 +90,14 @@ timestamped conservation observer for an actual balance measurement. The
 [derived-property audit](../theory/EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md#61-emergent-property-audit-and-useful-derived-margins)
 owns the distinction between these read-outs and dynamical emergence.
 
+`summary_statistics` uses shared stable means and population deviations. It
+omits a wholly malformed field instead of silently filtering its samples. If
+only the range exceeds binary64, that entry is `None`; representable mean,
+deviation and extrema remain available. SDK summaries describe each field on
+its own support. Their overall safety advisory requires matching nonempty
+potential/gradient/curvature support and an available coherence length, in
+addition to the configured checks. Missing observations cannot certify safety.
+
 ## 2. Canonical field definitions
 
 Public imports are available from
@@ -105,6 +130,17 @@ The `weight` attribute remains the diffusion conductance, so experiments in
 which conductance and distance differ must set both attributes. Unreachable and
 zero-distance pairs contribute zero under the current compatibility behavior.
 Parallel edges use minimum effective path lengths.
+
+Both explicit lengths and legacy weight-as-length values must be finite,
+nonnegative real scalars; Boolean and textual values are rejected before
+cache access. Reachable path sums that exceed the represented range are errors,
+not disconnected pairs. Dense and streamed evaluation share the same source
+reduction. Inverse-square exceptional rows combine represented distances and
+sources before final rounding, preserving finite results when squaring distance
+alone would overflow or underflow. This does not remove shortest-path rounding
+or make the diagnostic a new constitutive law.
+Other finite exponents retain their ordinary numerical path; exceptional
+distance-power arithmetic rejects rather than manufacturing a finite field.
 
 For a fixed distance kernel in exact arithmetic, Φ_s = B_G ΔNFR is linear in
 pressure. Therefore
@@ -141,6 +177,16 @@ The magnitude discards signs and local ordering. It can identify the location
 of phase stress that a single global C(t) does not report, but it is not a
 complete reconstruction of the phase field.
 
+Signed phase differences and currents share the circular-difference kernel.
+Gradient/curvature retain their declared half-open branch convention, while
+small representable separations are not erased by adding pi before reduction.
+Unrepresentable direct phase subtraction rejects instead of emitting NaN.
+The signed kernel evaluates represented trigonometric arguments, rather than
+remainder by the represented number `2*pi`. Exact periodic invariance of
+rounded or very large coordinates is not certified. Only the half-open
+telemetry adapter maps an exactly returned `+pi` to `-pi`; antisymmetry at
+that cut is not a curvature invariant.
+
 <a id="phase-curvature"></a>
 ### 2.3 Circular phase curvature K_φ
 
@@ -168,6 +214,8 @@ error. A zero represented sum can differ from the exact-real trigonometric
 sum at those input angles. The evidence records requested precision separately
 from the binary64 component and approximate-angle semantics. No supplied
 precision label turns ill-conditioned data into a certified direction.
+Curvature compares the center's represented phasor direction with the neighbor
+direction, avoiding loss of that direction when the stored angle is very large.
 Malformed authoritative phase aliases fail before a cached result is reused;
 missing phase retains its established zero default. This is a diagnostic
 correction, with no replacement of the pressure or phase-evolution kernels.
@@ -200,7 +248,10 @@ arbitrary wrapped configurations.
 
 The multiscale utilities fit curvature-variance decay under a specified
 coarse-graining protocol. A fitted exponent or the utility's default exponent
-is not a topology-independent law.
+is not a topology-independent law. `alpha_hint=None` omits the reference-exponent
+comparison without changing the fitted exponent. `k_phi_multiscale_safety`
+reports `fit_acceptable` separately: a good fit never overrides a violated
+configured variance bound, and missing or invalid variance cannot be safe.
 
 <a id="coherence-length"></a>
 ### 2.4 Coherence length ξ_C
@@ -250,6 +301,11 @@ symmetric fallback, and unavailable estimates remain NaN. A fitted ξ_C has
 the declared path-length units; the normalized-generator fallback is
 dimensionless and does not scale with an independent explicit length.
 
+Grammar telemetry compares a fitted length only with a mean reachable distance
+computed using that same geometry and units. A spectral fallback is explicitly
+`not_comparable` to that path-length baseline; missing or nonfinite estimates
+remain unavailable rather than passing a safety cut.
+
 Use `estimate_coherence_length_with_provenance(G)` to retain the method,
 distance/units, source selection, fit policy and graph regime.
 `estimate_coherence_length(G)` retains its scalar return for compatibility;
@@ -290,6 +346,15 @@ shortest-path lengths (`length`, then the legacy `weight` fallback), while local
 phase readouts average graph neighbors and diffusion uses `weight` as
 conductance. A study comparing geometric and spectral quantities must declare
 both edge channels when their physical meanings differ.
+
+The companion phase-current and pressure-flux readouts follow the unique
+outgoing support convention, including zero-conductance edges. Their stable
+arithmetic, stored-state and cache boundaries are owned by the
+[extended-field definitions](../theory/EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md#1-extended-transport-diagnostics).
+The compatibility `measure_phase_symmetry` statistic is axial concentration
+about a circular mean, not phase synchronization or graph symmetry. Opposing
+phases can give a high score. A vanishing mean direction is unavailable and
+raises; an empty phase sample retains its explicit legacy zero convention.
 
 ## 4. API summary
 
@@ -385,8 +450,8 @@ operator-tetrad fingerprint measured in one experiment is a property of that
 protocol, not an injective identification of every operator on every state.
 Retain the initial state and full operator trace when comparing responses.
 
-The research tools include
-[the integrated field study](../benchmarks/integrated_force_regime_study.py),
+Use [shared study execution and detached diagnostics](CLI_AND_SDK.md)
+for engine responses. Related demonstrations include
 [operator-tetrad experiments](../examples/02_physics_regimes/37_operator_tetrad_synergy.py),
 and [nodal-channel decomposition](../examples/02_physics_regimes/39_nodal_equation_decomposition.py).
 Numerical findings must be interpreted with their recorded seeds, topology,

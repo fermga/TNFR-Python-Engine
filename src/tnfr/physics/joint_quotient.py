@@ -279,8 +279,9 @@ def observe_joint_nodal_quotient(graph, blocks) -> JointNodalQuotient:
             "effective_channel_coefficients",
         ),
         phase_geometry_scope=(
-            "not certified; represented NumPy phase coefficients may include "
-            "atan2(0,0); nonzero geometric resultants are not established"
+            "not certified; represented zero-resultant rows use the explicit "
+            "zero phase-pressure extension; nonzero geometric resultants "
+            "are not established"
         ),
         exact_identity_checks=tuple(checks),
         scope=(

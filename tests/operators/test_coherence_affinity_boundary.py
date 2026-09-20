@@ -325,3 +325,25 @@ def test_dissonance_events_builds_affinity_once_without_history_growth(
     assert {
         key: list(history.get(key, ())) for key in ("W_sparse", "W_i", "W_stats")
     } == before
+
+
+@pytest.mark.parametrize(
+    ("markers", "context", "expected_step"),
+    [
+        ({}, None, 2),
+        ({"_runtime_step_next": 7}, None, 7),
+        ({}, {"step": 9}, 9),
+    ],
+)
+def test_dissonance_event_ordinal_uses_callback_or_runtime_before_legacy_samples(
+    markers, context, expected_step
+) -> None:
+    graph = nx.empty_graph(1)
+    graph.nodes[0].update(EPI=0.0, nu_f=1.0, theta=0.0, **{ALIAS_DNFR[0]: 1.0})
+    graph.graph.update(HISTORY_MAXLEN=2, history={"C_steps": [0.7, 0.8]}, **markers)
+
+    dissonance_events(graph, context)
+
+    assert list(graph.graph["history"]["events"]) == [
+        ("dissonance_start", {"node": 0, "step": expected_step})
+    ]

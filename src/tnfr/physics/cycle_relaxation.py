@@ -4,6 +4,8 @@ The supplied equal-capacity averaged-sine phase law preserves its acute gap
 sector. Its two-neighbor phasor source drives the canonical weighted EPI row.
 This evaluator bounds that exact-real model from detached represented initial
 data; it neither advances the graph nor certifies a binary64 trajectory.
+A detached comparison relates that supplied sine response to a separately
+declared phase-pressure response without selecting or installing either law.
 """
 
 from __future__ import annotations
@@ -13,11 +15,16 @@ from collections.abc import Mapping, Set
 from dataclasses import dataclass
 from fractions import Fraction
 from itertools import islice
+from numbers import Integral
 
 from .._exact_time import exact_or_represented_real
 from ..mathematics._phase_midpoint import _affine_interval, _oriented_turn, _pi_bounds
 from ..operators._phase_gate import resolve_u3_phase_limits
-from .forcing_realization import NonEpiForcingObservation, capture_non_epi_forcing
+from .forcing_realization import (
+    NonEpiForcingObservation,
+    _validated_forcing_decomposition,
+    capture_non_epi_forcing,
+)
 from .hybrid_operator_stability import _exact_sqrt_upper
 from .reversible_eigenmode_reference import _negative_exp_bounds
 from .structural_diffusion import (
@@ -28,7 +35,12 @@ from .structural_diffusion import (
 __all__ = [
     "CycleRelaxationEnvelope",
     "CycleRelaxationSample",
+    "CycleRestoringResponseComparison",
+    "CycleCapacityForcingBudget",
+    "CycleCapacityForcingSample",
+    "bound_cycle_capacity_forcing",
     "bound_cycle_relaxation",
+    "compare_cycle_restoring_responses",
 ]
 
 
@@ -160,6 +172,30 @@ class CycleRelaxationEnvelope:
         )
 
     @property
+    def initial_phase_curvature_affine(self) -> tuple[tuple[Fraction, Fraction], ...]:
+        """Return ideal initial curvature as affine-pi pairs in cycle order.
+
+        On the admitted acute two-neighbor chart,
+        ``K_phi_i=-(delta_i-delta_(i-1))/2=(L_cycle*h)_i/2``. The Laplacian
+        is the unweighted support operator, distinct from weighted form
+        transport. Full curvature and the retained winding reconstruct h
+        through ``h=2*L_cycle^+*K_phi``; curvature alone loses the sector
+        and common phase offset. These are exact-model coordinates derived
+        from admitted gaps, not rounded production curvature observations.
+        """
+        return tuple(
+            tuple(
+                -(
+                    exact_or_represented_real(right, "gap coefficient")
+                    - exact_or_represented_real(left, "gap coefficient")
+                )
+                / 2
+                for right, left in zip(row, self.gap_affine[i - 1], strict=True)
+            )
+            for i, row in enumerate(self.gap_affine)
+        )
+
+    @property
     def phase_orbit_distance_squared_upper(self) -> tuple[Fraction, ...]:
         """Bound lifted squared shape norms at the existing sample times.
 
@@ -172,6 +208,316 @@ class CycleRelaxationEnvelope:
             sample.gap_deviation_squared_upper / self.phase_laplacian_gap_lower_bound
             for sample in self.samples
         )
+
+
+@dataclass(frozen=True)
+class CycleRestoringResponseComparison:
+    """Conditional exact bounds for two separately supplied phase responses.
+
+    On the admitted acute cycle, ``J_i=(sin(delta_i)-sin(delta_(i-1)))/2``
+    and ``g_i=(delta_i-delta_(i-1))/(2*pi)`` obey ``g_i=m_i*J_i``.
+    The multiplier is the reciprocal pi-scaled sine divided difference;
+    where both responses vanish its continuous extension is used instead
+    of dividing zero observations. The two declared phase laws are
+    ``theta'=kappa+K*J`` and ``theta'=kappa+K*g``, with the same supplied
+    common free rate. Both ideal responses telescope to zero over the nodes.
+
+    Response mobility multiplies the sine current in the phase row; it is
+    not a new capacity in the nodal EPI equation. The pressure class rate
+    uses the general positive-response theorem; its sharper linear rate
+    uses the exact two-neighbor pressure reduction. No new phase law is
+    derived from the nodal product or installed in the engine.
+
+    For the pressure candidate only, ``h'=K*g`` makes
+    ``m_s-kappa*w*s.T*h/(K*sum(s))`` constant. The limiting form mean is
+    supplied as an affine-pi pair and its rational enclosure. This requires
+    the declared fixed positive capacity/conductance and unforced, unclipped
+    scalar form law throughout; it is neither a sine-law endpoint nor a
+    transferred clipping or binary64 trajectory certificate.
+    """
+
+    coupling_strength: Fraction
+    cosine_lower_bound: Fraction
+    phase_laplacian_gap_lower_bound: Fraction
+    pressure_to_current_ratio_bounds: tuple[Fraction, Fraction]
+    current_response_mobility_bounds: tuple[Fraction, Fraction]
+    pressure_response_mobility_bounds: tuple[Fraction, Fraction]
+    current_decay_rate_lower_bound: Fraction
+    pressure_class_decay_rate_lower_bound: Fraction
+    pressure_linear_decay_rate_lower_bound: Fraction
+    pressure_response_mean_limit_affine: tuple[Fraction, Fraction]
+    pressure_response_mean_limit_enclosure: tuple[Fraction, Fraction]
+    scope: tuple[str, ...] = (
+        "conditional_exact_real_arithmetic_from_a_declared_cycle_envelope",
+        "original_fixed_acute_cycle_capacity_and_pressure_premises_retained",
+        "supplied_common_free_phase_rate_and_positive_K_for_both_candidates",
+        "sine_current_and_phase_pressure_are_separately_supplied_phase_laws",
+        "both_ideal_candidate_corrections_have_zero_sum_so_alpha_dot_equals_kappa",
+        "generic_nonuniform_positive_response_can_add_a_common_phase_drift",
+        "ratio_uses_continuous_extension_at_equal_adjacent_gaps",
+        "response_mobility_is_not_nodal_form_capacity",
+        "pressure_candidate_mean_limit_uses_fixed_capacity_and_actual_strengths",
+        "mean_limit_requires_unforced_unclipped_form_without_events_or_controllers",
+        "sine_envelope_samples_and_clipping_bounds_are_not_pressure_candidate_bounds",
+        "coefficient_checks_do_not_authenticate_envelope_or_live_provenance",
+        "no_new_solver_controller_graph_write_or_binary64_identity",
+        "no_autonomous_formation_or_unique_constitutive_law_claim",
+    )
+
+
+@dataclass(frozen=True)
+class CycleCapacityForcingSample:
+    """Upper budgets at a declared physical time in the conditional model.
+
+    Capacity exposure bounds ``integral ||D_cycle*nu||_2 dt``; the phase
+    source is the unit midpoint channel, and the complete non-EPI source
+    also retains the capacity contrast channel. Form energy is the actual
+    conductance Dirichlet energy, not a moving weighted-mean variance.
+    Integrated source bounds and ``epi_interval`` cover the whole physical
+    prefix [0,time] in the exact unclipped model, by the transport maximum
+    principle. They are not bounds on a binary64 solver's accumulated error.
+    """
+
+    time: Fraction
+    capacity_exposure_upper: Fraction
+    gap_deviation_norm_upper: Fraction
+    phase_source_norm_upper: Fraction
+    non_epi_source_norm_upper: Fraction
+    epi_dirichlet_energy_upper: Fraction
+    gap_deviation_integral_upper: Fraction
+    non_epi_source_integral_upper: Fraction
+    epi_interval: tuple[Fraction, Fraction]
+
+
+@dataclass(frozen=True)
+class CycleCapacityForcingBudget:
+    """Prospective interval-capacity tube for the supplied local sine law.
+
+    The retained envelope supplies initial form/phase, actual fixed support,
+    pressure coefficients and positive K. Its held capacity is replaced by
+    the displayed interval premise at every physical time. The common-rate
+    sine reference is reused only for phase-shape comparison; its sampled
+    form bounds, limiting mean and clipping conclusions are not transferred.
+
+    A failed strict tube margin returns ``admitted=False`` and no samples.
+    Positive admission is conditional on the complete declared model, not
+    evidence that an engine writer or future schedule obeys those premises.
+    """
+
+    capacity_bounds: tuple[Fraction, Fraction]
+    phase_radius: Fraction
+    initial_phase_radius_upper: Fraction
+    capacity_difference_norm_upper: Fraction
+    initial_gap_deviation_norm_upper: Fraction
+    phase_decay_rate_lower_bound: Fraction
+    phase_gap_tail_upper: Fraction
+    reference_gap_deviation_upper: Fraction
+    phase_tube_radius_upper: Fraction
+    all_time_gap_norm_upper: Fraction
+    transport_laplacian_gap_lower_bound: Fraction
+    initial_epi_dirichlet_energy: Fraction
+    epi_energy_decay_rate_lower_bound: Fraction
+    non_epi_source_norm_upper: Fraction
+    epi_energy_drive_upper: Fraction
+    epi_energy_tail_upper: Fraction
+    admitted: bool
+    admission_failure: str | None
+    samples: tuple[CycleCapacityForcingSample, ...]
+    scope: tuple[str, ...] = (
+        "conditional_exact_real_model_from_retained_initial_phase_form_support",
+        "fixed_actual_symmetric_positive_cycle_conductance_and_pressure_weights",
+        "held_template_capacity_replaced_by_declared_positive_interval_at_all_times",
+        "supplied_constant_positive_K_averaged_sine_phase_law_theta_dot_equals_nu_plus_KJ",
+        "capacity_may_be_measurable_or_jump_without_direct_phase_or_form_jumps",
+        "strict_acute_U3_tube_from_centered_shape_comparison_with_existing_reference",
+        "capacity_pressure_retained_and_topology_pressure_zero_on_fixed_cycle",
+        "unforced_unclipped_scalar_form_row_without_Gamma_other_events_or_controllers",
+        "common_actual_conductance_Dirichlet_energy_not_fixed_capacity_mean_variance",
+        "finite_prefix_absolute_form_interval_from_transport_maximum_principle",
+        "no_capacity_homogenization_zero_tail_or_integrable_total_exposure_claim",
+        "no_all_time_form_bound_mean_or_phase_offset_convergence_or_autonomous_maintenance",
+        "no_graph_write_kernel_recapture_solver_or_future_binary64_execution_certificate",
+        "arithmetic_consistency_does_not_authenticate_caller_created_template_or_live_state",
+    )
+
+
+def compare_cycle_restoring_responses(
+    envelope: CycleRelaxationEnvelope,
+) -> CycleRestoringResponseComparison:
+    """Compare existing sine response with a conditional pressure response.
+
+    Reuse the envelope's positive coupling ``K``, acute cosine lower bound
+    ``c`` and cycle spectral lower bound ``lambda``. The shared exact pi
+    enclosure gives ``1/pi <= m_i <= 1/(pi*c)`` without a floating-point
+    trigonometric evaluation. Multiplication by K bounds the pressure
+    candidate's response mobility. The general positive-response class
+    gives rate ``a_min*c*lambda/2``; the pressure candidate's exact linear
+    gap law improves that to ``K*lambda/(2*pi)``.
+
+    This read-only comparison does not resample or relabel the original
+    sine envelope. Its additional pressure-candidate endpoint is
+    ``m_s(0)-kappa*w*s.T*h(0)/(K*sum(s))``, with the actual strengths
+    aligned from capture order to the retained cycle order. The exact-model
+    limiting mean is affine in mathematical pi, with a rational enclosure;
+    it introduces neither a fitted target nor another phase integration.
+    The unrestricted scalar row excludes Gamma, clipping, later events,
+    capacity changes and controllers. The sine envelope's clipping bounds
+    are not certified for this alternative candidate.
+
+    All derived coefficients are rational. Consumed inputs
+    use the shared exact-or-represented scalar boundary and must satisfy
+    the envelope's rate identity. These checks establish only arithmetic
+    consistency, not authenticity of caller-created or replaced reports,
+    current graph admission, an executed phase law or future stability.
+    """
+    if not isinstance(envelope, CycleRelaxationEnvelope):
+        raise TypeError("envelope must be a CycleRelaxationEnvelope")
+    coupling = exact_or_represented_real(
+        envelope.coupling_strength, "coupling_strength"
+    )
+    cosine = exact_or_represented_real(
+        envelope.cosine_lower_bound, "cosine_lower_bound"
+    )
+    phase_gap = exact_or_represented_real(
+        envelope.phase_laplacian_gap_lower_bound,
+        "phase_laplacian_gap_lower_bound",
+    )
+    current_rate = exact_or_represented_real(
+        envelope.phase_decay_rate_lower_bound, "phase_decay_rate_lower_bound"
+    )
+    if coupling <= 0:
+        raise ValueError("coupling_strength must be positive")
+    if not 0 < cosine <= 1:
+        raise ValueError("cosine_lower_bound must lie in (0,1]")
+    if phase_gap <= 0:
+        raise ValueError("phase_laplacian_gap_lower_bound must be positive")
+    if current_rate != coupling * cosine * phase_gap / 2:
+        raise ValueError(
+            "phase_decay_rate_lower_bound is inconsistent with K*c*lambda/2"
+        )
+
+    pi_lower, pi_upper = _pi_bounds()
+    ratio_bounds = (1 / pi_upper, 1 / (pi_lower * cosine))
+    pressure_mobility = tuple(coupling * value for value in ratio_bounds)
+    mean_limit = _pressure_response_mean_limit(envelope, coupling)
+    return CycleRestoringResponseComparison(
+        coupling_strength=coupling,
+        cosine_lower_bound=cosine,
+        phase_laplacian_gap_lower_bound=phase_gap,
+        pressure_to_current_ratio_bounds=ratio_bounds,
+        current_response_mobility_bounds=(coupling, coupling),
+        pressure_response_mobility_bounds=pressure_mobility,
+        current_decay_rate_lower_bound=current_rate,
+        pressure_class_decay_rate_lower_bound=pressure_mobility[0]
+        * cosine
+        * phase_gap
+        / 2,
+        pressure_linear_decay_rate_lower_bound=pressure_mobility[0] * phase_gap / 2,
+        pressure_response_mean_limit_affine=mean_limit,
+        pressure_response_mean_limit_enclosure=_affine_interval(
+            *mean_limit, (pi_lower, pi_upper)
+        ),
+    )
+
+
+def _cycle_response_inputs(envelope):
+    """Check the shared initial scalar state and affine phase coordinates.
+
+    These checks retain coefficient, vector and coordinate consistency;
+    they do not authenticate a caller-created envelope or a live state.
+    """
+    capacity = exact_or_represented_real(envelope.capacity, "capacity")
+    epi_weight = exact_or_represented_real(envelope.epi_weight, "epi_weight")
+    phase_weight = exact_or_represented_real(envelope.phase_weight, "phase_weight")
+    mean = exact_or_represented_real(envelope.weighted_mean, "weighted_mean")
+    if capacity <= 0 or epi_weight <= 0:
+        raise ValueError("capacity and epi_weight must be positive")
+    if phase_weight < 0:
+        raise ValueError("phase_weight must be nonnegative")
+    source = envelope.capture.snapshot
+    size = len(source.nodes)
+    indices = envelope.cycle_indices
+    if (
+        not 3 <= size <= 12
+        or len(indices) != size
+        or any(isinstance(i, bool) or not isinstance(i, Integral) for i in indices)
+        or set(indices) != set(range(size))
+        or tuple(source.nodes[i] for i in indices) != tuple(envelope.cycle_order)
+    ):
+        raise ValueError(
+            "cycle_indices must align every captured node with cycle_order"
+        )
+    strengths = tuple(
+        exact_or_represented_real(value, "strength") for value in envelope.strengths
+    )
+    if len(strengths) != size or any(value <= 0 for value in strengths):
+        raise ValueError("strengths must contain one positive value per captured node")
+    epi = tuple(
+        exact_or_represented_real(value, "captured EPI") for value in source.epi
+    )
+    total_strength = sum(strengths, Fraction(0))
+    if (
+        len(epi) != size
+        or mean
+        != sum(
+            (strength * value for strength, value in zip(strengths, epi)), Fraction(0)
+        )
+        / total_strength
+    ):
+        raise ValueError(
+            "weighted_mean is inconsistent with strengths and captured EPI"
+        )
+    if len(envelope.gap_affine) != size or any(
+        len(row) != 2 for row in envelope.gap_affine
+    ):
+        raise ValueError("gap_affine must contain one affine-pi pair per cycle node")
+    gaps = tuple(
+        tuple(exact_or_represented_real(value, "gap coefficient") for value in row)
+        for row in envelope.gap_affine
+    )
+    mean_gap = exact_or_represented_real(
+        envelope.mean_gap_pi_coefficient, "mean_gap_pi_coefficient"
+    )
+    if (
+        isinstance(envelope.winding, bool)
+        or not isinstance(envelope.winding, Integral)
+        or mean_gap != Fraction(2 * int(envelope.winding), size)
+        or sum(row[0] for row in gaps) != 0
+        or sum(row[1] for row in gaps) != size * mean_gap
+    ):
+        raise ValueError(
+            "gap_affine and mean_gap_pi_coefficient must retain the winding"
+        )
+    shape = tuple(
+        tuple(exact_or_represented_real(value, "shape coefficient") for value in row)
+        for row in envelope.initial_phase_shape_affine
+    )
+    if any(sum(row[j] for row in shape) for j in (0, 1)) or any(
+        shape[(i + 1) % size][j] - shape[i][j] != gaps[i][j] - (mean_gap if j else 0)
+        for i in range(size)
+        for j in (0, 1)
+    ):
+        raise ValueError(
+            "initial phase shape must be centered and reconstruct the gaps"
+        )
+    return capacity, epi_weight, phase_weight, mean, strengths, shape
+
+
+def _pressure_response_mean_limit(envelope, coupling):
+    """Derive one conditional affine-pi label from shared checked inputs."""
+    capacity, _, phase_weight, mean, strengths, shape = _cycle_response_inputs(envelope)
+    factor = capacity * phase_weight / (coupling * sum(strengths, Fraction(0)))
+    weighted_shape = tuple(
+        sum(
+            (
+                strengths[index] * shape[i][j]
+                for i, index in enumerate(envelope.cycle_indices)
+            ),
+            Fraction(0),
+        )
+        for j in (0, 1)
+    )
+    return mean - factor * weighted_shape[0], -factor * weighted_shape[1]
 
 
 def _ordered_cycle(source, cycle_order):
@@ -248,6 +594,232 @@ def _decay_bounds(exponent):
     if not remainder:
         return lower_bounds
     return _negative_exp_bounds(upper_exponent)[0], lower_bounds[1]
+
+
+def _relaxation_upper(initial, tail, rate, time):
+    """Enclose tail+(initial-tail)*exp(-rate*time) with its signed factor."""
+    if not time or initial == tail:
+        return initial
+    lower, upper = _decay_bounds(rate * time)
+    difference = initial - tail
+    return tail + difference * (upper if difference > 0 else lower)
+
+
+def _integrated_relaxation_upper(initial, tail, rate, time):
+    """Enclose the integral of the nonnegative exponential envelope."""
+    if not time or initial == tail:
+        return initial * time
+    lower, upper = _decay_bounds(rate * time)
+    difference = initial - tail
+    # A positive coefficient needs the upper integral (lower exponential);
+    # a negative coefficient needs the lower integral (upper exponential).
+    decay = lower if difference > 0 else upper
+    integrated = tail * time + difference * (1 - decay) / rate
+    return min(integrated, max(initial, tail) * time)
+
+
+def bound_cycle_capacity_forcing(
+    envelope: CycleRelaxationEnvelope,
+    *,
+    capacity_bounds,
+    phase_radius,
+    times,
+) -> CycleCapacityForcingBudget:
+    """Bound a prospectively declared capacity interval on the retained cycle.
+
+    Replace held capacity by arbitrary measurable ``lower<=nu_i(t)<=upper``
+    in ``theta'=nu+K*J`` and ``x'=diag(nu)*(-e*L_W*x+w*g-f*L_U*nu)``.
+    The supplied K and pressure weights stay fixed; capacity jumps do not
+    directly change phase or form. This is an exact-model comparison, not
+    identification of a native controller, numerical solver or writer trace.
+
+    Let width=upper-lower, B=sqrt(n)*width and rho=phase_radius. On the acute
+    chart, gamma=K*c*lambda_C/2 with c<=cos(rho). Centering the difference
+    from the same-initial-phase constant-capacity sine reference removes
+    common rotation. Strong monotonicity bounds its norm by
+    sqrt(n)*width/(2*gamma), hence each gap differs by at most
+    sqrt(n/2)*width/gamma. Adding that margin to the reference's invariant
+    initial gap radius gives the strict prospective tube test. No extra
+    bootstrap time, trajectory or selected capacity feedback is introduced.
+
+    Once admitted, q=||delta-mean(delta)|| obeys q'<=-gamma*q+B. Its
+    nonzero tail controls phase forcing; the capacity pressure contributes
+    at most f*B. With actual conductance Laplacian B_W and strengths s,
+    E=x.T*B_W*x/2 satisfies E'<=-r*E+drive, where
+    r=e*lower*lambda_2(B_W)/max(s) and
+    drive=max(s)*upper*(w*q_max/pi+f*B)^2/(2*e).
+    Shared rational square-root, spectral and exponential owners enclose
+    all displayed bounds. No fixed-capacity weighted mean is conserved here.
+
+    Integrating the nonnegative source envelope gives A(t). Positivity of
+    transport then bounds every form coordinate on the entire prefix by
+    [min(x0)-upper*A(t), max(x0)+upper*A(t)]. This supports a sufficient
+    finite clipping-inactivity check against separately declared rails;
+    neither an all-time scalar bound nor future runtime admission follows.
+    """
+    if not isinstance(envelope, CycleRelaxationEnvelope):
+        raise TypeError("envelope must be a CycleRelaxationEnvelope")
+    if isinstance(capacity_bounds, (str, bytes, bytearray, Mapping, Set)):
+        raise TypeError("capacity_bounds must be an ordered lower/upper pair")
+    try:
+        raw_bounds = tuple(islice(iter(capacity_bounds), 3))
+    except TypeError as exc:
+        raise TypeError("capacity_bounds must be an ordered lower/upper pair") from exc
+    if len(raw_bounds) != 2:
+        raise ValueError("capacity_bounds must contain exactly lower and upper")
+    lower, upper = tuple(
+        exact_or_represented_real(value, "capacity bound") for value in raw_bounds
+    )
+    if not 0 < lower <= upper:
+        raise ValueError("capacity bounds must satisfy 0 < lower <= upper")
+    rho = exact_or_represented_real(phase_radius, "phase_radius")
+    evaluation_times = _times(times)
+    coupling = exact_or_represented_real(
+        envelope.coupling_strength, "coupling_strength"
+    )
+    gate = exact_or_represented_real(
+        envelope.effective_phase_gate, "effective_phase_gate"
+    )
+    if coupling <= 0:
+        raise ValueError("coupling_strength must be positive")
+    pi_bounds = _pi_bounds()
+    pi_lower = pi_bounds[0]
+    if not 0 < rho < min(gate, pi_lower / 2):
+        raise ValueError(
+            "phase_radius must be strictly inside both the U3 gate and pi/2"
+        )
+    capacity, e, w, _, strengths, _ = _cycle_response_inputs(envelope)
+    source, _, weights = _validated_forcing_decomposition(envelope.capture)
+    _, cycle = _ordered_cycle(source, envelope.cycle_order)
+    if cycle != tuple(envelope.cycle_indices):
+        raise ValueError("cycle_indices differ from the captured support order")
+    if any(value != capacity for value in source.capacity):
+        raise ValueError("initial template must retain its declared common capacity")
+    if e != weights["epi"] or w != weights["phase"]:
+        raise ValueError(
+            "template pressure weights differ from the captured coefficients"
+        )
+    f = weights["vf"]
+    size = len(cycle)
+    phases = tuple(
+        exact_or_represented_real(value, "captured phase")
+        for value in envelope.capture.phase
+    )
+    if len(phases) != size:
+        raise ValueError("captured phases must match the support")
+    gap_intervals = []
+    deviations = []
+    mean_coefficient = Fraction(2 * envelope.winding, size)
+    for j, i in enumerate(cycle):
+        difference = phases[cycle[(j + 1) % size]] - phases[i]
+        turn = _oriented_turn(difference, pi_bounds)
+        if turn is None or envelope.gap_affine[j] != (difference, 2 * turn):
+            raise ValueError(
+                "template gaps must equal the admitted captured phase lift"
+            )
+        gap_intervals.append(_affine_interval(difference, 2 * turn, pi_bounds))
+        deviations.append(
+            _affine_interval(difference, 2 * turn - mean_coefficient, pi_bounds)
+        )
+    rho0 = max(abs(value) for row in gap_intervals for value in row)
+    q_squared = sum(
+        (max(abs(value) for value in row) ** 2 for row in deviations), Fraction(0)
+    )
+    if rho0 != exact_or_represented_real(
+        envelope.phase_radius_upper, "phase_radius_upper"
+    ) or q_squared != exact_or_represented_real(
+        envelope.initial_gap_deviation_squared_upper,
+        "initial_gap_deviation_squared_upper",
+    ):
+        raise ValueError("template initial radius and gap bounds are inconsistent")
+
+    phase_laplacian = tuple(
+        tuple(
+            Fraction(2 if i == j else -1 if j in source.support_neighbors[i] else 0)
+            for j in range(size)
+        )
+        for i in range(size)
+    )
+    phase_gap, phase_uniform = _exact_real_laplacian_gap_lower_bound(phase_laplacian)
+    transport = [[Fraction(0) for _ in range(size)] for _ in range(size)]
+    actual_strengths = [Fraction(0) for _ in range(size)]
+    for i, j, weight in source.conductance:
+        actual_strengths[i] += weight
+        transport[i][i] += weight
+        transport[i][j] -= weight
+    if tuple(actual_strengths) != strengths:
+        raise ValueError("template strengths differ from its actual conductance")
+    transport_gap, transport_uniform = _exact_real_laplacian_gap_lower_bound(
+        tuple(tuple(row) for row in transport)
+    )
+    if not phase_uniform or not transport_uniform or min(phase_gap, transport_gap) <= 0:
+        raise ValueError(
+            "fixed-cycle phase and transport gaps must be strictly positive"
+        )
+    width = upper - lower
+    capacity_difference = _exact_sqrt_upper(size * width**2)
+    gamma = coupling * (1 - 2 * rho / pi_lower) * phase_gap / 2
+    reference_deviation = _exact_sqrt_upper(Fraction(size, 2) * width**2) / gamma
+    tube_radius = rho0 + reference_deviation
+    admitted = tube_radius < rho
+    q0 = _exact_sqrt_upper(q_squared)
+    q_tail = capacity_difference / gamma
+    q_max = max(q0, q_tail)
+    forcing = w * q_max / pi_lower + f * capacity_difference
+    energy_rate = e * lower * transport_gap / max(strengths)
+    energy_drive = max(strengths) * upper * forcing**2 / (2 * e)
+    energy_tail = energy_drive / energy_rate
+    samples = []
+    if admitted:
+        for time in evaluation_times:
+            q = _relaxation_upper(q0, q_tail, gamma, time)
+            integrated_q = _integrated_relaxation_upper(q0, q_tail, gamma, time)
+            integrated_source = (
+                w * integrated_q / pi_lower + f * capacity_difference * time
+            )
+            form_offset = upper * integrated_source
+            samples.append(
+                CycleCapacityForcingSample(
+                    time=time,
+                    capacity_exposure_upper=capacity_difference * time,
+                    gap_deviation_norm_upper=q,
+                    phase_source_norm_upper=q / pi_lower,
+                    non_epi_source_norm_upper=w * q / pi_lower
+                    + f * capacity_difference,
+                    epi_dirichlet_energy_upper=_relaxation_upper(
+                        source.dirichlet_energy, energy_tail, energy_rate, time
+                    ),
+                    gap_deviation_integral_upper=integrated_q,
+                    non_epi_source_integral_upper=integrated_source,
+                    epi_interval=(
+                        min(source.epi) - form_offset,
+                        max(source.epi) + form_offset,
+                    ),
+                )
+            )
+    return CycleCapacityForcingBudget(
+        capacity_bounds=(lower, upper),
+        phase_radius=rho,
+        initial_phase_radius_upper=rho0,
+        capacity_difference_norm_upper=capacity_difference,
+        initial_gap_deviation_norm_upper=q0,
+        phase_decay_rate_lower_bound=gamma,
+        phase_gap_tail_upper=q_tail,
+        reference_gap_deviation_upper=reference_deviation,
+        phase_tube_radius_upper=tube_radius,
+        all_time_gap_norm_upper=q_max,
+        transport_laplacian_gap_lower_bound=transport_gap,
+        initial_epi_dirichlet_energy=source.dirichlet_energy,
+        epi_energy_decay_rate_lower_bound=energy_rate,
+        non_epi_source_norm_upper=forcing,
+        epi_energy_drive_upper=energy_drive,
+        epi_energy_tail_upper=energy_tail,
+        admitted=admitted,
+        admission_failure=(
+            None if admitted else "prospective_reference_gap_tube_reaches_phase_radius"
+        ),
+        samples=tuple(samples),
+    )
 
 
 def bound_cycle_relaxation(

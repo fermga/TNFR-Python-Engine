@@ -14,14 +14,12 @@ owns the active research queue. Running an example does not reopen a parked bran
 | `02_physics_regimes` | 37 | [Diffusion certificates](../theory/TNFR_DIFFUSION_STABILITY_THEOREM.md), diagnostics and auxiliary models | Read each model's hypotheses; a diagnostic decrease is not general stability |
 | `03_riemann_zeta` | 19 | Finite instruments in the [Riemann notebook](../theory/TNFR_RIEMANN_RESEARCH_NOTES.md) | Parked comparisons; disclose supplied zeros/primes |
 | `04_riemann_L_twisted` | 18 | Character/L-function instruments in the same [notebook](../theory/TNFR_RIEMANN_RESEARCH_NOTES.md) | Supplied arithmetic data and finite comparisons, not generalized RH |
-| `05_type_hygiene` | 13 | [Catalog and state-type controls](../theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md) | Finite representation probes; entropy does not determine state dimension |
-| `06_navier_stokes` | 1 | [Selected PDE correspondence](../theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md) | Added models and unresolved continuum obligations |
-| `07_number_theory` | 15 | [Arithmetic definitions](../theory/TNFR_NUMBER_THEORY.md), residues and prime structure | Disclose factorization, sieves and other construction inputs |
+| `05_type_hygiene` | 4 | [Catalog and state-type controls](../theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md) | Finite delay projection, actual storage, event-count and registry observations |
+| `07_number_theory` | 14 | [Arithmetic definitions](../theory/TNFR_NUMBER_THEORY.md), residues and prime structure | Disclose factorization, sieves and other construction inputs |
 | `08_emergent_geometry` | 47 | [Scale/geometry bridge](../theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md), spectra and auxiliary models | Separate prescribed geometry, observed structure and autonomous generation |
-| `09_millennium` | 3 | Conditional algebraic comparisons; see the [theory index](../theory/README.md) | No solution to the named open problems is claimed |
 | `10_applications` | 6 | [Measurement protocol](../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md), adapters and backend provenance | Data admission and reserved prediction remain separate obligations |
 
-The inventory contains 163 executable demonstrations and one shared support
+The inventory contains 149 executable demonstrations and one shared support
 module, `_flat_grammar_model.py`. Counts describe files, not independent research
 lines. The grammar automaton examples reuse that module; arithmetic and physical
 examples reuse their package owners. A finite fixture may recur as a controlled
@@ -56,32 +54,33 @@ defaults at module scope, so this is not a promise of side-effect-free imports.
 Package ownership belongs to [Architecture](../ARCHITECTURE.md), and verification
 requirements to [Testing](../TESTING.md).
 
-## Consolidated demonstrations
+## Retained controls and shared owners
 
-The former handwritten phase updates were removed because they presented
-`theta_dot` as the EPI nodal equation, used noncanonical pressure/coherence
-proxies, and duplicated the same kernels in several files. Their conceptual
-topics now point to the existing owners below; the old numerical outputs are
-not reinterpreted as canonical evidence.
+The type-hygiene directory retains four scoped entry points:
 
-| Retired entry | Reason and retained route |
+| Entry | What it observes |
 | --- | --- |
-| `02_musical_resonance.py` | Handwritten phase synchronization; use [179](08_emergent_geometry/179_phase_form_driven_response.py) for an explicitly prescribed phase/form response |
-| `03_network_formation.py` | Handwritten connection rules and a private coherence score; use [10](01_foundations/10_simplified_sdk_showcase.py) for supplied SDK topology construction |
-| `05_coherence_evolution.py` | Phase update incorrectly attributed to the EPI law; use [99](08_emergent_geometry/99_structural_diffusion.py) for the declared diffusion model |
-| `06_network_topologies.py` | Duplicated private pressure/phase dynamics; use [10](01_foundations/10_simplified_sdk_showcase.py) and [99](08_emergent_geometry/99_structural_diffusion.py) |
-| `08_emergent_phenomena.py` | Ad hoc phase/frequency rules and collective-behavior claims; use [07](01_foundations/07_phase_transitions.py) for prepared observations and [179](08_emergent_geometry/179_phase_form_driven_response.py) for conditional response |
-| `09_visualization_suite.py` | Plots of the duplicated substitute dynamics; use [179](08_emergent_geometry/179_phase_form_driven_response.py) for exported plots of its declared model |
-| `13_quantum_mechanics_demo.py` | Imposed energy targets and handwritten noisy updates, not a derived cavity spectrum; see the [spectral validation boundary](../theory/PHYSICAL_REGIME_CORRESPONDENCES.md#44-validation-boundary) |
-| `14_uncertainty_and_interference.py` | Raw-array Fourier widths and a forced wave grid without a canonical bridge or validated bound; see the [Fourier scope](../theory/PHYSICAL_REGIME_CORRESPONDENCES.md#53-validation-boundary) |
+| [77](05_type_hygiene/77_remesh_infinity_residue_split_demo.py) | Finite fixed-delay Fourier projection and window sensitivity |
+| [79](05_type_hygiene/79_epi_type_signature_demo.py) | Actual scalar-chart storage membership and descriptive temporal entropy |
+| [82](05_type_hygiene/82_remesh_window_type_signature_demo.py) | Selected finite REMESH event/window comparisons |
+| [89](05_type_hygiene/89_operator_catalog_discipline_signature_demo.py) | The implemented registry and its idempotency |
 
-The original bytes and retirement hashes are retained in the local audit
-artifacts under `artifacts/research/examples_consolidation_originals_2026_09_19/`.
-Example 01 now uses the public SDK directly. Examples 10 and 30 keep their
-command-line workflows behind `main()` instead of executing them on import.
-Example 109 retains its finite classical MAX-CUT baseline, with its supplied
-antialignment update distinguished from canonical TNFR phase pressure. None of
-these retirements introduces a replacement physical law or research branch.
+Entropy thresholds and scalar-only fixtures do not prove that a richer state
+type is necessary or impossible. The retired type-necessity and synthetic
+closure campaigns are replaced by the actual domain and execution contracts:
+[signed-form admission](../tests/test_nodal_solver_epi_scope.py),
+[circular U3 admission](../tests/operators/test_u3_hard_invariant.py),
+[field availability](../tests/sdk/test_nfr_observation_scope.py) and
+[grammar observations](../tests/operators/test_grammar_observations.py).
+
+For supplied topology construction use [10](01_foundations/10_simplified_sdk_showcase.py);
+for declared diffusion use [99](08_emergent_geometry/99_structural_diffusion.py).
+Prescribed phase/form response belongs to [179](08_emergent_geometry/179_phase_form_driven_response.py).
+Removed chemistry and Millennium demonstrations supplied target laws or
+encodings without deriving them from nodal dynamics. Their removal does not
+affect the scoped diffusion, graph-wave, winding and arithmetic owners.
+Retirement reasons and API migrations have one
+[scope record](../theory/research/archive/README.md#foundation-reassessment-2026-09-20).
 
 ## Diffusion and runtime evidence
 

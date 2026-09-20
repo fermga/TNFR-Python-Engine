@@ -3,9 +3,11 @@
 from collections import Counter
 from copy import deepcopy
 from dataclasses import asdict
+from fractions import Fraction
 from pathlib import Path
 
 import networkx as nx
+import numpy as np
 import pytest
 
 from tests.example_protocol_helpers import load_example
@@ -31,6 +33,64 @@ COMPOSITES = (
     fields.compute_tensor_invariants,
 )
 GRAPH_KINDS = (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
+
+
+def test_field_summary_preserves_finite_extreme_means_and_population_spread():
+    stats = unified.summary_statistics(
+        {
+            "constant": {0: 1e308, 1: 1e308},
+            "signed": {0: -1e308, 1: 1e308},
+        }
+    )
+    assert stats["constant"] == {
+        "mean": 1e308,
+        "std": 0.0,
+        "min": 1e308,
+        "max": 1e308,
+        "range": 0.0,
+    }
+    assert stats["signed"] == {
+        "mean": 0.0,
+        "std": 1e308,
+        "min": -1e308,
+        "max": 1e308,
+        "range": None,
+    }
+
+
+def test_field_summary_includes_real_numpy_scalars_and_subnormal_samples():
+    tiny = float.fromhex("0x0.0000000000001p-1022")
+    stats = unified.summary_statistics(
+        {
+            "mixed_real": {0: np.float32(2.0), 1: np.int64(4)},
+            "tiny": {0: tiny, 1: tiny},
+        }
+    )
+    assert stats["mixed_real"] == {
+        "mean": 3.0,
+        "std": 1.0,
+        "min": 2.0,
+        "max": 4.0,
+        "range": 2.0,
+    }
+    assert stats["tiny"]["mean"] == tiny
+    assert stats["tiny"]["std"] == 0.0
+
+
+@pytest.mark.parametrize(
+    "invalid", [True, "4", None, float("nan"), Fraction(1, 10**400)]
+)
+def test_field_summary_omits_invalid_whole_field_without_selecting_a_subset(invalid):
+    stats = unified.summary_statistics(
+        {
+            "valid": {0: 2.0, 1: 4.0},
+            "invalid": {0: 2.0, 1: invalid},
+            "empty": {},
+            "scalar_metadata": 7.0,
+        }
+    )
+    assert set(stats) == {"valid"}
+    assert stats["valid"]["mean"] == 3.0
 
 
 def _graph(kind=nx.Graph):
@@ -206,6 +266,87 @@ def test_empty_graph_preserves_empty_maps_and_zero_totals():
     )
 
 
+def _energy_maps(rows):
+    return tuple(
+        {node: row[index] for node, row in enumerate(rows)} for index in range(5)
+    )
+
+
+@pytest.mark.parametrize(
+    "rows",
+    [
+        pytest.param(((1.1e-162,) * 5,), id="underflow-within-node"),
+        pytest.param(
+            ((1.1e-162, 0.0, 0.0, 0.0, 0.0),) * 8, id="underflow-across-nodes"
+        ),
+        pytest.param(((1.5e154, 0.0, 0.0, 0.0, 0.0),), id="raw-square-overflow"),
+        pytest.param(((1e154, 0.0, 0.0, 0.0, 0.0),) * 2, id="raw-sum-overflow"),
+    ],
+)
+def test_normalized_energy_recovers_representable_total_before_rounding(rows):
+    exact = (
+        sum((Fraction(value) ** 2 for row in rows for value in row), Fraction(0)) / 2
+    )
+    expected = float(exact)
+    assert expected > 0.0
+    assert unified._total_energy_from_fields(*_energy_maps(rows)) == expected
+
+
+@pytest.mark.parametrize("value", [2e154, 1e-200])
+def test_nonzero_energy_outside_represented_range_is_explicitly_unavailable(value):
+    maps = _energy_maps(((value, 0.0, 0.0, 0.0, 0.0),))
+    with pytest.raises(ValueError, match="normalized total energy"):
+        unified._total_energy_from_fields(*maps)
+
+
+@pytest.mark.parametrize("rows", [(), ((0.0,) * 5,)])
+def test_zero_energy_remains_available_for_empty_and_zero_fields(rows):
+    assert unified._total_energy_from_fields(*_energy_maps(rows)) == 0.0
+
+
+def test_ordinary_energy_keeps_existing_arithmetic_without_exact_fallback(monkeypatch):
+    rows = ((1.0, 0.25, -0.5, -2.0, 3.0), (0.125, 0.0, 2.0, 1.5, 0.0))
+
+    def unexpected(*args, **kwargs):
+        pytest.fail("ordinary energy should not require exceptional arithmetic")
+
+    monkeypatch.setattr(unified, "exact_weighted_sum_ratio", unexpected)
+    expected = 0.5 * sum(sum(value**2 for value in row) for row in rows)
+    assert unified._total_energy_from_fields(*_energy_maps(rows)) == expected
+
+
+def test_normalized_energy_does_not_redefine_the_raw_density_api():
+    maps = _energy_maps(((1.1e-162,) * 5,))
+    assert unified._energy_density_from_fields(*maps) == {0: 0.0}
+    assert unified._total_energy_from_fields(*maps) == float.fromhex(
+        "0x0.0000000000001p-1022"
+    )
+
+
+def test_normalized_energy_requires_matching_field_support():
+    maps = _energy_maps(((1.0,) * 5,))
+    maps[1]["extra"] = 0.0
+    with pytest.raises(ValueError, match="identical node support"):
+        unified._total_energy_from_fields(*maps)
+
+
+def test_suite_live_and_snapshot_charge_share_a_cancelling_field_total():
+    graph = nx.complete_graph(4)
+    for node, pressure in enumerate((1e16, 1.0, 0.0, -1e16)):
+        graph.nodes[node].update(delta_nfr=pressure, theta=0.0)
+    # A finite-energy K4 counterpart of the extreme cancellation control:
+    # represented potential/charge is (-1e16, 0, 1, +1e16), whose sum is 1.
+    suite = unified.compute_unified_field_suite(graph)
+    assert tuple(suite["charge_density"].values()) == (-1e16, 0.0, 1.0, 1e16)
+    assert suite["conservation_metrics"]["noether_charge"] == 1.0
+    assert conservation.compute_noether_charge(graph) == 1.0
+    tracker = conservation.ConservationTracker(graph)
+    tracker.record(0.0)
+    tracker.record(1.0)
+    assert tracker.report().total_charge == [1.0, 1.0]
+    assert tracker.latest_balance.total_charge_after == 1.0
+
+
 def test_correlation_helper_skips_complex_and_misaligned_maps():
     result = unified.analyze_field_correlations(
         {
@@ -220,6 +361,16 @@ def test_correlation_helper_skips_complex_and_misaligned_maps():
 
 def test_correlation_helper_handles_empty_input():
     assert unified.analyze_field_correlations({}) == {}
+
+
+@pytest.mark.parametrize("scale", [1e200, 1e-200])
+def test_field_correlation_retains_paired_variation_at_extreme_scales(scale):
+    left = {0: -scale, 1: 0.0, 2: scale}
+    right = {2: -scale, 0: scale, 1: 0.0}
+    correlations = unified.analyze_field_correlations(
+        {"left": left, "right": right, "text": {n: str(v) for n, v in left.items()}}
+    )
+    assert correlations == pytest.approx({"left_vs_right": -1.0})
 
 
 @pytest.mark.parametrize("kind", GRAPH_KINDS)
@@ -297,8 +448,78 @@ def test_full_field_facade_reuses_one_real_canonical_snapshot(monkeypatch):
     )
     # The auxiliary block also consumes the same coordinates, without a graph recapture.
     assert result["symplectic_substrate"]["phase_space_dimension"] == 4 * len(graph)
+    assert result["optional_sector_status"] == {
+        "symplectic_substrate": {
+            "available": True,
+            "source": "tnfr.physics.symplectic_substrate",
+            "scope": "auxiliary_symplectic_model",
+            "error": None,
+        },
+        "pulse": {
+            "available": True,
+            "source": "tnfr.physics.structural_diffusion.compute_emergent_pulse",
+            "scope": "auxiliary_graph_wave_spectrum",
+            "error": None,
+        },
+        "resonance": {
+            "available": True,
+            "source": "tnfr.physics.structural_diffusion.compute_nodal_pulse",
+            "scope": "stored_capacity_phase_readout",
+            "error": None,
+        },
+    }
     result["extended_canonical"]["phase_current"].clear()
     assert result["canonical"]["j_phi"] == captured[0]["j_phi"]
+
+
+@pytest.mark.parametrize(
+    "sector, error_message",
+    [
+        ("symplectic_substrate", "n_nodes must be >= 1"),
+        ("pulse", "This transport formula requires symmetric adjacency"),
+        (
+            "resonance",
+            "local phase synchrony is unavailable: coherence is disabled",
+        ),
+    ],
+)
+def test_optional_telemetry_reports_real_domain_failure_per_sector(
+    sector, error_message
+):
+    if sector == "symplectic_substrate":
+        graph = nx.Graph()
+    else:
+        graph = nx.DiGraph([(0, 1)]) if sector == "pulse" else nx.path_graph(3)
+        for node in graph:
+            graph.nodes[node].update(theta=0.1 * node, delta_nfr=0.2 * node, nu_f=1.0)
+        if sector == "resonance":
+            graph.graph["COHERENCE"] = {"enabled": False}
+
+    result = fields.compute_unified_telemetry(graph)
+    assert result[sector] == {}
+    status = result["optional_sector_status"]
+    assert status[sector]["available"] is False
+    assert status[sector]["error"] == {"type": "ValueError", "message": error_message}
+    for name in status.keys() - {sector}:
+        assert status[name]["available"] is True
+        assert status[name]["error"] is None
+        assert result[name]
+    assert set(result["canonical"]["phi_s"]) == set(graph)
+    assert result["tensor_invariants"]["conservation_sample_available"] is False
+
+
+def test_optional_telemetry_capture_does_not_hide_required_field_errors(monkeypatch):
+    from tnfr.physics import structural_diffusion
+
+    graph = _graph()
+    set_attr(graph.nodes["a"], ALIAS_DNFR, float("nan"))
+
+    def unexpected(*args, **kwargs):
+        pytest.fail("Required field rejection must precede optional readouts")
+
+    monkeypatch.setattr(structural_diffusion, "compute_emergent_pulse", unexpected)
+    with pytest.raises(ValueError):
+        fields.compute_unified_telemetry(graph)
 
 
 def test_phase_winding_facade_uses_shared_support_and_branch_admission():

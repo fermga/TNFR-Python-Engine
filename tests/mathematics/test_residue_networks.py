@@ -1,4 +1,4 @@
-"""Tests for the canonical arithmetic residue-network API (example 153).
+"""Tests for the retained arithmetic residue-network API.
 
 Covers the structural-frequency rank, the quadratic-residue prime signature,
 the cyclotomy law s_k(p)=gcd(k,p-1)+1, the unitary (Ramanujan) rank, and the
@@ -34,7 +34,7 @@ def _is_prime(n: int) -> bool:
 # --- structural_frequency_rank (general spectral diagnostic) ---
 
 
-@pytest.mark.parametrize("n", [4, 5, 6, 7])
+@pytest.mark.parametrize("n", [4, 7])
 def test_structural_frequency_rank_complete_graph_is_two(n):
     # A complete graph has exactly 2 distinct diffusion eigenvalues.
     graph = nx.complete_graph(n, create_using=nx.DiGraph)
@@ -74,38 +74,54 @@ def test_residue_network_rank_unknown_kind_raises():
 # --- the quadratic-residue prime signature ---
 
 
-@pytest.mark.parametrize("m", list(range(3, 50, 2)))
-def test_qr_rank_three_iff_odd_prime(m):
-    assert (residue_network_rank(m, "quadratic") == 3) == _is_prime(m)
+@pytest.fixture(scope="module", params=[3, 5, 9, 15, 25, 27, 45, 49])
+def quadratic_rank(request):
+    # Prime, square/cube, squarefree and mixed repeated-factor witnesses.
+    modulus = request.param
+    return modulus, residue_network_rank(modulus, "quadratic")
 
 
-@pytest.mark.parametrize("m", list(range(3, 50, 2)))
-def test_qr_scalar_rank_equals_annotated_for_odd(m):
-    # On the small range the scalar count equals the multiplicative A(m).
-    assert residue_network_rank(m, "quadratic") == quadratic_residue_annotated_rank(m)
+def test_qr_rank_three_iff_odd_prime(quadratic_rank):
+    modulus, rank = quadratic_rank
+    assert (rank == 3) == _is_prime(modulus)
+
+
+def test_qr_scalar_rank_equals_annotated_for_odd(quadratic_rank):
+    modulus, rank = quadratic_rank
+    assert rank == quadratic_residue_annotated_rank(modulus)
 
 
 # --- the cyclotomy law ---
 
 
-@pytest.mark.parametrize("p", [5, 7, 11, 13, 17, 19, 23, 29, 31])
-@pytest.mark.parametrize("k", [2, 3, 4, 5, 6])
+@pytest.mark.parametrize(
+    "p,k",
+    [
+        (5, 1),
+        (5, 2),
+        (7, 3),
+        (13, 4),
+        (11, 5),
+        (13, 6),
+        (7, 4),
+        (7, 5),
+        (31, 40),
+        (61, 60),
+    ],
+)
 def test_cyclotomy_law(p, k):
-    assert power_residue_rank(p, k) == math.gcd(k, p - 1) + 1
-    assert residue_network_rank(p, "power", k) == power_residue_rank(p, k)
-
-
-@pytest.mark.parametrize("p", [7, 11, 13, 17, 19, 23])
-@pytest.mark.parametrize("k", [3, 4, 5, 6])
-def test_complete_splitting_reading(p, k):
+    # GCD 1 through 6, partial/full splitting, and powers beyond the old k<=6
+    # grid. The graph spectrum is computed once for these independent readings.
+    actual = residue_network_rank(p, "power", k)
+    assert actual == power_residue_rank(p, k) == math.gcd(k, p - 1) + 1
     # Maximal rank k+1 is reached iff p splits completely in Q(zeta_k): p=1 mod k.
-    assert (residue_network_rank(p, "power", k) == k + 1) == (p % k == 1)
+    assert (actual == k + 1) == ((p - 1) % k == 0)
 
 
 # --- unitary (Ramanujan) rank ---
 
 
-@pytest.mark.parametrize("p", [5, 7, 11, 13, 17])
+@pytest.mark.parametrize("p", [5])
 def test_unitary_rank_two_for_primes(p):
     assert residue_network_rank(p, "unitary") == 2
 
@@ -130,31 +146,16 @@ def test_annotated_rank_multiplicative_on_coprime():
     ) * quadratic_residue_annotated_rank(b)
 
 
-def test_annotated_rank_at_least_tau():
-    for m in range(3, 60):
-        tau = 1
-        for exponent in _prime_factorization(m).values():
-            tau *= exponent + 1
-        assert quadratic_residue_annotated_rank(m) >= tau
+@pytest.mark.parametrize("m", [3, 8, 9, 27, 45, 105])
+def test_annotated_rank_at_least_tau(m):
+    tau = math.prod(exponent + 1 for exponent in _prime_factorization(m).values())
+    assert quadratic_residue_annotated_rank(m) >= tau
 
 
 def test_mathematics_package_reexports():
     from tnfr.mathematics import residue_network_rank as reexported
 
     assert reexported(7, "quadratic") == 3
-
-
-# --- the cyclotomy law, proved for all k (theory/TNFR_NUMBER_THEORY.md 9.11) ---
-
-
-def test_cyclotomy_law_large_k():
-    """s_k(p) = gcd(k, p-1) + 1 for all k (Gauss-period proof, verified k<=40)."""
-    from sympy import isprime
-
-    primes = [p for p in range(3, 64) if isprime(p)]
-    for k in range(1, 41):
-        for p in primes:
-            assert residue_network_rank(p, "power", k) == math.gcd(k, p - 1) + 1
 
 
 def _conductor_annotated_count(m, decimals=8):

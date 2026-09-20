@@ -21,6 +21,7 @@ from tnfr import glyph_history
 from ..alias import get_attr, set_attr_str
 from ..constants import DEFAULTS, get_param
 from ..constants.aliases import (
+    ALIAS_DNFR,
     ALIAS_EPI,
     ALIAS_EPI_KIND,
     ALIAS_SOURCE_GLYPH,
@@ -62,6 +63,7 @@ from ._phase_gate import (
 from ._resonance_identity import (
     RA_RUNTIME_AMPLIFICATION_TRIGGER,
     normalize_resonance_epi_kind,
+    resonance_capacity_proposal,
     resonance_identity_failures,
     resonance_neighbor_circular_mean,
     resonance_proposed_epi_kind,
@@ -436,6 +438,17 @@ def _finite_real_epi(value: Any, label: str, *, operator: str) -> float:
     return require_real_scalar_epi(value, operator=operator, label=label)
 
 
+def _raw_runtime_value(
+    node: NodeProtocol, aliases: tuple[str, ...], attribute: str
+) -> Any:
+    """Read the authoritative graph value before an adapter can coerce it."""
+    if hasattr(node, "G") and hasattr(node, "n"):
+        return get_attr(
+            node.G.nodes[node.n], aliases, 0.0, strict=True, conv=lambda value: value
+        )
+    return getattr(node, attribute)
+
+
 @contextmanager
 def _rollback_jitter_progress_on_error(node: NodeProtocol) -> Iterator[None]:
     """Restore deterministic jitter progress when an operation is rejected."""
@@ -698,9 +711,12 @@ def _op_AL(node: NodeProtocol, gf: GlyphFactors) -> None:  # AL — Emission
     True
     """
     f = get_factor(gf, "AL_boost", COUPLING_GENTLE)
-    epi = _finite_real_epi(node.EPI, "target EPI state", operator="Emission")
-    new_epi = _finite_operator_scalar(epi + f, "AL EPI proposal")
-    _set_epi_with_boundary_check(node, new_epi)
+    from .al_sha_stage_proposals import emission_epi_proposal
+
+    _, new_epi = emission_epi_proposal(
+        getattr(node, "graph", {}), _raw_runtime_value(node, ALIAS_EPI, "EPI"), f
+    )
+    _set_epi_with_boundary_check(node, new_epi, apply_clip=False)
 
 
 def _op_EN(node: NodeProtocol, gf: GlyphFactors) -> None:  # EN — Reception
@@ -963,8 +979,9 @@ def _op_um_protocol_fallback(node: NodeProtocol, gf: GlyphFactors) -> None:
         neighbor_phases = ()
 
     node.theta = target_phase
-    for neighbor, phase in zip(neighbors, neighbor_phases, strict=True):
-        neighbor.theta = phase
+    if bidirectional:
+        for neighbor, phase in zip(neighbors, neighbor_phases, strict=True):
+            neighbor.theta = phase
 
 
 def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM - Coupling
@@ -1126,7 +1143,7 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
     # before touching EPI, frequency, phase, history, or telemetry.  Resonance
     # may reorganize the scalar value, but its canonical contract forbids a
     # strict nonzero sign inversion and forbids replacing an established kind.
-    vf_before = node.vf
+    raw_vf = _raw_runtime_value(node, ALIAS_VF, "vf")
     epi_before = node.EPI
     from ..types import real_scalar_epi
 
@@ -1244,19 +1261,9 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
     amplification_active = bool(
         neigh and abs(epi_bar) > RA_RUNTIME_AMPLIFICATION_TRIGGER
     )
-    proposed_vf = float(vf_before)
-    if amplification_active:
-        proposed_vf = float(vf_before) * (1.0 + vf_boost)
-    if not math.isfinite(proposed_vf) or proposed_vf < float(vf_before):
-        raise TNFRValueError(
-            "Resonance capacity proposal must be finite and nondecreasing",
-            context={
-                "operator": "Resonance",
-                "vf_before": float(vf_before),
-                "vf_proposed": proposed_vf,
-                "failed_condition": "finite_nondecreasing_capacity",
-            },
-        )
+    vf_before, proposed_vf = resonance_capacity_proposal(
+        raw_vf, vf_boost, active=amplification_active
+    )
 
     # Track network C(t) before RA if enabled (optional telemetry).  This starts
     # only after the hard identity gate, so rejected inputs leave no RA metadata.
@@ -1355,8 +1362,11 @@ def _op_SHA(node: NodeProtocol, gf: GlyphFactors) -> None:  # SHA — Silence
     factor = get_factor(gf, "SHA_vf_factor", SHA_VF_FACTOR)  # canonical ν_f↓ gain
     # SHA scales capacity; EPI, pressure and phase are unchanged at the event.
     # Later nodal flow still depends on the product of capacity and pressure.
-    vf = _finite_operator_scalar(node.vf, "SHA nu_f state")
-    proposal = _finite_operator_scalar(factor * vf, "SHA nu_f proposal")
+    from .al_sha_stage_proposals import silence_capacity_proposal
+
+    _, proposal = silence_capacity_proposal(
+        _raw_runtime_value(node, ALIAS_VF, "vf"), factor
+    )
     node.vf = proposal
 
 
@@ -1460,8 +1470,12 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
         proposal = propose_scale_operator(
             glyph=glyph,
             factor=factor,
-            vf_before=node.vf,
-            dnfr_before=node.dnfr if glyph is Glyph.NUL else None,
+            vf_before=_raw_runtime_value(node, ALIAS_VF, "vf"),
+            dnfr_before=(
+                _raw_runtime_value(node, ALIAS_DNFR, "dnfr")
+                if glyph is Glyph.NUL
+                else None
+            ),
             configured_densification_factor=(
                 gf.get("NUL_densification_factor")
                 if glyph is Glyph.NUL and "NUL_densification_factor" in gf
@@ -1478,7 +1492,17 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
             clip_mode=str(node.graph.get("CLIP_MODE", "hard")),
         )
 
-        # Atomic commit after every factor, bound and proposal has passed.
+        from ._argument_validation import require_list_sink
+
+        if glyph is Glyph.NUL:
+            require_list_sink(node.graph, "nul_densification_log", operator="NUL")
+        if proposal.edge_aware_adapted:
+            require_list_sink(
+                node.graph, "edge_aware_interventions", operator=glyph.value
+            )
+
+        # Validate consumed telemetry sinks as well as the numeric proposal
+        # before the first structural write. Custom setters remain external.
         node.vf = proposal.vf_after
         if glyph is Glyph.NUL:
             assert proposal.dnfr_before is not None

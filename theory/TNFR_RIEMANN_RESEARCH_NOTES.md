@@ -198,8 +198,8 @@ reconstruction follows. See
 
 ## 7. Superseded claims and preserved historical record
 
-The full earlier notebook is preserved as
-[RIEMANN_NOTEBOOK_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt](research/archive/RIEMANN_NOTEBOOK_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt).
+The full earlier notebook is recoverable from the Git revision identified by
+the [retirement record](research/archive/README.md).
 It is a chronological record, not an active task queue or current theorem
 authority. Specifically superseded readings include:
 

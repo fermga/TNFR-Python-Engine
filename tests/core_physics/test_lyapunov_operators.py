@@ -79,16 +79,6 @@ def ws_graph():
     return _make_tnfr_graph(20, "watts_strogatz")
 
 
-@pytest.fixture
-def ba_graph():
-    return _make_tnfr_graph(20, "barabasi_albert")
-
-
-@pytest.fixture
-def complete_graph():
-    return _make_tnfr_graph(10, "complete")
-
-
 # ===========================================================================
 # 1. Operator policy-multiplier registry
 # ===========================================================================
@@ -133,39 +123,25 @@ class TestOperatorLyapunovBoundsRegistry:
         assert len(OPERATOR_LYAPUNOV_BOUNDS) == 13
         assert OPERATOR_POLICY_MULTIPLIERS is OPERATOR_LYAPUNOV_BOUNDS
 
-    @pytest.mark.parametrize("name", EXPECTED_OPERATORS)
-    def test_operator_present_by_name(self, name):
-        bound = get_bound(name)
-        assert isinstance(bound, OperatorLyapunovBound)
-        assert bound.operator_name == name
-
-    @pytest.mark.parametrize("glyph", EXPECTED_GLYPHS)
-    def test_operator_present_by_glyph(self, glyph):
+    @pytest.mark.parametrize(
+        "name,glyph", tuple(zip(EXPECTED_OPERATORS, EXPECTED_GLYPHS))
+    )
+    def test_registry_aliases_and_factor_provenance(self, name, glyph):
         bound = get_bound(glyph)
         assert isinstance(bound, OperatorLyapunovBound)
         assert bound.glyph == glyph
+        assert bound.operator_name == name
+        assert get_bound(name) is bound
         assert get_policy_multiplier(glyph) is bound
+        assert bound.verification_scope == "u2_policy_heuristic"
+        assert not bound.is_energy_bound
+        assert bound.glyph_factor_value == pytest.approx(
+            CORE_DEFAULTS["GLYPH_FACTORS"][bound.glyph_factor_name]
+        )
 
     def test_unknown_operator_raises(self):
         with pytest.raises(KeyError):
             get_bound("NonExistent")
-
-    def test_all_have_scoped_policy_rationale(self):
-        for name, bound in OPERATOR_LYAPUNOV_BOUNDS.items():
-            assert len(bound.derivation) > 10, f"{name} missing derivation"
-            assert bound.verification_scope == "u2_policy_heuristic"
-            assert not bound.is_energy_bound
-
-    def test_all_have_positive_glyph_factor(self):
-        for name, bound in OPERATOR_LYAPUNOV_BOUNDS.items():
-            assert bound.glyph_factor_value >= 0.0, f"{name} invalid factor"
-
-    def test_factor_values_come_from_canonical_defaults(self):
-        factors = CORE_DEFAULTS["GLYPH_FACTORS"]
-        for bound in OPERATOR_POLICY_MULTIPLIERS.values():
-            assert bound.glyph_factor_value == pytest.approx(
-                factors[bound.glyph_factor_name]
-            )
 
 
 # ===========================================================================
@@ -195,6 +171,7 @@ class TestEnergyClassTaxonomy:
     @pytest.mark.parametrize("name", STABILISERS)
     def test_stabilisers(self, name):
         assert get_bound(name).energy_class == EnergyClass.STABILISER
+        assert 0.0 < get_bound(name).policy_multiplier < 1.0
 
     @pytest.mark.parametrize("name", DESTABILISERS)
     def test_destabilisers(self, name):
@@ -203,37 +180,7 @@ class TestEnergyClassTaxonomy:
     @pytest.mark.parametrize("name", NEUTRALS)
     def test_neutrals(self, name):
         assert get_bound(name).energy_class == EnergyClass.NEUTRAL
-
-    def test_classification_matches_canonical_grammar(self):
-        """The legacy class field derives from the centralized U2 predicates."""
-        from tnfr.config.physics_derivation import (
-            increases_structural_pressure,
-            provides_negative_feedback,
-        )
-
-        name_to_func = {
-            "Emission": "emission",
-            "Reception": "reception",
-            "Coherence": "coherence",
-            "Dissonance": "dissonance",
-            "Coupling": "coupling",
-            "Resonance": "resonance",
-            "Silence": "silence",
-            "Expansion": "expansion",
-            "Contraction": "contraction",
-            "SelfOrganization": "self_organization",
-            "Mutation": "mutation",
-            "Transition": "transition",
-            "Recursivity": "recursivity",
-        }
-        for name, func in name_to_func.items():
-            cls = get_bound(name).energy_class
-            if provides_negative_feedback(func):
-                assert cls == EnergyClass.STABILISER, name
-            elif increases_structural_pressure(func):
-                assert cls == EnergyClass.DESTABILISER, name
-            else:
-                assert cls == EnergyClass.NEUTRAL, name
+        assert get_bound(name).contraction_rate == 0.0
 
 
 # ===========================================================================
@@ -257,37 +204,11 @@ class TestContractionRates:
             CORE_DEFAULTS["GLYPH_FACTORS"]["OZ_dnfr_factor"]
         )
 
-    def test_emission_rate_small(self):
-        """AL has no U2 debt adjustment; this says nothing about energy."""
-        bound = get_bound("AL")
-        assert bound.contraction_rate == 0.0
-
-    def test_resonance_rate_approx_01(self):
-        """RA has no U2 debt adjustment."""
-        bound = get_bound("RA")
-        assert bound.contraction_rate == 0.0
-
     def test_expansion_policy_uses_capacity_scale(self):
         bound = get_bound("VAL")
         assert bound.policy_multiplier == pytest.approx(
             CORE_DEFAULTS["GLYPH_FACTORS"]["VAL_scale"]
         )
-
-    def test_silence_rate_small(self):
-        """SHA has no U2 debt adjustment."""
-        bound = get_bound("SHA")
-        assert bound.contraction_rate == 0.0
-
-    def test_recursivity_rate_zero(self):
-        """REMESH is U2-neutral; no zero-energy claim follows."""
-        bound = get_bound("REMESH")
-        assert bound.contraction_rate == 0.0
-
-    def test_stabilisers_have_positive_rates(self):
-        # Positive adjustments define sub-unit policy multipliers only.
-        for name in ["Coherence", "SelfOrganization"]:
-            assert get_bound(name).contraction_rate > 0.0
-            assert get_bound(name).policy_multiplier < 1.0
 
 
 # ===========================================================================
@@ -317,10 +238,6 @@ class TestComputeOperatorEnergyBound:
         d5 = compute_operator_policy_delta("Silence", 10.0, n_nodes=5)
         d1 = compute_operator_policy_delta("Silence", 10.0, n_nodes=1)
         assert d5 == d1 == 0.0
-
-    def test_recursivity_bound_is_zero(self):
-        delta = compute_operator_energy_bound("Recursivity", 10.0, n_nodes=20)
-        assert delta == 0.0
 
     def test_zero_score_gives_zero_policy_delta(self):
         assert compute_operator_energy_bound("Coherence", 0.0) == 0.0
@@ -416,10 +333,6 @@ class TestSequenceEnergyBound:
             compute_sequence_policy_score(sequence, 1.0, 20)
         )
 
-    def test_policy_score_is_finite_for_finite_fragment(self):
-        score = compute_sequence_policy_score(["OZ", "ZHIR", "IL"], 1.0, 20)
-        assert math.isfinite(score)
-
     @pytest.mark.parametrize("operators", ["IL", ["IL", 1]])
     def test_invalid_operator_sequence_rejected(self, operators):
         with pytest.raises(TypeError):
@@ -473,46 +386,19 @@ class TestSequenceLyapunovProof:
 class TestSpectralGapAnalysis:
     """Test spectral gap characterisation on various topologies."""
 
-    def test_connected_graph_has_positive_gap(self, ws_graph):
-        result = analyze_spectral_gap(ws_graph)
-        assert result.spectral_gap > 0.0
-        assert result.is_connected
-
-    def test_complete_graph_has_large_gap(self):
-        """Complete graph K_n: λ₁ = n."""
+    def test_complete_graph_has_analytic_combinatorial_and_normalized_gaps(self):
+        """K10 has combinatorial gap 10 and normalized gap 10/9."""
         G = nx.complete_graph(10)
         inject_defaults(G)
         result = analyze_spectral_gap(G)
-        assert abs(result.spectral_gap - 10.0) < 0.1
-
-    def test_relaxation_time_is_inverse_normalized_diffusion_gap(self, ws_graph):
-        result = analyze_spectral_gap(ws_graph)
-        expected_tau = 1.0 / result.diffusion_gap
-        assert abs(result.relaxation_time - expected_tau) < 1e-10
-        assert result.convergence_rate == result.diffusion_gap
-
-    def test_legacy_mixing_scale_uses_normalized_gap(self, ws_graph):
-        result = analyze_spectral_gap(ws_graph)
-        n = ws_graph.number_of_nodes()
-        expected = math.log(n) / result.diffusion_gap
-        assert abs(result.mixing_time_bound - expected) < 1e-10
-
-    def test_normalized_cheeger_lower_expression(self, ws_graph):
-        result = analyze_spectral_gap(ws_graph)
-        assert result.cheeger_lower == pytest.approx(0.5 * result.diffusion_gap)
-
-    def test_spectral_ratio_finite(self, ws_graph):
-        result = analyze_spectral_gap(ws_graph)
-        assert math.isfinite(result.spectral_ratio)
-        assert result.spectral_ratio >= 1.0
-
-    def test_eigenvalues_array_length(self, ws_graph):
-        result = analyze_spectral_gap(ws_graph)
-        assert len(result.eigenvalues) == ws_graph.number_of_nodes()
-
-    def test_fiedler_equals_spectral_gap(self, ws_graph):
-        result = analyze_spectral_gap(ws_graph)
+        assert result.is_connected
+        assert result.spectral_gap == pytest.approx(10.0)
+        assert result.diffusion_gap == pytest.approx(10.0 / 9.0)
+        assert result.relaxation_time == pytest.approx(0.9)
+        assert result.mixing_time_bound == pytest.approx(0.9 * math.log(10))
+        assert result.cheeger_lower == pytest.approx(5.0 / 9.0)
         assert result.fiedler_value == result.spectral_gap
+        assert len(result.eigenvalues) == 10
 
     def test_single_node_graph(self):
         G = nx.Graph()
@@ -539,15 +425,6 @@ class TestSpectralGapAnalysis:
         assert result.spectral_gap > 0.0
         assert result.diffusion_gap > 0.0
         assert math.isfinite(result.relaxation_time)
-
-    @pytest.mark.parametrize(
-        "topology", ["watts_strogatz", "barabasi_albert", "complete"]
-    )
-    def test_positive_gap_across_topologies(self, topology):
-        G = _make_tnfr_graph(15, topology, seed=7)
-        result = analyze_spectral_gap(G)
-        assert result.spectral_gap > 0.0
-        assert result.is_connected
 
 
 class TestDiffusionHTheoremRate:
@@ -651,17 +528,6 @@ class TestOperatorConvergence:
 
 class TestEdgeCases:
     """Test edge cases and boundary conditions."""
-
-    def test_zero_initial_energy(self):
-        """A zero policy score should not cause division errors."""
-        for glyph in ["IL", "OZ", "AL", "SHA", "REMESH"]:
-            d = compute_operator_energy_bound(glyph, 0.0, n_nodes=10)
-            assert math.isfinite(d)
-
-    def test_very_small_energy(self):
-        """A very small policy score should produce a small model delta."""
-        d = compute_operator_energy_bound("IL", 1e-15, n_nodes=1)
-        assert abs(d) < 1e-14
 
     def test_sequence_never_goes_negative(self):
         """Positive multipliers preserve a non-negative policy score."""

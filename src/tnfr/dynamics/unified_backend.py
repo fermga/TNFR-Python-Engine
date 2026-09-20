@@ -22,7 +22,10 @@ from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
-from ..types import real_scalar_epi
+from ..physics._helpers import finite_real_scalar
+from ..types import real_scalar_epi, require_finite_real_scalar_epi
+from ._euler_kernel import euler_update
+from .canonical import compute_canonical_nodal_derivative
 
 try:
     import networkx as nx
@@ -236,7 +239,9 @@ class TNFRUnifiedBackend:
     ) -> dict[str, Any]:
         """Return one detached nodal proposal under an explicit pressure model.
 
-        ``stored_delta_nfr`` integrates the live canonical pressure attribute.
+        ``stored_delta_nfr`` proposes an unforced, unclipped Euler step from
+        the live pressure attribute. It does not execute Gamma, clipping,
+        derivative/history writes or the optional extended channel dynamics.
         ``epi_diffusion`` is the narrower graph-diffusion realization
         ``DeltaNFR_epi = -L_rw EPI`` and may use the nodal optimizer. The two
         models are never substituted for one another based on an optimization
@@ -262,28 +267,42 @@ class TNFRUnifiedBackend:
             states = {}
             for node in graph.nodes():
                 node_data = graph.nodes[node]
-                epi = real_scalar_epi(
+                epi = require_finite_real_scalar_epi(
                     get_attr(
                         node_data,
                         ALIAS_EPI,
                         0.0,
                         strict=True,
                         conv=lambda value: value,
+                    ),
+                    f"node {node!r} EPI",
+                )
+                nu_f, dnfr, phase = (
+                    finite_real_scalar(
+                        get_attr(
+                            node_data,
+                            aliases,
+                            default,
+                            strict=True,
+                            conv=lambda value: value,
+                        ),
+                        f"node {node!r} {label}",
+                    )
+                    for aliases, default, label in (
+                        (ALIAS_VF, 1.0, "nu_f"),
+                        (ALIAS_DNFR, 0.0, "DeltaNFR"),
+                        (ALIAS_THETA, 0.0, "phase"),
                     )
                 )
-                if epi is None:
+                rate = compute_canonical_nodal_derivative(
+                    nu_f, dnfr, graph=graph
+                ).derivative
+                endpoint = euler_update(epi, dt, rate)
+                if not math.isfinite(rate) or not math.isfinite(endpoint):
                     raise TNFRValueError(
-                        f"node {node!r} EPI has no scalar nodal embedding"
+                        f"node {node!r} nodal rate and EPI proposal must remain finite"
                     )
-                nu_f = float(get_attr(node_data, ALIAS_VF, 1.0, strict=True))
-                dnfr = float(get_attr(node_data, ALIAS_DNFR, 0.0, strict=True))
-                phase = float(get_attr(node_data, ALIAS_THETA, 0.0, strict=True))
-                values = np.asarray((epi, nu_f, dnfr, phase), dtype=float)
-                if not np.all(np.isfinite(values)) or nu_f < 0.0:
-                    raise TNFRValueError(
-                        f"node {node!r} nodal state must be finite with nu_f >= 0"
-                    )
-                states[node] = (float(epi + dt * nu_f * dnfr), phase)
+                states[node] = (float(endpoint), phase)
         else:
             raise TNFRValueError(
                 "pressure_model must be 'stored_delta_nfr' or 'epi_diffusion'"
@@ -298,6 +317,9 @@ class TNFRUnifiedBackend:
             ),
             "pressure_model": pressure_model,
             "detached": True,
+            "integration_method": "explicit_euler",
+            "epi_step_scope": "unforced_unclipped_proposal",
+            "stability_not_certified": True,
         }
 
     def _cache_signature(self, graph: Any, dependencies: set[str]) -> str:

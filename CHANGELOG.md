@@ -4,6 +4,122 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.3.7] - 2026-09-20 — Nodal engine refactoring and foundation reassessment
+
+### Foundation reassessment and scope reduction
+
+- Correct retained phase-response controls to account for represented pressure
+  and endpoint defects instead of assuming exact periodic neutrality. Separate
+  capacity-only ideal profiles from full represented phase forcing.
+- Separate runtime callback/sampling ordinals from metric retention and physical
+  time. Track admitted invocations, preserve one index across both callback
+  boundaries and reject recursive same-graph execution.
+- Integrate that ordinal with REMESH cooldown, Recursivity and diagnosis;
+  preserve bounded histories during raw REMESH and detach validation history
+  without duplicating live advisory events.
+- Execute the predeclared finite P3 phase-to-form comparison through shared
+  pressure/integration owners. Retain independent modal predictions, numerical
+  defects and evidence hashes without selecting a default physical law.
+- Expose independent availability, provenance and errors for optional substrate,
+  wave-pulse and resonance telemetry without changing their numerical models.
+- Detect direct NetworkX support/weight/length edits in the shared edge-cache
+  owner, including same-size rewiring that previously retained old pressure/Si
+  inputs. Preserve explicit cache dependency and concurrent-read boundaries.
+- Unify AL/SHA lifecycle proposals, enforce AL's clipped nondecrease contract
+  before writes and validate SHA/VAL/NUL raw inputs and active log sinks.
+- Require fresh consecutive valid observations for runtime early stopping,
+  support bounded built-in histories and activate explicit CLI stopping options.
+  Inspect only the configured history tail.
+- Apply `HISTORY_MAXLEN` to samples within each metric stream, preserve metric
+  names, resize existing streams consistently and support deque coherence tails.
+- Detach fluent and provenance reports while preserving opaque node labels;
+  expose unavailable diagnostics and reject invalid study report values/keys.
+- Reuse unified tetrad summary reductions, retain fit/fallback provenance and
+  expose unavailable optional statistics instead of filtering invalid nodes.
+  Reject nested JSON key collisions before replacing exported files.
+- Unify solver clock, retained-rate and consumed-phase admission; retire Boolean
+  duration coercion and prevent cached trigonometry from masking invalid state.
+  The unforced row no longer reads unused phase data on the array path.
+- Share direct/staged Resonance capacity proposals, reject invalid inactive
+  amplification inputs, and fix graphless unidirectional Coupling's partial-write
+  failure. Retain explicit unique outgoing-support semantics and prevent consumed
+  nonzero glyph factors from being coerced into a zero policy.
+- Admit equivalent reciprocal directed transport in the Euler modal diagnostic
+  through the shared symmetry owner; validate auxiliary reaction rates.
+- Reject invalid local coherence and colliding node labels in SDK reports;
+  distinguish unavailable logical verdicts from false observations.
+- Replace obsolete error-reference links and unsupported generic bounds and
+  monotonicity claims with current conditional contracts.
+- Share validated selector snapshots across execution paths, renew normalizers
+  between decisions and release engine-owned batches on failure. Reject malformed
+  coefficients and normalize large finite mixtures without overflow.
+- Preserve explicit computation services, resolve registered strategy tokens,
+  and learn from the executed strategy rather than an unresolved AUTO request.
+- Preserve diagnostic availability in SDK summaries, nodal-rate predictions and
+  phase observations. Stabilize phase imbalance/fits and retain a disconnected-copy
+  control showing why configured phase labels cannot establish emergence.
+- Reuse nodal admission in pressure hooks and phase/capacity execution; stage
+  phase proposals before writes and share the runtime branch predicate with
+  finite forcing observations.
+- Recover representable temporal rates from overflowing intermediate
+  differences, reject nonzero underflow rates and detach retained conservation
+  evidence from public snapshots/reports. Admit combined SDK evidence before
+  appending it and compare endpoint energies for nonincrease. Share charge and
+  normalized-energy totals across live fields and retained observations,
+  recovering finite cancellation and exceptional-range quadratic totals.
+- Share scaled paired correlation between field and sector diagnostics;
+  distinguish unavailable observations from compatibility zero values.
+- Retire unpaired-correlation, cancelling-stress and unconnected lattice/sieve
+  studies. Reuse circular/Euler arithmetic in retained auxiliary controls and
+  correct example distinctions between phase laws, waves and nodal diffusion.
+- Share strict represented-real admission across validated nodal rates,
+  equilibrium and sense-index reads; reuse the EPI derivative in the extended
+  model and reject unrepresentable outputs instead of certifying them.
+- Reuse stable neighbor differences for pressure flux and preserve explicit
+  phase-symmetry availability. Retire the inert-intensity coherence-length sweep.
+- Expose incremental SDK operator failures, validate candidate lists before
+  execution and remove the unsupported coherence-preservation test claim.
+- Define one routine engine/API pytest gate through standard `testpaths`;
+  retain research/certificate suites through explicit paths and `make test-all`.
+  Remove the duplicate Python 3.11 SDK workflow already covered by main CI.
+- Remove redundant validation grids and unsupported energy/grammar fixture
+  campaigns. Share expensive arithmetic, phase-ramp and auxiliary-model
+  producers while retaining independent identities, negative controls and
+  rollback boundaries.
+- Unify circular differences and field reductions across execution paths;
+  retain tiny phase separations and finite inverse-square responses at extreme
+  represented scales, with explicit metric and overflow admission.
+- Honor the live Gamma registry in scalar and array integration, reject invalid
+  runtime sources and invalidate phase-dependent forcing caches on phase changes.
+- Reuse stable signed means, dispersion and circular-mean availability in SDK
+  reports; validate authoritative phase values and reject nonfinite JSON export.
+  Correct directed density and share probability admission across SDK recipes.
+- Unify support and pressure evaluation across dense/multigraph paths and
+  optimization adapters. Preserve finite small pressure under extreme weights
+  and use shared nodal arithmetic instead of reordered products.
+- Share clipping-policy admission between default/extended integration and
+  held-step observations. Invalid policies reject instead of silently changing
+  the selected projection.
+- Compute conservation sectors from their captured graph divergences, reject
+  missing or invalid temporal evidence, and distinguish a tolerance alert from
+  an actual non-increasing energy sample.
+
+- Make foundational premises and model alternatives explicit; defer the C5
+  pressure-gate continuation pending minimal-model assessment. Preserve exact
+  conditional results and counterexamples rather than treating previous defaults
+  as uniquely derived laws.
+- Correct NFR observation availability and configured topology interpretation,
+  separate fitted correlation from spectral fallback, and restrict grammar
+  calibration to its represented monotone domain.
+- Remove ungrounded chemistry/quantum mappings, external fluid and physical-gap
+  programmes, circular type-signature probes, obsolete examples and their
+  dedicated tests. This intentionally removes public APIs; the
+  [retirement record](theory/research/archive/README.md#foundation-reassessment-2026-09-20)
+  lists affected interfaces, reasons and recoverable source revisions.
+- Consolidate ontology into a mechanism reuse map and remove duplicated old
+  notebooks from the working tree. The execution plan remains the sole queue.
+
+
 ## [0.0.3.6] - 2026-09-19 — Nodal research integration and documentation consolidation
 
 ### Nodal dynamics and research
@@ -104,8 +220,8 @@ and connecting them to independently specified terrestrial measurements remains
 open. This release does not establish general C6 stability, a complete state
 basis, a Millennium conjecture or physical particle emergence.
 
-The detailed pre-release development log is preserved in the
-[historical snapshot](theory/research/archive/DEVELOPMENT_LOG_PRE_0.0.3.6_2026-09-19.txt).
+The detailed pre-release development log is recoverable from Git through the
+[historical record](theory/research/archive/README.md).
 Descriptions in older release entries below record their original context;
 current mathematical authority belongs to the [theory index](theory/README.md).
 

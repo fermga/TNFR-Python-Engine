@@ -1,5 +1,6 @@
 """Linear pressure retains representable differences and active-channel scope."""
 
+import math
 from fractions import Fraction
 
 import networkx as nx
@@ -113,7 +114,7 @@ def test_disabled_linear_channels_and_zero_edges_do_not_evaluate_extreme_pairs(
     graph = _graph([1e308, -1e308, 1e308])
     graph.graph["DNFR_WEIGHTS"].update(epi=0.0, phase=1.0)
     for node in graph:
-        set_attr(graph.nodes[node], ALIAS_VF, (-1) ** node * 1e308)
+        set_attr(graph.nodes[node], ALIAS_VF, (node % 2) * 1e308)
     with np.errstate(over="raise", invalid="raise"):
         np.testing.assert_array_equal(_run(graph, path, monkeypatch), 0.0)
     zero = _graph([1e308, -1e308])
@@ -164,6 +165,42 @@ def test_weighted_loops_parallel_neighbors_and_aliases_match_exact_rational_mean
     np.testing.assert_allclose(
         _run(graph, "fallback", monkeypatch), expected, atol=1e-14
     )
+
+
+@pytest.mark.parametrize("kind", [nx.MultiGraph, nx.MultiDiGraph])
+@pytest.mark.parametrize("channel", ["phase", "topo"])
+@pytest.mark.parametrize("path", PATHS)
+def test_parallel_edges_do_not_reweight_support_channels(
+    kind, channel, path, monkeypatch
+):
+    graph = kind()
+    graph.add_weighted_edges_from(
+        [(0, 1, 2.0), (0, 1, 3.0), (0, 2, 0.0), (0, 3, 1.0), (1, 2, 1.0)]
+    )
+    graph.graph["DNFR_WEIGHTS"] = {
+        key: float(key == channel) for key in ("phase", "epi", "vf", "topo")
+    }
+    phases = (0.0, 0.1, 0.8, -0.2)
+    for node in graph:
+        graph.nodes[node].update(EPI=0.0, theta=phases[node], nu_f=1.0)
+    expected = []
+    for node in graph:
+        neighbors = tuple(graph.neighbors(node))
+        if not neighbors:
+            expected.append(0.0)
+        elif channel == "topo":
+            expected.append(
+                sum(len(tuple(graph.neighbors(other))) for other in neighbors)
+                / len(neighbors)
+                - len(neighbors)
+            )
+        else:
+            mean = math.atan2(
+                sum(math.sin(phases[other]) for other in neighbors),
+                sum(math.cos(phases[other]) for other in neighbors),
+            )
+            expected.append((mean - phases[node]) / math.pi)
+    np.testing.assert_allclose(_run(graph, path, monkeypatch), expected, atol=2e-16)
 
 
 @pytest.mark.parametrize("use_jit", [False, True])

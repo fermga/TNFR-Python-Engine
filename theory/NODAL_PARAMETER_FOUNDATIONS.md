@@ -59,6 +59,113 @@ An identity involving a chosen coefficient proves properties of that choice;
 it does not derive why nature or the nodal law must choose that coefficient.
 The naming of `constants.canonical` is not an epistemic classification.
 
+### 1.1 Thresholds, constants and numerical settings have different duties
+
+The active configuration audit distinguishes the following categories. A
+formula containing pi, a historical `CANONICAL` suffix or a passing regression
+test does not move a value from a selected policy to a derived physical law.
+
+| Category | Examples and owner | Meaning and limitation |
+| --- | --- | --- |
+| Mathematical identity / representation | The radian wrap bound pi; binary64 `PI` in [constants](../src/tnfr/constants/canonical.py) | The geometric bound is exact; the stored floating value approximates it. `sin(pi/6)` is a dimensionless score, not an angular tolerance of 30 degrees. |
+| Conditional model quantity | Spectral gaps, diffusion rates, Dirichlet bounds, cycle restoring margins | Derived from the specified graph, law and domain; generally state or configuration dependent. They are not universal fixed TNFR numbers. |
+| Constitutive / control policy | Pressure weights, U3 ceiling, capacity averaging, grammar windows and scalar rails | They select a model, allowed event or admissible chart. Structural constraints may restrict their range without selecting a unique value. |
+| Diagnostic / classification policy | Si mixture, tetrad warnings, R-squared fit cut and comparison exponents | These classify observations. Consuming them as feedback is an additional controller; a fit-quality cut is not a statistical significance test. |
+| Numerical method / error budget | RK coefficients, time step, residual tolerances and represented arithmetic | Method coefficients belong to a specified numerical scheme. A tolerance needs units and a scale; it cannot establish infinite-time convergence or define a new physical law. |
+| Implementation setting | Cache capacities, worker counts and tuning scores in [operational constants](../src/tnfr/constants/operational.py) | These organize computation, not nodal dynamics. The compatibility suffix does not give them physical meaning. |
+
+The live owners, rather than equal-looking numbers, determine what can be
+unified:
+
+| Configuration / observation | Actual role | Single owner / distinction |
+| --- | --- | --- |
+| `EPS_DNFR_STABLE=1e-3` | Absolute stored-pressure admission for capacity adaptation; equality is admitted | [Adaptation](../src/tnfr/dynamics/adaptation.py), with the value in `RemeshDefaults`. Its caller must refresh pressure when fresh admission is claimed. This is not the exact equilibrium equation `p=0`. |
+| `VF_ADAPT_MU=0.1`, `VF_ADAPT_TAU=5` | Snapshot-average fraction and consecutive qualifying invocation count | [Core defaults](../src/tnfr/config/defaults_core.py). Five calls are not a physical duration without a declared call cadence; successful writes do not reset the count. |
+| `SELECTOR_THRESHOLDS` | Cuts for Si, network-normalized absolute pressure and acceleration | The [shared resolver](../src/tnfr/config/selector_thresholds.py) serves selection, adaptation and Si aggregation. `GLYPH_THRESHOLDS` is a different policy, not another source of Si defaults. |
+| `PHASE_ADAPT` | Global/local phase controller settings | Partial mappings inherit the same core defaults as full mappings; they must not activate an obsolete private fallback table. |
+| `DELTA_PHI_MAX`, `UM_MAX_PHASE_DIFF` | Selected U3 ceiling, with an optional tighter UM limit | The [phase gate resolver](../src/tnfr/operators/_phase_gate.py) owns execution and diagnostic interpretation. The pi/2 admission ceiling is distinct from the pi wrap bound. |
+| Potential, gradient and curvature warnings | Selected pi/4, pi/16 and 0.9*pi comparisons | [Field constants](../src/tnfr/constants/canonical.py); U6's pi/2 reference-relative potential drift is a separate observable. Equal units or related formulas do not make the policies interchangeable. |
+| Legacy precondition names | Some retained exports no longer drive execution | [Precondition defaults](../src/tnfr/config/thresholds.py) identify active fallbacks and inert compatibility values. The old one-radian RA phase warning does not override the live U3 gate. |
+
+In particular, selector pressure ratios and the absolute adaptation threshold
+must not be collapsed into one constant. Their denominators, scales and
+purposes differ. Nor should unrelated gains be coupled merely because their
+current numeric values match. Centralization means one owner for one semantic
+quantity, with explicit compatibility aliases where needed.
+
+#### Unit changes also transform admission policies
+
+Under Section 3's positive chart/time change `y=a*x+b`, `tau=c*t`, with
+consistently transformed pressure `p'=a*p` and capacity `nu'=nu/c`, equivalent
+absolute-pressure admission requires `epsilon_p'=a*epsilon_p`. A signed
+form-rate threshold transforms by `a/c`, an acceleration threshold by `a/c^2`,
+capacity rails by `1/c`, form rails by `a*x_bound+b`, and a time step by c.
+Dimensionless blend fractions and invocation counts do not rescale, although
+changing the invocation schedule changes a hybrid model. The unchanged radian
+chart leaves phase-angle gates unchanged.
+
+This proves why a bare positive pressure cut cannot be a chart-independent
+constant selected by the nodal product. It does not choose a replacement
+threshold or prove complete runtime covariance: the configured normalized
+pressure mixture and auxiliary laws retain Section 3's separate obligations.
+The existing covariance controls already test that boundary; there is no
+second numerical campaign here.
+
+#### Corrected implementation boundaries
+
+The audit retains complete default values while removing inconsistent
+interpretations. Partial selector configurations now use the shared selector
+defaults everywhere; omitted keys no longer fall back to a different glyph
+policy in adaptation or Si aggregation. Nonfinite, boolean or out-of-range
+selector thresholds are rejected instead of clamped or silently compared.
+Partial phase-adaptation configurations inherit the current default policy.
+U3 diagnostics share the live uppercase configuration keys and validation;
+invalid admission inputs cannot produce a successful structural check.
+
+These corrections also reach the ordinary engine boundary: malformed initial
+selector, capacity and phase policy settings reject before a step advances
+the graph. Default-integrator numerical parameters are also preflighted;
+custom integrators retain their own contracts. This is not admission of every
+configuration field or a transaction covering callbacks and later failures.
+Checks at each consumer remain active. The held-step nodal comparator and
+THOL proposal preflight share the configured tolerance and clipping policy,
+including soft-knee gain and the integrator's preservation of zero represented
+increments. Clip-aware tolerance has EPI units; the legacy unclipped rate
+comparison has EPI/time units. Switching modes does not preserve the meaning
+of the same bare tolerance. Neither comparison is a causal execution certificate.
+
+Field threshold diagnostics retain observation availability. Unavailable
+coherence length is not a successful zero, fitted length is compared in its
+own path geometry, and spectral fallback retains separate units/provenance.
+A satisfactory curvature fit cannot override observed variance violations.
+Precision modes do not change intended mathematical definitions, but can
+change rounded decisions near a cut; a mode name supplies no certified error
+bound. The auxiliary pulse comparison likewise enforces its requested error
+tolerance and requires an independent oracle before reporting success.
+
+Importing binary64 constants no longer changes the caller's mpmath precision.
+Cold-import controls at 15 and 80 decimal digits preserve that context and
+the previous binary64 pi/log(2) values. Numerical precision is part of the
+experiment's provenance, not a hidden side effect of configuration import.
+Legacy unused tolerance names do not certify integral convergence and the
+unused one-degree phase tolerance does not relax U3 execution.
+
+The [grammar calibration helpers](../src/tnfr/config/physics_derivation.py)
+require finite positive nonboolean capacity and step with represented product
+`0 < nu_f*dt <= 1`. Their scalar recurrence is evaluated exactly on those
+represented coefficients; invalid, underflowed or oscillatory inputs do not
+produce a spurious calibration. The 64-position U4 cap remains a policy and
+need not achieve the surrogate's target. U2 uses the exact reciprocal floor
+of the represented rate, avoiding overflow and integer-boundary rounding.
+Neither helper establishes graph-wide relaxation or event occurrence.
+
+For G3, the pressure/Si gates remain supplied policy. Their previous mandatory
+continuation is superseded by the revised
+[single plan](research/FIVE_STAGE_EXECUTION_PLAN.md): first admit the model and
+its independent premises. Existing C5 bounds and the first-feedback result
+remain conditional evidence. Neither retuning admission to force maintenance
+nor proving one such bound would derive the controller or identify a physical NFR.
+
 ## 2. Parameter and dependency ledger
 
 | Family | Meaning and owner | Established boundary |
@@ -115,6 +222,16 @@ operators, not the neighborhood used by this pressure reading. The
 conventions. Phase-resultant cancellation, wrap boundaries and represented
 arithmetic retain their execution-path-specific availability and numerical
 scope; this formula does not assert exact parity between all backends.
+
+The cached dense support adjacency is binary: parallel-edge multiplicity must
+not weight the phase or topology mean. The shared
+[neighbor-difference reducer](../src/tnfr/mathematics/_neighbor_differences.py)
+also evaluates coefficient-weighted linear channels before judging their
+representability. A finite final pressure can exist even when an unscaled
+difference or normalized intermediate weight overflows or underflows. Graph
+and dense optimization adapters reuse this realization; multiplying a rounded
+Laplacian is a distinct floating-point calculation, despite the same exact-real
+model. Matrix certificates retain the representation stated in their hypotheses.
 
 Capacity has **two separate roles**: `G_U nu` contributes a spatial pressure
 contrast, while `diag(nu)` multiplies the complete pressure in the EPI rate.
@@ -174,11 +291,14 @@ writing caches. A legacy explicitly supplied `_dnfr_weights` mix is retained
 until the public configuration changes after its first preparation. This
 compatibility override is not the recommended configuration interface.
 `_DNFR_META.weights_effective` records the executed coefficients;
-`weights_norm` only reports normalized proportions. Public normalization retains
-the shared utility's permissive policy, including clipping negative entries
-and selecting a uniform mix when the usable total is zero. Setting every public
-coefficient to zero therefore does not disable pressure. These are configuration
-policies, not constitutive deductions.
+`weights_norm` only reports normalized proportions. The default pressure and
+selector score policies share strict nonnegative represented-real coefficient
+admission. Malformed mappings, Boolean/text coefficients, negative values and
+nonzero inputs lost during materialization reject before use. Finite large
+weights normalize in scaled coordinates when their sum overflows; they do not
+disable a valid mixture. A zero total retains the explicit uniform-mix policy.
+Setting every public coefficient to zero therefore does not disable pressure.
+These are configuration policies, not constitutive deductions.
 
 Optional hooks must be named as different models where their formulas differ:
 
@@ -581,6 +701,83 @@ is installed. These are model-discrimination controls, not laboratory evidence
 selecting either response. Reflection symmetry or agreement to first order
 likewise does not select a unique smooth periodic response function.
 
+#### Prospective finite-response discriminator
+
+The same P3 preparation gives an exact-real prediction for this bounded
+comparison. Keep unit conductances, common fixed capacity `kappa>0`, common
+initial scalar form, no Gamma and held phases
+`(c+m-d, c, c+m+d)`. Require `abs(m)+abs(d)<pi/2`. Let `a>0` and `e>0` be
+the same effective phase and EPI coefficients in both models. The comparison
+source replaces only `g_phi` by the already defined `J_phi/pi`; doing so is a
+declared constitutive hypothesis, not an existing default engine law.
+
+For spreads `d_1,d_2`, the topology source is identical and the capacity
+gradient is zero. Thus those full-mixture channels cancel in the difference
+of the two form responses, even though the P3 topology source itself need
+not vanish. The present Arg source has center `m/pi` and endpoint differences
+that are antisymmetric under path reflection. This odd subspace is invariant
+under `L_rw`, so the center difference is zero. For the comparison source,
+the even part is proportional to `(-1,1,-1)`, a `L_rw` eigenvector of
+eigenvalue two. Integration of that forced mode yields
+
+```text
+x_center^Arg(t; d_2) - x_center^Arg(t; d_1) = 0,
+
+x_center^J(t; d_2) - x_center^J(t; d_1)
+    = a*sin(m)*(cos(d_2)-cos(d_1))/(2*pi*e)
+      * (1-exp(-2*kappa*e*t)).
+```
+
+The odd component of the current source likewise cannot reach the center in
+this fixed linear transport model. Nonzero `sin(m)` and distinct cosines
+therefore supply a finite-response discriminator at every positive horizon.
+This is a paired exact-real prediction with held supporting coordinates,
+before clipping or numerical stepping. It is not an absolute-response formula
+with the topology channel silently omitted. A numerical comparison must check
+the declared unclipped interval and separate pressure realization, integration
+and rounding defects. A frozen second spread is a numerical prospective
+control, not an independent physical observation.
+
+**Executed fixed control.** The [shared-engine experiment](../src/tnfr/research/phase_form_response.py)
+now evaluates four trajectories with common initial EPI `1/2`, capacity one,
+`c=pi/4`, `m=pi/8`, spreads `pi/16` and `3*pi/16`, and the complete normalized
+mixture `(phase, EPI, capacity, topology)=(1/4,1/2,1/8,1/8)`. It refreshes
+pressure before each of 256 shared Euler calls with `h=1/256`, holds phase and
+support, and declares Gamma absent. Only the alternative phase source is
+substituted. The nonzero topology contribution remains in each trajectory;
+the initial total central Arg pressure is `-3/32`, despite its positive phase
+contribution. This prevents a phase-only interpretation of the absolute motion.
+
+The declaration and predictions are written and hashed before evolution.
+For the even mode, Euler replaces `exp(-2*kappa*e*t)` by
+`(1-2*kappa*e*h)^256`. The signed central response below is wide minus narrow:
+
+| Phase source | Continuous prediction | Euler prediction | Engine observation |
+| --- | --- | --- | --- |
+| Arg direction | 0 | 0 | -5.55e-17 |
+| `J_phi/pi` | -0.002874319847547102 | -0.002877592338102031 | -0.002877592338101642 |
+
+For the current source the analytic integration defect is about `-3.27249e-6`,
+whereas engine minus discrete prediction is about `3.89e-16`. Thus the measured
+difference is resolved independently of the known Euler error. The fixed
+budgets are `2e-14` for pressure realization, `2e-15` for one represented-step
+rounding defect, `1e-11` for the discrete trajectory and `5e-6` for the paired
+continuous response. All pass. Positive averaging with source bound `0.203125`
+gives the analytic enclosure `[0.296875,0.703125]`; raw represented proposals
+and accepted values also remain within the predeclared open interval
+`(0.25,0.75)`, inside the hard clip `[0,1]`.
+
+The [regression controls](../tests/research/test_phase_form_response.py) also
+compare against an independent augmented matrix power and check evidence
+hashes, full-mixture retention and rejection of changed declarations. Run
+`python -m tnfr.research.phase_form_response --output <fresh-directory>` to
+produce the declaration, trajectories and evidence sidecar. This is local
+prospective recording with binary64 analytical evaluations and selected error
+budgets, not an interval certificate or external preregistration. It establishes
+the predicted finite implementation distinction; both constitutive hypotheses
+remain possible until an independent reduction or physical measurement
+criterion selects the information their pressure must preserve.
+
 ### 4.4 Constitutive admission ledger and remaining choices
 
 The nodal equation fixes a typed rate product. The following ledger prevents
@@ -732,6 +929,15 @@ field dictionaries are detached from cache entries; caller edits cannot alter
 later readouts. These fixes and partial-field availability belong to the
 [field API guide](../docs/STRUCTURAL_FIELDS_TETRAD.md), not a new dynamical law.
 
+Numerical realization must also be controlled before interpreting weak fields
+as emergence. Shared circular differences retain tiny nonzero separations;
+structural source reductions retain finite inverse-square responses across
+large and small represented distances. SDK pressure summaries use the same
+stable linear-reduction and dispersion owners. Backend-dependent zeros,
+infinities or inconsistent branch signs cannot serve as evidence for a new
+phase transition. These controls support the prospective phase/form comparison
+without selecting either candidate law.
+
 The separate dispersion diagnostic `1-std(p)/max|p|` is scale-invariant in
 exact arithmetic. Its duplicated implementations previously squared raw
 pressures and overflowed or underflowed: `(m,2m)` produced `0.75`, `0`, or
@@ -757,6 +963,14 @@ at zero capacity. Nonzero Gamma can move a zero-capacity node. The four
 [forcing-scope controls](../tests/test_nodal_forcing_scope.py) verify the
 distinction through both integration backends. Unforced proofs require Gamma
 to vanish; source residuals cannot be concealed by reconstructing pressure.
+
+Runtime Gamma evaluation now has one registry and strict source admission
+across scalar/array execution. A registered custom source cannot disappear in
+an array fast path, and a same-time phase change invalidates its Kuramoto
+read-out. This is essential to distinguish a supplied sustaining source from
+unforced evolution; neither cache reuse nor numerical dispatch is a mechanism
+for autonomous maintenance. Detailed callback and quadrature boundaries are
+owned by the [API contracts](../docs/API_CONTRACTS.md).
 
 The solver now enforces finite nonnegative capacity, finite pressure and
 finite derivative metadata at its authoritative reads and writes. Every
@@ -2073,13 +2287,15 @@ S=1/64,\qquad \dot S_{\rm passive}=-1/64,\qquad
 \dot S_{\rm source}=1/48,\qquad \dot S=1/192>0.
 \]
 
-The actual pressure-capture owner instead records the represented source
-work `1501199875790165/2^56` and total rate
-`375299968947541/2^56>0`. The total rate differs from the ideal `1/192` by
-`-1/(3*2^56)`. Pressure assembly and stored-pressure defect work are both
-zero for this prepared capture; that does not erase the phase-arithmetic
-difference. The source sums to zero: internal redistribution can increase
-internal amplitude without increasing the common mean. This is evidence
+The actual pressure-capture owner retains represented source coefficients
+and their exact projected work. Regression controls evaluate the represented
+phasor arithmetic independently and distinguish it from the ideal `1/48`
+source work and `1/192` total rate; a historical binary64 fraction is not a
+portable model constant. The retained witness has positive source work above
+passive loss. Pressure assembly and stored-pressure defect work are separate
+from the phase-arithmetic difference. The ideal source sums to zero: internal
+redistribution can increase internal amplitude without increasing the common
+mean; the represented mean contribution must be retained independently. This is evidence
 for instantaneous source compensation under declared coefficients, not a
 law sustaining that phase arrangement or a self-maintaining NFR trajectory.
 
@@ -2159,8 +2375,10 @@ Preserving the full EPI state requires the full EPI row of the identity.
 At the preparation of section 14.3, `e=1/2` and each nonzero `u=1/16`.
 The original pure-EPI model gives `u_dot=-1/32`; the added ideal phase
 source contributes `1/24`, producing `u_dot=1/96`. The actual captured
-contribution is `1501199875790165/2^55`. It is nonzero and retained exactly
-by the regression. Thus this pressure is a genuine change of fine dynamics,
+projection is retained exactly and compared with an independent represented
+phase-source evaluation. Its difference from the ideal is recorded rather
+than fixed to one platform's binary64 literal. The contribution is nonzero
+and reverses the sign of the retained rate. Thus this pressure changes fine dynamics,
 not the pushforward of the original passive model. No choice of a phase
 velocity can remove that instantaneous EPI mismatch.
 

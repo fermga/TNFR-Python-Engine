@@ -87,7 +87,8 @@ def validate_resonance_strict(
     Thresholds are configurable via graph metadata:
     - ``RA_MIN_SOURCE_EPI``: Minimum EPI for source (default: 0.1)
     - ``RA_MAX_DISSONANCE``: Maximum |ΔNFR| (default: 0.5)
-    - ``RA_MAX_PHASE_DIFF``: Maximum phase difference in radians (default: 1.0)
+    - ``RA_MAX_PHASE_DIFF``: Mean-based warning threshold in radians
+      (default: ``DELTA_PHI_MAX``, pi/2); distinct from the U3 hard gate
     - ``RA_MIN_VF``: Minimum structural frequency (default: 0.01)
 
     Examples
@@ -127,16 +128,17 @@ def validate_resonance_strict(
     diagnose_resonance_readiness : Diagnostic function for RA readiness
     """
     from ...alias import get_attr
+    from ...config.thresholds import DNFR_RA_MAX, EPI_RA_MIN, VF_RA_MIN
     from ...constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
     from ...constants.canonical import DELTA_PHI_MAX
     from ...utils.numeric import angle_diff
 
     # Get configuration with defensive fallbacks
     if min_epi is None:
-        min_epi = float(G.graph.get("RA_MIN_SOURCE_EPI", 0.1))
+        min_epi = float(G.graph.get("RA_MIN_SOURCE_EPI", EPI_RA_MIN))
     if max_dissonance is None:
-        max_dissonance = float(G.graph.get("RA_MAX_DISSONANCE", 0.5))
-    min_vf = float(G.graph.get("RA_MIN_VF", 0.01))
+        max_dissonance = float(G.graph.get("RA_MAX_DISSONANCE", DNFR_RA_MAX))
+    min_vf = float(G.graph.get("RA_MIN_VF", VF_RA_MIN))
     # Canonical U3 gate Δφ_max = π/2 (Invariant #2); the hard phase gate is the
     # enforcer, this mean-based check is a suboptimality diagnostic.
     max_phase_diff = float(G.graph.get("RA_MAX_PHASE_DIFF", DELTA_PHI_MAX))
@@ -256,14 +258,15 @@ def diagnose_resonance_readiness(G: TNFRGraph, node: Any) -> dict[str, Any]:
     validate_resonance_strict : Strict precondition validator
     """
     from ...alias import get_attr
+    from ...config.thresholds import DNFR_RA_MAX, EPI_RA_MIN, VF_RA_MIN
     from ...constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
     from ...constants.canonical import DELTA_PHI_MAX
     from ...utils.numeric import angle_diff
 
     # Get thresholds
-    min_epi = float(G.graph.get("RA_MIN_SOURCE_EPI", 0.1))
-    max_dissonance = float(G.graph.get("RA_MAX_DISSONANCE", 0.5))
-    min_vf = float(G.graph.get("RA_MIN_VF", 0.01))
+    min_epi = float(G.graph.get("RA_MIN_SOURCE_EPI", EPI_RA_MIN))
+    max_dissonance = float(G.graph.get("RA_MAX_DISSONANCE", DNFR_RA_MAX))
+    min_vf = float(G.graph.get("RA_MIN_VF", VF_RA_MIN))
     max_phase_diff = float(G.graph.get("RA_MAX_PHASE_DIFF", DELTA_PHI_MAX))
 
     # Get current state

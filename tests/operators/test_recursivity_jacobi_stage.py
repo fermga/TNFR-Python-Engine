@@ -104,7 +104,7 @@ def test_stage_is_target_order_invariant_and_deduplicates_advisory() -> None:
         )
 
 
-def test_repeated_stage_emits_once_per_telemetry_step() -> None:
+def test_repeated_stage_emits_once_per_legacy_telemetry_step() -> None:
     graph = _graph()
     graph.graph["history"] = {"C_steps": [0.9]}
 
@@ -117,6 +117,22 @@ def test_repeated_stage_emits_once_per_telemetry_step() -> None:
 
     assert len(_events(graph)) == 2
     assert [event[1]["step"] for event in _events(graph)] == [1, 2]
+
+
+def test_advisory_deduplicates_by_runtime_ordinal_with_a_full_history() -> None:
+    from tnfr._runtime_steps import runtime_step_scope
+
+    graph = _graph()
+    graph.graph.update(HISTORY_MAXLEN=2, history={"C_steps": [0.9, 0.95]})
+    with runtime_step_scope(graph.graph, 0):
+        execute_recursivity_stage(graph, Recursivity(), tuple(graph))
+        execute_recursivity_stage(graph, Recursivity(), tuple(graph))
+    assert [event[1]["step"] for event in _events(graph)] == [0]
+
+    with runtime_step_scope(graph.graph, 1):
+        execute_recursivity_stage(graph, Recursivity(), tuple(graph))
+    assert [event[1]["step"] for event in _events(graph)] == [0, 1]
+    assert len(graph.graph["history"]["C_steps"]) == 2
 
 
 def test_word_stage_never_invokes_explicit_delayed_epi_remesh(

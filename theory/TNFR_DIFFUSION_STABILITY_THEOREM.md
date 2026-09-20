@@ -351,6 +351,14 @@ Stationary-mode resolution uses a reported
 dimensionless tolerance times the fastest decay rate. It is not an absolute
 frequency threshold and is kept separate from any scaled EPI-update tolerance.
 
+Admission uses the shared materialized conductance matrix: symmetry and
+connected positive support are mathematical conditions, not a NetworkX
+container test. Reciprocal directed graphs, including multigraphs with matching
+effective weights, can represent the same operator and give the same modal
+window. Parallel weights are summed and self-loops retain their declared
+normalization contribution; genuinely asymmetric conductance rejects. This
+does not extend the theorem to arbitrary directed transport.
+
 ### Exact reversible single-eigenmode Euler reference theorem
 
 This section centralizes the complete proof used by the pure reference kernel.

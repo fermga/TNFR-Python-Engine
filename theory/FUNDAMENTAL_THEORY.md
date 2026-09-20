@@ -419,8 +419,10 @@ $$
 
 Both backends now share the distance/pair/fit definition. This is not connected
 covariance and has no goodness-of-fit acceptance test. If unsuitable, fitting
-yields to a spectral fallback: $1/\sqrt{\lambda_2}$ on a connected undirected
-normalized Laplacian is a dimensionless mode scale, whereas a successful fit
+yields to a spectral fallback: the inverse square root of the smallest
+normalized-Laplacian eigenvalue above the implemented `1e-9` cutoff. On an
+admitted connected undirected graph this equals $1/\sqrt{\lambda_2}$ only when
+that gap clears the cutoff. It is a dimensionless mode scale, whereas a successful fit
 has path-distance units. A large length is not a proof of criticality. See
 [estimator scope](NODAL_PARAMETER_FOUNDATIONS.md#52-one-coherence-fit-definition-across-implementations).
 
@@ -467,12 +469,14 @@ physical necessity.
 |-------|--------|-------------------|------------------|
 | Structural potential | $\Phi_s$ | Drift policy $\pi/2$; per-node policy $\pi/4$ | Pressure and graph-kernel dependent |
 | Phase gradient | $\lvert\nabla\phi\rvert$ | Warning $\pi/16$ | Exact maximum $\pi$ |
-| Phase curvature | $K_\phi$ | Warning $0.9\pi$ | Exact absolute maximum $\pi$; Laplacian only after linearization |
-| Coherence length | $\xi_C$ | Configured length comparisons | Correlation fit or spectral reference $1/\sqrt{\lambda_2}$ on connected undirected graphs |
+| Phase curvature | $K_\phi$ | Warning $0.9\pi$ | Exact absolute maximum $\pi$; local Laplacian comparison, with exact low-degree/chart cases |
+| Coherence length | $\xi_C$ | Configured length comparisons | Correlation fit or spectral reference using the stated positive-mode cutoff |
 
 The phase bounds are kinematic identities. The warning margins and potential
 thresholds are unchanged engine policies. Fitted correlation lengths need not
 equal the graph-spectral reference for every state.
+The exact curvature exception and its support/chart premises belong to
+[the low-degree phase result](NODAL_PARAMETER_FOUNDATIONS.md#41-exact-low-degree-reduction-and-its-nonlinear-boundary).
 
 ### 4.2 The four fields
 

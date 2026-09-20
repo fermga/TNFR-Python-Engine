@@ -212,17 +212,25 @@ class TNFRNumericalUtilities:
     def compute_phase_difference(
         self, phase1: ArrayLike, phase2: ArrayLike
     ) -> ArrayLike:
-        """Compute phase difference with proper wraparound.
+        """Compute a signed atan2 phase difference without shifting by pi.
 
         TNFR PHYSICS: Phase differences determine coupling compatibility
         per grammar rule U3 (RESONANT COUPLING).
+        Finite phases whose subtraction overflows binary64 are rejected;
+        this reader does not invent a direction from a nonfinite difference.
+        The signed endpoint convention differs from a half-open modulo chart.
+        Binary64 trigonometry does not promise exact invariance after adding
+        represented multiples of 2*pi, particularly for large coordinates.
         """
         if NUMPY_AVAILABLE:
             first = np.asarray(phase1, dtype=float)
             second = np.asarray(phase2, dtype=float)
             if not np.all(np.isfinite(first)) or not np.all(np.isfinite(second)):
                 raise TNFRValueError("phases must contain only finite real values")
-            diff = first - second
+            with np.errstate(over="ignore", invalid="ignore"):
+                diff = first - second
+            if not np.all(np.isfinite(diff)):
+                raise TNFRValueError("phase differences must be finite binary64 values")
             return np.arctan2(np.sin(diff), np.cos(diff))
 
         first_iterable = hasattr(phase1, "__iter__")
@@ -236,13 +244,17 @@ class TNFRNumericalUtilities:
             second = [_finite_real(item, label="phase2") for item in phase2]
             if len(first) != len(second):
                 raise TNFRValueError("phase iterables must have equal length")
+            differences = [a - b for a, b in zip(first, second)]
+            if not all(math.isfinite(value) for value in differences):
+                raise TNFRValueError("phase differences must be finite binary64 values")
             return [
-                math.atan2(math.sin(a - b), math.cos(a - b))
-                for a, b in zip(first, second)
+                math.atan2(math.sin(value), math.cos(value)) for value in differences
             ]
         diff = _finite_real(phase1, label="phase1") - _finite_real(
             phase2, label="phase2"
         )
+        if not math.isfinite(diff):
+            raise TNFRValueError("phase differences must be finite binary64 values")
         return math.atan2(math.sin(diff), math.cos(diff))
 
     def generate_random_array(
@@ -372,11 +384,13 @@ class TNFRNumericalUtilities:
     def compute_circular_mean(self, angles: ArrayLike) -> float:
         """Compute the circular mean of a nonempty, nondegenerate sample."""
         if NUMPY_AVAILABLE:
-            values = np.asarray(angles, dtype=float)
-            if values.size == 0:
+            original = np.asarray(angles, dtype=object)
+            if original.size == 0:
                 raise TNFRValueError("circular mean requires at least one angle")
-            if not np.all(np.isfinite(values)):
-                raise TNFRValueError("angles must contain only finite real values")
+            values = np.array(
+                [_finite_real(value, label="angle") for value in original.flat],
+                dtype=float,
+            )
             mean_sin = float(np.mean(np.sin(values)))
             mean_cos = float(np.mean(np.cos(values)))
         else:

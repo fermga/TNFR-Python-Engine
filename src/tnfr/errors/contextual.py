@@ -8,21 +8,20 @@ while maintaining TNFR theoretical compliance. All errors include:
 3. Links to relevant documentation
 4. Context about the structural operation that failed
 
-Canonical Invariants Preserved
-------------------------------
-These errors enforce TNFR invariants from AGENTS.md:
-- Operator closure and sequence validity
-- Phase synchrony requirements for coupling
-- Frequency (νf) bounds in Hz_str units
-- ΔNFR semantic correctness
-- EPI coherence preservation
+Scope
+-----
+Errors describe the caller's failed validation. They do not independently
+validate a state or establish a universal monotonicity/stability theorem.
+Configured bounds must be supplied by the actual consumer; the generic nodal
+domains below must not replace them with arbitrary finite cutoffs.
 """
 
 from __future__ import annotations
 
-import math
 from difflib import get_close_matches
 from typing import Any
+
+_REFERENCE_ROOT = "https://github.com/fermga/TNFR-Python-Engine/blob/main/"
 
 __all__ = [
     "TNFRUserError",
@@ -61,8 +60,7 @@ class TNFRUserError(Exception):
     --------
     >>> raise TNFRUserError(
     ...     "Invalid structural frequency",
-    ...     suggestion="νf must be positive in Hz_str units",
-    ...     docs_url="https://tnfr.readthedocs.io/api/core.html#frequency"
+    ...     suggestion="νf must be a finite nonnegative real scalar"
     ... )
     """
 
@@ -198,7 +196,7 @@ class OperatorSequenceError(TNFRUserError):
         super().__init__(
             message=f"Invalid operator sequence: '{invalid_operator}' cannot be applied",
             suggestion=suggestion,
-            docs_url="https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonante-TNFR-/blob/main/docs/source/api/operators.md",
+            docs_url=_REFERENCE_ROOT + "docs/API_CONTRACTS.md",
             context=context,
         )
 
@@ -230,37 +228,36 @@ class NetworkConfigError(TNFRUserError):
     >>> raise NetworkConfigError(
     ...     "vf",
     ...     -0.5,
-    ...     (0.01, 100.0),
-    ...     "Structural frequency must be positive (Hz_str units)"
+    ...     reason="Capacity must be finite and nonnegative"
     ... )
     """
 
     # Valid parameter ranges with structural meaning
     PARAMETER_CONSTRAINTS = {
         "vf": {
-            "range": (0.01, 100.0),
+            "range": None,
             "unit": "Hz_str",
-            "description": "Structural frequency (reorganization rate)",
+            "description": "Finite nonnegative reorganization capacity; zero is valid",
         },
         "phase": {
-            "range": (0.0, 2 * math.pi),
+            "range": None,
             "unit": "radians",
-            "description": "Phase angle for network synchrony",
+            "description": "Finite circular phase representative; comparison uses wrapped separation",
         },
         "coherence": {
             "range": (0.0, 1.0),
             "unit": "dimensionless",
-            "description": "Structural stability measure C(t)",
+            "description": "Configured coherence readout C(t); not a stability certificate",
         },
         "delta_nfr": {
-            "range": (-10.0, 10.0),
-            "unit": "dimensionless",
-            "description": "Internal reorganization gradient ΔNFR",
+            "range": None,
+            "unit": "[EPI]/([nu_f][time])",
+            "description": "Finite signed reorganization pressure; model bounds require explicit policy",
         },
         "epi": {
-            "range": (0.0, 1.0),
-            "unit": "dimensionless",
-            "description": "Primary Information Structure magnitude",
+            "range": None,
+            "unit": "declared structural chart",
+            "description": "Finite signed scalar EPI; clipping bounds belong to the configured solver",
         },
         "edge_probability": {
             "range": (0.0, 1.0),
@@ -268,9 +265,9 @@ class NetworkConfigError(TNFRUserError):
             "description": "Network edge connection probability",
         },
         "num_nodes": {
-            "range": (1, 100000),
+            "range": None,
             "unit": "count",
-            "description": "Number of nodes in network",
+            "description": "Nonnegative integer count; individual builders may require nonempty support",
         },
     }
 
@@ -312,7 +309,8 @@ class NetworkConfigError(TNFRUserError):
         super().__init__(
             message=f"Invalid network configuration for '{parameter}'",
             suggestion=" | ".join(suggestion_parts) if suggestion_parts else None,
-            docs_url="https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonante-TNFR-/blob/main/docs/source/api/overview.md",
+            docs_url=_REFERENCE_ROOT
+            + "docs/API_CONTRACTS.md#nodal-solver-input-clock-and-output-boundaries",
             context=context,
         )
 
@@ -379,18 +377,17 @@ class PhaseError(TNFRUserError):
         super().__init__(
             message=f"Phase synchrony violation between nodes '{node1}' and '{node2}'",
             suggestion=suggestion,
-            docs_url="https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonante-TNFR-/blob/main/GLOSSARY.md#phase",
+            docs_url=_REFERENCE_ROOT + "AGENTS.md#structural-triad",
             context=context,
         )
 
 
 class CoherenceError(TNFRUserError):
-    """Error raised when coherence operations violate monotonicity.
+    """Report a decrease against a caller's declared coherence postcondition.
 
-    Coherence operator must not decrease C(t) except in controlled
-    dissonance tests. This error indicates unexpected coherence loss.
-
-    Enforces Invariant #1: Nodal Equation Integrity (EPI coherent form) from AGENTS.md
+    Nondecrease must belong to the actual operator/model contract and observation
+    scope. It is not a consequence of the nodal identity for every trajectory;
+    constructing this error does not independently validate those premises.
 
     Parameters
     ----------
@@ -420,9 +417,8 @@ class CoherenceError(TNFRUserError):
 
         suggestion = (
             f"Coherence decreased by {decrease:.3f} ({percent_loss:.1f}%). "
-            f"This violates the coherence monotonicity invariant. "
-            f"Check if this is a controlled dissonance test or if "
-            f"there's an unexpected structural instability."
+            "Check the caller's nondecrease postcondition and the scope of both "
+            "observations. General nodal evolution does not guarantee monotone C(t)."
         )
 
         context = {
@@ -439,7 +435,7 @@ class CoherenceError(TNFRUserError):
         super().__init__(
             message=f"Unexpected coherence decrease during '{operation}'",
             suggestion=suggestion,
-            docs_url="https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonante-TNFR-/blob/main/AGENTS.md#canonical-invariants",
+            docs_url=_REFERENCE_ROOT + "theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md",
             context=context,
         )
 
@@ -447,51 +443,42 @@ class CoherenceError(TNFRUserError):
 class FrequencyError(TNFRUserError):
     """Error raised when structural frequency νf is invalid.
 
-    Structural frequency must be positive and expressed in Hz_str
-    (structural hertz) units. This error indicates frequency violations.
-
-    Enforces Invariant #5: Structural Metrology (structural units) from AGENTS.md
+    Capacity must be a finite nonnegative real scalar, with no boolean/text
+    coercion or underflow of a nonzero input to represented zero. Zero is
+    admitted; no finite upper cutoff is imposed. The resulting product must
+    still be representable. Numeric admission does not calibrate units.
 
     Parameters
     ----------
-    node_id : str
-        Node ID with invalid frequency.
-    vf : float
+    vf : Any
         The invalid frequency value.
+    node_id : str, optional
+        Node ID with invalid frequency.
     operation : str, optional
         Operation that triggered the check.
 
     Examples
     --------
-    >>> raise FrequencyError("n1", -0.5, "emission")
+    >>> raise FrequencyError(-0.5, node_id="n1", operation="validation")
     """
 
     def __init__(
         self,
-        vf: float,
+        vf: Any,
         node_id: str | None = None,
         operation: str | None = None,
     ):
         node_msg = f" for node '{node_id}'" if node_id else ""
 
-        if vf <= 0:
-            suggestion = (
-                f"Structural frequency νf must be positive (Hz_str units). "
-                f"set νf > 0{node_msg}. "
-                f"Typical range: 0.1 to 10.0 Hz_str."
-            )
-        elif vf > 100:
-            suggestion = (
-                f"Structural frequency νf = {vf:.3f} Hz_str is very high. "
-                f"Typical range: 0.1 to 10.0 Hz_str. "
-                f"Verify this is intentional."
-            )
-        else:
-            suggestion = f"Verify structural frequency{node_msg}."
+        suggestion = (
+            f"Set capacity νf{node_msg} to a finite nonnegative real scalar. "
+            "Zero is valid; a nonzero input must remain nonzero in binary64. "
+            "Do not supply booleans or numeric text."
+        )
 
         context = {
-            "vf": f"{vf:.3f} Hz_str",
-            "valid_range": "[0.01, 100.0] Hz_str",
+            "vf": vf,
+            "valid_range": "finite represented real values >= 0 (zero admitted)",
         }
 
         if node_id:
@@ -502,7 +489,7 @@ class FrequencyError(TNFRUserError):
         super().__init__(
             message=f"Invalid structural frequency{node_msg}",
             suggestion=suggestion,
-            docs_url="https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonante-TNFR-/blob/main/GLOSSARY.md#structural-frequency",
+            docs_url=_REFERENCE_ROOT + "theory/NODAL_PARAMETER_FOUNDATIONS.md",
             context=context,
         )
 

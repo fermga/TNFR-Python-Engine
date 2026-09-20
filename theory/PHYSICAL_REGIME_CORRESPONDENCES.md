@@ -2,20 +2,20 @@
 
 **Status**: Technical reference
 **Version source**: [pyproject.toml](../pyproject.toml)
-**Date**: March 2026
+**Reviewed**: 2026-09-20
 
 ---
 
 ## 1. Scope
 
-This document records five scoped comparisons between TNFR observables and
-separately declared physical models. Each comparison states its assumptions
-and available evidence; proposed comparisons without a retained driver are
-identified explicitly. The nodal equation
+This document records implemented graph-transport and auxiliary-wave results,
+and separately declared classical adapters. Each comparison retains its
+assumptions and evidence. The nodal equation
 $\partial\mathrm{EPI}/\partial t = \nu_f\,\Delta\mathrm{NFR}(t)$ directly gives a
 first-order structural drift law. It does not, by itself, derive Newtonian,
 quantum or thermodynamic dynamics. Those labels apply only to the adapters or
-auxiliary models named below.
+auxiliary models named below. Retired supplied-target demonstrations and
+unimplemented thermal proxies are not research routes or validation evidence.
 
 ### Verification Status
 
@@ -23,9 +23,8 @@ auxiliary models named below.
 |------------|----------------|-------------------|---------------|--------|
 | Classical adapter | `classical_mechanics.py` | Harmonic and circular-orbit closure | `test_classical_mechanics.py` | Finite regression |
 | Kinematic adapter | `classical_mechanics.py` | Two-train analytical | Embedded in example | Demonstrated |
-| Finite spectral comparison | `quantum_mechanics.py` | Supplied mode labels | None | Legacy adapter; normalization unresolved |
-| Fourier/interference comparison | No retained driver | Declared Fourier convention required | None | Proposed correspondence only |
-| Coupled-oscillator thermal proxy | No retained driver | Newton cooling comparison proposed | None | Proposed correspondence only |
+| Finite graph spectra and auxiliary waves | `structural_diffusion.py` | Declared graph generator and wave equation | `test_structural_diffusion.py` | Conditional algebra and finite numerical controls |
+| Sampled ring modes and winding | `winding_certificates.py`, `structural_diffusion.py` | Declared cycle and phase field | `test_emergent_wave_particle_scope.py` | Aliasing, branch and spectral controls; no particle identification |
 
 ## 2. Classical Adapter and Overdamped Limit
 
@@ -163,8 +162,8 @@ zero-pressure fixed EPI chart into a derivation of Newton's first law.
 
 ### 4.1 Scope
 
-Finite graph or cavity operators possess discrete modes because their state
-space and boundary-value problem are finite. Large wrapped phase gradients can
+Finite symmetric graph operators possess a discrete orthonormal eigenbasis.
+The choice of graph and operator remains an input. Large wrapped phase gradients can
 be useful stress diagnostics, but they do not by themselves select a quantum
 model or cause quantization.
 
@@ -172,19 +171,30 @@ model or cause quantization.
 
 | Auxiliary-model quantity | TNFR comparison | Boundary |
 |--------------------------|-----------------|----------|
-| Complex wave field $\psi$ | $\Psi=K_\phi+iJ_\phi$ | Auxiliary geometric sector |
+| Complex wave field $\psi$ | Separate from $\Psi=K_\phi+iJ_\phi$ | A state map and dynamical bridge would be required |
 | Modal energy/frequency | Eigenvalue-derived model value | Not identical to nodal $\nu_f$ |
 | Potential $V(x)$ | Declared function compared with $\Phi_s(x)$ | Matching must be specified |
 | Mode index $n$ | Eigenmode or winding label | Depends on boundary operator |
 | Damping/selection | Explicit dissipative adapter | IL/SHA labels alone do not define measurement collapse |
 
-### 4.3 Mode-selection mechanism
+### 4.3 Retained graph-mode calculation
 
-A finite spectral experiment must specify its wave operator, boundary
-conditions, initial field, normalization and damping rule. Those additional
-assumptions produce standing modes and their eigenvalues. The nodal law can
-supply structural telemetry along the experiment, but it does not supply the
-wave equation, superposition principle or a measurement rule on its own.
+For fixed reciprocal nonnegative conductance and common positive capacity,
+the pure-EPI generator has modes `exp(-nu_f*lambda_k*t)`. The separately
+supplied graph wave has frequencies `sqrt(lambda_k)`; this wave equation is
+not the first-order nodal law. Reuse
+[structural_diffusion.py](../src/tnfr/physics/structural_diffusion.py) and its
+[stability scope](TNFR_DIFFUSION_STABILITY_THEOREM.md), rather than imposing an
+array of desired levels. Boundary conditions, initial state, clock and damping
+remain declared inputs.
+
+On a unit cycle, the sampled phasor `exp(2*pi*i*k*j/n)` is a normalized
+Laplacian eigenvector with eigenvalue `1-cos(2*pi*k/n)`. Sampling aliases k
+modulo n; the winding reader separately checks the wrap branch and U3 domain.
+This exact graph identity does not turn the phasor into the geometric field
+`Psi`: at uniform phase the phasor is one while `Psi` is zero. The retained
+[ring-mode controls](../tests/research/test_emergent_wave_particle_scope.py)
+exercise this distinction without claiming particle creation or quantum duality.
 
 ### 4.4 Validation boundary
 
@@ -192,13 +202,12 @@ The retired example 13 adjusted an energy array toward an imposed phase
 reticulum using a handwritten noisy update. It did not construct a cavity
 operator or derive its spectrum; it is not retained as spectral evidence.
 
-The legacy `QuantumMechanicsMapper` remains an auxiliary adapter with unresolved
-conventions. `calculate_theoretical_levels(L)` currently returns `n**2` and
-ignores `L`, despite its docstring's `n**2/(8*L**2)` formula. Its reverse mapper
-constructs `abs(EPI)*exp(i*phase)` rather than inverting the separate assignment
-of complex input to `(K_phi, J_phi)`. These are not validated inverse mappings
-or a derived wave dynamics. A quantitative spectral comparison would need a
-declared operator, normalization and dedicated tests before supplying evidence.
+The supplied-target quantum mapper has also been retired: its level generator
+ignored the declared length and its two state mappings were not inverses.
+There is no replacement physical quantum API. Graph spectra, winding and
+auxiliary wave calculations retain their own mathematical contracts; they
+do not establish probability amplitudes, detector statistics or physical
+energy levels.
 
 ## 5. Fourier Width and Interference Correspondence
 
@@ -227,24 +236,15 @@ read-out did not validate a stated analytical uncertainty bound; its wave
 intensity was not canonical structural coherence. No quantitative validation
 or canonical pressure-to-phase bridge is retained for this proposed comparison.
 
-## 6. Coupled-oscillator Thermal Proxy
+## 6. Phase and balance boundaries
 
-This section describes a proposed Kuramoto-style comparison with thermal labels
-for selected diagnostics. The previously cited `17_thermodynamics_demo.py` is
-not a retained entry point; example 17 concerns conservation instead. There is
-no dedicated quantitative thermal validation here and no derivation of the
-laws of thermodynamics from TNFR.
+Phase dispersion, structural coherence and the field energies are distinct
+read-outs. None is a physical temperature or thermodynamic entropy without
+an independently justified measurement and evolution model. The former
+thermal-proxy proposal had no retained validated driver and is not maintained
+as a research route.
 
-### 6.1 Declared proxy mapping
-
-| Demonstration quantity | Chosen structural proxy | Status |
-|------------------------|-------------------------|--------|
-| Heat/noise | Phase dispersion $\sigma_\phi$ | Model convention |
-| Temperature | Local phase-gradient variance | Model convention |
-| Entropy | Separately defined monotone diagnostic | No identity $S\propto1/C(t)$ |
-| Synchronized state | Small pairwise wrapped separation | Phase condition, not full structural equilibrium |
-
-### 6.2 Pairwise U3 compatibility is not transitive
+### 6.1 Pairwise U3 compatibility is not transitive
 
 U3 checks each active pair independently. If A and B are each within
 $\Delta\phi_{\max}$ of C, their mutual separation may reach
@@ -252,7 +252,7 @@ $2\Delta\phi_{\max}$ and fail the gate. Therefore a synchronized cluster needs
 explicit pairwise or edgewise evidence; compatibility through a shared neighbor
 is insufficient.
 
-### 6.3 Balance boundary
+### 6.2 Balance boundary
 
 Conservation of a structural current requires a stated symmetry and model. The
 auxiliary symplectic substrate conserves its declared charges under its exact
@@ -260,26 +260,13 @@ flow. A general engine operator sequence, Kuramoto experiment or sum of
 $J_\phi$ values has no automatic conservation law; its residual must be measured
 along the actual trajectory.
 
-### 6.4 Stochastic desynchronization boundary
+### 6.3 Stochastic desynchronization boundary
 
 Random perturbations can increase phase spread in a specified stochastic
 schedule, while sufficiently strong coupling can also resynchronize the same
 network without invoking IL or THOL. The direction of $C(t)$ depends on the
 observed pressure and EPI-rate channels. No universal time arrow follows from
 omitting named stabilizers or closure operators.
-
-### 6.5 Cooling comparison
-
-A proposed coffee-cup proxy would couple a central random-phase patch to an
-outer aligned ring under a supplied oscillator law. A Newton-cooling comparison would fit
-
-$$
-T(t)=T_{\mathrm{env}}+(T_0-T_{\mathrm{env}})e^{-kt}
-$$
-
-to a predeclared temperature proxy and report residuals and uncertainty. The
-comparison has no retained validated driver or extracted time constant;
-exponential cooling remains a hypothesis outside the active research gate.
 
 ## 7. Regime Transition Summary
 
@@ -290,16 +277,13 @@ conditions. This table is a model index, not a phase diagram derived from TNFR:
 |--------|---------------------|----------------|-------------------|-------------------|
 | Zero-pressure chart | $=0$ | Measured separately | EPI rate, $C(t)$ | Fixed EPI |
 | Classical adapter | External force value; graph bridge optional | Optional low-spread regime | Adapter $q,p,F$; tetrad only through a declared bridge | Explicit $F=ma$ adapter |
-| Thermal proxy | Model-dependent | Distributed | Phase variance, pressure/rate | Coupled oscillators |
-| Finite spectral model | Model-dependent | Model-dependent | Eigenpairs, $\Psi$ | Declared boundary operator |
-| Fourier-width model | Not required | Broadband | Width estimators | Declared Fourier convention |
+| Finite spectral model | Model-dependent | Model-dependent | Eigenpairs and declared wave coordinates | Declared boundary operator |
 
 These regimes organize several implemented TNFR read-outs and declared auxiliary
 models. Only reductions with explicit hypotheses, such as fixed-graph EPI
-diffusion, follow from the nodal equation. The classical, thermodynamic, and
-quantum-labelled constructions are scoped correspondences or adapters; their
-presence in one package does not derive those physical theories from the nodal
-equation.
+diffusion under its pressure realization, follow from the stated nodal model.
+Classical adapters and auxiliary waves supply extra laws. Their presence in
+one package does not derive the corresponding physical theories.
 
 ---
 
@@ -308,7 +292,8 @@ equation.
 | Component | Location |
 |-----------|----------|
 | Classical mechanics mapper | `src/tnfr/physics/classical_mechanics.py` |
-| Quantum mechanics module | `src/tnfr/physics/quantum_mechanics.py` |
+| Graph transport and auxiliary waves | `src/tnfr/physics/structural_diffusion.py` |
+| Declared-cycle winding | `src/tnfr/physics/winding_certificates.py` |
 | Symplectic integrators | `src/tnfr/dynamics/symplectic.py` |
 | Structural field computation | `src/tnfr/physics/fields.py` |
 | Central-force demonstration | `examples/02_physics_regimes/12_classical_mechanics_demo.py` |
@@ -369,14 +354,15 @@ does not override those observational dependencies or provide a force law.
 ### Key Source Modules
 
 - `src/tnfr/physics/classical_mechanics.py` — Explicit classical adapter and diagnostics
-- `src/tnfr/physics/quantum_mechanics.py` — Legacy mappings and supplied mode labels; limitations in §4.4
+- `src/tnfr/physics/structural_diffusion.py` — Declared diffusion generators, spectra and auxiliary waves
+- `src/tnfr/physics/winding_certificates.py` — Cycle, branch and winding evidence
 
 ---
 
 ## 9. References
 
 - [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) — the structural-field tetrad
-- [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) — U1–U6 derivations
+- [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) — U1–U6 contracts and mathematical scope
 - [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) — Conservation laws
 - [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md) — Lagrangian formulation
 - [GLOSSARY.md](GLOSSARY.md) — Operational definitions

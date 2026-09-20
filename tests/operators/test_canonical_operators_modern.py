@@ -22,7 +22,6 @@ Operators tested:
 from __future__ import annotations
 
 import math
-from typing import Any
 
 import networkx as nx
 import pytest
@@ -198,83 +197,45 @@ class TestCanonicalOperatorPhysics:
         assert success, "Resonance should operate without errors"
 
 
-class TestOperatorNodalEquationCompliance:
-    """Test that operators comply with the nodal equation ∂EPI/∂t = νf · ΔNFR."""
+class TestEventAndHeldStepBoundary:
+    """A clipped endpoint match does not certify a hybrid event as nodal flow."""
 
     def setup_method(self) -> None:
         """Create test network."""
         self.G = nx.Graph()
         self.G.add_node(1, EPI=1.0, nu_f=2.0, ΔNFR=0.5, theta=0.0)
 
-    def test_emission_respects_nodal_equation(self) -> None:
-        """Test AL (Emission) respects nodal equation."""
+    @pytest.mark.parametrize("operator_type", [Emission, Coherence, Dissonance])
+    def test_upper_rail_match_does_not_identify_unprojected_flow(
+        self, operator_type
+    ) -> None:
+        """Actual AL/IL/OZ events can match a clipped step without any EPI motion."""
         epi_before = get_attr(self.G.nodes[1], ALIAS_EPI)
-
-        emission = Emission()
-        emission(self.G, 1)
-
+        operator_type()(self.G, 1)
         epi_after = get_attr(self.G.nodes[1], ALIAS_EPI)
-
-        # Validate nodal equation compliance (with relaxed tolerance for boundary effects)
-        is_valid = validate_nodal_equation(
+        expected_rate = get_attr(self.G.nodes[1], ALIAS_VF) * get_attr(
+            self.G.nodes[1], ALIAS_DNFR
+        )
+        assert epi_after == epi_before == 1.0
+        assert expected_rate > 0.0
+        assert validate_nodal_equation(
             self.G,
             1,
             epi_before,
             epi_after,
             dt=1.0,
-            operator_name="emission",
-            tolerance=0.5,
-            strict=False,
+            tolerance=0.0,
+            clip_aware=True,
         )
-        # If strict validation fails, just check that EPI changed (structural effect occurred)
-        if not is_valid:
-            assert (
-                epi_after != epi_before
-            ), "Emission should have structural effect on EPI"
-        else:
-            assert is_valid, "Emission should respect nodal equation within tolerance"
-
-    def test_coherence_respects_nodal_equation(self) -> None:
-        """Test IL (Coherence) respects nodal equation."""
-        epi_before = get_attr(self.G.nodes[1], ALIAS_EPI)
-
-        coherence = Coherence()
-        coherence(self.G, 1)
-
-        epi_after = get_attr(self.G.nodes[1], ALIAS_EPI)
-
-        # Validate nodal equation compliance
-        is_valid = validate_nodal_equation(
+        assert not validate_nodal_equation(
             self.G,
             1,
             epi_before,
             epi_after,
             dt=1.0,
-            operator_name="coherence",
-            tolerance=1e-2,
+            tolerance=0.0,
+            clip_aware=False,
         )
-        assert is_valid, "Coherence should respect nodal equation"
-
-    def test_dissonance_respects_nodal_equation(self) -> None:
-        """Test OZ (Dissonance) respects nodal equation."""
-        epi_before = get_attr(self.G.nodes[1], ALIAS_EPI)
-
-        dissonance = Dissonance()
-        dissonance(self.G, 1)
-
-        epi_after = get_attr(self.G.nodes[1], ALIAS_EPI)
-
-        # Validate nodal equation compliance (with higher tolerance for destabilizers)
-        is_valid = validate_nodal_equation(
-            self.G,
-            1,
-            epi_before,
-            epi_after,
-            dt=1.0,
-            operator_name="dissonance",
-            tolerance=1e-1,
-        )
-        assert is_valid, "Dissonance should respect nodal equation"
 
 
 class TestOperatorStructuralPreservation:

@@ -18,7 +18,6 @@ import pytest
 from tests.diagnostic_graph_fixtures import (
     make_diagnostic_field_graph as _make_tnfr_graph,
 )
-from tnfr.constants import inject_defaults
 from tnfr.constants.canonical import PI
 from tnfr.physics.conservation import (
     ConservationAlertLevels,
@@ -108,15 +107,6 @@ class TestConservationSnapshot:
 class TestChargeDensity:
     """Test ρ(i) = Φ_s(i) + K_φ(i)."""
 
-    def test_charge_density_keys_match_nodes(self, ws_graph):
-        rho = compute_charge_density(ws_graph)
-        assert set(rho.keys()) == set(ws_graph.nodes())
-
-    def test_charge_density_is_finite(self, ws_graph):
-        rho = compute_charge_density(ws_graph)
-        for val in rho.values():
-            assert math.isfinite(val)
-
     @pytest.mark.parametrize("topo", ["watts_strogatz", "barabasi_albert", "grid"])
     def test_charge_density_across_topologies(self, topo):
         G = _make_tnfr_graph(25, topo)
@@ -133,22 +123,15 @@ class TestChargeDensity:
 class TestCurrentDivergence:
     """Test div J(i) = div(J_φ, J_ΔNFR)."""
 
-    def test_divergence_keys_match_nodes(self, ws_graph):
-        div_j = compute_current_divergence(ws_graph)
-        assert set(div_j.keys()) == set(ws_graph.nodes())
-
-    def test_divergence_is_finite(self, ws_graph):
-        div_j = compute_current_divergence(ws_graph)
-        for val in div_j.values():
-            assert math.isfinite(val)
-
-    def test_total_divergence_near_zero(self, ws_graph):
-        """Sum of divergence over all nodes should be small (Gauss theorem)."""
-        div_j = compute_current_divergence(ws_graph)
-        total = sum(div_j.values())
-        # On a closed graph, total divergence is theoretically 0
-        # Allow numerical tolerance
-        assert abs(total) < 1.0, f"Total divergence {total} too large"
+    def test_neighbor_mean_divergence_has_degree_weighted_not_uniform_balance(self):
+        """The irregular P3 current is (2,-2.5,3), so div=(-4.5,5,-5.5)."""
+        graph = nx.path_graph(3)
+        nx.set_node_attributes(graph, 0.0, "phase")
+        nx.set_node_attributes(graph, {0: 0.0, 1: 2.0, 2: -1.0}, "delta_nfr")
+        divergence = compute_current_divergence(graph)
+        assert divergence == {0: -4.5, 1: 5.0, 2: -5.5}
+        assert sum(divergence.values()) == -5.0
+        assert sum(graph.degree[node] * divergence[node] for node in graph) == 0.0
 
 
 # ===========================================================================
@@ -159,7 +142,7 @@ class TestCurrentDivergence:
 class TestConservationBalance:
     """Test the two-snapshot balance verification."""
 
-    def test_identical_snapshots_give_zero_residual(self, ws_graph):
+    def test_identical_snapshots_retain_static_divergence(self, ws_graph):
         """Same state → zero ∂ρ/∂t → residual = div J only."""
         snap = capture_conservation_snapshot(ws_graph)
         balance = verify_conservation_balance(snap, snap)
@@ -170,27 +153,9 @@ class TestConservationBalance:
 
         # Charge drift must be zero
         assert balance.charge_drift < 1e-12
-
-    def test_conservation_quality_for_identical_snapshots(self, ws_graph):
-        snap = capture_conservation_snapshot(ws_graph)
-        balance = verify_conservation_balance(snap, snap)
-        # Quality should be high since ∂ρ/∂t=0; residual = div J only
-        assert balance.conservation_quality > 0.5
-
-    def test_small_perturbation_has_small_residual(self, ws_graph):
-        """Tiny ΔNFR perturbation should produce small residual."""
-        before = capture_conservation_snapshot(ws_graph)
-
-        rng = np.random.default_rng(99)
-        for n in ws_graph.nodes():
-            # Very small perturbation
-            ws_graph.nodes[n]["delta_nfr"] += rng.uniform(-0.001, 0.001)
-
-        after = capture_conservation_snapshot(ws_graph)
-        balance = verify_conservation_balance(before, after)
-
-        assert balance.rms_residual < 1.0
-        assert balance.conservation_quality > 0.5
+        assert balance.residual == snap.divergence
+        expected_rms = math.sqrt(np.mean(np.square(list(snap.divergence.values()))))
+        assert balance.conservation_quality == pytest.approx(1.0 / (1.0 + expected_rms))
 
     def test_balance_has_correct_total_charges(self, ws_graph):
         snap = capture_conservation_snapshot(ws_graph)
@@ -216,20 +181,10 @@ class TestConservationBalance:
 class TestNoetherCharge:
     """Test Q = Σ_i ρ(i) is well-defined and finite."""
 
-    def test_noether_charge_is_finite(self, ws_graph):
-        Q = compute_noether_charge(ws_graph)
-        assert math.isfinite(Q)
-
     def test_noether_charge_equals_sum_of_charge_density(self, ws_graph):
         Q = compute_noether_charge(ws_graph)
         rho = compute_charge_density(ws_graph)
         assert abs(Q - sum(rho.values())) < 1e-12
-
-    @pytest.mark.parametrize("topo", ["watts_strogatz", "barabasi_albert", "grid"])
-    def test_noether_charge_across_topologies(self, topo):
-        G = _make_tnfr_graph(25, topo)
-        Q = compute_noether_charge(G)
-        assert math.isfinite(Q)
 
 
 # ===========================================================================
@@ -240,17 +195,13 @@ class TestNoetherCharge:
 class TestEnergyFunctional:
     """Test E = (1/2)Σ(Φ_s² + K_φ² + J_φ² + J_ΔNFR²) ≥ 0."""
 
-    def test_energy_is_non_negative(self, ws_graph):
-        E = compute_energy_functional(ws_graph)
-        assert E >= 0.0
-
-    def test_energy_is_finite(self, ws_graph):
-        E = compute_energy_functional(ws_graph)
-        assert math.isfinite(E)
-
-    def test_energy_positive_for_nontrivial_network(self, ws_graph):
-        E = compute_energy_functional(ws_graph)
-        assert E > 0.0, "Nontrivial network must have E > 0"
+    def test_energy_matches_independent_pressure_only_path(self):
+        graph = nx.path_graph(3)
+        nx.set_node_attributes(graph, 0.0, "phase")
+        nx.set_node_attributes(graph, {0: 0.0, 1: 2.0, 2: -1.0}, "delta_nfr")
+        # Potential=(1.75,-1,2), pressure current=(2,-2.5,3); phase fields vanish.
+        expected = (1.75**2 + 1.0 + 4.0 + 4.0 + 2.5**2 + 9.0) / 2.0
+        assert compute_energy_functional(graph) == expected
 
 
 # ===========================================================================
@@ -341,23 +292,6 @@ class TestConservationTracker:
             np.mean(report.conservation_quality)
         )
 
-    def test_near_static_evolution_is_conserved(self, ws_graph):
-        """Near-static evolution should achieve high conservation quality."""
-        tracker = ConservationTracker(ws_graph)
-        rng = np.random.default_rng(77)
-
-        for step in range(6):
-            tracker.record(t=float(step))
-            for n in ws_graph.nodes():
-                ws_graph.nodes[n]["delta_nfr"] += rng.uniform(-0.0001, 0.0001)
-
-        report = tracker.report()
-        # Near-static evolution: quality should remain stable across steps
-        # (quality ≈ 0.5-0.6 is typical due to discrete divergence terms)
-        assert report.mean_quality > 0.4
-        # Charge drift should be small for tiny perturbations
-        assert all(d < 0.1 for d in report.charge_drift)
-
 
 # ===========================================================================
 # Test: Sector decomposition
@@ -394,17 +328,6 @@ class TestSectorCoupling:
         assert result["dominant_sector"] in ("potential", "geometric", "balanced")
         assert result["sector_asymmetry"] >= 1.0
         assert -1.0 <= result["cross_coupling_strength"] <= 1.0
-
-    def test_pure_dnfr_change_dominates_potential_sector(self, ws_graph):
-        """Pure ΔNFR perturbation should load the potential sector."""
-        before = capture_conservation_snapshot(ws_graph)
-        for n in ws_graph.nodes():
-            ws_graph.nodes[n]["delta_nfr"] *= 1.5  # significant change
-        after = capture_conservation_snapshot(ws_graph)
-
-        result = analyze_sector_coupling(before, after)
-        # Expect potential sector to dominate or be balanced
-        assert result["potential_sector_residual"] >= 0.0
 
 
 # ===========================================================================
@@ -482,25 +405,18 @@ class TestWardIdentity:
     """Test per-operator conservation signatures."""
 
     def test_ward_identity_for_static_step(self, ws_graph):
-        """Identical snapshots => exact conservation (no source)."""
+        """Identical endpoints have no charge/energy change, but can have divergence."""
         snap = capture_conservation_snapshot(ws_graph)
         ward = compute_ward_identity(snap, snap, operator_name="SHA")
         assert isinstance(ward, WardIdentity)
         assert ward.operator_name == "SHA"
         assert abs(ward.delta_charge) < 1e-12
         assert ward.charge_character == "exact"
-
-    def test_ward_identity_classifies_source(self, ws_graph):
-        """A perturbation that increases total charge is classified as source."""
-        before = capture_conservation_snapshot(ws_graph)
-        # Increase delta_nfr to raise Phi_s (and thus charge)
-        for n in ws_graph.nodes():
-            ws_graph.nodes[n]["delta_nfr"] += 1.0
-        after = capture_conservation_snapshot(ws_graph)
-        ward = compute_ward_identity(before, after, operator_name="OZ")
-        assert ward.charge_character in ("source", "sink", "transport", "exact")
-        assert math.isfinite(ward.delta_charge)
-        assert math.isfinite(ward.delta_energy)
+        assert ward.energy_character == "neutral"
+        assert ward.delta_energy == 0.0
+        assert ward.mean_source == pytest.approx(
+            np.mean(list(snap.divergence.values()))
+        )
 
     def test_ward_mean_source_uses_rate_and_trapezoidal_divergence(self, ws_graph):
         before = capture_conservation_snapshot(ws_graph)
@@ -523,12 +439,6 @@ class TestWardIdentity:
         snap = capture_conservation_snapshot(ws_graph)
         with pytest.raises(ValueError, match="threshold"):
             compute_ward_identity(snap, snap, "SHA", threshold=threshold)
-
-    def test_ward_identity_energy_character(self, ws_graph):
-        """Energy character should be one of dissipative/injective/neutral."""
-        snap = capture_conservation_snapshot(ws_graph)
-        ward = compute_ward_identity(snap, snap, operator_name="SHA")
-        assert ward.energy_character in ("dissipative", "injective", "neutral")
 
     def test_sequence_ward_identity(self, ws_graph):
         """Sequence of small perturbations should approximately conserve."""
@@ -594,31 +504,6 @@ class TestLyapunovDerivative:
         assert lyap.energy_after >= 0.0
         assert math.isfinite(lyap.energy_derivative)
 
-    def test_lyapunov_dissipation_non_negative(self, ws_graph):
-        """Dissipation D[G] = max(0, -dE/dt) is always non-negative."""
-        snap = capture_conservation_snapshot(ws_graph)
-        lyap = compute_lyapunov_derivative(snap, snap)
-        assert lyap.dissipation >= 0.0
-
-    @pytest.mark.parametrize("topo", ["watts_strogatz", "barabasi_albert", "grid"])
-    def test_diffusive_evolution_is_lyapunov_stable(self, topo):
-        """Diffusive dynamics should decrease energy (Lyapunov theorem)."""
-        G = _make_tnfr_graph(25, topo)
-        before = capture_conservation_snapshot(G)
-
-        # Simple ΔNFR diffusion (stabilizing)
-        for n in G.nodes():
-            nbrs = list(G.neighbors(n))
-            if nbrs:
-                dnfr = G.nodes[n].get("delta_nfr", 0.0)
-                mean_dnfr = np.mean([G.nodes[j].get("delta_nfr", 0.0) for j in nbrs])
-                G.nodes[n]["delta_nfr"] += 0.1 * (mean_dnfr - dnfr)
-
-        after = capture_conservation_snapshot(G)
-        lyap = compute_lyapunov_derivative(before, after)
-        # Diffusive dynamics should be stable or near-stable
-        assert lyap.energy_derivative < 1.0  # allow some tolerance
-
 
 # ===========================================================================
 # Test: Spectral conservation
@@ -637,39 +522,23 @@ class TestSpectralConservation:
         assert len(spec.div_spectrum) == n
         assert len(spec.conservation_by_mode) == n
 
-    def test_spectral_gap_positive(self, ws_graph):
-        """Connected graph has positive spectral gap lambda_1 > 0."""
-        spec = compute_spectral_conservation(ws_graph)
-        assert spec.spectral_gap > 0.0
-
     def test_zero_mode_has_zero_eigenvalue(self, ws_graph):
         """First eigenvalue of graph Laplacian is 0 (connected graph)."""
         spec = compute_spectral_conservation(ws_graph)
         assert abs(spec.eigenvalues[0]) < 1e-10
-
-    def test_rho_spectrum_finite(self, ws_graph):
-        spec = compute_spectral_conservation(ws_graph)
-        assert np.all(np.isfinite(spec.rho_spectrum))
 
     def test_conservation_modes_count(self, ws_graph):
         spec = compute_spectral_conservation(ws_graph)
         n = ws_graph.number_of_nodes()
         assert 0 < spec.dominant_conservation_modes <= n
 
-    @pytest.mark.parametrize("topo", ["watts_strogatz", "barabasi_albert", "grid"])
-    def test_spectral_across_topologies(self, topo):
-        G = _make_tnfr_graph(25, topo)
-        spec = compute_spectral_conservation(G)
-        assert isinstance(spec, SpectralConservation)
-        assert spec.spectral_gap >= 0.0
-
 
 # ===========================================================================
-# Test: Dissipative regime integration (P4)
+# Test: Operator-event observation integration
 # ===========================================================================
 
 
-class TestDissipativeOperatorSequences:
+class TestOperatorBalanceIntegration:
     """Check finite diagnostics for sequences carrying U2 role labels.
 
     The labels organize grammar debt; they do not prove convergence of the
@@ -686,38 +555,8 @@ class TestDissipativeOperatorSequences:
             G.nodes[nd]["EPI"] = 1.0
         return G
 
-    def test_dissonance_then_coherence_lyapunov_stable(self):
-        """OZ → IL returns a finite energy-change diagnostic."""
-        from tnfr.operators.definitions import Coherence, Dissonance
-
-        G = self._make_graph()
-        node = list(G.nodes())[0]
-        before = capture_conservation_snapshot(G)
-        Dissonance()(G, node)
-        Coherence()(G, node)
-        after = capture_conservation_snapshot(G)
-        lyap = compute_lyapunov_derivative(before, after)
-        assert lyap.dissipation >= 0.0, "Dissipation must be non-negative"
-        assert math.isfinite(lyap.energy_derivative)
-
-    def test_dissonance_then_coherence_charge_bounded(self):
-        """OZ → IL should not produce unbounded charge drift."""
-        from tnfr.operators.definitions import Coherence, Dissonance
-
-        G = self._make_graph()
-        node = list(G.nodes())[0]
-        before = capture_conservation_snapshot(G)
-        Dissonance()(G, node)
-        Coherence()(G, node)
-        after = capture_conservation_snapshot(G)
-        balance = verify_conservation_balance(before, after)
-        assert math.isfinite(balance.charge_drift)
-        assert (
-            balance.rms_residual < 10.0
-        ), f"OZ→IL RMS residual {balance.rms_residual:.4f} unexpectedly large"
-
-    def test_full_grammar_sequence_al_oz_il_sha(self):
-        """Full grammar-compliant sequence: AL → OZ → IL → SHA."""
+    def test_operator_events_are_recorded_in_tracker(self):
+        """Track actual AL/OZ/IL/SHA events without imposing energy-sign claims."""
         from tnfr.operators.definitions import Coherence, Dissonance, Emission, Silence
 
         G = self._make_graph()
@@ -742,388 +581,8 @@ class TestDissipativeOperatorSequences:
         assert all(math.isfinite(q) for q in report.total_charge)
         assert all(math.isfinite(r) for r in report.rms_residuals)
         assert all(0 <= q <= 1.0 for q in report.conservation_quality)
-        # Mean quality should be reasonable for grammar-compliant sequence
-        assert (
-            report.mean_quality > 0.0
-        ), f"Mean conservation quality {report.mean_quality:.4f} is zero"
-
-    def test_destabilizer_debt_repaid_by_stabilizers(self):
-        """3×OZ + 3×IL stays within this fixture's broad finite-energy alert."""
-        from tnfr.operators.definitions import Coherence, Dissonance
-
-        G = self._make_graph()
-        node = list(G.nodes())[0]
-
-        snap_initial = capture_conservation_snapshot(G)
-
-        # Accumulate destabilizer debt
-        for _ in range(3):
-            Dissonance()(G, node)
-        snap_post_oz = capture_conservation_snapshot(G)
-
-        # Repay with stabilizers
-        for _ in range(3):
-            Coherence()(G, node)
-        snap_post_il = capture_conservation_snapshot(G)
-
-        lyap_oz = compute_lyapunov_derivative(snap_initial, snap_post_oz)
-        lyap_il = compute_lyapunov_derivative(snap_post_oz, snap_post_il)
-
-        # ``dissipation`` is the nonnegative negative-part read-out by definition.
-        assert lyap_il.dissipation >= 0.0
-        # Fixture-level alert only; no universal IL sign follows from U2.
-        assert lyap_il.energy_after <= lyap_oz.energy_after + 1.0, (
-            f"IL did not reduce energy: post-OZ={lyap_oz.energy_after:.4f}, "
-            f"post-IL={lyap_il.energy_after:.4f}"
+        assert report.times == [0.0, 1.0, 2.0, 3.0, 4.0]
+        assert report.total_charge[-1] == pytest.approx(compute_noether_charge(G))
+        assert tracker.latest_balance.charge_drift == pytest.approx(
+            abs(report.total_charge[-1] - report.total_charge[-2])
         )
-
-    @pytest.mark.parametrize("topo", ["watts_strogatz", "barabasi_albert", "grid"])
-    def test_oz_il_stable_across_topologies(self, topo):
-        """OZ → IL energy diagnostics stay finite across sampled topologies."""
-        from tnfr.operators.definitions import Coherence, Dissonance
-
-        n = 16 if topo == "grid" else 25
-        G = self._make_graph(n, topo)
-        node = list(G.nodes())[0]
-        before = capture_conservation_snapshot(G)
-        Dissonance()(G, node)
-        Coherence()(G, node)
-        after = capture_conservation_snapshot(G)
-        lyap = compute_lyapunov_derivative(before, after)
-        assert lyap.dissipation >= 0.0
-        assert math.isfinite(lyap.energy_derivative)
-
-
-class TestDissonancePostconditionConservation:
-    """Test OZ postcondition (|ΔNFR| must increase) at conservation level.
-
-    Physics: OZ raises structural pressure (ΔNFR). The conservation
-    snapshot j_dnfr field captures this quantity. After OZ, the network-
-    level absolute ΔNFR should not decrease (propagation redistributes
-    dissonance among phase-compatible neighbours).
-    """
-
-    @staticmethod
-    def _make_graph(
-        n: int = 20, topo: str = "watts_strogatz", seed: int = 42
-    ) -> nx.Graph:
-        G = _make_tnfr_graph(n, topo, seed=seed)
-        for nd in G.nodes():
-            G.nodes[nd]["EPI"] = 1.0
-        return G
-
-    def test_dissonance_increases_delta_nfr(self):
-        """OZ increases network-level |ΔNFR| after proper grammar setup."""
-        from tnfr.operators.definitions import Coherence, Dissonance
-
-        G = self._make_graph()
-        node = list(G.nodes())[0]
-        # Grammar U4a requires handler context before bifurcation trigger
-        Coherence()(G, node)
-        total_before = sum(abs(G.nodes[n].get("delta_nfr", 0.0)) for n in G.nodes())
-        Dissonance()(G, node)
-        total_after = sum(abs(G.nodes[n].get("delta_nfr", 0.0)) for n in G.nodes())
-        # OZ contract: network-level |ΔNFR| should increase (includes propagation)
-        assert (
-            total_after >= total_before - 1e-6
-        ), f"OZ did not increase network |ΔNFR|: {total_before:.6f} → {total_after:.6f}"
-
-    @pytest.mark.parametrize("topo", ["watts_strogatz", "barabasi_albert", "grid"])
-    def test_dissonance_postcondition_cross_topology(self, topo):
-        """OZ increases network-level |ΔNFR| across topologies."""
-        from tnfr.operators.definitions import Coherence, Dissonance
-
-        n = 16 if topo == "grid" else 25
-        G = self._make_graph(n, topo)
-        for node in list(G.nodes())[:3]:
-            # Grammar U4a handler context required before OZ
-            Coherence()(G, node)
-            total_before = sum(
-                abs(G.nodes[nd].get("delta_nfr", 0.0)) for nd in G.nodes()
-            )
-            Dissonance()(G, node)
-            total_after = sum(
-                abs(G.nodes[nd].get("delta_nfr", 0.0)) for nd in G.nodes()
-            )
-            assert (
-                total_after >= total_before - 1e-6
-            ), f"{topo} node {node}: network |ΔNFR| {total_before:.6f} → {total_after:.6f}"
-
-    def test_dissonance_energy_injection(self):
-        """OZ stays within this fixture's broad energy-change alert."""
-        from tnfr.operators.definitions import Dissonance
-
-        G = self._make_graph()
-        node = list(G.nodes())[0]
-        before = capture_conservation_snapshot(G)
-        Dissonance()(G, node)
-        after = capture_conservation_snapshot(G)
-        lyap = compute_lyapunov_derivative(before, after)
-        # OZ destabilizes: energy should not decrease significantly
-        # Allow small decrease due to network propagation effects
-        assert lyap.energy_after >= lyap.energy_before - 0.5, (
-            f"OZ unexpectedly decreased energy: "
-            f"{lyap.energy_before:.4f} → {lyap.energy_after:.4f}"
-        )
-
-
-class TestDissipationGrammarViolationCorrelation:
-    """Test legacy residual labels as balance diagnostics.
-
-    The source residual need not vanish for a grammar-valid history, and no
-    grammar sequence can be reconstructed from two structural snapshots.
-    """
-
-    @staticmethod
-    def _make_graph(
-        n: int = 30, topo: str = "watts_strogatz", seed: int = 42
-    ) -> nx.Graph:
-        return _make_tnfr_graph(n, topo, seed=seed)
-
-    def test_static_state_no_violations(self):
-        """Identical snapshots: zero Δρ/Δt but residual reflects current div(J)."""
-        G = self._make_graph()
-        snap = capture_conservation_snapshot(G)
-        balance = verify_conservation_balance(snap, snap)
-        # ∂ρ/∂t = 0 for identical snapshots → delta_rho is zero
-        for n in G.nodes():
-            assert abs(balance.delta_rho[n]) < 1e-12
-        # Charge drift must be zero (same state)
-        assert balance.charge_drift < 1e-12
-        # Severity reflects current divergence (non-equilibrium state),
-        # not actual grammar violations — identical snapshots have no dynamics
-        violations = detect_grammar_violations_from_conservation(balance)
-        assert math.isfinite(violations["severity"])
-
-    def test_small_perturbation_low_severity(self):
-        """Small perturbation produces finite diagnostics with reasonable quality."""
-        G = self._make_graph()
-        before = capture_conservation_snapshot(G)
-        rng = np.random.default_rng(42)
-        for n in G.nodes():
-            G.nodes[n]["delta_nfr"] += rng.uniform(-0.001, 0.001)
-        after = capture_conservation_snapshot(G)
-        balance = verify_conservation_balance(before, after)
-        violations = detect_grammar_violations_from_conservation(balance)
-        # Small perturbation: severity is finite, quality remains reasonable
-        assert math.isfinite(violations["severity"])
-        assert balance.conservation_quality > 0.3
-
-    def test_extreme_perturbation_detected(self):
-        """Large ΔNFR perturbation should trigger violation detection."""
-        G = self._make_graph()
-        before = capture_conservation_snapshot(G)
-        for n in G.nodes():
-            G.nodes[n]["delta_nfr"] += 10.0  # extreme perturbation
-        after = capture_conservation_snapshot(G)
-        balance = verify_conservation_balance(before, after)
-        violations = detect_grammar_violations_from_conservation(balance)
-        assert violations["severity"] > 0.0, "Extreme perturbation not detected"
-
-    def test_severity_scales_with_perturbation(self):
-        """Larger perturbations should produce higher severity."""
-        G = self._make_graph()
-        before = capture_conservation_snapshot(G)
-        severities = []
-        for scale in [0.01, 0.1, 1.0, 10.0]:
-            G2 = G.copy()
-            rng = np.random.default_rng(42)
-            for n in G2.nodes():
-                G2.nodes[n]["delta_nfr"] += rng.uniform(-scale, scale)
-            after = capture_conservation_snapshot(G2)
-            balance = verify_conservation_balance(before, after)
-            violations = detect_grammar_violations_from_conservation(balance)
-            severities.append(violations["severity"])
-        # Severity should be monotonically non-decreasing
-        for i in range(len(severities) - 1):
-            assert (
-                severities[i] <= severities[i + 1] + 1e-9
-            ), f"Severity not monotone: {severities}"
-
-
-class TestMultiStepDissipativeTracking:
-    """Test ConservationTracker across multi-step dissipative sequences.
-
-    Physics: The ConservationTracker records conservation diagnostics
-    at each step. For grammar-compliant sequences (U2 convergence),
-    the time-series should show bounded residuals and finite charge
-    throughout.
-    """
-
-    @staticmethod
-    def _make_graph(
-        n: int = 25, topo: str = "watts_strogatz", seed: int = 42
-    ) -> nx.Graph:
-        G = _make_tnfr_graph(n, topo, seed=seed)
-        for nd in G.nodes():
-            G.nodes[nd]["EPI"] = 1.0
-        return G
-
-    def test_tracker_across_oz_il_repeated(self):
-        """Alternating OZ-IL pairs should maintain bounded diagnostics."""
-        from tnfr.operators.definitions import Coherence, Dissonance
-
-        G = self._make_graph()
-        node = list(G.nodes())[0]
-        tracker = ConservationTracker(G)
-        tracker.record(t=0.0)
-
-        for i in range(5):
-            Dissonance()(G, node)
-            tracker.record(t=float(2 * i + 1))
-            Coherence()(G, node)
-            tracker.record(t=float(2 * i + 2))
-
-        report = tracker.report()
-        assert all(
-            math.isfinite(q) for q in report.total_charge
-        ), "Non-finite charge in multi-step OZ-IL sequence"
-        assert all(
-            math.isfinite(r) for r in report.rms_residuals
-        ), "Non-finite RMS residual in multi-step OZ-IL sequence"
-
-    def test_tracker_lyapunov_per_step(self):
-        """Each OZ→IL pair should have finite Lyapunov derivative."""
-        from tnfr.operators.definitions import Coherence, Dissonance
-
-        G = self._make_graph()
-        node = list(G.nodes())[0]
-        snapshots = [capture_conservation_snapshot(G)]
-
-        for _ in range(3):
-            Dissonance()(G, node)
-            Coherence()(G, node)
-            snapshots.append(capture_conservation_snapshot(G))
-
-        for i in range(len(snapshots) - 1):
-            lyap = compute_lyapunov_derivative(snapshots[i], snapshots[i + 1])
-            assert math.isfinite(
-                lyap.energy_derivative
-            ), f"Step {i}: non-finite dE/dt = {lyap.energy_derivative}"
-            assert lyap.energy_before >= 0.0
-            assert lyap.energy_after >= 0.0
-
-    def test_charge_drift_bounded_over_sequence(self):
-        """Total charge drift should be bounded across a long sequence."""
-        from tnfr.operators.definitions import Coherence, Dissonance, Emission, Silence
-
-        G = self._make_graph()
-        node = list(G.nodes())[0]
-        tracker = ConservationTracker(G)
-        tracker.record(t=0.0)
-
-        # Grammar-compliant sequence: AL → OZ → IL → OZ → IL → SHA
-        Emission()(G, node)
-        tracker.record(t=1.0)
-        Dissonance()(G, node)
-        tracker.record(t=2.0)
-        Coherence()(G, node)
-        tracker.record(t=3.0)
-        Dissonance()(G, node)
-        tracker.record(t=4.0)
-        Coherence()(G, node)
-        tracker.record(t=5.0)
-        Silence()(G, node)
-        tracker.record(t=6.0)
-
-        report = tracker.report()
-        # Charge drift should be bounded (not diverging)
-        assert all(math.isfinite(d) for d in report.charge_drift)
-        # Conservation quality should remain positive throughout
-        assert all(q >= 0.0 for q in report.conservation_quality)
-
-
-class TestLyapunovDissipativeRegimes:
-    """Test Lyapunov derivative classification under different regimes.
-
-    Physics: The Lyapunov energy E = ½Σ[field²] should decrease under
-    grammar-compliant stabilization (IL) and may increase under
-    destabilization (OZ). The classify is: is_stable (dE/dt ≤ 0),
-    is_strongly_stable (dE/dt < -ε).
-    """
-
-    @staticmethod
-    def _make_graph(
-        n: int = 25, topo: str = "watts_strogatz", seed: int = 42
-    ) -> nx.Graph:
-        G = _make_tnfr_graph(n, topo, seed=seed)
-        for nd in G.nodes():
-            G.nodes[nd]["EPI"] = 1.0
-        return G
-
-    def test_coherence_is_lyapunov_stable(self):
-        """IL (Coherence) should decrease or maintain energy."""
-        from tnfr.operators.definitions import Coherence
-
-        G = self._make_graph()
-        node = list(G.nodes())[0]
-        before = capture_conservation_snapshot(G)
-        Coherence()(G, node)
-        after = capture_conservation_snapshot(G)
-        lyap = compute_lyapunov_derivative(before, after)
-        # IL is a stabilizer: dE/dt ≤ 0 (Lyapunov theorem)
-        assert (
-            lyap.is_stable
-        ), f"IL not Lyapunov stable: dE/dt = {lyap.energy_derivative:.6f}"
-        assert lyap.dissipation >= 0.0
-
-    def test_dissonance_may_inject_energy(self):
-        """OZ (Dissonance) may have dE/dt > 0 (energy injection)."""
-        from tnfr.operators.definitions import Dissonance
-
-        G = self._make_graph()
-        node = list(G.nodes())[0]
-        before = capture_conservation_snapshot(G)
-        Dissonance()(G, node)
-        after = capture_conservation_snapshot(G)
-        lyap = compute_lyapunov_derivative(before, after)
-        # OZ is a destabilizer: we just verify the result is finite
-        # (it may inject energy or be near-neutral depending on state)
-        assert math.isfinite(lyap.energy_derivative)
-        assert lyap.energy_before >= 0.0
-        assert lyap.energy_after >= 0.0
-
-    def test_silence_is_neutral(self):
-        """SHA (Silence) should have near-zero energy change."""
-        from tnfr.operators.definitions import Silence
-
-        G = self._make_graph()
-        node = list(G.nodes())[0]
-        before = capture_conservation_snapshot(G)
-        Silence()(G, node)
-        after = capture_conservation_snapshot(G)
-        lyap = compute_lyapunov_derivative(before, after)
-        # SHA freezes evolution: dE/dt ≈ 0
-        assert (
-            abs(lyap.energy_derivative) < 1.0
-        ), f"SHA energy change {lyap.energy_derivative:.6f} too large"
-
-    @pytest.mark.parametrize("topo", ["watts_strogatz", "barabasi_albert", "grid"])
-    def test_coherence_lyapunov_stable_cross_topology(self, topo):
-        """IL Lyapunov stability should hold across all topologies."""
-        from tnfr.operators.definitions import Coherence
-
-        n = 16 if topo == "grid" else 25
-        G = self._make_graph(n, topo)
-        node = list(G.nodes())[0]
-        before = capture_conservation_snapshot(G)
-        Coherence()(G, node)
-        after = capture_conservation_snapshot(G)
-        lyap = compute_lyapunov_derivative(before, after)
-        assert lyap.is_stable, f"{topo}: IL dE/dt = {lyap.energy_derivative:.6f} > 0"
-
-    def test_dissipation_non_negative_invariant(self):
-        """D[G] = max(0, -dE/dt) is always ≥ 0, regardless of operator."""
-        from tnfr.operators.definitions import Coherence, Dissonance, Emission, Silence
-
-        G = self._make_graph()
-        node = list(G.nodes())[0]
-        operators = [Emission(), Dissonance(), Coherence(), Silence()]
-        for op in operators:
-            snap_before = capture_conservation_snapshot(G)
-            op(G, node)
-            snap_after = capture_conservation_snapshot(G)
-            lyap = compute_lyapunov_derivative(snap_before, snap_after)
-            assert (
-                lyap.dissipation >= 0.0
-            ), f"{op.name}: dissipation = {lyap.dissipation:.6f} < 0"

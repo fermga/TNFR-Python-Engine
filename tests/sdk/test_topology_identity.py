@@ -83,7 +83,7 @@ def test_single_node_ring_has_no_self_coupling(api):
     assert graph.number_of_edges() == 0
 
 
-@pytest.mark.parametrize("probability", [-0.1, 1.1, math.nan, math.inf])
+@pytest.mark.parametrize("probability", [True, False, -0.1, 1.1, math.nan, math.inf])
 @pytest.mark.parametrize("api", ["simple", "fluent"])
 def test_invalid_random_probability_fails_before_topology_changes(api, probability):
     network = TNFR.create(4) if api == "simple" else TNFRNetwork().add_nodes(4)

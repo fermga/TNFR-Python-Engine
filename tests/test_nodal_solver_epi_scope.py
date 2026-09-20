@@ -6,6 +6,7 @@ Uniform-real BEPI remains the same signed scalar chart on every tested route.
 """
 
 import pickle
+from fractions import Fraction
 
 import networkx as nx
 import pytest
@@ -14,7 +15,7 @@ from tnfr.constants import inject_defaults
 from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from tnfr.dynamics import integrators
 from tnfr.dynamics.canonical import integrate_canonical_nodal_equation
-from tnfr.errors.contextual import TNFRValueError
+from tnfr.errors.contextual import FrequencyError, NetworkConfigError, TNFRValueError
 from tnfr.mathematics import BEPIElement
 from tnfr.types import ensure_bepi, serialize_bepi
 
@@ -129,3 +130,60 @@ def test_zero_step_does_not_represent_or_modify_rich_epi(
     before = _snapshot(graph)
     _run(graph, route, method, dt=0.0)
     assert _snapshot(graph) == before
+
+
+@pytest.mark.parametrize(
+    "route,aliases,value,error",
+    [
+        ("default", ALIAS_VF, True, FrequencyError),
+        ("extended", ALIAS_VF, -Fraction(1, 2**2000), FrequencyError),
+        ("canonical", ALIAS_DNFR, "0.25", NetworkConfigError),
+    ],
+)
+def test_invalid_raw_coefficient_rejects_before_any_solver_owned_write(
+    route, aliases, value, error
+):
+    graph = _graph(route)
+    graph.nodes[2][aliases[0]] = value
+    graph.nodes[2][aliases[1]] = 0.25  # The valid fallback cannot replace the primary.
+    before = _snapshot(graph)
+    with pytest.raises(error):
+        _run(graph, route, "euler")
+    assert _snapshot(graph) == before
+
+
+@pytest.mark.parametrize(
+    "parameter,value",
+    [
+        ("dt", "0.25"),
+        ("dt", Fraction(1, 2**2000)),
+        ("tolerance", True),
+        ("use_gpu", "false"),
+    ],
+)
+def test_canonical_convenience_controls_are_admitted_before_graph_writes(
+    parameter, value
+):
+    graph = _graph("canonical")
+    arguments = dict(dt=0.25, max_steps=1, tolerance=0.0, use_gpu=False)
+    arguments[parameter] = value
+    before = _snapshot(graph)
+    with pytest.raises(TNFRValueError):
+        integrate_canonical_nodal_equation(graph, **arguments)
+    assert _snapshot(graph) == before
+
+
+def test_canonical_metadata_records_materialized_step_and_tolerance():
+    graph = _graph("canonical")
+    result = integrate_canonical_nodal_equation(
+        graph,
+        dt=Fraction(1, 10),
+        max_steps=1,
+        tolerance=Fraction(1, 1000),
+        use_gpu=False,
+    )
+    assert type(result["parameters"]["dt"]) is float
+    assert result["parameters"]["dt"] == 0.1
+    assert type(result["parameters"]["tolerance"]) is float
+    assert result["parameters"]["tolerance"] == 0.001
+    assert graph.nodes[0][ALIAS_EPI[0]] == -0.475

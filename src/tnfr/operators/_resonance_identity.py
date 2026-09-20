@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import cmath
 import math
-from typing import Iterable
+from typing import Any, Iterable
 
+from .._exact_time import finite_represented_real
+from ..errors import TNFRValueError
 from ..utils import angle_diff
 from ._neighbor_epi_kernel import neighbor_epi_proposed_kind
 from ._phase_gate import phase_limit_is_canonical
@@ -13,6 +15,7 @@ from ._phase_gate import phase_limit_is_canonical
 __all__ = [
     "RA_RUNTIME_AMPLIFICATION_TRIGGER",
     "normalize_resonance_epi_kind",
+    "resonance_capacity_proposal",
     "resonance_identity_failures",
     "resonance_kind_identity_compatible",
     "resonance_neighbor_circular_mean",
@@ -27,6 +30,41 @@ __all__ = [
 # Existing engine activation threshold for the conditional RA capacity boost.
 # This is operational binary64 policy, not a derived structural constant.
 RA_RUNTIME_AMPLIFICATION_TRIGGER = 1e-9
+
+
+def resonance_capacity_proposal(
+    value: Any, amplification_factor: float, *, active: bool
+) -> tuple[float, float]:
+    """Validate raw capacity and the configured RA amplification before writes.
+
+    Capacity remains a nonnegative represented real even when the neighbor
+    signal does not activate amplification. The factor is validated by the
+    shared runtime factor contract before this arithmetic is reached.
+    """
+    try:
+        before = finite_represented_real(value, "Resonance capacity")[0]
+    except (TypeError, ValueError) as exc:
+        raise TNFRValueError(
+            str(exc),
+            context={"operator": "Resonance", "failed_condition": "capacity_domain"},
+        ) from exc
+    if before < 0.0:
+        raise TNFRValueError(
+            "Resonance capacity must be nonnegative",
+            context={"operator": "Resonance", "failed_condition": "capacity_domain"},
+        )
+    after = before * (1.0 + amplification_factor) if active else before
+    if not math.isfinite(after) or after < before:
+        raise TNFRValueError(
+            "Resonance capacity proposal must be finite and nondecreasing",
+            context={
+                "operator": "Resonance",
+                "vf_before": before,
+                "vf_proposed": after,
+                "failed_condition": "finite_nondecreasing_capacity",
+            },
+        )
+    return before, after
 
 
 def normalize_resonance_epi_kind(value: object) -> str:

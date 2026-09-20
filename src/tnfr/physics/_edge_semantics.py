@@ -13,8 +13,9 @@ and lets new graphs separate coupling strength from metric distance.
 from __future__ import annotations
 
 import math
-from numbers import Real
 from typing import Any, Callable, Mapping
+
+from .._exact_time import finite_represented_real
 
 EDGE_CONDUCTANCE_ATTRIBUTE = "weight"
 EDGE_LENGTH_ATTRIBUTE = "length"
@@ -26,6 +27,8 @@ __all__ = [
     "has_explicit_edge_lengths",
     "has_nonpositive_edge_length",
     "structural_path_weight",
+    "validate_structural_graph",
+    "structural_distance_rows",
 ]
 
 
@@ -39,10 +42,8 @@ def effective_edge_length(attributes: Mapping[str, Any]) -> float:
         EDGE_LENGTH_ATTRIBUTE,
         attributes.get(EDGE_CONDUCTANCE_ATTRIBUTE, 1.0),
     )
-    if isinstance(raw, bool) or not isinstance(raw, Real):
-        raise ValueError("Structural edge length must be a finite nonnegative real")
     try:
-        value = float(raw)
+        value, _ = finite_represented_real(raw, "Structural edge length")
     except (OverflowError, TypeError, ValueError) as exc:
         raise ValueError(
             "Structural edge length must be a finite nonnegative real"
@@ -50,6 +51,37 @@ def effective_edge_length(attributes: Mapping[str, Any]) -> float:
     if not math.isfinite(value) or value < 0.0:
         raise ValueError("Structural edge length must be a finite nonnegative real")
     return value
+
+
+def validate_structural_graph(graph: Any, nodes: Any) -> None:
+    """Admit a complete node order and every component's represented metric."""
+    if len(set(nodes)) != len(nodes) or set(nodes) != set(graph):
+        raise ValueError(
+            "structural node order must contain every graph node exactly once"
+        )
+    for _, _, attributes in graph.edges(data=True):
+        effective_edge_length(attributes)
+
+
+def structural_distance_rows(graph: Any, sources: Any):
+    """Stream outgoing paths without confusing overflow with disconnection."""
+    import networkx as nx
+
+    weighted = any(
+        "length" in data or "weight" in data for _, _, data in graph.edges(data=True)
+    )
+    weight = structural_path_weight(graph)
+    for source in sources:
+        row = (
+            nx.single_source_dijkstra_path_length(graph, source, weight=weight)
+            if weighted
+            else nx.single_source_shortest_path_length(graph, source)
+        )
+        if any(not math.isfinite(distance) for distance in row.values()):
+            raise ValueError(
+                "reachable path distance exceeds the finite represented range"
+            )
+        yield source, row
 
 
 def has_explicit_edge_lengths(graph: Any) -> bool:

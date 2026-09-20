@@ -8,12 +8,12 @@ preparation is an autonomous birth or a repeated complete-runtime policy.
 from __future__ import annotations
 
 import argparse
-from dataclasses import asdict
 import json
 import math
-from pathlib import Path
 import platform
 import sys
+from dataclasses import asdict
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -22,14 +22,14 @@ sys.path.insert(0, str(ROOT / "src"))
 import networkx as nx  # noqa: E402
 import numpy as np  # noqa: E402
 
-from benchmarks.capacity_feedback import (
+from benchmarks.capacity_feedback import (  # noqa: E402
     SOURCE_SCOPE,
     STEP,
     _artifact_payload,
-)  # noqa: E402
-from benchmarks.child_coupling_feedback import (
+)
+from benchmarks.child_coupling_feedback import (  # noqa: E402
     _advance_forced_support_interval,
-)  # noqa: E402
+)
 from benchmarks.structural_perturbation_response import (  # noqa: E402
     _diagnostics,
     _materialized,
@@ -49,9 +49,9 @@ from tnfr.constants.aliases import (  # noqa: E402
 from tnfr.dynamics.dnfr import default_compute_delta_nfr  # noqa: E402
 from tnfr.operators._coupling_stage_kernel import propose_coupling_stage  # noqa: E402
 from tnfr.operators.definitions import Coupling, Silence  # noqa: E402
-from tnfr.operators.factor_contracts import (
+from tnfr.operators.factor_contracts import (  # noqa: E402
     resolve_runtime_operator_factors,
-)  # noqa: E402
+)
 from tnfr.operators.grammar_dynamics import validate_candidate  # noqa: E402
 from tnfr.operators.network_stage import (  # noqa: E402
     TWO_PHASE_JACOBI,
@@ -60,10 +60,14 @@ from tnfr.operators.network_stage import (  # noqa: E402
 )
 from tnfr.physics.coupling_support import observe_coupling_support  # noqa: E402
 from tnfr.physics.forced_support import (  # noqa: E402
+    derive_forced_support_balance,
     observe_forced_support_event,
     observe_forced_support_pattern,
 )
-from tnfr.physics.forcing_realization import capture_non_epi_forcing  # noqa: E402
+from tnfr.physics.forcing_realization import (  # noqa: E402
+    capture_non_epi_forcing,
+    decompose_non_epi_forcing,
+)
 from tnfr.physics.support_transport import _energy  # noqa: E402
 from tnfr.research.claims import ClaimStatus  # noqa: E402
 from tnfr.research.core_manifests import (  # noqa: E402
@@ -130,7 +134,7 @@ def _admissions(graph, operator, step):
 
 
 def _fixed_profile(capture, reference):
-    """Identify an existing held capacity-forcing theorem, not a fitted source."""
+    """Separate the capacity-only theorem from the captured full forcing."""
     n = len(capture.snapshot.nodes)
     weights = dict(capture.normalized_weights)
     checks = {
@@ -142,8 +146,16 @@ def _fixed_profile(capture, reference):
             for i, row in enumerate(capture.snapshot.support_neighbors)
         ),
     }
-    if not all(checks.values()):
+    if not all(
+        value for name, value in checks.items() if name != "zero_phase_pressure"
+    ):
         raise RuntimeError(f"held capacity-profile hypotheses failed: {checks}")
+    channels = dict(decompose_non_epi_forcing(capture))
+    capacity_reference = derive_forced_support_balance(
+        capture.snapshot,
+        epi_weight=capture.epi_weight,
+        forcing=channels["vf"],
+    )
     k = weights["vf"] / capture.epi_weight
     nu, x, metric = (
         capture.snapshot.capacity,
@@ -154,11 +166,29 @@ def _fixed_profile(capture, reference):
     mean_capacity = sum(h * v for h, v in zip(metric, nu)) / mass
     mean_epi = sum(h * value for h, value in zip(metric, x)) / mass
     derived_profile = tuple(-k * (v - mean_capacity) for v in nu)
-    if derived_profile != reference.relative_profile or reference.mean_drift:
+    if (
+        derived_profile != capacity_reference.relative_profile
+        or capacity_reference.mean_drift
+    ):
         raise RuntimeError("capacity-profile identity failed")
+    extra_forcing = tuple(
+        full - capacity
+        for full, capacity in zip(reference.forcing, capacity_reference.forcing)
+    )
     lifted = tuple(value + k * v for value, v in zip(x, nu))
     return {
         "checks": checks,
+        "model": "capacity_only_held_forcing",
+        "applies_to_full_forcing": not any(extra_forcing),
+        "capacity_only_reference": asdict(capacity_reference),
+        "full_forcing_difference": {
+            "forcing": extra_forcing,
+            "relative_profile": tuple(
+                full - capacity
+                for full, capacity in zip(reference.relative_profile, derived_profile)
+            ),
+            "mean_drift": reference.mean_drift - capacity_reference.mean_drift,
+        },
         "forcing_ratio": k,
         "capacity_mean": mean_capacity,
         "relative_profile": derived_profile,
@@ -168,7 +198,9 @@ def _fixed_profile(capture, reference):
         "conditional_convex_epi_upper": tuple(max(lifted) - k * v for v in nu),
         "max_refreshed_convex_step": reference.max_convex_step,
         "scope": (
-            "Exact held-coefficient diffusion limit and refreshed-Euler convex box. "
+            "Capacity-only exact held-coefficient diffusion limit and refreshed-Euler "
+            "convex box; full-forcing applicability requires zero extra forcing. "
+            "The captured phase forcing, full reference and their differences are retained. "
             "The actual finite interval has held pressure and signed endpoint defects; "
             "this is not observed convergence or repeated full-word admission."
         ),
@@ -307,7 +339,7 @@ def run_compatible_capacity_case(case):
         "post_um_reference": asdict(held),
         "event": event,
         "flow": flow,
-        "fixed_profile_prediction": profile,
+        "capacity_only_profile_prediction": profile,
         "full_support_capacity_energy_before": _energy(
             initial.snapshot.conductance,
             initial.snapshot.capacity,

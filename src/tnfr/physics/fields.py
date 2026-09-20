@@ -5,9 +5,8 @@ submodules (canonical.py, extended.py) to reduce coupling and improve
 maintainability. This module now acts as the public API, re-exporting all
 canonical fields and containing only research-phase utilities.
 
-This module computes emergent structural "fields" from TNFR graph state,
-grounding a pathway from the nodal equation to macroscopic interaction
-patterns.
+This module exposes structural read-outs of graph state. Their algebraic
+composition does not derive an evolution law or a macroscopic interaction.
 
 CANONICAL FIELDS (Read-Only Telemetry)
 ---------------------------------------
@@ -15,7 +14,7 @@ All four structural fields form the canonical diagnostic interface:
 
 - Φ_s (Structural Potential): Global field from ΔNFR distribution
 - |∇φ| (Phase Gradient): Local phase desynchronization metric
-- K_φ (Phase Curvature): Geometric phase confinement indicator [now unified in Ψ = K_φ + i·J_φ]
+- K_φ (Phase Curvature): Wrapped displacement from a defined neighbor direction
 - ξ_C (Coherence Length): State- and topology-dependent correlation estimate
 
 Canonical status specifies the required read-outs and their implementations.
@@ -28,10 +27,10 @@ provenance must be retained when interpretations differ.
 
 EXTENDED CANONICAL FIELDS (Promoted Nov 12, 2025)
 -------------------------------------------------
-Two flux fields capturing directed transport:
+Two additional signed neighbor statistics, without an inferred transport law:
 
-- J_φ (Phase Current): Geometric phase-driven transport
-- J_ΔNFR (ΔNFR Flux): Potential-driven reorganization transport
+- J_φ (Phase Current): Mean sine of outgoing phase displacements
+- J_ΔNFR (ΔNFR Flux): Mean outgoing stored-pressure contrast
 
 RESEARCH-PHASE UTILITIES
 ------------------------
@@ -66,10 +65,12 @@ from __future__ import annotations
 
 import math
 import time
+from collections.abc import Callable
 from numbers import Real
 from typing import Any
 
-from ..mathematics.unified_numerical import np
+from ..mathematics.unified_numerical import compute_circular_mean, np
+from ._helpers import get_phase
 
 try:
     import networkx as nx
@@ -256,10 +257,14 @@ def measure_phase_symmetry(G: Any) -> float:
 
     Interpretation
     --------------
-    S ≈ 1  : Highly clustered / symmetric phase distribution.
-    S → 0  : Broad / antisymmetric distribution (desynchronization).
+    This is an axial concentration statistic around the chosen mean. Opposing
+    phases can also produce a value near one; this is not phase synchrony or
+    evidence of graph symmetry. No pressure, capacity or topology enters it.
 
-    Returns 0.0 if no phases are available.
+    Returns the legacy empty-sample convention 0.0 if no phase aliases are
+    present. Malformed authoritative phases raise. A numerically vanishing
+    resultant raises through the shared circular-mean owner (including its
+    declared tolerance); an undefined direction is not a measured zero score.
 
     Notes
     -----
@@ -267,24 +272,20 @@ def measure_phase_symmetry(G: Any) -> float:
     - Provides backward compatibility for benchmarks expecting this symbol.
     - Invariant #2 respected (phase verification external to this metric).
     """
-    phases: list[float] = []
-    # Collect phases from node attributes using alias list
-    for node, data in G.nodes(data=True):  # type: ignore[attr-defined]
-        for alias in ALIAS_THETA:
-            if alias in data:
-                try:
-                    phases.append(float(data[alias]))
-                except (TypeError, ValueError):
-                    pass
-                break
+    phases = [
+        get_phase(G, node)
+        for node, data in G.nodes(data=True)
+        if any(alias in data for alias in ALIAS_THETA)
+    ]
     if not phases:
         return 0.0
     arr = np.array(phases, dtype=float)
-    # Wrap into [0, 2π)
-    arr = np.mod(arr, 2 * math.pi)
-    vec = np.exp(1j * arr)
-    mean_angle = float(np.angle(np.mean(vec)))
-    diffs = np.abs(np.sin(arr - mean_angle))
+    mean_angle = compute_circular_mean(arr)
+    # Rotate represented phasors directly: subtracting an O(1) angle from a
+    # huge primitive coordinate can erase the mean direction before wrapping.
+    diffs = np.abs(
+        np.sin(arr) * math.cos(mean_angle) - np.cos(arr) * math.sin(mean_angle)
+    )
     return float(1.0 - min(1.0, float(np.mean(diffs))))
 
 
@@ -334,7 +335,7 @@ def classify_nodal_topology(G: Any, *, alpha: float = 2.0) -> dict[str, Any]:
     structural coherence* with an internal **nodal topology**: radial (one
     central nucleus), annular (passive center, peripheral ring) or multinodal
     (several connected centers). This reads that topology from the canonical
-    structural-potential geometry -- the Green's function of :math:`\Phi_s`
+    structural-potential geometry -- its distance kernel evaluated
     under a *unit* structural source,
 
     .. math::
@@ -346,9 +347,11 @@ def classify_nodal_topology(G: Any, *, alpha: float = 2.0) -> dict[str, Any]:
     geometry-only read-out does not imply that every state channel is uniform
     at a general :math:`\Delta\mathrm{NFR}=0` snapshot.
 
-    The classification is emergent and threshold-light: the concentration
-    ``max(c)/mean(c)`` separates the rotationally-symmetric annular form
-    (:math:`\approx 1`) from center-bearing forms; among the latter, the count
+    This is a configured centrality-profile classification, not a test of
+    geometric emergence, graph symmetry or persistent NFR identity. The
+    concentration ``max(c)/mean(c)`` labels a nearly uniform profile
+    "annular" (:math:`\approx 1`); a complete graph receives this label too,
+    so it does not establish a literal ring. Among other profiles, the count
     of near-maximal centers (``c >= 0.85*max``) is 1 for radial and >= 2 for
     multinodal. Both cuts are measured/validated on canonical topologies, not
     physical constants.  ``alpha`` remains in the signature for compatibility
@@ -357,7 +360,9 @@ def classify_nodal_topology(G: Any, *, alpha: float = 2.0) -> dict[str, Any]:
     Returns
     -------
     dict
-        ``topology`` ("radial"/"annular"/"multinodal"), ``centers`` (center
+        ``topology`` ("radial"/"annular"/"multinodal"/"unavailable"),
+        ``available`` and ``status`` (whether positive finite geometric
+        information exists), ``centers`` (center
         node ids), ``concentration`` (max/mean), ``dispersion`` (coefficient
         of variation), ``centrality`` (per-node geometric centrality) and
         ``n_nodes``.
@@ -369,7 +374,9 @@ def classify_nodal_topology(G: Any, *, alpha: float = 2.0) -> dict[str, Any]:
     n = len(nodes)
     if n == 0:
         return {
-            "topology": "annular",
+            "topology": "unavailable",
+            "available": False,
+            "status": "empty_graph",
             "centers": [],
             "concentration": 0.0,
             "dispersion": 0.0,
@@ -382,19 +389,37 @@ def classify_nodal_topology(G: Any, *, alpha: float = 2.0) -> dict[str, Any]:
     # weighted, outgoing distance kernel as the dynamical potential.
     centrality = _compute_phi_s_exact(G, nodes, {node: 1.0 for node in nodes}, exponent)
     vals = np.asarray([centrality[i] for i in nodes], dtype=float)
-    mean = float(vals.mean())
+    if not np.all(np.isfinite(vals)) or np.any(vals < 0.0):
+        raise ValueError("nodal-topology centrality must be finite and nonnegative")
     vmax = float(vals.max())
-    if mean <= 0.0:
+    if vmax == 0.0:
+        from ._edge_semantics import structural_distance_rows
+
+        has_positive_pairs = any(
+            target != source and distance > 0.0
+            for source, distances in structural_distance_rows(G, nodes)
+            for target, distance in distances.items()
+        )
         return {
-            "topology": "annular",
+            "topology": "unavailable",
+            "available": False,
+            "status": (
+                "centrality_below_represented_range"
+                if has_positive_pairs
+                else "no_positive_metric_pairs"
+            ),
             "centers": [],
             "concentration": 0.0,
             "dispersion": 0.0,
             "centrality": centrality,
             "n_nodes": n,
         }
-    conc = vmax / mean
-    cv = float(vals.std()) / mean
+    # Normalize before reductions: finite centralities can overflow their sum
+    # or squared deviations even when these dimensionless ratios are modest.
+    scaled = vals / vmax
+    scaled_mean = float(scaled.mean())
+    conc = 1.0 / scaled_mean
+    cv = float(scaled.std()) / scaled_mean
     if conc < _NFR_TOPOLOGY_ANNULAR_CONC_MAX:
         topology = "annular"
         centers: list[Any] = []
@@ -405,6 +430,8 @@ def classify_nodal_topology(G: Any, *, alpha: float = 2.0) -> dict[str, Any]:
         topology = "radial" if len(centers) == 1 else "multinodal"
     return {
         "topology": topology,
+        "available": True,
+        "status": "centrality_profile_policy",
         "centers": centers,
         "concentration": conc,
         "dispersion": cv,
@@ -488,7 +515,7 @@ def compute_k_phi_multiscale_variance(
 
 def fit_k_phi_asymptotic_alpha(
     variance_by_scale: dict[int, float],
-    alpha_hint: float = defaults.K_PHI_ASYMPTOTIC_ALPHA,
+    alpha_hint: float | None = defaults.K_PHI_ASYMPTOTIC_ALPHA,
 ) -> dict[str, Any]:
     """Fit power-law exponent α for multiscale K_φ variance decay.
 
@@ -505,8 +532,9 @@ def fit_k_phi_asymptotic_alpha(
     ----------
     variance_by_scale : dict[int, float]
         Mapping from scale r to variance of coarse-grained K_φ
-    alpha_hint : float
-        Expected value of α for comparison (default from K_PHI_ASYMPTOTIC_ALPHA research)
+    alpha_hint : float | None
+        Selected reference exponent, default from K_PHI_ASYMPTOTIC_ALPHA.
+        ``None`` omits that comparison; it does not change the fitted exponent.
 
     Returns
     -------
@@ -515,7 +543,7 @@ def fit_k_phi_asymptotic_alpha(
         - c: Fitted constant C (pre-factor)
         - r_squared: Goodness of fit
         - residuals: Per-scale residuals
-        - prediction_error: Relative error vs alpha_hint
+        - prediction_error: Relative error vs alpha_hint, or None without a hint
     """
     if len(variance_by_scale) < 3:
         return {
@@ -523,7 +551,7 @@ def fit_k_phi_asymptotic_alpha(
             "c": 0.0,
             "r_squared": 0.0,
             "residuals": {},
-            "prediction_error": 0.0,
+            "prediction_error": None if alpha_hint is None else 0.0,
         }
 
     scales = np.array(sorted(variance_by_scale.keys()))
@@ -547,19 +575,23 @@ def fit_k_phi_asymptotic_alpha(
 
         # Residuals per scale
         residuals = {
-            s: float(v - np.exp(fitted[i]))
-            for i, (s, v) in enumerate(variance_by_scale.items())
+            int(s): float(variances[i] - np.exp(fitted[i]))
+            for i, s in enumerate(scales)
         }
 
         # Error vs hint
-        pred_error = abs(alpha - alpha_hint) / (alpha_hint + 1e-9)
+        pred_error = (
+            None
+            if alpha_hint is None
+            else float(abs(alpha - alpha_hint) / (alpha_hint + 1e-9))
+        )
 
         return {
             "alpha": float(alpha),
             "c": float(c),
             "r_squared": float(r2),
             "residuals": residuals,
-            "prediction_error": float(pred_error),
+            "prediction_error": pred_error,
         }
     except (np.linalg.LinAlgError, ValueError):
         return {
@@ -567,57 +599,70 @@ def fit_k_phi_asymptotic_alpha(
             "c": 0.0,
             "r_squared": 0.0,
             "residuals": {},
-            "prediction_error": 0.0,
+            "prediction_error": None if alpha_hint is None else 0.0,
         }
 
 
 def k_phi_multiscale_safety(
     G: Any,
-    alpha_hint: float = defaults.K_PHI_ASYMPTOTIC_ALPHA,
+    alpha_hint: float | None = defaults.K_PHI_ASYMPTOTIC_ALPHA,
     fit_min_r2: float = defaults.STATISTICAL_SIGNIFICANCE_THRESHOLD,
 ) -> dict[str, Any]:
-    """Assess multiscale safety of K_φ field [RESEARCH].
+    """Compare multiscale K_φ variances to a selected warning policy.
 
     **Status**: RESEARCH (safety analysis support)
 
-    Computes coarse-grained K_φ variance across scales, fits power-law
-    decay, and returns safety verdict based on fit quality and threshold
-    violations.
+    The finite nonnegative measured variances must all lie below the squared
+    curvature warning margin. A power-law fit is a separate descriptive
+    diagnostic and cannot excuse a threshold violation. Neither passing cut
+    nor a fitted exponent proves future stability or asymptotic scaling.
 
     Returns
     -------
     dict[str, Any]
         - variance_by_scale: dict[int, float] - computed variances
         - fit: dict - power-law fitting results
-        - violations: list[int] - scales with |K_φ| >= K_PHI_CURVATURE_THRESHOLD
-        - safe: bool - overall safety status
+        - violations: list[int] - scales with variance >= curvature margin squared
+        - safe: bool - available variances all below that selected cut
+        - available: bool - nonempty finite nonnegative variance observations
+        - fit_acceptable: bool - positive fitted exponent and selected R² cut
+        - assessment_status: str - pass, warning, or unavailable
     """
     # Compute multiscale variance
     variance_by_scale = compute_k_phi_multiscale_variance(G)
 
-    # Fit power-law
-    fit = fit_k_phi_asymptotic_alpha(variance_by_scale, alpha_hint)
+    available = bool(variance_by_scale) and all(
+        np.isfinite(value) and value >= 0.0 for value in variance_by_scale.values()
+    )
+    fit = fit_k_phi_asymptotic_alpha(variance_by_scale if available else {}, alpha_hint)
 
     # Check for threshold violations
-    # (Removed unused local k_phi_field assignment to satisfy lint)
     violations = [
         r
         for r, var in variance_by_scale.items()
-        if var > defaults.K_PHI_CURVATURE_THRESHOLD**2
-    ]  # Phase-wrap threshold: K_φ ≤ π (audit 2026: π is the genuine scale)
+        if np.isfinite(var) and var >= defaults.K_PHI_CURVATURE_THRESHOLD**2
+    ]
 
     # Assess safety
-    safe_by_fit = (
-        fit.get("alpha", 0.0) > 0.0 and fit.get("r_squared", 0.0) >= fit_min_r2
+    fit_acceptable = bool(
+        available
+        and np.isfinite(fit.get("alpha", 0.0))
+        and np.isfinite(fit.get("r_squared", 0.0))
+        and fit.get("alpha", 0.0) > 0.0
+        and fit.get("r_squared", 0.0) >= fit_min_r2
     )
-    safe_by_tolerance = (alpha_hint is not None) and (len(violations) == 0)
-    safe = bool(safe_by_fit or safe_by_tolerance)
+    safe = bool(available and not violations)
 
     return {
         "variance_by_scale": {int(k): float(v) for k, v in variance_by_scale.items()},
         "fit": fit,
         "violations": violations,
         "safe": safe,
+        "available": available,
+        "fit_acceptable": fit_acceptable,
+        "assessment_status": (
+            ("pass" if safe else "warning") if available else "unavailable"
+        ),
     }
 
 
@@ -887,6 +932,13 @@ def compute_unified_telemetry(G: Any) -> dict[str, Any]:
     trajectory with the conservative model or make the tetrad a complete state
     observer.
 
+    ``optional_sector_status`` records availability, source, scope and exception
+    type/message separately for ``symplectic_substrate``, ``pulse`` and
+    ``resonance``. Their existing empty-dictionary failure placeholders remain
+    unchanged. Availability means the corresponding readout completed under
+    its owner's contract; it does not certify a trajectory or physical regime.
+    Required canonical/derived field failures still propagate.
+
     Args:
         G: TNFR network with the state attributes required by each diagnostic
 
@@ -931,7 +983,7 @@ def compute_unified_telemetry(G: Any) -> dict[str, Any]:
     conservation = dict(derived["conservation_metrics"])
 
     # Auxiliary symplectic substrate initialized from extracted graph fields.
-    try:
+    def read_symplectic_substrate() -> dict[str, Any]:
         from .symplectic_substrate import (
             PhaseSpacePoint,
             background_potential,
@@ -948,35 +1000,68 @@ def compute_unified_telemetry(G: Any) -> dict[str, Any]:
             captured.grad_phi,
         )
         _pt = PhaseSpacePoint(nodes, k_phi, j_phi, phi_s, j_dnfr, grad_phi)
-        symplectic_substrate = {
+        return {
             "phase_space_dimension": _pt.dimension,
             "hamiltonian": substrate_hamiltonian(_pt),
             "background_potential": background_potential(_pt),
             "liouville_divergence": liouville_divergence(_pt),
         }
-    except Exception:
-        symplectic_substrate = {}
 
     # Auxiliary graph-wave pulse -- the resonant
     # spectrum omega_k = sqrt(lambda_k), the dominant beat and the
     # self-similar signature), computed from the structural spectrum
     # (structural_diffusion.py). It is not an inferred engine trajectory.
-    try:
+    def read_pulse() -> dict[str, Any]:
         from .structural_diffusion import compute_emergent_pulse
 
-        pulse = compute_emergent_pulse(G)
-    except Exception:
-        pulse = {}
+        return compute_emergent_pulse(G)
 
     # Per-NFR resonance reads stored capacity and current phase alignment
     # (local synchrony and collective Kuramoto R). It does not measure an
     # oscillation period or derive a collective clock from synchronization.
-    try:
+    def read_resonance() -> dict[str, Any]:
         from .structural_diffusion import compute_nodal_pulse
 
-        resonance = compute_nodal_pulse(G)
-    except Exception:
-        resonance = {}
+        return compute_nodal_pulse(G)
+
+    optional_sector_status: dict[str, Any] = {}
+
+    def capture_optional(
+        name: str, source: str, scope: str, read: Callable[[], dict[str, Any]]
+    ) -> dict[str, Any]:
+        status: dict[str, Any] = {
+            "available": False,
+            "source": source,
+            "scope": scope,
+            "error": None,
+        }
+        optional_sector_status[name] = status
+        try:
+            value = read()
+        except Exception as error:
+            status["error"] = {"type": type(error).__name__, "message": str(error)}
+            return {}
+        status["available"] = True
+        return value
+
+    symplectic_substrate = capture_optional(
+        "symplectic_substrate",
+        "tnfr.physics.symplectic_substrate",
+        "auxiliary_symplectic_model",
+        read_symplectic_substrate,
+    )
+    pulse = capture_optional(
+        "pulse",
+        "tnfr.physics.structural_diffusion.compute_emergent_pulse",
+        "auxiliary_graph_wave_spectrum",
+        read_pulse,
+    )
+    resonance = capture_optional(
+        "resonance",
+        "tnfr.physics.structural_diffusion.compute_nodal_pulse",
+        "stored_capacity_phase_readout",
+        read_resonance,
+    )
 
     return {
         "canonical": canonical_telemetry,
@@ -988,6 +1073,7 @@ def compute_unified_telemetry(G: Any) -> dict[str, Any]:
         "symplectic_substrate": symplectic_substrate,
         "pulse": pulse,
         "resonance": resonance,
+        "optional_sector_status": optional_sector_status,
         "unified_field_version": "1.0.0",  # Track implementation version
     }
 

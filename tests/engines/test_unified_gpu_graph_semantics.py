@@ -70,6 +70,79 @@ def test_dense_delta_nfr_is_normalized_epi_pressure_independent_of_capacity() ->
     assert result.convergence_achieved is None
 
 
+def test_dense_pressure_keeps_large_uniform_form_at_exact_consensus() -> None:
+    engine = object.__new__(TNFRUnifiedGPUSystem)
+    result = engine.compute_delta_nfr_gpu(
+        np.ones((3, 3)), np.full(3, 1e308), np.ones(3), np.zeros(3)
+    )
+
+    # Every edge has zero form difference; averaging the absolute values first
+    # used to overflow and invent infinite pressure in this equilibrium state.
+    np.testing.assert_array_equal(result.result_data, np.zeros(3))
+
+
+def test_dense_pressure_retains_a_tiny_weight_times_large_form() -> None:
+    engine = object.__new__(TNFRUnifiedGPUSystem)
+    weights = np.array([[0.0, 1e308, 1e-308], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]])
+    result = engine.compute_delta_nfr_gpu(
+        weights, [0.0, 0.0, 1e308], [1.0] * 3, [0.0] * 3
+    )
+
+    # The probability rounds to zero if materialized first, but the final
+    # weighted pressure remains representable. Both sinks have zero pressure.
+    assert result.result_data[0] == 1e-308
+    np.testing.assert_array_equal(result.result_data[1:], [0.0, 0.0])
+
+
+def test_dense_pressure_rejects_unrepresentable_result_without_success_stats() -> None:
+    engine = object.__new__(TNFRUnifiedGPUSystem)
+    engine._operation_stats = {}
+
+    with pytest.raises(ValueError, match="finite floating-point range"):
+        engine.compute_delta_nfr_gpu(
+            [[0.0, 1.0], [1.0, 0.0]], [1e308, -1e308], [1.0, 1.0], [0.0, 0.0]
+        )
+
+    assert engine._operation_stats == {}
+
+
+@pytest.mark.parametrize(
+    ("weights", "values", "expected"),
+    [
+        (np.ones((3, 3)), [1e308] * 3, [0.0] * 3),
+        (
+            [[0.0, 1e308, 1e-308], [0.0] * 3, [0.0] * 3],
+            [0.0, 0.0, 1e308],
+            [1e-308, 0.0, 0.0],
+        ),
+    ],
+)
+def test_graph_and_dense_pressure_share_extreme_finite_domain(
+    weights, values, expected
+):
+    graph = nx.from_numpy_array(np.asarray(weights), create_using=nx.DiGraph)
+    nx.set_node_attributes(graph, dict(enumerate(values)), "EPI")
+    engine = object.__new__(TNFRUnifiedGPUSystem)
+
+    graph_result = engine.compute_delta_nfr_from_graph(graph)
+    dense_result = engine.compute_delta_nfr_gpu(weights, values, [1.0] * 3, [0.0] * 3)
+
+    np.testing.assert_array_equal(list(graph_result.values()), expected)
+    np.testing.assert_array_equal(dense_result.result_data, expected)
+
+
+def test_graph_pressure_rejects_unrepresentable_result_without_success_stats() -> None:
+    graph = nx.path_graph(2)
+    nx.set_node_attributes(graph, {0: 1e308, 1: -1e308}, "EPI")
+    engine = object.__new__(TNFRUnifiedGPUSystem)
+    engine._operation_stats = {}
+
+    with pytest.raises(ValueError, match="finite floating-point range"):
+        engine.compute_delta_nfr_from_graph(graph)
+
+    assert engine._operation_stats == {}
+
+
 def test_array_only_structural_tetrad_is_explicitly_rejected() -> None:
     engine = object.__new__(TNFRUnifiedGPUSystem)
 

@@ -236,7 +236,11 @@ def test_temporal_phase_delta_uses_half_open_canonical_wrapping() -> None:
         np.zeros(4),
     )
 
-    assert wrapped == pytest.approx((-math.pi, -math.pi, -math.pi, 0.25))
+    assert wrapped[[0, 1, 3]] == pytest.approx((-math.pi, -math.pi, 0.25))
+    # Represented 3*pi has positive sine and lies just below the positive cut;
+    # treating it as an exact odd multiple erases the represented orientation.
+    assert 0.0 < wrapped[2] < math.pi
+    assert math.sin(wrapped[2]) == pytest.approx(math.sin(3.0 * math.pi), abs=2e-16)
     assert np.all(wrapped >= -math.pi)
     assert np.all(wrapped < math.pi)
 

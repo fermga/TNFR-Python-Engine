@@ -112,14 +112,17 @@ observers.phase_sync : Phase synchronization metrics
 from __future__ import annotations
 
 import math
+from collections import deque
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
+from itertools import islice
 from numbers import Integral, Real
 from typing import Any, MutableMapping, cast
 
 from .._compat import TypeAlias
 from ..alias import collect_attr, collect_theta_attr, get_attr, set_attr
+from ..config.selector_thresholds import resolve_selector_thresholds
 from ..constants import get_param
 
 # Retain the module's historical constant re-exports after moving their writes.
@@ -166,6 +169,7 @@ from .capacity_rates import (
 )
 from .common import (
     _dispersion_coherence,
+    _equilibrium_tolerances,
     _finite_scalar,
     _stored_metric_values,
     compute_coherence,
@@ -1408,7 +1412,12 @@ def _update_coherence(G: TNFRGraph, hist: HistoryState) -> None:
     if cs:
         window = min(len(cs), DEFAULT_WBAR_SPAN)
         w = max(1, window)
-        wbar = sum(cs[-w:]) / w
+        # Bounded histories use deques; retain chronological summation while
+        # reading only the requested tail rather than copying the whole trace.
+        tail = (
+            tuple(islice(reversed(cs), w))[::-1] if isinstance(cs, deque) else cs[-w:]
+        )
+        wbar = sum(tail) / w
         _record_metrics(hist, (wbar, "W_bar"))
 
 
@@ -1457,6 +1466,19 @@ def _update_sigma(G: TNFRGraph, hist: HistoryState) -> None:
     )
 
 
+_STABILITY_OBSERVATION_REVISION = "_stability_observation_revision"
+
+
+def _stability_observation_revision(G: TNFRGraph) -> int:
+    """Read the append revision used to distinguish new bounded samples."""
+    revision = G.graph.get(_STABILITY_OBSERVATION_REVISION, 0)
+    if isinstance(revision, bool) or not isinstance(revision, Integral):
+        raise TypeError("stability observation revision must be a nonnegative integer")
+    if revision < 0:
+        raise ValueError("stability observation revision must be nonnegative")
+    return int(revision)
+
+
 def _track_stability(
     G: TNFRGraph,
     hist: MutableMapping[str, Any],
@@ -1480,6 +1502,8 @@ def _track_stability(
     commit; it is not a sealed execution certificate.
     """
     del dt, n_jobs
+    revision = _stability_observation_revision(G)
+    eps_dnfr, eps_depi = _equilibrium_tolerances(eps_dnfr, eps_depi)
     nodes = tuple(G.nodes)
     count = len(nodes)
     pressures = tuple(
@@ -1526,6 +1550,7 @@ def _track_stability(
     hist.setdefault("delta_Si", []).append(delta_mean)
     hist.setdefault("B", []).append(mean_second)
     hist.setdefault("capacity_rate_coverage", []).append(coverage)
+    G.graph[_STABILITY_OBSERVATION_REVISION] = revision + 1
 
 
 def _si_chunk_stats(
@@ -1561,11 +1586,9 @@ def _aggregate_si(
 ) -> None:
     """Aggregate Si statistics across nodes."""
 
+    thresholds = resolve_selector_thresholds(G)
+    si_hi, si_lo = thresholds["si_hi"], thresholds["si_lo"]
     try:
-        thr_sel = get_param(G, "SELECTOR_THRESHOLDS")
-        thr_def = get_param(G, "GLYPH_THRESHOLDS")
-        si_hi = float(thr_sel.get("si_hi", thr_def.get("hi", 0.66)))
-        si_lo = float(thr_sel.get("si_lo", thr_def.get("lo", 0.33)))
 
         node_ids = list(G.nodes)
         if not node_ids:

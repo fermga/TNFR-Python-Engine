@@ -591,7 +591,7 @@ GRAMMAR_BASES = MappingProxyType(
                     ("band", "1/(pi+1)"),
                     (
                         "implementation_scope",
-                        "one-step fallback and 64-step cap do not certify the inequality",
+                        "0 < nu_f*dt <= 1 is required; the 64-step cap need not certify crossing",
                     ),
                 ),
                 "tnfr.config.physics_derivation.derive_bifurcation_window_from_physics",
@@ -1023,7 +1023,7 @@ def canonical_structural_type(pattern: StructuralPattern) -> StructuralType:
 def verify_canon_consistency() -> bool:
     """Assert the materialised role table reproduces the canonical sets exactly.
 
-    The per-operator role table is derived from the same nodal-equation
+    The per-operator role table is derived from the same declared-role
     predicates as :mod:`grammar_types`; this check pins that the two views agree,
     so the canon cannot silently drift from the single source of truth.
     """

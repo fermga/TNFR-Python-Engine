@@ -12,6 +12,11 @@ from collections.abc import Iterable, Mapping, MutableMapping
 from itertools import islice
 from typing import Any, cast
 
+from ._runtime_steps import (
+    RUNTIME_STEP_NEXT_KEY,
+    RUNTIME_STEP_UNSET,
+    resolve_runtime_step_index,
+)
 from .constants import get_param, normalise_state_token
 from .glyph_runtime import last_glyph
 from .types import TNFRGraph
@@ -189,8 +194,8 @@ class HistoryDict(dict[str, Any]):
         self._counts: Counter[str] = Counter()
         if self._maxlen > 0:
             for k, v in list(self.items()):
-                if isinstance(v, list):
-                    super().__setitem__(k, deque(v, maxlen=self._maxlen))
+                if isinstance(v, (list, deque)):
+                    super().__setitem__(k, self._to_deque(v))
                 self._counts[k] = 0
         else:
             for k in self:
@@ -206,10 +211,10 @@ class HistoryDict(dict[str, Any]):
 
         ``Iterable`` inputs (excluding ``str`` and ``bytes``) are expanded into
         the deque, while single values are wrapped. Existing deques are
-        returned unchanged.
+        retained only when their bound already matches this history.
         """
 
-        if isinstance(val, deque):
+        if isinstance(val, deque) and val.maxlen == self._maxlen:
             return val
         if isinstance(val, Iterable) and not isinstance(val, (str, bytes)):
             return deque(val, maxlen=self._maxlen)
@@ -287,15 +292,21 @@ def ensure_history(G: TNFRGraph) -> HistoryDict | dict[str, Any]:
 
     ``HISTORY_MAXLEN`` must be non-negative; otherwise a
     :class:`ValueError` is raised. When ``HISTORY_MAXLEN`` is zero, a regular
-    ``dict`` is used.
+    ``dict`` is used. The bound limits samples per series, never the number
+    of metric streams. Older automatic least-used key eviction could remove
+    unrelated diagnostics; callers needing key eviction must request it
+    explicitly through :meth:`HistoryDict.pop_least_used`.
     """
-    maxlen, _ = _ensure_history({}, int(get_param(G, "HISTORY_MAXLEN")))
+    maxlen, _ = _ensure_history({}, get_param(G, "HISTORY_MAXLEN"))
     hist = G.graph.get("history")
     sentinel_key = "_metrics_history_id"
     replaced = False
     if maxlen == 0:
         if isinstance(hist, HistoryDict):
-            hist = dict(hist)
+            hist = {
+                key: list(value) if isinstance(value, deque) else value
+                for key, value in hist.items()
+            }
             G.graph["history"] = hist
             replaced = True
         elif hist is None:
@@ -311,9 +322,6 @@ def ensure_history(G: TNFRGraph) -> HistoryDict | dict[str, Any]:
         hist = HistoryDict(hist, maxlen=maxlen)
         G.graph["history"] = hist
         replaced = True
-    excess = len(hist) - maxlen
-    if excess > 0:
-        hist.pop_least_used_batch(excess)
     if replaced:
         G.graph.pop(sentinel_key, None)
     _normalise_state_streams(cast(MutableMapping[str, Any], hist))
@@ -321,10 +329,21 @@ def ensure_history(G: TNFRGraph) -> HistoryDict | dict[str, Any]:
 
 
 def current_step_idx(G: TNFRGraph | Mapping[str, Any]) -> int:
-    """Return the current step index from ``G`` history."""
+    """Read the active runtime ordinal, or next ordinal outside a runtime call.
+
+    Legacy standalone graphs without runtime markers retain their C_steps
+    length fallback. That fallback is a retained sample index, not a lifetime
+    execution count or physical time.
+    """
 
     graph = getattr(G, "graph", G)
-    return len(graph.get("history", {}).get("C_steps", []))
+    next_index = graph.get(RUNTIME_STEP_NEXT_KEY, RUNTIME_STEP_UNSET)
+    fallback = (
+        len(graph.get("history", {}).get("C_steps", []))
+        if next_index is RUNTIME_STEP_UNSET
+        else 0
+    )
+    return resolve_runtime_step_index(next_index, fallback=fallback)
 
 
 def append_metric(hist: MutableMapping[str, list[Any]], key: str, value: Any) -> None:
