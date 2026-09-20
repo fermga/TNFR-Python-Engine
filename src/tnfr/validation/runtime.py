@@ -153,7 +153,12 @@ def apply_canonical_clamps(
         set_attr(nd, ALIAS_VF, vf_val)
 
     if theta_wrap:
-        new_th = (th + math.pi) % (2 * math.pi) - math.pi
+        # Preserve the native centered chart exactly when already inside it.
+        # Adding/subtracting pi needlessly erases tiny phases and shifts other
+        # valid values; setters own alias/cache writes, not normalization.
+        new_th = (
+            th if -math.pi <= th < math.pi else (th + math.pi) % (2 * math.pi) - math.pi
+        )
         if G is not None and node is not None:
             set_theta(G, node, new_th)
         else:

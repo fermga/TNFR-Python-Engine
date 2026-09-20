@@ -1294,8 +1294,17 @@ $$
 
 where the default calibrated magnitude is
 $s=(1/\pi)(\pi/4)=1/4$ radians unless an explicit fixed shift is supplied.
+The displayed sign formula concerns nonzero pressure. The represented kernel
+uses `copysign(1.0, pressure)`: `+0.0` selects the positive shift and `-0.0`
+the negative shift. Zero current pressure therefore does not suppress an
+otherwise admitted event whose preceding observed growth crossed the threshold.
 The runtime preconditions and U4b history determine whether the mutation is
 admissible; $|\Delta\text{NFR}|$ does not scale this phase step.
+
+Native occurrence additionally depends on selection. The
+[heterogeneous-capacity admission study](FORCED_SUPPORT_BALANCE.md#35-heterogeneous-capacity-opens-a-conditional-mutation-admission-gate)
+separates fresh diagnostic compatibility, declared histories, an executed
+default prefix and the direction of the resulting phase action.
 
 The phase calculation and its branch-specific `_zhir_*` telemetry payload use
 one RNG-free immutable kernel. At the all-target boundary, the complete frozen

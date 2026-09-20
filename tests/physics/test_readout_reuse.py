@@ -3,14 +3,16 @@
 from collections import Counter
 from copy import deepcopy
 from dataclasses import asdict
+from pathlib import Path
 
 import networkx as nx
 import pytest
 
+from tests.example_protocol_helpers import load_example
 from tnfr.alias import set_attr
 from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_THETA
 from tnfr.operators import apply_glyph
-from tnfr.physics import conservation, unified, variational
+from tnfr.physics import conservation, fields, unified, variational
 
 READERS = (
     "compute_structural_potential",
@@ -25,6 +27,8 @@ COMPOSITES = (
     variational.capture_lagrangian_snapshot,
     variational.translate_sectors,
     conservation.capture_conservation_snapshot,
+    fields.compute_emergent_fields,
+    fields.compute_tensor_invariants,
 )
 GRAPH_KINDS = (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
 
@@ -216,3 +220,156 @@ def test_correlation_helper_skips_complex_and_misaligned_maps():
 
 def test_correlation_helper_handles_empty_input():
     assert unified.analyze_field_correlations({}) == {}
+
+
+@pytest.mark.parametrize("kind", GRAPH_KINDS)
+def test_array_facades_preserve_mixed_node_labels_and_declared_alignment(kind):
+    graph = _graph(kind)
+    before = deepcopy(dict(graph.nodes(data=True)))
+    nodes = tuple(graph)
+    complex_view = fields.compute_complex_geometric_field_arrays(graph)
+    emergent_view = fields.compute_emergent_fields(graph)
+    tensor_view = fields.compute_tensor_invariants(graph)
+    psi = unified.compute_complex_geometric_field(graph)
+    for view in (complex_view, emergent_view, tensor_view):
+        assert view["nodes"] == nodes
+        assert view["num_nodes"] == len(nodes)
+    assert complex_view["psi_real"].tolist() == [psi[node].real for node in nodes]
+    assert complex_view["psi_imag"].tolist() == [psi[node].imag for node in nodes]
+    expected = unified.compute_unified_field_suite(graph)
+    for key in ("chirality", "symmetry_breaking", "coherence_coupling"):
+        assert emergent_view[key].tolist() == [expected[key][node] for node in nodes]
+    for key, original in (
+        ("energy_density", "energy_density"),
+        ("topological_charge", "historical_q_density"),
+        ("conservation_density", "charge_density"),
+    ):
+        assert tensor_view[key].tolist() == [expected[original][node] for node in nodes]
+    assert dict(graph.nodes(data=True)) == before
+
+
+def test_snapshot_conservation_is_unavailable_under_relabeling_and_on_empty_graph():
+    graph = nx.path_graph(4)
+    for node in graph:
+        graph.nodes[node].update(theta=0.0, delta_nfr=float(2**node), EPI=0.5, nu_f=1.0)
+    relabeled = nx.relabel_nodes(graph, {0: 0, 1: 3, 2: 1, 3: 2})
+    observations = [
+        fields.compute_tensor_invariants(g) for g in (graph, relabeled, nx.Graph())
+    ]
+    for result in observations:
+        assert result["conservation_quality"] is None
+        assert result["conservation_sample_available"] is False
+        assert result["conservation_scope"] == "single_snapshot_no_temporal_balance"
+    assert (
+        observations[0]["conservation_density"].tolist()
+        == observations[1]["conservation_density"].tolist()
+    )
+    # These same densities produced different fictitious scores when sorted by label.
+    assert observations[1]["nodes"] != tuple(sorted(relabeled))
+
+
+def test_full_field_facade_reuses_one_real_canonical_snapshot(monkeypatch):
+    graph = _graph()
+    original = fields.compute_structural_telemetry
+    captured = []
+
+    def snapshot(current):
+        result = original(current)
+        captured.append(deepcopy(result))
+        return result
+
+    def duplicate(*args, **kwargs):
+        pytest.fail("a captured algebraic view must not request another base field")
+
+    monkeypatch.setattr(fields, "compute_structural_telemetry", snapshot)
+    monkeypatch.setattr(fields, "compute_extended_canonical_suite", duplicate)
+    for name in READERS:
+        monkeypatch.setattr(unified, name, duplicate)
+    result = fields.compute_unified_telemetry(graph)
+    assert len(captured) == 1
+    assert result["canonical"] == captured[0]
+    assert result["extended_canonical"] == {
+        "phase_current": captured[0]["j_phi"],
+        "dnfr_flux": captured[0]["j_dnfr"],
+    }
+    assert result["conservation"]["structural_energy"] == pytest.approx(
+        0.5 * sum(result["tensor_invariants"]["energy_density"])
+    )
+    # The auxiliary block also consumes the same coordinates, without a graph recapture.
+    assert result["symplectic_substrate"]["phase_space_dimension"] == 4 * len(graph)
+    result["extended_canonical"]["phase_current"].clear()
+    assert result["canonical"]["j_phi"] == captured[0]["j_phi"]
+
+
+def test_phase_winding_facade_uses_shared_support_and_branch_admission():
+    from tnfr.physics.emergent_particles import winding_number, winding_ring
+
+    graph = winding_ring(5, 1)
+    order = list(graph)
+    assert (
+        fields.compute_phase_winding(graph, order)
+        == winding_number(graph, order=order)[0]
+        == 1
+    )
+    graph.remove_edge(0, 1)
+    for read in (
+        fields.compute_phase_winding,
+        lambda g, nodes: winding_number(g, order=nodes),
+    ):
+        with pytest.raises(ValueError, match="undefined"):
+            read(graph, order)
+
+
+def test_tensor_demo_reports_actual_density_instead_of_missing_key_zero(
+    capsys, monkeypatch
+):
+    example = load_example(
+        Path(__file__).resolve().parents[2]
+        / "examples/02_physics_regimes/33_complex_field_unification.py"
+    )
+    graph = nx.path_graph(3)
+    for node in graph:
+        graph.nodes[node].update(theta=0.0, delta_nfr=1.0)
+    # Test display wiring on a supplied fixture, not its separate auxiliary flow.
+    monkeypatch.setattr(example, "_build_graph", lambda *args: graph)
+    monkeypatch.setattr(example, "_evolve_step", lambda graph: None)
+    example.demo_tensor_invariants()
+    rows = [
+        row
+        for row in capsys.readouterr().out.splitlines()
+        if row.strip().startswith(("WS (N=40)", "BA (N=40)", "Grid (6x6)"))
+    ]
+    assert len(rows) == 3
+    # rho = Phi_s + K = (5/4, 2, 5/4) for unit P3 and unit pressure.
+    assert all(float(row.split()[-1]) == 1.5 for row in rows)
+
+
+def test_supplied_snapshot_showcase_reuses_readouts_without_evolution(
+    capsys, monkeypatch
+):
+    example = load_example(
+        Path(__file__).resolve().parents[2]
+        / "examples/08_emergent_geometry/unified_fields_showcase.py"
+    )
+    snapshots = example.build_snapshots(17)
+    originals = deepcopy(
+        {name: dict(graph.nodes(data=True)) for name, graph in snapshots.items()}
+    )
+    calls = []
+
+    def read(graph):
+        calls.append(graph)
+        return fields.compute_unified_telemetry(graph)
+
+    monkeypatch.setattr(example, "build_snapshots", lambda seed: snapshots)
+    monkeypatch.setattr(example, "compute_unified_telemetry", read)
+    reports = example.analyze_snapshots(17)
+    example.print_snapshot_report(reports)
+    output = capsys.readouterr().out
+    assert output.count("Temporal conservation: unavailable (single snapshot)") == 3
+    assert "validated" not in output
+    assert calls == list(snapshots.values())
+    assert {
+        name: dict(graph.nodes(data=True)) for name, graph in snapshots.items()
+    } == originals
+    assert all("_t" not in graph.graph for graph in snapshots.values())

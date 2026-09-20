@@ -19,10 +19,10 @@ from tnfr.constants.aliases import (
 )
 from tnfr.errors import TNFRValueError
 from tnfr.operators import apply_glyph
+from tnfr.operators._coupling_stage_kernel import coupling_capacity_blend
 from tnfr.operators.definitions import Coupling
 from tnfr.operators.metrics_network import coupling_metrics
 from tnfr.operators.network_stage import (
-    OPERATOR_MAJOR_GAUSS_SEIDEL,
     STAGE_SCHEDULE_KEY,
     TWO_PHASE_JACOBI,
     execute_coupling_stage,
@@ -101,6 +101,39 @@ def test_reverse_target_order_merges_shared_neighbor_identically() -> None:
     assert forward.graph[STAGE_SCHEDULE_KEY]["nodes_processed"] == 2
     assert forward.nodes[1]["glyph_history"] == ["AL"]
     assert stage_contract_for("UM").two_phase_contract_complete is True
+
+
+def test_identical_capacities_do_not_acquire_artificial_target_detuning() -> None:
+    # Rounding the redundant sum before division used to destroy this fixed
+    # point for the admitted full-sync factor on a three-neighbor target.
+    capacity = 0.1
+    assert math.fsum((capacity,) * 3) / 3 != capacity
+    direct = _graph((0.0, 0.2, 0.4, 0.6), edges=((0, 1), (0, 2), (0, 3)))
+    for node in direct:
+        direct.nodes[node][ALIAS_VF[0]] = capacity
+    direct.graph["GLYPH_FACTORS"] = {"UM_vf_sync": 1.0}
+    staged = deepcopy(direct)
+    apply_glyph(direct, 0, "UM")
+    execute_coupling_stage(staged, Coupling(), (0,))
+    for graph in (direct, staged):
+        assert (
+            tuple(get_attr(data, ALIAS_VF, None) for _, data in graph.nodes(data=True))
+            == (capacity,) * 4
+        )
+    assert _structural_state(direct) == _structural_state(staged)
+
+
+@pytest.mark.parametrize(
+    "capacity", (0.0, 0.1, math.ulp(0.0), float.fromhex("0x1.fffffffffffffp+1023"))
+)
+def test_uniform_capacity_kernel_preserves_finite_extremes(capacity: float) -> None:
+    # Includes the underflow boundary and a finite mean whose unneeded sum
+    # would overflow. The identity applies for every admitted sync factor.
+    for factor in (1 / (4 * math.pi), 1.0):
+        assert (
+            coupling_capacity_blend(capacity, (capacity,) * 3, factor).hex()
+            == capacity.hex()
+        )
 
 
 @pytest.mark.parametrize(

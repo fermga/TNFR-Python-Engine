@@ -1,20 +1,27 @@
 """Component boundaries of the default native phase-renewal budget.
 
-These detached inputs exercise existing integrator, adaptation and clamp
-owners. They are not a runtime trajectory or a selector/history certificate.
+These detached inputs exercise existing integrator, adaptation, coordination
+and clamp owners. They are not a runtime trajectory or a history certificate.
 Stored pressure is declared, not silently replaced by freshly computed pressure.
 """
 
 import math
+from copy import deepcopy
 from fractions import Fraction as Q
+from functools import wraps
 
+import networkx as nx
 import pytest
 
 from tests.physics._internal_mode_fixture import _graph
 from tnfr.alias import get_attr, get_theta_attr
 from tnfr.constants import DEFAULTS, inject_defaults
 from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
-from tnfr.dynamics import adaptation, integrators, runtime
+from tnfr.dynamics import adaptation, coordination, integrators, runtime
+from tnfr.mathematics.phasor_resultant import reduce_phasor_components
+from tnfr.metrics.trig_cache import get_trig_cache
+from tnfr.physics.winding_certificates import certify_phase_winding
+from tnfr.utils import angle_diff
 from tnfr.validation.runtime import apply_canonical_clamps
 
 
@@ -89,14 +96,8 @@ def test_extended_wrapper_flag_does_not_select_a_native_extended_integrator():
     assert uncached is not first
 
 
-@pytest.mark.parametrize(
-    ("capacity", "eligible_defect"),
-    [(1.0, Q(0)), (0.3, Q(1, 2**54))],
-    ids=["retained-unit-capacity", "nonunit-rounding-countercontrol"],
-)
-def test_selective_adaptation_distinguishes_unit_invariance_from_rounding(
-    capacity, eligible_defect
-):
+@pytest.mark.parametrize("capacity", (1.0, 0.3))
+def test_selective_adaptation_preserves_uniform_fixed_point(capacity):
     graph = _input_graph()
     # Declared stored gate inputs exercise count, pressure and Si exclusions;
     # they are not an assertion about eligibility in an unexecuted native step.
@@ -125,24 +126,35 @@ def test_selective_adaptation_distinguishes_unit_invariance_from_rounding(
         10,
         1,
     )
-    expected = tuple(
-        Q(capacity) + (eligible_defect if index in (0, 4) else 0)
-        for index in range(len(graph))
-    )
+    expected = (Q(capacity),) * len(graph)
     assert _channel(graph, ALIAS_VF) == expected
     if capacity == 1.0:
         # All snapshot neighbor means equal one. The default represented
         # convex blend is exactly one, independently of the eligible subset.
         assert set(expected) == {Q(1)}
     else:
-        # Exact-real uniformity is not an unrestricted binary64 invariant:
-        # only the eligible nodes acquire this one-ulp change at stored 0.3.
-        assert len(set(expected)) == 2
-        assert float(expected[0]) == math.nextafter(capacity, math.inf)
+        # The old redundant two-product blend introduced one ulp only at
+        # eligible nodes. The shared fixed-point branch now prevents it.
+        mu = graph.graph["VF_ADAPT_MU"]
+        assert (1 - mu) * capacity + mu * capacity == math.nextafter(capacity, math.inf)
     assert _channel(graph, ALIAS_EPI) == held_form
     assert _channel(graph, ALIAS_DNFR) == tuple(map(Q, pressures))
     assert _phases(graph) == held_phase
     assert tuple(graph.edges) == held_edges
+
+
+@pytest.mark.parametrize("graph_owned", (False, True))
+def test_centered_phase_clamp_is_an_exact_identity_inside_its_chart(graph_owned):
+    graph = _input_graph()
+    phases = (0.1, 1e-16, -1e-16, math.ulp(0.0), -math.pi, -0.0)
+    for node, phase in zip(graph, phases, strict=True):
+        graph.nodes[node].update(theta=phase, phase=phase)
+        if graph_owned:
+            apply_canonical_clamps(graph.nodes[node], graph, node)
+        else:
+            apply_canonical_clamps(graph.nodes[node])
+        assert graph.nodes[node]["theta"].hex() == phase.hex()
+        assert graph.nodes[node]["phase"].hex() == phase.hex()
 
 
 def test_normalization_requires_a_coherent_lift_and_a_represented_defect():
@@ -175,3 +187,130 @@ def test_normalization_requires_a_coherent_lift_and_a_represented_defect():
     assert _channel(graph, ALIAS_EPI) == held_form
     assert _channel(graph, ALIAS_VF) == held_capacity
     assert _channel(graph, ALIAS_DNFR) == held_pressure
+
+
+@pytest.fixture(scope="module")
+def static_twist_coordination():
+    """Two isolated calls from the same declared C5, not a formation trace."""
+    source = nx.cycle_graph(5)
+    nx.set_edge_attributes(source, 1.0, "weight")
+    inject_defaults(source)
+    source.graph["RANDOM_SEED"] = 17
+    for node in source:
+        source.nodes[node].update(
+            EPI=0.5,
+            nu_f=1.0,
+            theta=0.125 + math.tau * node / 5,
+            delta_nfr=0.0,
+            glyph_history=[],
+        )
+    cases = {}
+    for mode in ("legacy", "exact_components_v1"):
+        graph = deepcopy(source)
+        before = _phases(graph)
+        trig = get_trig_cache(graph)
+        resultant = reduce_phasor_components(
+            (trig.cos[node], trig.sin[node]) for node in graph
+        )
+        before_winding = certify_phase_winding(graph, range(5))
+        held = {
+            "epi": _channel(graph, ALIAS_EPI),
+            "capacity": _channel(graph, ALIAS_VF),
+            "pressure": _channel(graph, ALIAS_DNFR),
+            "support": deepcopy(tuple(graph.edges(data=True))),
+            "time": graph.graph.get("_t"),
+        }
+        targets = []
+        original_mean = coordination.neighbor_phase_mean_list
+
+        @wraps(original_mean)
+        def local_mean(*args, **kwargs):
+            result = original_mean(*args, **kwargs)
+            targets.append(result)
+            return result
+
+        with pytest.MonkeyPatch.context() as patch:
+            patch.setattr(coordination, "neighbor_phase_mean_list", local_mean)
+            if mode == "legacy":
+                # Exercise the actual default argument, not an override.
+                result = coordination.coordinate_global_local_phase(graph)
+            else:
+                result = coordination.coordinate_global_local_phase(
+                    graph, global_reduction=mode
+                )
+        after = _phases(graph)
+        gaps = tuple(
+            angle_diff(after[(index + 1) % 5], after[index]) for index in range(5)
+        )
+        cases[mode] = {
+            "graph": graph,
+            "before": before,
+            "after": after,
+            "before_winding": before_winding,
+            "after_winding": certify_phase_winding(graph, range(5)),
+            "resultant": resultant,
+            "local_targets": tuple(targets),
+            "gaps": gaps,
+            "held": held,
+            "result": result,
+        }
+    return cases
+
+
+def test_native_global_relaxation_changes_twist_geometry_without_changing_winding(
+    static_twist_coordination,
+):
+    # Ideally each local phasor sum is 2*cos(delta)*exp(i*theta_i), and
+    # cos(2*pi/5)>0. Thus the local target is theta_i, not a global direction.
+    # The active global term creates a long edge at its branch-cut crossing.
+    delta = math.tau / 5
+    for case in static_twist_coordination.values():
+        graph, held = case["graph"], case["held"]
+        history = graph.graph["history"]
+        k_global = history["phase_kG"][-1]
+        k_local = history["phase_kL"][-1]
+        assert 0 < k_global < 0.2 and k_local > 0
+        assert history["phase_disr"][-1] == 0.0
+        # The ideal zero resultant is not asserted of materialized trig.
+        assert 0 <= history["phase_R"][-1] < 1e-14
+        assert len(case["local_targets"]) == 5
+        assert tuple(
+            angle_diff(target, phase)
+            for target, phase in zip(case["local_targets"], case["before"], strict=True)
+        ) == pytest.approx((0.0,) * 5, rel=0, abs=2e-15)
+        short = (1 - k_global) * delta
+        long = delta + k_global * (math.tau - delta)
+        assert tuple(sorted(case["gaps"])) == pytest.approx(
+            (short,) * 4 + (long,), rel=0, abs=3e-15
+        )
+        assert long - short > 0.1
+        assert case["before_winding"].winding == 1
+        assert case["after_winding"].winding == 1
+        assert case["after_winding"].quantization_residual < 1e-14
+        assert case["after_winding"].u3_admissible == (long <= math.pi / 2)
+        # A common phase rotation preserves every edge gap; this writer does
+        # not preserve that geometric orbit despite preserving this winding.
+        assert _channel(graph, ALIAS_EPI) == held["epi"]
+        assert _channel(graph, ALIAS_VF) == held["capacity"]
+        assert _channel(graph, ALIAS_DNFR) == held["pressure"]
+        assert tuple(graph.edges(data=True)) == held["support"]
+        assert graph.graph.get("_t") == held["time"]
+        assert all(graph.nodes[node]["glyph_history"] == [] for node in graph)
+
+
+def test_exact_component_reduction_does_not_reconstruct_an_ideal_zero_resultant(
+    static_twist_coordination,
+):
+    assert static_twist_coordination["legacy"]["result"] is None
+    case = static_twist_coordination["exact_components_v1"]
+    evidence = case["result"]
+    assert evidence.resultant == case["resultant"]
+    assert not evidence.resultant.joint_zero
+    assert 0 < float(evidence.resultant.scale) < 1e-14
+    assert evidence.global_term_active and evidence.global_target is not None
+    assert evidence.local_targets == case["local_targets"]
+    assert evidence.realized_phases == case["after"]
+    assert evidence.primitive_phases == case["before"]
+    assert evidence.gain_mode == "adaptive"
+    # This exactness applies only to the represented components. Their small
+    # nonzero sum does not supply a direction for the ideal zero resultant.

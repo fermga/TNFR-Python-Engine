@@ -1783,13 +1783,14 @@ class Network:
         return compute_unified_telemetry(self.G)
 
     def tensor_invariants(self) -> dict[str, Any]:
-        """Compute tensor invariants (energy density, topological charge).
+        """Read quadratic and bilinear snapshot coordinates.
 
         Returns
         -------
         dict[str, Any]
             energy_density, topological_charge, conservation_density,
-            conservation_quality, num_nodes.
+            ``conservation_quality=None`` with explicit unavailable temporal
+            balance scope, ``nodes`` (array order), and ``num_nodes``.
         """
         if not _HAS_FIELDS:
             return {}
@@ -1801,7 +1802,8 @@ class Network:
         Returns
         -------
         dict[str, Any]
-            chirality, symmetry_breaking, coherence_coupling, num_nodes.
+            chirality, symmetry_breaking, coherence_coupling, nodes (array
+            order), num_nodes.
         """
         if not _HAS_FIELDS:
             return {}
@@ -2239,7 +2241,7 @@ class Network:
         -------
         dict[str, Any]
             psi_real (K_phi), psi_imag (J_phi), magnitude, phase arrays
-            keyed by node.
+            aligned with the returned nodes tuple.
         """
         if not _HAS_FIELDS:
             return {}

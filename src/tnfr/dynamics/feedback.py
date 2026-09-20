@@ -1,11 +1,9 @@
-"""Structural feedback loops for TNFR adaptive dynamics.
+"""Configured feedback controller using structural read-outs and public operators.
 
-This module implements feedback loops that automatically adjust nodal parameters
-based on current structural state. Feedback loops enable autonomous regulation
-and homeostatic cycles as specified in TNFR dynamics theory.
-
-The core principle: ΔNFR → operator selection → application → measure effect →
-adjust thresholds, creating closed-loop structural regulation.
+Targets, thresholds, selected node and invocation schedule are supplied policy
+inputs. Measured coherence selects an action and adjusts a threshold; this does
+not derive the policy from nodal dynamics or prove restoration of a form.
+Public operator admission still applies to each requested action.
 """
 
 from __future__ import annotations
@@ -240,7 +238,7 @@ class StructuralFeedbackLoop:
     def homeostatic_cycle(self, num_steps: int = 10) -> None:
         """Execute homeostatic regulation cycle.
 
-        Maintains target coherence through repeated sense-decide-act-learn cycles.
+        Request repeated sense-decide-act-learn steps toward a supplied target.
 
         Parameters
         ----------
@@ -257,7 +255,9 @@ class StructuralFeedbackLoop:
         4. Measures new coherence
         5. Adapts thresholds
 
-        This implements autonomous structural homeostasis.
+        Automatic controller execution is not a proof of autonomous NFR
+        formation, target attainment or stability. The caller supplies the
+        node and number of invocations; operator admission may reject a step.
         """
         for step in range(num_steps):
             # Measure state before

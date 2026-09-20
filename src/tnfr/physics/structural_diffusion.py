@@ -2879,7 +2879,9 @@ def compute_emergent_pulse(G: Any, n_modes: int = 8) -> dict[str, Any]:
     ----------
     G : TNFRGraph
     n_modes : int
-        Number of leading resonant frequencies to report.
+        Nonnegative number of leading resonant frequencies to report. Zero
+        leaves the spectrum list empty; the other statistics still use all
+        available modes, including the returned total ``n_modes`` count.
 
     Returns
     -------
@@ -2891,7 +2893,11 @@ def compute_emergent_pulse(G: Any, n_modes: int = 8) -> dict[str, Any]:
         eigenvalue rounding), ``vibration_energy`` (legacy key for
         :math:`\tfrac12\sum\lambda_k`, not measured state energy), ``n_modes``.
     """
+    from numbers import Integral
+
     _reject_boolean_numeric(n_modes, "n_modes")
+    if not isinstance(n_modes, Integral) or n_modes < 0:
+        raise ValueError("n_modes must be a nonnegative integer")
     eigvals = _cached_eigenvalues(G)
     eigvals = np.asarray(eigvals, dtype=float)
     omega = np.sqrt(np.clip(eigvals, 0.0, None))
@@ -2917,6 +2923,9 @@ def compute_nodal_pulse(G: Any) -> dict[str, Any]:
     does not by itself derive an oscillator or identify phase speed with
     structural capacity. This read-out summarizes the stored capacities and
     phases; it does not observe a period or prove a phase-evolution law.
+    Invalid capacities/phases and unavailable synchrony calculations raise;
+    this includes disabled affinity on a nonempty graph. They are not
+    interpreted as structural silence or zero alignment.
     Local phase synchrony measures neighbor alignment, global Kuramoto order
     ``R`` measures collective alignment, and the U3 phase bound reports
     admissibility. These are distinct from the auxiliary graph-wave spectrum
@@ -2941,6 +2950,10 @@ def compute_nodal_pulse(G: Any) -> dict[str, Any]:
         not an observed oscillation count), ``n_nodes``.
     """
     from ..constants.canonical import DELTA_PHI_MAX
+    from ..gamma import kuramoto_R_psi
+    from ..metrics.coherence import coherence_matrix, local_phase_sync_weighted
+    from ..metrics.common import finite_mean_absolute, finite_population_std
+    from ._helpers import get_phase
 
     nodes = list(G.nodes())
     n = len(nodes)
@@ -2955,38 +2968,34 @@ def compute_nodal_pulse(G: Any) -> dict[str, Any]:
             "n_pulsing": 0,
             "n_nodes": 0,
         }
-    vf = np.asarray(
-        [float(get_attr(G.nodes[k], ALIAS_VF, 0.0) or 0.0) for k in nodes],
-        dtype=float,
-    )
+    vf = _nodal_frequencies(G, nodes)
+    for node in nodes:
+        get_phase(G, node)
+
+    mean_frequency = finite_mean_absolute(vf, name="structural frequency")
+    spread = finite_population_std(vf, name="structural frequency")
+
     # Collective alignment of the stored phases (Kuramoto order parameter).
-    try:
-        from ..gamma import kuramoto_R_psi
-
-        phase_coherence = float(kuramoto_R_psi(G)[0])
-    except Exception:
-        phase_coherence = 0.0
+    phase_coherence = finite_real_scalar(kuramoto_R_psi(G)[0], "phase coherence")
+    if phase_coherence < 0.0:
+        raise ValueError("phase coherence must be nonnegative")
     # per-NFR resonance: mean local phase synchrony (one shared matrix build)
-    try:
-        from ..metrics.coherence import coherence_matrix, local_phase_sync_weighted
-
-        order, W = coherence_matrix(G, _record_history=False)
-        if order is None:
-            mean_local = 0.0
-        else:
-            mean_local = float(
-                np.mean(
-                    [
-                        local_phase_sync_weighted(G, k, nodes_order=order, W_row=W)
-                        for k in order
-                    ]
-                )
-            )
-    except Exception:
-        mean_local = 0.0
+    order, W = coherence_matrix(G, _record_history=False)
+    if order is None or W is None:
+        raise ValueError("local phase synchrony is unavailable: coherence is disabled")
+    local = tuple(
+        finite_real_scalar(
+            local_phase_sync_weighted(G, k, nodes_order=order, W_row=W),
+            f"local phase synchrony[{k!r}]",
+        )
+        for k in order
+    )
+    if any(value < 0.0 for value in local):
+        raise ValueError("local phase synchrony must be nonnegative")
+    mean_local = finite_mean_absolute(local, name="local phase synchrony")
     return {
-        "mean_frequency": float(np.mean(vf)),
-        "frequency_spread": float(np.std(vf)),
+        "mean_frequency": mean_frequency,
+        "frequency_spread": spread,
         "phase_coherence": phase_coherence,
         "mean_local_resonance": mean_local,
         "resonance_gate": gate,
@@ -3176,13 +3185,13 @@ def instability_threshold(G: Any) -> float:
 
 
 def fiedler_partition(G: Any) -> tuple[list, list]:
-    r"""The Fiedler-mode 2-partition — the first structural pattern.
+    r"""Partition nodes by the sign of the second normalized spatial mode.
 
-    Splits the nodes by the sign of the Fiedler eigenvector (the mode with
-    the smallest non-zero λ).  This is the network's **weakest structural
-    cut** (the two most weakly-connected communities) — the empirically-
-    validated spectral-clustering partition, and the first pattern to grow
-    once the reaction rate crosses the instability threshold.
+    On a connected symmetric nonnegative graph this is a Fiedler sign
+    partition, useful as a candidate regional decomposition. It is not a
+    general minimum-cut theorem or evidence that a persistent pattern forms.
+    Disconnected graphs can have a second zero mode; degenerate eigenvalues
+    make the returned partition dependent on the selected eigenbasis.
 
     Parameters
     ----------
@@ -3191,7 +3200,7 @@ def fiedler_partition(G: Any) -> tuple[list, list]:
     Returns
     -------
     (part_a, part_b) : tuple[list, list]
-        Node lists for the two structural communities.
+        Positive and nonpositive sign groups of the returned second mode.
     """
     nodes = _ordered_nodes(G)
     eigvals, eigvecs = structural_eigenmodes(G)

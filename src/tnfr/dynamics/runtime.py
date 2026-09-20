@@ -1024,6 +1024,12 @@ def step(
     Registered callbacks execute within :func:`step` and any exceptions they
     raise propagate according to the callback manager configuration.
 
+    Pressure and optional Si are refreshed before glyph selection. Integration
+    consumes the post-glyph stored pressure; subsequent phase coordination and
+    capacity adaptation do not refresh pressure or Si. The adaptation gate
+    therefore reads retained inputs, not diagnostics of the terminal state.
+    Native phase coordination acts once per invocation, independently of ``dt``.
+
     Examples
     --------
     Register a hook that records phase synchrony while using the parametric

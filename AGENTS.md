@@ -53,6 +53,16 @@ requires a measurement bridge. Pressure is a structural driving term, not an
 arbitrary loss function. Defining it retrospectively as a measured derivative
 merely reconstructs the identity and supplies no independent prediction.
 
+Differentiably invertible form charts preserve differential solution sets when
+pressure (and any gradient-flow mobility) transforms consistently. Injective
+storage alone can introduce spurious differential solutions at singular points.
+Even with a fixed pressure law, one instantaneous EPI rate need not identify
+capacity; the existing P2 control separates two such states by their subsequent
+acceleration. Clock changes also transform capacity evolution, and phase
+synchronization alone need not supply a monotone clock. These boundaries are
+owned by the [form foundation](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/FUNDAMENTAL_THEORY.md)
+and [parameter foundation](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md).
+
 ### Structural triad
 
 - **Form EPI:** structural configuration in a declared state space. The graph
@@ -83,6 +93,14 @@ Emission acts on an existing node with supplied basal capacity. THOL can create
 children under configured preconditions and construction rules. Neither fact
 proves spontaneous creation of the substrate or an autonomous maintained NFR.
 
+A persistence claim must specify its full-state identity and evolution law.
+Stationary profile restoration, orbital stability, winding retention and finite
+regional lifetime are different obligations. Uniform scalar EPI can coexist
+with nontrivial phase geometry under an admitted law. A failed scalar recovery
+test does not exclude every NFR; a snapshot match or low global phase order
+does not decide the presence or absence of coherent geometric identity. See
+[research scope](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_RESEARCH_STRATEGY.md#closure-audit-equations-events-and-identity).
+
 The radial/annular/multinodal classifier is a calibrated read-out of potential
 geometry. It does not derive a universal geometry or select Platonic solids.
 `Network.nfr()` exposes this read-out. `structural_coherence` and
@@ -101,8 +119,21 @@ not. U2 is a stabilization/debt policy, not a universal convergence theorem.
 ### Transport content (structural diffusion)
 
 The implemented pressure combines configured phase, form, capacity and topology
-channels. Only the isolated EPI channel is exactly
+channels. Only EPI uses conductance weights; phase, capacity and degree contrast
+use unique outgoing support neighbors, including zero-conductance edges.
+Capacity contrast is a source for form, not a capacity evolution equation.
+The nonlinear phase source need not conserve a transport-weighted form mean,
+even on a regular reciprocal graph. Its exact low-degree reduction does not
+extend to general neighborhoods. Internal source terms do not require an
+external environment; the initial nodal support remains assumed. See the
+[pressure contract](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md#21-the-implemented-pressure-is-a-specified-relational-map).
+Only the isolated EPI channel is exactly
 `p_epi=-L_rw*x`, `L_rw=I-D^(-1)W`, with zero rows at isolates.
+For an isolated source-free form response, exact amplitude/offset covariance
+and differentiability at uniform form force linearity; locality and a maximum
+principle then imply nonnegative neighbor differences. Those are explicit
+premises, not consequences of the nodal product. They do not select the full
+pressure mixture or its phase response; see the linked pressure foundations.
 On fixed connected symmetric nonnegative conductance and fixed positive capacity,
 `dx/dt=-diag(nu_f)*L_rw*x` relaxes to consensus. With common capacity it conserves
 the degree-weighted mean and decays in modes `exp(-nu_f*lambda_k*t)`; heterogeneous
@@ -186,6 +217,16 @@ operator labels alone do not make it vanish. The nonnegative sum-of-squares
 field energy is a Lyapunov candidate until monotonicity is proved for a stated
 law or observed on a specified trace. Read the precise hypotheses in
 [conservation](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/STRUCTURAL_CONSERVATION_THEOREM.md).
+
+Single-snapshot tensor telemetry reports conservation quality as unavailable;
+node-label ordering cannot supply a time derivative or graph divergence.
+Composite read-outs reuse one base-field collection and retain its node order.
+Historical vorticity and THOL emergence indices are static/retrospective
+statistics, not cycle winding, measured deformation or formation theorems.
+The existing acute-cycle cosine margin bounds local-resultant availability
+and the supplied sine law's restoring stiffness; it is not the Jacobian of
+the Arg-based pressure. See the
+[emergent-property audit](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md#61-emergent-property-audit-and-useful-derived-margins).
 
 ### Regime correspondences
 

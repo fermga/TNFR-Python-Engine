@@ -22,6 +22,7 @@ from ..utils import (
 __all__ = (
     "GraphLike",
     "finite_mean_absolute",
+    "finite_population_std",
     "validate_structural_coherence",
     "compute_coherence",
     "structural_coherence",
@@ -102,6 +103,32 @@ def finite_mean_absolute(values: Iterable[float], *, name: str) -> float:
     if not math.isfinite(result):
         raise ValueError(f"mean absolute {name} exceeds finite range")
     return result
+
+
+def finite_population_std(values: Iterable[float], *, name: str = "values") -> float:
+    """Return population standard deviation without unscaled squares or sums.
+
+    Finite real scalar inputs are validated before arithmetic. Empty and
+    constant samples return zero. Translation by the range midpoint precedes
+    scaling, preserving the small spread of adjacent large same-sign values.
+    The final product retains ordinary binary64 rounding, including subnormal
+    results and underflow when the standard deviation is unrepresentable.
+    """
+    samples = tuple(_finite_scalar(value, name=name) for value in values)
+    if not samples:
+        return 0.0
+    low, high = min(samples), max(samples)
+    if low == high:
+        return 0.0
+    midpoint = low / 2.0 + high / 2.0
+    deviations = tuple(value - midpoint for value in samples)
+    scale = max(map(abs, deviations))
+    normalized = tuple(value / scale for value in deviations)
+    mean = math.fsum(normalized) / len(normalized)
+    variance = math.fsum((value - mean) ** 2 for value in normalized) / len(samples)
+    # A variable in [-1, 1] has population variance at most one. Enforce the
+    # exact bound against a rounding excursion near the largest finite float.
+    return scale * min(1.0, math.sqrt(variance))
 
 
 def _dispersion_coherence(values: Iterable[float]) -> float:

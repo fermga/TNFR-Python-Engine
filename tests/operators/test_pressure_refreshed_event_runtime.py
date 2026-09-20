@@ -1254,6 +1254,94 @@ def test_snapshot_restores_factory_mapping_identity_for_all_graph_kinds(
     )
 
 
+@pytest.mark.parametrize("preparation", ["legacy_cache", "public_edit"])
+def test_default_refresh_reconciles_only_the_predeclared_weight_source(
+    preparation,
+) -> None:
+    from tnfr.dynamics.dnfr import default_compute_delta_nfr
+
+    graph = _pure_epi_graph()
+    if preparation == "legacy_cache":
+        graph.graph["_dnfr_weights"] = dict(graph.graph["DNFR_WEIGHTS"])
+        expected_epi = (0.25, -0.25)
+    else:
+        default_compute_delta_nfr(graph)
+        graph.graph["DNFR_WEIGHTS"].update(epi=0.0, phase=1.0)
+        expected_epi = (1.0, -1.0)
+    schedule, partition = _partitioned_empty_schedule()
+
+    result = execute_operator_event_schedule(
+        graph,
+        schedule,
+        physical_flow_partitions=(partition,),
+        suppress_birth_warnings=True,
+    )
+
+    assert tuple(float(graph.nodes[node]["EPI"]) for node in graph) == expected_epi
+    assert graph.graph["_dnfr_weights"] == graph.graph["DNFR_WEIGHTS"]
+    assert graph.graph["_dnfr_weights_source"] == graph.graph["DNFR_WEIGHTS"]
+    boundaries = result.physical_flow_partition_evidence[0].boundary_observations
+    assert len(boundaries) == 3
+    assert all(
+        boundary.dnfr_weights_preserved_or_canonically_initialized
+        for boundary in boundaries
+    )
+
+
+def test_custom_callback_cannot_change_cached_weight_source() -> None:
+    from tnfr.dynamics.dnfr import default_compute_delta_nfr
+
+    graph = _pure_epi_graph()
+    default_compute_delta_nfr(graph)
+    schedule, partition = _partitioned_empty_schedule()
+
+    def invalid_pressure_callback(live_graph: nx.Graph) -> None:
+        live_graph.graph["_dnfr_weights_source"]["epi"] = 0.5
+
+    graph.graph["compute_delta_nfr"] = invalid_pressure_callback
+    source_before = deepcopy(graph.graph["_dnfr_weights_source"])
+    weights_before = deepcopy(graph.graph["_dnfr_weights"])
+    nodes_before = deepcopy(dict(graph.nodes(data=True)))
+
+    with pytest.raises(TNFRValueError, match="non-pressure graph state"):
+        execute_operator_event_schedule(
+            graph,
+            schedule,
+            physical_flow_partitions=(partition,),
+        )
+
+    assert graph.graph["_dnfr_weights_source"] == source_before
+    assert graph.graph["_dnfr_weights"] == weights_before
+    assert dict(graph.nodes(data=True)) == nodes_before
+
+
+def test_default_callback_identity_does_not_admit_unpredicted_weight_changes(
+    monkeypatch,
+) -> None:
+    from tnfr.dynamics import dnfr
+
+    graph = _pure_epi_graph()
+    schedule, partition = _partitioned_empty_schedule()
+    configure = dnfr._configure_dnfr_weights
+
+    def invalid_configuration(live_graph):
+        weights = configure(live_graph)
+        weights["epi"] = 0.5
+        return weights
+
+    monkeypatch.setattr(dnfr, "_configure_dnfr_weights", invalid_configuration)
+    graph_before = deepcopy(dict(graph.graph))
+
+    with pytest.raises(TNFRValueError, match="non-pressure graph state"):
+        execute_operator_event_schedule(
+            graph,
+            schedule,
+            physical_flow_partitions=(partition,),
+        )
+
+    assert dict(graph.graph) == graph_before
+
+
 def test_callback_cannot_change_existing_cached_dnfr_weights() -> None:
     graph = _pure_epi_graph()
     graph.graph["_dnfr_weights"] = {

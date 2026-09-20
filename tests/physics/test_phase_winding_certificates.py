@@ -344,6 +344,19 @@ def test_telemetry_failure_propagates_instead_of_fabricating_zero(monkeypatch):
         classify_winding_sector(winding_ring(8, 1))
 
 
+def test_winding_telemetry_preserves_finite_mean_when_energy_sum_overflows():
+    graph = winding_ring(5, 1, base_dnfr=4e153)
+    result = classify_winding_sector(graph)
+
+    # Every C5 node sees two sources at distance one and two at distance two:
+    # Phi_s = (2 + 2/4) * 4e153 = 1e154. Its squared value dominates each
+    # represented energy; summing all five overflows, but their mean is finite.
+    assert result.winding == 1
+    assert result.telemetry_available
+    assert result.global_energy_density_mean == 1e308
+    assert math.isfinite(result.global_q_density_mean)
+
+
 def test_legacy_winding_tuple_api_rejects_an_absent_cycle():
     graph = winding_ring(8, 1)
     graph.remove_edge(3, 4)

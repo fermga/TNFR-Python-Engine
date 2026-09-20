@@ -196,7 +196,8 @@ its default value does not independently calibrate laboratory time.
 
 ### 2.6 A structural coordinate must transform its pressure
 
-For a nodewise differentiable invertible chart `y=f(x)` with the same time and capacity,
+For a nodewise differentiable chart `y=f(x)` with differentiable inverse,
+with the same time and capacity,
 the chain rule requires `p_y=Df(x)*p_x`. Keeping only the written form
 `y_dot=nu*p_y` does not justify reusing an unchanged coordinate formula for p.
 For a chart mixing several nodes with unequal positive capacities, the
@@ -212,9 +213,41 @@ does not make the chosen affine chart physically unique. In the full pressure
 `p=-e L_W x+F`, an affine rescaling y=a*x+b also needs F_y=a*F; unchanged
 phase/capacity source coefficients do not automatically satisfy that.
 
+Changing capacity cannot generally repair a missing pressure transformation.
+On unit P3 with `x=(1,2,3)` and unit capacity, pure EPI pressure is `(1,0,-1)`.
+The valid positive-domain chart `y=x^2` requires rate `(2,0,-6)`, whereas
+recomputed neighbor differences are `(3,1,-5)`. Every positive center capacity
+then gives a nonzero center rate. This discrepancy is not a clock calibration.
+For a convex differentiable nodewise f and nonnegative difference weights,
+the discrepancy is the sum of Taylor remainders
+`sum_j a_ij*(f(x_j)-f(x_i)-f'(x_i)*(x_j-x_i)) >= 0`.
+
+A valid coordinate change preserves the existing gradient-flow mechanism if
+its metric is transformed too. For `x_dot=-M*grad_x E`, a diffeomorphism with
+Jacobian J gives `E_tilde=E composed with f^-1` and
+`y_dot=-(J M J^T)*grad_y E_tilde`. Positive semidefinite mobility and the
+energy dissipation identity survive. Reusing the old Euclidean mobility and
+Laplacian in y generally defines a different model. A finite Euler step also
+need not commute with a nonlinear chart; the implemented integrator is a
+solver in its declared scalar chart, not a coordinate-independent manifold solver.
+
+**Injectivity alone is insufficient for differential equivalence.** On pure
+unit-capacity P2 diffusion from `x(0)=(0,1)`, the unique solution is
+`x=((1-exp(-2t))/2,(1+exp(-2t))/2)`. The injective encoding `y_i=x_i^3`
+has a singular inverse at zero. Its pushed equation is
+`y_i_dot=3*abs(y_i)^(2/3)*(cbrt(y_j)-cbrt(y_i))`. Both the cubed true solution
+and `y=(0,exp(-3t))` solve this equation with the same initial value. The latter
+lifts to `(0,exp(-t))`, whose first coordinate violates the original nodal row.
+No information was discarded by the encoding, but its vanishing Jacobian
+introduced a spurious absorbing branch. A differentiable inverse supplies
+the general solution-equivalence guarantee; faithful storage alone does not.
+A singular encoding can still preserve a particular law, so this is not a
+claim that every singular representation necessarily fails.
+
 The [portable foundation controls](../tests/physics/test_nodal_foundation_scope.py)
-exercise the actual pressure owner, signed scalar embedding and lossy rich-EPI
-projection. They do not select a new state space or evolve a new model.
+exercise the actual pressure owner, signed scalar embedding, lossy rich-EPI
+projection, transformed mobility and the singular-chart counterexample. They
+do not select a new state space or evolve a new production model.
 
 ---
 
@@ -229,6 +262,14 @@ linearity, shift, equilibrium and maximum-principle premises; reciprocity
 and graph symmetry supply further restrictions rather than following from
 the nodal product alone. Numeric defaults and telemetry remain distinct from
 autonomous constitutive laws.
+
+Its [pressure map](NODAL_PARAMETER_FOUNDATIONS.md#21-the-implemented-pressure-is-a-specified-relational-map)
+specifies the four channel signs, weights and distinct neighborhoods. The
+[low-degree reduction and nonlinear boundary](NODAL_PARAMETER_FOUNDATIONS.md#41-exact-low-degree-reduction-and-its-nonlinear-boundary)
+explain why phase/capacity compensation on a path does not imply a general
+conservation law for the mixed pressure. Capacity acts both as mobility and
+as a spatial source; a zero explicit topology coefficient does not remove
+the graph from the dynamics.
 
 ### 2.8 Representation dimension does not select a maintaining mechanism
 
@@ -270,6 +311,14 @@ This does not derive the existence of the fine substrate or the selection of
 the observed partition. Conversely, taking a fine substrate as a premise does
 not assert a substance outside the framework. Structural scale is not an
 assertion of an earlier physical time.
+
+In particular, a non-EPI pressure contribution from neighboring phases or
+capacities can be an internal relational effect, even when a decomposition
+calls it a "source". It need not be a force from an ambient external reality.
+Conversely, reading those relations on an initialized graph does not derive
+the first network or establish that an observable physical world emerges
+from it. That claim needs a closed formation model and an independently
+testable observation bridge.
 
 For a declared fine state `Z` with a complete law `Z_dot=F(Z)`, let `Y=Pi(Z)`
 be a proposed effective nodal description. On a smooth fixed-support domain,
@@ -614,7 +663,8 @@ initial state, gains, time steps, and seeds recorded. A correlation between
 potential drift and coherence loss is evidence for that protocol, not a
 universal upper bound or a proof of state reconstruction.
 
-The exact definition-level facts are pressure linearity and the π phase-wrap
+The exact definition-level facts are linearity of structural potential in
+pressure and the π phase-wrap
 bounds. Potential policies π/4 and π/2, curvature margin 0.9π, and phase-gradient
 warning π/16 retain their current values. The finite-graph witnesses and the
 distinctions they require are recorded in

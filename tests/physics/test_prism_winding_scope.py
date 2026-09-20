@@ -15,6 +15,7 @@ import pytest
 
 from tests.physics._internal_mode_fixture import NODES, _graph
 from tnfr.physics.coupling_winding import observe_coupling_gap_step
+from tnfr.physics.phase_cycle_geometry import derive_phase_cycle_geometry
 
 
 def _wrap_pi_units(value):
@@ -47,6 +48,12 @@ def prism():
 
 def test_two_triangles_and_two_squares_span_the_entire_prism_cycle_space(prism):
     s, support, edges, incidence, cycles, circulation = prism
+    # The general owner must agree with this independently constructed basis.
+    geometry = derive_phase_cycle_geometry(support)
+    assert geometry.edges == edges
+    assert s.Matrix(geometry.incidence) == incidence
+    assert geometry.cycle_rank == geometry.short_cycle_span_rank == 4
+    assert geometry.short_cycle_consensus_only
     assert len(edges) - len(support) + 1 == 4
     assert incidence.rank() == 5 and circulation.rank() == 4
     assert incidence * circulation.T == s.zeros(6, 4)

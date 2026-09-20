@@ -1,11 +1,9 @@
-"""Structural homeostasis for TNFR nodes.
+"""Configured range controller for a caller-selected TNFR node.
 
-This module implements homeostatic regulation that maintains nodal parameters
-within target ranges. When parameters drift outside acceptable bounds, corrective
-operators are automatically applied to restore equilibrium.
-
-Homeostasis ensures long-term stability while allowing dynamic adaptation
-within safe operating ranges.
+The controller requests public operators when stored parameters cross supplied
+ranges. Their admission and effects remain operator-specific: the request does
+not guarantee return to the range, restoration of an original form or long-term
+stability. Targets and invocation schedules are not derived nodal laws.
 """
 
 from __future__ import annotations
@@ -24,11 +22,11 @@ __all__ = ["StructuralHomeostasis"]
 
 
 class StructuralHomeostasis:
-    """Maintains dynamic equilibrium in nodal parameters.
+    """Request parameter corrections under a supplied range policy.
 
     This class monitors EPI, νf, and ΔNFR values and applies corrective operators
-    when they drift outside target ranges. The goal is to maintain healthy
-    structural dynamics without constraining natural evolution.
+    when they drift outside target ranges. These ranges specify an engineering
+    objective, not an emergent equilibrium or a stability certificate.
 
     **Homeostatic Principles:**
 

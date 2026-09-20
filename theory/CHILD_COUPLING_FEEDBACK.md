@@ -1004,7 +1004,9 @@ observer. The production arithmetic has one shared owner,
 `coupling_capacity_blend` in the
 [Coupling kernel](../src/tnfr/operators/_coupling_stage_kernel.py). Extraction
 preserves the existing neighbor mean, subtraction, multiplication and sum
-in their original order. The
+in their original order for nonuniform inputs. The equal-input fixed point
+now returns its input directly, avoiding a rounded redundant mean; this leaves
+the present singleton-neighbor unit-binade result unchanged. The
 [shared platform probe](../src/tnfr/_binary64.py) also retains REMESH's former
 private alias; basic format probes are not an exhaustive hardware proof.
 

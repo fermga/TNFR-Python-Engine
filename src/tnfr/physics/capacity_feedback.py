@@ -1,4 +1,4 @@
-"""Exact P2 form/capacity feedback and a conditional binary64 capacity class.
+"""Conditional capacity recovery bounds and exact P2 form/capacity feedback.
 
 On mutual-singleton equal-conductance support, synchronized zero phase and
 zero topology-channel forcing give F=-w_vf*L_rw*nu. One target-only Coupling
@@ -8,6 +8,9 @@ binary64 lattice theorem covers the represented capacity map on [1,2] with
 fixed neighbor capacity one; its observer matches the shared production
 arithmetic under declared IEEE assumptions. Neither result writes a graph
 or certifies grammar admission, pressure refresh or future complete runtime.
+The graph-independent interval bound separately excludes recovery of a
+positive nonuniform capacity profile when a contracted interval is invariant;
+it does not certify that premise for any supplied execution.
 """
 
 import math
@@ -18,6 +21,8 @@ from .._exact_time import exact_or_represented_real
 from ._cycle_algebra import Vector, ordered_vector
 
 __all__ = [
+    "CapacityIntervalRecoveryBound",
+    "derive_capacity_interval_recovery_bound",
     "P2CapacityFeedbackReference",
     "P2CapacityFeedbackCycle",
     "P2CapacityFeedbackBound",
@@ -29,6 +34,73 @@ __all__ = [
     "derive_p2_binary64_coupling_lattice",
     "observe_p2_binary64_coupling_lattice",
 ]
+
+
+@dataclass(frozen=True)
+class CapacityIntervalRecoveryBound:
+    """Sharp target-separation bounds, conditional on interval preservation."""
+
+    capacity: Vector
+    contraction: Fraction
+    mean_capacity: Fraction
+    perturbed_capacity: Vector
+    original_interval: tuple[Fraction, Fraction]
+    invariant_interval: tuple[Fraction, Fraction]
+    original_ratio: Fraction
+    admissible_ratio: Fraction
+    fixed_scale_separation: Fraction
+    rescaled_separation: Fraction
+    minimizing_scale: Fraction
+    additive_separation: Fraction
+    minimizing_offset: Fraction
+
+
+def derive_capacity_interval_recovery_bound(
+    capacity, *, contraction
+) -> CapacityIntervalRecoveryBound:
+    """Bound recovery error after contracting capacity toward its own mean.
+
+    For positive nu*, set nu_e=(1-e)*nu*+e*mean(nu*) with 0<e<=1.
+    Let m,M be the original extrema and l,u the perturbed extrema. IF every
+    later capacity w stays in [l,u], then ||w-nu*||_inf>=max(l-m,M-u).
+    For EVERY common scale c>0, ||w-c*nu*||_inf>=(M*l-m*u)/(M+m).
+    The latter follows from the two extreme coordinates and is sharp over
+    this box at c=(l+u)/(m+M). It is positive exactly for nonuniform nu*.
+    Allowing a common additive offset instead gives the lower bound
+    ((M-m)-(u-l))/2=e*(M-m)/2. Its minimizing offset is
+    (l+u-m-M)/2 over all real offsets; this minimizer need not keep nu*+offset
+    positive. The bound remains valid for that smaller positive domain.
+
+    This algebra does not evolve a graph, prove interval invariance, select
+    operators or authenticate runtime. Contraction is a declared perturbation,
+    not a new dynamical coefficient. No claim is made about identities that
+    discard capacity or change support. Exact rationals remain exact.
+    """
+    values = ordered_vector(capacity, "capacity")
+    if not values or any(value <= 0 for value in values):
+        raise ValueError("capacity must be nonempty and strictly positive")
+    epsilon = exact_or_represented_real(contraction, "contraction")
+    if not 0 < epsilon <= 1:
+        raise ValueError("contraction must lie in (0, 1]")
+    mean = sum(values, Fraction(0)) / len(values)
+    perturbed = tuple((1 - epsilon) * value + epsilon * mean for value in values)
+    m, maximum = min(values), max(values)
+    lower, upper = min(perturbed), max(perturbed)
+    return CapacityIntervalRecoveryBound(
+        values,
+        epsilon,
+        mean,
+        perturbed,
+        (m, maximum),
+        (lower, upper),
+        maximum / m,
+        upper / lower,
+        max(lower - m, maximum - upper),
+        (maximum * lower - m * upper) / (maximum + m),
+        (lower + upper) / (m + maximum),
+        ((maximum - m) - (upper - lower)) / 2,
+        (lower + upper - m - maximum) / 2,
+    )
 
 
 @dataclass(frozen=True)
@@ -528,7 +600,8 @@ def observe_p2_binary64_coupling_lattice(
 
     Both inputs must be built-in finite floats in [1,2]; the neighbor is exactly
     1.0. The rounded result must equal the production helper, including its
-    fsum/singleton mean, subtraction, multiplication and addition order. Equality
+    equal-input identity or its fsum/singleton mean, subtraction, multiplication
+    and addition order for nonuniform inputs. Equality
     verifies these detached numeric inputs only, not the caller's graph, grammar,
     history, pressure refresh, platform provenance or future execution. The
     eventual index concerns repetition of this restricted numeric map alone.

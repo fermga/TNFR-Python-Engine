@@ -182,10 +182,6 @@ __all__ = [
 # RESEARCH-PHASE UTILITIES (Not in modular implementations)
 # ============================================================================
 
-# Centralised helpers — single source of truth in _helpers.py
-from ._helpers import get_phase as _get_phase  # noqa: E402
-from ._helpers import wrap_angle as _wrap_angle  # noqa: E402
-
 
 def path_integrated_gradient(G: Any, source: Any, target: Any) -> float:
     """Compute path-integrated phase gradient along a shortest path.
@@ -293,54 +289,16 @@ def measure_phase_symmetry(G: Any) -> float:
 
 
 def compute_phase_winding(G: Any, cycle_nodes: list[Any]) -> int:
-    """Compute winding number (topological charge) for a closed cycle.
+    """Read integer phase winding on a declared non-ambiguous graph cycle.
 
-    **Status**: RESEARCH (topological analysis support)
-
-    Definition
-    ----------
-    For a closed loop of nodes, count full rotations of phase:
-        q = (1/2π) Σ_{edges in cycle} Δφ_wrapped
-
-    Returns
-    -------
-    int
-        Winding number q. Non-zero values indicate phase vortices/defects
-        enclosed by the loop.
-
-    Parameters
-    ----------
-    G : TNFRGraph
-        NetworkX-like graph with per-node phase attribute.
-    cycle_nodes : list
-        Ordered list of node IDs forming a closed cycle. Function will
-        connect the last node back to the first to complete the loop.
-
-    Returns
-    -------
-    int
-        Integer winding number (topological charge). Values != 0 indicate
-        a phase vortex/defect enclosed by the loop.
-
-    Notes
-    -----
-    - Telemetry-only; does not mutate EPI.
-    - Robust to local reparameterizations of phase due to circular wrapping.
-    - If fewer than 2 nodes are provided, returns 0.
+    Delegate support, phase and branch admission to the shared winding owner.
+    Missing edges, repeated nodes, incomplete cycles and undefined wrap-boundary
+    cases raise ``ValueError``; a nonexistent loop is not a zero-winding loop.
+    This read-only integer is not a physical particle or defect classification.
     """
-    if not cycle_nodes or len(cycle_nodes) < 2:
-        return 0
+    from .emergent_particles import winding_number
 
-    total = 0.0
-    seq = list(cycle_nodes)
-    # Ensure closure by including last->first
-    for i, j in zip(seq, seq[1:] + [seq[0]]):
-        phi_i = _get_phase(G, i)
-        phi_j = _get_phase(G, j)
-        total += _wrap_angle(phi_j - phi_i)
-
-    q = int(round(total / (2.0 * math.pi)))
-    return q
+    return winding_number(G, order=cycle_nodes)[0]
 
 
 # Nodal-topology classification thresholds (TNFR.pdf §1.4.1: radial / annular /
@@ -784,161 +742,132 @@ def fit_correlation_length_exponent(
 # ============================================================================
 
 
-def _extract_field_values(field_dict_list, G):
-    """Extract aligned arrays from field dictionaries.
-
-    Helper function to convert field dictionaries to aligned numpy arrays.
-    """
-    if not field_dict_list:
-        return []
-
-    # Find common keys across all field dictionaries
-    common_keys = set(field_dict_list[0].keys())
-    for field_dict in field_dict_list[1:]:
-        common_keys &= set(field_dict.keys())
-
-    if not common_keys:
-        return []
-
-    # Sort keys for consistent ordering
-    sorted_keys = sorted(common_keys)
-
-    # Extract aligned arrays
-    aligned_arrays = []
-    for field_dict in field_dict_list:
-        aligned_arrays.append(np.array([field_dict[key] for key in sorted_keys]))
-
-    return aligned_arrays
+def _aligned_field_arrays(nodes, *field_maps):
+    """Align complete field maps with the declared graph iteration order."""
+    return tuple(
+        np.asarray([field[node] for node in nodes], dtype=float) for field in field_maps
+    )
 
 
-def compute_complex_geometric_field_arrays(G: Any) -> dict[str, Any]:
-    """Compute unified complex geometric field Ψ = K_φ + i·J_φ (array form).
-
-    Delegates to :func:`tnfr.physics.unified.compute_complex_geometric_field`
-    (single source of truth) and reshapes the result into aligned numpy arrays
-    with an additional K_φ ↔ J_φ correlation measurement.
-
-    Returns:
-        dict with keys: psi_real, psi_imag, psi_magnitude, psi_phase,
-        correlation, num_nodes.
-    """
-    from .unified import compute_complex_geometric_field as _psi_dict
-
-    psi = _psi_dict(G)
-    if not psi:
-        return {
-            "psi_real": np.array([]),
-            "psi_imag": np.array([]),
-            "psi_magnitude": np.array([]),
-            "psi_phase": np.array([]),
-            "correlation": 0.0,
-            "num_nodes": 0,
-        }
-
-    nodes = sorted(psi.keys())
-    k_phi = np.array([psi[n].real for n in nodes])
-    j_phi = np.array([psi[n].imag for n in nodes])
+def _complex_field_array_view(nodes, psi):
+    k_phi = np.asarray([psi[node].real for node in nodes], dtype=float)
+    j_phi = np.asarray([psi[node].imag for node in nodes], dtype=float)
     psi_complex = k_phi + 1j * j_phi
-
     correlation = 0.0
-    num_nodes = len(nodes)
-    if num_nodes > 1 and np.std(k_phi) > 1e-10 and np.std(j_phi) > 1e-10:
+    if len(nodes) > 1 and np.std(k_phi) > 1e-10 and np.std(j_phi) > 1e-10:
         correlation = float(np.corrcoef(k_phi, j_phi)[0, 1])
         if np.isnan(correlation):
             correlation = 0.0
-
     return {
+        "nodes": nodes,
         "psi_real": k_phi,
         "psi_imag": j_phi,
         "psi_magnitude": np.abs(psi_complex),
         "psi_phase": np.angle(psi_complex),
         "correlation": correlation,
-        "num_nodes": num_nodes,
+        "num_nodes": len(nodes),
     }
+
+
+def compute_complex_geometric_field_arrays(G: Any) -> dict[str, Any]:
+    """Read Psi = K_phi + i J_phi as arrays aligned with returned ``nodes``.
+
+    ``nodes`` follows graph iteration order, including incomparable labels.
+    The underlying per-node field remains owned by ``physics.unified``.
+    Correlation retains the historical zero convention for constant samples.
+    """
+    from .unified import compute_complex_geometric_field as _psi_dict
+
+    return _complex_field_array_view(tuple(G), _psi_dict(G))
 
 
 # Backward-compatible alias (prefer compute_complex_geometric_field_arrays)
 compute_complex_geometric_field = compute_complex_geometric_field_arrays
 
 
+def _emergent_field_array_view(nodes, derived):
+    names = ("chirality", "symmetry_breaking", "coherence_coupling")
+    arrays = _aligned_field_arrays(nodes, *(derived[name] for name in names))
+    return {"nodes": nodes, "num_nodes": len(nodes), **dict(zip(names, arrays))}
+
+
 def compute_emergent_fields(G: Any) -> dict[str, Any]:
-    """Compute emergent fields χ, 𝒮, 𝒞 (array form).
+    """Read the three composite fields, aligned with returned ``nodes``.
 
-    Delegates to the per-node implementations in
-    :mod:`tnfr.physics.unified` and returns aligned numpy arrays.
-
-    Returns:
-        dict with keys: chirality, symmetry_breaking, coherence_coupling,
-        num_nodes.
+    Capture each required base field once. These are algebraic snapshot
+    coordinates; their names do not establish physical emergence.
     """
-    from .unified import compute_chirality_field as _chi
-    from .unified import compute_coherence_coupling_field as _cc
-    from .unified import compute_symmetry_breaking_field as _sb
+    from .unified import (
+        _capture_structural_fields,
+        _chirality_field,
+        _coherence_coupling_field,
+        _complex_geometric_field,
+        _symmetry_breaking_field,
+    )
 
-    chi = _chi(G)
-    sb = _sb(G)
-    cc = _cc(G)
+    fields = _capture_structural_fields(G)
+    psi = _complex_geometric_field(fields.k_phi, fields.j_phi)
+    return _emergent_field_array_view(
+        tuple(G),
+        {
+            "chirality": _chirality_field(
+                fields.grad_phi, fields.k_phi, fields.j_phi, fields.j_dnfr
+            ),
+            "symmetry_breaking": _symmetry_breaking_field(
+                fields.grad_phi, fields.k_phi, fields.j_phi, fields.j_dnfr
+            ),
+            "coherence_coupling": _coherence_coupling_field(fields.phi_s, psi),
+        },
+    )
 
-    if not chi:
-        return {
-            "chirality": np.array([]),
-            "symmetry_breaking": np.array([]),
-            "coherence_coupling": np.array([]),
-            "num_nodes": 0,
-        }
 
-    nodes = sorted(chi.keys())
+def _tensor_field_array_view(nodes, derived):
+    energy, charge, density = _aligned_field_arrays(
+        nodes,
+        derived["energy_density"],
+        derived["historical_q_density"],
+        derived["charge_density"],
+    )
     return {
-        "chirality": np.array([chi[n] for n in nodes]),
-        "symmetry_breaking": np.array([sb[n] for n in nodes]),
-        "coherence_coupling": np.array([cc[n] for n in nodes]),
+        "nodes": nodes,
+        "energy_density": energy,
+        "topological_charge": charge,
+        "conservation_density": density,
+        "conservation_quality": None,
+        "conservation_sample_available": False,
+        "conservation_scope": "single_snapshot_no_temporal_balance",
         "num_nodes": len(nodes),
     }
 
 
 def compute_tensor_invariants(G: Any) -> dict[str, Any]:
-    """Compute tensor invariants ℰ, 𝒬, ρ (array form).
+    """Read quadratic/bilinear snapshot arrays aligned with ``nodes``.
 
-    Delegates to the per-node implementations in
-    :mod:`tnfr.physics.unified` and :mod:`tnfr.physics.conservation`,
-    returning aligned numpy arrays.
-
-    Returns:
-        dict with keys: energy_density, topological_charge,
-        conservation_density, conservation_quality, num_nodes.
+    The legacy ``topological_charge`` is a continuous bilinear coordinate,
+    not integer winding. ``conservation_quality`` is retained as ``None``:
+    one snapshot cannot measure a temporal balance. Availability and scope
+    are explicit; use ``conservation``'s paired snapshots for that assessment.
     """
-    from .conservation import compute_charge_density as _rho
-    from .unified import compute_energy_density as _ed
-    from .unified import compute_topological_charge as _tc
+    from .conservation import _charge_density_from_fields
+    from .unified import (
+        _capture_structural_fields,
+        _energy_density_from_fields,
+        _topological_charge,
+    )
 
-    ed = _ed(G)
-    tc = _tc(G)
-    rho = _rho(G)
-
-    if not ed:
-        return {
-            "energy_density": np.array([]),
-            "topological_charge": np.array([]),
-            "conservation_density": np.array([]),
-            "conservation_quality": 0.0,
-            "num_nodes": 0,
-        }
-
-    nodes = sorted(ed.keys())
-    rho_arr = np.array([rho[n] for n in nodes])
-
-    conservation_quality = 0.0
-    if len(rho_arr) > 1:
-        rho_gradient = np.gradient(rho_arr)
-        conservation_quality = float(1.0 / (1.0 + np.std(rho_gradient)))
-
-    return {
-        "energy_density": np.array([ed[n] for n in nodes]),
-        "topological_charge": np.array([tc[n] for n in nodes]),
-        "conservation_density": rho_arr,
-        "conservation_quality": conservation_quality,
-        "num_nodes": len(nodes),
-    }
+    fields = _capture_structural_fields(G)
+    return _tensor_field_array_view(
+        tuple(G),
+        {
+            "energy_density": _energy_density_from_fields(
+                fields.phi_s, fields.grad_phi, fields.k_phi, fields.j_phi, fields.j_dnfr
+            ),
+            "historical_q_density": _topological_charge(
+                fields.grad_phi, fields.k_phi, fields.j_phi, fields.j_dnfr
+            ),
+            "charge_density": _charge_density_from_fields(fields.phi_s, fields.k_phi),
+        },
+    )
 
 
 def compute_unified_telemetry(G: Any) -> dict[str, Any]:
@@ -973,38 +902,52 @@ def compute_unified_telemetry(G: Any) -> dict[str, Any]:
         - Structural-field scope in docs/STRUCTURAL_FIELDS_TETRAD.md
         - Coherence-length provenance in docs/XI_C_CANONICAL_PROMOTION.md
     """
-    # Canonical diagnostic tetrad telemetry.
+    from .unified import (
+        _complex_geometric_field,
+        _StructuralFieldReadout,
+        _unified_field_suite_from_fields,
+    )
+
+    # One declared snapshot supplies every algebraic view and scalar total.
     canonical_telemetry = compute_structural_telemetry(G)
-
-    # Extended canonical fields
-    extended_suite = compute_extended_canonical_suite(G)
-
-    # Unified field computations (delegate to unified.py via array wrappers)
-    complex_field = compute_complex_geometric_field_arrays(G)
-    emergent_fields = compute_emergent_fields(G)
-    tensor_invariants = compute_tensor_invariants(G)
-
-    # Conservation telemetry (canonical source: conservation.py)
-    try:
-        from .conservation import compute_energy_functional, compute_noether_charge
-
-        conservation = {
-            "noether_charge": compute_noether_charge(G),
-            "structural_energy": compute_energy_functional(G),
-        }
-    except Exception:
-        conservation = {}
+    nodes = tuple(G)
+    captured = _StructuralFieldReadout(
+        phi_s=dict(canonical_telemetry["phi_s"]),
+        grad_phi=dict(canonical_telemetry["grad_phi"]),
+        k_phi=dict(canonical_telemetry["curv_phi"]),
+        j_phi=dict(canonical_telemetry["j_phi"]),
+        j_dnfr=dict(canonical_telemetry["j_dnfr"]),
+    )
+    derived = _unified_field_suite_from_fields(captured)
+    extended_suite = {
+        "phase_current": dict(captured.j_phi),
+        "dnfr_flux": dict(captured.j_dnfr),
+    }
+    complex_field = _complex_field_array_view(
+        nodes, _complex_geometric_field(captured.k_phi, captured.j_phi)
+    )
+    emergent_fields = _emergent_field_array_view(nodes, derived)
+    tensor_invariants = _tensor_field_array_view(nodes, derived)
+    conservation = dict(derived["conservation_metrics"])
 
     # Auxiliary symplectic substrate initialized from extracted graph fields.
     try:
         from .symplectic_substrate import (
+            PhaseSpacePoint,
             background_potential,
-            extract_phase_space_point,
             liouville_divergence,
             substrate_hamiltonian,
         )
 
-        _pt = extract_phase_space_point(G)
+        k_phi, j_phi, phi_s, j_dnfr, grad_phi = _aligned_field_arrays(
+            nodes,
+            captured.k_phi,
+            captured.j_phi,
+            captured.phi_s,
+            captured.j_dnfr,
+            captured.grad_phi,
+        )
+        _pt = PhaseSpacePoint(nodes, k_phi, j_phi, phi_s, j_dnfr, grad_phi)
         symplectic_substrate = {
             "phase_space_dimension": _pt.dimension,
             "hamiltonian": substrate_hamiltonian(_pt),
@@ -1054,6 +997,29 @@ def compute_unified_telemetry(G: Any) -> dict[str, Any]:
 # ============================================================================
 
 
+def _field_magnitude_summary(telemetry: dict[str, Any]) -> dict[str, float | None]:
+    """Reduce existing arrays; absent/empty samples have no measured mean.
+
+    These mean absolute magnitudes feed configured advisory cuts only. They
+    are descriptive statistics, not new state variables or dynamical rules.
+    """
+    from ..metrics.common import finite_mean_absolute
+
+    channels = (
+        ("psi_magnitude_mean", "complex_field", "psi_magnitude"),
+        ("chirality_magnitude_mean", "emergent_fields", "chirality"),
+        ("symmetry_breaking_magnitude_mean", "emergent_fields", "symmetry_breaking"),
+        ("energy_density_mean", "tensor_invariants", "energy_density"),
+    )
+    summary = {}
+    for name, block, field in channels:
+        values = telemetry.get(block, {}).get(field, ())
+        summary[name] = (
+            finite_mean_absolute(values, name=field) if len(values) else None
+        )
+    return summary
+
+
 def analyze_optimization_potential(G: Any) -> dict[str, Any]:
     """
     Analyze mathematical optimization potential using unified field analysis.
@@ -1080,6 +1046,7 @@ def analyze_optimization_potential(G: Any) -> dict[str, Any]:
 
     # Get unified field telemetry
     unified_telemetry = compute_unified_telemetry(G)
+    magnitudes = _field_magnitude_summary(unified_telemetry)
 
     # Create self-optimizing engine
     engine = TNFRSelfOptimizingEngine(
@@ -1104,18 +1071,17 @@ def analyze_optimization_potential(G: Any) -> dict[str, Any]:
         field_optimization_hints.append("use_extreme_correlation_optimization")
 
     # Emergent field analysis
-    emergent_fields = unified_telemetry.get("emergent_fields", {})
-    chirality_magnitude = emergent_fields.get("chirality_magnitude", 0.0)
+    chirality_magnitude = magnitudes["chirality_magnitude_mean"]
 
-    if chirality_magnitude > defaults.CHIRALITY_THRESHOLD:
+    if (
+        chirality_magnitude is not None
+        and chirality_magnitude > defaults.CHIRALITY_THRESHOLD
+    ):
         field_optimization_hints.append("use_chirality_optimization")
 
     # Tensor invariant analysis
-    tensor_invariants = unified_telemetry.get("tensor_invariants", {})
-    energy_density = tensor_invariants.get("energy_density", [])
-
-    if len(energy_density) > 0:
-        avg_energy = np.mean(energy_density)
+    avg_energy = magnitudes["energy_density_mean"]
+    if avg_energy is not None:
         if avg_energy > defaults.HIGH_ENERGY_THRESHOLD:
             field_optimization_hints.append("use_high_energy_optimization")
         elif avg_energy < defaults.LOW_ENERGY_THRESHOLD:
@@ -1123,6 +1089,7 @@ def analyze_optimization_potential(G: Any) -> dict[str, Any]:
 
     return {
         "field_analysis": unified_telemetry,
+        "field_magnitude_summary": magnitudes,
         "mathematical_insights": mathematical_insights,
         "optimization_recommendations": field_optimization_hints,
         "predicted_improvements": {
@@ -1166,20 +1133,24 @@ def recommend_field_optimization_strategy(
 
     # Field-specific optimization strategies
     field_analysis = analysis.get("field_analysis", {})
-    complex_field = field_analysis.get("complex_field", {})
+    magnitudes = analysis.get("field_magnitude_summary")
+    if magnitudes is None:
+        magnitudes = _field_magnitude_summary(field_analysis)
 
-    if complex_field.get("magnitude", 0.0) > defaults.COMPLEX_FIELD_THRESHOLD:
+    psi_mean = magnitudes["psi_magnitude_mean"]
+    if psi_mean is not None and psi_mean > defaults.COMPLEX_FIELD_THRESHOLD:
         field_specific_strategies.append("prioritize_complex_field_computation")
 
-    emergent_fields = field_analysis.get("emergent_fields", {})
+    symmetry_mean = magnitudes["symmetry_breaking_magnitude_mean"]
     if (
-        emergent_fields.get("symmetry_breaking", 0.0)
-        > defaults.SYMMETRY_BREAKING_THRESHOLD
+        symmetry_mean is not None
+        and symmetry_mean > defaults.SYMMETRY_BREAKING_THRESHOLD
     ):
         field_specific_strategies.append("use_symmetry_breaking_acceleration")
 
     return {
         "unified_field_analysis": field_analysis,
+        "field_magnitude_summary": magnitudes,
         "mathematical_recommendations": recommendations.recommended_strategies,
         "field_specific_strategies": field_specific_strategies,
         "predicted_speedups": recommendations.predicted_speedups,

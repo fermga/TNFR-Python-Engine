@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import threading
+from types import SimpleNamespace
 
 import networkx as nx
+import numpy as np
+import pytest
 
 from tnfr.dynamics.emergent_integration_engine import (
     IntegrationOpportunity,
@@ -26,6 +29,11 @@ class _AnalysisEngine:
     def analyze_mathematical_optimization_landscape(self, graph, operation):
         return {"scope": operation}
 
+    def recommend_optimization_strategy(self, graph, operation):
+        return SimpleNamespace(
+            recommended_strategies=[], predicted_speedups={}, mathematical_insights={}
+        )
+
 
 class _AutomaticEngine:
     def __init__(self, *args, **kwargs):
@@ -35,7 +43,7 @@ class _AutomaticEngine:
 def test_field_analysis_keeps_unmeasured_performance_values_neutral(monkeypatch):
     telemetry = {
         "complex_field": {"correlation": 0.99},
-        "emergent_fields": {"chirality_magnitude": 0.75},
+        "emergent_fields": {"chirality": [0.75]},
         "tensor_invariants": {"energy_density": [2.0]},
     }
     monkeypatch.setattr(fields, "_SELF_OPTIMIZING_AVAILABLE", True)
@@ -51,6 +59,52 @@ def test_field_analysis_keeps_unmeasured_performance_values_neutral(monkeypatch)
         "chirality_memory_reduction": None,
         "energy_computation_factor": None,
     }
+
+
+def test_advisory_cuts_reduce_real_multinode_arrays_without_ambiguous_truth(
+    monkeypatch,
+):
+    graph = nx.path_graph(3)
+    for node, phase, pressure in zip(graph, [0.2, 0.7, -0.1], [1.0, 10.0, -3.0]):
+        graph.nodes[node].update(EPI=0.5, nu_f=1.0, theta=phase, delta_nfr=pressure)
+    monkeypatch.setattr(fields, "_SELF_OPTIMIZING_AVAILABLE", True)
+    monkeypatch.setattr(fields, "OptimizationObjective", _Objective)
+    monkeypatch.setattr(fields, "TNFRSelfOptimizingEngine", _AnalysisEngine)
+    analysis = fields.analyze_optimization_potential(graph)
+    snapshot = analysis["field_analysis"]
+    summary = analysis["field_magnitude_summary"]
+    for name, block, channel in (
+        ("psi_magnitude_mean", "complex_field", "psi_magnitude"),
+        ("chirality_magnitude_mean", "emergent_fields", "chirality"),
+        ("symmetry_breaking_magnitude_mean", "emergent_fields", "symmetry_breaking"),
+        ("energy_density_mean", "tensor_invariants", "energy_density"),
+    ):
+        values = snapshot[block][channel]
+        assert values.shape == (3,)
+        assert summary[name] == pytest.approx(float(np.mean(np.abs(values))))
+    assert (
+        "use_chirality_optimization" in analysis["optimization_recommendations"]
+    ) is (summary["chirality_magnitude_mean"] > fields.defaults.CHIRALITY_THRESHOLD)
+    # Reuse the real field observation while isolating recommendation wiring.
+    monkeypatch.setattr(
+        fields, "analyze_optimization_potential", lambda graph: analysis
+    )
+    result = fields.recommend_field_optimization_strategy(graph)
+    assert result["field_magnitude_summary"] == summary
+    for strategy, value, threshold in (
+        (
+            "prioritize_complex_field_computation",
+            summary["psi_magnitude_mean"],
+            fields.defaults.COMPLEX_FIELD_THRESHOLD,
+        ),
+        (
+            "use_symmetry_breaking_acceleration",
+            summary["symmetry_breaking_magnitude_mean"],
+            fields.defaults.SYMMETRY_BREAKING_THRESHOLD,
+        ),
+    ):
+        assert (strategy in result["field_specific_strategies"]) is (value > threshold)
+    assert analysis["performance_evidence"] == "not_measured"
 
 
 def test_auto_field_path_does_not_claim_an_unmeasured_optimization(monkeypatch):

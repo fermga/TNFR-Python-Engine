@@ -31,8 +31,9 @@ from __future__ import annotations
 
 import math
 from abc import ABC, abstractmethod
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Iterator, Mapping
 from concurrent.futures import ProcessPoolExecutor
+from contextlib import contextmanager
 from multiprocessing import get_context
 from numbers import Real
 from typing import Any, Literal, cast
@@ -40,7 +41,7 @@ from typing import Any, Literal, cast
 import networkx as nx
 
 from .._compat import TypeAlias
-from ..alias import collect_attr, get_attr, get_attr_str, set_attr, set_attr_str
+from ..alias import get_attr, get_attr_str, set_attr, set_attr_str
 from ..config.defaults_core import PI
 from ..constants import DEFAULTS
 from ..constants.aliases import (
@@ -103,6 +104,64 @@ def _read_scalar_epi(nd: dict[str, Any]) -> float:
     )
 
 
+def _finite_output(value: Any, parameter: str = "derivative") -> float:
+    """Reject nonfinite solver state and metadata before committing them."""
+    result = float(value)
+    if not math.isfinite(result):
+        raise NetworkConfigError(
+            parameter=parameter, value=result, reason="Solver output must be finite"
+        )
+    return result
+
+
+def _validate_clock_grid(t0: float, dt_step: float, steps: int, method: str) -> float:
+    """Validate the repeated-add clock actually used, without storing a grid."""
+    current = t0
+    for _ in range(steps):
+        following = current + dt_step
+        if not math.isfinite(following) or (dt_step > 0 and following <= current):
+            raise NetworkConfigError(
+                parameter="t",
+                value=following,
+                reason="Every positive solver substep must advance a finite represented clock",
+            )
+        if method == "rk4" and dt_step > 0:
+            midpoint = current + dt_step / INTEGRATORS_HALF_STEP_CANONICAL
+            if not math.isfinite(midpoint):
+                raise NetworkConfigError(
+                    parameter="t",
+                    value=midpoint,
+                    reason="RK4 stage times must be finite",
+                )
+        current = following
+    return current
+
+
+@contextmanager
+def _restore_solver_outputs_on_error(
+    graph: TNFRGraph, keys: tuple[str, ...]
+) -> Iterator[None]:
+    """Restore owned node outputs after a later scalar/extended substep fails.
+
+    Callback effects, graph caches and external state are not transactional.
+    """
+    saved = {
+        node: {key: nd[key] for key in keys if key in nd}
+        for node, nd in graph.nodes(data=True)
+    }
+    try:
+        yield
+    except Exception:
+        for node, original in saved.items():
+            if node not in graph:
+                continue
+            nd = graph.nodes[node]
+            for key in keys:
+                nd.pop(key, None)
+            nd.update(original)
+        raise
+
+
 def _gamma_worker_init(graph: TNFRGraph) -> None:
     """Initialise process-local graph reference for Γ evaluation."""
 
@@ -162,7 +221,16 @@ def _apply_increment_chunk(
             epi = euler_update(epi_i, dt_step, k1)
             dEPI_dt = k1
         d2epi = (dEPI_dt - dEPI_prev) / dt_step if dt_nonzero else 0.0
-        results.append((node, (float(epi), float(dEPI_dt), float(d2epi))))
+        results.append(
+            (
+                node,
+                (
+                    _finite_output(epi, "EPI"),
+                    _finite_output(dEPI_dt),
+                    _finite_output(d2epi),
+                ),
+            )
+        )
 
     return results
 
@@ -270,6 +338,7 @@ def prepare_integration_params(
             )
         steps = max(1, int(math.floor(ratio)))
     dt_step = dt / steps if steps else 0.0
+    _validate_clock_grid(t, dt_step, steps, method_value)
 
     return dt_step, steps, t, cast(Literal["euler", "rk4"], method_value)
 
@@ -334,9 +403,9 @@ def _apply_increments(
         results: NodalUpdate = {}
         for idx, node in enumerate(nodes):
             results[node] = (
-                float(epi[idx]),
-                float(dEPI_dt[idx]),
-                float(d2epi[idx]),
+                _finite_output(epi[idx], "EPI"),
+                _finite_output(dEPI_dt[idx]),
+                _finite_output(d2epi[idx]),
             )
         return results
 
@@ -405,9 +474,8 @@ def _collect_nodal_increments(
     Returns:
         Mapping of nodes to staged integration increments
 
-    Notes:
-        - Units: vf in Hz_str, dnfr dimensionless, base in Hz_str
-        - Preserves TNFR operator closure and structural semantics
+    Pressure units are EPI units divided by capacity and the declared clock.
+    This numerical combination does not establish an operator closure theorem.
     """
 
     nodes: list[NodeId] = list(G.nodes())
@@ -437,8 +505,9 @@ def _collect_nodal_increments(
         )
 
     if np is not None:
-        vf = cast(Any, collect_attr(G, nodes, ALIAS_VF, 0.0))
-        dnfr = cast(Any, collect_attr(G, nodes, ALIAS_DNFR, 0.0))
+        states = [_node_state(G.nodes[node]) for node in nodes]
+        vf = np.asarray([state[0] for state in states], dtype=float)
+        dnfr = np.asarray([state[1] for state in states], dtype=float)
         # CANONICAL TNFR EQUATION: ∂EPI/∂t = νf · ΔNFR(t)
         # This implements the fundamental nodal equation explicitly
         base = vf * dnfr
@@ -598,17 +667,14 @@ def _integrate_vectorized_step(
     nodes = list(G.nodes)
     n_nodes = len(nodes)
     if n_nodes == 0:
-        return t0 + dt_step * steps
+        return _validate_clock_grid(t0, dt_step, steps, method)
 
     # 1. Extract state into arrays
-    vf = cast(Any, collect_attr(G, nodes, ALIAS_VF, 0.0))
-    dnfr = cast(Any, collect_attr(G, nodes, ALIAS_DNFR, 0.0))
-    epi = np.fromiter(
-        (_read_scalar_epi(G.nodes[node]) for node in nodes),
-        dtype=float,
-        count=n_nodes,
+    states = [_node_state(G.nodes[node]) for node in nodes]
+    vf, dnfr, dEPI, epi = (
+        np.asarray([state[column] for state in states], dtype=float)
+        for column in range(4)
     )
-    dEPI = cast(Any, collect_attr(G, nodes, ALIAS_DEPI, 0.0))
 
     # For gamma, we need theta
     theta = collect_theta_attr(G, nodes, 0.0)
@@ -670,6 +736,18 @@ def _integrate_vectorized_step(
             d2EPI = (dEPI - dEPI_prev) / dt_step
         else:
             d2EPI[:] = 0.0
+
+        for values, parameter in (
+            (epi, "EPI"),
+            (dEPI, "dEPI_dt"),
+            (d2EPI, "d2EPI_dt2"),
+        ):
+            if not np.isfinite(values).all():
+                raise NetworkConfigError(
+                    parameter=parameter,
+                    value=values,
+                    reason="Solver output must be finite",
+                )
 
         # Boundary projection must not move a node with zero integrated change.
         changed = epi != epi_previous
@@ -740,58 +818,58 @@ class DefaultIntegrator(AbstractIntegrator):
 
         # Validate the complete input before Gamma can populate graph caches.
         for nd in graph.nodes.values():
-            _read_scalar_epi(nd)
+            _node_state(nd)
 
+        epi_min = float(graph.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)))
+        epi_max = float(graph.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)))
+        clip_mode = str(graph.graph.get("CLIP_MODE", "hard"))
+        if clip_mode not in ("hard", "soft"):
+            clip_mode = "hard"
+        clip_k = float(
+            graph.graph.get("CLIP_SOFT_K", INTEGRATORS_CLIP_SOFT_K_CANONICAL)
+        )
+
+        owned_keys = ALIAS_EPI + ALIAS_EPI_KIND + ALIAS_DEPI + ALIAS_D2EPI
         t_local = t0
-        for _ in range(steps):
-            if resolved_method == "rk4":
-                updates: NodalUpdate = _integrate_rk4(
-                    graph, dt_step, t_local, n_jobs=n_jobs
-                )
-            else:
-                updates = _integrate_euler(graph, dt_step, t_local, n_jobs=n_jobs)
+        with _restore_solver_outputs_on_error(graph, owned_keys):
+            for _ in range(steps):
+                if resolved_method == "rk4":
+                    updates = _integrate_rk4(graph, dt_step, t_local, n_jobs=n_jobs)
+                else:
+                    updates = _integrate_euler(graph, dt_step, t_local, n_jobs=n_jobs)
 
-            for n, (epi, dEPI_dt, d2epi) in updates.items():
-                nd = graph.nodes[n]
-                epi_kind = get_attr_str(nd, ALIAS_EPI_KIND, "")
-
-                # Apply structural boundary preservation
-                epi_min = float(
-                    graph.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0))
-                )
-                epi_max = float(
-                    graph.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0))
-                )
-                clip_mode_str = str(graph.graph.get("CLIP_MODE", "hard"))
-                # Validate clip mode and cast to proper type
-                if clip_mode_str not in ("hard", "soft"):
-                    clip_mode_str = "hard"
-                clip_mode: Literal["hard", "soft"] = clip_mode_str  # type: ignore[assignment]
-                clip_k = float(
-                    graph.graph.get("CLIP_SOFT_K", INTEGRATORS_CLIP_SOFT_K_CANONICAL)
-                )
-
-                epi_previous = _read_scalar_epi(nd)
-                epi_clipped = (
-                    epi_previous
-                    if epi == epi_previous
-                    else structural_clip(
-                        epi,
-                        lo=epi_min,
-                        hi=epi_max,
-                        mode=clip_mode,
-                        k=clip_k,
-                        record_stats=False,
+                # Stage every projected result before committing this substep.
+                staged = {}
+                for n, (epi, dEPI_dt, d2epi) in updates.items():
+                    nd = graph.nodes[n]
+                    epi_previous = _read_scalar_epi(nd)
+                    epi_clipped = (
+                        epi_previous
+                        if epi == epi_previous
+                        else structural_clip(
+                            epi,
+                            lo=epi_min,
+                            hi=epi_max,
+                            mode=clip_mode,
+                            k=clip_k,
+                            record_stats=False,
+                        )
                     )
-                )
+                    staged[n] = (
+                        _finite_output(epi_clipped, "EPI"),
+                        _finite_output(dEPI_dt),
+                        _finite_output(d2epi),
+                        get_attr_str(nd, ALIAS_EPI_KIND, ""),
+                    )
 
-                set_attr(nd, ALIAS_EPI, epi_clipped)
-                if epi_kind:
-                    set_attr_str(nd, ALIAS_EPI_KIND, epi_kind)
-                set_attr(nd, ALIAS_DEPI, dEPI_dt)
-                set_attr(nd, ALIAS_D2EPI, d2epi)
-
-            t_local += dt_step
+                for n, (epi, dEPI_dt, d2epi, epi_kind) in staged.items():
+                    nd = graph.nodes[n]
+                    set_attr(nd, ALIAS_EPI, epi)
+                    if epi_kind:
+                        set_attr_str(nd, ALIAS_EPI_KIND, epi_kind)
+                    set_attr(nd, ALIAS_DEPI, dEPI_dt)
+                    set_attr(nd, ALIAS_D2EPI, d2epi)
+                t_local += dt_step
 
         graph.graph["_t"] = t_local
 
@@ -890,10 +968,12 @@ def _node_state(nd: dict[str, Any]) -> tuple[float, float, float, float]:
         - EPI must belong to the finite signed scalar chart; rich BEPI is rejected
     """
 
-    vf = get_attr(nd, ALIAS_VF, 0.0)
-    dnfr = get_attr(nd, ALIAS_DNFR, 0.0)
-    dEPI_dt_prev = get_attr(nd, ALIAS_DEPI, 0.0)
+    from .canonical import validate_nodal_gradient, validate_structural_frequency
+
     epi_i = _read_scalar_epi(nd)
+    vf = get_attr(nd, ALIAS_VF, 0.0, strict=True, conv=validate_structural_frequency)
+    dnfr = get_attr(nd, ALIAS_DNFR, 0.0, strict=True, conv=validate_nodal_gradient)
+    dEPI_dt_prev = get_attr(nd, ALIAS_DEPI, 0.0, strict=True, conv=_finite_output)
     return vf, dnfr, dEPI_dt_prev, epi_i
 
 
@@ -929,9 +1009,10 @@ def _update_extended_nodal_system(
     if dt_step == 0.0:
         return
 
-    # Reject unsupported EPI before the field readers populate graph caches.
+    # Validate the full nodal input before field readers populate graph caches.
     for nd in G.nodes.values():
-        _read_scalar_epi(nd)
+        _node_state(nd)
+        get_attr(nd, ALIAS_THETA, 0.0, strict=True, conv=_finite_output)
 
     epi_min = float(G.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)))
     epi_max = float(G.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)))
@@ -940,53 +1021,86 @@ def _update_extended_nodal_system(
         clip_mode = "hard"
     clip_k = float(G.graph.get("CLIP_SOFT_K", INTEGRATORS_CLIP_SOFT_K_CANONICAL))
 
-    for _ in range(steps):
-        # Zero flux is a valid canonical field value, never a missing-data signal.
-        phase_current = compute_phase_current(G)
-        pressure_flux = compute_dnfr_flux(G)
-        divergences = compute_flux_divergence_vectorized(G, pressure_flux)
-        updates = {}
-        for node in G:
-            nd = G.nodes[node]
-            vf, dnfr, previous_derivative, epi = _node_state(nd)
-            theta = float(get_attr(nd, ALIAS_THETA, 0.0))
-            result = compute_extended_nodal_system(
-                nu_f=vf,
-                delta_nfr=dnfr,
-                theta=theta,
-                j_phi=phase_current.get(node, 0.0),
-                j_dnfr_divergence=divergences.get(node, 0.0),
-                coupling_strength=_estimate_local_coupling_strength(G, node),
-                validate_units=False,
-            )
-            new_epi = epi + result.classical_derivative * dt_step
-            if new_epi != epi:
-                new_epi = structural_clip(
-                    new_epi, lo=epi_min, hi=epi_max, mode=clip_mode, k=clip_k
+    owned_keys = (
+        ALIAS_EPI
+        + ALIAS_THETA
+        + ALIAS_DNFR
+        + ALIAS_DEPI
+        + ALIAS_D2EPI
+        + ("dtheta_dt", "ddnfr_dt")
+    )
+    with _restore_solver_outputs_on_error(G, owned_keys):
+        for _ in range(steps):
+            # Zero flux is valid; it is never a missing-data signal.
+            phase_current = compute_phase_current(G)
+            pressure_flux = compute_dnfr_flux(G)
+            divergences = compute_flux_divergence_vectorized(G, pressure_flux)
+            updates = {}
+            for node in G:
+                nd = G.nodes[node]
+                vf, dnfr, previous_derivative, epi = _node_state(nd)
+                theta = get_attr(nd, ALIAS_THETA, 0.0, strict=True, conv=_finite_output)
+                result = compute_extended_nodal_system(
+                    nu_f=vf,
+                    delta_nfr=dnfr,
+                    theta=theta,
+                    j_phi=phase_current.get(node, 0.0),
+                    j_dnfr_divergence=divergences.get(node, 0.0),
+                    coupling_strength=_estimate_local_coupling_strength(G, node),
+                    validate_units=False,
                 )
-            new_theta = (theta + result.phase_derivative * dt_step) % (2 * math.pi)
-            new_dnfr = dnfr + result.dnfr_derivative * dt_step
-            if new_dnfr != dnfr:
-                new_dnfr = max(
-                    -INTEGRATORS_DNFR_BOUNDS_CANONICAL,
-                    min(INTEGRATORS_DNFR_BOUNDS_CANONICAL, new_dnfr),
+                rate = _finite_output(result.classical_derivative, "dEPI_dt")
+                phase_rate = _finite_output(result.phase_derivative, "dtheta_dt")
+                pressure_rate = _finite_output(result.dnfr_derivative, "ddnfr_dt")
+                d2epi = _finite_output(
+                    (rate - previous_derivative) / dt_step, "d2EPI_dt2"
                 )
-            updates[node] = (new_epi, new_theta, new_dnfr, result, previous_derivative)
+                new_epi = _finite_output(epi + rate * dt_step, "EPI")
+                if new_epi != epi:
+                    new_epi = structural_clip(
+                        new_epi,
+                        lo=epi_min,
+                        hi=epi_max,
+                        mode=clip_mode,
+                        k=clip_k,
+                    )
+                new_theta = _finite_output(theta + phase_rate * dt_step, "theta") % (
+                    2 * math.pi
+                )
+                new_dnfr = _finite_output(dnfr + pressure_rate * dt_step, "delta_nfr")
+                if new_dnfr != dnfr:
+                    new_dnfr = max(
+                        -INTEGRATORS_DNFR_BOUNDS_CANONICAL,
+                        min(INTEGRATORS_DNFR_BOUNDS_CANONICAL, new_dnfr),
+                    )
+                updates[node] = (
+                    new_epi,
+                    new_theta,
+                    new_dnfr,
+                    rate,
+                    d2epi,
+                    phase_rate,
+                    pressure_rate,
+                )
 
-        for node, (epi, theta, dnfr, result, previous_derivative) in updates.items():
-            nd = G.nodes[node]
-            set_attr(nd, ALIAS_EPI, epi)
-            set_attr(nd, ALIAS_THETA, theta)
-            set_attr(nd, ALIAS_DNFR, dnfr)
-            set_attr(nd, ALIAS_DEPI, result.classical_derivative)
-            set_attr(
-                nd,
-                ALIAS_D2EPI,
-                (result.classical_derivative - previous_derivative) / dt_step,
-            )
-            nd["dtheta_dt"] = result.phase_derivative
-            nd["ddnfr_dt"] = result.dnfr_derivative
-        t_local += dt_step
+            for node, (
+                epi,
+                theta,
+                dnfr,
+                rate,
+                d2epi,
+                phase_rate,
+                pressure_rate,
+            ) in updates.items():
+                nd = G.nodes[node]
+                set_attr(nd, ALIAS_EPI, epi)
+                set_attr(nd, ALIAS_THETA, theta)
+                set_attr(nd, ALIAS_DNFR, dnfr)
+                set_attr(nd, ALIAS_DEPI, rate)
+                set_attr(nd, ALIAS_D2EPI, d2epi)
+                nd["dtheta_dt"] = phase_rate
+                nd["ddnfr_dt"] = pressure_rate
+            t_local += dt_step
     G.graph["_t"] = t_local
 
 

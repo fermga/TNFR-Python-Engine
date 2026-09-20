@@ -10,8 +10,12 @@ it does not infer cycles per second or apply the optional physical Hz bridge.
 The nodal optimizer and FFT engine share this model. Ordinary runtime phase
 coordination instead uses its separately configured relaxation map. Neither
 law may be substituted for the other based only on the nodal EPI identity.
-See ``theory/FORCED_SUPPORT_BALANCE.md`` section 23. This helper returns a
-proposal without mutating the graph.
+Both optimized consumers pair this proposal with isolated EPI diffusion, whose
+pressure does not read phase. The explicit, opt-in composition in
+``physics.p2_phase_form`` instead combines this proposal with fresh multichannel
+pressure on fixed P2. It retains the same supplied angular-rate premise.
+See ``theory/FORCED_SUPPORT_BALANCE.md`` sections 23 and 26. This helper returns
+a proposal without mutating the graph.
 """
 
 from __future__ import annotations
@@ -66,10 +70,38 @@ def propose_u3_gated_phase_step(
     imaginary component is discarded from an inverse spectral transform.
     Nonzero input scalars must remain nonzero when materialized as binary64.
     """
-    from ..operators._phase_gate import U3PhaseGateError, resolve_u3_phase_neighbors
-
     if tuple(graph.nodes()) != tuple(nodes):
         raise TNFRValueError("Phase proposal node order differs from the graph.")
+    return _propose_u3_phase_from_neighbors(
+        graph.graph,
+        nodes,
+        graph.neighbors,
+        phases,
+        frequencies,
+        dt=dt,
+        coupling_strength=coupling_strength,
+    )
+
+
+def _propose_u3_phase_from_neighbors(
+    graph_attributes,
+    nodes,
+    neighbors,
+    phases,
+    frequencies,
+    *,
+    dt,
+    coupling_strength,
+):
+    """Shared arithmetic for live unique support and observed counted support.
+
+    Internal callers supply the node order and neighbor reader. In a counted
+    quotient, repeated indices stand for distinct fine neighbors; an internal
+    neighbor contributes to the admitted denominator even when its sine is zero.
+    Graph metadata and observed multiplicities retain their separate owners.
+    """
+    from ..operators._phase_gate import U3PhaseGateError, resolve_u3_phase_neighbors
+
     count = len(nodes)
     phase = _finite_vector(phases, count, "phase")
     frequency = _finite_vector(frequencies, count, "structural frequency")
@@ -91,9 +123,9 @@ def propose_u3_gated_phase_step(
     for offset, node in enumerate(nodes):
         try:
             gate = resolve_u3_phase_neighbors(
-                graph.graph,
+                graph_attributes,
                 phase[offset],
-                graph.neighbors(node),
+                neighbors(node),
                 phase_getter=lambda neighbor: phase[index[neighbor]],
                 operator_code="UM",
                 require_compatible=False,

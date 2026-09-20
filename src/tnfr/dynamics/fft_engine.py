@@ -6,6 +6,9 @@ product nu_f * DeltaNFR in node space. It also advances phase through the
 shared simultaneous U3-gated proposal. The implementation is an exact
 coordinate realization of its declared model, not a generic FFT speed claim,
 a wavelet decomposition, or an implementation of arbitrary DeltaNFR channels.
+The evolved phase does not feed into the EPI pressure. Phase locking in this
+model cannot by itself sustain differentiated form; capacity and support remain
+inputs to the step. Canonical multichannel pressure requires its separate owner.
 """
 
 import hashlib

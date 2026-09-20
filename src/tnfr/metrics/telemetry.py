@@ -292,8 +292,15 @@ class TelemetryEmitter:
                     if "tensor_invariants" in unified_data:
                         ti = unified_data["tensor_invariants"]
                         if "conservation_quality" in ti:
-                            metrics["conservation_quality"] = float(
-                                ti["conservation_quality"]
+                            quality = ti["conservation_quality"]
+                            metrics["conservation_quality"] = (
+                                None if quality is None else float(quality)
+                            )
+                            metrics["conservation_sample_available"] = ti.get(
+                                "conservation_sample_available", False
+                            )
+                            metrics["conservation_scope"] = ti.get(
+                                "conservation_scope", "unspecified"
                             )
                         if (
                             "energy_density" in ti

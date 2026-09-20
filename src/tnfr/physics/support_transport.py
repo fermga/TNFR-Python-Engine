@@ -22,9 +22,11 @@ __all__ = [
     "SupportTransportSnapshot",
     "SupportTransportReset",
     "SupportTransportEuler",
+    "SupportTransportClippedFlow",
     "observe_support_transport",
     "observe_support_transport_reset",
     "observe_support_transport_euler",
+    "observe_support_transport_clipped_flow",
     "RegionalSupportBalance",
     "observe_regional_support_balance",
     "RegionalSupportEuler",
@@ -80,6 +82,22 @@ def _support_gradient(support, values):
         )
         for i, row in enumerate(support)
     )
+
+
+def _support_components(rows):
+    """Ordered index components of validated reciprocal support, with isolates."""
+    remaining, result = set(range(len(rows))), []
+    while remaining:
+        first = min(remaining)
+        reached, pending = {first}, [first]
+        while pending:
+            i = pending.pop()
+            new = set(rows[i]) - reached
+            reached.update(new)
+            pending.extend(new)
+        remaining.difference_update(reached)
+        result.append(tuple(sorted(reached)))
+    return tuple(result)
 
 
 def _from_data(nodes, conductance, support_neighbors, epi, capacity, pressure):
@@ -772,4 +790,70 @@ def observe_support_transport_euler(before, after, dt) -> SupportTransportEuler:
         defect_term,
         change,
         change - drift - quadratic - defect_term,
+    )
+
+
+@dataclass(frozen=True)
+class SupportTransportClippedFlow:
+    """Exact reference clipping and the remaining observed endpoint defect."""
+
+    held: SupportTransportEuler
+    lower: Fraction
+    upper: Fraction
+    clipped_epi: Vector
+    implementation_state_defect: Vector
+    unclipped_energy_change: Fraction
+    clipping_term: Fraction
+    clipped_energy_change: Fraction
+    implementation_term: Fraction
+    identity_residual: Fraction
+
+
+def observe_support_transport_clipped_flow(
+    before, after, dt, *, lower, upper
+) -> SupportTransportClippedFlow:
+    """Separate a common-rail hard-clip reference from endpoint discrepancy.
+
+    Reuse the held-rate Euler budget with y=x+h*nu*p_before, then form the
+    exact reference z=min(upper, max(lower, y)) coordinatewise. The energy
+    telescope is E(after)-E(x)=[E(y)-E(x)]+[E(z)-E(y)]+[E(after)-E(z)].
+    The middle term is nonpositive for the admitted symmetric nonnegative
+    conductance. The last term includes every remaining implementation or
+    model discrepancy; this detached observation does not identify its cause.
+
+    Initial EPI must lie inside the fixed common interval. With fixed rate,
+    nonnegative exact substep durations compose to this clipped endpoint:
+    for positive velocity nested upper minima collapse, and for negative
+    velocity nested lower maxima collapse. This is an exact held-flow result,
+    not binary64 partition invariance, a soft-clip result or a pressure-refresh
+    theorem. Rational inputs remain exact; no float conversion of y occurs.
+    Neither the supplied rails nor any internal runtime clipping is certified.
+    """
+    lo = exact_or_represented_real(lower, "lower")
+    hi = exact_or_represented_real(upper, "upper")
+    if lo > hi:
+        raise ValueError("lower must not exceed upper")
+    held = observe_support_transport_euler(before, after, dt)
+    if any(not lo <= value <= hi for value in held.before.epi):
+        raise ValueError("initial EPI must lie inside the common interval")
+    clipped = tuple(min(hi, max(lo, value)) for value in held.expected_epi)
+    defect = tuple(x - z for x, z in zip(held.after.epi, clipped))
+    edges = held.before.conductance
+    unclipped_energy = _energy(edges, held.expected_epi)
+    clipped_energy = _energy(edges, clipped)
+    unclipped_change = unclipped_energy - held.before.dirichlet_energy
+    clipping = clipped_energy - unclipped_energy
+    clipped_change = clipped_energy - held.before.dirichlet_energy
+    implementation = held.after.dirichlet_energy - clipped_energy
+    return SupportTransportClippedFlow(
+        held,
+        lo,
+        hi,
+        clipped,
+        defect,
+        unclipped_change,
+        clipping,
+        clipped_change,
+        implementation,
+        held.energy_change - unclipped_change - clipping - implementation,
     )

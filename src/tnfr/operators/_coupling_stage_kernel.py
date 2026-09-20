@@ -43,8 +43,12 @@ def coupling_capacity_blend(
     Callers provide validated finite nonnegative capacities, a nonempty
     compatible-neighbor tuple and a factor in [0,1], and validate the result.
     Keeping the mean, subtraction, product and sum separate is part of the
-    represented numeric contract; this is not a fused multiply-add.
+    represented numeric contract for nonuniform inputs; this is not a fused
+    multiply-add. Identical inputs retain their exact fixed point without
+    rounding a redundant sum or overflowing it before division.
     """
+    if neighbors and all(value == capacity for value in neighbors):
+        return capacity
     neighbor_mean = math.fsum(neighbors) / len(neighbors)
     return capacity + factor * (neighbor_mean - capacity)
 

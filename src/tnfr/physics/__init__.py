@@ -287,6 +287,17 @@ from .p5_memory_truncation import (
     P5MemoryTruncationSample,
     bound_p5_memory_truncation,
 )
+from .p5_hidden_form import (
+    P5HiddenFormBound,
+    P5HiddenFormSample,
+    bound_p5_hidden_form,
+)
+from .p2_phase_form import (
+    P2PhaseFormModel,
+    P2PhaseFormStep,
+    derive_p2_phase_form_model,
+    propose_p2_phase_form_step,
+)
 from .p5_reduction import (
     P5ReducedState,
     P5ReductionGeometry,
@@ -865,10 +876,12 @@ from .cycle_support_dynamics import (
     observe_cycle_support_reset,
 )
 from .support_transport import (
+    SupportTransportClippedFlow,
     SupportTransportEuler,
     SupportTransportReset,
     SupportTransportSnapshot,
     observe_support_transport,
+    observe_support_transport_clipped_flow,
     observe_support_transport_euler,
     observe_support_transport_reset,
 )
@@ -891,17 +904,23 @@ from .forced_support import (
     observe_forced_support_target,
 )
 from .forcing_realization import (
+    ForcingCapacityDifference,
+    ForcingDirichletBalance,
     NonEpiForcingObservation,
     capture_non_epi_forcing,
     decompose_non_epi_forcing,
+    observe_forcing_capacity_difference,
+    observe_forcing_dirichlet_balance,
 )
 from .capacity_feedback import (
+    CapacityIntervalRecoveryBound,
     P2Binary64CouplingObservation,
     P2Binary64CouplingReference,
     P2CapacityFeedbackBound,
     P2CapacityFeedbackCycle,
     P2CapacityFeedbackReference,
     bound_p2_capacity_feedback,
+    derive_capacity_interval_recovery_bound,
     derive_p2_binary64_coupling_lattice,
     derive_p2_capacity_feedback,
     observe_p2_binary64_coupling_lattice,
@@ -1051,6 +1070,13 @@ __all__ = [
     "P5MemoryTruncationReference",
     "P5MemoryTruncationSample",
     "bound_p5_memory_truncation",
+    "P5HiddenFormBound",
+    "P5HiddenFormSample",
+    "bound_p5_hidden_form",
+    "P2PhaseFormModel",
+    "P2PhaseFormStep",
+    "derive_p2_phase_form_model",
+    "propose_p2_phase_form_step",
     "P5ReducedState",
     "P5ReductionGeometry",
     "P5RemeshReduction",
@@ -1078,9 +1104,11 @@ __all__ = [
     "SupportTransportSnapshot",
     "SupportTransportReset",
     "SupportTransportEuler",
+    "SupportTransportClippedFlow",
     "observe_support_transport",
     "observe_support_transport_reset",
     "observe_support_transport_euler",
+    "observe_support_transport_clipped_flow",
     "ForcedSupportBalance",
     "ForcedSupportEvent",
     "ForcedSupportJumpEnergy",
@@ -1098,9 +1126,15 @@ __all__ = [
     "observe_forced_support_step",
     "observe_forced_support_target",
     "NonEpiForcingObservation",
+    "ForcingDirichletBalance",
+    "ForcingCapacityDifference",
+    "observe_forcing_capacity_difference",
     "capture_non_epi_forcing",
     "decompose_non_epi_forcing",
+    "observe_forcing_dirichlet_balance",
     "P2CapacityFeedbackBound",
+    "CapacityIntervalRecoveryBound",
+    "derive_capacity_interval_recovery_bound",
     "P2CapacityFeedbackCycle",
     "P2CapacityFeedbackReference",
     "bound_p2_capacity_feedback",

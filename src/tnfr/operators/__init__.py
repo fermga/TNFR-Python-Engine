@@ -1276,9 +1276,8 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
     epi_bar_result = epi_bar
     kind_result = proposed_kind
 
-    # CANONICAL EFFECT 1: νf amplification through resonance
-    # This is always active - it's a fundamental property of resonance per TNFR theory
-    # Only amplify when the compatible-neighbor EPI trigger is active
+    # Configured capacity amplification is conditional on the compatible-
+    # neighbor EPI trigger; its coefficient is not derived by the nodal law.
     if amplification_active:
         node.vf = proposed_vf
 
@@ -1597,24 +1596,24 @@ def _op_THOL(node: NodeProtocol, gf: GlyphFactors) -> None:  # THOL — Self-org
 def _op_ZHIR(node: NodeProtocol, gf: GlyphFactors) -> None:  # ZHIR — Mutation
     """Apply canonical phase transformation θ → θ' based on structural dynamics.
 
-    ZHIR (Mutation) implements the canonical TNFR phase transformation whose
-    DIRECTION and firing are governed by the node's reorganization state (ΔNFR),
-    implementing the physics: θ → θ' when ΔEPI/Δt > ξ (AGENTS.md §11,
-    TNFR.pdf §2.2.11). Per the operator contract, ZHIR acts on the θ (phase)
-    channel; ΔNFR enters only through its SIGN (rotation direction) and the
-    bifurcation threshold (whether ZHIR fires, U4b). The shift MAGNITUDE is a
-    calibration constant, not a function of |ΔNFR| — only channel and direction
-    are canonical (the shift magnitude is an operational calibration value;
-    only π is a genuine structural scale).
+    ZHIR (Mutation) acts on the phase channel. Its signed branch reads the
+    current stored ΔNFR only for rotation direction. Admission separately
+    requires active capacity, a live positive EPI-history secant above ξ,
+    and grammar context including prior IL and a recent destabilizer (U4b).
+    Current νf*ΔNFR is a predicted rate, not that observed history. Native
+    selection adds its own diagnostic policy before admission. The shift
+    magnitude is a configured constant, not a function of |ΔNFR| or a law
+    uniquely derived from the nodal equation.
 
     **Canonical Behavior**:
     - Direction: Based on ΔNFR sign (positive → forward phase, negative → backward)
+      with represented zero following its sign bit through ``copysign``.
     - Magnitude: Calibrated constant theta_shift_factor · (π/4); independent of |ΔNFR|
     - Regime detection: Identifies quadrant crossings (π/2 boundaries)
     - RNG-free: Same validated state and configuration produce the same result
 
-    The transformation preserves structural identity (epi_kind) while shifting the
-    operational regime, enabling adaptation without losing coherence.
+    The primitive preserves EPI and epi_kind while changing phase. This local
+    contract does not establish maintenance or formation of a coherent pattern.
 
     Parameters
     ----------

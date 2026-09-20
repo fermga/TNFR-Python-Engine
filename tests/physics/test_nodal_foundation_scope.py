@@ -11,7 +11,7 @@ from tnfr.types import ensure_bepi, real_scalar_epi, scalarize_epi
 
 
 def _pressure(field):
-    graph = nx.path_graph(2)
+    graph = nx.path_graph(len(field))
     graph.graph["DNFR_WEIGHTS"] = dict(epi=1.0, phase=0.0, vf=0.0, topo=0.0)
     for node, value in zip(graph, field):
         graph.nodes[node].update(EPI=value, nu_f=1.0, theta=0.0)
@@ -29,6 +29,82 @@ def test_nonlinear_epi_relabeling_requires_a_pushforward_pressure():
     assert pushed_velocity != renamed.rate
     # A new metric/state representation cannot retain the old pressure rule
     # merely by retaining the text of x'=nu*p.
+
+
+def test_positive_capacity_rescaling_cannot_repair_a_nonlinear_chart_pressure():
+    original = _pressure((1.0, 2.0, 3.0))
+    renamed = _pressure((1.0, 4.0, 9.0))  # Squaring is a smooth chart on x>0.
+    pushed_rate = tuple(2 * x * rate for x, rate in zip(original.epi, original.rate))
+
+    assert original.rate == (1, 0, -1)
+    assert pushed_rate == (2, 0, -6)
+    assert renamed.stored_pressure == (3, 1, -5)
+    # The central rate must stay zero, but every strictly positive capacity
+    # times the recomputed central pressure 1 is positive. This failure cannot
+    # be absorbed into a positive capacity or common clock rescaling.
+    assert pushed_rate[1] == 0 < renamed.stored_pressure[1]
+
+
+def test_valid_square_chart_transforms_both_energy_gradient_and_mobility():
+    s = pytest.importorskip("sympy")
+    y0, y1 = s.symbols("y0 y1", positive=True)
+    root = s.Matrix([s.sqrt(y0), s.sqrt(y1)])
+    pulled_energy = (root[1] - root[0]) ** 2 / 2
+    energy_gradient = s.Matrix([s.diff(pulled_energy, y) for y in (y0, y1)])
+    jacobian = s.diag(2 * root[0], 2 * root[1])
+    transformed_mobility = jacobian * jacobian.T  # Original P2 mobility is I.
+    original_rate = s.Matrix([root[1] - root[0], root[0] - root[1]])
+    transformed_rate = -transformed_mobility * energy_gradient
+
+    assert (transformed_rate - jacobian * original_rate).applyfunc(
+        s.simplify
+    ) == s.zeros(2, 1)
+    original = _pressure((1.0, 2.0))
+    at_state = {y0: 1, y1: 4}
+    pushed_live_rate = tuple(
+        2 * x * rate for x, rate in zip(original.epi, original.rate)
+    )
+    assert tuple(transformed_rate.subs(at_state)) == pushed_live_rate
+    assert (energy_gradient.dot(transformed_rate)).subs(
+        at_state
+    ) == original.energy_rate
+    assert original.energy_rate < 0
+    # No pressure is fitted from a desired response. The same original law
+    # and energy are expressed in a different regular coordinate system.
+
+
+def test_injective_singular_cube_encoding_admits_a_spurious_absorbing_branch():
+    s = pytest.importorskip("sympy")
+    t = s.Symbol("t", positive=True)
+    original = _pressure((0.0, 1.0))
+    assert original.rate == (1, -1)
+    true_lift = ((1 - s.exp(-2 * t)) / 2, (1 + s.exp(-2 * t)) / 2)
+    false_lift = (s.Integer(0), s.exp(-t))
+
+    for lift in (true_lift, false_lift):
+        encoded = tuple(x**3 for x in lift)
+        assert tuple(y.subs(t, 0) for y in encoded) == (0, 1)
+        for i in range(2):
+            # These explicit roots are nonnegative for t>=0, so this is the
+            # pushed row y_i'=3*|y_i|^(2/3)*(cbrt(y_j)-cbrt(y_i)).
+            pushed_rhs = 3 * lift[i] ** 2 * (lift[1 - i] - lift[i])
+            assert s.simplify(s.diff(encoded[i], t) - pushed_rhs) == 0
+
+    true_residual = tuple(
+        s.simplify(s.diff(true_lift[i], t) - (true_lift[1 - i] - true_lift[i]))
+        for i in range(2)
+    )
+    false_residual = tuple(
+        s.simplify(s.diff(false_lift[i], t) - (false_lift[1 - i] - false_lift[i]))
+        for i in range(2)
+    )
+    assert true_residual == (0, 0)
+    assert false_residual == (-s.exp(-t), 0)
+    assert s.simplify(true_lift[0] ** 3).subs(t, s.log(2)) == s.Rational(27, 512)
+    assert false_lift[0] ** 3 == 0
+    # x->x^3 is injective, but its inverse is not differentiable at zero.
+    # Retaining state information therefore does not alone make the two
+    # differential equations equivalent; this is not an implemented solver.
 
 
 @pytest.mark.parametrize("scale,offset", [(2.0, 3.0), (-2.0, 3.0), (0.5, -1.0)])

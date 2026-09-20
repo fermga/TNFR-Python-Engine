@@ -2,10 +2,19 @@
 
 from __future__ import annotations
 
+import math
+from decimal import Decimal, localcontext
+
 import networkx as nx
 import pytest
 
-from tnfr.metrics.emergence import compute_bifurcation_rate, compute_emergence_index
+from tnfr.mathematics import BEPIElement
+from tnfr.metrics.emergence import (
+    compute_bifurcation_rate,
+    compute_emergence_index,
+    compute_metabolic_efficiency,
+)
+from tnfr.types import ensure_bepi, serialize_bepi
 
 
 def _node(
@@ -78,3 +87,64 @@ def test_operator_step_counter_survives_bounded_glyph_history() -> None:
 
     assert list(data["glyph_history"]) == ["THOL", "SHA"]
     assert current_operator_step(data) == 5
+
+
+@pytest.mark.parametrize("count,value", [(10, 1e308), (1, math.ulp(0.0))])
+def test_emergence_root_stays_finite_when_intermediate_product_does_not(count, value):
+    graph = _node(epi=value, initial_epi=0.0, sub_epi_count=count, thol_count=1)
+    with localcontext() as context:
+        context.prec = 90
+        exact_product = Decimal(count * count) * Decimal.from_float(value) / 10
+        expected = float(exact_product ** (Decimal(1) / 3))
+    actual = compute_emergence_index(graph, 0)
+    assert math.isfinite(actual) and actual > 0
+    assert actual == pytest.approx(expected, rel=2e-14, abs=0)
+
+
+def test_metabolic_division_precedes_unrepresentable_materialization():
+    graph = _node(epi=1e308, initial_epi=-1e308, sub_epi_count=1, thol_count=2)
+    assert compute_metabolic_efficiency(graph, 0) == 1e308
+    graph.nodes[0]["glyph_history"] = ["THOL"]
+    with pytest.raises(ValueError, match="finite float range"):
+        compute_metabolic_efficiency(graph, 0)
+    # The composite can still be representable without materializing that ratio.
+    assert math.isfinite(compute_emergence_index(graph, 0))
+
+
+@pytest.mark.parametrize(
+    "reader", [compute_metabolic_efficiency, compute_emergence_index]
+)
+@pytest.mark.parametrize("key", ["EPI", "epi_initial"])
+@pytest.mark.parametrize(
+    "invalid",
+    [
+        math.nan,
+        math.inf,
+        True,
+        "0.5",
+        BEPIElement((-2.0, -2.0), (-2.0, -1.0), (0.0, 1.0)),
+    ],
+)
+def test_emergence_heuristics_reject_invalid_scalar_form(reader, key, invalid):
+    graph = _node(epi=0.5, initial_epi=0.0, sub_epi_count=1, thol_count=1)
+    graph.nodes[0][key] = invalid
+    # A secondary valid alias must not hide an invalid authoritative EPI.
+    graph.nodes[0]["epi"] = 0.5
+    with pytest.raises(ValueError):
+        reader(graph, 0)
+
+
+@pytest.mark.parametrize("encode", [ensure_bepi, serialize_bepi])
+def test_metabolic_efficiency_reuses_signed_live_and_serialized_chart(encode):
+    graph = _node(epi=-0.25, initial_epi=-0.75, sub_epi_count=1, thol_count=2)
+    for key in ("EPI", "epi_initial"):
+        graph.nodes[0][key] = encode(graph.nodes[0][key])
+    assert compute_metabolic_efficiency(graph, 0) == 0.25
+
+
+def test_explicit_operator_clock_is_not_moved_to_admit_future_records():
+    graph = _node(epi=0.5, initial_epi=0.0, sub_epi_count=1, thol_count=1)
+    graph.nodes[0].update(_operator_step=2, sub_epis=[{"timestamp": 100}])
+    with pytest.raises(ValueError, match="exceeds"):
+        compute_bifurcation_rate(graph, 0)
+    assert graph.nodes[0]["_operator_step"] == 2

@@ -964,9 +964,14 @@ be identified independently.
 
 ### 7.1 The three-level structure: stage → occupant → process — **DERIVED facts**
 
-- **(a) The stage — a discrete standing-mode spectrum.** On a finite network
-  `L_sym` has a discrete spectrum. Its kernel is spanned by componentwise-constant
-  modes and is one-dimensional only for a connected graph. On a connected 1D box,
+- **(a) The stage — a discrete standing-mode spectrum.** On finite symmetric
+  nonnegative conductance, `L_sym` has a discrete spectrum. On each connected
+  component of positive conductance its null mode is proportional to `sqrt(d)`,
+  where `d` is row strength; the corresponding `L_rw` null mode is constant.
+  Zero-strength isolates have zero rows and supply independent null modes.
+  Thus kernel dimension counts components of positive conductance, including
+  isolates; zero-weight support links do not join these transport components.
+  On a connected 1D box,
   the low modes follow the particle-in-a-box law `λ_k ∝ k²` (measured log-log
   slope **1.997**), ordered by Courant nodal-domain bounds, with homogeneous-
   capacity lifetimes `1/(νf·λ_k)`. It says **where** an excitation may sit.

@@ -1,6 +1,6 @@
 # Nodal parameter foundations and constitutive scope
 
-Reviewed 2026-09-18. This is the cross-channel foundation audit supporting G3
+Reviewed 2026-09-20. This is the cross-channel foundation audit supporting G3
 in the [single execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md).
 It is not another research queue. The definition of structural form, tangent
 pressure and chart changes remains in
@@ -63,11 +63,11 @@ The naming of `constants.canonical` is not an epistemic classification.
 
 | Family | Meaning and owner | Established boundary |
 | --- | --- | --- |
-| EPI `x` | Coherent form in a declared chart; [foundation types](FUNDAMENTAL_THEORY.md#24-physical-concepts-mathematical-types-and-implementation), [scalarization](../src/tnfr/mathematics/epi.py) | Signed real storage and finite BEPI storage exist. Neither storage complexity nor temporal entropy selects the necessary physical state space. |
-| Capacity `nu` | Nonnegative local mobility/rate in `xdot=nu*p`; [adaptation](../src/tnfr/dynamics/adaptation.py) | Zero freezes this unforced EPI channel; it need not destroy stored form or freeze all other channels. `nu<=2*pi` is a configured rail, not a phase theorem. No unique autonomous capacity law follows from the product. |
-| Pressure `p` | Directed tangent response, evaluated from a declared constitutive map; [dnfr](../src/tnfr/dynamics/dnfr.py), [support transport](../src/tnfr/physics/support_transport.py) | The EPI channel is a graph difference. The full pressure is not generally a potential gradient. Its sign is chart-dependent and does not name an operator. Stored pressure need not be freshly evaluated pressure. |
+| EPI `x` | Coherent form in a declared chart; [foundation types](FUNDAMENTAL_THEORY.md#24-physical-concepts-mathematical-types-and-implementation), [scalarization](../src/tnfr/mathematics/epi.py) | Signed real storage and finite BEPI storage exist. Neither storage complexity nor temporal entropy selects the necessary physical state space. Differential equivalence needs a regular chart and transformed pressure/mobility; injective storage alone is insufficient. |
+| Capacity `nu` | Nonnegative local mobility/rate in `xdot=nu*p`; [adaptation](../src/tnfr/dynamics/adaptation.py) | Zero freezes this unforced EPI channel; it need not destroy stored form or freeze all other channels. `nu<=2*pi` is a configured rail, not a phase theorem. No unique autonomous capacity law follows from the product; even a fixed pressure law can have distinct capacities with the same instantaneous EPI rate (section 3.2). |
+| Pressure `p` | Directed tangent response, evaluated from a declared constitutive map; [dnfr](../src/tnfr/dynamics/dnfr.py), [support transport](../src/tnfr/physics/support_transport.py) | The EPI channel is a graph difference. The full pressure does not by itself specify a joint potential or joint dynamics. Its sign is chart-dependent and does not name an operator. Stored pressure need not be freshly evaluated pressure. |
 | Phase `theta` | Circle coordinate and wrapped neighbor separation; [phase response](../src/tnfr/physics/phase_response.py) | A common rotation is a symmetry of the regular difference/phasor formulas. Relative phase is independent of scalar EPI in the present representation. The nodal product does not imply `theta_dot=nu` or any synchronization law. |
-| Clock `t`, `dt` | Declared time coordinate and numerical increment; [integrator](../src/tnfr/dynamics/integrators.py), [directed structural time](../src/tnfr/physics/directed_diffusion.py) | Physical time, operator position, invocation count and history index are different. A step size alone supplies no stability guarantee. |
+| Clock `t`, `dt` | Declared time coordinate and numerical increment; [integrator](../src/tnfr/dynamics/integrators.py), [directed structural time](../src/tnfr/physics/directed_diffusion.py) | Physical time, operator position, invocation count and history index are different. A step size alone supplies no stability guarantee. A changing clock rate transforms the capacity law too; synchronization need not be a monotone clock (section 3.1). |
 | Channel coefficients | `p=w_phi*g_phi+w_epi*g_epi+w_vf*g_vf+w_topo*g_topo`; [defaults](../src/tnfr/config/defaults_core.py) | Numeric sum one is a selected normalization, not physical dimensional analysis. Priority phase/EPI/capacity is configured. See section 3. |
 | Support `G` | Which nodes can be neighbors, including zero-conductance support edges | Phase and capacity support need not equal positive EPI transport support. Isolates, self-loops, multiple edges and directionality require explicit conventions. |
 | Conductance `W` | Nonnegative transport strength; [support transport](../src/tnfr/physics/support_transport.py) | Common positive rescaling leaves row-normalized EPI transport unchanged. Reciprocal conductance is an additional assumption, not a consequence of undirected support alone. |
@@ -79,6 +79,125 @@ The naming of `constants.canonical` is not an epistemic classification.
 | Memory and scale | Hidden-coordinate elimination; [EPI memory](../src/tnfr/physics/epi_memory.py); declared jumps in [REMESH](../src/tnfr/operators/_delayed_remesh_kernel.py) | Exact projected memory is model-dependent. REMESH mixing factors and integer history delays are selected maps, not the automatically derived kernel. Nesting alone is not self-similarity or an autonomous macro-NFR. |
 | Operators and grammar | Named transformation contracts, phase gates, word admission and runtime evidence; [contracts](../src/tnfr/operators/operator_contracts.py), [grammar bases](../src/tnfr/operators/grammar_canon.py) | Channel/sign contracts do not uniquely derive magnitudes, order or occurrence. U1-U6 combine definitions, conditions and policies. Completeness of the 13 transformations remains open. |
 | Numerical and statistical controls | Clipping, tolerances, discretization, regression bins, sampling and random seeds | They define an experiment or implementation. Reproducibility is not physical necessity; small residuals need an error scale and cannot replace a proof. |
+
+### 2.1 The implemented pressure is a specified relational map
+
+Let `N_i` be the unique outgoing neighbors, `k_i=|N_i|`, and let `W` be
+the EPI conductance. Define the support and transport differences by
+
+\[
+(G_Uv)_i=\frac1{k_i}\sum_{j\in N_i}(v_j-v_i),\qquad
+(G_Wx)_i=\frac1{d_i}\sum_jW_{ij}(x_j-x_i),\quad d_i=\sum_jW_{ij}.
+\]
+
+An empty support row or zero transport strength gives the corresponding
+zero row. On a regular phase branch, with nonzero neighbor resultant,
+
+\[
+S_i=\sum_{j\in N_i}e^{\mathrm i\theta_j},\qquad
+g_{\phi,i}=\frac{\operatorname{wrap}(\arg S_i-\theta_i)}{\pi},\qquad
+p=a g_\phi+eG_Wx+bG_U\nu+tG_Uk.
+\]
+
+Here `(a,e,b,t)` are the effective phase/EPI/capacity/topology coefficients
+of the declared configuration. The default recipe is
+`(pi/(pi+1), pi/(pi+1)^2, 1/(pi+1)^2, 0)`; executable coefficients retain
+their represented normalization. Those numbers are configured choices, not
+consequences of the nodal product. Section 3 gives their different units.
+
+Only the EPI difference reads transport conductance. Phase, capacity and
+degree contrast use unique support neighbors, including zero-conductance
+edges. A self-loop is one such neighbor; parallel edges aggregate EPI
+conductance without repeating that neighbor. U3 restricts particular
+operators, not the neighborhood used by this pressure reading. The
+[pressure owner](../src/tnfr/dynamics/dnfr.py) and
+[support transport](../src/tnfr/physics/support_transport.py) implement these
+conventions. Phase-resultant cancellation, wrap boundaries and represented
+arithmetic retain their execution-path-specific availability and numerical
+scope; this formula does not assert exact parity between all backends.
+
+Capacity has **two separate roles**: `G_U nu` contributes a spatial pressure
+contrast, while `diag(nu)` multiplies the complete pressure in the EPI rate.
+The former is not a capacity evolution equation. Likewise, `t=0` removes
+only the explicit degree-contrast channel: the other channels still depend
+on the graph, and EPI transport still depends on its conductance. Degree
+contrast is not a general curvature or a law for evolving topology.
+
+Writing `p=eG_Wx+F`, where `F=a g_phi+bG_U nu+tG_U k`, isolates a source
+relative to EPI diffusion. It need not be external forcing: all its readings
+can belong to the same nodal state. Computing `F` still does not determine
+the evolution of its phase, capacity or support. For fixed reciprocal
+positive transport strength and held `F`, the EPI-sector potential
+`V=e*x^T(D-W)*x/2-x^T*D*F` gives
+`xdot=-diag(nu/d)*grad_x(V)`. This conditional representation does not
+derive a joint potential or autonomous source law; the
+[variational closure audit](TNFR_VARIATIONAL_PRINCIPLE.md#13-forced-potential-family-and-reciprocal-closure-constraints)
+owns those additional obligations.
+
+The engine assumes a support and initial nodal state on which these differences
+can be read. An isolated row has no neighbor-pressure contribution; an empty
+graph supplies no nodal equation from which to instantiate its first node.
+Emission acts on an existing node, and nested birth starts from an existing
+parent. Their names do not derive an initial substrate. If a larger whole is
+modeled as one NFR, its internal regions can supply relational pressure without
+an assumed external environment. Identifying that whole with physical reality,
+deriving its initial support or placing this structure before an independently
+defined physical clock remains a hypothesis. A prerequisite of the current
+model is not evidence for an additional substance beyond coherence.
+
+### 2.2 Pressure execution and representation contract
+
+The default scalar pressure rejects nonuniform or complex BEPI rather than
+projecting it to a magnitude; uniform-real embeddings keep their sign. The
+shared neighbor-difference kernels preserve representable linear differences
+and validate active conductances. Pressure is computed before node pressure
+writes, so a nonfinite assembled vector is rejected without partial pressure
+assignment. This is not a transaction over every preparation cache.
+
+The phase path uses the signed `atan2(sin(delta),cos(delta))` convention,
+retaining tiny displacements and signed antipodal ties. Centers outside the
+principal chart are read through their materialized phasors before subtraction;
+this prevents a huge unreduced coordinate from erasing the neighbor direction.
+The certified acute two-neighbor midpoint remains authoritative when available.
+Otherwise the consumed floating neighbor sums determine the argument. Exactly
+zero sums have the explicit computational extension of zero phase pressure;
+small nonzero sums are not suppressed by an undeclared epsilon. Neither this
+extension nor a tiny represented resultant derives a unique physical direction
+at an ideal cancellation. Reduction order and transcendental rounding can still
+matter; there is no claim of bitwise backend equivalence or exact runtime mean
+conservation. JIT execution disables fast-math reassociation for this reason.
+
+Public `DNFR_WEIGHTS` updates are observed at the next default refresh, including
+in-place edits. The engine retains a detached configuration snapshot next to
+its effective mix; detached forcing observers use the same resolution without
+writing caches. A legacy explicitly supplied `_dnfr_weights` mix is retained
+until the public configuration changes after its first preparation. This
+compatibility override is not the recommended configuration interface.
+`_DNFR_META.weights_effective` records the executed coefficients;
+`weights_norm` only reports normalized proportions. Public normalization retains
+the shared utility's permissive policy, including clipping negative entries
+and selecting a uniform mix when the usable total is zero. Setting every public
+coefficient to zero therefore does not disable pressure. These are configuration
+policies, not constitutive deductions.
+
+Optional hooks must be named as different models where their formulas differ:
+
+| Entry point | Actual contract |
+| --- | --- |
+| `default_compute_delta_nfr` | Configured four-channel map above, with weighted EPI transport. |
+| `dnfr_phase_only` | Neighbor-argument phase channel with the same local midpoint and represented-zero rules; not a pairwise sine oscillator law. |
+| `dnfr_epi_vf_mixed` | Unweighted unique-support EPI/capacity differences with fixed half coefficients. |
+| `dnfr_laplacian` | Unweighted unique-support EPI/capacity differences with raw public coefficients, without renormalization. |
+| `compute_delta_nfr_hamiltonian` | Auxiliary projector-diagonal commutator readout, identically zero; see [its algebraic scope](STRUCTURAL_STABILITY_AND_DYNAMICS.md#53-compatibility-helpers-and-sign-scope). It is not a more fundamental generating pressure law. |
+
+NumPy, optimized NumPy, Torch and JAX graph-pressure adapters delegate to the
+default CPU owner; an adapter name does not certify GPU pressure or a distinct
+constitutive law. Backend, configuration, scalar-domain and failure controls live
+in [the pressure read tests](../tests/core_physics/test_pressure_read_contract.py),
+[phase path controls](../tests/test_dnfr_fallback_parity.py) and the existing
+[linear pressure suite](../tests/core_physics/test_stable_neighbor_pressure.py).
+The actual Numba compilation checks explicitly skip where Numba is unavailable;
+executing the Python kernel body is a separate validation level.
 
 ## 3. Joint changes of form and time units
 
@@ -134,6 +253,83 @@ conversion is `theta_dot=2*pi*nu`. Neither choice follows from
 Writing angles in radians gives the exact pi bound, not a universal ceiling
 on a rate or a unique coefficient for other channels.
 
+### 3.1 Capacity, clock and positivity require compatible laws
+
+A common smooth clock change `tau=T(t)`, `alpha=T'(t)>0`, preserves the
+unforced nodal row when `nu_tau=nu/alpha` and pressure is evaluated at the
+corresponding original state. If the pressure itself depends on capacity,
+its constitutive map must also be transformed; substituting `nu_tau` into
+the old formula is not that transformation. For a twice differentiable T,
+
+```text
+d nu_tau / d tau = nu_dot/alpha^2 - nu*alpha_dot/alpha^3.
+```
+
+Thus a nonconstant clock change generally changes even the form of a supplied
+capacity law. The constant-unit result above is its special case. Phase laws,
+event times and memory arguments must transform as well. The existing
+[capacity-exposure result](FORCED_SUPPORT_BALANCE.md#23-capacity-exposure-does-not-determine-a-phase-clock)
+and [time-varying diffusion theorem](TNFR_DIFFUSION_STABILITY_THEOREM.md)
+already delimit when a common activity clock is removable. Independent local
+activity parameters do not eliminate the need to specify which neighbor state
+is read at the shared time.
+
+Synchronization alone cannot be a universal clock: the existing positive
+P2 diffusion solution with equal fixed phases has phase order R=1 at every
+time while its EPI contrast changes. A clock reconstructed from a structural
+observable requires a specified domain and a strictly monotone reading there;
+an equilibrium or repeated reading does not supply elapsed time. This excludes
+that universal identification, not the possibility of restricted internal clocks.
+
+Nonnegative capacity is a state-domain premise. A supplied locally Lipschitz
+continuous-time law `nu_dot=F(z)` must point inward, `F_i>=0` at `nu_i=0`,
+to preserve the nonnegative orthant while its solution exists. Nonnegative
+initial data alone do not impose this condition. Multiplicative laws such as
+`nu_dot=nu*g(z)` with finite integrated g preserve positivity, but do not
+uniquely follow from the nodal equation. A clamp is a configured projection;
+positivity of a continuous flow also does not guarantee positivity of an
+arbitrarily large explicit Euler step. Neither a positive upper rail nor a
+phase-to-capacity conversion is selected by these domain requirements.
+
+### 3.2 An EPI rate need not identify capacity, even with a fixed pressure law
+
+On unit P2 with consensus phase, let `delta=x_1-x_0>0`, `e=w_epi>0`,
+`b=w_vf>0`, and `f=e*delta`. Both nodes have the same degree, so the actual
+default topology and phase channels vanish. For capacities `nu=(2u,u)`, the
+declared exact pressure and rate are
+
+```text
+p = (f-b*u, -f+b*u),
+x_dot = (2u*(f-b*u), -u*(f-b*u)).
+```
+
+The distinct positive choices `u=f/(4b)` and `u'=3f/(4b)` give identical
+nonzero EPI rates with threefold capacity and one-third pressure. This is an
+ambiguity inside one fixed prospective pressure law, not a retrospective
+definition `p=x_dot/nu` or freedom to refit its coefficients. It concerns one
+instantaneous response, not equality of complete trajectories.
+
+There is an independent prospective discriminator. Hold each supplied
+capacity profile and phase fixed. Since the initial EPI rates coincide,
+`p_dot=e*G_U*x_dot` coincides and is nonzero. The nodal product then gives
+`x_ddot=diag(nu)*p_dot`, so the second profile has threefold acceleration.
+The shared joint-response owner checks this consequence before any trajectory
+or calibration. Its exact controls treat the materialized e,b as rational
+coefficients and declare rational capacities; they do not assert exact
+equality after arbitrary binary64 materialization.
+
+Support conventions introduce another, narrower ambiguity. Pure EPI diffusion
+on unit P2 with capacities `(1/2,1/4)` equals the EPI generator on the same
+off-diagonal conductance with capacities `(1,1)` and self-loop weights `(1,3)`.
+In both, mobility `nu_i/d_i=(1/2,1/4)`, the off-diagonal Dirichlet form and its
+energy rate coincide. Primitive capacity is therefore not identified by that
+transport budget if holding conductances are unrestricted. With the same
+consensus phases, the full default law distinguishes these states through
+its capacity-gradient channel; pure
+transport equivalence is not equivalence of the complete nodal state.
+Controls are centralized in
+[constitutive capacity scope](../tests/physics/test_constitutive_capacity_scope.py).
+
 ## 4. What locality and symmetry can derive
 
 Consider only an affine local EPI pressure on a finite loopless support:
@@ -178,6 +374,248 @@ maximum principle. Removing those sources would change the model. Self-loops
 also change normalization without contributing an EPI difference and require
 their own convention. The portable covariance controls test these restricted
 matrix identities alongside the existing support owner.
+
+### 4.1 Exact low-degree reduction and its nonlinear boundary
+
+On a loopless support of maximum degree two, suppose all phases have a
+common real lift of width strictly below pi. A singleton neighbor has its
+own phase; the circular mean of two neighbors is their lifted arithmetic
+midpoint. The displacement from the node remains in the same regular
+branch. Consequently `g_phi=G_U theta/pi` **exactly**, without a small-angle
+approximation. If EPI uses the same row-normalized support, then
+
+\[
+p=G_U\left(e x+\frac{a}{\pi}\theta+b\nu+t k\right).
+\]
+
+This explains exact compensation families on paths and common-chart cycles.
+It does not extend to arbitrary degree, nonmatching transport, or winding
+configurations without a common chart. With undirected support the displayed
+reduction has `sum_i k_i*p_i=0`; the nonlinear phase law has no such general
+support-degree conservation identity.
+
+For an explicit boundary, take unit-conductance `K4`, phases
+`(0,0,0,pi/3)`, uniform EPI and common positive capacity. Every edge is
+strictly U3-compatible at the configured `pi/2` threshold, and every
+resultant is nonzero. Put `beta=atan(sqrt(3)/5)`. Direct phasor addition gives
+
+\[
+g_\phi=\frac1\pi(\beta,\beta,\beta,-\pi/3),\qquad
+\sum_i g_{\phi,i}=\frac{3\beta-\pi/3}{\pi}<0.
+\]
+
+Indeed `tan(3*beta)=9*sqrt(3)/10<sqrt(3)=tan(pi/3)`, with both angles in
+`(0,pi/2)`. The other three gradients vanish, so any positive phase
+coefficient gives a negative instantaneous EPI mean rate. Reflecting all
+phases reverses this rate. Oddness under reflection therefore does not make
+the phase channel an antisymmetric pairwise flux. The
+[compact pressure controls](../tests/physics/test_pressure_constitutive_scope.py)
+check this analytic result and the low-degree reduction against actual
+materialized pressure, with explicit floating-point tolerance.
+
+This is a constitutive boundary, not a demonstrated conservation bug.
+The [regular phase metric](TNFR_VARIATIONAL_PRINCIPLE.md#136-exact-state-dependent-metric-for-canonical-phase-pressure)
+already relates this phase reading to a cosine energy with a
+state-dependent diagonal metric; that metric generally differs from the
+transport degree metric. Neither identity supplies phase motion or a
+conserved EPI total. Replacing the phasor law by a conservative edge flux
+would require an independent conservation premise and would change the
+model. Unit covariance, joint dynamical closure and the identity intended
+to persist must be assessed before selecting such a replacement.
+
+### 4.2 When scale covariance and regularity force linear form response
+
+The affine premise in section 4 can itself be derived under stronger, explicit
+assumptions. Fix the graph and all non-EPI state. For a source-free pressure
+`Q` on a real form chart, suppose
+
+\[
+Q(x+c\mathbf1)=Q(x),\qquad Q(a x)=a Q(x)\quad(a>0),
+\]
+
+whenever the arguments are admitted, and suppose `Q` has a Frechet derivative
+at an interior uniform state. Work in a translated chart containing an open
+neighborhood of zero and the segment from zero to each form being considered;
+shift invariance transfers the derivative to zero.
+Homogeneity gives `Q(0)=0`. For every admitted `v`,
+
+\[
+Q(v)=\lim_{\epsilon\downarrow0}\frac{Q(\epsilon v)-Q(0)}{\epsilon}
+     =DQ(0)v.
+\]
+
+Thus `Q` is exactly linear on that domain, not merely approximately linear near
+equilibrium. Locality then restricts its matrix support, and the maximum
+principle from section 4 fixes the off-diagonal signs. The resulting family is
+`Q_i=sum_j a_ij*(x_j-x_i)`, `a_ij>=0`. This does not select those coefficients,
+reciprocity, row normalization or the active support. Differentiability means
+one linear total derivative; separate directional derivatives are insufficient.
+
+Row normalization can be justified by another explicit premise. Suppose this
+linear row is anonymous and unweighted: only the center and neighbor multiset
+are available, with no other structural attributes distinguishing neighbors.
+Permutation symmetry then gives `Q_k=c_k*sum_j(x_j-x_i)`. Require invariance
+when every neighbor observation is repeated `m` times. It follows that
+`m*c_(mk)=c_k`; taking `k=1` yields `c_k=c_1/k`. The arithmetic mean is thereby
+selected up to the common single-neighbor gain `c_1`. Fixing that gain defines
+a normalization, not a newly derived physical rate. Repetition of observations
+is an added premise about this row, not a theorem about cloning physical nodes,
+adding parallel transport channels or changing topology. Weighted rows still
+need a meaning and aggregation rule for their conductances.
+
+Exact amplitude covariance is an added scale-free constitutive premise. It is
+stronger than correctly converting units while also transforming dimensional
+parameters. EPI-offset invariance is justified only for a channel whose chosen
+form origin is redundant; it is not a theorem about every operator or a
+physically distinguished vacuum. For the mixed pressure, this argument can
+apply to `Q(x)=P(x)-P(0)` at held non-EPI state if its premises hold. It does not
+determine the independent source `P(0)` or eliminate that source.
+
+Regularity is essential. With gaps `d_ij=x_j-x_i`, the comparison response
+
+\[
+Q_i^{\rm cmp}(x)=
+\begin{cases}
+\displaystyle\frac{\sum_{j\in N_i}d_{ij}^3}{\sum_{j\in N_i}d_{ij}^2},
+ &\sum_jd_{ij}^2>0,\\
+0,&\text{otherwise}
+\end{cases}
+\]
+
+uses only existing form differences, has no new dimensional parameter, and
+satisfies locality, relabeling, affine form-chart covariance and the maximum
+principle. It is continuous at uniform form since its magnitude is bounded by
+the largest neighbor gap. However, at the center of a two-leaf star, directions
+with gaps `(1,0)` and `(0,1)` each give one, while their sum `(1,1)` also gives
+one. Its directional derivative at uniform form is not additive, so no total
+derivative exists there. This is a countermodel to uniqueness from covariance
+and continuity alone, not an installed pressure law. The existing
+[covariance controls](../tests/physics/test_nodal_parameter_covariance.py)
+compare it with the shared exact EPI owner.
+
+There is also a useful stationary boundary independent of linearity. On fixed
+finite connected undirected support with positive capacities, assume every
+local form maximum with a strictly lower neighbor has strictly negative source-free
+pressure. A nonuniform stationary form would have a maximum plateau with a
+boundary node adjacent to a lower value, contradicting its zero pressure.
+Hence only uniform stationary form is possible. Nonlinearity alone cannot
+evade this obstruction while keeping that strict response premise. Zero
+capacity, disconnected support, zero response on unequal neighbors or an
+additional source changes the hypotheses. This is not a convergence theorem
+or an exclusion of phase identity, moving patterns or finite-lived regions.
+For directed support the same plateau argument needs strong connectivity;
+weak connectivity alone permits distinct terminal values.
+
+### 4.3 Phase domain, orientation and a discriminating structural response
+
+The circle supplies periodicity, not a unique real-valued pressure. On regular
+branches the implemented `g_phi` respects common rotation and node relabeling.
+It is odd under internal phase conjugation `theta->-theta`. That conjugation
+is different from a graph permutation representing a spatial reflection.
+Holding `x,nu,G,W` fixed gives `P(-theta)-P(theta)=-2*a*g_phi(theta)`.
+Consequently it is not a redundancy of the full scalar-form law when `a>0`.
+If phase orientation is declared merely a coordinate convention with unchanged
+scalar form and pressure, its coefficient must also transform as `a->-a`.
+Otherwise conjugation describes a distinct model state. No symmetry claim is
+complete without the transformation of every state, output and coefficient.
+
+Two separate global-domain obstructions are explicit:
+
+- On P2, the ideal phase pressure is `wrap(delta)/pi`. Its limits at an
+  antipodal gap are `+1` and `-1`, although the neighbor resultant is nonzero.
+  No continuous real-valued extension matches both limits. Moreover a
+  single-valued periodic odd response must satisfy `f(pi)=0`, since `pi` and
+  `-pi` denote the same circle point. Signed binary64 ties are a representation
+  convention, not a globally odd circular law.
+- With center phase zero and two neighbors at `0` and `pi±epsilon`, the
+  neighbor resultant tends to zero. The pressure tends to `-1/2` and `+1/2`
+  respectively. Here the limiting target directions are not antipodal to the
+  center. No value assigned at zero resultant makes this response continuous.
+
+These controls do not obey a strict U3 edge domain and are not evidence against
+the regular-domain theorem. A model may restrict its domain, retain a lift or
+extra state, define an event rule, or select a different response; each is an
+additional obligation. The pressure reader's numerical fallback supplies none
+of those dynamical justifications. The existing regular phase metric and its
+[current/curvature identity](TNFR_VARIATIONAL_PRINCIPLE.md#136-exact-state-dependent-metric-for-canonical-phase-pressure)
+remain the owner of local geometry:
+
+\[
+J_{\phi,i}=\frac{|S_i|}{k_i}\sin(\pi g_{\phi,i}).
+\]
+
+On the regular non-antipodal reciprocal domain, both readings have the same
+alignment potential `V_phi`, but different metrics: `g_phi=-H_phi^-1*grad V_phi`
+with `H_phi,ii=pi*|S_i|*sinc(pi*g_phi,i)`, while
+`J_phi/pi=-(pi*diag(k))^-1*grad V_phi`. The common potential therefore does not
+select the response metric or a phase-to-form coupling. Equivalently,
+`J_phi/pi=(|S_i|/k_i)*sinc(pi*g_phi,i)*g_phi,i` is a nodewise attenuation on
+that domain. This does not order total EPI source work: nodal work factors
+can have different signs and the attenuation is not spatially uniform. The
+existing forcing/Dirichlet balance remains necessary for that comparison.
+
+This identity exposes a concrete selection question: should form pressure read
+only the resultant direction, as the present phase channel does, or also its
+amplitude? Both readings already exist in the repository; neither is a phase
+clock. Matching their coherent linear response does not answer the question.
+For neighbor gaps `epsilon*a_j`, let `m`, `v` and `c3` be respectively the mean,
+variance and central third moment of the unscaled `a_j`. On the regular branch
+near consensus,
+
+\[
+g_\phi=\frac{\epsilon m-\epsilon^3c_3/6}{\pi}+O(\epsilon^5),\qquad
+\frac{J_\phi}{\pi}=
+\frac{\epsilon m-\epsilon^3(c_3+3mv+m^3)/6}{\pi}+O(\epsilon^5).
+\]
+
+The first possibly nonzero discriminating coefficient is
+`(m^3+3*m*v)/(6*pi)` at cubic order; it vanishes for `m=0`.
+For two neighbors with gaps `m±d`, the comparison is exact: phase pressure is
+`m/pi` while the matched-gain current is `sin(m)*cos(d)/pi`, for `|d|<pi/2`
+and an admitted principal mean `m`. The
+[production controls](../tests/physics/test_pressure_constitutive_scope.py)
+use `m=pi/8`, spreads `pi/16` and `3*pi/16`, and center phase `pi/4`. All edge
+gaps are strictly acute. The phase pressure stays fixed while the existing
+current changes; no coupling coefficient is fitted and no alternative dynamics
+is installed. These are model-discrimination controls, not laboratory evidence
+selecting either response. Reflection symmetry or agreement to first order
+likewise does not select a unique smooth periodic response function.
+
+### 4.4 Constitutive admission ledger and remaining choices
+
+The nodal equation fixes a typed rate product. The following ledger prevents
+extra constitutive conditions from being promoted to consequences of that
+product. Its mathematical owners above replace parallel research campaigns.
+
+| Requirement | What it justifies | What remains open or conditional |
+| --- | --- | --- |
+| Relabeling covariance when node names are bookkeeping | Permuting all nodal fields and support must permute pressure | It does not select an aggregation, graph, coefficient or actual state symmetry. |
+| Phase periodicity and common rotation with no supplied phase reference | Dependence on circular relative configuration on the admitted domain | Neither the Arg rule, phase orientation, behavior at cancellation nor a phase clock is selected. |
+| Form-chart and time-unit covariance | The coefficient transformation in section 3 | Fixed normalized numeric weights are not a physical unit law; a vacuum may invalidate form-offset redundancy. |
+| Source-free exact amplitude covariance plus regularity at uniform form | The linear family proved in section 4.2 | These are added premises; they do not constrain an independently supplied source or forbid nonlinear models with another scale/domain. |
+| Locality plus a local maximum principle in that linear family | Nonnegative neighbor-difference coefficients | Nonlinearity, reciprocity, row speed and the support must be addressed separately. The full sourced pressure does not obey this form-only maximum principle. |
+| Reciprocal edge response with a declared measure | Detailed balance and the corresponding Dirichlet identities | Undirected support alone does not suffice. A weighted EPI charge is not thereby conserved in the presence of other channels. |
+| Anonymous linear row plus whole-neighborhood observation replication | Selects the arithmetic mean up to a common gain | Replication is an additional premise, not graph cloning. More general row gains can be absorbed into effective capacity for isolated EPI diffusion; replacing primitive capacity everywhere changes its other laws. |
+| Regular phase-domain closure or a declared boundary rule | A defined continuation when a trajectory reaches branch/cancellation boundaries | Current-state U3 admission and a numerical fallback do not establish future domain invariance. |
+| Full-state identity, source evolution and event laws | A complete candidate for maintenance or formation | Well-posedness still needs a domain and regularity argument. A pressure formula, grammar admission or tetrad snapshot alone does not supply the complete laws. |
+
+For reciprocal transport, positive capacity and held coefficients, the actual
+mean balance is `d/dt sum_i(d_i/nu_i)*x_i=sum_i d_i*F_i`, with the metric also
+held fixed. It is an accounting identity, not a requirement that the right side
+vanish. With `W,nu,e,F` fixed and a compatible stationary target `x*`, the
+difference `x-x*` obeys homogeneous diffusion even though absolute EPI does not. Reuse the
+[forced-support owner](FORCED_SUPPORT_BALANCE.md), rather than rejecting the
+full pressure merely because a source-free property fails.
+
+The present pressure is therefore retained as a configured, regular-domain map,
+with a well-characterized EPI sector and explicit source choices. Neither its
+normalized coefficients nor its use of phase direction alone is uniquely
+derived. An unresolved constitutive distinction is what information a derived
+phase-to-form response must preserve: direction, resultant amplitude and its
+source work, with a declared phase domain and orientation. This must be fixed
+before promoting an alternative to dynamics. The existing metric, joint
+derivative and discrimination controls provide the route; another arbitrary
+potential, numerical trajectory or fitted force cannot remove the freedom.
 
 ## 5. Geometry and the whole tetrad
 
@@ -319,6 +757,16 @@ at zero capacity. Nonzero Gamma can move a zero-capacity node. The four
 [forcing-scope controls](../tests/test_nodal_forcing_scope.py) verify the
 distinction through both integration backends. Unforced proofs require Gamma
 to vanish; source residuals cannot be concealed by reconstructing pressure.
+
+The solver now enforces finite nonnegative capacity, finite pressure and
+finite derivative metadata at its authoritative reads and writes. Every
+positive internal substep must advance a finite represented clock, including
+empty graphs and subdivisions whose early endpoints advance but later ones
+collapse. Scalar output staging and local restoration prevent partially
+committed solver states on numerical failure. The
+[API contract](../docs/API_CONTRACTS.md#nodal-solver-input-clock-and-output-boundaries)
+states the precise write scope and callback/cache exceptions. These numerical
+guards repair execution; they do not supply a physical clock or capacity law.
 
 Capacity-rate telemetry now uses the shared
 [timestamped observer](../src/tnfr/metrics/capacity_rates.py). For advancing
@@ -2427,12 +2875,12 @@ The following atlas identifies the actual default path between coordinators.
 
 | Owner in chronological order | Primitive phase effect and required boundary |
 | --- | --- |
-| [Capacity adaptation](../src/tnfr/dynamics/adaptation.py) | No phase write. With retained capacity `1` and default `mu=0.1`, eligible and ineligible nodes all retain capacity exactly `1` |
+| [Capacity adaptation](../src/tnfr/dynamics/adaptation.py) | No phase write. Equal represented capacities inside the common rails remain fixed regardless of eligibility: the shared proposal retains its input when the represented neighbor mean equals it |
 | [Auxiliary math step, history and automatic REMESH](../src/tnfr/dynamics/runtime.py) | Auxiliary state has no inverse node-phase projection. Automatic REMESH calls the protected delayed-EPI owner, not the phase/capacity structural-memory interpolation |
 | [Validators](../src/tnfr/validation/graph.py) and [callbacks](../src/tnfr/utils/callbacks.py) | Built-in validators do not write phase. Arbitrary callbacks receive the mutable graph and are excluded unless their writes are accounted for; suppressed callback errors do not undo partial writes |
 | [Fresh pressure and default selection](../src/tnfr/dynamics/selectors.py) | Fresh default Si with equal positive capacity chooses IL, except forced AL/EN lag branches. These native primitives write no phase, capacity or support |
 | [Default integrator](../src/tnfr/dynamics/integrators.py) | Scalar and NumPy paths advance EPI and time, holding primitive phase and capacity fixed. The extended-wrapper flag alone does not replace this runtime integrator |
-| [Canonical clamps](../src/tnfr/validation/runtime.py) | Ideal wrapping preserves circular phase; represented normalization needs a coherent lift and a signed error |
+| [Canonical clamps](../src/tnfr/validation/runtime.py) | Already centered phases are retained exactly. Outside `[-math.pi,math.pi)`, represented normalization still needs a coherent lift and a signed error; ideal wrapping preserves circular phase |
 | [Next coordinator](../src/tnfr/dynamics/coordination.py) | The preceding default-gain theorem gives ideal diameter factor at most `q<1` |
 
 The selector statement uses initialized nodes: nonzero EPI or retained
@@ -2446,10 +2894,13 @@ configuration are hypotheses, not facts about arbitrary selectors.
 
 On the retained fixed unit prism, valid built-in steps preserve unit
 capacity under these maps, even with different adaptation eligibility.
-Do not extend the represented assertion to every uniform value: from
-`nu=0.3`, one eligible node can increase by `2^-54` while an ineligible
-node stays fixed. That is a numerical capacity defect, not an independently
-derived mechanism for breaking the retained symmetry. Phase-capable public
+The former two-product blend could increase an eligible `nu=0.3` by
+`2^-54` while leaving an ineligible node fixed. The shared fixed-point guard
+now removes that numerical defect, extending represented equal-capacity
+preservation beyond the unit input. Nonuniform arithmetic and out-of-rail
+clamps keep their separate effects. The
+[whole-step integration](FORCED_SUPPORT_BALANCE.md#34-native-runtime-admission-uses-relaxation-not-the-supplied-sine-clock)
+records this extension and finite ordinary-runtime controls. Phase-capable public
 operators, custom integrators/selectors, generic callbacks, structural-memory
 REMESH and the optimizer/FFT free-advance model are separate execution paths.
 

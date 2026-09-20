@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
+from fractions import Fraction
 from numbers import Integral, Real
 from typing import Any, Iterable
 
@@ -63,7 +64,14 @@ def _finite_map_mean(values: dict[Any, float], *, name: str) -> float:
     scalars = [float(value) for value in values.values()]
     if not all(math.isfinite(value) for value in scalars):
         raise ValueError(f"{name} telemetry must be finite")
-    return math.fsum(scalars) / len(scalars)
+    try:
+        return math.fsum(scalars) / len(scalars)
+    except OverflowError:
+        # A finite mean can exist when its intermediate sum overflows. Exact
+        # represented arithmetic also preserves signed cancellation without
+        # underflowing small terms through an unconditional rescaling.
+        total = sum(map(Fraction.from_float, scalars), Fraction())
+        return float(total / len(scalars))
 
 
 def _finite_alias_value(

@@ -26,6 +26,26 @@ def test_zero_result_averages_are_measured_values():
     assert "0.000 rad (computed)" in summary
 
 
+def test_snapshot_summary_retains_correlation_when_conservation_is_unavailable():
+    results = NetworkResults(
+        1.0,
+        {},
+        {},
+        nx.Graph(),
+        unified_fields={
+            "complex_field": {"correlation": -0.25},
+            "tensor_invariants": {
+                "conservation_quality": None,
+                "conservation_sample_available": False,
+                "conservation_scope": "single_snapshot_no_temporal_balance",
+            },
+        },
+    )
+    summary = results.summary()
+    assert "Correlation: -0.250" in summary
+    assert "Conservation Quality: unavailable (single snapshot)" in summary
+
+
 def test_mean_phase_respects_the_phase_wrap():
     network = TNFRNetwork().add_nodes(2)
     for node, phase in zip(network.graph, [0.1, 2.0 * math.pi - 0.1]):

@@ -419,10 +419,15 @@ class NetworkResults:
                 cf = self.unified_fields.get("complex_field", {})
                 correlation = cf.get("correlation", 0.0)
                 ti = self.unified_fields.get("tensor_invariants", {})
-                conservation = ti.get("conservation_quality", 0.0)
+                conservation = ti.get("conservation_quality")
+                conservation_text = (
+                    "unavailable (single snapshot)"
+                    if conservation is None
+                    else f"{conservation:.3f}"
+                )
                 unified_summary = f"""
   • K_φ ↔ J_φ Correlation: {correlation:.3f}
-  • Conservation Quality: {conservation:.3f}"""
+  • Conservation Quality: {conservation_text}"""
             except Exception:
                 pass
 

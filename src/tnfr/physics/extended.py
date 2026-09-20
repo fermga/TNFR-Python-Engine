@@ -11,10 +11,14 @@ statistics. They are not measured time derivatives or evolution laws.
 
 from __future__ import annotations
 
+import math
+from fractions import Fraction
 from typing import Any
 
-from ..constants.aliases import ALIAS_DNFR
 from ..mathematics.unified_numerical import np
+from ..metrics.common import finite_population_std
+from ._edge_semantics import structural_path_weight
+from ._helpers import finite_real_scalar
 from ._helpers import get_dnfr as _get_dnfr
 from ._helpers import get_phase as _get_phase
 from ._helpers import neighborhood_arrays
@@ -240,19 +244,15 @@ def compute_extended_canonical_suite(G: Any) -> dict[str, dict[Any, float]]:
 
 
 def compute_phase_strain(G, scale=1):
-    """Compute spatial phase strain rate (research phase).
+    """Read the population variance of neighboring phase-gradient magnitudes.
 
-    **Status**: RESEARCH (structural deformation analysis)
-
-    Definition
-    ----------
-    Local deformation rate from phase gradients:
-        σ_φ(i) = variance of phase gradients at neighbors
-
-    Physical Interpretation
-    -----------------------
-    Measures "stretching" or "compression" of phase field locally.
+    This research snapshot contains no time interval and is not a deformation
+    rate. Unique outgoing neighbors are counted once; isolates return zero.
+    Only the implemented one-hop ``scale=1`` is supported. The compatibility
+    parameter does not silently select an unimplemented coarse-graining.
     """
+    if finite_real_scalar(scale, "scale") != 1.0:
+        raise ValueError("phase strain supports only scale=1")
     grad_phi = compute_phase_gradient(G)
     nodes = list(G.nodes())
     strain = {}
@@ -272,73 +272,76 @@ def compute_phase_strain(G, scale=1):
 
 
 def compute_phase_vorticity(G):
-    """Compute phase vorticity (rotational circulation).
+    """Read the legacy inverse-length mean wrapped neighbor displacement.
 
-    **Status**: RESEARCH (topological defect detection)
+    The historical name is retained for compatibility. The formula is
+    ``mean_j wrap(theta_j-theta_i)/length(i,j)`` over unique outgoing
+    neighbors, with zero at isolates. It can be nonzero on a two-node tree;
+    it is neither a curl nor circulation, winding or defect evidence. Use
+    ``winding_certificates.certify_phase_winding`` for an actual declared cycle.
 
-    Definition
-    ----------
-    Detects phase vortices (spinning patterns):
-        ω_φ(i) = weighted sum of phase differences around node
-
-    Physical Interpretation
-    -----------------------
-    Non-zero vorticity indicates phase singularities/defects.
+    Length uses the shared explicit ``length`` channel, then legacy ``weight``
+    fallback, then one. Parallel edges use their minimum structural length.
+    Every consumed length must be strictly positive, and wrapped differences
+    and final results must be representable and finite.
     """
     nodes = list(G.nodes())
+    phases = {node: _get_phase(G, node) for node in nodes}
+    edge_length = structural_path_weight(G)
     vorticity = {}
 
     for node in nodes:
-        total_curl = 0.0
-        neighbor_count = 0
-
+        terms = []
         for neighbor in G.neighbors(node):
-            phi_i = _get_phase(G, node)
-            phi_j = _get_phase(G, neighbor)
-            d_phi = _wrap_angle(phi_j - phi_i)
-            weight = G[node][neighbor].get("weight", 1.0)
-            dist_inv = 1.0 / weight
-            total_curl += d_phi * dist_inv
-            neighbor_count += 1
+            length = edge_length(node, neighbor, G[node][neighbor])
+            if length <= 0.0:
+                raise ValueError("phase vorticity requires strictly positive lengths")
+            difference = _wrap_angle(phases[neighbor] - phases[node])
+            if not math.isfinite(difference):
+                raise ValueError("wrapped phase displacement must be finite")
+            terms.append((difference, length))
 
-        if neighbor_count > 0:
-            vorticity[node] = total_curl / neighbor_count
-        else:
+        if not terms:
             vorticity[node] = 0.0
+            continue
+
+        try:
+            result = math.fsum(gap / length for gap, length in terms) / len(terms)
+            if not math.isfinite(result):
+                raise OverflowError
+        except (OverflowError, ValueError):
+            # Keep finite cancellation/means even when individual represented
+            # quotients or their sum overflow; the wrapped gaps stay unchanged.
+            exact = sum(
+                (Fraction(gap) / Fraction(length) for gap, length in terms),
+                Fraction(),
+            ) / len(terms)
+            try:
+                result = float(exact)
+            except OverflowError as exc:
+                raise ValueError("phase vorticity is outside finite range") from exc
+        vorticity[node] = result
 
     return vorticity
 
 
 def compute_reorganization_strain(G):
-    """Compute ΔNFR-based reorganization strain.
+    """Read the population standard deviation of neighboring stored pressure.
 
-    **Status**: RESEARCH (structural pressure deformation)
-
-    Definition
-    ----------
-    Spatial variation in reorganization gradients:
-        s_Δ(i) = std of ΔNFR at neighbors
-
-    Physical Interpretation
-    -----------------------
-    High strain indicates unbalanced forces on node.
+    This research snapshot is spatial dispersion, not a force or a measured
+    deformation rate. The shared pressure reader validates the first present
+    alias and uses zero for missing pressure. Unique outgoing neighbors count
+    once, and isolates return zero. Scaling avoids overflow in the variance
+    of finite large pressures.
     """
     nodes = list(G.nodes())
+    pressure = {node: _get_dnfr(G, node) for node in nodes}
     strain = {}
 
     for node in nodes:
-        neighbor_dnfrs = []
-        for neighbor in G.neighbors(node):
-            neighbor_data = G.nodes[neighbor]
-            for alias in ALIAS_DNFR:
-                if alias in neighbor_data:
-                    neighbor_dnfrs.append(float(neighbor_data[alias]))
-                    break
-
-        if neighbor_dnfrs:
-            strain[node] = float(np.std(neighbor_dnfrs))
-        else:
-            strain[node] = 0.0
+        strain[node] = finite_population_std(
+            (pressure[neighbor] for neighbor in G.neighbors(node)), name="pressure"
+        )
 
     return strain
 

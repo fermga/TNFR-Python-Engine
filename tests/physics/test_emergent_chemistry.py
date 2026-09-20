@@ -51,7 +51,7 @@ def ball() -> nx.Graph:
     return _solid_ball()
 
 
-class TestAngularDegeneracyEmerges:
+class TestFiniteAngularClustering:
     """Finite spectral clustering on the constructed sphere graph."""
 
     def test_sphere_low_modes_are_2l_plus_1(self):
@@ -67,6 +67,19 @@ class TestAngularDegeneracyEmerges:
         assert len(shells) == 1
         assert shells[0].multiplicity == 4
         assert shells[0].angular_index is None
+
+    def test_clustering_can_merge_distinct_eigenvalues_and_depend_on_truncation(self):
+        # K5 has normalized spectrum {0, 5/4, 5/4, 5/4, 5/4}. The retained
+        # heuristic merges the zero mode with the positive eigenspace; its
+        # angular labels therefore do not certify true spectral degeneracy.
+        graph = nx.complete_graph(5)
+        full = structural_eigenmodes(graph, max_modes=5)
+        prefix = structural_eigenmodes(graph, max_modes=3)
+        assert len(full) == len(prefix) == 1
+        assert (full[0].multiplicity, full[0].angular_index) == (5, 2)
+        assert (prefix[0].multiplicity, prefix[0].angular_index) == (3, 1)
+        assert full[0].eigenvalue == pytest.approx(1.0, rel=0, abs=2e-15)
+        assert prefix[0].eigenvalue == pytest.approx(5 / 6, rel=0, abs=2e-15)
 
     @pytest.mark.parametrize(
         ("kwargs", "error"),
@@ -98,10 +111,9 @@ class TestAufbauIsPostulated:
         assert emergent_magic_numbers()[:6] == [2, 10, 18, 36, 54, 86]
 
     def test_free_product_spectrum_is_not_atomic(self):
-        # A free concentric-shell Laplacian (sphere x path) groups modes by
-        # lambda_ang(l)+lambda_rad(nu); its closed-shell counts do NOT match
-        # the atomic noble gases -- screening is absent, so (n+l) is not
-        # spectral. The second closure is never the Ne-like 10.
+        # This supplied product graph and finite clustering protocol do not
+        # yield the selected closure list. The control does not establish a
+        # normalized-Laplacian sum formula or exclude other graph models.
         prod = nx.cartesian_product(fibonacci_sphere_graph(80, 6), nx.path_graph(6))
         shells = structural_eigenmodes(prod, max_modes=30, gap_factor=4.0)
         cum, total = [], 0
@@ -114,7 +126,7 @@ class TestAufbauIsPostulated:
 class TestEmergentChemistryAPI:
     """Pin the module's public API directly (was only tested via the SDK)."""
 
-    def test_noble_gas_is_zero_pressure_fixed_point(self):
+    def test_declared_closures_have_zero_model_distance(self):
         # The independently defined shell distance reuses the scalar
         # zero-pressure predicate; it does not share arithmetic dynamics.
         for z in (2, 10, 18):
@@ -123,7 +135,7 @@ class TestEmergentChemistryAPI:
             assert classify_element(z).closed_shell is True
             assert classify_element(z).reactivity == 0.0
 
-    def test_reactive_element_has_pressure(self):
+    def test_nonclosure_has_positive_model_distance(self):
         assert valence_delta_nfr(11) > 0.0  # Na: one past the Ne closure
         assert classify_element(11).closed_shell is False
 
@@ -161,9 +173,8 @@ class TestEmergentChemistryAPI:
         assert result.delta_nfr == result.closure_distance
 
 
-class TestNucleusTopologyEmerges:
-    """M5: a central nucleus is an emergent read-out (radial topology) of the
-    canonical structural-potential geometry, not a postulated hub."""
+class TestSuppliedGeometryClassification:
+    """Calibrated topology labels on supplied graphs, without nucleus formation."""
 
     def test_star_is_radial(self):
         assert classify_nodal_topology(nx.star_graph(30))["topology"] == "radial"
@@ -171,19 +182,18 @@ class TestNucleusTopologyEmerges:
     def test_ring_is_annular(self):
         assert classify_nodal_topology(nx.cycle_graph(30))["topology"] == "annular"
 
-    def test_sphere_has_no_nucleus(self):
+    def test_supplied_sphere_is_classified_annular(self):
         topo = classify_nodal_topology(fibonacci_sphere_graph(120, 6))
         assert topo["topology"] == "annular"
 
-    def test_solid_ball_has_emergent_nucleus(self, ball):
+    def test_supplied_solid_ball_has_one_classified_center(self, ball):
         topo = classify_nodal_topology(ball)
         assert topo["topology"] == "radial"
         assert len(topo["centers"]) == 1
 
 
-class TestBallClosuresAreSphericalWell:
-    """M6: with the emergent nucleus, the ball's shells are the independent-
-    particle / spherical-well closures 2, 8, 18 -- NOT the atomic table."""
+class TestBallSpectralCounting:
+    """Finite ball clusters with assumed doubled occupancy, not atomic shells."""
 
     def test_first_shells_are_angular_multiplets(self, ball):
         shells = structural_eigenmodes(ball, max_modes=40, gap_factor=4.0)
