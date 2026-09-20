@@ -4,8 +4,10 @@
 The closure review separates the nodal identity, pressure realization,
 companion laws, event policies and dynamical identity. It also identifies an
 exact conflict between regular cycle geometry and a single global phase target.
+The retained weighted-C5 identity contract now separates rotation, shape and
+governed form-mean drift, with conditional orbital stability and attraction.
 Completed gates retain their original assumptions; resume at the
-[G3 gate](#current-g3-gate) for the complete-identity and phase-domain contract.
+[G3 gate](#current-g3-gate) for the common local restoring-response mechanism.
 Historical next-step paragraphs are not additional active tasks.
 
 The [portfolio](../../TNFR_lineas_de_investigacion.txt) classifies priorities;
@@ -454,7 +456,7 @@ there. A supplied target with positive native global gain distorts the regular
 twist, although winding can survive one call. The finite isolated-writer
 controls retain represented-resultant evidence separately from ideal symmetry.
 
-**Nodal-factor admission review completed; next: the geometric-identity contract.**
+**Nodal-factor and emergent-property admission reviews completed.**
 The [implemented-pressure audit](../NODAL_PARAMETER_FOUNDATIONS.md#21-the-implemented-pressure-is-a-specified-relational-map)
 is complete at the stated model and numerical scope. It fixes phase-path
 discrepancies, scalar admission, live mix resolution and auxiliary Hamiltonian
@@ -515,25 +517,42 @@ of first-network formation needs a pre-graph state, a transition law and an
 independently checkable consequence before executable work is admitted. Internal
 relational pressure does not establish an external reservoir or earlier time.
 
-Finish one geometric-identity contract using the retained post-UM C5 and its
-actual nonunit closing conductance. Keep the declared pressure and phase law
-with their recorded assumptions. Specify regular winding-one twists and uniform
-EPI modulo common rotation and the permitted evolving mean. Reuse section 32's
-bounds and section 41's native-writer obstruction without replaying the
-trajectory. State the clock, phase domain, capacities, support and perturbation
-class; distinguish conditional invariance, attraction and formation. The new
-pressure discriminators constrain interpretation of this contract and do not
-open a parallel fitted-law or laboratory-data campaign.
+**Completed: the conditional geometric-identity contract.**
+The [retained weighted-C5 contract](../FORCED_SUPPORT_BALANCE.md#42-a-geometric-identity-contract-for-the-retained-weighted-c5)
+fixes actual support/conductance and common capacity, and specifies winding-one
+regular twists with uniform EPI modulo common rotation. Its centered phase lift
+separates rotation from deformation; the existing gap/spectral bounds also bound
+distance to the twist orbit. The governed form mean can shift under the actual
+nonunit conductance, with a constrained limit rather than a fitted target.
+The existing evaluator exposes these derived coordinates without another solver.
+Controls reuse the retained event endpoint: winding one and uniform EPI coexist
+with a strictly positive geometric deformation. The contract establishes
+conditional orbital stability and attraction inside a common acute neighborhood,
+not stability to support/capacity changes or compatibility with the native
+global coordinator. Its clock, phase law, preparation and remaining closure
+premises are explicit. Autonomous formation and physical identity remain open.
 
-Acceptance is one model/identity contract with an explicit list of justified
-premises and unresolved inputs. A missing global direction is not missing
-local organization; a deterministic phase-only target cannot remove the known
-symmetry contradiction. A distributed response, additional state, stochastic
-law or abstention needs its own justification. Numerical zero-resultant
-handling is an implementation extension, not that justification. No fitted
-sustaining force, arbitrary coupling adjustment or rescue of the old stationary
-P3 target is accepted as a derivation. Autonomous maintenance and physical
-identification remain open.
+**Sole next task: identify the shared local restoring-response mechanism.**
+On this same cycle, compare the existing local sine current and regular
+neighbor-phasor displacement through the state-dependent positive mobility
+relating their responses.
+Determine whether a positive, bounded local response multiplying the sine
+current suffices for acute-sector preservation, shape restoration and the
+existing phase-to-form bounds. Keep the actual pressure, support, capacity and
+clock premises explicit. Treat using pressure as a phase rate as a separate
+candidate constitutive premise, not an already implemented consequence of the
+nodal equation. Zero and sign-reversed responses must distinguish symmetry and
+correct fixed points from actual attraction; a general nonuniform response can
+also change the common phase mean.
+
+Acceptance is one sufficient response-class result, controls through the
+existing current/pressure owners and a ledger separating its structural
+conditions from unselected model choices. It must not install a replacement
+controller, fit a sustaining force or repeat the old stationary-P3 campaign.
+The intended gain is to isolate the local restoring mechanism shared by
+existing alternatives. It does not derive autonomous support/capacity evolution,
+select a unique phase clock or remove the global-target symmetry obstruction.
+No parallel trajectory sweep or laboratory-data campaign is opened.
 
 The [joint derivative and compatibility owners](../../src/tnfr/physics/phase_response.py)
 and sections 22-24 already establish tangency and law nonuniqueness. No repeated

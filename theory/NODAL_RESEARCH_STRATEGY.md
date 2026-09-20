@@ -185,6 +185,15 @@ support and capacity assumptions still require their own admission.
 The [REMESH StructuralIdentity](../src/tnfr/operators/remesh.py) tolerance
 matcher is a snapshot utility, not this general dynamical identity contract.
 
+The [weighted-C5 contract](FORCED_SUPPORT_BALANCE.md#42-a-geometric-identity-contract-for-the-retained-weighted-c5)
+now makes one such family explicit. Existing cycle bounds control its centered
+phase deformation separately from common rotation and governed uniform-form
+drift. Its local orbital stability holds at fixed capacity/support inside a
+common acute domain. This completes identity admission for that conditional
+model; the next response-class gate asks which local restoring property is
+shared by existing candidate laws. Neither result selects their autonomous
+occurrence. The execution plan remains the sole queue.
+
 **The ordinary scheduler does not exercise every available mechanism.** The
 [default selector](../src/tnfr/dynamics/selectors.py) reaches IL/OZ/ZHIR/NAV/RA,
 with lag overrides AL/EN. Under the ordinary built-in path and observational
@@ -468,7 +477,8 @@ the stated exact source class, without a longer trajectory. This does not
 exclude other phase geometries, source laws or moving identities.
 
 The mechanism admission table above now consolidates the evidence. The plan
-owns the next geometric-identity contract. Tangency and joint-law nonuniqueness are already established;
+records the completed weighted-C5 identity contract and owns the next local
+restoring-response gate. Tangency and joint-law nonuniqueness are already established;
 repeating them would not provide the missing source-restoration law. Such a law
 need not contain reciprocal EPI feedback: an autonomous attracting source can
 drive form restoration. Its own state, dynamics and perturbable inputs must

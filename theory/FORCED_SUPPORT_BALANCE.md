@@ -29,6 +29,8 @@ Section 40 distinguishes feasible static phase compensation from the native
 writer's opposing direction and closes a conditional same-P3 source class.
 Section 41 separates retained geometric identity from global phase order and
 proves a symmetry obstruction to selecting one global phase target.
+Section 42 completes the conditional geometric-identity contract on the actual
+post-UM weighted C5 and separates its rotation, deformation and form mean.
 None supplies an autonomous substrate law.
 
 **Research status:** This note retains mathematical dependencies and historical
@@ -5948,3 +5950,142 @@ step and establish neither future invariance nor formation of this pattern.
 These results identify a model-compatibility boundary between an existing
 geometric identity and an existing native policy. They select no replacement
 target, zero-resultant threshold, phase law or autonomous event schedule.
+
+## 42. A geometric-identity contract for the retained weighted C5
+
+### Declared state, law and identity family
+
+Keep Section 32's scalar form chart, supplied clock and continuous phase/form
+law. The modeled state is `(x,theta,nu,W)`, not every engine history, cache or
+controller variable. Retain the actual Section 31 post-UM support and its
+materialized nonunit closing conductance. The ordered phase support is C5;
+all transport conductances are fixed, positive and symmetric. Capacity is
+held at its captured common positive value `kappa`, and effective pressure
+weights and `K>0` are fixed. No Gamma, subsequent event, active clipping or
+native controller is included. The phase law identifies kappa with radians
+per supplied time unit; neither laboratory seconds nor a clock emergent from
+synchronization is inferred.
+
+The identity family is specified before evaluating a response:
+
+```text
+I(W,kappa) = { x=c*1, nu=kappa*1,
+              theta_i=alpha+2*pi*i/5 modulo 2*pi, W fixed }.
+```
+
+Its free labels are common rotation alpha and uniform form c in the declared
+chart. It excludes phase consensus and fixes winding `+1` in the chosen
+orientation. Reversing the cycle enumeration changes the displayed winding
+sign, not the physical state; conjugating the physical phases is a different
+operation and is not quotiented out. The family preserves nontrivial phase
+geometry even though form is uniform. It does not require nonzero scalar-form
+amplitude; that would be a further identity obligation. It is not a definition
+of every NFR or an identification with a physical particle.
+
+On this family the local phasor source and EPI pressure vanish, the sine
+corrections cancel, and `theta_dot=kappa*1`. Thus it is exactly invariant
+under the declared continuous law: c is constant and alpha rotates. The
+global Kuramoto order is zero while each normalized local resultant is
+`cos(2*pi/5)>0`. The global-target obstruction in Section 41 therefore remains
+relevant; invariance here is not invariance under that native coordinator.
+
+### A lifted shape coordinate separates rotation from deformation
+
+Admit initial oriented gaps inside one strictly acute interval `[m,M]`,
+contained in the fixed U3 gate, with sum `2*pi`. Section 32 preserves this
+domain. Write `delta_bar=2*pi/5`, `u_i=delta_i-delta_bar`, and define
+
+```text
+p_0=0,  p_i=sum_(j<i) u_j,
+h_i=p_i-mean(p),
+alpha=theta_lift_0+mean(p).
+```
+
+Then `sum h_i=0`, the cyclic difference of h equals u, and
+`theta_lift_i=alpha+i*delta_bar+h_i`. The last cyclic difference is valid
+because `sum u_i=0`; the phase lift itself closes after one full turn.
+Under the supplied equal-capacity sine law the corrections telescope in
+`sum theta_dot_i=5*kappa`. Consequently
+
+```text
+alpha(t)=alpha(0)+kappa*t,
+sum_i h_i(t)^2 <= ||u(t)||_2^2 / lambda_2(L_C5)
+              <= Q^2*exp(-2*gamma*t) / lambda_2(L_C5).
+```
+
+The second line is the cycle Poincare inequality on centered h. This is a
+lifted shape norm. The circular orbit distance is
+`inf_alpha sum_i wrap(theta_i-alpha-i*delta_bar)^2`. It is no greater than
+the displayed lifted bound, because wrapping each residual and then
+minimizing over a common rotation cannot increase this chosen value. No
+claim is made that the lifted norm is the global circular minimum.
+
+The offset alpha uses the ordered support and its admitted lift. It is a
+coordinate, not a permutation-invariant target obtained from the phase
+multiset, and it supplies no exception to Section 41's symmetry obstruction.
+
+The existing `CycleRelaxationEnvelope` exposes this decomposition as exact
+affine-pi pairs in `initial_phase_offset_affine` and
+`initial_phase_shape_affine`, with shared rational enclosures in
+`initial_phase_shape_enclosures`. Its
+`phase_orbit_distance_squared_upper` reuses the existing sample times, gap
+envelopes and certified spectral lower bound. These are derived read-outs of
+one captured state/model, not new dynamic parameters, a second solver or
+another evidence record. The properties also apply to the evaluator's other
+admitted cycle sizes and winding sectors; the identity selected here is C5,
+winding one.
+
+### Form mean and the strength of the persistence claim
+
+Use the actual transport strengths s, their sum S and
+`m_s=s^T*x/S`. The form residual remains
+`D=sum_i s_i*(x_i-m_s)^2`; phase and form residuals are reported separately
+without inventing a cross-channel normalization. Section 32 supplies D's
+Duhamel bound and
+
+```text
+m_s_dot = kappa*w*s^T*g/S,
+|m_s(t)-m_s(0)| <= (M_source/gamma)*(1-exp(-gamma*t)),
+|m_infinity-m_s(t)| <= (M_source/gamma)*exp(-gamma*t).
+```
+
+Here `M_source` is that section's mean-rate prefactor (its symbol M there),
+not the upper phase-gap endpoint used above. Thus the limiting uniform form
+is unknown but constrained by the captured initial mean and
+`mean_limit_offset_upper`. Permitting this governed mean drift is not
+permission to fit an arbitrary c(t). On the invariant family itself g=0,
+so there is no mean drift. With the retained nonunit edge, a perturbed state
+can have nonzero weighted drift even though `sum g_i=0`.
+
+These estimates establish conditional attraction to the identity family.
+They also give local orbital stability relative to that family: keep W,
+kappa, coefficients and a common strictly acute neighborhood fixed. As
+initial gap and form residuals tend to zero, their all-time upper bounds
+and the mean-shift bound tend to zero. The neighborhood keeps the rates
+bounded away from zero. Form disagreement need not decrease monotonically;
+the retained post-event state initially develops form contrast before it
+relaxes. Capacity, support, operator-policy and phase-law perturbations are
+outside this stability claim.
+
+### Evidence and remaining premises
+
+The [existing control owner](../tests/physics/test_cycle_postevent_relaxation.py)
+reuses its retained initial capture to reconstruct the phase lift independently
+at high precision, check centering, affine-pi enclosures, reconstruction and
+the Poincare bound. Its winding is already one and its initial EPI disagreement
+is zero, but its phase deformation is strictly positive. Thus a winding label
+and uniform form do not alone identify a regular geometric shape. Reversal
+with relabeling retains the same nodewise shape; a consensus control has zero
+shape in the separate winding-zero family. No new trajectory is generated for
+these assertions. The earlier finite binary64 continuation remains evidence
+only for its stated execution horizon and numerical defects.
+
+The derived parts are phase-domain preservation, this rotation/shape split,
+conditional invariance, attraction and mean bounds. Fixed support/capacity,
+the supplied sine phase law, its clock interpretation, pressure realization,
+coefficients and prepared sector remain explicit model premises. The native
+global coordinator is incompatible with the regular orbit; support creation
+still depends on the recorded UM policy. Autonomous maintenance, formation
+from a different sector and empirical identification remain unresolved. The
+[single G3 queue](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) owns
+the next mechanism-admission task.

@@ -74,7 +74,7 @@ target from general dynamical identity. The
 identifies local regular-cycle geometry with no unique symmetric global phase
 target. Two isolated native-writer controls deform the twist while retaining
 winding. The [pressure audit](NODAL_PARAMETER_FOUNDATIONS.md#21-the-implemented-pressure-is-a-specified-relational-map)
-now precedes the geometric-identity contract. It separates the configured
+supplies admission for the geometric-identity contract. It separates the configured
 relational law, repaired numerical execution and initial-support assumptions;
 an exact K4 control prevents exporting low-degree source conservation to all
 networks. The [admission ledger](NODAL_PARAMETER_FOUNDATIONS.md#44-constitutive-admission-ledger-and-remaining-choices)
@@ -93,6 +93,11 @@ corrects snapshot/readout claims and reuses the existing acute-cycle margin
 for local phase availability and conditional restoring stiffness. The cycle
 theorem retains the full pressure mixture where its extra channels vanish by
 the admitted geometry; no new fitted parameter or parallel campaign is added.
+The [weighted-C5 identity contract](FORCED_SUPPORT_BALANCE.md#42-a-geometric-identity-contract-for-the-retained-weighted-c5)
+now separates the rotation, centered phase shape and governed form mean, with
+conditional orbital stability and attraction at fixed support/capacity.
+The single next G3 gate examines the shared local restoring-response mechanism
+through existing current/pressure owners; no new phase law is installed.
 The P1-P5 measurement bridge is
 supporting work. C6, prepared-ring response, polyhedral, public-data search and
 Millennium campaigns are parked unless the plan explicitly reopens them.

@@ -189,6 +189,65 @@ def test_exact_bounds_against_independent_high_precision_algebra(continuation):
         )
 
 
+def test_retained_cycle_has_shape_beyond_winding_and_a_fixed_rotation_frame(
+    continuation,
+):
+    """Use the retained endpoint; do not execute another scientific trace."""
+    envelope = continuation[0]
+    shape = envelope.initial_phase_shape_affine
+    assert tuple(sum(row[j] for row in shape) for j in (0, 1)) == (0, 0)
+    for i, (rational, coefficient) in enumerate(envelope.gap_affine):
+        right, left = shape[(i + 1) % len(shape)], shape[i]
+        assert (right[0] - left[0], right[1] - left[1]) == (
+            rational,
+            coefficient - envelope.mean_gap_pi_coefficient,
+        )
+    with mp.workdps(110):
+        phases = [_mp(envelope.capture.phase[i]) for i in envelope.cycle_indices]
+        # Independently unwrap the represented phases with high-precision pi,
+        # rather than reusing the certificate's branch integers.
+        gaps = [
+            (phases[(i + 1) % 5] - phases[i] + mp.pi) % (2 * mp.pi) - mp.pi
+            for i in range(5)
+        ]
+        lifted = [phases[0]]
+        for gap in gaps[:-1]:
+            lifted.append(lifted[-1] + gap)
+        untwisted = [value - i * 2 * mp.pi / 5 for i, value in enumerate(lifted)]
+        offset = mp.fsum(untwisted) / 5
+        centered = [value - offset for value in untwisted]
+        a, b = envelope.initial_phase_offset_affine
+        assert mp.almosteq(offset, _mp(a) + _mp(b) * mp.pi)
+        for exact, (a, b), (low, high) in zip(
+            centered, shape, envelope.initial_phase_shape_enclosures, strict=True
+        ):
+            assert mp.almosteq(exact, _mp(a) + _mp(b) * mp.pi)
+            if low == high:
+                # The exact rational enclosure is a singleton. Independent
+                # high-precision subtraction still has its own roundoff.
+                assert b == 0 and low == a
+                assert mp.almosteq(exact, _mp(low))
+            else:
+                assert _mp(low) <= exact <= _mp(high)
+        shape_squared = mp.fsum(value**2 for value in centered)
+        gap_squared = mp.fsum((gap - 2 * mp.pi / 5) ** 2 for gap in gaps)
+        true_gap = 2 - 2 * mp.cos(2 * mp.pi / 5)
+        # Winding one and initially uniform EPI do not imply a regular twist.
+        assert envelope.winding == 1
+        assert envelope.initial_epi_disagreement_squared == 0
+        assert 0 < shape_squared <= gap_squared / true_gap
+        assert gap_squared / true_gap <= _mp(
+            envelope.phase_orbit_distance_squared_upper[0]
+        )
+        gamma = _mp(envelope.phase_decay_rate_lower_bound)
+        for sample, upper in zip(
+            envelope.samples, envelope.phase_orbit_distance_squared_upper, strict=True
+        ):
+            assert gap_squared * mp.exp(
+                -2 * gamma * _mp(sample.time)
+            ) / true_gap <= _mp(upper)
+
+
 def test_orientation_relabeling_and_unit_weight_mean_control():
     graph = execute_coupling_cycle_birth()["graph"]
     before = repr(
@@ -215,6 +274,14 @@ def test_orientation_relabeling_and_unit_weight_mean_control():
         == forward.initial_gap_deviation_squared_upper
     )
     assert backward.samples == forward.samples
+    assert backward.phase_orbit_distance_squared_upper == (
+        forward.phase_orbit_distance_squared_upper
+    )
+    forward_shape = dict(zip(forward.cycle_order, forward.initial_phase_shape_affine))
+    backward_shape = dict(
+        zip(backward.cycle_order, backward.initial_phase_shape_affine)
+    )
+    assert {i: backward_shape[labels[i]] for i in graph} == forward_shape
     nx.set_edge_attributes(graph, 1.0, "weight")
     unit = bound_cycle_relaxation(graph, range(5), coupling_strength=0.5, times=(0, 1))
     assert unit.mean_rate_prefactor_squared_upper == 0
@@ -296,6 +363,9 @@ def test_zero_source_and_equal_decay_rates_have_regular_bounds():
     )
     assert report.winding == 0
     assert report.initial_gap_deviation_squared_upper == 0
+    assert report.initial_phase_offset_affine == (Fraction(1, 4), 0)
+    assert report.initial_phase_shape_affine == ((0, 0),) * 3
+    assert report.phase_orbit_distance_squared_upper == (0,) * 3
     assert report.phase_decay_rate_lower_bound == report.epi_decay_rate_lower_bound
     assert report.mean_limit_offset_upper == 0
     assert (

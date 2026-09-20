@@ -108,6 +108,71 @@ class CycleRelaxationEnvelope:
         "shared_exponential_work_limit_4096_and_outward_64_bit_exponent_grid",
     )
 
+    def _phase_orbit_coordinates(self):
+        """Split the admitted lift into a common offset and centered shape."""
+        prefixes = [(Fraction(0), Fraction(0))]
+        for rational, coefficient in self.gap_affine[:-1]:
+            previous = prefixes[-1]
+            prefixes.append(
+                (
+                    previous[0] + rational,
+                    previous[1] + coefficient - self.mean_gap_pi_coefficient,
+                )
+            )
+        count = len(prefixes)
+        mean = tuple(sum(row[j] for row in prefixes) / count for j in (0, 1))
+        offset = (
+            self.capture.phase[self.cycle_indices[0]] + mean[0],
+            mean[1],
+        )
+        shape = tuple((a - mean[0], b - mean[1]) for a, b in prefixes)
+        return offset, shape
+
+    @property
+    def initial_phase_offset_affine(self) -> tuple[Fraction, Fraction]:
+        """Return alpha(0) as rational + coefficient*pi in the chosen lift.
+
+        The supplied equal-capacity sine law gives alpha(t)=alpha(0)+capacity*t.
+        This ordered-support chart coordinate is not a global phasor direction
+        or a target chosen from an unordered phase multiset.
+        """
+        return self._phase_orbit_coordinates()[0]
+
+    @property
+    def initial_phase_shape_affine(self) -> tuple[tuple[Fraction, Fraction], ...]:
+        """Return centered lifted deformation from the regular winding orbit.
+
+        In cycle order, theta_lift_i=alpha+i*mean_gap+h_i. Each h_i is an
+        affine-pi pair; sum(h)=0 and h_(i+1)-h_i equals the gap deviation,
+        including the closing edge. This is not a quotient by phase reversal.
+        """
+        return self._phase_orbit_coordinates()[1]
+
+    @property
+    def initial_phase_shape_enclosures(
+        self,
+    ) -> tuple[tuple[Fraction, Fraction], ...]:
+        """Enclose the initial lifted shape using the shared exact pi owner."""
+        pi_bounds = _pi_bounds()
+        return tuple(
+            _affine_interval(rational, coefficient, pi_bounds)
+            for rational, coefficient in self.initial_phase_shape_affine
+        )
+
+    @property
+    def phase_orbit_distance_squared_upper(self) -> tuple[Fraction, ...]:
+        """Bound lifted squared shape norms at the existing sample times.
+
+        Poincare gives ||h||^2 <= ||gap-mean_gap||^2/lambda_2(L_cycle).
+        The represented rational lower spectral bound makes the returned
+        upper bound conservative. Circular distance to the regular-twist
+        orbit is no larger; binary64 trajectory error remains separate.
+        """
+        return tuple(
+            sample.gap_deviation_squared_upper / self.phase_laplacian_gap_lower_bound
+            for sample in self.samples
+        )
+
 
 def _ordered_cycle(source, cycle_order):
     if isinstance(cycle_order, (str, bytes, bytearray, Mapping, Set)):

@@ -114,7 +114,7 @@ An exact regular-C5 argument exposes a symmetry obstruction to a single global
 phase target despite well-defined local geometry. Two isolated native-writer
 controls deform the regular twist while retaining winding and U3 admission;
 represented phasor residuals are not exact ideal directions. The pressure audit
-now precedes that geometric-identity contract. Its numerical paths, scalar
+supplies admission for that geometric-identity contract. Its numerical paths, scalar
 admission, live configuration and auxiliary null readout have been corrected;
 the explicit model and its limitations are owned by
   theory/NODAL_PARAMETER_FOUNDATIONS.md#21-the-implemented-pressure-is-a-specified-relational-map.
@@ -139,6 +139,18 @@ premises into the retained weighted post-UM cycle identity, without changing
 the pressure to obtain maintenance. No sustaining force is fitted. Joint tangency and law
 nonuniqueness are already established and should not be recalculated as new work.
 The sole next task and its admission criteria remain in the G3 plan.
+The retained weighted-C5 identity contract is complete under its declared
+continuous law: a centered phase lift separates common rotation from shape,
+and existing spectral bounds give conditional orbital stability/attraction.
+Actual conductances determine the governed form-mean drift and its limit bound.
+Winding one alone does not certify regular geometry. These derived coordinates
+reuse the existing cycle evaluator and retained endpoint, without a new solver.
+The G3 plan now admits one next mechanism task: identify the positive local
+restoring-response conditions shared by the existing sine current and regular
+phasor displacement. A pressure-as-phase-rate comparison would remain an
+additional constitutive premise. Autonomous support/capacity evolution,
+formation and physical identity remain open. Detailed contract:
+  theory/FORCED_SUPPORT_BALANCE.md#42-a-geometric-identity-contract-for-the-retained-weighted-c5.
 The emergent-property audit additionally removes a node-label-dependent
 snapshot conservation score, centralizes field captures and cycle validation,
 and corrects static research and pulse/THOL readout boundaries. No additional
