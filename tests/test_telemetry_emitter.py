@@ -123,6 +123,12 @@ def test_ordinary_record_roundtrips_actual_unified_numpy_fields(tmp_path, safe):
     )
     assert saved["extra"] == {"seed": 12, "trace": [0.0, 0.5]}
     assert saved["operator"] == "IL"
+    assert event.metrics["conservation_quality"] is None
+    assert event.metrics["conservation_sample_available"] is False
+    assert saved["metrics"]["conservation_quality"] is None
+    assert (
+        saved["metrics"]["conservation_scope"] == "single_snapshot_no_temporal_balance"
+    )
 
 
 @pytest.mark.parametrize("safe", (False, True))
@@ -174,7 +180,9 @@ def test_successful_unified_collection_reuses_its_extended_suite(tmp_path, monke
     event = TelemetryEmitter(tmp_path / "reuse.jsonl", safe=False).record(
         _star(cancellation=False)
     )
-    assert len(calls) == 1
+    # The canonical snapshot already contains both currents; neither facade
+    # needs to invoke the separate extended suite again.
+    assert len(calls) == 0
     extended = event.metrics["unified_fields"]["extended_canonical"]
     assert event.metrics["phase_current"] == extended["phase_current"]
     assert event.metrics["dnfr_flux"] == extended["dnfr_flux"]
@@ -194,3 +202,24 @@ def test_mirror_format_failure_precedes_either_file_append(tmp_path):
     assert not path.exists()
     assert not path.with_suffix(".log").exists()
     assert len(emitter._buffer) == 1
+
+
+def test_optional_grammar_snapshot_log_preserves_unavailable_balance(
+    monkeypatch, capsys
+):
+    from tnfr.operators.definitions import Emission, Silence
+    from tnfr.operators.grammar_validate import validate_grammar
+    from tnfr.physics import fields
+
+    monkeypatch.setattr(
+        fields,
+        "compute_unified_telemetry",
+        lambda graph: {
+            "complex_field": {"correlation": -0.25},
+            "tensor_invariants": {"conservation_quality": None},
+        },
+    )
+    assert validate_grammar([Emission(), Silence()], collect_unified_telemetry=True)
+    output = capsys.readouterr().out
+    assert "correlation: -0.250" in output
+    assert "Conservation quality: unavailable (single snapshot)" in output

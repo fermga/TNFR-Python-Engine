@@ -109,6 +109,13 @@ not a proven complete state; reflection equivalence and loss of hidden state are
 separate questions. Auxiliary symplectic/U(2) demonstrations do not establish
 that engine operators are Hamiltonian or generate particles.
 
+[The unified-field showcase](08_emergent_geometry/unified_fields_showcase.py)
+compares seeded supplied states on a path, cycle and barbell using the shared
+snapshot readout. It executes no operators or evolution. Its optional plot
+reports descriptive field statistics and explicitly leaves temporal conservation
+unavailable; the former handwritten operator substitutes and physical-domain
+validation claims have been removed.
+
 [Example 179](08_emergent_geometry/179_phase_form_driven_response.py) checks a
 prescribed rotating phase contrast and its derived EPI response on the six-node
 prism. It evaluates detached analytic snapshots rather than a native trajectory.

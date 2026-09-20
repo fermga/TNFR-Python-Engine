@@ -1,4 +1,4 @@
-r"""Internal Hamiltonian operator construction for TNFR.
+r"""Auxiliary finite Hermitian matrix construction from TNFR graph read-outs.
 
 This module implements the explicit construction of the internal Hamiltonian:
 
@@ -8,16 +8,10 @@ This module implements the explicit construction of the internal Hamiltonian:
 Mathematical Foundation
 -----------------------
 
-The internal Hamiltonian :math:`\hat{H}_{int}` governs the structural evolution
-of resonant fractal nodes through the canonical nodal equation:
-
-.. math::
-    \frac{\partial \text{EPI}}{\partial t} = \nu_f \cdot \Delta\text{NFR}(t)
-
-where the reorganization operator :math:`\Delta\text{NFR}` is defined as:
-
-.. math::
-    \Delta\text{NFR} = \frac{d}{dt} + \frac{i[\hat{H}_{int}, \cdot]}{\hbar_{str}}
+This matrix defines an auxiliary unitary model. It does not derive the engine's
+nodal pressure, phase law or operator selection. The legacy node-local
+commutator read-out is identically zero; no evolving density matrix or mapping
+from that matrix to graph EPI is supplied here.
 
 **Components**:
 
@@ -47,13 +41,8 @@ where the reorganization operator :math:`\Delta\text{NFR}` is defined as:
    simple undirected support. Direction, reciprocal arcs and parallel edges
    collapse to one coupling. A self-loop contributes one diagonal entry.
 
-Theoretical References
-----------------------
-
-See:
-- Mathematical formalization: ``Formalizacion-Matematica-TNFR-Unificada.pdf``, §2.4
-- ΔNFR development: ``Desarrollo-Exhaustivo_-Formalizacion-Matematica-Ri-3.pdf``
-- Quantum time evolution: Sakurai, "Modern Quantum Mechanics", Chapter 2
+The model and sign boundaries are documented in
+``theory/STRUCTURAL_STABILITY_AND_DYNAMICS.md``, section 5.
 
 Examples
 --------
@@ -136,7 +125,7 @@ class InternalHamiltonian:
     H_int : ndarray, shape (N, N)
         Total internal Hamiltonian
     hbar_str : float
-        Structural Planck constant (ℏ_str)
+        Finite nonzero scale of the auxiliary unitary model
     nodes : list
         Ordered list of node identifiers
     N : int
@@ -145,14 +134,11 @@ class InternalHamiltonian:
     Notes
     -----
 
-    This implementation leverages existing cache infrastructure:
-
-    - Uses ``cached_node_list()`` for consistent node ordering
-    - Reuses ``coherence_matrix()`` computation for H_coh
-    - Integrates with ``CacheManager`` for performance optimization
-
-    All matrix components are verified to be Hermitian (self-adjoint),
-    ensuring real eigenvalues and unitary time evolution.
+    Matrix construction reuses the node-order and structural-affinity owners.
+    The matrices are a snapshot: changing the graph does not update this object.
+    The cache-manager argument is retained for compatibility. Components must
+    be finite and pass a numerical Hermiticity check; this is not an exact
+    algebraic certificate or a theorem about the engine trajectory.
     """
 
     def __init__(
@@ -168,20 +154,21 @@ class InternalHamiltonian:
         G : TNFRGraph
             Graph with nodes containing 'nu_f', 'phase', 'epi', 'si' attributes
         hbar_str : float, default=1.0
-            Structural Planck constant (ℏ_str). This sets the scale for
-            structural reorganization rates. Default value of 1.0 gives natural
-            units where the Hamiltonian directly represents structural energy scales.
+            Finite nonzero real scale for the auxiliary unitary model.
         cache_manager : CacheManager, optional
-            Cache manager for performance optimization. If None, uses the
-            graph's internal cache manager.
+            Retained compatibility argument. If None, retains the graph's
+            internal cache manager; matrix construction is not cached here.
 
         Raises
         ------
         ValueError
-            If any Hamiltonian component fails Hermiticity check
+            If the scale is zero/nonfinite or a component is nonfinite or
+            fails the numerical Hermiticity check
         """
         self.G = G
-        self.hbar_str = float(hbar_str)
+        self.hbar_str = _finite_real_coefficient(hbar_str, "hbar_str")
+        if self.hbar_str == 0.0:
+            raise ValueError("hbar_str must be nonzero")
 
         # Use unified cache infrastructure
         if cache_manager is None:
@@ -200,7 +187,7 @@ class InternalHamiltonian:
         # Combine into total Hamiltonian
         self.H_int = self.H_coh + self.H_freq + self.H_coupling
 
-        # Verify Hermiticity (critical for physical validity)
+        # Validate the auxiliary matrix, not a physical identification.
         self._verify_hermitian()
 
     def _build_H_coherence(self) -> FloatMatrix:
@@ -246,7 +233,8 @@ class InternalHamiltonian:
             \hat{H}_{freq} = \sum_i \nu_{f,i} |i\rangle\langle i|
 
         Each node's structural frequency :math:`\nu_{f,i}` becomes its diagonal
-        energy. Nodes with higher νf have higher "kinetic" reorganization energy.
+        entry of this auxiliary matrix. This is a model choice, not a derived
+        kinetic energy for the first-order nodal equation.
 
         Returns
         -------
@@ -260,17 +248,7 @@ class InternalHamiltonian:
         and maintain consistency with the rest of the codebase.
         """
 
-        frequencies = np.zeros(self.N, dtype=float)
-
-        for i, node in enumerate(self.nodes):
-            # Use unified attribute access with aliasing support
-            nu_f = get_attr(self.G.nodes[node], ALIAS_VF, 0.0)
-            frequencies[i] = float(nu_f)
-
-        # Create diagonal matrix (automatically Hermitian)
-        H_freq = np.diag(frequencies).astype(complex)
-
-        return H_freq
+        return build_H_frequency(self.G, nodes=list(self.nodes))
 
     def _build_H_coupling(self) -> FloatMatrix:
         r"""Construct coupling from the graph's undirected Boolean support.
@@ -319,7 +297,7 @@ class InternalHamiltonian:
 
         1. Real eigenvalues (energy spectrum)
         2. Unitary time evolution
-        3. Probability conservation
+        3. Euclidean norm conservation in the auxiliary complex state space
         """
 
         # Handle empty graph case
@@ -334,6 +312,8 @@ class InternalHamiltonian:
         ]
 
         for name, H in components:
+            if not np.all(np.isfinite(H)):
+                raise ValueError(f"{name} must contain only finite entries")
             # Check Hermiticity: H = H†
             H_dagger = H.conj().T
             deviation = np.max(np.abs(H - H_dagger))
@@ -345,32 +325,14 @@ class InternalHamiltonian:
                 )
 
     def compute_delta_nfr_operator(self) -> FloatMatrix:
-        r"""Compute ΔNFR operator from Hamiltonian commutator.
+        r"""Return the legacy auxiliary matrix ``+i H_int / hbar_str``.
 
-        Theory
-        ------
-
-        .. math::
-            \Delta\text{NFR} = \frac{i[\hat{H}_{int}, \cdot]}{\hbar_{str}}
-
-        For a state :math:`|\psi\rangle`:
-
-        .. math::
-            \Delta\text{NFR}|\psi\rangle = \frac{i}{\hbar_{str}}(\hat{H}_{int}|\psi\rangle - |\psi\rangle\hat{H}_{int})
-
-        Returns
-        -------
-        Delta_NFR_matrix : ndarray, shape (N, N)
-            ΔNFR operator in matrix form (anti-Hermitian)
-
-        Notes
-        -----
-
-        The ΔNFR operator is anti-Hermitian: :math:`\Delta\text{NFR}^\dagger = -\Delta\text{NFR}`,
-        which ensures imaginary eigenvalues and corresponds to generator of
-        time evolution.
+        Despite its name, this N-by-N matrix is not a commutator superoperator
+        on density matrices and does not supply node-local pressure. For a
+        Hermitian H it is anti-Hermitian. Its sign is the negative of the
+        ket-state generator used by :meth:`time_evolution_operator`; retain
+        this convention when consuming the compatibility API.
         """
-        # ΔNFR = (i/ℏ_str) * H_int (for operators acting on states)
         return (1j / self.hbar_str) * self.H_int
 
     def time_evolution_operator(self, t: float) -> FloatMatrix:
@@ -401,7 +363,8 @@ class InternalHamiltonian:
         .. math::
             |\psi(t)\rangle = U(t)|\psi(0)\rangle
 
-        Unitarity :math:`U^\dagger U = I` ensures probability conservation.
+        Unitarity :math:`U^\dagger U = I` preserves the auxiliary state norm.
+        This method does not write graph EPI or establish physical probabilities.
         """
         try:
             from scipy.linalg import expm
@@ -448,7 +411,8 @@ class InternalHamiltonian:
             \hat{H}_{int}|\phi_n\rangle = E_n|\phi_n\rangle
 
         gives the stationary states :math:`|\phi_n\rangle` with energies :math:`E_n`.
-        These are the maximally stable coherent configurations.
+        They are stationary rays of the auxiliary unitary flow, not a proof of
+        stable or attracting TNFR graph configurations.
         """
 
         # Use eigh for Hermitian matrices (more efficient and numerically stable)
@@ -457,7 +421,7 @@ class InternalHamiltonian:
         return eigenvalues, eigenvectors
 
     def compute_node_delta_nfr(self, node: Any) -> float:
-        r"""Compute ΔNFR for a single node using Hamiltonian commutator.
+        r"""Return the identically zero localized-projector read-out.
 
         Parameters
         ----------
@@ -467,7 +431,7 @@ class InternalHamiltonian:
         Returns
         -------
         delta_nfr : float
-            ΔNFR value for the specified node
+            Zero for a node in this Hamiltonian's captured support
 
         Theory
         ------
@@ -483,36 +447,14 @@ class InternalHamiltonian:
         Notes
         -----
 
-        The commutator result is anti-Hermitian, so its diagonal elements are
-        purely imaginary in theory. We extract the real part to obtain the ΔNFR
-        observable value. In practice, numerical precision may introduce small
-        real components that represent the actual structural reorganization rate.
+        For this projector, ``[H, rho_n][n,n] = H[n,n] - H[n,n] = 0`` for any
+        matrix H. Evaluating large matrix products cannot add a structural
+        rate to this identity. This compatibility read-out is not the engine's
+        configured pressure and supplies no density-matrix evolution.
         """
-
-        # Get node index
-        try:
-            node_idx = self.nodes.index(node)
-        except ValueError:
+        if node not in self.nodes:
             raise ValueError(f"Node {node} not found in Hamiltonian")
-
-        # Node density matrix (pure state |n⟩⟨n|)
-        rho_n = np.zeros((self.N, self.N), dtype=complex)
-        rho_n[node_idx, node_idx] = 1.0
-
-        # Commutator: [H_int, ρ_n] = H_int ρ_n - ρ_n H_int
-        commutator = self.H_int @ rho_n - rho_n @ self.H_int
-
-        # ΔNFR operator
-        delta_nfr_matrix = (1j / self.hbar_str) * commutator
-
-        # Extract diagonal element for node n
-        # Note: Take real part to obtain observable. Diagonal elements of the
-        # anti-Hermitian commutator are purely imaginary theoretically; any
-        # nonzero real part comes from numerical precision or represents the
-        # actual structural reorganization rate.
-        delta_nfr = float(delta_nfr_matrix[node_idx, node_idx].real)
-
-        return delta_nfr
+        return 0.0
 
 
 # Standalone builder functions for modular usage
@@ -658,17 +600,19 @@ def build_H_frequency(
     H_freq : ndarray, shape (N, N)
         Diagonal frequency operator
     """
-    from ..mathematics.unified_numerical import np
-
-    if nodes is None:
-        nodes = cached_node_list(G)
+    nodes = _validated_node_order(G, nodes)
 
     N = len(nodes)
     frequencies = np.zeros(N, dtype=float)
 
     for i, node in enumerate(nodes):
-        nu_f = get_attr(G.nodes[node], ALIAS_VF, 0.0)
-        frequencies[i] = float(nu_f)
+        frequencies[i] = get_attr(
+            G.nodes[node],
+            ALIAS_VF,
+            0.0,
+            strict=True,
+            conv=lambda value: _finite_real_coefficient(value, "nu_f"),
+        )
 
     return np.diag(frequencies).astype(complex)
 

@@ -1156,9 +1156,10 @@ $W$ is the matrix returned by `coherence_matrix`. The constructor default is
 $C_0=-1$, so the coherence term is $-W$; writing an additional leading minus
 sign reverses the implemented sign. The default coupling is $J_0=0.1$, and the
 builder writes both matrix directions for every graph edge. The constructor
-checks every component and their sum with an absolute Hermiticity residual
-tolerance of `1e-10` and raises when that numerical check fails. Acceptance is
-not an exact algebraic Hermiticity certificate.
+requires finite entries in every component and their sum, then checks an
+absolute Hermiticity residual tolerance of `1e-10`. The auxiliary scale must
+be a finite nonzero real number. Acceptance is not an exact algebraic
+Hermiticity certificate.
 
 This matrix supplies an auxiliary linear model. The repository does not derive
 the general engine trajectory or the canonical graph $\Delta\mathrm{NFR}$ from
@@ -1198,8 +1199,8 @@ $$
 which is anti-Hermitian and is the negative of the ket-state generator
 $-iH_{\mathrm{int}}/\hbar_{\mathrm{str}}$ used by $U(t)$.
 
-`compute_node_delta_nfr(n)` separately constructs
-$\rho_n=|n\rangle\langle n|$ and returns the real part of
+`compute_node_delta_nfr(n)` implements the localized-projector read-out
+for $\rho_n=|n\rangle\langle n|$, defined by the real part of
 
 $$
 \frac{i}{\hbar_{\mathrm{str}}}
@@ -1207,12 +1208,24 @@ $$
 $$
 
 For this localized projector, the displayed diagonal commutator is exactly
-zero: $[H,\rho_n]_{nn}=H_{nn}-H_{nn}=0$. Under the implemented unitary
+zero: $[H,\rho_n]_{nn}=H_{nn}-H_{nn}=0$. The implementation returns this
+identity directly after checking captured node membership, without matrix
+products. Under the implemented unitary
 $U\rho U^\dagger$, the density-matrix derivative would instead carry the sign
 $-i[H,\rho]/\hbar_{\mathrm{str}}$. These helpers therefore do not reconstruct
 the engine's node-local structural pressure; canonical $\Delta\mathrm{NFR}$ is
 computed by
 [`dynamics.dnfr`](../src/tnfr/dynamics/dnfr.py).
+
+Selecting its opt-in `compute_delta_nfr_hamiltonian` hook writes zero stored
+pressure at every node and labels that null read-out in pressure metadata.
+It supplies no density evolution or independently derived pressure law. The
+hook rebuilds its auxiliary matrix on each invocation, so capacity, support,
+affinity configuration and scale changes are not hidden by a node-count cache.
+`cache_hamiltonian=True` retains only the latest constructed snapshot for
+inspection; it does not reuse that snapshot on the next call. Regression
+coverage belongs to
+[`test_hamiltonian_pressure_scope.py`](../tests/operators/test_hamiltonian_pressure_scope.py).
 
 ---
 

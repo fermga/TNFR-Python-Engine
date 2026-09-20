@@ -99,7 +99,10 @@ def _stable_mean(
     mean = scale * (normalized_total / len(neighbor_indices))
     if not math.isfinite(mean):
         raise ValueError("neighbor frequency mean must remain finite")
-    return mean
+    # Enforce the exact neighbor hull independently of the rounding in this
+    # scaled reduction. No extra threshold or evolution rule is introduced.
+    lower = min(values[index] for index in neighbor_indices)
+    return clamp(mean, lower, scale)
 
 
 def _vf_adapt_chunk(
@@ -116,9 +119,15 @@ def _vf_adapt_chunk(
     for node, index, neighbor_indices in chunk:
         vf = vf_values[index]
         mean = _stable_mean(vf_values, neighbor_indices, vf)
-        proposed = (1.0 - mu) * vf + mu * mean
+        # The represented mean is already this node's fixed point. Evaluating
+        # two rounded products can otherwise introduce artificial detuning
+        # when only part of an equal-capacity network passes the gate.
+        proposed = vf if mean == vf else (1.0 - mu) * vf + mu * mean
         if not math.isfinite(proposed):
             raise ValueError("adapted structural frequency must remain finite")
+        # A convex update cannot leave the segment between its endpoints.
+        # Two rounded products can otherwise exceed even adjacent capacities.
+        proposed = clamp(proposed, min(vf, mean), max(vf, mean))
         updates.append((node, proposed))
     return updates
 
@@ -271,10 +280,20 @@ def adapt_vf_after_structural_stability(
     than EPS_DNFR_STABLE and Si is at least the configured si_hi threshold.
     After VF_ADAPT_TAU consecutive qualifying evaluations, its frequency moves
     by VF_ADAPT_MU toward the immutable-snapshot mean of its neighbors.
+    Comparison guards keep the represented mean inside its neighbor range
+    and the represented update between the current capacity and that mean.
+    Thus any eligibility subset preserves the incoming capacity interval;
+    rounding cannot supply a new extremum. This does not guarantee consensus.
+    The counter measures calls, not elapsed time, and a successful write does
+    not reset it: further qualifying calls can update capacity again.
 
     Si is a derived diagnostic. Using it to select capacity updates is an
     operational policy, not an evolution law derived from the nodal EPI
-    equation. This routine consumes stored Si; it does not refresh it.
+    equation. This routine consumes stored pressure and Si; it refreshes
+    neither. A caller requiring current-state gate inputs must refresh pressure
+    before Si, then invoke this writer. A permitted update need not preserve
+    a phase/form target that depended on the previous capacities; see
+    ``theory/FORCED_SUPPORT_BALANCE.md`` section 27.
 
     This routine does not read dEPI/dt and therefore does not compute or gate on
     canonical total coherence C(t). All parameters and node scalars are

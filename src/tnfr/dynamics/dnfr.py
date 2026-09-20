@@ -14,6 +14,7 @@ import math
 import sys
 from collections.abc import Callable, Iterator, Mapping, MutableMapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
+from copy import deepcopy
 from time import perf_counter
 from types import ModuleType
 from typing import Any, cast
@@ -27,9 +28,8 @@ from ..mathematics._neighbor_differences import (
     mean_neighbor_difference,
 )
 from ..mathematics._phase_midpoint import certified_two_neighbor_phase
-from ..mathematics.unified_numerical import np
-from ..metrics.common import merge_and_normalize_weights
-from ..metrics.trig import neighbor_phase_mean_list
+from ..mathematics.unified_numerical import compute_phase_difference, np
+from ..metrics.common import merge_and_normalize_weights, merge_graph_weights
 from ..metrics.trig_cache import compute_theta_trig
 from ..types import (
     DeltaNFRHook,
@@ -38,6 +38,7 @@ from ..types import (
     NeighborStats,
     NodeId,
     TNFRGraph,
+    require_finite_real_scalar_epi,
 )
 from ..utils import (
     DNFR_PREP_STATE_KEY,
@@ -46,7 +47,6 @@ from ..utils import (
     DnfrPrepState,
     _graph_cache_manager,
     angle_diff,
-    angle_diff_array,
     cached_node_list,
     cached_nodes_and_A,
     new_dnfr_cache,
@@ -55,7 +55,6 @@ from ..utils import (
 )
 from .fused_dnfr import compute_fused_gradients_symmetric
 
-_MEAN_VECTOR_EPS = 1e-12
 _SPARSE_DENSITY_THRESHOLD = 0.25
 _DNFR_APPROX_BYTES_PER_EDGE = 48
 
@@ -340,8 +339,9 @@ def _write_dnfr_metadata(
     meta = {
         "hook": hook_name,
         "weights_raw": dict(weights),
+        "weights_effective": dict(weights),
         "weights_norm": weights_norm,
-        "components": [k for k, v in weights_norm.items() if v != 0.0],
+        "components": [k for k, v in weights.items() if v != 0.0],
         "doc": "ΔNFR = Σ w_i·g_i",
     }
     if note:
@@ -350,18 +350,44 @@ def _write_dnfr_metadata(
     G.graph["_dnfr_hook_name"] = hook_name  # string friendly
 
 
-def _configure_dnfr_weights(G) -> dict:
-    """Normalise and store ΔNFR weights in ``G.graph['_dnfr_weights']``.
+def _resolve_dnfr_weights(G) -> Mapping[str, float]:
+    """Read effective coefficients without mutating the graph.
 
-    Uses ``G.graph['DNFR_WEIGHTS']`` or default values. The result is a
-    dictionary of normalised components reused at each simulation step
-    without recomputing the mix.
+    A legacy explicitly supplied private mix remains an override until the
+    public configuration changes after its first pressure preparation. An
+    engine-owned cached mix must never hide a subsequent public configuration
+    edit. Detached observers use this same resolution rule.
     """
-    weights = merge_and_normalize_weights(
+    cached = G.graph.get("_dnfr_weights")
+    source = G.graph.get("_dnfr_weights_source")
+    configured = merge_graph_weights(G, "DNFR_WEIGHTS")
+    if cached is not None and (source is None or source == configured):
+        return cached
+    return merge_and_normalize_weights(
         G, "DNFR_WEIGHTS", ("phase", "epi", "vf", "topo"), default=0.0
     )
+
+
+def _configure_dnfr_weights(G) -> Mapping[str, float]:
+    """Store the effective mix and a detached snapshot of its public source."""
+    weights = _resolve_dnfr_weights(G)
     G.graph["_dnfr_weights"] = weights
+    G.graph["_dnfr_weights_source"] = deepcopy(merge_graph_weights(G, "DNFR_WEIGHTS"))
     return weights
+
+
+def _read_scalar_epi(nd: Mapping[str, Any]) -> float:
+    """Read the finite signed scalar chart required by this pressure model."""
+    return get_attr(
+        nd, ALIAS_EPI, 0.0, strict=True, conv=require_finite_real_scalar_epi
+    )
+
+
+def _pressure_phase_coordinate(value: float) -> float:
+    """Read the principal phasor chart before a phase-pressure subtraction."""
+    return (
+        value if abs(value) <= math.pi else math.atan2(math.sin(value), math.cos(value))
+    )
 
 
 def _init_dnfr_cache(
@@ -761,7 +787,7 @@ def _refresh_dnfr_vectors(
     if np_ready:
         if node_count:
             epi_arr = np_module.fromiter(
-                (get_attr(G.nodes[node], ALIAS_EPI, 0.0) for node in nodes),
+                (_read_scalar_epi(G.nodes[node]) for node in nodes),
                 dtype=float,
                 count=node_count,
             )
@@ -811,7 +837,7 @@ def _refresh_dnfr_vectors(
             node_id: NodeId = node
             nd = G.nodes[node_id]
             cache.theta[i] = trig.theta[node_id]
-            cache.epi[i] = get_attr(nd, ALIAS_EPI, 0.0)
+            cache.epi[i] = _read_scalar_epi(nd)
             cache.vf[i] = get_attr(nd, ALIAS_VF, 0.0)
             cache.cos_theta[i] = trig.cos[node_id]
             cache.sin_theta[i] = trig.sin[node_id]
@@ -853,9 +879,7 @@ def _prepare_dnfr_data(
     )
 
     graph = G.graph
-    weights = graph.get("_dnfr_weights")
-    if weights is None:
-        weights = _configure_dnfr_weights(G)
+    weights = _configure_dnfr_weights(G)
 
     result: dict[str, Any] = {
         "weights": weights,
@@ -1194,8 +1218,18 @@ def _apply_dnfr_gradients(
         if w_topo != 0.0:
             grad_topo = _ensure_cached_array(cache, "grad_topo_np", deg_array.shape)
 
-        angle_diff_array(theta_np, th_bar, np=np, out=grad_phase)
-        np.multiply(grad_phase, -1.0 / math.pi, out=grad_phase)
+        center_phase = np.where(
+            np.abs(theta_np) <= math.pi,
+            theta_np,
+            np.arctan2(data["sin_theta"], data["cos_theta"]),
+        )
+        mean_phase = np.where(
+            np.abs(th_bar) <= math.pi,
+            th_bar,
+            np.arctan2(np.sin(th_bar), np.cos(th_bar)),
+        )
+        np.copyto(grad_phase, compute_phase_difference(mean_phase, center_phase))
+        np.divide(grad_phase, math.pi, out=grad_phase)
         for index, value in phase_overrides.items():
             grad_phase[index] = value
 
@@ -1253,10 +1287,10 @@ def _apply_dnfr_gradients(
                             start,
                             end,
                             nodes,
-                            theta,
+                            [_pressure_phase_coordinate(value) for value in theta],
                             epi,
                             vf,
-                            th_bar,
+                            [_pressure_phase_coordinate(value) for value in th_bar],
                             epi_bar,
                             vf_bar,
                             deg_bar,
@@ -1283,7 +1317,11 @@ def _apply_dnfr_gradients(
                 g_phase = (
                     phase_overrides[i]
                     if i in phase_overrides
-                    else -angle_diff(theta[i], th_bar[i]) / math.pi
+                    else angle_diff(
+                        _pressure_phase_coordinate(th_bar[i]),
+                        _pressure_phase_coordinate(theta[i]),
+                    )
+                    / math.pi
                 )
                 g_epi = (
                     (
@@ -1489,24 +1527,15 @@ def _compute_neighbor_means(
         inv.fill(0.0)
         np.divide(1.0, count, out=inv, where=mask)
 
-        cos_avg = _ensure_cached_array(cache, "neighbor_cos_avg_np", (n,))
-        cos_avg.fill(0.0)
-        np.multiply(x, inv, out=cos_avg, where=mask)
-
-        sin_avg = _ensure_cached_array(cache, "neighbor_sin_avg_np", (n,))
-        sin_avg.fill(0.0)
-        np.multiply(y, inv, out=sin_avg, where=mask)
-
-        lengths = _ensure_cached_array(cache, "neighbor_mean_length_np", (n,))
-        np.hypot(cos_avg, sin_avg, out=lengths)
-
         temp = _ensure_cached_array(cache, "neighbor_mean_tmp_np", (n,))
-        np.arctan2(sin_avg, cos_avg, out=temp)
+        np.arctan2(y, x, out=temp)
 
         theta_src = data.get("theta_np")
         if theta_src is None:
             theta_src = np.asarray(theta, dtype=float)
-        zero_mask = lengths <= _MEAN_VECTOR_EPS
+        # Computational extension at zero consumed floating sums. A tiny
+        # nonzero resultant is not a derived physical zero or a stable target.
+        zero_mask = (np.asarray(x) == 0.0) & (np.asarray(y) == 0.0)
         np.copyto(temp, theta_src, where=zero_mask)
         np.copyto(th_bar, temp, where=mask, casting="unsafe")
 
@@ -1526,12 +1555,10 @@ def _compute_neighbor_means(
         if not c:
             continue
         inv = 1.0 / float(c)
-        cos_avg = x[i] * inv
-        sin_avg = y[i] * inv
-        if math.hypot(cos_avg, sin_avg) <= _MEAN_VECTOR_EPS:
+        if x[i] == 0.0 and y[i] == 0.0:
             th_bar[i] = theta[i]
         else:
-            th_bar[i] = math.atan2(sin_avg, cos_avg)
+            th_bar[i] = math.atan2(y[i], x[i])
         if not data.get("stable_linear_gradients"):
             if epi_count[i] > 0.0:
                 epi_bar[i] = epi_sum[i] / epi_count[i]
@@ -2698,9 +2725,9 @@ def default_compute_delta_nfr(
     G : nx.Graph
         Graph on which the computation is performed.
     cache_size : int | None, optional
-        Maximum number of edge configurations cached in ``G.graph``. Values
-        ``None`` or <= 0 imply unlimited cache. Defaults to ``1`` to keep the
-        previous behaviour.
+        Maximum number of edge configurations cached in ``G.graph``. ``None``
+        is unlimited; values <= 0 disable reusable accumulation caches.
+        Defaults to ``1``.
     n_jobs : int | None, optional
         Parallel worker count for the pure-Python accumulation path. ``None``
         or values <= 1 preserve the serial behaviour. The vectorised NumPy
@@ -2878,6 +2905,7 @@ def _apply_dnfr_hook(
                 np_module.add(totals, values, out=totals)
             else:
                 np_module.add(totals, values * w, out=totals)
+        _require_finite_pressure(totals)
         for idx, (n, _) in enumerate(nodes_data):
             set_dnfr(G, n, float(totals[idx]))
         _write_dnfr_metadata(G, weights=weights, hook_name=hook_name, note=note)
@@ -2925,6 +2953,7 @@ def _apply_dnfr_hook(
                     total += w * float(func(G, n, nd))
             results.append((n, total))
 
+    _require_finite_pressure([value for _, value in results])
     for node, value in results:
         set_dnfr(G, node, float(value))
 
@@ -2956,16 +2985,19 @@ class _PhaseGradient:
         theta_val = get_theta_attr(nd, 0.0)
         th_i = float(theta_val if theta_val is not None else 0.0)
         neighbors = list(G.neighbors(n))
-        if neighbors:
-            th_bar = neighbor_phase_mean_list(
-                neighbors,
-                cos_th=self.cos,
-                sin_th=self.sin,
-                fallback=th_i,
+        if len(neighbors) == 2:
+            certified = certified_two_neighbor_phase(
+                th_i,
+                float(get_theta_attr(G.nodes[neighbors[0]], 0.0)),
+                float(get_theta_attr(G.nodes[neighbors[1]], 0.0)),
             )
-        else:
-            th_bar = th_i
-        return -angle_diff(th_i, th_bar) / math.pi
+            if certified is not None:
+                return certified.delta / math.pi
+        x = sum(self.cos[v] for v in neighbors)
+        y = sum(self.sin[v] for v in neighbors)
+        if x == 0.0 and y == 0.0:
+            return 0.0
+        return angle_diff(math.atan2(y, x), _pressure_phase_coordinate(th_i)) / math.pi
 
 
 class _NeighborAverageGradient:
@@ -2989,7 +3021,11 @@ class _NeighborAverageGradient:
     ) -> float:
         val = self.values.get(n)
         if val is None:
-            val = float(get_attr(nd, self.alias, 0.0))
+            val = (
+                _read_scalar_epi(nd)
+                if self.alias == ALIAS_EPI
+                else float(get_attr(nd, self.alias, 0.0))
+            )
             self.values[n] = val
         neighbors = list(G.neighbors(n))
         if not neighbors:
@@ -2998,14 +3034,21 @@ class _NeighborAverageGradient:
         for neigh in neighbors:
             neigh_val = self.values.get(neigh)
             if neigh_val is None:
-                neigh_val = float(get_attr(G.nodes[neigh], self.alias, val))
+                neigh_val = (
+                    _read_scalar_epi(G.nodes[neigh])
+                    if self.alias == ALIAS_EPI
+                    else float(get_attr(G.nodes[neigh], self.alias, val))
+                )
                 self.values[neigh] = neigh_val
             values.append(neigh_val)
         return mean_neighbor_difference(val, values)
 
 
 def dnfr_phase_only(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
-    """Compute ΔNFR from phase only (Kuramoto-like).
+    """Compute the circular neighbor-argument phase pressure alone.
+
+    This is not the pairwise sine-coupling law. It uses the default pressure's
+    local midpoint certificate and zero represented-resultant extension.
 
     Parameters
     ----------
@@ -3029,7 +3072,10 @@ def dnfr_phase_only(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
 
 
 def dnfr_epi_vf_mixed(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
-    """Compute ΔNFR without phase, mixing EPI and νf.
+    """Mix unweighted support EPI and capacity gradients with fixed halves.
+
+    This optional model ignores edge conductances; it is not the default
+    weighted EPI channel with phase disabled.
 
     Parameters
     ----------
@@ -3040,9 +3086,7 @@ def dnfr_epi_vf_mixed(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
         serial execution.
     """
 
-    epi_values = {
-        n: float(get_attr(nd, ALIAS_EPI, 0.0)) for n, nd in G.nodes(data=True)
-    }
+    epi_values = {n: _read_scalar_epi(nd) for n, nd in G.nodes(data=True)}
     vf_values = {n: float(get_attr(nd, ALIAS_VF, 0.0)) for n, nd in G.nodes(data=True)}
     grads = {
         "epi": _NeighborAverageGradient(ALIAS_EPI, epi_values),
@@ -3053,13 +3097,16 @@ def dnfr_epi_vf_mixed(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
         grads,
         weights={"phase": 0.0, "epi": 0.5, "vf": 0.5},
         hook_name="dnfr_epi_vf_mixed",
-        note="Example hook.",
+        note="Unweighted unique-support gradients; fixed half coefficients.",
         n_jobs=n_jobs,
     )
 
 
 def dnfr_laplacian(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
-    """Explicit topological gradient using Laplacian over EPI and νf.
+    """Unweighted support Laplacian over EPI and capacity with raw coefficients.
+
+    The public EPI/capacity coefficients are not normalized here. Unlike the
+    default EPI channel, this optional model ignores edge conductances.
 
     Parameters
     ----------
@@ -3074,9 +3121,7 @@ def dnfr_laplacian(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
     wE = float(weights_cfg.get("epi", DEFAULTS["DNFR_WEIGHTS"]["epi"]))
     wV = float(weights_cfg.get("vf", DEFAULTS["DNFR_WEIGHTS"]["vf"]))
 
-    epi_values = {
-        n: float(get_attr(nd, ALIAS_EPI, 0.0)) for n, nd in G.nodes(data=True)
-    }
+    epi_values = {n: _read_scalar_epi(nd) for n, nd in G.nodes(data=True)}
     vf_values = {n: float(get_attr(nd, ALIAS_VF, 0.0)) for n, nd in G.nodes(data=True)}
     grads = {
         "epi": _NeighborAverageGradient(ALIAS_EPI, epi_values),
@@ -3087,7 +3132,7 @@ def dnfr_laplacian(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
         grads,
         weights={"epi": wE, "vf": wV},
         hook_name="dnfr_laplacian",
-        note="Topological gradient",
+        note="Unweighted unique-support gradients; raw EPI/capacity coefficients.",
         n_jobs=n_jobs,
     )
 
@@ -3099,48 +3144,31 @@ def compute_delta_nfr_hamiltonian(
     cache_hamiltonian: bool = True,
     profile: MutableMapping[str, Any] | None = None,
 ) -> None:
-    r"""Compute ΔNFR using rigorous Hamiltonian commutator formulation.
+    r"""Write the auxiliary Hamiltonian's identically zero node read-out.
 
-    This is the **canonical** TNFR method that constructs the internal
-    Hamiltonian H_int = H_coh + H_freq + H_coupling explicitly and computes
-    ΔNFR from the quantum commutator:
+    This opt-in compatibility hook constructs the auxiliary matrix
+    H_int = H_coh + H_freq + H_coupling and reads:
 
     .. math::
         \Delta\text{NFR}_n = \frac{i}{\hbar_{str}} \langle n | [\hat{H}_{int}, \rho_n] | n \rangle
 
-    where \rho_n = |n\rangle\langle n| is the density matrix for node n.
-
-    Theory
-    ------
-
-    The internal Hamiltonian governs structural evolution through:
-
-    .. math::
-        \frac{\partial \text{EPI}}{\partial t} = \nu_f \cdot \Delta\text{NFR}(t)
-
-    with the reorganization operator defined as:
-
-    .. math::
-        \Delta\text{NFR} = \frac{d}{dt} + \frac{i[\hat{H}_{int}, \cdot]}{\hbar_{str}}
-
-    **Components**:
-
-    1. **H_coh**: Coherence potential from structural similarity
-    2. **H_freq**: Diagonal frequency operator (νf per node)
-    3. **H_coupling**: Network topology-induced interactions
+    For the localized projector rho_n, the diagonal commutator is exactly
+    H[n,n] - H[n,n] = 0. Selecting this hook therefore replaces every stored
+    pressure by zero. It does not derive the default pressure, evolve a density
+    matrix, or establish equilibrium of the full engine with other writers.
 
     Parameters
     ----------
     G : TNFRGraph
         Graph with nodes containing 'nu_f', 'phase', 'epi', 'si' attributes
     hbar_str : float, optional
-        Structural Planck constant (ℏ_str). If None, uses
-        ``G.graph.get('HBAR_STR', 1.0)``. Natural units (1.0) make the
-        Hamiltonian directly represent structural energy scales.
+        Finite nonzero real scale of the auxiliary matrix model. If None,
+        uses ``G.graph.get('HBAR_STR', 1.0)``.
     cache_hamiltonian : bool, default=True
-        If True, caches the Hamiltonian in ``G.graph['_hamiltonian_cache']``
-        for reuse in subsequent calls. set to False for dynamic networks
-        where topology changes frequently.
+        Retain the latest construction in ``G.graph['_hamiltonian_cache']``.
+        Every invocation rebuilds from current attributes, support and
+        configuration; the retained object is not reused. False removes any
+        previously retained snapshot after successful construction.
     profile : MutableMapping[str, float] or None, optional
         Mutable mapping that accumulates wall-clock timings:
 
@@ -3151,25 +3179,10 @@ def compute_delta_nfr_hamiltonian(
     Notes
     -----
 
-    **Advantages over heuristic methods**:
-
-    - **Rigorous**: Directly implements TNFR mathematical formalization
-    - **Hermitian**: Guarantees real eigenvalues and unitary evolution
-    - **Verifiable**: Can compute energy spectrum and eigenstates
-    - **Scoped**: Uses the auxiliary structural-affinity matrix; it does not
-      reconstruct all structural correlations or canonical ``C(t)``
-
-    **Performance considerations**:
-
-    - Complexity: O(N²) for matrix construction, O(N³) for eigendecomposition
-    - Recommended for networks with N < 1000 nodes
-    - For larger networks, use default_compute_delta_nfr (heuristic, O(E))
-
-    **Cache behavior**:
-
-    - Hamiltonian is cached if ``cache_hamiltonian=True``
-    - Cache is invalidated when node attributes or topology change
-    - Uses ``CacheManager`` for consistency with other TNFR computations
+    The auxiliary affinity is distinct from canonical C(t). Matrix construction
+    is dense and uses quadratic storage. The null read-out requires no matrix
+    commutator products. Node-count/checksum cache reuse is insufficient because
+    the matrix also consumes graph attributes and configuration.
 
     Examples
     --------
@@ -3184,7 +3197,7 @@ def compute_delta_nfr_hamiltonian(
     ...         'nu_f': 1.0, 'phase': 0.0, 'epi': 1.0, 'si': 0.8
     ...     })
     >>> compute_delta_nfr_hamiltonian(G)
-    >>> # ΔNFR values now stored in G.nodes[n]['delta_nfr']
+    >>> # Every stored node pressure is now zero.
 
     **With profiling**:
 
@@ -3197,19 +3210,18 @@ def compute_delta_nfr_hamiltonian(
 
     >>> from tnfr.dynamics import set_delta_nfr_hook
     >>> set_delta_nfr_hook(G, compute_delta_nfr_hamiltonian, name="hamiltonian")
-    >>> # Now simulate() will use Hamiltonian-based ΔNFR
+    >>> # Pressure refreshes now select the auxiliary null read-out.
 
     See Also
     --------
     tnfr.operators.hamiltonian.InternalHamiltonian : Core Hamiltonian class
-    default_compute_delta_nfr : Heuristic O(E) method for large networks
+    default_compute_delta_nfr : Configured multichannel graph pressure
     set_delta_nfr_hook : Register custom ΔNFR computation
 
     References
     ----------
 
-    - Mathematical formalization: ``Formalizacion-Matematica-TNFR-Unificada.pdf`` §2.4
-    - ΔNFR development: ``Desarrollo-Exhaustivo_-Formalizacion-Matematica-Ri-3.pdf``
+    ``theory/STRUCTURAL_STABILITY_AND_DYNAMICS.md``, section 5
     """
     from ..operators.hamiltonian import InternalHamiltonian
 
@@ -3223,43 +3235,19 @@ def compute_delta_nfr_hamiltonian(
         ),
     )
 
-    # Get structural Planck constant
+    # Resolve the auxiliary model's scale.
     if hbar_str is None:
         hbar_str = G.graph.get("HBAR_STR", 1.0)
 
-    # Check cache for existing Hamiltonian
+    # Rebuild: a node count/checksum cannot certify all consumed state/config.
     cache_key = "_hamiltonian_cache"
-    ham = None
-
+    timer = start_timer()
+    ham = InternalHamiltonian(G, hbar_str=hbar_str)
     if cache_hamiltonian:
-        cached_ham = G.graph.get(cache_key)
-        # Verify cache validity (node count and checksum)
-        if cached_ham is not None:
-            current_checksum = G.graph.get("_dnfr_nodes_checksum")
-            cached_checksum = getattr(cached_ham, "_cache_checksum", None)
-            if (
-                isinstance(cached_ham, InternalHamiltonian)
-                and cached_ham.N == G.number_of_nodes()
-                and current_checksum == cached_checksum
-            ):
-                ham = cached_ham
-
-    # Construct Hamiltonian if not cached or invalid
-    if ham is None:
-        timer = start_timer()
-
-        # Get cache manager for integration with existing infrastructure
-        manager = _graph_cache_manager(G.graph)
-
-        # Build Hamiltonian
-        ham = InternalHamiltonian(G, hbar_str=float(hbar_str), cache_manager=manager)
-
-        # Cache for reuse
-        if cache_hamiltonian:
-            ham._cache_checksum = G.graph.get("_dnfr_nodes_checksum")
-            G.graph[cache_key] = ham
-
-        stop_timer("hamiltonian_construction", timer)
+        G.graph[cache_key] = ham
+    else:
+        G.graph.pop(cache_key, None)
+    stop_timer("hamiltonian_construction", timer)
 
     # Compute ΔNFR for all nodes
     timer = start_timer()
@@ -3284,5 +3272,5 @@ def compute_delta_nfr_hamiltonian(
         G,
         weights={"hamiltonian": 1.0},
         hook_name="compute_delta_nfr_hamiltonian",
-        note="Canonical Hamiltonian commutator formulation",
+        note="Auxiliary localized-projector commutator: identically zero pressure",
     )

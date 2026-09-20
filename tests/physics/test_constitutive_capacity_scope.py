@@ -11,6 +11,7 @@ import networkx as nx
 import pytest
 
 from tnfr.dynamics.canonical import compute_extended_nodal_system
+from tnfr.dynamics.dnfr import default_compute_delta_nfr
 from tnfr.physics._cycle_algebra import dot
 from tnfr.physics.fields import (
     compute_phase_curvature,
@@ -27,6 +28,7 @@ from tnfr.physics.structural_diffusion import (
     compute_diffusion_energy,
     structural_diffusion_operator,
 )
+from tnfr.physics.support_transport import _from_data
 
 
 def _initial_graph():
@@ -207,3 +209,166 @@ def test_optional_pressure_response_has_no_pressure_restoring_term(divergence):
         for pressure in (-0.5, 0.0, 0.5)
     )
     assert rates == (-(1.0 + 0.135) * divergence,) * 3
+
+
+@pytest.fixture(scope="module")
+def inverse_capacity_controls():
+    """Exact declared states, not two equal binary64 execution endpoints."""
+    graph = _initial_graph()
+    capture = capture_non_epi_forcing(graph)
+    weights = dict(capture.normalized_weights)
+    e, b = weights["epi"], weights["vf"]
+    assert e > 0 and b > 0
+    assert capture.phase_gradient == capture.snapshot.topology_gradient == (0, 0)
+    source = capture.snapshot
+    epi = tuple(reversed(source.epi))
+    delta = epi[1] - epi[0]
+    f = e * delta
+    u = f / (4 * b)
+    states = []
+    for factor in (1, 3):
+        capacity = (2 * factor * u, factor * u)
+        initial = _from_data(
+            source.nodes,
+            source.conductance,
+            source.support_neighbors,
+            epi,
+            capacity,
+            (0, 0),
+        )
+        # Actual implemented channel definitions, interpreted exactly on the
+        # declared rational state. No rate is used to construct pressure.
+        pressure = tuple(
+            e * epi_gradient + b * capacity_gradient
+            for epi_gradient, capacity_gradient in zip(
+                initial.epi_gradient, initial.capacity_gradient, strict=True
+            )
+        )
+        states.append(
+            _from_data(
+                initial.nodes,
+                initial.conductance,
+                initial.support_neighbors,
+                initial.epi,
+                initial.capacity,
+                pressure,
+            )
+        )
+    reference = derive_phase_response(
+        cosine_gram=((1, 1), (1, 1)),
+        mean_neighbors=((1,), (0,)),
+        receiver_sources=((0,), (1,)),
+        phase_factor=Q(0),
+    )
+    return {
+        "states": tuple(states),
+        "weights": weights,
+        "reference": reference,
+        "laplacian": _laplacian(graph),
+        "f": f,
+        "u": u,
+    }
+
+
+def test_fixed_full_pressure_law_need_not_identify_capacity_from_one_nodal_rate(
+    inverse_capacity_controls,
+):
+    control = inverse_capacity_controls
+    first, second = control["states"]
+    f, u, b = control["f"], control["u"], control["weights"]["vf"]
+    assert first.epi == second.epi
+    assert first.conductance == second.conductance
+    assert first.support_neighbors == second.support_neighbors
+    assert second.capacity == tuple(3 * value for value in first.capacity)
+    assert all(value > 0 for value in first.capacity + second.capacity)
+    assert first.stored_pressure == (3 * f / 4, -3 * f / 4)
+    assert second.stored_pressure == (f / 4, -f / 4)
+    q = 3 * f**2 / (16 * b)
+    assert first.rate == second.rate == (2 * q, -q)
+    assert any(first.rate)
+    assert first.capacity == (2 * u, u)
+    # This is a noninjectivity of the specified constitutive map, not the
+    # freedom to replace pressure by a posterior reconstruction x_dot/nu.
+    assert first.capacity_gradient != second.capacity_gradient
+
+
+def test_held_capacity_acceleration_separates_the_same_rate_states(
+    inverse_capacity_controls,
+):
+    control = inverse_capacity_controls
+    weights = control["weights"]
+    first, second = control["states"]
+    responses = tuple(
+        derive_joint_nodal_response(
+            state,
+            control["reference"],
+            epi_weight=weights["epi"],
+            phase_weight=weights["phase"],
+            capacity_weight=weights["vf"],
+            phase_rate_over_pi=(0, 0),
+            capacity_rate=(0, 0),
+        )
+        for state in (first, second)
+    )
+    expected = tuple(
+        -weights["epi"] * dot(row, first.rate) for row in control["laplacian"]
+    )
+    assert any(expected)
+    assert all(response.pressure_rate == expected for response in responses)
+    assert all(response.capacity_pressure_rate == (0, 0) for response in responses)
+    assert responses[1].epi_acceleration == tuple(
+        3 * value for value in responses[0].epi_acceleration
+    )
+    assert responses[0].epi_acceleration != responses[1].epi_acceleration
+    # The supplied zero capacity/phase velocities define this comparison.
+    # Equal instantaneous EPI rates do not imply equal later trajectories.
+
+
+def test_self_loop_normalization_hides_capacity_from_pure_transport_only(
+    inverse_capacity_controls,
+):
+    graphs = [_initial_graph(), _initial_graph()]
+    for node, capacity in enumerate((0.5, 0.25)):
+        graphs[0].nodes[node]["nu_f"] = capacity
+    graphs[1].add_edge(0, 0, weight=1.0)
+    graphs[1].add_edge(1, 1, weight=3.0)
+    captures, energies = [], []
+    for graph in graphs:
+        graph.graph["DNFR_WEIGHTS"] = dict(phase=0.0, epi=1.0, vf=0.0, topo=0.0)
+        default_compute_delta_nfr(graph)
+        captures.append(capture_non_epi_forcing(graph))
+        energies.append(compute_diffusion_energy(graph))
+    first, second = (capture.snapshot for capture in captures)
+    assert first.epi == second.epi == (Q(5, 8), Q(3, 8))
+    assert first.capacity == (Q(1, 2), Q(1, 4))
+    assert second.capacity == (1, 1)
+    assert first.stored_pressure == (Q(-1, 4), Q(1, 4))
+    assert second.stored_pressure == (Q(-1, 8), Q(1, 16))
+    assert first.rate == second.rate == (Q(-1, 8), Q(1, 16))
+    assert first.dirichlet_gradient == second.dirichlet_gradient
+    assert first.dirichlet_energy == second.dirichlet_energy == Q(1, 32)
+    assert first.energy_rate == second.energy_rate == Q(-3, 64)
+    for energy in energies:
+        assert tuple(map(Q, energy.mobility)) == (Q(1, 2), Q(1, 4))
+        assert tuple(map(Q, energy.epi_rate)) == first.rate
+        assert Q(energy.energy) == first.dirichlet_energy
+        assert Q(energy.energy_rate) == first.energy_rate
+    assert all(capture.stored_pressure_residual == (0, 0) for capture in captures)
+    # The capacity channel breaks this equivalence in the full declared mix.
+    # These are exact modeled rates using retained default coefficients, not
+    # a claim that pressure sums are represented without rounding.
+    e = inverse_capacity_controls["weights"]["epi"]
+    b = inverse_capacity_controls["weights"]["vf"]
+    full_rates = tuple(
+        tuple(
+            nu * (e * epi_gradient + b * capacity_gradient)
+            for nu, epi_gradient, capacity_gradient in zip(
+                state.capacity, state.epi_gradient, state.capacity_gradient, strict=True
+            )
+        )
+        for state in (first, second)
+    )
+    assert tuple(a - z for a, z in zip(*full_rates, strict=True)) == (
+        -b / 8,
+        b / 16,
+    )

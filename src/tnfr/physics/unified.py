@@ -354,9 +354,16 @@ def compute_unified_field_suite(G: Any) -> dict[str, Any]:
         - ``conservation_metrics``: historical charge and structural-energy
           snapshot totals; neither key asserts temporal conservation
     """
+    fields = _capture_structural_fields(G)
+    return _unified_field_suite_from_fields(fields)
+
+
+def _unified_field_suite_from_fields(
+    fields: _StructuralFieldReadout,
+) -> dict[str, Any]:
+    """Apply the shared derived algebra to an already captured field snapshot."""
     from .conservation import _charge_density_from_fields
 
-    fields = _capture_structural_fields(G)
     phi_s, grad_phi, k_phi = fields.phi_s, fields.grad_phi, fields.k_phi
     j_phi, j_dnfr = fields.j_phi, fields.j_dnfr
     results: dict[str, Any] = {}

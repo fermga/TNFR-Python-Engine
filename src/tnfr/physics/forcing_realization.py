@@ -14,18 +14,23 @@ from .._exact_time import exact_or_represented_real, finite_represented_real
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_THETA
 from ..dynamics import dnfr, fused_dnfr
-from ..metrics.common import merge_and_normalize_weights
-from ._cycle_algebra import Vector, ordered_vector
+from ._cycle_algebra import Vector, dot, ordered_vector
 from .support_transport import (
     SupportTransportSnapshot,
     _rebuild,
+    _support_components,
+    _support_gradient,
     observe_support_transport,
 )
 
 __all__ = [
     "NonEpiForcingObservation",
+    "ForcingDirichletBalance",
     "capture_non_epi_forcing",
     "decompose_non_epi_forcing",
+    "observe_forcing_dirichlet_balance",
+    "ForcingCapacityDifference",
+    "observe_forcing_capacity_difference",
 ]
 
 _CHANNELS = ("phase", "epi", "vf", "topo")
@@ -56,6 +61,28 @@ class NonEpiForcingObservation:
     stored_pressure_residual: Vector
 
 
+@dataclass(frozen=True)
+class ForcingDirichletBalance:
+    """Exact channel rates for E_D=x^T B x/2, not a trajectory certificate.
+
+    Every pressure contribution is paired with diag(capacity)*B*x. Negative
+    diffusion and signed source work concern this Dirichlet energy, not the
+    tetrad energy or a selected regional identity. Fresh and stored totals
+    describe different pressure inputs at the same supplied state.
+    """
+
+    source: SupportTransportSnapshot
+    diffusion_rate: Fraction
+    channel_rates: tuple[tuple[str, Fraction], ...]
+    source_rate: Fraction
+    modeled_rate: Fraction
+    kernel_defect_rate: Fraction
+    fresh_rate: Fraction
+    stored_residual_rate: Fraction
+    stored_rate: Fraction
+    identity_residual: Fraction
+
+
 def _represented_vector(values, label):
     return tuple(
         finite_represented_real(value, f"{label}[{index}]")[1]
@@ -64,16 +91,9 @@ def _represented_vector(values, label):
 
 
 def _runtime_weights(graph):
-    # The pressure engine reuses this cache verbatim. Metadata's weights_norm
-    # is normalized again and is not the source of the executed coefficients.
-    configured = graph.graph.get("_dnfr_weights")
-    if configured is None:
-        configured = merge_and_normalize_weights(
-            graph,
-            "DNFR_WEIGHTS",
-            _CHANNELS,
-            default=0.0,
-        )
+    # Read the same effective mix as the next engine refresh, without changing
+    # its cache. Metadata's normalized proportions are not executed coefficients.
+    configured = dnfr._resolve_dnfr_weights(graph)
     if not isinstance(configured, Mapping):
         raise TypeError("cached DeltaNFR weights must be a mapping")
     weights = []
@@ -99,14 +119,8 @@ def _forcing_components(snapshot, weights, phase_gradient):
     )
 
 
-def decompose_non_epi_forcing(observation) -> tuple:
-    """Validate and split a detached capture's F without another kernel call.
-
-    The phase gradient is a supplied represented coefficient. This arithmetic
-    check cannot authenticate its graph, phase-resultant branch or causal
-    provenance. Support-gradient caches are rebuilt. Kernel rounding and
-    stale stored pressure remain separate from these exact forcing channels.
-    """
+def _validated_forcing_decomposition(observation):
+    """Rebuild one shared structural reference and validate its channels."""
     if type(observation) is not NonEpiForcingObservation:
         raise TypeError("forcing decomposition requires a NonEpiForcingObservation")
     source = _rebuild(observation.snapshot)
@@ -137,7 +151,211 @@ def decompose_non_epi_forcing(observation) -> tuple:
         raise ValueError(
             "captured forcing differs from its exact channel decomposition"
         )
-    return components
+    return source, components, weights
+
+
+def decompose_non_epi_forcing(observation) -> tuple:
+    """Validate and split a detached capture's F without another kernel call.
+
+    The phase gradient is a supplied represented coefficient. This arithmetic
+    check cannot authenticate its graph, phase-resultant branch or causal
+    provenance. Support-gradient caches are rebuilt. Kernel rounding and
+    stale stored pressure remain separate from these exact forcing channels.
+    """
+    return _validated_forcing_decomposition(observation)[1]
+
+
+def _validated_pressure_realization(observation):
+    """Shared exact channel assembly and fresh/stored defect reconstruction."""
+    source, channels, weights = _validated_forcing_decomposition(observation)
+    full = ordered_vector(observation.full_kernel_pressure, "full pressure")
+    if len(full) != len(source.nodes):
+        raise ValueError("full pressure must match the captured node order")
+    modeled = tuple(
+        weights["epi"] * epi + sum((row[i] for _, row in channels), Fraction(0))
+        for i, epi in enumerate(source.epi_gradient)
+    )
+    kernel = tuple(a - b for a, b in zip(full, modeled, strict=True))
+    stored = tuple(a - b for a, b in zip(source.stored_pressure, full, strict=True))
+    return source, channels, weights, modeled, full, kernel, stored
+
+
+def observe_forcing_dirichlet_balance(observation) -> ForcingDirichletBalance:
+    """Pair existing pressure channels with the heterogeneous nodal mobility.
+
+    Reuse the detached forcing decomposition without another graph or phase
+    kernel call. Rebuild structural caches and recompute pressure defects from
+    the supplied full pressure vector; cached defect fields are not evidence.
+    Materialized phase/full-pressure inputs remain caller data, so these exact
+    identities neither authenticate a kernel call nor establish causal history.
+
+    The modeled rate is diffusion plus phase/capacity/topology source work.
+    Adding assembly error gives the fresh rate; adding stored-pressure residual
+    work gives the held rate. An observed Euler interval keeps its quadratic
+    and endpoint defects in ``observe_support_transport_euler`` separately.
+    """
+    source, channels, weights, _, full_pressure, kernel_defect, stored_residual = (
+        _validated_pressure_realization(observation)
+    )
+    epi_pressure = tuple(weights["epi"] * value for value in source.epi_gradient)
+    score = tuple(
+        gradient * capacity
+        for gradient, capacity in zip(
+            source.dirichlet_gradient, source.capacity, strict=True
+        )
+    )
+    diffusion_rate = dot(score, epi_pressure)
+    channel_rates = tuple((name, dot(score, values)) for name, values in channels)
+    source_rate = sum((rate for _, rate in channel_rates), Fraction(0))
+    modeled_rate = diffusion_rate + source_rate
+    kernel_defect_rate = dot(score, kernel_defect)
+    fresh_rate = dot(score, full_pressure)
+    stored_residual_rate = dot(score, stored_residual)
+    stored_rate = source.energy_rate
+    return ForcingDirichletBalance(
+        source=source,
+        diffusion_rate=diffusion_rate,
+        channel_rates=channel_rates,
+        source_rate=source_rate,
+        modeled_rate=modeled_rate,
+        kernel_defect_rate=kernel_defect_rate,
+        fresh_rate=fresh_rate,
+        stored_residual_rate=stored_residual_rate,
+        stored_rate=stored_rate,
+        identity_residual=(
+            stored_rate - modeled_rate - kernel_defect_rate - stored_residual_rate
+        ),
+    )
+
+
+@dataclass(frozen=True)
+class ForcingCapacityDifference:
+    """Detached pressure differences at matching form and lifted phase geometry."""
+
+    before: SupportTransportSnapshot
+    after: SupportTransportSnapshot
+    epi_offset: Fraction
+    phase_offset: Fraction
+    capacity_change: Vector
+    capacity_pressure_change: Vector
+    phase_realization_change: Vector
+    modeled_pressure_before: Vector
+    modeled_pressure_after: Vector
+    kernel_defect_change: Vector
+    fresh_pressure_change: Vector
+    stored_residual_change: Vector
+    stored_pressure_change: Vector
+    identity_residual: Vector
+    stored_identity_residual: Vector
+    support_components: tuple
+    component_capacity_offsets: tuple[Fraction | None, ...]
+
+
+def observe_forcing_capacity_difference(before, after) -> ForcingCapacityDifference:
+    """Compare capacities with fixed support, weights and relative form/phase.
+
+    Require positive capacities, reciprocal support, an exact common EPI
+    offset and an exact common raw phase offset. Differently wrapped lifts are
+    not silently identified. The exact capacity contribution uses the shared
+    UNWEIGHTED support gradient, even on unequal transport conductance.
+
+    A true common rotation preserves the ideal regular phase source. Captured
+    binary64 phase gradients need not agree; their weighted difference is kept
+    separately, as are fresh-kernel assembly and stored-pressure defects. Public
+    snapshots are rebuilt, but phase/full-pressure payloads remain caller data.
+    No graph read, new pressure call, execution or stationary state is certified.
+
+    With an unchanged ideal regular phase source, if both ideal pressures
+    vanish and the capacity-channel weight is positive, the capacity change
+    must be constant on each connected support component.
+    Zero channel weight, zero capacity, Gamma, clipping and EPI drift cannot be
+    treated as that stationary inference. This observer does not read Gamma or
+    clipping configuration; those remain separate model hypotheses.
+    """
+    left, channels0, weights, p0, fresh0, kernel0, stored0 = (
+        _validated_pressure_realization(before)
+    )
+    right, channels1, weights_after, p1, fresh1, kernel1, stored1 = (
+        _validated_pressure_realization(after)
+    )
+    if (
+        not left.nodes
+        or left.nodes != right.nodes
+        or left.conductance != right.conductance
+        or left.support_neighbors != right.support_neighbors
+        or weights != weights_after
+    ):
+        raise ValueError(
+            "capacity comparison requires fixed nodes, support and weights"
+        )
+    rows = left.support_neighbors
+    if any(i not in rows[j] for i, row in enumerate(rows) for j in row):
+        raise ValueError("capacity comparison requires reciprocal support")
+    if any(value <= 0 for value in left.capacity + right.capacity):
+        raise ValueError("stationary capacity comparison requires positive capacities")
+
+    def difference(a, b):
+        return tuple(y - x for x, y in zip(a, b, strict=True))
+
+    def common_offset(a, b, label):
+        delta = difference(a, b)
+        if len(delta) != len(left.nodes) or any(value != delta[0] for value in delta):
+            raise ValueError(f"{label} must differ by one exact common offset")
+        return delta[0]
+
+    epi_offset = common_offset(left.epi, right.epi, "EPI")
+    phase_offset = common_offset(
+        ordered_vector(before.phase, "before phase"),
+        ordered_vector(after.phase, "after phase"),
+        "phase",
+    )
+    delta = difference(left.capacity, right.capacity)
+    capacity_pressure = tuple(
+        weights["vf"] * value for value in _support_gradient(rows, delta)
+    )
+    phase_change = difference(dict(channels0)["phase"], dict(channels1)["phase"])
+    kernel_change = difference(kernel0, kernel1)
+    fresh_change = difference(fresh0, fresh1)
+    stored_change = difference(stored0, stored1)
+    stored_pressure = difference(left.stored_pressure, right.stored_pressure)
+    residual = tuple(
+        f - c - p - k
+        for f, c, p, k in zip(
+            fresh_change, capacity_pressure, phase_change, kernel_change, strict=True
+        )
+    )
+    stored_residual = tuple(
+        s - f - d
+        for s, f, d in zip(stored_pressure, fresh_change, stored_change, strict=True)
+    )
+    components = _support_components(rows)
+    offsets = tuple(
+        (
+            delta[component[0]]
+            if all(delta[i] == delta[component[0]] for i in component)
+            else None
+        )
+        for component in components
+    )
+    return ForcingCapacityDifference(
+        left,
+        right,
+        epi_offset,
+        phase_offset,
+        delta,
+        capacity_pressure,
+        phase_change,
+        p0,
+        p1,
+        kernel_change,
+        fresh_change,
+        stored_change,
+        stored_pressure,
+        residual,
+        stored_residual,
+        components,
+        offsets,
+    )
 
 
 def capture_non_epi_forcing(G) -> NonEpiForcingObservation:

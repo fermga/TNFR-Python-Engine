@@ -105,6 +105,26 @@ The word starts with a U1 generator, contains a stabilizer, and ends with a U1
 closure. State-dependent operator preconditions remain mandatory during
 execution. Coupling and Resonance additionally enforce U3 before mutation.
 
+## Nodal solver input, clock and output boundaries
+
+The shared [nodal integrator](../src/tnfr/dynamics/integrators.py) reads the
+authoritative capacity, pressure and previous derivative aliases: invalid
+provided values cannot fall through to a later alias or a zero default.
+Capacity must be finite and nonnegative; pressure and retained derivatives
+must be finite. Missing values retain the documented defaults. Zero-duration
+calls remain no-ops, and the existing boolean timestep compatibility is retained.
+
+Every positive internal substep must advance a finite represented clock;
+checking only the requested final duration is insufficient under subdivision.
+Empty and populated graphs use the same repeated-add time convention.
+Projected EPI and stored rate/acceleration must be finite before commit.
+The scalar and optional extended paths restore solver-owned node outputs if
+a later substep fails; callback side effects and diagnostic caches are outside
+this local restoration. Event execution below supplies its broader transaction.
+Clipping still separates the stored unconstrained rate from the realized EPI
+secant. These checks establish neither solver accuracy nor a physical clock.
+Controls: [integrator numerics](../tests/test_integrator_numerics.py).
+
 ## Operator-event timeline
 
 [`build_operator_event_schedule`](../src/tnfr/operators/event_timing.py)

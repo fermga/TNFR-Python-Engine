@@ -103,9 +103,14 @@ def validate_grammar(
                 print(f"  K_φ ↔ J_φ correlation: {corr:.3f}")
             if "tensor_invariants" in unified_data:
                 conservation = unified_data["tensor_invariants"].get(
-                    "conservation_quality", 0.0
+                    "conservation_quality"
                 )
-                print(f"  Conservation quality: {conservation:.3f}")
+                conservation_text = (
+                    "unavailable (single snapshot)"
+                    if conservation is None
+                    else f"{conservation:.3f}"
+                )
+                print(f"  Conservation quality: {conservation_text}")
 
         except Exception:
             # Graceful degradation - unified telemetry is optional

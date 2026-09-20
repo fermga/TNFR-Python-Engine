@@ -1,13 +1,9 @@
-"""TNFR computation backends for high-performance ΔNFR and Si evaluation.
+"""TNFR graph-computation adapters for pressure and sense-index evaluation.
 
-This module provides pluggable backend implementations that optimize the core
-TNFR computational kernels (ΔNFR, Si) using different numerical libraries.
-Each backend maintains TNFR semantic fidelity while leveraging library-specific
-optimizations like JIT compilation or GPU acceleration.
-
-The backend system ensures that the nodal equation ∂EPI/∂t = νf · ΔNFR(t) and
-all structural invariants remain intact regardless of which backend executes
-the computation.
+Adapters share the configured graph-pressure and sense-index owners. JAX and
+PyTorch currently delegate those computations to the CPU; importing a library
+does not imply that these methods use its GPU, JIT or autodiff facilities.
+Capability flags describe the implemented route, not every library feature.
 
 Examples
 --------
@@ -28,7 +24,7 @@ python your_simulation.py
 Available backends
 ------------------
 - **numpy**: Vectorized NumPy implementation (default, stable)
-- **jax**: JIT-compiled JAX with autodiff support (experimental)
+- **jax**: JAX adapter using shared CPU graph kernels (experimental)
 - **torch**: PyTorch adapter using canonical CPU graph kernels (experimental)
 """
 
@@ -54,16 +50,10 @@ logger = get_logger(__name__)
 class TNFRBackend(ABC):
     """Base class for TNFR computation backends.
 
-    All backends must implement the core computational methods while
-    preserving TNFR structural semantics and the canonical nodal equation.
-
-    Structural Invariants
-    ---------------------
-    1. ΔNFR semantics: sign and magnitude must modulate reorganization rate
-    2. Phase verification: coupling requires explicit phase synchrony check
-    3. Operator closure: all transformations map to valid TNFR states
-    4. Determinism: computations must be reproducible with fixed seeds
-    5. Si stability: sense index must correlate with network coherence
+    Implementations preserve the declared pressure and diagnostic contracts.
+    These read/write kernels do not by themselves guarantee operator grammar,
+    trajectory stability or a monotone relationship between Si and coherence.
+    Reproduction requires the same inputs, configuration, arithmetic and route.
 
     Attributes
     ----------

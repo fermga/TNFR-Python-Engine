@@ -245,6 +245,644 @@ They distinguish the counted channels from simple-graph recomputation,
 including unequal phase-neighbor multiplicities and internal neighbors.
 Field inheritance remains a separate requirement, addressed next.
 
+### Joint evolving phase/form reduction on fixed K3
+
+The counted construction also permits a joint evolving calculation on a
+restricted invariant subspace. Take fixed unit undirected `K3`, the selected
+partition `((0),(1,2))`, and identical positive fine capacity `kappa`. Supply
+the existing U3-gated sine phase law with coupling `K>0`, identifying its
+free angular rate with that fine capacity. The gate is `pi/2`. Use fresh
+canonical multichannel pressure with fixed effective coefficients
+`e=w_epi>0`, `w=w_phase>=0`; the capacity and topology coefficients may be
+nonzero, but their gradients vanish because fine capacities and degrees
+are uniform. Hold capacities, support and the pressure recipe fixed; exclude
+Gamma, operator events and clipping. These are constitutive premises, not
+consequences of the nodal equation alone.
+
+Assume block-constant fine EPI and primitive phase. Write their two distinct
+values as `x0,x1` and continuous phase lifts `theta0,theta1`, with
+
+```text
+q = x0-x1,                 delta = theta1-theta0,
+abs(delta) < pi/2.
+```
+
+All fine neighbors are then U3-compatible. Node 0 has two neighbors with
+phase `theta1`; each node in block 1 has one neighbor of each phase. Their
+phasor directions are respectively `theta1` and the midpoint
+`(theta0+theta1)/2` in this chart. Therefore the actual counted pressure and
+the supplied averaged-sine phase law give
+
+```text
+p0 = -e*q + w*delta/pi,
+p1 =  e*q/2 - w*delta/(2*pi),        p2 = p1,
+
+x0_dot = kappa*p0,
+x1_dot = kappa*p1,
+
+theta0_dot = kappa + K*sin(delta),
+theta1_dot = kappa - (K/2)*sin(delta).
+```
+
+The two fine nodes in block 1 receive identical exact-real rows, so the
+block-constant subspace is invariant. This statement does not cover
+within-block perturbations, arbitrary partitions or unequal capacities.
+Eliminating the common coordinates yields a triangular relative system:
+
+```text
+c = 3*K/2,                A = 3*kappa*e/2,
+B = 3*kappa*w/(2*pi),
+
+delta_dot = -c*sin(delta),
+q_dot     = -A*q + B*delta.
+```
+
+The geometry supplies the factors `3/2` and the unequal block rates. It
+does not create a nonzero intrinsic-frequency difference. In particular,
+
+```text
+m = (x0+2*x1)/3,          m_dot = 0,
+b = (theta0+2*theta1)/3,   b_dot = kappa,
+
+x0 = m + 2*q/3,           x1 = m - q/3,
+theta0 = b - 2*delta/3,    theta1 = b + delta/3.
+```
+
+Here `b` is a lifted weighted phase coordinate, not a global circular mean
+or a clock derived from the tetrad. The common advancing phase still comes
+from the declared microscopic law. The EPI mean is precisely the inherited
+metric mean, since the fine transport metric is `(2/kappa)*I` and its block
+weights are `(2/kappa,4/kappa)`.
+
+**Why effective mobility must not be reused as an intrinsic phase rate.**
+The cross-only quotient has conductance two and effective capacities
+`nu_eff=(kappa,kappa/2)`. Its counted source multipliers are `(1,2)`, hence
+its effective nodal-pressure vector is
+
+```text
+p_eff = (-e*q+w*delta/pi, e*q-w*delta/pi),
+(x0_dot,x1_dot) = diag(kappa,kappa/2)*p_eff.
+```
+
+These unequal effective capacities derive from transport normalization;
+the fine phase law still reads the common microscopic `kappa` and the
+neighbor multiplicities `N=((0,2),(1,1))`. Substituting `nu_eff` for the free
+angular rate on a new bare P2 would instead produce
+`delta_dot=-kappa/2-2*K*sin(delta)`. It already disagrees at `delta=0` and
+can manufacture a nonzero lock from a uniform microscopic clock. That
+would be a changed model, not emergent detuning. Recomputing its capacity
+pressure from `nu_eff` would introduce the additional false source
+identified in the preceding normalization obstruction.
+
+**Exact continuous restoration ends at consensus.** Choose
+`0<rho<pi/2` with `abs(delta(0))<=rho`. The phase interval `[-rho,rho]` is
+forward invariant because its vector field points inward. More explicitly,
+
+```text
+delta(t) = 2*atan(tan(delta(0)/2)*exp(-c*t)).
+```
+
+Set `mu=c*cos(rho)>0`. Since `sin(delta)/delta>=cos(rho)` on this interval,
+
+```text
+abs(delta(t)) <= abs(delta(0))*exp(-mu*t),
+
+abs(q(t)) <= abs(q(0))*exp(-A*t)
+             + B*abs(delta(0))*I(A,mu,t),
+
+I(A,mu,t) = (exp(-mu*t)-exp(-A*t))/(A-mu)   if A != mu,
+I(A,A,t)  = t*exp(-A*t).
+```
+
+The second inequality follows directly from variation of constants. Both
+relative coordinates therefore approach zero, and fine EPI tends to the
+constant `m`. The unique relative equilibrium in this chart is
+`(delta,q)=(0,0)`, with linearized eigenvalues `-c,-A`. Common EPI level
+and common phase remain separate neutral coordinates. Nonzero form
+contrast is not maintained by the unequal effective mobilities. Phase may
+temporarily increase `abs(q)` before relaxing, so this is not a claim of
+monotone form contrast or monotone diagnostic coherence.
+
+No additional pressure law is needed to express the joint response:
+
+```text
+p0_dot = -A*p0 - (c*w/pi)*sin(delta),      p1 = -p0/2.
+```
+
+This identity differentiates the already declared pressure along the
+coupled rows. It does not add an independently adjustable force. For
+`w=0`, form is isolated diffusion with `q(t)=q(0)*exp(-A*t)`; the phase
+trajectory is unchanged. A runtime control must retain the same effective
+`e` when disabling `w`, because setting a raw channel weight to zero can
+renormalize the other channels. Moving that raw weight to the identically
+zero topology channel on K3 supplies such a control.
+
+**Ideal Euler scope.** A simultaneous exact-real explicit step is
+
+```text
+delta_next = delta - h*c*sin(delta),
+q_next     = (1-h*A)*q + h*B*delta.
+```
+
+For `0<h<=min(1/c,1/A)`, the phase keeps its sign, decreases in magnitude
+and remains in `[-rho,rho]`. Let `a=1-h*mu`, `b_e=1-h*A`; then
+
+```text
+abs(delta_n) <= a^n*abs(delta_0),
+abs(q_n) <= b_e^n*abs(q_0)
+            + h*B*abs(delta_0)*sum_(j=0)^(n-1) b_e^(n-1-j)*a^j.
+```
+
+Both terms tend to zero; when `a=b_e`, the sum is `n*a^(n-1)` for `n>=1`.
+The EPI mean is preserved and the lifted weighted phase advances by
+`h*kappa` per step. Since `q_next` is a convex combination of `q` and
+`w*delta/(e*pi)`, every ideal contrast stays in
+
+```text
+[min(q_0,-w*rho/(e*pi)), max(q_0,w*rho/(e*pi))].
+```
+
+Together with `x0=m+2*q/3`, `x1=m-q/3`, this gives an explicit sufficient
+ideal no-clipping condition by checking the two interval endpoints against
+the allowed EPI range. It does not establish a future binary64 bound.
+
+**Implementation and evidence boundary.**
+[propose_joint_nodal_phase_step](../src/tnfr/physics/joint_quotient.py)
+returns a detached `JointNodalPhaseStep`: its existing joint observation
+retains the same-snapshot EPI pressure, effective mobility and fine capture,
+while its new phase proposal compares actual fine endpoints with lifted
+counted endpoints. Both phase paths reuse the arithmetic owner in
+[phase_evolution.py](../src/tnfr/dynamics/phase_evolution.py); counted
+neighbors retain the multiplicities supplied by the existing quotient
+observer. The exact signed `phase_step_defect` records the difference
+between represented endpoints, not a circular distance or an authenticated
+runtime certificate. This observer does not integrate EPI or write the
+graph. The [joint phase tests](../tests/physics/test_joint_phase_evolution.py)
+separately pass the simultaneous pressure/capacity inputs to the actual
+shared `DefaultIntegrator`, compare fine and reduced one-step endpoints,
+and refresh pressure after the EPI and phase proposals. These finite
+one-step and lift controls do not establish repeated runtime closure.
+Binary64 trigonometry, neighbor summation, phase wrapping and Euler updates
+have separate represented defects; the exact equations above are not
+identities for every rounded row. No asymptotic binary64 convergence or
+future gate/clip admission follows. The theorem closes the joint
+calculation on the declared symmetric K3 subspace. Autonomous
+capacity/support evolution, partition selection, transverse stability outside
+the following fixed-law domain and a maintained nonuniform NFR remain open.
+
+### Transverse restoration and omission error on the same K3
+
+The preceding invariant-subspace calculation can be tested against differences
+inside the selected block. Retain its fixed unit K3, common positive fine
+capacity `kappa`, supplied averaged-sine phase law `K>0`, and fresh pressure
+coefficients `e>0`, `w>=0`. Capacity and topology gradients remain zero; exclude
+Gamma, events, changing support and clipping. Choose continuous fine phase
+lifts with initial width at most `rho`, where `0<rho<pi/2`. This is a condition
+on all three fine phases, not merely on their two block averages. Require the
+fixed effective U3 gate to admit this width, so every fine neighbor contributes
+to the supplied phase law throughout the invariant chart.
+
+Define the visible and omitted coordinates by
+
+```text
+delta = (theta1+theta2)/2-theta0,     eta = theta1-theta2,
+q     = x0-(x1+x2)/2,               u   = x1-x2,
+
+c = 3*K/2,     A = 3*kappa*e/2,     B = 3*kappa*w/(2*pi).
+```
+
+Each node has two neighbors whose relative phases lie in its open half-pi
+chart, so the neighbor-phasor direction is their midpoint. Subtracting the
+actual fine rows gives the exact continuous system
+
+```text
+delta_dot = -c*sin(delta)*cos(eta/2),
+eta_dot   = -K*(cos(delta)*sin(eta/2)+sin(eta)),
+q_dot     = -A*q+B*delta,
+u_dot     = -A*u-B*eta.
+```
+
+The minus sign in the hidden form forcing follows from the declared
+orientation `u=x1-x2`, `eta=theta1-theta2`. The mean form `m=(x0+x1+x2)/3`
+is conserved and the lifted mean phase `b=(theta0+theta1+theta2)/3` advances
+at the supplied rate `kappa`. Reconstruction is exact:
+
+```text
+x0 = m+2*q/3,      x1 = m-q/3+u/2,          x2 = m-q/3-u/2,
+theta0 = b-2*delta/3,
+theta1 = b+delta/3+eta/2,    theta2 = b+delta/3-eta/2.
+```
+
+Thus an omitted form difference alone does not affect these macro rows.
+An omitted phase difference does: it changes the visible phase relaxation
+through `cos(eta/2)`, which subsequently changes the visible form response.
+At `delta=0` that macro defect vanishes even when `eta` is nonzero. Generic
+off-fiber phase states therefore lack exact two-coordinate macro autonomy;
+the special zero-visible-phase case must not be used to infer it.
+
+**An invariant chart and attraction of the omitted coordinates.** Subtract
+the common rotation `kappa*t`. At a maximal lifted phase every sine term is
+nonpositive; at a minimal phase every term is nonnegative. The phase width
+therefore never exceeds its initial bound. In particular,
+
+```text
+abs(eta) <= rho,       abs(delta)+abs(eta)/2 <= rho,
+mu = c*cos(rho) > 0.
+```
+
+To obtain a quantitative rate, use `sin(z)/z>=cos(z)` inside this chart,
+continuously extended at zero, and
+
+```text
+cos(delta)*cos(eta/2)
+  = (cos(delta+eta/2)+cos(delta-eta/2))/2 >= cos(rho).
+```
+
+The scalar damping coefficient in each phase row is consequently at least
+`mu`. Variation of constants in the form row then yields
+
+```text
+abs(delta(t)) <= abs(delta0)*exp(-mu*t),
+abs(eta(t))   <= abs(eta0)*exp(-mu*t),
+abs(u(t)) <= abs(u0)*exp(-A*t)+B*abs(eta0)*I(A,mu,t).
+```
+
+Here `I(a,b,t)=integral_0^t exp(-a*(t-s))*exp(-b*s) ds` is the nonnegative
+convolution already evaluated above, including `I(a,a,t)=t*exp(-a*t)`.
+The selected block becomes coherent in both phase and form. The whole
+triangle also reaches consensus in its relative coordinates: this is
+attraction of a supplied grouping, not selection or persistent identity
+of a distinct two-node object. Every relabeled pair has the same symmetry.
+
+**A prospective absolute error for omitting the phase difference.** Let
+`delta_bar,q_bar` follow the preceding `eta=0` macro model with the same
+initial visible coordinates, common means and supplied coefficients.
+Its phase interval also remains inside `[-rho,rho]`. The omitted term in
+the visible phase equation is exactly
+
+```text
+r_delta = c*sin(delta)*(1-cos(eta/2)),
+abs(r_delta) <= (3*K/16)*abs(sin(delta))*eta^2.
+```
+
+This uses `1-cos(z)<=z^2/2`, not a truncated Taylor equality. Define
+`R0=c*abs(delta0)*eta0^2/8`. The phase bounds imply
+`abs(r_delta(t))<=R0*exp(-3*mu*t)`. For
+`D=abs(delta-delta_bar)` and `Q=abs(q-q_bar)`, the mean-value theorem gives
+the scalar comparison `D_dot<=-mu*D+abs(r_delta)` in the upper-derivative
+sense, including at `D=0`. Hence
+
+```text
+D(t) <= R0*I(mu,3*mu,t),
+Q(t) <= B*R0*(I(A,mu,t)-I(A,3*mu,t))/(2*mu).
+```
+
+The difference of convolutions is nonnegative; equivalently the second
+bound is `B*R0*integral_0^t exp(-A*(t-s))*I(mu,3*mu,s) ds`.
+These expressions remain valid when `A=mu` or `A=3*mu` by the stated
+continuous definition of `I`. Both bounds tend to zero. Their all-time
+upper bounds are
+
+```text
+sup D <= R0/(3*sqrt(3)*mu),
+sup Q <= (B/A)*R0/(3*sqrt(3)*mu).
+```
+
+The first maximum follows by maximizing
+`I(mu,3*mu,t)=(exp(-mu*t)-exp(-3*mu*t))/(2*mu)`; the second uses the
+positive form convolution with integral at most `1/A`. Thus the visible
+omission error is quadratic in initial `eta0`, with no fitted coefficient
+or reserved-trajectory adjustment. This does not make the fine state
+recoverable from its block means. Against the reference lifted to the
+same fine graph, reconstruction gives, for example,
+
+```text
+max_i abs(x_i-x_bar_i) <= max(2*Q/3, Q/3+abs(u)/2).
+```
+
+The omitted fine form and phase remain first-order information even when
+their effect on the macro response is second order.
+
+**Pressure and potential reuse the same error coordinates.** Set
+`P=-e*(q-q_bar)+w*(delta-delta_bar)/pi` and `H=e*u+w*eta/pi`.
+The fine pressure error against that lifted reference is
+
+```text
+p-p_bar = (P, -P/2-3*H/4, -P/2+3*H/4).
+```
+
+Consequently, with `M=e*Q+w*D/pi` and `J=e*abs(u)+w*abs(eta)/pi`,
+its maximum absolute value is at most `max(M,M/2+3*J/4)`. Every fresh
+exact pressure on this unit triangle sums to zero; its fine inverse-square
+potential therefore satisfies `Phi_s(i)=sum_(j!=i) p_j=-p_i`. The same
+bound applies to this potential error. Both read-outs use the original
+fine graph and unit path lengths. Recomputing potential on a bare quotient
+is a different observation. This identity neither bounds every tetrad
+reconstruction nor removes the correlation-fit availability boundaries.
+
+**Ideal Euler scope.** A simultaneous exact-real Euler step of the four
+displayed rows preserves the lifted phase-width bound for
+`0<h<=min(1/c,1/A)`. Indeed each fine phase update, after removing `h*kappa`,
+is a convex combination with weights
+`(h*K/2)*sin(theta_j-theta_i)/(theta_j-theta_i)` and a nonnegative
+remaining self-weight. Let `a=1-h*mu`, `b_e=1-h*A`. The visible and hidden
+phase magnitudes contract by at most `a`, while
+
+```text
+abs(u_n) <= b_e^n*abs(u0)
+  + h*B*abs(eta0)*sum_(j=0)^(n-1) b_e^(n-1-j)*a^j.
+```
+
+For the ideal `eta=0` comparison initialized with the same macro state,
+
+```text
+D_n <= h*R0*sum_(j=0)^(n-1) a^(n-1-j)*a^(3*j),
+Q_n <= h*B*sum_(j=0)^(n-1) b_e^(n-1-j)*D_j.
+```
+
+These are exact-model discrete convolution bounds. They do not combine
+an exact continuous reference with an unmeasured Euler error. A condition
+excluding future EPI clipping must additionally use the reconstruction
+and form bounds; phase admission alone cannot supply it.
+
+**Implementation and arithmetic boundary.**
+[observe_k3_transverse_state](../src/tnfr/physics/joint_quotient.py)
+reuses the fine capture to read the represented lifted coordinates,
+common capacity and effective pressure recipe.
+`bound_k3_transverse_euler` evaluates an exact rational upper envelope of
+the ideal-Euler bounds for a declared finite step count. Its computational
+domain uses the narrower sufficient raw phase-width condition `rho<=1`
+radian, without wrapping the supplied chart. It replaces the transcendental
+constants by the justified inequalities
+
+```text
+mu >= c*(1-rho^2/2) > 0,       B <= 3*kappa*w/(2*3),
+1/pi < 1/3.
+```
+
+The first follows from `cos(rho)>=1-rho^2/2`; the others use `pi>3`.
+The evaluator propagates nonnegative rational upper bounds for the two
+phase magnitudes, hidden form, macro omission errors and reconstructed
+pressure/potential error. It does not evaluate a new trajectory or replace
+the existing phase/pressure/integrator owners. The one-radian restriction
+and finite evaluator limit are implementation scope, not an inferred
+structural constant or the full theorem's boundary.
+
+The [transverse controls](../tests/physics/test_k3_transverse.py) exercise
+the existing averaged-sine phase proposal, refreshed canonical pressure
+and shared nodal integrator, keeping the reduced comparison fixed from its
+initial projected state. The rational envelope concerns ideal arithmetic;
+comparison with represented finite endpoints must retain its numerical
+defect scope. Binary64 trigonometry, phase normalization, midpoint rounding
+and integration defects are distinct from the exact-real and ideal-Euler
+claims. An observed finite restoration or omission error is not an
+asymptotic binary64 certificate. This result does not derive capacities,
+support, a privileged partition, the supplied phase law or a maintained
+nonuniform NFR.
+
+The deterministic finite control uses node order `(0,1,2)`, unit conductances
+and path lengths, `kappa=1`, `K=1/2`, effective `e=w=1/2`, no Gamma, hard EPI
+limits `[-1,1]` and the full half-pi U3 gate. At initialization,
+`x=(1/4,3/16,1/16)` and `theta=(1/4,7/8,5/8)`, giving
+`(delta,eta,q,u)=(1/2,1/4,1/8,1/8)`. The comparison retains the same initial
+`delta,q,m,b` and sets `eta=u=0`. Both invoke the shared simultaneous phase
+proposal and `DefaultIntegrator` with fresh pressure for 32 steps at `h=1/8`;
+no stochastic seed or named operator word is involved. No clipping or phase
+wrap occurs in these finite traces. Final macro omission errors are:
+
+| Coordinate | Observed absolute error | Precomputed ideal-Euler upper bound |
+| --- | --- | --- |
+| Phase contrast delta | 0.00010148122492026346 | 0.00022025172008861333 |
+| Form contrast q | 0.00008750642343340054 | 0.00014777434227552532 |
+
+The final hidden phase is approximately `0.0110270752` and hidden form
+`-0.00620438720`; form changes sign under the phase forcing and is not claimed
+to decrease monotonically in magnitude. Tests compare every finite endpoint
+with explicit `1e-12` headroom and separately record signed phase-staging,
+pressure-sum, field-summation and Euler defects. These observations validate
+the prepared finite control, not an unmeasured runtime error enclosure.
+
+### A prospective regional window on the unit barbell
+
+This finite comparison uses two unit triangles joined by one unit edge,
+with node order `(0,1,2,3,4,5)` and bridge `(2,3)`. Conductances and path lengths
+are one. This supplied geometry distinguishes two regions up to their exchange;
+it does not derive support or choose an autonomously maintained NFR. The model
+retains common fixed capacity `kappa>0`, fresh canonical pressure with effective
+weights `e>0`, `w>=0`, and the supplied averaged-sine phase law with `K>0`.
+Capacity and topology pressure weights are explicitly zero. There are no Gamma
+terms, operator events, capacity updates, clipping or controllers in the ideal
+comparison. In particular, zero topology weight is a configuration choice:
+the raw topology-gradient vector on this graph is
+
+```text
+(1/2, 1/2, -2/3, -2/3, 1/2, 1/2).
+```
+
+It cannot be discarded by claiming the support is regular. If a topology weight
+`t>0` were retained, its source would be `-t*L*d`, and after phase synchronization
+the corresponding fixed-support equilibrium would instead be
+`x=constant-(t/e)*d`. That is a different declared pressure recipe.
+
+**What can be grouped.** Let `D=diag(2,2,3,3,2,2)` and `L=I-D^(-1)W`.
+The four fibers `((0,1),(2),(3),(4,5))` retain bridge endpoints and have the
+counted neighbor-mean matrix
+
+```text
+P4 = ((1/2, 1/2, 0,   0),
+      (2/3, 0,   1/3, 0),
+      (0,   1/3, 0,   2/3),
+      (0,   0,   1/2, 1/2)).
+```
+
+The equal-interior subspace is preserved by the ideal form and phase laws.
+Writing its phase coordinates as `(a,b,c,d_phase)`, the first two phase rows are
+
+```text
+a_dot = kappa + (K/2)*sin(b-a),
+b_dot = kappa + (K/3)*(2*sin(a-b)+sin(c-b));
+```
+
+the other two follow by reflection. The first pressure-phase row is
+`(b-a)/(2*pi)` in the admitted chart; the second is
+`Arg(2*exp(i*(a-b))+exp(i*(c-b)))/pi`. The internal same-fiber neighbor remains
+in both the denominator and phasor sum. Replacing those counted rows by a
+simple four-node path would change the model. Two triangle averages alone are
+not closed: states with the same averages can have different bridge values,
+and hence different boundary flux and future averages.
+
+**Local joint response and its two clocks.** In the common rotating chart
+`vartheta=theta-kappa*t*1`, the linearization at synchronization is
+
+```text
+vartheta_dot = -K*L*vartheta,
+x_dot = -kappa*e*L*x - (kappa*w/pi)*L*vartheta.
+```
+
+The sorted spectrum of `L` is
+
+```text
+0, (11-sqrt(73))/12, 7/6, 3/2, 3/2, (11+sqrt(73))/12.
+```
+
+Thus `lambda_s=(11-sqrt(73))/12` is about `0.2046663546`, whereas every faster
+nonconstant mode has eigenvalue at least `7/6`. Right eigenvectors are
+orthonormal in `<u,v>_D=u^T*D*v`. The two initialized unit modes are
+
+```text
+r = (sqrt(73)-5)/6,
+v_s = (1,1,r,-r,-1,-1)/sqrt(8+6*r^2),
+v_f = (3,3,-4,-4,3,3)/sqrt(168).
+```
+
+Their first nonzero entries are positive. The slow profile itself has bridge
+to interior ratio `r`, about `0.5906672909`; a dominant slow mode therefore
+does not make each triangle uniform. A regional mean and its remaining
+bridge profile must be retained separately.
+
+For a modal phase coefficient `c_lambda` and form coefficient `d_lambda`,
+put `A=kappa*e` and `B=kappa*w/pi`. The continuous linear response is
+
+```text
+vartheta_lambda(t) = exp(-K*lambda*t)*c_lambda,
+x_lambda(t) = exp(-A*lambda*t)*d_lambda
+  - B*lambda*c_lambda*integral_0^t
+      exp(-A*lambda*(t-s))*exp(-K*lambda*s) ds.
+```
+
+The clocks `K` and `A` are distinct in general. At `K=A`, the integral is
+`t*exp(-A*lambda*t)`; there is no singular response. The finite comparison uses
+ideal simultaneous Euler rather than silently treating this continuous formula
+as an exact numerical endpoint. With `a_lambda=1-h*A*lambda` and
+`b_lambda=1-h*K*lambda`, its closed prediction is
+
+```text
+vartheta_lambda,n = b_lambda^n*c_lambda,
+x_lambda,n = a_lambda^n*d_lambda
+  - h*B*lambda*c_lambda*sum_(j=0)^(n-1)
+      a_lambda^(n-1-j)*b_lambda^j.
+```
+
+For distinct factors the sum is
+`(a_lambda^n-b_lambda^n)/(a_lambda-b_lambda)`; for equal factors it is
+`n*a_lambda^(n-1)`. At `n=0` the forcing sum is empty. The constant mode has no
+forcing or decay in this predictor. The reciprocal sine law conserves the
+ideal degree-weighted rotating phase mean by edgewise cancellation, but the
+nonlinear neighbor-phasor pressure need not conserve the degree-weighted form
+mean. Its drift is part of the source discrepancy, not removed by recentering
+the predicted trajectory after execution.
+
+**Prospective nonlinear envelope.** Suppose the initial raw lifted phase
+width is at most `rho<=1`, the full support stays U3-admitted, and
+`h*K<=1`, `h*kappa*e<=1`. After subtracting the common drift, each ideal sine
+Euler row is a convex combination: its edge weights are
+`h*K*sin(theta_j-theta_i)/(degree_i*(theta_j-theta_i))`, interpreted continuously
+at zero. They are nonnegative and their sum is at most `h*K`. The phase width
+therefore remains at most `rho`. For the actual canonical range convention,
+the declared finite horizon must also stay inside the selected unwrapped chart.
+
+The sine remainder is bounded by `rho^3/6`. For a neighbor arithmetic mean `m`,
+the displacements `z_j=theta_j-m` satisfy `mean(z)=0` and `abs(z_j)<=rho`.
+Consequently `abs(mean(sin(z)))<=rho^3/6` and
+`mean(cos(z))>=1-rho^2/2>0`. Using `abs(atan(y))<=abs(y)` gives a phasor-direction
+defect at most `rho^3/[6*(1-rho^2/2)]`. The following rational bounds thus apply
+to the phase-rate defect and the pressure-phase defect, respectively:
+
+```text
+R_theta = K*rho^3/6,
+R_p = rho^3/[18*(1-rho^2/2)],
+```
+
+where the second uses `pi>3`. The linear Euler phase and form matrices are
+row stochastic, hence contractions in the sup norm, and `||L||_infinity=2`.
+The executable predictor restricts both step products to at most `1/2`, a
+sufficient subdomain making every ideal modal factor nonnegative. It uses the
+observed initial width, which can give tighter bounds than the chosen ceiling.
+Starting from the same initial full state, telescoping gives
+
+```text
+epsilon_theta(n) <= n*h*R_theta,
+epsilon_x(n) <= kappa*w*(n*h*R_p
+                       + h^2*n*(n-1)*R_theta/3).
+```
+
+These bounds compare the nonlinear ideal Euler law with its fixed linear
+prediction. They include all modes and possible form-mean drift. They do not
+bound the difference between ideal arithmetic and an arbitrary binary64
+trajectory. Pressure realization, phase staging, trigonometry, spectral
+projection and nodal integration retain their separate numerical evidence.
+
+**Frozen finite control.** The deterministic protocol fixes
+`kappa=1`, `e=w=K=1/2`, `h=1/8`, `N=48`, no seed or named operator word,
+the full half-pi U3 gate and hard EPI limits `[-1,1]`. Set
+
+```text
+theta0 = (1/8)*1 + (1/32)*(v_s+v_f),
+x0 = -(theta0-(1/8)*1)/pi.
+```
+
+The predictor reads the materialized initial modal projections, including
+their small represented residuals, before any trajectory is evaluated; it
+does not replace them with ideal fixture coefficients. The chosen width
+ceiling `rho=1/16` holds at initialization and the full time-six phase range
+stays below the wrap boundary in the ideal model. This width ceiling, the
+amplitude and the observation times are experimental design choices, not new
+TNFR constants. The reference is fixed from that initial state and never
+refitted to an observed endpoint.
+
+Let `Pi_s` be the D-orthogonal slow-mode projector, `Pi_0` the constant-mode
+projector and `Q_fast=I-Pi_0-Pi_s`. At the reserved steps `n=(32,40,48)`,
+corresponding to times `(4,5,6)`, require all of the following:
+
+- `||Q_fast*vartheta_n||_D <= 0.2*||Pi_s*vartheta_n||_D`;
+- `||Q_fast*x_n||_D <= 0.4*||Pi_s*x_n||_D`;
+- `||Pi_s*vartheta_n||_D >= 0.5*||Pi_s*vartheta_0||_D`;
+- full-state sup-norm prediction errors remain within the precomputed
+  nonlinear envelopes plus the explicit finite numeric allowance `1e-12`.
+
+These tests mean that faster disturbances have subsided while a predictable
+interregional contrast remains. Projector errors are at most
+`sqrt(14)*epsilon` when a full-state sup bound is `epsilon`, since `sum(d)=14`.
+Before execution, the displayed ideal prediction and rational envelopes give
+phase-ratio upper bounds approximately `(0.151,0.104,0.079)`, form-ratio bounds
+`(0.377,0.284,0.229)`, and slow-phase retention lower bounds
+`(0.652,0.585,0.524)` at the three selected times. These are prospective bounds,
+not measured responses. The `1e-12` allowance is an explicit finite numerical
+comparison tolerance, not a proof of future runtime accuracy.
+
+The [phase-response owner](../src/tnfr/physics/phase_response.py) supplies the
+fixed linear predictor and envelopes; the
+[reserved barbell controls](../tests/physics/test_barbell_joint_response.py)
+exercise the existing shared phase proposal, canonical pressure refresh and
+nodal integrator. No second nonlinear solver is introduced. The finite control
+must retain source and execution defects, chart/clipping checks, weighted mean
+and bridge-profile observations. Its acceptance or failure concerns this
+configured transient regional window only, not autonomous phase-law selection,
+permanent differentiated maintenance, emergent topology or physical NFR identity.
+
+**Finite outcome under the frozen protocol.** The shared engine passed all three
+reserved acceptance checks. Rounded observations were:
+
+| Supplied time | Fast/slow phase norm | Fast/slow form norm | Slow phase retained |
+| --- | --- | --- | --- |
+| 4 | 0.133885 | 0.332843 | 0.662348 |
+| 5 | 0.0809865 | 0.221152 | 0.597526 |
+| 6 | 0.0489883 | 0.144229 | 0.539048 |
+
+The observed initial width is approximately `0.03252325`. At time six, full-field
+phase and form sup errors were `5.92e-8` and `3.05e-8`, versus respective ideal
+nonlinear bounds `1.72e-5` and `2.26e-5`, with the separately declared `1e-12`
+finite numerical allowance. The weighted form mean changed by `1.59e-8`:
+the nonlinear source was retained, not replaced by the linear Laplacian.
+The maximum observed nonlinear pressure-phase discrepancy was `1.35e-7`.
+Independent 70-digit source evaluations separate this discrepancy from
+binary64 source materialization (below `2.83e-16`); phase staging was below
+`6.94e-16`, and signed nodal Euler defects below `4.21e-19`. These are measured
+finite residuals, not interval certificates. Exact regional endpoint budgets
+retain internal dissipation, bridge exchange, forcing and numerical defects.
+The result admits this temporary regional window; it does not establish
+permanent maintenance or an autonomous origin of the supplied phase law.
+
 ### Geometric observation can require an additional state coordinate
 
 For the same held fine law, write `p=-e L x+f`, `x_dot=-A x+b`,
@@ -557,6 +1195,125 @@ that small pressure error alone cannot justify a uniform error bound for
 the unqualified displayed xi value near this boundary. Any later dynamical
 reduction must retain that distinction instead of imposing continuity or
 altering a nodal force to improve the diagnostic.
+
+### Absolute error from omitting the decaying odd form on P5
+
+Keep the preceding fixed unit-conductance P5, unit structural edge lengths,
+common constant capacity `nu>0`, and pure-EPI law `x_dot=-nu*L_rw*x`.
+Primitive phases are equal and held; no additional source, capacity/support
+motion or hybrid event is admitted. Replacing the full form by its lifted
+reflection means gives
+
+```text
+x_hat=(a,p,c,p,a),       h=x-x_hat=(r,s,0,-s,-r),
+z=(r,s),               z_dot=-nu*D*z,
+D=((1,-1),(-1/2,1)).
+```
+
+Both full and lifted forms follow the same declared fine law. Their difference
+therefore evolves in the invariant odd subspace. This **five-to-three
+approximation** discards actual form information; it is not the preceding
+reflection quotient, which retains five intrinsic dimensions. It also retains
+the even contrast `u=c-p`: the separate three-to-two memory approximation
+below discards a different coordinate.
+
+**Decay in the inherited metric.** Use the degree metric
+`H=diag(1,2,2,2,1)`, equal to `nu` times the existing reversible metric.
+The squared norm, without a factor of one half, satisfies
+
+```text
+N=||h||_H^2=2*r^2+4*s^2,
+N_dot=-4*nu*(r^2-2*r*s+2*s^2).
+```
+
+In coordinates `(sqrt(2)*r,2*s)`, the hidden generator is symmetric with
+diagonal entries one and off-diagonal entries `-1/sqrt(2)`. Its dimensionless
+rates are `lambda_minus=1-1/sqrt(2)` and `lambda_plus=1+1/sqrt(2)`. Hence,
+for every `t>=0`,
+
+```text
+N(t) <= N(0)*exp(-2*nu*lambda_minus*t).
+```
+
+The rate is sharp over the real state space, attained by a nonzero slow mode
+with `s=r/sqrt(2)`. The rational evaluator does not replace this irrational
+eigenvector by an approximate vector and call it exact.
+
+**Pressure and potential errors.** Write signed errors as full model minus
+lifted model. Fresh model pressure is `p_model=-L_rw*x`, independently of
+`nu`. Thus
+
+```text
+delta_p=(s-r, r/2-s, 0, s-r/2, r-s).
+```
+
+The same unit-path kernel `B_ij=1/|i-j|^2` off the diagonal, `B_ii=0`, gives
+`delta_Phi=B*delta_p`. On odd pressure `(q0,q1,0,-q1,-q0)`, its first two
+components are `K*(q0,q1)`, where
+
+```text
+K=((-1/16,8/9),(8/9,-1/4)),
+delta_Phi=(73*r/144-137*s/144, -73*r/72+41*s/36, 0,
+           73*r/72-41*s/36, -73*r/144+137*s/144).
+```
+
+Cauchy-Schwarz in the hidden metric `diag(2,4)` bounds a row `(u,v)` by
+`(u*r+v*s)^2 <= (u^2/2+v^2/4)*N`. Applying it to these rows proves
+
+```text
+(delta_p_i(t))^2   <= C_p[i]*N(0)*exp(-2*nu*lambda_minus*t),
+(delta_Phi_i(t))^2 <= C_Phi[i]*N(0)*exp(-2*nu*lambda_minus*t),
+C_p   =(3/4, 3/8, 0, 3/8, 3/4),
+C_Phi =(9809/27648, 2897/3456, 0, 2897/3456, 9809/27648).
+```
+
+The row constants are sharp instantaneous bounds in this norm; joint
+attainment with the slow-rate envelope is not asserted. All three orbit
+means of `h`, `delta_p` and `delta_Phi` are exactly zero. Thus exact orbit
+means and orbit-averaged potential can coexist with nonzero fine-field error.
+No commutation of the potential kernel with the diffusion generator is
+required: reflection invariance of each suffices.
+
+**Admitting an absolute approximation.** For positive requested tolerances
+`eps_p,eps_Phi`, both infinity-norm errors are within budget for all `t>=T`,
+where the sufficient analytical time is
+
+```text
+M=max(1, (3/4)*N(0)/eps_p^2, (2897/3456)*N(0)/eps_Phi^2),
+T=log(M)/(2*nu*lambda_minus).
+```
+
+Zero initial hidden form gives exact agreement immediately. Nonzero hidden
+form cannot give identically zero pressure or potential error at finite time;
+the hidden flow and both restricted output maps are invertible. Tolerances
+are approximation budgets, not new parameters in the nodal dynamics.
+
+[`bound_p5_hidden_form`](../src/tnfr/physics/p5_hidden_form.py) derives its
+hidden generator and metric from the shared P5 reduction, and the potential
+from the existing exact geometry kernel. It returns rational squared bounds,
+using a positive rational lower rate `g<=nu*lambda_minus` certified by the
+shared semidefinite test and an upper rational enclosure of `exp(-2*g*t)`.
+`sample.within_tolerances(pressure=..., potential=...)` compares those bounds
+directly with squared budgets. A false result means the bounds are
+insufficient, not that the actual error exceeds the budget. Conservative
+rate/enclosure slack is distinct from model omission error. The evaluator
+supports `nu*t<=2048`; this resource limit does not restrict the all-time
+analytical theorem. Binary64 execution defects are outside both claims.
+[Independent controls](../tests/physics/test_p5_hidden_form.py) cover the
+shared matrices, factors, rational bounds and admission boundaries.
+
+**Identity and tetrad boundary.** Absolute decay alone does not justify
+forgetting the remaining shape. For nonzero pure odd form the lifted
+approximation is zero, and the relative H-norm error is one at every finite
+time. More generally, the retained nonuniform even modes decay at `nu` and
+`2*nu`, both faster than the slow omitted odd mode. With that slow component
+present, its fraction of the remaining nonuniform form can approach one.
+The result therefore admits an absolute pressure/potential approximation,
+not preservation of relative pattern identity. Held equal phases give the
+same phase read-outs, but the preceding xi fit/fallback discontinuity still
+precludes an unqualified uniform xi error guarantee. This is a conditional
+reduction of a supplied passive law, not autonomous NFR formation,
+maintenance, or a law for the full evolving substrate.
 
 ### Derived memory when closure fails
 

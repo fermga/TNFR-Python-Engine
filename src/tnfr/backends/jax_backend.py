@@ -1,24 +1,15 @@
-"""JAX-based JIT-compiled backend for TNFR computations (Experimental).
+"""Experimental JAX adapter delegating graph computations to shared CPU owners.
 
-This module provides a JIT-compiled JAX implementation of TNFR computational
-kernels. JAX enables:
-
-- Just-in-time (JIT) compilation for optimized machine code
-- Automatic differentiation for gradient-based analysis
-- GPU acceleration for large-scale networks
-- XLA compiler optimizations
-
-**Status**: Experimental - API may change in future releases.
-
-The JAX backend currently delegates to the NumPy implementation but provides
-infrastructure for future JIT-optimized kernels.
+JAX is an optional adapter dependency. These pressure and sense-index methods
+do not use JAX arrays, JIT compilation, autodiff or GPU execution. Capabilities
+refer to these exposed graph computations, not the installed JAX library.
 
 Examples
 --------
 >>> from tnfr.backends import get_backend
 >>> backend = get_backend("jax")  # doctest: +SKIP
 >>> backend.supports_jit  # doctest: +SKIP
-True
+False
 """
 
 from __future__ import annotations
@@ -30,32 +21,20 @@ from . import TNFRBackend
 
 
 class JAXBackend(TNFRBackend):
-    """JIT-compiled JAX implementation of TNFR kernels (Experimental).
-
-    This backend provides a foundation for JIT-optimized TNFR computations
-    using JAX. Current implementation delegates to NumPy backend while
-    maintaining interface compatibility for future JIT implementations.
-
-    Future optimizations planned:
-    - JIT-compiled ΔNFR computation with @jax.jit
-    - Vectorized operations using jax.numpy
-    - GPU acceleration via JAX device placement
-    - Automatic differentiation for sensitivity analysis
+    """Experimental JAX adapter with shared CPU graph-kernel semantics.
 
     Attributes
     ----------
     name : str
         Returns "jax"
     supports_gpu : bool
-        True (JAX supports GPU acceleration)
+        False; graph computations execute on the CPU
     supports_jit : bool
-        True (JAX provides JIT compilation)
+        False; these methods do not use JAX JIT
 
     Notes
     -----
     Requires JAX to be installed: `pip install jax jaxlib`
-
-    For GPU support, install appropriate JAX GPU build for your platform.
     """
 
     def __init__(self) -> None:
@@ -79,13 +58,13 @@ class JAXBackend(TNFRBackend):
 
     @property
     def supports_gpu(self) -> bool:
-        """JAX supports GPU acceleration."""
-        return True
+        """The currently exposed graph kernels execute on the CPU."""
+        return False
 
     @property
     def supports_jit(self) -> bool:
-        """JAX supports JIT compilation."""
-        return True
+        """JAX JIT is not used by the graph kernels."""
+        return False
 
     def compute_delta_nfr(
         self,
@@ -93,30 +72,30 @@ class JAXBackend(TNFRBackend):
         *,
         cache_size: int | None = 1,
         n_jobs: int | None = None,
-        profile: MutableMapping[str, float] | None = None,
+        profile: MutableMapping[str, Any] | None = None,
     ) -> None:
-        """Compute ΔNFR using JAX backend.
+        """Compute pressure through the shared CPU dispatcher.
 
-        **Current implementation**: Delegates to NumPy backend while maintaining
-        interface compatibility.
-
-        **Planned**: JIT-compiled vectorized computation using jax.numpy with
-        automatic XLA optimization and optional GPU acceleration.
+        All execution options are forwarded. Profiling identifies the JAX
+        adapter separately from the actual CPU kernel and dispatch path.
 
         Parameters
         ----------
         graph : TNFRGraph
             NetworkX graph with TNFR node attributes
         cache_size : int or None, optional
-            Cache size hint (currently passed to NumPy backend)
+            Forwarded cache-size hint
         n_jobs : int or None, optional
-            Ignored (JAX uses vectorization instead of multiprocessing)
-        profile : MutableMapping[str, float] or None, optional
-            dict to collect timing metrics
+            Forwarded worker-count hint
+        profile : MutableMapping[str, Any] or None, optional
+            Mapping for timings and execution provenance
         """
-        # JAX implementation planned for v2.0 - high-performance JIT compilation
-        # Currently delegates to NumPy backend for compatibility
         from ..dynamics.dnfr import default_compute_delta_nfr
+
+        if profile is not None:
+            profile["dnfr_backend"] = "jax"
+            profile["dnfr_device"] = "cpu"
+            profile["dnfr_implementation"] = "canonical"
 
         default_compute_delta_nfr(
             graph,
@@ -134,13 +113,7 @@ class JAXBackend(TNFRBackend):
         chunk_size: int | None = None,
         profile: MutableMapping[str, Any] | None = None,
     ) -> dict[Any, float] | Any:
-        """Compute sense index using JAX backend.
-
-        **Current implementation**: Delegates to NumPy backend while maintaining
-        interface compatibility.
-
-        **Planned**: JIT-compiled vectorized Si computation using jax.numpy with
-        optimized phase dispersion and normalization kernels.
+        """Compute sense index through the shared CPU implementation.
 
         Parameters
         ----------
@@ -149,9 +122,9 @@ class JAXBackend(TNFRBackend):
         inplace : bool, default=True
             Whether to write Si values back to graph
         n_jobs : int or None, optional
-            Ignored (JAX uses vectorization)
+            Forwarded worker-count hint
         chunk_size : int or None, optional
-            Chunk size hint (currently passed to NumPy backend)
+            Forwarded chunk-size hint
         profile : MutableMapping[str, Any] or None, optional
             dict to collect timing metrics
 
@@ -160,8 +133,6 @@ class JAXBackend(TNFRBackend):
         dict[Any, float] or numpy.ndarray
             Node-to-Si mapping or array of Si values
         """
-        # JAX implementation planned for v2.0 - high-performance JIT compilation
-        # Currently delegates to NumPy backend for compatibility
         from ..metrics.sense_index import compute_Si
 
         return compute_Si(

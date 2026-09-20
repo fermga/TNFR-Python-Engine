@@ -15,12 +15,9 @@ from ..constants.aliases import ALIAS_THETA
 from ..types import Glyph
 from ._cycle_algebra import Matrix, Vector, dot, ordered_vector
 from ._exact_linear_algebra import exact_square_matrix_product
-from .support_transport import (
-    SupportTransportSnapshot,
-    _energy,
-    _laplacian,
-    observe_support_transport,
-)
+from .support_transport import SupportTransportSnapshot, _energy, _laplacian
+from .support_transport import _support_components as _components
+from .support_transport import observe_support_transport
 
 __all__ = [
     "CompatibleCapacityBalance",
@@ -72,21 +69,6 @@ def _neighbor_rows(neighbors, size, *, allow_empty):
     if any(i not in rows[j] for i, row in enumerate(rows) for j in row):
         raise ValueError("compatible-neighbor rows must be reciprocal")
     return rows
-
-
-def _components(rows):
-    remaining, result = set(range(len(rows))), []
-    while remaining:
-        first = min(remaining)
-        reached, pending = {first}, [first]
-        while pending:
-            i = pending.pop()
-            new = set(rows[i]) - reached
-            reached.update(new)
-            pending.extend(new)
-        remaining.difference_update(reached)
-        result.append(tuple(sorted(reached)))
-    return tuple(result)
 
 
 @dataclass(frozen=True)

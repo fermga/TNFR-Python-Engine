@@ -7,6 +7,10 @@ The optimizer computes the simultaneous node-space product
 and delegates phase proposals to the shared U3-gated kernel. A spectral basis is
 available as an explicit comparison API, but the nodal step itself uses the
 dense live random-walk operator and makes no unmeasured speedup claim.
+The two proposals are dynamically separate: phase does not enter EPI pressure,
+and EPI does not enter the phase proposal. Calculated phase synchronization
+therefore supplies no form-maintenance mechanism in this model. Capacity and
+support are read as inputs, not evolved by the proposal.
 Because the step size is unrestricted, each proposal explicitly reports that
 Euler stability has not been certified.
 """
@@ -309,6 +313,8 @@ class NodalEquationOptimizer:
         x_next = x - dt * diag(nu_f) * L_rw * x. The method returns detached
         proposals and never commits them to the graph. Its metadata records
         that arbitrary-dt explicit Euler stability is not certified.
+        Graph DNFR_WEIGHTS do not turn this isolated channel into the separate
+        multichannel pressure model; phase changes cannot change this EPI row.
         """
         if not HAS_NETWORKX or G is None:
             return NodalEvolutionProposal({})

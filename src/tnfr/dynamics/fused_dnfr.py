@@ -4,8 +4,7 @@
 This module provides optimized implementations of ΔNFR computation that fuse
 multiple operations to reduce memory traffic and improve cache locality.
 
-The fused kernels maintain exact TNFR semantics while achieving better
-performance through:
+The fused kernels implement the same declared pressure channels through:
 
 1. Combined gradient computation (phase + EPI + topology in single pass)
 2. Reduced intermediate array allocations
@@ -15,7 +14,13 @@ performance through:
 All implementations preserve TNFR structural invariants:
 - ΔNFR = w_phase·g_phase + w_epi·g_epi + w_vf·g_vf + w_topo·g_topo
 - Isolated nodes receive ΔNFR = 0
-- Deterministic results with fixed topology
+- Reproducible results with fixed inputs, contribution order and backend
+
+Transcendental materialization and accumulation can differ by backend;
+near a vanishing resultant, small component errors can change its direction.
+Outside the certified two-neighbor branch, an exactly joint-zero accumulated
+pair uses the center phase as an explicit computational extension, not a
+derived phase direction or physical law.
 """
 
 from __future__ import annotations
@@ -28,7 +33,7 @@ from ..mathematics._neighbor_differences import (
     edge_mean_differences,
 )
 from ..mathematics._phase_midpoint import certified_two_neighbor_phase
-from ..mathematics.unified_numerical import np
+from ..mathematics.unified_numerical import compute_phase_difference, np
 from ..utils import get_logger
 
 logger = get_logger(__name__)
@@ -69,12 +74,18 @@ def _compute_canonical_gradients_jit_kernel(
     neighbour ``v``.  The EPI channel is edge-weighted (the channel with the
     proven L_rw identity); phase, vf and topology use the unweighted
     neighbourhood (ADR-002).  Undirected graphs carry both (u, v) and (v, u),
-    so the result is symmetric and reproduces the legacy path exactly.
+    so the result has the same support convention as the graph dispatcher.
     """
     # Allocations (Numba handles these efficiently in nopython mode)
     cos_sum = np.zeros(n_nodes, dtype=np.float64)
     sin_sum = np.zeros(n_nodes, dtype=np.float64)
     count = np.zeros(n_nodes, dtype=np.float64)
+    phase_cos = np.zeros(n_nodes, dtype=np.float64)
+    phase_sin = np.zeros(n_nodes, dtype=np.float64)
+    if w_phase != 0.0:
+        for i in range(n_nodes):
+            phase_cos[i] = math.cos(phase[i])
+            phase_sin[i] = math.sin(phase[i])
 
     n_edges = edge_src.shape[0]
 
@@ -83,27 +94,32 @@ def _compute_canonical_gradients_jit_kernel(
         u = edge_src[i]
         v = edge_dst[i]
         # u -> v: node u receives neighbour v
-        cos_sum[u] += math.cos(phase[v])
-        sin_sum[u] += math.sin(phase[v])
+        if w_phase != 0.0:
+            cos_sum[u] += phase_cos[v]
+            sin_sum[u] += phase_sin[v]
         count[u] += 1.0
 
         if symmetric:
             # v -> u: node v receives neighbour u
-            cos_sum[v] += math.cos(phase[u])
-            sin_sum[v] += math.sin(phase[u])
+            if w_phase != 0.0:
+                cos_sum[v] += phase_cos[u]
+                sin_sum[v] += phase_sin[u]
             count[v] += 1.0
 
     # Pass 2: Compute gradients
     for i in range(n_nodes):
         if count[i] > 0:
-            # Phase: g = (theta_mean - theta_node) / pi
-            # theta_mean = atan2(sum_sin, sum_cos)
-            theta_mean = math.atan2(sin_sum[i], cos_sum[i])
-
-            # angle_diff(a, b) = (a - b + pi) % 2pi - pi
-            # We want (theta_mean - phase[i])
-            diff = (theta_mean - phase[i] + math.pi) % (2 * math.pi) - math.pi
-            g_phase = diff / math.pi
+            g_phase = 0.0
+            if w_phase != 0.0 and (sin_sum[i] != 0.0 or cos_sum[i] != 0.0):
+                theta_mean = math.atan2(sin_sum[i], cos_sum[i])
+                center = phase[i]
+                if abs(center) > math.pi:
+                    center = math.atan2(phase_sin[i], phase_cos[i])
+                raw = theta_mean - center
+                # Numba-compatible form of the shared signed atan2 wrap.
+                # Adding pi first loses small gaps and changes antipodal ties.
+                diff = math.atan2(math.sin(raw), math.cos(raw))
+                g_phase = diff / math.pi
 
             # Linear channels arrive from the shared stable edge reducer.
             delta_nfr[i] = w_phase * g_phase + g_epi[i] + g_vf[i]
@@ -133,7 +149,7 @@ if _NUMBA_AVAILABLE:
         _compute_canonical_gradients_jit = _numba.njit(
             _compute_canonical_gradients_jit_kernel,
             parallel=False,
-            fastmath=True,
+            fastmath=False,
             cache=True,
         )
         logger.debug("Numba JIT compilation successful for fused gradients")
@@ -197,8 +213,6 @@ def compute_fused_gradients(
         Structural frequency νf for each node (shape: [N])
     weights : Mapping[str, float]
         ΔNFR component weights (w_phase, w_epi, w_vf, w_topo)
-    np : module
-        NumPy module
     use_jit : bool, default=True
         Whether to use JIT compilation if available
 
@@ -256,6 +270,9 @@ def compute_fused_gradients_symmetric(
         If True (default), each edge (u, v) contributes to both u and v.
         If False, each edge (u, v) contributes neighbor v to row u (src).
         Set to False if edge_src/edge_dst already contain both (u,v) and (v,u).
+        These arrays describe contributions, not a deduplicated graph. True
+        also doubles self-loop contributions; the graph-facing dispatcher
+        supplies unique outgoing neighbors and always uses False.
     use_jit : bool, default=True
         Whether to use JIT compilation if available
 
@@ -330,7 +347,7 @@ def compute_fused_gradients_symmetric(
         )
         if len(phase_rows):
             # Reassemble eligible rows without subtracting an already rounded
-            # phasor term or relying on the JIT fastmath evaluation order.
+            # phasor term or relying on the kernel's evaluation order.
             topology = 0.0
             if w_topo != 0.0:
                 degree_sum = np.bincount(
@@ -358,39 +375,46 @@ def compute_fused_gradients_symmetric(
     neighbor_cos_sum = np.zeros(n_nodes, dtype=float)
     neighbor_sin_sum = np.zeros(n_nodes, dtype=float)
     neighbor_count = np.zeros(n_nodes, dtype=float)
-
-    # Extract neighbour values
-    phase_src_vals = phase[edge_src]
-    phase_dst_vals = phase[edge_dst]
+    if w_phase != 0.0:
+        phase_cos, phase_sin = np.cos(phase), np.sin(phase)
 
     # Outgoing: node src receives neighbour dst
-    np.add.at(neighbor_cos_sum, edge_src, np.cos(phase_dst_vals))
-    np.add.at(neighbor_sin_sum, edge_src, np.sin(phase_dst_vals))
+    if w_phase != 0.0:
+        np.add.at(neighbor_cos_sum, edge_src, phase_cos[edge_dst])
+        np.add.at(neighbor_sin_sum, edge_src, phase_sin[edge_dst])
     np.add.at(neighbor_count, edge_src, 1.0)
 
     if accumulate_both_directions:
         # Reverse edge: node dst receives neighbour src
-        np.add.at(neighbor_cos_sum, edge_dst, np.cos(phase_src_vals))
-        np.add.at(neighbor_sin_sum, edge_dst, np.sin(phase_src_vals))
+        if w_phase != 0.0:
+            np.add.at(neighbor_cos_sum, edge_dst, phase_cos[edge_src])
+            np.add.at(neighbor_sin_sum, edge_dst, phase_sin[edge_src])
         np.add.at(neighbor_count, edge_dst, 1.0)
 
     # Pass 2: Compute gradients from means
     # Avoid division by zero for isolated nodes
     has_neighbors = neighbor_count > 0
 
-    # Compute circular mean phase for nodes with neighbors
-    phase_mean = np.zeros(n_nodes, dtype=float)
-    phase_mean[has_neighbors] = np.arctan2(
-        neighbor_sin_sum[has_neighbors], neighbor_cos_sum[has_neighbors]
-    )
-
-    # Compute gradients using TNFR canonical formula
-    # Phase: g_phase = -angle_diff(θ_node, θ_mean) / π
-    # angle_diff(a, b) = (a - b + π) % 2π - π (minimal angular difference)
-    phase_diff = (phase_mean - phase + np.pi) % (2 * np.pi) - np.pi
-    g_phase = phase_diff / np.pi
-    g_phase[~has_neighbors] = 0.0  # Isolated nodes have no gradient
-    g_phase[phase_rows] = phase_values
+    g_phase = np.zeros(n_nodes, dtype=float)
+    if w_phase != 0.0:
+        # Zero is a property of these accumulated floating components. It is
+        # not a certificate that the exact phasor resultant is zero.
+        defined = has_neighbors & (
+            (neighbor_sin_sum != 0.0) | (neighbor_cos_sum != 0.0)
+        )
+        phase_mean = np.arctan2(neighbor_sin_sum[defined], neighbor_cos_sum[defined])
+        # Compare with the same represented center phasor. Subtracting a huge
+        # raw angle loses the O(1) target and creates pressure even at uniform
+        # phase. Keep already centered values to retain tiny displacements.
+        centers = np.array(phase[defined], dtype=float, copy=True)
+        outside = np.abs(centers) > math.pi
+        centers[outside] = np.arctan2(
+            phase_sin[defined][outside], phase_cos[defined][outside]
+        )
+        g_phase[defined] = compute_phase_difference(phase_mean, centers) / math.pi
+        # Isolates and joint-zero rows retain zero phase pressure; admitted
+        # two-neighbor rows retain their certified midpoint realization.
+        g_phase[phase_rows] = phase_values
 
     # Topology: Canonical form is (mean_neighbor_degree - node_degree)
     if w_topo != 0.0:
@@ -434,12 +458,11 @@ def apply_vf_scaling(
     vf: Any,
     np: Any,
 ) -> None:
-    """Apply structural frequency scaling to ΔNFR in-place.
+    """Replace a pressure buffer by the nodal rate in-place.
 
-    Applies the fundamental TNFR transformation:
-    Delta_NFR_final = nu_f * Delta_NFR_gradient
-
-    This completes the nodal equation: dEPI/dt = nu_f * Delta_NFR(t)
+    The resulting buffer contains dEPI/dt = nu_f * Delta_NFR, not a second
+    pressure. This legacy utility has no pressure-pipeline caller; the shared
+    nodal integrator applies capacity once when advancing EPI.
 
     Parameters
     ----------

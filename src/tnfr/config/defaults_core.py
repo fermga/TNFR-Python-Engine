@@ -102,7 +102,7 @@ class CoreDefaults:
             "phase": CHANNEL_WEIGHT_PRIMARY,  # π/(π+1) ≈ 0.7585 (dominant desync channel)
             "epi": CHANNEL_WEIGHT_SECONDARY,  # π/(π+1)² ≈ 0.1832 (diffusion channel)
             "vf": CHANNEL_WEIGHT_TERTIARY,  # 1/(π+1)² ≈ 0.0583 (capacity-gradient channel)
-            "topo": 0.0,  # Topological weight remains zero (graph fixed during evolution)
+            "topo": 0.0,  # Degree-contrast source disabled by policy.
         }
     )
     SI_WEIGHTS: dict[str, float] = field(

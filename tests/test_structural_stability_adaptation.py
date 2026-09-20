@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import copy
+import math
 
 import networkx as nx
-import numpy as np
 import pytest
 
 import tnfr.dynamics.adaptation as adaptation_module
@@ -51,6 +51,67 @@ def test_parallel_proposals_preserve_snapshot_result() -> None:
 
     assert graph.nodes["left"]["νf"] == pytest.approx(0.6)
     assert graph.nodes["right"]["νf"] == pytest.approx(0.6)
+
+
+@pytest.mark.parametrize("capacity", (0.104, 0.3))
+@pytest.mark.parametrize("n_jobs", (1, 2))
+def test_partial_default_adaptation_preserves_equal_capacities(capacity, n_jobs):
+    graph = nx.path_graph(4)
+    inject_defaults(graph)
+    tau, mu = graph.graph["VF_ADAPT_TAU"], graph.graph["VF_ADAPT_MU"]
+    # The old two-product evaluation invented detuning at this exact fixed
+    # point. Different eligibility is a declared counter input, not past flow.
+    assert mu == 0.1
+    assert (1.0 - mu) * capacity + mu * capacity != capacity
+    for node in graph:
+        graph.nodes[node].update(
+            {
+                "νf": capacity,
+                "Si": 0.9,
+                "ΔNFR": 0.0,
+                "stable_count": tau - 1 if node % 2 == 0 else 0,
+            }
+        )
+    adapt_vf_after_structural_stability(graph, n_jobs=n_jobs)
+    assert tuple(graph.nodes[node]["stable_count"] for node in graph) == (
+        tau,
+        1,
+        tau,
+        1,
+    )
+    assert tuple(graph.nodes[node]["νf"] for node in graph) == (capacity,) * 4
+
+
+@pytest.mark.parametrize("n_jobs", (1, 2))
+def test_partial_adaptation_cannot_create_an_extremum_from_adjacent_capacities(n_jobs):
+    graph = nx.path_graph(4)
+    inject_defaults(graph)
+    upper = 0.104
+    lower = math.nextafter(upper, -math.inf)
+    tau, mu = graph.graph["VF_ADAPT_TAU"], graph.graph["VF_ADAPT_MU"]
+    # The unguarded two-product formula moves the upper endpoint upward,
+    # even though its only neighbor and the exact proposal are below it.
+    assert (1.0 - mu) * upper + mu * lower == math.nextafter(upper, math.inf)
+    before = (upper, lower, lower, upper)
+    for node, capacity in enumerate(before):
+        graph.nodes[node].update(
+            {
+                "νf": capacity,
+                "Si": 0.9,
+                "ΔNFR": 0.0,
+                "stable_count": tau - 1 if node in (0, 3) else 0,
+            }
+        )
+    adapt_vf_after_structural_stability(graph, n_jobs=n_jobs)
+    after = tuple(graph.nodes[node]["νf"] for node in graph)
+    assert after == before
+    assert all(lower <= value <= upper for value in after)
+    assert tuple(graph.nodes[node]["stable_count"] for node in graph) == (
+        tau,
+        1,
+        1,
+        tau,
+    )
 
 
 @pytest.mark.parametrize(

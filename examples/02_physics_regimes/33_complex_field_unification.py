@@ -174,7 +174,7 @@ def demo_complex_field() -> None:
 
     nodes = sorted(G.nodes())[:10]  # show first 10
 
-    print(f"\n  Node decomposition (first 10 nodes, WS N=30):")
+    print("\n  Node decomposition (first 10 nodes, WS N=30):")
     print(
         f"  {'Node':>6}  {'K_phi':>8}  {'J_phi':>8}  {'|Psi|':>8}  {'arg(Psi)':>10}  {'Psi':>20}"
     )
@@ -191,7 +191,7 @@ def demo_complex_field() -> None:
 
     # Array version
     arrays = compute_complex_geometric_field_arrays(G)
-    print(f"\n  Array API summary:")
+    print("\n  Array API summary:")
     print(f"    Psi array shape: ({len(arrays['psi_real'])},)")
     print(f"    Mean |Psi|: {np.mean(arrays['psi_magnitude']):.4f}")
     print(f"    Std |Psi|:  {np.std(arrays['psi_magnitude']):.4f}")
@@ -220,20 +220,20 @@ def demo_emergent_fields() -> None:
     chi_arr = np.array(list(chi.values()))
     sb_arr = np.array(list(sym_break.values()))
 
-    print(f"\n  a) Chirality  chi = |grad_phi|*K_phi - J_phi*J_DELTA_NFR")
+    print("\n  a) Chirality  chi = |grad_phi|*K_phi - J_phi*J_DELTA_NFR")
     print("     Interpretation label: structural handedness / parity imbalance")
     print(f"     Mean: {np.mean(chi_arr):.6f}")
     print(f"     Std:  {np.std(chi_arr):.6f}")
     print("     |chi| is reported as a bilinear sector-asymmetry diagnostic")
 
     print(
-        f"\n  b) Symmetry Breaking  S = (|grad_phi|^2 - K_phi^2) + (J_phi^2 - J_DELTA_NFR^2)"
+        "\n  b) Symmetry Breaking  S = (|grad_phi|^2 - K_phi^2) + (J_phi^2 - J_DELTA_NFR^2)"
     )
     print("     Candidate sector-imbalance diagnostic")
     print(f"     Mean: {np.mean(sb_arr):.6f}  (S ~ 0 = balanced, |S| >> 0 = broken)")
     print(f"     Std:  {np.std(sb_arr):.6f}")
 
-    print(f"\n  c) Coherence Coupling  C = Phi_s * |Psi|")
+    print("\n  c) Coherence Coupling  C = Phi_s * |Psi|")
     print("     Algebraic product of global potential and local-field magnitude")
     cc_arr = np.array(emergent.get("coherence_coupling", [0.0]))
     if len(cc_arr) > 1:
@@ -250,7 +250,7 @@ def demo_emergent_fields() -> None:
 
     chi_high = np.mean([abs(chi[n]) for n in high_phi_s]) if high_phi_s else 0
     chi_low = np.mean([abs(chi[n]) for n in low_phi_s]) if low_phi_s else 0
-    print(f"\n  Chirality comparison by Phi_s level:")
+    print("\n  Chirality comparison by Phi_s level:")
     print(f"    High |Phi_s| nodes (n={len(high_phi_s)}): mean |chi| = {chi_high:.6f}")
     print(f"    Low  |Phi_s| nodes (n={len(low_phi_s)}):  mean |chi| = {chi_low:.6f}")
 
@@ -285,9 +285,9 @@ def demo_tensor_invariants() -> None:
 
         inv = compute_tensor_invariants(G)
 
-        e_arr = np.array(inv.get("energy_density", [0.0]))
-        q_arr = np.array(inv.get("topological_charge", [0.0]))
-        rho_arr = np.array(inv.get("charge_density", [0.0]))
+        e_arr = np.asarray(inv["energy_density"])
+        q_arr = np.asarray(inv["topological_charge"])
+        rho_arr = np.asarray(inv["conservation_density"])
 
         print(
             f"  {name:<16}  {np.mean(e_arr):10.4f}  {np.std(e_arr):8.4f}  "
@@ -316,7 +316,7 @@ def demo_tensor_invariants() -> None:
     T = 0.5 * np.sum(jp**2 + jd**2)  # kinetic (transport)
     V = 0.5 * np.sum(ps**2 + gp**2 + kp**2)  # potential (geometric)
     E_total = T + V
-    print(f"\n  Energy decomposition (WS N=40):")
+    print("\n  Energy decomposition (WS N=40):")
     print(f"    E_total = {E_total:.4f}")
     print(f"    T (kinetic/transport) = {T:.4f}  ({T/E_total*100:.1f}%)")
     print(f"    V (potential/geometric) = {V:.4f}  ({V/E_total*100:.1f}%)")
@@ -324,14 +324,14 @@ def demo_tensor_invariants() -> None:
     # Action density
     action = ps * gp + kp * jp + gp * jd
     print(
-        f"\n  Action density A = Phi_s*|grad_phi| + K_phi*J_phi + |grad_phi|*J_DELTA_NFR:"
+        "\n  Action density A = Phi_s*|grad_phi| + K_phi*J_phi + |grad_phi|*J_DELTA_NFR:"
     )
     print(f"    Mean A: {np.mean(action):.6f}")
     print(f"    Sum A:  {np.sum(action):.4f}")
 
     # Single-snapshot topological-charge diagnostic
     Q_total = np.sum(gp * jp - kp * jd)
-    print(f"\n  Topological charge Q = sum(|grad_phi|*J_phi - K_phi*J_DELTA_NFR):")
+    print("\n  Topological charge Q = sum(|grad_phi|*J_phi - K_phi*J_DELTA_NFR):")
     print(f"    Q_total = {Q_total:.6f}")
     print("    This snapshot does not test conservation; that requires a declared")
     print("    trajectory and a before/after comparison.")
@@ -351,7 +351,7 @@ def demo_evolution_tracking() -> None:
     G = _build_graph(40, "WS")
     n_steps = 30
 
-    print(f"\n  Tracking WS (N=40) over {n_steps} diffusion steps:")
+    print(f"\n  Tracking WS (N=40) over {n_steps} supplied auxiliary smoothing steps:")
     print(
         f"  {'Step':>6}  {'Mean|Psi|':>10}  {'Mean|chi|':>10}  "
         f"{'Mean|S|':>10}  {'E_total':>10}  {'Q_total':>10}"
@@ -408,10 +408,10 @@ def main() -> None:
     print("  SUMMARY")
     print("=" * 65)
     print(
-        f"""
+        """
   Complex Geometric Field Psi = K_phi + i * J_phi packages:
-    Real part (K_phi):  Static geometric confinement
-    Imaginary part (J_phi):  Dynamic transport flow
+    Real part (K_phi):  Wrapped neighbor-resultant mismatch
+    Imaginary part (J_phi):  Mean neighbor sine displacement
 
   The table reports a strong negative correlation in five seeded fixtures.
   It does not establish a universal interval, causality or dynamical duality.
@@ -423,7 +423,7 @@ def main() -> None:
 
   Named tensor diagnostics:
     Energy density E:    candidate structural-energy diagnostic
-    Topological charge Q: trajectory-dependent diagnostic
+    Topological charge Q: continuous snapshot bilinear, not integer winding
     Action density A:    cross-sector contraction diagnostic
 
   The implementation constructs six named downstream quantities from

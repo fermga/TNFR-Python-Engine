@@ -3304,6 +3304,7 @@ _PRESSURE_REFRESH_DERIVED_GRAPH_KEYS = frozenset(
     {
         "_DNFR_META",
         "_dnfr_hook_name",
+        "_dnfr_weights_source",
         "_dnfr_prep_dirty",
         "_dnfrmax",
         "_dnfrmax_node",
@@ -3399,7 +3400,13 @@ def _dnfr_weights_signature(
     )
     present = bool(entries)
     value = entries[0][1] if entries else None
-    return present, value is None, structural_proof_signature(value)
+    return (
+        present,
+        value is None,
+        structural_proof_signature(
+            (value, _runtime_graph_mapping(graph).get("_dnfr_weights_source"))
+        ),
+    )
 
 
 def _edge_state_signature(
@@ -4466,8 +4473,9 @@ def _invoke_restricted_pressure_refresh(
     if type(require_callback_state_preserved) is not bool:
         raise TypeError("require_callback_state_preserved must be a bool")
 
-    from ..dynamics.dnfr import default_compute_delta_nfr
+    from ..dynamics.dnfr import _resolve_dnfr_weights, default_compute_delta_nfr
     from ..dynamics.runtime import _refresh_delta_nfr
+    from ..metrics.common import merge_graph_weights
 
     _require_pressure_callback_binding(
         graph,
@@ -4494,6 +4502,23 @@ def _invoke_restricted_pressure_refresh(
         retained_references=retained_graph_bindings,
         opaque_references=graph_identity_opaque_references,
         transient_networkx_cached_views=transient_networkx_cached_views,
+    )
+    # Resolve the exact permitted cache/source transition before execution.
+    # The default may reconcile a public edit or attach source bookkeeping
+    # to a legacy explicit mix; arbitrary callback mutations remain forbidden.
+    expected_default_weights = (
+        (
+            True,
+            False,
+            structural_proof_signature(
+                (
+                    _resolve_dnfr_weights(graph),
+                    merge_graph_weights(graph, "DNFR_WEIGHTS"),
+                )
+            ),
+        )
+        if expected_callback is default_compute_delta_nfr
+        else None
     )
     callback_state_before = (
         _callback_owned_state_signature(
@@ -4531,10 +4556,8 @@ def _invoke_restricted_pressure_refresh(
     weights_preserved_or_initialized = bool(
         weights_before == weights_after
         or (
-            (weights_before[0] is False or weights_before[1] is True)
-            and weights_after[0] is True
-            and weights_after[1] is False
-            and callback is default_compute_delta_nfr
+            callback is default_compute_delta_nfr
+            and weights_after == expected_default_weights
         )
     )
     checks = {

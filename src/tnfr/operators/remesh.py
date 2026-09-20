@@ -312,11 +312,13 @@ _VF_FROZEN_THRESHOLD = 0.05
 
 @dataclass
 class StructuralIdentity:
-    """Persistent fractal identity maintained across reorganizations.
+    """Configured nodal snapshot signature for matching reorganized states.
 
-    Captures the canonical structural "signature" of a pattern that must be
-    preserved as it echoes across scales. This implements TNFR's requirement
-    that patterns maintain identity through reorganization.
+    Stores scalar EPI, a capacity range and an optional circular phase target.
+    A match checks these read-outs against a selected tolerance; it does not
+    establish an invariant set, orbital stability, autonomous maintenance or
+    a complete NFR identity. Dynamic identity and permitted perturbations need
+    a separate model contract.
 
     **REMESH ↔ SHA Relationship**: SHA (Silence) reduces capacity while
     preserving EPI at the event. Later unforced EPI evolution obeys
@@ -376,7 +378,7 @@ class StructuralIdentity:
     def matches(
         self, node_data: Mapping[str, Any], *, tolerance: float | None = None
     ) -> bool:
-        """Check if a node maintains this structural identity.
+        """Check whether a nodal snapshot matches the configured signature.
 
         Parameters
         ----------

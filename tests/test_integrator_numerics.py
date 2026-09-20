@@ -12,10 +12,16 @@ import pytest
 
 from tnfr.alias import get_attr
 from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY, inject_defaults
-from tnfr.constants.aliases import ALIAS_D2EPI, ALIAS_DEPI, ALIAS_THETA
+from tnfr.constants.aliases import (
+    ALIAS_D2EPI,
+    ALIAS_DEPI,
+    ALIAS_DNFR,
+    ALIAS_THETA,
+    ALIAS_VF,
+)
 from tnfr.dynamics import integrators
 from tnfr.dynamics.symplectic import TNFRSymplecticIntegrator
-from tnfr.errors.contextual import NetworkConfigError
+from tnfr.errors.contextual import FrequencyError, NetworkConfigError
 
 SYMPLECTIC_METHODS = ["velocity_verlet", "leapfrog", "yoshida_4th_order"]
 
@@ -499,3 +505,152 @@ def test_euler_preserves_separate_multiply_and_add(monkeypatch, vectorized, rout
     assert Fraction(-1) + Fraction(step) * Fraction(rate) == -Fraction(1, 2**104)
     assert actual == 0.0
     assert derivative == rate
+
+
+def _integration_route(monkeypatch, route):
+    graph = _graph(extended=route == "extended")
+    if route == "scalar":
+        monkeypatch.setattr(integrators, "np", None)
+    return graph
+
+
+@pytest.mark.parametrize("route", ["scalar", "vectorized", "extended"])
+@pytest.mark.parametrize(
+    "aliases,value,error",
+    [
+        (ALIAS_VF, -1.0, FrequencyError),
+        (ALIAS_VF, math.nan, FrequencyError),
+        (ALIAS_VF, math.inf, FrequencyError),
+        (ALIAS_DNFR, math.nan, NetworkConfigError),
+        (ALIAS_DNFR, math.inf, NetworkConfigError),
+        (ALIAS_DEPI, math.nan, NetworkConfigError),
+        (ALIAS_DEPI, math.inf, NetworkConfigError),
+    ],
+)
+def test_invalid_authoritative_nodal_input_rejects_before_caches_or_writes(
+    monkeypatch, route, aliases, value, error
+):
+    graph = _integration_route(monkeypatch, route)
+    # A later valid alias must not mask the invalid authoritative value.
+    graph.nodes[0][aliases[0]] = value
+    graph.nodes[0][aliases[1]] = 0.5
+    before = copy.deepcopy(graph)
+    with pytest.raises(error):
+        integrators.update_epi_via_nodal_equation(graph, dt=0.1)
+    assert dict(graph.nodes[0]) == dict(before.nodes[0])
+    assert graph.graph == before.graph
+
+
+@pytest.mark.parametrize("route", ["scalar", "vectorized", "extended"])
+@pytest.mark.parametrize(
+    "t0,dt,dt_min",
+    [
+        (1e20, 0.1, 0.0),
+        (1e308, 1e308, 0.0),
+        # The full span advances, and the first substep advances; the second does not.
+        (float(2**53 - 1), 2.0, 1.0),
+    ],
+)
+def test_entire_represented_clock_grid_is_validated_before_evolution(
+    monkeypatch, route, t0, dt, dt_min
+):
+    graph = _integration_route(monkeypatch, route)
+    graph.graph.update(_t=t0, DT_MIN=dt_min)
+    graph.nodes[0][DNFR_PRIMARY] = 0.25
+    before = copy.deepcopy(graph)
+    with pytest.raises(NetworkConfigError, match="clock"):
+        integrators.update_epi_via_nodal_equation(graph, dt=dt)
+    assert dict(graph.nodes[0]) == dict(before.nodes[0])
+    assert graph.graph == before.graph
+
+
+@pytest.mark.parametrize("route", ["scalar", "vectorized", "extended"])
+def test_empty_graph_uses_same_repeated_add_clock_as_populated_graph(
+    monkeypatch, route
+):
+    graph = _integration_route(monkeypatch, route)
+    graph.graph.update(_t=0.1, DT_MIN=0.1)
+    empty = nx.Graph()
+    empty.graph.update(copy.deepcopy(graph.graph))
+    for candidate in (graph, empty):
+        integrators.update_epi_via_nodal_equation(candidate, dt=1.0)
+    step, count, _, _ = integrators.prepare_integration_params(graph, dt=1.0, t=0.1)
+    expected = 0.1
+    for _ in range(count):
+        expected += step
+    assert expected != 0.1 + step * count
+    assert graph.graph["_t"] == empty.graph["_t"] == expected
+
+
+@pytest.mark.parametrize("route", ["scalar", "vectorized", "extended"])
+def test_late_node_nonfinite_output_does_not_partially_write(monkeypatch, route):
+    graph = _integration_route(monkeypatch, route)
+    graph.nodes[0].update({EPI_PRIMARY: 0.0, DNFR_PRIMARY: 0.25})
+    graph.add_node(1, **{EPI_PRIMARY: 0.0, VF_PRIMARY: 1e308, DNFR_PRIMARY: 1.0})
+    before = copy.deepcopy(dict(graph.nodes(data=True)))
+    with np.errstate(over="ignore", invalid="ignore"):
+        with pytest.raises(NetworkConfigError, match="finite"):
+            integrators.update_epi_via_nodal_equation(graph, dt=2.0)
+    assert dict(graph.nodes(data=True)) == before
+    assert "_t" not in graph.graph
+
+
+@pytest.mark.parametrize("route", ["scalar", "vectorized", "extended"])
+def test_finite_epi_does_not_admit_infinite_acceleration_metadata(monkeypatch, route):
+    graph = _integration_route(monkeypatch, route)
+    graph.nodes[0].update({EPI_PRIMARY: 0.0, DNFR_PRIMARY: 1.0})
+    before = copy.deepcopy(dict(graph.nodes(data=True)))
+    with np.errstate(over="ignore", invalid="ignore"):
+        with pytest.raises(NetworkConfigError, match="finite"):
+            integrators.update_epi_via_nodal_equation(graph, dt=1e-320)
+    assert dict(graph.nodes(data=True)) == before
+    assert "_t" not in graph.graph
+
+
+@pytest.mark.parametrize("route", ["scalar", "vectorized", "extended"])
+def test_later_substep_failure_restores_all_solver_owned_outputs(monkeypatch, route):
+    graph = _integration_route(monkeypatch, route)
+    graph.graph.update(DT_MIN=0.1, GAMMA={"type": "harmonic"})
+    graph.nodes[0][DNFR_PRIMARY] = 0.2
+    before = copy.deepcopy(dict(graph.nodes(data=True)))
+    calls = []
+    if route == "extended":
+        from tnfr.dynamics import canonical
+
+        original = canonical.compute_extended_nodal_system
+
+        def extended_rates(**kwargs):
+            calls.append(kwargs)
+            result = original(**kwargs)
+            return (
+                result if len(calls) == 1 else result._replace(dnfr_derivative=math.inf)
+            )
+
+        monkeypatch.setattr(canonical, "compute_extended_nodal_system", extended_rates)
+    else:
+
+        def gamma(*args):
+            calls.append(args)
+            return 0.0 if len(calls) == 1 else math.inf
+
+        monkeypatch.setattr(integrators, "eval_gamma", gamma)
+        monkeypatch.setattr(integrators, "eval_gamma_vectorized", gamma)
+    with np.errstate(over="ignore", invalid="ignore"):
+        with pytest.raises(NetworkConfigError, match="finite"):
+            integrators.update_epi_via_nodal_equation(graph, dt=0.2)
+    assert len(calls) == 2
+    assert dict(graph.nodes(data=True)) == before
+    assert "_t" not in graph.graph
+
+
+@pytest.mark.parametrize("route", ["scalar", "vectorized", "extended"])
+def test_clipped_motion_remains_distinct_from_stored_model_derivative(
+    monkeypatch, route
+):
+    graph = _integration_route(monkeypatch, route)
+    graph.nodes[0].update({EPI_PRIMARY: 0.9, DNFR_PRIMARY: 0.5})
+    integrators.update_epi_via_nodal_equation(graph, dt=0.5)
+    assert graph.nodes[0][EPI_PRIMARY] == 1.0
+    assert get_attr(graph.nodes[0], ALIAS_DEPI) == 0.5
+    assert get_attr(graph.nodes[0], ALIAS_D2EPI) == 1.0
+    assert (graph.nodes[0][EPI_PRIMARY] - 0.9) / 0.5 != 0.5

@@ -7,16 +7,27 @@ Joint pressure/acceleration identities reuse the transport owner and retain
 the still-supplied capacity and phase velocities as explicit inputs.
 Finite held-source compatibility determines admissible capacity profiles
 without selecting an evolution law or authenticating an oriented phase source.
+Local numerical phase/form predictions reuse the consensus tangent and shared
+structural modes, with separate ideal nonlinear-error envelopes.
+Current-state lock/source observations retain represented sine residuals and
+production phasor pressure separately, without a tolerance-based certificate.
 """
 
+import math
 from collections.abc import Mapping, Set
 from dataclasses import dataclass, replace
 from fractions import Fraction
+from numbers import Integral
 
-from .._exact_time import exact_or_represented_real
+from .._exact_time import exact_or_represented_real, finite_represented_real
 from ..mathematics.krylov import exact_rank
 from ._cycle_algebra import Matrix, Vector, dot, ordered_vector
 from ._exact_linear_algebra import exact_matrix_inverse
+from .forcing_realization import (
+    NonEpiForcingObservation,
+    capture_non_epi_forcing,
+    decompose_non_epi_forcing,
+)
 from .support_transport import (
     SupportTransportDerivative,
     SupportTransportSnapshot,
@@ -34,7 +45,237 @@ __all__ = [
     "derive_joint_nodal_response",
     "PhaseCapacityBalance",
     "derive_phase_capacity_balance",
+    "PhaseLockSourceObservation",
+    "observe_phase_lock_source",
+    "JointLinearSample",
+    "SynchronizedJointPrediction",
+    "predict_synchronized_joint_euler",
 ]
+
+
+@dataclass(frozen=True)
+class PhaseLockSourceObservation:
+    """Detached sine-lock residuals and separately observed phasor pressure.
+
+    ``full_support_sine`` and ``relative_real`` are exact sums of materialized
+    ``math.sin`` and ``math.cos`` coefficients, not exact transcendental
+    evaluations. Phase rates use their unweighted support mean. ``common_rate``
+    is the degree-weighted capacity candidate for a fully admitted reciprocal
+    lock, not a measured common rate or proof that a lock exists.
+
+    ``sine_reduction_defect`` is in angular-rate units: K/admitted_degree
+    times the difference between the producer's represented ``math.fsum``
+    and the exact sum of its represented terms. It excludes later product,
+    addition, integration and modulo rounding. Both rate-residual fields are
+    exact rational references to coefficients, not binary64 step derivatives.
+
+    Acuity and source estimates are ordinary numerical observations. The
+    relative phasor uses raw differences; production pressure separately uses
+    its absolute phasor kernel and certified two-neighbor override. Their
+    difference remains visible even at a nearly locked state. No tolerance
+    certifies an exact phase lock, positive resultant or future invariant.
+    """
+
+    capture: NonEpiForcingObservation
+    coupling_strength: Fraction
+    phase_degrees: Vector
+    common_rate: Fraction
+    full_support_sine: Vector
+    relative_real: Vector
+    full_support_rate_residual: Vector
+    actual_admitted_rate_residual: Vector
+    sine_reduction_defect: Vector
+    full_u3_admission: bool
+    strict_acute_edges_estimate: bool
+    relative_phase_source_estimate: tuple[float | None, ...]
+    production_source_discrepancy: tuple[Fraction | None, ...]
+    lock_source_estimate: tuple[float | None, ...]
+    other_forcing: Vector
+    homogeneous_capacity: bool
+    positive_capacities: bool
+    positive_transport_connected: bool
+    scope: tuple[str, ...] = (
+        "connected_reciprocal_unique_phase_support_and_canonical_raw_phase_chart",
+        "exact_rational_residuals_of_materialized_sine_coefficients",
+        "configured_omega_equals_capacity_phase_law_with_supplied_positive_K",
+        "partial_U3_admission_keeps_its_own_mean_and_residual",
+        "numerical_acuity_and_phasor_estimates_are_not_transcendental_enclosures",
+        "production_phase_source_and_nonphase_forcing_remain_separate",
+        "no_tolerance_lock_test_capacity_solver_target_solver_or_graph_write",
+        "no_admission_of_Gamma_events_clipping_controllers_or_future_evolution",
+    )
+
+
+def observe_phase_lock_source(
+    graph, *, coupling_strength
+) -> PhaseLockSourceObservation:
+    """Compare the configured sine-lock equation with actual phase pressure.
+
+    On reciprocal connected unique support with degrees d, full U3 admission
+    gives the candidate Omega=sum(d*nu)/sum(d). Return the exact represented
+    residual ``nu + K*sum(sin(theta_j-theta_i))/d - Omega``. The admitted-row
+    residual uses the actual U3 subset and its own denominator; an empty
+    admitted row retains free angular rate nu. Neither residual is thresholded.
+
+    Reuse the shared forcing capture and U3 gate without executing callbacks or
+    changing graph-owned state. Canonical raw phases must lie in [0, 2*pi),
+    matching the selected represented chart. Sine coefficients use raw phase
+    subtraction exactly as the configured phase producer does, not wrapped
+    displacement. Zero-weight support links remain in both phase equations.
+
+    For relative phasor R+i*S, report atan2(S,R)/pi where its represented sums
+    are not jointly zero. Under full admission and numerically strict acute
+    edges, also report the conditional lock-source estimate
+    ``atan((Omega-nu)/(K*(R/d)))/pi`` when R>0. This formula presumes an exact
+    ideal lock; a small observed residual does not establish that premise.
+    ``production_source_discrepancy`` is actual captured phase pressure minus
+    the relative-phasor estimate. Undefined estimates remain None.
+
+    Capacity and topology forcing are retained together as ``other_forcing``;
+    a nonzero source therefore cannot silently be attributed only to phase.
+    EPI transport uses conductance strengths, not these support degrees.
+    Positive transport connectivity is reported separately for consumers of
+    the existing forced-support theorem. No stationary profile is solved here.
+    """
+    from ..operators._phase_gate import resolve_u3_phase_neighbors
+    from ..utils import angle_diff
+
+    capture = capture_non_epi_forcing(graph)
+    source = capture.snapshot
+    support = source.support_neighbors
+    size = len(source.nodes)
+    if not size or any(not row for row in support):
+        raise ValueError(
+            "phase lock observation requires nonempty support at every node"
+        )
+    if any(i not in support[j] for i, row in enumerate(support) for j in row):
+        raise ValueError("phase lock observation requires reciprocal support")
+
+    def connected(rows):
+        reached, pending = {0}, [0]
+        while pending:
+            for j in rows[pending.pop()]:
+                if j not in reached:
+                    reached.add(j)
+                    pending.append(j)
+        return len(reached) == size
+
+    if not connected(support):
+        raise ValueError("phase lock observation requires connected phase support")
+    if any(not 0 <= value < Fraction.from_float(math.tau) for value in capture.phase):
+        raise ValueError(
+            "phase lock observation requires canonical raw phases in [0, 2*pi)"
+        )
+    _, strength = finite_represented_real(coupling_strength, "coupling_strength")
+    if strength <= 0:
+        raise ValueError("coupling_strength must be positive")
+
+    degrees = tuple(Fraction(len(row)) for row in support)
+    omega = dot(degrees, source.capacity) / sum(degrees)
+    phase = tuple(map(float, capture.phase))
+    index = {node: i for i, node in enumerate(source.nodes)}
+    phase_by_node = dict(zip(source.nodes, phase, strict=True))
+    sine, real, full_residual, admitted_residual, reduction_defect = [], [], [], [], []
+    full_admission, acute = True, True
+    for i, (node, row) in enumerate(zip(source.nodes, support, strict=True)):
+        raw_terms = {j: math.sin(phase[j] - phase[i]) for j in row}
+        imag = sum(
+            (Fraction.from_float(value) for value in raw_terms.values()), Fraction(0)
+        )
+        real_part = sum(
+            (Fraction.from_float(math.cos(phase[j] - phase[i])) for j in row),
+            Fraction(0),
+        )
+        sine.append(imag)
+        real.append(real_part)
+        full_residual.append(source.capacity[i] + strength * imag / degrees[i] - omega)
+        acute = acute and all(
+            abs(angle_diff(phase[j], phase[i])) < math.pi / 2 for j in row
+        )
+        neighbors = tuple(graph.neighbors(node))
+        gate = resolve_u3_phase_neighbors(
+            graph.graph,
+            phase[i],
+            neighbors,
+            phase_getter=phase_by_node.__getitem__,
+            operator_code="UM",
+            require_compatible=False,
+        )
+        full_admission = full_admission and gate.neighbors == neighbors
+        admitted = tuple(raw_terms[index[neighbor]] for neighbor in gate.neighbors)
+        admitted_sum = sum(map(Fraction.from_float, admitted), Fraction(0))
+        divisor = len(admitted)
+        admitted_residual.append(
+            source.capacity[i]
+            + (strength * admitted_sum / divisor if divisor else 0)
+            - omega
+        )
+        reduction_defect.append(
+            strength
+            * (Fraction.from_float(math.fsum(admitted)) - admitted_sum)
+            / divisor
+            if divisor
+            else Fraction(0)
+        )
+
+    relative_estimate = tuple(
+        (
+            math.atan2(float(imag), float(real_part)) / math.pi
+            if imag or real_part
+            else None
+        )
+        for imag, real_part in zip(sine, real, strict=True)
+    )
+    discrepancy = tuple(
+        actual - Fraction.from_float(estimate) if estimate is not None else None
+        for actual, estimate in zip(
+            capture.phase_gradient, relative_estimate, strict=True
+        )
+    )
+    lock_estimate = []
+    for nu, real_part, degree in zip(source.capacity, real, degrees, strict=True):
+        if not (full_admission and acute and real_part > 0):
+            lock_estimate.append(None)
+            continue
+        # Form the exact coefficient ratio before conversion: separately
+        # materializing numerator and denominator can erase an O(1) ratio
+        # when both are subnormal. The reciprocal branch avoids overflow.
+        # The final arctangent remains a numerical estimate, not an enclosure.
+        ratio = (omega - nu) * degree / (strength * real_part)
+        if abs(ratio) <= 1:
+            angle = math.atan(float(ratio))
+        else:
+            angle = math.pi / 2 - math.atan(float(1 / abs(ratio)))
+            if ratio < 0:
+                angle = -angle
+        lock_estimate.append(angle / math.pi)
+    components = dict(decompose_non_epi_forcing(capture))
+    other = tuple(
+        a + b for a, b in zip(components["vf"], components["topo"], strict=True)
+    )
+    transport = [set() for _ in range(size)]
+    for i, j, _ in source.conductance:
+        transport[i].add(j)
+    return PhaseLockSourceObservation(
+        capture=capture,
+        coupling_strength=strength,
+        phase_degrees=degrees,
+        common_rate=omega,
+        full_support_sine=tuple(sine),
+        relative_real=tuple(real),
+        full_support_rate_residual=tuple(full_residual),
+        actual_admitted_rate_residual=tuple(admitted_residual),
+        sine_reduction_defect=tuple(reduction_defect),
+        full_u3_admission=full_admission,
+        strict_acute_edges_estimate=acute,
+        relative_phase_source_estimate=relative_estimate,
+        production_source_discrepancy=discrepancy,
+        lock_source_estimate=tuple(lock_estimate),
+        other_forcing=other,
+        homogeneous_capacity=len(set(source.capacity)) == 1,
+        positive_capacities=all(value > 0 for value in source.capacity),
+        positive_transport_connected=connected(transport),
+    )
 
 
 def _ordered(values, label):
@@ -259,6 +500,265 @@ def observe_phase_source_geometry(reference) -> PhaseSourceGeometry:
         rank,
         size - rank,
         all(value >= 0 for row in mean for value in row),
+    )
+
+
+@dataclass(frozen=True)
+class JointLinearSample:
+    """One numerical tangent prediction with separate ideal nonlinear bounds.
+
+    Nodal and modal float tuples follow the prediction's source order and
+    spectral column order, respectively. Phase is the lifted offset from the
+    initial degree-weighted origin and common rotation, not wrapped phase.
+    The rational sup-norm bounds exclude spectral and runtime arithmetic error.
+    """
+
+    step: int
+    epi: tuple[float, ...]
+    phase_offset: tuple[float, ...]
+    epi_modes: tuple[float, ...]
+    phase_modes: tuple[float, ...]
+    phase_error_upper: Fraction
+    epi_error_upper: Fraction
+
+
+@dataclass(frozen=True)
+class SynchronizedJointPrediction:
+    """Frozen local joint prediction from supplied fixed support and laws.
+
+    ``right_modes`` is row-major D^(-1/2)V, where V contains the existing
+    symmetric-normalized Laplacian eigenvectors. The modal projection is
+    V^T D^(1/2), so degree weights are not discarded on irregular graphs.
+    Public fields do not authenticate a trajectory or a future observation.
+    """
+
+    capture: NonEpiForcingObservation
+    dt: Fraction
+    coupling_strength: Fraction
+    phase_origin: Fraction
+    phase_width: Fraction
+    degree_weights: Vector
+    right_modes: tuple[tuple[float, ...], ...]
+    eigenvalues: tuple[float, ...]
+    initial_epi_modes: tuple[float, ...]
+    initial_phase_modes: tuple[float, ...]
+    phase_reference: PhaseResponseReference
+    samples: tuple[JointLinearSample, ...]
+    scope: str
+
+
+def predict_synchronized_joint_euler(
+    graph, *, dt, coupling_strength, steps
+) -> SynchronizedJointPrediction:
+    r"""Freeze the consensus-tangent phase/form response before observation.
+
+    On connected unit support with common capacity kappa, effective weights
+    e>0 and w>=0, and zero topology coefficient, the ideal local model is
+
+        z'=-K*L_rw*z,  x'=-kappa*e*L_rw*x-kappa*w/pi*L_rw*z.
+
+    Here z subtracts the initial degree-weighted phase origin and kappa*t.
+    The exact all-ones phasor Gram derives the pressure tangent from the
+    existing phase-response owner. Actual degree-three or higher phasor means
+    remain nonlinear; the derivative is not substituted into their runtime.
+    Closed modal Euler powers, including the finite convolution at equal
+    clocks, evaluate this prediction without running a graph solver.
+
+    Require canonical raw phases in a common lift of width rho<=1, admitted
+    by U3, and h*K<=1/2, h*kappa*e<=1/2. For the unwrapped ideal nonlinear
+    averaged-sine/fresh-phasor Euler composition these conditions preserve
+    the width. With r=K*rho^3/6, the returned exact sup-norm comparison bounds
+    are n*h*r for phase and
+
+        kappa*w*(n*h*rho^3/(18*(1-rho^2/2))
+                 +h^2*n*(n-1)*r/3)
+
+    for form. They compare the ideal nonlinear and linear Euler models with
+    identical initial data. Binary64 eigensystem, power, source, phase-wrap,
+    pressure assembly and integration errors are separate; the numerical
+    predictions are not enclosed by these bounds. Small represented spectral
+    endpoint errors are retained rather than repaired into exact eigenvalues.
+
+    This read-out excludes Gamma, events, clipping, changing capacity/support
+    and controllers; their runtime configuration is not admitted. Limits of
+    12 nodes and 256 steps, plus the capture owner's 100 directed support
+    entries, are evaluation budgets, not physical thresholds. The input graph
+    and its spectral caches remain untouched.
+    """
+    import networkx as nx
+    import numpy as np
+
+    from ..operators._phase_gate import resolve_u3_phase_limits
+    from .structural_diffusion import structural_eigenmodes
+
+    if (
+        isinstance(steps, bool)
+        or not isinstance(steps, Integral)
+        or not 0 <= steps <= 256
+    ):
+        raise ValueError("steps must be an integer in [0,256]")
+    _, h = finite_represented_real(dt, "dt")
+    _, k = finite_represented_real(coupling_strength, "coupling_strength")
+    if h <= 0 or k <= 0:
+        raise ValueError("dt and coupling_strength must be positive")
+    capture = capture_non_epi_forcing(graph)
+    source = capture.snapshot
+    size = len(source.nodes)
+    if not 2 <= size <= 12:
+        raise ValueError("joint prediction requires between 2 and 12 nodes")
+    transport = {(i, j): weight for i, j, weight in source.conductance}
+    support = {(i, j) for i, row in enumerate(source.support_neighbors) for j in row}
+    if (
+        set(transport) != support
+        or any(i == j or value != 1 for (i, j), value in transport.items())
+        or any((j, i) not in support for i, j in support)
+        or any(len(row) != len(set(row)) for row in source.support_neighbors)
+    ):
+        raise ValueError(
+            "joint prediction requires matching unit symmetric nonloop unique support"
+        )
+    reached, pending = {0}, [0]
+    while pending:
+        added = set(source.support_neighbors[pending.pop()]) - reached
+        reached.update(added)
+        pending.extend(added)
+    if len(reached) != size:
+        raise ValueError("joint prediction requires connected support")
+    capacity = source.capacity[0]
+    if capacity <= 0 or any(value != capacity for value in source.capacity):
+        raise ValueError("joint prediction requires common positive capacity")
+    weights = dict(capture.normalized_weights)
+    e, w = capture.epi_weight, weights["phase"]
+    if e <= 0:
+        raise ValueError("joint prediction requires positive EPI weight")
+    if weights["topo"] != 0:
+        raise ValueError("joint prediction requires zero topology weight")
+    phase = capture.phase
+    if any(not 0 <= value < Fraction.from_float(math.tau) for value in phase):
+        raise ValueError("joint phases must be canonical [0,2*pi) coordinates")
+    width = max(phase) - min(phase)
+    if width > 1:
+        raise ValueError("joint raw phase lift must have width <= 1 radian")
+    _, gate = resolve_u3_phase_limits(graph.graph, operator_code="UM")
+    if width > Fraction.from_float(gate):
+        raise ValueError("joint phase lift must be fully U3-admitted")
+    if h * k > Fraction(1, 2) or h * capacity * e > Fraction(1, 2):
+        raise ValueError("dt exceeds the joint monotone modal Euler ceiling")
+
+    degree = tuple(Fraction(len(row)) for row in source.support_neighbors)
+    origin = dot(degree, phase) / sum(degree, Fraction(0))
+    reference = derive_phase_response(
+        cosine_gram=tuple(tuple(Fraction(1) for _ in phase) for _ in phase),
+        mean_neighbors=source.support_neighbors,
+        receiver_sources=tuple((i,) for i in range(size)),
+        phase_factor=1,
+    )
+    # Never inherit a live spectral cache, attributes, callbacks or state.
+    detached = nx.Graph()
+    detached.add_nodes_from(source.nodes)
+    detached.add_edges_from(
+        (source.nodes[i], source.nodes[j], {"weight": 1.0})
+        for i, j in sorted(support)
+        if i < j
+    )
+
+    def float_tuple(values, label):
+        return tuple(
+            finite_represented_real(value, f"{label}[{i}]")[0]
+            for i, value in enumerate(values)
+        )
+
+    phase_step = finite_represented_real(h * k, "phase Euler coefficient")[0]
+    form_step = finite_represented_real(h * capacity * e, "form Euler coefficient")[0]
+    source_step = finite_represented_real(
+        h * capacity * w / Fraction.from_float(math.pi),
+        "phase-to-form Euler coefficient",
+    )[0]
+    try:
+        with np.errstate(over="raise", invalid="raise", divide="raise"):
+            eigenvalues, vectors = structural_eigenmodes(detached)
+            lambdas = float_tuple(eigenvalues, "eigenvalue")
+            root_degree = np.sqrt(np.asarray(tuple(map(float, degree))))
+            right = vectors / root_degree[:, None]
+            right_modes = tuple(float_tuple(row, "right mode") for row in right)
+            x0 = np.asarray(float_tuple(source.epi, "initial EPI"))
+            z0 = np.asarray(
+                float_tuple((value - origin for value in phase), "phase offset")
+            )
+            epi_modes = float_tuple(vectors.T @ (root_degree * x0), "initial EPI mode")
+            phase_modes = float_tuple(
+                vectors.T @ (root_degree * z0), "initial phase mode"
+            )
+            form_factors = tuple(1 - form_step * value for value in lambdas)
+            phase_factors = tuple(1 - phase_step * value for value in lambdas)
+            samples = []
+            residual = k * width**3 / 6
+            for n in range(int(steps) + 1):
+                z_modes = float_tuple(
+                    (a**n * value for a, value in zip(phase_factors, phase_modes)),
+                    "predicted phase mode",
+                )
+                x_modes = float_tuple(
+                    (
+                        af**n * xi
+                        - source_step
+                        * value
+                        * math.fsum(af ** (n - 1 - j) * at**j for j in range(n))
+                        * zi
+                        for af, at, value, xi, zi in zip(
+                            form_factors, phase_factors, lambdas, epi_modes, phase_modes
+                        )
+                    ),
+                    "predicted EPI mode",
+                )
+                phase_error = n * h * residual
+                epi_error = (
+                    capacity
+                    * w
+                    * (
+                        n * h * width**3 / (18 * (1 - width**2 / 2))
+                        + h**2 * n * (n - 1) * residual / 3
+                    )
+                )
+                samples.append(
+                    JointLinearSample(
+                        step=n,
+                        epi=float_tuple(right @ np.asarray(x_modes), "predicted EPI"),
+                        phase_offset=float_tuple(
+                            right @ np.asarray(z_modes), "predicted phase offset"
+                        ),
+                        epi_modes=x_modes,
+                        phase_modes=z_modes,
+                        phase_error_upper=phase_error,
+                        epi_error_upper=epi_error,
+                    )
+                )
+    except (FloatingPointError, OverflowError) as exc:
+        raise ValueError(
+            "joint modal prediction exceeds finite numerical range"
+        ) from exc
+    return SynchronizedJointPrediction(
+        capture=capture,
+        dt=h,
+        coupling_strength=k,
+        phase_origin=origin,
+        phase_width=width,
+        degree_weights=degree,
+        right_modes=right_modes,
+        eigenvalues=lambdas,
+        initial_epi_modes=epi_modes,
+        initial_phase_modes=phase_modes,
+        phase_reference=reference,
+        samples=tuple(samples),
+        scope=(
+            "Numerical closed modal prediction of the consensus-tangent ideal Euler "
+            "model on supplied fixed unit support and common capacity; exact rational "
+            "bounds concern ideal nonlinear-versus-linear truncation only. Spectral "
+            "and binary64 runtime errors are excluded. No Gamma/events/clipping/"
+            "controllers or changing support/capacity; their runtime configuration "
+            "is not admitted. No autonomous law, asymptotic execution or physical "
+            "identification is certified."
+        ),
     )
 
 

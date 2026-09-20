@@ -63,6 +63,16 @@ The engine does not install such a lock or silently copy the graph per metric.
 These rules apply to the unified and variational suites and to conservation
 and Lagrangian snapshots as well as individual field functions.
 
+The array facades return an explicit `nodes` order matching graph iteration;
+mixed node-label types do not require sorting. Unified telemetry derives its
+composite maps and auxiliary substrate coordinates from the same base-field
+collection. A tensor snapshot has no measured temporal conservation quality:
+its compatibility key `conservation_quality` is `None`, accompanied by
+`conservation_sample_available=False` and a scope string. Use the existing
+timestamped conservation observer for an actual balance measurement. The
+[derived-property audit](../theory/EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md#61-emergent-property-audit-and-useful-derived-margins)
+owns the distinction between these read-outs and dynamical emergence.
+
 ## 2. Canonical field definitions
 
 Public imports are available from

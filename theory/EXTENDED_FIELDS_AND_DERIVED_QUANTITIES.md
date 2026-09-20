@@ -55,9 +55,19 @@ Additional fields under investigation (not yet canonical):
 
 | Field | Definition | Status |
 |-------|-----------|--------|
-| Phase strain | Second-order phase gradient tensor | Research |
-| Phase vorticity | Curl analogue of phase field | Research |
-| Reorganisation strain | Second-order $\Delta$NFR gradient | Research |
+| Phase strain | Population variance of neighboring phase-gradient magnitudes | Static research statistic; only scale 1 is implemented |
+| Phase vorticity | Historical name for the mean inverse-length weighted wrapped neighbor displacement | Not a curl or cycle winding; nonzero even on a tree |
+| Reorganisation strain | Population standard deviation of neighboring pressure | Static research statistic, not a time derivative or force balance |
+
+The legacy vorticity reader uses the shared distance convention: explicit
+`length`, then `weight` fallback, then unit length; parallel lengths combine
+by minimum. Every consumed inverse distance must be positive and finite.
+Zero conductance with an explicit positive length remains admissible. Actual
+topological winding requires an oriented cycle and branch evidence from
+`certify_phase_winding`; it cannot be recovered by interpreting this local
+mean as circulation. Missing pressure uses the common zero default and invalid
+authoritative pressure is rejected. These definitions introduce no extra
+nodal evolution law.
 
 **Implementation**: `src/tnfr/physics/extended.py` — `compute_phase_current()`, `compute_dnfr_flux()`.
 
@@ -111,7 +121,7 @@ complex number alone does not derive a gauge law.
 
 ## 3. Derived diagnostic contractions
 
-Seven named read-outs are computed from the six-field tuple
+The named read-outs below are computed from the field tuple
 $(\Phi_s, |\nabla\phi|, K_\phi, J_\phi, J_{\Delta\mathrm{NFR}}, \xi_C)$.
 They are algebraic contractions; names such as “charge” or “action” do not by
 themselves establish conservation, topology or a variational principle.
@@ -295,6 +305,49 @@ read-outs alone need not reconstruct that state or predict its future. See
 [STRUCTURAL_OPERATORS.md
 §17.5](STRUCTURAL_OPERATORS.md) and [example 39](../examples/02_physics_regimes/39_nodal_equation_decomposition.py).
 
+### 6.1 Emergent-property audit and useful derived margins
+
+Adding a function of already observed fields does not restore information
+lost by those fields. Derived quantities are useful when they expose a
+specific invariant, response or domain boundary; naming another combination
+does not create an independent state coordinate or an evolution law.
+
+| Quantity or property | What is available | What it does not establish |
+| --- | --- | --- |
+| Complex fields, bilinears and energy totals | One shared algebraic suite over the captured five base maps | New independent degrees of freedom, dynamics, or conservation |
+| Cycle winding and branch/U3 margins | Existing declared-cycle certificate and period geometry; cycle edges and orientation are required | Creation of the cycle, unrestricted preservation or an integer value on an open path |
+| Local normalized resultant | On the admitted acute cycle, the existing cosine margin bounds it away from zero | A nonzero global resultant or a universal synchrony clock |
+| Conditional restoring stiffness | The same margin bounds the supplied sine law's Hessian and its existing decay rate | Stiffness of every pressure or phase law; the Arg-pressure Jacobian is different |
+| Effective capacity and memory | Existing reduction/quotient and hidden-coordinate owners under their closure hypotheses | Identification with primitive capacity or elimination of unresolved history by renaming it |
+| THOL record count, record rate and emergence index | Retrospective heuristics with an explicit observation/window convention | Autonomous generation, mathematical bifurcation, causal efficiency or a persistence certificate |
+| Wave spectrum and nodal pulse | Auxiliary modal frequencies versus stored capacity/phase summaries | Measured oscillations, mode excitation or equality of those two clocks |
+
+The positive margin derivation is centralized in
+[the acute-cycle theorem](FORCED_SUPPORT_BALANCE.md#one-existing-margin-controls-availability-and-conditional-stiffness).
+It reuses `phase_radius_upper`, `cosine_lower_bound` and the existing spectral
+rate bounds; no new adjustable coefficient is introduced. The full configured
+pressure mixture is admissible there because its capacity/topology gradients
+vanish under the theorem's common-capacity, fixed-simple-cycle premises.
+
+**Snapshot conservation boundary.** The tensor facade formerly differentiated
+charge density along sorted node labels. That operation is neither a graph
+divergence nor a time derivative: relabeling the same P4 changed the resulting
+score. `conservation_quality` is now `None`, with
+`conservation_sample_available=False` and
+`conservation_scope="single_snapshot_no_temporal_balance"`. Temporal balance
+still belongs to the existing conservation observer on declared snapshots
+and times. A zero unavailable score would incorrectly claim a measurement.
+Array facades retain an explicit `nodes` order instead of sorting arbitrary
+node identifiers; composite telemetry reuses one base-field collection.
+
+THOL heuristics retain signed scalar EPI admission and exact intermediate
+ratios before their approximate cube root, avoiding false zero/infinity from
+overflow or underflow. An explicit operator counter cannot be advanced merely
+to accommodate a future-dated record. Their EPI baseline must still match the
+retained THOL window: eviction does not preserve a lifetime denominator.
+These arithmetic and provenance repairs do not promote the heuristics into
+dynamical mechanisms. See [emergence controls](../tests/test_emergence_metrics.py).
+
 ---
 
 ## Implementation Reference
@@ -328,7 +381,7 @@ emergent = net.emergent_fields()        # chirality, symmetry_breaking, coherenc
 | Example | Concept from this document |
 |---------|---------------------------|
 | [33_complex_field_unification.py](../examples/02_physics_regimes/33_complex_field_unification.py) | Ψ = K_φ + i·J_φ anticorrelation, emergent fields χ/𝒮/𝒞, energy decomposition |
-| [unified_fields_showcase.py](../examples/08_emergent_geometry/unified_fields_showcase.py) | Ψ = K_φ + i·J_φ, emergent fields χ/𝒮/𝒰, tensor invariants |
+| [unified_fields_showcase.py](../examples/08_emergent_geometry/unified_fields_showcase.py) | Seeded supplied-state snapshots, shared complex/derived fields and explicit unavailable temporal conservation; no operator evolution |
 
 ### Key Source Modules
 

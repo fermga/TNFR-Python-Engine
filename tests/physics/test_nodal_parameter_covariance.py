@@ -8,6 +8,7 @@ those retained coefficients as exact, without a transcendental claim.
 from fractions import Fraction as Q
 
 import networkx as nx
+import pytest
 
 from tnfr.physics.forcing_realization import (
     capture_non_epi_forcing,
@@ -20,10 +21,11 @@ _NU = (Q(1, 2), Q(1), Q(3, 2))
 _WEIGHTS = {"phase": Q(1, 4), "epi": Q(1, 4), "vf": Q(1, 4), "topo": Q(1, 4)}
 
 
-def _capture(*, epi=_X, capacity=_NU, weights=None, normalize=False):
+def _capture(
+    *, epi=_X, capacity=_NU, weights=None, normalize=False, conductance=(1.0, 2.0)
+):
     graph = nx.path_graph(3)
-    graph.edges[0, 1]["weight"] = 1.0
-    graph.edges[1, 2]["weight"] = 2.0
+    graph.edges[0, 1]["weight"], graph.edges[1, 2]["weight"] = conductance
     for node, x, nu, theta in zip(graph, epi, capacity, (0.0, 0.25, -0.5), strict=True):
         graph.nodes[node].update(EPI=float(x), nu_f=float(nu), theta=theta)
     supplied = {key: float(value) for key, value in (weights or _WEIGHTS).items()}
@@ -189,3 +191,118 @@ def test_edge_transitive_cycle_uniform_weights_reduce_to_neighbor_averages():
     # Cycle rotations carry each undirected edge to every other edge; a
     # support-only reciprocal assignment invariant under those rotations
     # therefore has exactly the common-weight freedom tested here.
+
+
+def _nonlinear_comparison(gaps):
+    """Exact countermodel only; this is not an implemented TNFR pressure law."""
+    denominator = sum((gap**2 for gap in gaps), Q(0))
+    return sum((gap**3 for gap in gaps), Q(0)) / denominator if denominator else Q(0)
+
+
+def _comparison_pressure(epi, support):
+    return tuple(
+        _nonlinear_comparison(tuple(epi[j] - epi[i] for j in neighbors))
+        for i, neighbors in enumerate(support)
+    )
+
+
+@pytest.fixture(scope="module")
+def source_free_directional_controls():
+    # Prospective unit-P3 probes distinguish constitutive linearity. No
+    # physical-time evolution, parameter fit or autonomous selection is used.
+    fields = ((Q(1), Q(0), Q(0)), (Q(0), Q(0), Q(2)), (Q(1), Q(0), Q(2)))
+    return tuple(
+        _capture(
+            epi=field,
+            capacity=(Q(1),) * 3,
+            weights={"phase": 0, "epi": 1, "vf": 0, "topo": 0},
+            conductance=(1.0, 1.0),
+        )
+        for field in fields
+    )
+
+
+def test_nonlinear_comparison_has_covariance_replication_and_maximum_principle(
+    source_free_directional_controls,
+):
+    for observation in source_free_directional_controls:
+        source = observation.snapshot
+        epi, support = source.epi, source.support_neighbors
+        pressure = _comparison_pressure(epi, support)
+        # Negative scaling also works; the comparison does not distinguish
+        # a preferred origin, orientation or amplitude in the scalar chart.
+        for scale, shift in ((Q(3, 2), Q(-1)), (Q(-2), Q(7, 4))):
+            transformed = tuple(scale * value + shift for value in epi)
+            assert _comparison_pressure(transformed, support) == tuple(
+                scale * value for value in pressure
+            )
+        for index, neighbors in enumerate(support):
+            gaps = tuple(epi[j] - epi[index] for j in neighbors)
+            assert _nonlinear_comparison(gaps * 3) == pressure[index]
+            assert min(gaps) <= pressure[index] <= max(gaps)
+            if max(gaps) <= 0:
+                assert pressure[index] <= 0
+            if min(gaps) >= 0:
+                assert pressure[index] >= 0
+            # This bound supplies continuity at uniform form when all gaps
+            # tend to zero, without supplying a linear derivative there.
+            assert abs(pressure[index]) <= max(map(abs, gaps))
+        assert _comparison_pressure((Q(7, 4),) * 3, support) == (0, 0, 0)
+
+
+def test_scale_covariance_does_not_supply_a_linear_derivative_at_uniform_form(
+    source_free_directional_controls,
+):
+    first, second, combined = source_free_directional_controls
+    support = first.snapshot.support_neighbors
+    fields = tuple(
+        observation.snapshot.epi for observation in (first, second, combined)
+    )
+    nonlinear = tuple(_comparison_pressure(field, support) for field in fields)
+    assert fields[2] == tuple(a + b for a, b in zip(fields[0], fields[1], strict=True))
+    assert tuple(value[1] for value in nonlinear) == (Q(1), Q(2), Q(9, 5))
+    assert nonlinear[2][1] != nonlinear[0][1] + nonlinear[1][1]
+    for field, pressure in zip(fields, nonlinear, strict=True):
+        for epsilon in (Q(1, 16), Q(1, 256)):
+            quotient = tuple(
+                value / epsilon
+                for value in _comparison_pressure(
+                    tuple(epsilon * value for value in field), support
+                )
+            )
+            assert quotient == pressure
+    # The actual EPI pressure owner is additive on the same support/probes;
+    # these dyadic cases also have no kernel materialization residual.
+    linear = tuple(
+        observation.snapshot.epi_gradient for observation in (first, second, combined)
+    )
+    assert tuple(value[1] for value in linear) == (Q(1, 2), Q(1), Q(3, 2))
+    assert linear[2] == tuple(a + b for a, b in zip(linear[0], linear[1], strict=True))
+    for observation in (first, second, combined):
+        assert observation.full_kernel_pressure == observation.snapshot.epi_gradient
+
+
+def test_strict_response_rejects_a_maximum_plateau_but_zero_capacity_can_freeze(
+    source_free_directional_controls,
+):
+    source = source_free_directional_controls[0].snapshot
+    plateau = (Q(1), Q(1), Q(0))
+    pressure = _comparison_pressure(plateau, source.support_neighbors)
+    assert pressure == (0, -1, 1)
+    # Node 0 is an interior plateau maximum with no pressure, but its boundary
+    # node 1 has a lower neighbor and strict inward response. Connectedness
+    # supplies this boundary in the general stationary-state argument.
+    assert plateau[1] == max(plateau) and pressure[1] < 0
+    epi = (Q(0), Q(1, 2), Q(1))
+    pressure = _comparison_pressure(epi, source.support_neighbors)
+    assert pressure == (Q(1, 2), 0, Q(-1, 2))
+    stalled = _from_data(
+        source.nodes,
+        source.conductance,
+        source.support_neighbors,
+        epi,
+        (Q(0), Q(1), Q(0)),
+        pressure,
+    )
+    assert stalled.rate == (0, 0, 0) and any(stalled.stored_pressure)
+    assert len(set(stalled.epi)) > 1
