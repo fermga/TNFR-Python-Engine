@@ -1,85 +1,86 @@
 # Documentation ownership and navigation
 
-This is the repository-wide map of maintained documentation. A topic has one
-primary owner; summaries, examples and translations point to that owner rather
-than introduce their own definitions. [The theory index](../theory/README.md)
-provides the complete scientific-document catalog by topic, question-based
-reading routes and a theory-to-engine/test/SDK map. Its owner list is checked
-automatically; research priority remains in the portfolio and execution plan.
+This is the repository-wide documentation map. `docs/` connects supported
+interfaces to their execution contracts; [theory](../theory/README.md) owns
+mathematical definitions, hypotheses and proofs. Tutorials show how to call an
+owner, contracts specify admission and output, and theory states what follows
+under which assumptions. None creates a second research queue.
 
-## One owner for each responsibility
+Start with the [root README](../README.md) for installation and first use. For
+a scientific question, use the theory index's reading routes and its map from
+definitions to engine modules, tests and SDK entry points.
 
-| Responsibility | Maintained owner | Source or evidence boundary |
+<!-- BEGIN DOCS CATALOG -->
+
+## Usage guides
+
+| Maintained owner | Use it for | Boundary |
 | --- | --- | --- |
-| Installation and first use | [Root README](../README.md) | Version/dependencies in `pyproject.toml`; executable example checked by documentation gate |
-| CLI and SDK studies | [CLI and SDK guide](CLI_AND_SDK.md) | Shared study declarations, finite execution, diagnostic availability and JSON export |
-| Working conventions and invariants | [AGENTS](../AGENTS.md) | Exact mirror at `.github/agents/my-agent.md`; synthesis, not a duplicate research ledger |
-| Package boundaries and execution paths | [Architecture](../ARCHITECTURE.md) | Actual modules and dispatch paths |
-| Test selection and local verification | [Testing](../TESTING.md) | `pyproject.toml`, test configuration and executable test paths |
-| Contributor process | [Contributing](../CONTRIBUTING.md) | Uses Testing; does not define a second test/dependency matrix |
-| CI and publication behavior | [Workflows](../.github/WORKFLOWS.md) | YAML owns triggers, permissions and commands; prose is descriptive |
-| Security reporting | [Security](../SECURITY.md) | Reporting procedure, not a guarantee of vulnerability absence |
-| Documentation commands and staging | [Scripts](../scripts/README.md) | `check_documentation.py`, `verify_internal_references.py`, `prepare_docs.py`, `mkdocs.yml` |
-| Nodal definitions and mathematical types | [Fundamentals](../theory/FUNDAMENTAL_THEORY.md) | Declared chart, units, inputs and nodal row |
-| Constitutive and parameter dependencies | [Parameter foundations](../theory/NODAL_PARAMETER_FOUNDATIONS.md) | Explicit model assumptions and exact/finite scope |
-| Operator metadata and execution contracts | [API contracts](API_CONTRACTS.md) | Generated registry table plus execution-path boundaries |
-| Operator interpretation | [Structural operators](../theory/STRUCTURAL_OPERATORS.md) | Explains the implemented contracts; no second registry |
-| Grammar rules and policy premises | [Grammar](../theory/UNIFIED_GRAMMAR_RULES.md) | `grammar_canon.py`; [scope/counterexamples](../theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md) and [verification map](grammar/PHYSICS_VERIFICATION.md) |
-| Field definitions and estimator behavior | [Structural tetrad](STRUCTURAL_FIELDS_TETRAD.md) | Shared field readers, availability, units and fit/fallback provenance |
-| Research branches | [Portfolio](../TNFR_lineas_de_investigacion.txt) | Main, supporting and parked lines |
-| Scientific rationale | [Strategy](../theory/NODAL_RESEARCH_STRATEGY.md) | Explains choices; does not create tasks |
-| Active research tasks and gates | [Execution plan](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md) | Sole active queue |
-| Physical phenomena and correspondence cards | [Physical atlas](../theory/PHYSICAL_REGIME_CORRESPONDENCES.md#physical-emergence-atlas) | Existing reductions, supplied analogues and unmet physical prerequisites; no second research queue |
-| Regional phase/amplitude measurement | [Observation contract](../theory/research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md) | Spatial sensor map, uncertainty and candidate-specific source admission; no physical validation yet |
-| Regional form APIs and representation | [SDK usage](CLI_AND_SDK.md#observe-regional-form-and-its-nodal-response) | Shared Cartesian/Gram and source-relative observations, plus separately supplied affine-law admission; no second evolution implementation |
-| Conditional relational execution | [SDK usage](CLI_AND_SDK.md#execute-the-conditional-relational-model), [execution contract](API_CONTRACTS.md#conditional-relational-execution) | One admitted engine field and atomic Euler step; [continuous local recovery](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-local-recovery) has stronger hypotheses than step admission |
-| Prepared relational pattern observations | [SDK usage](CLI_AND_SDK.md#observe-a-prepared-relational-pattern), [observation contract](API_CONTRACTS.md#prepared-relational-pattern-observations) | Explicit regions/reference lifts, separate form/phase geometry, reused winding/transport accounting and exact report projection; no pattern selection |
-| Joint pattern memory and approximation | [Joint memory](../theory/nodal/RELATIONAL_PATTERN_MEMORY.md) | Complete visible/hidden split, conditional error orders and a frozen finite prediction; research coefficients do not install a reduced nonlinear SDK solver |
-| Validated relational transit | [SDK usage](CLI_AND_SDK.md#validate-continuous-transit-to-a-protected-basin), [proof owner](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-validated-transit) | Whole-time continuous enclosure from an exact reflected initial state to a sufficient basin; preserves earlier finite-executor evidence |
-| Derived form geometry and reduction closure | [Derived form](../theory/nodal/DERIVED_FORM_PHASE.md) | Exact coordinate identities, conditional mean/Gram closure and source-relative response; fixed-law prediction is distinct from source selection |
-| Examples | [Example index](../examples/README.md) | Tutorial/model scope; not a theorem or performance inventory |
-| Benchmarks and research instruments | [Benchmark index](../benchmarks/README.md) | Record input, path, seed, hardware and scope for each actual run |
-| Factorization usage and configuration | [Factorization lab](../factorization-lab/README.md) | Candidate heuristics, arithmetic checks and fallback provenance |
-| Arithmetic primality utility | [Primality guide](../primality-test/README.md) | Supplied divisor statistics; no physical generation or complexity theorem |
-| Optional Torch backend | [Torch scope](TORCH_BACKEND.md) | Backend operations versus graph-pressure execution and measured acceleration |
-| Structural application interfaces | [Interface guide](STRUCTURAL_INTERFACE_THEORY.md) | Engineering protocol; independent validation required |
-| EEG correspondence report | [EEG report](EMPIRICAL_CONFRONTATION_EEG.md) | External report, not admission of the repository measurement model |
-| Historical release notes | [Changelog](../CHANGELOG.md) | Statements about past versions, not current guarantees |
-| Research history | [Historical archive](../theory/research/archive/README.md) | Frozen source context and explicit supersession |
+| [CLI and SDK](CLI_AND_SDK.md) | Network creation, operator studies, diagnostics, JSON and command routes | Word counts are not physical time; reports are not checkpoints |
+| [Regional and relational SDK](guides/REGIONAL_AND_RELATIONAL.md) | Form observations, supplied joint models, pattern reports, attachment and capture | Preparations and references are inputs; method admission is distinct from a theorem's hypotheses |
+| [Observational interfaces](STRUCTURAL_INTERFACE_THEORY.md) | Feature graphs, multichannel signals, comparisons and reserved forecasts | Engineering adapters do not independently identify canonical physical variables |
+| [Optional Torch backend](TORCH_BACKEND.md) | Backend selection, device checks and execution limits | Requested backend, effective device and measured acceleration are different claims |
+
+## Contracts and diagnostics
+
+| Maintained owner | Responsibility | Primary evidence |
+| --- | --- | --- |
+| [API contracts](API_CONTRACTS.md) | Shared admission, nodal solvers and generated operator metadata | Actual execution owners and operator registry |
+| [Relational dynamics](contracts/RELATIONAL_DYNAMICS.md) | Joint field/step, pattern, attachment and capture report contracts | Admitted model and exact/finite certificate implementations |
+| [Operator events](contracts/OPERATOR_EVENTS.md) | Schedules, jumps, atomic stages, REMESH and finite executor evidence | Shared event and history owners; no unrestricted stability guarantee |
+| [Structural fields](STRUCTURAL_FIELDS_TETRAD.md) | Tetrad definitions, units, availability and estimator provenance | Shared field readers; the tetrad is not a complete state basis |
+
+<!-- END DOCS CATALOG -->
+
+## Repository and research owners
+
+| Responsibility | Primary owner |
+| --- | --- |
+| Contributor and agent instructions | [AGENTS](../AGENTS.md), mirrored verbatim at `.github/agents/my-agent.md` |
+| Package boundaries and execution paths | [Architecture](../ARCHITECTURE.md) |
+| Test selection and development | [Testing](../TESTING.md), [Contributing](../CONTRIBUTING.md) |
+| CI, publication and reporting | [Workflows](../.github/WORKFLOWS.md), [Security](../SECURITY.md) |
+| Documentation commands and staging | [Scripts](../scripts/README.md) |
+| Definitions, derivations and scientific scope | [Theory catalog](../theory/README.md); [glossary](../theory/GLOSSARY.md) for classified concept cards |
+| Grammar policies and verification | [Unified grammar](../theory/UNIFIED_GRAMMAR_RULES.md#9-verification-and-reporting); rules and evidence share that owner |
+| Research priorities | [Portfolio](../TNFR_lineas_de_investigacion.txt) classifies branches; [strategy](../theory/NODAL_RESEARCH_STRATEGY.md) explains them |
+| Active tasks and gates | [Execution plan](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md), the sole task queue |
+| Maintained runnable entry points | [Examples](../examples/README.md), [benchmarks](../benchmarks/README.md), [optional applications](../applications/README.md) |
+| Historical results and supersession | [Archive](../theory/research/archive/README.md), including [reported interface observations](../theory/research/archive/REPORTED_INTERFACE_OBSERVATIONS.md) |
+| Past publication statements | [Changelog](../CHANGELOG.md); historical claims are not current guarantees |
 
 ## Update rules
 
-Change the primary implementation/definition and its owner together. Update a
-summary only where the result or navigation changes. Do not copy long theorem
-proofs, dated delivery lists, configuration defaults or workflow matrices into
-entry-point documents. The registry-generated table in API Contracts is checked
-for exact agreement; use `python scripts/check_documentation.py --write-generated`
-when its source metadata changes. The same command generates theory navigation
-from the catalog in `theory/README.md`; edit its topic/owner rows rather than
-maintaining a second manual menu. This command does not prove mathematical claims.
+Change the implementation or definition and its owner together. Summaries link
+to that owner; they do not copy derivations, configuration tables or delivery
+histories. Keep usage examples separate from the full admission contract.
+The agent mirror is the only intentionally exact prose duplicate.
 
-The agent mirror is the only intentionally exact prose duplicate. Templates
-provide structure and links; they do not define extra grammar or acceptance laws.
-An educational analogy cannot override a technical contract or become evidence
-of physical emergence.
+The catalog above owns the technical website menu; the theory catalog owns its
+own menu. `python scripts/check_documentation.py --write-generated` refreshes
+both menus, the registry-derived operator table and the glossary index. The
+ordinary gate checks catalog coverage and generated agreement. Link/fragment
+checking and a strict site build also belong to the
+[documentation checks](../scripts/README.md). Generated consistency does not
+validate a theorem or a physical identification.
+
+The glossary's declaration classes and dependency/evidence checks are specified
+by its own template and `scripts/check_glossary.py`. Do not redefine concept
+admission in another index or infer scientific proof from a valid link.
 
 ## Historical and generated material
 
-`artifacts/` contains local run receipts and pre-edit snapshots. Its preserved
-paths can refer to an earlier source context; it is not another documentation
-site or task queue. Archived notebooks retain their original outputs and are
-not current runnable tutorials. `build/docs-source/` and `site/` are regenerated
-from maintained files. Never edit generated output to change the authoritative
-content.
+`docs/assets/` holds website support and referenced frozen research evidence,
+including source archives and numerical reports. Preserve those paths and bytes;
+new runs belong in `artifacts/`, not over the published record. Retaining an
+old result does not promote it into the current execution contract.
 
-A removed guide's useful material belongs in the corresponding owner above.
-Retire dead tools only after checking callers and replacement coverage. Keep
-historical observations unchanged when they carry evidence; mark their domain
-and replacement explicitly rather than silently rewriting the past.
+`artifacts/`, ignored `output/`, `outputs/` and `results/` retain local receipts
+and earlier source contexts. They are not current guides or another task queue.
+Archived notebooks retain original outputs and are not runnable tutorials.
+`build/docs-source/` and `site/` are generated; edit their maintained inputs.
 
-Ignored local `output/`, `outputs/` and `results/` directories also contain older
-generated reports and briefs. They retain their original context and are not
-current guides, published site inputs or evidence of a new validation run.
-
-The [retirement manifest](../theory/research/archive/DOCUMENTATION_SECOND_CLEANUP_MANIFEST_2026-09-19.json)
-records the second cleanup's removed paths, replacements and preserved archive hashes.
+Retire a document only after moving useful material to its owner and repairing
+maintained references. Preserve source-bound observations and mark their scope
+and replacement. [Archive records](../theory/research/archive/README.md) explain
+supersession; older manifests retain their original recovery paths and hashes.

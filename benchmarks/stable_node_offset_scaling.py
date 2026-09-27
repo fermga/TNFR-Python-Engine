@@ -157,7 +157,8 @@ def main():
                 ),
                 flush=True,
             )
-        assert len(set(hashes)) == 1, "identical seeds did not reproduce the trajectory"
+        if len(set(hashes)) != 1:
+            raise RuntimeError("identical seeds did not reproduce the trajectory")
         print(
             json.dumps(
                 {

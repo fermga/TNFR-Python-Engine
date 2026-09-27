@@ -9,6 +9,8 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+from benchmarks.graph_fixtures import sierpinski_simplex
+
 _BENCHMARK_PATH = (
     Path(__file__).resolve().parents[2]
     / "benchmarks"
@@ -26,6 +28,18 @@ _SPEC.loader.exec_module(_BENCHMARK)
 
 def _settings() -> tuple[float, float, float, float]:
     return 0.0, math.pi / 4.0, math.pi / 8.0, 3.0 * math.pi / 8.0
+
+
+def test_auxiliary_generator_uses_true_corners_above_the_first_level() -> None:
+    graph = _BENCHMARK._sierpinski_simplex(3, 2)
+    expected, corners = sierpinski_simplex(3, 2)
+    assert list(graph) == list(expected)
+    assert list(graph.edges) == list(expected.edges)
+    assert len(graph) == 15
+    assert graph.number_of_edges() == 27
+    # The former first-m-inserted-node shortcut produced degrees 6 and 8 here.
+    assert sorted(dict(graph.degree()).values()) == [2] * 3 + [4] * 12
+    assert all(graph.degree(corner) == 2 for corner in corners)
 
 
 def test_shared_angle_model_checks_the_pointwise_chsh_bound() -> None:

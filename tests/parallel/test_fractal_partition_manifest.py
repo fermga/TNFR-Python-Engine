@@ -107,7 +107,7 @@ def test_summary_structure_is_valid(sample_network):
 
 def test_sdk_wrapper_accepts_fractal_partition_manifests(sample_network, monkeypatch):
     monkeypatch.syspath_prepend(
-        str(Path(__file__).resolve().parents[2] / "factorization-lab")
+        str(Path(__file__).resolve().parents[2] / "applications/factorization-lab")
     )
     """Test that SDK wrapper can process fractal partition manifests."""
     partitioner = FractalPartitioner(max_partition_size=10)

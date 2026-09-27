@@ -9,8 +9,10 @@ All functions reuse canonical utilities from glyph_history and alias modules.
 
 from __future__ import annotations
 
+from fractions import Fraction
 from typing import Any, Sequence
 
+from .._exact_time import finite_represented_real
 from ..alias import get_attr
 from ..config.operator_names import (
     COHERENCE,
@@ -21,7 +23,7 @@ from ..config.operator_names import (
     SILENCE,
 )
 from ..constants.aliases import ALIAS_EPI
-from ..types import Glyph, TNFRGraph
+from ..types import Glyph, TNFRGraph, require_finite_real_scalar_epi
 
 __all__ = [
     "compute_learning_plasticity",
@@ -221,11 +223,10 @@ def compute_learning_efficiency(
     G: TNFRGraph,
     node: Any,
 ) -> float:
-    """Measure learning efficiency (EPI change per operator applied).
+    """Read absolute scalar EPI change per recorded operator application.
 
-    Efficiency represents how much structural change (ΔEPI) occurs per
-    operator application, indicating effective learning without excessive
-    reorganization.
+    This retrospective ratio measures change under the supplied observation
+    window. It does not attribute that change to learning or establish quality.
 
     Parameters
     ----------
@@ -242,9 +243,12 @@ def compute_learning_efficiency(
 
     Notes
     -----
-    Reuses canonical alias functions (get_attr) for accessing node attributes.
-    Requires node to have 'epi_initial' attribute set at creation time to
-    measure total EPI change.
+    The initial EPI must correspond to the retained history window; the legacy
+    missing-initial convention is zero. History eviction does not retain a
+    lifetime denominator. A no-history record returns zero without claiming
+    that a rate was measured. Scalar admission preserves uniform BEPI sign and
+    rejects richer states. Nonrepresentable results raise instead of becoming
+    zero or infinity.
 
     Examples
     --------
@@ -259,12 +263,6 @@ def compute_learning_efficiency(
     >>> efficiency >= 0.0  # Should be non-negative
     True
     """
-    # Get current EPI using canonical get_attr
-    epi_current = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
-
-    # Get initial EPI (should be set at node creation)
-    epi_initial = G.nodes[node].get("epi_initial", 0.0)
-
     # Get number of operators applied from glyph history
     history = G.nodes[node].get("glyph_history", [])
     num_ops = len(history) if history else 0
@@ -272,6 +270,13 @@ def compute_learning_efficiency(
     if num_ops == 0:
         return 0.0
 
-    # Calculate efficiency: total EPI change per operator
-    delta_epi = abs(epi_current - epi_initial)
-    return delta_epi / num_ops
+    epi_current = get_attr(
+        G.nodes[node], ALIAS_EPI, 0.0, strict=True, conv=require_finite_real_scalar_epi
+    )
+    epi_initial = require_finite_real_scalar_epi(
+        G.nodes[node].get("epi_initial", 0.0), "initial EPI"
+    )
+    # Divide the exact represented difference before materializing the result:
+    # large endpoint differences can overflow even when the quotient is finite.
+    ratio = abs(Fraction(epi_current) - Fraction(epi_initial)) / num_ops
+    return finite_represented_real(ratio, "learning efficiency")[0]

@@ -20,7 +20,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PAYLOAD_ROOT = REPO_ROOT / "results" / "self_optimization"
 DEFAULT_REPORT_PATH = REPO_ROOT / "results" / "self_optimization_validation.json"
 OPERATION_TESTS: Dict[str, List[str]] = {
-    "paley_partition": ["factorization-lab/tests/test_spectral_paley.py"],
+    "paley_partition": ["applications/factorization-lab/tests/test_spectral_paley.py"],
 }
 
 

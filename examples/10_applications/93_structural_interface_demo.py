@@ -5,26 +5,28 @@ Structural Interface Theory studies graph-local boundaries where neighbouring
 nodes are close under the graph relation but differ sharply in phase, state, or
 regime, and expresses the diagnosis as a grammar-valid operator prescription.
 
-This example runs fully offline and deterministically, showing the two settings
-where the TNFR Structural Field Tetrad is most informative:
+This example runs fully offline and deterministically, comparing supplied
+spatial and signal preparations through the shared observation adapters:
 
   A. Static spatial — records -> k-NN graph -> injected binary phase ->
      per-node interface stress, compared against classical graph-local
      baselines on a *non-circular* target (planted boundary nodes), plus a
      grammar-valid operator prescription.
 
-  B. Multi-channel — a set of coupled oscillators (the tetrad's native setting)
-     switching from an incoherent to a coherent regime, where the coherence
-     length ξ_C and phase curvature K_φ carry information the global Kuramoto
-     order parameter R cannot express.
+  B. Multi-channel — independently generated sinusoids in two concatenated
+     blocks, with dispersed and aligned phases. The phase-locking graph is
+     reconstructed from signals; no coupling law or TNFR evolution is executed.
 
 Honest scope
 ------------
 - The static interface stress is, by construction, related to the classical
   k-NN label-disagreement baseline (both are shown side by side; TNFR is not
   claimed to dominate the strongest global baseline on hard data).
-- In the multi-channel case |∇φ| is partially redundant with 1 − R; the
-  genuinely distinct fields are ξ_C (a coherence *length*) and K_φ.
+- Local phase stress and global phase order can correlate. Different field
+  formulas alone do not establish independent or additional predictive value.
+- The multichannel adapter currently returns ξ_C without fit/fallback
+  provenance, so the displayed value cannot identify a measured correlation
+  length. Its amplitude-pressure proxy is a supplied observation map.
 
 Run:
     python examples/10_applications/93_structural_interface_demo.py
@@ -139,23 +141,23 @@ def run_static_spatial() -> None:
         f"|∇φ|={top.phase_gradient:.3f} |K_φ|={top.abs_curvature:.3f} "
         f"violations={top.incident_violation_count}"
     )
-    print(f"Grammar-valid prescription: {' -> '.join(top.prescription)}")
+    print(f"Configured operator suggestion: {' -> '.join(top.prescription)}")
     print(
-        "\nNote: TNFR stress is shown beside the classical baselines; on clean "
-        "boundaries it is competitive, but the strongest global baseline "
-        "(label-propagation residual) can win on harder data."
+        "\nThese rankings concern the supplied planted target only. "
+        "The operator suggestion is contextual telemetry; it is not executed "
+        "and does not establish live-state or complete-word admission."
     )
 
 
 # ---------------------------------------------------------------------------
-# Section B — multi-channel coupled oscillators (the native tetrad setting)
+# Section B — supplied sinusoidal blocks and signal-derived observations
 # ---------------------------------------------------------------------------
 
 
 def synthetic_regime_switch(
     *, n_channels: int = 8, block: int = 2048, fs: float = 64.0, seed: int = 0
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Incoherent block (label 0) followed by a coherent block (label 1)."""
+    """Concatenate supplied dispersed-phase and aligned-phase sinusoidal blocks."""
     rng = np.random.default_rng(seed)
     t = np.arange(block) / fs
     f0 = 6.0
@@ -181,7 +183,7 @@ def synthetic_regime_switch(
 
 def run_multichannel() -> None:
     print("\n" + "=" * 64)
-    print("B. Multi-channel coupled oscillators (incoherent -> coherent)")
+    print("B. Supplied sinusoidal blocks (dispersed phases -> aligned phases)")
     print("=" * 64)
 
     signals, labels = synthetic_regime_switch()
@@ -202,8 +204,7 @@ def run_multichannel() -> None:
         return "n/a" if value != value else f"{value:.3f}"  # NaN-safe
 
     print(
-        "\nWindowed tetrad means (first vs last window) — the local stress\n"
-        "fields collapse toward zero as the network locks:\n"
+        "\nWindowed field means (first vs last supplied signal window):\n"
         f"  |∇φ|: {data['grad_phi'][0]:.3f} -> {data['grad_phi'][-1]:.3f}\n"
         f"  K_φ:  {data['k_phi'][0]:.3f} -> {data['k_phi'][-1]:.3f}\n"
         f"  ξ_C:  {_fmt(data['xi_c'][0])} -> {_fmt(data['xi_c'][-1])}"
@@ -212,11 +213,11 @@ def run_multichannel() -> None:
     discrimination = evaluate_synchrony_discrimination(signals, labels, config=cfg)
     print("\n" + discrimination.summary())
     print(
-        "\nNote: on this easy synthetic switch |∇φ| separates the regimes as\n"
-        "well as the global Kuramoto order parameter R — the two are partially\n"
-        "redundant (|∇φ| tracks 1 − R). The genuinely distinct fields are K_φ\n"
-        "and the coherence length ξ_C; ξ_C needs enough channels for a stable\n"
-        "estimate (on real 14-channel EEG it was competitive with R)."
+        "\nThe adapter does not retain ξ_C fit/fallback provenance; its value\n"
+        "alone is not an identified correlation length. This finite ranking\n"
+        "does not establish independent predictive information or superiority\n"
+        "on measured data. Signal preparation supplies the apparent regime\n"
+        "change; no autonomous synchronization or nodal dynamics is tested."
     )
 
 

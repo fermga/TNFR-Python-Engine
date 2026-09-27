@@ -23,49 +23,16 @@ import sys
 import networkx as nx
 import numpy as np
 
-_SRC = pathlib.Path(__file__).resolve().parents[1] / "src"
+_ROOT = pathlib.Path(__file__).resolve().parents[1]
+_SRC = _ROOT / "src"
 if str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
 
+from benchmarks.graph_fixtures import sierpinski_simplex  # noqa: E402
 
-# --- THOL/U5 self-similar simplex nesting (Sierpinski gasket of K_m) ---
-def sierpinski_simplex(m: int, levels: int):
-    """Construct m corner-glued copies recursively, returning graph and corners.
-
-    Branching and gluing are supplied; this is not a THOL operator invocation."""
-    if levels == 0:
-        return nx.complete_graph(m), list(range(m))
-    sub, subc = sierpinski_simplex(m, levels - 1)
-    G = nx.Graph()
-    copies = []
-    for i in range(m):
-        mp = {v: (i, v) for v in sub.nodes}
-        G.add_nodes_from(mp[v] for v in sub.nodes)
-        G.add_edges_from((mp[u], mp[v]) for u, v in sub.edges)
-        copies.append([mp[c] for c in subc])
-    parent = {n: n for n in G.nodes}
-
-    def find(x):
-        root = x
-        while parent[root] != root:
-            root = parent[root]
-        while parent[x] != root:
-            parent[x], x = root, parent[x]
-        return root
-
-    for i in range(m):
-        for j in range(i + 1, m):
-            ra, rb = find(copies[i][j]), find(copies[j][i])
-            if ra != rb:
-                parent[rb] = ra
-
-    H = nx.Graph()
-    for u, v in G.edges:
-        ru, rv = find(u), find(v)
-        if ru != rv:
-            H.add_edge(ru, rv)
-    corners = [find(copies[i][i]) for i in range(m)]
-    return H, corners
+# --- Supplied corner-glued simplex nesting ---
 
 
 def _node_count_recurrence(m: int, levels: int) -> int:

@@ -1,8 +1,9 @@
 """Structural health assessment utilities (Phase 3).
 
 Provides a concise health summary built on the enhanced validation
-aggregator. Read-only; never mutates graph state. Intended for CLI
-reporting, telemetry dashboards, CI guards.
+aggregator. It does not advance structural state; shared observations may
+maintain rebuildable graph caches. Intended for CLI reporting, telemetry
+dashboards and CI guards.
 
 Key Concepts
 ------------
@@ -118,6 +119,9 @@ def compute_structural_health(
         "risk_level": report.risk_level,
         "status": report.status,
         "thresholds_exceeded": th,
+        "field_availability": fm["field_availability"],
+        "threshold_status": fm["threshold_status"],
+        "threshold_reasons": fm["threshold_reasons"],
         "recommended_actions": dedup_recs,
         "notes": report.notes,
         "field_metrics_subset": field_subset,

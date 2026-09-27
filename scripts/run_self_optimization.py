@@ -17,7 +17,7 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence
 import networkx as nx
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-FACTOR_LAB_ROOT = REPO_ROOT / "factorization-lab"
+FACTOR_LAB_ROOT = REPO_ROOT / "applications/factorization-lab"
 if (
     FACTOR_LAB_ROOT.exists()
 ):  # Ensure tnfr_factorization is importable without installation
@@ -515,8 +515,13 @@ def _compute_telemetry_deltas(
 
 
 def _load_json(path: Path) -> Dict[str, Any]:
-    with path.open("r", encoding="utf-8") as handle:
-        return json.load(handle)
+    """Read manifest objects through the shared loss-rejecting JSON boundary."""
+    from tnfr.sdk.utils import import_from_json
+
+    payload = import_from_json(path)
+    if not isinstance(payload, dict):
+        raise ValueError(f"Manifest JSON must be an object: {path}")
+    return payload
 
 
 def _write_json(path: Path, payload: Dict[str, Any]) -> None:

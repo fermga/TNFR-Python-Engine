@@ -520,11 +520,11 @@ def _coordinate_global_local_phase(
             set_theta(G, node, value)
 
     cos_vals = [
-        component(cos_map.get(n, math.cos(theta_vals[idx])))
+        component(cos_map[n] if n in cos_map else math.cos(theta_vals[idx]))
         for idx, n in enumerate(nodes)
     ]
     sin_vals = [
-        component(sin_map.get(n, math.sin(theta_vals[idx])))
+        component(sin_map[n] if n in sin_map else math.sin(theta_vals[idx]))
         for idx, n in enumerate(nodes)
     ]
     cos_map = dict(zip(nodes, cos_vals))

@@ -1,44 +1,32 @@
-"""TNFR multi-channel interface analysis for coupled-oscillator networks.
+"""TNFR field observations on graphs reconstructed from multichannel signals.
 
-This module is the *phase-coupled network* counterpart of
-:mod:`tnfr.validation.temporal_interface`.  Where the temporal module embeds a
-**single** scalar series into a delay-coordinate graph, this module treats a set
-of **simultaneously-measured channels** as a network of coupled oscillators —
-the setting for which the TNFR Structural Field Tetrad is genuinely native.
+Unlike the delay-coordinate graph in :mod:`tnfr.validation.temporal_interface`,
+this adapter supplies one node per simultaneous signal channel. Hilbert phases,
+amplitude-envelope pressure and a phase-locking graph are observation choices;
+they do not establish physical wiring or a closed nodal evolution law.
 
-Why multi-channel is the strong case
--------------------------------------
-For a single scalar series the established critical-slowing-down indicators
-(rolling variance, lag-1 autocorrelation) are the right tool and typically win;
-the temporal module reports that honestly.  In a multi-channel phase-coupled
-network the structural fields acquire a genuine *spatial* meaning:
-
-- ``|∇φ|``  — phase desynchronisation between coupled channels,
-- ``K_φ``   — curvature of the phase field over the coupling graph,
-- ``ξ_C``   — how far phase coherence extends across the network (a length the
-  global synchrony order parameter cannot express),
-- ``Φ_s``   — structural potential from the (phase-independent) pressure field.
+The shared field owners compute local wrapped phase separation ``|∇φ|``,
+circular curvature ``K_φ``, pressure aggregation ``Φ_s`` and ``ξ_C``. The last
+is a static pressure-coherence product fit or a separate spectral fallback.
+``MultichannelWindowSeries`` currently retains only its numeric value, so this
+adapter cannot identify its fit/fallback provenance or certify a measured
+correlation length.
 
 Pipeline
 --------
 ``multi-channel signals -> per-channel Hilbert phase/amplitude -> phase-locking
 coupling graph (nodes = channels) -> TNFR spatial tetrad per window`` compared
-against the recognised synchronisation baselines: the **Kuramoto order
-parameter** ``R`` (the gold-standard global phase-synchrony measure), the mean
-phase-locking value, and the spatial phase dispersion.
+against the Kuramoto order parameter ``R``, mean phase-locking value and
+spatial phase dispersion.
 
 Scope and honesty
 -----------------
-- The Kuramoto order parameter ``R = |⟨e^{iφ}⟩|`` is a strong, standard baseline,
-  included so the comparison is fair rather than a strawman.
-- ``|∇φ|`` is *partially* redundant with ``1 − R`` (both fall as the network
-  synchronises).  The genuinely distinct TNFR contributions are ``ξ_C`` (a
-  spatial coherence *length*) and ``K_φ`` (phase-field curvature); neither has a
-  direct order-parameter analogue.  This partial redundancy is stated up front,
-  not hidden.
-- The per-node structural pressure ``ΔNFR`` is derived from the analytic
-  **amplitude** envelope, which is independent of the phase field, so ``Φ_s`` and
-  ``ξ_C`` are not trivially reproductions of ``|∇φ|``.
+- Local phase separation and global phase order can correlate; neither
+  determines the other on an arbitrary supplied graph.
+- Amplitude and phase are different transforms of the same signals. An
+  amplitude-only pressure proxy does not prove their statistical independence.
+- Different field formulas and finite univariate AUC rankings do not establish
+  additional predictive information, physical emergence or a measured law.
 - All functions are read-only telemetry; the only graph mutation is the
   construction of new coupling graphs and the setting of ``phase``/``theta`` and
   ``dnfr``/``delta_nfr`` node attributes at build time.
@@ -111,7 +99,7 @@ def _require_networkx() -> None:
 
 @dataclass(frozen=True)
 class MultichannelConfig:
-    """Configuration for the multi-channel coupled-oscillator pipeline.
+    """Configuration for the multichannel signal-observation pipeline.
 
     Parameters
     ----------
@@ -188,7 +176,9 @@ class SynchronyDiscrimination:
     ``auc`` maps each indicator to its discriminative ROC-AUC against a binary
     regime label (``max(auc, 1 - auc)`` so the arbitrary regime direction does
     not matter).  An AUC near 0.5 means the indicator does not separate the two
-    regimes; near 1.0 means clean separation.
+    regimes; near 1.0 means clean separation. If the labelled windows lack
+    either class, ``metadata['auc_available']`` is false and the retained 0.5
+    values are compatibility placeholders, not performance measurements.
     """
 
     indicators: tuple[str, ...]
@@ -203,6 +193,8 @@ class SynchronyDiscrimination:
     metadata: Mapping[str, Any] = field(default_factory=dict)
 
     def summary(self) -> str:
+        if self.metadata.get("auc_available") is False:
+            return self.interpretation
         bt, bv = self.best_tnfr
         bb, bbv = self.best_baseline
         return (
@@ -361,11 +353,12 @@ def phase_offsets(phase_matrix: "np.ndarray") -> "np.ndarray":
 
 
 def amplitude_pressure(amplitude_matrix: "np.ndarray") -> "np.ndarray":
-    """Phase-independent ΔNFR proxy from the analytic amplitude envelope.
+    """Supply an amplitude-envelope pressure proxy without a phase argument.
 
     ``ΔNFR_j = |⟨A_j⟩_t - ⟨A⟩| / (⟨A⟩ + ε)`` — the relative deviation of each
-    channel's mean envelope from the network mean.  Because it uses amplitude
-    (not phase), it does not trivially reproduce the phase-gradient field.
+    channel's mean envelope from the network mean. It does not consume phase
+    explicitly; that does not establish statistical independence or an
+    independently measured physical pressure.
     """
     _require_numpy()
     amp = np.asarray(amplitude_matrix, dtype=float)
@@ -560,16 +553,38 @@ _TNFR_CHANNELS = ("grad_phi", "k_phi", "xi_c", "phi_s")
 _BASELINE_CHANNELS = ("order_parameter", "mean_plv", "phase_dispersion")
 
 
+def _binary_sample_labels(
+    labels: Sequence[float], *, n_samples: int | None = None
+) -> "np.ndarray":
+    """Admit a finite binary vector without coercing labels or losing alignment."""
+    arr = np.asarray(labels)
+    if arr.ndim != 1 or arr.dtype.kind not in "biuf":
+        raise ValueError("labels must be a one-dimensional numeric binary vector")
+    if not np.all((arr == 0) | (arr == 1)):
+        raise ValueError("labels must contain only finite binary values 0 or 1")
+    if n_samples is not None and arr.size != n_samples:
+        raise ValueError("labels must match the number of signal samples")
+    return arr
+
+
 def _window_labels(
     labels: Sequence[float], series: MultichannelWindowSeries, window: int
 ) -> "np.ndarray":
     """Majority binary label per window (label at each window's sample span)."""
-    arr = np.asarray(labels, dtype=float)
+    arr = _binary_sample_labels(labels)
+    ends = np.asarray(series.window_end)
+    if (
+        ends.ndim != 1
+        or ends.dtype.kind not in "iu"
+        or np.any(ends < window - 1)
+        or np.any(ends >= arr.size)
+    ):
+        raise ValueError("window endpoints must index complete labelled sample spans")
     out = np.empty(series.window_end.size, dtype=bool)
-    for i, end in enumerate(series.window_end):
+    for i, end in enumerate(ends):
         start = int(end) - window + 1
-        segment = arr[max(0, start) : int(end) + 1]
-        out[i] = bool(np.mean(segment) >= 0.5) if segment.size else False
+        segment = arr[start : int(end) + 1]
+        out[i] = bool(np.mean(segment) >= 0.5)
     return out
 
 
@@ -585,14 +600,32 @@ def evaluate_synchrony_discrimination(
     signal samples.  Each window receives its majority label; for every
     indicator the discriminative ROC-AUC against the window labels is reported.
 
-    The Kuramoto order parameter is the gold-standard baseline.  ``|∇φ|`` is
-    partially redundant with ``1 − R``; the genuinely distinct TNFR fields are
-    ``ξ_C`` and ``K_φ``, so the honest question is whether they *add*
-    discriminative power, not whether the tetrad beats a strawman.
+    Scores describe this supplied labelled sample. Distinct formulas do not
+    prove independent information or out-of-sample prediction. The report's
+    comparison bands are descriptive policies, not uncertainty intervals;
+    ``xi_c`` also lacks fit/fallback provenance in the retained numeric series.
     """
     _require_numpy()
     cfg = config or MultichannelConfig()
-    series = multichannel_window_series(signals, config=cfg)
+    data = _as_channel_matrix(signals)
+    labels = _binary_sample_labels(labels, n_samples=data.shape[1])
+    series = multichannel_window_series(data, config=cfg)
+    return _evaluate_synchrony_series(
+        series, labels, config=cfg, n_channels=data.shape[0], n_samples=data.shape[1]
+    )
+
+
+def _evaluate_synchrony_series(
+    series: MultichannelWindowSeries,
+    labels: Sequence[float],
+    *,
+    config: MultichannelConfig,
+    n_channels: int,
+    n_samples: int,
+) -> SynchronyDiscrimination:
+    """Score an already computed series; benchmark summaries reuse the same data."""
+    cfg = config
+    labels = _binary_sample_labels(labels, n_samples=n_samples)
     window_labels = _window_labels(labels, series, cfg.window)
 
     channels = {
@@ -615,10 +648,25 @@ def evaluate_synchrony_discrimination(
 
     best_tnfr = _best(_TNFR_CHANNELS)
     best_baseline = _best(_BASELINE_CHANNELS)
+    n_windows = int(series.window_end.size)
     n_pos = int(np.count_nonzero(window_labels))
+    unavailable_reason = None
+    if not n_windows:
+        unavailable_reason = "no_windows"
+    elif not n_pos:
+        unavailable_reason = "missing_positive_class"
+    elif n_pos == n_windows:
+        unavailable_reason = "missing_negative_class"
 
     gap = best_tnfr[1] - best_baseline[1]
-    if best_tnfr[1] < 0.6 and best_baseline[1] < 0.6:
+    if unavailable_reason is not None:
+        interpretation = (
+            "AUC comparison unavailable: analysis windows must contain both "
+            "label classes. Retained 0.5 scores and best-channel entries are "
+            "compatibility placeholders, not evidence of discrimination or "
+            "chance performance."
+        )
+    elif best_tnfr[1] < 0.6 and best_baseline[1] < 0.6:
         interpretation = (
             "Neither the TNFR tetrad nor the synchrony baselines separate the "
             "two regimes well (all AUC < 0.6); the regimes may not differ in "
@@ -650,11 +698,13 @@ def evaluate_synchrony_discrimination(
         baseline_indicators=_BASELINE_CHANNELS,
         best_tnfr=best_tnfr,
         best_baseline=best_baseline,
-        n_windows=int(series.window_end.size),
+        n_windows=n_windows,
         n_positive_windows=n_pos,
         interpretation=interpretation,
         metadata={
-            "n_channels": int(_as_channel_matrix(signals).shape[0]),
+            "auc_available": unavailable_reason is None,
+            "auc_unavailable_reason": unavailable_reason,
+            "n_channels": int(n_channels),
             "config": {
                 "window": cfg.window,
                 "step": cfg.step,

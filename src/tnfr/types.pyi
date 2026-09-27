@@ -8,6 +8,7 @@ from collections.abc import (
     MutableSequence,
     Sequence,
 )
+from dataclasses import dataclass
 from enum import Enum
 from typing import (
     Any,
@@ -45,7 +46,31 @@ except Exception:
 from .glyph_history import HistoryDict as _HistoryDict
 from .tokens import Token
 
+class CacheLevel(Enum):
+    GRAPH_STRUCTURE = "graph_structure"
+    NODE_PROPERTIES = "node_properties"
+    DERIVED_METRICS = "derived_metrics"
+    TEMPORARY = "temporary"
+
+@dataclass
+class CacheStats:
+    hits: int = ...
+    misses: int = ...
+    evictions: int = ...
+    size: int = ...
+    max_size: int = ...
+    timings: int = ...
+    total_time: float = ...
+
+    @property
+    def hit_rate(self) -> float: ...
+    @property
+    def total_accesses(self) -> int: ...
+    def merge(self, other: CacheStats) -> CacheStats: ...
+
 __all__: tuple[str, ...] = (
+    "CacheLevel",
+    "CacheStats",
     "TNFRGraph",
     "Graph",
     "ValidatorFunc",

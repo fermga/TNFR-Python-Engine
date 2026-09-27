@@ -1,7 +1,8 @@
 """TNFR Pattern Discovery Engines
 
-Mathematical pattern detection and emergence analysis tools.
-Detects patterns in operator sequences and emergent mathematical structures.
+Configured graph and operator-sequence pattern diagnostics.
+Reported patterns retain each detector's assumptions and observation scope;
+they do not establish autonomous formation or physical emergence.
 
 Main Classes:
 - TNFREmergentPatternEngine: Mathematical pattern discovery
@@ -11,7 +12,7 @@ Usage:
 ```python
 from tnfr.engines.pattern_discovery import TNFREmergentPatternEngine
 pattern_engine = TNFREmergentPatternEngine()
-patterns = pattern_engine.discover_patterns(network)
+patterns = pattern_engine.discover_all_patterns(network)
 ```
 """
 

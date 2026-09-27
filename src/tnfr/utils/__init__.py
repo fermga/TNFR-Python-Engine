@@ -38,7 +38,7 @@ Functions prefixed with ``_`` are internal implementation details subject to cha
     # Serialization
     data = json_dumps(obj, sort_keys=True)
 
-See :doc:`/docs/utils_reference` for comprehensive documentation.
+See ``docs/API_CONTRACTS.md`` for shared execution and observation contracts.
 """
 
 from __future__ import annotations
@@ -132,6 +132,7 @@ from .io import (
     StructuredFileError,
     clear_orjson_param_warnings,
     json_dumps,
+    json_loads,
     read_structured_file,
     safe_write,
 )
@@ -229,6 +230,7 @@ __all__ = (
     "JsonDumpsParams",
     "DEFAULT_PARAMS",
     "json_dumps",
+    "json_loads",
     "clear_orjson_param_warnings",
     "read_structured_file",
     "safe_write",

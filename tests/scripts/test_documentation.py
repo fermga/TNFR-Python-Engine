@@ -7,6 +7,7 @@ real checker and contract registry, then point its filesystem reads at a sandbox
 from __future__ import annotations
 
 import importlib.util
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -75,7 +76,23 @@ def publication_workspace(tmp_path):
         '[project]\nversion = "9.8.7"\n', encoding="utf-8"
     )
     (tmp_path / ".zenodo.json").write_text(
-        '{"version": "9.8.7", "publication_date": "2026-01-02"}\n',
+        json.dumps(
+            {
+                "version": "9.8.7",
+                "publication_date": "2026-01-02",
+                "description": (
+                    '<p><a href="https://github.com/fermga/TNFR-Python-Engine/'
+                    'releases/tag/v9.8.7">Release</a> '
+                    '<a href="https://github.com/fermga/TNFR-Python-Engine/'
+                    'tree/v9.8.7">Source</a> '
+                    '<a href="https://pypi.org/project/tnfr/9.8.7/">Package</a></p>'
+                ),
+                "related_identifiers": [
+                    {"identifier": "https://pypi.org/project/tnfr/9.8.7/"}
+                ],
+            }
+        )
+        + "\n",
         encoding="utf-8",
     )
     (tmp_path / "CITATION.cff").write_text(
@@ -95,6 +112,86 @@ def test_consistent_publication_metadata_passes_with_optimization(
     result = _run_check(publication_workspace, "check_publication_metadata")
 
     assert result.returncode == 0, result.stderr
+
+
+def test_publication_links_accept_single_quoted_html_attributes(publication_workspace):
+    path = publication_workspace / ".zenodo.json"
+    metadata = json.loads(path.read_text(encoding="utf-8"))
+    metadata["description"] = metadata["description"].replace('"', "'")
+    path.write_text(json.dumps(metadata), encoding="utf-8")
+
+    result = _run_check(publication_workspace, "check_publication_metadata")
+
+    assert result.returncode == 0, result.stderr
+
+
+@pytest.mark.parametrize("corruption", ("overescaped", "text", "comment", "duplicate"))
+def test_zenodo_requires_real_unambiguous_html_links_with_optimization(
+    publication_workspace, corruption
+):
+    path = publication_workspace / ".zenodo.json"
+    metadata = json.loads(path.read_text(encoding="utf-8"))
+    description = metadata["description"]
+    if corruption == "overescaped":
+        description = description.replace('"', '\\"')
+    elif corruption == "text":
+        description = description.replace("<a href=", "<span data-href=")
+        description = description.replace("</a>", "</span>")
+    elif corruption == "comment":
+        description = "<!-- " + description + " -->"
+    else:
+        description = description.replace("<a href=", '<a href="wrong" href=', 1)
+    metadata["description"] = description
+    corrupted = json.dumps(metadata)
+    path.write_text(corrupted, encoding="utf-8")
+
+    result = _run_check(publication_workspace, "check_publication_metadata")
+
+    assert result.returncode != 0
+    assert "Zenodo description" in result.stderr
+    assert path.read_text(encoding="utf-8") == corrupted
+
+
+@pytest.mark.parametrize(
+    "stale_target",
+    (
+        "https://github.com/fermga/TNFR-Python-Engine/releases/tag/v9.8.6",
+        "https://github.com/fermga/TNFR-Python-Engine/tree/v9.8.6",
+        "https://github.com/fermga/TNFR-Python-Engine/blob/v9.8.6/theory/README.md",
+        "https://pypi.org/project/tnfr/9.8.6/",
+    ),
+)
+def test_zenodo_rejects_stale_links_even_beside_current_links(
+    publication_workspace, stale_target
+):
+    path = publication_workspace / ".zenodo.json"
+    metadata = json.loads(path.read_text(encoding="utf-8"))
+    metadata["description"] += f'<a href="{stale_target}">Stale publication</a>'
+    corrupted = json.dumps(metadata)
+    path.write_text(corrupted, encoding="utf-8")
+
+    result = _run_check(publication_workspace, "check_publication_metadata")
+
+    assert result.returncode != 0
+    assert "description links to a different publication version" in result.stderr
+    assert path.read_text(encoding="utf-8") == corrupted
+
+
+@pytest.mark.parametrize(
+    "identifiers", ([], [{"identifier": "https://pypi.org/project/tnfr/9.8.6/"}])
+)
+def test_zenodo_related_package_must_match_version(publication_workspace, identifiers):
+    path = publication_workspace / ".zenodo.json"
+    metadata = json.loads(path.read_text(encoding="utf-8"))
+    metadata["related_identifiers"] = identifiers
+    corrupted = json.dumps(metadata)
+    path.write_text(corrupted, encoding="utf-8")
+
+    result = _run_check(publication_workspace, "check_publication_metadata")
+
+    assert result.returncode != 0
+    assert "related PyPI identifier differs from project version" in result.stderr
+    assert path.read_text(encoding="utf-8") == corrupted
 
 
 @pytest.mark.parametrize(
@@ -401,30 +498,45 @@ def test_live_missing_targets_and_fragments_are_rejected(
     assert "guide.md" in failures[0]
 
 
+def _populate_catalog(workspace, checker, directory):
+    folder = workspace / directory
+    excluded = folder / ("research/archive" if directory == "theory" else "assets")
+    (folder / "nodal").mkdir(parents=True)
+    excluded.mkdir(parents=True)
+    (folder / "FOUNDATION.md").write_text("# Foundation\n", encoding="utf-8")
+    (folder / "nodal" / "CLOSURE.md").write_text("# Closure\n", encoding="utf-8")
+    (excluded / "HISTORICAL.md").write_text("# Historical result\n", encoding="utf-8")
+    start = getattr(checker, directory.upper() + "_CATALOG_START")
+    end = getattr(checker, directory.upper() + "_CATALOG_END")
+    contract_row = (
+        "| [Contracts](API_CONTRACTS.md) | Registry |\n" if directory == "docs" else ""
+    )
+    (folder / "README.md").write_text(
+        "# Owner index\n\n"
+        "[Quick foundation link](FOUNDATION.md)\n" + start + "\n\n## Foundations\n\n"
+        "| Document | Scope |\n| --- | --- |\n"
+        "| [Foundation](FOUNDATION.md#foundation) | Definition |\n"
+        "| [Closure](nodal/CLOSURE.md) | Conditional theorem |\n\n"
+        + contract_row
+        + end
+        + f"\n\n[Excluded owner]({excluded.relative_to(folder).as_posix()}/HISTORICAL.md)\n",
+        encoding="utf-8",
+    )
+
+
 @pytest.fixture
 def theory_catalog_workspace(documented_workspace, monkeypatch):
     workspace, checker = documented_workspace
     monkeypatch.setattr(checker, "REPO_ROOT", workspace)
-    theory = workspace / "theory"
-    (theory / "nodal").mkdir(parents=True)
-    (theory / "research" / "archive").mkdir(parents=True)
-    (theory / "FOUNDATION.md").write_text("# Foundation\n", encoding="utf-8")
-    (theory / "nodal" / "CLOSURE.md").write_text("# Closure\n", encoding="utf-8")
-    (theory / "research" / "archive" / "HISTORICAL.md").write_text(
-        "# Historical result\n", encoding="utf-8"
-    )
-    (theory / "README.md").write_text(
-        "# Theory index\n\n"
-        "[Quick foundation link](FOUNDATION.md)\n"
-        + checker.THEORY_CATALOG_START
-        + "\n\n## Foundations\n\n"
-        "| Document | Scope |\n| --- | --- |\n"
-        "| [Foundation](FOUNDATION.md#foundation) | Definition |\n"
-        "| [Closure](nodal/CLOSURE.md) | Conditional theorem |\n\n"
-        + checker.THEORY_CATALOG_END
-        + "\n\n[Historical owner](research/archive/HISTORICAL.md)\n",
-        encoding="utf-8",
-    )
+    _populate_catalog(workspace, checker, "theory")
+    return workspace, checker
+
+
+@pytest.fixture
+def docs_catalog_workspace(documented_workspace, monkeypatch):
+    workspace, checker = documented_workspace
+    monkeypatch.setattr(checker, "REPO_ROOT", workspace)
+    _populate_catalog(workspace, checker, "docs")
     return workspace, checker
 
 
@@ -531,42 +643,63 @@ def test_theory_catalog_requires_one_ordered_region(
         checker.check_theory_catalog()
 
 
-@pytest.fixture
-def theory_navigation_workspace(theory_catalog_workspace):
-    workspace, checker = theory_catalog_workspace
+def _populate_navigation(workspace, checker, directory):
+    start = getattr(checker, directory.upper() + "_NAVIGATION_START")
+    end = getattr(checker, directory.upper() + "_NAVIGATION_END")
     (workspace / "mkdocs.yml").write_text(
         "custom: !!python/name:example.callback\nnav:\n"
         "  - Home: index.md\n"
-        + checker.THEORY_NAVIGATION_START
-        + "\n  - Obsolete theory tree: obsolete.md\n"
-        + checker.THEORY_NAVIGATION_END
+        + start
+        + "\n  - Obsolete tree: obsolete.md\n"
+        + end
         + "\n      - Historical archive: theory/research/archive/README.md\n"
         "  - Examples: examples/README.md\n",
         encoding="utf-8",
     )
+
+
+@pytest.fixture
+def theory_navigation_workspace(theory_catalog_workspace):
+    workspace, checker = theory_catalog_workspace
+    _populate_navigation(workspace, checker, "theory")
     return workspace, checker
 
 
-def test_theory_navigation_generation_is_idempotent_and_preserves_ancillary_yaml(
-    theory_navigation_workspace,
+@pytest.fixture
+def docs_navigation_workspace(docs_catalog_workspace):
+    workspace, checker = docs_catalog_workspace
+    _populate_navigation(workspace, checker, "docs")
+    return workspace, checker
+
+
+@pytest.fixture(params=["theory", "docs"])
+def catalog_navigation_workspace(request):
+    workspace, checker = request.getfixturevalue(
+        request.param + "_navigation_workspace"
+    )
+    return workspace, checker, request.param
+
+
+def test_catalog_navigation_generation_is_idempotent_and_preserves_ancillary_yaml(
+    catalog_navigation_workspace,
 ):
-    workspace, checker = theory_navigation_workspace
+    workspace, checker, directory = catalog_navigation_workspace
     path = workspace / "mkdocs.yml"
-    index = workspace / "theory" / "README.md"
+    index = workspace / directory / "README.md"
     original_index = index.read_bytes()
     before = path.read_text(encoding="utf-8")
-    start, end = checker.theory_navigation_region(before)
-    checker.update_theory_navigation()
+    start, end = getattr(checker, f"{directory}_navigation_region")(before)
+    getattr(checker, f"update_{directory}_navigation")()
     generated = path.read_text(encoding="utf-8")
     assert generated.startswith(before[:start])
     assert generated.endswith(before[end:])
     assert '      - "Foundations":\n' in generated
-    assert '          - "Foundation": theory/FOUNDATION.md\n' in generated
-    assert '          - "Closure": theory/nodal/CLOSURE.md\n' in generated
+    assert f'          - "Foundation": {directory}/FOUNDATION.md\n' in generated
+    assert f'          - "Closure": {directory}/nodal/CLOSURE.md\n' in generated
     assert "#foundation" not in generated
     assert "Quick foundation" not in generated
-    checker.check_theory_navigation()
-    checker.update_theory_navigation()
+    getattr(checker, f"check_{directory}_navigation")()
+    getattr(checker, f"update_{directory}_navigation")()
     assert path.read_text(encoding="utf-8") == generated
     assert index.read_bytes() == original_index
 
@@ -582,68 +715,80 @@ def test_theory_navigation_generation_is_idempotent_and_preserves_ancillary_yaml
         ),
     ),
 )
-def test_theory_title_or_group_change_rejects_stale_nav_and_generates_safe_yaml_labels(
-    theory_navigation_workspace, old, new, expected_label
+def test_catalog_title_or_group_change_rejects_stale_nav_and_generates_safe_yaml_labels(
+    catalog_navigation_workspace, old, new, expected_label
 ):
     import json
 
-    workspace, checker = theory_navigation_workspace
-    checker.update_theory_navigation()
-    index = workspace / "theory" / "README.md"
+    workspace, checker, directory = catalog_navigation_workspace
+    getattr(checker, f"update_{directory}_navigation")()
+    index = workspace / directory / "README.md"
     index.write_text(
         index.read_text(encoding="utf-8").replace(old, new), encoding="utf-8"
     )
-    checker.check_theory_catalog()
-    with pytest.raises(RuntimeError, match="theory navigation drifted"):
-        checker.check_theory_navigation()
-    checker.update_theory_navigation()
-    checker.check_theory_navigation()
+    getattr(checker, f"check_{directory}_catalog")()
+    with pytest.raises(RuntimeError, match=directory + " navigation drifted"):
+        getattr(checker, f"check_{directory}_navigation")()
+    getattr(checker, f"update_{directory}_navigation")()
+    getattr(checker, f"check_{directory}_navigation")()
     label = json.dumps(expected_label, ensure_ascii=False)
     assert "- " + label + ":" in (workspace / "mkdocs.yml").read_text(encoding="utf-8")
 
 
 def test_catalog_and_navigation_share_only_the_first_link_of_primary_rows(
-    theory_navigation_workspace,
+    catalog_navigation_workspace,
 ):
-    workspace, checker = theory_navigation_workspace
-    index = workspace / "theory" / "README.md"
+    workspace, checker, directory = catalog_navigation_workspace
+    index = workspace / directory / "README.md"
     index.write_text(
-        index.read_text(encoding="utf-8").replace(
-            "| Definition |", "| See [closure](nodal/CLOSURE.md) |"
+        index.read_text(encoding="utf-8")
+        .replace("| Definition |", "| See [closure](nodal/CLOSURE.md) |")
+        .replace(
+            getattr(checker, directory.upper() + "_CATALOG_END"),
+            "| No primary link | [Context only](ABSENT.md) |\n"
+            + getattr(checker, directory.upper() + "_CATALOG_END"),
         )
         + "\n## Unrelated reading route\n| [Extra title](FOUNDATION.md) | Context |\n",
         encoding="utf-8",
     )
-    checker.check_theory_catalog()
-    rendered = checker.render_theory_navigation()
-    assert rendered.count("theory/FOUNDATION.md") == 1
-    assert rendered.count("theory/nodal/CLOSURE.md") == 1
+    getattr(checker, f"check_{directory}_catalog")()
+    rendered = getattr(checker, f"render_{directory}_navigation")()
+    assert rendered.count(f"{directory}/FOUNDATION.md") == 1
+    assert rendered.count(f"{directory}/nodal/CLOSURE.md") == 1
     assert "Extra title" not in rendered
     assert "Unrelated reading route" not in rendered
 
 
 @pytest.mark.parametrize("corruption", ("missing", "indented", "reversed"))
 def test_generated_navigation_requires_ordered_column_zero_markers(
-    theory_navigation_workspace, corruption
+    catalog_navigation_workspace, corruption
 ):
-    workspace, checker = theory_navigation_workspace
+    workspace, checker, directory = catalog_navigation_workspace
     path = workspace / "mkdocs.yml"
     document = path.read_text(encoding="utf-8")
     if corruption == "missing":
-        document = document.replace(checker.THEORY_NAVIGATION_START, "")
+        document = document.replace(
+            getattr(checker, directory.upper() + "_NAVIGATION_START"), ""
+        )
     elif corruption == "indented":
         document = document.replace(
-            checker.THEORY_NAVIGATION_START, "  " + checker.THEORY_NAVIGATION_START
+            getattr(checker, directory.upper() + "_NAVIGATION_START"),
+            "  " + getattr(checker, directory.upper() + "_NAVIGATION_START"),
         )
     else:
-        document = document.replace(checker.THEORY_NAVIGATION_START, "temporary-start")
         document = document.replace(
-            checker.THEORY_NAVIGATION_END, checker.THEORY_NAVIGATION_START
+            getattr(checker, directory.upper() + "_NAVIGATION_START"), "temporary-start"
         )
-        document = document.replace("temporary-start", checker.THEORY_NAVIGATION_END)
+        document = document.replace(
+            getattr(checker, directory.upper() + "_NAVIGATION_END"),
+            getattr(checker, directory.upper() + "_NAVIGATION_START"),
+        )
+        document = document.replace(
+            "temporary-start", getattr(checker, directory.upper() + "_NAVIGATION_END")
+        )
     path.write_text(document, encoding="utf-8")
     with pytest.raises(RuntimeError, match="column zero|markers are reversed"):
-        checker.update_theory_navigation()
+        getattr(checker, f"update_{directory}_navigation")()
     assert path.read_text(encoding="utf-8") == document
 
 
@@ -651,6 +796,16 @@ def test_write_generated_updates_both_registry_contracts_and_catalog_navigation(
     theory_navigation_workspace, monkeypatch, capsys
 ):
     workspace, checker = theory_navigation_workspace
+    _populate_catalog(workspace, checker, "docs")
+    navigation = workspace / "mkdocs.yml"
+    navigation.write_text(
+        navigation.read_text(encoding="utf-8")
+        + checker.DOCS_NAVIGATION_START
+        + "\n  - Old docs: obsolete.md\n"
+        + checker.DOCS_NAVIGATION_END
+        + "\n",
+        encoding="utf-8",
+    )
     contracts = workspace / "docs" / "API_CONTRACTS.md"
     document = contracts.read_text(encoding="utf-8")
     start, end = checker.contract_region(document)
@@ -662,10 +817,74 @@ def test_write_generated_updates_both_registry_contracts_and_catalog_navigation(
         "check_publication_metadata",
         "check_documented_examples",
         "check_build_inputs",
+        "check_glossary",
+        "update_glossary_index",
     ):
         monkeypatch.setattr(checker, check, lambda: None)
     monkeypatch.setattr(sys, "argv", [str(CHECKER), "--write-generated"])
     assert checker.main() == 0
     checker.check_contract_view()
     checker.check_theory_navigation()
+    checker.check_docs_catalog()
+    checker.check_docs_navigation()
     assert "Documentation integrity checks passed" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize(
+    "link, expected",
+    (
+        ("[Repeated](./FOUNDATION.md#foundation)", "duplicate"),
+        ("[Stale](contracts/REMOVED.md)", "unknown or excluded"),
+        ("[Asset](assets/HISTORICAL.md)", "unknown or excluded"),
+        ("[Outside](../AGENTS.md)", "unknown or excluded"),
+    ),
+)
+def test_docs_catalog_rejects_nonowners_and_duplicate_rows(
+    docs_catalog_workspace, link, expected
+):
+    workspace, checker = docs_catalog_workspace
+    index = workspace / "docs" / "README.md"
+    index.write_text(
+        index.read_text(encoding="utf-8").replace(
+            checker.DOCS_CATALOG_END,
+            f"| {link} | Extra row |\n" + checker.DOCS_CATALOG_END,
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(RuntimeError, match=expected + " primary docs documents"):
+        checker.check_docs_catalog()
+
+
+def test_new_docs_owner_requires_a_primary_catalog_entry_under_optimization(
+    docs_catalog_workspace,
+):
+    workspace, _ = docs_catalog_workspace
+    chapter = workspace / "docs" / "contracts" / "NEW_CONTRACT.md"
+    chapter.parent.mkdir()
+    chapter.write_text("# New admission contract\n", encoding="utf-8")
+    result = _run_check(workspace, "check_docs_catalog", optimized=True)
+    assert result.returncode != 0
+    assert "missing primary docs documents" in result.stderr
+    assert "NEW_CONTRACT.md" in result.stderr
+
+
+def test_retired_claim_check_covers_nested_docs_without_a_retired_path_manifest(
+    docs_catalog_workspace,
+):
+    workspace, checker = docs_catalog_workspace
+    (workspace / "pyproject.toml").write_text('version = "9.8.7"\n', encoding="utf-8")
+    for relative in (
+        "README.md",
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        ".github/WORKFLOWS.md",
+        "theory/README.md",
+    ):
+        path = workspace / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("# Reference 9.8.7\n", encoding="utf-8")
+    checker.check_versions_and_retired_claims()
+    nested = workspace / "docs" / "nodal" / "CLOSURE.md"
+    nested.write_text("# complete system observability\n", encoding="utf-8")
+    with pytest.raises(RuntimeError, match="retired claim.*CLOSURE.md"):
+        checker.check_versions_and_retired_claims()

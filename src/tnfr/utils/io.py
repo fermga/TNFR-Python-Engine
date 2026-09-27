@@ -10,6 +10,7 @@ from functools import partial
 from pathlib import Path
 from typing import Any, Callable
 
+from .._exact_time import finite_represented_real
 from ..errors import TNFRValueError
 from .init import LazyImportProxy, cached_import, get_logger
 
@@ -33,6 +34,61 @@ class JsonDumpsParams:
 
 
 DEFAULT_PARAMS = JsonDumpsParams()
+
+
+def _reject_duplicate_json_keys(pairs: list[tuple[str, Any]]) -> None:
+    """Reject colliding decoded names without retaining a second object tree."""
+    names: set[str] = set()
+    for name, _ in pairs:
+        if name in names:
+            raise ValueError(f"JSON object keys collide after serialization: {name!r}")
+        names.add(name)
+
+
+class _JSONValueError(ValueError):
+    """Syntactically decodable JSON with ambiguous or unrepresentable values."""
+
+
+def _decoded_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    _reject_duplicate_json_keys(pairs)
+    return dict(pairs)
+
+
+def _reject_nonfinite_constant(token: str) -> None:
+    raise ValueError(f"JSON numbers must be finite; found {token}")
+
+
+def _represented_json_float(token: str) -> float:
+    value = float(token)
+    finite_represented_real(value, "JSON number")
+    # The decoder admits the grammar. Only the mantissa decides exact zero,
+    # independently of the exponent's magnitude.
+    mantissa = token.lower().split("e", 1)[0]
+    if value == 0.0 and any(digit in "123456789" for digit in mantissa):
+        raise ValueError("JSON number is nonzero but underflows to represented zero")
+    return value
+
+
+def json_loads(text: str | bytes | bytearray) -> Any:
+    """Decode JSON using the shared report and configuration admission policy.
+
+    Reject duplicate decoded names, nonfinite numbers and nonzero fractional
+    literals that underflow to binary64 zero. Integers retain Python's integer
+    representation; finite fractions retain normal float rounding. Object,
+    array and scalar roots are supported. This does not validate model fields
+    or authenticate a report's provenance.
+    """
+    try:
+        return json.loads(
+            text,
+            object_pairs_hook=_decoded_object,
+            parse_constant=_reject_nonfinite_constant,
+            parse_float=_represented_json_float,
+        )
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        raise
+    except ValueError as exc:
+        raise _JSONValueError(str(exc)) from exc
 
 
 def _json_dumps_std(
@@ -214,7 +270,7 @@ def _parse_toml(text: str) -> Any:
 
 
 PARSERS = {
-    ".json": json.loads,
+    ".json": json_loads,
     ".yaml": _parse_yaml,
     ".yml": _parse_yaml,
     ".toml": _parse_toml,
@@ -236,6 +292,7 @@ _BASE_ERROR_MESSAGES: dict[type[BaseException], str] = {
     OSError: "Could not read {path}: {e}",
     UnicodeDecodeError: "Encoding error while reading {path}: {e}",
     json.JSONDecodeError: "Error parsing JSON file at {path}: {e}",
+    _JSONValueError: "Invalid JSON value at {path}: {e}",
     ImportError: "Missing dependency parsing {path}: {e}",
 }
 
@@ -265,6 +322,7 @@ _BASE_STRUCTURED_EXCEPTIONS = (
     OSError,
     UnicodeDecodeError,
     json.JSONDecodeError,
+    _JSONValueError,
     ImportError,
 )
 
@@ -318,6 +376,8 @@ def read_structured_file(
 
     This function includes path traversal protection. When ``base_dir`` is
     provided, the resolved path must stay within that directory.
+    JSON uses :func:`json_loads`'s strict value admission. YAML and TOML retain
+    their respective parser semantics; consumers validate their model fields.
 
     Parameters
     ----------
@@ -524,6 +584,7 @@ __all__ = (
     "DEFAULT_PARAMS",
     "clear_orjson_param_warnings",
     "json_dumps",
+    "json_loads",
     "read_structured_file",
     "safe_write",
     "StructuredFileError",

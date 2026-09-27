@@ -20,48 +20,18 @@ from __future__ import annotations
 import pathlib
 import sys
 
-import numpy as np
 import networkx as nx
+import numpy as np
 from scipy.linalg import expm
 
-_SRC = pathlib.Path(__file__).resolve().parents[1] / "src"
+_ROOT = pathlib.Path(__file__).resolve().parents[1]
+_SRC = _ROOT / "src"
 if str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
 
-
-def sierpinski_simplex(m, levels):
-    """Construct a prescribed K_m gasket directly."""
-    if levels == 0:
-        return nx.complete_graph(m), list(range(m))
-    sub, subc = sierpinski_simplex(m, levels - 1)
-    G = nx.Graph()
-    copies = []
-    for i in range(m):
-        mp = {v: (i, v) for v in sub.nodes}
-        G.add_nodes_from(mp[v] for v in sub.nodes)
-        G.add_edges_from((mp[u], mp[v]) for u, v in sub.edges)
-        copies.append([mp[c] for c in subc])
-    parent = {n: n for n in G.nodes}
-
-    def find(x):
-        r = x
-        while parent[r] != r:
-            r = parent[r]
-        while parent[x] != r:
-            parent[x], x = r, parent[x]
-        return r
-
-    for i in range(m):
-        for j in range(i + 1, m):
-            a, b = find(copies[i][j]), find(copies[j][i])
-            if a != b:
-                parent[b] = a
-    H = nx.Graph()
-    for u, v in G.edges:
-        ru, rv = find(u), find(v)
-        if ru != rv:
-            H.add_edge(ru, rv)
-    return H, [find(copies[i][i]) for i in range(m)]
+from benchmarks.graph_fixtures import sierpinski_simplex  # noqa: E402
 
 
 def ring_lrw(n):
@@ -80,10 +50,7 @@ def nodal_domains_ring(v, tol=1e-9):
 
 
 def main() -> None:
-    from tnfr.metrics.common import (
-        is_structural_equilibrium,
-        structural_coherence,
-    )
+    from tnfr.metrics.common import is_structural_equilibrium, structural_coherence
     from tnfr.physics.fields import classify_nodal_topology
 
     print("=" * 70)

@@ -1,21 +1,17 @@
-"""Backward-compatible shim for input validation functions.
+"""Value-returning input adapters shared by the public validation pipeline.
 
-This module provides backward compatibility for code that imports from
-``tnfr.validation.input_validation``. All functionality has been consolidated
-into :mod:`tnfr.validation.unified_validation_system`.
-
-New code should import directly from :mod:`tnfr.validation` or use the
-:class:`TNFRUnifiedValidationSystem` class.
-
-.. deprecated:: 1.0.0
-    Use :mod:`tnfr.validation.unified_validation_system` instead.
+Scalar EPI and pressure reuse their represented-real admission owners;
+frequency and phase adapt configured reports from the unified input validator.
+Glyph, identifier and graph-interface helpers retain their local contracts.
+These checks do not establish operator admission or a valid nodal trajectory.
 """
 
 from __future__ import annotations
 
 from typing import Any
 
-from ..types import Glyph, NodeId, TNFRGraph
+from .._exact_time import finite_represented_real
+from ..types import Glyph, NodeId, TNFRGraph, require_finite_real_scalar_epi
 from .unified_validation_system import (
     ValidationError,
     ValidationResult,
@@ -133,9 +129,9 @@ def validate_tnfr_graph(graph: Any) -> TNFRGraph:
 def validate_epi_value(value: Any, field_name: str = "epi") -> float:
     """Validate an EPI (Primary Information Structure) value.
 
-    EPI is a coherent structural configuration value. In TNFR physics,
-    EPI lives in a Banach space and is modified only via canonical operators.
-    The value must be a finite real number.
+    This scalar input adapter preserves a signed uniform-real EPI embedding.
+    Richer form states require their own model admission; they cannot be
+    replaced by a magnitude here.
 
     Parameters
     ----------
@@ -154,18 +150,10 @@ def validate_epi_value(value: Any, field_name: str = "epi") -> float:
     ValidationError
         If value is invalid
     """
-    import math
-
-    if not isinstance(value, (int, float)):
-        raise ValidationError(
-            f"{field_name} must be a number, got {type(value).__name__}"
-        )
-
-    fval = float(value)
-    if math.isnan(fval) or math.isinf(fval):
-        raise ValidationError(f"{field_name} must be finite, got {fval}")
-
-    return fval
+    try:
+        return require_finite_real_scalar_epi(value, field_name)
+    except (TypeError, ValueError) as exc:
+        raise ValidationError(str(exc)) from exc
 
 
 def validate_vf_value(value: Any, field_name: str = "vf") -> float:
@@ -227,7 +215,7 @@ def validate_theta_value(value: Any, field_name: str = "theta") -> float:
 
 
 def validate_dnfr_value(value: Any, field_name: str = "dnfr") -> float:
-    """Validate a ΔNFR (nodal gradient) value.
+    """Validate a finite represented-real ΔNFR pressure value.
 
     Parameters
     ----------
@@ -246,22 +234,10 @@ def validate_dnfr_value(value: Any, field_name: str = "dnfr") -> float:
     ValidationError
         If value is invalid
     """
-    import math
-
-    if not isinstance(value, (int, float)):
-        raise ValidationError(
-            f"{field_name} must be a number, got {type(value).__name__}"
-        )
-
-    validated = float(value)
-
-    if math.isnan(validated):
-        raise ValidationError(f"{field_name} cannot be NaN")
-
-    if math.isinf(validated):
-        raise ValidationError(f"{field_name} cannot be infinite")
-
-    return validated
+    try:
+        return finite_represented_real(value, field_name)[0]
+    except (TypeError, ValueError) as exc:
+        raise ValidationError(str(exc)) from exc
 
 
 def validate_glyph_factors(

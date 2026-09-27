@@ -172,7 +172,9 @@ class RelationalExchangeField:
     phase rate minus ``(w/beta)*phase_mobility*(B*x)``. It measures rate
     rounding, not transcendental error in that metric. These optional defaults
     preserve older manually constructed reports; engine evaluation always
-    supplies all three observations.
+    supplies these observations. ``relative_resultant`` captures the same
+    materialized cosine/sine sums used by the phase law, without a second
+    trigonometric evaluation or an error enclosure for those sums.
     """
 
     model: RelationalExchangeModel
@@ -203,6 +205,7 @@ class RelationalExchangeField:
     work: RelationalWorkBalance | None = None
     phase_mobility: tuple[Q, ...] | None = None
     phase_rate_rounding_defect: tuple[Q, ...] | None = None
+    relative_resultant: tuple[tuple[float, float], ...] | None = None
 
 
 @dataclass(frozen=True)
@@ -346,9 +349,11 @@ def _field(staged, model):
     gradient = tuple(_finite(value, "form gradient") for value in q)
     sources, metrics, phase_gradient, phase_rate = [], [], [], []
     phase_mobility, phase_defects = [], []
+    resultants = []
     for i, row in enumerate(neighbors):
         cosine = math.fsum(math.cos(gaps[i, j]) for j in row)
         sine = math.fsum(math.sin(gaps[i, j]) for j in row)
+        resultants.append((cosine, sine))
         if wider and cosine <= 0:
             raise ValueError(
                 "the materialized relative resultant must have positive real part"
@@ -448,6 +453,7 @@ def _field(staged, model):
         work=work,
         phase_mobility=tuple(phase_mobility),
         phase_rate_rounding_defect=tuple(phase_defects),
+        relative_resultant=tuple(resultants),
     )
 
 

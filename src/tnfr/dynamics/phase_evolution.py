@@ -110,7 +110,11 @@ def _propose_u3_phase_from_neighbors(
     neighbor contributes to the admitted denominator even when its sine is zero.
     Graph metadata and observed multiplicities retain their separate owners.
     """
-    from ..operators._phase_gate import U3PhaseGateError, resolve_u3_phase_neighbors
+    from ..operators._phase_gate import (
+        U3PhaseGateError,
+        resolve_u3_phase_limits,
+        select_u3_phase_neighbors,
+    )
 
     count = len(nodes)
     phase = _finite_vector(phases, count, "phase")
@@ -124,6 +128,13 @@ def _propose_u3_phase_from_neighbors(
         raise TNFRValueError("phase integration dt must be positive.")
     if strength < 0.0:
         raise TNFRValueError("phase coupling strength must be nonnegative.")
+    try:
+        _, phase_limit = resolve_u3_phase_limits(graph_attributes, operator_code="UM")
+    except U3PhaseGateError as exc:
+        raise TNFRValueError(
+            "Phase proposal failed the U3 phase gate.",
+            context={"reason": exc.failed_condition},
+        ) from exc
 
     index = {node: offset for offset, node in enumerate(nodes)}
     with np.errstate(over="ignore", invalid="ignore"):
@@ -132,12 +143,11 @@ def _propose_u3_phase_from_neighbors(
         raise TNFRValueError("Free phase proposal must remain finite.")
     for offset, node in enumerate(nodes):
         try:
-            gate = resolve_u3_phase_neighbors(
-                graph_attributes,
+            target_phase, compatible, neighbor_phases = select_u3_phase_neighbors(
                 phase[offset],
                 neighbors(node),
                 phase_getter=lambda neighbor: phase[index[neighbor]],
-                operator_code="UM",
+                phase_limit=phase_limit,
                 require_compatible=False,
             )
         except U3PhaseGateError as exc:
@@ -146,15 +156,13 @@ def _propose_u3_phase_from_neighbors(
                 context={"node": node, "reason": exc.failed_condition},
             ) from exc
 
-        if gate.neighbors:
+        if compatible:
             coupling = math.fsum(
-                math.sin(neighbor_phase - gate.target_phase)
-                for neighbor_phase in gate.phases
+                math.sin(neighbor_phase - target_phase)
+                for neighbor_phase in neighbor_phases
             )
             with np.errstate(over="ignore", invalid="ignore"):
-                proposal[offset] += (
-                    time_step * strength * coupling / len(gate.neighbors)
-                )
+                proposal[offset] += time_step * strength * coupling / len(compatible)
             if not math.isfinite(float(proposal[offset])):
                 raise TNFRValueError("Coupled phase proposal must remain finite.")
 

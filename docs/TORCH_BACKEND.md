@@ -9,17 +9,26 @@ Install the optional Torch dependency with:
 pip install -e ".[compute-torch]"
 ```
 
-Select the backend through the public mathematics backend interface:
+Request the backend through the public mathematics backend interface and inspect
+the actual selection:
 
 ```python
 from tnfr.mathematics.backend import get_backend
 
 backend = get_backend("torch")
+print(backend.name, backend.get_device_name())
 ```
 
-The backend uses the Torch installation and devices available in the caller's
-environment. Backend agreement is covered by
+If Torch is unavailable, `get_backend("torch")` can return the NumPy fallback.
+Check `backend.name == "torch"` when Torch execution is required. A Torch backend
+can itself use CPU or CUDA according to the installation, device availability
+and `TNFR_CUDA_ENABLED`; requesting Torch does not guarantee GPU execution.
+`backend.get_backend_info()` exposes additional execution metadata.
+
+Backend agreement is covered by
 [`tests/mathematics/test_backends.py`](../tests/mathematics/test_backends.py).
+Those backend-specific checks skip when the requested dependency is unavailable;
+a passing NumPy-only run does not establish Torch agreement.
 
 TNFR does not currently ship the historical
 tnfr.engines.computation.gpu_engine.TNFRGPUEngine class. The

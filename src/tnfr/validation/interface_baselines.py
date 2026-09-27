@@ -27,7 +27,7 @@ when the only per-node signal is the label itself.
 
 References
 ----------
-- ``docs/STRUCTURAL_INTERFACE_THEORY_PLAN.md`` §"Fair benchmark design"
+- ``docs/STRUCTURAL_INTERFACE_THEORY.md`` §"Fair benchmark design"
 """
 
 from __future__ import annotations

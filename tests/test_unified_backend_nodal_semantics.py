@@ -2,10 +2,15 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
+from fractions import Fraction
+
 import networkx as nx
+import numpy as np
 import pytest
 
 from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from tnfr.dynamics import integrators
 from tnfr.dynamics.nodal_optimizer import NodalEquationOptimizer
 from tnfr.dynamics.unified_backend import (
     ComputationType,
@@ -369,3 +374,216 @@ def test_internal_caches_obey_one_shared_approximate_byte_budget() -> None:
 def test_cache_budget_must_be_a_positive_finite_scalar(budget: object) -> None:
     with pytest.raises((TypeError, ValueError), match="positive finite"):
         TNFRUnifiedBackend(cache_size_mb=budget)  # type: ignore[arg-type]
+
+
+@pytest.mark.parametrize(
+    "kind", [ComputationType.NODAL_EVOLUTION, ComputationType.TEMPORAL_INTEGRATION]
+)
+@pytest.mark.parametrize("model", ["stored_delta_nfr", "epi_diffusion"])
+@pytest.mark.parametrize("dt", ["0.1", True, Fraction(1, 10**400)])
+def test_dispatch_preserves_raw_time_admission_before_any_state_write(kind, model, dt):
+    graph = _uniform_graph()
+    before = deepcopy(graph)
+    request = UnifiedComputationRequest(
+        kind, graph, parameters={"dt": dt, "num_steps": 1, "pressure_model": model}
+    )
+
+    with pytest.raises(TNFRValueError, match="dt must be a positive finite real"):
+        TNFRUnifiedBackend().execute_computation(request)
+
+    assert dict(graph.nodes(data=True)) == dict(before.nodes(data=True))
+    assert graph.graph == before.graph
+
+
+@pytest.mark.parametrize("model", ["stored_delta_nfr", "epi_diffusion"])
+@pytest.mark.parametrize("flag", [1, "false", None])
+def test_trajectory_flag_rejects_truthy_coercion_before_dispatch(model, flag):
+    graph = _uniform_graph()
+    before = deepcopy(graph)
+    request = UnifiedComputationRequest(
+        ComputationType.TEMPORAL_INTEGRATION,
+        graph,
+        parameters={"dt": 0.1, "num_steps": 1, "pressure_model": model},
+        return_trajectory=flag,
+    )
+
+    with pytest.raises(TNFRValueError, match="return_trajectory must be boolean"):
+        TNFRUnifiedBackend().execute_computation(request)
+
+    assert dict(graph.nodes(data=True)) == dict(before.nodes(data=True))
+    assert graph.graph == before.graph
+
+
+@pytest.mark.parametrize("model", ["stored_delta_nfr", "epi_diffusion"])
+def test_both_temporal_models_admit_numpy_integer_step_counts(model):
+    graph = _uniform_graph()
+    graph.graph["DT_MIN"] = 0.0
+    result = TNFRUnifiedBackend().execute_computation(
+        UnifiedComputationRequest(
+            ComputationType.TEMPORAL_INTEGRATION,
+            graph,
+            parameters={
+                "num_steps": np.int64(2),
+                "dt": Fraction(1, 8),
+                "pressure_model": model,
+            },
+        )
+    )
+
+    assert result.results["final_time"] == 0.25
+    assert graph.graph["_t"] == 0.25
+
+
+@pytest.mark.parametrize(
+    "t0,dt,dt_min",
+    [
+        (0.0, 1e308, 0.0),
+        (float(2**53 - 1), 1.0, 0.0),
+        (float(2**53 - 3), 2.0, 1.0),
+    ],
+)
+def test_later_requested_clock_failure_is_rejected_before_sources_or_writes(
+    monkeypatch, t0, dt, dt_min
+):
+    graph = _uniform_graph()
+    graph.graph.update(_t=t0, DT_MIN=dt_min, GAMMA={"type": "harmonic"})
+    for data in graph.nodes.values():
+        data[ALIAS_DNFR[0]] = 1e-309
+    before = deepcopy(graph)
+    source_calls = []
+
+    def source(*args, **kwargs):
+        source_calls.append(args)
+        return 0.0
+
+    monkeypatch.setattr(integrators, "eval_gamma", source)
+    monkeypatch.setattr(integrators, "eval_gamma_vectorized", source)
+    request = UnifiedComputationRequest(
+        ComputationType.TEMPORAL_INTEGRATION,
+        graph,
+        parameters={"num_steps": 2, "dt": dt},
+    )
+
+    with pytest.raises(NetworkConfigError, match="clock"):
+        TNFRUnifiedBackend().execute_computation(request)
+
+    assert source_calls == []
+    assert dict(graph.nodes(data=True)) == dict(before.nodes(data=True))
+    assert graph.graph == before.graph
+
+
+@pytest.mark.parametrize("method", ["euler", "rk4"])
+def test_temporal_grid_matches_repeated_shared_substeps_and_endpoints(method):
+    graph = _uniform_graph()
+    graph.graph.update(_t=0.1, DT_MIN=0.1)
+    reference = deepcopy(graph)
+    expected = []
+    for _ in range(2):
+        integrators.update_epi_via_nodal_equation(reference, dt=1.0, method=method)
+        expected.append(reference.graph["_t"])
+
+    result = (
+        TNFRUnifiedBackend()
+        .execute_computation(
+            UnifiedComputationRequest(
+                ComputationType.TEMPORAL_INTEGRATION,
+                graph,
+                parameters={"num_steps": 2, "dt": 1.0, "method": method},
+                return_trajectory=True,
+            )
+        )
+        .results
+    )
+
+    assert expected[0] != 0.1 + 1.0
+    assert [row["time"] for row in result["trajectory"]] == expected
+    assert result["final_time"] == reference.graph["_t"]
+    assert dict(graph.nodes(data=True)) == dict(reference.nodes(data=True))
+
+
+def test_zero_step_report_does_not_consume_state_or_inactive_solver_policy():
+    graph = _uniform_graph()
+    graph.graph.update(_t=0.25, DT_MIN="unused")
+    graph.nodes[0][ALIAS_EPI[0]] = "unused"
+    before = deepcopy(graph)
+    result = (
+        TNFRUnifiedBackend()
+        .execute_computation(
+            UnifiedComputationRequest(
+                ComputationType.TEMPORAL_INTEGRATION,
+                graph,
+                parameters={"num_steps": 0, "dt": 0.0, "method": "unused"},
+                return_trajectory=True,
+            )
+        )
+        .results
+    )
+
+    assert result["final_time"] == 0.25
+    assert result["trajectory"] == []
+    assert dict(graph.nodes(data=True)) == dict(before.nodes(data=True))
+    assert graph.graph == before.graph
+
+
+@pytest.mark.parametrize("clock", [True, "0.25", Fraction(1, 10**400)])
+def test_zero_step_report_validates_the_clock_it_observes(clock):
+    graph = _uniform_graph()
+    graph.graph["_t"] = clock
+    before = deepcopy(graph)
+
+    with pytest.raises((TypeError, ValueError), match="graph runtime time"):
+        TNFRUnifiedBackend().execute_computation(
+            UnifiedComputationRequest(
+                ComputationType.TEMPORAL_INTEGRATION,
+                graph,
+                parameters={"num_steps": 0},
+            )
+        )
+
+    assert dict(graph.nodes(data=True)) == dict(before.nodes(data=True))
+    assert graph.graph == before.graph
+
+
+def test_detached_proposal_does_not_consume_the_graph_clock():
+    graph = _uniform_graph()
+    graph.graph.update(_t="unused", DT_MIN="unused")
+
+    result = TNFRUnifiedBackend().execute_computation(_request(graph)).results
+
+    assert result["nodal_states"][0][0] == pytest.approx(0.54)
+    assert graph.graph["_t"] == "unused"
+
+
+def test_clock_preflight_does_not_freeze_configuration_between_integration_calls(
+    monkeypatch,
+):
+    graph = _uniform_graph()
+    graph.graph.update(_t=0.1, DT_MIN=0.1)
+    integrate = integrators.update_epi_via_nodal_equation
+    observed_minimums = []
+
+    def changing_policy(candidate, **kwargs):
+        observed_minimums.append(candidate.graph["DT_MIN"])
+        integrate(candidate, **kwargs)
+        candidate.graph["DT_MIN"] = 0.3
+
+    monkeypatch.setattr(integrators, "update_epi_via_nodal_equation", changing_policy)
+    result = (
+        TNFRUnifiedBackend()
+        .execute_computation(
+            UnifiedComputationRequest(
+                ComputationType.TEMPORAL_INTEGRATION,
+                graph,
+                parameters={"num_steps": 2, "dt": 1.0},
+            )
+        )
+        .results
+    )
+
+    expected = 0.1
+    for _ in range(10):
+        expected += 0.1
+    for _ in range(3):
+        expected += 1.0 / 3.0
+    assert observed_minimums == [0.1, 0.3]
+    assert result["final_time"] == expected

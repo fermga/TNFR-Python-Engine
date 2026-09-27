@@ -1,6 +1,6 @@
-"""TNFR canonical primality entry points.
+"""Optional static arithmetic primality entry points.
 
-This module exposes canonical primality utilities through a stable interface:
+This module exposes arithmetic primality utilities through a stable interface:
 ``is_prime``, ``delta_nfr``, ``component_breakdown``, ``structural_triad``, and
 ``analyze``.
 
@@ -13,9 +13,9 @@ from __future__ import annotations
 
 import math
 import numbers
-import sys
-from pathlib import Path
 from typing import Any
+
+from .._optional_apps import bootstrap_application
 
 __all__ = [
     "is_prime",
@@ -52,16 +52,11 @@ def _validate_tolerance(tolerance: float) -> float:
 def _bootstrap_primality_test() -> None:
     """Ensure the tnfr_primality package is importable.
 
-    In development checkouts the primality module lives in the sibling
-    ``primality-test`` directory. When the standalone ``tnfr-primality``
+    In development checkouts the primality module lives in the
+    ``applications/primality-test`` directory. When the standalone ``tnfr-primality``
     package is installed, this function becomes a no-op.
     """
-    if "tnfr_primality" in sys.modules:
-        return
-
-    test_root = Path(__file__).resolve().parents[3] / "primality-test"
-    if test_root.exists() and str(test_root) not in sys.path:
-        sys.path.insert(0, str(test_root))
+    bootstrap_application("tnfr_primality", "primality-test")
 
 
 def _load_core() -> tuple[Any, Any, Any, Any]:
@@ -86,7 +81,7 @@ def _load_core() -> tuple[Any, Any, Any, Any]:
     except ModuleNotFoundError as exc:
         raise TNFRUserError(
             "tnfr_primality is not available. Install the tnfr-primality "
-            "package or keep the primality-test directory in your workspace."
+            "package or keep the applications/primality-test directory in your workspace."
         ) from exc
 
 
@@ -114,14 +109,14 @@ def component_breakdown(n: int) -> dict[str, Any]:
 
 
 def structural_triad(n: int) -> dict[str, Any]:
-    """Return TNFR structural triad {EPI, vf, delta_nfr, local_coherence}."""
+    """Return a static arithmetic bundle; its legacy name does not supply phase."""
     n = _validate_candidate(n)
     _, _, _, tnfr_structural_triad = _load_core()
     return dict(tnfr_structural_triad(n))
 
 
 def analyze(n: int, *, tolerance: float = 1e-10) -> dict[str, Any]:
-    """Return complete canonical primality analysis payload for SDK/reporting."""
+    """Return static arithmetic primality analysis for SDK/reporting."""
     n = _validate_candidate(n)
     tolerance = _validate_tolerance(tolerance)
     prime, dnfr = is_prime(n, tolerance=tolerance)

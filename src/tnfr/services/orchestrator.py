@@ -5,12 +5,14 @@ of operator sequences with clear separation of responsibilities:
 
 1. Validation (delegated to ValidationService)
 2. Execution (coordinated through OperatorRegistry)
-3. Dynamics (delegated to DynamicsEngine)
+3. Configured pressure-hook refresh (delegated to DynamicsEngine)
 4. Telemetry (delegated to TelemetryCollector)
 
-The orchestrator maintains the nodal equation ∂EPI/∂t = νf · ΔNFR(t) while
-ensuring that each layer operates independently and can be replaced without
-affecting the others.
+This service applies operator events and refreshes the configured pressure hook
+after each event. It does not call the dynamics service's time integrator or
+phase-coordination method, and supplies no elapsed-time trajectory certificate.
+Custom services and hooks retain their declared effects. Use the shared SDK
+study runner for its separately specified network-word execution contract.
 
 Examples
 --------
@@ -23,7 +25,7 @@ Execute a sequence with default services:
 >>> container = TNFRContainer.create_default()
 >>> orchestrator = TNFROrchestrator.from_container(container)
 >>> G, node = create_nfr("seed", epi=1.0, vf=2.0)
->>> orchestrator.execute_sequence(G, node, ["emission", "coherence"])
+>>> orchestrator.execute_sequence(G, node, ["emission", "coherence", "silence"])
 
 Execute with custom services:
 
@@ -59,7 +61,7 @@ __all__ = ("TNFROrchestrator",)
 class TNFROrchestrator:
     """Orchestrates TNFR sequence execution with separated responsibilities.
 
-    The orchestrator coordinates validation, execution, dynamics updates, and
+    The orchestrator coordinates validation, execution, pressure refresh, and
     telemetry collection without directly implementing any of these concerns.
     Each responsibility is delegated to a specialized service, enabling
     flexible composition and testing.
@@ -71,7 +73,7 @@ class TNFROrchestrator:
     _registry : OperatorRegistry
         Service for retrieving operator implementations.
     _dynamics : DynamicsEngine
-        Service for computing ΔNFR and integrating nodal equation.
+        Service whose pressure-refresh method is called after each event.
     _telemetry : TelemetryCollector
         Service for collecting metrics and traces.
 
@@ -87,7 +89,7 @@ class TNFROrchestrator:
 
     >>> from tnfr.structural import create_nfr
     >>> G, node = create_nfr("test", epi=1.0, vf=1.0)
-    >>> orch.execute_sequence(G, node, ["emission", "coherence"])
+    >>> orch.execute_sequence(G, node, ["emission", "coherence", "silence"])
     """
 
     def __init__(
@@ -159,12 +161,14 @@ class TNFROrchestrator:
     ) -> None:
         """Execute operator sequence with separated responsibilities.
 
-        This method coordinates the full execution pipeline:
+        This method coordinates an operator-event pipeline:
         1. Validate sequence against TNFR grammar
         2. Convert tokens to operator instances
         3. Apply each operator with telemetry (optional)
-        4. Update ΔNFR after each operator
-        5. Integrate nodal equation
+        4. Invoke the configured pressure refresh after each operator
+
+        No continuous integration or phase-coordination step is inserted.
+        Completed events remain applied if a later event or hook fails.
 
         Parameters
         ----------
@@ -189,11 +193,11 @@ class TNFROrchestrator:
         >>> from tnfr.structural import create_nfr
         >>> G, n = create_nfr("node1", epi=1.0)
         >>> orch = TNFROrchestrator.from_container(container)
-        >>> orch.execute_sequence(G, n, ["emission", "coherence"])
+        >>> orch.execute_sequence(G, n, ["emission", "coherence", "silence"])
 
         Execute with telemetry enabled:
 
-        >>> orch.execute_sequence(G, n, ["emission"], enable_telemetry=True)
+        >>> orch.execute_sequence(G, n, ["emission", "silence"], enable_telemetry=True)
         >>> # Check transitions in G.graph["_trace_transitions"]
         """
         # Convert sequence to list and extract operator tokens
@@ -279,7 +283,7 @@ class TNFROrchestrator:
 
         Examples
         --------
-        >>> orch.validate_only(["emission", "coherence"])  # OK
+        >>> orch.validate_only(["emission", "coherence", "silence"])  # OK
         >>> orch.validate_only(["unknown_op"])  # Raises ValueError
         """
         self._validator.validate_sequence(sequence)
@@ -320,6 +324,6 @@ class TNFROrchestrator:
         Examples
         --------
         >>> si_metrics = orch.get_sense_index(G)
-        >>> print(f"Si = {si_metrics['Si']:.3f}")
+        >>> print(si_metrics)  # Default collector returns a node-to-Si mapping.
         """
         return self._telemetry.compute_sense_index(graph)

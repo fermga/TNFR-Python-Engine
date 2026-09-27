@@ -44,6 +44,10 @@ apply. No confinement potential or additional physical coefficient is added.
 
 ## 2. Canonical support resets have a signed energy budget
 
+Here "support reset" means a capacity/phase reset on the fixed cycle, not
+an edge-set event. The latter has a separate
+[relational storage budget](nodal/RELATIONAL_PATTERN_COMPOSITION.md#support-event-premise-admission).
+
 Use target-only Coupling with `UM_BIDIRECTIONAL=False` and
 `UM_FUNCTIONAL_LINKS=False`. Its immutable all-target stage, followed by
 uniform Silence, gives the exact reference reset
@@ -214,7 +218,8 @@ both `0<s,eta<1`, and every flow lasts a fixed `h>0`. The cycle maps
 `rho_b=max_{lambda>0}|1-b*lambda|<1` over the cycle spectrum. This is a
 geometric envelope, not a claim that the combined gradient norm decreases
 at every event. The ordinary EPI
-Dirichlet energy `E_x=x^T*L*x`, unchanged by support events, satisfies
+Dirichlet energy `E_x=x^T*L*x`, unchanged by these capacity/phase resets on
+fixed edges, satisfies
 
 $$
 \dot E_x\leq-e m\|Lx\|^2+

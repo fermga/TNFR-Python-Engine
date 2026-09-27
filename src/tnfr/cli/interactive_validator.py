@@ -19,8 +19,10 @@ if TYPE_CHECKING:
     from ..operators.health_analyzer import SequenceHealthMetrics
     from ..tools.sequence_generator import GenerationResult
 
+from ..config.operator_names import VALID_END_OPERATORS, VALID_START_OPERATORS
 from ..operators.grammar import validate_sequence_with_health
 from ..operators.health_analyzer import SequenceHealthAnalyzer
+from ..operators.operator_contracts import iter_contracts
 from ..tools.domain_templates import list_domains, list_objectives
 from ..tools.sequence_generator import ContextualSequenceGenerator
 
@@ -94,7 +96,7 @@ class TNFRInteractiveValidator:
         print()
         print("┌" + "─" * 58 + "┐")
         print("│" + " " * 10 + "TNFR Interactive Sequence Validator" + " " * 13 + "│")
-        print("│" + " " * 15 + "Grammar 2.0 - Full Capabilities" + " " * 12 + "│")
+        print("│" + " " * 13 + "Configured grammar and diagnostics" + " " * 11 + "│")
         print("└" + "─" * 58 + "┘")
         print()
 
@@ -349,26 +351,16 @@ class TNFRInteractiveValidator:
         print()
         print("TNFR (Resonant Fractal Nature Theory) Operators:")
         print()
-        print("  emission      - Initiate resonant pattern (AL)")
-        print("  reception     - Receive and integrate patterns (EN)")
-        print("  coherence     - Stabilize structure (IL)")
-        print("  dissonance    - Introduce controlled instability (OZ)")
-        print("  coupling      - Create structural links (UM)")
-        print("  resonance     - Amplify and propagate (RA)")
-        print("  silence       - Freeze evolution temporarily (SHA)")
-        print("  expansion     - Increase complexity (VAL)")
-        print("  contraction   - Reduce complexity (NUL)")
-        print("  self_organization - Spontaneous pattern formation (THOL)")
-        print("  mutation      - Phase transformation (ZHIR)")
-        print("  transition    - Movement between states (NAV)")
-        print("  recursivity   - Nested operations (REMESH)")
+        for contract in iter_contracts():
+            print(f"  {contract.name:18} ({contract.glyph}) - {contract.purpose}")
+        print("  Registered purposes do not replace live operator admission.")
         print()
-        print("Health Metrics:")
+        print("Configured word diagnostics (not stability or formation proofs):")
         print()
         print("  Overall Health    - Composite quality score (0.0-1.0)")
         print("  Flow Quality      - Sequential token-flow score")
         print("  Balance Score     - Stability/instability equilibrium")
-        print("  Sustainability    - Long-term maintenance capacity")
+        print("  Sustainability    - Configured ending, debt and regeneration score")
         print()
         print("For more information, visit:")
         print("  https://github.com/fermga/TNFR-Python-Engine")
@@ -476,8 +468,11 @@ class TNFRInteractiveValidator:
         """Suggest fixes for validation errors."""
         print("💡 Suggestions:")
         print("  - Check operator spelling (e.g., 'emission' not 'emmision')")
-        print("  - Ensure sequence starts with emission or reception")
-        print("  - End with a stabilizer (coherence, silence, self_organization)")
+        print(
+            "  - Standalone U1 initiators: " + ", ".join(sorted(VALID_START_OPERATORS))
+        )
+        print("  - Standalone U1 closures: " + ", ".join(sorted(VALID_END_OPERATORS)))
+        print("  - These roles alone do not satisfy every grammar or live-state rule")
         print()
 
     def _display_exception(self, error: Exception) -> None:

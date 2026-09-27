@@ -5,6 +5,7 @@ import math
 import os
 import subprocess
 import sys
+from copy import deepcopy
 from pathlib import Path
 
 import networkx as nx
@@ -50,6 +51,89 @@ def test_unsupported_graph_state_is_explicitly_rejected(value):
     graph.graph["unsupported"] = value
     with pytest.raises(ValueError, match="finite JSON state"):
         encode_graph(graph)
+
+
+def _record(payload, kind):
+    return payload if kind == "graph" else payload[kind][0]
+
+
+@pytest.mark.parametrize("kind", ("graph", "nodes", "edges"))
+def test_graph_attributes_cannot_coerce_pair_arrays_and_drop_repeated_values(kind):
+    payload = encode_graph(nx.path_graph(2))
+    _record(payload, kind)["attributes"] = [["EPI", 0.5], ["EPI", 9.0]]
+    before = deepcopy(payload)
+
+    with pytest.raises(ValueError, match="attributes must be a JSON object"):
+        decode_graph(payload)
+
+    assert payload == before
+
+
+@pytest.mark.parametrize("kind", ("graph", "nodes", "edges"))
+def test_graph_record_fields_cannot_be_silently_discarded(kind):
+    payload = encode_graph(nx.path_graph(2))
+    # A key cannot be meaningful on a declared simple graph and then vanish.
+    field = "key" if kind == "edges" else "unsupported"
+    _record(payload, kind)[field] = "unretained state"
+    with pytest.raises(ValueError, match="unknown fields"):
+        decode_graph(payload)
+
+
+@pytest.mark.parametrize(
+    "kind, field", (("graph", "attributes"), ("nodes", "id"), ("edges", "source"))
+)
+def test_required_record_fields_are_rejected_with_schema_error(kind, field):
+    payload = encode_graph(nx.path_graph(2))
+    del _record(payload, kind)[field]
+    with pytest.raises(ValueError, match="missing or unknown fields"):
+        decode_graph(payload)
+
+
+@pytest.mark.parametrize("field", ("nodes", "edges"))
+def test_record_collections_require_json_arrays(field):
+    payload = encode_graph(nx.path_graph(2))
+    payload[field] = {"unexpected": payload[field]}
+    with pytest.raises(ValueError, match=f"graph.{field} must be a JSON array"):
+        decode_graph(payload)
+
+
+@pytest.mark.parametrize("kind", ("graph", "nodes", "edges"))
+def test_graph_records_require_json_objects(kind):
+    payload = encode_graph(nx.path_graph(2))
+    if kind == "graph":
+        payload = []
+    else:
+        payload[kind][0] = []
+    with pytest.raises(ValueError, match="must be a JSON object"):
+        decode_graph(payload)
+
+
+def test_multigraph_requires_explicit_keys_and_retains_distinct_parallel_channels():
+    graph = nx.MultiDiGraph()
+    graph.add_edge("a", "b", key=0, weight=0.0)
+    graph.add_edge("a", "b", key="0", weight=2.0)
+    payload = encode_graph(graph)
+    assert encode_graph(decode_graph(payload)) == payload
+    del payload["edges"][0]["key"]
+    with pytest.raises(ValueError, match="missing or unknown fields"):
+        decode_graph(payload)
+
+
+def test_decoded_json_attributes_are_detached_and_remain_open_metadata():
+    graph = nx.path_graph(2)
+    graph.graph["future_metadata"] = {"observations": [None, True, -0.25]}
+    graph.nodes[0]["history"] = [{"EPI": -0.5}]
+    graph.edges[0, 1]["channels"] = ["form"]
+    payload = encode_graph(graph)
+    before = deepcopy(payload)
+    restored = decode_graph(payload)
+
+    restored.graph["future_metadata"]["observations"].append(1.0)
+    restored.nodes[0]["history"][0]["EPI"] = 0.75
+    restored.edges[0, 1]["channels"].append("phase")
+
+    assert payload == before
+    assert encode_graph(graph) == before
 
 
 def test_manifest_telemetry_matches_analytic_coherence():

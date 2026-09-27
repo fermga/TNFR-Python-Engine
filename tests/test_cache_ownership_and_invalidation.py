@@ -1,6 +1,10 @@
 """Cache results must preserve graph ownership and explicit request semantics."""
 
+import ast
+import importlib
+import inspect
 import pickle
+from dataclasses import fields
 from pathlib import Path
 
 import networkx as nx
@@ -20,6 +24,107 @@ from tnfr.cache import (
 )
 from tnfr.metrics.buffer_cache import ensure_numpy_buffers
 from tnfr.utils.unified_cache import UnifiedLRUCache
+
+
+def test_cache_type_aliases_resolve_to_the_live_shared_owners():
+    from tnfr.utils import cache
+
+    stub = ast.parse(
+        Path(cache.__file__).with_suffix(".pyi").read_text(encoding="utf-8")
+    )
+    owners = {
+        alias.asname: ("." * node.level + node.module, alias.name)
+        for node in stub.body
+        if isinstance(node, ast.ImportFrom)
+        for alias in node.names
+        if alias.asname is not None
+    }
+    shared_names = {
+        "CacheStatistics",
+        "CacheLayer",
+        "MappingCacheLayer",
+        "ShelveCacheLayer",
+        "RedisCacheLayer",
+        "InstrumentedLRUCache",
+        "ManagedLRUCache",
+        "SecurityError",
+        "SecurityWarning",
+        "create_hmac_signer",
+        "create_hmac_validator",
+        "create_secure_shelve_layer",
+        "create_secure_redis_layer",
+    }
+    assert shared_names <= owners.keys()
+    local_classes = {node.name for node in stub.body if isinstance(node, ast.ClassDef)}
+    assert not shared_names & local_classes
+    for name in shared_names:
+        module_name, attribute = owners[name]
+        owner = importlib.import_module(module_name, cache.__package__)
+        assert getattr(cache, name) is getattr(owner, attribute)
+
+
+def test_utility_type_exports_and_import_helpers_match_runtime():
+    import tnfr.utils as utilities
+    from tnfr.utils import init
+
+    stub = ast.parse(
+        Path(utilities.__file__).with_suffix(".pyi").read_text(encoding="utf-8")
+    )
+    exported = next(
+        ast.literal_eval(node.value)
+        for node in stub.body
+        if isinstance(node, ast.Assign)
+        and any(
+            isinstance(target, ast.Name) and target.id == "__all__"
+            for target in node.targets
+        )
+    )
+    assert set(exported) == set(utilities.__all__)
+    for name in exported:
+        getattr(utilities, name)
+    for module in (utilities, init):
+        with pytest.raises(AttributeError):
+            getattr(module, "get_numpy")
+        declarations = ast.parse(
+            Path(module.__file__).with_suffix(".pyi").read_text(encoding="utf-8")
+        )
+        assert not any(
+            isinstance(node, ast.FunctionDef) and node.name == "get_numpy"
+            for node in declarations.body
+        )
+    init_stub = ast.parse(
+        Path(init.__file__).with_suffix(".pyi").read_text(encoding="utf-8")
+    )
+    prune = next(
+        node
+        for node in init_stub.body
+        if isinstance(node, ast.FunctionDef) and node.name == "prune_failed_imports"
+    )
+    assert not inspect.signature(init.prune_failed_imports).parameters
+    assert not prune.args.posonlyargs + prune.args.args + prune.args.kwonlyargs
+    assert prune.args.vararg is None and prune.args.kwarg is None
+
+
+def test_shared_cache_type_declarations_retain_runtime_fields():
+    from tnfr import types
+
+    stub = ast.parse(
+        Path(types.__file__).with_suffix(".pyi").read_text(encoding="utf-8")
+    )
+    declarations = {
+        node.name: node for node in stub.body if isinstance(node, ast.ClassDef)
+    }
+    stats = declarations["CacheStats"]
+    field_names = [
+        node.target.id for node in stats.body if isinstance(node, ast.AnnAssign)
+    ]
+    assert field_names == [field.name for field in fields(types.CacheStats)]
+    enum_values = {
+        node.targets[0].id: ast.literal_eval(node.value)
+        for node in declarations["CacheLevel"].body
+        if isinstance(node, ast.Assign)
+    }
+    assert enum_values == {item.name: item.value for item in types.CacheLevel}
 
 
 def test_copied_graph_does_not_reuse_original_cache_or_scratch_arrays():

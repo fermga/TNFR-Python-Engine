@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Collection, Iterable, Mapping, Sequence
 from typing import Any, Literal, overload
 
 from ..types import GraphLike, NodeAttrMap
@@ -16,6 +16,9 @@ def finite_pearson_correlation(
 ) -> float | None: ...
 def validate_structural_coherence(value: float, *, name: str = ...) -> float: ...
 def structural_coherence(dnfr: Any, depi: Any = ...) -> Any: ...
+def _coherence_on_nodes(
+    G: GraphLike, nodes: Collection[Any]
+) -> tuple[float, float, float]: ...
 def is_structural_equilibrium(
     dnfr: float,
     depi: float = ...,

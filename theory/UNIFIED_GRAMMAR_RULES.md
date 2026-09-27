@@ -291,6 +291,7 @@ every possible dynamical risk is expressible by six word constraints.
 | Operator roles and calibration | [physics_derivation.py](../src/tnfr/config/physics_derivation.py) |
 | Re-exported sets and window | [grammar_types.py](../src/tnfr/operators/grammar_types.py) |
 | Declarative grammar and basis registries | [grammar_canon.py](../src/tnfr/operators/grammar_canon.py) |
+| Public validation facade | [grammar.py](../src/tnfr/operators/grammar.py) |
 | Operator-list validation | [grammar_core.py](../src/tnfr/operators/grammar_core.py) |
 | Context-aware name/glyph validation | [grammar_patterns.py](../src/tnfr/operators/grammar_patterns.py) |
 | Causal debt and prior Coherence | [grammar_debt.py](../src/tnfr/operators/grammar_debt.py) |
@@ -298,7 +299,13 @@ every possible dynamical risk is expressible by six word constraints.
 | Validated execution boundary | [grammar_execution.py](../src/tnfr/operators/grammar_execution.py) |
 | Finite represented EPI execution evidence | [grammar_evidence.py](../src/tnfr/operators/grammar_evidence.py) |
 | Read-only grammar and evidence reporting | [grammar_observations.py](../src/tnfr/operators/grammar_observations.py) |
+| Live operator preconditions | [preconditions](../src/tnfr/operators/preconditions/__init__.py) |
+| Reference-relative U6 observation | [grammar_u6.py](../src/tnfr/operators/grammar_u6.py) |
 | Field measurements | [fields.py](../src/tnfr/physics/fields.py) |
+
+Consumers reuse these role predicates and registries rather than maintaining
+independent operator sets. Word validation and live state admission remain
+separate steps in this source chain.
 
 The legacy C1/RC1 initiation rules map to U1, C2/RC2 to U2, RC3 to U3, and
 C3/RC4 to U4. U5 covers declared hierarchy and U6 covers potential telemetry.
@@ -361,6 +368,22 @@ Verification has separate targets:
   substituting a surrogate.
 - **Telemetry:** record C(t), Si, ν_f in Hz_str, phase, ΔNFR, and the tetrad with
   seeds, operator sequence, and before/after field baselines.
+
+The implementation owners are listed in §8. The following focused tests
+distinguish registry consistency, live execution and read-only observation:
+
+| Contract | Principal tests |
+| --- | --- |
+| Role registry and consumer consistency | [Grammar canon](../tests/operators/test_grammar_canon.py), [consumer consistency](../tests/operators/test_grammar_canonical_consistency.py) |
+| U1–U4 context and history | [Grammar dynamics](../tests/operators/test_grammar_dynamics.py) |
+| U3 rejection before mutation | [Hard U3 invariant](../tests/operators/test_u3_hard_invariant.py) |
+| Operator postconditions on their declared paths | [Operator contracts](../tests/operators/test_operator_contracts.py) |
+| Reference-relative U6 drift and aligned-support admission | [U6 observations](../tests/operators/test_grammar_u6_observations.py) |
+| Phase-sector bounds and field computability | [Tetrad bounds](../tests/physics/test_tetrad_bounds.py) |
+
+The field-computability tests do not exercise U6's reference-relative monitor.
+Passing this finite coverage does not establish unrestricted asymptotic
+stability or physical validation.
 
 The numerical policies and operator sets remain fixed by their existing source
 definitions. Tests of those values establish compatibility. They do not close

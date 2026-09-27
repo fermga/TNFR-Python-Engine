@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import importlib.util
+import random
 import sys
 from pathlib import Path
+
+import pytest
 
 
 def _load_module(name: str, path: Path):
@@ -37,6 +40,33 @@ def test_dynamic_example_import_preserves_tnfr_module_identity():
     assert module.ROOT == root
     assert sys.modules["tnfr"] is tnfr
     assert sys.modules["tnfr.utils.cache"] is cache_module
+
+
+@pytest.mark.parametrize("nodes", (14, 21, 24))
+def test_sensor_scramble_preserves_histogram_and_topology_for_each_size(nodes):
+    from tnfr.physics.fields import compute_phase_gradient
+
+    root = Path(__file__).resolve().parents[1]
+    module = _load_module(
+        "phase_gate_monitor_demo",
+        root / "examples" / "10_applications" / "90_phase_gate_monitor_demo.py",
+    )
+    random_state = random.getstate()
+    smooth = module.build_sensor_ring(nodes)
+    scrambled = module.build_sensor_ring(nodes, scrambled=True)
+    repeated = module.build_sensor_ring(nodes, scrambled=True)
+
+    assert random.getstate() == random_state
+    assert list(smooth.edges) == list(scrambled.edges)
+
+    def phases(graph):
+        return [graph.nodes[node]["theta"] for node in graph]
+
+    assert sorted(phases(smooth)) == sorted(phases(scrambled))
+    assert phases(scrambled) == phases(repeated)
+    assert sum(compute_phase_gradient(scrambled).values()) > sum(
+        compute_phase_gradient(smooth).values()
+    )
 
 
 def test_phase_gate_validation_finds_tnfr_local_advantage(tmp_path: Path):

@@ -1,8 +1,8 @@
-"""TNFR Unified Telemetry System - Consolidated Event Collection and Monitoring.
+"""Telemetry event storage, cache observations and reorganization-count estimates.
 
-Provides unified telemetry emission for all TNFR dynamics analysis.
-Telemetry captures observable manifestations of nodal equation evolution
-without perturbing underlying TNFR coherence.
+The optional event sink records caller-supplied values; it neither calculates
+the tetrad nor authenticates model dynamics. Specialized graph/cache/count
+observers retain their own contracts and are exposed alongside the sink.
 
 Main Components:
 - TNFRUnifiedTelemetrySystem: Consolidated event collection
@@ -21,7 +21,7 @@ emit_structural_telemetry(coherence=0.85, phi_s=0.6)
 ```
 """
 
-# Legacy telemetry components (for compatibility)
+# Specialized observation owners
 from .cache_metrics import (
     CacheMetricsSnapshot,
     CacheTelemetryPublisher,
@@ -36,7 +36,7 @@ from .nu_f import (
     record_nu_f_window,
 )
 
-# Unified telemetry system (primary interface)
+# Optional buffered event sink
 from .unified_telemetry_system import (
     FailureTelemetryEvent,
     PerformanceTelemetryEvent,
@@ -57,6 +57,17 @@ from .verbosity import (
 )
 
 __all__ = [
+    "TNFRUnifiedTelemetrySystem",
+    "TelemetryConfiguration",
+    "StructuralTelemetryEvent",
+    "PerformanceTelemetryEvent",
+    "FailureTelemetryEvent",
+    "get_unified_telemetry_system",
+    "emit_structural_telemetry",
+    "emit_performance_telemetry",
+    "emit_failure_telemetry",
+    "flush_unified_telemetry",
+    "get_unified_telemetry_stats",
     "CacheMetricsSnapshot",
     "CacheTelemetryPublisher",
     "ensure_cache_metrics_publisher",

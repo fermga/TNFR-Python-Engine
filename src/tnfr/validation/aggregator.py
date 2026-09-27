@@ -7,7 +7,8 @@ checks, telemetry enrichment, CI guards).
 
 Design Principles
 -----------------
-1. Read-only: Never mutates graph state; all computations are telemetry.
+1. Observational: Never advances nodal state; shared field/geometry owners may
+   maintain rebuildable graph caches. All decisions here are telemetry.
 2. Non-invasive: Wraps existing grammar error factory without altering
    its behaviour or the validator core.
 3. Extensible: Thresholds overrideable; adding new canonical fields or
@@ -28,7 +29,9 @@ status    : "valid" | "invalid" (grammar only)
 risk_level: "low" | "elevated" | "critical" (fields + grammar)
 grammar_errors: list[ExtendedGrammarError]
 field_metrics : raw field snapshots + aggregates
-thresholds_exceeded: dict[name, bool]
+thresholds_exceeded: dict[name, bool] for evaluated checks only; availability
+and failure reasons are retained in field_metrics. Missing observations or
+invalid thresholds do not establish a low-risk result.
 
 Usage
 -----
@@ -41,18 +44,20 @@ Usage
 
 Physics Traceability
 --------------------
-Grammar rules reference nodal equation boundedness and coupling conditions
-(U1-U4). The phase-field values are monitoring policies, distinct from the
-exact wrapped-angle bound π and the measured, σ-dependent synchronization
-onset near 0.29. The potential drift value implements the selected U6 policy
-rather than a graph-independent bound.
+Grammar admission and the configured field cuts are monitoring policies;
+they do not derive boundedness, convergence or a universal synchronization
+threshold. The exact wrapped-angle bound π is distinct from these selected
+warning cuts. Potential drift implements the selected reference-relative U6
+policy, not a graph-independent bound on potential.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Any, Iterable, Sequence
+from dataclasses import asdict, dataclass
+from fractions import Fraction
+from typing import Any, Sequence
 
+from .._exact_time import finite_represented_real
 from ..constants.canonical import (
     GRAD_PHI_CANONICAL_THRESHOLD,
     K_PHI_CANONICAL_THRESHOLD,
@@ -66,6 +71,7 @@ try:  # Graph dependency (NetworkX-like interface)
 except ImportError:  # pragma: no cover
     nx = None  # type: ignore
 
+from ..metrics.common import finite_mean
 from ..operators.grammar_error_factory import (
     ExtendedGrammarError,
     collect_grammar_errors,
@@ -73,10 +79,9 @@ from ..operators.grammar_error_factory import (
 from ..operators.grammar_u6 import validate_structural_potential_confinement
 from ..performance.guardrails import PerformanceRegistry
 from ..physics.fields import (
-    compute_phase_curvature,
-    compute_phase_gradient,
     compute_structural_potential,
-    estimate_coherence_length,
+    estimate_coherence_length_with_provenance,
+    observe_phase_curvature,
 )
 
 __all__ = [
@@ -127,11 +132,6 @@ class ValidationReport:
         }
 
 
-def _mean(values: Iterable[float]) -> float:
-    vals = list(values)
-    return sum(vals) / max(len(vals), 1)
-
-
 def run_structural_validation(
     G: Any,
     *,
@@ -153,12 +153,12 @@ def run_structural_validation(
     ----------
     G : Graph
         TNFR network (NetworkX-like) with required node attributes
-        for ΔNFR & phase where available.
-        where available.
+        for ΔNFR & phase where available. Field owners may update rebuildable
+        graph caches; structural node/edge state is not advanced.
     sequence : Sequence[str] | None
         Operator glyphs applied. If provided, grammar errors collected.
-        If None, grammar validation skipped (status remains 'valid'
-        unless field risk escalates).
+        If None, grammar validation is skipped (status remains 'valid').
+        Field risk and evidence availability are reported separately.
     max_delta_phi_s : float
         Selected U6 monitoring threshold for mean absolute ΔΦ_s drift.
         Evaluated only when a baseline is provided.
@@ -206,17 +206,55 @@ def run_structural_validation(
         grammar_errors = collect_grammar_errors(sequence)
     status = "valid" if not grammar_errors else "invalid"
 
-    # Field computations (canonical tetrad)
-    phi_s_map = compute_structural_potential(G)
-    grad_map = compute_phase_gradient(G)
-    curvature_map = compute_phase_curvature(G)
-    xi_c = estimate_coherence_length(G)
-
-    # Aggregates
-    mean_phi_s = _mean(phi_s_map.values())
-    mean_grad = _mean(grad_map.values())
-    max_grad = max(grad_map.values()) if grad_map else 0.0
-    max_k_phi = max(abs(v) for v in curvature_map.values()) if curvature_map else 0.0
+    # Independent shared observations: undefined curvature must not erase a
+    # defined phase gradient, and empty support supplies no measured aggregate.
+    field_availability = dict.fromkeys(
+        ("phi_s", "phase_gradient", "phase_curvature", "xi_c"), False
+    )
+    field_errors: dict[str, str] = {}
+    phi_s_map: dict[Any, float] = {}
+    grad_map: dict[Any, float] = {}
+    curvature_map: dict[Any, float | None] = {}
+    mean_phi_s = mean_grad = max_grad = max_k_phi = xi_c = None
+    xi_c_provenance = None
+    if G.number_of_nodes():
+        try:
+            phi_s_map = compute_structural_potential(G)
+            mean_phi_s = finite_mean(phi_s_map.values(), name="structural potential")
+            field_availability["phi_s"] = bool(phi_s_map)
+        except Exception as exc:
+            field_errors["phi_s"] = str(exc)
+        try:
+            phase = observe_phase_curvature(G)
+            grad_map = {row.node: row.gradient for row in phase.rows}
+            curvature_map = {row.node: row.curvature for row in phase.rows}
+            mean_grad = finite_mean(grad_map.values(), name="phase gradient")
+            max_grad = max(grad_map.values())
+            field_availability["phase_gradient"] = True
+            if all(value is not None for value in curvature_map.values()):
+                max_k_phi = max(abs(value) for value in curvature_map.values())
+                field_availability["phase_curvature"] = True
+            else:
+                field_errors["phase_curvature"] = (
+                    "undefined represented neighbor resultant"
+                )
+        except Exception as exc:
+            field_errors["phase_gradient"] = str(exc)
+            field_errors["phase_curvature"] = str(exc)
+        try:
+            estimate = estimate_coherence_length_with_provenance(G)
+            xi_c_provenance = asdict(estimate)
+            value = finite_represented_real(xi_c_provenance.pop("value"), "xi_c")[0]
+            if value <= 0.0:
+                raise ValueError("coherence length requires a finite positive scale")
+            xi_c = value
+            field_availability["xi_c"] = True
+        except Exception as exc:
+            field_errors["xi_c"] = str(exc)
+    else:
+        field_errors = dict.fromkeys(
+            field_availability, "empty graph has no field samples"
+        )
 
     # Drift (optional baseline)
     delta_phi_s = None
@@ -239,9 +277,15 @@ def run_structural_validation(
         else:
             u6_status = "evaluated"
 
-    # System geometry approximation (unweighted)
+    # Global finite-size comparisons require connected undirected support;
+    # a component-local diameter cannot stand in for disconnected geometry.
+    system_diameter = mean_node_distance = None
     if nx is not None:
         try:
+            if G.number_of_nodes() < 2 or G.is_directed() or not nx.is_connected(G):
+                raise ValueError(
+                    "finite-size comparisons require connected undirected support with >= 2 nodes"
+                )
             # Use the linear-traversal heuristic; runtime is workload-specific.
             try:
                 from ..utils.fast_diameter import (
@@ -250,28 +294,54 @@ def run_structural_validation(
                 )
 
                 system_diameter = approximate_diameter_2sweep(G)
-            except (ImportError, Exception):
+            except Exception:
                 # Fallback to exact (slow) diameter
                 system_diameter = nx.diameter(G)  # type: ignore
                 compute_eccentricity_cached = None  # type: ignore
-        except Exception:  # pragma: no cover - fallback path
-            system_diameter = 0
+        except Exception as exc:
+            field_errors["system_geometry"] = str(exc)
             compute_eccentricity_cached = None  # type: ignore
         # Mean node eccentricity (cached when dependencies are unchanged)
         try:
+            if system_diameter is None:
+                raise ValueError(field_errors["system_geometry"])
             if compute_eccentricity_cached is not None:
                 ecc = compute_eccentricity_cached(G)
             else:
                 ecc = nx.eccentricity(G)  # type: ignore
-            mean_node_distance = _mean(ecc.values())
-        except Exception:  # pragma: no cover
-            mean_node_distance = 0.0
+            mean_node_distance = finite_mean(ecc.values(), name="node eccentricity")
+        except Exception as exc:
+            field_errors["mean_node_distance"] = str(exc)
     else:  # pragma: no cover
-        system_diameter = 0
-        mean_node_distance = 0.0
+        field_errors["system_geometry"] = "networkx unavailable"
 
     # Threshold evaluations
     thresholds_exceeded: dict[str, bool] = {}
+    threshold_status = {"delta_phi_s": u6_status}
+    threshold_reasons = {"delta_phi_s": u6_reason}
+    normalized_thresholds = {}
+
+    def assess(name, value, raw_threshold, *, scale=1.0, inclusive=True):
+        """Admit a configured comparison; unavailable is not a passing flag."""
+        try:
+            threshold = finite_represented_real(raw_threshold, name)[0]
+            if raw_threshold < 0:
+                raise ValueError("monitoring threshold must be nonnegative")
+            if value is None or scale is None or scale <= 0:
+                raise ValueError("required field or comparison geometry is unavailable")
+            limit = Fraction(threshold) * Fraction(scale)
+        except (TypeError, ValueError) as exc:
+            threshold_status[name] = "unavailable"
+            threshold_reasons[name] = str(exc)
+            notes.append(f"{name} unavailable: {exc}")
+            return False
+        observed = Fraction(value)
+        exceeded = observed >= limit if inclusive else observed > limit
+        normalized_thresholds[name] = threshold
+        threshold_status[name] = "evaluated"
+        threshold_reasons[name] = None
+        thresholds_exceeded[name] = bool(exceeded)
+        return exceeded
 
     if delta_phi_s is not None:
         exceeded = not u6_valid
@@ -280,41 +350,45 @@ def run_structural_validation(
             notes.append(
                 (
                     f"ΔΦ_s drift {delta_phi_s:.3f} ≥ "
-                    f"{max_delta_phi_s:.3f} (selected drift policy)"
+                    f"{float(max_delta_phi_s):.3f} (selected drift policy)"
                 )
             )
 
     # Phase gradient (mean & max considered; max is more sensitive to spikes)
-    grad_exceeded = max_grad >= max_phase_gradient
-    thresholds_exceeded["phase_gradient_max"] = grad_exceeded
+    grad_exceeded = assess("phase_gradient_max", max_grad, max_phase_gradient)
     if grad_exceeded:
         notes.append(
             (
                 f"max |∇φ| {max_grad:.3f} ≥ "
-                f"{max_phase_gradient:.3f} (stress threshold)"
+                f"{normalized_thresholds['phase_gradient_max']:.3f} (stress threshold)"
             )
         )
 
     # Curvature confinement pockets
-    k_phi_flag = max_k_phi >= k_phi_flag_threshold
-    thresholds_exceeded["k_phi_flag"] = k_phi_flag
+    k_phi_flag = assess("k_phi_flag", max_k_phi, k_phi_flag_threshold)
     if k_phi_flag:
         notes.append(
             (
                 f"|K_φ| max {max_k_phi:.3f} ≥ "
-                f"{k_phi_flag_threshold:.3f} (fault zone flag)"
+                f"{normalized_thresholds['k_phi_flag']:.3f} (fault zone flag)"
             )
         )
 
     # Coherence length critical / watch thresholds
-    xi_c_critical = (
-        system_diameter > 0 and xi_c > system_diameter * xi_c_critical_multiplier
+    xi_c_critical = assess(
+        "xi_c_critical",
+        xi_c,
+        xi_c_critical_multiplier,
+        scale=system_diameter,
+        inclusive=False,
     )
-    xi_c_watch = (
-        mean_node_distance > 0 and xi_c > mean_node_distance * xi_c_watch_multiplier
+    xi_c_watch = assess(
+        "xi_c_watch",
+        xi_c,
+        xi_c_watch_multiplier,
+        scale=mean_node_distance,
+        inclusive=False,
     )
-    thresholds_exceeded["xi_c_critical"] = bool(xi_c_critical)
-    thresholds_exceeded["xi_c_watch"] = bool(xi_c_watch)
     if xi_c_critical:
         notes.append(
             (
@@ -340,7 +414,8 @@ def run_structural_validation(
         ):
             risk_level = "critical"
         elif (
-            u6_status == "unavailable"
+            not all(field_availability.values())
+            or "unavailable" in threshold_status.values()
             or thresholds_exceeded.get("phase_gradient_max")
             or thresholds_exceeded.get("k_phi_flag")
             or thresholds_exceeded.get("xi_c_watch")
@@ -363,6 +438,11 @@ def run_structural_validation(
         "u6_reason": u6_reason,
         "system_diameter": system_diameter,
         "mean_node_distance": mean_node_distance,
+        "field_availability": field_availability,
+        "field_errors": field_errors,
+        "xi_c_provenance": xi_c_provenance,
+        "threshold_status": threshold_status,
+        "threshold_reasons": threshold_reasons,
     }
 
     report = ValidationReport(

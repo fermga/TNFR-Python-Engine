@@ -1,90 +1,25 @@
-"""Phase coherence metrics for TNFR networks.
+"""Read-only local and global phase-order diagnostics.
 
-This module provides phase alignment and synchronization metrics based on
-circular statistics and the Kuramoto order parameter. These metrics are
-essential for measuring the effectiveness of the IL (Coherence) operator's
-phase locking mechanism.
+The Kuramoto magnitude measures cancellation of represented unit phasors; a
+small value need not mean disorder (a regular alternating pattern can cancel).
+It is distinct from structural coherence C(t), a pairwise U3 admission test,
+and any theorem about operator action or persistence. In particular IL does
+not promise to increase this readout.
 
-Mathematical Foundation
------------------------
-
-**Kuramoto Order Parameter:**
-
-The phase alignment quality is measured using the Kuramoto order parameter r:
-
-.. math::
-    r = |\\frac{1}{N} \\sum_{j=1}^{N} e^{i\\theta_j}|
-
-where:
-- r ∈ [0, 1]
-- r = 1: Perfect phase synchrony (all nodes aligned)
-- r = 0: Complete phase disorder (uniformly distributed phases)
-- θ_j: Phase of node j in radians
-
-**Circular Mean:**
-
-The mean phase of a set of angles is computed using the circular mean to
-properly handle phase wrap-around at 2π:
-
-.. math::
-    \\theta_{mean} = \\text{arg}\\left(\\frac{1}{N} \\sum_{j=1}^{N} e^{i\\theta_j}\\right)
-
-This ensures that phases near 0 and 2π are correctly averaged (e.g., 0.1 and
-6.2 radians average to near 0, not π).
-
-TNFR Context
-------------
-
-Phase alignment is a key component of the IL (Coherence) operator:
-
-- **IL Phase Locking**: θ_node → θ_node + α * (θ_network - θ_node)
-- **Network Synchrony**: High r indicates effective IL application
-- **Local vs. Global**: Phase alignment can be measured at node or network level
-- **Structural Traceability**: Phase metrics enable telemetry of synchronization
-
-Examples
---------
-
-**Compute phase alignment for a node:**
-
->>> import networkx as nx
->>> from tnfr.metrics.phase_coherence import compute_phase_alignment
->>> from tnfr.constants import THETA_PRIMARY
->>> G = nx.Graph()
->>> G.add_edges_from([(1, 2), (2, 3)])
->>> G.nodes[1][THETA_PRIMARY] = 0.0
->>> G.nodes[2][THETA_PRIMARY] = 0.1
->>> G.nodes[3][THETA_PRIMARY] = 0.2
->>> alignment = compute_phase_alignment(G, 2, radius=1)
->>> 0.0 <= alignment <= 1.0
-True
-
-**Compute global phase coherence:**
-
->>> from tnfr.metrics.phase_coherence import compute_global_phase_coherence
->>> coherence = compute_global_phase_coherence(G)
->>> 0.0 <= coherence <= 1.0
-True
-
-See Also
---------
-
-operators.definitions.Coherence : IL operator that applies phase locking
-metrics.common.compute_coherence : Canonical total structural coherence C(t)
-observers.kuramoto_order : Alternative Kuramoto order parameter implementation
+Phase materialization and phasor reduction reuse the engine's trigonometric
+and Kuramoto owners. A vanishing resultant has a defined magnitude of zero;
+these functions neither request nor supply a mean direction.
 """
 
 from __future__ import annotations
 
-import cmath
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
+
+from .local_coherence import _radius_nodes
+from .trig_cache import compute_theta_trig
 
 if TYPE_CHECKING:
     from ..types import TNFRGraph
-
-from ..alias import get_attr
-from ..constants.aliases import ALIAS_THETA
-from ..mathematics.unified_numerical import np
 
 __all__ = [
     "compute_phase_alignment",
@@ -92,257 +27,45 @@ __all__ = [
 ]
 
 
+def _phase_order_on_nodes(G: TNFRGraph, nodes: tuple[Any, ...]) -> float:
+    """Reduce the selected phases without skipping invalid stored evidence."""
+    # Import locally: gamma itself imports metrics during package startup.
+    from ..gamma import _kuramoto_from_trig
+
+    trig = compute_theta_trig((node, G.nodes[node]) for node in nodes)
+    if len(trig.order) <= 1:
+        # Preserve the historical empty/singleton observation conventions, but
+        # validate the singleton phase before returning the trivial magnitude.
+        return 1.0
+    magnitude, _ = _kuramoto_from_trig(trig)
+    return min(1.0, magnitude)
+
+
 def compute_phase_alignment(G: TNFRGraph, node: Any, radius: int = 1) -> float:
-    """Compute phase alignment quality for node and neighborhood.
+    """Return phase-order magnitude on the center-inclusive graph ball.
 
-    Uses Kuramoto order parameter r = |⟨e^(iθ)⟩| to measure phase synchrony
-    within a node's neighborhood. Higher values indicate better phase alignment,
-    which is the goal of IL (Coherence) phase locking.
+    Radius must be a nonnegative integer and the center must exist. Directed
+    graphs use outgoing support paths; edge weights do not change membership
+    and parallel edges do not repeat a node. Only selected phases are consumed.
+    The shared phase reader uses the authoritative alias and a zero convention
+    when every phase alias is absent; malformed stored values raise.
 
-    Parameters
-    ----------
-    G : TNFRGraph
-        Network graph with node phase attributes (θ)
-    node : Any
-        Central node for local phase alignment computation
-    radius : int, default=1
-        Neighborhood radius:
-        - 1 = node + immediate neighbors (default)
-        - 2 = node + neighbors + neighbors-of-neighbors
-        - etc.
-
-    Returns
-    -------
-    float
-        Phase alignment in [0, 1] where:
-        - 1.0 = Perfect phase synchrony (all phases aligned)
-        - 0.0 = Complete phase disorder (uniformly distributed)
-
-    Notes
-    -----
-    **Mathematical Foundation:**
-
-    Kuramoto order parameter for local neighborhood:
-
-    .. math::
-        r = |\\frac{1}{N} \\sum_{j \\in \\mathcal{N}(i)} e^{i\\theta_j}|
-
-    where 𝒩(i) is the set of neighbors within `radius` of node i (including i).
-
-    **Use Cases:**
-
-    - **IL Effectiveness**: Measure phase locking success after IL application
-    - **Synchrony Monitoring**: Track local phase coherence over time
-    - **Hotspot Detection**: Identify regions with poor phase alignment
-    - **Coupling Validation**: Verify phase prerequisites before UM (Coupling)
-
-    **Special Cases:**
-
-    - Isolated node (no neighbors): Returns 1.0 (trivially synchronized)
-    - Single neighbor: Returns 1.0 (two nodes always "aligned")
-    - Empty neighborhood: Returns 1.0 (no disorder by definition)
-
-    **TNFR Context:**
-
-    Phase alignment is a precondition for effective coupling (UM operator) and
-    resonance (RA operator). The IL operator increases phase alignment through
-    its phase locking mechanism: θ_node → θ_node + α * (θ_network - θ_node).
-
-    See Also
-    --------
-    compute_global_phase_coherence : Network-wide phase coherence
-    operators.definitions.Coherence : IL operator with phase locking
-
-    Examples
-    --------
-    >>> import networkx as nx
-    >>> from tnfr.metrics.phase_coherence import compute_phase_alignment
-    >>> from tnfr.constants import THETA_PRIMARY
-    >>> G = nx.Graph()
-    >>> G.add_edges_from([(1, 2), (2, 3), (3, 4)])
-    >>> # Highly aligned phases
-    >>> for n in [1, 2, 3, 4]:
-    ...     G.nodes[n][THETA_PRIMARY] = 0.1 * n  # Small differences
-    >>> r = compute_phase_alignment(G, node=2, radius=1)
-    >>> r > 0.9  # Should be highly aligned
-    True
-    >>> # Disordered phases
-    >>> import numpy as np
-    >>> for n in [1, 2, 3, 4]:
-    ...     G.nodes[n][THETA_PRIMARY] = np.random.uniform(0, 2*np.pi)
-    >>> r = compute_phase_alignment(G, node=2, radius=1)
-    >>> 0.0 <= r <= 1.0  # Could be anywhere in range
-    True
+    Radius zero and an admitted isolated node return 1.0. A two-node ball can
+    have any order magnitude between zero and one, depending on phase separation.
+    A vanishing resultant is a valid zero magnitude, not an available direction.
+    The final upper clamp removes floating overshoot of the unit bound; it is
+    neither a coupling threshold nor a stability policy. No graph data is written.
     """
-    import networkx as nx
-
-    # Get neighborhood
-    if radius == 1:
-        neighbors = set(G.neighbors(node)) | {node}
-    else:
-        try:
-            neighbors = set(
-                nx.single_source_shortest_path_length(G, node, cutoff=radius).keys()
-            )
-        except (nx.NetworkXError, KeyError):
-            # Node not in graph or graph is empty
-            neighbors = {node} if node in G.nodes else set()
-
-    # Collect phases from neighborhood
-    phases = []
-    for n in neighbors:
-        try:
-            theta = cast(float, get_attr(G.nodes[n], ALIAS_THETA, 0.0))
-            phases.append(theta)
-        except (KeyError, ValueError, TypeError):
-            # Skip nodes with invalid phase data
-            continue
-
-    # Handle edge cases
-    if not phases:
-        return 1.0  # Empty neighborhood: trivially synchronized
-
-    if len(phases) == 1:
-        return 1.0  # Single node: perfect synchrony
-
-    # Compute Kuramoto order parameter using circular statistics
-    if np is not None:
-        # NumPy vectorized computation
-        phases_array = np.array(phases)
-        complex_phases = np.exp(1j * phases_array)
-        mean_complex = np.mean(complex_phases)
-        r = np.abs(mean_complex)
-        return float(r)
-    else:
-        # Pure Python fallback
-
-        # Convert phases to complex exponentials
-        complex_phases = [cmath.exp(1j * theta) for theta in phases]
-
-        # Compute mean complex phasor
-        mean_real = sum(z.real for z in complex_phases) / len(complex_phases)
-        mean_imag = sum(z.imag for z in complex_phases) / len(complex_phases)
-        mean_complex = complex(mean_real, mean_imag)
-
-        # Kuramoto order parameter is magnitude of mean phasor
-        r = abs(mean_complex)
-        return float(r)
+    return _phase_order_on_nodes(G, _radius_nodes(G, node, radius))
 
 
 def compute_global_phase_coherence(G: TNFRGraph) -> float:
-    """Compute global phase coherence across entire network.
+    """Return phase-order magnitude across all graph nodes.
 
-    Measures network-wide phase synchronization using the Kuramoto order
-    parameter applied to all nodes. This is the global analog of
-    compute_phase_alignment and indicates overall phase alignment quality.
-
-    Parameters
-    ----------
-    G : TNFRGraph
-        Network graph with node phase attributes (θ)
-
-    Returns
-    -------
-    float
-        Global phase coherence in [0, 1] where:
-        - 1.0 = Perfect network-wide phase synchrony
-        - 0.0 = Complete phase disorder across network
-
-    Notes
-    -----
-    **Mathematical Foundation:**
-
-    Global Kuramoto order parameter:
-
-    .. math::
-        r_{global} = |\\frac{1}{N} \\sum_{j=1}^{N} e^{i\\theta_j}|
-
-    where N is the total number of nodes in the network.
-
-    **Use Cases:**
-
-    - **IL Effectiveness**: Measure global impact of IL phase locking
-    - **Network Health**: Monitor overall synchronization state
-    - **Convergence Tracking**: Verify phase alignment over time
-    - **Bifurcation Measurement**: Low r_global records phase desynchronization;
-      precursor claims require a sampled trajectory and matched controls
-
-    **Special Cases:**
-
-    - Empty network: Returns 1.0 (no disorder by definition)
-    - Single node: Returns 1.0 (trivially synchronized)
-    - All phases = 0: Returns 1.0 (perfect alignment)
-
-    **TNFR Context:**
-
-    Global phase coherence is a phase-synchronization diagnostic. Together
-    with canonical C(t), it separates phase alignment from structural pressure
-    and EPI rate. Their joint observation does not prove asymptotic stability
-    or reconstruct the full TNFR state.
-
-    See Also
-    --------
-    compute_phase_alignment : Local phase alignment for node neighborhoods
-    metrics.common.compute_coherence : Canonical total structural coherence C(t)
-    observers.kuramoto_order : Alternative Kuramoto implementation
-
-    Examples
-    --------
-    >>> import networkx as nx
-    >>> from tnfr.metrics.phase_coherence import compute_global_phase_coherence
-    >>> from tnfr.constants import THETA_PRIMARY
-    >>> G = nx.Graph()
-    >>> G.add_nodes_from([1, 2, 3, 4])
-    >>> # Aligned network
-    >>> for n in [1, 2, 3, 4]:
-    ...     G.nodes[n][THETA_PRIMARY] = 0.5  # All same phase
-    >>> r = compute_global_phase_coherence(G)
-    >>> r == 1.0  # Perfect alignment
-    True
-    >>> # Disordered network
-    >>> import numpy as np
-    >>> for n in [1, 2, 3, 4]:
-    ...     G.nodes[n][THETA_PRIMARY] = np.random.uniform(0, 2*np.pi)
-    >>> r = compute_global_phase_coherence(G)
-    >>> 0.0 <= r <= 1.0
-    True
+    This is the same observation as local alignment with the entire node set.
+    The historical empty-graph convention is 1.0, not measured synchronization
+    evidence. A singleton is also 1.0 after phase validation. Missing phase
+    aliases use the shared zero convention; invalid present values raise rather
+    than being dropped or replaced by another alias. No graph data is written.
     """
-    # Collect all node phases
-    phases = []
-    for n in G.nodes():
-        try:
-            theta = cast(float, get_attr(G.nodes[n], ALIAS_THETA, 0.0))
-            phases.append(theta)
-        except (KeyError, ValueError, TypeError):
-            # Skip nodes with invalid phase data
-            continue
-
-    # Handle edge cases
-    if not phases:
-        return 1.0  # Empty network: trivially synchronized
-
-    if len(phases) == 1:
-        return 1.0  # Single node: perfect synchrony
-
-    # Compute Kuramoto order parameter using circular statistics
-    if np is not None:
-        # NumPy vectorized computation
-        phases_array = np.array(phases)
-        complex_phases = np.exp(1j * phases_array)
-        mean_complex = np.mean(complex_phases)
-        r = np.abs(mean_complex)
-        return float(r)
-    else:
-        # Pure Python fallback
-
-        # Convert phases to complex exponentials
-        complex_phases = [cmath.exp(1j * theta) for theta in phases]
-
-        # Compute mean complex phasor
-        mean_real = sum(z.real for z in complex_phases) / len(complex_phases)
-        mean_imag = sum(z.imag for z in complex_phases) / len(complex_phases)
-        mean_complex = complex(mean_real, mean_imag)
-
-        # Kuramoto order parameter is magnitude of mean phasor
-        r = abs(mean_complex)
-        return float(r)
+    return _phase_order_on_nodes(G, tuple(G.nodes()))

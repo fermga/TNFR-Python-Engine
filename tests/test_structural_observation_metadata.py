@@ -119,7 +119,7 @@ def test_domain_observation_adapters_preserve_distinct_semantics():
         graph.nodes[node].update(EPI=float(node), **{"ΔNFR": 0.0, "θ": 0.1})
     graph_observation = observe_graph_tetrad(collect_tetrad_snapshot(graph))
     arithmetic_observation = observe_arithmetic_nfr({"coherence": 1.0})
-    assert graph_observation.aggregation == "per_node_fields_plus_global_xi_c"
+    assert graph_observation.aggregation == "per_node_field_statistics_plus_global_xi_c"
     assert arithmetic_observation.aggregation == (
         "canonical_static_coherence_of_mean_absolute_pressure"
     )
@@ -145,6 +145,72 @@ def test_public_domain_readouts_expose_opt_in_observation_envelopes():
     assert network.tetrad_observation().domain == "graph"
     assert network.nfr_observation().domain == "graph"
     assert ArithmeticTNFRNetwork(10).nfr_observation().domain == "arithmetic"
+
+
+def test_summary_and_per_node_tetrads_keep_distinct_complete_metadata():
+    graph = nx.path_graph(3)
+    for node in graph:
+        graph.nodes[node].update(EPI=0.0, nu_f=1.0, theta=0.0, delta_nfr=0.0)
+    per_node = Network(graph).tetrad_observation()
+    summarized = observe_graph_tetrad(collect_tetrad_snapshot(graph))
+    assert per_node.aggregation == "per_node_fields_plus_global_xi_c"
+    assert summarized.aggregation == "per_node_field_statistics_plus_global_xi_c"
+    for observation in (per_node, summarized):
+        assert observation.metadata["complete"] is True
+        assert observation.metadata["unavailable"] is False
+        assert observation.metadata["field_availability"] == {
+            "phi_s": True,
+            "grad_phi": True,
+            "k_phi": True,
+            "xi_c": True,
+        }
+
+
+def test_partial_tetrad_is_useful_but_does_not_claim_complete_evidence():
+    import math
+
+    graph = nx.star_graph(4)
+    for node, phase in zip(graph, (0.3, 0.0, 0.0, math.pi, -math.pi)):
+        graph.nodes[node].update(EPI=1.0, nu_f=1.0, phase=phase, delta_nfr=0.0)
+    observation = observe_graph_tetrad(collect_tetrad_snapshot(graph))
+    assert observation.metadata["unavailable"] is False
+    assert observation.metadata["complete"] is False
+    assert observation.metadata["field_availability"] == {
+        "phi_s": True,
+        "grad_phi": True,
+        "k_phi": False,
+        "xi_c": True,
+    }
+
+
+@pytest.mark.parametrize("snapshot", [None, {}, {"phi_s": {}, "xi_c": float("nan")}])
+def test_empty_tetrad_payload_has_no_available_evidence(snapshot):
+    observation = observe_graph_tetrad(snapshot)
+    assert observation.metadata["unavailable"] is True
+    assert observation.metadata["complete"] is False
+    assert not any(observation.metadata["field_availability"].values())
+
+
+def test_per_node_completeness_requires_matching_nonempty_field_support():
+    from tnfr.sdk.simple import TetradSnapshot
+
+    snapshot = TetradSnapshot(
+        phi_s={0: 0.0}, grad_phi={0: 0.0}, k_phi={1: 0.0}, xi_c=1.0
+    )
+    observation = observe_graph_tetrad(snapshot)
+    assert all(observation.metadata["field_availability"].values())
+    assert observation.metadata["complete"] is False
+
+
+@pytest.mark.parametrize("invalid", [True, "0", float("nan"), Fraction(1, 10**400)])
+def test_invalid_summary_scalar_does_not_inherit_available_flag(invalid):
+    snapshot = collect_tetrad_snapshot(nx.path_graph(3))
+    snapshot["phi_s"]["mean"] = invalid
+    snapshot["xi_c"] = invalid
+    observation = observe_graph_tetrad(snapshot)
+    assert observation.metadata["field_availability"]["phi_s"] is False
+    assert observation.metadata["field_availability"]["xi_c"] is False
+    assert observation.metadata["complete"] is False
 
 
 def test_cross_domain_fixed_point_logic_and_frozen_state_remain_distinct():

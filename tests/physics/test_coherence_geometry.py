@@ -1,6 +1,7 @@
 """Exact level-set geometry of the canonical local coherence kernel."""
 
 import math
+from fractions import Fraction
 
 import networkx as nx
 import pytest
@@ -242,3 +243,33 @@ def test_cross_polytope_face_queries_are_domain_checked(face_dimension):
     strata = network_coherence_level_set_geometry(0.5, 2).stratification
     with pytest.raises(ValueError, match="face_dimension"):
         strata.face_count(face_dimension)
+
+
+@pytest.mark.parametrize(
+    "reader",
+    [
+        coherence_level_set_geometry,
+        lambda value: network_coherence_level_set_geometry(value, 2),
+        lambda value: fixed_capacity_coherence_level_set_geometry(value, (0.0, 1.0)),
+    ],
+)
+@pytest.mark.parametrize("side", [-1, 1])
+def test_exact_level_is_not_rounded_into_an_equilibrium_certificate(reader, side):
+    value = Fraction(1) + side * Fraction(1, 2**80)
+    assert float(value) == 1.0
+    with pytest.raises(ValueError):
+        reader(value)
+
+
+@pytest.mark.parametrize("sign", [-1, 1])
+def test_nodal_capacity_cannot_disappear_during_materialization(sign):
+    with pytest.raises(ValueError, match="capacities"):
+        fixed_capacity_coherence_level_set_geometry(0.5, (sign * Fraction(1, 10**400),))
+
+
+def test_representable_fraction_levels_preserve_nonzero_geometry():
+    value = Fraction(1) - Fraction(1, 2**52)
+    certificate = coherence_level_set_geometry(value)
+    assert not certificate.is_equilibrium_point
+    assert certificate.l1_radius > 0
+    assert certificate.l1_radius == float((1 - value) / value)

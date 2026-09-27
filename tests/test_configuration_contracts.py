@@ -23,6 +23,7 @@ from tnfr.config import (
 from tnfr.config.feature_flags import MathFeatureFlags, context_flags, get_flags
 from tnfr.constants.aliases import ALIAS_VF
 from tnfr.initialization import init_node_attrs
+from tnfr.utils.io import StructuredFileError
 
 
 def test_empty_configuration_does_not_restore_unrelated_defaults(tmp_path):
@@ -33,6 +34,29 @@ def test_empty_configuration_does_not_restore_unrelated_defaults(tmp_path):
     assert graph.graph["DT"] == 0.125
     assert graph.graph["RANDOM_SEED"] == 37
     assert "VF_MAX" not in graph.graph
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        '{"DT": 0.1, "DT": 0.2}',
+        r'{"DT": 0.1, "D\u0054": 0.2}',
+        '{"COHERENCE": {"weights": {"phase": 1, "phase": 0}}}',
+        '{"DT": NaN}',
+        '{"DT": 1e999}',
+        '{"DT": 1e-999}',
+    ],
+)
+def test_invalid_json_configuration_is_rejected_before_injection(tmp_path, payload):
+    graph = nx.Graph(DT=0.125, RANDOM_SEED=37)
+    before = deepcopy(graph.graph)
+    path = tmp_path / "invalid.json"
+    path.write_text(payload, encoding="utf-8")
+    with pytest.raises(StructuredFileError) as failure:
+        apply_config(graph, path)
+    assert failure.value.path == path.resolve()
+    assert isinstance(failure.value.__cause__, ValueError)
+    assert graph.graph == before
 
 
 def test_explicit_empty_instance_defaults_are_respected():

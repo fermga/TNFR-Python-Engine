@@ -1,13 +1,16 @@
-# TNFR Structural Interface Theory
+# TNFR Observational Interface Guide
 
 ## Status
 
-Implemented diagnostic interfaces for graph and time-series observations.
-The historical numerical summaries below are reported results, not a completed
-validation of the nodal law or a reproducibility certificate. Their data/run
-provenance and current physical-admission boundary are centralized in
-[the empirical record](EMPIRICAL_CONFRONTATION_EEG.md); the research execution
-plan owns further validation, rather than this guide maintaining another queue.
+Implemented diagnostic interfaces for graph and time-series observations,
+plus separate frozen-calibration forecast APIs. This guide owns their current
+engineering contracts; field definitions belong to the
+[tetrad guide](STRUCTURAL_FIELDS_TETRAD.md), and physical admission and priorities
+belong to the [research execution plan](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#supporting-measurement-bridge).
+Historical numerical summaries are retained in the
+[reported-observation archive](../theory/research/archive/REPORTED_INTERFACE_OBSERVATIONS.md),
+not as independently reproduced validation or current API evidence. This guide
+maintains no separate research queue.
 
 This is an **operational framework**, not a new fundamental physical law.  It
 reuses the existing TNFR Structural Field Tetrad (Φ_s, |∇φ|, K_φ, ξ_C) and the
@@ -20,7 +23,7 @@ is not a transaction that leaves every graph attribute untouched.
 
 A **structural interface** is a graph-local region where neighbouring nodes are
 close under the graph relation but differ sharply in phase, state, label,
-measurement band, or regime.  Structural Interface Theory ranks such regions
+measurement band, or regime. The interface implementation ranks such regions
 from TNFR phase telemetry and expresses the diagnosis as a configured operator
 recommendation for an already-active state:
 
@@ -30,12 +33,11 @@ real system -> graph / proximity construction -> phase or state field
             -> contextual operator recommendation (not live admission)
 ```
 
-The framework supplies three observational settings. Historical comparisons
-are scoped to their reported preparations and targets:
+The framework supplies three observational settings:
 
-| Setting | Module | Native field role | Honest verdict |
+| Setting | Module | Native field role | Evaluation boundary |
 | --- | --- | --- | --- |
-| Static spatial | [structural_interface.py](../src/tnfr/validation/structural_interface.py) | Phase encodes an injected label | Reported rankings vary by dataset; label-propagation residual is an essential comparator |
+| Static spatial | [structural_interface.py](../src/tnfr/validation/structural_interface.py) | Phase encodes an injected label | Compare against label disagreement and label-propagation residual; disclose label availability |
 | Temporal single-series | [temporal_interface.py](../src/tnfr/validation/temporal_interface.py) | Phase is estimated from an analytic signal | Compare against variance and autocorrelation with the same information and split |
 | Multi-channel | [multichannel_interface.py](../src/tnfr/validation/multichannel_interface.py) | Per-channel phase estimates on a PLV observation graph | Local phase fields and pressure-product diagnostics have different inputs; predictive independence must be tested |
 
@@ -67,8 +69,9 @@ recommendation policies (see
 - phase-curvature stress `|K_φ|` (local circular-mean mismatch);
 - structural potential `Φ_s` (global pressure, reported as telemetry, not folded
   into the ranking);
-- coherence length `ξ_C` with its product-fit, spectral-fallback or unavailable
-  provenance; only the fit branch has path-length units;
+- coherence length `ξ_C`; only its product-fit branch has path-length units.
+  The shared estimator can expose provenance, but the multichannel numeric
+  series does not retain its fit/fallback branch;
 - incident gate-violation pressure;
 - a configured operator recommendation with declared grammar rationale.
 
@@ -132,24 +135,9 @@ perturbation sensitivity, or an explicit classical-interface target.
 
 ### Results (held-out model-error target)
 
-Historically reported ranking power (ROC-AUC) against classifier errors. The
-reported target differs from local disagreement; independent replay must still
-verify the split, label availability, graph construction and preprocessing.
-The circular "local-disagreement" target gives
-≈ 1.0 for all local scores and is used only as a localization sanity check.
-
-| Dataset | TNFR | local disagreement | graph TV | local entropy | label-prop residual | errors / N |
-| --- | --- | --- | --- | --- | --- | --- |
-| WDBC (breast cancer) | **0.9590** | 0.9493 | 0.9493 | 0.9345 | 0.9563 | 12 / 569 |
-| Iris | **0.9860** | 0.9820 | 0.9820 | 0.9695 | 0.9850 | 7 / 150 |
-| Digits | 0.6984 | 0.6962 | 0.6962 | 0.6980 | **0.8200** | 146 / 1797 |
-| Wine quality (red) | 0.8739 | 0.8623 | — | — | **0.9423** | — |
-
-The reported rankings include stronger label-propagation performance on
-digits and wine red. Small differences on WDBC and Iris lack an uncertainty
-statement here, and the low error counts matter. These summaries establish
-neither superiority nor a non-noise mechanism without a pinned replay and
-appropriate uncertainty analysis.
+Historical static rankings and their replay limits are retained in the
+[reported observations](../theory/research/archive/REPORTED_INTERFACE_OBSERVATIONS.md#reported-static-ranking).
+They do not establish superiority or supply a current benchmark result.
 
 ## Setting 2 — temporal single-series interfaces
 
@@ -169,14 +157,10 @@ and lag-1 autocorrelation (Scheffer et al. 2009; Dakos et al. 2012).
 
 ### Result (grid-frequency real data)
 
-The historical power-grid report gives a classical variance trend (Kendall-τ ≈
-0.255) slightly **beats** the strongest TNFR channel (Φ_s, τ ≈ 0.184), and both
-are weak (< 0.26). Those statistics do not establish the physical mechanism
-behind the signal or a general limit of either method.
-
-Variance and autocorrelation are necessary comparators for this preparation.
-Multichannel data permit additional graph-local observations; their availability
-does not itself establish added predictive value.
+The historical grid-frequency trends are retained in the
+[reported observations](../theory/research/archive/REPORTED_INTERFACE_OBSERVATIONS.md#reported-grid-frequency-trends).
+Variance and autocorrelation remain necessary comparators; no reported trend
+alone establishes a transition mechanism.
 
 ## Setting 3 — multi-channel coupled oscillators
 
@@ -200,8 +184,7 @@ The phase-gradient field `|∇φ|` measures local neighbor mismatch, whereas `R`
 uses a global phasor sum. They can correlate, but neither generally determines
 the other on an arbitrary graph. Two further read-outs are:
 
-- **ξ_C** — a static pressure-coherence product fit, or the separately
-  identified spectral fallback;
+- **ξ_C** — a static pressure-coherence product fit or a spectral fallback;
 - **K_φ** — phase curvature.
 
 The amplitude-envelope pressure proxy and Hilbert phase are different functions
@@ -209,22 +192,24 @@ of the same signals. Different formulas do not prove statistical independence,
 causal relevance or additional predictive information. Their dependence and
 the fit/fallback branch must be measured on the retained evaluation data.
 
+`MultichannelWindowSeries.xi_c` retains numeric estimates only. It cannot tell
+whether a sample came from the product fit or spectral fallback; the current
+`SynchronyDiscrimination` report does not restore that evidence. Obtain
+`estimate_coherence_length_with_provenance` on the actual prepared graph when
+branch interpretation matters, rather than inferring it from the value.
+
+The multichannel evaluator reports `max(AUC, 1-AUC)` after assigning each window
+its majority label. This orientation-free score uses the supplied evaluation
+labels to choose direction; it is descriptive discrimination, not an oriented
+classifier frozen on calibration data or a reserved prediction. No finite
+scores or a one-class window sample return the helper's neutral 0.5 convention,
+which is not evidence that an informative two-class comparison was available.
+
 ### Result (EEG Eye State real data)
 
-Historically reported discrimination (ROC-AUC) of eyes-open versus eyes-closed
-labels; the table does not supply a pinned replay or uncertainty interval:
-
-| Indicator | AUC |
-| --- | --- |
-| phase dispersion (baseline) | **0.641** |
-| ξ_C (TNFR) | 0.615 |
-| Kuramoto R (baseline) | 0.559 |
-| mean PLV (baseline) | 0.530 |
-
-These reported AUCs order the selected scores in this preparation. The gap
-of about 0.026 between phase dispersion and ξ_C does not establish statistical
-equivalence or superiority. Neither this ranking nor the formulas alone prove
-that ξ_C adds information after controlling for the other observables.
+The historical EEG Eye State rankings are retained in the
+[reported observations](../theory/research/archive/REPORTED_INTERFACE_OBSERVATIONS.md#reported-eeg-eye-state-ranking).
+They lack a pinned replay and uncertainty interval and are not reserved forecasts.
 
 ## How to run
 
@@ -241,9 +226,12 @@ python examples/10_applications/93_structural_interface_demo.py
 ```
 
 [examples/10_applications/93_structural_interface_demo.py](../examples/10_applications/93_structural_interface_demo.py)
-runs the static-spatial pipeline on a synthetic two-cluster graph and a
-synthetic multi-channel regime switch, printing a baseline comparison and
-contextual operator recommendations.
+runs the static-spatial pipeline on a synthetic two-cluster graph and
+concatenated independently prepared sinusoidal blocks with dispersed and
+aligned phases. It prints a baseline comparison and contextual operator
+recommendations; the join is not an observed dynamical transition. The
+multichannel benchmark's synthetic source similarly concatenates independently
+initialized low/high-coupling Kuramoto blocks.
 
 ### Benchmark entry points
 
@@ -268,12 +256,11 @@ data or dependencies can yield skipped reports, which are not validation passes.
 
 ## API reference
 
-The P1 engineering boundary below is implemented; P2 physical admission remains
-`not_admitted` and the current programme's empirical outcome is `not_tested`.
-The historical numerical tables above were not rerun by these changes. The
-[research execution plan](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md) owns stage
-status; the [passive transport protocol](../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md)
-owns the proposed measurement conditions.
+These APIs distinguish implemented engineering behavior from physical
+admission. The [execution plan](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md)
+owns stage status; the [passive transport protocol](../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md)
+owns independent measurement conditions. Historical reports are not replayed
+by API regression tests.
 
 ### Static spatial — `tnfr.validation.structural_interface`
 
@@ -324,10 +311,21 @@ prefix-only processing by itself establishes no event-prediction performance.
 The PLV graph and amplitude-pressure proxy are observational read-outs, not
 canonical wiring, a complete EPI/capacity state map or a U3 certificate.
 
+Labels must be finite binary values, one per signal sample, before window
+processing. `SynchronyDiscrimination.metadata` retains `auc_available` and
+`auc_unavailable_reason` (`no_windows`, `missing_positive_class` or
+`missing_negative_class`). Unavailable scores retain legacy `0.5` values only
+for compatibility; the interpretation and summary mark them unavailable,
+not chance-level measured performance. The benchmark reuses one computed
+series for rankings and block summaries, and preserves these flags in its
+strict JSON report. Corrupt input rows are rejected rather than removed from
+the sample clock; missing class means are `null`.
+
 ### Modal diagnostics — `tnfr.validation.signal_confrontation`
 
 - `confront_signal` returns `SignalConfrontation` with static graph read-outs
-  and a `modal_diagnostic`; its coherence assumes `dEPI=0` explicitly.
+  and a `modal_diagnostic`; its coherence assumes `dEPI=0` explicitly. It
+  constructs an observational PLV graph, not measured canonical wiring.
 - `diagnose_modal_roots` returns `ModalRootDiagnostic`: `resolved`, `unresolved`
   or `failure`, with a reason. Real/complex root majority and fitted
   growing/decaying/unit-boundary behavior are separate statistics.
@@ -343,6 +341,30 @@ canonical wiring, a complete EPI/capacity state map or a U3 certificate.
   Its unconstrained coefficient is not clipped into physical admissibility;
   its nonnegative training improvement is not held-out forecasting evidence.
 
+For supported finite signals, `confront_signal` projects onto graph `L_sym`
+modes and fits affine AR(2) models. The intercept prevents incomplete-period
+means from being forced into the homogeneous recurrence; it is a statistical
+nuisance term, not an added nodal pressure channel. Short, constant or
+degenerate valid data can be `unresolved`; computational exceptions become
+`failure` with a reason. Malformed or nonfinite inputs are rejected.
+
+This adapter's `xi_c` is specifically the graph-wave reciprocal scale
+`1/omega_0`, where the pulse owner selects the smallest eigenvalue above
+`1e-9` and sets `omega_0` to its square root. Thus `xi_c=1/sqrt(lambda_2)`
+only on connected support with a resolved gap; when no positive mode is
+selected, `xi_c` is infinite. The adapter does not run the tetrad product fit. Its `coherence` is
+`structural_coherence(mean(abs(DeltaNFR)), 0)`, not measured dynamic `C(t)` or
+a convergence certificate. Graph spectral scales have no automatic conversion
+to laboratory frequency or length.
+
+For nonzero observed increments `r` and fitted diffusion direction `d`, the
+unconstrained same-window improvement over persistence in exact arithmetic is
+`(r dot d)^2 / (||r||^2 * ||d||^2) >= 0`. Its positivity and the legacy
+`NodalPredictionSkill.beats_persistence` describe training residuals. A frozen
+measurement map, admitted capacity and independent reserved acquisition are
+separate obligations.
+
+<a id="frozen-calibration-and-reserved-forecasts"></a>
 ### Reserved nodal forecasts — `tnfr.validation.nodal_prediction`
 
 These APIs are also exported through `tnfr.validation`:
@@ -352,57 +374,48 @@ These APIs are also exported through `tnfr.validation`:
   preparation identity.
 - `calibrate_nodal_prediction`: calibration-only common positive capacity
   and baseline on independently specified support, offsets/scales and clock
-  bridge; returns immutable `FrozenNodalCalibration`.
+  bridge; returns immutable `FrozenNodalCalibration` with detached nested
+  content. Nonpositive or unidentifiable capacity is rejected for this model.
 - `forecast_nodal_response`: consumes calibration, a disjoint declared
   `evaluation_acquisition_id`, reserved run identity, initial measurement,
   timestamps and fixed budgets. It advances EPI via the shared nodal integrator.
 - `write_nodal_forecast`: saves the issued prediction. Retain its
   `content_hash` before reading reserved observations.
 - `score_nodal_forecast(..., expected_forecast_hash=issued_hash)`: checks
-  that retained digest, calibration and observation identities before scoring.
+  that retained digest, calibration, run/acquisition identity, units,
+  timestamps and initialization before scoring.
   A passing numerical budget still has physical status
   `not_admitted_by_this_score`.
 
-These are refreshed-Euler engineering forecasts, not automatic admission of
-a continuous physical model. Declared acquisition IDs and hashes do not prove
-independent laboratory preparation or trusted chronology. The
-[empirical record](EMPIRICAL_CONFRONTATION_EEG.md#frozen-calibration-and-reserved-forecasts)
-describes artifact admission, and
-[example 159](../examples/10_applications/159_empirical_confrontation_pipeline.py)
-demonstrates prediction-before-response order on a synthetic P2 fixture.
+These are refreshed-Euler engineering forecasts. A fitted finite-increment
+coefficient is not automatically a continuous physical rate. Declared
+acquisition IDs and hashes do not prove independent laboratory preparation
+or trusted chronology.
+
+An [EvidenceSidecar](../src/tnfr/research/evidence_sidecar.py) with a
+[CoreExperimentManifest](../src/tnfr/research/core_manifests.py) additionally
+checks actual artifact bytes under `root_dir`; those file digests differ from
+a model's canonical content hash. The
+[integration test](../tests/research/test_nodal_prediction_evidence.py) links
+calibration, issued forecast and result artifacts and rejects modified bytes.
+[Example 159](../examples/10_applications/159_empirical_confrontation_pipeline.py)
+demonstrates prediction-before-response order on a synthetic fixture. It is
+not laboratory evidence and does not replay the archived EEG tables.
 
 ### Continuous P2 uncertainty — `tnfr.validation.p2_transport`
 
-`P2MeasurementBounds` freezes independently supplied sensor and clock bounds.
-`calibrate_p2_transport` uses fixed first/last observations to enclose continuous
-common capacity on known two-node passive support; it does not reuse the P1
-Euler increment coefficient. `forecast_p2_transport` issues exact rational
-coordinate/mean/contrast enclosures without reserved response values.
-`write_p2_transport_forecast` saves those endpoints exactly, and
-`score_p2_transport` requires the retained forecast hash and disjoint acquisition
-identity. Its outcomes are `incompatible_with_declared_bounds` or
-`not_falsified_by_enclosures`; interval overlap does not prove one joint latent
-fit. Common-time sensor alignment and joint error bounds remain declared
-assumptions requiring evidence. The
-[P2 annex](../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md#implemented-continuous-time-uncertainty-boundary)
-owns the derivation and physical admission conditions. The public package and
-typing exports include these APIs; example 159 demonstrates their synthetic
-continuous path separately from Euler.
+The [P2 protocol annex](../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md#implemented-continuous-time-uncertainty-boundary)
+owns `P2MeasurementBounds`, continuous calibration, rational forecast enclosures,
+hash/acquisition checks and their admission limits. That model does not reuse
+the Euler increment coefficient. Interval overlap is not proof of one joint
+latent fit or physical validation. Example 159 demonstrates its software
+fixture separately from Euler.
 
-The separately named `bound_fixed_reference_capacity` and
-`bound_fixed_reference_transport` in
-[p2_transport_reference.py](../src/tnfr/physics/p2_transport_reference.py)
-cover capacities `(nu,0)` and a constant reference. Their contrast decay rate
-is `nu`, not `2*nu`; the arithmetic mean is not conserved. They share the
-rational log/exp kernels and do not fabricate a second measured channel.
-The [Volts benchmark](../benchmarks/volts_fixed_reference_exploration.py)
-uses that reference for the historical fixed-design within-acquisition exploration;
-its [model boundary](../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md#volts-model-boundary)
-separates that earlier comparison from the revised generative programme.
-It leaves the strict disjoint-acquisition scoring API unchanged. Its nominal
-arithmetic enclosures are not instrument error bounds. Data ingestion requires
-Python 3.11 or later and the pinned optional `research-data` extra. Physical
-mapping and results are owned by the same P2 annex.
+The [Volts model boundary](../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md#volts-model-boundary)
+owns the earlier fixed-reference comparison and its limits. The separately
+declared driven [TCLab protocol](../theory/research/TCLAB_EXPLORATORY_PROTOCOL.md)
+owns its calibration/reserved comparisons and source evidence. Neither result
+admits the full physical model or replaces the primary research queue.
 
 ## Limitations and non-goals
 
@@ -421,7 +434,7 @@ mapping and results are owned by the same P2 annex.
 ## References
 
 - Field definitions: [STRUCTURAL_FIELDS_TETRAD.md](STRUCTURAL_FIELDS_TETRAD.md)
-- Grammar derivations: [grammar/PHYSICS_VERIFICATION.md](grammar/PHYSICS_VERIFICATION.md)
+- Grammar contracts and verification: [Unified grammar](../theory/UNIFIED_GRAMMAR_RULES.md#9-verification-and-reporting)
 - Primary theory: [AGENTS.md](../AGENTS.md)
 - Scheffer et al. (2009), *Early-warning signals for critical transitions*, Nature.
 - Dakos et al. (2012), *Methods for detecting early warnings of critical

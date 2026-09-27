@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import math
 from types import MappingProxyType
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Collection, Iterable, Mapping, Sequence
 
 from .._coherence_validation import validate_structural_coherence
 from .._exact_time import finite_represented_real
@@ -365,6 +365,26 @@ def is_structural_equilibrium(
     return abs(dnfr_value) <= dnfr_tolerance and abs(depi_value) <= depi_tolerance
 
 
+def _coherence_on_nodes(
+    G: GraphLike, nodes: Collection[Any]
+) -> tuple[float, float, float]:
+    """Aggregate stored pressure/rate over a reusable selected node collection.
+
+    Empty support has the public aggregate value zero. Local callers choose
+    their support explicitly; admission, stable means and the reciprocal map
+    are identical to the global observation. No graph copy is needed.
+    """
+    if not nodes:
+        return 0.0, 0.0, 0.0
+    dnfr_mean = finite_mean_absolute(
+        _stored_metric_values(G, nodes, ALIAS_DNFR), name="dnfr"
+    )
+    depi_mean = finite_mean_absolute(
+        _stored_metric_values(G, nodes, ALIAS_DEPI), name="depi"
+    )
+    return structural_coherence(dnfr_mean, depi_mean), dnfr_mean, depi_mean
+
+
 def compute_coherence(
     G: GraphLike, *, return_means: bool = False
 ) -> float | tuple[float, float, float]:
@@ -397,19 +417,8 @@ def compute_coherence(
     zero-input value ``1``.
     """
 
-    count = G.number_of_nodes()
-    if count == 0:
-        return (0.0, 0.0, 0.0) if return_means else 0.0
-
-    nodes = G.nodes
-    dnfr_values = _stored_metric_values(G, nodes, ALIAS_DNFR)
-    depi_values = _stored_metric_values(G, nodes, ALIAS_DEPI)
-
-    dnfr_mean = finite_mean_absolute(dnfr_values, name="dnfr")
-    depi_mean = finite_mean_absolute(depi_values, name="depi")
-
-    coherence = structural_coherence(dnfr_mean, depi_mean)
-    return (coherence, dnfr_mean, depi_mean) if return_means else coherence
+    observation = _coherence_on_nodes(G, G.nodes)
+    return observation if return_means else observation[0]
 
 
 def ensure_neighbors_map(G: GraphLike) -> Mapping[Any, Sequence[Any]]:

@@ -56,7 +56,7 @@ except Exception:  # pragma: no cover - fallback when extras not available
     runtime_spectral_threshold = None  # type: ignore[assignment]
     runtime_frequency_positive = None  # type: ignore[assignment]
     runtime_normalized = None  # type: ignore[assignment]
-from .dnfr import default_compute_delta_nfr
+from .dnfr import _invoke_dnfr_hook, default_compute_delta_nfr
 from .remesh_history import append_remesh_epi_history_snapshot
 from .sampling import update_node_sample as _update_node_sample
 
@@ -575,42 +575,7 @@ def _refresh_delta_nfr(
         default_compute_delta_nfr,
     )
 
-    supports_n_jobs = False
-    try:
-        signature = inspect.signature(compute_dnfr_cb)
-    except (TypeError, ValueError):
-        signature = None
-    if signature is not None:
-        params = signature.parameters
-        if "n_jobs" in params:
-            kind = params["n_jobs"].kind
-            supports_n_jobs = kind in (
-                inspect.Parameter.POSITIONAL_OR_KEYWORD,
-                inspect.Parameter.KEYWORD_ONLY,
-            )
-        elif any(p.kind == inspect.Parameter.VAR_KEYWORD for p in params.values()):
-            supports_n_jobs = True
-
-    if signature is not None:
-        if supports_n_jobs:
-            compute_dnfr_cb(G, n_jobs=n_jobs)
-        else:
-            compute_dnfr_cb(G)
-    else:
-        try:
-            compute_dnfr_cb(G, n_jobs=n_jobs)
-        except TypeError as exc:
-            traceback = exc.__traceback__
-            message = str(exc)
-            binding_failure = bool(
-                traceback is not None
-                and traceback.tb_next is None
-                and ("n_jobs" in message or "takes no keyword arguments" in message)
-            )
-            if binding_failure:
-                compute_dnfr_cb(G)
-            else:
-                raise
+    _invoke_dnfr_hook(compute_dnfr_cb, G, n_jobs=n_jobs)
     G.graph.pop("_sel_norms", None)
     return compute_dnfr_cb
 

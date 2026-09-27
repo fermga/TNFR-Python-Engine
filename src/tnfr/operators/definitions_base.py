@@ -178,8 +178,11 @@ class Operator(metaclass=OperatorMetaAuto):
         )
 
         state_before = None
+        capture_state = (
+            self._capture_metrics_state if collect_metrics else self._capture_state
+        )
         if collect_metrics or validate_equation:
-            state_before = self._capture_state(G, node)
+            state_before = capture_state(G, node)
 
         # Structural Integrity Monitor — pre-operator snapshot
         _integrity_monitor = G.graph.get("integrity_monitor")
@@ -195,7 +198,7 @@ class Operator(metaclass=OperatorMetaAuto):
                 # A pre-operator monitor is permitted to inspect or even alter
                 # the graph. Prepared reads therefore own the immediate EN
                 # boundary and replace the earlier generic metrics snapshot.
-                state_before = self._capture_state(G, node)
+                state_before = capture_state(G, node)
                 state_before[_PREPARED_OPERATOR_STATE_KEY] = prepared_state
             _apply_selected_glyph(
                 G,
@@ -318,6 +321,14 @@ class Operator(metaclass=OperatorMetaAuto):
             "dnfr": float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0)),
             "theta": float(get_attr(G.nodes[node], ALIAS_THETA, 0.0)),
         }
+
+    def _capture_metrics_state(self, G: TNFRGraph, node: Any) -> dict[str, Any]:
+        """Capture optional observations only when metrics are requested.
+
+        Default delegation preserves existing subclass and monkeypatched state
+        readers. Validation alone does not require extra diagnostic observations.
+        """
+        return self._capture_state(G, node)
 
     def _collect_metrics(
         self, G: TNFRGraph, node: Any, state_before: dict[str, Any]

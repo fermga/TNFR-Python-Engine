@@ -1,16 +1,17 @@
 """TNFR Integration Engines
 
-Emergent integration and multi-scale analysis tools.
-Handles hierarchical coupling and cross-scale information flow.
+Configured computational integration and reuse opportunities.
+Recommendations concern implementations and measured evidence; they do not
+derive hierarchical coupling or physical cross-scale dynamics.
 
 Main Classes:
-- TNFREmergentIntegrationEngine: Multi-scale emergent integration
+- TNFREmergentIntegrationEngine: Computational integration recommendations
 
 Usage:
 ```python
 from tnfr.engines.integration import TNFREmergentIntegrationEngine
 engine = TNFREmergentIntegrationEngine()
-result = engine.integrate_scales(network)
+opportunities = engine.discover_integration_opportunities(network)
 ```
 """
 

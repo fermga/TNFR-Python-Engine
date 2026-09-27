@@ -6,14 +6,15 @@ that factors emerge autonomously from the nodal equation. Grammar validation
 of a proposed word does not verify its execution or arithmetic divisibility.
 
 The ``tnfr_factorization`` package is optional; a source checkout can load the
-sibling ``factorization-lab`` directory. Missing dependencies are reported when
+``applications/factorization-lab`` directory. Missing dependencies are reported when
 the factorizer is first requested."""
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 from typing import Any
+
+from .._optional_apps import bootstrap_application
 
 __all__ = ["factorize", "SpectralAnalysisResult", "SpectralPaleyFactorizer"]
 
@@ -21,17 +22,12 @@ __all__ = ["factorize", "SpectralAnalysisResult", "SpectralPaleyFactorizer"]
 def _bootstrap_factorization_lab() -> None:
     """Ensure the tnfr_factorization package is importable.
 
-    In development checkouts the factorization lab lives in the sibling
-    ``factorization-lab`` directory. When the standalone ``tnfr-factorization``
+    In development checkouts the factorization lab lives in the
+    ``applications/factorization-lab`` directory. When the standalone ``tnfr-factorization``
     package is installed, this function becomes a no-op.
     """
 
-    if "tnfr_factorization" in sys.modules:
-        return
-
-    lab_root = Path(__file__).resolve().parents[3] / "factorization-lab"
-    if lab_root.exists() and str(lab_root) not in sys.path:
-        sys.path.insert(0, str(lab_root))
+    bootstrap_application("tnfr_factorization", "factorization-lab")
 
 
 def _load_spectral_paley() -> tuple[Any, Any]:
@@ -49,7 +45,7 @@ def _load_spectral_paley() -> tuple[Any, Any]:
     except ModuleNotFoundError as exc:
         raise TNFRUserError(
             "tnfr_factorization is not available. Install the tnfr-factorization "
-            "package or keep the factorization-lab directory in your workspace."
+            "package or keep the applications/factorization-lab directory in your workspace."
         ) from exc
 
 
@@ -107,7 +103,8 @@ def factorize(
     This wrapper reuses one factorizer with its class default node cap. It has
     ``trace_certificates`` rather than the lab wrapper's ``trace`` argument and
     no ``pure`` argument. ``TNFR_PURE_MODE`` selects a partial heuristic policy,
-    not an arithmetic-free execution; see ``factorization-lab/README.md``."""
+    not an arithmetic-free execution; see ``applications/factorization-lab/README.md``.
+    """
 
     factorizer = _get_factorizer()
     return factorizer.analyze(

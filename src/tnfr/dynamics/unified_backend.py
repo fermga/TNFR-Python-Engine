@@ -18,6 +18,7 @@ from enum import Enum
 from numbers import Integral
 from typing import Any
 
+from .._exact_time import finite_represented_real
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ..errors import TNFRValueError
@@ -115,6 +116,22 @@ class UnifiedComputationResult:
     optimization_strategy: str = "none"
     memory_used_mb: float | None = None
     accuracy_metrics: dict[str, float] = field(default_factory=dict)
+
+
+def _integration_dt(value: Any, *, active: bool) -> float:
+    """Admit the raw represented step before dispatch or float conversion.
+
+    A zero-step observation consumes no interval, so its finite step retains
+    the existing sign-insensitive admission. Active proposals must advance.
+    """
+    requirement = "positive finite" if active else "finite"
+    try:
+        step = finite_represented_real(value, "dt")[0]
+    except (TypeError, ValueError) as exc:
+        raise TNFRValueError(f"dt must be a {requirement} real scalar: {exc}") from exc
+    if active and step <= 0.0:
+        raise TNFRValueError("dt must be a positive finite real scalar")
+    return step
 
 
 class TNFRUnifiedBackend:
@@ -248,15 +265,7 @@ class TNFRUnifiedBackend:
         level.
         """
         graph = request.graph
-        raw_dt = request.parameters.get("dt", 0.01)
-        if isinstance(raw_dt, (bool, np.bool_)):
-            raise TNFRValueError("dt must be a positive finite real scalar")
-        try:
-            dt = float(raw_dt)
-        except (OverflowError, TypeError, ValueError) as exc:
-            raise TNFRValueError("dt must be a positive finite real scalar") from exc
-        if not np.isfinite(dt) or dt <= 0.0:
-            raise TNFRValueError("dt must be a positive finite real scalar")
+        dt = _integration_dt(request.parameters.get("dt", 0.01), active=True)
 
         pressure_model = request.parameters.get("pressure_model", "stored_delta_nfr")
         if pressure_model == "epi_diffusion":
@@ -515,11 +524,25 @@ class TNFRUnifiedBackend:
     def _execute_temporal_integration(
         self, request: UnifiedComputationRequest, backend: str
     ) -> dict[str, Any]:
-        """Commit a multi-step trajectory under one explicit pressure model."""
+        """Commit a multi-step trajectory under one explicit pressure model.
+
+        The supplied stored-pressure clock schedule is checked before the first
+        write. This is not a transaction over future state or callback changes;
+        each integration call still validates its live configuration.
+        """
         graph = request.graph
         num_steps = request.parameters.get("num_steps", 10)
         dt = request.parameters.get("dt", 0.01)
         pressure_model = request.parameters.get("pressure_model", "stored_delta_nfr")
+
+        if isinstance(num_steps, bool) or not isinstance(num_steps, Integral):
+            raise TNFRValueError("num_steps must be a nonnegative integer")
+        num_steps = int(num_steps)
+        if num_steps < 0:
+            raise TNFRValueError("num_steps must be a nonnegative integer")
+        dt_value = _integration_dt(dt, active=bool(num_steps))
+        if not isinstance(request.return_trajectory, bool):
+            raise TNFRValueError("return_trajectory must be boolean")
 
         # The graph-spectral engine implements only the EPI diffusion channel.
         # Graph size and optimization level must never change pressure semantics.
@@ -527,7 +550,7 @@ class TNFRUnifiedBackend:
             if self._fft_engine is None:
                 raise TNFRValueError("EPI diffusion engine is unavailable")
             result = self._fft_engine.run_fft_simulation(
-                graph, num_steps, dt, request.return_trajectory
+                graph, num_steps, dt_value, request.return_trajectory
             )
             result["pressure_model"] = pressure_model
             result["backend"] = "tnfr-fft-diffusion"
@@ -537,20 +560,25 @@ class TNFRUnifiedBackend:
                 "pressure_model must be 'stored_delta_nfr' or 'epi_diffusion'"
             )
 
-        if isinstance(num_steps, bool) or not isinstance(num_steps, int):
-            raise TNFRValueError("num_steps must be a nonnegative integer")
-        if num_steps < 0:
-            raise TNFRValueError("num_steps must be a nonnegative integer")
-        if isinstance(dt, (bool, np.bool_)):
-            raise TNFRValueError("dt must be a positive finite real scalar")
-        try:
-            dt_value = float(dt)
-        except (OverflowError, TypeError, ValueError) as exc:
-            raise TNFRValueError("dt must be a positive finite real scalar") from exc
-        if not np.isfinite(dt_value) or (num_steps and dt_value <= 0.0):
-            raise TNFRValueError("dt must be a positive finite real scalar")
+        from .integrators import (
+            _validate_clock_grid,
+            prepare_integration_params,
+            update_epi_via_nodal_equation,
+        )
 
-        from .integrators import update_epi_via_nodal_equation
+        if num_steps:
+            dt_step, subdivisions, initial_time, method = prepare_integration_params(
+                graph, dt=dt_value, method=request.parameters.get("method", "euler")
+            )
+            # Repeated substep addition, not num_steps * dt, is the clock that
+            # the shared integrator actually advances. No state/source callback
+            # is evaluated while checking this fixed supplied schedule.
+            _validate_clock_grid(
+                initial_time, dt_step, num_steps * subdivisions, method
+            )
+        else:
+            # A zero-step report consumes its clock but no state or solver law.
+            finite_represented_real(graph.graph.get("_t", 0.0), "graph runtime time")
 
         trajectory = []
         for step in range(num_steps):

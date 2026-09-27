@@ -15,56 +15,30 @@ from dataclasses import dataclass
 from typing import Any, ClassVar, ContextManager, Generic, TypeVar
 
 import networkx as nx
-from cachetools import LRUCache
 
+from ..errors import TNFRSecurityError as SecurityError
+from ..errors import TNFRSecurityWarning as SecurityWarning
+from ..security.crypto import create_hmac_signer as create_hmac_signer
+from ..security.crypto import create_hmac_validator as create_hmac_validator
+from ..types import CacheStats as CacheStatistics
 from ..types import GraphLike, NodeId, TimingContext, TNFRGraph
+from .cache_layers import CacheLayer as CacheLayer
+from .cache_layers import MappingCacheLayer as MappingCacheLayer
+from .cache_layers import RedisCacheLayer as RedisCacheLayer
+from .cache_layers import ShelveCacheLayer as ShelveCacheLayer
+from .cache_layers import create_secure_redis_layer as create_secure_redis_layer
+from .cache_layers import create_secure_shelve_layer as create_secure_shelve_layer
+from .unified_cache import UnifiedLRUCache as InstrumentedLRUCache
+from .unified_cache import UnifiedLRUCache as ManagedLRUCache
 
 K = TypeVar("K", bound=Hashable)
 V = TypeVar("V")
 T = TypeVar("T")
 
-class SecurityError(RuntimeError):
-    """Raised when a cache payload fails hardened validation."""
-
-    ...
-
 @dataclass(frozen=True)
 class CacheCapacityConfig:
     default_capacity: int | None
     overrides: dict[str, int | None]
-
-@dataclass(frozen=True)
-class CacheStatistics:
-    hits: int = ...
-    misses: int = ...
-    evictions: int = ...
-    total_time: float = ...
-    timings: int = ...
-
-    def merge(self, other: CacheStatistics) -> CacheStatistics: ...
-
-class CacheLayer:
-    def load(self, name: str) -> Any: ...
-    def store(self, name: str, value: Any) -> None: ...
-    def delete(self, name: str) -> None: ...
-    def clear(self) -> None: ...
-    def close(self) -> None: ...
-
-class MappingCacheLayer(CacheLayer):
-    def __init__(self, storage: MutableMapping[str, Any] | None = ...) -> None: ...
-
-class ShelveCacheLayer(CacheLayer):
-    def __init__(
-        self,
-        path: str,
-        *,
-        flag: str = ...,
-        protocol: int | None = ...,
-        writeback: bool = ...,
-    ) -> None: ...
-
-class RedisCacheLayer(CacheLayer):
-    def __init__(self, client: Any | None = ..., *, namespace: str = ...) -> None: ...
 
 class CacheManager:
     _MISSING: ClassVar[object]
@@ -151,67 +125,6 @@ class CacheManager:
     ) -> None: ...
     def log_metrics(self, logger: logging.Logger, *, level: int = ...) -> None: ...
 
-class InstrumentedLRUCache(MutableMapping[K, V], Generic[K, V]):
-    _MISSING: ClassVar[object]
-
-    def __init__(
-        self,
-        maxsize: int,
-        *,
-        manager: CacheManager | None = ...,
-        metrics_key: str | None = ...,
-        telemetry_callbacks: (
-            Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None
-        ) = ...,
-        eviction_callbacks: (
-            Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None
-        ) = ...,
-        locks: MutableMapping[K, Any] | None = ...,
-        getsizeof: Callable[[V], int] | None = ...,
-        count_overwrite_hit: bool = ...,
-    ) -> None: ...
-    @property
-    def telemetry_callbacks(self) -> tuple[Callable[[K, V], None], ...]: ...
-    @property
-    def eviction_callbacks(self) -> tuple[Callable[[K, V], None], ...]: ...
-    def set_telemetry_callbacks(
-        self,
-        callbacks: Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None,
-        *,
-        append: bool = ...,
-    ) -> None: ...
-    def set_eviction_callbacks(
-        self,
-        callbacks: Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None,
-        *,
-        append: bool = ...,
-    ) -> None: ...
-    def pop(self, key: K, default: Any = ...) -> V: ...
-    def popitem(self) -> tuple[K, V]: ...
-    def clear(self) -> None: ...
-    @property
-    def maxsize(self) -> int: ...
-    @property
-    def currsize(self) -> int: ...
-    def get(self, key: K, default: V | None = ...) -> V | None: ...
-
-class ManagedLRUCache(LRUCache[K, V], Generic[K, V]):
-    def __init__(
-        self,
-        maxsize: int,
-        *,
-        manager: CacheManager | None = ...,
-        metrics_key: str | None = ...,
-        eviction_callbacks: (
-            Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None
-        ) = ...,
-        telemetry_callbacks: (
-            Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None
-        ) = ...,
-        locks: MutableMapping[K, Any] | None = ...,
-    ) -> None: ...
-    def popitem(self) -> tuple[K, V]: ...
-
 def prune_lock_mapping(
     cache: Mapping[K, Any] | MutableMapping[K, Any] | None,
     locks: MutableMapping[K, Any] | None,
@@ -227,6 +140,12 @@ __all__ = (
     "MappingCacheLayer",
     "RedisCacheLayer",
     "ShelveCacheLayer",
+    "SecurityError",
+    "SecurityWarning",
+    "create_hmac_signer",
+    "create_hmac_validator",
+    "create_secure_shelve_layer",
+    "create_secure_redis_layer",
     "prune_lock_mapping",
     "EdgeCacheManager",
     "NODE_SET_CHECKSUM_KEY",

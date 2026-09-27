@@ -12,7 +12,10 @@ from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from tnfr.errors import TNFRValueError
 from tnfr.operators.definitions import Coherence, Dissonance, Emission, Silence
 from tnfr.operators.grammar_execution import ValidatedSequence
+from tnfr.operators.metrics_basic import dissonance_metrics
+from tnfr.operators.network_stage import execute_dissonance_stage
 from tnfr.operators.preconditions import OperatorPreconditionError
+from tnfr.topology.asymmetry import compute_topological_asymmetry
 
 
 def _context():
@@ -52,6 +55,117 @@ def _snapshot(graph: nx.Graph) -> tuple[dict, dict, list]:
         {node: deepcopy(dict(data)) for node, data in graph.nodes(data=True)},
         deepcopy(list(graph.edges(data=True))),
     )
+
+
+def test_static_asymmetric_snapshot_does_not_fabricate_a_topology_change():
+    graph = _graph()
+    metrics = dissonance_metrics(graph, 0, 0.2, 0.0)
+    # Degrees (2, 1, 1) give CV=sqrt(2)/4; all clustering values are zero.
+    assert metrics["topological_asymmetry_after"] == pytest.approx(0.15 * math.sqrt(2))
+    assert metrics["topological_asymmetry_before"] is None
+    assert metrics["topological_asymmetry_delta"] is None
+    assert metrics["topological_asymmetry_change_available"] is False
+    assert metrics["topological_asymmetry_changed"] is None
+    assert metrics["symmetry_disrupted"] is None
+
+
+def test_topology_score_rejects_absent_center_but_keeps_small_real_neighborhoods():
+    graph = nx.Graph([(0, 1)])
+    graph.add_node(2)
+    assert compute_topological_asymmetry(graph, 0) == 0.0
+    assert compute_topological_asymmetry(graph, 2) == 0.0
+    with pytest.raises(nx.NetworkXException):
+        compute_topological_asymmetry(graph, "absent")
+
+
+def test_topology_support_failure_is_not_replaced_by_zero(monkeypatch):
+    def unavailable_support(*args, **kwargs):
+        raise nx.NetworkXError("ego support unavailable")
+
+    monkeypatch.setattr(nx, "ego_graph", unavailable_support)
+    with pytest.raises(nx.NetworkXError, match="ego support unavailable"):
+        compute_topological_asymmetry(nx.path_graph(3), 1)
+
+
+@pytest.mark.parametrize("staged", [False, True])
+def test_real_oz_event_captures_unchanged_asymmetric_support(staged, monkeypatch):
+    graph = _graph()
+    before_edges = list(graph.edges(data=True))
+    captured = []
+    original = Dissonance._capture_state
+
+    def capture(self, current, node):
+        captured.append(node)
+        return original(self, current, node)
+
+    monkeypatch.setattr(Dissonance, "_capture_state", capture)
+    kwargs = {"sequence_context": _context(), "collect_metrics": True}
+    if staged:
+        execute_dissonance_stage(graph, Dissonance(), (0,), **kwargs)
+    else:
+        Dissonance()(graph, 0, **kwargs)
+    assert captured == [0]
+    assert graph.nodes[0][ALIAS_DNFR[0]] == pytest.approx(0.4)
+    assert list(graph.edges(data=True)) == before_edges
+    metrics = graph.graph["operator_metrics"][-1]
+    assert metrics["topological_asymmetry_before"] == pytest.approx(0.15 * math.sqrt(2))
+    assert (
+        metrics["topological_asymmetry_after"]
+        == metrics["topological_asymmetry_before"]
+    )
+    assert metrics["topological_asymmetry_delta"] == 0.0
+    assert metrics["topological_asymmetry_change_available"] is True
+    assert metrics["topological_asymmetry_changed"] is False
+    assert metrics["symmetry_disrupted"] is False
+
+
+@pytest.mark.parametrize("staged", [False, True])
+def test_oz_nodal_validation_does_not_request_topology_metrics(staged, monkeypatch):
+    from tnfr.topology import asymmetry
+
+    graph = _graph(nx.MultiGraph)
+    graph.add_edge(0, 1, weight=0.25)
+    graph.graph["VALIDATE_NODAL_EQUATION"] = True
+    calls = []
+
+    def unexpected_metric(*args, **kwargs):
+        calls.append(args)
+        pytest.fail("Nodal validation must not request topological metrics")
+
+    monkeypatch.setattr(asymmetry, "compute_topological_asymmetry", unexpected_metric)
+    kwargs = {
+        "sequence_context": _context(),
+        "collect_metrics": False,
+        "propagate_to_network": False,
+    }
+    if staged:
+        execute_dissonance_stage(graph, Dissonance(), (0,), **kwargs)
+    else:
+        Dissonance()(graph, 0, **kwargs)
+    assert calls == []
+    assert graph.nodes[0][ALIAS_DNFR[0]] == pytest.approx(0.4)
+    assert "operator_metrics" not in graph.graph
+
+
+def test_supplied_preceding_observation_retains_signed_topology_change():
+    graph = _graph()
+    before = Dissonance()._capture_metrics_state(graph, 0)
+    graph.add_edge(1, 2)  # Supplied support event, not a native OZ operation.
+    metrics = Dissonance()._collect_metrics(graph, 0, before)
+    assert metrics["topological_asymmetry_after"] == 0.0
+    assert metrics["topological_asymmetry_delta"] == pytest.approx(-0.15 * math.sqrt(2))
+    # The legacy flag is an absolute-change policy, not successful disruption.
+    assert metrics["topological_asymmetry_changed"] is True
+    assert metrics["symmetry_disrupted"] is True
+
+
+@pytest.mark.parametrize("value", [True, math.nan, -0.1, 1.1])
+def test_invalid_preceding_topology_score_rejects_before_metric_side_effects(value):
+    graph = _graph()
+    before = _snapshot(graph)
+    with pytest.raises(TNFRValueError, match="topological asymmetry"):
+        dissonance_metrics(graph, 0, 0.2, 0.0, asymmetry_before=value)
+    assert _snapshot(graph) == before
 
 
 def test_late_invalid_weight_is_rejected_before_local_oz_or_jitter_progress():

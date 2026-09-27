@@ -1,11 +1,11 @@
 # TNFR Python Engine Architecture
 
-**Version:** 0.0.3.7
+**Version:** 0.0.3.8
 **Status:** Implemented architecture reference
 
 This document describes the repository as implemented. Mathematical claims are
 owned by the scoped specifications under
-[`theory/`](theory/README.md); [AGENTS](AGENTS.md) summarizes working conventions.
+[`theory/`](theory/README.md); [AGENTS](AGENTS.md) provides contributor and agent instructions.
 This guide links to those sources rather than
 strengthening their claims.
 
@@ -27,7 +27,8 @@ graph invalidation and persistence retain their separate responsibilities.
 
 | Concern | Source of truth |
 | --- | --- |
-| Canonical TNFR synthesis and invariants | [AGENTS.md](AGENTS.md) |
+| Contributor and agent instructions; six invariant identifiers | [AGENTS.md](AGENTS.md) |
+| Mathematical definitions, derivations and scientific scope | [Theory catalog](theory/README.md) |
 | Operator channel, scale and postcondition | [`operator_contracts.py`](src/tnfr/operators/operator_contracts.py) |
 | Operator-role derivation | [`physics_derivation.py`](src/tnfr/config/physics_derivation.py) |
 | Grammar specification | [`grammar_canon.py`](src/tnfr/operators/grammar_canon.py) |
@@ -56,7 +57,11 @@ graph invalidation and persistence retain their separate responsibilities.
 | Validated relational transit | [`physics/relational_transit.py`](src/tnfr/physics/relational_transit.py); exact reflected ODE enclosure using shared rational intervals, Taylor derivatives and signed-diagonal comparison; read-only proof computation, not live engine evolution |
 | Coherence and equilibrium kernel | [`common.py`](src/tnfr/metrics/common.py) |
 | Public high-level API | [`sdk/simple.py`](src/tnfr/sdk/simple.py) |
-| JSON report I/O | [`sdk/utils.py`](src/tnfr/sdk/utils.py); strict decoding and atomic export, also used by the CLI and fluent `save()` |
+| JSON decoding and atomic file writes | [`utils/io.py`](src/tnfr/utils/io.py); one strict JSON value policy shared by configuration and SDK readers |
+| JSON report I/O | [`sdk/utils.py`](src/tnfr/sdk/utils.py); delegates to shared decoding/writing, also used by the CLI and fluent `save()` |
+| Configured validation orchestration | [`validation/validator.py`](src/tnfr/validation/validator.py); fresh checks, shared input/precondition owners and explicit runtime clamp effects |
+| Manifest graph transport | [`engines/manifest.py`](src/tnfr/engines/manifest.py); strict v1 records for the supported finite JSON state subset |
+| Buffered event storage | [`telemetry/unified_telemetry_system.py`](src/tnfr/telemetry/unified_telemetry_system.py); shared capture/flush path using `utils.io` atomic writes |
 
 These are implementation responsibilities. The [documentation ownership map](docs/README.md)
 identifies the single maintained guide for each responsibility.
@@ -177,7 +182,7 @@ reduction retains defects and leaves the fine law usable. The report is not
 proof that runtime policy holds support, capacity, coefficients and primitive
 phase fixed. The [derived-form note](theory/nodal/DERIVED_FORM_PHASE.md) owns
 the proof and source-relative response; the
-[SDK guide](docs/CLI_AND_SDK.md#observe-regional-form-and-its-nodal-response)
+[SDK guide](docs/guides/REGIONAL_AND_RELATIONAL.md#observe-regional-form-and-its-nodal-response)
 owns usage and representation conventions.
 
 [`source_relative_form.py`](src/tnfr/physics/source_relative_form.py) composes
@@ -214,6 +219,22 @@ region selector or formation mechanism. `Network.relational_pattern` is a
 thin adapter; the SDK's `relational_report_to_dict` supplies the exact rational
 JSON projection for the existing writer. Reports are observations, not live
 checkpoints or authenticated execution histories.
+
+The same observer's `Network.relational_attachment` route compares two
+separately admitted components with their hypothetical joined field. Port
+messages, exact represented rate changes and shared support-reset accounting
+retain the instantaneous effect without live topology changes. Its
+`assess_supply` method compares caller-declared signed event work with the
+captured storage jump; continuous loss is reported separately as a rate.
+The exact report exporter retains that arithmetic, not an ideal-trigonometric
+certificate, authenticated work input or event-selection law.
+`Network.relational_relocation` reuses these field, port, budget and export
+owners for a supplied atomic exchange of a graph bridge. Removing the old
+bridge must define two nontrivial connected components; the new bridge joins
+those same components without changing their internal edges or nodal state.
+The report compares both connected endpoints without evolving the detached
+intermediate graph. Its scope exceeds the specific two-C5 mathematical witness;
+it does not automatically apply that witness's recovery theorem to other input.
 
 [`mathematics/linear_observation.py`](src/tnfr/mathematics/linear_observation.py)
 owns exact invariant-row realization for any supplied finite rational
@@ -331,8 +352,9 @@ in the tetrad.
 - Fitted coherence length is distinct from the tagged spectral fallback, which
   selects the first eigenvalue above `1e-9`; it is `1/sqrt(lambda_2)` only under
   the corresponding connectivity and cutoff hypotheses.
-- The tetrad is the canonical read-out. Complete reconstruction of arbitrary
-  system state from four scalars remains an open stronger claim.
+- The tetrad is a diagnostic read-out and does not reconstruct arbitrary full
+  nodal states in general. Any sufficient reduced description requires its own
+  restricted state domain and closure proof.
 
 See [the field specification](docs/STRUCTURAL_FIELDS_TETRAD.md) and
 [the minimality scope note](theory/MINIMAL_STRUCTURAL_DEGREES.md).
@@ -415,6 +437,35 @@ Automatic selection stays within its available candidates. Learning records
 the executed strategy, while reports retain the requested strategy separately.
 Timing history and configured scores select candidates, not a globally optimal
 algorithm or an emergent TNFR evolution law.
+
+Manifest graph decoding admits the declared v1 record fields and copies finite
+JSON attributes. Unknown fields and pair-list attributes reject instead of
+being discarded or collapsed. The execution script reads manifest, summary
+and partition JSON through the SDK's strict decoder before graph construction.
+This preserves supported state transport; it does not restore arbitrary
+callbacks, backend/RNG objects or a complete runtime checkpoint.
+
+## Event storage
+
+The optional telemetry sink records supplied values in structural, performance
+and failure channels. It does not compute or certify structural fields. All
+channels share detached payload capture, serialization and atomic UTF-8 batch
+writes. Distinct batch filenames prevent same-second overwrites. A failed write
+raises on the manual path, leaves accepted events buffered and can be retried
+with `flush_all()`; timer failures are logged. Cleanup cancels future scheduling,
+rejects new emission and retains failed pending writes for a later flush retry.
+The global switch disables collection in every channel.
+
+Correlation IDs are admitted before enqueueing. Events and SDK reports share
+JSON object-name collision rejection, so distinct Python keys cannot silently
+collapse into one decoded metadata field. Invalid JSON/UTF-8 data rejects
+before an event enters the accepted buffer or count.
+
+Supported storage formats are JSON and JSONL. Compression, memory-limit and
+severity/type-filter settings remain reserved compatibility fields, with no
+active guarantees. Collection timestamps are wall time, not a derived TNFR
+clock. Scientific provenance and unavailable observations remain the caller's
+responsibility; specialized cache and count telemetry keep their own owners.
 
 ## Documentation architecture
 

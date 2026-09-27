@@ -8,19 +8,13 @@ Public operator admission still applies to each requested action.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-# TNFR Optimizations Integration
-try:
-    from ..mathematics.backend import get_backend
-
-    _HAS_OPTIMIZATIONS = True
-except ImportError:
-    _HAS_OPTIMIZATIONS = False
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from ..types import TNFRGraph, NodeId
 
+from .._coherence_validation import validate_structural_coherence
+from .._exact_time import finite_represented_real
 from ..alias import get_attr
 from ..config.operator_names import (
     COHERENCE,
@@ -41,8 +35,18 @@ from ..constants.canonical import (
 )
 from ..metrics.local_coherence import compute_radius_structural_coherence
 from ..operators.registry import get_operator_class
+from ..types import require_finite_real_scalar_epi
+from ..validation.window import validate_window
 
 __all__ = ["StructuralFeedbackLoop"]
+
+
+def _nonnegative_policy_value(value: Any, name: str) -> float:
+    """Admit a represented controller setting without lossy coercion."""
+    normalized, _ = finite_represented_real(value, name)
+    if normalized < 0.0:
+        raise ValueError(f"{name} must be nonnegative")
+    return normalized
 
 
 class StructuralFeedbackLoop:
@@ -66,20 +70,20 @@ class StructuralFeedbackLoop:
         Graph containing the regulated node
     node : NodeId
         Identifier of the node to regulate
-    target_coherence : float, default=0.7
-        Target coherence level (C_target)
-    tau_adaptive : float, default=0.1
-        Initial bifurcation threshold (adaptive)
-    learning_rate : float, default=0.05
-        Rate of threshold adaptation
-    coherence_tolerance_low : float, default=0.2
-        Deviation below target that triggers stabilization
-    coherence_tolerance_high : float, default=0.1
-        Deviation above target that triggers exploration
-    dnfr_threshold : float, default=0.15
-        ΔNFR threshold for self-organization
-    epi_threshold : float, default=0.3
-        EPI threshold for emission
+    target_coherence : float
+        Supplied target in [0, 1]; defaults to FEEDBACK_TARGET_COHERENCE.
+    tau_adaptive : float
+        Nonnegative initial bifurcation threshold; defaults to FEEDBACK_TAU_ADAPTIVE.
+    learning_rate : float
+        Nonnegative adaptation gain; defaults to FEEDBACK_LEARNING_RATE.
+    coherence_tolerance_low : float
+        Nonnegative deviation below target; defaults to FEEDBACK_COHERENCE_TOL_LOW.
+    coherence_tolerance_high : float
+        Nonnegative deviation above target; defaults to FEEDBACK_COHERENCE_TOL_HIGH.
+    dnfr_threshold : float
+        Nonnegative pressure-magnitude threshold; defaults to FEEDBACK_DNFR_THRESHOLD.
+    epi_threshold : float
+        Signed scalar form threshold; defaults to FEEDBACK_EPI_THRESHOLD.
 
     Attributes
     ----------
@@ -116,7 +120,7 @@ class StructuralFeedbackLoop:
     COHERENCE_TOL_LOW = FEEDBACK_COHERENCE_TOL_LOW  # ≈ 0.139
     COHERENCE_TOL_HIGH = FEEDBACK_COHERENCE_TOL_HIGH  # ≈ 0.099
     DNFR_THRESHOLD = FEEDBACK_DNFR_THRESHOLD  # √(tol_low × tol_high) ≈ 0.117
-    EPI_THRESHOLD = FEEDBACK_EPI_THRESHOLD  # Canonical combo ≈ 0.330
+    EPI_THRESHOLD = FEEDBACK_EPI_THRESHOLD  # Configured policy ≈ 0.330
 
     def __init__(
         self,
@@ -130,24 +134,28 @@ class StructuralFeedbackLoop:
         dnfr_threshold: float = DNFR_THRESHOLD,
         epi_threshold: float = EPI_THRESHOLD,
     ) -> None:
-        """Initialize feedback loop with optimized mathematical backend."""
+        """Initialize a validated scalar feedback policy without selecting a backend."""
         self.G = graph
         self.node = node
-        self.target_coherence = float(target_coherence)
-        self.tau_adaptive = float(tau_adaptive)
-        self.learning_rate = float(learning_rate)
-        self.COHERENCE_TOL_LOW = float(coherence_tolerance_low)
-        self.COHERENCE_TOL_HIGH = float(coherence_tolerance_high)
-        self.DNFR_THRESHOLD = float(dnfr_threshold)
-        self.EPI_THRESHOLD = float(epi_threshold)
+        self.target_coherence = validate_structural_coherence(
+            target_coherence, name="target_coherence"
+        )
+        self.tau_adaptive = _nonnegative_policy_value(tau_adaptive, "tau_adaptive")
+        self.learning_rate = _nonnegative_policy_value(learning_rate, "learning_rate")
+        self.COHERENCE_TOL_LOW = _nonnegative_policy_value(
+            coherence_tolerance_low, "coherence_tolerance_low"
+        )
+        self.COHERENCE_TOL_HIGH = _nonnegative_policy_value(
+            coherence_tolerance_high, "coherence_tolerance_high"
+        )
+        self.DNFR_THRESHOLD = _nonnegative_policy_value(
+            dnfr_threshold, "dnfr_threshold"
+        )
+        self.EPI_THRESHOLD = finite_represented_real(epi_threshold, "epi_threshold")[0]
 
-        # Initialize optimized backend for mathematical operations
-        if _HAS_OPTIMIZATIONS:
-            self.backend = get_backend()
-            self._use_optimizations = True
-        else:
-            self.backend = None
-            self._use_optimizations = False
+        # Compatibility attributes only: this controller has no backend operations.
+        self.backend = None
+        self._use_optimizations = False
 
     def regulate(self) -> str:
         """Select appropriate operator based on current structural state.
@@ -173,23 +181,48 @@ class StructuralFeedbackLoop:
         nodal equation. This is an engineering controller, not evidence of
         autonomous phase/form maintenance.
         """
-        dnfr = get_attr(self.G.nodes[self.node], ALIAS_DNFR, 0.0)
-        epi = get_attr(self.G.nodes[self.node], ALIAS_EPI, 0.0)
+        target = validate_structural_coherence(
+            self.target_coherence, name="target_coherence"
+        )
+        tolerance_low = _nonnegative_policy_value(
+            self.COHERENCE_TOL_LOW, "coherence_tolerance_low"
+        )
+        tolerance_high = _nonnegative_policy_value(
+            self.COHERENCE_TOL_HIGH, "coherence_tolerance_high"
+        )
+        dnfr_threshold = _nonnegative_policy_value(
+            self.DNFR_THRESHOLD, "dnfr_threshold"
+        )
+        epi_threshold = finite_represented_real(self.EPI_THRESHOLD, "epi_threshold")[0]
+        dnfr = get_attr(
+            self.G.nodes[self.node],
+            ALIAS_DNFR,
+            0.0,
+            strict=True,
+            conv=lambda value: finite_represented_real(value, "stored pressure")[0],
+        )
+        epi = get_attr(
+            self.G.nodes[self.node],
+            ALIAS_EPI,
+            0.0,
+            strict=True,
+            conv=require_finite_real_scalar_epi,
+        )
 
         # Compute local coherence estimate
         coherence = self._compute_local_coherence()
 
         # Structural decision tree
-        if coherence < self.target_coherence - self.COHERENCE_TOL_LOW:
+        if coherence < target - tolerance_low:
             # Very low coherence → stabilize
             return COHERENCE
-        elif coherence > self.target_coherence + self.COHERENCE_TOL_HIGH:
+        elif coherence > target + tolerance_high:
             # High coherence → explore
             return DISSONANCE
-        elif abs(dnfr) > self.DNFR_THRESHOLD:
+        elif abs(dnfr) > dnfr_threshold:
             # High reorganization pressure → self-organize
             return SELF_ORGANIZATION
-        elif epi < self.EPI_THRESHOLD:
+        elif epi < epi_threshold:
             # Low activation → emit
             return EMISSION
         else:
@@ -215,7 +248,8 @@ class StructuralFeedbackLoop:
         Parameters
         ----------
         performance_metric : float
-            Achieved coherence or other performance measure
+            Finite signed coherence or other performance measure in the
+            supplied target scale. This generic input is not restricted to [0, 1].
 
         Notes
         -----
@@ -225,15 +259,22 @@ class StructuralFeedbackLoop:
 
             \\tau_{t+1} = \\tau_t + \\alpha (C_{target} - C_{achieved})
 
-        where α is the learning rate.
+        where α is the nonnegative learning rate. The existing policy clips
+        the next threshold to [0.05, 0.25]. Invalid inputs or a nonrepresentable
+        update are rejected before changing the stored threshold.
         """
-        error = self.target_coherence - performance_metric
-
-        # Proportional adjustment
-        self.tau_adaptive += self.learning_rate * error
-
-        # Clamp to valid range
-        self.tau_adaptive = max(0.05, min(0.25, self.tau_adaptive))
+        target = validate_structural_coherence(
+            self.target_coherence, name="target_coherence"
+        )
+        tau = _nonnegative_policy_value(self.tau_adaptive, "tau_adaptive")
+        learning_rate = _nonnegative_policy_value(self.learning_rate, "learning_rate")
+        performance = finite_represented_real(performance_metric, "performance_metric")[
+            0
+        ]
+        proposal = finite_represented_real(
+            tau + learning_rate * (target - performance), "adapted threshold"
+        )[0]
+        self.tau_adaptive = max(0.05, min(0.25, proposal))
 
     def homeostatic_cycle(self, num_steps: int = 10) -> None:
         """Execute homeostatic regulation cycle.
@@ -259,15 +300,15 @@ class StructuralFeedbackLoop:
         formation, target attainment or stability. The caller supplies the
         node and number of invocations; operator admission may reject a step.
         """
-        for step in range(num_steps):
-            # Measure state before
-            self._compute_local_coherence()
-
+        for _ in range(validate_window(num_steps)):
+            # Admit adaptive settings before an operator can write graph state.
+            tau = _nonnegative_policy_value(self.tau_adaptive, "tau_adaptive")
+            _nonnegative_policy_value(self.learning_rate, "learning_rate")
             # Select and apply operator
             operator_name = self.regulate()
             operator_class = get_operator_class(operator_name)
             operator = operator_class()
-            operator(self.G, self.node, tau=self.tau_adaptive)
+            operator(self.G, self.node, tau=tau)
 
             # Measure state after
             coherence_after = self._compute_local_coherence()

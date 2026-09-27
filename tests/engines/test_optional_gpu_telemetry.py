@@ -30,6 +30,14 @@ class MissingPsutil(importlib.abc.MetaPathFinder):
 
 sys.meta_path.insert(0, MissingPsutil())
 
+from tnfr.engines import computation
+from tnfr.engines.computation import FFTDynamicsEngine
+from tnfr.engines.computation.fft_engine import FFTDynamicsEngine as shim_engine
+from tnfr.dynamics.fft_engine import FFTDynamicsEngine as owner_engine
+
+assert "FFTDynamicsEngine" in computation.__all__
+assert FFTDynamicsEngine is shim_engine is owner_engine
+
 from tnfr.engines.computation.unified_fft_engine import (
     TNFRUnifiedFFTEngine,
     UnifiedFFTConfig,

@@ -88,6 +88,27 @@ def _scalar_id(value: Any) -> Any:
     return _json_state(value, "identifier")
 
 
+def _graph_record(value: Any, path: str, fields: set[str]) -> dict[str, Any]:
+    """Require the declared v1 object fields without silently dropping data."""
+    if not isinstance(value, dict):
+        raise ValueError(f"{path} must be a JSON object")
+    missing = fields - value.keys()
+    unknown = value.keys() - fields
+    if missing or unknown:
+        raise ValueError(
+            f"{path} has missing or unknown fields: "
+            f"missing={sorted(missing)!r}, unknown={sorted(map(repr, unknown))!r}"
+        )
+    return value
+
+
+def _graph_attributes(value: Any, path: str) -> dict[str, Any]:
+    """Copy only JSON objects; pair lists would silently coerce or merge keys."""
+    if not isinstance(value, dict):
+        raise ValueError(f"{path} must be a JSON object")
+    return _json_state(value, path)
+
+
 def encode_graph(graph: nx.Graph) -> dict[str, Any]:
     """Capture supported graph state without mutating or relabelling it."""
     nodes = [
@@ -123,7 +144,20 @@ def encode_graph(graph: nx.Graph) -> dict[str, Any]:
 
 
 def decode_graph(payload: dict[str, Any]) -> nx.Graph:
-    """Load the declared graph schema, rejecting unknown or lossy state."""
+    """Load the declared v1 object/array schema without dropping record fields.
+
+    Attributes are string-keyed JSON objects, not key/value pair arrays.
+    Duplicate nodes/edges and undeclared endpoints reject. Nested attributes
+    are copied, retaining the finite-JSON scope of :func:`encode_graph`.
+    A text decoder must reject duplicate JSON names before constructing this
+    dictionary; already overwritten Python dictionary values are unrecoverable.
+    This is state transport, not physical-state admission or a runtime checkpoint.
+    """
+    payload = _graph_record(
+        payload,
+        "graph",
+        {"schema", "directed", "multigraph", "attributes", "nodes", "edges"},
+    )
     if payload.get("schema") != GRAPH_SCHEMA:
         raise ValueError("Unsupported manifest graph schema")
     if (
@@ -131,24 +165,36 @@ def decode_graph(payload: dict[str, Any]) -> nx.Graph:
         or type(payload.get("multigraph")) is not bool
     ):
         raise ValueError("Manifest graph flags must be booleans")
+    for field in ("nodes", "edges"):
+        if not isinstance(payload[field], list):
+            raise ValueError(f"graph.{field} must be a JSON array")
     graph_type = (
         (nx.MultiDiGraph if payload["directed"] else nx.MultiGraph)
         if payload["multigraph"]
         else (nx.DiGraph if payload["directed"] else nx.Graph)
     )
     graph = graph_type()
-    graph.graph.update(_json_state(payload["attributes"], "graph.attributes"))
-    for record in payload["nodes"]:
+    graph.graph.update(_graph_attributes(payload["attributes"], "graph.attributes"))
+    for index, record in enumerate(payload["nodes"]):
+        path = f"graph.nodes[{index}]"
+        record = _graph_record(record, path, {"id", "attributes"})
         node = _scalar_id(record["id"])
         if node in graph:
             raise ValueError("Duplicate node ID in manifest graph")
         graph.add_node(node)
-        graph.nodes[node].update(_json_state(record["attributes"], "node.attributes"))
-    for record in payload["edges"]:
+        graph.nodes[node].update(
+            _graph_attributes(record["attributes"], f"{path}.attributes")
+        )
+    edge_fields = {"source", "target", "attributes"}
+    if graph.is_multigraph():
+        edge_fields.add("key")
+    for index, record in enumerate(payload["edges"]):
+        path = f"graph.edges[{index}]"
+        record = _graph_record(record, path, edge_fields)
         source, target = _scalar_id(record["source"]), _scalar_id(record["target"])
         if source not in graph or target not in graph:
             raise ValueError("Manifest edge references an undeclared node")
-        attributes = _json_state(record["attributes"], "edge.attributes")
+        attributes = _graph_attributes(record["attributes"], f"{path}.attributes")
         if graph.is_multigraph():
             key = _scalar_id(record["key"])
             if graph.has_edge(source, target, key):

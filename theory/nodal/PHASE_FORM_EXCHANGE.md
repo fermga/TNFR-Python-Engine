@@ -597,7 +597,7 @@ follows from the inequalities above. The same-input response controls are in
 From the repository root, with its Python dependencies installed, run
 
 ```bash
-python examples/08_emergent_geometry/179_phase_form_driven_response.py --output-dir docs/assets/phase_form_driven_response
+python examples/08_emergent_geometry/179_phase_form_driven_response.py --output-dir artifacts/phase_form_driven_response
 ```
 
 The example declares its phase input first, reconstructs the analytic EPI

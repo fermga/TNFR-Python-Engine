@@ -12,6 +12,7 @@ __all__ = [
     "DEFAULT_PARAMS",
     "clear_orjson_param_warnings",
     "json_dumps",
+    "json_loads",
     "read_structured_file",
     "safe_write",
     "StructuredFileError",
@@ -31,6 +32,8 @@ class JsonDumpsParams:
 
 DEFAULT_PARAMS: Incomplete
 
+def _reject_duplicate_json_keys(pairs: list[tuple[str, Any]]) -> None: ...
+def json_loads(text: str | bytes | bytearray) -> Any: ...
 def json_dumps(
     obj: Any,
     *,
@@ -54,7 +57,12 @@ class StructuredFileError(Exception):
     path: Incomplete
     def __init__(self, path: Path, original: Exception) -> None: ...
 
-def read_structured_file(path: Path) -> Any: ...
+def read_structured_file(
+    path: Path | str,
+    *,
+    base_dir: Path | str | None = None,
+    allowed_extensions: tuple[str, ...] | None = (".json", ".yaml", ".yml", ".toml"),
+) -> Any: ...
 def safe_write(
     path: str | Path,
     write: Callable[[Any], Any],
@@ -63,5 +71,6 @@ def safe_write(
     encoding: str | None = "utf-8",
     atomic: bool = True,
     sync: bool | None = None,
+    base_dir: str | Path | None = None,
     **open_kwargs: Any,
 ) -> None: ...

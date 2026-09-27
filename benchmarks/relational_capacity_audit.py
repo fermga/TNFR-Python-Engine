@@ -9,12 +9,11 @@ runs and complete dependency provenance cannot be authenticated by this record.
 from __future__ import annotations
 
 import argparse
-from fractions import Fraction as Q
 import hashlib
-import json
 import math
-from pathlib import Path
 import platform
+from fractions import Fraction as Q
+from pathlib import Path
 
 import networkx as nx
 import numpy as np
@@ -24,6 +23,7 @@ from tnfr.dynamics.relational import (
     RelationalExchangeModel,
     evaluate_relational_exchange,
 )
+from tnfr.sdk.utils import import_from_json
 
 if __package__ in (None, ""):
     import relational_capacity_response as campaign
@@ -76,6 +76,11 @@ def load_exact_json(path):
     """Load finite JSON with strictly typed exact-rational diagnostic payloads."""
 
     def decode(value):
+        if isinstance(value, list):
+            return [decode(item) for item in value]
+        if not isinstance(value, dict):
+            return value
+        value = {key: decode(item) for key, item in value.items()}
         if set(value) == {"numerator", "denominator"}:
             n, d = value["numerator"], value["denominator"]
             _require(
@@ -84,14 +89,9 @@ def load_exact_json(path):
             return Q(n, d)
         return value
 
-    def invalid(value):
-        raise ValueError(f"nonfinite JSON scalar: {value}")
-
-    return json.loads(
-        Path(path).read_text(encoding="utf-8"),
-        object_hook=decode,
-        parse_constant=invalid,
-    )
+    # The shared decoder validates original JSON names and numeric tokens before
+    # dictionary construction or binary64 coercion can discard evidence.
+    return decode(import_from_json(path))
 
 
 def _compatibility(prediction, root):

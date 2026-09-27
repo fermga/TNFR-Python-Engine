@@ -1,4 +1,4 @@
-"""Read-only regional observations of the selected relational exchange model.
+"""Read-only regional and support-change observations of relational exchange.
 
 An explicit reference supplies real phase lifts, not a discovered equilibrium.
 The full centered form and phase-error vectors retain information discarded by
@@ -11,11 +11,12 @@ from __future__ import annotations
 from collections.abc import Mapping, Set
 from dataclasses import dataclass
 from fractions import Fraction
+from itertools import islice
 from typing import Any
 
 import networkx as nx
 
-from .._exact_time import finite_represented_real
+from .._exact_time import exact_or_represented_real, finite_represented_real
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ..dynamics.relational import (
     RelationalExchangeField,
@@ -25,9 +26,11 @@ from ..dynamics.relational import (
 from .support_transport import (
     RegionalSupportBalance,
     RegionalSupportCut,
+    SupportTransportReset,
     observe_regional_support_balance,
     observe_regional_support_cut,
     observe_support_transport,
+    observe_support_transport_reset,
 )
 from .winding_certificates import WindingCertificate, certify_phase_winding
 
@@ -38,6 +41,13 @@ __all__ = (
     "RegionalPatternObservation",
     "RelationalPatternObservation",
     "observe_relational_pattern",
+    "RelationalPortState",
+    "RelationalAttachmentPort",
+    "RelationalAttachmentObservation",
+    "RelationalAttachmentSupplyAssessment",
+    "observe_relational_attachment",
+    "RelationalRelocationObservation",
+    "observe_relational_relocation",
 )
 
 
@@ -164,11 +174,188 @@ class RelationalPatternObservation:
     )
 
 
-def _ordered(value, label):
+@dataclass(frozen=True)
+class RelationalPortState:
+    """One supplied port's captured state and instantaneous local interface.
+
+    ``form_gradient`` is exact represented ``q=B*x``; ``relative_resultant``
+    contains the engine's materialized relative cosine/sine sums. Degree,
+    gradient and resultant refer to the field's complete support. These
+    summaries do not supply their own future evolution or a closed macro-node.
+    """
+
+    node: Any
+    epi: float
+    phase: float
+    capacity: float
+    degree: int
+    form_gradient: Fraction
+    relative_resultant: tuple[float, float]
+    pressure: float
+    phase_metric: float
+    form_rate: float
+    phase_rate: float
+
+
+@dataclass(frozen=True)
+class RelationalAttachmentPort:
+    """Captured port before and after a hypothetical unit-support change.
+
+    The original attachment name is retained for compatibility; relocation
+    observations reuse this same before/after card.
+    """
+
+    before: RelationalPortState
+    after: RelationalPortState
+
+
+@dataclass(frozen=True)
+class RelationalAttachmentSupplyAssessment:
+    """Declared work compared with one represented hypothetical storage jump.
+
+    The additional event-passivity premise is ``storage_change <= supplied_work``.
+    Required supply uses the support comparison's captured storage difference, not a
+    new physical energy or a bound on ideal trigonometric storage. Signed work
+    may describe supply or extraction; its source is supplied by the caller.
+    A passing balance neither authenticates that work nor selects an event.
+    """
+
+    required_supply: Fraction
+    supplied_work: Fraction
+    supply_margin: Fraction
+    represented_balance_satisfied: bool
+    scope: tuple[str, ...] = (
+        "caller_supplied_work_not_authenticated",
+        "passivity_is_an_additional_event_premise",
+        "represented_storage_not_an_ideal_trigonometric_certificate",
+        "no_occurrence_timing_or_live_support_selection",
+    )
+
+
+class _RelationalSupportBudget:
+    """Shared declared-work accounting for captured support comparisons."""
+
+    storage_change: Fraction
+
+    @property
+    def represented_zero_supply_passive(self) -> bool:
+        """Whether captured storage satisfies the additional zero-work premise."""
+        return self.storage_change <= 0
+
+    def assess_supply(self, supplied_work: Any) -> RelationalAttachmentSupplyAssessment:
+        """Assess signed declared work without evaluating or modifying any graph.
+
+        Positive work is supply and negative work is extraction, in the same
+        structural-storage units as ``storage_change``. Rational inputs remain
+        exact; other real inputs follow the shared represented-real boundary.
+        No default work, occurrence rule, elapsed-time credit or continuous-loss
+        funding is inferred. This is arithmetic on the report, not proof of its
+        provenance or of exact-real passivity from rounded phase data.
+        """
+        work = exact_or_represented_real(supplied_work, "supplied_work")
+        margin = work - self.storage_change
+        return RelationalAttachmentSupplyAssessment(
+            required_supply=self.storage_change,
+            supplied_work=work,
+            supply_margin=margin,
+            represented_balance_satisfied=margin >= 0,
+        )
+
+
+@dataclass(frozen=True)
+class RelationalAttachmentObservation(_RelationalSupportBudget):
+    """Compare two admitted components with their hypothetical joined field.
+
+    Full component states remain available in ``components``. Change tuples
+    follow ``joined.nodes`` and subtract the matching component's captured
+    value from the joined value using exact represented arithmetic. Storage
+    changes subtract the sum of both components; ``phase_storage_change`` is
+    the unscaled cosine cost V, and total storage includes the model's beta.
+    ``cut`` is directed outward from the complete left component. The shared
+    ``transport_reset`` accounts for form storage only. None of these values
+    records an executed support event, a trajectory or a capture certificate.
+    """
+
+    components: tuple[RelationalExchangeField, RelationalExchangeField]
+    joined: RelationalExchangeField
+    bridge: tuple[Any, Any]
+    ports: tuple[RelationalAttachmentPort, RelationalAttachmentPort]
+    form_rate_change: tuple[Fraction, ...]
+    phase_rate_change: tuple[Fraction, ...]
+    pressure_change: tuple[Fraction, ...]
+    phase_metric_change: tuple[Fraction, ...]
+    form_storage_change: Fraction
+    phase_storage_change: Fraction
+    storage_change: Fraction
+    transport_reset: SupportTransportReset
+    cut: RegionalSupportCut
+    scope: tuple[str, ...] = (
+        "two_disjoint_separately_admitted_connected_components",
+        "supplied_ordered_unit_bridge_left_port_to_right_port",
+        "acute_model_only_with_unchanged_form_phase_and_held_capacity",
+        "three_fresh_native_fields_without_live_graph_writes",
+        "exact_represented_differences_not_transcendental_error_bounds",
+        "hypothetical_support_comparison_not_an_executed_event",
+        "no_autonomous_attachment_reduced_closure_or_recovery_certificate",
+    )
+
+    @property
+    def continuous_loss_change(self) -> Fraction:
+        """Joined minus component loss rates, not available event work."""
+        return self.joined.continuous_loss - sum(
+            (field.continuous_loss for field in self.components), Fraction(0)
+        )
+
+
+@dataclass(frozen=True)
+class RelationalRelocationObservation(_RelationalSupportBudget):
+    """Two fresh fields for one supplied state-preserving bridge relocation.
+
+    ``components`` are ordered node partitions after removing the old bridge,
+    not separately evaluated fields. Their internal edges remain unchanged.
+    Both cuts point outward from the first partition. Change tuples follow
+    ``after.nodes``; ports contain each affected node once, in that order.
+    Phase storage changes are unscaled cosine costs; total storage includes
+    beta. A passive represented budget alone does not certify future identity.
+    """
+
+    before: RelationalExchangeField
+    after: RelationalExchangeField
+    components: tuple[tuple[Any, ...], tuple[Any, ...]]
+    remove_bridge: tuple[Any, Any]
+    add_bridge: tuple[Any, Any]
+    ports: tuple[RelationalAttachmentPort, ...]
+    form_rate_change: tuple[Fraction, ...]
+    phase_rate_change: tuple[Fraction, ...]
+    pressure_change: tuple[Fraction, ...]
+    phase_metric_change: tuple[Fraction, ...]
+    form_storage_change: Fraction
+    phase_storage_change: Fraction
+    storage_change: Fraction
+    transport_reset: SupportTransportReset
+    cut_before: RegionalSupportCut
+    cut_after: RegionalSupportCut
+    scope: tuple[str, ...] = (
+        "supplied_graph_bridge_separates_two_nontrivial_connected_components",
+        "supplied_missing_unit_edge_crosses_the_same_ordered_components",
+        "all_internal_edges_and_primitive_form_phase_capacity_are_preserved",
+        "acute_model_only_with_two_fresh_fields_without_live_graph_writes",
+        "exact_represented_differences_not_transcendental_error_bounds",
+        "hypothetical_support_comparison_not_an_executed_event",
+        "no_autonomous_selection_timing_reduced_closure_or_recovery_certificate",
+    )
+
+    @property
+    def continuous_loss_change(self) -> Fraction:
+        """New minus old loss rate, not available event work."""
+        return self.after.continuous_loss - self.before.continuous_loss
+
+
+def _ordered(value, label, *, limit=None):
     if isinstance(value, (str, bytes, bytearray, Mapping, Set)):
         raise TypeError(f"{label} must be an ordered iterable")
     try:
-        return tuple(value)
+        return tuple(value) if limit is None else tuple(islice(iter(value), limit))
     except TypeError as exc:
         raise TypeError(f"{label} must be an ordered iterable") from exc
 
@@ -208,6 +395,192 @@ def _detached_graph(field):
         )
     graph.add_edges_from((a, b, {"weight": 1.0}) for a, b in field.edges)
     return graph
+
+
+def _port_state(field, node):
+    if field.work is None or field.relative_resultant is None:
+        raise RuntimeError("fresh relational field must contain port evidence")
+    index = field.nodes.index(node)
+    return RelationalPortState(
+        node=node,
+        epi=field.epi[index],
+        phase=field.phase[index],
+        capacity=field.capacity[index],
+        degree=sum(node == a or node == b for a, b in field.edges),
+        form_gradient=field.work.form_gradient[index],
+        relative_resultant=field.relative_resultant[index],
+        pressure=field.pressure[index],
+        phase_metric=field.phase_metric[index],
+        form_rate=field.form_rate[index],
+        phase_rate=field.phase_rate[index],
+    )
+
+
+def _field_changes(before_fields, after):
+    """Exact represented differences against one or several disjoint fields."""
+    origins = {
+        node: (field, index)
+        for field in before_fields
+        for index, node in enumerate(field.nodes)
+    }
+    changes = {
+        name
+        + "_change": tuple(
+            Fraction(value)
+            - Fraction(getattr(origins[node][0], name)[origins[node][1]])
+            for node, value in zip(after.nodes, getattr(after, name), strict=True)
+        )
+        for name in ("form_rate", "phase_rate", "pressure", "phase_metric")
+    }
+    changes.update(
+        {
+            name
+            + "_change": getattr(after, name)
+            - sum((getattr(field, name) for field in before_fields), Fraction(0))
+            for name in ("form_storage", "phase_storage", "storage")
+        }
+    )
+    return changes
+
+
+def observe_relational_attachment(left, right, *, model, bridge):
+    """Evaluate one supplied unit bridge on detached admitted component states.
+
+    ``left`` and ``right`` must each satisfy the native relational graph/state
+    contract, with disjoint node labels. ``bridge`` is an ordered pair naming
+    one left port and one right port. The selected model must use the acute
+    phase domain; the joined field must independently pass that same admission.
+    Invalid components or a nonacute new edge raise without changing either
+    graph. Zero capacities retain the native frozen-row semantics.
+
+    Both components are evaluated separately. Their disconnected union is
+    used only for shared transport accounting, never as a relational field.
+    A fresh native evaluation on the joined detached state supplies pressure,
+    phase mobility and both rates. No support event is committed and no new
+    pressure, phase or autonomous connection law is introduced.
+    """
+    if not isinstance(model, RelationalExchangeModel):
+        raise TypeError("model must be a RelationalExchangeModel")
+    if model.phase_domain != "acute":
+        raise ValueError("relational attachment requires the acute phase domain")
+    endpoints = _ordered(bridge, "bridge", limit=3)
+    if len(endpoints) != 2:
+        raise ValueError("bridge must contain exactly two ordered ports")
+    components = (
+        evaluate_relational_exchange(left, model=model),
+        evaluate_relational_exchange(right, model=model),
+    )
+    left_nodes, right_nodes = (set(field.nodes) for field in components)
+    if left_nodes & right_nodes:
+        raise ValueError("component node labels must be disjoint")
+    try:
+        valid_ports = endpoints[0] in left_nodes and endpoints[1] in right_nodes
+    except TypeError as exc:
+        raise ValueError(
+            "bridge ports must belong to their respective components"
+        ) from exc
+    if not valid_ports:
+        raise ValueError("bridge ports must belong to their respective components")
+
+    detached = nx.compose(*(_detached_graph(field) for field in components))
+    # The admitted model has no forcing. Preserve that explicit declaration
+    # when reconstructing only its consumed state on the detached support.
+    detached.graph["GAMMA"] = {"type": "none"}
+    before_transport = observe_support_transport(detached)
+    detached.add_edge(*endpoints, weight=1.0)
+    joined = evaluate_relational_exchange(detached, model=model)
+    after_transport = observe_support_transport(_detached_graph(joined))
+    reset = observe_support_transport_reset(before_transport, after_transport)
+    cut = observe_regional_support_cut(after_transport, components[0].nodes)
+    return RelationalAttachmentObservation(
+        components=components,
+        joined=joined,
+        bridge=endpoints,
+        ports=tuple(
+            RelationalAttachmentPort(
+                _port_state(field, node), _port_state(joined, node)
+            )
+            for field, node in zip(components, endpoints, strict=True)
+        ),
+        **_field_changes(components, joined),
+        transport_reset=reset,
+        cut=cut,
+    )
+
+
+def observe_relational_relocation(graph, *, model, remove_bridge, add_bridge):
+    """Compare a supplied bridge relocation at unchanged primitive state.
+
+    The acute simple unit connected input is evaluated through the native
+    owner. Removing ``remove_bridge`` must leave exactly two connected
+    components with at least two nodes each. Its ordered endpoints identify
+    the first and second components; ``add_bridge`` must join them in that
+    same order and must be absent from the original graph. All internal
+    component edges remain unchanged. The new connected graph independently
+    passes the same native field admission. Zero capacities remain valid.
+
+    Only detached state is edited. No field is evaluated on the disconnected
+    intermediate support. The report can describe either sign of storage
+    change; its optional declared-work assessment is not an event selector,
+    time law, ideal trigonometric bound or subsequent recovery certificate.
+    """
+    if not isinstance(model, RelationalExchangeModel):
+        raise TypeError("model must be a RelationalExchangeModel")
+    if model.phase_domain != "acute":
+        raise ValueError("relational relocation requires the acute phase domain")
+    old = _ordered(remove_bridge, "remove_bridge", limit=3)
+    new = _ordered(add_bridge, "add_bridge", limit=3)
+    if len(old) != 2 or len(new) != 2:
+        raise ValueError("each bridge must contain exactly two ordered ports")
+    before = evaluate_relational_exchange(graph, model=model)
+    detached = _detached_graph(before)
+    detached.graph["GAMMA"] = {"type": "none"}
+    try:
+        valid_nodes = all(node in detached for node in (*old, *new))
+    except TypeError as exc:
+        raise ValueError("bridge ports must belong to the full support") from exc
+    if not valid_nodes:
+        raise ValueError("bridge ports must belong to the full support")
+    if not detached.has_edge(*old):
+        raise ValueError("remove_bridge must be an existing edge")
+    if detached.has_edge(*new):
+        raise ValueError("add_bridge must be absent from the original support")
+    before_transport = observe_support_transport(detached)
+    detached.remove_edge(*old)
+    parts = tuple(nx.connected_components(detached))
+    if len(parts) != 2 or any(len(part) < 2 for part in parts):
+        raise ValueError("remove_bridge must separate two nontrivial components")
+    left = next(part for part in parts if old[0] in part)
+    right = next(part for part in parts if old[1] in part)
+    if new[0] not in left or new[1] not in right:
+        raise ValueError("add_bridge must cross the same ordered components")
+    components = tuple(
+        tuple(node for node in before.nodes if node in part) for part in (left, right)
+    )
+    detached.add_edge(*new, weight=1.0)
+    after = evaluate_relational_exchange(detached, model=model)
+    after_transport = observe_support_transport(_detached_graph(after))
+    affected = set((*old, *new))
+    return RelationalRelocationObservation(
+        before=before,
+        after=after,
+        components=components,
+        remove_bridge=old,
+        add_bridge=new,
+        ports=tuple(
+            RelationalAttachmentPort(
+                _port_state(before, node), _port_state(after, node)
+            )
+            for node in after.nodes
+            if node in affected
+        ),
+        **_field_changes((before,), after),
+        transport_reset=observe_support_transport_reset(
+            before_transport, after_transport
+        ),
+        cut_before=observe_regional_support_cut(before_transport, components[0]),
+        cut_after=observe_regional_support_cut(after_transport, components[0]),
+    )
 
 
 def _regional_work(field, indices):

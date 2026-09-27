@@ -1,73 +1,28 @@
-"""
-benchmarks/emergent_rationals.py
+"""Supplied graph-spectral encodings of integers and rational arithmetic.
 
-Camino 4 (gap 3) — does Q (division / the field of fractions) emerge from
-coupling coherent systems, the way +,x emerged from graph products in
-composition_arithmetic.py?
+Bipartite adjacency spectra have sign symmetry. Selected integral graphs
+therefore provide signed integer eigenvalues. Complete bipartite K_{a,b} has
+Laplacian spectrum {0, a^(b-1), b^(a-1), a+b}; ratios of selected nonzero
+integer modes encode rational numbers. For every positive p/q, taking
+(a,b)=(2p,2q) ensures both eigenvalues have nonzero multiplicity, including
+when p or q is one. Negative signs and zero require the separate arithmetic
+construction; positive Laplacian ratios alone do not give all of Q.
 
-composition_arithmetic.py established the additive/multiplicative MONOID of
-cardinals:
-  - Cartesian product G [] H : Laplacian spectrum = {lambda_i + mu_j}  -> ADDITION
-  - Tensor    product G x  H : adjacency spectrum = {alpha_i * beta_j}  -> MULTIPLICATION
-What it did NOT close is the FIELD structure: additive inverse (-> Z) and
-division (-> Q). This harness closes gap (3): the inverse and the quotient also
-emerge from the coupling, and the emergent set is FIELD-CLOSED = Q.
+The finite arithmetic controls use explicit integer inputs, outer_sum,
+outer_prod and Python Fraction. The field-of-fractions construction Frac(Z)=Q
+is supplied mathematics, not an autonomous physical production of arithmetic.
+Stern-Brocot traversal separately applies a prescribed mediant rule.
 
-FOUR pieces, each anchored to a known theorem (the independent ground truth):
+A separate two-oscillator sine-coupling ODE is integrated by explicit Euler
+as a comparison. It tests a finite-time ratio near a 1:1 lock for selected
+frequencies and coupling; it does not generate Stern-Brocot mediants or all
+rational locks. Grammar U3 is a circular compatibility gate and does not
+derive this phase law, its frequency inputs or physical realization.
 
-  (1) Z (additive inverse). The adjacency matrix A is the coupling operator.
-      For a BIPARTITE graph the sublattice (chiral) symmetry forces
-      spec(A) = -spec(A): for every emergent eigenvalue n there is -n. The
-      additive inverse is not injected; it is a structural consequence of the
-      bipartite coupling. Integral bipartite graphs (hypercube Q_d, K_{n,n})
-      give SIGNED INTEGERS.
-
-  (2) Q (division). Laplacian-integral graphs have integer eigenvalues. The
-      complete bipartite graph K_{a,b} has Laplacian spectrum
-      {0, a^(b-1), b^(a-1), a+b}; the ratio a/b of two emergent eigenvalues is
-      a rational, and every reduced p/q is realised by a suitable K_{a,b}.
-      Division = the ratio of two emergent integer modes.
-
-  (3) Field closure. For emergent integer eigenvalues a,b,c,d the four field
-      operations on the ratios a/b, c/d land back in the emergent set:
-        x : (a/b)(c/d) = (ac)/(bd)         [ac, bd via the TENSOR product]
-        + : a/b + c/d  = (ad+bc)/(bd)       [ad,bc via x ; ad+bc via [] ]
-        - : a/b - c/d  = (ad-bc)/(bd)       [ad-bc via the bipartite inverse]
-        / : (a/b)/(c/d)= (ad)/(bc)          [ratio of emergents = rational]
-      The numerators/denominators are built with the SAME outer_sum / outer_prod
-      engine as composition_arithmetic.py. By the field-of-fractions theorem the
-      closed set is Frac(Z) = Q.
-
-  (4) Physical mechanism (TNFR-native). Resonant phase coupling (grammar rule
-      U3, |phi_i - phi_j| <= dphi_max) locks two oscillators at RATIONAL
-      frequency ratios (rotation number). The Stern-Brocot mediant
-      a/b (+) c/d = (a+c)/(b+d) is the resonance-combination of two locked
-      ratios, and it generates every positive rational from the two seed
-      frequencies 0/1 and 1/0 (Farey / Arnold-tongue ordering). So Q is not an
-      external construction bolted on; it is the natural attractor lattice of
-      phase coupling. A minimal two-oscillator Kuramoto integration confirms the
-      1:1 lock gives rotation number exactly 1 inside the Arnold tongue.
-
-TNFR reading: the canonical discrete dNFR / phase-curvature operator is the
-emergent random-walk Laplacian L_rw = I - D^-1 W; A is the coupling matrix and
-D - A its imposed combinatorial cousin. + and x come from composing systems
-(composition_arithmetic.py); the inverse comes from bipartite coupling symmetry;
-division comes from the ratio of resonant modes / phase-locking. Q therefore
-inherits emergence from the same nodal machinery, with division given a physical
-(resonance) realisation rather than a purely formal one.
-
-HONEST SCOPE:
-  Frac(Z) = Q is a known algebraic theorem; this harness does not prove Q "from
-  nothing". What it shows is that (a) the integers and their +,x,- are emergent
-  (not injected), (b) division has a physical TNFR realisation (mode ratio /
-  phase-locking), and (c) the emergent set is field-closed = Q. The real
-  continuum R and pi remain the assumed
-  substrate; this is Q, not R. Nothing here touches G4 = RH.
-
-Run:
-    python benchmarks/emergent_rationals.py
-
-Status: RESEARCH (rational-emergence falsifier, gap 3 of the emergence map).
+The helpers remain for graph-symmetry consumers. Scope owners are
+``theory/TNFR_NUMBER_THEORY.md`` and ``theory/TNFR_RIEMANN_RESEARCH_NOTES.md``.
+No TNFR operator trajectory, physical measurement or RH result follows.
+Run ``python benchmarks/emergent_rationals.py`` for the configured controls.
 """
 
 from __future__ import annotations
@@ -111,8 +66,9 @@ def is_pm_symmetric(spec, tol=1e-8):
 def kab_laplacian_eigenvalues(a: int, b: int) -> set[int]:
     """Distinct Laplacian eigenvalues of the complete bipartite graph K_{a,b}.
 
-    Spectrum: {0, a (mult b-1), b (mult a-1), a+b}. Returns the emergent integers
-    available as eigenvalues (the nonzero physical modes).
+    Spectrum: {0, a (mult b-1), b (mult a-1), a+b} for positive a,b.
+    This numerical helper rounds the nonzero eigenvalues to integers under
+    its configured tolerance; it does not observe physical modes.
     """
     G = nx.complete_bipartite_graph(a, b)
     spec = integer_spectrum(lap_spectrum(G))
@@ -123,8 +79,8 @@ def stern_brocot_path(target: Fraction, max_steps: int = 10000):
     """Navigate the Stern-Brocot tree to `target` by mediants from 0/1 and 1/0.
 
     Returns (steps, reached, mediants) where `mediants` is the list of mediant
-    fractions visited. Each mediant is the resonance-combination (a+c)/(b+d) of
-    its two Farey parents.
+    fractions visited. Each mediant explicitly applies (a+c)/(b+d) to the two
+    bounding fractions; no phase dynamics generates that rule here.
     """
     left = (0, 1)  # 0/1
     right = (1, 0)  # 1/0 (infinity sentinel)
@@ -143,11 +99,13 @@ def stern_brocot_path(target: Fraction, max_steps: int = 10000):
 
 
 def kuramoto_two_rotation_number(omega1, omega2, K, steps=40000, dt=0.005):
-    """Long-run frequency ratio of two Kuramoto-coupled phase oscillators.
+    """Finite-horizon mean-rate ratio for a supplied sine-coupled phase law.
 
-    dtheta_i/dt = omega_i + K sin(theta_j - theta_i). They 1:1 frequency-lock
-    iff |omega1 - omega2| <= 2K, in which case both run at the mean frequency and
-    the rotation number (ratio of mean frequencies) -> 1 (rational).
+    Explicit Euler integrates dtheta_i/dt = omega_i + K sin(theta_j-theta_i)
+    from zero phases. For K>0 and |omega1-omega2|<2K, the continuous phase-
+    difference equation admits a stable locked branch. If reached and its
+    common mean rate is nonzero, the long-time ratio is one. The finite return
+    does not certify that limit, the boundary case, or the engine U3 policy.
     """
     t1 = 0.0
     t2 = 0.0
@@ -166,7 +124,7 @@ def kuramoto_two_rotation_number(omega1, omega2, K, steps=40000, dt=0.005):
 # --------------------------------------------------------------------------- #
 def test_additive_inverse_from_bipartite_symmetry():
     print("=" * 78)
-    print("(1) Z: the additive inverse emerges from bipartite coupling symmetry")
+    print("(1) Bipartite adjacency spectra: paired eigenvalue signs")
     print("=" * 78)
     bipartite = [
         ("C6", nx.cycle_graph(6)),
@@ -194,15 +152,15 @@ def test_additive_inverse_from_bipartite_symmetry():
             f"  {name:<16} spec(A) +/- symmetric? {sym}  (non-bipartite, " "contrast)"
         )
 
-    # integral bipartite -> signed integers Z
+    # Selected integral bipartite graph gives a finite set of signed integers.
     q3 = integer_spectrum(adj_spectrum(nx.hypercube_graph(3)))
     signed = sorted(set(int(v) for v in q3))
-    print(f"  Q3 gives SIGNED INTEGERS: {signed}  -> N extends to Z")
+    print(f"  Q3 gives the selected signed integer eigenvalues: {signed}")
 
     ok = all_sym and none_sym and (-min(signed) == max(signed))
     print(
         f"  VERDICT: {'PASS' if ok else 'FAIL'} -- -n is forced by the "
-        "coupling symmetry, not injected"
+        "bipartite adjacency symmetry on the selected graphs"
     )
     return ok
 
@@ -210,7 +168,7 @@ def test_additive_inverse_from_bipartite_symmetry():
 def test_division_from_integral_eigenvalue_ratios():
     print()
     print("=" * 78)
-    print("(2) Q: division emerges as ratios of integral Laplacian eigenvalues")
+    print("(2) Explicit ratios of selected integral Laplacian eigenvalues")
     print("=" * 78)
     targets = [Fraction(3, 2), Fraction(5, 3), Fraction(7, 4), Fraction(5, 2)]
     all_ok = True
@@ -226,10 +184,10 @@ def test_division_from_integral_eigenvalue_ratios():
             f"  {r}  realised by K_{{{a},{b}}}: eigenvalues {{a,b}}={{{a},{b}}} "
             f"present? {have};  ratio = {ratio}  matches? {ratio == r}"
         )
-    print("  any reduced p/q is the ratio of two emergent integer eigenvalues")
+    print("  Any positive p/q can be encoded using K_{2p,2q}; division is supplied.")
     print(
         f"  VERDICT: {'PASS' if all_ok else 'FAIL'} -- division = ratio of "
-        "two resonant modes"
+        "two selected nonzero integer eigenvalues"
     )
     return all_ok
 
@@ -237,11 +195,11 @@ def test_division_from_integral_eigenvalue_ratios():
 def test_field_closure_is_Q():
     print()
     print("=" * 78)
-    print("(3) Field closure: emergent ratios are closed under +,-,x,/ = Q")
+    print("(3) Supplied rational arithmetic: finite +,-,x,/ controls")
     print("=" * 78)
-    # emergent integer eigenvalues taken from K_{2,3}: {2, 3, 5} and K_{2,4}:{2,4,6}
-    print("  emergent integers from K_{2,3} -> {2,3,5}, from K_{2,4} -> {2,4,6}")
-    a, b, c, d = 2, 3, 4, 6  # all emergent eigenvalues
+    # Supplied integers also occurring in the indicated Laplacian spectra.
+    print("  integer spectra K_{2,3} -> {2,3,5}, K_{2,4} -> {2,4,6}")
+    a, b, c, d = 2, 3, 4, 6
     r1 = Fraction(a, b)  # 2/3
     r2 = Fraction(c, d)  # 4/6 = 2/3
     # use two genuinely different ratios
@@ -251,7 +209,7 @@ def test_field_closure_is_Q():
     c, d = r2.numerator, r2.denominator
     print(
         f"  r1 = {r1} (= {a}/{b}),  r2 = {r2} (= {c}/{d})  "
-        "[a,b,c,d all emergent eigenvalues]"
+        "[supplied integer values in the selected spectra]"
     )
 
     checks = []
@@ -275,7 +233,7 @@ def test_field_closure_is_Q():
     diff = Fraction(int(round(num_sub)), int(round(den_add)))
     checks.append(("-", diff, r1 - r2))
 
-    # / : (a/b)/(c/d) = ad/bc, a ratio of two emergent integers
+    # / : (a/b)/(c/d) = ad/bc, with nonzero divisor c/d.
     quot = Fraction(int(round(ad)), int(round(bc)))
     checks.append(("/", quot, r1 / r2))
 
@@ -285,13 +243,13 @@ def test_field_closure_is_Q():
         all_ok &= ok
         print(
             f"  r1 {op} r2 = {got}   (exact {expect})   "
-            f"built from emergent integers? {ok}"
+            f"agrees with Fraction arithmetic? {ok}"
         )
     print("  numerators/denominators all built with outer_sum / outer_prod")
-    print("  => emergent integers with +,x,- and ratios form a FIELD = Frac(Z) = Q")
+    print("  Frac(Z)=Q is the supplied algebraic construction; this tests examples.")
     print(
-        f"  VERDICT: {'PASS' if all_ok else 'FAIL'} -- the emergent set is "
-        "field-closed; it IS Q"
+        f"  VERDICT: {'PASS' if all_ok else 'FAIL'} -- four arithmetic identities "
+        "on the selected rational inputs"
     )
     return all_ok
 
@@ -299,7 +257,7 @@ def test_field_closure_is_Q():
 def test_resonance_generates_Q():
     print()
     print("=" * 78)
-    print("(4) Physical mechanism: phase-locking + Stern-Brocot mediant generate Q+")
+    print("(4) Separate supplied models: sine-coupled pair and Stern-Brocot traversal")
     print("=" * 78)
     # 4a) two-oscillator Kuramoto 1:1 lock -> rational rotation number 1
     inside = kuramoto_two_rotation_number(1.0, 1.3, 0.5)  # |dw|=0.3 <= 2K=1.0
@@ -308,14 +266,14 @@ def test_resonance_generates_Q():
     unlocked = abs(outside - 1.0) > 5e-2
     print(
         f"  Kuramoto 1:1 inside Arnold tongue:  rotation number = {inside:.4f} "
-        f"-> locked at 1 (rational)? {locked}"
+        f"-> finite ratio within tolerance of 1? {locked}"
     )
     print(
         f"  Kuramoto outside tongue:            rotation number = {outside:.4f} "
         f"-> not 1 (drifting)?       {unlocked}"
     )
 
-    # 4b) the Stern-Brocot mediant (resonance-combination) generates every p/q
+    # 4b) prescribed Stern-Brocot mediants, independent of the phase integration.
     targets = [Fraction(3, 2), Fraction(5, 3), Fraction(22, 7), Fraction(1, 4)]
     gen_ok = True
     for r in targets:
@@ -323,20 +281,20 @@ def test_resonance_generates_Q():
         gen_ok &= reached
         print(
             f"  Stern-Brocot reaches {str(r):>5} in {steps:>3} mediants "
-            f"(resonance-combinations)?  {reached}"
+            f"(prescribed arithmetic rule)?  {reached}"
         )
-    # mediant IS the resonance combination of its two Farey parents
+    # One exact mediant example; no oscillator state enters this calculation.
     med_demo = Fraction(1 + 1, 2 + 3)  # mediant of 1/2 and 1/3 = 2/5
     med_ok = med_demo == Fraction(2, 5)
     print(
         f"  mediant(1/2, 1/3) = (1+1)/(2+3) = {med_demo}  "
-        f"(resonance lock between two ratios)?  {med_ok}"
+        f"(exact arithmetic identity)?  {med_ok}"
     )
 
     ok = locked and unlocked and gen_ok and med_ok
     print(
-        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- Q+ is the natural attractor "
-        "lattice of resonant phase coupling"
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- finite oscillator-ratio and "
+        "independent mediant controls; no dynamical derivation of Q"
     )
     return ok
 
@@ -345,15 +303,18 @@ def main():
     print(__doc__)
     results = [
         (
-            "(1) additive inverse from bipartite symmetry (Z)",
+            "(1) bipartite adjacency sign symmetry",
             test_additive_inverse_from_bipartite_symmetry(),
         ),
         (
-            "(2) division from integral eigenvalue ratios (Q)",
+            "(2) selected integral eigenvalue ratios",
             test_division_from_integral_eigenvalue_ratios(),
         ),
-        ("(3) field closure = Frac(Z) = Q", test_field_closure_is_Q()),
-        ("(4) resonance / Stern-Brocot generate Q+", test_resonance_generates_Q()),
+        ("(3) finite rational arithmetic identities", test_field_closure_is_Q()),
+        (
+            "(4) independent oscillator and mediant controls",
+            test_resonance_generates_Q(),
+        ),
     ]
     print()
     print("=" * 78)
@@ -365,19 +326,10 @@ def main():
     print()
     print(f"  OVERALL: {'ALL PASS' if overall else 'SOME FAIL'}")
     print()
-    print("  Reading: Q emerges from the SAME nodal machinery that produced +,x.")
-    print("  The additive inverse is forced by bipartite coupling symmetry (Z);")
-    print("  division is the ratio of two resonant integer modes (integral-")
-    print("  Laplacian graphs); the emergent ratios are field-closed under all")
-    print("  four operations, so by Frac(Z) = Q they ARE the rationals. The")
-    print("  physical reason division appears is phase-locking: resonant coupling")
-    print("  (U3) locks oscillators at rational rotation numbers, and the Stern-")
-    print("  Brocot mediant -- the resonance-combination of two locked ratios --")
-    print("  generates every positive rational. HONEST SCOPE: Frac(Z)=Q is a known")
-    print("  theorem; what is shown is that the integers, their +,x,- and division")
-    print("  are all emergent/physical, not injected. R (continuum) and pi")
-    print("  remain assumed substrate; this is Q, not R;")
-    print("  nothing here touches G4 = RH.")
+    print("  Reading: selected graph spectra encode integer values; explicit")
+    print("  arithmetic forms their ratios. The independent sine-coupled ODE")
+    print("  does not generate the mediant rule or derive all rational locks.")
+    print("  No physical emergence, engine U3 phase law or RH result is tested.")
     return 0 if overall else 1
 
 

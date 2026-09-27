@@ -76,7 +76,7 @@ constitutive pressure or replacement primitive phase law. Full-state closure,
 future evolution, source provenance and hypothesis admission remain separate.
 The [production controls](../../tests/physics/test_form_geometry.py) bind the
 observation to the shared nodal integrator and its finite Euler arithmetic.
-The [SDK guide](../../docs/CLI_AND_SDK.md#observe-regional-form-and-its-nodal-response)
+The [SDK guide](../../docs/guides/REGIONAL_AND_RELATIONAL.md#observe-regional-form-and-its-nodal-response)
 owns usage; the [pressure admission result](PRESSURE_CONSTITUTIVE_SCOPE.md#regular-derived-phase-pressure)
 explains why the observed angle cannot automatically become a global source.
 
@@ -1200,7 +1200,7 @@ contrast and c=0 remain valid observations. If c=0, W alone carries no form
 orientation. Source means remain separate and may still drive regional means.
 The report is a derived observation of supplied state/law data, not an
 autonomous evolution, primitive phase identification or physical bridge.
-The [SDK guide](../../docs/CLI_AND_SDK.md#retain-orientation-relative-to-a-held-source)
+The [SDK guide](../../docs/guides/REGIONAL_AND_RELATIONAL.md#retain-orientation-relative-to-a-held-source)
 owns exact field names, source admission and usage.
 
 **Frozen production protocol.** The maintained entry point is

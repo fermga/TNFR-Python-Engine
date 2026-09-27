@@ -5,6 +5,64 @@ The [execution plan](../FIVE_STAGE_EXECUTION_PLAN.md) is the sole active queue.
 Historical instructions, reported successes and old milestone names are not
 current mathematical authority.
 
+## Benchmark instrument cleanup, 2026-09-27
+
+The [benchmark guide](../../../benchmarks/README.md) distinguishes finite
+experiments, exact model probes, retained-record audits, observational
+comparisons and actual timing measurements. Existing producer/import paths and
+frozen responses remain stable; current priorities belong to the execution plan.
+
+The [recovery manifest](BENCHMARK_CLEANUP_2026-09-27.json) records the reason,
+replacement owner, original Git blob and both Git/checkout hashes for eight
+removed files. Each source matched its recorded revision after line-ending
+normalization before removal. Recover original bytes with `git cat-file blob`
+and a binary-safe writer; checkout and Git newline hashes can differ.
+
+- `benchmark_optimization_tracks.py` compared identical field calls and
+  declared an unmeasured cache hit rate while allowing mock fallback. The
+  maintained lookup/batching instruments report actual workloads and hashes.
+- `phi_s_confinement_investigation.py` searched obsolete golden-ratio/0.7711
+  calibrations. Potential and U6 scope remain in the field and grammar owners.
+- `u2_destabilization_irreversibility.py` assumed a universal U2 theorem and an
+  invalid persistence equivalence. Its external table has no replay manifest;
+  it establishes no external TNFR law. The removed source retains that negative
+  historical report without promoting its other claims to authority.
+- `tetrad_results_aggregate.py` served a retired producer's format, with no
+  maintained caller; existing raw outputs were not changed.
+- `nodal_transport_readouts.py` was an undocumented import-time scratch run,
+  not a retained protocol. Shared transport kernels and regression tests remain.
+
+The curvature safety demo moved to [examples](../../../examples/08_emergent_geometry/k_phi_safety_demo.py),
+where its unchanged WS preparation is explicit. Its single-use
+`benchmark_utils.py` abstraction and unused topology branches were removed.
+
+The two retired bridge drivers `golden_residue_remesh_bridge.py` and
+`nodal_propagator_residue_bridge.py` additionally promoted supplied circle-map,
+prime-spectrum and finite Fourier comparisons to unsupported nodal evolution
+or universal obstruction claims. Their shared kernels and properly scoped
+comparisons remain; [Riemann scope](../../TNFR_RIEMANN_RESEARCH_NOTES.md)
+owns the corrected boundaries.
+
+The dead `make riemann-benchmark` target and directory-wide pytest-benchmark
+instruction were removed. The optional plugin extra stays available explicitly;
+normal test/development environments no longer request the unused plugin.
+
+## Technical documentation consolidation, 2026-09-27
+
+The [documentation map](../../../docs/README.md) now separates usage guides,
+execution contracts and mathematical owners. Detailed relational contracts and
+operator-event contracts moved out of the API hub; regional SDK workflows have
+a dedicated guide. The former hub anchors remain as navigation links.
+
+| Retired document | Retained owner |
+| --- | --- |
+| `docs/grammar/PHYSICS_VERIFICATION.md` | [Grammar verification](../../UNIFIED_GRAMMAR_RULES.md#9-verification-and-reporting), including implementation owners and the actual U6 test |
+| `docs/EMPIRICAL_CONFRONTATION_EEG.md` | Current APIs in the [observational interface guide](../../../docs/STRUCTURAL_INTERFACE_THEORY.md); historical numbers and negative findings in [reported interface observations](REPORTED_INTERFACE_OBSERVATIONS.md) |
+
+The reported results retain their original evidence limitations; moving them
+supplies neither a rerun nor physical validation. Frozen `docs/assets/` reports
+and source archives stay at their existing paths without content changes.
+
 ## Unified theory catalog, 2026-09-27
 
 The [theory README](../../README.md) is now the single thematic catalog and

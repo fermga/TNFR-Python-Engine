@@ -368,7 +368,7 @@ def _add_epi_validate_parser(sub: argparse._SubParsersAction) -> None:
 
     p_epi = sub.add_parser(
         "epi.validate",
-        help="Validate EPI structural integrity and coherence",
+        help="Check stored affinity, capacity and all-edge phase diagnostics",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=(
             "Examples:\n"
@@ -395,29 +395,29 @@ def _add_epi_validate_parser(sub: argparse._SubParsersAction) -> None:
     validation_group = p_epi.add_argument_group("Validation options")
     validation_group.add_argument(
         "--check-coherence",
-        action="store_true",
+        action=argparse.BooleanOptionalAction,
         default=True,
-        help="Validate coherence preservation (enabled by default)",
+        help="Check stored affinity W_mean against -tolerance (not a coherence proof)",
     )
     validation_group.add_argument(
         "--check-frequency",
-        action="store_true",
+        action=argparse.BooleanOptionalAction,
         default=True,
-        help="Validate structural frequency positivity (enabled by default)",
+        help="Check finite nonnegative capacity (enabled by default)",
     )
     validation_group.add_argument(
         "--check-phase",
-        action="store_true",
+        action=argparse.BooleanOptionalAction,
         default=True,
-        help="Validate phase synchrony in couplings (enabled by default)",
+        help="Check the configured U3 gate on all edges (enabled by default)",
     )
     validation_group.add_argument(
         "--tolerance",
         type=float,
         default=1e-6,
         help=(
-            "Finite nonnegative tolerance for numeric diagnostics; "
-            "does not widen the U3 phase gate"
+            "Finite nonnegative slack for the affinity sign diagnostic only; "
+            "does not widen the capacity domain or U3 phase gate"
         ),
     )
 

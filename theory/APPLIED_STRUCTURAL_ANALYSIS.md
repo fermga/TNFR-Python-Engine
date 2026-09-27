@@ -19,8 +19,8 @@ Demonstrations must state which arithmetic information and fallbacks were used.
 ### 2.1 Statement
 
 The [public wrapper](../src/tnfr/factorization/__init__.py) delegates to the lab's
-[API](../factorization-lab/tnfr_factorization/api.py). The
-[Paley-Jacobi pipeline](../factorization-lab/tnfr_factorization/spectral_paley.py)
+[API](../applications/factorization-lab/tnfr_factorization/api.py). The
+[Paley-Jacobi pipeline](../applications/factorization-lab/tnfr_factorization/spectral_paley.py)
 constructs spectral candidates, may process partitions through a decoder,
 and emits telemetry and optional certificates. An output named
 `tnfr_certified_factors` records the pipeline's structural verification outcome;
@@ -48,7 +48,7 @@ size hints can use divisibility. `TNFR_PURE_MODE_VERIFY_DIVISIBILITY=1` filters
 initial seeds; it is not a universal proof for later heuristic acceptance.
 The verifier records `support_divisible` without requiring it in `pass_all`.
 Report these dependencies when attributing success to TNFR-specific processing.
-The [lab guide](../factorization-lab/README.md) owns current flag and output details.
+The [lab guide](../applications/factorization-lab/README.md) owns current flag and output details.
 
 The lab's spectral quantities named potential, gradient and curvature are proxies,
 not the canonical tetrad computed by `tnfr.physics.fields`. Their scale and
@@ -66,16 +66,16 @@ arithmetic verification and fallback provenance for reproducible comparisons.
 
 | Component | Owner |
 | --- | --- |
-| API and result fields | [api.py](../factorization-lab/tnfr_factorization/api.py) |
-| Candidate/refinement/verification paths | [spectral_paley.py](../factorization-lab/tnfr_factorization/spectral_paley.py) |
-| Partition planning | [partitioning.py](../factorization-lab/tnfr_factorization/partitioning.py) |
-| Seed handling | [seed_management.py](../factorization-lab/seed_management.py) |
-| Snapshot/replay | [snapshot_system.py](../factorization-lab/snapshot_system.py) |
-| CLI and use | [lab README](../factorization-lab/README.md) |
+| API and result fields | [api.py](../applications/factorization-lab/tnfr_factorization/api.py) |
+| Candidate/refinement/verification paths | [spectral_paley.py](../applications/factorization-lab/tnfr_factorization/spectral_paley.py) |
+| Partition planning | [partitioning.py](../applications/factorization-lab/tnfr_factorization/partitioning.py) |
+| Seed handling | [seed_management.py](../applications/factorization-lab/seed_management.py) |
+| Snapshot/replay | [snapshot_system.py](../applications/factorization-lab/snapshot_system.py) |
+| CLI and use | [lab README](../applications/factorization-lab/README.md) |
 
 ## 4. Test coverage and evaluation boundary
 
-The [lab tests](https://github.com/fermga/TNFR-Python-Engine/tree/main/factorization-lab/tests) exercise finite examples, verification
+The [lab tests](https://github.com/fermga/TNFR-Python-Engine/tree/main/applications/factorization-lab/tests) exercise finite examples, verification
 policies, false-positive controls, seeds, partitioning and replay. They do not
 prove universal factor recovery or a complexity improvement. Reserved evaluation
 must freeze thresholds before scoring, disclose labels entering construction,

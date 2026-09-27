@@ -1,13 +1,18 @@
 # Relational storage and local phase/form exchange admission
 
-**Status:** Conditional constitutive admission, not a selected TNFR law.
-This owner tests a new premise while retaining the native two-channel pressure.
-Section 13 links its opt-in engine implementation; section 14 retains the
-first evaluated nonlinear capacity response. Section 15 proves conditional
-local recovery under that full continuous law and retains its bounded engine
-control. Section 16 derives and tests interaction between two prepared regions.
-Section 17 separates genuine regular-domain obstructions from the executor's
-acute cutoff. None changes production defaults or makes a physical-identification claim.
+**Status:** Conditional joint-law derivation, recovery, interaction and
+formation-to-maintenance results; no uniquely selected or physically validated
+TNFR law is claimed. The model retains native two-channel pressure and adds
+explicit storage/capacity premises on supplied support. Its
+[opt-in implementation](#relational-engine-integration),
+[local recovery](#relational-local-recovery) and
+[prepared interaction](#relational-region-interaction) have separate contracts.
+[Validated continuous transit](#relational-validated-transit) joins formation
+to protected maintenance for a specified two-ring preparation;
+[zero-form](#relational-zero-form-control) and
+[reversed-form](#relational-reversed-form-control) controls distinguish the
+role of form direction. These results do not change production defaults,
+generate the initial substrate or identify a physical constituent.
 The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 remains the sole task queue.
 
@@ -16,12 +21,13 @@ remains the sole task queue.
 | Evidence level | What this study establishes | What remains supplied or open |
 | --- | --- | --- |
 | Model premises | An explicit connected graph, initial triad, held capacities, pressure coefficients, storage scale and structural clock | Their physical origin and autonomous preparation |
-| Conditional derivation | The phase row follows from the chosen storage balance, independent own-capacity dependence and zero-capacity freezing | Those premises are not selected by the nodal product alone |
-| Exact continuous results | Joint storage loss, initial response orders, complete receiver identity and local recovery of acute equilibria under positive capacity/dissipation | No unrestricted attraction, autonomous formation or one-node closure follows |
-| Engine contract | One explicit joint Euler step with admission and represented defects | A step need not inherit continuous storage nonincrease |
-| Retained numerical evidence | Four law/capacity cases at three step sizes meet the prior finite-response criteria | These are twelve simulations, not twelve independent physical experiments or an exact-flow error certificate |
-| Prepared geometry | The local theorem and two-grid C5 control support recovery; the paired-region control tests transmitted form/phase deformation | Autonomous formation, physical identification and unique capacity selection remain open |
-| Formation-domain admission | Pure cycles have a resultant-protected obstruction between acute winding sectors; a higher-degree example permits a local ordinary-winding crossing under the same regular law | No remote preparation-to-attractor formation, global continuation or wider engine execution is established |
+| Conditional derivation | The phase row follows from the chosen storage balance, [independent own-capacity dependence and zero-capacity freezing](#capacity-separable-exchange) | Those premises are not selected by the nodal product alone |
+| Exact continuous balances and recovery | Joint storage loss, complete receiver identity and [local exponential recovery of acute equilibria](#relational-local-recovery) under positive held capacity and form dissipation | No unrestricted attraction or autonomous one-node closure follows |
+| Engine contract | Shared [acute and positive-resultant Euler execution](#relational-positive-resultant-execution), detached observations and represented defects | Proposal-chord admission is not an exact-ODE error enclosure; a step need not inherit continuous storage nonincrease |
+| Prepared responses | Frozen [capacity-intervention](#finite-capacity-intervention-response) and [paired-region transmission](#relational-region-interaction) controls meet their stated finite-response criteria under the declared law | Supplied preparations and connections; finite numerical evidence does not establish physical validity or select a unique capacity law |
+| Formation-domain boundaries | A [pure-cycle resultant invariant](#relational-cycle-resultant-obstruction) restricts sector changes; supplied higher-degree support permits [regular winding crossing](#relational-regular-winding-crossing) | These support-specific boundaries are not a universal formation obstruction or unrestricted regular-domain guarantee |
+| Formation and maintenance | [Validated continuous transit and protected capture](#relational-validated-transit) prove that the admitted winding-zero preparation generates a winding-one pattern and converges to its maintained twist; smooth dependence gives a qualitative nearby-state result | Fixed two-ring/two-bridge support and constitutive premises remain supplied; no quantified robustness radius, arbitrary-support formation or physical identification |
+| Identity selection controls | [Zero initial form](#relational-zero-form-control) and [reversed initial form](#relational-reversed-form-control) lead to proved consensus under the same law; form reversal preserves initial storage and loss but changes the limiting identity | Scalar energy/loss and phase geometry alone do not select identity; autonomous support/capacity evolution and a universal selection law remain open |
 
 ## 1. State, inherited geometry and the independent premise
 
@@ -793,9 +799,9 @@ separate. In particular a lossless Euler step can increase storage. Keeping
 both endpoints and the numerical proposal segment acute does not prove
 that an exact future ODE trajectory stays there for arbitrary duration.
 
-The [execution contract](../../docs/API_CONTRACTS.md#conditional-relational-execution)
+The [execution contract](../../docs/contracts/RELATIONAL_DYNAMICS.md#conditional-relational-execution)
 owns scalar/clock admission, atomicity, caches, aliases and immutable report
-semantics; the [SDK guide](../../docs/CLI_AND_SDK.md#execute-the-conditional-relational-model)
+semantics; the [SDK guide](../../docs/guides/REGIONAL_AND_RELATIONAL.md#execute-the-conditional-relational-model)
 owns invocation. [Example 180](../../examples/08_emergent_geometry/180_relational_exchange.py)
 executes four small declared steps, including a zero-capacity node. The
 [routine regression owner](../../tests/test_relational_exchange_execution.py)
@@ -812,7 +818,7 @@ reference-lift phase coordinates, separate squared norms and common offsets.
 They reuse winding and full-support regional transport accounting with the
 independent phase source, preserving explicit unavailable domains and pressure
 defects. A supplied frame is not a demonstrated equilibrium or temporal identity.
-The [observation/export contract](../../docs/API_CONTRACTS.md#relational-pattern-observation)
+The [observation/export contract](../../docs/contracts/RELATIONAL_DYNAMICS.md#relational-pattern-observation)
 owns admission and exact JSON projection. Routine controls compare selected
 retained checkpoints with this owner without altering or rerunning the frozen
 campaigns; their historical benchmark wrappers remain immutable evidence.
@@ -1481,7 +1487,7 @@ from the older regional variance observer's positive-full-capacity contract.
 captures one fresh field, reuses this cut owner and exposes regional `work`
 and `boundary` through `Network.relational_pattern` and exact JSON projection.
 No diagnostic chooses an operator, evolves a graph, or closes regional
-dynamics. The [API contract](../../docs/API_CONTRACTS.md#relational-pattern-observation)
+dynamics. The [API contract](../../docs/contracts/RELATIONAL_DYNAMICS.md#relational-pattern-observation)
 owns field names and availability; static analytic, sign-reversal, exact
 gradient and retained interaction checks exercise the shared implementation
 without rerunning a trajectory. This integration adds explanatory accounting,
@@ -1846,7 +1852,7 @@ turns, leaving live radians and runtime admission separate. The
 [admission controls](../../tests/physics/test_relational_formation_admission.py)
 check those observations, the sharp C5 budget and the two-port phasor, tangent
 and native-pressure identities. They contain no time integration or formation
-parameter search. [API scope](../../docs/API_CONTRACTS.md#exact-cycle-resultant-sectors)
+parameter search. [API scope](../../docs/contracts/RELATIONAL_DYNAMICS.md#exact-cycle-resultant-sectors)
 owns inputs and availability; the symbolic proof above owns the conditional
 continuous conclusions.
 
@@ -2306,8 +2312,8 @@ defects, candidate rectangle margins, exact energy bounds and unavailable
 reasons. A target sector is supplied only on complete admission, independently
 of current winding. The certificate concerns the ideal continuous law from
 that represented state; Euler trajectories retain their separate obligations.
-The [API contract](../../docs/API_CONTRACTS.md#conditional-relational-capture)
-owns implementation details, and [SDK usage](../../docs/CLI_AND_SDK.md#check-a-protected-relational-basin)
+The [API contract](../../docs/contracts/RELATIONAL_DYNAMICS.md#conditional-relational-capture)
+owns implementation details, and [SDK usage](../../docs/guides/REGIONAL_AND_RELATIONAL.md#check-a-protected-relational-basin)
 supplies a nonacute zero-form preparation.
 
 Static [production controls](../../tests/test_relational_capture.py) exercise
@@ -2659,7 +2665,7 @@ pi; two strict enclosed inequalities must certify its acute interval.
 Summing the admitted integer turns yields both ring periods and the bridge
 square's period. Floating winding telemetry remains separate. The full
 storage upper bound must lie below a certified lower bound on the barrier.
-The [API contract](../../docs/API_CONTRACTS.md#conditional-relational-capture)
+The [API contract](../../docs/contracts/RELATIONAL_DYNAMICS.md#conditional-relational-capture)
 owns report fields, unsupported domains and restart-only scope.
 
 The separate [read-only auditor](../../benchmarks/relational_capture_audit.py)
@@ -3326,6 +3332,8 @@ close arbitrary graph formation, autonomous support/capacity evolution,
 physical identification or selection of this constitutive law by nature.
 The [shared work integration](#relational-work-integration) now exposes signed
 exchange and regional boundary accounting without extending this preparation
-into another basin sweep. The [composition result](RELATIONAL_PATTERN_COMPOSITION.md)
-now answers the first-variation question and isolates the nonlinear geometric
-response; the sole execution plan owns the remaining predictivity gate.
+into another basin sweep. The [composition owner](RELATIONAL_PATTERN_COMPOSITION.md)
+retains the tangent reduction, nonlinear closure obstructions and conditional
+passive bridge-relocation result. The
+[sole execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns the remaining support-law choice and event-clock question.

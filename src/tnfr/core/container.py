@@ -73,7 +73,8 @@ class TNFRContainer:
         """Register an implementation as a singleton.
 
         The provided instance will be cached and returned for all subsequent
-        requests for this interface.
+        requests for this interface. A new registration replaces any previously
+        resolved instance; other interface registrations are unchanged.
 
         Parameters
         ----------
@@ -90,6 +91,7 @@ class TNFRContainer:
         # Store as a factory that returns the same instance
         self._factories[interface] = lambda: implementation
         self._is_singleton[interface] = True
+        self._instances.pop(interface, None)
 
     def register_factory(
         self, interface: type[T], factory_func: Callable[[], T]
@@ -98,7 +100,8 @@ class TNFRContainer:
 
         The factory will be called each time the interface is requested,
         allowing fresh instances or cached instances depending on the
-        factory implementation.
+        factory implementation. Registering a factory discards any previously
+        resolved singleton for this interface.
 
         Parameters
         ----------
@@ -114,6 +117,7 @@ class TNFRContainer:
         """
         self._factories[interface] = factory_func
         self._is_singleton[interface] = False
+        self._instances.pop(interface, None)
 
     def get(self, interface: type[T]) -> T:
         """Retrieve an instance implementing the specified interface.

@@ -90,9 +90,10 @@ def _make_diagonal(values: Any, *, backend: MathematicsBackend) -> Any:
 class SpectralExpectationOperator:
     r"""Hermitian operator defining an auxiliary spectral expectation.
 
-    The observable is ``<psi|A|psi>`` for a Hermitian matrix ``A``.  Its range
-    is the real spectral interval of ``A`` and may lie below zero or above one;
-    it therefore has no canonical structural-coherence interpretation.  In
+    The observable is ``<psi|A|psi>`` for a Hermitian matrix ``A``. For a
+    unit-norm state its exact-real value lies in the spectral interval of ``A``;
+    an unnormalized state scales that interval by ``||psi||**2``. Values may
+    lie below zero or above one and have no structural-coherence meaning. In
     particular, it is not ``C(t) = 1/(1 + mean|DeltaNFR| + mean|dEPI|)`` and
     must not be recorded in ``C_steps`` or compared with canonical ``[0, 1]``
     coherence bands.

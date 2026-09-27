@@ -2,15 +2,18 @@
 
 Contributions should make an implemented behavior, mathematical statement or
 documented limitation more accurate and useful. The nodal equation does not make
-every configured algorithm a derived physical law. Read [AGENTS.md](AGENTS.md)
-for current definitions and evidence boundaries.
+every configured algorithm a derived physical law. Read the
+[contributor and agent instructions](AGENTS.md) before changing the repository.
+The [theory catalog](theory/README.md) owns definitions and scientific evidence;
+the instructions explain how to preserve their scope.
 
 ## Getting Started
 
 Use a separate environment and an editable checkout. Supported interpreters and
 dependency groups are defined in [pyproject.toml](pyproject.toml).
 [TESTING.md](TESTING.md#run-the-repository-tests) owns installation and validation
-commands; [the workflow guide](.github/WORKFLOWS.md) owns CI behavior. There are
+commands; [the workflow guide](.github/WORKFLOWS.md) describes CI and links its
+authoritative workflow YAML. There are
 no `dev` or `all` extras: choose a defined group for the work at hand.
 
 Before editing, inspect the affected source, tests and specialized documentation.
@@ -31,8 +34,9 @@ working-tree changes and keep a contribution focused enough to review.
 
 ## TNFR Principles
 
-The [working reference](AGENTS.md), [API contracts](docs/API_CONTRACTS.md) and
-[operator contracts](src/tnfr/operators/operator_contracts.py) own detailed rules.
+The [theory catalog](theory/README.md) locates definitions and their assumptions.
+[API contracts](docs/API_CONTRACTS.md) and
+[operator contracts](src/tnfr/operators/operator_contracts.py) specify execution.
 
 - Distinguish initial state construction, named operator maps and continuous
   nodal integration: their contracts differ.
@@ -89,9 +93,9 @@ results and untested scope. Identify changes to public APIs, serialization,
 dependencies or model assumptions. Link evidence instead of pasting duplicate
 reports. This guide promises no review or release deadline.
 
-Commit types are configured in [pyproject.toml](pyproject.toml). Publication
-behavior belongs to [the workflow guide](.github/WORKFLOWS.md); a merge alone
-does not imply a new release.
+Publication triggers and conditions are documented in
+[the workflow guide](.github/WORKFLOWS.md) and implemented in its linked YAML;
+a merge alone does not imply a new release.
 
 ## Theoretical Contributions
 

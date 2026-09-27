@@ -3,6 +3,7 @@
 import math
 from copy import deepcopy
 from fractions import Fraction
+from types import SimpleNamespace
 
 import networkx as nx
 import numpy as np
@@ -11,7 +12,58 @@ import pytest
 from tnfr.alias import get_theta_attr
 from tnfr.constants import DEFAULTS, STATE_DISSONANT, STATE_TRANSITION
 from tnfr.dynamics import coordination
+from tnfr.metrics.trig_cache import get_trig_cache
 from tnfr.utils import angle_diff
+
+
+@pytest.mark.parametrize("reduction", ["legacy", "exact_components_v1"])
+@pytest.mark.parametrize("vectorized", [False, True])
+def test_cached_trig_components_do_not_evaluate_unused_fallbacks(
+    monkeypatch, reduction, vectorized
+):
+    graph = nx.path_graph(2)
+    graph.nodes[0]["theta"] = 0.0
+    graph.nodes[1]["theta"] = 0.25
+    get_trig_cache(graph)
+
+    def unexpected_trig(_phase):
+        pytest.fail("the validated cache already contains this trig component")
+
+    proxy = SimpleNamespace(**{name: getattr(math, name) for name in dir(math)})
+    proxy.cos = proxy.sin = unexpected_trig
+    monkeypatch.setattr(coordination, "math", proxy)
+    monkeypatch.setattr(coordination, "np", np if vectorized else None)
+    coordination.coordinate_global_local_phase(
+        graph, global_force=0.0, local_force=0.25, global_reduction=reduction
+    )
+    assert tuple(get_theta_attr(graph.nodes[node]) for node in graph) == pytest.approx(
+        (0.0625, 0.1875), abs=1e-16
+    )
+
+
+def test_missing_cached_component_still_uses_its_validated_phase(monkeypatch):
+    graph = nx.path_graph(2)
+    graph.nodes[0]["theta"] = 0.0
+    graph.nodes[1]["theta"] = 0.25
+    cache = get_trig_cache(graph)
+    cache.sin.pop(1)
+    monkeypatch.setattr(coordination, "get_trig_cache", lambda _graph: cache)
+    calls = []
+    proxy = SimpleNamespace(**{name: getattr(math, name) for name in dir(math)})
+
+    def sine(phase):
+        calls.append(phase)
+        return math.sin(phase)
+
+    proxy.sin = sine
+    monkeypatch.setattr(coordination, "math", proxy)
+    coordination.coordinate_global_local_phase(
+        graph, global_force=0.0, local_force=0.25
+    )
+    assert calls == [0.25]
+    assert tuple(get_theta_attr(graph.nodes[node]) for node in graph) == pytest.approx(
+        (0.0625, 0.1875), abs=1e-16
+    )
 
 
 def _run(monkeypatch, phases, *, global_force, local_force, vectorized, connected=True):

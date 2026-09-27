@@ -1,38 +1,28 @@
 #!/usr/bin/env python3
-"""TNFR Multi-channel Structural-Interface Benchmark (coupled-oscillator networks).
+"""Multichannel signal-derived graph observations and finite score comparisons.
 
-This benchmark exercises the *multi-channel* extension of the TNFR Structural
-Interface Theory — the setting where the Structural Field Tetrad is genuinely
-native.  Where the temporal benchmark embeds a single scalar series, here a set
-of simultaneously-measured channels is treated as a network of coupled
-oscillators: per-channel Hilbert phase/amplitude feed a phase-locking coupling
-graph, and the TNFR spatial tetrad (``|∇φ|``, ``K_φ``, ``ξ_C``, ``Φ_s``) is
-tracked window by window and compared against the recognised synchronisation
-baselines (Kuramoto order parameter ``R``, mean phase-locking value, spatial
-phase dispersion).
+Per-channel Hilbert phase/amplitude feed a supplied phase-locking graph. Shared
+TNFR fields are compared with the Kuramoto order parameter, mean phase-locking
+value and phase dispersion. This observational graph does not identify measured
+canonical wiring, capacity or a physical pressure law.
 
 Real source: UCI "EEG Eye State"
 ---------------------------------
 14 EEG channels sampled at 128 Hz (Emotiv headset), with a binary label per
-sample: eyes open (0) vs eyes closed (1).  Eye closure increases occipital
-alpha-band (8–12 Hz) synchronisation, so the two label states differ in
-multi-channel phase-coupling structure — a genuine regime change for which the
-spatial tetrad is the right tool.  We band-pass to the alpha band before phase
-extraction.
+sample: eyes open (0) vs eyes closed (1). The selected alpha-band preprocessing
+and label discrimination do not themselves establish a physical transition or
+an independently validated TNFR measurement bridge.
 
 Honest scope
 ------------
-- The Kuramoto order parameter ``R`` is the gold-standard global synchrony
-  measure and is included as a *fair* baseline, not a strawman.
-- ``|∇φ|`` is partially redundant with ``1 − R`` (both fall as the network
-  synchronises).  The genuinely distinct TNFR fields are ``ξ_C`` (a spatial
-  coherence *length*) and ``K_φ`` (phase-field curvature), which have no
-  order-parameter analogue.  The reported question is whether they *add*
-  discriminative power; comparable or baseline-favourable outcomes are reported
-  honestly.
-- The ``synthetic`` source is a **test fixture only** (a Kuramoto network
-  switched from incoherent to coherent coupling).  It validates pipeline
-  mechanics and is never presented as evidence for the thesis.
+- Local phase stress and global phase order can correlate. Different formulas
+  and finite univariate AUCs do not prove independent predictive information.
+- ``ξ_C`` can come from a static product fit or a separate spectral fallback.
+  The current adapter does not retain that provenance, so this report cannot
+  identify its value as a measured correlation length.
+- The ``synthetic`` source concatenates separately initialized low/high-coupling
+  Kuramoto blocks. It validates pipeline mechanics; their join is not one
+  continuously evolved switch or evidence for a TNFR law.
 
 Usage (PowerShell)::
 
@@ -46,10 +36,11 @@ Usage (PowerShell)::
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 import zipfile
+from decimal import Decimal, InvalidOperation
 from io import BytesIO
+from numbers import Integral
 from pathlib import Path
 from typing import Any
 from urllib.request import Request, urlopen
@@ -62,9 +53,11 @@ if str(_SRC) not in sys.path:
 
 import numpy as np  # noqa: E402
 
+from tnfr.utils.io import json_dumps, safe_write  # noqa: E402
 from tnfr.validation.multichannel_interface import (  # noqa: E402
     MultichannelConfig,
-    evaluate_synchrony_discrimination,
+    _evaluate_synchrony_series,
+    _window_labels,
     multichannel_window_series,
 )
 
@@ -88,6 +81,14 @@ ROBUST_CLIP_SIGMA = 6.0
 # ---------------------------------------------------------------------------
 # Real data acquisition (bounded, cached, graceful-skip)
 # ---------------------------------------------------------------------------
+def _byte_limit(max_bytes: int) -> int:
+    if isinstance(max_bytes, bool) or not isinstance(max_bytes, Integral):
+        raise ValueError("max_bytes must be a positive integer")
+    if max_bytes <= 0:
+        raise ValueError("max_bytes must be a positive integer")
+    return int(max_bytes)
+
+
 def download_eeg_eye_state(
     *,
     cache_path: Path | None = None,
@@ -101,11 +102,17 @@ def download_eeg_eye_state(
     (no network, HTTP error, oversized payload) so the caller can skip
     gracefully offline.
     """
+    max_bytes = _byte_limit(max_bytes)
     path = cache_path or _ROOT / "results" / "data" / "eeg_eye_state.raw"
     # Treat the cache as valid only if it holds a non-trivial payload; a stale
     # empty/truncated file from an aborted run must not short-circuit the fetch.
-    if path.exists() and path.stat().st_size > 1024:
-        return path
+    if path.exists():
+        size = path.stat().st_size
+        if size > max_bytes:
+            print(f"  [skip] cached EEG exceeds {max_bytes} bytes", file=sys.stderr)
+            return None
+        if size > 1024:
+            return path
     path.parent.mkdir(parents=True, exist_ok=True)
     for url in EEG_EYE_STATE_URLS:
         try:
@@ -133,57 +140,82 @@ def download_eeg_eye_state(
             print(f"  [skip] EEG download failed ({url}): {exc}", file=sys.stderr)
             continue
         if buffer is not None and total > 0:
-            path.write_bytes(buffer.getvalue())
+            safe_write(path, lambda stream: stream.write(buffer.getvalue()), mode="wb")
             return path
     return None
 
 
-def _extract_arff_text(raw: bytes) -> str | None:
-    """Return ARFF text from a raw payload that may be a zip or plain ARFF."""
-    if raw[:2] == b"PK":  # zip magic
-        try:
+def _extract_arff_text(raw: bytes, *, max_bytes: int = DEFAULT_MAX_BYTES) -> str | None:
+    """Decode one bounded ARFF member without silently dropping corrupt bytes."""
+    max_bytes = _byte_limit(max_bytes)
+    if len(raw) > max_bytes:
+        print(f"  [skip] EEG payload exceeds {max_bytes} bytes", file=sys.stderr)
+        return None
+    try:
+        if raw[:2] == b"PK":  # zip magic
             with zipfile.ZipFile(BytesIO(raw)) as archive:
-                names = [n for n in archive.namelist() if n.lower().endswith(".arff")]
-                if not names:
-                    names = [n for n in archive.namelist() if not n.endswith("/")]
-                if not names:
-                    return None
-                return archive.read(names[0]).decode("utf-8", errors="ignore")
-        except Exception as exc:  # noqa: BLE001 - corrupt/partial archive
-            print(f"  [skip] could not read zip: {exc}", file=sys.stderr)
-            return None
-    return raw.decode("utf-8", errors="ignore")
+                members = [
+                    member
+                    for member in archive.infolist()
+                    if not member.is_dir() and member.filename.lower().endswith(".arff")
+                ]
+                if len(members) != 1:
+                    raise ValueError("EEG archive must contain exactly one ARFF member")
+                if members[0].file_size > max_bytes:
+                    raise ValueError("expanded EEG member exceeds byte limit")
+                with archive.open(members[0]) as stream:
+                    raw = stream.read(max_bytes + 1)
+                if len(raw) > max_bytes:
+                    raise ValueError("expanded EEG member exceeds byte limit")
+        return raw.decode("utf-8-sig")
+    except (OSError, ValueError, RuntimeError, zipfile.BadZipFile) as exc:
+        print(f"  [skip] could not decode EEG payload: {exc}", file=sys.stderr)
+        return None
 
 
 def parse_arff(text: str) -> tuple[np.ndarray, np.ndarray] | None:
     """Parse EEG Eye State ARFF text into ``(signals, labels)``.
 
     ``signals`` has shape ``(n_channels, n_samples)`` (channels first); ``labels``
-    is the per-sample binary eye-state.  ``@``/``%`` metadata lines are skipped;
-    rows are read after ``@DATA``.  Returns ``None`` if too little data parses.
+    is the per-sample binary eye-state. Metadata precedes ``@DATA`` and ``%``
+    comments are skipped. Malformed, nonfinite or nonbinary rows reject the
+    payload instead of compacting its sample clock. Returns ``None`` if the
+    complete valid record contains fewer than 1024 samples.
     """
     rows: list[list[float]] = []
     data_started = False
-    for raw_line in text.splitlines():
+    for line_number, raw_line in enumerate(text.splitlines(), start=1):
         line = raw_line.strip()
         if not line:
             continue
         lowered = line.lower()
-        if lowered.startswith("@data"):
+        if lowered == "@data" and not data_started:
             data_started = True
             continue
-        if line.startswith("@") or line.startswith("%"):
+        if line.startswith("%"):
             continue
         if not data_started:
             continue
         parts = [p.strip() for p in line.split(",")]
-        if len(parts) < N_EEG_CHANNELS + 1:
-            continue
+        if len(parts) != N_EEG_CHANNELS + 1:
+            raise ValueError(
+                f"EEG row {line_number} must contain 14 channels and a label"
+            )
         try:
             channels = [float(p) for p in parts[:N_EEG_CHANNELS]]
-            label = int(float(parts[N_EEG_CHANNELS]))
-        except ValueError:
-            continue
+            label = Decimal(parts[N_EEG_CHANNELS])
+        except (ValueError, InvalidOperation) as exc:
+            raise ValueError(
+                f"EEG row {line_number} contains a nonnumeric value"
+            ) from exc
+        if (
+            not all(np.isfinite(channels))
+            or not label.is_finite()
+            or label not in (0, 1)
+        ):
+            raise ValueError(
+                f"EEG row {line_number} requires finite channels and a binary label"
+            )
         rows.append(channels + [float(label)])
     if len(rows) < 1024:
         print(f"  [skip] parsed only {len(rows)} usable rows", file=sys.stderr)
@@ -212,13 +244,21 @@ def _robust_clip(
     return cleaned
 
 
-def load_eeg_eye_state(path: Path) -> tuple[np.ndarray, np.ndarray] | None:
-    """Load and clean the cached EEG Eye State payload."""
-    raw = path.read_bytes()
-    text = _extract_arff_text(raw)
+def load_eeg_eye_state(
+    path: Path, *, max_bytes: int = DEFAULT_MAX_BYTES
+) -> tuple[np.ndarray, np.ndarray] | None:
+    """Load a bounded complete EEG record and clean its supplied channel values."""
+    max_bytes = _byte_limit(max_bytes)
+    with path.open("rb") as stream:
+        raw = stream.read(max_bytes + 1)
+    text = _extract_arff_text(raw, max_bytes=max_bytes)
     if text is None:
         return None
-    parsed = parse_arff(text)
+    try:
+        parsed = parse_arff(text)
+    except ValueError as exc:
+        print(f"  [skip] invalid EEG record: {exc}", file=sys.stderr)
+        return None
     if parsed is None:
         return None
     signals, labels = parsed
@@ -266,12 +306,12 @@ def synthetic_kuramoto_regime_switch(
     coupling_high: float = 2.0,
     seed: int = 0,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Incoherent → coherent Kuramoto regime switch (mechanics fixture only).
+    """Concatenate separately initialized low/high-coupling Kuramoto fixtures.
 
     Concatenates a low-coupling (incoherent) block and a high-coupling
     (synchronised) block.  ``labels`` is 0 on the incoherent block and 1 on the
-    coherent block.  Used to validate that the tetrad and the baselines both
-    track synchronisation; never presented as evidence for the thesis.
+    coherent block. Labels name the supplied coupling preparation; the join
+    is not one continuously evolved switch or evidence for the TNFR thesis.
     """
     incoherent = kuramoto_simulate(n_oscillators, coupling_low, block, seed=seed + 1)
     coherent = kuramoto_simulate(n_oscillators, coupling_high, block, seed=seed + 2)
@@ -283,16 +323,16 @@ def synthetic_kuramoto_regime_switch(
 # ---------------------------------------------------------------------------
 # Benchmark orchestration
 # ---------------------------------------------------------------------------
-def _block_means(values: np.ndarray, labels: np.ndarray) -> dict[str, float]:
-    """Mean indicator value within each label class (for a quick sanity view)."""
+def _block_means(values: np.ndarray, labels: np.ndarray) -> dict[str, float | None]:
+    """Finite class means; absent classes/values are unavailable, encoded as null."""
     values = np.asarray(values, dtype=float)
     labels = np.asarray(labels, dtype=bool)
     finite = np.isfinite(values)
     pos = values[finite & labels]
     neg = values[finite & ~labels]
     return {
-        "label0": float(np.mean(neg)) if neg.size else float("nan"),
-        "label1": float(np.mean(pos)) if pos.size else float("nan"),
+        "label0": float(np.mean(neg)) if neg.size else None,
+        "label1": float(np.mean(pos)) if pos.size else None,
     }
 
 
@@ -314,13 +354,12 @@ def run_multichannel_benchmark(
             "bandpass": list(config.bandpass) if config.bandpass else None,
         },
         "honest_scope": (
-            "Multi-channel phase-coupled network: the native setting for the "
-            "TNFR spatial tetrad. The Kuramoto order parameter R is the "
-            "gold-standard synchrony baseline (fair, not a strawman). |∇φ| is "
-            "partially redundant with 1−R; the genuinely distinct TNFR fields "
-            "are ξ_C (spatial coherence length) and K_φ (phase-field curvature), "
-            "which have no order-parameter analogue. Comparable or "
-            "baseline-favourable outcomes are reported honestly."
+            "Signal-derived graph observations with supplied Hilbert phases "
+            "and an amplitude-pressure proxy. Finite score rankings do not "
+            "establish measured canonical wiring, a physical nodal law or "
+            "independent predictive information. The adapter omits xi_C "
+            "fit/fallback provenance; its numeric value alone cannot identify "
+            "a measured correlation length."
         ),
     }
 
@@ -334,7 +373,7 @@ def run_multichannel_benchmark(
                 "via --source synthetic."
             )
             return report
-        loaded = load_eeg_eye_state(cache)
+        loaded = load_eeg_eye_state(cache, max_bytes=max_bytes)
         if loaded is None:
             report["status"] = "skipped"
             report["reason"] = "Downloaded EEG payload could not be parsed."
@@ -347,7 +386,7 @@ def run_multichannel_benchmark(
             "cache": str(cache.relative_to(_ROOT)),
             "label_semantics": "0 = eyes open, 1 = eyes closed",
         }
-        report["event_kind"] = "eyes open vs eyes closed (alpha synchronisation)"
+        report["event_kind"] = "eyes-open versus eyes-closed labels"
     elif source == "synthetic":
         signals, labels = synthetic_kuramoto_regime_switch(
             n_oscillators=max(N_EEG_CHANNELS, 3), block=synthetic_block
@@ -356,9 +395,12 @@ def run_multichannel_benchmark(
             "n_channels": int(signals.shape[0]),
             "n_samples": int(signals.shape[1]),
             "label_balance": float(np.mean(labels)),
-            "note": "Synthetic Kuramoto regime switch; mechanics only, not evidence.",
+            "note": (
+                "Concatenated independently initialized Kuramoto blocks; "
+                "pipeline mechanics only, not evidence for a TNFR law."
+            ),
         }
-        report["event_kind"] = "incoherent → coherent coupling (fixture)"
+        report["event_kind"] = "concatenated low/high coupling fixtures"
     else:  # pragma: no cover - argparse restricts choices
         raise ValueError(f"unknown source: {source}")
 
@@ -370,12 +412,20 @@ def run_multichannel_benchmark(
         )
         return report
 
-    discrimination = evaluate_synchrony_discrimination(signals, labels, config=config)
     series = multichannel_window_series(signals, config=config)
+    discrimination = _evaluate_synchrony_series(
+        series,
+        labels,
+        config=config,
+        n_channels=signals.shape[0],
+        n_samples=signals.shape[1],
+    )
 
     report["status"] = "ok"
     report["n_windows"] = int(series.window_end.size)
     report["n_positive_windows"] = discrimination.n_positive_windows
+    report["auc_available"] = discrimination.metadata["auc_available"]
+    report["auc_unavailable_reason"] = discrimination.metadata["auc_unavailable_reason"]
     report["auc"] = {k: round(float(v), 4) for k, v in discrimination.auc.items()}
     report["best_tnfr"] = {
         "channel": discrimination.best_tnfr[0],
@@ -385,10 +435,9 @@ def run_multichannel_benchmark(
         "channel": discrimination.best_baseline[0],
         "auc": round(float(discrimination.best_baseline[1]), 4),
     }
+    window_labels = _window_labels(labels, series, config.window)
     report["block_means"] = {
-        name: _block_means(
-            getattr(series, name), _series_labels(series, labels, config)
-        )
+        name: _block_means(getattr(series, name), window_labels)
         for name in (
             "grad_phi",
             "k_phi",
@@ -401,19 +450,6 @@ def run_multichannel_benchmark(
     }
     report["interpretation"] = discrimination.interpretation
     return report
-
-
-def _series_labels(
-    series: Any, labels: np.ndarray, config: MultichannelConfig
-) -> np.ndarray:
-    """Majority window labels aligned with the tetrad series (for block means)."""
-    arr = np.asarray(labels, dtype=float)
-    out = np.empty(series.window_end.size, dtype=bool)
-    for i, end in enumerate(series.window_end):
-        start = int(end) - config.window + 1
-        segment = arr[max(0, start) : int(end) + 1]
-        out[i] = bool(np.mean(segment) >= 0.5) if segment.size else False
-    return out
 
 
 def _build_arg_parser() -> argparse.ArgumentParser:
@@ -464,14 +500,14 @@ def main(argv: list[str] | None = None) -> int:
         synthetic_block=args.synthetic_block,
     )
 
-    print(json.dumps(report, indent=2))
+    serialized = json_dumps(report, indent=2, allow_nan=False)
+    print(serialized)
 
     output_dir = Path(args.output)
     if not output_dir.is_absolute():
         output_dir = (Path.cwd() / output_dir).resolve()
-    output_dir.mkdir(parents=True, exist_ok=True)
     out_path = output_dir / f"multichannel_interface_{args.source}.json"
-    out_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    safe_write(out_path, lambda stream: stream.write(serialized + "\n"))
     try:
         display = out_path.relative_to(_ROOT)
     except ValueError:

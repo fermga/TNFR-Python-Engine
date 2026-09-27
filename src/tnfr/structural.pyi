@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Iterable, Sequence
+from typing import Any, Iterable, Sequence
 
 from tnfr.validation import NFRValidator
 from tnfr.validation import validate_sequence as validate_sequence
@@ -85,4 +85,9 @@ def create_math_nfr(
     dynamics_engine: MathematicalDynamicsEngine | None = None,
     validator: NFRValidator | None = None,
 ) -> tuple[TNFRGraph, str]: ...
-def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operator]) -> None: ...
+def run_sequence(
+    G: TNFRGraph,
+    node: NodeId,
+    ops: Iterable[Operator],
+    context: dict[str, Any] | None = None,
+) -> None: ...

@@ -24,7 +24,7 @@ queue, experimental protocol or delivery chronology.
     theory/NODAL_RESEARCH_STRATEGY.md
   Complete document catalog and implementation map:
     theory/README.md
-  Working definitions and execution contracts:
+  Contributor instructions and execution contracts:
     AGENTS.md
     docs/API_CONTRACTS.md
 
@@ -94,12 +94,25 @@ improved both tangent and direct-cubic controls on matched Euler grids.
 That result neither certifies an exact-ODE error at the evaluated amplitude
 nor supplies an autonomous compressed node or a fitted memory law.
 
-The current direction is component-to-joined interface admission with full
-internal state retained under one supplied unit bridge. Existing interaction
-controls start with already-joined support; they do not resolve this interface
-contract or select an autonomous attachment event. The same law, regional cuts
-and recovery results remain the reusable owners. Precise obligations and
-acceptance criteria belong only to:
+The component-to-joined interface is now admitted for one supplied acute unit
+bridge, retaining full internal state. Degree, internal form gradient and the
+complex neighbor resultant suffice for each new port row. Equal endpoint
+form/phase and zero event storage do not imply unchanged local rates, excluding
+the endpoint-difference-only control. The shared read-only engine/SDK report
+retains actual represented changes; it does not create a connection.
+Support-event accounting and nonselection are now explicit. With unchanged
+nodal state, pure addition costs nonnegative joint storage. An additional
+zero-supply passivity premise admits only equal form/phase endpoints and does
+not select occurrence; a continuous addition intensity on an open full-state
+domain must vanish. A supplied atomic edge exchange can lower storage on an
+open set. An explicit two-C5 bridge relocation now retains both internal
+cycles and a shared sufficient continuous recovery basin on a strict open
+domain. Its reverse can preserve recovery while failing the passive budget;
+the zero-perturbation control is a neutral exchange of equilibria.
+The shared observer/SDK compares the event without modifying live support.
+The remaining dependency is constitutive event choice and clock: a favorable
+budget and recoverable identity do not force a connection change to occur.
+Precise obligations and acceptance criteria belong only to:
   theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate
 
 Primary owners:

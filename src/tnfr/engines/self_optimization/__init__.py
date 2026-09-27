@@ -1,7 +1,8 @@
 """TNFR Self-Optimization Engine
 
-Automatic network optimization using TNFR operators and physics.
-Based on nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
+Configured computation selection using retained performance evidence.
+Recommendations do not constitute an emergent selection law or guarantee
+improvement for an unmeasured workload.
 
 Main Classes:
 - TNFRSelfOptimizingEngine: Core optimization engine
@@ -9,8 +10,8 @@ Main Classes:
 Usage:
 ```python
 from tnfr.engines.self_optimization import TNFRSelfOptimizingEngine
-engine = TNFRSelfOptimizingEngine(network)
-success, metrics = engine.step(node_id)
+engine = TNFRSelfOptimizingEngine()
+report = engine.optimize_automatically(network, dry_run=True)
 ```
 """
 

@@ -98,7 +98,16 @@ def test_graph_nfr_observation_uses_canonical_equilibrium_tolerance() -> None:
 
 
 @pytest.mark.parametrize(
-    "invalid", [-1.0, 1.1, True, "0.5", float("nan"), Fraction(1, 10**400)]
+    "invalid",
+    [
+        -1.0,
+        1.1,
+        True,
+        "0.5",
+        float("nan"),
+        Fraction(1, 10**400),
+        Fraction(2**55 + 1, 2**55),
+    ],
 )
 def test_local_coherence_reports_reject_invalid_samples_without_taking_magnitudes(
     invalid,

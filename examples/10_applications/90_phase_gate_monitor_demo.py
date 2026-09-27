@@ -11,6 +11,7 @@ Run:
 from __future__ import annotations
 
 import math
+import random
 import sys
 from pathlib import Path
 
@@ -33,8 +34,10 @@ def build_sensor_ring(n: int = 24, scrambled: bool = False) -> nx.Graph:
     G = nx.cycle_graph(n)
     phases = [2.0 * math.pi * i / n for i in range(n)]
     if scrambled:
-        # Deterministic permutation: same phase histogram, broken locality.
-        phases = [phases[(i * 7) % n] for i in range(n)]
+        # A seeded permutation preserves the phase histogram for every size.
+        # Multiplication modulo n would repeat values when the stride and n
+        # share a factor, changing the global signal instead of only locality.
+        random.Random(7).shuffle(phases)
     for node, phase in enumerate(phases):
         G.nodes[node]["phase"] = phase
         G.nodes[node]["theta"] = phase

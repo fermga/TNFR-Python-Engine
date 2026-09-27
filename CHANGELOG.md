@@ -4,6 +4,65 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.3.8] - 2026-09-27 — Relational patterns and consolidated engine contracts
+
+### Relational dynamics and research
+
+- Integrate an explicitly selected joint form-phase model with held capacity,
+  shared nodal stepping, SDK access and detached observation reports. Its
+  pressure and storage premises remain distinct from the operator runtime.
+- Document conditional recovery and formation on supplied support, regional
+  composition and transmission, and reduced descriptions with derived memory.
+  Retained finite responses and mathematical results identify their own scope.
+- Add read-only attachment and bridge-relocation observations. Report exact
+  differences of represented storage/rates, support cuts, transport reset and
+  explicitly supplied work through shared engine and SDK owners.
+- Prove a conditional, identity-preserving passive relocation for two prepared
+  five-node rings, including an open recovery region. One supplied event is not
+  an autonomous support law or a repeated-switch stability theorem.
+- Make support-event choice and its clock the next research gate. A storage
+  budget constrains admissibility but does not force an event or select its time.
+  Physical identification and a uniquely justified full model remain open.
+
+### Engine and public interfaces
+
+- Centralize represented-real admission for pressure, phase, capacity, nodal
+  arithmetic, coherence observations and validation consumers. Retain explicit
+  unavailable evidence and reject invalid inputs before coercion or caching.
+- Consolidate JSON input/output and detached report serialization, including
+  duplicate/colliding keys, unsupported labels and non-finite values. Reports
+  and construction recipes remain distinct from resumable checkpoints.
+- Correct cache ownership, service replacement, operator metric capture,
+  phase proposal validation and shared SDK/CLI diagnostic behavior.
+- Preserve explicit model, clock, forcing, event and numerical provenance;
+  diagnostic policy labels do not become autonomous dynamics.
+
+### Documentation, applications and maintenance
+
+- Rewrite the README around the current model and research direction, with an
+  accessible summary. Keep AGENTS and its mirror as contributor instructions;
+  consolidate the theory catalog, glossary, contract modules and usage guides.
+- Move the optional arithmetic projects to `applications/primality-test/` and
+  `applications/factorization-lab/`. Update checkout paths and integrations;
+  these projects are not bundled into the core TNFR wheel or source archive.
+- Retire obsolete benchmark wrappers, duplicate illustrations and transient
+  application outputs while retaining maintained entry points and scoped evidence.
+  Documentation links and glossary structure have automated integrity checks.
+- Keep the routine engine/API test gate separate from explicitly selected
+  research suites. Reuse expensive fixtures without weakening independent
+  numerical controls, unsupported-domain checks or execution provenance.
+
+### Compatibility
+
+- Callers relying on permissive numeric/JSON coercion must supply values within
+  the documented domain. Use the shared relational report exporter for exact
+  rational evidence; serializing a report does not execute its proposed event.
+- Repository scripts using former top-level arithmetic application paths must
+  migrate to `applications/`. See its index and each application's setup guide.
+- The 13 named operators and general runtime remain available. Selecting the
+  relational model is explicit; upgrading does not install an autonomous
+  topology selector or establish a physical measurement bridge.
+
 ## [0.0.3.7] - 2026-09-20 — Nodal engine refactoring and foundation reassessment
 
 ### Foundation reassessment and scope reduction

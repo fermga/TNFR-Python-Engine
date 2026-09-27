@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 import gzip
-import json
 from pathlib import Path
 
 import pytest
 
 import tnfr.factorization as factorization_module
 from tnfr.factorization import factorize
+from tnfr.sdk.utils import import_from_json
 
 
 def test_factorize_returns_spectral_result(
@@ -40,18 +40,18 @@ def test_factorize_returns_spectral_result(
         path for path in partition_dir.glob("*.json") if not path.name.startswith("_")
     )
     assert partition_files
-    payload = json.loads(partition_files[0].read_text())
+    payload = import_from_json(partition_files[0])
     assert payload["n"] == 221
     assert payload["partition_id"].startswith("p")
     assert result.partition_manifest_path
     manifest_path = Path(result.partition_manifest_path)
     assert manifest_path.exists()
-    manifest_payload = json.loads(manifest_path.read_text())
+    manifest_payload = import_from_json(manifest_path)
     assert manifest_payload["partition_files"]
     assert result.partition_manifest_index_path
     summary_path = Path(result.partition_manifest_index_path)
     assert summary_path.exists()
-    summary_payload = json.loads(summary_path.read_text())
+    summary_payload = import_from_json(summary_path)
     assert summary_payload["partition_count"] == len(manifest_payload["entries"])
     assert result.partition_file_archive_path is None
 
@@ -83,7 +83,25 @@ def test_factorize_emits_manifest_for_multiple_partitions(
     )
     assert len(partition_files) > 1
 
-    manifest_payload = json.loads(manifest_path.read_text())
+    manifest_payload = import_from_json(manifest_path)
+    assert import_from_json(result.certificate_path)["n"] == 299
+    for partition_file in partition_files:
+        assert import_from_json(partition_file)["n"] == 299
+    unavailable_lengths = [
+        index
+        for index, entry in enumerate(manifest_payload["entries"])
+        if entry["telemetry"]["coherence_length"] is None
+    ]
+    assert unavailable_lengths
+    for index in unavailable_lengths:
+        assert manifest_payload["numeric_availability"][
+            f"/entries/{index}/telemetry/coherence_length"
+        ] == {"available": False, "reason": "positive_infinity"}
+    assert manifest_payload["aggregation"]["coherence_ratio"] is None
+    assert manifest_payload["numeric_availability"]["/aggregation/coherence_ratio"] == {
+        "available": False,
+        "reason": "undefined_nan",
+    }
     assert len(manifest_payload["entries"]) == len(partition_files)
     first_entry_path = Path(manifest_payload["entries"][0]["relative_path"])
     if first_entry_path.is_absolute():
@@ -92,7 +110,7 @@ def test_factorize_emits_manifest_for_multiple_partitions(
         assert str(first_entry_path).startswith("partitioned/")
     assert result.partition_manifest_index_path
     summary_path = Path(result.partition_manifest_index_path)
-    summary_payload = json.loads(summary_path.read_text())
+    summary_payload = import_from_json(summary_path)
     assert summary_payload["partition_count"] == len(manifest_payload["entries"])
     assert summary_payload["file_index"]["inline"] is True
     assert result.partition_file_archive_path is None
@@ -119,13 +137,14 @@ def test_factorize_emits_compressed_partition_file_index_when_threshold_small(
         archived_files = [line.strip() for line in archive_stream if line.strip()]
 
     manifest_path = Path(result.partition_manifest_path)
-    manifest_payload = json.loads(manifest_path.read_text())
+    manifest_payload = import_from_json(manifest_path)
+    assert import_from_json(result.certificate_path)["n"] == 299
     assert manifest_payload["partition_file_archive"]
     assert not manifest_payload["partition_files"]
     assert len(archived_files) == len(manifest_payload["entries"])
 
     assert result.partition_manifest_index_path
     summary_path = Path(result.partition_manifest_index_path)
-    summary_payload = json.loads(summary_path.read_text())
+    summary_payload = import_from_json(summary_path)
     assert summary_payload["file_index"]["inline"] is False
     assert summary_payload["file_index"]["archive"]

@@ -23,8 +23,8 @@ not admitted canonical wiring or a physical state map. All these descriptors
 use the full input window. The legacy nodal skill also fits and evaluates
 that same window; independent calibration and reserved forecasts live in
 :mod:`tnfr.validation.nodal_prediction`. Neither API by itself supplies a
-physical measurement admission. Historical context is recorded separately in
-``docs/EMPIRICAL_CONFRONTATION_EEG.md``.
+physical measurement admission. Maintained interface and forecast contracts
+are documented in ``docs/STRUCTURAL_INTERFACE_THEORY.md``.
 """
 
 from __future__ import annotations

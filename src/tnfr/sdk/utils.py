@@ -12,7 +12,8 @@ from typing import Any
 
 from .._exact_time import finite_represented_real
 from ..metrics.common import finite_mean, finite_population_std
-from ..utils.io import json_dumps, safe_write
+from ..utils.io import _reject_duplicate_json_keys as _reject_duplicate_keys
+from ..utils.io import json_dumps, json_loads, safe_write
 
 __all__ = [
     "compare_networks",
@@ -20,36 +21,6 @@ __all__ = [
     "export_to_json",
     "import_from_json",
 ]
-
-
-def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> None:
-    """Validate actual JSON names without retaining a second decoded tree."""
-    names: set[str] = set()
-    for name, _ in pairs:
-        if name in names:
-            raise ValueError(f"JSON object keys collide after serialization: {name!r}")
-        names.add(name)
-
-
-def _decoded_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
-    _reject_duplicate_keys(pairs)
-    return dict(pairs)
-
-
-def _reject_nonfinite_constant(token: str) -> None:
-    raise ValueError(f"JSON numbers must be finite; found {token}")
-
-
-def _represented_json_float(token: str) -> float:
-    """Preserve finite JSON numbers without silently losing nonzero input."""
-    value = float(token)
-    finite_represented_real(value, "JSON number")
-    # The JSON decoder has already admitted the numeric grammar. Only the
-    # mantissa decides exact zero, independently of any exponent magnitude.
-    mantissa = token.lower().split("e", 1)[0]
-    if value == 0.0 and any(digit in "123456789" for digit in mantissa):
-        raise ValueError("JSON number is nonzero but underflows to represented zero")
-    return value
 
 
 def compare_networks(
@@ -211,7 +182,7 @@ def export_to_json(
     safe_write(filepath, lambda stream: stream.write(payload))
 
 
-def import_from_json(filepath: Path | str) -> dict[str, Any]:
+def import_from_json(filepath: Path | str) -> Any:
     """Import JSON data without reconstructing a live network.
 
     Duplicate object names and nonfinite numbers are rejected at every depth.
@@ -227,8 +198,8 @@ def import_from_json(filepath: Path | str) -> dict[str, Any]:
 
     Returns
     -------
-    dict[str, Any]
-        Dictionary with network data.
+    Any
+        Decoded JSON data; object, array and scalar roots are supported.
 
     Examples
     --------
@@ -236,17 +207,7 @@ def import_from_json(filepath: Path | str) -> dict[str, Any]:
     >>> data = import_from_json("network.json")
     >>> print(data['metadata']['nodes'])
     """
-    filepath = Path(filepath)
-
-    with open(filepath, "r", encoding="utf-8") as f:
-        data = json.load(
-            f,
-            object_pairs_hook=_decoded_object,
-            parse_constant=_reject_nonfinite_constant,
-            parse_float=_represented_json_float,
-        )
-
-    return data
+    return json_loads(Path(filepath).read_text(encoding="utf-8"))
 
 
 def format_comparison_table(

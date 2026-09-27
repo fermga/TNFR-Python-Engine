@@ -18,12 +18,23 @@ separate question.
 
 `metrics.collect_tetrad_snapshot` reuses the unified field-summary owner for
 finite means and population spreads. An invalid node value makes that whole
-field summary unavailable; it is not silently removed from the sample. Optional
+field summary unavailable; it is not silently removed from the sample.
+Potential, phase and correlation failures retain independent availability.
+Gradient and curvature reuse one phase observation: undefined curvature does
+not discard an available gradient. The curvature payload preserves ordered
+`node_values` and `node_status` with its observation scope, so partial evidence
+is retained without fabricating a complete curvature mean. Optional
 percentiles and histograms retain their existing numerical algorithms, and
 unrepresentable results carry `None` with `unavailable_statistics`. Coherence
 length retains the shared estimator's fit/fallback provenance through
 `xi_c_available`, `xi_c_provenance` and `xi_c_error`. The readout does not evolve
 nodal state, although field owners may maintain graph caches.
+
+`observe_graph_tetrad` distinguishes per-node fields from field-statistics
+summaries in its aggregation metadata. It records each canonical field's
+availability, overall `complete` and `unavailable` (no available canonical
+field). A partial observation is useful evidence, not a complete tetrad.
+The strict numeric `Network.tetrad()` API still rejects undefined curvature.
 
 `compute_unified_telemetry` retains independent `optional_sector_status` records
 for the auxiliary symplectic substrate, graph-wave pulse and nodal resonance

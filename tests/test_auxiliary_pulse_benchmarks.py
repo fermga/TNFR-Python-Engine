@@ -9,6 +9,8 @@ import networkx as nx
 import numpy as np
 import pytest
 
+from benchmarks.graph_fixtures import sierpinski_simplex
+
 
 def _load(name):
     path = Path(__file__).resolve().parents[1] / "benchmarks" / f"{name}.py"
@@ -20,6 +22,54 @@ def _load(name):
 
 
 FRACTAL = _load("emergent_fractal_pulse")
+
+
+@pytest.mark.parametrize("m, levels", [(2, 2), (3, 0), (3, 1), (3, 2), (4, 2)])
+def test_supplied_gasket_preserves_its_outer_boundary(m, levels):
+    graph, corners = sierpinski_simplex(m, levels)
+    # Each of m copies shares one corner with every other copy. Boundary
+    # vertices retain one copy's degree; each glued vertex joins two copies.
+    assert len(graph) == (m ** (levels + 1) + m) // 2
+    assert graph.number_of_edges() == m**levels * m * (m - 1) // 2
+    assert len(set(corners)) == m
+    assert nx.is_connected(graph)
+    assert nx.number_of_selfloops(graph) == 0
+    for node in graph:
+        assert graph.degree(node) == (m - 1 if node in corners else 2 * (m - 1))
+    for i, left in enumerate(corners):
+        for right in corners[i + 1 :]:
+            assert nx.shortest_path_length(graph, left, right) == 2**levels
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "emergent_nfr_geometry",
+        "emergent_fractal_simplex_dimension",
+        "emergent_resonant_pattern_tower",
+        "emergent_rhythm",
+    ],
+)
+def test_auxiliary_geometry_consumers_share_the_same_preparation(name):
+    pytest.importorskip("scipy")
+    assert _load(name).sierpinski_simplex is sierpinski_simplex
+
+
+def test_supplied_gasket_is_fresh_and_keeps_ordered_recursive_corner_labels():
+    graph, corners = sierpinski_simplex(3, 1)
+    assert list(graph) == [(0, 0), (0, 1), (0, 2), (1, 1), (1, 2), (2, 2)]
+    assert corners == [(0, 0), (1, 1), (2, 2)]
+    graph.remove_node(corners[0])
+    corners.clear()
+    fresh, boundary = sierpinski_simplex(3, 1)
+    assert len(fresh) == 6
+    assert boundary == [(0, 0), (1, 1), (2, 2)]
+
+
+@pytest.mark.parametrize("m, levels", [(1, 0), (3, -1), (3.0, 1), (3, True)])
+def test_supplied_gasket_rejects_undefined_construction_parameters(m, levels):
+    with pytest.raises((TypeError, ValueError)):
+        sierpinski_simplex(m, levels)
 
 
 @pytest.mark.parametrize("reader", ["fractal", "rhythm"])

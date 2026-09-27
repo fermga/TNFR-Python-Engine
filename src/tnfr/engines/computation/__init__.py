@@ -1,11 +1,13 @@
 """TNFR Computation Engines
 
-High-performance computing backends for TNFR operations.
-Includes GPU acceleration, FFT processing, and parallel computation.
+Computation adapters for ordered-sequence FFTs and graph dynamics.
+Backend availability and actual acceleration are reported by each operation;
+importing this namespace does not establish a speedup or a dynamical theorem.
 
 Main Classes:
-- TNFRUnifiedGPUSystem: Centralized GPU-accelerated TNFR computations
+- TNFRUnifiedGPUSystem: Backend selection and CPU/GPU provenance
 - TNFRUnifiedFFTEngine: Consolidated FFT processing with intelligent backend selection
+- FFTDynamicsEngine: Compatibility export of the shared graph-dynamics owner
 
 Usage:
 ```python
@@ -62,8 +64,8 @@ except ImportError:
     __all__ = []
 
 try:
-    from .fft_engine import FFTEngine
+    from .fft_engine import FFTDynamicsEngine
 
-    __all__.append("FFTEngine")
+    __all__.append("FFTDynamicsEngine")
 except ImportError:
     pass

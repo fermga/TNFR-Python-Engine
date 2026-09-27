@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 from decimal import Decimal, localcontext
+from fractions import Fraction
 
 import networkx as nx
 import pytest
@@ -14,6 +15,7 @@ from tnfr.metrics.emergence import (
     compute_emergence_index,
     compute_metabolic_efficiency,
 )
+from tnfr.metrics.learning_metrics import compute_learning_efficiency
 from tnfr.types import ensure_bepi, serialize_bepi
 
 
@@ -112,7 +114,12 @@ def test_metabolic_division_precedes_unrepresentable_materialization():
 
 
 @pytest.mark.parametrize(
-    "reader", [compute_metabolic_efficiency, compute_emergence_index]
+    "reader",
+    [
+        compute_metabolic_efficiency,
+        compute_emergence_index,
+        compute_learning_efficiency,
+    ],
 )
 @pytest.mark.parametrize("key", ["EPI", "epi_initial"])
 @pytest.mark.parametrize(
@@ -148,3 +155,34 @@ def test_explicit_operator_clock_is_not_moved_to_admit_future_records():
     with pytest.raises(ValueError, match="exceeds"):
         compute_bifurcation_rate(graph, 0)
     assert graph.nodes[0]["_operator_step"] == 2
+
+
+def test_learning_ratio_retains_representable_large_endpoint_change():
+    graph = _node(epi=1e308, initial_epi=-1e308, sub_epi_count=0, thol_count=2)
+    assert compute_learning_efficiency(graph, 0) == 1e308
+    graph.nodes[0]["glyph_history"] = ["AL"]
+    with pytest.raises(ValueError):
+        compute_learning_efficiency(graph, 0)
+
+
+@pytest.mark.parametrize("encode", [ensure_bepi, serialize_bepi])
+def test_learning_ratio_uses_absolute_signed_change_without_mutation(encode):
+    graph = _node(epi=-0.75, initial_epi=0.25, sub_epi_count=0, thol_count=2)
+    for key in ("EPI", "epi_initial"):
+        graph.nodes[0][key] = encode(graph.nodes[0][key])
+    before = dict(graph.nodes[0])
+    assert compute_learning_efficiency(graph, 0) == 0.5
+    assert graph.nodes[0] == before
+
+
+def test_learning_ratio_rejects_underflowing_input_and_output():
+    graph = _node(
+        epi=Fraction(1, 2**1075), initial_epi=0.0, sub_epi_count=0, thol_count=2
+    )
+    with pytest.raises(ValueError):
+        compute_learning_efficiency(graph, 0)
+    graph.nodes[0]["EPI"] = math.ulp(0.0)
+    with pytest.raises(ValueError, match="underflows"):
+        compute_learning_efficiency(graph, 0)
+    graph.nodes[0]["glyph_history"] = []
+    assert compute_learning_efficiency(graph, 0) == 0.0

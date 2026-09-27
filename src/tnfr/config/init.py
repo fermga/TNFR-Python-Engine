@@ -19,7 +19,9 @@ def load_config(
     *,
     base_dir: str | Path | None = None,
 ) -> Mapping[str, Any]:
-    """Read a JSON/YAML file and return a mapping with parameters.
+    """Read a JSON/YAML/TOML file and return a mapping with parameters.
+
+    JSON uses the shared strict decoder before any configuration is applied.
 
     Parameters
     ----------

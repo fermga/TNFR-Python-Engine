@@ -1,16 +1,23 @@
-# TNFR Operator API Contracts
+# TNFR API and execution contracts
 
 **Status:** Active normative view
 **Version source:** [package metadata](../pyproject.toml)
-**Owner:** [`tnfr.operators.operator_contracts`](../src/tnfr/operators/operator_contracts.py)
 
-This document is a readable view of the canonical operator contracts. The code
-module above owns channel, scale, direction, postcondition, and source anchors.
-Changes begin in that module and must pass its consistency assertions and tests.
+This hub owns shared API admission and execution boundaries and the generated
+operator-contract view. The [operator registry](../src/tnfr/operators/operator_contracts.py)
+owns operator metadata; the linked engine, observation and validation modules
+own their respective execution paths. A registry change alone does not revise
+an integrator, diagnostic or certificate contract.
 
-For network creation, execution, diagnostics and reproducible study export, use
-the [shared CLI and SDK guide](CLI_AND_SDK.md). That interface reuses these
-contracts; a serialized declaration or diagnostic report does not bypass live
+| Responsibility | Contract owner | Implementation boundary |
+| --- | --- | --- |
+| Common admission, solvers and named operator contracts | This document | Shared scalar/clock owners, nodal integrators and operator registry |
+| Conditional relational dynamics and observations | [Relational dynamics](contracts/RELATIONAL_DYNAMICS.md) | Selected joint law, snapshot/step reports and capture/transit admission |
+| Hybrid events and finite execution evidence | [Operator events](contracts/OPERATOR_EVENTS.md) | Declared schedules, transactions, runtime provenance and REMESH certificate APIs |
+
+For executable calls and examples, use the [CLI and SDK guide](CLI_AND_SDK.md).
+Mathematical definitions, hypotheses and proofs remain with the linked theory
+owners. A serialized declaration or diagnostic report does not bypass live
 preconditions or certify future stability.
 
 ## Contract model
@@ -28,6 +35,14 @@ Every canonical operator has:
 The channel classification does not replace grammar roles. For example,
 Mutation acts primarily on phase while also being a U2 destabilizer and U4
 transformer.
+
+`Scale` is the U5 fractality axis: `node` acts at the current fiber/level and
+`network` denotes the multi-scale REMESH echo. It is not an execution-footprint
+field. Coupling remains node-scale on this axis even though one application may
+write neighbouring phases and edge support; those overlaps belong to the
+separate stage contract.
+
+### Nodal arithmetic and input admission
 
 The optional `validate_nodal_equation` helper compares supplied EPI endpoints
 with one unforced Euler step holding the current capacity and pressure fixed.
@@ -57,6 +72,14 @@ nonrepresentable rate or endpoint reject instead of returning a successful
 infinite state. A temporal integration request has its own full integrator
 contract; it is not this detached proposal.
 
+The backend's temporal request validates the raw step, integral step count and
+Boolean trajectory flag before dispatch. Stored-pressure execution preflights
+the entire supplied clock grid, including internal subdivisions, through the
+integrator's own preparation and clock checks. A later inevitable clock overflow
+or rounded nonadvance therefore rejects before the first state write. Each step
+still admits live state/configuration; the preflight neither invokes sources nor
+makes future callbacks or state-dependent failures globally transactional.
+
 Validated nodal scalar inputs use the shared represented-real admission:
 Boolean/text values and nonzero values that disappear during binary64
 materialization reject. Capacity admits zero and has no arbitrary finite upper
@@ -77,6 +100,11 @@ conversion. Malformed primary aliases cannot be replaced by a valid secondary
 spelling. Invalid state rejects before stored pressure is written, including
 after cache reuse and on isolates. Preparation caches are not a rollback
 boundary. The phase-only hook requires only its consumed phase coordinates.
+Registered pressure hooks and runtime refresh share one optional-`n_jobs`
+dispatcher. Legacy hooks without that keyword remain supported; a `TypeError`
+inside a Python callback body propagates without replaying its side effects.
+Uninspectable callables retain the traceback-based argument-binding fallback.
+This dispatch boundary does not promise rollback of writes already made by the hook.
 The finite forcing observer uses the runtime's own vectorization predicate to
 exclude every disabled NumPy route; alternative accumulation paths are not
 silently identified with its certified numerical kernel.
@@ -87,6 +115,81 @@ negative values reject rather than becoming zero or a different default mix.
 Large finite coefficients retain a finite normalized mixture even when their
 raw sum overflows. An all-zero mix still selects uniform weights by explicit
 compatibility policy; it is not a request to disable the corresponding model.
+
+### Stored observations and validation
+
+Global and local structural coherence share stored-alias admission, finite mean
+reduction and the reciprocal diagnostic in `metrics.common`. The radius-local
+observation includes its center; the legacy immediate-neighbor observation
+excludes it and returns zero at isolates. Invalid consumed aliases reject
+without becoming zero or falling through to another spelling. These are
+different declared observation scopes, not different coherence laws; neither
+refreshes pressure or reconstructs an observed EPI rate.
+
+Local structural and phase observations share one center-inclusive support-ball
+reader: the center must exist and radius must be a nonnegative integer, excluding
+Booleans. Phase order reuses admitted trigonometric values and the shared
+Kuramoto magnitude; malformed present phases cannot be skipped to report perfect
+alignment. Its legacy empty-graph value of one is a convention, not evidence.
+A zero resultant has zero magnitude but no direction. Pairwise linear phase
+affinity is a configured score, distinct from structural C and live U3 admission.
+
+The shared coherence-value boundary checks the original real input in `[0, 1]`
+before accepting its finite binary64 representation. Rounding a value above one
+to one, or a nonzero value to zero, cannot make it admissible. The SDK and
+configured validation reports reuse this boundary. `TNFRUnifiedValidationSystem`
+memoizes only typed immutable inputs together with the consumed policy, and
+returns detached results. Text cannot reuse a numeric result; changed bounds or
+string patterns require their own evaluation. Both caching switches must be
+enabled for reads and writes. Its frequency cap and phase-range warnings are
+application policy, not additional constraints on the nodal identity.
+
+`TNFRValidator.validate_inputs()` delegates to the existing typed input helpers
+and returns admitted values for supplied form, capacity, phase, pressure, node,
+glyph and graph inputs. Failures raise `ValidationError` or populate `error`
+when `raise_on_error=False`; the aggregate `validate()` consumes that failure.
+Its legacy `config` argument does not override the shared adapter's policy.
+Graph-interface admission does not validate an entire trajectory or operator word.
+
+The aggregate validator admits Boolean check flags and operator graph/target
+context before dispatch; missing context cannot produce a successful skipped
+operator check. Runtime validation explicitly opts into the existing mutating
+clamp pass. Disabled passes are tagged `skipped`; reported runtime/invariant
+failure respects `raise_on_error`. Live graph checks always run afresh: the legacy
+cache switches remain compatibility arguments, since graph identity cannot
+capture changing state, selected checks or arbitrary custom-validator inputs.
+Returned violation records are detached while preserving node-label identity.
+
+`run_structural_validation()` and its health summary distinguish field
+availability from threshold flags. Unavailable comparisons have no passing
+Boolean; empty support, undefined curvature or invalid thresholds cannot yield
+low risk. Independent valid alerts remain active. Reports retain comparison
+status/reasons and xi estimator provenance. These observers do not advance nodal
+state; shared field and geometry owners may maintain rebuildable graph caches.
+
+Coherence level-set certificates additionally reject a non-equilibrium input
+that rounds to the exact equilibrium level. Their fixed capacities use the
+shared represented-real boundary. Retrospective learning efficiency is absolute
+scalar EPI change per retained operator count, not evidence of learning quality;
+its initial state and count must refer to the same observation window.
+
+OZ topology telemetry compares explicitly captured before/after heterogeneity
+scores. Without a preceding observation, its delta and change flags are `None`.
+The shared direct/stage lifecycle captures this diagnostic only when metrics
+are requested; nodal validation alone does not require topology telemetry.
+The native pressure operation preserves support; an asymmetric snapshot alone
+does not establish an operator-induced change or mathematical symmetry breaking.
+
+### Configured feedback and adaptation
+
+`StructuralFeedbackLoop` reads signed scalar form and radius-local coherence
+through their shared owners. Invalid state or consumed mutable policy rejects
+before operator selection. Its adaptation accepts a finite signed performance
+measure, checks the represented update, then applies the existing threshold
+clamp; NaN or overflow cannot become a successful clamp. Each cycle measures
+one pre-action and one post-action state without initializing an unused backend.
+This remains a supplied controller, not an emergent operator-selection law or
+a transaction covering arbitrary later operator/callback failures.
 
 Phase coordination validates every proposed phase before its first phase
 write on NumPy, scalar and worker paths. Only its exact-reduction transaction
@@ -112,6 +215,8 @@ Sense-index normalization shares these reads on Python and NumPy paths,
 including cache refresh. This changes invalid-input handling, not the Si law
 or its status as a configured diagnostic used by existing controllers.
 
+### Continuous integration paths
+
 The older `integrate_canonical_nodal_equation` convenience API also uses the
 shared derivative/Euler arithmetic but holds pressure and capacity throughout
 its loop. Both accepted method names describe that same constant-slope map;
@@ -134,15 +239,9 @@ forcing refreshes its phase-dependent cache even when the requested time is
 unchanged. The permissive public `eval_gamma(..., strict=False)` read retains
 its explicit zero-on-error compatibility behavior; it is not solver admission.
 Callback effects outside the integrator's documented write boundary are not
-made transactional by these changes.
+made transactional by source dispatch.
 The opt-in extended EPI/phase/pressure model is a separate unforced law; these
 Gamma dispatch rules do not add a source to that model.
-
-`Scale` is the U5 fractality axis: `node` acts at the current fiber/level and
-`network` denotes the multi-scale REMESH echo. It is not an execution-footprint
-field. Coupling remains node-scale on this axis even though one application may
-write neighbouring phases and edge support; those overlaps belong to the
-separate stage contract.
 
 ## Canonical contracts
 
@@ -239,6 +338,14 @@ The word starts with a U1 generator, contains a stabilizer, and ends with a U1
 closure. State-dependent operator preconditions remain mandatory during
 execution. Coupling and Resonance additionally enforce U3 before mutation.
 
+Resonance's optional strict preconditions and readiness report share admitted
+state and finite nonnegative policy thresholds. Invalid thresholds reject
+before direct or atomic-stage writes. The readiness flag covers the configured
+form-magnitude, capacity, pressure-magnitude and connectivity checks; it does
+not replace U3 or authorize execution. Its neighbor-mean phase warning retains
+an unavailable direction at an exactly zero represented resultant, while invalid
+consumed phases raise. These reads do not write graph caches.
+
 ## Nodal solver input, clock and output boundaries
 
 The shared [nodal integrator](../src/tnfr/dynamics/integrators.py) reads the
@@ -258,7 +365,8 @@ Empty and populated graphs use the same repeated-add time convention.
 Projected EPI and stored rate/acceleration must be finite before commit.
 The scalar and optional extended paths restore solver-owned node outputs if
 a later substep fails; callback side effects and diagnostic caches are outside
-this local restoration. Event execution below supplies its broader transaction.
+this local restoration. The [event executor](contracts/OPERATOR_EVENTS.md#schedules-and-transaction-boundaries)
+supplies its broader transaction.
 Clipping still separates the stored unconstrained rate from the realized EPI
 secant. These checks establish neither solver accuracy nor a physical clock.
 Controls: [integrator numerics](../tests/test_integrator_numerics.py).
@@ -285,1522 +393,59 @@ also verify support-cache invalidation after functional-link creation.
 
 ## Conditional relational execution
 
-The opt-in owner [dynamics/relational.py](../src/tnfr/dynamics/relational.py)
-implements `RelationalExchangeModel`, `evaluate_relational_exchange` and
-`step_relational_exchange`. `Network.relational_exchange(model)` and
-`Network.step_relational(model, dt=..., t=...)` are thin SDK delegates.
-The [theory owner](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#capacity-separable-exchange)
-states the joint-storage, independent-capacity and zero-phase-activity premises.
-No runtime flag implicitly substitutes this model for operator execution.
-
-`storage_scale` is a required finite positive beta. Nonnegative EPI weight
-and positive phase weight use the native coefficient normalization once;
-`model.effective_weights` retains that normalized pair. Graph-level pressure
-mixes, custom pressure hooks, clipping rails, histories and automatic policies
-are outside this selected model, and their configuration is preserved.
-Active/unknown Gamma and a simultaneous independent-pressure extension reject
-without invoking their callbacks; an overridden registry entry for `none`
-cannot hide forcing.
-
-The executor admits connected, simple, loopless, undirected
-support with at least two nodes and unit conductance. Each node must supply
-finite signed real scalar EPI, primitive phase and nonnegative capacity.
-Materialized uniform-real BEPI is admitted and, like the scalar nodal solver,
-commits as its signed scalar; richer or unmaterialized serialized form rejects.
-Raw Boolean/text values and nonzero inputs lost during materialization reject.
-`model.phase_domain` selects one of two admission paths for the same joint law:
-
-- `"acute"` is the default and preserves the existing numerical path. Every
-  represented wrapped edge gap must be strictly acute; its positive metric
-  check is numerical, not an exact transcendental certificate.
-- `"positive_resultant"` requires a certified positive real part of every
-  relative neighbor resultant `z_i = sum_j exp(i*(theta_j-theta_i))`. The
-  [shared rational enclosure](../src/tnfr/mathematics/_phase_resultant_chamber.py)
-  computes lower bounds `L_i <= Re(z_i)` from exact represented raw radians,
-  using the existing mathematical-pi enclosure and a bounded cosine series.
-  All `L_i` must be positive; the materialized resultant real part and metric
-  must also pass their positivity checks. Individual obtuse or antipodal edges
-  can be admitted when their full neighborhood meets these conditions.
-
-The second path is a sufficient right-half-plane chamber, not the entire
-regular slit-plane domain. A nonpositive enclosure can be inconclusive; it
-does not prove a singular or nonpositive actual resultant. Work limits and
-outward rounding are numerical policies, not physical thresholds. Neither
-option changes the pressure law, supplies a new evolution law or implicitly
-alters default runtime dispatch.
-
-Evaluation uses a detached preparation and actual native pressure, with no
-live graph mutation. Its immutable `RelationalExchangeField` retains node
-order, edges, state, source, metric, both rates and execution path. Storage,
-continuous loss, actual work, balance residual and pressure/product defects
-use exact fractions of represented values. Tiny exact derived storage is
-retained even when it has no nonzero binary64 display. `phase_storage` is the
-unscaled `V_phi`; `storage` includes its beta factor.
-For `"positive_resultant"`, `resultant_real_lower_bounds` retains the exact
-rational `L_i` values in field node order. It is `None` for `"acute"`.
-These explicit enclosures differ from exact arithmetic on rounded storage
-or work values: they certify mathematical cosine sums, not errors in the
-separately computed native pressure, phase metric or rates. The model and
-`scope` retain the selected chamber and enclosure-method provenance.
-
-A step requires positive `dt` and a finite clock advance. It uses explicit
-`t`, or graph `_t` with initial default zero. Both Euler rows use the same
-initial snapshot and the shared nodal/Euler arithmetic. In the default mode,
-the entire proposed phase segment must remain in its initial acute relative
-lift. In the positive-resultant mode, let `h_i` be the exact rational difference
-between the represented phase endpoint and its initial represented value.
-The sufficient whole-segment condition is
-`L_i - sum_j abs(h_j-h_i) > 0`, using the unit Lipschitz bound for cosine.
-`segment_resultant_real_lower_bounds` retains these exact margins in node order
-and is `None` in acute mode. This certifies the straight represented-endpoint
-proposal chord, including endpoint-rounding effects; it is not an enclosure
-of the continuous ODE solution or a bound on solver error. Endpoint state and
-pressure are separately refreshed and admitted before commit. Endpoint
-admission alone cannot skip a chart boundary. No finite solver defect is
-silently converted into a source.
-
-All admission, arithmetic, endpoint checks and graph-owned cache hooks are
-staged before commit to ordinary NetworkX attribute dictionaries. Rejection
-leaves live state and metadata unchanged. Success writes form, phase, fresh
-endpoint pressure and model rate, advances `_t`, updates pressure/trigonometric
-cache metadata, removes stale second-derivative aliases and retains the
-immutable report at `_relational_exchange`. Existing operator histories are
-not extended; they may consequently be stale for a history-consuming operator.
-This is neither a concurrent-access transaction nor an entire-loop rollback.
-
-`RelationalExchangeStep` retains `before`, `after`, `epi_update_defect`,
-`phase_update_defect`, `clock_defect` and actual `energy_change`.
-`energy_step_defect = energy_change - dt * before.storage_rate` measures the
-departure from the initial represented work. It is not a bound on ODE error.
-An energy increase is reported honestly; successful admission is not a
-monotonicity certificate. Repeat steps explicitly and inspect their evidence.
-No physical clock, autonomous pattern formation or universal-law selection is
-inferred. [Routine controls](../tests/test_relational_exchange_execution.py)
-exercise this owner and SDK delegation; [usage](CLI_AND_SDK.md#execute-the-conditional-relational-model)
-provides a minimal preparation.
-
-The [local-recovery theorem](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-local-recovery)
-requires strictly positive held capacities, positive EPI dissipation and a
-strictly acute phase equilibrium. It concerns the continuous law near a
-prepared geometry, modulo common form and phase offsets. The executor also
-admits zero capacity and zero EPI weight, where that recovery result need not
-hold. Neither admission nor a small instantaneous work residual certifies
-recovery for an arbitrary Euler step or a complete runtime with other events.
-
-The [paired-region result](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-region-interaction)
-uses the same law and shared regional support accounting. Its bridge and phase
-sectors are prepared. Transmitted deformation does not derive a new interaction
-force, autonomous formation or a closed evolution for regional means/storage.
+The maintained contract is [Conditional relational execution](contracts/RELATIONAL_DYNAMICS.md#conditional-relational-execution).
 
 ### Exact linear observations of a supplied generator
 
-`tnfr.mathematics.linear_observation.derive_linear_observation(J, O, *,
-max_rank_calls=4096)` returns an immutable minimal row-space realization for
-`z'=Jz`, `y=Oz`. It admits square finite exact/represented real `J` and ordered
-nonempty output rows, including dependent and zero rows. Rational values
-remain exact; floating values define their represented rational model.
-Its `observation`, `right_inverse`, `reduced_generator` and `output_map`
-verify `CT=I`, `CJ=GC`, `O=DC`, with explicit rank progression and a strict
-rank-call budget. A zero output has no state; budget exhaustion returns no
-partial certificate. This is not graph, stability, nonlinear-law or exact
-transcendental admission. The old affine diffusion API retains its independent
-model checks and negative generator sign; see the
-[composition scope](../theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md).
+See [Exact linear observations](contracts/RELATIONAL_DYNAMICS.md#exact-linear-observations-of-a-supplied-generator).
 
 <a id="relational-pattern-observation"></a>
 
 ### Prepared relational pattern observations
 
-[`observe_relational_pattern`](../src/tnfr/physics/relational_observations.py)
-and `Network.relational_pattern(model, *, reference_phase, regions, cycles=())`
-evaluate one fresh detached relational field and reuse it for the supplied
-observations. They do not mutate the graph, select regions, infer a reference
-equilibrium or certify a temporal recovery result. The report's `field`
-retains the same model, node order, native pressure and numerical defects as
-the execution owner.
+See [Prepared relational pattern observations](contracts/RELATIONAL_DYNAMICS.md#prepared-relational-pattern-observations).
 
-`reference_phase` maps every graph node to its explicitly supplied real phase
-lift; the report retains it in field node order. Each ordered region retains
-its nodes, exact represented form mean, phase-error mean, centered form and
-centered phase error. Regions must be nonempty and contain distinct existing
-nodes; different regions may overlap and need not partition the graph.
-Differences use the supplied lifts without independent
-wrapping or an inferred history. Common reference-frame offsets are distinct
-from internal deformation; arbitrary per-node `2*pi` changes can alter these
-lifted observations. Their separate squared norms use the declared form/phase
-coordinates and are not combined into a physical distance.
+<a id="relational-attachment-observation"></a>
 
-Supplied oriented `cycles` delegate to the shared winding observer. Regional
-`transport` delegates to `observe_regional_support_balance`, using the phase
-source `w*g` independently of the form rate and retaining native pressure
-split defects. Any zero capacity in the full graph, zero EPI weight or a
-whole-support region makes transport unavailable, checked in that order and
-reported through `transport_unavailable_reason`;
-other available pattern observations remain retained. Neither the weighted
-form accounting nor a winding integer closes future regional dynamics.
+### Supplied relational attachment observation
 
-The fresh field's `work` is a `RelationalWorkBalance` aligned with `field.nodes`.
-Its rational `form_gradient` retains the exact represented `q=Bx`, before the
-older floating `field.form_gradient` is rounded. It separates nonnegative
-`dissipation`, signed `exchange` (positive toward form storage), `form_work`,
-`phase_work`, `form_residual`, `phase_residual` and their `balance_residual`.
-The existing global loss, storage rate and balance residual sum these same
-contributions. They are gradient-work contributions to total storage, not
-derivatives of an independently assigned nodal energy.
-
-Each `region.work` sums those contributions over its supplied nodes. Only a
-partition sums to the global quantities; overlapping regions double count
-shared nodes. `region.boundary` uses a shared `RegionalSupportCut`, projected
-from admitted `transport` or obtained through `observe_regional_support_cut`.
-That cut observer revalidates captured primitives and permits full support,
-zero capacities and zero EPI weight without dividing by any of them. Existing
-`RegionalSupportBalance.cut` is a read-only projection of its retained data,
-not a separate provenance check. All cut indices refer to the full node order.
-
-Writing its outward current as `Q_R`, the boundary report retains:
-
-| Report quantity | Exact arithmetic on the represented field |
-| --- | --- |
-| `form_weighted_rate` | `sum_R (d_i/nu_i)*field.form_rate_i` |
-| `form_boundary_rate` | `-e*Q_R` |
-| `form_source_rate` | `w*sum_R d_i*g_i` |
-| `form_pressure_defect_rate` | `sum_R d_i*pressure_split_residual_i` |
-| `form_rounding_defect_rate` | `sum_R (d_i/nu_i)*nodal_rate_rounding_defect_i` |
-| `form_identity_residual` | Actual weighted form rate minus the four terms above; exact zero |
-| `phase_weighted_rate` | `sum_R (H_i/nu_i)*field.phase_rate_i` |
-| `phase_boundary_rate` | `(w/beta)*Q_R` |
-| `phase_rate_residual` | Actual weighted phase rate minus its boundary term; retained, not assigned zero |
-
-Here `d_i` is the full-graph degree and `H_i` the captured phase metric.
-The phase rate is not the derivative of a weighted phase total because `H`
-changes. Unlike legacy `transport`, these balances admit `e=0`, full-support
-regions (empty cut), and zero capacity outside the region. A zero capacity
-inside it sets `weighted_rate_unavailable_reason="zero_capacity_in_region"`;
-both weighted rates, form rounding/identity residuals and phase rate residual
-are then `None`. Nodal/regional work, cut and undivided model terms remain
-available. No division through zero or inference of equilibrium is performed.
-The [derivation and scope](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-work-integration)
-distinguish these represented balances from exact-real storage identities.
-
-The fresh field additionally retains exact rational `phase_mobility`,
-`a_i=nu_i/H_i`, and `phase_rate_rounding_defect`, the represented phase rate
-minus `(w/beta)*a_i*q_i`. These use the captured positive metric and exact
-`work.form_gradient`; the older floating gradient can lose information.
-
-`region.phase_response` is a `RegionalPhaseResponse` computed from this same
-field and cut. For `n` selected nodes and `k=w/beta`, it retains:
-
-| Report quantity | Exact arithmetic on the represented field |
-| --- | --- |
-| `mean_mobility`, `mean_form_gradient` | Arithmetic regional means of `a` and `q` |
-| `mobility_variance`, `form_gradient_variance`, `mobility_gradient_covariance` | Population variances and covariance, with denominator `n` |
-| `mean_mobility_boundary_rate` | `k*mean_mobility*Q_R` |
-| `covariance_rate` | `k*n*Cov_R(a,q)` |
-| `covariance_rate_squared_bound` | `k^2*n^2*Var_R(a)*Var_R(q)` |
-| `model_total_rate` | `k*sum_R a_i*q_i`; equals the two contributions above |
-| `rounding_residual` | Sum of captured `phase_rate_rounding_defect` |
-| `total_rate`, `mean_rate` | Sum and arithmetic mean of actual captured phase rates |
-| `identity_residual` | Actual total minus boundary, covariance and rounding terms; exact zero |
-
-The squared bound bounds `covariance_rate**2`, without a tolerance or square
-root. This unweighted rate admits zero capacity, a singleton, full support
-and zero EPI weight under the field's existing admission. It is a model-rate
-observation, not a measured time derivative. A zero cut need not imply zero
-response. Covariance includes boundary mobility variation on a proper region;
-it need not arise solely from internal edges or from phase geometry when
-capacity is heterogeneous. Partitioned totals add, but their mean-mobility
-boundary terms need not cancel. See the
-[nonlinear response theorem](../theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md#regional-phase-mobility-balance).
-
-The actual engine always supplies field `work`, `phase_mobility` and
-`phase_rate_rounding_defect`, and regional `work`, `boundary` and
-`phase_response`. Optional `None` defaults preserve earlier manually
-constructed report records. These additional observations alter no evolution
-law and certify no autonomous regional closure or monotone clock.
-The [state-and-rate counterexample](../theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md#state-rate-predictivity)
-shows why: a ten-coordinate coarse projection and its predicted rate can agree
-while coarse acceleration differs. This does not identify the full reports:
-their retained centered form vectors distinguish the omitted internal
-contrast. No acceleration observer or reduced evolution law is implied by
-the existing snapshot interface.
-The separate [joint memory theorem](../theory/nodal/RELATIONAL_PATTERN_MEMORY.md)
-uses those full coordinates to justify a prepared-even approximation with
-conditional finite-horizon error bounds. Its neighborhood and derivative
-constants are not part of an executable admission certificate; the SDK still
-executes and reports the full nonlinear state.
-
-`tnfr.sdk.relational_report_to_dict(report)` accepts only a
-`RelationalExchangeField`, `RelationalExchangeStep`,
-`RelationalPatternObservation` or `RelationalCaptureCertificate`.
-Its detached JSON-compatible envelope has
-`schema="tnfr.relational-report.v1"`, `report_type` and recursively projected
-`report` fields. Exact fractions use
-`{"numerator": ..., "denominator": ...}` records; tuples become ordered arrays,
-including tuple node labels. JSON scalar labels are supported; opaque objects
-are rejected rather than replaced with `repr`. Save the mapping with
-`export_to_json(relational_report_to_dict(report), path)`.
-
-This projection is not the `StudyResult` schema, a restorable checkpoint, a
-source fingerprint or authentication of a caller-supplied report. Node-type
-reconstruction is not promised. It supplies no new CLI execution mode.
-[Usage](CLI_AND_SDK.md#observe-a-prepared-relational-pattern) belongs to the
-shared SDK guide.
+See [Supplied relational attachment observation](contracts/RELATIONAL_DYNAMICS.md#supplied-relational-attachment-observation).
 
 ### Conditional relational capture
 
-[`certify_relational_capture`](../src/tnfr/physics/relational_capture.py) and
-`Network.relational_capture(model, *, cycles)` apply the
-[protected-capture theorem](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-protected-capture)
-to one fresh detached field. They add no solver, projection or controller.
-The existing model/graph/phase-domain admission runs first. Supply exactly
-two ordered five-node cycles covering the full graph; its only other edges
-must join matching positions zero and one. Unsupported topology or malformed
-inputs raise. An admitted engine snapshot need not satisfy this theorem.
-
-Each ring must have exactly identical form and phase coordinates
-`x=m+(A,-A,-B,0,B)` and `theta=c+(a,-a,-b,0,b)`, with held unit capacities
-and positive EPI, phase and storage coefficients. Fractions of the captured
-values retain both offsets and every copy/reflection defect. Nonzero defects
-are not rounded away, even when small. The theorem's exact symmetry is a
-sufficient premise; its failure is not proof that recovery is impossible.
-
-Mathematical-pi enclosures test three disjoint open rectangles in `(a,b)`:
-
-| Rectangle | Phase coordinates | Ideal limiting phase sector |
-| --- | --- | --- |
-| Positive twist | `(2*pi/3,pi) x (0,pi/2)` | `+1` |
-| Consensus | `(-2*pi/3,2*pi/3) x (-pi/2,pi/2)` | `0` |
-| Negative twist | `(-pi,-2*pi/3) x (-pi/2,0)` | `-1` |
-
-The same rational cosine owner encloses full-support phase storage at the
-exact represented raw radians. `storage_bounds` adds exact form storage and
-the declared beta factor; its upper bound must be strictly below `7*beta`.
-This threshold is derived for this support, symmetry and storage model, not a
-universal physical constant or a configurable acceptance tolerance. The
-field's floating `phase_storage` is retained separately and is not used as
-an exact energy enclosure. Chosen real phase lifts are not silently replaced.
-
-`RelationalCaptureCertificate` retains all candidate rectangle margins, the
-selected `rectangle_kind`, exact symmetry defects, coefficient/capacity
-admission, storage bounds and enclosure provenance. It sets `target_sector`
-only when every premise passes; otherwise `status="unavailable"`,
-`target_sector=None` and explicit `unavailable_reasons` are retained.
-Its `admitted` property concerns the ideal continuous conditional law from
-this exact represented initial state. Current winding is computed separately
-by the shared observer and need not match the predicted limiting sector.
-
-The result does not certify future Euler steps, authenticate a caller-created
-dataclass, establish an error bound for a numerical trajectory, or demonstrate
-formation from winding zero. Exact capture implies an open full-state basin
-qualitatively, but no asymmetry tolerance is computed or admitted here.
-The shared `relational_report_to_dict` exporter preserves the exact evidence.
-[Usage](CLI_AND_SDK.md#check-a-protected-relational-basin) and
-[routine controls](../tests/test_relational_capture.py) exercise the same owner.
-
-`certify_relational_local_capture(graph, *, model, cycles, target_sector=1)`
-and `Network.relational_local_capture` apply the existing full-state local
-energy theorem to the same supplied support. They require unit capacity and
-storage scale, positive coefficients and a declared sector in `{-1,0,1}`.
-They do not require reflection symmetry. The ideal reference in each ring is
-`sector*pi*(4/5,-4/5,-2/5,0,2/5)`; common form and phase offsets are removed
-exactly, without changing individual phase lifts. Rational pi and cosine
-enclosures must prove squared quotient distance below `9/800` and excess
-storage above the target below `1/100000`. These conservative constants come
-from the local energy barrier, not fitting the evaluated response.
-
-`RelationalLocalCaptureCertificate` retains the declared target, affine-pi
-phase errors, distance/energy bounds and individual admission reasons. Its
-target is available only when all premises hold. A negative lower bound on
-the enclosed excess is allowed: interval uncertainty can straddle zero,
-while the admitted local theorem supplies nonnegativity of the exact excess.
-This certifies ideal continuation from the precise represented snapshot.
-Applying it to a numerical endpoint supplies no error enclosure connecting
-that endpoint to the original continuous initial-value problem. Both capture
-reports use the same exact exporter; neither controls the dynamics.
-
-`certify_relational_sector_capture(graph, *, model, cycles, target_sector=1)`
-and `Network.relational_sector_capture` apply the
-[full-state acute-sector theorem](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-acute-sector-capture).
-On the same support they require strictly positive held capacities, positive
-storage scale and coefficients, strictly acute gaps and both ring periods equal to the declared
-`+1` or `-1` sector. Exact affine-pi inequalities validate integer full-turn
-candidates for each raw edge difference. The three independent cycle periods
-include the four-edge bridge cycle, which must have period zero. Floating
-remainders and numerical winding telemetry do not establish these premises.
-
-`RelationalSectorCaptureCertificate` retains these gap margins and periods,
-full energy bounds and a certified interval for the sufficient barrier
-`beta*[10-5*cos(2*pi/5)-4*cos(3*pi/8)]`. The energy upper bound must be strictly below
-the barrier lower bound. Exact reflection and a small Euclidean distance to a
-target are unnecessary. The limiting target is circular, modulo a common
-offset and fixed nodewise full-turn representatives. This is a sufficient
-barrier, not a claimed sharp bound or a numerical tolerance. Unresolved
-premises remain unavailable with evidence. As with the other certificates,
-admission concerns ideal continuation from the captured state; applying a
-new theorem after an experiment does not revise its frozen decision criteria.
-
-`geometric_barrier_bounds` encloses the unscaled geometric cost and
-`capture_barrier_bounds` includes beta. The retained `unit_capacity` and
-`unit_storage_scale` flags are descriptive; `positive_capacity` supplies
-the capacity admission. Zero capacity is not admitted by this recovery theorem.
-For full admission, `normalized_energy_margin_lower_bound=eta_lower>0`
-supplies three conditional all-future bounds: acute edge margin `13*eta_lower`,
-nodewise resultant real part `26*degree*eta_lower/pi_upper`, and phase metric
-`26*degree*eta_lower`. The resultants/metrics follow `field.nodes`. All three
-future-bound fields are `None` when any premise fails, even if energy alone
-passes. They describe the ideal continuation, not Euler error or a solver step.
-The [derivation](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-sector-consolidation)
-connects those margins to the same Jensen barrier without adding a threshold policy.
-
-| Certificate | Distinguishing sufficient premises | Scope |
-| --- | --- | --- |
-| `relational_capture` | Exact reflected state, unit capacity, positive beta, strict rectangle and energy below `7*beta` | Can admit nonacute states and consensus |
-| `relational_local_capture` | Unit capacity/beta, small full-state quotient distance and excess energy | No reflection; declared target `-1`, `0` or `1` |
-| `relational_sector_capture` | Positive held capacities/beta, exact acute sector and scaled barrier | No reflection or local-radius gate; targets `-1` or `1`; quantitative regularity |
-
-These independent sufficient theorems share one capture owner and exact
-exporter. No ordering of their verdicts or automatic policy is implied.
+See [Conditional relational capture](contracts/RELATIONAL_DYNAMICS.md#conditional-relational-capture).
 
 ### Validated conditional relational transit
 
-[`certify_relational_transit_capture`](../src/tnfr/physics/relational_transit.py)
-and `Network.relational_transit_capture(*, model, cycles, horizon, time_step,
-order=12, requested_sector=1)` perform a read-only proof computation for the
-ideal continuous law.
-The [validated-transit derivation](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-validated-transit)
-owns the reduction and enclosure argument. This API does not advance the
-graph, execute a numerical engine step, select operators or alter the supplied
-preparation. A represented Euler chord is not used as an exact ODE tube.
-
-The initial state must have the same exact copied/reflected two-ring support
-and coordinates as `relational_capture`, with held unit capacities, positive
-coefficients and `model.phase_domain="positive_resultant"`. Existing graph,
-scalar and cycle admission remains active. Reflection defects are never
-projected away. The initial snapshot need not already pass a protected-basin
-rectangle or storage test: its complete detached `RelationalCaptureCertificate`
-is retained as `initial`, independently of the transit verdict.
-
-`horizon` and `time_step` must be strictly positive exact `Fraction` or integer
-values; floats and Booleans are rejected. These times are relative structural
-durations from the supplied state, with no interpretation of a stored graph
-clock or laboratory units. `order` must be an integer from 4 through 16.
-The work policy admits at most 4096 declared proof steps. The last interval is
-shortened to reach the exact horizon; there is no automatic retry, preparation
-change, adaptive step selection or horizon extension.
-
-Interval coordinates are `(q,r,a,b)`, where `q=3*A-B` and `r=2*B-A`. Every
-accepted `TransitStep` retains a strict whole-time Picard inclusion, positive
-relative-resultant bounds for all distinct node rows including the central
-row, and a rational endpoint enclosure. Centered interval Taylor expansion
-bounds analytic truncation on that whole tube. A Metzler matrix comparison
-propagates the entering coordinate uncertainty using enclosed Jacobian bounds;
-128-bit outward dyadic arithmetic retains rounding uncertainty. Whole-time
-regularity, local truncation and propagated error are separate obligations.
-The analytic `atan(u)/u` enclosure retains its zero-safe series for constant
-intervals inside `[-1/2,1/2]`. Outside that interval, Taylor evaluation requires
-the constant interval to exclude zero and encloses the same function through
-`atan(u)` and interval division. An interval outside the series domain that
-also contains zero is unavailable. This extends the proof arithmetic's
-admitted domain without changing the relational pressure law, phase chamber
-or evolution equation. It introduces no additional evolution. Frozen source
-and result bundles retain their original provenance.
-
-`RelationalTransitCertificate.admitted` requires the entire requested horizon
-to be validated and the entire final box to lie in a selected protected
-rectangle, with joint-storage upper bound strictly below `7*beta`. The
-`requested_sector` policy accepts integer `1`, `0`, `-1` or `None`; Booleans,
-floats and other values are rejected. Its default `1` requires the positive
-rectangle `(2*pi/3,pi) x (0,pi/2)`. Zero requests the consensus rectangle
-`(-2*pi/3,2*pi/3) x (-pi/2,pi/2)`, and `-1` requests the reflection of the
-positive rectangle. `None` accepts any one of these disjoint rectangles.
-The point and interval capture owners share their affine margin definitions.
-
-This sufficient endpoint gate invokes the existing protected-basin theorem.
-Only full admission sets `target_sector` to the limiting sector actually
-certified: consensus is the valid integer `0`, not an unavailable result.
-`requested_sector` is a caller's admission policy; it neither changes the
-trajectory nor establishes its current winding or limiting target. Endpoint
-centers, sampled storage or floating winding alone cannot pass the gate.
-`initial_winding_zero` separately
-certifies a sufficient zero-winding condition on the original lifted phase
-state; it is not a gate for a general transit certificate. A claim of entry
-from winding zero requires both this flag and complete transit admission.
-
-An unresolved proof step stops the calculation and retains the accepted
-`steps`, `validated_horizon`, their final `endpoint`, the attempted
-`failed_tube` and explicit `unavailable_reasons`. A fully validated horizon
-can also return unavailable when the whole endpoint fails the sufficient
-capture gate. Unavailable means the requested proof was not obtained, not that
-the ideal trajectory fails to recover. No limiting target is assigned then.
-The report preserves `initial_box`, requested clock/order policy,
-`endpoint_storage` and enclosure-method scope. All three candidates' interval
-margins appear in `candidate_rectangle_margin_bounds`, in sector order
-`1,0,-1`. A matching strict rectangle supplies `rectangle_kind` and
-`rectangle_margin_bounds`, even if another obligation leaves the overall
-report unavailable; without a match they are `None` and empty respectively.
-`positive_rectangle_margins` remains the positive candidate's margins for
-compatibility, including when consensus or negative capture is requested.
-These geometric observations do not override horizon, storage or initial-law
-admission failures, which always leave `target_sector=None`.
-
-`relational_report_to_dict` exports the full nested evidence with exact
-fraction endpoints and validates node/cycle labels through `initial`.
-Projection is detached evidence, not a restart format or provenance
-authentication. Successful admission concerns this conditional ideal ODE;
-it supplies no guarantee for subsequent finite engine execution and leaves
-every original frozen experimental verdict unchanged. See the
-[SDK usage](CLI_AND_SDK.md#validate-continuous-transit-to-a-protected-basin).
+See [Validated conditional relational transit](contracts/RELATIONAL_DYNAMICS.md#validated-conditional-relational-transit).
 
 ### Exact cycle resultant sectors
 
-[`derive_cycle_resultant_sector`](../src/tnfr/physics/phase_resultant_sectors.py)
-accepts a supplied pure cycle, its full oriented `cycle_nodes` order and an
-exact full-support `phase_turns` mapping. Turns mean angles divided by
-mathematical `2*pi`; inputs must be rational numbers, excluding Booleans and
-floats. Live graph phases, capacity and conductance weights are not consumed.
-The shared topology budget applies; at least five nodes are required.
-
-The detached report separates ordinary `support_winding`, the windings of
-derived skip-two cycles, `zero_resultant_nodes` and
-`negative_real_resultant_nodes`. Antipodal edges make the corresponding
-winding unavailable. `resultant_sector_available` only requires nonzero
-neighbor resultants; `regular_phase_chart` also excludes the local negative-real
-Arg branch. Neither flag admits a runtime step. The auxiliary cycles add no
-coupling edges and are not another state variable. Exact classifications of
-declared turns do not certify rounded radian measurements or a whole path.
-The [formation-domain theorem](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-formation-domain)
-owns the conditional invariant and its degree-two scope; extra neighbors can
-invalidate that obstruction. This exact-turn observer does not select or
-extend either of the executor's separately declared phase chambers.
+See [Exact cycle resultant sectors](contracts/RELATIONAL_DYNAMICS.md#exact-cycle-resultant-sectors).
 
 ## Operator-event timeline
 
-[`build_operator_event_schedule`](../src/tnfr/operators/event_timing.py)
-accepts canonical lowercase execution tokens. It represents operators as
-zero-duration jumps and requires exactly one more declared flow interval than
-events. Exact rationalized binary64 durations and offsets define physical time;
-absolute float timestamps are display-only, and coincident events use their
-explicit index order. The schedule validates structure without executing an
-operator or writing EPI history.
-
-[`diagnose_continuous_relaxation_duration`](../src/tnfr/physics/event_duration.py)
-maps one declared interval to the existing fixed symmetric pure-EPI diffusion
-certificate. Its target decision uses the exact rate and rational
-transcendental enclosures; eigensolver and libm values remain estimates. This
-diagnostic does not alter U2 or U4 policy.
-
-[`execute_operator_event_schedule`](../src/tnfr/operators/event_runtime.py)
-executes a valid schedule with the graph's configured nodal integrator and the
-shared canonical all-target stage dispatcher. It freezes the initial target
-tuple, requires exact agreement with the live binary64 clock at each boundary,
-and rejects collapsed or nonadditive positive intervals before writes. A ZHIR
-pre-flow is also rejected when subtracting its displayed endpoints would differ
-from its authoritative declared duration. One outer graph transaction covers
-flows, jumps, histories, runtime caches and the hybrid event log. Completed
-pressure-refresh callbacks are counted; effects already emitted outside the
-graph cannot be rolled back. Flow boundaries feed timestamped EPI evidence,
-while same-time jumps restart that evidence and remain zero-duration events.
-During schedule execution the executor exclusively owns `epi_time_history`: any
-integrator write is rejected and rolls back the graph transaction, and only
-declared flow boundaries, including explicit physical-segment boundaries, are
-appended.
-
-For each positive call, the integrator write footprint is limited to EPI,
-`dEPI_dt`, `d2EPI_dt2` and the runtime clock. A custom integrator or subclass
-must additionally realize the held-input nodal equation exactly in the
-rationalized represented binary64 values:
-
-```text
-EPI_right[i] - EPI_left[i]
-    = dt * nu_f_left[i] * DeltaNFR_left[i]
-```
-
-Failure to capture either endpoint or any nonzero exact residual rejects the
-schedule and restores the graph. Passing this residual establishes the declared
-finite nodal identity only; it does not establish solver accuracy or order.
-
-The outer `GraphTransactionSnapshot` retains its originating graph and rejects
-use with any other graph, including a value-equal copy. It restores NetworkX
-structural mapping identities and their alias topology, graph-reachable mutable
-state, and capturable namespace, slot and closure state owned by configured
-callbacks. Snapshot preflight rejects mutable node, edge and attribute keys
-whose equality or hash is not object-identity based, custom `__deepcopy__`
-hooks, and unmodelled opaque interpreter/C state. Common immutable atoms,
-including supported date/time, `Fraction`, `Decimal`, regular-expression and
-`ZoneInfo` values, are safe atomic metadata. The rollback boundary covers state capturable from the graph;
-already emitted I/O and warnings, external resources, and references reachable
-only through external aliases are outside it.
-
-[`capture_nodal_flow_state`](../src/tnfr/physics/runtime_flow_stability.py)
-captures a detached ordered endpoint containing only scalar EPI, `nu_f`,
-`DeltaNFR` and effective conductance.
-[`certify_observed_nodal_flow_interval`](../src/tnfr/physics/runtime_flow_stability.py)
-compares two such endpoints over one materialized binary64 duration. Its exact
-rational nodal residual, exact pure-EPI pressure identity, one-step Euler replay,
-sequential held-pressure replay and exact rational quotient-gain theorem are
-independent claims. Caller-supplied endpoint metadata does not prove which
-runtime produced the observations.
-
-Setting `include_flow_certificates=True` on
-`execute_operator_event_schedule` binds capture to both sides of each actual
-positive flow call. Each `ExecutedNodalFlowInterval` records its interval and
-actual integrator provenance together with the detached certificate or an
-explicit state-capture abstention; failed conditions remain visible in the
-nested certificate. The broader
-`runtime_bound_binary64_held_pressure_interval_identified` property requires the
-exact built-in `DefaultIntegrator`, Euler with at least one substep, live Gamma
-type `none`, inactive clipping, disabled extended dynamics, stable node support,
-unchanged capacity and pressure, equality between the exact sum of represented
-substep durations and the declared interval, and a matching sequential replay.
-A custom integrator or subclass, RK4, any other Gamma type, active clipping,
-extended dynamics or a duration-sum mismatch prevents that identification.
-
-The older one-step binary64 property and exact rational pure-EPI affine
-promotion remain restricted to one Euler substep. The latter additionally
-requires at least two
-nodes, fixed symmetric nonnegative conductance with positive row strengths,
-positive capacity, the exact stored pressure `-L_rw EPI` and the exact rational
-nodal identity. Changed support, conductance, capacity or pressure blocks the
-corresponding promotion. Stale pressure exposes the levels directly: the
-held-pressure nodal identity and trusted binary64 sequential replay can pass
-while the pure-EPI affine map and quotient theorem abstain. Internal substeps
-hold pressure fixed; they are not a pressure-reevaluated physical partition and
-do not carry a diffusion modal decision.
-
-[`build_physical_flow_partition`](../src/tnfr/operators/event_timing.py)
-materializes at least two strictly positive physical segments over one positive
-scheduled interval. Exact represented durations must cover the parent interval,
-and every binary64 segment must advance, land by direct addition and subtract
-back to its declared duration. These segments are execution boundaries, unlike
-an integrator's internal substeps.
-
-Passing the partitions through `physical_flow_partitions=` makes
-`execute_operator_event_schedule` refresh stored pressure before every segment
-and once more at the terminal boundary. Physical execution therefore performs
-`segment_count + 1` pressure callbacks and forces interval capture independently
-of the general flow-certificate option. Each sealed
-`PressureRefreshBoundaryObservation` binds the callback identity and before/after
-state. The callback may write pressure aliases and known derived pressure/cache
-outputs only. It must preserve EPI, capacity, phase, derivatives, histories,
-node and edge support, every edge attribute, effective conductance, the clock,
-persistent graph configuration, capturable state owned by a callable hook and
-any existing non-`None` cached `_dnfr_weights`. Only the canonical default hook
-may initialize missing or `None` cached weights. The same restriction applies
-to stage pressure callbacks. The executor freezes hook presence and identity
-for the complete schedule and checks them before invocation. A failed
-preservation check, callback or later segment restores the complete graph
-transaction; effects emitted outside the graph remain outside rollback.
-
-`ExecutedPressureRefreshedFlowPartition` stores all boundary observations,
-segment `ExecutedNodalFlowInterval` records and one segment-start
-`PhysicalEulerModalObservation` per segment. For a fixed pure-EPI generator
-`A = diag(nu_f)L_rw`, the exact-real held-pressure outer model is `I - T A`,
-even when one integrator call uses several internal substeps. Its exact-real
-physical counterpart is `product_k(I - h_k A)`. Actual endpoints remain
-binary64 observations: a modal diagnostic alone does not identify them with
-either exact-real map. The comparison checks trusted held-pressure Euler replays,
-node order, capacity and conductance directly; equal decay-rate spectra do not
-establish a common eigenbasis. Its ordinary binary64 evaluations of the model
-mode factors are respectively `1 - T*mu` and
-`product_k(1 - h_k*mu)`, which need not have the same stability decision. Exact
-endpoint identification and segment gain composition additionally require
-intact exact-affine certificates and one exact normalized metric ray. The modal
-records certify no solver order, mesh convergence, adaptive grammar, or future
-execution. The result reports physical and stage pressure callback counts
-separately, and their sum must equal the total.
-
-`flow_certification_requested` distinguishes the disabled path.
-`flow_interval_evidence` stores unpartitioned positive-parent records;
-`physical_flow_partition_evidence` stores each physical parent and nests its
-segment records in `segment_flow_evidence`. Runtime wrappers are value-sealed,
-so direct construction or later replacement cannot assert executor provenance.
-The tri-state `all_positive_flow_intervals_binary64_identified`,
-`all_positive_flow_intervals_binary64_held_pressure_identified`,
-`all_positive_flow_intervals_exact_affine` and
-`all_positive_flow_intervals_contracting` aggregates return `None` when capture
-is disabled and otherwise summarize all executed positive parents through the
-corresponding unpartitioned record or all-segment physical property. They do not
-turn endpoint agreement into solver-accuracy, refinement, glyph-gain or
-repeated-schedule evidence.
-
-[`observe_event_local_zhir_prejump`](../src/tnfr/physics/event_refinement.py)
-requires a sealed, nonempty `ExecutedNodalFlowInterval` with trusted sequential
-held-pressure provenance. It pairs that record offline with a canonical
-scheduled ZHIR event whose exact and represented coordinate is the flow end and
-whose timestamp subtraction equals the declared duration. It reproduces the
-runtime gate in its actual binary64 order—EPI subtraction, timestamp
-subtraction, then division—and retains the exact rational endpoint secant as a
-separate quantity. `xi` must be finite and nonnegative. A rejected threshold is
-a valid observation; the object certifies neither a common originating schedule
-nor operator admission or U4b readiness.
-
-[`compare_event_local_zhir_held_pressure_subdivision`](../src/tnfr/physics/event_refinement.py)
-requires two intact observations with equal event coordinate, interval index,
-node order, initial EPI, capacity, pressure, conductance, duration and threshold,
-and different positive substep counts. For node `i`, let `r_i` be the exact
-representation of the actual binary64 observed rate and `xi` the exact
-representation of its threshold. The local sufficient test is
-`|r_i(candidate)-r_i(baseline)| < |r_i(baseline)-xi|`, together with observed
-decision agreement. It is strict: touching the threshold margin abstains. The
-sealed aggregate covers only that offline held-pressure gate comparison and
-keeps all physical-refinement, modal, solver, adaptive-policy, U4 and future
-claims false.
-
-[`observe_event_local_zhir_physical_prejump`](../src/tnfr/physics/event_refinement.py)
-requires one intact pressure-refreshed partition and a coordinate-paired
-scheduled ZHIR event. Mutation's authoritative observed rate is the secant over
-the terminal physical segment because those are the last two live history
-samples. The object also records an offline secant over the complete parent
-interval; that longer secant never substitutes for the live gate.
-
-[`observe_executed_event_local_zhir_physical_prejump`](../src/tnfr/physics/event_refinement.py)
-accepts an intact `OperatorEventExecutionResult` with stage certification and a
-committed ZHIR `event_index`. It identifies the unique scheduled and executed
-event, preceding physical parent, glyph stage, ordered target decisions and
-trigger certificates, and requires the stage's pre-flow evidence to be the
-terminal segment of that same parent. The resulting
-`ExecutedEventLocalZHIRPhysicalPrejumpObservation` revalidates those objects by
-identity and certifies common provenance for this one executor-owned finite
-window. The coordinate-paired observer above remains the reusable offline
-component and does not by itself certify that the partition and jump came from
-one execution.
-
-[`compare_event_local_zhir_physical_refinement`](../src/tnfr/physics/event_refinement.py)
-pairs this observation with an intact held-pressure baseline sharing the initial
-binary64 state, capacity, pressure, conductance, duration, event coordinate and
-threshold. It reports physical-minus-baseline endpoint and rate differences,
-both gate decisions, the held outer modal factors and the composite physical
-factors. Decision agreement is an observation rather than a prerequisite: a
-physical refresh may legitimately move the ZHIR gate or change modal stability.
-Common spectra and modal configuration are required before modal comparison;
-otherwise it abstains. The sealed record establishes neither equivalence,
-solver accuracy/order, convergence, U4 readiness, adaptive policy nor future
-behavior.
-
-Every accepted two-phase ZHIR `NetworkStageResult` also contains one ordered,
-sealed `MutationStageDecisionObservation` per target, independent of the EPI
-certificate option. It freezes the complete trigger certificate, capacity gate,
-phase/regime decision, acceleration and bifurcation result, and U4 context before
-live metadata can change. Direct construction and coherent `dataclasses.replace`
-records remain unsealed. Event execution carries these observations into the
-corresponding opt-in `ExecutedGlyphStage`.
-
-Every accepted two-phase EN `NetworkStageResult` contains one ordered, sealed
-`ReceptionStageObservation` per target. A single owner-bound pre-EN snapshot
-drives the target/neighbor EPI calculation, semantic-kind selection, optional
-source detection and EN metrics. The observation records pre/post EPI and kind,
-the materialized neighbour read and the tracked source record. Final EPI, kind
-and tracked sources are checked after monitors, metrics, any requested pressure
-refresh and schedule recording, before final warning publication; divergence
-rejects the transaction without leaking that warning. With source tracking
-disabled,
-legacy metadata is left opaque: the stage observation reports only whether its
-key is present, while separately collected Reception metrics also report whether
-the stored value has the canonical list-of-triples form. Standalone
-`reception_metrics` calls set `source_tracking_enabled=None` because old metadata
-does not identify the call that produced it. `auxiliary_stability_certified` is
-always false because this record describes one accepted finite stage rather
-than a trajectory invariant.
-
-On directed support, an arc `source -> receiver` is an incoming EN input: the
-snapshot reads predecessors and source detection follows paths in that same
-direction. Detection is optional telemetry and neither selects nor gates the
-direct-neighbour numeric blend; its finite search can include more distant
-ancestors. The represented affine Reception certificate remains restricted to
-undirected support and therefore abstains on a directed stage.
-
-Direct EN execution publishes its empty-source advisory during the pre-write
-read, so treating warnings as errors aborts before the direct mutation. The
-transactional two-phase stage defers that advisory until its result has been
-validated; a warning promoted to an error then rolls the entire stage back.
-
-`ExecutedGlyphStage` also seals its complete event, endpoint, certificate,
-adjacent-flow, Mutation-decision and Reception-observation payload.
-`OperatorEventExecutionResult` requires one intact stage for every committed
-event, preserves event order, and binds both ZHIR and EN observation order to
-`target_nodes`. A nested flow abstention remains recordable but cannot be
-promoted into a flow or composition certificate.
-
-Setting `include_stage_certificates=True` is also opt-in and implies flow
-capture. `glyph_stage_evidence` then contains one `ExecutedGlyphStage` for every
-accepted scheduled event. Pointwise AL/SHA/VAL/NUL/ZHIR/NAV stages reuse their
-executor-owned frozen-proposal certificate; EN/RA reuse their executor-owned
-all-target neighbour certificate. IL/OZ/UM/THOL/REMESH and any domain-rejected
-certificate expose a specific abstention reason. Each successful stage record
-binds the represented certificate to detached EPI snapshots captured around the
-actual jump, derives normalized exact pre/post metric rays, and checks its
-immediately adjacent positive-flow endpoints and metrics. A stage pressure
-callback that changes EPI or any other non-pressure state rejects the schedule
-and rolls back graph-owned state before stage evidence can be published.
-
-`represented_epi_schedule_composition` returns an
-`ObservedRepresentedEPIScheduleComposition` whenever stage capture was
-requested. Its `operations` tuple contains one
-`RepresentedEPIScheduleOperation` for every positive flow and every glyph in
-chronological order, including explicit ineligibility reasons. Exact factors,
-the common metric and their product are published only if the operation count
-is complete, every operation has intact represented affine evidence, all node
-orders match, consecutive observed EPI endpoints are exactly continuous, and
-one normalized positive rational metric applies throughout. On success,
-`represented_affine_composition_gain_certified` certifies that product and
-`represented_map_global_disagreement_contraction_certified` reports whether it
-is strictly below one. `runtime_schedule_global_gain_certified` is always
-false. These properties do not identify a global executable binary64 map or
-certify solver accuracy, refinement, full multichannel stability, future
-schedules or repeated execution. The underlying flow certificate and the
-operation/composition records seal their proof fields; wrapper and aggregate
-properties revalidate those seals and fail closed if a factor or claim flag is
-replaced.
-
-[`execute_event_remesh_cycle`](../src/tnfr/operators/event_remesh_runtime.py)
-composes one such schedule with exactly one canonical pre-REMESH `_epi_hist`
-sample and one separately invoked delayed map. The outer transaction rejects
-ordered node-support changes or schedule-owned delayed-history writes. It also
-binds the immutable schedule result to the live event log and freezes the
-endpoint clock, phase, pressure-hook identity and deterministic REMESH controls.
-Edges may change during the schedule; the EPI-only delayed map and its ON_REMESH
-observers are read-only over all graph-owned state, including the resulting
-topology, metadata, histories and stored non-EPI aliases. Capturable state
-reachable through a graph-owned observer is therefore restored on failure.
-
-The supplied metric is materialized once, exposed even for the uniform default,
-and reused for cycle-level weighted EPI observations and optional REMESH
-evidence. Legacy REMESH metadata retains unweighted summaries. Exact means,
-drifts and disagreements remain authoritative; an unrepresentable binary64
-display is `None`. Capacity vectors, pressure vectors, schedule refreshes and
-the optional post-REMESH pressure callback remain distinct. The latter runs
-only when REMESH applies and is counted only after returning. Delay `tau` reads
-`_epi_hist[-(tau + 1)]`, with no post-jump delayed-history duplicate. A committed
-jump separately records its same-time `epi_time_history` endpoint for Mutation.
-The cycle forwards `include_flow_certificates` and
-`include_stage_certificates`, preserving the resulting interval, glyph and
-represented finite-schedule records inside `event_execution`. The delayed
-REMESH operation remains separate and its one-step evidence is never a factor
-in `represented_epi_schedule_composition`. The cycle does not certify a global
-binary64 runtime gain or repeated stability with evolving history. Capturable
-graph-reachable callback and integrator state is covered by the transaction;
-their emitted I/O or warnings and external-only resources or aliases are not.
-The optional `physical_flow_partitions` iterable is materialized once inside
-the cycle's outer graph transaction and that exact tuple is forwarded unchanged
-to `execute_operator_event_schedule`. Iterator failure aborts and restores the
-graph, and a stateful iterable cannot define a second partition plan; its own
-external-only state is not graph rollback state.
-
-Each successful cycle also returns a sealed
-[`RemeshHistoryTransitionObservation`](../src/tnfr/operators/event_remesh_runtime.py).
-Writing `M=history_maxlen`, `H_in` for the exact represented incoming rows and
-`x_pre` for the exact pre-REMESH EPI vector, its decisive identity is
-`H_out = tail_M(tail_M(H_in) || (x_pre,))`. It records container rebuild and
-truncation, append eviction, and the vectors at
-`H_out[-(tau_local + 1)]` and `H_out[-(tau_global + 1)]` independently. Either
-lag can therefore be unavailable while the other is present. Its proof seal,
-and the enclosing `EventRemeshCycleResult` seal, fail closed after replacement
-or nested evidence mutation.
-
-[`compose_event_remesh_cycle_observations`](../src/tnfr/operators/event_remesh_sequence.py)
-is a pure observer over at least two sealed cycle results supplied in caller
-order. It returns an `ObservedEventRemeshCycleSequence` containing one sealed
-`EventRemeshCycleBoundaryObservation` per adjacent supplied pair. A passing
-boundary requires intact individually atomic cycles, ordered node support, exact
-schedule end/start time, post-REMESH/pre-schedule EPI, complete outgoing/incoming
-REMESH history, capacity, post-refresh/pre-schedule pressure and phase equality.
-When an applied left REMESH changed EPI, the observer additionally requires one
-completed explicitly requested post-REMESH pressure callback. Callback
-completion is operational evidence; it does not certify the constitutive
-identity `DeltaNFR = -L_rw EPI`.
-
-`cycle_indices` are zero-based local ordinals assigned by the composer, not
-runtime call identifiers. Reusing the identical result object at two positions
-is rejected as a self-pairing guard. Distinct value-equal copies remain
-admissible, so neither that guard nor exact boundary equality proves causal
-ordering, consecutive calls or shared-graph execution provenance.
-
-The sequence records each exact raw metric vector and its normalized positive
-rational ray. `raw_metric_weights_equal` requires the original vectors to be
-identical; `exact_common_normalized_metric_ray` also admits exact proportional
-vectors, which share disagreement geometry while using different raw energy
-scales. `nested_schedule_metric_alignment` is tri-state per cycle and compares
-an available nested `ObservedRepresentedEPIScheduleComposition` metric with
-that cycle's ray; absence of a nested metric remains `None`. This alignment is
-not silently substituted for recorded boundary continuity.
-`exact_recorded_boundary_continuity_certified` checks the sealed adjacent-state
-conditions without requiring a common metric. The stronger
-`exact_common_metric_cycle_sequence_certified` additionally requires one exact
-normalized ray and `True` alignment for every nested schedule; exact equality
-of raw metric vectors is not a condition. A `None` or `False` alignment blocks
-only this stronger result, not exact recorded-boundary continuity.
-`schedule_compositions` and `remesh_results` preserve both evidence families
-without combining their gain claims.
-
-No sequence field multiplies schedule and REMESH gains or certifies
-evolving-history REMESH gain or repetition, a runtime-global gain,
-whole-sequence atomicity across separate calls, full graph-state or
-grammar-history continuity, solver accuracy, shared graph provenance, or a
-future-cycle theorem. A concrete obstruction uses lag one and `alpha=1`:
-starting from EPI `(2, 0)` with delayed row `(0, 2)`, two empty-schedule cycles
-produce `(0, 2)` and then `(2, 0)`. Both one-step REMESH records have zero
-current-state coefficient, so multiplying those fixed-history factors would
-contradict the observed alternating history.
-
-[`execute_event_remesh_cycle_sequence`](../src/tnfr/operators/event_remesh_causal_runtime.py)
-is the graph-mutating finite causal wrapper. Each
-`EventRemeshCycleExecutionSpec` declares one cycle invocation. The executor
-runs the specs in order on one graph under one outer graph transaction and
-returns an `ExecutedEventRemeshCycleSequence`. Every sealed
-`CausalEventRemeshCycleReceipt` binds a zero-based execution ordinal, the exact
-spec object and the resulting `EventRemeshCycleResult`; in particular, the
-cycle's executed schedule is the schedule carried by that spec. The enclosing
-result always retains the ordinary `ObservedEventRemeshCycleSequence`. The
-default `require_runtime_telescope=True` additionally requires and retains its
-compatible `RuntimeRemeshScheduleSequenceObservation`. With
-`require_runtime_telescope=False`, `runtime_telescope` is always exactly `None`;
-this lets a word without one common affine schedule metric still produce sealed
-causal evidence, and `exact_finite_energy_telescope_certified` is false. The flag and the
-optional object are both proof-bound.
-
-The new positive claim is restricted to same-invocation causal order, common
-graph identity and finite graph-owned atomicity. Failure anywhere in the
-declared block restores the outer graph transaction. This does not compose a
-global executable schedule/REMESH gain, certify solver accuracy/order or mesh
-convergence, or establish repeated or future stability. Emitted I/O, warnings,
-external resources and aliases reachable only outside the graph remain outside
-rollback. Caller-ordered results passed directly to either underlying observer
-still have no causal provenance.
-
-[`observe_executed_event_remesh_block_margin`](../src/tnfr/physics/runtime_remesh_schedule_block_margin.py)
-accepts only an intact `ExecutedEventRemeshCycleSequence` with the compatible
-runtime telescope present. Optional
-`start_boundary` and `boundary_count` select one nonempty contiguous block of
-its identity-bound runtime telescope. The sealed
-`RuntimeRemeshScheduleBlockMarginObservation` retains those exact boundary
-objects and verifies
-
-```text
-D_block = V_before - V_after = K_block + S_block,
-S_block >= 0.
-```
-
-Here `K_block` is the sum of the gain-based energy-drop lower bounds and
-`S_block` is the sum of represented-schedule slacks. For `V_before > 0`, the
-stored normalized diagnostics are
-`kappa = K_block / V_before`, the observed fraction `D_block / V_before`, and
-the endpoint gain upper bound `1 - kappa`. They are `None` at zero initial
-energy. `positive_normalized_block_margin_certified` means only that this
-recorded block has `K_block > 0`; it is not uniform class coercivity.
-
-No positive absolute lower bound can be uniform across equilibrium and
-amplitude-scaled copies because the quadratic energy and drop scale to zero.
-The remaining runtime-promotion target is a uniform positive normalized block
-margin on a declared forward-invariant executor class plus a finite runtime
-intrablock prefix bound. Neither target, repeated/future runtime stability, a
-runtime-global gain, solver accuracy/order, mesh convergence nor full TNFR
-stability is certified by this finite observer. The separate exact-model
-analogue below proves both bounds conditionally from a common schedule gain.
-
-[`observe_event_remesh_three_mesh_refinement`](../src/tnfr/physics/event_remesh_refinement.py)
-is a pure observer over three already committed `EventRemeshCycleResult`
-objects. Every positive interval must have physical partition evidence, and
-the intermediate boundary sets must strictly contain the coarse sets while the
-fine sets strictly contain the intermediate sets. The observer rejects an
-incompatible schedule, ordered full support, initial EPI/capacity/phase/pressure,
-captured effective conductance, normalized cycle metric, executor/integrator or
-pressure-callback metadata, incoming REMESH history, or REMESH configuration.
-The observer and its six record types are re-exported by the curated
-`tnfr.physics` facade and remain available from their defining
-`tnfr.physics.event_remesh_refinement` submodule.
-
-The returned `EventRemeshThreeMeshRefinementObservation` retains the three cycle
-and schedule-composition objects and their separate delayed REMESH results. Its
-checkpoint records cover pre-schedule EPI, every physical boundary,
-pre-REMESH EPI and post-REMESH EPI. Pairwise
-`EventRemeshPersistentEPIError` records report exact represented component
-errors and the exact `L_inf` error on persistent node identifiers at every
-coarser checkpoint. ZHIR comparison is available whenever intact
-`ExecutedEventLocalZHIRPhysicalPrejumpObservation` records exist for all three
-runs. Optional `zhir_xi` validates that their executed thresholds match the
-supplied value; omitting it does not request an abstention.
-Per-parent modal factors are available only where all runs expose one identical
-ordered support, capacity/conductance generator and modal spectrum.
-
-`three_mesh_observation_certified` means that the finite inputs, strict nesting,
-compatibility checks and proof seals are intact. The separate
-`intermediate_fine_error_decreases_at_coarse_checkpoints` property reports a
-finite non-increase with at least one strict decrease; neither property proves
-solver accuracy or order, mesh convergence, Lyapunov decrease, runtime-global
-gain, a combined schedule/REMESH gain, whole-three-mesh atomicity or future
-behavior. `complete_reference_problem_certified` and
-`epi_differences_attributable_only_to_mesh_certified` are always false: detached
-cycle artifacts do not retain the complete pre-schedule graph namespace,
-callback closure or RNG state, node metadata, or sub-EPI state.
-
-[`certify_reversible_single_eigenmode_euler_reference`](../src/tnfr/physics/reversible_eigenmode_reference.py)
-is the pure exact-rational reference API for one mode of a general reversible
-pure-EPI generator. It accepts ordered `Fraction` sequences only. The
-conductance must be square, symmetric, nonnegative and zero-diagonal, with at
-least two nodes and connected positive support; every capacity must be
-positive. From `d_i=sum_j W_ij` it derives
-`A=diag(nu_f)(I-D^-1 W)`, `H=diag(d_i/nu_i)`, the `H`-weighted mean, and the
-centered initial field. That field must be nonzero and satisfy the exact
-rational identity `A*v=mu*v` for one `mu>0`; mixed modes are rejected rather
-than projected.
-
-Every supplied partition must be positive, have the same exact duration `T`
-and satisfy `0 < mu*h < 1`. Successive partitions, when present, must form a
-strict proper-subdivision chain. The sealed
-`ReversibleSingleEigenmodeEulerReferenceCertificate` retains the exact
-generator and metric, modal residual, rational enclosure of `exp(-mu*T)`,
-Euler products and endpoints, and factor, `L_inf` and `H`-error-energy bounds.
-One partition certifies the theorem but has no observed pairwise subdivision;
-with at least two partitions the separate strict-improvement property verifies
-every declared refinement. For fixed data and an admissible family with
-`h_max -> 0`, the certificate exposes the conditional exact-real convergence
-theorem. Its binary64-asymptotic, mixed-mode, directed/nonreversible,
-changing-generator, glyph/REMESH, solver-order and full-TNFR scope properties
-remain false. Direct mutation and inconsistent private resealing fail closed.
-
-The rational exponential implementation requires `mu*T <= 4096` solely to
-cap the integer-power exponent used by the enclosure. It places no bound on the
-total bit size of arbitrary `Fraction` inputs or derived rational values. The
-function and result class are re-exported from `tnfr.physics`, and the complete
-typed surface is declared by
-[`reversible_eigenmode_reference.pyi`](../src/tnfr/physics/reversible_eigenmode_reference.pyi).
-The theorem and proof are centralized in
-[`TNFR_DIFFUSION_STABILITY_THEOREM.md`](../theory/TNFR_DIFFUSION_STABILITY_THEOREM.md#exact-reversible-single-eigenmode-euler-reference-theorem).
-The public nonregular-`P3` construction is
-[`167_reversible_eigenmode_reference.py`](../examples/02_physics_regimes/167_reversible_eigenmode_reference.py).
-
-[`observe_executed_reversible_single_eigenmode_euler_reference`](../src/tnfr/physics/runtime_eigenmode_reference.py)
-is the finite executor-binding API for that exact theorem. It accepts a
-nonempty ordered iterable of intact
-`ExecutedPressureRefreshedFlowPartition` records. Every record must expose the
-same ordered support, rationalized conductance, positive capacity, exact initial
-EPI and total duration; every physical boundary must carry canonical binary64
-pure-EPI pressure, and every segment must identify the trusted held-pressure
-Euler replay. Every segment must satisfy `0 < mu*h < 1`, and multiple inputs
-must form a strict proper-subdivision chain. The adapter derives the exact
-reference certificate from those runtime inputs. It does not accept an
-independently supplied reference.
-
-For each segment, the sealed
-`ExecutedReversibleSingleEigenmodeEulerPartitionObservation` stores
-
-```text
-rho_j     = p64_j - (-L_rw z_j),
-eta_j     = z_(j+1) - z_j - h_j diag(nu_f) p64_j,
-epsilon_j = h_j diag(nu_f) rho_j + eta_j.
-```
-
-All displayed binary64 values are interpreted as exact `Fraction` values in
-these identities. The adapter verifies
-`z_(j+1)=(I-h_j A)z_j+epsilon_j` and propagates endpoint defects with the full
-matrix recurrence
-`r_(j+1)=(I-h_j A)r_j+epsilon_j`. This full propagation is required because
-`rho_j`, `eta_j` and `epsilon_j` need not remain in the reference eigenmode.
-The row also retains rational signed coordinate enclosures for the
-runtime-minus-continuous endpoint and exact `L_inf` and `H`-error-energy lower
-and upper bounds. Exact-affine-map identification is reported independently;
-it is not required when the measured represented residuals are nonzero.
-
-The enclosing
-`ExecutedReversibleSingleEigenmodeEulerReferenceObservation` binds the rows to
-one internally derived exact reference and revalidates their nested execution
-evidence. Its certification means only a finite offline binding of individually
-executor-certified partitions. Binary64 asymptotic convergence, runtime mesh
-convergence, solver accuracy/order, common causal provenance among the supplied
-executions, glyph/REMESH dynamics, repeated behavior and future/full TNFR
-stability remain false. Both record classes and the observer are re-exported
-from `tnfr.physics`; the typed surface is declared by
-[`runtime_eigenmode_reference.pyi`](../src/tnfr/physics/runtime_eigenmode_reference.pyi).
-Example
-[`168_runtime_reversible_eigenmode_reference.py`](../examples/02_physics_regimes/168_runtime_reversible_eigenmode_reference.py)
-exercises the public API on three independently executed nonregular-`P3`
-partitions.
-
-[`observe_p2_event_remesh_reference_family`](../src/tnfr/physics/event_remesh_reference.py)
-promotes exactly one compatible finite family beyond that generic observation.
-It accepts three intact coarse, intermediate and fine cycle results and binds
-the generic refinement record to an executor-linked runtime REMESH bridge for
-each mesh. It extracts the three physical partitions, invokes the common
-runtime eigenmode observer once, and requires each returned row to identify an
-exact affine map with zero `rho`, `eta`, `epsilon` and endpoint defect before
-applying its stronger P2/REMESH claims. The accepted domain is an event-free
-effective two-node path with a
-nonuniform initial mode, homogeneous positive capacity, fixed positive
-conductance, pure-EPI pressure refreshed at every boundary, and exact
-represented Euler segments satisfying `0 < lambda*h < 1`. Both refinements
-must be proper positive subdivisions. REMESH must use unit local/global delays,
-the exact initial field as its delayed row, and hard clipping on one common
-nonempty scalar interval. The exact rational exponential enclosure is limited
-to `lambda*T <= 4096` to cap its integer-power exponent. This cutoff does not
-bound the bit size of arbitrary `Fraction` inputs.
-
-Each `P2EventRemeshMeshReferenceObservation` retains the exact Euler factor,
-the rational continuous-factor interval, both finite-mesh error bounds, the
-ideal `beta=(1-alpha)^2` REMESH error scaling, the signed runtime residual and
-the resulting `L_inf` runtime error bound. The enclosing
-`P2EventRemeshReferenceFamilyObservation` verifies the two strict subdivision
-improvements and binds all three rows to one reference problem. Its explicit
-false-scope properties withhold solver order, generic mesh convergence,
-binary64 asymptotic convergence, arbitrary glyph or mixed-mode dynamics, soft
-clipping, changing support or metric, repeated runtime stability and future
-behavior. The observer and both result classes are re-exported from
-`tnfr.physics`; its complete typed surface is declared by
-[`event_remesh_reference.pyi`](../src/tnfr/physics/event_remesh_reference.pyi).
-Its continuous/Euler proof is the two-node homogeneous-capacity specialization
-of the
-[`general reversible eigenmode theorem`](../theory/TNFR_DIFFUSION_STABILITY_THEOREM.md#exact-reversible-single-eigenmode-euler-reference-theorem).
-The additional REMESH equations and runtime boundary are centralized in
-[`REMESH_INFINITY_DERIVATION.md`](../theory/REMESH_INFINITY_DERIVATION.md#28-effective-p2-three-mesh-reference-family).
-The public `2/4/8`-segment construction is
-[`166_event_remesh_reference_family.py`](../examples/02_physics_regimes/166_event_remesh_reference_family.py).
-
-[`certify_uniform_remesh_history_stability`](../src/tnfr/physics/remesh_history_stability.py)
-constructs a sealed exact-rational certificate for the distinct finite
-companion recurrence
-
-```text
-x[k+1] = (1-alpha)^2*x[k]
-       + alpha*(1-alpha)*x[k-tau_local]
-       + alpha*x[k-tau_global].
-```
-
-Its public `UniformRemeshHistoryStabilityCertificate` exposes the combined
-delay coefficients, row-stochastic companion matrix and invariant stationary
-temporal distribution. For any fixed positive diagonal spatial metric,
-[`observe_uniform_remesh_history_transition`](../src/tnfr/physics/remesh_history_stability.py)
-checks one exact transition and the identity
-
-```text
-V_before - V_after
-  = pi[0]/2 * sum_(a<b) c[a]*c[b]
-      * ||Q_H*x[k-a] - Q_H*x[k-b]||_H^2 >= 0.
-```
-
-For `0 < alpha < 1`, the companion is primitive and each spatial coordinate
-converges to the preserved stationary history barycenter. `alpha=0` is the
-identity. At `alpha=1`, the companion is a pure-delay permutation of order
-`tau_global+1`; its augmented energy is conserved and a particular orbit may
-have any period dividing that order. These are theorem-level properties of the
-uniform exact recurrence. They do not identify `apply_network_remesh` with its
-binary64 evaluation and clipping, certify spatial consensus or zero pressure,
-admit changing parameters/support/metric, or multiply a represented schedule
-gain by a REMESH gain. Both functions and result classes are re-exported from
-`tnfr.physics`; the full derivation lives in
-[`REMESH_INFINITY_DERIVATION.md`](../theory/REMESH_INFINITY_DERIVATION.md#24-exact-finite-companion-history-stability).
-
-[`certify_uniform_remesh_schedule_policy_stability`](../src/tnfr/physics/remesh_schedule_policy_stability.py)
-accepts one intact companion certificate and an exact-rationalized common
-schedule disagreement-energy gain bound `q` in `[0,1]`. It describes a
-conditional family whose histories are sampled after each schedule: REMESH
-first forms the next input from the stored heads, and the next schedule then
-acts on that mixture. The componentwise energy envelope is therefore
-
-```text
-B_q = diag(q, 1, ..., 1) P.
-```
-
-The sealed `UniformRemeshSchedulePolicyStabilityCertificate` stores the exact
-one-step envelopes and the three decisive block powers at
-`L=active_max_delay+1`, verifies `B_q^L <= q*P^L` entrywise and exposes
-
-```text
-prefix gain <= 1,
-L-cycle block gain <= q,
-normalized block-margin lower bound >= 1-q,
-V[k+n] <= q^floor(n/L) V[k].
-```
-
-`L` is a sufficient universal companion-path horizon and need not be minimal
-for a particular interior coefficient choice. Strict `q<1` proves geometric
-decay of spatial disagreement in every history row. It does not control their
-spatially uniform temporal means. `q=1` proves nonincrease with zero certified
-margin and makes no convergence decision. The caller must separately prove the
-common schedule gain and consensus preservation for every member of the
-intended exact family. No schedule map or runtime execution is an input, so the
-certificate does not establish binary64 invariance, rounding/clipping control,
-solver accuracy/order, adaptive grammar or full TNFR stability. The class and
-builder are re-exported from `tnfr.physics`; example 171 exercises the strict
-mixed-delay, strict pure-delay and `q=1` boundary cases.
-
-[`certify_uniform_remesh_schedule_relative_defect_stability`](../src/tnfr/physics/remesh_schedule_relative_defect_stability.py)
-accepts an intact common-`q` policy certificate and a finite nonnegative
-relative signed-defect bound `eta`. For the ideal head `y`, runtime-bounded head
-`z`, and Jensen input envelope
-
-```text
-J = sum_d c_d E_H(history[d]),
-delta = E_H(z) - E_H(y) <= eta*J,
-q_eff = q*(1+eta),
-```
-
-Jensen's inequality and the declared schedule gain imply
-`E_H(schedule(z)) <= q_eff*J`. The builder delegates its matrices and block
-powers to the common-gain theorem, preserving `q` as the schedule-only bound.
-It rejects `q_eff>1`; `q_eff=1` gives nonincrease and zero margin, while
-`q_eff<1` gives normalized block margin `1-q_eff` and the repeated exact-model
-bound `q_eff^floor(n/L)`. A zero schedule gain absorbs every finite `eta`.
-The defect is the signed difference between two centered energies, not the
-energy of the state residual. The certificate declares rather than verifies
-the per-transition hypothesis and therefore makes no runtime or future claim.
-
-[`observe_executed_event_remesh_relative_defect_block`](../src/tnfr/physics/runtime_remesh_schedule_relative_defect.py)
-accepts one intact `ExecutedEventRemeshCycleSequence` with its compatible
-runtime telescope present, one intact relative-defect certificate, and an
-optional nonempty contiguous boundary range. It
-reuses the causal block binding and, for each selected boundary, verifies the
-REMESH configuration, represented schedule gain `q_j <= q`, exact signed
-defect `delta_j <= eta*J_j`, and the componentwise history-energy envelope
-under `diag(q_eff,1,...,1)P`. It records exact defect ratios only when
-`J_j>0`; at `J_j=0`, it checks the inequality without division. The endpoint
-bound is `q_eff^floor(N/L)` for `N` selected boundaries, so an incomplete first
-block retains factor one. The result certifies only that recorded finite
-causal block. It does not prove that the bounds are forward invariant, recur
-on later executions, establish solver accuracy/order, or stabilize the full
-TNFR state.
-
-[`observe_binary64_remesh_pair_relative_defect`](../src/tnfr/physics/binary64_remesh_relative_defect.py)
-accepts three strict two-coordinate binary64 pairs plus the represented REMESH
-factor and clipping interval. It invokes the same nested scalar evaluator used
-by the planner and returns a sealed
-`Binary64RemeshPairRelativeDefectObservation` containing
-
-```text
-D_c = beta*d_current^2 + gamma*d_local^2 + delta*d_global^2,
-rounding defect = raw separation^2 - ideal separation^2,
-clipping defect = bounded separation^2 - raw separation^2,
-eta_pair = max(0, total defect / D_c) when D_c > 0.
-```
-
-At `D_c=0` the observer closes the deterministic equality branch without
-division. The value is the exact minimum nonnegative bound for that pair; it
-does not maximize over a state class. The retained normal-valued `alpha=1/2`
-witness has `eta_pair=2**210-1/4`, giving the strict threshold
-`q<4/(2**212+3)`. Hard clipping is pairwise nonexpansive, but that fact cannot
-control the preceding rounding amplification.
-
-[`certify_alpha_one_hard_clip_remesh_class`](../src/tnfr/physics/binary64_remesh_relative_defect.py)
-accepts one nonempty ordered support, an optional positive diagonal metric,
-positive local/global delays and one finite interval. It fixes `alpha=1`, hard
-clipping and the runtime history capacity, then reuses the exact REMESH
-companion certificate. Every represented chronological history with length
-between `max(tau_local,tau_global)+1` and `history_maxlen`, exact row width,
-finite binary64 entries and values inside the interval belongs to the class.
-REMESH copies the global delayed row numerically, has uniform `eta=0`, and
-preserves the class. Equality does not promise preservation of the signed-zero
-bit. Schedule, repeated event execution, future-runtime, solver and full-TNFR
-properties are explicitly false.
-
-[`certify_half_alpha_antisymmetric_hard_clip_remesh_class`](../src/tnfr/physics/binary64_remesh_relative_defect.py)
-accepts exactly two ordered nodes, an optional positive diagonal metric,
-positive local/global delays and a positive represented radius
-`epi_bound>=4*2**-1074`. It fixes `alpha=0.5` and the symmetric hard interval
-`[-epi_bound,epi_bound]`. A represented history belongs only when its length is
-between `max(tau_local,tau_global)+1` and `history_maxlen` and every row is a
-finite in-interval binary64 pair `(a,-a)`. The production nested recurrence and
-symmetric clamp preserve numeric antisymmetry and the interval.
-
-The certificate stores the sharp bound `eta*=135/124`. Its executable proof
-splits at `x=sqrt(D)=11*s`, where `s=2**-1074` and
-`D=c**2+l**2+2*g**2`. For the large-norm tail, it stores the exact constants
-`A=3*u/2+u**2/2` and `C=9/4+9*u/4+u**2/2`, with `u=2**-53`, in
-`|r-y|<=A*x+C*s`; the resulting tail ratio is strictly below `eta*`. For
-`x<11*s`, it exactly enumerates 6,615 bounded integer triples, retains the
-3,890 with `0<D/s**2<121`, and finds the maximum at `(-3,-2,-3)`. The stored
-subnormal witness has ideal amplitude `-11*s/4`, runtime amplitude `-4*s`, and
-relative defect `135/124`.
-
-`certify_schedule_relative_defect_stability(q)` composes that `eta*` through
-the existing robust theorem. Its strict threshold is `q<124/259`; `q=4/9`
-produces `q_eff=259/279` and normalized block margin `20/279`, equality at
-`q=124/259` produces nonincrease with zero margin, and `q=9/16` is rejected.
-This method certifies the conditional exact schedule theorem, not a verified
-runtime schedule family. The class is REMESH-forward-invariant only. It does
-not include arbitrary positive-metric-centered histories or unrestricted fixed
-lattices, and it leaves graph/event binding, repeated complete-runtime
-execution, solver and full-TNFR properties false.
-
-[`certify_p2_half_reception_remesh_stability`](../src/tnfr/physics/binary64_p2_reception_stability.py)
-requires an intact two-node `alpha=1` class certificate. It fixes mutual
-singleton neighbor indices, the exact binary64 configured factor `0.5`, a
-common hard clamp and an immutable all-target EPI snapshot. For every finite
-represented pair in the interval, the two shared Reception-kernel evaluations
-are numerically equal; hence their centered energy is zero in the supplied
-metric and the global numeric EPI-kernel gain is `q=0`. The builder reuses the
-common-`q` and relative-defect certificates with `eta=q_eff=0`. Its exact cycle
-bound is one before the sufficient horizon and zero from
-`tau_global+1` onward. `evaluate_binary64_schedule_pair` replays one strict
-pair and checks numeric consensus and interval membership. The certificate is
-global over its numeric EPI-kernel class and supports arbitrary finite kernel
-repetition; it does not bind a real graph, the complete EN stage, grammar,
-events, callbacks, transactions or a solver.
-
-[`certify_executed_p2_half_reception_stage`](../src/tnfr/physics/runtime_p2_reception_stage.py)
-accepts one intact P2 half-Reception kernel certificate and one intact
-`OperatorEventExecutionResult`. Unless `event_index` selects it explicitly,
-the execution must contain exactly one Reception event. The adapter requires
-the selected event and its executor-owned `ExecutedGlyphStage` to retain
-same-invocation identity, zero duration, two-phase scheduling, two exact
-captured endpoints and a revalidated one-step neighbor-stage certificate. It
-then verifies ordered P2 targets, mutual singleton runtime neighbors, exact
-binary64 mix `0.5`, the source hard interval, unchanged capacity and effective
-conductance, the source diffusion-metric ray, accepted output identity and a
-bit-exact replay through the shared production mean/blend/clipping kernel.
-
-The sealed `ExecutedP2HalfReceptionStageCertificate` therefore binds the
-global `q=0` conclusion to one executed EPI stage with finite grammar admission
-and whole-schedule graph atomicity. Opposite signed-zero output bits remain
-valid numeric consensus. The certificate does not bind the source REMESH
-history or configuration to the graph, audit all auxiliary Reception state or
-raw topology, retain current live-graph identity, or certify future/repeated
-runtime stability, solver accuracy or full TNFR stability.
-
-[`certify_executed_p2_half_reception_remesh_sequence`](../src/tnfr/physics/runtime_p2_reception_remesh_sequence.py)
-accepts one intact P2 half-Reception kernel certificate and one intact
-`ExecutedEventRemeshCycleSequence`. It selects one Reception event per cycle,
-automatically only when the event is unique, and constructs both an
-`ExecutedP2HalfReceptionStageCertificate` and a
-`RuntimeRemeshHistoryBridgeObservation` for that same cycle. Each selected EN
-stage must span the complete schedule EPI endpoints and retain the exact P2
-support, half mix, hard interval and metric ray, so the observed schedule EPI
-transition has `q=0`. Each applied REMESH must use exact binary64 `alpha=1`, the
-same delays, bounds, history capacity and alpha-source provenance, and must be
-an exact numeric copy of its selected global-delay row with zero represented
-defect.
-
-For `N >= L = tau_global+1`, the adapter checks the active suffix of exactly
-`L` chronological rows rather than every retained history row. That suffix lies
-inside the source interval, while stale older rows are outside the recurrence
-and outside the certificate. The result records exact zero spatial disagreement
-for the observed post-horizon REMESH fields and the final committed endpoint,
-and inherits same-invocation cycle order and graph-owned atomicity from the
-source execution. This is a finite observed certificate. Future or unobserved
-repetition, auxiliary Reception state, current live-graph binding, solver
-accuracy and full TNFR stability remain explicitly false.
-
-[`execute_p2_half_reception_remesh_policy_invocation`](../src/tnfr/physics/runtime_p2_reception_remesh_policy.py)
-is the reusable execution boundary for that restricted finite protocol. A fresh
-outer `GraphTransactionSnapshot` is taken before caller-owned specifications or
-metric weights are materialized. Static preflight requires an intact P2
-kernel certificate; the same ordered undirected two-node mutual-singleton
-support and positive diffusion metric ray; positive capacity and symmetric
-conductance; exact binary64
-`EN_mix=0.5`; matching hard-clipped `alpha=1` REMESH controls, delays, bounds and
-history capacity; an in-interval live EPI pair that is not identically zero,
-an in-interval active incoming history; and
-at least `tau_global+1` distinct one-cycle zero-flow
-`Reception -> Coherence -> Recursivity` specifications chained to the live
-clock. Physical flow partitions are excluded from this initial policy.
-The incoming history may use any supported indexed container; the canonical
-append rebuilds it as a bounded deque. Enough rows must exist for the first
-append to satisfy `max(tau_local,tau_global)+1`, but only the last `tau_global`
-incoming rows are active and therefore required to lie inside the interval.
-
-The function passes a read-only live context to
-`execute_event_remesh_cycle_sequence`; schedule materialization therefore
-rederives U1a admission from the current EPI pair at every cycle start. If a
-REMESH result makes that pair identically zero, the next cycle is rejected and
-the whole invocation rolls back. The policy requests no affine telescope and
-constructs the existing
-`ExecutedP2HalfReceptionRemeshSequenceCertificate` before the outer transaction
-can commit. Any preflight, execution, callback, observation or
-post-certification failure restores graph-owned state. Each successful call
-certifies only its own finite trace. A later call is revalidated independently;
-future and unobserved repetition, auxiliary Reception-state stability, solver
-properties and full TNFR stability remain false.
-
-[`observe_runtime_remesh_history_bridge`](../src/tnfr/physics/runtime_remesh_history_stability.py)
-accepts one intact, applied `EventRemeshCycleResult` and binds it to that exact
-companion model. The returned `RuntimeRemeshHistoryBridgeObservation` retains
-the exact represented ideal, raw and bounded heads and the signed identity
-
-```text
-bounded = ideal_companion + rounding_residual + clipping_residual.
-```
-
-It replays the nested affine expression and canonical `structural_clip` call
-bit for bit. Its exact lifted augmented-energy balances separate Jensen
-dissipation from the signed rounding and clipping defects. The accompanying
-absolute perturbation bounds are a posteriori sufficient conditions for this
-one step; the signed balances remain available when those bounds are too
-conservative. Hard clipping on one common interval is nonexpansive in the
-declared positive diagonal disagreement metric. Soft clipping can increase
-disagreement and therefore receives no such promotion.
-
-The word `lifted` is part of the contract: the runtime appends the pre-REMESH
-head and does not immediately append the bounded result. The bridge does not
-certify live history advance, repeated runtime stability, transfer of the
-companion convergence theorem, schedule/REMESH composition or future behavior.
-Its result class and observer are re-exported from `tnfr.physics`.
-
-[`observe_remesh_schedule_history_transition`](../src/tnfr/physics/remesh_schedule_stability.py)
-is the pure exact layer for one REMESH-head/schedule-head transition. Given an
-intact companion transition, represented raw and bounded heads, a scheduled
-head and a declared nonnegative bound `q` that it verifies against those
-supplied heads, it retains separate raw, clipping and schedule
-disagreement-energy defects. The returned
-`RemeshScheduleHistoryStabilityObservation` checks
-
-```text
-exact_drop = Jensen_dissipation - raw_defect - clip_defect - schedule_defect
-exact_drop = gain_based_lower_bound + pi[0] * schedule_gain_slack.
-```
-
-The lower bound is a sufficient one-step nonincrease condition. The exact
-signed balance remains authoritative when that sufficient bound is negative.
-The observation also records the stationary-history barycenter drift caused by
-replacing the ideal head with the scheduled head. This layer has no executable
-provenance and certifies neither repetition nor future stability. Its class and
-observer are re-exported from `tnfr.physics`.
-
-[`observe_runtime_remesh_schedule_sequence`](../src/tnfr/physics/runtime_remesh_schedule_stability.py)
-accepts an intact `ObservedEventRemeshCycleSequence` only when its exact
-recorded boundaries are continuous, every nested schedule exposes one common
-normalized positive metric and the REMESH configuration is fixed. For each
-adjacent pair, `RuntimeRemeshScheduleBoundaryObservation` binds the left
-cycle's applied runtime bridge to the right cycle's represented schedule. The
-schedule must start at the bounded REMESH head, finish at the right pre-REMESH
-head and satisfy its sealed represented-map gain.
-
-The boundary also reconstructs the next cycle's newest-first history window
-and requires it to equal the scheduled head followed by the preceding
-companion tail. Its exact energy record therefore applies to the runtime
-values retained by those two cycle artifacts. The enclosing
-`RuntimeRemeshScheduleSequenceObservation` checks cancellation of every
-intermediate augmented energy and publishes the finite identity
-
-```text
-total_drop = initial_augmented_energy - final_augmented_energy
-total_drop = sum(gain_based_lower_bounds)
-             + sum(schedule_augmented_energy_gain_slacks).
-```
-
-Each augmented slack is `pi[0] * schedule_energy_gain_slack` in the fixed
-companion metric.
-
-This is an additive finite telescope, without multiplication of fixed-history
-REMESH gains. The source sequence remains a caller-supplied ordering of
-individually atomic cycles, so the result does not certify shared graph
-provenance, causal succession, cross-call atomicity, a global executable gain,
-repetition or future behavior. Both result classes and the observer are
-re-exported from `tnfr.physics`.
+The maintained [operator-event and finite-evidence contract](contracts/OPERATOR_EVENTS.md#operator-event-timeline)
+owns schedules, runtime transactions, flow/stage observations, REMESH composition
+and the scoped certificate APIs. The headings above retain earlier incoming links;
+full contracts are maintained only in the linked chapters.
 
 ## Contract verification
 
-- [`test_operator_contracts.py`](../tests/operators/test_operator_contracts.py)
-  verifies catalog coverage and direct effects.
-- [`test_u3_hard_invariant.py`](../tests/operators/test_u3_hard_invariant.py)
-  verifies rejection before Coupling or Resonance mutation.
-- [`test_canonical_operators_modern.py`](../tests/operators/test_canonical_operators_modern.py)
-  covers operator behavior and latency.
-- [`test_event_remesh_runtime.py`](../tests/operators/test_event_remesh_runtime.py)
-  verifies sealed exact history transitions and one-cycle boundaries.
-- [`test_event_remesh_cycle_sequence.py`](../tests/operators/test_event_remesh_cycle_sequence.py)
-  verifies ordered recorded-state continuity, metric rays, proof seals and
-  the alternating-history obstruction to gain multiplication.
-- [`test_event_remesh_causal_runtime.py`](../tests/operators/test_event_remesh_causal_runtime.py)
-  verifies same-invocation receipts, graph identity, outer graph rollback,
-  nested sequence bindings, seal integrity and explicit false stability scope;
-  [`test_event_remesh_causal_runtime_example.py`](../tests/operators/test_event_remesh_causal_runtime_example.py)
-  checks the public facade, stub and finite causal example.
-- [`test_runtime_remesh_schedule_block_margin.py`](../tests/physics/test_runtime_remesh_schedule_block_margin.py)
-  verifies exact contiguous-block telescoping, normalized diagnostics, zero
-  initial energy, source/boundary identity and fail-closed proof seals;
-  [`test_runtime_remesh_schedule_block_margin_example.py`](../tests/physics/test_runtime_remesh_schedule_block_margin_example.py)
-  checks the public facade, import order and the `139/256` versus `0` examples.
-- [`test_event_remesh_refinement.py`](../tests/physics/test_event_remesh_refinement.py)
-  verifies strict three-mesh compatibility, checkpoint errors, executed ZHIR
-  binding, common-generator modal abstention and fail-closed proof seals.
-- [`test_event_remesh_reference.py`](../tests/physics/test_event_remesh_reference.py)
-  verifies the effective-P2 hypotheses, rational Euler bounds, strict proper
-  subdivisions, exact REMESH scaling, runtime residual bound and fail-closed
-  scope; [`test_event_remesh_reference_example.py`](../tests/physics/test_event_remesh_reference_example.py)
-  executes and checks the public `2/4/8`-segment example.
-- [`test_reversible_eigenmode_reference.py`](../tests/physics/test_reversible_eigenmode_reference.py)
-  verifies the general reversible metric and exact-mode hypotheses, exponential
-  enclosure, Euler and norm bounds, strict subdivision identities, convergence
-  scope and fail-closed proof seal;
-  [`test_reversible_eigenmode_reference_example.py`](../tests/physics/test_reversible_eigenmode_reference_example.py)
-  verifies the facade, public stub and both nonuniform modes in example 167.
-- [`test_runtime_eigenmode_reference.py`](../tests/physics/test_runtime_eigenmode_reference.py)
-  verifies runtime-source binding, exact `rho`/`eta`/`epsilon` decomposition,
-  full-matrix defect propagation, rational continuous-error enclosures, family
-  compatibility, proof sealing and false scope;
-  [`test_runtime_eigenmode_reference_example.py`](../tests/physics/test_runtime_eigenmode_reference_example.py)
-  covers its facade, stub and executed `P3` report.
-- [`test_remesh_history_stability.py`](../tests/physics/test_remesh_history_stability.py)
-  verifies the exact companion, stationary distribution, Jensen balance,
-  equality case and all three alpha regimes.
-- [`test_remesh_schedule_policy_stability.py`](../tests/physics/test_remesh_schedule_policy_stability.py)
-  verifies the exact `D_q P` ordering, rational powers, universal path horizon,
-  prefix and block inequalities, endpoint regimes, input domain and fail-closed
-  seals; [`test_remesh_schedule_policy_stability_example.py`](../tests/physics/test_remesh_schedule_policy_stability_example.py)
-  checks the facade, stub, import order and public example 171.
-- [`test_remesh_schedule_relative_defect_stability.py`](../tests/physics/test_remesh_schedule_relative_defect_stability.py)
-  verifies exact `q_eff`, the reused envelope, zero/equality/rejection
-  boundaries, Jensen cancellation and `J=0`, exact rationalization, hostile
-  inputs and fail-closed nested seals.
-- [`test_runtime_remesh_schedule_relative_defect.py`](../tests/physics/test_runtime_remesh_schedule_relative_defect.py)
-  verifies causal identity, normalized signed defects, minimum accepted `eta`,
-  represented `q_j<=q`, every history-vector envelope, incomplete and complete
-  blocks, zero energy and tamper resistance;
-  [`test_runtime_remesh_schedule_relative_defect_example.py`](../tests/physics/test_runtime_remesh_schedule_relative_defect_example.py)
-  checks the public facade and example 172.
-- [`test_binary64_remesh_relative_defect.py`](../tests/physics/test_binary64_remesh_relative_defect.py)
-  verifies shared-kernel replay, the exact normal-valued `alpha=1/2`
-  obstruction, zero denominators, hard-clamp nonexpansiveness, signed-zero
-  scope, the `alpha=1` class and fail-closed seals;
-  [`test_delayed_remesh_contract.py`](../tests/operators/test_delayed_remesh_contract.py)
-  verifies that the planner and observer share the production scalar kernel;
-  [`test_binary64_remesh_relative_defect_example.py`](../tests/physics/test_binary64_remesh_relative_defect_example.py)
-  checks the public facade and example 173.
-- [`test_half_alpha_antisymmetric_remesh_class.py`](../tests/physics/test_half_alpha_antisymmetric_remesh_class.py)
-  verifies the sharp `eta=135/124` class, exact analytic-tail constants,
-  exhaustive 6,615/3,890 finite core, subnormal maximizer, strict/equality/
-  rejection gain boundaries, history membership, forward invariance, excluded
-  centered and lattice generalizations, public types and fail-closed seals;
-  [`test_half_alpha_antisymmetric_remesh_class_example.py`](../tests/physics/test_half_alpha_antisymmetric_remesh_class_example.py)
-  checks the public facade and example
-  [`178_half_alpha_antisymmetric_remesh_class.py`](../examples/02_physics_regimes/178_half_alpha_antisymmetric_remesh_class.py).
-- [`test_binary64_p2_reception_stability.py`](../tests/physics/test_binary64_p2_reception_stability.py)
-  verifies global numeric consensus and `q=0` for the exact-half P2 kernel,
-  its `eta=q_eff=0` composition and finite extinction horizon, extremes,
-  signed-zero scope, the canonical-factor gain-four witness and hostile seals;
-  [`test_binary64_p2_reception_stability_example.py`](../tests/physics/test_binary64_p2_reception_stability_example.py)
-  checks the public facade and example 174.
-- [`test_runtime_p2_reception_stage.py`](../tests/physics/test_runtime_p2_reception_stage.py)
-  verifies real event/stage provenance, exact P2 support, mix, interval, metric,
-  endpoint replay, underflow and signed-zero behavior, default-factor rejection,
-  nested reseal resistance and explicit negative scope;
-  [`test_runtime_p2_reception_stage_example.py`](../tests/physics/test_runtime_p2_reception_stage_example.py)
-  checks the public facade and example 175.
-- [`test_runtime_p2_reception_remesh_sequence.py`](../tests/physics/test_runtime_p2_reception_remesh_sequence.py)
-  verifies per-cycle EN and REMESH identity, fixed P2 configuration, the active
-  suffix boundary, finite post-horizon extinction and fail-closed negative
-  scope;
-  [`test_runtime_p2_reception_remesh_sequence_example.py`](../tests/physics/test_runtime_p2_reception_remesh_sequence_example.py)
-  checks the public facade, stub and example
-  [`176_runtime_p2_reception_remesh_sequence.py`](../examples/02_physics_regimes/176_runtime_p2_reception_remesh_sequence.py)
-  with its same-invocation two-cycle witness.
-- [`test_runtime_p2_reception_remesh_policy.py`](../tests/physics/test_runtime_p2_reception_remesh_policy.py)
-  verifies per-call preflight, two independent successful invocations, complete
-  rollback after invalid or graph-mutating post-certification, live U1a
-  derivation, active-history scope and directed preflight rejection;
-  [`test_runtime_p2_reception_remesh_policy_example.py`](../tests/physics/test_runtime_p2_reception_remesh_policy_example.py)
-  checks the public facade, stub and example
-  [`177_runtime_p2_reception_remesh_policy.py`](../examples/02_physics_regimes/177_runtime_p2_reception_remesh_policy.py).
-- [`test_runtime_remesh_history_stability.py`](../tests/physics/test_runtime_remesh_history_stability.py)
-  verifies bit-exact replay, signed residual and energy identities, hard-clip
-  nonexpansiveness, the soft-clip counterexample, inactive-delay handling and
-  fail-closed derivation seals.
-- [`test_remesh_schedule_stability.py`](../tests/physics/test_remesh_schedule_stability.py)
-  verifies the exact defect telescope, schedule-gain slack and lower bound,
-  expansive and contracting cases, barycenter drift and fail-closed seals.
-- [`test_runtime_remesh_schedule_stability.py`](../tests/physics/test_runtime_remesh_schedule_stability.py)
-  verifies adjacent represented schedule endpoints, the recorded history
-  advance, common normalized metrics, finite energy telescoping and fail-closed
-  nested proof bindings.
-- [Grammar Physics Verification Map](grammar/PHYSICS_VERIFICATION.md) maps U1-U6
-  to their implementation and scope.
+The [testing guide](../TESTING.md) owns selection and execution commands.
+Core operator regression entry points are:
+
+- [Registry and direct effects](../tests/operators/test_operator_contracts.py).
+- [Circular U3 rejection before mutation](../tests/operators/test_u3_hard_invariant.py).
+- [Public operator behavior](../tests/operators/test_canonical_operators_modern.py).
+
+Use the [grammar verification map](../theory/UNIFIED_GRAMMAR_RULES.md#9-verification-and-reporting)
+for U1–U6, the [REMESH proof owner's direct checks](../theory/REMESH_INFINITY_DERIVATION.md#22-reproducibility-and-direct-checks)
+for history/schedule/certificate controls, and the
+[theory-to-implementation map](../theory/README.md) for other model-specific
+controls. Those owners retain the detailed test obligations; this hub does
+not duplicate their inventories. Finite regression checks are not unrestricted
+stability proofs or physical validation.
 
 ## Extension rule
 
@@ -1813,10 +458,17 @@ canonicity.
 
 ## Auxiliary spectral-expectation contract
 
-`SpectralExpectationOperator` evaluates the Hermitian observable
-`<psi|A|psi>`. Its value lies in the real spectral interval of `A`; values
-above one are valid. This auxiliary value is never the structural coherence
-`C(t)`, never inherits a `[0, 1]` bound, and never enters `C_steps`.
+`SpectralExpectationOperator` evaluates the Hermitian quadratic form
+`<psi|A|psi>`. For a unit-norm state, including the default
+`expectation(..., normalise=True)` path, its exact-real value lies in the
+spectral interval of `A`; numerical evaluation retains floating-point error.
+With `normalise=False`, an unnormalized input instead scales that interval by
+`||psi||^2`: `A=diag(2,3)` and `psi=(2,0)` give `8`, not a value in `[2,3]`.
+Values above one are valid in either mode. This auxiliary value is never the
+structural coherence `C(t)`, never inherits a `[0,1]` bound, and never enters
+`C_steps`. Payload metadata `range="unbounded_real"` and `bounded=False`
+describe the family of supplied observables; they do not negate the conditional
+spectral bound for a fixed Hermitian operator and normalized state.
 
 `NodeNX`, `create_math_nfr`, the dynamics runtime and the CLI expose the
 canonical names `spectral_operator`, `spectral_expectation_threshold` and

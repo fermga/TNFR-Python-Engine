@@ -24,6 +24,7 @@ from ..config.operator_names import (
     SILENCE,
     TRANSFORMERS,
     TRANSITION,
+    VALID_END_OPERATORS,
 )
 
 __all__ = [
@@ -56,8 +57,8 @@ class SequenceHealthMetrics:
         Equilibrium between stabilizers and destabilizers (0.0-1.0). Ideal
         sequences have balanced structural forces.
     sustainability_index : float
-        Capacity for long-term maintenance (0.0-1.0). Considers final stabilization,
-        resolved dissonance, and regenerative elements.
+        Configured ending, unresolved-dissonance and regeneration score in
+        [0, 1]. It does not estimate dynamical maintenance or lifetime.
     complexity_efficiency : float
         Value-to-complexity ratio (0.0-1.0). Penalizes unnecessarily long sequences
         that don't provide proportional structural value.
@@ -389,7 +390,10 @@ class SequenceHealthAnalyzer:
         destabilizer_count: int,
         regenerator_count: int,
     ) -> float:
-        """Calculate sustainability index: capacity to maintain without collapse.
+        """Calculate the configured token sustainability rubric.
+
+        This score does not inspect a trajectory or establish maintenance,
+        stability, lifetime, grammar admission or live operator feasibility.
 
         Factors:
         - Final operator is a stabilizer
@@ -423,9 +427,18 @@ class SequenceHealthAnalyzer:
             sustainability += 0.4
         else:
             sustainability += 0.1  # Some credit for other endings
-            self._recommendations.append(
-                "Consider ending with a stabilizer (coherence, silence, resonance, or self_organization)"
-            )
+            allowed_endings = sorted(_STABILIZERS & VALID_END_OPERATORS)
+            if allowed_endings:
+                self._recommendations.append(
+                    "Consider a rubric stabilizer admitted as a standalone U1 closure: "
+                    + ", ".join(allowed_endings)
+                    + "; other grammar and live-state conditions still apply"
+                )
+            else:
+                self._recommendations.append(
+                    "The rubric prefers a stabilizer ending, but none is admitted "
+                    "as a standalone U1 closure"
+                )
 
         # Factor 2: Resolved dissonance (0.3 points)
         unresolved_dissonance = self._count_unresolved_dissonance(sequence)

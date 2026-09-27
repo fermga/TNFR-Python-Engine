@@ -21,7 +21,8 @@ from collections.abc import Iterator, Mapping, Sequence, Set
 from dataclasses import dataclass
 from numbers import Integral
 
-from ._helpers import finite_real_scalar
+from .._coherence_validation import validate_structural_coherence
+from .._exact_time import finite_represented_real
 
 __all__ = [
     "CoherenceLevelSetCertificate",
@@ -165,11 +166,15 @@ class FixedCapacityCoherenceLevelSetCertificate:
 
 def _coherence_and_radius(coherence: float) -> tuple[float, float]:
     try:
-        value = finite_real_scalar(coherence, "coherence")
-    except ValueError as exc:
+        value = validate_structural_coherence(coherence)
+    except (TypeError, ValueError) as exc:
         raise ValueError(_ERROR_COHERENCE) from exc
     if not 0.0 < value <= 1.0:
         raise ValueError(_ERROR_COHERENCE)
+    if value == 1.0 and coherence != 1:
+        raise ValueError(
+            "non-equilibrium coherence cannot round to the equilibrium level"
+        )
     radius = (1.0 - value) / value
     if not math.isfinite(radius):
         raise ValueError("coherence level radius exceeds finite range")
@@ -370,12 +375,14 @@ def fixed_capacity_coherence_level_set_geometry(
     normalized: list[float] = []
     for index, capacity in enumerate(raw_capacities):
         try:
-            capacity_value = finite_real_scalar(capacity, f"capacities[{index}]")
-        except ValueError as exc:
+            capacity_value = finite_represented_real(capacity, f"capacities[{index}]")[
+                0
+            ]
+        except (TypeError, ValueError) as exc:
             raise ValueError(
                 "capacities must contain finite nonnegative real scalars"
             ) from exc
-        if capacity_value < 0.0:
+        if capacity < 0 or capacity_value < 0.0:
             raise ValueError("capacities must contain finite nonnegative real scalars")
         normalized.append(capacity_value)
 

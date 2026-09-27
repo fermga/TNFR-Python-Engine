@@ -442,3 +442,311 @@ def test_sector_capture_export_retains_exact_acute_gap_and_barrier_evidence(
     ]
     output["report"]["field"]["epi"][0] = 123.0
     assert report.field.epi[0] == graph.nodes[0]["EPI"] == 0.0
+
+
+def _attachment_networks():
+    left = _network()
+    right = Network(
+        nx.relabel_nodes(left.G, {("port", 0): ("target", 1), "right": "outer"})
+    )
+    return left, right
+
+
+def test_attachment_sdk_is_a_thin_delegate_and_requires_another_network(monkeypatch):
+    from tnfr.physics import relational_observations as owner
+
+    left, right = _attachment_networks()
+    model, bridge = RelationalExchangeModel(1), (("port", 0), ("target", 1))
+    calls, marker = [], object()
+
+    def observe(left_graph, right_graph, **kwargs):
+        calls.append((left_graph, right_graph, kwargs))
+        return marker
+
+    monkeypatch.setattr(owner, "observe_relational_attachment", observe)
+    assert left.relational_attachment(right, model, bridge=bridge) is marker
+    assert calls == [(left.G, right.G, dict(model=model, bridge=bridge))]
+    with pytest.raises(TypeError, match="other must be a Network"):
+        left.relational_attachment(right.G, model, bridge=bridge)
+    assert len(calls) == 1
+
+
+@pytest.fixture(scope="module")
+def attachment_report():
+    left, right = _attachment_networks()
+    return left.relational_attachment(
+        right,
+        RelationalExchangeModel(1),
+        bridge=(("port", 0), ("target", 1)),
+    )
+
+
+def test_attachment_export_retains_complete_fields_and_exact_detached_changes(
+    attachment_report, tmp_path
+):
+    report = attachment_report
+    output = relational_report_to_dict(report)
+    path = tmp_path / "attachment.json"
+    export_to_json(output, path)
+    assert json.loads(path.read_text(encoding="utf-8")) == output
+    assert output["report_type"] == "RelationalAttachmentObservation"
+    body = output["report"]
+    assert body["bridge"] == [["port", 0], ["target", 1]]
+    assert body["components"] == [
+        relational_report_to_dict(field)["report"] for field in report.components
+    ]
+    assert body["joined"] == relational_report_to_dict(report.joined)["report"]
+    encoded_loss = body["continuous_loss_change"]
+    assert Fraction(encoded_loss["numerator"], encoded_loss["denominator"]) == (
+        report.continuous_loss_change
+    )
+    assert body["represented_zero_supply_passive"] is True
+    for name in ("form_rate_change", "phase_rate_change", "pressure_change"):
+        recovered = tuple(
+            Fraction(value["numerator"], value["denominator"]) for value in body[name]
+        )
+        assert recovered == getattr(report, name)
+    encoded = body["transport_reset"]["energy_change"]
+    assert Fraction(encoded["numerator"], encoded["denominator"]) == (
+        report.transport_reset.energy_change
+    )
+    body["components"][0]["epi"][0] = 123.0
+    body["joined"]["relative_resultant"][0][0] = 456.0
+    body["ports"][0]["after"]["degree"] = 999
+    assert report.components[0].epi[0] == 0.25
+    assert report.joined.relative_resultant[0][0] != 456.0
+    assert report.ports[0].after.degree != 999
+
+
+def test_attachment_supply_export_preserves_exact_work_and_scope(
+    attachment_report, tmp_path
+):
+    report = attachment_report
+    tiny = Fraction(1, 2**1200)
+    assessment = report.assess_supply(-tiny)
+    output = relational_report_to_dict(assessment)
+    assert output["schema"] == "tnfr.relational-report.v1"
+    assert output["report_type"] == "RelationalAttachmentSupplyAssessment"
+    body = output["report"]
+    assert body["required_supply"] == {"numerator": 0, "denominator": 1}
+    assert body["supplied_work"] == {"numerator": -1, "denominator": 2**1200}
+    assert body["supply_margin"] == body["supplied_work"]
+    assert body["represented_balance_satisfied"] is False
+    assert "caller_supplied_work_not_authenticated" in body["scope"]
+    assert "represented_storage_not_an_ideal_trigonometric_certificate" in body["scope"]
+    path = tmp_path / "attachment_supply.json"
+    export_to_json(output, path)
+    assert json.loads(path.read_text(encoding="utf-8")) == output
+    body["supplied_work"]["numerator"] = 0
+    body["scope"].clear()
+    assert assessment.supplied_work == -tiny
+    assert assessment.scope
+    assert report.storage_change == 0
+
+
+@pytest.mark.parametrize(
+    "location",
+    (
+        "component",
+        "component_edge",
+        "joined",
+        "joined_edge",
+        "bridge",
+        "port_before",
+        "port_after",
+        "reset",
+        "cut",
+        "cut_edge",
+    ),
+)
+def test_attachment_export_checks_all_node_label_locations(attachment_report, location):
+    @dataclass(frozen=True)
+    class OpaqueLabel:
+        value: int
+
+    report, opaque = attachment_report, OpaqueLabel(3)
+    if location == "component":
+        first = report.components[0]
+        report = replace(
+            report,
+            components=(
+                replace(first, nodes=(opaque,) + first.nodes[1:]),
+                report.components[1],
+            ),
+        )
+    elif location == "component_edge":
+        first = report.components[0]
+        report = replace(
+            report,
+            components=(
+                replace(first, edges=((opaque, first.nodes[1]),)),
+                report.components[1],
+            ),
+        )
+    elif location == "joined":
+        report = replace(
+            report,
+            joined=replace(report.joined, nodes=(opaque,) + report.joined.nodes[1:]),
+        )
+    elif location == "joined_edge":
+        report = replace(
+            report,
+            joined=replace(report.joined, edges=((opaque, report.joined.nodes[1]),)),
+        )
+    elif location == "bridge":
+        report = replace(report, bridge=(opaque, report.bridge[1]))
+    elif location.startswith("port_"):
+        name = location.removeprefix("port_")
+        port = report.ports[0]
+        port = replace(port, **{name: replace(getattr(port, name), node=opaque)})
+        report = replace(report, ports=(port, report.ports[1]))
+    elif location == "reset":
+        before = report.transport_reset.before
+        report = replace(
+            report,
+            transport_reset=replace(
+                report.transport_reset,
+                before=replace(before, nodes=(opaque,) + before.nodes[1:]),
+            ),
+        )
+    elif location == "cut":
+        report = replace(report, cut=replace(report.cut, region=(opaque,)))
+    else:
+        report = replace(
+            report, cut=replace(report.cut, cut_edges=((opaque, "outer", Fraction(1)),))
+        )
+    with pytest.raises(TypeError, match="node labels"):
+        relational_report_to_dict(report)
+
+
+def _relocation_network():
+    left, right = _attachment_networks()
+    graph = nx.compose(left.G, right.G)
+    graph.add_edge(("port", 0), ("target", 1), weight=1.0)
+    graph.nodes[("port", 0)]["EPI"] = 1.0
+    return Network(graph)
+
+
+def test_relocation_sdk_delegates_the_complete_supplied_contract(monkeypatch):
+    from tnfr.physics import relational_observations as owner
+
+    network = _relocation_network()
+    model = RelationalExchangeModel(1)
+    old, new = (("port", 0), ("target", 1)), ("right", "outer")
+    calls, marker = [], object()
+
+    def observe(graph, **kwargs):
+        calls.append((graph, kwargs))
+        return marker
+
+    monkeypatch.setattr(owner, "observe_relational_relocation", observe)
+    assert (
+        network.relational_relocation(model, remove_bridge=old, add_bridge=new)
+        is marker
+    )
+    assert calls == [(network.G, dict(model=model, remove_bridge=old, add_bridge=new))]
+
+
+@pytest.fixture(scope="module")
+def relocation_report():
+    return _relocation_network().relational_relocation(
+        RelationalExchangeModel(1),
+        remove_bridge=(("port", 0), ("target", 1)),
+        add_bridge=("right", "outer"),
+    )
+
+
+def test_relocation_export_retains_full_fields_partition_and_budget(
+    relocation_report, tmp_path
+):
+    report = relocation_report
+    output = relational_report_to_dict(report)
+    assert output["report_type"] == "RelationalRelocationObservation"
+    body = output["report"]
+    assert body["before"] == relational_report_to_dict(report.before)["report"]
+    assert body["after"] == relational_report_to_dict(report.after)["report"]
+    assert body["components"] == [[["port", 0], "right"], [["target", 1], "outer"]]
+    assert body["remove_bridge"] == [["port", 0], ["target", 1]]
+    assert body["add_bridge"] == ["right", "outer"]
+    assert body["represented_zero_supply_passive"] is True
+    for name in ("storage_change", "continuous_loss_change"):
+        value = body[name]
+        assert Fraction(value["numerator"], value["denominator"]) == getattr(
+            report, name
+        )
+    assert report.storage_change < 0
+    assessment = report.assess_supply(report.storage_change)
+    assert assessment.supply_margin == 0
+    supply = relational_report_to_dict(assessment)
+    assert supply["report"]["represented_balance_satisfied"] is True
+    path = tmp_path / "relocation.json"
+    export_to_json(output, path)
+    assert json.loads(path.read_text(encoding="utf-8")) == output
+    body["after"]["epi"][0] = 123.0
+    body["components"][0].clear()
+    assert report.after.epi[0] == 1.0
+    assert report.components[0] == (("port", 0), "right")
+
+
+@pytest.mark.parametrize(
+    "location",
+    (
+        "before",
+        "after_edge",
+        "component",
+        "remove_bridge",
+        "add_bridge",
+        "port",
+        "reset",
+        "cut_before",
+        "cut_after_edge",
+    ),
+)
+def test_relocation_export_rejects_opaque_labels_in_nested_evidence(
+    relocation_report, location
+):
+    @dataclass(frozen=True)
+    class OpaqueLabel:
+        value: int
+
+    report, opaque = relocation_report, OpaqueLabel(3)
+    if location == "before":
+        report = replace(report, before=replace(report.before, nodes=(opaque,)))
+    elif location == "after_edge":
+        report = replace(
+            report, after=replace(report.after, edges=((opaque, "outer"),))
+        )
+    elif location == "component":
+        report = replace(report, components=((opaque,), report.components[1]))
+    elif location in ("remove_bridge", "add_bridge"):
+        report = replace(report, **{location: (opaque, "outer")})
+    elif location == "port":
+        port = report.ports[0]
+        report = replace(
+            report,
+            ports=(
+                replace(port, after=replace(port.after, node=opaque)),
+                *report.ports[1:],
+            ),
+        )
+    elif location == "reset":
+        report = replace(
+            report,
+            transport_reset=replace(
+                report.transport_reset,
+                after=replace(report.transport_reset.after, nodes=(opaque,)),
+            ),
+        )
+    elif location == "cut_before":
+        report = replace(
+            report, cut_before=replace(report.cut_before, environment=(opaque,))
+        )
+    else:
+        report = replace(
+            report,
+            cut_after=replace(
+                report.cut_after, cut_edges=((opaque, "outer", Fraction(1)),)
+            ),
+        )
+    with pytest.raises(TypeError, match="node labels"):
+        relational_report_to_dict(report)

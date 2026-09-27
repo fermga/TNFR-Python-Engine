@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import inspect
+import math
 from copy import deepcopy
+from fractions import Fraction
 
 import networkx as nx
 import pytest
@@ -26,6 +28,7 @@ from tnfr.telemetry.constants import (
     STRUCTURAL_POTENTIAL_DELTA_THRESHOLD,
 )
 from tnfr.validation.aggregator import run_structural_validation
+from tnfr.validation.health import compute_structural_health
 
 
 def test_public_threshold_views_alias_canonical_policies() -> None:
@@ -177,3 +180,133 @@ def test_u6_invalid_threshold_is_explicitly_unavailable(threshold):
     assert report.field_metrics["u6_status"] == "unavailable"
     assert report.field_metrics["delta_phi_s"] is None
     assert "delta_phi_s" not in report.thresholds_exceeded
+
+
+@pytest.mark.parametrize(
+    "parameter,flag",
+    [
+        ("max_phase_gradient", "phase_gradient_max"),
+        ("k_phi_flag_threshold", "k_phi_flag"),
+        ("xi_c_critical_multiplier", "xi_c_critical"),
+        ("xi_c_watch_multiplier", "xi_c_watch"),
+    ],
+)
+@pytest.mark.parametrize("invalid", [math.nan, True, "1.0", -Fraction(1, 10**400)])
+def test_invalid_monitoring_threshold_is_unavailable_not_a_passing_flag(
+    parameter, flag, invalid
+):
+    graph = _u6_graph()
+    nodes_before = deepcopy(dict(graph.nodes(data=True)))
+    report = run_structural_validation(graph, **{parameter: invalid})
+    assert report.field_metrics["threshold_status"][flag] == "unavailable"
+    assert report.field_metrics["threshold_reasons"][flag]
+    assert flag not in report.thresholds_exceeded
+    assert report.risk_level in {"elevated", "critical"}
+    assert dict(graph.nodes(data=True)) == nodes_before
+
+
+def test_empty_graph_cannot_supply_low_risk_field_evidence():
+    graph = nx.Graph()
+    report = run_structural_validation(graph)
+    assert report.status == "valid"  # No grammar was requested.
+    assert report.risk_level == "elevated"
+    assert report.thresholds_exceeded == {}
+    assert not any(report.field_metrics["field_availability"].values())
+    assert report.field_metrics["max_phase_gradient"] is None
+    assert report.field_metrics["max_k_phi"] is None
+    assert report.field_metrics["xi_c"] is None
+    assert graph.graph == {}
+
+
+def test_undefined_curvature_keeps_independent_gradient_observation():
+    graph = nx.star_graph(4)
+    nx.set_node_attributes(
+        graph, dict(enumerate((0.3, 0.0, 0.0, math.pi, -math.pi))), "theta"
+    )
+    nx.set_node_attributes(graph, 0.0, "delta_nfr")
+    report = run_structural_validation(graph, max_phase_gradient=4.0)
+    fields = report.field_metrics
+    assert fields["field_availability"]["phase_gradient"] is True
+    assert fields["field_availability"]["phase_curvature"] is False
+    assert fields["phase_curvature"][0] is None
+    assert fields["max_k_phi"] is None
+    assert fields["max_phase_gradient"] > 0
+    assert "k_phi_flag" not in report.thresholds_exceeded
+    assert report.thresholds_exceeded["phase_gradient_max"] is False
+    assert report.risk_level in {"elevated", "critical"}
+
+
+def test_pressure_failure_does_not_erase_phase_or_certify_safety():
+    graph = _u6_graph()
+    graph.nodes[0]["delta_nfr"] = math.nan
+    report = run_structural_validation(graph)
+    assert report.field_metrics["field_availability"] == {
+        "phi_s": False,
+        "phase_gradient": True,
+        "phase_curvature": True,
+        "xi_c": False,
+    }
+    assert report.field_metrics["mean_structural_potential"] is None
+    assert report.field_metrics["field_errors"]["phi_s"]
+    assert report.risk_level == "elevated"
+
+
+def test_disconnected_support_does_not_use_one_component_as_global_geometry():
+    graph = nx.disjoint_union(nx.path_graph(2), nx.path_graph(3))
+    nx.set_node_attributes(graph, 0.0, "theta")
+    nx.set_node_attributes(graph, 0.0, "delta_nfr")
+    report = run_structural_validation(graph)
+    fields = report.field_metrics
+    assert fields["system_diameter"] is None
+    assert fields["mean_node_distance"] is None
+    assert "xi_c_critical" not in report.thresholds_exceeded
+    assert "xi_c_watch" not in report.thresholds_exceeded
+    assert report.risk_level == "elevated"
+
+
+def test_field_aggregation_uses_finite_shared_mean_and_retains_xi_provenance():
+    graph = _u6_graph()
+    nx.set_node_attributes(graph, 1e308, "delta_nfr")
+    report = run_structural_validation(graph)
+    assert report.field_metrics["phi_s"] == {0: 1e308, 1: 1e308}
+    assert report.field_metrics["mean_structural_potential"] == 1e308
+    assert report.field_metrics["xi_c_provenance"]["method"]
+
+
+def test_zero_warning_cut_remains_a_valid_explicit_policy():
+    report = run_structural_validation(_u6_graph(), max_phase_gradient=0.0)
+    assert report.field_metrics["threshold_status"]["phase_gradient_max"] == "evaluated"
+    assert report.thresholds_exceeded["phase_gradient_max"] is True
+
+
+def test_missing_curvature_does_not_hide_independent_critical_drift():
+    graph = nx.star_graph(4)
+    nx.set_node_attributes(
+        graph, dict(enumerate((0.3, 0.0, 0.0, math.pi, -math.pi))), "theta"
+    )
+    nx.set_node_attributes(graph, 0.0, "delta_nfr")
+    report = compute_structural_health(
+        graph, baseline_phi_s=dict.fromkeys(graph, 2.0), max_delta_phi_s=Fraction(3, 2)
+    )
+    assert report["field_availability"]["phase_curvature"] is False
+    assert report["threshold_status"]["k_phi_flag"] == "unavailable"
+    assert report["threshold_reasons"]["k_phi_flag"]
+    assert report["thresholds_exceeded"]["delta_phi_s"] is True
+    assert report["risk_level"] == "critical"
+
+
+def test_admitted_fraction_cuts_and_large_comparison_scales_remain_evaluable():
+    graph = nx.path_graph(3)
+    nx.set_node_attributes(graph, dict(enumerate((0.0, 0.25, 0.0))), "theta")
+    nx.set_node_attributes(graph, 0.0, "delta_nfr")
+    report = run_structural_validation(
+        graph,
+        max_phase_gradient=Fraction(1, 8),
+        k_phi_flag_threshold=Fraction(1, 8),
+        xi_c_critical_multiplier=1e308,
+        xi_c_watch_multiplier=1e308,
+    )
+    assert report.thresholds_exceeded["phase_gradient_max"] is True
+    assert report.thresholds_exceeded["k_phi_flag"] is True
+    assert report.thresholds_exceeded["xi_c_critical"] is False
+    assert report.field_metrics["threshold_status"]["xi_c_critical"] == "evaluated"

@@ -10,31 +10,29 @@ The historical immediate-neighbour helper remains available for compatibility.
 
 from __future__ import annotations
 
-import math
 from operator import index as integer_index
 from typing import Any
 
-from ..alias import get_attr
-from ..constants.aliases import ALIAS_DEPI, ALIAS_DNFR
-
-
-def _finite_real(value: Any, *, label: str) -> float:
-    if isinstance(value, bool):
-        raise TypeError(f"{label} must be a finite real scalar")
-    try:
-        result = float(value)
-    except (OverflowError, TypeError, ValueError) as exc:
-        raise TypeError(f"{label} must be a finite real scalar") from exc
-    if not math.isfinite(result):
-        raise ValueError(f"{label} must be finite")
-    return result
+from .common import _coherence_on_nodes
 
 
 def _radius_nodes(G: Any, node: Any, radius: int) -> tuple[Any, ...]:
+    """Return the validated center-inclusive outgoing graph ball once per node."""
+    if isinstance(radius, bool) or type(radius).__name__ == "bool_":
+        raise TypeError("radius must be a nonnegative integer")
+    try:
+        resolved_radius = integer_index(radius)
+    except (OverflowError, TypeError, ValueError) as exc:
+        raise TypeError("radius must be a nonnegative integer") from exc
+    if resolved_radius < 0:
+        raise ValueError("radius must be a nonnegative integer")
+    if node not in G:
+        raise KeyError(node)
+
     seen = {node}
     ordered = [node]
     frontier = [node]
-    for _depth in range(radius):
+    for _depth in range(resolved_radius):
         next_frontier: list[Any] = []
         for current in frontier:
             for neighbor in G.neighbors(current):
@@ -49,18 +47,6 @@ def _radius_nodes(G: Any, node: Any, radius: int) -> tuple[Any, ...]:
     return tuple(ordered)
 
 
-def _mean_absolute(values: tuple[float, ...]) -> float:
-    if not values:
-        return 0.0
-    scale = max(abs(value) for value in values)
-    if scale == 0.0:
-        return 0.0
-    result = scale * (math.fsum(abs(value) / scale for value in values) / len(values))
-    if not math.isfinite(result):
-        raise ValueError("local mean magnitude exceeds finite range")
-    return result
-
-
 def compute_radius_structural_coherence(
     G: Any,
     node: Any,
@@ -70,38 +56,13 @@ def compute_radius_structural_coherence(
 
     The centre node is always included. A radius-zero or isolated-node read-out
     therefore evaluates the node itself instead of inventing a zero or perfect
-    neighborhood value.
+    neighborhood value. Stored aliases use the global observation's strict
+    scalar admission and stable mean reduction; malformed evidence cannot
+    fall through to a later alias or become zero.
     """
 
-    if isinstance(radius, bool):
-        raise TypeError("radius must be a nonnegative integer")
-    try:
-        resolved_radius = integer_index(radius)
-    except (OverflowError, TypeError, ValueError) as exc:
-        raise TypeError("radius must be a nonnegative integer") from exc
-    if resolved_radius < 0:
-        raise ValueError("radius must be a nonnegative integer")
-    if node not in G:
-        raise KeyError(node)
-
-    nodes = _radius_nodes(G, node, resolved_radius)
-    pressures = tuple(
-        _finite_real(
-            get_attr(G.nodes[candidate], ALIAS_DNFR, 0.0),
-            label=f"DeltaNFR state for {candidate!r}",
-        )
-        for candidate in nodes
-    )
-    rates = tuple(
-        _finite_real(
-            get_attr(G.nodes[candidate], ALIAS_DEPI, 0.0),
-            label=f"dEPI state for {candidate!r}",
-        )
-        for candidate in nodes
-    )
-    from .common import structural_coherence
-
-    return float(structural_coherence(_mean_absolute(pressures), _mean_absolute(rates)))
+    nodes = _radius_nodes(G, node, radius)
+    return _coherence_on_nodes(G, nodes)[0]
 
 
 def compute_local_coherence_fallback(G: Any, node: Any) -> float:
@@ -109,31 +70,11 @@ def compute_local_coherence_fallback(G: Any, node: Any) -> float:
 
     This compatibility helper excludes the centre node and returns ``0.0`` for
     an isolate. New radius-aware operator telemetry should use
-    :func:`compute_radius_structural_coherence`.
+    :func:`compute_radius_structural_coherence`. Only the historical support
+    choice is retained: consumed values share strict global scalar admission.
     """
 
-    neighbors = list(G.neighbors(node))
-    if not neighbors:
-        return 0.0
-
-    def _as_float(value: Any, default: float = 0.0) -> float:
-        try:
-            return float(value)
-        except Exception:
-            return float(default)
-
-    dnfr_vals = [
-        abs(_as_float(get_attr(G.nodes[n], ALIAS_DNFR, 0.0))) for n in neighbors
-    ]
-    depi_vals = [
-        abs(_as_float(get_attr(G.nodes[n], ALIAS_DEPI, 0.0))) for n in neighbors
-    ]
-
-    dnfr_mean = sum(dnfr_vals) / len(dnfr_vals) if dnfr_vals else 0.0
-    depi_mean = sum(depi_vals) / len(depi_vals) if depi_vals else 0.0
-    from .common import structural_coherence
-
-    return structural_coherence(dnfr_mean, depi_mean)
+    return _coherence_on_nodes(G, tuple(G.neighbors(node)))[0]
 
 
 __all__ = [

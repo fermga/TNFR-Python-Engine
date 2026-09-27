@@ -21,6 +21,7 @@ from .cache import (
     RedisCacheLayer,
     ScopedCounterCache,
     SecurityError,
+    SecurityWarning,
     ShelveCacheLayer,
     _graph_cache_manager,
     _SeedHashCache,
@@ -30,6 +31,10 @@ from .cache import (
     clear_node_repr_cache,
     configure_global_cache_layers,
     configure_graph_cache_limits,
+    create_hmac_signer,
+    create_hmac_validator,
+    create_secure_redis_layer,
+    create_secure_shelve_layer,
     edge_version_cache,
     edge_version_update,
     ensure_node_index_map,
@@ -76,7 +81,6 @@ from .init import (
     cached_import,
     get_logger,
     get_nodenx,
-    get_numpy,
     prune_failed_imports,
     warm_cached_import,
     warn_once,
@@ -87,6 +91,7 @@ from .io import (
     StructuredFileError,
     clear_orjson_param_warnings,
     json_dumps,
+    json_loads,
     read_structured_file,
     safe_write,
 )
@@ -99,6 +104,9 @@ from .numeric import (
     similarity_abs,
     within_range,
 )
+from .topology import compute_fiedler_value as compute_fiedler_value
+from .topology import compute_k_top_spectral as compute_k_top_spectral
+from .topology import compute_laplacian_spectrum as compute_laplacian_spectrum
 
 __all__ = (
     "IMPORT_LOG",
@@ -109,7 +117,6 @@ __all__ = (
     "get_logger",
     "get_lock",
     "get_nodenx",
-    "get_numpy",
     "prune_failed_imports",
     "warn_once",
     "convert_value",
@@ -140,6 +147,11 @@ __all__ = (
     "RedisCacheLayer",
     "ShelveCacheLayer",
     "SecurityError",
+    "SecurityWarning",
+    "create_hmac_signer",
+    "create_hmac_validator",
+    "create_secure_shelve_layer",
+    "create_secure_redis_layer",
     "prune_lock_mapping",
     "EdgeCacheManager",
     "DNFR_PREP_STATE_KEY",
@@ -175,6 +187,7 @@ __all__ = (
     "JsonDumpsParams",
     "DEFAULT_PARAMS",
     "json_dumps",
+    "json_loads",
     "clear_orjson_param_warnings",
     "read_structured_file",
     "safe_write",
@@ -195,6 +208,9 @@ __all__ = (
     "CallbackManager",
     "callback_manager",
     "CallbackSpec",
+    "compute_k_top_spectral",
+    "compute_laplacian_spectrum",
+    "compute_fiedler_value",
 )
 
 def get_lock(name: str, /) -> Lock: ...

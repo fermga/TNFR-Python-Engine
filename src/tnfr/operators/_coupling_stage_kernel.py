@@ -15,6 +15,7 @@ import math
 from collections import defaultdict
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from fractions import Fraction
 from numbers import Integral
 from typing import Any
 
@@ -24,6 +25,7 @@ from ..constants import DEFAULTS
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_THETA, ALIAS_VF
 from ..constants.canonical import UM_COMPAT_THRESHOLD as _UM_COMPAT_CANONICAL
 from ..errors import TNFRValueError
+from ..mathematics._exact_weighted import exact_weighted_sum_ratio
 from ..metrics.phase_compatibility import compute_phase_coupling_strength
 from ..rng import make_rng
 from ..types import Glyph
@@ -44,13 +46,21 @@ def coupling_capacity_blend(
     Callers provide validated finite nonnegative capacities, a nonempty
     compatible-neighbor tuple and a factor in [0,1], and validate the result.
     Keeping the mean, subtraction, product and sum separate is part of the
-    represented numeric contract for nonuniform inputs; this is not a fused
-    multiply-add. Identical inputs retain their exact fixed point without
-    rounding a redundant sum or overflowing it before division.
+    represented numeric contract for nonuniform inputs with a finite sum;
+    this is not a fused multiply-add. If only the unneeded neighbor sum
+    overflows, round its exact represented mean instead, then retain the same
+    subtraction, product and sum. Identical inputs retain their exact fixed
+    point without rounding a redundant sum or overflowing it before division.
     """
     if neighbors and all(value == capacity for value in neighbors):
         return capacity
-    neighbor_mean = math.fsum(neighbors) / len(neighbors)
+    try:
+        neighbor_mean = math.fsum(neighbors) / len(neighbors)
+    except OverflowError:
+        numerator, denominator = exact_weighted_sum_ratio(
+            (1.0,) * len(neighbors), neighbors, normalize=True
+        )
+        neighbor_mean = float(Fraction(numerator, denominator))
     return capacity + factor * (neighbor_mean - capacity)
 
 

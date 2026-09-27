@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+from fractions import Fraction
 
 import numpy as np
 import pytest
@@ -47,7 +48,17 @@ def test_soft_clip_is_affine_equivariant_across_finite_intervals():
 
 
 @pytest.mark.parametrize(
-    "value", [math.nan, math.inf, -math.inf, True, "0.2", 0.2 + 0j]
+    "value",
+    [
+        math.nan,
+        math.inf,
+        -math.inf,
+        True,
+        np.bool_(True),
+        "0.2",
+        0.2 + 0j,
+        Fraction(1, 2**2000),
+    ],
 )
 def test_scalar_clip_rejects_nonfinite_or_nonreal_values(value):
     with pytest.raises(ValueError, match="finite real"):
@@ -63,6 +74,8 @@ def test_scalar_clip_rejects_nonfinite_or_nonreal_values(value):
         {"mode": "elastic"},
         {"k": 0.0},
         {"k": math.nan},
+        {"lo": np.bool_(False)},
+        {"lo": Fraction(1, 2**2000), "hi": Fraction(1, 2**1999)},
     ],
 )
 def test_scalar_and_array_clip_share_parameter_validation(kwargs):
@@ -78,8 +91,11 @@ def test_scalar_and_array_clip_share_parameter_validation(kwargs):
         [0.0, math.nan],
         [0.0, math.inf],
         [True, False],
+        [True, 0.5],
+        [np.bool_(False), 0.5],
         [0.0, 1.0 + 0j],
         ["0.0", "1.0"],
+        [0.0, Fraction(1, 2**2000)],
     ],
 )
 def test_array_clip_rejects_nonfinite_or_nonreal_values(values):
@@ -96,3 +112,15 @@ def test_clip_telemetry_records_exact_interventions_only():
     assert summary["soft_clips"] == 1
     assert summary["hard_clips"] == 1
     assert summary["total_adjustments"] == 2
+
+
+@pytest.mark.parametrize("mode", ["hard", "soft"])
+def test_array_clip_materializes_admitted_raw_scalars_without_losing_shape(mode):
+    tiny = Fraction(1, 2**1074)
+    raw = [[Fraction(-1, 2), tiny], [0, Fraction(1, 4)]]
+    result = structural_clip_array(raw, mode=mode)
+    expected = np.array([[-0.5, float(tiny)], [0.0, 0.25]])
+    assert result.shape == (2, 2)
+    assert np.array_equal(result, expected)
+    assert result[0, 1] > 0
+    assert raw[0][0] == Fraction(-1, 2)

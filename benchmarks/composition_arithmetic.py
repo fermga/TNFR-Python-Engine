@@ -9,7 +9,7 @@ established:
   - emergent_integers_symmetry.py  : geometry -> integers OUT (cardinals = irrep dims)
   - inverse_spectrum_to_symmetry.py: partial spectrum -> group -> predict a hidden cardinal
 Both PRODUCE cardinals but never the arithmetic operation itself. The primality
-module (primality-test/tnfr_primality) goes the other way: it CONSUMES divisibility
+module (applications/primality-test/tnfr_primality) goes the other way: it CONSUMES divisibility
 (trial division n % i) to re-read primality as the equilibrium condition ΔNFR = 0.
 
 The open frontier is exactly: can the additive/multiplicative COMPOSITION of

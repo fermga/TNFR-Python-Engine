@@ -10,9 +10,9 @@ Protocols (Interfaces)
 OperatorRegistry
     Maps operator tokens to structural operator implementations.
 ValidationService
-    Validates sequences and graph states against TNFR invariants.
+    Applies the configured sequence and graph-state checks.
 DynamicsEngine
-    Computes ΔNFR, integrates the nodal equation, and coordinates phase.
+    Exposes separate pressure, integration and phase-coordination operations.
 TelemetryCollector
     Captures coherence metrics, sense index, and structural traces.
 
@@ -21,7 +21,9 @@ Notes
 These interfaces use :class:`typing.Protocol` to enable duck typing and
 structural subtyping. Implementations do not need to explicitly inherit from
 these protocols; they need only provide the specified methods with compatible
-signatures.
+signatures. Protocol conformance does not establish mathematical invariants or
+trajectory stability. The service orchestrator calls pressure refresh after
+operator events; integration and phase coordination require separate calls.
 
 Examples
 --------
@@ -58,8 +60,8 @@ class OperatorRegistry(Protocol):
     """Interface for registering and retrieving structural operators.
 
     The operator registry maintains the mapping between operator tokens
-    (strings or Glyph codes) and their concrete implementations. It ensures
-    that only canonical operators are accessible during sequence execution.
+    and their concrete implementations. Registration and lookup do not replace
+    grammar admission or an operator's live-state preconditions.
     """
 
     def get_operator(self, token: str) -> Operator:
@@ -97,9 +99,9 @@ class OperatorRegistry(Protocol):
 class ValidationService(Protocol):
     """Interface for validating sequences and graph states.
 
-    The validation service guards TNFR invariants by checking operator
-    sequences against grammar rules and ensuring graph states remain within
-    canonical bounds (νf, phase, ΔNFR ranges).
+    The default adapter checks operator words and configured graph constraints.
+    These checks are not a complete trajectory certificate; custom services
+    must state which conditions they actually evaluate.
     """
 
     def validate_sequence(self, sequence: list[str]) -> None:
@@ -118,12 +120,12 @@ class ValidationService(Protocol):
         ...
 
     def validate_graph_state(self, graph: TNFRGraph) -> None:
-        """Validate graph state against structural invariants.
+        """Validate graph state against the service's configured checks.
 
         Parameters
         ----------
         graph : TNFRGraph
-            Graph whose node attributes (EPI, νf, θ, ΔNFR) are validated.
+            Graph whose attributes and registered validators are evaluated.
 
         Raises
         ------
@@ -137,17 +139,16 @@ class ValidationService(Protocol):
 class DynamicsEngine(Protocol):
     """Interface for computing ΔNFR and integrating the nodal equation.
 
-    The dynamics engine orchestrates the temporal evolution of nodes by
-    computing internal reorganization gradients (ΔNFR), integrating the
-    nodal equation ∂EPI/∂t = νf · ΔNFR(t), and coordinating phase coupling
-    across the network.
+    The three operations remain separate. The pressure hook, integration mode,
+    phase policy and clock are configured inputs; the nodal identity alone does
+    not select them or a capacity-evolution law.
     """
 
     def update_delta_nfr(self, graph: TNFRGraph) -> None:
         """Compute and update ΔNFR for all nodes in the graph.
 
-        This method implements the canonical ΔNFR computation using
-        configured hooks (e.g., dnfr_epi_vf_mixed, dnfr_laplacian).
+        The default adapter invokes a callable ``compute_delta_nfr`` graph hook
+        when supplied and otherwise leaves stored pressure unchanged.
 
         Parameters
         ----------
@@ -157,11 +158,12 @@ class DynamicsEngine(Protocol):
         ...
 
     def integrate_nodal_equation(self, graph: TNFRGraph) -> None:
-        """Integrate the nodal equation to update EPI, νf, and phase.
+        """Advance form through the selected nodal integrator.
 
-        This method applies the canonical integrator to advance EPI based on
-        the structural frequency and ΔNFR gradient, while optionally
-        adapting νf and coordinating phase synchrony.
+        The ordinary default uses the stored capacity-pressure product and
+        declared forcing. The opt-in extended model has its own additional
+        phase/pressure law. Capacity adaptation and standalone phase
+        coordination are not implied by this interface.
 
         Parameters
         ----------
@@ -173,8 +175,9 @@ class DynamicsEngine(Protocol):
     def coordinate_phase_coupling(self, graph: TNFRGraph) -> None:
         """Coordinate phase synchronization across coupled nodes.
 
-        This method ensures that phase relationships between connected nodes
-        respect resonance conditions and structural coupling strength.
+        The default adapter applies a configured phase-relaxation map. It does
+        not derive that map from the nodal EPI identity or certify U3 admission
+        for every subsequent coupling event.
 
         Parameters
         ----------
@@ -199,7 +202,8 @@ class TraceContext(Protocol):
         Returns
         -------
         dict
-            State snapshot including coherence, phase, νf distributions.
+            Implementation-defined snapshot. The default retains coherence
+            and node/edge counts, not a reconstructible full state.
         """
         ...
 
@@ -258,13 +262,13 @@ class TelemetryCollector(Protocol):
         Returns
         -------
         float
-            Global coherence value C(t) ∈ [0, 1], where higher values
-            indicate greater structural stability.
+            Configured global coherence read-out C(t) ∈ [0, 1]. It is not a
+            proof of stability, identity or autonomous formation.
         """
         ...
 
     def compute_sense_index(self, graph: TNFRGraph) -> dict[str, Any]:
-        """Compute sense index (Si) measuring reorganization capacity.
+        """Compute the configured sense-index diagnostic.
 
         Parameters
         ----------
@@ -274,6 +278,7 @@ class TelemetryCollector(Protocol):
         Returns
         -------
         dict
-            Sense index metrics including total Si and per-node contributions.
+            Collector-defined diagnostic mapping. The default returns per-node
+            Si values; it does not add an aggregate ``"Si"`` field.
         """
         ...

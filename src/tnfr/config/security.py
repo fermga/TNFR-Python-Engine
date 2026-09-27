@@ -9,7 +9,7 @@ Security Principles:
 - Load sensitive values from environment variables
 - Provide secure defaults for development
 - Validate configuration before use
-- Support multiple configuration sources (environment, .env files)
+- Read the process environment; loading an environment file is the caller's job
 - Sanitize credentials in logs to prevent exposure
 - Secure memory management for secrets
 - Credential rotation and TTL support
@@ -91,7 +91,7 @@ def get_env_variable(
         if required:
             raise ConfigurationError(
                 f"Required environment variable '{name}' is not set. "
-                f"Please set it in your environment or .env file."
+                f"Please set it in the process environment."
             )
         if secret and default is not None:
             warnings.warn(

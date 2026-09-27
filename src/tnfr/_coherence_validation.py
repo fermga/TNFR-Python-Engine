@@ -2,24 +2,20 @@
 
 from __future__ import annotations
 
-import math
 from typing import Any
+
+from ._exact_time import finite_represented_real
 
 
 def validate_structural_coherence(value: Any, *, name: str = "coherence") -> float:
-    """Return one finite canonical coherence value in the closed unit interval."""
+    """Admit a real coherence sample without rounding it into the unit interval.
 
-    if isinstance(value, (bool, str, bytes)) or type(value).__name__ == "bool_":
-        raise TypeError(f"{name} must be a finite real scalar, not bool")
-    if getattr(value, "ndim", 0) != 0:
-        raise TypeError(f"{name} must be a finite real scalar")
-    try:
-        normalized = float(value)
-    except (TypeError, ValueError, OverflowError) as exc:
-        raise TypeError(f"{name} must be a finite real scalar") from exc
-    if not math.isfinite(normalized):
-        raise ValueError(f"{name} must be finite")
-    if not 0.0 <= normalized <= 1.0:
+    Reuse runtime scalar admission: booleans, text, non-finite values and
+    nonzero sources lost to binary64 zero are invalid. Check the original
+    ordered value as well, so an out-of-range rational cannot round to one.
+    """
+    normalized, _ = finite_represented_real(value, name)
+    if not 0 <= value <= 1 or not 0.0 <= normalized <= 1.0:
         raise ValueError(f"{name} must be in [0, 1]")
     return normalized
 

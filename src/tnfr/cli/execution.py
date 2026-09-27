@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import math
 from collections import deque
 from collections.abc import Iterable, Mapping, Sized
 from copy import deepcopy
@@ -13,6 +12,7 @@ from typing import Any, Sequence
 import networkx as nx
 import numpy as np
 
+from .._exact_time import finite_represented_real
 from .._spectral_expectation import (
     SPECTRAL_EXPECTATION_METRIC_KIND,
     finite_spectral_real,
@@ -837,22 +837,30 @@ def cmd_math_run(args: argparse.Namespace) -> int:
 def cmd_epi_validate(args: argparse.Namespace) -> int:
     """Execute ``tnfr epi.validate`` returning the exit status.
 
-    This command checks the selected stored-state diagnostics. Its all-edge
-    U3 read-out uses the configured hard graph gate without numerical slack;
+    This command checks the selected stored-state diagnostics. Affinity
+    history is not a coherence-preservation certificate. Missing observations
+    remain unavailable; no observed checks means a nonzero exit status. Its
+    all-edge U3 read-out uses the configured hard graph gate without numerical slack;
     it does not certify a word or a future operator's complete admission.
     """
 
-    raw_tolerance = getattr(args, "tolerance", 1e-6)
     try:
-        if isinstance(raw_tolerance, (bool, np.bool_)):
-            raise ValueError("boolean tolerance")
-        tolerance = float(raw_tolerance)
-        if not math.isfinite(tolerance) or tolerance < 0.0:
-            raise ValueError("nonfinite or negative tolerance")
+        tolerance, _ = finite_represented_real(
+            getattr(args, "tolerance", 1e-6), "tolerance"
+        )
+        if tolerance < 0.0:
+            raise ValueError("negative tolerance")
     except (TypeError, ValueError, OverflowError):
         logger.error(
             "[EPI.VALIDATE] tolerance must be finite, nonnegative and nonboolean"
         )
+        return 1
+
+    check_coherence = getattr(args, "check_coherence", True)
+    check_frequency = getattr(args, "check_frequency", True)
+    check_phase = getattr(args, "check_phase", True)
+    if not any((check_coherence, check_frequency, check_phase)):
+        logger.error("[EPI.VALIDATE] Select at least one diagnostic check")
         return 1
 
     code, graph = _run_cli_program(args)
@@ -863,68 +871,86 @@ def cmd_epi_validate(args: argparse.Namespace) -> int:
         logger.error("[EPI.VALIDATE] No graph generated for validation")
         return 1
 
-    # Validation checks
-    check_coherence = getattr(args, "check_coherence", True)
-    check_frequency = getattr(args, "check_frequency", True)
-    check_phase = getattr(args, "check_phase", True)
-
     validation_passed = True
     validation_summary = []
+    observed_checks = 0
 
-    # Check coherence preservation
+    # W is the configured affinity diagnostic, not canonical coherence C.
     if check_coherence:
-        hist = ensure_history(graph)
+        hist = graph.graph.get("history", {})
         cfg_coh = graph.graph.get("COHERENCE", METRIC_DEFAULTS["COHERENCE"])
-        if cfg_coh.get("enabled", True):
+        if not isinstance(cfg_coh, Mapping):
+            validation_passed = False
+            validation_summary.append("  [FAIL] Invalid affinity configuration")
+        elif not isinstance(hist, Mapping):
+            validation_passed = False
+            validation_summary.append("  [FAIL] Invalid stored history")
+        elif cfg_coh.get("enabled", True):
             Wstats = hist.get(cfg_coh.get("stats_history_key", "W_stats"), [])
-            if Wstats:
-                # Check that coherence is non-negative and bounded
+            if not isinstance(Wstats, (list, tuple, deque)):
+                validation_passed = False
+                validation_summary.append("  [FAIL] Invalid affinity history")
+            elif Wstats:
+                observed_checks += 1
+                affinity_passed = True
                 for i, stats in enumerate(Wstats):
-                    W_mean = float(stats.get("mean", 0.0))
+                    try:
+                        if not isinstance(stats, Mapping):
+                            raise TypeError("expected a statistics mapping")
+                        W_mean, _ = finite_represented_real(stats.get("mean"), "W_mean")
+                    except (TypeError, ValueError, OverflowError) as exc:
+                        affinity_passed = False
+                        validation_summary.append(f"  [FAIL] Step {i}: {exc}")
+                        continue
                     if W_mean < -tolerance:
-                        validation_passed = False
+                        affinity_passed = False
                         validation_summary.append(
-                            f"  [FAIL] Step {i}: Coherence W_mean={W_mean:.6f} < 0"
+                            f"  [FAIL] Step {i}: Affinity W_mean={W_mean:.6g} "
+                            f"< -tolerance={-tolerance:.6g}"
                         )
-                if validation_passed:
+                validation_passed &= affinity_passed
+                if affinity_passed:
                     validation_summary.append(
-                        f"  [PASS] Coherence preserved (W_mean ≥ 0 across {len(Wstats)} steps)"
+                        "  [PASS] Affinity sign diagnostic "
+                        f"(W_mean >= -tolerance across {len(Wstats)} stored samples)"
                     )
             else:
-                validation_summary.append("  [SKIP] No coherence history available")
+                validation_summary.append("  [SKIP] No affinity history available")
         else:
-            validation_summary.append("  [SKIP] Coherence tracking disabled")
+            validation_summary.append("  [SKIP] Affinity tracking disabled")
 
-    # Check structural frequency positivity
+    # Capacity's state domain is nonnegative; affinity slack cannot widen it.
     if check_frequency:
         nodes = list(_iter_graph_nodes(graph))
         if nodes:
-            negative_frequencies = []
+            observed_checks += 1
+            invalid_frequencies = []
             for node_id in nodes:
                 data = graph.nodes[node_id]
-                nu_f = float(
-                    get_attr(
+                try:
+                    raw_capacity = get_attr(
                         data,
                         VF_ALIAS_KEYS,
-                        default=float(data.get(VF_PRIMARY, 0.0)),
+                        strict=True,
+                        conv=lambda value: value,
                     )
-                )
-                if nu_f < -tolerance:
-                    negative_frequencies.append((node_id, nu_f))
+                    nu_f, _ = finite_represented_real(raw_capacity, "capacity nu_f")
+                    if nu_f < 0.0:
+                        raise ValueError("capacity nu_f must be nonnegative")
+                except (TypeError, ValueError, OverflowError) as exc:
+                    invalid_frequencies.append((node_id, str(exc)))
 
-            if negative_frequencies:
+            if invalid_frequencies:
                 validation_passed = False
-                for node_id, nu_f in negative_frequencies[:5]:  # Show first 5
+                for node_id, reason in invalid_frequencies[:5]:
+                    validation_summary.append(f"  [FAIL] Node {node_id}: {reason}")
+                if len(invalid_frequencies) > 5:
                     validation_summary.append(
-                        f"  [FAIL] Node {node_id}: νf={nu_f:.6f} < 0"
-                    )
-                if len(negative_frequencies) > 5:
-                    validation_summary.append(
-                        f"  ... and {len(negative_frequencies) - 5} more nodes"
+                        f"  ... and {len(invalid_frequencies) - 5} more nodes"
                     )
             else:
                 validation_summary.append(
-                    f"  [PASS] Structural frequency νf ≥ 0 for all {len(nodes)} nodes"
+                    f"  [PASS] Finite capacity nu_f >= 0 for all {len(nodes)} nodes"
                 )
         else:
             validation_summary.append("  [SKIP] No nodes to validate")
@@ -938,6 +964,7 @@ def cmd_epi_validate(args: argparse.Namespace) -> int:
             validation_passed = False
             validation_summary.append(f"  [FAIL] U3 configuration: {exc}")
         else:
+            observed_checks += bool(edges)
             phase_violations = []
             invalid_phase_count = 0
 
@@ -971,7 +998,7 @@ def cmd_epi_validate(args: argparse.Namespace) -> int:
                 for u, v, diff in phase_violations[:5]:
                     validation_summary.append(
                         f"  [FAIL] Edge ({u},{v}): wrapped phase diff={diff:.6f} "
-                        f"> Δφ_max={phase_gate:.6f}"
+                        f"> Delta_phi_max={phase_gate:.6f}"
                     )
                 if len(phase_violations) > 5:
                     validation_summary.append(
@@ -980,7 +1007,7 @@ def cmd_epi_validate(args: argparse.Namespace) -> int:
             elif edges and not invalid_phase_count:
                 validation_summary.append(
                     f"  [PASS] U3 phase gate satisfied across {len(edges)} edges "
-                    f"(Δφ_max={phase_gate:.6f})"
+                    f"(Delta_phi_max={phase_gate:.6f})"
                 )
             elif not edges:
                 validation_summary.append("  [SKIP] No edges to validate")
@@ -990,9 +1017,13 @@ def cmd_epi_validate(args: argparse.Namespace) -> int:
     for line in validation_summary:
         logger.info("%s", line)
 
-    if validation_passed:
-        logger.info("[EPI.VALIDATE] ✓ All validation checks passed")
+    if validation_passed and observed_checks:
+        logger.info(
+            "[EPI.VALIDATE] Available diagnostic checks passed; "
+            "skipped checks remain unavailable"
+        )
         return 0
-    else:
-        logger.info("[EPI.VALIDATE] ✗ Some validation checks failed")
-        return 1
+    logger.info(
+        "[EPI.VALIDATE] Diagnostic checks failed or no selected observations were available"
+    )
+    return 1

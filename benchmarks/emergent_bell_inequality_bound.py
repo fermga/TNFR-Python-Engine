@@ -70,47 +70,28 @@ Run:
 from __future__ import annotations
 
 import math
+import sys
+from pathlib import Path
 
 import networkx as nx
 import numpy as np
 
+_ROOT = Path(__file__).resolve().parents[1]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+
+from benchmarks.graph_fixtures import sierpinski_simplex  # noqa: E402
+
 
 def _sierpinski_simplex(m: int, levels: int) -> nx.Graph:
-    """Build the self-similar graph used by the auxiliary M2 generator."""
-    if levels == 0:
-        return nx.complete_graph(m)
-    sub = _sierpinski_simplex(m, levels - 1)
-    sub_corners = list(range(m)) if levels == 1 else list(sub.nodes())[:m]
-    graph = nx.Graph()
-    copies: list[list[tuple]] = []
-    for i in range(m):
-        mapping = {v: (i, v) for v in sub.nodes}
-        graph.add_nodes_from(mapping[v] for v in sub.nodes)
-        graph.add_edges_from((mapping[u], mapping[v]) for u, v in sub.edges)
-        copies.append([mapping[c] for c in sub_corners])
-    parent = {node: node for node in graph.nodes}
+    """Return the shared gasket with its true recursively retained corners.
 
-    def find(node):
-        root = node
-        while parent[root] != root:
-            root = parent[root]
-        while parent[node] != root:
-            parent[node], node = root, parent[node]
-        return root
-
-    for i in range(m):
-        for j in range(i + 1, m):
-            root_a = find(copies[i][j])
-            root_b = find(copies[j][i])
-            if root_a != root_b:
-                parent[root_b] = root_a
-    merged = nx.Graph()
-    for u, v in graph.edges:
-        root_u = find(u)
-        root_v = find(v)
-        if root_u != root_v:
-            merged.add_edge(root_u, root_v)
-    return merged
+    The former local constructor reused the first m inserted nodes as corners
+    above level one. From level two onward that produced a different graph.
+    This preparation correction does not change the pointwise CHSH bound;
+    previous numerical phase-generator observations describe the old support.
+    """
+    return sierpinski_simplex(m, levels)[0]
 
 
 def fractal_resonant_hidden_variable(

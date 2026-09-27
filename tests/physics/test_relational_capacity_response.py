@@ -188,6 +188,47 @@ def test_prepare_is_exclusive_and_failure_is_retained_without_a_run(
         campaign.main(["--output", str(output)])
 
 
+@pytest.mark.parametrize(
+    "payload",
+    [
+        '{"x": 1, "x": 2}',
+        '{"q": {"numerator": 1, "numerator": 2, "denominator": 3}}',
+        '{"x": NaN}',
+        '{"x": Infinity}',
+        '{"x": 1e309}',
+        '{"x": 1e-5000}',
+        '{"q": {"numerator": true, "denominator": 3}}',
+        '{"q": {"numerator": 1.0, "denominator": 3}}',
+        '{"q": {"numerator": 1, "denominator": false}}',
+        '{"q": {"numerator": 1, "denominator": 0}}',
+        '{"q": {"numerator": 1, "denominator": -2}}',
+    ],
+)
+def test_retained_json_rejects_lossy_or_invalid_evidence(tmp_path, payload):
+    path = tmp_path / "record.json"
+    path.write_text(payload, encoding="utf-8")
+    with pytest.raises(ValueError):
+        retained_audit.load_exact_json(path)
+    assert path.read_text(encoding="utf-8") == payload
+
+
+def test_retained_json_preserves_nested_exact_fractions_and_distinct_records(tmp_path):
+    numerator = -(2**1200 + 1)
+    record = {
+        "samples": [{"fraction": {"numerator": numerator, "denominator": 7}}],
+        "metadata": {"numerator": 1, "denominator": 2, "units": "ratio"},
+        "smallest_float": math.ulp(0.0),
+        "unavailable": None,
+    }
+    path = tmp_path / "record.json"
+    path.write_text(json.dumps(record), encoding="utf-8")
+    decoded = retained_audit.load_exact_json(path)
+    assert decoded["samples"] == [{"fraction": Q(numerator, 7)}]
+    assert decoded["metadata"] == record["metadata"]
+    assert decoded["smallest_float"] == math.ulp(0.0)
+    assert decoded["unavailable"] is None
+
+
 @pytest.fixture(scope="module")
 def retained_records():
     owner = campaign.ROOT / "docs/assets/relational_capacity_response"

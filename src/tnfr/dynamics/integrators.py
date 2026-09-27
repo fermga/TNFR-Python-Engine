@@ -44,6 +44,7 @@ import networkx as nx
 from .._compat import TypeAlias
 from .._exact_time import finite_represented_real
 from ..alias import get_attr, get_attr_str, set_attr, set_attr_str
+from ..config.parsing import parse_bool
 from ..constants import DEFAULTS
 from ..constants.aliases import (
     ALIAS_D2EPI,
@@ -847,11 +848,13 @@ def _integrate_vectorized_step(
 
         t_local += dt_step
 
-    # Write back
-    # Use primary alias for bulk update
-    nx.set_node_attributes(G, dict(zip(nodes, epi)), ALIAS_EPI[0])
-    nx.set_node_attributes(G, dict(zip(nodes, dEPI)), ALIAS_DEPI[0])
-    nx.set_node_attributes(G, dict(zip(nodes, d2EPI)), ALIAS_D2EPI[0])
+    # Preserve each mapping's authoritative spelling, as the scalar path does.
+    # A bulk primary-key write would shadow existing legacy state aliases.
+    for node, form, rate, acceleration in zip(nodes, epi, dEPI, d2EPI):
+        nd = G.nodes[node]
+        set_attr(nd, ALIAS_EPI, form)
+        set_attr(nd, ALIAS_DEPI, rate)
+        set_attr(nd, ALIAS_D2EPI, acceleration)
 
     return t_local
 
@@ -1009,8 +1012,17 @@ def update_epi_via_nodal_equation(
         >>> G.graph['use_extended_dynamics'] = True
         >>> update_epi_via_nodal_equation(G, dt=0.01)
     """
-    # Check if extended dynamics is enabled
-    use_extended = G.graph.get("use_extended_dynamics", False)
+    # Use the shared configuration parser: the text "false" must not select
+    # a different nodal completion merely because it is a nonempty string.
+    raw_extended = G.graph.get("use_extended_dynamics", False)
+    try:
+        use_extended = parse_bool(raw_extended)
+    except (TypeError, ValueError) as exc:
+        raise NetworkConfigError(
+            parameter="use_extended_dynamics",
+            value=raw_extended,
+            reason=str(exc),
+        ) from exc
 
     if use_extended:
         # Use extended nodal system with flux fields

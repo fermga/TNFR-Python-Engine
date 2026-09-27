@@ -62,8 +62,8 @@ ledger](NODAL_PARAMETER_FOUNDATIONS.md#2-parameter-and-dependency-ledger).
 
 | Layer | Description | Source |
 |-------|-------------|--------|
-| **Primality** | Deterministic prime detection via $\Delta\mathrm{NFR}=0$ | `primality-test/`, `src/tnfr/mathematics/number_theory.py` |
-| **Factorization** | Spectral factor discovery via Paley-Jacobi graphs | `factorization-lab/` |
+| **Primality** | Deterministic prime detection via $\Delta\mathrm{NFR}=0$ | `applications/primality-test/`, `src/tnfr/mathematics/number_theory.py` |
+| **Factorization** | Spectral factor discovery via Paley-Jacobi graphs | `applications/factorization-lab/` |
 | **Riemann program** | Declared arithmetic traces and finite pulse comparisons; historical prime-path prototype superseded | `src/tnfr/riemann/` |
 
 These layers reuse selected arithmetic functions, graph diagnostics and
@@ -522,7 +522,7 @@ The implementation uses Paley graphs — algebraic constructions from quadratic 
    $D-W=dL_{rw}$. Irregular support uses the combinatorial Laplacian directly.
    The shared eigenvectors and degree rescaling preserve the stated Paley
    spectral comparison; the chosen residue graph and factor-inference rule
-   remain additional inputs. See the [lab implementation](../factorization-lab/tnfr_factorization/spectral_paley.py)
+   remain additional inputs. See the [lab implementation](../applications/factorization-lab/tnfr_factorization/spectral_paley.py)
    and [transport owner](../src/tnfr/physics/structural_diffusion.py).
 
 3. **Tetrad proxies**: The factorizer uses scalar lab features, including
@@ -535,7 +535,7 @@ The implementation uses Paley graphs — algebraic constructions from quadratic 
    Gap selection skips values at or below `1e-9`; backend-supplied coherence
    values retain their own convention. These quantities are not the canonical
    nodewise potential or spatial coherence-product fit. The
-   [lab feature contract](../factorization-lab/README.md) owns their provenance.
+   [lab feature contract](../applications/factorization-lab/README.md) owns their provenance.
    In the symmetric-seed fixtures of example 117, the genuine per-node tetrad
    does not distinguish the factor cosets; this is a result for that
    state/observer pair, not unconditional per-node blindness.
@@ -548,8 +548,8 @@ The implementation uses Paley graphs — algebraic constructions from quadratic 
    form/phase/support law. Its labels therefore do not verify circular U3
    admission or hierarchical U5 preservation. Separate optimizer/workflow
    records must be assessed against their actual execution. The
-   [implementation](../factorization-lab/tnfr_factorization/spectral_paley.py)
-   and [lab scope](../factorization-lab/README.md) preserve this distinction.
+   [implementation](../applications/factorization-lab/tnfr_factorization/spectral_paley.py)
+   and [lab scope](../applications/factorization-lab/README.md) preserve this distinction.
 
 5. **Factor inference**: Read periodicities of the partition node indices and
    use the declared modulus to propose candidate factors; the surrogate's
@@ -1086,12 +1086,12 @@ Structural triad: $\mathrm{EPI}(30) \approx 7.48$, $\nu_f(30) \approx 2.15$, $C_
 | Module | Path | Scope |
 |--------|------|-------|
 | **Arithmetic network** | `src/tnfr/mathematics/number_theory.py` | `ArithmeticTNFRNetwork`, `ArithmeticTNFRFormalism`, `PrimeCertificate` |
-| **Primality testing** | `primality-test/tnfr_primality/core.py` | Standalone ΔNFR computation, validation |
-| **Canonical constants** | `primality-test/tnfr_primality/constants.py` | Arithmetic pressure coefficients (separate subproject) |
-| **Advanced integration** | `primality-test/tnfr_primality/advanced_core.py` | Full repo infrastructure bridge |
-| **Optimized batch** | `primality-test/tnfr_primality/optimized.py` | Caching, benchmarking, batch processing |
-| **Spectral factorization** | `factorization-lab/tnfr_factorization/spectral_paley.py` | Paley-Jacobi spectral decoder |
-| **Factorization API** | `factorization-lab/tnfr_factorization/api.py` | High-level `factorize()` function |
+| **Primality testing** | `applications/primality-test/tnfr_primality/core.py` | Standalone ΔNFR computation, validation |
+| **Canonical constants** | `applications/primality-test/tnfr_primality/constants.py` | Arithmetic pressure coefficients (separate subproject) |
+| **Advanced integration** | `applications/primality-test/tnfr_primality/advanced_core.py` | Full repo infrastructure bridge |
+| **Optimized batch** | `applications/primality-test/tnfr_primality/optimized.py` | Caching, benchmarking, batch processing |
+| **Spectral factorization** | `applications/factorization-lab/tnfr_factorization/spectral_paley.py` | Paley-Jacobi spectral decoder |
+| **Factorization API** | `applications/factorization-lab/tnfr_factorization/api.py` | High-level `factorize()` function |
 | **Nodal-pulse foundation** | `src/tnfr/riemann/nodal_pulse.py` | Emergent prime-NFR nodal pulse ($\nu_f = \log n$; zeros as destructive interference) |
 | **Prime-ladder Hamiltonian** | `src/tnfr/riemann/prime_ladder_hamiltonian.py` | Canonical $\nu_f$ prime-ladder (P14) |
 | **Canonical constants (repo)** | `src/tnfr/constants/canonical.py` | Repository-wide canonical constant definitions |
@@ -1122,10 +1122,10 @@ Structural triad: $\mathrm{EPI}(30) \approx 7.48$, $\nu_f(30) \approx 2.15$, $C_
 
 | Test area | Location |
 |-----------|----------|
-| Primality validation (10k range) | `primality-test/test_installation.py` |
+| Primality validation (10k range) | `applications/primality-test/test_installation.py` |
 | Arithmetic network construction | `tests/` (number_theory tests) |
-| Factorization spectral decoder | `factorization-lab/tests/test_spectral_paley.py` |
-| Factorization verification | `factorization-lab/tests/test_verification_robustness.py` |
+| Factorization spectral decoder | `applications/factorization-lab/tests/test_spectral_paley.py` |
+| Factorization verification | `applications/factorization-lab/tests/test_verification_robustness.py` |
 | Riemann operator spectral | `tests/` (riemann tests) |
 
 ---

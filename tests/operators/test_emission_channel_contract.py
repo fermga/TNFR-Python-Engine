@@ -87,4 +87,8 @@ def test_frequency_advice_never_claims_emission_raises_capacity() -> None:
     for report in reports:
         advice = " ".join(report["recommendations"])
         assert "AL (Emission)" not in advice
-        assert "NAV (Transition)" in advice
+    # RA's capacity advice must not promise that NAV's regime-dependent
+    # multiplier (or VAL's scaling) creates capacity from zero.
+    resonance_advice = " ".join(reports[1]["recommendations"])
+    assert "Supply admitted capacity" in resonance_advice
+    assert "NAV (Transition)" not in resonance_advice

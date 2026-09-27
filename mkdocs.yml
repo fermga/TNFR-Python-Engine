@@ -45,16 +45,22 @@ extra_javascript:
 
 nav:
   - Home: index.md
-  - Canonical reference: AGENTS.md
+  - Contributor and agent instructions: AGENTS.md
   - Architecture: ARCHITECTURE.md
-  - CLI and SDK: docs/CLI_AND_SDK.md
-  - Torch backend: docs/TORCH_BACKEND.md
-  - Technical documentation:
-      - Hub: docs/README.md
-      - Operator contracts: docs/API_CONTRACTS.md
-      - Structural fields: docs/STRUCTURAL_FIELDS_TETRAD.md
-      - Grammar verification: docs/grammar/PHYSICS_VERIFICATION.md
-      - Interface theory: docs/STRUCTURAL_INTERFACE_THEORY.md
+# BEGIN GENERATED DOCS NAVIGATION
+  - "Technical documentation":
+      - "Documentation map": docs/README.md
+      - "Usage guides":
+          - "CLI and SDK": docs/CLI_AND_SDK.md
+          - "Regional and relational SDK": docs/guides/REGIONAL_AND_RELATIONAL.md
+          - "Observational interfaces": docs/STRUCTURAL_INTERFACE_THEORY.md
+          - "Optional Torch backend": docs/TORCH_BACKEND.md
+      - "Contracts and diagnostics":
+          - "API contracts": docs/API_CONTRACTS.md
+          - "Relational dynamics": docs/contracts/RELATIONAL_DYNAMICS.md
+          - "Operator events": docs/contracts/OPERATOR_EVENTS.md
+          - "Structural fields": docs/STRUCTURAL_FIELDS_TETRAD.md
+# END GENERATED DOCS NAVIGATION
 # BEGIN GENERATED THEORY NAVIGATION
   - "Theory and research":
       - "Reading routes and implementation map": theory/README.md
@@ -129,8 +135,9 @@ nav:
   - Examples: examples/README.md
   - Benchmarks: benchmarks/README.md
   - Applications:
-      - Factorization lab: factorization-lab/README.md
-      - Primality: primality-test/README.md
+      - Scope and retained projects: applications/README.md
+      - Factorization lab: applications/factorization-lab/README.md
+      - Primality: applications/primality-test/README.md
   - Development:
       - Testing: TESTING.md
       - Contributing: CONTRIBUTING.md

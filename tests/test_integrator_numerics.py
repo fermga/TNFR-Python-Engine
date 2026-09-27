@@ -16,6 +16,7 @@ from tnfr.constants.aliases import (
     ALIAS_D2EPI,
     ALIAS_DEPI,
     ALIAS_DNFR,
+    ALIAS_EPI,
     ALIAS_THETA,
     ALIAS_VF,
 )
@@ -112,6 +113,64 @@ def _graph(*, extended=False):
         {EPI_PRIMARY: 0.4, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.0, "theta": 0.0}
     )
     return graph
+
+
+@pytest.mark.parametrize("flag,enabled", [(" false ", False), ("ON", True)])
+def test_extended_model_selection_uses_shared_boolean_configuration(flag, enabled):
+    graph = _graph(extended=flag)
+    graph.add_node(
+        1, **{EPI_PRIMARY: 0.4, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.0, "theta": 0.5}
+    )
+    graph.add_edge(0, 1)
+    reference = copy.deepcopy(graph)
+    reference.graph["use_extended_dynamics"] = enabled
+    for candidate in (graph, reference):
+        integrators.update_epi_via_nodal_equation(candidate, dt=0.01)
+    assert dict(graph.nodes(data=True)) == dict(reference.nodes(data=True))
+    assert ("dtheta_dt" in graph.nodes[0]) is enabled
+    assert (graph.nodes[0]["theta"] != 0.0) is enabled
+
+
+def test_unknown_extended_model_flag_rejects_before_state_or_cache_writes():
+    graph = _graph(extended="unknown-model")
+    before = copy.deepcopy(graph)
+    with pytest.raises(NetworkConfigError, match="use_extended_dynamics"):
+        integrators.update_epi_via_nodal_equation(graph, dt=0.1)
+    assert dict(graph.nodes(data=True)) == dict(before.nodes(data=True))
+    assert graph.graph == before.graph
+
+
+@pytest.mark.parametrize("route", ["vectorized", "scalar", "extended"])
+def test_integrator_commits_to_existing_aliases_without_shadow_state(
+    monkeypatch, route
+):
+    graph = _integration_route(monkeypatch, route)
+    graph.nodes[0].clear()
+    graph.nodes[0].update(
+        {
+            ALIAS_EPI[1]: 0.25,
+            ALIAS_VF[1]: 1.0,
+            ALIAS_DNFR[1]: 0.5,
+            ALIAS_DEPI[1]: 0.25,
+            ALIAS_D2EPI[1]: -3.0,
+        }
+    )
+    # With duplicate keys, the first present alias remains authoritative;
+    # an update must not try to synchronize unrelated later spellings.
+    graph.add_node(1, **dict(graph.nodes[0]))
+    graph.nodes[1].update(
+        {ALIAS_EPI[0]: 0.25, ALIAS_DEPI[0]: 0.25, ALIAS_D2EPI[0]: -3.0}
+    )
+    integrators.update_epi_via_nodal_equation(graph, dt=0.125)
+    for aliases, expected, stale in (
+        (ALIAS_EPI, 0.3125, 0.25),
+        (ALIAS_DEPI, 0.5, 0.25),
+        (ALIAS_D2EPI, 2.0, -3.0),
+    ):
+        assert aliases[0] not in graph.nodes[0]
+        assert graph.nodes[0][aliases[1]] == expected
+        assert graph.nodes[1][aliases[0]] == expected
+        assert graph.nodes[1][aliases[1]] == stale
 
 
 @pytest.mark.parametrize(
@@ -691,6 +750,8 @@ def _integration_route(monkeypatch, route):
         ("vectorized", 0.0, {"CLIP_SOFT_K": 0.0}),
         ("vectorized", 0.0, {"CLIP_SOFT_K": True}),
         ("vectorized", 0.0, {"CLIP_SOFT_K": math.inf}),
+        ("vectorized", 0.0, {"EPI_MIN": np.bool_(False)}),
+        ("scalar", 0.0, {"EPI_MIN": Fraction(1, 2**2000)}),
         ("scalar", 0.0, {"CLIP_MODE": "misspelled"}),
         ("extended", 0.0, {"CLIP_MODE": "misspelled"}),
         ("vectorized", 1.0, {"CLIP_MODE": "misspelled"}),

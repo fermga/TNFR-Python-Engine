@@ -684,8 +684,7 @@ class NodalStateReport:
 
     def _coherence_value(self) -> float:
         """Admit the supplied local read-out, without replacing it by a magnitude."""
-        value = finite_represented_real(self.coherence, "local coherence")[0]
-        return validate_structural_coherence(value, name="local coherence")
+        return validate_structural_coherence(self.coherence, name="local coherence")
 
     def _verdicts(self) -> dict[str, bool | None]:
         """Read mutable report metadata strictly at each reporting boundary."""
@@ -2376,6 +2375,41 @@ class Network:
             cycles=cycles,
         )
 
+    def relational_attachment(self, other, model, *, bridge):
+        """Compare two admitted networks with one supplied hypothetical bridge.
+
+        The shared observer requires disjoint components and the acute model.
+        ``bridge`` orders this network's port before ``other``'s port. Complete
+        component fields, the joined field and exact represented changes are
+        retained. Neither network is modified; the report does not execute an
+        attachment event or certify recovery or autonomous interaction.
+        Its ``assess_supply(work)`` method compares declared event work with
+        represented storage; a passing budget does not select an event.
+        """
+        if not isinstance(other, Network):
+            raise TypeError("other must be a Network")
+        from ..physics.relational_observations import observe_relational_attachment
+
+        return observe_relational_attachment(
+            self.G, other.G, model=model, bridge=bridge
+        )
+
+    def relational_relocation(self, model, *, remove_bridge, add_bridge):
+        """Observe a supplied bridge relocation without modifying this network.
+
+        Removing the ordered old bridge must separate two nontrivial connected
+        components; the missing new bridge must cross them in the same order.
+        The shared acute-model observer retains both fresh full fields, cuts,
+        unique port cards and exact represented storage/rate changes. Its
+        declared-work assessment neither executes nor selects the event and
+        does not certify subsequent pattern recovery.
+        """
+        from ..physics.relational_observations import observe_relational_relocation
+
+        return observe_relational_relocation(
+            self.G, model=model, remove_bridge=remove_bridge, add_bridge=add_bridge
+        )
+
     def relational_capture(self, model, *, cycles):
         """Check the sufficient exact reflected two-ring capture theorem.
 
@@ -2877,7 +2911,7 @@ class Network:
     ) -> FactorizationReport:
         """Run canonical TNFR factorization and attach network synergy diagnostics.
 
-        This creates an explicit bridge between factorization-lab dynamics and
+        This creates an explicit bridge between applications/factorization-lab dynamics and
         SDK network telemetry, enabling direct cross-module analysis.
         """
         return TNFR.factorize(
@@ -3275,7 +3309,7 @@ class TNFR:
                 context={"feature": "sdk.factorize", "available": False},
                 suggestion=(
                     "Ensure the canonical factorization module is present "
-                    "(tnfr.factorization + factorization-lab in this repository)."
+                    "(tnfr.factorization + applications/factorization-lab in this repository)."
                 ),
             )
 
@@ -3312,7 +3346,7 @@ class TNFR:
                 context={"feature": "sdk.primality", "available": False},
                 suggestion=(
                     "Ensure the canonical primality module is present "
-                    "(tnfr.primality + primality-test in this repository)."
+                    "(tnfr.primality + applications/primality-test in this repository)."
                 ),
             )
         raw = canonical_primality_analyze(n, tolerance=tolerance)

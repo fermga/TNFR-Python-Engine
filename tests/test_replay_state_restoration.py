@@ -19,7 +19,7 @@ import pytest
 @pytest.fixture
 def lab(monkeypatch):
     monkeypatch.syspath_prepend(
-        str(Path(__file__).resolve().parents[1] / "factorization-lab")
+        str(Path(__file__).resolve().parents[1] / "applications/factorization-lab")
     )
     return SimpleNamespace(
         seeds=importlib.import_module("seed_management"),

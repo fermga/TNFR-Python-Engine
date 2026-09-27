@@ -354,6 +354,14 @@ class Dissonance(Operator):
 
         validate_dissonance(G, node)
 
+    def _capture_metrics_state(self, G: TNFRGraph, node: Any) -> dict[str, Any]:
+        """Capture the pre-event topology observation for direct and staged metrics."""
+        from ..topology.asymmetry import compute_topological_asymmetry
+
+        state = super()._capture_metrics_state(G, node)
+        state["topological_asymmetry"] = compute_topological_asymmetry(G, node)
+        return state
+
     def _collect_metrics(
         self, G: TNFRGraph, node: Any, state_before: dict[str, Any]
     ) -> dict[str, Any]:
@@ -365,6 +373,7 @@ class Dissonance(Operator):
             node,
             state_before["dnfr"],
             state_before["theta"],
+            asymmetry_before=state_before.get("topological_asymmetry"),
         )
 
 

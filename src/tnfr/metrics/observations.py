@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import Any, Mapping
 
-from .._exact_time import nonnegative_represented_time
+from .._exact_time import finite_represented_real, nonnegative_represented_time
 
 __all__ = [
     "StructuralObservation",
@@ -77,9 +77,58 @@ class StructuralObservation:
 def observe_graph_tetrad(
     snapshot: Any, *, tolerance: float | None = None
 ) -> StructuralObservation:
-    """Detach a graph tetrad without replacing its type or opaque node labels."""
+    """Detach a graph tetrad, retaining summary versus per-node aggregation.
+
+    Availability describes the supplied payload, not authenticated graph evidence.
+    A partial snapshot is useful but incomplete; no available canonical channel
+    marks the whole envelope unavailable. Extended currents are not required for
+    canonical tetrad completeness.
+    """
+    summary = (
+        isinstance(snapshot, Mapping)
+        and {"phi_s", "phase_grad", "phase_curv", "xi_c_available"} <= snapshot.keys()
+    )
+    field_names = ("phi_s", "grad_phi", "k_phi")
+    if summary:
+        availability = {
+            name: isinstance(snapshot[key], Mapping)
+            and snapshot[key].get("available") is True
+            and all(
+                _available_scalar(snapshot[key].get(statistic))
+                for statistic in ("mean", "min", "max", "std")
+            )
+            for name, key in zip(field_names, ("phi_s", "phase_grad", "phase_curv"))
+        }
+        availability["xi_c"] = snapshot["xi_c_available"] is True and _available_scalar(
+            snapshot.get("xi_c"), positive=True
+        )
+        complete = all(availability.values())
+        aggregation = "per_node_field_statistics_plus_global_xi_c"
+    else:
+        local_fields = {
+            name: (
+                snapshot.get(name)
+                if isinstance(snapshot, Mapping)
+                else getattr(snapshot, name, None)
+            )
+            for name in field_names
+        }
+        availability = {
+            name: _available_field(values) for name, values in local_fields.items()
+        }
+        xi = (
+            snapshot.get("xi_c")
+            if isinstance(snapshot, Mapping)
+            else getattr(snapshot, "xi_c", None)
+        )
+        availability["xi_c"] = _available_scalar(xi, positive=True)
+        complete = all(availability.values()) and all(
+            set(values) == set(local_fields["phi_s"])
+            for values in local_fields.values()
+        )
+        aggregation = "per_node_fields_plus_global_xi_c"
     labels = []
-    for name in ("phi_s", "grad_phi", "k_phi", "j_phi", "j_dnfr"):
+    for name in (() if summary else ("phi_s", "grad_phi", "k_phi", "j_phi", "j_dnfr")):
         values = (
             snapshot.get(name)
             if isinstance(snapshot, Mapping)
@@ -90,13 +139,33 @@ def observe_graph_tetrad(
     return StructuralObservation(
         domain="graph",
         pressure_realization="graph_coupled_delta_nfr",
-        aggregation="per_node_fields_plus_global_xi_c",
+        aggregation=aggregation,
         derivative_kind="read_only_snapshot",
         equilibrium_tolerance=tolerance,
         scope="canonical graph tetrad telemetry",
         value=snapshot,
-        metadata={"unavailable": snapshot is None},
+        metadata={
+            "unavailable": not any(availability.values()),
+            "complete": complete,
+            "field_availability": availability,
+        },
         _identity_labels=tuple(labels),
+    )
+
+
+def _available_scalar(value: Any, *, positive: bool = False) -> bool:
+    try:
+        numeric = finite_represented_real(value, "tetrad value")[0]
+    except (TypeError, ValueError):
+        return False
+    return not positive or numeric > 0.0
+
+
+def _available_field(values: Any) -> bool:
+    return (
+        isinstance(values, Mapping)
+        and bool(values)
+        and all(_available_scalar(value) for value in values.values())
     )
 
 

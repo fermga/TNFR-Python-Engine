@@ -30,13 +30,23 @@ does not establish its derivation from the identity.
 | [Validated formation and controls](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-validated-transit) | A supplied winding-zero preparation reaches a maintained positive twist; zero-form and reversed-form controls reach consensus. This is conditional pattern formation, not substrate creation or physical identification. |
 | [Composition](nodal/RELATIONAL_PATTERN_COMPOSITION.md) and [memory](nodal/RELATIONAL_PATTERN_MEMORY.md) | Lost internal information changes future regional response, and its derived feedback improves one frozen finite prediction. These results do not supply an autonomous coarse replacement. |
 
-The finite memory-approximation gate is complete in its stated scope. The
-remaining compositional question is an explicit component-to-joined field
-contract: how a supplied connection changes degree normalization, internal
-form response and neighbor-resultant geometry under the same law. Retaining
-the full internal state permits this question without assuming that a region
-is already an autonomous effective node. Its exact preparation, controls and
-deliverables belong only to the current execution plan.
+The finite memory-approximation gate and the
+[one-bridge interface](nodal/RELATIONAL_PATTERN_COMPOSITION.md#one-bridge-interface-admission)
+are complete in their stated scopes. A supplied connection changes degree
+normalization and neighbor-resultant geometry even at equal endpoint state
+and zero event storage cost. Full internal state and sufficient port messages
+expose that effect without assuming an autonomous coarse node. The
+[support-event premise audit](nodal/RELATIONAL_PATTERN_COMPOSITION.md#support-event-premise-admission)
+establishes the remaining selection freedom even under additional zero-supply
+passivity. Pure additions then lie on an empty-interior endpoint-coincidence
+set; a continuous addition intensity on the open full-state domain is zero.
+Atomic edge exchange can instead have strict passive slack. An
+[identity-preserving relocation](nodal/RELATIONAL_PATTERN_COMPOSITION.md#identity-preserving-bridge-relocation)
+now shares an explicit recovery basin before and after one bridge change,
+on an open set of two-ring preparations. Reversing the change can retain
+recovery while failing passivity. The next bounded question is the remaining
+constitutive choice of candidate and event clock, before proposing any rule.
+The existing transmission result needs no repeat.
 
 A finite-lived structure can be informative. Eternal persistence, an
 unrestricted global basin, Hamiltonian form or creation from nothing is not
@@ -260,14 +270,35 @@ that finite approximation gate. It is not a continuous-trajectory error
 certificate or an empirical proof of asymptotic order; Decimal reevaluation
 checks arithmetic on represented coefficients, not exact irrational constants.
 
-The useful next distinction is between already-connected transmission and
-attachment of independently admitted components. Sufficient port information
-must account for changed degree, form-Laplacian sum and complex internal
-resultant, while retaining the full internal state and relative frames.
-Read-only hypothetical attachment, the actual supplied support event and later
-flow are separate questions. Endpoint differences alone need not encode the
-loading. The plan owns this admission task; no new force, automatic selection,
-memory-fitting campaign or universal basin is implied.
+The completed attachment contract separates already-connected transmission
+from joining independently admitted components. Its port message retains
+degree, form-Laplacian sum and complex internal resultant, alongside the full
+internal state and relative frames. The exact endpoint-only counterexample
+explains why those quantities matter. Read-only hypothetical attachment, an
+actual supplied support event and later flow remain separate questions.
+The shared report resolves the first and assesses a caller-declared supply
+against represented storage. The ideal event result separately proves passive
+addition's endpoint-coincidence restriction and nonselection. Continuous
+loss is a rate, not an available event reserve; retaining dissipated storage
+would require an additional reservoir state and law.
+
+A passive atomic exchange avoids that addition-only restriction without new
+nodal coordinates: subtract the removed edge's cost from the new edge's cost.
+The strict P4 witness supplies an open feasible set, but changing an internal
+cycle can destroy its identity without crossing a phase boundary. This is why
+the relocation admission preserves the two internal cycles and changes only
+their bridge. Both graphs have the same aligned-twist equilibrium and admit
+the same conservative energy barrier. A strict passive exchange within that
+barrier preserves recovery on an open set, not only at one exact preparation.
+Fixed edge count and the atomic event are declared premises. The reverse and
+neutral controls distinguish passivity, recovery and a supplied event.
+
+This removes a concrete identity/budget obstruction without deriving an
+occurrence law. The next admission concerns choice and clock on the full state,
+using symmetry and the existing event accounting. If those premises leave
+multiple laws, retain that freedom explicitly; do not add a ranking or event
+rate to the runtime under an emergent label. Repeated-switching stability is
+a separate question from the one-event recovery theorem.
 
 ## 4. Source and implementation reuse ledger
 
@@ -391,7 +422,7 @@ and acquisition identity must be available; a plausible waveform is not enough.
 | [Volts model boundary](research/PASSIVE_TRANSPORT_PROTOCOL.md#volts-model-boundary) | The earlier electrical model/map pair is historical evidence, not validation of the revised generative programme. |
 | [TCLab exploration](research/TCLAB_EXPLORATORY_PROTOCOL.md) | A frozen latent heater/sensor realization improves joint quadratic error over a sensor-only model, with residual bias and incomplete physical admission; it does not select unique nodal physics. |
 | [Phase/amplitude protocol](research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md) | The directed model needs admitted acquisition and coupling information. Deferred candidate data are not an evaluated response. |
-| [EEG note](../docs/EMPIRICAL_CONFRONTATION_EEG.md) | Externally reported evidence retains its provenance; it is not automatically reproduced here or a canonical-state identification. |
+| [EEG note](research/archive/REPORTED_INTERFACE_OBSERVATIONS.md) | Externally reported evidence retains its provenance; it is not automatically reproduced here or a canonical-state identification. |
 
 ### A physical atlas as a selection method
 

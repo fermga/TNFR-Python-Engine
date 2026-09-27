@@ -52,8 +52,31 @@ def _project(value: Any) -> Any:
     )
 
 
+def _validate_support_change_labels(report, states, bridges, cuts, partitions=()):
+    for state in states:
+        for edge in state.edges:
+            for node in edge:
+                _validate_label(node)
+    for labels in (*bridges, *partitions):
+        for node in labels:
+            _validate_label(node)
+    for port in report.ports:
+        _validate_label(port.before.node)
+        _validate_label(port.after.node)
+    for snapshot in (report.transport_reset.before, report.transport_reset.after):
+        for node in snapshot.nodes:
+            _validate_label(node)
+    for cut in cuts:
+        for labels in (cut.nodes, cut.region, cut.environment):
+            for node in labels:
+                _validate_label(node)
+        for a, b, _ in cut.cut_edges:
+            _validate_label(a)
+            _validate_label(b)
+
+
 def relational_report_to_dict(report: Any) -> dict[str, Any]:
-    """Project a relational field, step, pattern, capture or continuous-transit report.
+    """Project a relational field, step, observation or scoped certificate.
 
     Use ``export_to_json(relational_report_to_dict(report), path)`` to save the
     result atomically. Fractions become ``{numerator, denominator}`` records;
@@ -64,6 +87,12 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
     Capture and continuous-transit certificates retain their exact rational
     bounds and independent theorem admission; projection never combines their
     verdicts or authenticates a publicly constructed report.
+    Attachment observations retain both component fields, the hypothetical
+    joined field and supplied ports without representing a committed event.
+    Relocation observations retain the old/new fields and the unchanged
+    component partition with the same support-change accounting semantics.
+    Supply assessments compare declared work with represented storage; they
+    neither authenticate that work nor select or certify an actual event.
     """
     from ..dynamics.relational import RelationalExchangeField, RelationalExchangeStep
     from ..physics.relational_capture import (
@@ -71,7 +100,12 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
         RelationalLocalCaptureCertificate,
         RelationalSectorCaptureCertificate,
     )
-    from ..physics.relational_observations import RelationalPatternObservation
+    from ..physics.relational_observations import (
+        RelationalAttachmentObservation,
+        RelationalAttachmentSupplyAssessment,
+        RelationalPatternObservation,
+        RelationalRelocationObservation,
+    )
     from ..physics.relational_transit import RelationalTransitCertificate
 
     if not isinstance(
@@ -80,6 +114,9 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
             RelationalExchangeField,
             RelationalExchangeStep,
             RelationalPatternObservation,
+            RelationalAttachmentObservation,
+            RelationalAttachmentSupplyAssessment,
+            RelationalRelocationObservation,
             RelationalCaptureCertificate,
             RelationalLocalCaptureCertificate,
             RelationalSectorCaptureCertificate,
@@ -87,12 +124,29 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
         ),
     ):
         raise TypeError(
-            "expected a relational field, step, pattern, capture or continuous-transit report"
+            "expected a relational field, step, pattern, attachment, relocation, supply assessment, "
+            "capture or continuous-transit report"
         )
     observation = (
         report.initial if isinstance(report, RelationalTransitCertificate) else report
     )
-    if isinstance(observation, RelationalExchangeStep):
+    if isinstance(observation, RelationalAttachmentSupplyAssessment):
+        states = ()
+    elif isinstance(observation, RelationalAttachmentObservation):
+        states = (*observation.components, observation.joined)
+        _validate_support_change_labels(
+            observation, states, (observation.bridge,), (observation.cut,)
+        )
+    elif isinstance(observation, RelationalRelocationObservation):
+        states = (observation.before, observation.after)
+        _validate_support_change_labels(
+            observation,
+            states,
+            (observation.remove_bridge, observation.add_bridge),
+            (observation.cut_before, observation.cut_after),
+            observation.components,
+        )
+    elif isinstance(observation, RelationalExchangeStep):
         states = (observation.before, observation.after)
     elif isinstance(
         observation,
@@ -114,8 +168,16 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
     for state in states:
         for node in state.nodes:
             _validate_label(node)
+    projected = _project(report)
+    if isinstance(
+        report, (RelationalAttachmentObservation, RelationalRelocationObservation)
+    ):
+        projected["continuous_loss_change"] = _project(report.continuous_loss_change)
+        projected["represented_zero_supply_passive"] = (
+            report.represented_zero_supply_passive
+        )
     return {
         "schema": "tnfr.relational-report.v1",
         "report_type": type(report).__name__,
-        "report": _project(report),
+        "report": projected,
     }

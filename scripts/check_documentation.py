@@ -11,6 +11,7 @@ import re
 import sys
 from collections import Counter
 from datetime import date
+from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
@@ -50,10 +51,12 @@ def check_versions_and_retired_claims() -> None:
         "README.md",
         "ARCHITECTURE.md",
         "docs/README.md",
-        "docs/API_CONTRACTS.md",
-        "docs/grammar/PHYSICS_VERIFICATION.md",
         ".github/WORKFLOWS.md",
         "theory/README.md",
+        *(
+            path.relative_to(REPO_ROOT.resolve()).as_posix()
+            for path in sorted(_catalog_paths("docs"))
+        ),
     )
     retired = (
         "1,633 tests",
@@ -67,6 +70,26 @@ def check_versions_and_retired_claims() -> None:
         text = (REPO_ROOT / relative).read_text(encoding="utf-8")
         for phrase in retired:
             require(phrase not in text, f"retired claim in {relative}: {phrase}")
+
+
+class _PublicationLinks(HTMLParser):
+    """Read real anchor targets; literal URLs and escaped HTML are not links."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.hrefs: list[str] = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag != "a":
+            return
+        targets = [value for name, value in attrs if name == "href"]
+        if not targets:
+            return
+        require(
+            len(targets) == 1 and isinstance(targets[0], str) and bool(targets[0]),
+            "Zenodo description has an invalid or ambiguous anchor href",
+        )
+        self.hrefs.append(targets[0])
 
 
 def check_publication_metadata() -> None:
@@ -103,6 +126,53 @@ def check_publication_metadata() -> None:
     require(
         f"releases/tag/v{version}" in citation, "citation lacks the exact release URL"
     )
+    repository = "https://github.com/fermga/TNFR-Python-Engine"
+    pypi_project = "https://pypi.org/project/tnfr/"
+    release_url = f"{repository}/releases/tag/v{version}"
+    source_url = f"{repository}/tree/v{version}"
+    pypi_url = f"{pypi_project}{version}/"
+    description = archive.get("description")
+    require(isinstance(description, str), "Zenodo description must contain HTML links")
+    links = _PublicationLinks()
+    links.feed(description)
+    links.close()
+    for label, expected in (
+        ("release", release_url),
+        ("versioned source", source_url),
+        ("PyPI", pypi_url),
+    ):
+        require(
+            expected in links.hrefs,
+            f"Zenodo description lacks a valid {label} href for project version",
+        )
+    for target in links.hrefs:
+        if target.startswith(f"{repository}/releases/tag/"):
+            valid = target == release_url
+        elif target.startswith(f"{repository}/tree/"):
+            valid = target == source_url or target.startswith(source_url + "/")
+        elif target.startswith(f"{repository}/blob/v"):
+            valid = target.startswith(f"{repository}/blob/v{version}/")
+        elif target.startswith(pypi_project):
+            valid = target == pypi_url
+        else:
+            continue
+        require(valid, "Zenodo description links to a different publication version")
+    identifiers = archive.get("related_identifiers", [])
+    require(
+        isinstance(identifiers, list)
+        and all(isinstance(item, dict) for item in identifiers),
+        "Zenodo related identifiers must be a list of records",
+    )
+    pypi_identifiers = [
+        item["identifier"]
+        for item in identifiers
+        if isinstance(item.get("identifier"), str)
+        and item["identifier"].startswith(pypi_project)
+    ]
+    require(
+        pypi_identifiers == [pypi_url],
+        "Zenodo related PyPI identifier differs from project version",
+    )
 
 
 CONTRACT_START = "<!-- BEGIN GENERATED OPERATOR CONTRACTS -->"
@@ -111,26 +181,31 @@ THEORY_CATALOG_START = "<!-- BEGIN THEORY CATALOG -->"
 THEORY_CATALOG_END = "<!-- END THEORY CATALOG -->"
 THEORY_NAVIGATION_START = "# BEGIN GENERATED THEORY NAVIGATION"
 THEORY_NAVIGATION_END = "# END GENERATED THEORY NAVIGATION"
+DOCS_CATALOG_START = "<!-- BEGIN DOCS CATALOG -->"
+DOCS_CATALOG_END = "<!-- END DOCS CATALOG -->"
+DOCS_NAVIGATION_START = "# BEGIN GENERATED DOCS NAVIGATION"
+DOCS_NAVIGATION_END = "# END GENERATED DOCS NAVIGATION"
 
 
-def _theory_catalog_entries() -> list[tuple[str, str, Path]]:
+def _catalog_entries(
+    directory: str, catalog_start: str, catalog_end: str
+) -> list[tuple[str, str, Path]]:
     """Read H2 groups and the first inline link of each primary table row."""
-    index = REPO_ROOT / "theory" / "README.md"
+    index = REPO_ROOT / directory / "README.md"
     document = index.read_text(encoding="utf-8")
     require(
-        document.count(THEORY_CATALOG_START) == 1
-        and document.count(THEORY_CATALOG_END) == 1,
-        "theory index must have exactly one primary catalog region",
+        document.count(catalog_start) == 1 and document.count(catalog_end) == 1,
+        f"{directory} index must have exactly one primary catalog region",
     )
-    start = document.index(THEORY_CATALOG_START) + len(THEORY_CATALOG_START)
-    end = document.index(THEORY_CATALOG_END)
-    require(start < end, "theory catalog markers are reversed")
+    start = document.index(catalog_start) + len(catalog_start)
+    end = document.index(catalog_end)
+    require(start < end, f"{directory} catalog markers are reversed")
 
     # Load the existing syntax reader independently of cwd and import mode.
     # Tests may redirect REPO_ROOT without copying the actual script modules.
     reference_path = Path(__file__).with_name("verify_internal_references.py")
     spec = importlib.util.spec_from_file_location(
-        "theory_catalog_references", reference_path
+        "documentation_catalog_references", reference_path
     )
     require(
         spec is not None and spec.loader is not None, "reference checker is unavailable"
@@ -145,11 +220,8 @@ def _theory_catalog_entries() -> list[tuple[str, str, Path]]:
         if heading:
             group = heading.group(1)
             continue
-        links = (
-            references.LINK_PATTERN.findall(line)
-            if line.lstrip().startswith("|")
-            else []
-        )
+        first_cell = re.match(r"^\s*\|((?:\\.|[^|])*)\|", line)
+        links = references.LINK_PATTERN.findall(first_cell[1]) if first_cell else []
         if not links:
             continue
         label, raw = links[0]
@@ -160,30 +232,28 @@ def _theory_catalog_entries() -> list[tuple[str, str, Path]]:
         if not relative.lower().endswith(".md"):
             continue
         require(
-            group is not None, "primary theory documents require an H2 catalog group"
+            group is not None,
+            f"primary {directory} documents require an H2 catalog group",
         )
         entries.append((group, label, (index.parent / relative).resolve()))
     return entries
 
 
-def check_theory_catalog() -> None:
-    """Require one primary table entry per maintained mathematical owner.
-
-    The index owns this inventory: no independently maintained filename list
-    or fixed document count is needed. Full link and fragment validation stays
-    with verify_internal_references.py; this gate checks catalog coverage.
-    """
-    index = REPO_ROOT / "theory" / "README.md"
-    counts = Counter(path for _, _, path in _theory_catalog_entries())
-
-    theory = index.parent.resolve()
-    archive = theory / "research" / "archive"
-    expected = {
+def _catalog_paths(directory: str) -> set[Path]:
+    index = REPO_ROOT / directory / "README.md"
+    folder = index.parent.resolve()
+    excluded = folder / ("research/archive" if directory == "theory" else "assets")
+    return {
         path.resolve()
-        for path in theory.rglob("*.md")
+        for path in folder.rglob("*.md")
         if path.resolve() != index.resolve()
-        and not path.resolve().is_relative_to(archive)
+        and not path.resolve().is_relative_to(excluded)
     }
+
+
+def _check_catalog(directory: str, entries: list[tuple[str, str, Path]]) -> None:
+    counts = Counter(path for _, _, path in entries)
+    expected = _catalog_paths(directory)
 
     def names(paths) -> str:
         return ", ".join(
@@ -198,30 +268,55 @@ def check_theory_catalog() -> None:
         )
 
     unknown = set(counts) - expected
+    unknown_kind = (
+        "unknown or archived" if directory == "theory" else "unknown or excluded"
+    )
     require(
-        not unknown, "unknown or archived primary theory documents: " + names(unknown)
+        not unknown, f"{unknown_kind} primary {directory} documents: " + names(unknown)
     )
     missing = expected - set(counts)
-    require(not missing, "missing primary theory documents: " + names(missing))
+    require(not missing, f"missing primary {directory} documents: " + names(missing))
     duplicates = {path for path, count in counts.items() if count != 1}
-    require(not duplicates, "duplicate primary theory documents: " + names(duplicates))
+    require(
+        not duplicates, f"duplicate primary {directory} documents: " + names(duplicates)
+    )
 
 
-def render_theory_navigation() -> str:
-    """Derive the MkDocs theory tree from the sole maintained owner catalog."""
-    check_theory_catalog()
+def _theory_catalog_entries() -> list[tuple[str, str, Path]]:
+    return _catalog_entries("theory", THEORY_CATALOG_START, THEORY_CATALOG_END)
+
+
+def _docs_catalog_entries() -> list[tuple[str, str, Path]]:
+    return _catalog_entries("docs", DOCS_CATALOG_START, DOCS_CATALOG_END)
+
+
+def check_theory_catalog() -> None:
+    """Require one primary row per maintained theory owner, excluding archives."""
+    _check_catalog("theory", _theory_catalog_entries())
+
+
+def check_docs_catalog() -> None:
+    """Require one primary row per maintained docs owner, excluding assets.
+
+    Coverage derives from the recursive source tree. Link and fragment validation
+    remains with verify_internal_references.py; no second owner manifest is added.
+    """
+    _check_catalog("docs", _docs_catalog_entries())
+
+
+def _render_catalog_navigation(
+    directory: str, title: str, index_title: str, entries: list[tuple[str, str, Path]]
+) -> str:
 
     def quote(value: str) -> str:
         return json.dumps(value, ensure_ascii=False)
 
     rows = [
-        "  - " + quote("Theory and research") + ":",
-        "      - "
-        + quote("Reading routes and implementation map")
-        + ": theory/README.md",
+        "  - " + quote(title) + ":",
+        "      - " + quote(index_title) + f": {directory}/README.md",
     ]
     previous_group = None
-    for group, label, path in _theory_catalog_entries():
+    for group, label, path in entries:
         if group != previous_group:
             rows.append("      - " + quote(group) + ":")
             previous_group = group
@@ -234,43 +329,110 @@ def render_theory_navigation() -> str:
     return "\n".join(rows)
 
 
-def theory_navigation_region(document: str) -> tuple[int, int]:
+def render_theory_navigation() -> str:
+    """Derive the MkDocs theory tree from its sole maintained owner catalog."""
+    check_theory_catalog()
+    return _render_catalog_navigation(
+        "theory",
+        "Theory and research",
+        "Reading routes and implementation map",
+        _theory_catalog_entries(),
+    )
+
+
+def render_docs_navigation() -> str:
+    """Derive the technical documentation tree from docs/README.md."""
+    check_docs_catalog()
+    return _render_catalog_navigation(
+        "docs", "Technical documentation", "Documentation map", _docs_catalog_entries()
+    )
+
+
+def _navigation_region(
+    document: str, directory: str, navigation_start: str, navigation_end: str
+) -> tuple[int, int]:
     starts = list(
-        re.finditer(
-            "^" + re.escape(THEORY_NAVIGATION_START) + "$", document, re.MULTILINE
-        )
+        re.finditer("^" + re.escape(navigation_start) + "$", document, re.MULTILINE)
     )
     ends = list(
-        re.finditer(
-            "^" + re.escape(THEORY_NAVIGATION_END) + "$", document, re.MULTILINE
-        )
+        re.finditer("^" + re.escape(navigation_end) + "$", document, re.MULTILINE)
     )
     require(
         len(starts) == 1 and len(ends) == 1,
-        "MkDocs must have exactly one generated theory navigation region at column zero",
+        f"MkDocs must have exactly one generated {directory} navigation region at column zero",
     )
     start, end = starts[0].end(), ends[0].start()
-    require(start < end, "theory navigation markers are reversed")
+    require(start < end, f"{directory} navigation markers are reversed")
     return start, end
 
 
-def update_theory_navigation() -> None:
+def theory_navigation_region(document: str) -> tuple[int, int]:
+    return _navigation_region(
+        document, "theory", THEORY_NAVIGATION_START, THEORY_NAVIGATION_END
+    )
+
+
+def docs_navigation_region(document: str) -> tuple[int, int]:
+    return _navigation_region(
+        document, "docs", DOCS_NAVIGATION_START, DOCS_NAVIGATION_END
+    )
+
+
+def _update_navigation(region_reader, renderer) -> None:
     path = REPO_ROOT / "mkdocs.yml"
     document = path.read_text(encoding="utf-8")
-    start, end = theory_navigation_region(document)
-    rendered = render_theory_navigation()
+    start, end = region_reader(document)
+    rendered = renderer()
     path.write_text(
         document[:start] + "\n" + rendered + "\n" + document[end:], encoding="utf-8"
     )
 
 
-def check_theory_navigation() -> None:
+def _check_navigation(directory: str, region_reader, renderer) -> None:
     document = (REPO_ROOT / "mkdocs.yml").read_text(encoding="utf-8")
-    start, end = theory_navigation_region(document)
+    start, end = region_reader(document)
     require(
-        document[start:end].strip("\n") == render_theory_navigation(),
-        "theory navigation drifted; run scripts/check_documentation.py --write-generated",
+        document[start:end].strip("\n") == renderer(),
+        f"{directory} navigation drifted; run scripts/check_documentation.py --write-generated",
     )
+
+
+def update_theory_navigation() -> None:
+    _update_navigation(theory_navigation_region, render_theory_navigation)
+
+
+def check_theory_navigation() -> None:
+    _check_navigation("theory", theory_navigation_region, render_theory_navigation)
+
+
+def update_docs_navigation() -> None:
+    _update_navigation(docs_navigation_region, render_docs_navigation)
+
+
+def check_docs_navigation() -> None:
+    _check_navigation("docs", docs_navigation_region, render_docs_navigation)
+
+
+def _glossary_checker():
+    """Load the prose-only checker independently of cwd and a redirected root."""
+    path = Path(__file__).with_name("check_glossary.py")
+    spec = importlib.util.spec_from_file_location("documentation_glossary", path)
+    require(
+        spec is not None and spec.loader is not None, "glossary checker is unavailable"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def check_glossary() -> None:
+    """Validate the sole concept register and its generated index."""
+    _glossary_checker().check_glossary(REPO_ROOT)
+
+
+def update_glossary_index() -> None:
+    """Regenerate only the glossary index from validated concept declarations."""
+    _glossary_checker().update_concept_index(REPO_ROOT)
 
 
 def render_contract_table() -> str:
@@ -371,6 +533,7 @@ def check_build_inputs() -> None:
         "mkdocs.yml",
         "scripts/prepare_docs.py",
         "scripts/verify_internal_references.py",
+        "scripts/check_glossary.py",
     ):
         require(
             (REPO_ROOT / relative).is_file(), f"missing documentation input: {relative}"
@@ -382,12 +545,14 @@ def main() -> int:
     parser.add_argument(
         "--write-generated",
         action="store_true",
-        help="Refresh the registry-owned contract table and catalog-owned theory navigation",
+        help="Refresh operator contracts, theory/docs navigation and the concept-card index",
     )
     args = parser.parse_args()
     if args.write_generated:
+        update_glossary_index()
         update_contract_view()
         update_theory_navigation()
+        update_docs_navigation()
     checks = (
         check_agent_mirror,
         check_versions_and_retired_claims,
@@ -395,6 +560,9 @@ def main() -> int:
         check_contract_view,
         check_theory_catalog,
         check_theory_navigation,
+        check_docs_catalog,
+        check_docs_navigation,
+        check_glossary,
         check_documented_examples,
         check_build_inputs,
     )

@@ -13,8 +13,10 @@ the TNFR thesis.
 from __future__ import annotations
 
 import importlib.util
+import json
 import sys
 import zipfile
+from dataclasses import fields, replace
 from io import BytesIO
 from pathlib import Path
 
@@ -23,6 +25,7 @@ import pytest
 
 pytest.importorskip("networkx")
 
+import tnfr.validation.multichannel_interface as multichannel
 from tnfr.validation.multichannel_interface import (
     MultichannelConfig,
     MultichannelWindowSeries,
@@ -385,3 +388,226 @@ def test_run_multichannel_benchmark_synthetic_ok():
     assert "auc" in report
     assert "interpretation" in report
     assert report["best_baseline"]["auc"] > 0.8
+
+
+@pytest.mark.parametrize(
+    "bad_row",
+    [
+        "missing,row",
+        ",".join(["1"] * 16),
+        ",".join(["nan"] + ["1"] * 13 + ["0"]),
+        ",".join(["inf"] + ["1"] * 13 + ["0"]),
+        ",".join(["?"] + ["1"] * 13 + ["0"]),
+    ]
+    + [
+        ",".join(["1"] * 14 + [label])
+        for label in ("0.7", "2", "nan", "inf", "1e-400", "1.00000000000000000001")
+    ],
+)
+def test_arff_rejects_corrupt_row_without_compacting_clock(bad_row, tmp_path):
+    row = ",".join(["1"] * 14 + ["0"])
+    text = "@DATA\n" + "\n".join([row] * 512 + [bad_row] + [row] * 512)
+    # The old parser silently skipped malformed rows or truncated fractional labels.
+    with pytest.raises(ValueError, match="EEG row 514"):
+        BENCH.parse_arff(text)
+    path = tmp_path / "corrupt.arff"
+    path.write_text(text, encoding="utf-8")
+    assert BENCH.load_eeg_eye_state(path) is None
+
+
+def test_eeg_cached_byte_bound_is_enforced_without_network(monkeypatch, tmp_path):
+    cache = tmp_path / "eeg.raw"
+    payload = b"x" * 2048
+    cache.write_bytes(payload)
+
+    def no_download(*args, **kwargs):
+        pytest.fail("a rejected cache must not trigger a replacement download")
+
+    monkeypatch.setattr(BENCH, "urlopen", no_download)
+    assert BENCH.download_eeg_eye_state(cache_path=cache, max_bytes=128) is None
+    assert cache.read_bytes() == payload
+    assert BENCH.download_eeg_eye_state(cache_path=cache, max_bytes=2048) == cache
+    assert BENCH.load_eeg_eye_state(cache, max_bytes=128) is None
+
+
+@pytest.mark.parametrize("bound", [True, 0, -1, 2048.5, "2048"])
+def test_eeg_byte_bound_rejects_invalid_configuration(bound, tmp_path):
+    with pytest.raises(ValueError, match="positive integer"):
+        BENCH.download_eeg_eye_state(
+            cache_path=tmp_path / "absent.raw", max_bytes=bound
+        )
+    assert not list(tmp_path.iterdir())
+
+
+def test_eeg_download_rejects_oversized_payload(monkeypatch, tmp_path):
+    monkeypatch.setattr(BENCH, "urlopen", lambda *args, **kwargs: BytesIO(b"x" * 129))
+    cache = tmp_path / "eeg.raw"
+    assert BENCH.download_eeg_eye_state(cache_path=cache, max_bytes=128) is None
+    assert not cache.exists()
+
+
+def test_eeg_zip_bounds_expansion_and_rejects_ambiguous_members():
+    compressed = BytesIO()
+    with zipfile.ZipFile(compressed, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("eeg.arff", "x" * 4096)
+    assert len(compressed.getvalue()) < 512
+    assert BENCH._extract_arff_text(compressed.getvalue(), max_bytes=512) is None
+    ambiguous = BytesIO()
+    with zipfile.ZipFile(ambiguous, "w") as archive:
+        archive.writestr("first.arff", "@DATA")
+        archive.writestr("second.arff", "@DATA")
+    assert BENCH._extract_arff_text(ambiguous.getvalue()) is None
+    assert BENCH._extract_arff_text(b"@DATA\n1,\xff,0") is None
+
+
+@pytest.mark.parametrize(
+    "labels",
+    [np.zeros(63), np.zeros(65), np.zeros((1, 64)), ["0"] * 64]
+    + [[bad] + [0] * 63 for bad in (float("nan"), float("inf"), 0.7, 2, 1j)],
+)
+def test_discrimination_rejects_unaligned_or_nonbinary_labels_before_fields(
+    monkeypatch, labels
+):
+    def no_fields(*args, **kwargs):
+        pytest.fail("invalid sample labels must be rejected before window analysis")
+
+    monkeypatch.setattr(multichannel, "multichannel_window_series", no_fields)
+    with pytest.raises(ValueError, match="labels"):
+        evaluate_synchrony_discrimination(
+            np.zeros((3, 64)), labels, config=MultichannelConfig(window=32, step=32)
+        )
+
+
+@pytest.fixture(scope="module")
+def two_phase_classes():
+    # Two exactly periodic signal blocks: common phase, then three equally spaced
+    # phases. This is an independent order-parameter control, not a model fit.
+    t = 2 * np.pi * np.arange(128) / 16
+    common = np.broadcast_to(np.sin(t), (3, t.size))
+    spread = np.sin(t[None, :] + np.array([0, 2 * np.pi / 3, -2 * np.pi / 3])[:, None])
+    signals = np.concatenate([common, spread], axis=1)
+    labels = np.repeat([0, 1], 128)
+    config = MultichannelConfig(window=64, step=64, k_neighbours=2)
+    series = multichannel_window_series(signals, config=config)
+    return signals, labels, config, series
+
+
+@pytest.mark.parametrize("reverse_labels", [False, True])
+def test_reused_series_keeps_public_scores_and_both_class_orientations(
+    two_phase_classes, reverse_labels, monkeypatch
+):
+    signals, labels, config, series = two_phase_classes
+    labels = 1 - labels if reverse_labels else labels
+    calls = []
+
+    def retained_series(data, *, config):
+        calls.append(data)
+        return series
+
+    monkeypatch.setattr(multichannel, "multichannel_window_series", retained_series)
+    result = evaluate_synchrony_discrimination(signals, labels, config=config)
+    assert len(calls) == 1
+    reused = multichannel._evaluate_synchrony_series(
+        series, labels, config=config, n_channels=3, n_samples=256
+    )
+    assert result == reused
+    assert len(calls) == 1
+    assert result.auc["order_parameter"] == 1.0
+    assert result.n_windows == 4 and result.n_positive_windows == 2
+    assert result.metadata["n_channels"] == 3
+    assert result.metadata["auc_available"] is True
+    assert result.metadata["auc_unavailable_reason"] is None
+
+
+@pytest.mark.parametrize(
+    "case, reason",
+    [
+        (0, "missing_positive_class"),
+        (1, "missing_negative_class"),
+        (None, "no_windows"),
+    ],
+)
+def test_unavailable_auc_is_explicit_in_shared_and_benchmark_reports(
+    two_phase_classes, monkeypatch, case, reason
+):
+    signals, labels, config, series = two_phase_classes
+    if case is None:
+        series = replace(
+            series,
+            **{item.name: getattr(series, item.name)[:0] for item in fields(series)},
+        )
+    else:
+        labels = np.full(signals.shape[1], case)
+
+    monkeypatch.setattr(
+        multichannel, "multichannel_window_series", lambda *args, **kwargs: series
+    )
+    result = evaluate_synchrony_discrimination(signals, labels, config=config)
+    assert result.metadata["auc_available"] is False
+    assert result.metadata["auc_unavailable_reason"] == reason
+    assert set(result.auc.values()) == {0.5}
+    assert "unavailable" in result.interpretation
+    assert "compatibility placeholders" in result.summary()
+
+    monkeypatch.setattr(BENCH, "multichannel_window_series", lambda *a, **k: series)
+    monkeypatch.setattr(
+        BENCH, "synthetic_kuramoto_regime_switch", lambda **kwargs: (signals, labels)
+    )
+    report = BENCH.run_multichannel_benchmark(source="synthetic", config=config)
+    assert report["auc_available"] is False
+    assert report["auc_unavailable_reason"] == reason
+    assert report["interpretation"] == result.interpretation
+    assert (
+        json.loads(BENCH.json_dumps(report, allow_nan=False))["auc_available"] is False
+    )
+
+
+def test_benchmark_computes_series_once(two_phase_classes, monkeypatch):
+    signals, labels, config, series = two_phase_classes
+    calls = []
+
+    def retained_series(data, *, config):
+        calls.append(data)
+        return series
+
+    # Count both the benchmark alias and any accidental recomputation by the
+    # public scorer. The series itself comes from the real signal pipeline.
+    monkeypatch.setattr(BENCH, "multichannel_window_series", retained_series)
+    monkeypatch.setattr(multichannel, "multichannel_window_series", retained_series)
+    monkeypatch.setattr(
+        BENCH, "synthetic_kuramoto_regime_switch", lambda **kwargs: (signals, labels)
+    )
+    report = BENCH.run_multichannel_benchmark(source="synthetic", config=config)
+    assert len(calls) == 1
+    assert report["n_windows"] == 4
+    assert report["auc"]["order_parameter"] == 1.0
+    assert report["block_means"]["order_parameter"]["label0"] > 0.99
+    assert report["block_means"]["order_parameter"]["label1"] < 1e-14
+
+
+def test_block_means_missing_class_is_json_null():
+    means = BENCH._block_means(np.array([1.0, 2.0, np.nan]), np.zeros(3))
+    assert means == {"label0": 1.5, "label1": None}
+    assert json.loads(BENCH.json_dumps(means, allow_nan=False)) == means
+
+
+def test_cli_strict_json_rejects_nonfinite_before_replacing_report(
+    monkeypatch, tmp_path
+):
+    report_path = tmp_path / "multichannel_interface_synthetic.json"
+    report_path.write_text('{"previous": true}\n', encoding="utf-8")
+    monkeypatch.setattr(
+        BENCH,
+        "run_multichannel_benchmark",
+        lambda **kwargs: {"unexpected": float("nan")},
+    )
+    with pytest.raises(ValueError, match="JSON"):
+        BENCH.main(["--source", "synthetic", "--output", str(tmp_path)])
+    assert json.loads(report_path.read_text()) == {"previous": True}
+    monkeypatch.setattr(
+        BENCH,
+        "run_multichannel_benchmark",
+        lambda **kwargs: {"block_means": {"label0": 1.0, "label1": None}},
+    )
+    assert BENCH.main(["--source", "synthetic", "--output", str(tmp_path)]) == 0
+    assert json.loads(report_path.read_text())["block_means"]["label1"] is None

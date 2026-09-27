@@ -7,6 +7,37 @@ import pytest
 from tnfr.utils import io
 
 
+def test_structured_json_uses_shared_decoder_and_preserves_admitted_values(tmp_path):
+    payload = "[0e-999999999999999999999, -0.0, 5e-324, " + str(10**400) + "]"
+    path = tmp_path / "values.json"
+    path.write_text(payload, encoding="utf-8")
+    expected = [0.0, -0.0, float.fromhex("0x0.0000000000001p-1022"), 10**400]
+    assert io.read_structured_file(path) == expected
+    assert io.json_loads(payload.encode("utf-8")) == expected
+
+
+def test_json_syntax_error_retains_location_and_structured_file_context(tmp_path):
+    path = tmp_path / "invalid.json"
+    path.write_text('{"value": }', encoding="utf-8")
+    with pytest.raises(io.StructuredFileError) as failure:
+        io.read_structured_file(path)
+    cause = failure.value.__cause__
+    assert isinstance(cause, json.JSONDecodeError)
+    assert cause.pos == 10
+    assert failure.value.path == path.resolve()
+
+
+def test_structured_reader_does_not_hide_unrelated_parser_errors(tmp_path, monkeypatch):
+    def broken_parser(text):
+        raise ValueError("custom parser defect")
+
+    path = tmp_path / "custom.json"
+    path.write_text("{}", encoding="utf-8")
+    monkeypatch.setitem(io.PARSERS, ".json", broken_parser)
+    with pytest.raises(ValueError, match="custom parser defect"):
+        io.read_structured_file(path)
+
+
 class OptionalEncoder:
     """Minimal stand-in for orjson's documented differing defaults."""
 

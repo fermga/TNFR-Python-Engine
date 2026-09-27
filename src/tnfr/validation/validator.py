@@ -1,17 +1,14 @@
-"""Unified TNFR Validation Pipeline.
+"""Orchestrate configured input, graph and operator validation checks.
 
-This module provides the TNFRValidator class which serves as the canonical
-entry point for all TNFR validation operations. It integrates:
-- Invariant validation (10 legacy checks covering the six canonical invariants)
-- Input validation (parameters, types, bounds)
-- Graph validation (structure, coherence)
-- Runtime validation (canonical clamps, contracts)
-- Security validation (injection prevention, type safety)
-- Operator precondition validation
+The pipeline combines shared input adapters, selected graph/runtime checks,
+operator preconditions and ten legacy invariant diagnostics. A successful
+report covers the requested checks, not every nodal model obligation or a
+certificate of trajectory validity, physical correctness or input security.
 """
 
 from __future__ import annotations
 
+from copy import deepcopy
 from html import escape
 from typing import Any, Mapping
 
@@ -39,22 +36,53 @@ __all__ = [
 ]
 
 
+def _require_boolean_flag(value: Any, name: str) -> None:
+    """Reject truthy substitutes before selecting checks or runtime mutation."""
+    if not isinstance(value, bool):
+        raise TNFRValueError(f"{name} must be a boolean")
+
+
+def _operator_precondition_validator(graph: TNFRGraph, node: NodeId, operator: str):
+    """Resolve existing preconditions after admitting their invocation context."""
+    from ..config.operator_names import CANONICAL_OPERATOR_NAMES
+    from ..operators import preconditions
+    from .input_validation import validate_node_id, validate_tnfr_graph
+
+    if (
+        not isinstance(operator, str)
+        or operator.lower() not in CANONICAL_OPERATOR_NAMES
+    ):
+        raise TNFRValueError(
+            f"Unknown operator: {operator}",
+            context={
+                "operator": operator,
+                "available": sorted(CANONICAL_OPERATOR_NAMES),
+            },
+            suggestion="Use a valid canonical operator name.",
+        )
+    validate_tnfr_graph(graph)
+    validate_node_id(node)
+    if node not in graph.nodes:
+        raise TNFRValueError(f"Operator target node {node!r} is not in graph")
+    return getattr(preconditions, f"validate_{operator.lower()}")
+
+
 class TNFRValidator:
     """Unified TNFR Validation Pipeline.
 
-    This class serves as the single entry point for all TNFR validation operations,
-    consolidating scattered validation logic into a coherent pipeline that enforces
-    all canonical TNFR invariants.
+    This class orchestrates selected validation owners and reports their results.
+    Input admission, invariant diagnostics and operator preconditions have
+    distinct scopes; omitted checks supply no evidence of success.
 
     Features
     --------
     - Applies 10 legacy checks covering the six canonical TNFR invariants
-    - Input validation with security checks
+    - Shared scalar, identifier and graph-interface input validation
     - Graph structure and coherence validation
     - Runtime canonical validation
     - Operator precondition checking
     - Comprehensive reporting (text, JSON, HTML)
-    - Optional result caching for performance
+    - Fresh evaluation of live graph checks
 
     Examples
     --------
@@ -90,6 +118,12 @@ class TNFRValidator:
         enable_runtime_validation : bool, optional
             Enable runtime canonical validation (default: True).
         """
+        for name, value in (
+            ("enable_input_validation", enable_input_validation),
+            ("enable_graph_validation", enable_graph_validation),
+            ("enable_runtime_validation", enable_runtime_validation),
+        ):
+            _require_boolean_flag(value, name)
         # Initialize core invariant validators
         self._invariant_validators: list[TNFRInvariant] = [
             Invariant1_EPIOnlyThroughOperators(),
@@ -118,10 +152,6 @@ class TNFRValidator:
         self._enable_graph_validation = enable_graph_validation
         self._enable_runtime_validation = enable_runtime_validation
 
-        # Cache for validation results (graph_id -> violations)
-        self._validation_cache: dict[int, list[InvariantViolation]] = {}
-        self._cache_enabled = False
-
     def add_custom_validator(self, validator: TNFRInvariant) -> None:
         """Add custom invariant validator.
 
@@ -133,20 +163,16 @@ class TNFRValidator:
         self._custom_validators.append(validator)
 
     def enable_cache(self, enabled: bool = True) -> None:
-        """Enable or disable validation result caching.
+        """Retain the compatibility switch without caching live graph evidence.
 
-        Parameters
-        ----------
-        enabled : bool
-            Whether to enable caching (default: True).
+        Graph identity cannot capture mutable state, check selection or custom
+        validator dependencies. Every graph invocation therefore evaluates its
+        requested checks afresh, regardless of this Boolean argument.
         """
-        self._cache_enabled = enabled
-        if not enabled:
-            self._validation_cache.clear()
+        _require_boolean_flag(enabled, "enabled")
 
     def clear_cache(self) -> None:
-        """Clear the validation result cache."""
-        self._validation_cache.clear()
+        """Compatibility no-op: this orchestrator retains no graph result cache."""
 
     def validate(
         self,
@@ -163,11 +189,11 @@ class TNFRValidator:
         include_runtime: bool = False,
         raise_on_error: bool = False,
     ) -> dict[str, Any]:
-        """Comprehensive unified validation pipeline (single entry point).
+        """Run the requested input, graph, invariant and operator checks.
 
-        This method provides a single entry point for all TNFR validation needs,
-        consolidating input validation, graph validation, invariant checking,
-        and operator preconditions into one call.
+        Flags must be booleans. Supplying an operator requires both a graph
+        and a target node. Runtime validation is an opt-in mutating clamp pass,
+        including when a later check fails; this pipeline is not transactional.
 
         Parameters
         ----------
@@ -190,7 +216,7 @@ class TNFRValidator:
         include_graph_structure : bool, optional
             Include graph structure validation (default: True).
         include_runtime : bool, optional
-            Include runtime canonical validation (default: False).
+            Include the mutating runtime clamp/validation pass (default: False).
         raise_on_error : bool, optional
             Whether to raise on first error (default: False).
 
@@ -229,6 +255,7 @@ class TNFRValidator:
         ...     # Apply operator
         ...     pass
         """
+        _require_boolean_flag(raise_on_error, "raise_on_error")
         results: dict[str, Any] = {
             "passed": True,
             "inputs": {},
@@ -239,10 +266,30 @@ class TNFRValidator:
             "errors": [],
         }
 
-        config = graph.graph if graph is not None else None
+        from .input_validation import validate_tnfr_graph
+
+        try:
+            for name, value in (
+                ("include_invariants", include_invariants),
+                ("include_graph_structure", include_graph_structure),
+                ("include_runtime", include_runtime),
+            ):
+                _require_boolean_flag(value, name)
+            if graph is not None:
+                validate_tnfr_graph(graph)
+            if operator is not None and (graph is None or node_id is None):
+                raise TNFRValueError("Operator validation requires graph and node_id")
+            if operator is not None:
+                _operator_precondition_validator(graph, node_id, operator)
+        except Exception as exc:
+            if raise_on_error:
+                raise
+            results["passed"] = False
+            results["errors"].append(f"Validation request: {exc}")
+            return results
 
         # Input validation
-        if epi is not None or vf is not None or theta is not None or dnfr is not None:
+        if any(value is not None for value in (epi, vf, theta, dnfr, node_id)):
             try:
                 results["inputs"] = self.validate_inputs(
                     epi=epi,
@@ -250,7 +297,6 @@ class TNFRValidator:
                     theta=theta,
                     dnfr=dnfr,
                     node_id=node_id,
-                    config=config,
                     raise_on_error=raise_on_error,
                 )
                 if "error" in results["inputs"]:
@@ -326,6 +372,8 @@ class TNFRValidator:
                             results["errors"].append(
                                 f"{len(critical_violations)} critical invariant violations found"
                             )
+                            if raise_on_error:
+                                raise TNFRValidationError(critical_violations)
                 except Exception as e:
                     results["passed"] = False
                     results["errors"].append(f"Invariant validation failed: {str(e)}")
@@ -373,35 +421,40 @@ class TNFRValidator:
     ) -> dict[str, Any]:
         """Validate structural operator inputs.
 
-        This method consolidates input validation for all TNFR structural parameters,
-        enforcing type safety, bounds checking, and security constraints.
+        This adapter returns normalized values from the shared input helpers.
+        It does not certify graph dynamics or operator preconditions. ``None``
+        means an omitted argument; disabled input validation returns an empty dict.
 
         Parameters
         ----------
         epi : Any, optional
-            EPI (Primary Information Structure) value to validate.
+            Finite signed scalar or uniform-real EPI value to validate.
         vf : Any, optional
             νf (structural frequency) value to validate.
         theta : Any, optional
             θ (phase) value to validate.
         dnfr : Any, optional
-            ΔNFR (reorganization operator) value to validate.
+            Finite represented-real ΔNFR pressure value to validate.
         node_id : Any, optional
             Node identifier to validate.
         glyph : Any, optional
             Glyph enumeration to validate.
         graph : Any, optional
-            TNFRGraph to validate.
+            Object to check for the required graph interface. Full graph
+            structure and invariant validation are separate operations.
         config : Mapping[str, Any], optional
-            Configuration for bounds checking.
+            Reserved compatibility argument, currently not consumed. Graph
+            configuration keys do not override input bounds. Frequency policy
+            and phase normalization use the shared input validator's config.
         raise_on_error : bool, optional
             Whether to raise exception on validation failure (default: True).
 
         Returns
         -------
         dict[str, Any]
-            Dictionary with validation results for each parameter.
-            Keys: parameter names, Values: validation status or validated values.
+            Supplied parameter names mapped to normalized values. On failure
+            with ``raise_on_error=False``, retain preceding validated values
+            and add ``error`` with the first failure; later inputs are unchecked.
 
         Raises
         ------
@@ -414,34 +467,40 @@ class TNFRValidator:
         >>> validator.validate_inputs(epi=0.5, vf=1.0, theta=0.0)
         {'epi': 0.5, 'vf': 1.0, 'theta': 0.0}
         """
+        _require_boolean_flag(raise_on_error, "raise_on_error")
         if not self._enable_input_validation:
             return {}
 
-        from .unified_validation_system import get_unified_validation_system
+        from .input_validation import (
+            ValidationError,
+            validate_dnfr_value,
+            validate_epi_value,
+            validate_glyph,
+            validate_node_id,
+            validate_theta_value,
+            validate_tnfr_graph,
+            validate_vf_value,
+        )
 
-        validator = get_unified_validation_system()
-        results = {}
-
-        # Map legacy validation calls to unified system
-        if epi is not None:
-            results["epi"] = validator.validate_epi(epi)
-        if vf is not None:
-            results["vf"] = validator.validate_frequency(vf)
-        if theta is not None:
-            results["theta"] = validator.validate_phase(theta)
-        if dnfr is not None:
-            results["dnfr"] = validator.validate_dnfr(dnfr)
-        if node_id is not None:
-            results["node_id"] = validator.validate_node_id(node_id)
-        if glyph is not None:
-            # Glyph validation not explicitly in unified system yet, pass through or add
-            pass
-        if graph is not None:
-            # Graph validation handled by unified system
-            pass
-
-        return results
-
+        results: dict[str, Any] = {}
+        for name, value, validate_value in (
+            ("epi", epi, validate_epi_value),
+            ("vf", vf, validate_vf_value),
+            ("theta", theta, validate_theta_value),
+            ("dnfr", dnfr, validate_dnfr_value),
+            ("node_id", node_id, validate_node_id),
+            ("glyph", glyph, validate_glyph),
+            ("graph", graph, validate_tnfr_graph),
+        ):
+            if value is None:
+                continue
+            try:
+                results[name] = validate_value(value)
+            except ValidationError as exc:
+                if raise_on_error:
+                    raise
+                results["error"] = str(exc)
+                break
         return results
 
     def validate_operator_preconditions(
@@ -453,8 +512,9 @@ class TNFRValidator:
     ) -> bool:
         """Validate operator preconditions before application.
 
-        Each TNFR structural operator has specific requirements that must be met
-        before execution to maintain structural invariants.
+        Delegate to the existing named precondition owner. This checks neither
+        complete word grammar nor execution postconditions; owners may retain
+        their documented telemetry effects.
 
         Parameters
         ----------
@@ -484,38 +544,9 @@ class TNFRValidator:
         ...     # Apply emission operator
         ...     pass
         """
-        from ..operators import preconditions
-
-        validator_map = {
-            "emission": preconditions.validate_emission,
-            "reception": preconditions.validate_reception,
-            "coherence": preconditions.validate_coherence,
-            "dissonance": preconditions.validate_dissonance,
-            "coupling": preconditions.validate_coupling,
-            "resonance": preconditions.validate_resonance,
-            "silence": preconditions.validate_silence,
-            "expansion": preconditions.validate_expansion,
-            "contraction": preconditions.validate_contraction,
-            "self_organization": preconditions.validate_self_organization,
-            "mutation": preconditions.validate_mutation,
-            "transition": preconditions.validate_transition,
-            "recursivity": preconditions.validate_recursivity,
-        }
-
-        validator_func = validator_map.get(operator.lower())
-        if validator_func is None:
-            if raise_on_error:
-                raise TNFRValueError(
-                    f"Unknown operator: {operator}",
-                    context={
-                        "operator": operator,
-                        "available": list(validator_map.keys()),
-                    },
-                    suggestion="Use a valid canonical operator name.",
-                )
-            return False
-
+        _require_boolean_flag(raise_on_error, "raise_on_error")
         try:
+            validator_func = _operator_precondition_validator(graph, node, operator)
             validator_func(graph, node)
             return True
         except Exception:
@@ -528,13 +559,15 @@ class TNFRValidator:
         graph: TNFRGraph,
         raise_on_error: bool = True,
     ) -> dict[str, Any]:
-        """Validate graph structure and coherence.
+        """Run the graph owner's configured node and sigma checks.
 
         Performs structural validation including:
         - Node attribute completeness
         - EPI bounds and grid uniformity
         - Structural frequency ranges
-        - Coherence metrics
+        - Glyph provenance and the sigma norm check
+
+        This does not collect the tetrad or certify coherence/persistence.
 
         Parameters
         ----------
@@ -553,12 +586,19 @@ class TNFRValidator:
         TNFRValueError
             If structural validation fails and raise_on_error is True.
         """
+        _require_boolean_flag(raise_on_error, "raise_on_error")
         if not self._enable_graph_validation:
-            return {"passed": True, "message": "Graph validation disabled"}
+            return {
+                "passed": True,
+                "skipped": True,
+                "message": "Graph validation disabled",
+            }
 
         from .graph import run_validators
+        from .input_validation import validate_tnfr_graph
 
         try:
+            validate_tnfr_graph(graph)
             run_validators(graph)
             return {"passed": True, "message": "Graph structure valid"}
         except Exception as e:
@@ -573,7 +613,9 @@ class TNFRValidator:
     ) -> dict[str, Any]:
         """Validate runtime canonical constraints.
 
-        Applies canonical clamps and validates graph contracts at runtime.
+        Applies the runtime owner's configured clamps, refreshes maxima and
+        checks graph contracts. This mutates the graph and can leave applied
+        clamps even if validation fails. It is not a read-only or atomic check.
 
         Parameters
         ----------
@@ -592,18 +634,35 @@ class TNFRValidator:
         Exception
             If runtime validation fails and raise_on_error is True.
         """
+        _require_boolean_flag(raise_on_error, "raise_on_error")
         if not self._enable_runtime_validation:
-            return {"passed": True, "message": "Runtime validation disabled"}
+            return {
+                "passed": True,
+                "skipped": True,
+                "message": "Runtime validation disabled",
+            }
 
+        from .input_validation import validate_tnfr_graph
         from .runtime import validate_canon
 
         try:
+            validate_tnfr_graph(graph)
             outcome = validate_canon(graph)
-            return {
+            result = {
                 "passed": outcome.passed,
                 "summary": outcome.summary,
                 "artifacts": outcome.artifacts,
             }
+            if not outcome.passed:
+                errors = outcome.summary.get("errors", ())
+                result["error"] = (
+                    "; ".join(map(str, errors))
+                    if errors
+                    else "Runtime canonical validation failed"
+                )
+                if raise_on_error:
+                    raise TNFRValueError(result["error"])
+            return result
         except Exception as e:
             if raise_on_error:
                 raise
@@ -617,11 +676,12 @@ class TNFRValidator:
         include_graph_validation: bool = True,
         include_runtime_validation: bool = False,
     ) -> list[InvariantViolation]:
-        """Validate graph against all TNFR invariants (unified pipeline).
+        """Evaluate the configured graph and invariant checks on the live graph.
 
-        This is the main entry point for comprehensive graph validation,
-        integrating all validation layers:
-        - Invariant validation (10 canonical TNFR invariants)
+        The requested checks always execute afresh; graph identity does not
+        authenticate their dependencies. Returned violation evidence is copied,
+        preserving target node identities. Selected checks include:
+        - Ten legacy invariant diagnostics and any supplied custom validators
         - Optional graph structure validation
         - Optional runtime canonical validation
 
@@ -632,11 +692,11 @@ class TNFRValidator:
         severity_filter : InvariantSeverity, optional
             Only return violations of this severity level.
         use_cache : bool, optional
-            Whether to use cached results if available (default: True).
+            Compatibility argument; live graph results are never reused.
         include_graph_validation : bool, optional
             Include graph structure validation (default: True).
         include_runtime_validation : bool, optional
-            Include runtime canonical validation (default: False).
+            Include the mutating runtime clamp/validation pass (default: False).
 
         Returns
         -------
@@ -650,15 +710,12 @@ class TNFRValidator:
         >>> if violations:
         ...     print(validator.generate_report(violations))
         """
-        # Check cache if enabled
-        if self._cache_enabled and use_cache:
-            graph_id = id(graph)
-            if graph_id in self._validation_cache:
-                all_violations = self._validation_cache[graph_id]
-                # Apply severity filter if specified
-                if severity_filter:
-                    return [v for v in all_violations if v.severity == severity_filter]
-                return all_violations
+        for name, value in (
+            ("use_cache", use_cache),
+            ("include_graph_validation", include_graph_validation),
+            ("include_runtime_validation", include_runtime_validation),
+        ):
+            _require_boolean_flag(value, name)
 
         all_violations: list[InvariantViolation] = []
 
@@ -724,18 +781,18 @@ class TNFRValidator:
                     )
                 )
 
-        # Cache results if enabled
-        if self._cache_enabled:
-            graph_id = id(graph)
-            self._validation_cache[graph_id] = all_violations.copy()
-
         # Filter by severity if specified
         if severity_filter:
             all_violations = [
                 v for v in all_violations if v.severity == severity_filter
             ]
 
-        return all_violations
+        node_identities = {
+            id(violation.node_id): violation.node_id
+            for violation in all_violations
+            if violation.node_id is not None
+        }
+        return deepcopy(all_violations, node_identities)
 
     def validate_and_raise(
         self,

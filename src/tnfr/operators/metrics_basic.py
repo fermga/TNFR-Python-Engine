@@ -15,6 +15,7 @@ from ._diagnostic_scores import (
     mean_unit_score,
     nonnegative_magnitude,
     sum_nonnegative_magnitudes,
+    unit_score,
 )
 from ._reception_kernel import (
     RECEPTION_PRE_STATE_BOUNDARY,
@@ -459,127 +460,50 @@ def coherence_metrics(G, node, dnfr_before: float) -> dict[str, Any]:
     }
 
 
-def dissonance_metrics(G, node, dnfr_before, theta_before):
-    """OZ - Comprehensive dissonance and bifurcation metrics.
+def dissonance_metrics(
+    G,
+    node,
+    dnfr_before: float,
+    theta_before: float,
+    *,
+    asymmetry_before: float | None = None,
+) -> dict[str, Any]:
+    """Observe OZ pressure/phase changes and configured post-state diagnostics.
 
-    Collects extended metrics for the Dissonance (OZ) operator, including
-    quantitative bifurcation analysis, topological disruption measures, and
-    viable path identification. This aligns with TNFR canonical theory (§2.3.3)
-    that OZ introduces **topological dissonance**, not just numerical instability.
+    ``dnfr_before`` and ``theta_before`` supply the preceding scalar readings.
+    ``asymmetry_before`` optionally supplies the preceding ego-network degree/
+    clustering heterogeneity score in [0, 1]. The public Dissonance lifecycle
+    captures that score before execution; atomic stages use the same snapshot
+    owner. A standalone caller without this evidence gets ``None`` for the
+    topology delta and both change flags, plus an explicit availability flag.
+    Missing evidence is neither a zero delta nor successful symmetry retention.
 
-    Parameters
-    ----------
-    G : TNFRGraph
-        Graph containing the node
-    node : NodeId
-        Node to collect metrics from
-    dnfr_before : float
-        ΔNFR value before operator application
-    theta_before : float
-        Phase value before operator application
+    ``topological_asymmetry_after`` is always the current static score. With a
+    preceding observation, ``topological_asymmetry_delta`` is after minus before.
+    ``topological_asymmetry_changed`` applies the existing coarse absolute-change
+    threshold 0.1; ``symmetry_disrupted`` is its compatibility alias. Either sign
+    of change can pass this threshold. It is not an automorphism test, an OZ
+    causality certificate or evidence of physical symmetry breaking. The native
+    OZ glyph and its pressure propagation preserve support. Hooks or concurrent
+    external changes require separate provenance for any observed topology change.
 
-    Returns
-    -------
-    dict
-        Comprehensive dissonance metrics with keys:
-
-        **Quantitative dynamics:**
-
-        - dnfr_increase: Magnitude of introduced instability
-        - dnfr_final: Post-OZ ΔNFR value
-        - theta_shift: Phase exploration degree
-        - theta_final: Post-OZ phase value
-        - d2epi: Structural acceleration (bifurcation indicator)
-
-        **Bifurcation analysis:**
-
-        - bifurcation_score: Quantitative potential [0,1]
-        - bifurcation_active: Boolean threshold indicator (score > 0.5)
-        - viable_paths: list of viable operator glyph values
-        - viable_path_count: Number of viable paths
-        - mutation_readiness: Boolean indicator for ZHIR viability
-
-        **Topological effects:**
-
-        - topological_asymmetry_delta: Change in structural asymmetry
-        - symmetry_disrupted: Boolean (|delta| > 0.1)
-
-        **Network impact:**
-
-        - neighbor_count: Total neighbors
-        - impacted_neighbors: Count with |ΔNFR| > 0.1
-        - network_impact_radius: Ratio of impacted neighbors
-
-        **Recovery guidance:**
-
-        - recovery_estimate_IL: Estimated IL applications needed
-        - dissonance_level: |ΔNFR| magnitude
-        - critical_dissonance: Boolean (|ΔNFR| > 0.8)
-
-    Notes
-    -----
-    **Enhanced metrics vs original:**
-
-    The original implementation (lines 326-342) provided:
-    - Basic ΔNFR change
-    - Boolean bifurcation_risk
-    - Simple d2epi reading
-
-    This enhanced version adds:
-    - Quantitative bifurcation_score [0,1]
-    - Viable path identification
-    - Topological asymmetry measurement
-    - Network impact analysis
-    - Recovery estimation
-
-    **Topological asymmetry:**
-
-    Measures structural disruption in the node's ego-network using degree
-    and clustering heterogeneity. This captures the canonical effect that
-    OZ introduces **topological disruption**, not just numerical change.
-
-    **Viable paths:**
-
-    Identifies which operators can structurally resolve the dissonance:
-    - IL (Coherence): Always viable (universal resolution)
-    - ZHIR (Mutation): If νf > 0.8 (controlled transformation)
-    - NUL (Contraction): If EPI < 0.5 (safe collapse window)
-    - THOL (Self-organization): If degree >= 2 (network support)
-
-    Examples
-    --------
-    >>> from tnfr.structural import create_nfr
-    >>> from tnfr.operators.definitions import Dissonance, Coherence
-    >>>
-    >>> G, node = create_nfr("test", epi=0.5, vf=1.2)
-    >>> # Add neighbors for network analysis
-    >>> for i in range(3):
-    ...     G.add_node(f"n{i}")
-    ...     G.add_edge(node, f"n{i}")
-    >>>
-    >>> # Enable metrics collection
-    >>> G.graph['COLLECT_OPERATOR_METRICS'] = True
-    >>>
-    >>> # Apply Coherence to stabilize, then Dissonance to disrupt
-    >>> Coherence()(G, node)
-    >>> Dissonance()(G, node)
-    >>>
-    >>> # Retrieve enhanced metrics
-    >>> metrics = G.graph['operator_metrics'][-1]
-    >>> print(f"Bifurcation score: {metrics['bifurcation_score']:.2f}")
-    >>> print(f"Viable paths: {metrics['viable_paths']}")
-    >>> print(f"Network impact: {metrics['network_impact_radius']:.1%}")
-    >>> print(f"Recovery estimate: {metrics['recovery_estimate_IL']} IL")
-
-    See Also
-    --------
-    tnfr.dynamics.bifurcation.compute_bifurcation_score : Bifurcation scoring
-    tnfr.topology.asymmetry.compute_topological_asymmetry : Asymmetry measurement
-    tnfr.dynamics.bifurcation.get_bifurcation_paths : Viable path identification
+    Other outputs retain their configured diagnostic scope: pressure difference,
+    shortest-arc phase displacement, stored-history acceleration, a bifurcation
+    score and candidate paths, neighbor pressure counts, and a heuristic IL count.
+    Candidate paths are advisory, not admission to execute those operators or a
+    proof of recovery. Direct metrics are collected after local OZ and before its
+    subsequent propagation; staged metrics use the stage's committed observation
+    boundary. Propagation metadata is not a substitute for a preceding topology
+    measurement.
     """
     from ..dynamics.bifurcation import compute_bifurcation_score, get_bifurcation_paths
     from ..topology.asymmetry import compute_topological_asymmetry
     from .nodal_equation import compute_d2epi_dt2
+
+    if asymmetry_before is not None:
+        asymmetry_before = unit_score(
+            asymmetry_before, label="OZ preceding topological asymmetry"
+        )
 
     # Get post-OZ node state
     dnfr_after = _get_node_attr(G, node, ALIAS_DNFR)
@@ -600,15 +524,15 @@ def dissonance_metrics(G, node, dnfr_before, theta_before):
         tau=bifurcation_threshold,
     )
 
-    # 3. Topological asymmetry introduced by OZ
-    # Note: We measure asymmetry after OZ. In a full implementation, we'd also
-    # capture before state, but for metrics collection we focus on post-state.
-    # The delta is captured conceptually (OZ introduces disruption).
+    # 3. Distinguish a static read-out from an observed change. The registered
+    # OZ pressure operation does not itself modify the graph's support.
     asymmetry_after = compute_topological_asymmetry(G, node)
-
-    # For now, we'll estimate delta based on the assumption that OZ increases asymmetry
-    # In a future enhancement, this could be computed by storing asymmetry_before
-    asymmetry_delta = asymmetry_after  # Simplified: assume OZ caused current asymmetry
+    asymmetry_delta = (
+        asymmetry_after - asymmetry_before if asymmetry_before is not None else None
+    )
+    asymmetry_changed = (
+        abs(asymmetry_delta) > 0.1 if asymmetry_delta is not None else None
+    )
 
     # 4. Analyze viable post-OZ paths
     # set bifurcation_ready flag if score exceeds threshold
@@ -688,8 +612,12 @@ def dissonance_metrics(G, node, dnfr_before, theta_before):
         "viable_path_count": len(viable_paths),
         "mutation_readiness": any(g.value == "ZHIR" for g in viable_paths),
         # Topological effects
+        "topological_asymmetry_before": asymmetry_before,
+        "topological_asymmetry_after": asymmetry_after,
+        "topological_asymmetry_change_available": asymmetry_delta is not None,
         "topological_asymmetry_delta": asymmetry_delta,
-        "symmetry_disrupted": abs(asymmetry_delta) > 0.1,
+        "topological_asymmetry_changed": asymmetry_changed,
+        "symmetry_disrupted": asymmetry_changed,
         # Network impact
         "neighbor_count": len(neighbors),
         "impacted_neighbors": impacted_neighbors,

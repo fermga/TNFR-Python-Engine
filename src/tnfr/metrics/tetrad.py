@@ -24,11 +24,11 @@ from typing import TYPE_CHECKING, Any
 from ..config import get_telemetry_density
 from ..mathematics.unified_numerical import np
 from ..physics.canonical import (
-    compute_phase_curvature,
-    compute_phase_gradient,
     compute_structural_potential,
     estimate_coherence_length_with_provenance,
+    observe_phase_curvature,
 )
+from ..physics.phase_curvature import UndefinedPhaseCurvatureError
 
 if TYPE_CHECKING:
     import networkx as nx
@@ -57,6 +57,7 @@ def collect_tetrad_snapshot(
         - 'phase_curv': Phase curvature statistics
         - 'xi_c': Coherence length (scalar or None)
         - 'xi_c_available', 'xi_c_provenance', 'xi_c_error': Estimator evidence
+        - 'phase_curv' also retains ordered 'node_values'/'node_status' and scope
         - 'metadata': telemetry_density, node_count
 
     Notes
@@ -65,6 +66,7 @@ def collect_tetrad_snapshot(
     - Does NOT evolve nodal state; field owners may maintain graph caches
     - Does NOT affect operator sequences or grammar (U1-U6)
     - Does NOT change C(t), Si, or structural dynamics
+    - Independent fields remain available when another field is undefined
     """
     density = get_telemetry_density()
 
@@ -72,16 +74,44 @@ def collect_tetrad_snapshot(
     if include_histograms is None:
         include_histograms = density == "high"
 
-    # Collect field values
-    phi_s_values = compute_structural_potential(G)  # Per-node Φ_s
-    grad_values = compute_phase_gradient(G)  # Per-node |∇φ|
-    curv_values = compute_phase_curvature(G)  # Per-node K_φ
+    try:
+        potential = _field_statistics(
+            compute_structural_potential(G), density, include_histograms
+        )
+    except Exception as error:
+        potential = _unavailable_field_statistics(error)
+
+    # Gradient and curvature share one captured phase readout. An undefined
+    # neighbor direction does not invalidate the independently defined gradient.
+    try:
+        phase = observe_phase_curvature(G)
+        gradient = _field_statistics(
+            {row.node: row.gradient for row in phase.rows}, density, include_histograms
+        )
+        curvature_values = {row.node: row.curvature for row in phase.rows}
+        undefined = tuple(row.node for row in phase.rows if row.curvature is None)
+        if undefined:
+            curvature = _unavailable_field_statistics(
+                UndefinedPhaseCurvatureError(undefined)
+            )
+        else:
+            curvature = _field_statistics(curvature_values, density, include_histograms)
+        curvature.update(
+            node_values=[row.curvature for row in phase.rows],
+            node_status=[row.status for row in phase.rows],
+            complete=not undefined,
+            scope=list(phase.scope),
+        )
+    except Exception as error:
+        gradient = _unavailable_field_statistics(error)
+        curvature = _unavailable_field_statistics(error)
+        curvature.update(node_values=None, node_status=None, complete=False)
 
     # Build snapshot
     snapshot: dict[str, Any] = {
-        "phi_s": _field_statistics(phi_s_values, density, include_histograms),
-        "phase_grad": _field_statistics(grad_values, density, include_histograms),
-        "phase_curv": _field_statistics(curv_values, density, include_histograms),
+        "phi_s": potential,
+        "phase_grad": gradient,
+        "phase_curv": curvature,
         "xi_c": None,  # Filled below
         "xi_c_available": False,
         "xi_c_provenance": None,
@@ -89,6 +119,7 @@ def collect_tetrad_snapshot(
         "metadata": {
             "telemetry_density": density,
             "node_count": G.number_of_nodes(),
+            "phase_node_order": "graph_iteration_order",
         },
     }
 
@@ -110,6 +141,18 @@ def collect_tetrad_snapshot(
         snapshot["xi_c_error"] = {"type": type(error).__name__, "message": str(error)}
 
     return snapshot
+
+
+def _unavailable_field_statistics(error: Exception) -> dict[str, Any]:
+    """Keep summary shape and the actual owner failure without invented values."""
+    return {
+        "mean": None,
+        "max": None,
+        "min": None,
+        "std": None,
+        "available": False,
+        "error": {"type": type(error).__name__, "message": str(error)},
+    }
 
 
 def _field_statistics(

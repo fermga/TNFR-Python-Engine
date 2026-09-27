@@ -5772,11 +5772,13 @@ def _preflight_two_phase_stage(
     selections: list[Any] = []
     states_before: dict[Any, dict[str, Any]] = {}
     precondition_warnings: dict[Any, tuple[tuple[str, type[Warning]], ...]] = {}
+    collect_metrics = bool(resolved_kwargs.get("collect_metrics", False)) or bool(
+        snapshot.graph.get("COLLECT_OPERATOR_METRICS", False)
+    )
     needs_state_before = (
         bool(resolved_kwargs.get("validate_nodal_equation", False))
         or bool(snapshot.graph.get("VALIDATE_NODAL_EQUATION", False))
-        or bool(resolved_kwargs.get("collect_metrics", False))
-        or bool(snapshot.graph.get("COLLECT_OPERATOR_METRICS", False))
+        or collect_metrics
     )
     for node in targets:
         operator._validate_hard_invariants(snapshot, node)
@@ -5809,7 +5811,11 @@ def _preflight_two_phase_stage(
         )
         selections.append(selected)
         if needs_state_before:
-            states_before[node] = operator._capture_state(snapshot, node)
+            states_before[node] = (
+                operator._capture_metrics_state(snapshot, node)
+                if collect_metrics
+                else operator._capture_state(snapshot, node)
+            )
 
     exact_stage = all(
         glyph_function_name(selected) == operator.name for selected in selections

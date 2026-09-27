@@ -10,6 +10,7 @@ allocations.
 
 from __future__ import annotations
 
+import inspect
 import math
 import sys
 from collections.abc import Callable, Iterator, Mapping, MutableMapping, Sequence
@@ -2705,25 +2706,14 @@ def _compute_dnfr(
 
     data["n_jobs"] = n_jobs
     data["stable_linear_gradients"] = True
-    try:
-        neighbor_timer = start_timer()
-        res = _build_neighbor_sums_common(
-            G,
-            data,
-            use_numpy=prefer_dense,
-            n_jobs=n_jobs,
-        )
-        stop_timer("dnfr_neighbor_accumulation", neighbor_timer)
-    except TypeError as exc:
-        if "n_jobs" not in str(exc):
-            raise
-        neighbor_timer = start_timer()
-        res = _build_neighbor_sums_common(
-            G,
-            data,
-            use_numpy=prefer_dense,
-        )
-        stop_timer("dnfr_neighbor_accumulation", neighbor_timer)
+    neighbor_timer = start_timer()
+    res = _build_neighbor_sums_common(
+        G,
+        data,
+        use_numpy=prefer_dense,
+        n_jobs=n_jobs,
+    )
+    stop_timer("dnfr_neighbor_accumulation", neighbor_timer)
     if res is None:
         return
     x, y, epi_sum, vf_sum, count, deg_sum, degs = res
@@ -2815,6 +2805,49 @@ def default_compute_delta_nfr(
             cache.neighbor_accum_signature = None
 
 
+def _invoke_dnfr_hook(func: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
+    """Call a pressure callback without retrying an internal ``TypeError``.
+
+    Only the optional worker hint may be omitted for legacy signatures. For
+    uninspectable callables, the compatibility retry requires an argument-binding
+    failure at this call site, before any Python callback body was entered.
+    """
+    if "n_jobs" not in kwargs:
+        return func(*args, **kwargs)
+    try:
+        signature = inspect.signature(func)
+    except (TypeError, ValueError):
+        signature = None
+    if signature is not None:
+        parameters = signature.parameters
+        worker_parameter = parameters.get("n_jobs")
+        supports_n_jobs = (
+            worker_parameter is not None
+            and worker_parameter.kind
+            in (inspect.Parameter.POSITIONAL_OR_KEYWORD, inspect.Parameter.KEYWORD_ONLY)
+        ) or any(
+            parameter.kind == inspect.Parameter.VAR_KEYWORD
+            for parameter in parameters.values()
+        )
+        if not supports_n_jobs:
+            kwargs = {key: value for key, value in kwargs.items() if key != "n_jobs"}
+        return func(*args, **kwargs)
+    try:
+        return func(*args, **kwargs)
+    except TypeError as exc:
+        traceback = exc.__traceback__
+        message = str(exc)
+        binding_failure = (
+            traceback is not None
+            and traceback.tb_next is None
+            and ("n_jobs" in message or "takes no keyword arguments" in message)
+        )
+        if not binding_failure:
+            raise
+        kwargs = {key: value for key, value in kwargs.items() if key != "n_jobs"}
+        return func(*args, **kwargs)
+
+
 def set_delta_nfr_hook(
     G: TNFRGraph,
     func: DeltaNFRHook,
@@ -2827,22 +2860,13 @@ def set_delta_nfr_hook(
     The callable should accept ``(G, *[, n_jobs])`` and is responsible for
     writing ``ALIAS_DNFR`` in each node. ``n_jobs`` is optional and ignored by
     hooks that do not support parallel execution. Basic metadata in
-    ``G.graph`` is updated accordingly.
+    ``G.graph`` is updated accordingly. Internal Python callback errors propagate
+    without a second invocation; already performed callback writes are not
+    rolled back by this adapter.
     """
 
     def _wrapped(graph: TNFRGraph, *args: Any, **kwargs: Any) -> None:
-        if "n_jobs" in kwargs:
-            try:
-                func(graph, *args, **kwargs)
-                return
-            except TypeError as exc:
-                if "n_jobs" not in str(exc):
-                    raise
-                kwargs = dict(kwargs)
-                kwargs.pop("n_jobs", None)
-                func(graph, *args, **kwargs)
-                return
-        func(graph, *args, **kwargs)
+        _invoke_dnfr_hook(func, graph, *args, **kwargs)
 
     _wrapped.__name__ = getattr(func, "__name__", "custom_dnfr")
     _wrapped.__doc__ = getattr(func, "__doc__", _wrapped.__doc__)

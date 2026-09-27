@@ -14,6 +14,7 @@ import math
 from collections.abc import Mapping
 from typing import Any, Literal
 
+from .._exact_time import finite_represented_real
 from ..config.defaults_core import CORE_DEFAULTS, CoreDefaults
 from ..mathematics.unified_numerical import np
 
@@ -97,16 +98,11 @@ def reset_clip_stats() -> None:
 
 
 def _finite_real(value: Any, name: str) -> float:
-    """Return a finite real scalar without accepting coercive text or booleans."""
-    if isinstance(value, (bool, str, bytes, complex)):
-        raise ValueError(f"{name} must be a finite real number")
+    """Admit the shared represented-real boundary before numerical clipping."""
     try:
-        result = float(value)
-    except (TypeError, ValueError, OverflowError) as exc:
-        raise ValueError(f"{name} must be a finite real number") from exc
-    if not math.isfinite(result):
-        raise ValueError(f"{name} must be a finite real number")
-    return result
+        return finite_represented_real(value, name)[0]
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{name} must be a finite real scalar: {exc}") from exc
 
 
 def _validated_contract(
@@ -201,7 +197,8 @@ def structural_clip(
     projection.
 
     ``value``, both bounds, and ``k`` must be finite real scalars; booleans,
-    text, and complex values are rejected. ``k`` must be positive. These
+    text, and complex values are rejected. ``k`` must be positive.
+    Nonzero inputs must remain nonzero when materialized as binary64. These
     checks are identical in hard and soft mode so configuration errors cannot
     remain latent until a later mode change.
 
@@ -241,13 +238,26 @@ def structural_clip_array(
     lower, upper, resolved_mode, steepness = _validated_contract(lo, hi, mode, k)
     if np is None:  # pragma: no cover - NumPy is an engine dependency
         raise RuntimeError("structural_clip_array requires NumPy")
-    try:
-        source = np.asarray(values)
-    except (TypeError, ValueError, OverflowError) as exc:
-        raise ValueError("values must contain finite real numbers") from exc
-    if source.dtype.kind not in "iuf" or not bool(np.all(np.isfinite(source))):
-        raise ValueError("values must contain finite real numbers")
-    array = np.asarray(source, dtype=float)
+    # Existing numeric arrays up to binary64 cannot hide booleans or lose
+    # nonzero entries on materialization. Preserve that vectorized fast path.
+    # Other containers need raw object values: asarray([True, 0.5]) would
+    # otherwise erase the boolean before scalar admission could inspect it.
+    if (
+        isinstance(values, np.ndarray)
+        and values.dtype.kind in "iuf"
+        and values.dtype.itemsize <= 8
+    ):
+        if not bool(np.all(np.isfinite(values))):
+            raise ValueError("values must contain finite real numbers")
+        array = np.asarray(values, dtype=float)
+    else:
+        try:
+            source = np.asarray(values, dtype=object)
+            array = np.asarray(
+                [_finite_real(value, "values") for value in source.flat], dtype=float
+            ).reshape(source.shape)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ValueError(f"values must contain finite real numbers: {exc}") from exc
 
     if resolved_mode == "hard":
         return np.clip(array, lower, upper)

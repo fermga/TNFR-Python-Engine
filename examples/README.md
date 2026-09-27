@@ -6,6 +6,12 @@ validity. The [theory index](../theory/README.md) owns claim status; the
 [execution plan](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 owns the active research queue. Running an example does not reopen a parked branch.
 
+The [curvature safety illustration](08_emergent_geometry/k_phi_safety_demo.py)
+compares supplied WS-graph field observations before and after operator events.
+Its fit and safety labels are configured advisories, not a stability theorem.
+It moved from `benchmarks/`; the single-use topology helper was removed while
+preserving the declared preparation.
+
 ## Start with the intended task
 
 | Directory | Use and authority | Interpretation |
@@ -115,7 +121,7 @@ full-state local and sector certificates, and why positive heterogeneous
 capacity and a nonunit storage scale require the broader sector theorem.
 This comparison runs no additional trajectory and revises no frozen result.
 See the
-[execution guide](../docs/CLI_AND_SDK.md#execute-the-conditional-relational-model).
+[execution guide](../docs/guides/REGIONAL_AND_RELATIONAL.md#execute-the-conditional-relational-model).
 
 ```bash
 python examples/08_emergent_geometry/180_relational_exchange.py
@@ -142,7 +148,7 @@ states the exact assumptions, moving mean and same-input contraction scope.
 The imposed phase clock is not a derived autonomous maintenance mechanism.
 
 ```bash
-python examples/08_emergent_geometry/179_phase_form_driven_response.py --output-dir docs/assets/phase_form_driven_response
+python examples/08_emergent_geometry/179_phase_form_driven_response.py --output-dir output/phase_form_driven_response
 ```
 
 Optional plots require the `viz-basic` extra. Retained outputs are the
@@ -151,3 +157,9 @@ Optional plots require the `viz-basic` extra. Retained outputs are the
 and [CSV](../docs/assets/phase_form_driven_response/phase_form_driven_response.csv).
 Their recorded residuals and refinements are finite evidence, not autonomous
 formation or a physical identification.
+
+The [offline interface example](10_applications/93_structural_interface_demo.py)
+compares a planted spatial target and supplied sinusoidal blocks using shared
+observation adapters. It executes no coupling law or nodal trajectory. The
+signal adapter currently omits coherence-length fit/fallback provenance; the
+example exposes that limitation and treats operator suggestions as telemetry.

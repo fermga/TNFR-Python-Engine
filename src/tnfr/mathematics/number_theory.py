@@ -19,7 +19,7 @@ module is SECTOR A -- the per-node arithmetic ΔNFR (an exact but *circular*
 re-expression) CONSUMES divisibility (Ω, τ, σ); SECTOR B -- the spectral
 Paley/residue Fiedler gap (input only x^2 mod n) -- is a non-circular spectral
 probe carried by the factorizer
-(factorization-lab); SECTOR C (rep-theoretic irreducibility) is refuted. Only
+(applications/factorization-lab); SECTOR C (rep-theoretic irreducibility) is refuted. Only
 the equilibrium criterion (tnfr.metrics.common.is_structural_equilibrium) is
 shared across domains; the ΔNFR realisations are domain-specific.
 

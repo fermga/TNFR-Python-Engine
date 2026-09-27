@@ -34,7 +34,7 @@ The mathematical owners below establish restricted results, not a derivation
 of the physical world. Empirical correspondence is separately governed by the
 [measurement protocol](research/PASSIVE_TRANSPORT_PROTOCOL.md); reported EEG
 observations retain the limits in the
-[empirical record](../docs/EMPIRICAL_CONFRONTATION_EEG.md). Added physical
+[empirical record](research/archive/REPORTED_INTERFACE_OBSERVATIONS.md). Added physical
 programmes and circular type-signature instruments were
 [retired](research/archive/README.md#foundation-reassessment-2026-09-20), rather
 than maintained as parallel TNFR foundations.
@@ -253,6 +253,18 @@ selects the remaining work. The conditional relational law, formation/control
 results and bounded memory prediction have their existing proof owners; their
 admission is not a pending law-selection campaign. Composition must retain the
 internal state needed by that law and declare any supplied support event.
+The [event-premise result](nodal/RELATIONAL_PATTERN_COMPOSITION.md#support-event-premise-admission)
+shows that even an additional zero-supply passivity premise does not select
+attachment. State-preserving pure addition then requires equal endpoint form
+and phase; an atomic edge exchange can instead lower declared storage on an
+open set. Neither observation proves autonomous occurrence or preservation of
+a pattern when its defining cycle is changed. The
+[bridge-relocation theorem](nodal/RELATIONAL_PATTERN_COMPOSITION.md#identity-preserving-bridge-relocation)
+retains the internal cycles and proves recovery after one supplied passive
+exchange on an explicit open set. It demonstrates compatibility of
+reorganization and maintained phase identity, not an autonomous event law or
+an identification of the patterns with physical particles. The plan next
+examines the independent choice and timing of such events.
 Completed collective-state and contact results retain their original hypotheses.
 The target is an effective-constituent mechanism, not yet a spin or particle
 identification.

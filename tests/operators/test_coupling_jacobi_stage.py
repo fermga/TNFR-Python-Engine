@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 from copy import deepcopy
+from fractions import Fraction
 from typing import Any
 
 import networkx as nx
@@ -134,6 +135,43 @@ def test_uniform_capacity_kernel_preserves_finite_extremes(capacity: float) -> N
             coupling_capacity_blend(capacity, (capacity,) * 3, factor).hex()
             == capacity.hex()
         )
+
+
+@pytest.mark.parametrize("factor", (0.25, 0.5, 1.0))
+def test_finite_nonuniform_capacity_mean_survives_sum_overflow(factor: float) -> None:
+    # Exact dyadic expectations distinguish avoidable intermediate overflow
+    # from an unrepresentable capacity. Both public paths use the same owner.
+    scale = math.ldexp(1.0, 1023)
+    direct = _graph((0.0, 0.0, 0.0), edges=((0, 1), (0, 2)))
+    capacities = (scale, scale, 1.5 * scale)
+    for node, capacity in enumerate(capacities):
+        direct.nodes[node][ALIAS_VF[0]] = capacity
+        direct.nodes[node][ALIAS_DNFR[0]] = 0.0
+    direct.graph["GLYPH_FACTORS"] = {"UM_vf_sync": factor}
+    staged = deepcopy(direct)
+
+    with pytest.raises(OverflowError):
+        math.fsum(capacities[1:])
+    expected = float(Fraction(scale) * (1 + Fraction(factor) / 4))
+    apply_glyph(direct, 0, "UM")
+    execute_coupling_stage(staged, Coupling(), (0,))
+
+    for graph in (direct, staged):
+        assert tuple(get_attr(graph.nodes[node], ALIAS_VF) for node in graph) == (
+            expected,
+            *capacities[1:],
+        )
+    assert _structural_state(direct) == _structural_state(staged)
+
+
+def test_nonuniform_capacity_overflow_fallback_reaches_finite_upper_boundary() -> None:
+    maximum = float.fromhex("0x1.fffffffffffffp+1023")
+    neighbors = (maximum, math.nextafter(maximum, 0.0))
+    exact_mean = sum(map(Fraction, neighbors), Fraction()) / len(neighbors)
+    # Near the largest finite value, scaling must not round the mean to inf.
+    result = coupling_capacity_blend(0.0, neighbors, 1.0)
+    assert result == float(exact_mean)
+    assert neighbors[1] <= result <= neighbors[0]
 
 
 @pytest.mark.parametrize(

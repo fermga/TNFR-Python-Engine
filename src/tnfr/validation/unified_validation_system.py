@@ -1,34 +1,12 @@
-"""TNFR Unified Validation System - Consolidated Input and Security Validation.
+"""Configured validation reports for scalar, string and array inputs.
 
-CONSOLIDATION ACHIEVEMENT: This module unifies all TNFR validation implementations
-under a single coherent interface following nodal equation dynamics principles.
+This adapter reuses shared represented-real and coherence admission. Additional
+bounds (including the default frequency cap) are configured application policy,
+not laws derived from the nodal equation. Operator, trajectory and scientific
+admission remain with their corresponding owners.
 
-Unified Architecture:
-- Consolidates validation/input_validation.py input parameter validation
-- Merges security/validation.py security-focused validation functionality
-- Unifies type checking and structural invariant enforcement
-- Consistent error handling and validation reporting
-- Integrated with unified configuration system
-
-Theoretical Foundation:
-Validation enforces TNFR canonical invariants derived from nodal equation
-∂EPI/∂t = νf · ΔNFR(t) and structural field constraints to ensure theoretical
-consistency across all TNFR operations.
-
-Consolidated Features:
-1. Structural Validation: EPI, νf, φ/θ, ΔNFR parameter validation
-2. Security Validation: Input sanitization and injection prevention
-3. type Validation: TNFRGraph, NodeId, Glyph type checking
-4. Invariant Enforcement: Canonical constraints (C(t), Si, tetrad bounds)
-5. Range Validation: Proper value bounds for all TNFR parameters
-6. Error Reporting: Unified validation error hierarchy
-
-Consolidates:
-- src/tnfr/validation/input_validation.py (input parameter validation)
-- src/tnfr/security/validation.py (security-focused validation)
-- Scattered validation logic across operators and physics modules
-
-Status: UNIFIED VALIDATION CONSOLIDATION - All validation centralized
+Optional memoization retains typed immutable inputs, consumed policy and detached
+results; it never authenticates a nodal trajectory or operator execution.
 """
 
 from __future__ import annotations
@@ -36,10 +14,13 @@ from __future__ import annotations
 import logging
 import math
 import re
+from copy import deepcopy
 from dataclasses import dataclass
+from numbers import Integral, Real
 from typing import Any, Callable
 
 from .._coherence_validation import validate_structural_coherence
+from .._exact_time import finite_represented_real
 
 # Unified configuration integration
 from ..config import get_config
@@ -80,7 +61,7 @@ class ValidationConfig:
     strict_mode: bool = True
     enable_warnings: bool = True
 
-    # TNFR structural bounds
+    # Configured report bounds; the frequency cap is not a nodal law.
     max_structural_frequency: float = 1000.0  # Hz_str
     min_structural_frequency: float = 0.0
     max_phase_value: float = 2 * math.pi
@@ -134,19 +115,10 @@ class TNFRValidationError(TNFRValueError):
 
 
 class TNFRUnifiedValidationSystem:
-    """Unified Validation System - Consolidated Input and Security Validation.
-
-    ARCHITECTURE: This system consolidates all TNFR validation implementations
-    under a unified interface with intelligent routing and caching.
-
-    Consolidates:
-    - Input parameter validation from validation/input_validation.py
-    - Security validation from security/validation.py
-    - type checking across operators and physics modules
-    - Structural invariant enforcement
+    """Report input admission under shared scalar contracts and supplied policy.
 
     Usage:
-        # Single entry point for all validation
+        # Configured input-reporting entry point
         validator = TNFRUnifiedValidationSystem()
 
         # Structural parameter validation
@@ -156,9 +128,6 @@ class TNFRUnifiedValidationSystem:
         # Security validation
         result = validator.validate_string_input("user_input")
 
-        # Composite validation
-        result = validator.validate_tnfr_graph(graph_data)
-
         # Batch validation
         results = validator.validate_multiple({
             "vf": 1.2,
@@ -166,12 +135,8 @@ class TNFRUnifiedValidationSystem:
             "coherence": 0.85
         })
 
-    Benefits:
-        - Eliminates validation redundancy across codebase
-        - Consistent error messages and validation behavior
-        - Unified caching for performance optimization
-        - Integrated security and structural validation
-        - Comprehensive validation reporting
+    This class does not replace live operator preconditions or trajectory
+    certificates. A successful input report has only its stated local scope.
     """
 
     def __init__(self, config: ValidationConfig | None = None):
@@ -179,27 +144,76 @@ class TNFRUnifiedValidationSystem:
         self.config = config or ValidationConfig()
 
         # Validation cache for performance
-        self._validation_cache: dict[str, ValidationResult] = {}
+        self._validation_cache: dict[tuple[Any, ...], ValidationResult] = {}
         self._cache_stats = {"hits": 0, "misses": 0}
 
         # Global configuration integration
         self.global_config = get_config()
 
-        # Compile regex patterns for security validation
-        self._compiled_security_patterns = [
-            re.compile(pattern, re.IGNORECASE)
-            for pattern in self.config.forbidden_patterns
-        ]
+        self._pattern_sources: tuple[str, ...] | None = None
+        self._compiled_security_patterns: list[re.Pattern[str]] = []
+        self._security_patterns()
 
         logger.info(f"Initialized unified validation system with config: {self.config}")
+
+    def _cache_key(self, *parts: Any) -> tuple[Any, ...] | None:
+        """Cache only exact immutable builtins, with their types and policy."""
+        if not (self.config.enable_caching and self.config.cache_validation_results):
+            return None
+        if any(type(part) not in (str, int, float, bool, type(None)) for part in parts):
+            return None
+        if any(type(part) is float and not math.isfinite(part) for part in parts):
+            return None
+        return tuple((type(part), part) for part in parts)
+
+    def _cached_result(self, key: tuple[Any, ...] | None) -> ValidationResult | None:
+        if key is not None and key in self._validation_cache:
+            self._cache_stats["hits"] += 1
+            return deepcopy(self._validation_cache[key])
+        self._cache_stats["misses"] += 1
+        return None
+
+    def _store_result(
+        self, key: tuple[Any, ...] | None, result: ValidationResult
+    ) -> ValidationResult:
+        if key is not None:
+            self._validation_cache[key] = deepcopy(result)
+        return result
+
+    def _security_patterns(self) -> tuple[str, ...]:
+        """Compile the current pattern policy without retaining stale rules."""
+        sources = tuple(self.config.forbidden_patterns)
+        if any(not isinstance(pattern, str) for pattern in sources):
+            raise TypeError("forbidden_patterns must contain strings")
+        if sources != self._pattern_sources:
+            compiled = [re.compile(pattern, re.IGNORECASE) for pattern in sources]
+            self._compiled_security_patterns = compiled
+            self._pattern_sources = sources
+        return sources
+
+    def _policy_bounds(
+        self, lower_name: str, upper_name: str, *, allow_unbounded: bool = False
+    ) -> tuple[Any, Any]:
+        """Admit the live bounds while preserving their original ordering."""
+        lower = getattr(self.config, lower_name)
+        upper = getattr(self.config, upper_name)
+        for bound, name, open_end in (
+            (lower, lower_name, -math.inf),
+            (upper, upper_name, math.inf),
+        ):
+            if allow_unbounded and isinstance(bound, Real) and bound == open_end:
+                continue
+            finite_represented_real(bound, name)
+        if lower > upper:
+            raise ValueError(f"{lower_name} must not exceed {upper_name}")
+        return lower, upper
 
     def validate_structural_frequency(
         self, vf: float | int, field_name: str = "vf"
     ) -> ValidationResult:
         """Validate structural frequency (νf) parameter.
 
-        CONSOLIDATION: Unifies νf validation from input_validation.py
-        and security/validation.py with enhanced error reporting.
+        Reuses represented-real admission; the configured maximum is a policy.
 
         Parameters
         ----------
@@ -213,47 +227,47 @@ class TNFRUnifiedValidationSystem:
         ValidationResult
             Validation result with detailed feedback
         """
-        cache_key = f"vf_{vf}_{field_name}"
+        cache_key = self._cache_key(
+            "vf",
+            vf,
+            field_name,
+            self.config.min_structural_frequency,
+            self.config.max_structural_frequency,
+            self.config.strict_mode,
+        )
 
-        # Check cache
-        if self.config.enable_caching and cache_key in self._validation_cache:
-            self._cache_stats["hits"] += 1
-            return self._validation_cache[cache_key]
-
-        self._cache_stats["misses"] += 1
+        cached = self._cached_result(cache_key)
+        if cached is not None:
+            return cached
 
         errors = []
         warnings = []
         validated_value = vf
 
-        # type validation
-        if not isinstance(vf, (int, float)):
-            errors.append(f"{field_name} must be a number, got {type(vf).__name__}")
+        try:
+            lower, upper = self._policy_bounds(
+                "min_structural_frequency",
+                "max_structural_frequency",
+                allow_unbounded=True,
+            )
+            if lower < 0:
+                raise ValueError("min_structural_frequency must be nonnegative")
+            validated_value, _ = finite_represented_real(vf, field_name)
+        except (TypeError, ValueError) as exc:
+            errors.append(str(exc))
         else:
-            # Convert to float for consistency
-            validated_value = float(vf)
+            if vf < lower:
+                errors.append(f"{field_name} must be >= {lower}, got {validated_value}")
 
-            # Range validation
-            if validated_value < self.config.min_structural_frequency:
-                errors.append(
-                    f"{field_name} must be >= {self.config.min_structural_frequency}, got {validated_value}"
-                )
-
-            if validated_value > self.config.max_structural_frequency:
+            if vf > upper:
                 if self.config.strict_mode:
                     errors.append(
-                        f"{field_name} exceeds maximum {self.config.max_structural_frequency}, got {validated_value}"
+                        f"{field_name} exceeds maximum {upper}, got {validated_value}"
                     )
                 else:
                     warnings.append(
                         f"{field_name} is very large ({validated_value}), consider checking units"
                     )
-
-            # Special values validation
-            if math.isnan(validated_value):
-                errors.append(f"{field_name} cannot be NaN")
-            elif math.isinf(validated_value):
-                errors.append(f"{field_name} cannot be infinite")
 
         result = ValidationResult(
             is_valid=len(errors) == 0,
@@ -266,18 +280,14 @@ class TNFRUnifiedValidationSystem:
             },
         )
 
-        # Cache result
-        if self.config.cache_validation_results:
-            self._validation_cache[cache_key] = result
-
-        return result
+        return self._store_result(cache_key, result)
 
     def validate_phase_value(
         self, phase: float | int, field_name: str = "phase", normalize: bool = True
     ) -> ValidationResult:
         """Validate phase (φ/θ) parameter.
 
-        CONSOLIDATION: Unifies phase validation with normalization support.
+        Reuses represented-real admission before optional circular normalization.
 
         Parameters
         ----------
@@ -286,51 +296,55 @@ class TNFRUnifiedValidationSystem:
         field_name : str
             Name of the field being validated
         normalize : bool
-            Whether to normalize phase to [0, 2π] range
+            Whether to normalize phase to [0, 2π) range
 
         Returns
         -------
         ValidationResult
             Validation result with normalized phase value
         """
-        cache_key = f"phase_{phase}_{field_name}_{normalize}"
+        cache_key = self._cache_key(
+            "phase",
+            phase,
+            field_name,
+            normalize,
+            *(
+                ()
+                if normalize is True
+                else (self.config.min_phase_value, self.config.max_phase_value)
+            ),
+        )
 
-        # Check cache
-        if self.config.enable_caching and cache_key in self._validation_cache:
-            self._cache_stats["hits"] += 1
-            return self._validation_cache[cache_key]
-
-        self._cache_stats["misses"] += 1
+        cached = self._cached_result(cache_key)
+        if cached is not None:
+            return cached
 
         errors = []
         warnings = []
         validated_value = phase
 
-        # type validation
-        if not isinstance(phase, (int, float)):
-            errors.append(f"{field_name} must be a number, got {type(phase).__name__}")
+        try:
+            if not isinstance(normalize, bool):
+                raise TypeError("normalize must be a boolean")
+            validated_value, _ = finite_represented_real(phase, field_name)
+            if not normalize:
+                lower, upper = self._policy_bounds(
+                    "min_phase_value", "max_phase_value", allow_unbounded=True
+                )
+        except (TypeError, ValueError) as exc:
+            errors.append(str(exc))
         else:
-            validated_value = float(phase)
-
-            # Special values validation
-            if math.isnan(validated_value):
-                errors.append(f"{field_name} cannot be NaN")
-            elif math.isinf(validated_value):
-                errors.append(f"{field_name} cannot be infinite")
-            else:
-                # Normalize if requested
-                if normalize:
-                    validated_value = validated_value % (2 * math.pi)
-
-                # Range warnings for unnormalized values
-                if not normalize:
-                    if (
-                        validated_value < self.config.min_phase_value
-                        or validated_value > self.config.max_phase_value
-                    ):
-                        warnings.append(
-                            f"{field_name} outside typical range [0, 2π], got {validated_value}"
-                        )
+            if normalize:
+                period = 2 * math.pi
+                validated_value %= period
+                # Negative near-zero inputs can round the modulo result to 2π.
+                if validated_value == period:
+                    validated_value = 0.0
+            elif phase < lower or phase > upper:
+                warnings.append(
+                    f"{field_name} outside configured range [{lower}, {upper}], "
+                    f"got {validated_value}"
+                )
 
         result = ValidationResult(
             is_valid=len(errors) == 0,
@@ -344,43 +358,45 @@ class TNFRUnifiedValidationSystem:
             },
         )
 
-        # Cache result
-        if self.config.cache_validation_results:
-            self._validation_cache[cache_key] = result
-
-        return result
+        return self._store_result(cache_key, result)
 
     def validate_coherence(
         self, coherence: float | int, field_name: str = "coherence"
     ) -> ValidationResult:
         """Validate coherence C(t) parameter.
 
-        CONSOLIDATION: Unifies coherence validation with proper bounds checking.
+        Reuses the shared original-value and represented-value domain checks.
         """
-        cache_key = f"coherence_{coherence}_{field_name}"
+        cache_key = self._cache_key(
+            "coherence",
+            coherence,
+            field_name,
+            self.config.min_coherence,
+            self.config.max_coherence,
+        )
 
-        # Check cache
-        if self.config.enable_caching and cache_key in self._validation_cache:
-            self._cache_stats["hits"] += 1
-            return self._validation_cache[cache_key]
-
-        self._cache_stats["misses"] += 1
+        cached = self._cached_result(cache_key)
+        if cached is not None:
+            return cached
 
         errors = []
         warnings = []
         validated_value = coherence
 
         try:
+            lower, upper = self._policy_bounds("min_coherence", "max_coherence")
+            validate_structural_coherence(lower, name="min_coherence")
+            validate_structural_coherence(upper, name="max_coherence")
             validated_value = validate_structural_coherence(coherence, name=field_name)
         except (TypeError, ValueError) as exc:
             errors.append(str(exc))
         else:
-            if validated_value < self.config.min_coherence:
+            if coherence < lower:
                 errors.append(
                     f"{field_name} must be >= {self.config.min_coherence}, "
                     f"got {validated_value}"
                 )
-            elif validated_value > self.config.max_coherence:
+            elif coherence > upper:
                 errors.append(
                     f"{field_name} must be <= {self.config.max_coherence}, "
                     f"got {validated_value}"
@@ -397,11 +413,7 @@ class TNFRUnifiedValidationSystem:
             },
         )
 
-        # Cache result
-        if self.config.cache_validation_results:
-            self._validation_cache[cache_key] = result
-
-        return result
+        return self._store_result(cache_key, result)
 
     def validate_string_input(
         self,
@@ -411,8 +423,8 @@ class TNFRUnifiedValidationSystem:
     ) -> ValidationResult:
         """Validate string input with security checks.
 
-        CONSOLIDATION: Unifies string validation from security/validation.py
-        with enhanced pattern matching and injection detection.
+        Applies the current configured length and regular-expression policy.
+        This is an input filter, not a general injection-safety certificate.
 
         Parameters
         ----------
@@ -436,22 +448,27 @@ class TNFRUnifiedValidationSystem:
                 validated_value=input_string,
             )
 
-        max_len = max_length or self.config.max_string_length
-        cache_key = f"string_{hash(input_string)}_{field_name}_{max_len}"
+        max_len = self.config.max_string_length if max_length is None else max_length
+        patterns = self._security_patterns()
+        cache_key = self._cache_key(
+            "string", input_string, field_name, max_len, *patterns
+        )
 
-        # Check cache
-        if self.config.enable_caching and cache_key in self._validation_cache:
-            self._cache_stats["hits"] += 1
-            return self._validation_cache[cache_key]
-
-        self._cache_stats["misses"] += 1
+        cached = self._cached_result(cache_key)
+        if cached is not None:
+            return cached
 
         errors = []
         warnings = []
         validated_value = input_string
 
-        # type validation
-        if not isinstance(input_string, str):
+        if (
+            isinstance(max_len, bool)
+            or not isinstance(max_len, Integral)
+            or max_len < 0
+        ):
+            errors.append("max_length must be a nonnegative integer")
+        elif not isinstance(input_string, str):
             errors.append(
                 f"{field_name} must be a string, got {type(input_string).__name__}"
             )
@@ -491,11 +508,7 @@ class TNFRUnifiedValidationSystem:
             },
         )
 
-        # Cache result
-        if self.config.cache_validation_results:
-            self._validation_cache[cache_key] = result
-
-        return result
+        return self._store_result(cache_key, result)
 
     def validate_array_input(
         self,
@@ -658,7 +671,9 @@ class TNFRUnifiedValidationSystem:
             **self._cache_stats,
             "hit_rate_percent": round(hit_rate, 2),
             "cache_size": len(self._validation_cache),
-            "cache_enabled": self.config.enable_caching,
+            "cache_enabled": (
+                self.config.enable_caching and self.config.cache_validation_results
+            ),
         }
 
     def clear_cache(self) -> None:
@@ -681,8 +696,8 @@ def get_unified_validation_system(
 ) -> TNFRUnifiedValidationSystem:
     """Get or create global unified validation system.
 
-    This provides a singleton interface for all TNFR validation operations
-    to eliminate redundant system creation across modules.
+    This singleton owns the configured input-reporting adapter. Live operators
+    and scientific certificates retain their separate admission owners.
 
     Parameters
     ----------

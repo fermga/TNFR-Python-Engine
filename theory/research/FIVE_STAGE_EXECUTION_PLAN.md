@@ -40,11 +40,15 @@ identification needs the independent P1-P5 bridge. Infinite pattern lifetime,
 substrate creation from nothing, a Hamiltonian representation and universal
 operator selection are not prerequisites for every restricted result.
 
-**Present decision.** The finite derived-memory prediction is complete in its
-declared scope. Retain full nodal state and establish how one supplied bridge
-changes the local field and admission of two maintained regions. This is
-distinct from another transmission run on already-joined support. The
-[next work package](#current-g3-gate) fixes the question, inputs and stop rule.
+**Present decision.** Support-event accounting and nonselection are established
+for state-preserving unit-edge events. Requiring zero-supply passivity is an
+additional premise: pure addition then needs equal endpoint form and phase,
+and a continuous addition intensity on an open full-state domain must vanish.
+An atomic bridge relocation now has an explicit open domain that lowers
+storage and retains the two-ring recovery theorem, without adding a reservoir
+or changing nodal coordinates. The [next work package](#current-g3-gate)
+isolates support-law closure: candidate choice and event timing. Identity
+and the budget permit the event; neither has supplied its cause.
 
 <a id="2-one-status-board-and-dependency-chain"></a>
 ## 2. One status board
@@ -57,7 +61,10 @@ distinct from another transmission run on already-joined support. The
 | Formation and maintenance on supplied two-port support | Joined by validated continuous transit and a protected-basin theorem | General formation, substrate creation and physical identification remain open |
 | Zero/reversed-form controls | Completed: consensus differs from the reference's maintained twist | Initial energy, loss and phase geometry alone do not select identity |
 | Nonlinear composition and memory | Tangent closure and nonlinear obstructions established; finite derived-memory prediction completed | No autonomous coarse node, universal kernel or certified continuous approximation error |
-| **One-bridge interface admission, F1-F3** | **Next; not executed by this planning update** | Admission, implementation and outcome belong to the work package below |
+| One-bridge interface admission, F1-F3 | Complete in scope: sufficient port state, exact attachment identity, static discriminator and shared read-only report | Supplied unit connection; no autonomous event selection or compressed future state |
+| Support-event premise admission, F1-F3 | Complete in scope: hybrid storage accounting, passive-addition restriction and occurrence nonselection | Passivity is an extra premise; accounting does not select events or their clock |
+| Identity-preserving bridge relocation, F1-F3 | Complete in scope: strict passive open set, shared recovery basin, reverse and neutral controls, read-only engine/SDK comparison | One supplied event followed by fixed-support flow; neither repeated switching nor autonomous selection is proved |
+| **Support-law closure: choice and clock, F2-F3** | **Next; audit the remaining constitutive freedom** | A recoverable passive candidate need not occur; no arbitrary ranking, fitted threshold or event clock may be hidden in the law |
 | Physical confrontation, P1-P5 | Supporting and deferred; no full physical admission | Independent observation/clock/preparation model and reserved terrestrial evidence required |
 
 ### Completed evidence to reuse
@@ -76,6 +83,9 @@ assumptions, numerical values, protocols and source provenance.
 | Negative/stopped formation evidence | [Reserved crossing](../nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-reserved-crossing-response), [upper-corner response](../nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-upper-corner-response); later proofs do not turn failed original gates into passed predictions |
 | Coarse-state obstruction and exact budgets | [Composition](../nodal/RELATIONAL_PATTERN_COMPOSITION.md); ten tangent coordinates, even augmented by their initial rates, fail to close the nonlinear law |
 | Derived memory and prospective comparison | [Memory](../nodal/RELATIONAL_PATTERN_MEMORY.md#reserved-memory-response); one prepared finite prediction on matched Euler grids improves tangent and direct-cubic controls, without certifying ODE error or a scaling law |
+| Component-to-joined field | [One-bridge interface](../nodal/RELATIONAL_PATTERN_COMPOSITION.md#one-bridge-interface-admission); equal endpoints and zero event storage do not imply unchanged rates; fresh native fields retain represented defects |
+| Event premises and passivity | [Support-event admission](../nodal/RELATIONAL_PATTERN_COMPOSITION.md#support-event-premise-admission); zero-supply addition has an empty-interior coincidence guard, while passive atomic exchanges can have strict storage slack; neither selects occurrence |
+| Passive bridge relocation and identity | [Relocation theorem](../nodal/RELATIONAL_PATTERN_COMPOSITION.md#identity-preserving-bridge-relocation); a shared explicit two-C5 basin admits strict storage decrease and recovery after one event; reverse recovery does not imply reverse passivity |
 
 Shared observers, opt-in execution, exact report exports and SDK delegates are
 integrated. This is not a reason to rerun frozen producers. Historical source
@@ -83,121 +93,62 @@ archives and negative verdicts remain immutable. Current-source regressions
 must retain their separate provenance.
 
 <a id="current-g3-gate"></a>
-## 3. Next work package: one-bridge compositional interface admission
+## 3. Next work package: support-law closure, choice and clock
 
-**Question.** Given two independently admitted cycle states and one supplied
-unit connection, which internal and boundary data determine the fresh joined
-form/phase field, and when does the attachment stay in the model's admitted
-domain? Can an endpoint-difference-only interaction represent that change?
+**Question.** Once a passive identity-preserving relocation is admitted, what
+do the complete nodal state, its symmetries and declared clock determine about
+which candidate occurs and when? What independent constitutive premise, if any,
+would justify a nontrivial occurrence law?
 
-This is a finite-amplitude composition question. The previous interaction
-study started on already-joined support. The new obligation is an explicit
-component-to-joined field contract, including changed degree normalization and
-neighbor-resultant geometry. It does not seek a compressed autonomous NFR or
-introduce a new interaction law.
+The [relocation theorem](../nodal/RELATIONAL_PATTERN_COMPOSITION.md#identity-preserving-bridge-relocation)
+has removed the immediate budget/recovery obstruction on a stated open set.
+Its explicit preparation and two controls need no replay. The problem is now
+causal closure, not another topology, amplitude, memory or basin search. Fixed
+edge count, preserved internal cycles and atomic exchange remain premises.
 
-### Fixed starting point
+### Fixed scope and work order
 
-- Two C5 components, nodes `0..4` and `5..9`, with the existing ring edges.
-  Supply exactly one unit bridge `(0,5)`. This is the prepared single-bridge
-  family, not the two-adjacent-bridge support used in the formation proof.
-- Use the existing relational law with `epi_weight=phase_weight=1/2`,
-  `storage_scale=1`, unit held capacities and no Gamma, external forcing,
-  operator words or adaptive controller. The phase chart is acute.
-- Reuse the ideal reference phases `theta[k]=theta[k+5]=2*pi*k/5`, for
-  `k=0..4`, and the existing preparation `x=(1/256)*e_1`. Preserve all ten
-  form and phase coordinates, their regional offsets and the complete support.
-  The bridge endpoints have identical form and phase. Fix the relative
-  reference phase offset at zero; regional form means still differ. No
-  offset, amplitude or topology scan is needed.
-- Treat attachment as a **supplied support intervention**. State and capacity
-  do not jump in this comparison; derived pressure, metric and storage may
-  change. Assess event and subsequent fixed-support flow separately. The law
-  does not explain why or when the connection appears.
-- Evaluate the two pre-attachment C5 graphs separately. The production
-  relational evaluator requires connected support; their disconnected union
-  is not an admitted call. Do not weaken that contract for this experiment.
+1. **Specify the missing row.** Retain the existing full state, held capacities,
+   fixed internal cycles and finite candidate bridge exchanges. Distinguish
+   event admissibility, candidate selection, occurrence, waiting time and any
+   consumed event history. A graph label or insertion order cannot be a hidden
+   physical coordinate.
+2. **Derive restrictions before proposing a rule.** Test relabeling, common
+   form/phase-frame covariance, structural clock changes, passivity and recovery
+   admission. Reuse the exact finite-action selector owner where its declared
+   action applies. A symmetry obstruction is not a stochastic law; a storage
+   difference has storage units and is not itself an occurrence rate.
+3. **Test remaining freedom explicitly.** Exhibit compatible different choices
+   or clock laws if they exist, or prove a forced restriction. Retain abstention.
+   Compare complete candidate models, not only scores. Any added deterministic
+   guard, intensity, randomness or reservoir must be named as an independent
+   premise and accompanied by a discriminating consequence before evaluation.
+4. **Make a bounded decision.** Admit at most one independently motivated
+   extension for a later prospective test, or retain support changes as supplied
+   interventions with a proved closure boundary. Do not manufacture an autonomous
+   selector merely to continue this branch. Integrate only derived reusable
+   restrictions; no automatic default change follows.
 
-The preparation and node order already have an owner in
-[`relational_region_interaction.py`](../../benchmarks/relational_region_interaction.py).
-Reuse its declared inputs, not its old response as newly reserved evidence.
-Exact ideal trigonometric expressions and their binary64 materialization have
-different scopes; retain any represented defects explicitly.
+### Reuse and validation
 
-### Work order and deliverables
+- [Composition, event accounting and relocation](../nodal/RELATIONAL_PATTERN_COMPOSITION.md#identity-preserving-bridge-relocation)
+  own the admitted event; the shared
+  [relational observer](../../src/tnfr/physics/relational_observations.py) and
+  [transport reset](../../src/tnfr/physics/support_transport.py) own computations.
+- [Local recovery](../nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-local-recovery)
+  and [single-bridge interaction](../nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-region-interaction)
+  provide scoped identity and support results. The two-bridge capture API is
+  not a certificate for this support.
+- Reuse static [event controls](../../tests/test_relational_attachment.py),
+  [selector symmetry](../../src/tnfr/physics/selector_symmetry.py) and exact SDK
+  report export. Preserve frozen responses and source archives.
 
-1. **State/interface card (F1).** Name a sufficient boundary message at each
-   port: form, phase, capacity, internal degree, internal form-Laplacian sum
-   and the complex relative neighbor resultant. Retain the internal state
-   behind those summaries and the relative regional frames. This message
-   may reconstruct an instantaneous field without closing its future.
-   Do not claim global minimality or require stored history when full state
-   already supplies the selected Markov law; eliminating it invokes the
-   existing memory obligation.
-2. **Attachment identity and admission (F2-F3).** Derive the effect of adding
-   one neighbor on those quantities and recompute pressure and phase mobility
-   through the current law. Identify unchanged interior rows, changed port
-   rows, regular-resultant/acute-domain conditions and the storage change
-   attributable to the supplied event. Distinguish a zero outward cut from
-   unchanged local rates. Reuse the existing interaction section's sufficient
-   continuous basin for this ideal `1/256` preparation; do not derive it again.
-   Its ideal-input proof and represented-state admission remain separate, and
-   neither transfers the two-port certificate to a different graph.
-3. **One static discriminator (F3).** Compare the resulting field with two
-   separately evaluated components and with the explicit control that keeps
-   their old rows and adds only a term vanishing at equal endpoint form/phase.
-   In the fixed preparation the bridge differences vanish, while its donor
-   port has nonzero internal form contrast. Derive the rate difference before
-   using the engine, then check the actual native evaluator with declared
-   representation error. An exact structural counterexample is sufficient;
-   it does not need another transmission trajectory.
-4. **Integrate only the established contract.** Keep the derivation in
-   [pattern composition](../nodal/RELATIONAL_PATTERN_COMPOSITION.md).
-   Reuse existing field/cut/work observations; add a shared read-only admission
-   report only if those owners cannot already express the result. Any new
-   public report needs a thin SDK delegate and detached export, not a second
-   pressure implementation. Keep tests independent of fixture literals and
-   select the affected owners through [TESTING.md](../../TESTING.md); this
-   work package does not authorize regenerating completed research responses.
-
-### Reuse map for this work package
-
-| Need | Existing owner | Restriction |
-| --- | --- | --- |
-| Fresh joint field and raw scalar admission | [`dynamics/relational.py`](../../src/tnfr/dynamics/relational.py), [`test_relational_exchange_execution.py`](../../tests/test_relational_exchange_execution.py) | Separate connected component evaluations; graph support and chart remain admitted |
-| Complete regional state, work and phase response | [`relational_observations.py`](../../src/tnfr/physics/relational_observations.py), [`test_relational_phase_response.py`](../../tests/test_relational_phase_response.py), [`test_relational_work_observation.py`](../../tests/test_relational_work_observation.py) | Read-outs do not select attachment or close regional dynamics |
-| Outward cut and transport/source accounting | [`support_transport.py`](../../src/tnfr/physics/support_transport.py), [`test_regional_support_cut.py`](../../tests/test_regional_support_cut.py) | Degree normalization, source and mobility loading remain separate from cut current |
-| Prepared lock and reference input | [Interaction proof](../nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-region-interaction), [`test_relational_region_interaction.py`](../../tests/physics/test_relational_region_interaction.py) | Reuse input and analytic facts; do not repeat its completed response campaign |
-| Nonclosure and hidden information | [Composition](../nodal/RELATIONAL_PATTERN_COMPOSITION.md), [memory](../nodal/RELATIONAL_PATTERN_MEMORY.md) | Sufficient port data for a snapshot do not establish an autonomous macro-node |
-| Recovery and support-specific certificates | [Local recovery](../nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-local-recovery), [`relational_capture.py`](../../src/tnfr/physics/relational_capture.py) | The two-port capture API must reject the one-bridge graph; no transfer by relabeling |
-| Public integration | [`sdk/relational_reports.py`](../../src/tnfr/sdk/relational_reports.py), [SDK guide](../../docs/CLI_AND_SDK.md) | No separate CLI simulator or automatic connection policy |
-
-### Verdicts and stop condition
-
-**Positive:** an explicit sufficient interface reconstructs the ideal joined
-field under stated admission conditions, with a correctly scoped production
-check. The endpoint-only control is assessed against that identity. Record
-which terms are derived and which state/event inputs were supplied.
-
-**Negative:** an exact witness excludes the proposed interface or its domain.
-Name the lost quantity or violated premise. Failure of endpoint-only coupling
-rejects that simplification, not the full nodal law.
-
-**Unavailable:** a phase/resultant boundary, representation limitation or
-uncertified recovery premise prevents the claimed conclusion. Rejection by a
-sufficient certificate is not proof that a trajectory cannot recover.
-
-Stop this package after the scoped identity/admission verdict and necessary
-integration checks. No derivative ladder, memory-kernel fitting, global-basin
-campaign or accuracy sweep is required. If the result is already fully present
-in a shared owner, document that reuse and stop rather than duplicating it.
-
-**Subsequent decision, not a second active task:** only if this interface
-reveals a genuinely new finite response beyond existing transmission evidence,
-freeze one F4 prediction against a named control. Otherwise use the admission
-or obstruction to choose the next missing premise. Autonomous support,
-capacity evolution, nesting and physical identity remain open; this package
-does not promise to resolve them.
+**Stop condition.** An explicit premise/restriction/freedom ledger and a concrete
+admission or nonselection result. If no independently justified event premise
+emerges, close autonomous support selection as unresolved and retain the valid
+intervention results; do not launch another parameter search. Repeated-switching
+stability, continuous conductance, new capacity laws and physical intake are
+outside this package.
 
 ## 4. Reusable F1-F4 admission method
 
@@ -326,8 +277,8 @@ when the calculation cannot distinguish alternatives, or when success must
 be supplied as an input. A named independent revision can reopen it. Do not
 continue tightening a secondary bound solely because its machinery exists.
 
-Resume at the [one-bridge work package](#current-g3-gate), beginning with its
-state/interface card and analytic contract. Earlier C4/C8 continuations, C5
+Resume at the [support-law closure work package](#current-g3-gate), retaining
+the completed passive relocation and recovery result. Earlier C4/C8 continuations, C5
 searches, C6 global-runtime certification, derivative ladders, further memory
 sweeps and broad physical intake are parked. Historical O/S/G/B milestone
 labels are not additional task queues. Valid results stay in topical owners;
