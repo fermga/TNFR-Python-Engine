@@ -164,6 +164,17 @@ Examples
 # Import prerequisites before runtime certificates: reordering this facade can
 # re-enter partially initialized operators.network_stage during package startup.
 # isort: off
+from .form_geometry import (
+    RegionalAffineClosure,
+    RegionalFormObservation,
+    RegionalFormRegion,
+    derive_regional_affine_closure,
+    observe_regional_form,
+)
+from .source_relative_form import (
+    SourceRelativeFormObservation,
+    observe_source_relative_form,
+)
 from .cell import (
     CellTelemetry,
     MembraneFluxResult,
@@ -1033,6 +1044,13 @@ from .variational import (
 # isort: on
 
 __all__ = [
+    "RegionalAffineClosure",
+    "RegionalFormObservation",
+    "RegionalFormRegion",
+    "derive_regional_affine_closure",
+    "observe_regional_form",
+    "SourceRelativeFormObservation",
+    "observe_source_relative_form",
     # --- Structural Field Tetrad (Φ_s, |∇φ|, K_φ, ξ_C) ---
     "compute_structural_potential",
     "compute_phase_gradient",

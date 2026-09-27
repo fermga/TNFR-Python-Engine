@@ -8,7 +8,7 @@ current repository.
 
 | Script | Purpose |
 | --- | --- |
-| `check_documentation.py` | Check the agent mirror, version references, operator contracts, public examples, and documentation build inputs. |
+| `check_documentation.py` | Check the agent mirror, version references, operator contracts, public examples, theory-catalog coverage and generated navigation, and documentation build inputs. |
 | `verify_internal_references.py` | Validate repository-relative Markdown targets and GitHub-style heading fragments. |
 | `prepare_docs.py` | Build the deterministic MkDocs source tree under `build/docs-source`. |
 | `clean_repository.py` | Remove only known generated artifacts inside the repository. |
@@ -29,11 +29,13 @@ The reference check also resolves this repository's GitHub `blob/main` and
 ignores Markdown examples inside fenced code blocks.
 External websites and frozen run captures are outside this local check.
 
-The operator table in `docs/API_CONTRACTS.md` is generated from the registry.
-After an intentional contract change, run
+The operator table in `docs/API_CONTRACTS.md` is generated from the registry;
+the theory section of `mkdocs.yml` is generated from the primary catalog's
+topic headings and owner rows in `theory/README.md`. After an intentional
+contract or catalog change, run
 `python scripts/check_documentation.py --write-generated` and review the diff.
-The ordinary gate verifies exact table content, including postconditions; it
-does not update documentation silently.
+The ordinary gate verifies both generated views and complete catalog coverage;
+it does not update documentation silently or maintain a second owner registry.
 
 This validates references and executable examples before running a strict MkDocs
 build. Generated documentation sources and the rendered `site/` directory are not

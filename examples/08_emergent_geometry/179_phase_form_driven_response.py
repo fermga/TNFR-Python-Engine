@@ -2,7 +2,7 @@
 """Example 179: a supplied rotating phase contrast drives a circular form.
 
 Evaluate the analytic particular response on the unit P2 x C3 prism, using
-NODAL_PARAMETER_FOUNDATIONS section 16. The primitive phase path and its clock
+theory/nodal/PHASE_FORM_EXCHANGE.md section 16. The primitive phase path and its clock
 are imposed. No engine step, glyph, fitted source, or autonomous phase law is
 used. Every graph is a newly constructed snapshot of the prescribed curve.
 

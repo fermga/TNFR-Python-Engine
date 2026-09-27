@@ -1,5 +1,32 @@
 # Frozen raw archives preserve original bytes, including historical whitespace.
 # Live source and documentation retain the normal whitespace checks.
+docs/assets/source_relative_form_response/producer.v1.py.txt -text -whitespace
+docs/assets/source_relative_form_response/result.prediction.json -text
+docs/assets/source_relative_form_response/result.json -text
+docs/assets/phase_form_exchange_comparison/result.prediction.json -text
+docs/assets/phase_form_exchange_comparison/result.json -text
+docs/assets/relational_capacity_response/result.prediction.json -text
+docs/assets/relational_capacity_response/result.json -text
+docs/assets/relational_local_recovery/result.prediction.json -text
+docs/assets/relational_local_recovery/result.json -text
+docs/assets/relational_region_interaction/result.prediction.json -text
+docs/assets/relational_region_interaction/result.json -text
+docs/assets/relational_formation_response/result.prediction.json -text
+docs/assets/relational_formation_response/result.json -text
+docs/assets/relational_capture_response/result.prediction.json -text
+docs/assets/relational_capture_response/result.json -text
+docs/assets/relational_capture_response/endpoint-capture.audit.json -text
+docs/assets/relational_capture_response/continuous-transit.audit.json -text
+docs/assets/relational_capture_response/continuous-transit.audit.protocol.json -text
+docs/assets/relational_zero_form_response/result.json -text
+docs/assets/relational_zero_form_response/result.protocol.json -text
+docs/assets/relational_reversed_form_response/result.json -text
+docs/assets/relational_reversed_form_response/result.protocol.json -text
+docs/assets/relational_memory_response/result.prediction.json -text
+docs/assets/relational_memory_response/result.json -text
+docs/assets/relational_memory_response/result.sources.zip binary
+theory/research/archive/EXECUTION_PLAN_PRE_FOUR_FOUNDATIONS_2026-09-26.txt -text -whitespace
+theory/research/archive/PORTFOLIO_PRE_FOUR_FOUNDATIONS_2026-09-26.txt -text -whitespace
 theory/research/archive/ROADMAP_PRE_FIVE_STAGE_2026-09-17.txt -text -whitespace
 theory/research/archive/PORTFOLIO_PRE_COHORT_CONSOLIDATION_2026-09-19.txt -text -whitespace
 theory/research/archive/EXECUTION_PLAN_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt -text -whitespace

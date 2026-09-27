@@ -1,0 +1,845 @@
+{
+  "amplitude": {
+    "denominator": 16,
+    "numerator": 1
+  },
+  "beta": {
+    "denominator": 2,
+    "numerator": 1
+  },
+  "capacity": 1,
+  "cases": {
+    "cotangent": {
+      "high": {
+        "eigenvalue": {
+          "denominator": 2,
+          "numerator": 3
+        },
+        "mode": [
+          2,
+          -1,
+          -1,
+          2,
+          -1,
+          -1
+        ],
+        "phase_gain": {
+          "denominator": 884279719003555,
+          "numerator": 140737488355328
+        },
+        "probes": {
+          "minus": {
+            "form": [
+              {
+                "denominator": 256,
+                "numerator": 35
+              },
+              {
+                "denominator": 512,
+                "numerator": -35
+              },
+              {
+                "denominator": 512,
+                "numerator": -35
+              },
+              {
+                "denominator": 256,
+                "numerator": 35
+              },
+              {
+                "denominator": 512,
+                "numerator": -35
+              },
+              {
+                "denominator": 512,
+                "numerator": -35
+              }
+            ],
+            "phase": [
+              {
+                "denominator": 2305843009213693952,
+                "numerator": -5734161139222659
+              },
+              {
+                "denominator": 4611686018427387904,
+                "numerator": 5734161139222659
+              },
+              {
+                "denominator": 4611686018427387904,
+                "numerator": 5734161139222659
+              },
+              {
+                "denominator": 2305843009213693952,
+                "numerator": -5734161139222659
+              },
+              {
+                "denominator": 4611686018427387904,
+                "numerator": 5734161139222659
+              },
+              {
+                "denominator": 4611686018427387904,
+                "numerator": 5734161139222659
+              }
+            ]
+          },
+          "plus": {
+            "form": [
+              {
+                "denominator": 256,
+                "numerator": 29
+              },
+              {
+                "denominator": 512,
+                "numerator": -29
+              },
+              {
+                "denominator": 512,
+                "numerator": -29
+              },
+              {
+                "denominator": 256,
+                "numerator": 29
+              },
+              {
+                "denominator": 512,
+                "numerator": -29
+              },
+              {
+                "denominator": 512,
+                "numerator": -29
+              }
+            ],
+            "phase": [
+              {
+                "denominator": 2305843009213693952,
+                "numerator": 5734161139222659
+              },
+              {
+                "denominator": 4611686018427387904,
+                "numerator": -5734161139222659
+              },
+              {
+                "denominator": 4611686018427387904,
+                "numerator": -5734161139222659
+              },
+              {
+                "denominator": 2305843009213693952,
+                "numerator": 5734161139222659
+              },
+              {
+                "denominator": 4611686018427387904,
+                "numerator": -5734161139222659
+              },
+              {
+                "denominator": 4611686018427387904,
+                "numerator": -5734161139222659
+              }
+            ]
+          }
+        },
+        "reference_rate": {
+          "minus": [
+            {
+              "denominator": 28976077832308490240,
+              "numerator": -2953977372434276823
+            },
+            {
+              "denominator": 57952155664616980480,
+              "numerator": 2953977372434276823
+            },
+            {
+              "denominator": 57952155664616980480,
+              "numerator": 2953977372434276823
+            },
+            {
+              "denominator": 28976077832308490240,
+              "numerator": -2953977372434276823
+            },
+            {
+              "denominator": 57952155664616980480,
+              "numerator": 2953977372434276823
+            },
+            {
+              "denominator": 57952155664616980480,
+              "numerator": 2953977372434276823
+            }
+          ],
+          "plus": [
+            {
+              "denominator": 28976077832308490240,
+              "numerator": -2479037221123565097
+            },
+            {
+              "denominator": 57952155664616980480,
+              "numerator": 2479037221123565097
+            },
+            {
+              "denominator": 57952155664616980480,
+              "numerator": 2479037221123565097
+            },
+            {
+              "denominator": 28976077832308490240,
+              "numerator": -2479037221123565097
+            },
+            {
+              "denominator": 57952155664616980480,
+              "numerator": 2479037221123565097
+            },
+            {
+              "denominator": 57952155664616980480,
+              "numerator": 2479037221123565097
+            }
+          ]
+        },
+        "reference_restoring": {
+          "denominator": 452751216129820160,
+          "numerator": 17202483417667977
+        }
+      },
+      "low": {
+        "eigenvalue": {
+          "denominator": 2,
+          "numerator": 1
+        },
+        "mode": [
+          2,
+          1,
+          -1,
+          -2,
+          -1,
+          1
+        ],
+        "phase_gain": {
+          "denominator": 884279719003555,
+          "numerator": 140737488355328
+        },
+        "probes": {
+          "minus": {
+            "form": [
+              {
+                "denominator": 256,
+                "numerator": 33
+              },
+              {
+                "denominator": 512,
+                "numerator": 33
+              },
+              {
+                "denominator": 512,
+                "numerator": -33
+              },
+              {
+                "denominator": 256,
+                "numerator": -33
+              },
+              {
+                "denominator": 512,
+                "numerator": -33
+              },
+              {
+                "denominator": 512,
+                "numerator": 33
+              }
+            ],
+            "phase": [
+              {
+                "denominator": 2305843009213693952,
+                "numerator": -5734161139222659
+              },
+              {
+                "denominator": 4611686018427387904,
+                "numerator": -5734161139222659
+              },
+              {
+                "denominator": 4611686018427387904,
+                "numerator": 5734161139222659
+              },
+              {
+                "denominator": 2305843009213693952,
+                "numerator": 5734161139222659
+              },
+              {
+                "denominator": 4611686018427387904,
+                "numerator": 5734161139222659
+              },
+              {
+                "denominator": 4611686018427387904,
+                "numerator": -5734161139222659
+              }
+            ]
+          },
+          "plus": {
+            "form": [
+              {
+                "denominator": 256,
+                "numerator": 31
+              },
+              {
+                "denominator": 512,
+                "numerator": 31
+              },
+              {
+                "denominator": 512,
+                "numerator": -31
+              },
+              {
+                "denominator": 256,
+                "numerator": -31
+              },
+              {
+                "denominator": 512,
+                "numerator": -31
+              },
+              {
+                "denominator": 512,
+                "numerator": 31
+              }
+            ],
+            "phase": [
+              {
+                "denominator": 2305843009213693952,
+                "numerator": 5734161139222659
+              },
+              {
+                "denominator": 4611686018427387904,
+                "numerator": 5734161139222659
+              },
+              {
+                "denominator": 4611686018427387904,
+                "numerator": -5734161139222659
+              },
+              {
+                "denominator": 2305843009213693952,
+                "numerator": -5734161139222659
+              },
+              {
+                "denominator": 4611686018427387904,
+                "numerator": -5734161139222659
+              },
+              {
+                "denominator": 4611686018427387904,
+                "numerator": 5734161139222659
+              }
+            ]
+          }
+        },
+        "reference_rate": {
+          "minus": [
+            {
+              "denominator": 28976077832308490240,
+              "numerator": -928065222128531421
+            },
+            {
+              "denominator": 57952155664616980480,
+              "numerator": -928065222128531421
+            },
+            {
+              "denominator": 57952155664616980480,
+              "numerator": 928065222128531421
+            },
+            {
+              "denominator": 28976077832308490240,
+              "numerator": 928065222128531421
+            },
+            {
+              "denominator": 57952155664616980480,
+              "numerator": 928065222128531421
+            },
+            {
+              "denominator": 57952155664616980480,
+              "numerator": -928065222128531421
+            }
+          ],
+          "plus": [
+            {
+              "denominator": 28976077832308490240,
+              "numerator": -882939642390749219
+            },
+            {
+              "denominator": 57952155664616980480,
+              "numerator": -882939642390749219
+            },
+            {
+              "denominator": 57952155664616980480,
+              "numerator": 882939642390749219
+            },
+            {
+              "denominator": 28976077832308490240,
+              "numerator": 882939642390749219
+            },
+            {
+              "denominator": 57952155664616980480,
+              "numerator": 882939642390749219
+            },
+            {
+              "denominator": 57952155664616980480,
+              "numerator": -882939642390749219
+            }
+          ]
+        },
+        "reference_restoring": {
+          "denominator": 452751216129820160,
+          "numerator": 5734161139222659
+        }
+      }
+    },
+    "relational": {
+      "high": {
+        "eigenvalue": {
+          "denominator": 2,
+          "numerator": 3
+        },
+        "mode": [
+          2,
+          -1,
+          -1,
+          2,
+          -1,
+          -1
+        ],
+        "phase_gain": {
+          "denominator": 884279719003555,
+          "numerator": 422212465065984
+        },
+        "probes": {
+          "minus": {
+            "form": [
+              {
+                "denominator": 256,
+                "numerator": 35
+              },
+              {
+                "denominator": 512,
+                "numerator": -35
+              },
+              {
+                "denominator": 512,
+                "numerator": -35
+              },
+              {
+                "denominator": 256,
+                "numerator": 35
+              },
+              {
+                "denominator": 512,
+                "numerator": -35
+              },
+              {
+                "denominator": 512,
+                "numerator": -35
+              }
+            ],
+            "phase": [
+              {
+                "denominator": 288230376151711744,
+                "numerator": -2150310427208497
+              },
+              {
+                "denominator": 576460752303423488,
+                "numerator": 2150310427208497
+              },
+              {
+                "denominator": 576460752303423488,
+                "numerator": 2150310427208497
+              },
+              {
+                "denominator": 288230376151711744,
+                "numerator": -2150310427208497
+              },
+              {
+                "denominator": 576460752303423488,
+                "numerator": 2150310427208497
+              },
+              {
+                "denominator": 576460752303423488,
+                "numerator": 2150310427208497
+              }
+            ]
+          },
+          "plus": {
+            "form": [
+              {
+                "denominator": 256,
+                "numerator": 29
+              },
+              {
+                "denominator": 512,
+                "numerator": -29
+              },
+              {
+                "denominator": 512,
+                "numerator": -29
+              },
+              {
+                "denominator": 256,
+                "numerator": 29
+              },
+              {
+                "denominator": 512,
+                "numerator": -29
+              },
+              {
+                "denominator": 512,
+                "numerator": -29
+              }
+            ],
+            "phase": [
+              {
+                "denominator": 288230376151711744,
+                "numerator": 2150310427208497
+              },
+              {
+                "denominator": 576460752303423488,
+                "numerator": -2150310427208497
+              },
+              {
+                "denominator": 576460752303423488,
+                "numerator": -2150310427208497
+              },
+              {
+                "denominator": 288230376151711744,
+                "numerator": 2150310427208497
+              },
+              {
+                "denominator": 576460752303423488,
+                "numerator": -2150310427208497
+              },
+              {
+                "denominator": 576460752303423488,
+                "numerator": -2150310427208497
+              }
+            ]
+          }
+        },
+        "reference_rate": {
+          "minus": [
+            {
+              "denominator": 3622009729038561280,
+              "numerator": -364946550699867609
+            },
+            {
+              "denominator": 7244019458077122560,
+              "numerator": 364946550699867609
+            },
+            {
+              "denominator": 7244019458077122560,
+              "numerator": 364946550699867609
+            },
+            {
+              "denominator": 3622009729038561280,
+              "numerator": -364946550699867609
+            },
+            {
+              "denominator": 7244019458077122560,
+              "numerator": 364946550699867609
+            },
+            {
+              "denominator": 7244019458077122560,
+              "numerator": 364946550699867609
+            }
+          ],
+          "plus": [
+            {
+              "denominator": 3622009729038561280,
+              "numerator": -314180273494862631
+            },
+            {
+              "denominator": 7244019458077122560,
+              "numerator": 314180273494862631
+            },
+            {
+              "denominator": 7244019458077122560,
+              "numerator": 314180273494862631
+            },
+            {
+              "denominator": 3622009729038561280,
+              "numerator": -314180273494862631
+            },
+            {
+              "denominator": 7244019458077122560,
+              "numerator": 314180273494862631
+            },
+            {
+              "denominator": 7244019458077122560,
+              "numerator": 314180273494862631
+            }
+          ]
+        },
+        "reference_restoring": {
+          "denominator": 56593902016227520,
+          "numerator": 6450931281625491
+        }
+      },
+      "low": {
+        "eigenvalue": {
+          "denominator": 2,
+          "numerator": 1
+        },
+        "mode": [
+          2,
+          1,
+          -1,
+          -2,
+          -1,
+          1
+        ],
+        "phase_gain": {
+          "denominator": 884279719003555,
+          "numerator": 140737488355328
+        },
+        "probes": {
+          "minus": {
+            "form": [
+              {
+                "denominator": 256,
+                "numerator": 33
+              },
+              {
+                "denominator": 512,
+                "numerator": 33
+              },
+              {
+                "denominator": 512,
+                "numerator": -33
+              },
+              {
+                "denominator": 256,
+                "numerator": -33
+              },
+              {
+                "denominator": 512,
+                "numerator": -33
+              },
+              {
+                "denominator": 512,
+                "numerator": 33
+              }
+            ],
+            "phase": [
+              {
+                "denominator": 2305843009213693952,
+                "numerator": -5734161139222659
+              },
+              {
+                "denominator": 4611686018427387904,
+                "numerator": -5734161139222659
+              },
+              {
+                "denominator": 4611686018427387904,
+                "numerator": 5734161139222659
+              },
+              {
+                "denominator": 2305843009213693952,
+                "numerator": 5734161139222659
+              },
+              {
+                "denominator": 4611686018427387904,
+                "numerator": 5734161139222659
+              },
+              {
+                "denominator": 4611686018427387904,
+                "numerator": -5734161139222659
+              }
+            ]
+          },
+          "plus": {
+            "form": [
+              {
+                "denominator": 256,
+                "numerator": 31
+              },
+              {
+                "denominator": 512,
+                "numerator": 31
+              },
+              {
+                "denominator": 512,
+                "numerator": -31
+              },
+              {
+                "denominator": 256,
+                "numerator": -31
+              },
+              {
+                "denominator": 512,
+                "numerator": -31
+              },
+              {
+                "denominator": 512,
+                "numerator": 31
+              }
+            ],
+            "phase": [
+              {
+                "denominator": 2305843009213693952,
+                "numerator": 5734161139222659
+              },
+              {
+                "denominator": 4611686018427387904,
+                "numerator": 5734161139222659
+              },
+              {
+                "denominator": 4611686018427387904,
+                "numerator": -5734161139222659
+              },
+              {
+                "denominator": 2305843009213693952,
+                "numerator": -5734161139222659
+              },
+              {
+                "denominator": 4611686018427387904,
+                "numerator": -5734161139222659
+              },
+              {
+                "denominator": 4611686018427387904,
+                "numerator": 5734161139222659
+              }
+            ]
+          }
+        },
+        "reference_rate": {
+          "minus": [
+            {
+              "denominator": 28976077832308490240,
+              "numerator": -928065222128531421
+            },
+            {
+              "denominator": 57952155664616980480,
+              "numerator": -928065222128531421
+            },
+            {
+              "denominator": 57952155664616980480,
+              "numerator": 928065222128531421
+            },
+            {
+              "denominator": 28976077832308490240,
+              "numerator": 928065222128531421
+            },
+            {
+              "denominator": 57952155664616980480,
+              "numerator": 928065222128531421
+            },
+            {
+              "denominator": 57952155664616980480,
+              "numerator": -928065222128531421
+            }
+          ],
+          "plus": [
+            {
+              "denominator": 28976077832308490240,
+              "numerator": -882939642390749219
+            },
+            {
+              "denominator": 57952155664616980480,
+              "numerator": -882939642390749219
+            },
+            {
+              "denominator": 57952155664616980480,
+              "numerator": 882939642390749219
+            },
+            {
+              "denominator": 28976077832308490240,
+              "numerator": 882939642390749219
+            },
+            {
+              "denominator": 57952155664616980480,
+              "numerator": 882939642390749219
+            },
+            {
+              "denominator": 57952155664616980480,
+              "numerator": -882939642390749219
+            }
+          ]
+        },
+        "reference_restoring": {
+          "denominator": 452751216129820160,
+          "numerator": 5734161139222659
+        }
+      }
+    }
+  },
+  "epi_weight": {
+    "denominator": 2,
+    "numerator": 1
+  },
+  "eta": {
+    "denominator": 1,
+    "numerator": 1
+  },
+  "phase_weight": {
+    "denominator": 2,
+    "numerator": 1
+  },
+  "pi_represented": {
+    "denominator": 281474976710656,
+    "numerator": 884279719003555
+  },
+  "probe_span": {
+    "denominator": 8,
+    "numerator": 1
+  },
+  "protocol": "phase-form-exchange-finite-probe-v1",
+  "ratios": {
+    "cotangent": {
+      "admitted_interval": [
+        {
+          "denominator": 22399067126944455519461,
+          "numerator": 67197200673409591355539
+        },
+        {
+          "denominator": 22399066773232567918039,
+          "numerator": 67197201027121478956961
+        }
+      ],
+      "exact_real_prediction": 3,
+      "represented_reference": {
+        "denominator": 1,
+        "numerator": 3
+      }
+    },
+    "relational": {
+      "admitted_interval": [
+        {
+          "denominator": 22399067126944455519461,
+          "numerator": 201591602373940649949289
+        },
+        {
+          "denominator": 22399066773232567918039,
+          "numerator": 201591602727652537550711
+        }
+      ],
+      "exact_real_prediction": 9,
+      "represented_reference": {
+        "denominator": 1911387046407553,
+        "numerator": 17202483417667976
+      }
+    }
+  },
+  "restoring_allowance": {
+    "denominator": 10000000000,
+    "numerator": 1
+  },
+  "runtime": {
+    "kernel": "numpy_fused_unit_edges_below_jit_size_threshold",
+    "networkx": "3.6.1",
+    "numpy": "2.5.3",
+    "precision": "binary64",
+    "pressure_path": "fused_canonical",
+    "python": "3.13.6",
+    "randomness": "none"
+  },
+  "scale_choice": "a_priori_low_mode_match_beta_equals_eta_degree_w_lambda_low",
+  "scope": "prepared_constitutive_states_not_executed_trajectory_or_physical_selection",
+  "source_sha256": {
+    "benchmarks/phase_form_exchange_comparison.py": "ea19b78874c2dc8cac9a9b0869417fcc5bec0a3aa9a6b942ed17b99f649c50e7",
+    "src/tnfr/_exact_time.py": "69ef60f1405b6551f3d0fb64ad253dbe7267a053a6b390513c539a5a7a8878c0",
+    "src/tnfr/config/defaults_core.py": "bf938cb6108005a519f7e184865366a0f00ccdfd4fd685fbb3a8ea7b73faf551",
+    "src/tnfr/dynamics/canonical.py": "a3a1407b963f7846b1c005eaba3f76f2e2e72e0436b88b2ef2d7a4ebc1569221",
+    "src/tnfr/dynamics/dnfr.py": "e746586a987b223fda19192a49729e5274216668b4522d79cd46a935f184f7a1",
+    "src/tnfr/dynamics/fused_dnfr.py": "67ebc6c994da1f26ff1e1265dc135efe1fc24d0114d1b021fb9e5978eec77b2a",
+    "src/tnfr/mathematics/_neighbor_differences.py": "253a6e1ca539a27c555ea0b500f56d49e3d370778fb8d2bdbf24d481deaf3ba6",
+    "src/tnfr/mathematics/_phase_midpoint.py": "aea8e1902f83b7d585c31119f96039816dc607b2bad40200d85264446826d446",
+    "src/tnfr/mathematics/unified_numerical.py": "d8b48a6cbb588db76c05194601094063d7c9c15121275bd37f51537c5d90fb0e"
+  },
+  "support": "unit_undirected_C6_in_node_order_0_to_5"
+}

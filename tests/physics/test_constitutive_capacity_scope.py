@@ -1,7 +1,8 @@
-"""Detached capacity-law independence and optional constitutive-law controls.
+"""Capacity-law independence, constitutive admission and live-policy controls.
 
-The two analytic completions are counterexamples to a claimed implication,
-not proposed TNFR laws, executed trajectories or runtime certificates.
+The analytic completions and local capacity/form relations below are declared
+comparisons, not uniquely derived TNFR laws or complete-runtime certificates.
+The final admission controls execute actual pressure, Si and capacity events.
 """
 
 from copy import deepcopy
@@ -10,8 +11,13 @@ from fractions import Fraction as Q
 import networkx as nx
 import pytest
 
+from tnfr.alias import get_attr
+from tnfr.constants import inject_defaults
+from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_SI, ALIAS_VF
+from tnfr.dynamics.adaptation import adapt_vf_after_structural_stability
 from tnfr.dynamics.canonical import compute_extended_nodal_system
 from tnfr.dynamics.dnfr import default_compute_delta_nfr
+from tnfr.metrics.sense_index import compute_Si
 from tnfr.physics._cycle_algebra import dot
 from tnfr.physics.fields import (
     compute_phase_curvature,
@@ -372,3 +378,286 @@ def test_self_loop_normalization_hides_capacity_from_pure_transport_only(
         -b / 8,
         b / 16,
     )
+
+
+def test_local_capacity_form_relation_has_conditional_charge_and_energy_balance():
+    symbolic = pytest.importorskip("sympy")
+    graph = nx.cycle_graph(4)
+    laplacian = symbolic.Matrix(_laplacian(graph))
+    degree = 2 * symbolic.eye(4)
+    stiffness = degree * laplacian
+    x = symbolic.Matrix(symbolic.symbols("x0:4", real=True))
+    e, f = symbolic.symbols("e f", positive=True)
+    z, origin = symbolic.symbols("z origin", real=True)
+    g = symbolic.Function("g")
+    capacity = x.applyfunc(g)
+    h = e * x + f * capacity
+    rate = -symbolic.diag(*capacity) * laplacian * h
+
+    # These primitives require a supplied common positive g on the chart.
+    # They are not inferred from a trajectory or from the nodal product.
+    charge = sum(2 * symbolic.Integral(1 / g(z), (z, origin, value)) for value in x)
+    energy = sum(
+        2 * symbolic.Integral((e * z + f * g(z)) / g(z), (z, origin, value))
+        for value in x
+    )
+    charge_gradient = symbolic.Matrix([charge.diff(value) for value in x])
+    energy_gradient = symbolic.Matrix([energy.diff(value) for value in x])
+    assert charge_gradient == symbolic.Matrix([2 / value for value in capacity])
+    assert symbolic.simplify(charge_gradient.dot(rate)) == 0
+    dissipation = (h.T * stiffness * h)[0]
+    assert symbolic.simplify(energy_gradient.dot(rate) + dissipation) == 0
+    assert (
+        symbolic.expand(dissipation - sum((h[i] - h[j]) ** 2 for i, j in graph.edges))
+        == 0
+    )
+
+
+def test_local_affine_capacity_full_jacobian_exposes_the_slope_boundary():
+    symbolic = pytest.importorskip("sympy")
+    laplacian = symbolic.Matrix(_laplacian(nx.cycle_graph(4)))
+    x = symbolic.Matrix(symbolic.symbols("x0:4", real=True))
+    a, b = symbolic.symbols("a b", real=True)
+    e, f, capacity_at_a = symbolic.symbols("e f capacity_at_a", positive=True)
+    capacity = x.applyfunc(lambda value: capacity_at_a + b * (value - a))
+    h = e * x + f * capacity
+    rate = -symbolic.diag(*capacity) * laplacian * h
+    jacobian = rate.jacobian(x)
+    full_expected = (
+        -b * symbolic.diag(*(laplacian * h))
+        - (e + f * b) * symbolic.diag(*capacity) * laplacian
+    )
+    assert symbolic.simplify(jacobian - full_expected) == symbolic.zeros(4)
+    uniform_jacobian = jacobian.subs(dict.fromkeys(x, a))
+    assert symbolic.simplify(
+        uniform_jacobian + capacity_at_a * (e + f * b) * laplacian
+    ) == symbolic.zeros(4)
+
+    alternating = symbolic.Matrix([1, -1, 1, -1])
+    assert laplacian * alternating == 2 * alternating
+    coefficient = -2 * capacity_at_a * (e + f * b)
+    assert symbolic.simplify(
+        uniform_jacobian * alternating - coefficient * alternating
+    ) == symbolic.zeros(4, 1)
+    assert coefficient.subs(b, 0).is_negative
+    assert coefficient.subs(b, -e / f) == 0
+    assert coefficient.subs(b, -2 * e / f).is_positive
+    # At cancellation the entire supplied affine law has zero pressure,
+    # not merely a zero eigenvalue of the uniform-state linearization.
+    assert symbolic.simplify(rate.subs(b, -e / f)) == symbolic.zeros(4, 1)
+
+
+def test_positive_local_slopes_give_the_conditional_equilibrium_metric_identity():
+    symbolic = pytest.importorskip("sympy")
+    laplacian = symbolic.Matrix(_laplacian(nx.cycle_graph(4)))
+    degree = 2 * symbolic.eye(4)
+    capacities = symbolic.symbols("g0:4", positive=True)
+    slopes = symbolic.symbols("s0:4", positive=True)
+    # This is the linearization at a supplied equilibrium with h constant
+    # and s_i=h'(x_i)>0; it does not establish existence of such an equilibrium.
+    slope_matrix = symbolic.diag(*slopes)
+    jacobian = -symbolic.diag(*capacities) * laplacian * slope_matrix
+    metric = symbolic.diag(
+        *(2 * slope / capacity for slope, capacity in zip(slopes, capacities))
+    )
+    assert symbolic.simplify(
+        metric * jacobian + slope_matrix * degree * laplacian * slope_matrix
+    ) == symbolic.zeros(4)
+    null_direction = symbolic.Matrix([1 / slope for slope in slopes])
+    assert jacobian * null_direction == symbolic.zeros(4, 1)
+    charge_gradient = symbolic.Matrix([2 / capacity for capacity in capacities])
+    # The sole connected-cycle null direction is not tangent to fixed Q.
+    assert laplacian.rank() == 3
+    assert charge_gradient.dot(null_direction).is_positive
+
+
+@pytest.mark.parametrize("slope", [0, -1, -2])
+def test_declared_local_capacity_slopes_distinguish_fresh_nodal_responses(slope):
+    graph = nx.cycle_graph(4)
+    graph.graph["DNFR_WEIGHTS"] = dict(phase=0.0, epi=0.5, vf=0.5, topo=0.0)
+    epi = tuple(Q(1, 2) + Q((-1) ** node, 8) for node in graph)
+    capacities = tuple(1 + slope * (value - Q(1, 2)) for value in epi)
+    for node, value, capacity in zip(graph, epi, capacities, strict=True):
+        graph.nodes[node].update(
+            EPI=float(value), nu_f=float(capacity), theta=0.0, delta_nfr=0.0
+        )
+    # One predeclared state, fixed unit C4, held equal phases and no Gamma.
+    # nu'=slope*x' is an additional comparison premise, not engine selection.
+    default_compute_delta_nfr(graph)
+    capture = capture_non_epi_forcing(graph)
+    source = capture.snapshot
+    laplacian = _laplacian(graph)
+    e = f = Q(1, 2)
+    expected_pressure = tuple(-(e + f * slope) * dot(row, epi) for row in laplacian)
+    expected_rate = tuple(
+        capacity * pressure
+        for capacity, pressure in zip(capacities, expected_pressure, strict=True)
+    )
+    assert all(capacity > 0 for capacity in capacities)
+    assert source.epi == epi and source.capacity == capacities
+    assert (
+        capture.kernel_pressure_defect == capture.stored_pressure_residual == (0,) * 4
+    )
+    assert capture.phase_gradient == source.topology_gradient == (0,) * 4
+    assert source.stored_pressure == expected_pressure
+    assert source.rate == expected_rate
+    capacity_rate = tuple(slope * value for value in expected_rate)
+    reference = derive_phase_response(
+        cosine_gram=((1,) * 4,) * 4,
+        mean_neighbors=source.support_neighbors,
+        receiver_sources=tuple((node,) for node in graph),
+        phase_factor=Q(0),
+    )
+    response = derive_joint_nodal_response(
+        source,
+        reference,
+        epi_weight=e,
+        phase_weight=Q(0),
+        capacity_weight=f,
+        phase_rate_over_pi=(0,) * 4,
+        capacity_rate=capacity_rate,
+    )
+    expected_pressure_rate = tuple(
+        -(e + f * slope) * dot(row, expected_rate) for row in laplacian
+    )
+    assert response.capacity_rate == capacity_rate
+    assert response.capacity_pressure_rate == tuple(
+        -f * dot(row, capacity_rate) for row in laplacian
+    )
+    assert response.pressure_rate == expected_pressure_rate
+    assert response.epi_acceleration == tuple(
+        slope * rate * pressure + capacity * pressure_rate
+        for rate, pressure, capacity, pressure_rate in zip(
+            expected_rate,
+            expected_pressure,
+            capacities,
+            expected_pressure_rate,
+            strict=True,
+        )
+    )
+    # Exact initial change of the alternating contrast: damping, cancellation,
+    # or growth. This finite state does not certify a complete trajectory.
+    contrast_rate = (
+        sum((-1) ** node * value for node, value in enumerate(source.rate)) / 4
+    )
+    assert contrast_rate == -(1 + slope) / Q(8)
+
+
+def _capacity_admission_graph(epi, capacity):
+    graph = _initial_graph()
+    inject_defaults(graph)
+    graph.graph.update(
+        DNFR_WEIGHTS=dict(phase=0.0, epi=0.5, vf=0.5, topo=0.0),
+        VF_ADAPT_TAU=2,
+        VF_ADAPT_MU=0.25,
+        EPS_DNFR_STABLE=0.5,
+        VF_MIN=0.0,
+        SELECTOR_THRESHOLDS={"si_hi": 0.0},
+        _t=0.0,
+    )
+    for node, form, rate in zip(graph, epi, capacity, strict=True):
+        graph.nodes[node].update(EPI=float(form), nu_f=float(rate))
+    default_compute_delta_nfr(graph)
+    compute_Si(graph, inplace=True)
+    return graph
+
+
+def _capacity_channel(graph, aliases):
+    return tuple(Q(get_attr(graph.nodes[node], aliases, strict=True)) for node in graph)
+
+
+def _execute_two_qualifying_capacity_calls(graph):
+    """Execute the declared policy using current pressure and actual Si.
+
+    The low Si cutoff and wide pressure cutoff are explicit comparison policy,
+    not an emergent law or a claim that the default policy admits these states.
+    """
+    initial_capacity = _capacity_channel(graph, ALIAS_VF)
+    for call in (1, 2):
+        default_compute_delta_nfr(graph)
+        compute_Si(graph, inplace=True)
+        assert all(value >= 0 for value in _capacity_channel(graph, ALIAS_SI))
+        assert all(
+            abs(value) <= Q(1, 2) for value in _capacity_channel(graph, ALIAS_DNFR)
+        )
+        adapt_vf_after_structural_stability(graph, n_jobs=1)
+        assert tuple(graph.nodes[node]["stable_count"] for node in graph) == (call,) * 2
+        assert graph.graph["_t"] == 0.0  # Counts are invocations, not elapsed time.
+        if call == 1:
+            assert _capacity_channel(graph, ALIAS_VF) == initial_capacity
+
+
+def test_capacity_policy_jump_leaves_local_form_law_and_changes_fresh_pressure():
+    # Supplied graph law g(x)=x on x>0, with the existing pressure channels.
+    graph = _capacity_admission_graph((Q(5, 8), Q(3, 8)), (Q(5, 8), Q(3, 8)))
+    before = capture_non_epi_forcing(graph)
+    assert before.snapshot.epi == before.snapshot.capacity == (Q(5, 8), Q(3, 8))
+    assert before.snapshot.stored_pressure == (Q(-1, 4), Q(1, 4))
+    assert before.snapshot.rate == (Q(-5, 32), Q(3, 32))
+    assert before.stored_pressure_residual == before.kernel_pressure_defect == (0, 0)
+    # A continuous graph-law lift would require nu_dot=g'(x)*x_dot=x_dot.
+    # Holding capacity instead has this nonzero tangency defect.
+    assert tuple(-rate for rate in before.snapshot.rate) == (Q(5, 32), Q(-3, 32))
+
+    _execute_two_qualifying_capacity_calls(graph)
+    after = capture_non_epi_forcing(graph)
+    assert after.snapshot.epi == before.snapshot.epi
+    assert after.snapshot.capacity == (Q(9, 16), Q(7, 16))
+    assert tuple(
+        capacity - form
+        for capacity, form in zip(
+            after.snapshot.capacity, after.snapshot.epi, strict=True
+        )
+    ) == (Q(-1, 16), Q(1, 16))
+    assert after.snapshot.stored_pressure == before.snapshot.stored_pressure
+    assert after.snapshot.rate == (Q(-9, 64), Q(7, 64))
+    assert after.full_kernel_pressure == (Q(-3, 16), Q(3, 16))
+    assert after.stored_pressure_residual == (Q(-1, 16), Q(1, 16))
+    assert after.kernel_pressure_defect == (0, 0)
+    assert after.snapshot.epi_gradient == before.snapshot.epi_gradient
+    assert before.snapshot.capacity_gradient == (Q(-1, 4), Q(1, 4))
+    assert after.snapshot.capacity_gradient == (Q(-1, 8), Q(1, 8))
+    # Execute the actual refresh; the detached predicted pressure is not used
+    # as an externally supplied replacement for the pressure law.
+    default_compute_delta_nfr(graph)
+    refreshed = capture_non_epi_forcing(graph)
+    assert refreshed.snapshot.stored_pressure == after.full_kernel_pressure
+    assert refreshed.snapshot.rate == (Q(-27, 256), Q(21, 256))
+    assert refreshed.stored_pressure_residual == (0, 0)
+
+
+def test_capacity_event_can_reactivate_zero_outside_unforced_local_law_tangency():
+    # This is a separately admitted nonnegative boundary of g(x)=x; the
+    # positive-g charge/energy theorem above is not applied at zero capacity.
+    graph = _capacity_admission_graph((0, Q(1, 2)), (0, Q(1, 2)))
+    before = capture_non_epi_forcing(graph)
+    assert before.snapshot.stored_pressure == (Q(1, 2), Q(-1, 2))
+    assert before.snapshot.rate == (0, Q(-1, 4))
+    assert before.snapshot.capacity[0] == before.snapshot.epi[0] == 0
+    # A finite C1 local g' times this zero unforced form row requires nu_dot=0
+    # at node 0. A capacity-only hybrid jump has a different admission test.
+    _execute_two_qualifying_capacity_calls(graph)
+    after = capture_non_epi_forcing(graph)
+    assert after.snapshot.epi == before.snapshot.epi
+    assert after.snapshot.capacity == (Q(1, 8), Q(3, 8))
+    assert after.snapshot.rate == (Q(1, 16), Q(-3, 16))
+    assert after.full_kernel_pressure == (Q(3, 8), Q(-3, 8))
+    default_compute_delta_nfr(graph)
+    refreshed = capture_non_epi_forcing(graph)
+    assert refreshed.snapshot.rate == (Q(3, 64), Q(-9, 64))
+    assert refreshed.stored_pressure_residual == (0, 0)
+
+
+def test_uniform_capacity_policy_fixed_point_preserves_a_constant_graph_law():
+    graph = _capacity_admission_graph((Q(5, 8), Q(3, 8)), (Q(1, 2), Q(1, 2)))
+    before = capture_non_epi_forcing(graph)
+    assert before.snapshot.rate == (Q(-1, 16), Q(1, 16))
+    assert before.snapshot.capacity_gradient == (0, 0)
+    _execute_two_qualifying_capacity_calls(graph)
+    after = capture_non_epi_forcing(graph)
+    assert after.snapshot.epi == before.snapshot.epi
+    assert after.snapshot.capacity == before.snapshot.capacity == (Q(1, 2),) * 2
+    assert after.snapshot.rate == before.snapshot.rate
+    assert after.stored_pressure_residual == (0, 0)
+    # g=1/2 has g'=0: held capacity is tangent even while EPI moves, and this
+    # particular native event preserves the relation. Not every writer fails.

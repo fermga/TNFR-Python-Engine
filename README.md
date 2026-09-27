@@ -23,8 +23,15 @@ select them. Structural time requires a declared clock; comparison with
 laboratory seconds requires an independent measurement bridge.
 
 Use the engine to execute declared operator studies, observe structural fields
-and examine scoped mathematical models. Autonomous persistent patterns and
-their correspondence with physical entities remain research objectives.
+and investigate explicit nodal models. Conditional formation, maintenance and
+interaction of patterns have been established for specified laws and supplied
+networks. A uniquely selected fundamental law, autonomous substrate creation
+and identification with physical matter remain open.
+
+Start with the [theory reading routes](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md)
+for concepts and evidence, or the [CLI and SDK guide](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/CLI_AND_SDK.md)
+for executable interfaces. This README describes the current checkout; a
+published package or archived release can have a narrower feature set.
 
 ## Installation
 
@@ -82,7 +89,7 @@ explains these reports, seed ownership and advanced execution routes.
 
 ## Command line and reproducible studies
 
-The CLI and SDK share a declared study runner:
+For operator-word studies, the CLI and SDK share one declared runner:
 
 ```bash
 tnfr network --nodes 6 --topology ring --seed 42 --steps 1 --export-spec study.json --output report.json
@@ -138,62 +145,64 @@ network REMESH history and rollback boundaries are specified in the
 [API contracts](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/API_CONTRACTS.md),
 which owns these details rather than duplicating them here.
 
-## Mathematical scope
+## Execution paths and mathematical scope
 
-The repository contains useful conditional results and explicit counterexamples:
+Choose the declared execution path; the interfaces share engine owners but do
+not all execute the same model.
 
-- Fixed reversible pure-EPI diffusion has a Dirichlet dissipation law and
-  componentwise consensus under fixed positive capacities. Directed, forced and time-varying models
-  require additional hypotheses: [diffusion theorem](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_DIFFUSION_STABILITY_THEOREM.md).
-- Projecting out nodal state can create memory. Mean closure need not preserve
-  potential or coherence length: [derived memory](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/DERIVED_EPI_MEMORY.md)
-  and [scale/geometry bridge](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md).
-- A prescribed phase motion can produce a conditional periodic form response;
-  autonomous generation of that motion remains open:
-  [phase/form foundations](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md).
-- The symplectic substrate, graph wave, polarization and arithmetic models are
-  specified auxiliary constructions. Their identities do not establish that
-  all engine trajectories obey them or that particles have emerged:
-  [variational scope](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_VARIATIONAL_PRINCIPLE.md) and
-  [regime comparisons](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/PHYSICAL_REGIME_CORRESPONDENCES.md).
+| Purpose | Entry point | Contract |
+| --- | --- | --- |
+| Operator-word studies | `StudySpec` / `run_study`, `tnfr network` | Complete requested words, grammar and live preconditions; cycles are not seconds |
+| Conditional joint form/phase evolution | `RelationalExchangeModel`, `Network.step_relational(model, dt=...)` | Explicit joint Euler step on admitted fixed support with held capacity; separate from operator-word studies |
+| Observe a supplied state or pattern | `diagnose_network`, `regional_form`, `source_relative_form`, `relational_pattern` | Detached reports; stored-pressure and fresh-field observations retain their different provenance |
+| Check a sufficient basin or continuous transit | `Network.relational_*capture` | Read-only, support-specific theorem admission; not a generic detector, automatic controller or replacement for execution |
 
-Conservation residuals are measured quantities; a nonnegative diagnostic energy
-is not automatically a Lyapunov function. Passing finite tests or reproducing
-arithmetic targets does not prove global stability, a Millennium conjecture or
-a physical theory of emergence.
+The [SDK guide](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/CLI_AND_SDK.md)
+owns exact signatures, preparations, supported domains and export examples.
+Reports retain availability and numerical evidence; they are not full resumable
+checkpoints. Research coefficient instruments do not become production solvers
+merely because their finite predictions pass.
 
-The [theory index](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md) distinguishes current references,
-conditional results, finite evidence and historical work. The
-[research portfolio](https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR_lineas_de_investigacion.txt) classifies the branches;
-the [execution plan](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-is the sole active queue. The main objective remains a predictive generative
-account of coherent patterns, with a separate reserved-data measurement bridge.
-Foundational choices remain open to revision. Current priority is to identify
-the smallest justified model and a discriminating prediction, retaining useful
-conditional results without requiring the configured C5 maintenance route.
+The main results have distinct scopes:
+
+| Topic | Established contribution | Boundary and owner |
+| --- | --- | --- |
+| Diffusion | Dirichlet dissipation and componentwise consensus for fixed reversible pure-EPI transport with positive held capacity | Directed, forced and time-varying laws need separate hypotheses: [diffusion](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_DIFFUSION_STABILITY_THEOREM.md) |
+| Derived regional form | Amplitudes, angles, Gram relations and source-relative responses derived from scalar EPI | Observation closure requires its supplied law; a derived angle is not automatically primitive phase: [form geometry](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/DERIVED_FORM_PHASE.md) |
+| Relational patterns | A declared joint law supports local recovery, transmission and a validated formation-to-maintenance route on supplied two-ring support | Zero-form and sign-reversed controls can reach consensus instead; general formation and physical identification do not follow: [relational model](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md) |
+| Composition and memory | Exact tangent reduction, nonlinear nonclosure witnesses and a derived memory correction that improves one frozen finite prediction | Full internal state remains authoritative; matched-step numerical accuracy is not a continuous ODE error certificate: [composition](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md), [memory](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/RELATIONAL_PATTERN_MEMORY.md) |
+| Auxiliary models and applications | Explicit Hamiltonian, graph-wave, polarization and arithmetic constructions | Their added premises and supplied inputs do not establish particle emergence or a fundamental physical theory: [comparison catalog](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md#auxiliary-models-and-physical-comparisons) |
+
+Conservation residuals are observations; a nonnegative diagnostic energy needs
+its own Lyapunov proof. Passing tests, configured grammar or agreement with
+arithmetic targets does not establish unrestricted stability or physical validity.
+
+The [theory catalog](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md)
+connects each topic to its mathematical owner, engine implementation, tests and
+public interface. The [portfolio](https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR_lineas_de_investigacion.txt)
+classifies primary, supporting and parked work. The
+[execution plan](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+is the sole task queue: define sufficient state, justify complete laws, check
+joint consistency and make a discriminating prediction. The separate P1–P5
+measurement bridge requires independent observations and reserved evaluation.
 
 ## Repository map
 
-```text
-src/tnfr/
-├── config/          # runtime configuration and declared policy classifications
-├── constants/       # canonical and operational constants
-├── operators/       # operator implementations, contracts, grammar and execution
-├── dynamics/        # Delta NFR computation and nodal integration
-├── physics/         # tetrad, diffusion, conservation and structural diagnostics
-├── metrics/         # coherence, sense index and telemetry kernels
-├── core/            # service protocols, defaults and dependency container
-├── services/        # orchestration facade
-├── sdk/             # public network APIs, study declarations and reports
-├── cli/             # command adapters, including the shared SDK study runner
-├── engines/         # optimization and computation services
-├── mathematics/     # numerical backends and arithmetic structures
-└── research areas   # riemann, factorization and evidence infrastructure
-```
+| Location | Responsibility |
+| --- | --- |
+| `src/tnfr/dynamics/`, `operators/` | Declared pressure/evolution laws, named transformations, grammar and execution |
+| `src/tnfr/physics/`, `mathematics/`, `metrics/` | Scoped theorem tools, shared numerical algebra, observations and telemetry |
+| `src/tnfr/sdk/`, `cli/` | Public networks, study recipes, detached reports and command adapters |
+| `src/tnfr/config/`, `constants/` | Model defaults, numerical settings and configured policies |
+| `theory/` | Thematic mathematical catalog, detailed derivations and the research plan |
+| `tests/`, `examples/`, `benchmarks/` | Contract checks, executable illustrations and scoped research instruments |
+| `factorization-lab/`, `primality-test/` | Arithmetic applications with explicit input and verification boundaries |
 
-Executable demonstrations are grouped into eight thematic folders under
-[`examples/`](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/README.md). The full architecture and source-of-truth map
-are documented in [ARCHITECTURE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/ARCHITECTURE.md).
+[Architecture](https://github.com/fermga/TNFR-Python-Engine/blob/main/ARCHITECTURE.md)
+owns the detailed module and dispatch map. The
+[example index](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/README.md)
+and [benchmark index](https://github.com/fermga/TNFR-Python-Engine/blob/main/benchmarks/README.md)
+identify maintained entry points and their scope.
 
 ## Development and verification
 
@@ -205,20 +214,24 @@ python scripts/prepare_docs.py
 python -m mkdocs build --strict
 ```
 
-The configured default test run excludes tests marked `slow`. See
+The default test run is the routine engine/API gate. Research owners must be
+selected explicitly; tests marked `slow` also require explicit selection. See
 [TESTING.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/TESTING.md) for focused suites, optional backends, slow tests, and
 reproducibility checks. See [CONTRIBUTING.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING.md) for contribution
-requirements.
+requirements. Catalog coverage and the website theory menu are checked against
+`theory/README.md`. After changing its owner rows or the operator registry, run
+`python scripts/check_documentation.py --write-generated` to refresh their
+generated documentation views before checking them.
 
 ## Documentation
 
 | Resource | Purpose |
 | --- | --- |
-| [AGENTS.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md) | Working definitions, invariants and agent guidance |
+| [AGENTS.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md) | Development rules, model boundaries and agent guidance |
 | [ARCHITECTURE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/ARCHITECTURE.md) | Implemented package boundaries and data flow |
 | [docs/README.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/README.md) | Technical documentation hub |
-| [theory/README.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md) | Theory and research-program index |
-| [docs/CLI_AND_SDK.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/CLI_AND_SDK.md) | Shared execution, recipes, diagnostics and export |
+| [theory/README.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md) | Topic catalog, reading routes and theory-to-code/test map |
+| [docs/CLI_AND_SDK.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/CLI_AND_SDK.md) | Operator studies, conditional models, observations and export |
 | [docs/API_CONTRACTS.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/API_CONTRACTS.md) | Operator and execution contracts |
 | [docs/STRUCTURAL_FIELDS_TETRAD.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/STRUCTURAL_FIELDS_TETRAD.md) | Field definitions and safety-policy scope |
 | [examples/README.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/README.md) | Executable examples |

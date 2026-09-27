@@ -27,6 +27,8 @@ __all__ = [
     "observe_support_transport_reset",
     "observe_support_transport_euler",
     "observe_support_transport_clipped_flow",
+    "RegionalSupportCut",
+    "observe_regional_support_cut",
     "RegionalSupportBalance",
     "observe_regional_support_balance",
     "RegionalSupportEuler",
@@ -335,6 +337,75 @@ def observe_support_transport_derivative(
 
 
 @dataclass(frozen=True)
+class RegionalSupportCut:
+    """Exact outward transport cut on one detached full support.
+
+    ``region`` retains supplied order; ``region_indices`` and ``cut_edges``
+    index ``nodes``, never an induced subgraph. Conductances and current are
+    exact represented-state values. A cut does not require positive capacity,
+    a diffusion coefficient or any dynamical closure. Full-support selection
+    has empty environment, no cut edges and zero outward current.
+    """
+
+    nodes: tuple
+    region: tuple
+    environment: tuple
+    region_indices: tuple[int, ...]
+    cut_edges: tuple
+    outward_cut_current: Fraction
+
+
+def _regional_support_cut(source, region, *, proper=False):
+    """Read a selected cut after the shared snapshot admission."""
+    size = len(source.nodes)
+    if isinstance(region, (str, bytes, bytearray, Mapping, Set)):
+        raise TypeError("region must be an ordered selection of node IDs")
+    try:
+        selected = tuple(islice(iter(region), size if proper else size + 1))
+    except TypeError as exc:
+        raise TypeError("region must be an ordered selection of node IDs") from exc
+    if not selected or len(selected) > size or (proper and len(selected) == size):
+        qualifier = "proper nonempty" if proper else "nonempty"
+        raise ValueError(f"region must be a {qualifier} subset of source nodes")
+    try:
+        if len(set(selected)) != len(selected):
+            raise ValueError("region nodes must be distinct")
+        lookup = {node: i for i, node in enumerate(source.nodes)}
+        indices = tuple(lookup[node] for node in selected)
+    except (KeyError, TypeError) as exc:
+        raise ValueError("region nodes must belong to the source node space") from exc
+    selected_indices = set(indices)
+    environment = tuple(
+        node for i, node in enumerate(source.nodes) if i not in selected_indices
+    )
+    cut = tuple(
+        (i, j, weight)
+        for i, j, weight in source.conductance
+        if i in selected_indices and j not in selected_indices
+    )
+    current = sum(
+        (weight * (source.epi[i] - source.epi[j]) for i, j, weight in cut), Fraction(0)
+    )
+    return RegionalSupportCut(
+        source.nodes, selected, environment, indices, cut, current
+    )
+
+
+def observe_regional_support_cut(snapshot, region) -> RegionalSupportCut:
+    """Read Q_R=sum_cut W_ij*(x_i-x_j), directed out of supplied region R.
+
+    Rebuild the snapshot's primitive data before reading any cached quantity.
+    The region is an ordered, distinct, nonempty selection of full-support
+    labels and can contain the entire support. Zero capacities, isolates and
+    a zero EPI coefficient need no division here. Loops have no outward flux;
+    zero-conductance support edges carry no transport. No pressure is refreshed
+    and no graph is mutated. The cut is an observation, not an evolution law
+    or a regional formation/persistence certificate.
+    """
+    return _regional_support_cut(_rebuild(snapshot), region)
+
+
+@dataclass(frozen=True)
 class RegionalSupportBalance:
     """Instantaneous regional balance in one fixed full-graph model.
 
@@ -381,6 +452,18 @@ class RegionalSupportBalance:
     variance_identity_residual: Fraction
     scope: str
 
+    @property
+    def cut(self) -> RegionalSupportCut:
+        """Project the retained cut without recalculating it or admitting data."""
+        return RegionalSupportCut(
+            self.source.nodes,
+            self.region,
+            self.environment,
+            self.region_indices,
+            self.cut_edges,
+            self.outward_cut_current,
+        )
+
 
 def observe_regional_support_balance(snapshot, region, *, epi_weight, forcing):
     r"""Resolve a region's exact total and centered-variance rate.
@@ -415,25 +498,10 @@ def observe_regional_support_balance(snapshot, region, *, epi_weight, forcing):
     """
     source = _rebuild(snapshot)
     size = len(source.nodes)
-    if isinstance(region, (str, bytes, bytearray, Mapping, Set)):
-        raise TypeError("region must be an ordered selection of node IDs")
-    try:
-        selected = tuple(islice(iter(region), size))
-    except TypeError as exc:
-        raise TypeError("region must be an ordered selection of node IDs") from exc
-    if not selected or len(selected) >= size:
-        raise ValueError("region must be a proper nonempty subset of source nodes")
-    try:
-        if len(set(selected)) != len(selected):
-            raise ValueError("region nodes must be distinct")
-        lookup = {node: i for i, node in enumerate(source.nodes)}
-        indices = tuple(lookup[node] for node in selected)
-    except (KeyError, TypeError) as exc:
-        raise ValueError("region nodes must belong to the source node space") from exc
+    selection = _regional_support_cut(source, region, proper=True)
+    selected, indices = selection.region, selection.region_indices
     selected_indices = set(indices)
-    environment = tuple(
-        node for i, node in enumerate(source.nodes) if i not in selected_indices
-    )
+    environment = selection.environment
     e = exact_or_represented_real(epi_weight, "epi_weight")
     f = ordered_vector(forcing, "forcing")
     if len(f) != size:
@@ -459,14 +527,7 @@ def observe_regional_support_balance(snapshot, region, *, epi_weight, forcing):
     variance = sum((h[i] * z[i] ** 2 for i in indices), Fraction(0)) / 2
     pressure = tuple(e * g + fi for g, fi in zip(source.epi_gradient, f, strict=True))
     defect = tuple(p - q for p, q in zip(source.stored_pressure, pressure, strict=True))
-    cut = tuple(
-        (i, j, weight)
-        for i, j, weight in source.conductance
-        if i in selected_indices and j not in selected_indices
-    )
-    current = sum(
-        (weight * (source.epi[i] - source.epi[j]) for i, j, weight in cut), Fraction(0)
-    )
+    cut, current = selection.cut_edges, selection.outward_cut_current
     internal = e * sum(
         (
             weight * (source.epi[i] - source.epi[j]) ** 2

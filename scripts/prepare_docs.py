@@ -44,6 +44,7 @@ TREE_SUFFIXES = {
     ".csv",
     ".ipynb",
     ".sh",
+    ".zip",
 }
 
 

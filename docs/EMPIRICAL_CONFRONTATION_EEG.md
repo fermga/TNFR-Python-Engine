@@ -1,14 +1,24 @@
 # Reported empirical observations and diagnostic limits
 
 **Status:** P1 engineering complete; P2 physical admission `not_admitted`;
-the admitted physical protocol remains `not_tested`. A predeclared Volts
-continuation has been computed as an exploration within one acquisition;
+the admitted physical protocol remains `not_tested`. A historical Volts
+continuation evaluated an earlier fixed-reference pure-EPI model within one
+acquisition;
 its [result and evidence record](../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md#volts-exploratory-record)
-report lower error for the affine control than for the nodal model. It does
-not close physical admission. The historical numerical summaries below have
-not been independently reproduced in this
+report lower error for the affine control than for that specified model/map
+pair. Its [scope](../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md#volts-model-boundary)
+does not extend to the revised generative programme without prediction and
+measurement equivalence. It does not close physical admission. The historical
+numerical summaries below have not been independently reproduced in this
 checkout from a pinned dataset/run manifest. They are retained as reported
 results, not admitted validation of the complete nodal equation.
+
+The current [TCLab exploratory comparison](../theory/research/TCLAB_EXPLORATORY_PROTOCOL.md)
+uses a separately declared driven nodal model, two calibration files and three
+reserved files. Its latent-state model lowers joint prediction RMSE relative
+to a smaller nodal baseline, with remaining systematic temperature errors.
+That scoped result also leaves physical admission open; its linked owner
+retains the model, source identities, forecasts and limitations.
 
 ## Implemented diagnostic boundary
 
@@ -35,7 +45,7 @@ the following boundary:
 The engineering boundary is implemented and tested; it supplies neither a
 calibrated laboratory state map nor a physical law validation. Stage status and
 the subsequent gates remain owned by the
-[five-stage execution plan](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md).
+[research execution plan](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#supporting-measurement-bridge).
 The [passive transport protocol](../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md)
 records P2's unmet measurement conditions. This empirical record has no separate
 task queue, and the historical numerical results below were not rerun by P1.

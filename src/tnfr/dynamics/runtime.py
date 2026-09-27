@@ -1040,7 +1040,8 @@ def step(
         Recompute the Sense Index before the configured selector and capacity
         policy consume it. This refresh does not add a nodal pressure channel.
         ``False`` skips recomputation; consumers can still read stored Si, so
-        this flag does not disable diagnostic-dependent control.
+        this flag does not disable diagnostic-dependent control. If no Si is
+        stored, the capacity gate abstains and resets its stability count.
     apply_glyphs : bool, default True
         Enables canonical glyph selection so that phase and coherence glyphs
         continue to modulate ΔNFR.

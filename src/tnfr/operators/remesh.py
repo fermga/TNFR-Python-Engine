@@ -1004,120 +1004,148 @@ def propagate_structural_identity(
     target_nodes: Sequence[Hashable],
     propagation_strength: float = 0.5,
 ) -> None:
-    """Propagate structural identity from origin to similar nodes.
+    """Apply an explicitly requested structural-memory interpolation event.
 
-    This implements REMESH's core principle: nodes with similar patterns
-    mutually reinforce their coherence through structural resonance.
-    The origin's pattern is propagated to targets via weighted interpolation.
+    This auxiliary writer is separate from delayed-EPI REMESH and from a
+    continuous solution of the nodal equation. It holds stored pressure and
+    physical time unchanged; it does not preserve an arbitrary capacity law
+    ``nu_f = g(EPI)`` or establish identity persistence.
 
-    Parameters
-    ----------
-    G : TNFRGraph
-        Network to modify (changes node attributes in-place)
-    origin_node : Hashable
-        Source node whose pattern to propagate
-    target_nodes : sequence
-        Nodes that will receive pattern reinforcement
-    propagation_strength : float, default=0.5
-        Interpolation weight in [0, 1]:
-        - 0.0: No effect (targets unchanged)
-        - 1.0: Complete copy (targets become identical to origin)
-        - 0.5: Balanced blending
+    Strength must be a represented real in [0, 1]. Zero is a true no-op and
+    consumes no nodal state or clipping configuration. Otherwise all unique
+    non-origin targets use the same origin snapshot, with every consumed input
+    and proposal validated before the first write. Repeated targets act once.
+    Missing channels are rejected, not initialized. EPI admits raw reals or
+    materialized uniform-real BEPI and is written in the scalar chart.
 
-    Notes
-    -----
-    For each target node, updates:
-    - EPI: new = (1-α)×old + α×origin
-    - νf: new = (1-α)×old + α×origin
-    - θ: new = (1-α)×old + α×origin
-
-    Where α = propagation_strength.
-
-    Updates respect structural boundaries (EPI_MIN, EPI_MAX) via
-    structural_clip to prevent overflow and maintain physical validity.
-
-    Records propagation in node's 'structural_lineage' attribute for
-    traceability and analysis.
-
-    **TNFR Physics**: This preserves the nodal equation ∂EPI/∂t = νf·ΔNFR
-    by interpolating the structural state rather than imposing it directly.
-
-    Examples
-    --------
-    >>> origin = 1
-    >>> targets = [2, 3, 4]  # Similar nodes
-    >>> propagate_structural_identity(G, origin, targets, 0.3)
-    >>> # Targets now have patterns 30% closer to origin
+    Form and capacity use the exact convex combination of represented inputs,
+    rounded once to binary64; the shared EPI boundary policy then applies.
+    Phase follows the shortest circular arc and is stored in [0, 2*pi).
+    The shared ``angle_diff`` signed antipodal convention chooses a direction
+    at a tie; this is an execution convention, not a uniquely emergent law.
+    Strength one copies capacity and circular phase; EPI still obeys clipping.
+    ``structural_lineage`` records the actual jump and runtime step ordinal,
+    which is not a measured elapsed duration. Custom mapping/setter failures
+    are outside the preflight guarantee for invalid supplied inputs.
     """
-    # Get origin pattern
-    origin_epi = _as_float(get_attr(G.nodes[origin_node], ALIAS_EPI, 0.0))
-    origin_vf = _as_float(get_attr(G.nodes[origin_node], ALIAS_VF, 0.0))
-    from ..constants.aliases import ALIAS_THETA
+    from numbers import Integral, Real
 
-    origin_theta = _as_float(get_attr(G.nodes[origin_node], ALIAS_THETA, 0.0))
+    from .._exact_time import finite_represented_real
+    from ..alias import set_theta, set_vf
+    from ..dynamics.structural_clip import resolve_clip_policy, structural_clip
+    from ..glyph_history import current_step_idx
+    from ..mathematics import BEPIElement
+    from ..types import require_finite_real_scalar_epi
+    from ..utils import mark_dnfr_prep_dirty
+    from ._argument_validation import require_list_sink
 
-    # Get structural bounds
-    from ..constants import DEFAULTS
+    operator = "REMESH structural memory"
 
-    epi_min = float(G.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)))
-    epi_max = float(G.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)))
+    def finite(value: Any, label: str) -> float:
+        try:
+            return finite_represented_real(value, f"{operator} {label}")[0]
+        except (TypeError, ValueError) as exc:
+            raise TNFRValueError(str(exc)) from exc
 
-    # Get clip mode
-    clip_mode_str = str(G.graph.get("CLIP_MODE", "hard"))
-    if clip_mode_str not in ("hard", "soft"):
-        clip_mode_str = "hard"
+    strength = finite(propagation_strength, "propagation_strength")
+    if not 0.0 <= strength <= 1.0:
+        raise TNFRValueError("propagation_strength must lie in [0, 1]")
+    if strength == 0.0:
+        return
+    targets = tuple(dict.fromkeys(n for n in target_nodes if n != origin_node))
+    if not targets:
+        return
 
-    # Propagate to each target
-    for target in target_nodes:
-        if target == origin_node:
-            continue  # Don't propagate to self
+    missing = object()
 
-        # Get current target state
-        target_epi = _as_float(get_attr(G.nodes[target], ALIAS_EPI, 0.0))
-        target_vf = _as_float(get_attr(G.nodes[target], ALIAS_VF, 0.0))
-        target_theta = _as_float(get_attr(G.nodes[target], ALIAS_THETA, 0.0))
-
-        # Interpolate toward origin pattern
-        new_epi = (
-            1.0 - propagation_strength
-        ) * target_epi + propagation_strength * origin_epi
-        new_vf = (
-            1.0 - propagation_strength
-        ) * target_vf + propagation_strength * origin_vf
-        new_theta = (
-            1.0 - propagation_strength
-        ) * target_theta + propagation_strength * origin_theta
-
-        # Apply structural clipping to preserve boundaries
-        from ..dynamics.structural_clip import structural_clip
-
-        new_epi = structural_clip(
-            new_epi, lo=epi_min, hi=epi_max, mode=clip_mode_str
-        )  # type: ignore[arg-type]
-
-        # Update node attributes
-        set_attr(G.nodes[target], ALIAS_EPI, new_epi)
-        set_attr(G.nodes[target], ALIAS_VF, new_vf)
-        set_attr(G.nodes[target], ALIAS_THETA, new_theta)
-
-        # Record lineage for traceability
-        if "structural_lineage" not in G.nodes[target]:
-            G.nodes[target]["structural_lineage"] = []
-
-        # Get current step for timestamp
-        from ..glyph_history import current_step_idx
-
-        step = current_step_idx(G)
-
-        G.nodes[target]["structural_lineage"].append(
-            {
-                "origin": origin_node,
-                "step": step,
-                "propagation_strength": propagation_strength,
-                "epi_before": target_epi,
-                "epi_after": new_epi,
-            }
+    def read(node: Hashable, aliases: tuple[str, ...], label: str) -> float:
+        value = get_attr(
+            G.nodes[node], aliases, missing, strict=True, conv=lambda item: item
         )
+        if value is missing:
+            raise TNFRValueError(f"{operator} node {node!r} is missing {label}")
+        if aliases == ALIAS_EPI:
+            if isinstance(value, Real):
+                value = finite(value, label)
+            elif not isinstance(value, BEPIElement):
+                raise TNFRValueError("EPI requires a real scalar or materialized BEPI")
+            value = require_finite_real_scalar_epi(value, label)
+        result = finite(value, label)
+        if aliases == ALIAS_VF and result < 0.0:
+            raise TNFRValueError("structural memory requires nonnegative capacity")
+        return result
+
+    origin = tuple(
+        read(origin_node, aliases, label)
+        for aliases, label in (
+            (ALIAS_EPI, "EPI"),
+            (ALIAS_VF, "nu_f"),
+            (ALIAS_THETA, "theta"),
+        )
+    )
+    lo, hi, mode, knee = resolve_clip_policy(G.graph)
+    step = current_step_idx(G)
+    trig_version = G.graph.get("_trig_version", 0)
+    if isinstance(trig_version, bool) or not isinstance(trig_version, Integral):
+        raise TNFRValueError("_trig_version must be an integer")
+    alpha = Fraction.from_float(strength)
+
+    def blend(left: float, right: float, label: str) -> float:
+        return finite(
+            (1 - alpha) * Fraction.from_float(left)
+            + alpha * Fraction.from_float(right),
+            label,
+        )
+
+    proposals = []
+    for target in targets:
+        epi = read(target, ALIAS_EPI, "EPI")
+        capacity = read(target, ALIAS_VF, "nu_f")
+        theta = read(target, ALIAS_THETA, "theta")
+        require_list_sink(G.nodes[target], "structural_lineage", operator=operator)
+        raw_epi = blend(epi, origin[0], "EPI proposal")
+        next_epi = finite(
+            structural_clip(raw_epi, lo, hi, mode, knee), "bounded EPI proposal"
+        )
+        next_capacity = blend(capacity, origin[1], "capacity proposal")
+        target_phase, origin_phase = theta % math.tau, origin[2] % math.tau
+        next_phase = (
+            origin_phase
+            if strength == 1.0
+            else (target_phase + strength * angle_diff(origin_phase, target_phase))
+            % math.tau
+        )
+        next_phase = finite(next_phase, "phase proposal")
+        proposals.append(
+            (
+                target,
+                next_epi,
+                next_capacity,
+                next_phase,
+                {
+                    "origin": origin_node,
+                    "step": step,
+                    "scope": "auxiliary_structural_memory_event",
+                    "propagation_strength": strength,
+                    "epi_before": epi,
+                    "epi_unclipped": raw_epi,
+                    "epi_after": next_epi,
+                    "vf_before": capacity,
+                    "vf_after": next_capacity,
+                    "theta_before": theta,
+                    "theta_after": next_phase,
+                },
+            )
+        )
+
+    for target, epi, capacity, theta, event in proposals:
+        set_attr(G.nodes[target], ALIAS_EPI, epi)
+        set_vf(G, target, capacity, update_max=False)
+        set_theta(G, target, theta)
+        G.nodes[target].setdefault("structural_lineage", []).append(event)
+    G.graph.pop("_vfmax", None)
+    G.graph.pop("_vfmax_node", None)
+    mark_dnfr_prep_dirty(G)
 
 
 # ==============================================================================

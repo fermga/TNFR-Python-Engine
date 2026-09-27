@@ -29,9 +29,8 @@ import numpy as np
 
 from .._exact_time import exact_or_represented_real
 from ..dynamics._euler_kernel import euler_update
-from ..mathematics.krylov import exact_rank
+from ..mathematics.linear_observation import derive_linear_observation
 from ._cycle_algebra import Matrix, Vector, dot, ordered_vector
-from ._exact_linear_algebra import exact_matrix_inverse
 from .forced_support import ForcedSupportBalance
 from .forced_support import _pattern as _forced_pattern
 from .forced_support import _reference as _validated_forced_reference
@@ -539,9 +538,17 @@ def observe_affine_nodal_realization(
 
 
 def _affine_nodal_realization_core(ref, a, b, x, r, offset, *, max_rank_calls):
-    """One invariant-row algorithm for validated generic and partition outputs."""
-    n, m = len(a), len(r)
-    rank_calls = product_calls = max_bits = 0
+    """Project one validated affine nodal law through the shared row algebra.
+
+    The invariant spaces of A and -A agree. Passing A retains the historical
+    deterministic O*A**k basis and positive stored G, while this wrapper keeps
+    its original physical sign x'=-A*x+b and s'=-G*s+C*b. The mathematical
+    owner accepts a supplied matrix without inventing a forced-support model.
+    """
+    kernel = derive_linear_observation(a, r, max_rank_calls=max_rank_calls)
+    c, t = kernel.observation, kernel.right_inverse
+    g, d = kernel.reduced_generator, kernel.output_map
+    max_bits = kernel.max_coefficient_bits
 
     def retain(matrix):
         nonlocal max_bits
@@ -554,103 +561,12 @@ def _affine_nodal_realization_core(ref, a, b, x, r, offset, *, max_rank_calls):
                 )
         return matrix
 
-    def rank(matrix):
-        nonlocal rank_calls
-        if rank_calls >= max_rank_calls:
-            raise ValueError("exact rank-call budget exhausted; realization incomplete")
-        rank_calls += 1
-        return exact_rank(matrix)
-
-    def product(left, right):
-        nonlocal product_calls
-        product_calls += 1
-        return retain(_exact_matrix_product(left, right))
-
     def mv(matrix, vector):
         result = tuple(dot(row, vector) for row in matrix)
         retain((result,))
         return result
 
-    retain(a)
-    retain(r)
     retain((b, x, offset))
-    basis, labels, levels = [], [], []
-    level = r
-    for power in range(n + 1):
-        previous_rank = len(basis)
-        selected = []
-        for row_index, row in enumerate(level):
-            observed_rank = rank((*basis, row))
-            if observed_rank not in (len(basis), len(basis) + 1):
-                raise RuntimeError(
-                    "exact independent-row selection lost rank consistency"
-                )
-            if observed_rank > len(basis):
-                basis.append(row)
-                labels.append((power, row_index))
-                selected.append(row_index)
-        levels.append(
-            ForcedSupportRealizationLevel(
-                power,
-                previous_rank,
-                len(basis),
-                m,
-                tuple(selected),
-            )
-        )
-        if power > 0 and len(basis) == previous_rank:
-            break
-        if power < n:
-            level = product(level, a)
-    else:
-        raise RuntimeError(
-            "exact row-space closure did not stabilize within its dimension bound"
-        )
-    c = tuple(basis)
-    dimension = len(c)
-    output_rank = levels[0].rank_after
-    columns, chosen = [], []
-    zero, one = Fraction(0), Fraction(1)
-    if dimension:
-        for j in range(n):
-            column = tuple(row[j] for row in c)
-            observed_rank = rank((*columns, column))
-            if observed_rank not in (len(columns), len(columns) + 1):
-                raise RuntimeError("exact pivot-column selection lost rank consistency")
-            if observed_rank > len(columns):
-                columns.append(column)
-                chosen.append(j)
-            if len(columns) == dimension:
-                break
-        if len(columns) != dimension:
-            raise RuntimeError(
-                "independent observation rows have no invertible column minor"
-            )
-        minor = tuple(tuple(row[j] for j in chosen) for row in c)
-        inverse = retain(exact_matrix_inverse(minor))
-        selected_positions = {j: i for i, j in enumerate(chosen)}
-        t = retain(
-            tuple(
-                (
-                    inverse[selected_positions[i]]
-                    if i in selected_positions
-                    else (zero,) * dimension
-                )
-                for i in range(n)
-            )
-        )
-        ca = product(c, a)
-        g, d = product(ca, t), product(r, t)
-    else:
-        # Empty tuples alone lose their column count. Handle the known
-        # 0-by-n, n-by-0, 0-by-0 and m-by-0 shapes explicitly rather than
-        # changing the nonempty shared product/inverse contracts.
-        t = ((),) * n
-        ca, g, d = (), (), ((),) * m
-    identity = tuple(
-        tuple(one if i == j else zero for j in range(dimension))
-        for i in range(dimension)
-    )
     source, state = mv(c, b), mv(c, x)
     reduced_rate = tuple(
         force - drift for force, drift in zip(source, mv(g, state), strict=True)
@@ -664,17 +580,28 @@ def _affine_nodal_realization_core(ref, a, b, x, r, offset, *, max_rank_calls):
     )
     output_rate, projected_rate = mv(d, reduced_rate), mv(r, fine_rate)
     retain((reduced_rate, fine_rate, output_state, projected_state))
+    # Keep the original report/check names and level type at this API boundary.
+    levels = tuple(
+        ForcedSupportRealizationLevel(
+            level.power,
+            level.rank_before,
+            level.rank_after,
+            level.candidate_rows,
+            level.selected_row_indices,
+        )
+        for level in kernel.level_records
+    )
     checks = {
-        "rank(C)=dimension": rank(c) == dimension,
-        "C T=I": (product(c, t) if dimension else ()) == identity,
-        "C A=G C": ca == (product(g, c) if dimension else ()),
-        "O=D C": r == (product(d, c) if dimension else ((zero,) * n,) * m),
-        "complete-level stabilization": levels[-1].rank_before == levels[-1].rank_after,
-        "initial output rank retained": output_rank <= dimension,
-        "reduced affine nodal rate": reduced_rate == mv(c, fine_rate),
-        "output state reconstruction": output_state == projected_state,
-        "output rate reconstruction": output_rate == projected_rate,
+        ("C A=G C" if name == "C J=G C" else name): True
+        for name in kernel.exact_identity_checks
     }
+    checks.update(
+        {
+            "reduced affine nodal rate": reduced_rate == mv(c, fine_rate),
+            "output state reconstruction": output_state == projected_state,
+            "output rate reconstruction": output_rate == projected_rate,
+        }
+    )
     failed = tuple(name for name, passed in checks.items() if not passed)
     if failed:
         raise RuntimeError(f"exact sufficient-observation identities failed: {failed}")
@@ -682,15 +609,15 @@ def _affine_nodal_realization_core(ref, a, b, x, r, offset, *, max_rank_calls):
         reference=ref,
         output_rows=r,
         output_offset=offset,
-        output_count=m,
-        output_rank=output_rank,
-        dimension=dimension,
-        full_state_dimension=n,
-        extra_coordinates=dimension - output_rank,
-        rank_progression=tuple(level.rank_after for level in levels),
+        output_count=len(r),
+        output_rank=kernel.output_rank,
+        dimension=kernel.dimension,
+        full_state_dimension=len(a),
+        extra_coordinates=kernel.extra_coordinates,
+        rank_progression=kernel.rank_progression,
         level_records=tuple(levels),
-        selected_row_labels=tuple(labels),
-        pivot_columns=tuple(chosen),
+        selected_row_labels=kernel.selected_row_labels,
+        pivot_columns=kernel.pivot_columns,
         observation=c,
         right_inverse=t,
         reduced_generator=g,
@@ -704,9 +631,9 @@ def _affine_nodal_realization_core(ref, a, b, x, r, offset, *, max_rank_calls):
         reconstructed_output_state=output_state,
         reconstructed_output_rate=output_rate,
         exact_identity_checks=tuple(checks),
-        rank_calls=rank_calls,
+        rank_calls=kernel.rank_calls,
         max_rank_calls=max_rank_calls,
-        matrix_product_calls=product_calls,
+        matrix_product_calls=kernel.matrix_product_calls,
         completed_levels=len(levels),
         stabilization_power=levels[-1].power,
         max_coefficient_bits=max_bits,

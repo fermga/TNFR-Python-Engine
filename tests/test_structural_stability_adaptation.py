@@ -253,6 +253,47 @@ def test_failed_frequency_commit_rolls_back_counters_values_and_cache(
     assert graph.graph == before_graph
 
 
+@pytest.mark.parametrize("missing", ["Si", "ΔNFR"])
+def test_missing_gate_observation_abstains_even_at_zero_sense_threshold(missing):
+    graph = _stable_pair()
+    graph.graph["SELECTOR_THRESHOLDS"] = {"si_hi": 0.0}
+    del graph.nodes["left"][missing]
+    adapt_vf_after_structural_stability(graph)
+    assert graph.nodes["left"]["νf"] == 0.2
+    assert graph.nodes["left"]["stable_count"] == 0
+    assert missing not in graph.nodes["left"]
+    # A neighbor with complete evidence still uses the real capacity snapshot.
+    assert graph.nodes["right"]["νf"] == pytest.approx(0.6)
+    assert graph.nodes["right"]["stable_count"] == 2
+
+    graph.nodes["left"][missing] = 0.0
+    adapt_vf_after_structural_stability(graph)
+    assert graph.nodes["left"]["stable_count"] == 1
+    assert graph.nodes["left"]["νf"] == 0.2
+
+
+def test_missing_capacity_is_not_a_zero_capacity_node_and_rejects_atomically():
+    graph = _stable_pair()
+    graph.graph["VF_MIN"] = 0.0
+    del graph.nodes["right"]["νf"]
+    before_nodes = copy.deepcopy(dict(graph.nodes(data=True)))
+    before_graph = copy.deepcopy(graph.graph)
+    with pytest.raises(ValueError, match="nu_f is missing"):
+        adapt_vf_after_structural_stability(graph)
+    assert dict(graph.nodes(data=True)) == before_nodes
+    assert graph.graph == before_graph
+
+
+@pytest.mark.parametrize("field", ["Si", "ΔNFR"])
+def test_present_none_is_invalid_not_an_absent_gate_observation(field):
+    graph = _stable_pair()
+    graph.nodes["right"][field] = None
+    before = copy.deepcopy(dict(graph.nodes(data=True)))
+    with pytest.raises(ValueError):
+        adapt_vf_after_structural_stability(graph)
+    assert dict(graph.nodes(data=True)) == before
+
+
 def test_reversed_frequency_bounds_are_rejected() -> None:
     graph = _stable_pair()
     graph.graph["VF_MIN"] = 1.0

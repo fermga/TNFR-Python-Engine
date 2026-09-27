@@ -1559,7 +1559,7 @@ that these operators exhaust all admissible TNFR transformations would require:
 
 Registry size, reload idempotence, metadata alignment, and reuse of `P_d` do
 not supply those ingredients. This is the open S10 boundary in
-[CORE_RESEARCH_PROGRAM.md](CORE_RESEARCH_PROGRAM.md).
+[the theory catalog](README.md#historical-aliases-and-maintenance).
 
 ---
 

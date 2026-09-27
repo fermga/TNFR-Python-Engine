@@ -32,7 +32,7 @@ Physics basis:
   curvature margin, π/4 potential magnitude warning, and π/2 U6 drift value
   are selected monitoring policies. A fixed graph spectrum supplies a useful
   length scale, while a fitted correlation length remains state-dependent.
-  See: theory/MATHEMATICAL_DYNAMICS_BASIS.md
+  See: theory/NODAL_PARAMETER_FOUNDATIONS.md (constants and policy ledger)
   See: theory/MINIMAL_STRUCTURAL_DEGREES.md §§ 4-5
 """
 

@@ -27,6 +27,7 @@ plugins:
 
 markdown_extensions:
   - attr_list
+  - md_in_html
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
@@ -54,22 +55,77 @@ nav:
       - Structural fields: docs/STRUCTURAL_FIELDS_TETRAD.md
       - Grammar verification: docs/grammar/PHYSICS_VERIFICATION.md
       - Interface theory: docs/STRUCTURAL_INTERFACE_THEORY.md
-  - Theory and research:
-      - Index: theory/README.md
-      - Foundations: theory/FUNDAMENTAL_THEORY.md
-      - Parameter foundations: theory/NODAL_PARAMETER_FOUNDATIONS.md
-      - Research strategy: theory/NODAL_RESEARCH_STRATEGY.md
-      - Active execution plan: theory/research/FIVE_STAGE_EXECUTION_PLAN.md
-      - Grammar scope: theory/UNIFIED_GRAMMAR_RULES.md
-      - Diagnostic scope: theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md
-      - Minimal structural degrees: theory/MINIMAL_STRUCTURAL_DEGREES.md
-      - Structural conservation: theory/STRUCTURAL_CONSERVATION_THEOREM.md
-      - Core dynamics program: theory/CORE_RESEARCH_PROGRAM.md
-      - Heterogeneous diffusion stability: theory/TNFR_DIFFUSION_STABILITY_THEOREM.md
-      - Scale, geometry and bridge: theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md
-      - Derived memory: theory/DERIVED_EPI_MEMORY.md
+# BEGIN GENERATED THEORY NAVIGATION
+  - "Theory and research":
+      - "Reading routes and implementation map": theory/README.md
+      - "State and laws":
+          - "Fundamental theory": theory/FUNDAMENTAL_THEORY.md
+          - "Parameter foundations": theory/NODAL_PARAMETER_FOUNDATIONS.md
+          - "Pressure premises": theory/nodal/PRESSURE_CONSTITUTIVE_SCOPE.md
+          - "Joint parameter response": theory/nodal/JOINT_PARAMETER_RESPONSE.md
+          - "Glossary": theory/GLOSSARY.md
+      - "Form, phase and coherent patterns":
+          - "Inherited form dynamics": theory/nodal/INHERITED_FORM_DYNAMICS.md
+          - "Phase-to-form exchange": theory/nodal/PHASE_FORM_EXCHANGE.md
+          - "Primitive phase closure": theory/nodal/PRIMITIVE_PHASE_CLOSURE.md
+          - "Derived form phase": theory/nodal/DERIVED_FORM_PHASE.md
+          - "Relational exchange, recovery and formation": theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md
+          - "Relational pattern composition": theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md
+          - "Relational pattern memory": theory/nodal/RELATIONAL_PATTERN_MEMORY.md
+          - "Emergence and ontology": theory/EMERGENT_ONTOLOGY.md
+      - "Transport, memory and clocks":
+          - "EPI diffusion stability": theory/TNFR_DIFFUSION_STABILITY_THEOREM.md
+          - "Directed nonnormal dynamics": theory/TNFR_DIRECTED_NONNORMAL_DYNAMICS.md
+          - "Derived EPI memory": theory/DERIVED_EPI_MEMORY.md
+          - "Capacity and localization": theory/CAPACITY_LOCALIZATION_BALANCE.md
+          - "Cycle support dynamics": theory/CYCLE_SUPPORT_DYNAMICS.md
+          - "Cycle memory relaxation": theory/CYCLE_MEMORY_RELAXATION.md
+          - "Forced support balance": theory/FORCED_SUPPORT_BALANCE.md
+          - "REMESH fixed-delay models": theory/REMESH_INFINITY_DERIVATION.md
+          - "Scale, geometry and bridge": theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md
+      - "Operators, grammar and support events":
+          - "Structural operators": theory/STRUCTURAL_OPERATORS.md
+          - "Unified grammar": theory/UNIFIED_GRAMMAR_RULES.md
+          - "Diagnostic and grammar scope": theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md
+          - "Coupling and winding": theory/COUPLING_WINDING_PERSISTENCE.md
+          - "Coherent pattern contact": theory/COHERENT_PATTERN_CONTACT.md
+          - "THOL pressure feedback": theory/THOL_PRESSURE_FEEDBACK.md
+          - "THOL birth and transport": theory/THOL_BIRTH_AND_TRANSPORT.md
+          - "Child coupling feedback": theory/CHILD_COUPLING_FEEDBACK.md
+      - "Diagnostics and geometry":
+          - "Minimal structural degrees": theory/MINIMAL_STRUCTURAL_DEGREES.md
+          - "Structural conservation diagnostics": theory/STRUCTURAL_CONSERVATION_THEOREM.md
+          - "Stability and dynamics diagnostics": theory/STRUCTURAL_STABILITY_AND_DYNAMICS.md
+          - "Extended fields": theory/EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md
+      - "Auxiliary models and physical comparisons":
+          - "Variational and exchange models": theory/TNFR_VARIATIONAL_PRINCIPLE.md
+          - "Dissipative/open-system models": theory/DISSIPATIVE_AND_OPEN_SYSTEMS.md
+          - "Gauge and polarization constructions": theory/GAUGE_SYMMETRY_AND_UNIFICATION.md
+          - "Physical phenomena atlas": theory/PHYSICAL_REGIME_CORRESPONDENCES.md
+      - "Arithmetic and applications":
+          - "Number theory": theory/TNFR_NUMBER_THEORY.md
+          - "Structural observability — R1": theory/TNFR_STRUCTURAL_OBSERVABILITY.md
+          - "Arithmetic dynamics — R2": theory/TNFR_ARITHMETIC_DYNAMICS.md
+          - "CRT composition — R3": theory/TNFR_CRT_FRACTALITY.md
+          - "p-adic dynamics — R4": theory/TNFR_PADIC_DYNAMICS.md
+          - "Algebraic number fields — R5": theory/TNFR_ALGEBRAIC_NUMBER_FIELDS.md
+          - "Additive dynamics — R6": theory/TNFR_ADDITIVE_DYNAMICS.md
+          - "Arithmetic pressure — R7": theory/TNFR_ARITHMETIC_PRESSURE.md
+          - "Arithmetic operators — R8": theory/TNFR_ARITHMETIC_OPERATORS.md
+          - "Riemann scope": theory/TNFR_RIEMANN_RESEARCH_NOTES.md
+          - "Prime-ladder atlas": theory/NUCLEUS_A_PRIME_LADDER_ATLAS.md
+          - "Equivariance obstructions": theory/NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md
+          - "Applied structural analysis": theory/APPLIED_STRUCTURAL_ANALYSIS.md
+      - "Research, measurement and parked evidence":
+          - "Execution plan": theory/research/FIVE_STAGE_EXECUTION_PLAN.md
+          - "Research strategy": theory/NODAL_RESEARCH_STRATEGY.md
+          - "Passive transport protocol": theory/research/PASSIVE_TRANSPORT_PROTOCOL.md
+          - "Regional phase/amplitude protocol": theory/research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md
+          - "TCLab exploratory protocol": theory/research/TCLAB_EXPLORATORY_PROTOCOL.md
+          - "C6 mechanism audit": theory/C6_RESEARCH_MECHANISM_AUDIT.md
+# END GENERATED THEORY NAVIGATION
       - Historical archive: theory/research/archive/README.md
-      - Structural research program: theory/STRUCTURAL_RESEARCH_PROGRAM.md
+      - Retired programme boundaries: theory/research/archive/RETIRED_PROGRAMME_BOUNDARIES.md
   - Examples: examples/README.md
   - Benchmarks: benchmarks/README.md
   - Applications:

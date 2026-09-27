@@ -1,144 +1,203 @@
-# TNFR theory and research index
+# TNFR theory: reading routes, mathematical owners and implementation
 
-This is the document ownership and status index. Read
-[AGENTS.md](../AGENTS.md) for working conventions, the
-[portfolio](../TNFR_lineas_de_investigacion.txt) for research branches, and the
-[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) for the sole
-active queue. [Strategy](NODAL_RESEARCH_STRATEGY.md) explains that queue's rationale.
+Use this page to find a concept, its derivation, and the code and checks that
+implement it. It is the single maintained theory catalog. The
+[portfolio](../TNFR_lineas_de_investigacion.txt) classifies research priorities;
+the [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+alone owns the next task. [AGENTS](../AGENTS.md) supplies working conventions,
+and the [documentation map](../docs/README.md) routes engineering questions.
 
-**Current scope:** the objective is to identify predictive consequences of
-justified nodal models while revising unsupported foundational choices. Exact
-and finite results retain their original hypotheses; autonomous maintained
-pattern generation and physical identification remain open. The
-[strategy's premise review](NODAL_RESEARCH_STRATEGY.md#revisable-foundations-and-the-positive-core)
-owns the assessment. C5 pressure-admission continuation is conditional and
-deferred; the execution plan owns minimal-model admission and the next
-comparison. P1-P5 remain the supporting measurement bridge. This index lists
-owners rather than repeating their delivery chronology.
+The nodal identity does not uniquely determine all evolution laws. Conditional
+formation, maintenance, interaction and memory results now exist for specified
+models and preparations. They do not establish a uniquely selected fundamental
+law, autonomous support creation, arbitrary nonlinear nesting or physical
+identification. Read the hypotheses of the linked owner before reusing a result.
 
-| Label | Meaning |
+## Choose a question
+
+| I want to understand... | Start here | Then use |
+| --- | --- | --- |
+| What EPI, capacity, pressure, phase and time mean | [Foundations](FUNDAMENTAL_THEORY.md), [parameter ledger](NODAL_PARAMETER_FOUNDATIONS.md) | [State and laws](#state-and-laws) |
+| How form and phase can generate a maintained pattern | [Relational law and formation](nodal/RELATIONAL_EXCHANGE_ADMISSION.md) | [Form, phase and coherent patterns](#form-phase-and-coherent-patterns) |
+| What is lost when a region is treated as one node | [Composition](nodal/RELATIONAL_PATTERN_COMPOSITION.md), [joint memory](nodal/RELATIONAL_PATTERN_MEMORY.md) | [Theory to execution](#theory-to-execution) |
+| Which stability or memory theorem applies | [Transport and memory](#transport-memory-and-clocks) | Check fixed/changing support, forcing, phase law and history first |
+| What operators and grammar actually guarantee | [Operator and grammar block](#operators-grammar-and-support-events) | [API contracts](../docs/API_CONTRACTS.md), [CLI/SDK guide](../docs/CLI_AND_SDK.md) |
+| What a field or diagnostic measures | [Field guide](../docs/STRUCTURAL_FIELDS_TETRAD.md) | [Diagnostics and geometry](#diagnostics-and-geometry) |
+| What is physically tested, auxiliary or still open | [Physical comparisons](#auxiliary-models-and-physical-comparisons) | [Research and measurement](#research-measurement-and-parked-evidence) |
+| What the arithmetic applications contribute | [Arithmetic and applications](#arithmetic-and-applications) | Their supplied inputs and arithmetic checks, not a physical identification |
+
+**How to read status:** a definition or contract specifies a model/interface;
+a conditional theorem needs its stated hypotheses; finite evidence records
+particular tests or executions; an auxiliary construction adds premises; an
+open question lacks a derivation or adequate evidence. These statuses can
+coexist in one document. “Parked” concerns research priority, not invalidity.
+A filename containing “canonical”, “emergent” or “unification” is not evidence.
+
+## Directory responsibilities
+
+| Location | Responsibility |
 | --- | --- |
-| Definition/contract | Chosen model or implemented interface; not uniquely derived from the nodal identity |
-| Exact/conditional | Mathematical result under explicit hypotheses and representation conventions |
-| Finite evidence | Recorded cases or tests; no unobserved-future guarantee |
-| Auxiliary model | Added dynamics or construction with its own assumptions and bridge obligations |
-| Open | Required derivation or adequate evidence is absent |
-| Historical/parked | Retained results or proposals; not current instructions or an active campaign |
+| `theory/*.md` | Cross-cutting foundations and established topical owners, grouped below; filenames remain stable for citations |
+| `theory/nodal/` | Detailed pressure, form/phase, relational-pattern and reduction derivations |
+| `theory/research/` | One execution plan and supporting measurement protocols |
+| `theory/research/archive/` | Retirement records, superseded plans and evidence provenance; historical instructions are inactive |
 
-The categories may coexist in one document. A theorem's hypotheses and a
-counterexample take precedence over a historical title containing "canonical",
-"conservation", "emergent" or "unification".
+The catalog below lists every maintained theory document once. Reading routes
+and implementation links may point to the same owner without copying its proof
+or its changing research status. `scripts/check_documentation.py` checks catalog
+coverage and the generated website menu; link checks separately verify
+destinations and anchors. After changing catalog rows or groups, run
+`python scripts/check_documentation.py --write-generated` to update the menu.
 
-## Core framework
+<!-- BEGIN THEORY CATALOG -->
 
-| Document | Scope |
+## State and laws
+
+| Mathematical owner | What it defines or establishes |
 | --- | --- |
-| [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) | Nodal equation, structural triad and framework overview |
-| [NODAL_PARAMETER_FOUNDATIONS.md](NODAL_PARAMETER_FOUNDATIONS.md) | Parameter families, units, covariance, conditional diffusion, joint response, phase/capacity compatibility and directed phase/form exchange |
-| [DIAGNOSTIC_AND_GRAMMAR_SCOPE.md](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md) | Exact hypotheses, finite-graph witnesses and limits of current claims |
-| [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) | Navigation between state, closure, parameter and diagnostic owners; no duplicate derivation ledger |
-| [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md) | Four diagnostic channels and the open minimal-state question |
-| [STRUCTURAL_OPERATORS.md](STRUCTURAL_OPERATORS.md) | Operator semantics and channel effects |
-| [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) | U1-U6 contracts, conditional motivation and configured policies |
-| [GLOSSARY.md](GLOSSARY.md) | Shared terminology and status of constants and thresholds |
+| [Fundamental theory](FUNDAMENTAL_THEORY.md) | EPI state space, nodal identity, chart/equivalence admission and the held S0/derived D boundary |
+| [Parameter foundations](NODAL_PARAMETER_FOUNDATIONS.md) | Units, zero limits, cross-channel dependencies, clocks and the threshold/constant ledger |
+| [Pressure premises](nodal/PRESSURE_CONSTITUTIVE_SCOPE.md) | Locality, covariance, phase-domain boundaries and what does not select a unique pressure law |
+| [Joint parameter response](nodal/JOINT_PARAMETER_RESPONSE.md) | Signed form, pressure derivatives and finite phase/capacity/source compatibility |
+| [Glossary](GLOSSARY.md) | Terminology and symbol lookup; linked owners retain the actual definitions and proofs |
 
-Field APIs and bounds are centralized in
-[Structural Fields](../docs/STRUCTURAL_FIELDS_TETRAD.md); executable operator
-contracts are centralized in [API Contracts](../docs/API_CONTRACTS.md).
+## Form, phase and coherent patterns
 
-Definitions belong to the foundation/parameter references; grammar premises
-to the scope/specification pair; implementation effects to operator contracts.
-The [scale bridge](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) owns current effective
-geometry, shared realization, P5 reflection invariants and xi boundaries.
-The phase/form and primitive-phase studies remain in the parameter reference;
-they do not derive an autonomous source by imposing a rotating input.
-
-## Dynamics and geometry
-
-| Document | Scope |
+| Mathematical owner | What it establishes and what remains separate |
 | --- | --- |
-| [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) | Conservation diagnostics, residuals and Lyapunov candidates |
-| [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md) | Auxiliary Hamiltonian/variational models and restricted exact diffusion bridges |
-| [DISSIPATIVE_AND_OPEN_SYSTEMS.md](DISSIPATIVE_AND_OPEN_SYSTEMS.md) | Auxiliary dissipative/open-system models, with declared forcing and neutral-mode boundaries |
-| [STRUCTURAL_STABILITY_AND_DYNAMICS.md](STRUCTURAL_STABILITY_AND_DYNAMICS.md) | Stability diagnostics and invariant monitoring |
-| [TNFR_DIFFUSION_STABILITY_THEOREM.md](TNFR_DIFFUSION_STABILITY_THEOREM.md) | Fixed/time-varying and exact-common-metric EPI diffusion, exact reversible single-eigenmode Euler theorem, finite executor binding with full-matrix defect propagation, directed transient criterion, and conditional affine hybrid bounds |
-| [TNFR_SCALE_GEOMETRY_AND_BRIDGE.md](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) | Counted-support phase/form quotients, K3 omission bounds, prospective barbell regional window, joint EPI/potential realization, tetrad dependencies, reflection invariants and xi continuity, scoped metriplectic/S16 bridges |
-| [DERIVED_EPI_MEMORY.md](DERIVED_EPI_MEMORY.md) | Exact projected memory, affine closure, shared minimal realization of affine outputs, full-EPI Euler prediction and conditional common-IL response; P5 finite-history bounds/minimal quotient and REMESH comparison |
-| [COUPLING_WINDING_PERSISTENCE.md](COUPLING_WINDING_PERSISTENCE.md) | Restricted canonical Coupling gap diffusion, winding protection, loss under Transition, and finite runtime boundaries |
-| [CAPACITY_LOCALIZATION_BALANCE.md](CAPACITY_LOCALIZATION_BALANCE.md) | Shifted EPI/capacity diffusion, conditional nonuniform equilibria, operator release and finite-mobility retention controls |
-| [CYCLE_SUPPORT_DYNAMICS.md](CYCLE_SUPPORT_DYNAMICS.md) | Joint phase/capacity/EPI balance, operator reset and nodal-flow energy budgets, and retained contrast under a finite reorganization clock |
-| [CYCLE_MEMORY_RELAXATION.md](CYCLE_MEMORY_RELAXATION.md) | Positive-capacity cycle diffusion supplies an exact REMESH history contraction gain; finite admitted delayed-memory and memory-free controls |
-| [THOL_PRESSURE_FEEDBACK.md](THOL_PRESSURE_FEEDBACK.md) | Shared history-driven THOL pressure, refresh/integration budgets and the disconnected-child feedback boundary |
-| [THOL_BIRTH_AND_TRANSPORT.md](THOL_BIRTH_AND_TRANSPORT.md) | Causal birth and UM/transport, distributed feedback, frozen-profile response, exact sixteen-coordinate state, native mixed-policy response, retained EN/AL accounting and relative-phase ordering sensitivity |
-| [FORCED_SUPPORT_BALANCE.md](FORCED_SUPPORT_BALANCE.md) | Conditional restoration, cycle birth/relaxation, common-chart boundaries, native Mutation admission and its source/held-flow energy budget |
-| [CHILD_COUPLING_FEEDBACK.md](CHILD_COUPLING_FEEDBACK.md) | Child-target Coupling, exact changes of reference and a fixed original-profile comparison |
-| [PHYSICAL_REGIME_CORRESPONDENCES.md](PHYSICAL_REGIME_CORRESPONDENCES.md) | Scoped comparisons with diffusive, inertial and modal regimes |
-| [GAUGE_SYMMETRY_AND_UNIFICATION.md](GAUGE_SYMMETRY_AND_UNIFICATION.md) | Auxiliary gauge and classical polarization constructions; no engine-wide symmetry or particle unification theorem |
-| [EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md](EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md) | Diagnostic algebraic contractions; measured dynamics require a separate law |
-| [EMERGENT_ONTOLOGY.md](EMERGENT_ONTOLOGY.md) | NFR formation reuse map (Section 1.1), admissible emergence claims and shared mechanism owners; physical emergence remains open |
+| [Inherited form dynamics](nodal/INHERITED_FORM_DYNAMICS.md) | Fine-to-coarse pushforwards, inherited pressure/metric, field reconstruction and changing support |
+| [Phase-to-form exchange](nodal/PHASE_FORM_EXCHANGE.md) | Causal-source matching, regional frames and response to a prescribed phase input |
+| [Primitive phase closure](nodal/PRIMITIVE_PHASE_CLOSURE.md) | Symmetry and closure obstructions, oriented response and the actual runtime phase-writer inventory |
+| [Derived form phase](nodal/DERIVED_FORM_PHASE.md) | Regional Cartesian/Gram geometry, fixed affine closure, derived angles and source-relative predictions |
+| [Relational exchange, recovery and formation](nodal/RELATIONAL_EXCHANGE_ADMISSION.md) | Explicit joint law, engine admission, capacity controls, local recovery, sector crossing and validated capture; supplied support remains a premise |
+| [Relational pattern composition](nodal/RELATIONAL_PATTERN_COMPOSITION.md) | Exact tangent closure, nonlinear state/rate counterexamples and the regional phase-metric covariance budget |
+| [Relational pattern memory](nodal/RELATIONAL_PATTERN_MEMORY.md) | Complete visible/hidden split, conditional approximation orders and a frozen finite memory prediction; no exact state compression |
+| [Emergence and ontology](EMERGENT_ONTOLOGY.md) | Which formation/identity claims are supported, which mechanisms can be reused, and which ontological claims remain open |
 
-## Arithmetic structure
+## Transport, memory and clocks
 
-| Document | Scope |
+| Mathematical owner | Domain and reuse boundary |
 | --- | --- |
-| [TNFR_NUMBER_THEORY.md](TNFR_NUMBER_THEORY.md) | Arithmetic pressure and primality criterion |
-| [TNFR_ARITHMETIC_DYNAMICS.md](TNFR_ARITHMETIC_DYNAMICS.md) | Arithmetic-network dynamics |
-| [TNFR_ARITHMETIC_OPERATORS.md](TNFR_ARITHMETIC_OPERATORS.md) | Operator realization in arithmetic domains |
-| [TNFR_ARITHMETIC_PRESSURE.md](TNFR_ARITHMETIC_PRESSURE.md) | Pressure-channel analysis and limitations |
-| [TNFR_ADDITIVE_DYNAMICS.md](TNFR_ADDITIVE_DYNAMICS.md) | Additive/Fourier constructions |
-| [TNFR_CRT_FRACTALITY.md](TNFR_CRT_FRACTALITY.md) | Chinese-remainder synthesis |
-| [TNFR_PADIC_DYNAMICS.md](TNFR_PADIC_DYNAMICS.md) | Projective p-adic transport |
-| [TNFR_ALGEBRAIC_NUMBER_FIELDS.md](TNFR_ALGEBRAIC_NUMBER_FIELDS.md) | Finite and algebraic-field extensions |
-| [TNFR_STRUCTURAL_OBSERVABILITY.md](TNFR_STRUCTURAL_OBSERVABILITY.md) | Observability diagnostics and selector scope |
+| [EPI diffusion stability](TNFR_DIFFUSION_STABILITY_THEOREM.md) | Reversible and restricted time-varying diffusion, metric/solver bounds and finite executor evidence; not full-runtime stability |
+| [Directed nonnormal dynamics](TNFR_DIRECTED_NONNORMAL_DYNAMICS.md) | Directed transport, transient amplification and clock changes (historical R9); eigenvalue decay alone is insufficient |
+| [Derived EPI memory](DERIVED_EPI_MEMORY.md) | Linear/affine hidden-state elimination, initial sources, observation closure and error propagation |
+| [Capacity and localization](CAPACITY_LOCALIZATION_BALANCE.md) | Held-capacity balance, release and admission of proposed form/capacity laws |
+| [Cycle support dynamics](CYCLE_SUPPORT_DYNAMICS.md) | Joint cycle budgets and finite reorganization clocks under the stated phase/capacity laws |
+| [Cycle memory relaxation](CYCLE_MEMORY_RELAXATION.md) | Restricted delayed REMESH/history contraction; distinct from eliminating hidden phase/form state |
+| [Forced support balance](FORCED_SUPPORT_BALANCE.md) | Held-source restoration, reference changes, event work and clock boundaries |
+| [REMESH fixed-delay models](REMESH_INFINITY_DERIVATION.md) | History companion systems, filters and runtime defects; no unrestricted infinite-runtime theorem |
+| [Scale, geometry and bridge](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) | Quotients, shared realizations, reflection invariants, field dependencies and coherence-length limits |
 
-## Research programme owners
+## Operators, grammar and support events
 
-Start with the [research portfolio](../TNFR_lineas_de_investigacion.txt) to
-distinguish primary axes, supporting mechanisms and deferred programmes.
-Only the [nodal execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md)
-owns the active queue and stage status. The linked domain notes below retain
-their research scope; listing them does not activate concurrent campaigns.
-
-| Program | Document |
+| Mathematical owner | Domain and reuse boundary |
 | --- | --- |
-| Core dynamics S1-S16 | [CORE_RESEARCH_PROGRAM.md](CORE_RESEARCH_PROGRAM.md) |
-| Primary generative research and supporting P1-P5 measurement bridge | [research/FIVE_STAGE_EXECUTION_PLAN.md](research/FIVE_STAGE_EXECUTION_PLAN.md) |
-| P2 passive-transport measurement protocol and admission gaps | [research/PASSIVE_TRANSPORT_PROTOCOL.md](research/PASSIVE_TRANSPORT_PROTOCOL.md) |
-| Nodal strategy, regional mechanism reuse and laboratory admission | [NODAL_RESEARCH_STRATEGY.md](NODAL_RESEARCH_STRATEGY.md) |
-| Riemann and spectral ladders | [TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md) |
+| [Structural operators](STRUCTURAL_OPERATORS.md) | Named transformations and their interpretation; registered catalog size does not prove mathematical completeness |
+| [Unified grammar](UNIFIED_GRAMMAR_RULES.md) | U1–U6 word and live-state contracts, with configured policy premises |
+| [Diagnostic and grammar scope](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md) | Counterexamples, constitutive closure audit and limits of grammar/diagnostic claims |
+| [Coupling and winding](COUPLING_WINDING_PERSISTENCE.md) | Restricted cycle gap diffusion, winding retention and event/runtime exclusions |
+| [Coherent pattern contact](COHERENT_PATTERN_CONTACT.md) | Prepared contact, two-port recovery and formation barriers under its stated event/phase laws |
+| [THOL pressure feedback](THOL_PRESSURE_FEEDBACK.md) | History-driven pressure, refresh order and disconnected-child limitations |
+| [THOL birth and transport](THOL_BIRTH_AND_TRANSPORT.md) | Configured child creation, admitted transport and source/event accounting; not spontaneous substrate creation |
+| [Child coupling feedback](CHILD_COUPLING_FEEDBACK.md) | Child-target Coupling, changes of reference and comparison with the original profile |
 
-The added Navier-Stokes, Yang-Mills and standalone Millennium programmes were
-removed. Their reusable negative conclusions are centralized in
-[retired programme boundaries](research/archive/RETIRED_PROGRAMME_BOUNDARIES.md).
-The retained arithmetic/spectral research does not solve the corresponding
-classical problems. Supporting maps include
-[STRUCTURAL_RESEARCH_PROGRAM.md](STRUCTURAL_RESEARCH_PROGRAM.md),
-[NUCLEUS_A_PRIME_LADDER_ATLAS.md](NUCLEUS_A_PRIME_LADDER_ATLAS.md), and
-[NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md](NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md).
+## Diagnostics and geometry
 
-## Catalog and application references
-
-| Document | Scope/status |
+| Mathematical owner | Domain and reuse boundary |
 | --- | --- |
-| [REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md) | Current conditional mathematics: cyclic filters, history companion, finite runtime defects and restricted repeated policies; no unrestricted runtime-infinity theorem |
-| [CATALOG_TYPE_HYGIENE_PROGRAMME.md](CATALOG_TYPE_HYGIENE_PROGRAMME.md) | Historical audit outcome and current implementation owners; no active queue or complete catalog theorem |
-| [APPLIED_STRUCTURAL_ANALYSIS.md](APPLIED_STRUCTURAL_ANALYSIS.md) | Experimental factorization pipeline; structural confidence versus arithmetic verification, fallbacks and evaluation scope |
-| [C6_RESEARCH_MECHANISM_AUDIT.md](C6_RESEARCH_MECHANISM_AUDIT.md) | Parked B71-B75 audit/evidence; 41/56 first-exit labels excluded, 15 open; C6 global stability remains open |
-| [TNFR_DIRECTED_NONNORMAL_DYNAMICS.md](TNFR_DIRECTED_NONNORMAL_DYNAMICS.md) | Conditional directed-transport results; eigenvalue decay and transient amplification are distinct |
+| [Minimal structural degrees](MINIMAL_STRUCTURAL_DEGREES.md) | Complementary tetrad observations and counterexamples to complete-state reconstruction |
+| [Structural conservation diagnostics](STRUCTURAL_CONSERVATION_THEOREM.md) | Actual temporal balance, currents and residuals; a field energy needs its own monotonicity proof |
+| [Stability and dynamics diagnostics](STRUCTURAL_STABILITY_AND_DYNAMICS.md) | Operational stability/lifecycle observations and their implementation boundaries |
+| [Extended fields](EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md) | Algebraic derived quantities, availability and emergent-property audit; static statistics are not temporal laws |
 
-## Historical material and maintenance
+## Auxiliary models and physical comparisons
 
-The [retirement record](research/archive/README.md) identifies obsolete code,
-studies and duplicated notebooks with their recovery revision. Earlier full
-notebooks are recoverable from Git rather than kept as duplicate working-tree
-documents. Historical instructions and assertions are not current authority. Dates inside retained derivation
-notebooks identify evidence/supersession; the active queue remains the plan.
-Do not append the same result to every index: update its mathematical owner,
-then adjust the portfolio or plan only when status or priority changes.
+| Mathematical owner | Added premises and open bridge |
+| --- | --- |
+| [Variational and exchange models](TNFR_VARIATIONAL_PRINCIPLE.md) | Auxiliary action/Hamiltonian read-outs, exact restricted diffusion bridges and conditional cotangent closure |
+| [Dissipative/open-system models](DISSIPATIVE_AND_OPEN_SYSTEMS.md) | Specified forcing and dissipative constructions with their neutral-mode boundaries |
+| [Gauge and polarization constructions](GAUGE_SYMMETRY_AND_UNIFICATION.md) | Classical auxiliary symmetries; no engine-wide gauge or particle-unification theorem |
+| [Physical phenomena atlas](PHYSICAL_REGIME_CORRESPONDENCES.md) | Conditional reductions, supplied analogues, measurement prerequisites and unresolved physical correspondences |
 
-## Reproducibility rule
+## Arithmetic and applications
 
-A numerical claim identifies model, inputs, source/configuration, seed where used,
-execution path, precision and evidence. Exact mathematics states assumptions and
-proof; finite tests check implementations and witnesses. An audit correction is
-not a new experimental validation, and no archive move closes an open theorem.
+These are scoped mathematical constructions and application references, not
+parallel active campaigns or evidence that arithmetic nodes are physical NFRs.
+Historical R identifiers remain searchable here; their proofs own the claims.
+
+| Mathematical owner | Contribution and boundary |
+| --- | --- |
+| [Number theory](TNFR_NUMBER_THEORY.md) | Arithmetic encodings, pressure and primality criterion; supplied divisor information is explicit |
+| [Structural observability — R1](TNFR_STRUCTURAL_OBSERVABILITY.md) | Symmetry-sector observations and finite operator/selector scope |
+| [Arithmetic dynamics — R2](TNFR_ARITHMETIC_DYNAMICS.md) | Pulse recurrence for the declared residue-network construction |
+| [CRT composition — R3](TNFR_CRT_FRACTALITY.md) | Chinese-remainder transport/product synthesis |
+| [p-adic dynamics — R4](TNFR_PADIC_DYNAMICS.md) | Projective transport; a static lift is not a temporal REMESH echo |
+| [Algebraic number fields — R5](TNFR_ALGEBRAIC_NUMBER_FIELDS.md) | Finite/algebraic-field extensions and classification limits |
+| [Additive dynamics — R6](TNFR_ADDITIVE_DYNAMICS.md) | Controlled Fourier construction; no demonstrated TNFR-specific excess |
+| [Arithmetic pressure — R7](TNFR_ARITHMETIC_PRESSURE.md) | Channel independence and redundancy for primality; completeness remains open |
+| [Arithmetic operators — R8](TNFR_ARITHMETIC_OPERATORS.md) | Synthetic effect comparisons, not actual glyph/grammar execution |
+| [Riemann scope](TNFR_RIEMANN_RESEARCH_NOTES.md) | Current arithmetic/spectral evidence and unresolved analytic bridge; not a proof of RH |
+| [Prime-ladder atlas](NUCLEUS_A_PRIME_LADDER_ATLAS.md) | Internal reproduction of supplied spectra and classical identities |
+| [Equivariance obstructions](NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md) | Conditional negative algebraic results, without an exhaustion theorem |
+| [Applied structural analysis](APPLIED_STRUCTURAL_ANALYSIS.md) | Factorization heuristics, arithmetic verification and fallback/evaluation provenance |
+
+## Research, measurement and parked evidence
+
+| Owner | Responsibility |
+| --- | --- |
+| [Execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md) | Sole active F1–F4 task queue; supporting P1–P5 admission gates |
+| [Research strategy](NODAL_RESEARCH_STRATEGY.md) | Scientific rationale, premise review and current/historical reuse audit |
+| [Passive transport protocol](research/PASSIVE_TRANSPORT_PROTOCOL.md) | Independent measurement and clock mapping, calibration/evaluation separation |
+| [Regional phase/amplitude protocol](research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md) | Collective observation map, uncertainty and data-source admission |
+| [TCLab exploratory protocol](research/TCLAB_EXPLORATORY_PROTOCOL.md) | Frozen driven thermal comparison and unresolved physical admission |
+| [C6 mechanism audit](C6_RESEARCH_MECHANISM_AUDIT.md) | Parked finite evidence: 41/56 labels excluded, 15 open; global stability is not closed |
+
+<!-- END THEORY CATALOG -->
+
+## Theory to execution
+
+Follow the actual path before transferring a theorem. These are representative
+integration checks, not a claim that every module or theorem has been verified.
+[Architecture](../ARCHITECTURE.md) owns dispatch; [Testing](../TESTING.md) owns
+selection and commands; the [SDK guide](../docs/CLI_AND_SDK.md) owns usage.
+
+| Mechanism | Shared implementation | Representative checks | Public use and limit |
+| --- | --- | --- | --- |
+| Configured nodal pressure | [DNFR](../src/tnfr/dynamics/dnfr.py), [nodal row](../src/tnfr/dynamics/canonical.py) | [Core contracts](../tests/core_physics/README.md) | `runtime.step` also includes configured phase/capacity/events; diffusion hypotheses cannot be assumed |
+| Operator-word studies | [Study runner](../src/tnfr/sdk/study.py), [CLI adapter](../src/tnfr/cli/study.py) | [SDK studies](../tests/sdk/test_study.py), [CLI wiring](../tests/cli/test_study_commands.py) | `run_study` / `tnfr network`; cycles count words, not seconds |
+| Regional form and held-source response | [Form geometry](../src/tnfr/physics/form_geometry.py), [source-relative form](../src/tnfr/physics/source_relative_form.py) | [Form controls](../tests/physics/test_form_geometry.py), [source controls](../tests/physics/test_source_relative_form_response.py) | `Network.regional_form` / `source_relative_form`; stored-pressure observations, not a new solver |
+| Conditional joint evolution | [Relational engine](../src/tnfr/dynamics/relational.py) | [Execution](../tests/test_relational_exchange_execution.py), [regular domain](../tests/test_relational_regular_execution.py) | `relational_exchange` / `step_relational`; opt-in held-capacity law, separate from CLI word studies |
+| Pattern geometry and exchange budgets | [Relational observations](../src/tnfr/physics/relational_observations.py), [support transport](../src/tnfr/physics/support_transport.py) | [Pattern observations](../tests/test_relational_pattern_observation.py), [phase response](../tests/test_relational_phase_response.py) | `relational_pattern`; fresh detached field, supplied regions/frame, retained complete centered state |
+| Protected basin and continuous transit | [Capture](../src/tnfr/physics/relational_capture.py), [transit](../src/tnfr/physics/relational_transit.py) | [Capture](../tests/test_relational_capture.py), [SDK reports](../tests/sdk/test_relational_reports.py) | `relational_*capture`; sufficient scoped certificates, distinct from stepping or an automatic pattern detector |
+| Linear reduction and nonlinear memory | [Invariant-row algebra](../src/tnfr/mathematics/linear_observation.py), [memory prediction](../benchmarks/relational_memory_prediction.py) | [Exact closure](../tests/test_linear_observation.py), [frozen response](../tests/physics/test_relational_memory_response.py) | Research instrument only; no reduced nonlinear SDK evolution or fitted memory law |
+| Fields and diagnostic provenance | [Fields](../src/tnfr/physics/fields.py), [study diagnostics](../src/tnfr/sdk/study.py) | [Read-out consistency](../tests/physics/test_field_readout_consistency.py), [SDK diagnostics](../tests/sdk/test_study.py) | `tetrad` / `diagnose_network`; unavailable fields and estimator provenance remain explicit |
+| Named events and grammar | [Registry](../src/tnfr/operators/operator_contracts.py), [atomic stages](../src/tnfr/operators/network_stage.py) | [Event execution](../tests/operators/test_operator_event_runtime.py) | [API contracts](../docs/API_CONTRACTS.md); operator events are not finite-duration nodal solutions |
+| Arithmetic applications | [Factorization guide](../factorization-lab/README.md), [primality guide](../primality-test/README.md) | Each application's declared arithmetic verification | Supplied encodings, candidate heuristics and fallbacks; separate from physical generative research |
+
+The SDK delegates to the shared owners; it is not another model implementation.
+A public adapter is warranted for a stable contract, not for every exploratory
+coefficient calculation. Detached reports are evidence projections, not full
+resumable checkpoints. The single-bridge local memory preparation and two-bridge
+formation/capture supports have different hypotheses despite sharing a law.
+
+## Historical aliases and maintenance
+
+The former S1–S16 map referred to stability/Lyapunov/solver questions (S1, S2,
+S4, S5, S13), state/geometry/reduction (S3, S8, S9, S11, S14), transitions/support
+(S6, S7), catalog completeness (S10), inverse observation (S15) and effective
+NFR identity (S16). Their topical owners are cataloged above. These aliases
+are not completion labels or a second active queue. R1–R9 are listed with their
+owners; the old B0–B11 catalog audit was finite implementation evidence, not a
+proof of universal operator completeness.
+
+The [archive](research/archive/README.md) owns retirement and recovery records.
+[Retired programme boundaries](research/archive/RETIRED_PROGRAMME_BOUNDARIES.md)
+preserve useful negative conclusions from removed physical-programme wrappers.
+Do not treat an archived instruction as current work or rewrite frozen results
+when code evolves. Preserved numerical records retain model, inputs, source,
+precision, path and outcome; tests do not turn finite evidence into a theorem.
+
+Update a derivation and its affected implementation/tests together. Update this
+catalog only when ownership, scope or navigation changes, and the execution
+plan only when a task or priority changes. Do not append the same result to
+every guide or restore a parallel status index.

@@ -169,7 +169,7 @@ proved stability margin.
 [defaults_core.py](../src/tnfr/config/defaults_core.py). The metric owner
 normalizes its live inputs and applies the configured combination; the
 weights are not independently derived physical constants.
-**Math:** [Mathematical Foundations - Metrics](MATHEMATICAL_DYNAMICS_BASIS.md)
+**Math:** [Structural-field definitions](../docs/STRUCTURAL_FIELDS_TETRAD.md)
 
 ### Phase Gradient (|∇φ|) - CANONICAL
 
@@ -420,7 +420,7 @@ record). A successful ZHIR preserves `epi_kind` and records `ZHIR` in
 
 **Grammar:** See [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) for complete rules
 **Detailed Specs:** See [AGENTS.md § The 13 Canonical Operators](../AGENTS.md#5-the-13-canonical-operators)
-**Math:** [Mathematical Foundations](MATHEMATICAL_DYNAMICS_BASIS.md)
+**Math:** [Theory reading routes](README.md#choose-a-question)
 
 ---
 
@@ -783,7 +783,7 @@ continuous-model phase transition.
 ### Core References (Essential)
 - **[AGENTS.md](../AGENTS.md)** ⭐ - Single source of truth for TNFR agent guidance, invariants, and philosophy
 - **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)** ⭐ - Current U1-U6 grammar specification and scope
-- **[Mathematical Foundations](MATHEMATICAL_DYNAMICS_BASIS.md)** ⭐ - Mathematical models, restricted proofs and spectral context
+- **[Theory reading routes](README.md#choose-a-question)** ⭐ - Mathematical models, restricted proofs and spectral context
 
 ### Theory & Physics
 - [TNFR.pdf](TNFR.pdf) - Original theoretical companion (paradigm, nodal equation, foundational physics)

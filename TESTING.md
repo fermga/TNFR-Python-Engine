@@ -50,6 +50,136 @@ declared obsolete merely because they are outside the routine gate. Add a new
 production-field regression to `testpaths` when it belongs in that gate. A
 routine pass is not a claim that every mathematical campaign was replayed.
 
+For the foundational F1-F4 cycle, the shared regional/source-relative form
+observations and affine-closure admission are production contracts covered by
+the routine gate.
+The [relational execution controls](tests/test_relational_exchange_execution.py)
+also belong to that gate: they exercise the shared opt-in field, atomic step,
+numerical admission, zero capacities and SDK delegation. Its theorem and
+countermodel checks remain explicit research selections.
+The [regular-chamber controls](tests/test_relational_regular_execution.py)
+and [rational cosine bounds](tests/test_phase_resultant_chamber.py) cover the
+opt-in wider executor in the routine gate. They check the analytic crossing
+tangent, whole-step rejection despite regular endpoints, atomicity and
+independent trigonometric admission without running a formation campaign.
+The [protected-capture controls](tests/test_relational_capture.py) run in the
+routine gate. They check exact symmetry and energy admission, three distinct
+target basins, current winding versus limiting sector, unsupported domains,
+read-only SDK delegation and exact export. They neither integrate trajectories
+nor replace mathematical proofs with a finite pass. The symbolic basin and
+saddle controls remain in the explicit formation-admission research selection.
+The same routine owner also checks the full-state local basin without exact
+reflection, using affine-pi quotient distances and enclosed excess storage.
+It also checks the full-state acute-sector barrier with independently admitted
+edge lifts, cycle periods and energy margins, without a symmetry tolerance.
+Positive heterogeneous capacities, beta/form rescaling, unavailable future
+regularity bounds and strict zero-capacity exclusion are covered explicitly.
+The upper-corner [response controls](tests/physics/test_relational_capture_response.py)
+test protocol freezing, stopped-state accounting and retained endpoint
+certificates without repeating the three-grid evolution.
+The [continuous-transit controls](tests/test_relational_transit.py) exercise
+the reduced/full-law correspondence, short analytic solutions, retained
+central resultant, read-only execution and explicit unavailable prefixes.
+Independent rational references test interval trigonometry, Taylor derivative
+tails and signed-diagonal comparison. The separately selected
+[proof-record controls](tests/physics/test_relational_transit_proof.py) bind
+the exact archived source, original seed/verdict, every saved Picard tube and
+whole-endpoint basin inequalities; they do not repeat the 256-step proof.
+The [zero-form controls](tests/physics/test_relational_zero_form.py) check the
+single intervention, initial phase-to-form derivatives, explicit competing
+outcomes, immutable source and every retained tube without rerunning its
+trajectory. They distinguish proved consensus from unavailable capture and
+label transient winding at saved endpoints as a post-evaluation deduction.
+Three-basin and extended arctangent derivative controls preserve the prior
+positive-only default and the original small-argument arithmetic.
+The [equal-storage reversal controls](tests/physics/test_relational_reversed_form.py)
+compare exact initial graph energies, signed reduced coordinates and fresh
+engine phase rates. They check frozen intervention admission and distinguish
+different limits from unchanged or unavailable outcomes. Protocol tests do
+not regenerate a trajectory; retained-evidence checks use saved interval tubes.
+The [shared pattern observations](tests/test_relational_pattern_observation.py)
+and [SDK report controls](tests/sdk/test_relational_reports.py) also run in the
+routine gate. They check supplied real phase lifts, complete centered
+coordinates, unavailable transport domains, read-only fresh pressure, retained
+checkpoint agreement and exact JSON projection. They do not repeat the frozen
+recovery or interaction trajectories.
+The [signed-work controls](tests/test_relational_work_observation.py) check
+independent graph gradients, sign reversal, stationary/uniform-form limits,
+regional partitions, actual-rate defects and zero-capacity availability.
+The [shared cut controls](tests/test_regional_support_cut.py) cover full support,
+complements and primitive revalidation while preserving legacy transport
+admission. These static controls and SDK exports add no temporal campaign.
+The [regional phase-response controls](tests/test_relational_phase_response.py)
+check an analytic zero-cut path response, separate capacity and metric effects,
+independent edge accounting, exact covariance bounds and rate-rounding defects.
+They retain zero-capacity admission, single/full regions, partitions, sign
+reversal and relabeling. A static mixed-state witness shares ten coarse
+coordinates and a zero cut while its regional phase response differs.
+The [generic linear observation controls](tests/test_linear_observation.py)
+check exact invariant-row closure, complete stabilization, resource admission
+and minimal state reconstruction independently of a graph or diffusion law.
+Existing affine/forced realization tests retain their original negative
+generator sign, reports and counters. The explicitly selected
+[local composition controls](tests/physics/test_relational_local_composition.py)
+check fixed rational coefficient probes, the actual-trigonometric Jacobian
+against static native differences and the nonlinear same-observation witness.
+The same owner checks equal coarse state/rate with unequal acceleration, using
+exact rational algebra probes and independent static directional differences
+of the native field. Equal initial energy/loss does not erase that obstruction.
+They do not substitute rational values for the ideal constants in a theorem
+or evolve a new research trajectory.
+The [joint memory controls](tests/physics/test_relational_pattern_memory.py)
+check the complete quotient reconstruction, independent hidden generator,
+energy split, lossless boundary and nonlinear symmetry against native fields.
+An analytic prepared-even witness tests hidden generation and the leading
+cubic visible residual. Static consistency does not certify a trajectory
+error or supply the theorem's neighborhood/derivative bounds numerically.
+The [memory coefficient controls](tests/physics/test_relational_memory_prediction.py)
+check independently derived quadratic/cubic terms, generated feedback, parity,
+polarization, one-step causal staging and a native static Taylor probe.
+The [memory-response controls](tests/physics/test_relational_memory_response.py)
+validate preparation isolation, immutable source/protocol binding and retained
+endpoint errors by independent graph-energy accounting. They reuse the first
+three-grid response rather than repeating its trajectories; ideal rational
+means and represented matrix arithmetic have separate rounding boundaries.
+The [capacity-response controls](tests/physics/test_relational_capacity_response.py)
+reuse one [read-only audit](benchmarks/relational_capacity_audit.py) for retained
+preparation, checkpoint and frozen-decision consistency. Adversarial mutations
+check that matching the nodal product alone cannot authenticate pressure or
+the other stored fields. These checks do not rerun the twelve trajectories;
+current snapshot replay is separately available only when the recorded
+source/runtime fingerprints match. A later incompatible environment does not
+retroactively change the historical numerical verdict.
+The [joint local-recovery controls](tests/physics/test_relational_local_recovery.py)
+check the conditional tangent dynamics and retained two-grid C5 response, with
+actual engine execution at the excluded zero-capacity boundary. The theorem
+requires positive capacities and EPI dissipation; runtime admission alone
+does not assert recovery. Reuse retained evidence instead of rerunning the
+full finite campaign for each assertion.
+The [paired-region controls](tests/physics/test_relational_region_interaction.py)
+reuse that same law, plus the existing regional support-balance observer.
+Independent initial-acceleration and equal-summary counterexamples check
+transmission and the limits of aggregate state; retained three-grid records
+and detached snapshots supply the finite evidence without repeating trajectories.
+The [formation-admission controls](tests/physics/test_relational_formation_admission.py)
+are an explicit research selection. Exact rational-turn geometry, symbolic
+storage barriers and native-pressure/tangent checks distinguish constitutive
+boundaries from the acute executor. They perform no formation trajectory or
+parameter sweep and leave the frozen recovery/interaction campaigns intact.
+The [bounded crossing controls](tests/physics/test_relational_formation_response.py)
+separately check the frozen protocol, stop/atomicity reporting and retained
+checkpoint geometry through shared observers. They do not repeat its three
+grids or treat an uncompleted horizon as a final recovery verdict.
+The conditional-law and frozen-response controls remain explicit research
+selections at their [theoretical owner](theory/nodal/DERIVED_FORM_PHASE.md).
+The [F4 tests](tests/physics/test_source_relative_form_response.py) prepare a
+current-source prediction in memory and reuse one four-trajectory fixture;
+they neither rewrite the retained artifacts nor certify that the current
+source equals the first evaluated source. Historical fingerprint verification,
+current regression execution and a new reserved prediction are separate
+operations. The [benchmark guide](benchmarks/README.md#running-and-reporting)
+owns their artifact lifecycle.
+
 Local execution is serial by default. To use the main CI scheduling policy,
 run `python -m pytest -n 2 --dist loadfile`; this keeps the same `not slow`
 selection and assertions. Each file stays on one worker to reuse its module

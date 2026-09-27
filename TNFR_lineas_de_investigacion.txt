@@ -1,152 +1,213 @@
-TNFR - RESEARCH PORTFOLIO AND RESUMPTION INDEX
-============================================
-Updated: 2026-09-20.
+TNFR - RESEARCH PORTFOLIO
+========================
+Updated: 2026-09-27.
 
-1. OBJECTIVE AND CURRENT DECISION
-=================================
-Determine what predictive structure follows from justified nodal dynamics,
-which results depend on revisable modeling choices, and which interpretations
-must be corrected or rejected. The intended generative account of coherent
-patterns is retained. Existing foundations, pressure recipes, operator policies
-and identities are not protected from mathematical or empirical revision.
+1. PURPOSE AND DOCUMENT RESPONSIBILITIES
+========================================
+The primary objective is to determine whether coherent, interacting patterns
+and eventually properties of physical constituents can emerge from justified
+TNFR structure and dynamics. EPI need not correspond directly to a sensor
+reading. A collective measurement bridge may be appropriate, but physical
+emergence remains a hypothesis, not an established consequence of the nodal
+identity.
 
-The nodal identity alone does not select a complete model. Conditional emergence
-from a declared fine model is meaningful without proving that model unique.
-It must remain distinct from autonomous formation and physical identification.
-No current result establishes that particles or all reality emerge from TNFR.
+An NFR is part of the same structural configuration it affects. Its effective
+interactions must be inherited from the admitted fine dynamics, not supplied
+again as unexplained forces or extra agents. Support, initial conditions,
+capacity laws and constitutive premises must remain explicit.
 
-The sole execution queue is:
+This file classifies branches and their roles; it contains no separate task
+queue, experimental protocol or delivery chronology.
+  Sole task queue and next admission:
+    theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate
+  Scientific rationale and reuse decisions:
+    theory/NODAL_RESEARCH_STRATEGY.md
+  Complete document catalog and implementation map:
+    theory/README.md
+  Working definitions and execution contracts:
+    AGENTS.md
+    docs/API_CONTRACTS.md
+
+2. PRIMARY GENERATIVE RESEARCH
+==============================
+
+A. FOUNDATIONS AND COMPLETE LAWS
+Role: identify the state and justify the dynamics before claiming emergence.
+Status: scoped reference admissions are established; unique foundations are
+not selected.
+
+The S reference retains signed scalar form and independent primitive phase;
+D observes a restricted transport sector of S. A regular chart change, an
+exact symmetry and a lossy observation are different operations. The nodal
+identity alone does not determine pressure, phase, capacity, support or events.
+Source-relative observations and fixed-law closure criteria now have shared
+engine/SDK owners. They retain their supplied-source and domain assumptions.
+
+Primary owners:
+  theory/FUNDAMENTAL_THEORY.md
+  theory/NODAL_PARAMETER_FOUNDATIONS.md
+  theory/nodal/PRESSURE_CONSTITUTIVE_SCOPE.md
+  theory/nodal/JOINT_PARAMETER_RESPONSE.md
+  theory/nodal/DERIVED_FORM_PHASE.md
+  theory/CAPACITY_LOCALIZATION_BALANCE.md
+
+B. CONDITIONAL FORMATION, MAINTENANCE AND INTERACTION
+Role: establish mechanisms under one complete law and distinguish their
+consequences from their constitutive premises.
+Status: conditional formation and maintenance, local recovery and prepared
+interaction are established in specified domains.
+
+The relational exchange family preserves the declared native pressure and
+derives joint phase response under additional storage/capacity assumptions.
+It has shared opt-in engine/SDK execution, signed-work and regional-response
+observations, and separate sufficient capture/transit certificates. The
+default operator runtime remains a different execution path.
+
+On supplied two-ring support, a validated continuous transit joins formation
+to a protected maintained phase geometry. Controls with uniform or reversed
+initial form reach consensus under the same law. Initial energy and loss
+alone therefore do not select identity. These results do not generate the
+underlying support or establish physical constituents.
+
+Primary owner:
+  theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md
+Interpretation and public integration:
+  theory/EMERGENT_ONTOLOGY.md
+  docs/CLI_AND_SDK.md
+  docs/API_CONTRACTS.md
+
+C. COMPOSITION, RETAINED INFORMATION AND MEMORY
+Role: determine what must be retained when interacting coherent regions are
+described at a larger scale.
+Status: exact tangent reduction and nonlinear closure obstructions are known;
+the bounded derived-memory prediction gate is complete.
+
+For the admitted single-bridge reference, regional mean/port observations
+require additional shape coordinates even at first variation. The resulting
+coarse state is not a complete nonlinear predictor; adding its instantaneous
+rate also fails. The existing full pattern report retains the omitted
+internal information.
+
+Exact hidden-state elimination and symmetry give conditional approximation
+orders for prepared small perturbations. A frozen finite memory prediction
+improved both tangent and direct-cubic controls on matched Euler grids.
+That result neither certifies an exact-ODE error at the evaluated amplitude
+nor supplies an autonomous compressed node or a fitted memory law.
+
+The current direction is component-to-joined interface admission with full
+internal state retained under one supplied unit bridge. Existing interaction
+controls start with already-joined support; they do not resolve this interface
+contract or select an autonomous attachment event. The same law, regional cuts
+and recovery results remain the reusable owners. Precise obligations and
+acceptance criteria belong only to:
   theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate
-It now prioritizes minimal-model admission and discriminating predictions.
-Continuing the configured C5 pressure-admission proof is no longer mandatory.
-Its completed results remain valid within their hypotheses and reusable.
 
-2. OWNERSHIP: ONE DOCUMENT FOR EACH RESPONSIBILITY
-=================================================
-- Active tasks, status, acceptance and stop criteria:
-  theory/research/FIVE_STAGE_EXECUTION_PLAN.md
-- Scientific assessment, premise review and mechanism admission:
-  theory/NODAL_RESEARCH_STRATEGY.md
-- Theorems, counterexamples and model dependencies:
-  theory/README.md (index of the responsible references)
-- Technical S1-S16 inventory and implementation scope:
-  theory/CORE_RESEARCH_PROGRAM.md
-- Engineering contracts and architecture:
-  AGENTS.md, ARCHITECTURE.md, docs/API_CONTRACTS.md
-- Physical measurement/source admission:
+Primary owners:
+  theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md
+  theory/nodal/RELATIONAL_PATTERN_MEMORY.md
+  theory/nodal/INHERITED_FORM_DYNAMICS.md
+
+3. SHARED METHOD AND SUPPORTING MATHEMATICS
+===========================================
+F1-F4 is the recurring admission method, not a claim that all TNFR is complete:
+  F1: define state, equivalences, units, zero limits and retained information.
+  F2: justify complete laws and distinguish premises from derived consequences.
+  F3: check the joint laws, symmetries, boundaries, balances and reductions.
+  F4: freeze a discriminating prediction and evaluate without retuning.
+
+Earlier completed cycles remain scoped results. Their tools can be reused
+when their actual hypotheses apply; they are not parallel active campaigns.
+
+- Transport, scale and linear memory supply exact reduction, source accounting
+  and error-propagation methods. Diffusion positivity, fixed-delay REMESH and
+  nonlinear hidden-state memory have different premises.
+    theory/TNFR_DIFFUSION_STABILITY_THEOREM.md
+    theory/TNFR_DIRECTED_NONNORMAL_DYNAMICS.md
+    theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md
+    theory/DERIVED_EPI_MEMORY.md
+    theory/CYCLE_MEMORY_RELAXATION.md
+
+- Phase/form response, capacity and forcing studies distinguish derived
+  orientation from primitive phase, held inputs from endogenous dynamics,
+  and continuous-law preservation from hybrid-event preservation.
+    theory/nodal/PHASE_FORM_EXCHANGE.md
+    theory/nodal/PRIMITIVE_PHASE_CLOSURE.md
+    theory/FORCED_SUPPORT_BALANCE.md
+
+- Contact, support events and grammar provide existing admission and accounting
+  mechanisms. Configured THOL construction is not an autonomous birth law;
+  operator policies do not become universal laws through successful execution.
+    theory/COHERENT_PATTERN_CONTACT.md
+    theory/THOL_BIRTH_AND_TRANSPORT.md
+    theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md
+    theory/UNIFIED_GRAMMAR_RULES.md
+
+- Fields and geometry provide observations and counterexamples to completeness.
+  The tetrad does not replace the full state, its history or a closure proof.
+    docs/STRUCTURAL_FIELDS_TETRAD.md
+    theory/MINIMAL_STRUCTURAL_DEGREES.md
+
+4. PHYSICAL CONFRONTATION - SUPPORTING, NOT YET ADMITTED
+=======================================================
+P1-P5 supports the primary generative research:
+  P1: correct diagnostics and separate calibration from evaluation.
+  P2: independently define measurement, clock and preparation.
+  P3: evaluate a frozen reserved physical response.
+  P4: test partial observation and memory.
+  P5: test maintenance, recovery and transitions under that same protocol.
+
+No public dataset has passed complete physical admission. The evaluated TCLab
+exploration retains unresolved identification and positive-bias limitations;
+its evaluated data cannot become reserved data again. Historical Volts results
+do not evaluate the revised model. Retained phase/amplitude contracts and data
+metadata are resources for a named dependency, not an automatic new search.
+
+Owners:
   theory/research/PASSIVE_TRANSPORT_PROTOCOL.md
-- Superseded plans and complete delivery histories:
+  theory/research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md
+  theory/research/TCLAB_EXPLORATORY_PROTOCOL.md
+  theory/PHYSICAL_REGIME_CORRESPONDENCES.md
+
+The physical phenomena atlas is a comparison library, not a second queue or
+evidence that analogous equations establish the same underlying ontology.
+Use public terrestrial surface observations accessible with a workstation
+or an ordinary research laboratory. Space/satellite data and large-facility
+programmes are outside this plan. Physical observables may describe collective
+patterns; they need not identify each primitive with one measured magnitude.
+Never reconstruct pressure retrospectively from the observed derivative to
+make the nodal equation fit its own evaluation data.
+
+5. PARKED BRANCHES, EVIDENCE AND RESUMPTION
+=========================================
+Parked: C4 off-manifold closure, further C8 identity calculations, C5 gate
+itineraries, C6 complete-runtime stability, and additional formation or
+memory-accuracy sweeps. Reopening requires a named dependency in the sole plan.
+The completed single-bridge memory control and two-bridge formation/capture
+results have different support/preparation hypotheses and remain distinct.
+
+Arithmetic and Riemann studies retain scoped mathematical and computational
+results. Cotangent/Hamiltonian, symplectic and gauge constructions remain
+explicit alternatives or auxiliary models. Historical Millennium/particle
+analogies establish no physical constituents, quantum theory or substrate
+origin. Their usefulness must be checked against the current state and laws.
+
+Owner and recovery map:
+  theory/README.md
+  theory/TNFR_VARIATIONAL_PRINCIPLE.md
+  theory/TNFR_RIEMANN_RESEARCH_NOTES.md
+  theory/TNFR_NUMBER_THEORY.md
   theory/research/archive/README.md
+  theory/research/archive/RETIRED_PROGRAMME_BOUNDARIES.md
+  theory/research/archive/RETIRED_SCOPE_2026-09-20.json
 
-This portfolio classifies work; it is not another chronological log or queue.
-The pre-reassessment plan and portfolio are preserved byte for byte in the
-archive. Their previous next-step instructions are superseded, not their data.
+Keep four kinds of evidence separate: exact definitions/conditional theorems;
+finite represented execution or validated enclosures with their stated scope;
+diagnostics/configured policies; and independent physical observations.
+Preserve original model, inputs, source, precision, clock and frozen outcomes.
+A later theorem or code correction does not rewrite an earlier verdict.
 
-3. PRIMARY AND SUPPORTING LINES
-===============================
-A. Justified nodal dynamics and generative patterns - PRIMARY
-Question: which explicit nodal model can predict an observable pattern or
-response without inserting that response, its target or a fitted sustaining
-source into the premises?
-Status: a partial nodal law, configured engine, exact restricted results and
-strong counterexamples exist; autonomous closure and physical identity remain
-open. All candidate primitives and constitutive choices remain reviewable.
-Contribution: a dependency-complete model, a family of robust conditional
-predictions, or an exact statement of what cannot yet be inferred.
-Owners: theory/FUNDAMENTAL_THEORY.md, theory/NODAL_PARAMETER_FOUNDATIONS.md,
-  theory/NODAL_RESEARCH_STRATEGY.md.
-
-B. Effective state, memory and geometry - SUPPORTING THEORY
-Status: exact projections, inherited mobility, restricted joint quotients,
-reflection invariants and omission bounds are available. Tetrad summaries are
-not a complete state; selected partitions and hidden initial conditions matter.
-Contribution: derive an effective response from an admitted fine model and
-identify information that a predictor must retain. Do not equate geometric
-transport mobility with a primitive angular clock without a derivation.
-Owners: theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md,
-  theory/DERIVED_EPI_MEMORY.md, theory/MINIMAL_STRUCTURAL_DEGREES.md.
-
-C. Persistence, interactions and transitions - CONDITIONAL MECHANISMS
-Status: held-source recovery, phase locking, winding retention and finite
-regional organization work in specified models. Native controller obstructions,
-mean drift and binary64 defects delimit stronger claims.
-Contribution: positive and negative controls for A, distinguishing stationary,
-orbital, topological and finite-lived identity. No one C5/C6 target defines all
-possible NFRs; a rejected target must not be changed after evaluation.
-Owners: theory/FORCED_SUPPORT_BALANCE.md,
-  theory/THOL_BIRTH_AND_TRANSPORT.md, theory/CYCLE_MEMORY_RELAXATION.md.
-
-D. Independent observations and predictions - SUPPORTING EMPIRICAL BRIDGE
-Status: P1 and prediction/evidence infrastructure exist; P2 has no admitted
-physical dataset. P3 and physical P4/P5 depend on P2. The closed Volts comparison
-did not outperform its affine control and is not a refitting task.
-Contribution: distinguish mathematical construction from observed physics with
-an independent measurement map, preparation, clock, uncertainty and held-out
-responses. Only public terrestrial surface data or ordinary laboratory-scale
-observations; the user currently has only a computer.
-Owner: theory/research/PASSIVE_TRANSPORT_PROTOCOL.md.
-
-4. RETAINED POSITIVE RESULTS AND LIMITS
-======================================
-- Shared implementation contracts: pressure support and stable differences,
-  circular phase, metric/source reductions, registry-owned forcing, nodal
-  arithmetic, clipping-policy admission and temporal observation now
-  use common owners with regression controls. These are consistency checks,
-  not additional physical laws or evidence of autonomous emergence.
-  Owners: ARCHITECTURE.md, docs/API_CONTRACTS.md,
-  theory/STRUCTURAL_CONSERVATION_THEOREM.md.
-- Fixed reversible EPI diffusion: exact balance, conditional dissipation and
-  consensus; no universal differentiated-pattern maintenance.
-  Owner: theory/TNFR_DIFFUSION_STABILITY_THEOREM.md.
-- Exact state elimination: induced memory with hidden-initial-state source;
-  configured REMESH is not automatically that derived kernel.
-  Owner: theory/DERIVED_EPI_MEMORY.md.
-- Held-phase P3 source discrimination: four shared-engine trajectories confirm
-  the predeclared finite EPI-response difference between Arg direction and
-  J_phi/pi, with full pressure mixture and separated numerical defects.
-  This does not select a physical law or establish autonomous formation.
-  The active queue now asks which phase information a justified reduction must
-  retain, reusing existing amplitude/phase and fine-to-coarse derivations.
-  Owner: theory/NODAL_PARAMETER_FOUNDATIONS.md,
-    subsection "Prospective finite-response discriminator".
-- Counted-support joint quotients and regional windows: conditional effective
-  dynamics and temporary organization; region selection remains a premise.
-  Owner: theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md.
-- Phase sectors and acute locking: geometric identity under specified laws;
-  preparation, winding birth and complete-runtime stability are separate.
-  Owner: theory/FORCED_SUPPORT_BALANCE.md sections 26-47.
-- Weighted-C5 first feedback: source bias decreases but is not cancelled;
-  capacity interval control alone permits absolute EPI drift.
-  Owner: theory/FORCED_SUPPORT_BALANCE.md sections 42-47.
-- Atomic stages, THOL birth and causal observations: reproducible engine
-  transformations; no proof of autonomous operator occurrence.
-  Owners: docs/API_CONTRACTS.md, theory/THOL_BIRTH_AND_TRANSPORT.md.
-- Symplectic, gauge, wave and arithmetic constructions: reusable scoped algebra;
-  they require an actual bridge before identifying them with nodal trajectories.
-  Owner: theory/TNFR_VARIATIONAL_PRINCIPLE.md and the theory index.
-
-The strategy owns the detailed premise/admission matrix. The technical S1-S16
-and O1-O6 maps retain their original owners and broad open obligations; no
-additional queue is created by their identifiers. E/H labels remain historical.
-
-5. DEFERRED WORK AND REOPENING RULE
-==================================
-C5 persistent fresh-pressure admission and repeated feedback are deferred until
-needed by an independently admitted model. Preserve its source, full mixture,
-phase law, gate cadence and defects if reused; do not fit admission after failure.
-C6 stays parked at B75 with 15 regions open; no global-stability proof exists.
-Prepared-ring response, Platonic/polyhedral selection, unrestricted operator
-completeness, quantum interpretation and public-data search are also deferred.
-
-Riemann and structural arithmetic retain reusable conditional tools, not
-solutions to classical open problems or active parallel campaigns. Added
-Navier-Stokes, Yang-Mills, P versus NP, BSD and Hodge programmes, chemistry
-and quantum mappings, circular type probes and duplicate historical files
-have been removed. Recovery, API removals and consolidated negative boundaries
-are recorded in theory/research/archive/README.md. Current mathematical owners
-and evidence remain indexed in theory/README.md.
-
-Reopen only to answer a named primary dependency or an explicit user priority,
-with a bounded question, declared premises and a prospective decision rule.
-A missing derivation is not evidence that a useful conditional theorem is false.
-A test pass or a historical 'canonical' label is not evidence of physical truth.
+Autonomous support/capacity selection, unrestricted nonlinear composition and
+physical identification remain open. A restricted positive result need not
+explain creation from nothing, prove infinite lifetime for every pattern or
+select every operator universally. Resume at the plan's current gate, using
+the substantive owners above and the archive as evidence, not as instructions.

@@ -3,8 +3,10 @@
 **Working reference for the TNFR Python Engine, version 0.0.3.7.**
 This synthesis states current definitions, contracts and mathematical boundaries.
 Guide responsibilities belong to the [documentation map](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/README.md).
-Detailed derivations belong to the [theory index](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md);
-execution details belong to [API contracts](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/API_CONTRACTS.md).
+The [theory index](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md)
+is the single scientific catalog, with question-based reading routes and a
+theory-to-engine/test/SDK map. Execution details belong to
+[API contracts](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/API_CONTRACTS.md).
 This file is mirrored verbatim at `.github/agents/my-agent.md`.
 
 ## 1. What TNFR is
@@ -102,6 +104,16 @@ Gamma to be absent/zero; see [integrators](https://github.com/fermga/TNFR-Python
 The additive integrator evaluates sources strictly through the live registry;
 invalid declarations or an array fast path cannot silently remove a source.
 The opt-in extended coupled model has a separate unforced scope.
+
+The held reference model S0 fixes support, conductance, capacity, primitive
+phase and pressure coefficients. Its fresh pressure defines an affine form
+law; this restricted completion is distinct from `runtime.step`, which can
+also change phase, capacity and support. Regional means and form contrasts
+are observations of that state, not a replacement primitive ontology.
+Identifying a derived form angle with primitive phase, or imposing
+`nu_f=g(EPI)`, requires preservation by the declared flow and every event.
+See the [state admission](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/FUNDAMENTAL_THEORY.md#foundational-state-admission)
+and [capacity-law admission](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/CAPACITY_LOCALIZATION_BALANCE.md#capacity-law-admission) owners.
 
 ### The fractal-resonant node (NFR)
 
@@ -395,7 +407,13 @@ changes against the affected contract and evidence: destabilization, negative
 results or corrected diagnostics need not increase C. Never hide a contradiction
 by relabeling telemetry or adjusting a reserved response after evaluation.
 
-### Shared public execution and observations
+Use the [theory-to-execution map](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md#theory-to-execution)
+to locate a derivation, shared implementation and representative checks.
+Generic runtime, operator-word studies, the opt-in relational law and read-only
+proof calculations have different contracts; selecting an interface does not
+transfer a theorem between them.
+
+### Operator studies and stored-state observations
 
 For a declared finite operator study, use `StudySpec` and `run_study` from
 `tnfr.sdk`. The CLI `tnfr network` (also `python -m tnfr network`) delegates to
@@ -413,6 +431,13 @@ seed and graph `RANDOM_SEED`; direct `TNFR.create(..., seed=...)` sets only the
 topology seed. Other engine configuration is inherited, so retain relevant
 configuration and runtime provenance when comparing runs.
 
+`StudySpec.from_dict` validates a construction recipe and rejects unknown keys.
+`StudyResult.to_dict()` returns detached report data; the shared `export_to_json`
+writer saves it. Neither a recipe nor this scalar state/support projection is
+a complete resumable checkpoint. `import_from_json` reads data without restoring
+callbacks, histories or a live graph. Usage and schema details belong to the
+[CLI and SDK guide](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/CLI_AND_SDK.md).
+
 Use `diagnose_network(network)` for detached stored-state observations. It does
 not refresh pressure, evolve the graph or invent missing temporal evidence.
 Preserve independent field availability, per-node undefined curvature and xi
@@ -420,12 +445,166 @@ estimator provenance. Its nodal product is a model-rate read-out, not a measured
 derivative or permission to execute Mutation. Diagnostic values do not select
 the next operator in the shared study runner.
 
-`StudySpec.from_dict` validates a construction recipe and rejects unknown keys.
-`StudyResult.to_dict()` returns detached report data; the shared `export_to_json`
-writer saves it. Neither a recipe nor this scalar state/support projection is
-a complete resumable checkpoint. `import_from_json` reads data without restoring
-callbacks, histories or a live graph. Usage and schema details belong to the
-[CLI and SDK guide](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/CLI_AND_SDK.md).
+`Network.regional_form(regions)` delegates to
+[`physics/form_geometry.py`](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/form_geometry.py).
+It projects stored unforced nodal rates onto a supplied disjoint ordered
+three-node partition of the full support, retaining exact represented
+Cartesian/Gram data and rounding defects. The form angle is derived from EPI
+and is unavailable at zero contrast;
+primitive phase is not consumed. Observation neither selects the partition
+nor supplies an autonomous reduced law.
+`derive_regional_affine_closure` separately checks a supplied fixed law
+`xdot=Gx+b` on the full real fine-state domain. Its source `b` has rate units,
+not pressure units; the report does not authenticate a live graph or runtime.
+A fixed source with regional contrast can distinguish forms having the same
+Gram data, even when their initial Gram rates agree. The
+[derived-form owner](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/DERIVED_FORM_PHASE.md)
+states the exact closure conditions and source-relative response boundary.
+`Network.source_relative_form(regions, held_source_rate=...)` delegates to
+[`physics/source_relative_form.py`](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/source_relative_form.py).
+It retains the contrast relative to an independently supplied held rate source
+through `W=z*c^dagger`. A nonzero source-contrast vector supplies an orientation
+reference; a zero vector does not. This observation supplies neither the
+source's origin nor its evolution and installs no selection policy.
+
+### Conditional relational execution and observations
+
+`RelationalExchangeModel` and `Network.relational_exchange` /
+`Network.step_relational` select the explicit capacity-separable joint model
+in [dynamics/relational.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/dynamics/relational.py).
+It reuses native pressure and nodal arithmetic on fixed simple unit support,
+with held nonnegative capacity and an explicitly admitted phase domain. The
+default `phase_domain="acute"` retains its acute-edge contract. The opt-in
+`"positive_resultant"` chamber certifies positive real relative resultants
+throughout each represented Euler chord using rational cosine bounds. This
+is a sufficient regular chamber, not the whole regular domain or an enclosure
+of the exact ODE trajectory; an inconclusive bound rejects the proposal. Joint
+storage and independent local capacity are constitutive premises. A detached
+field is distinct from an atomic Euler step; represented balance and step
+defects remain evidence, not a continuous or physical stability certificate.
+The default operator runtime, forcing and capacity policies are separate.
+The [API contracts](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/API_CONTRACTS.md#conditional-relational-execution)
+own admission, commit and report semantics; the
+[theory owner](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md)
+owns the derivation and competing capacity premise.
+
+The same law has conditional local recovery around acute equilibria with
+strictly positive held capacities and form dissipation, and finite evidence
+of transmission between prepared regions. `Network.relational_pattern`
+delegates to the detached
+[observation owner](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/relational_observations.py):
+supplied regions and reference phase lifts define centered form, phase errors
+and offsets. It reuses shared winding and regional transport accounting;
+unavailable transport is explicit. The fresh field also retains exact
+represented nodal dissipation, signed exchange and actual form/phase work;
+these sum to its existing global balance. Regional work sums those same
+contributions and paired weighted rates share one outward-cut definition.
+A selected zero capacity makes divided rates unavailable, while work and
+cut evidence remain defined. The phase rate is not the derivative of a
+weighted phase total. See the
+[work integration](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-work-integration).
+A snapshot does not establish recovery or closed regional dynamics.
+
+The exact regional phase-rate budget is mean mobility times the outward form
+cut, plus mobility/form-gradient covariance and captured rounding residual.
+The engine's phase mobility and rounding evidence feed `region.phase_response`,
+including at zero capacity. Its Cauchy squared bound is derived, not a policy
+threshold. An unchanged or zero cut can conceal different regional phase
+responses; neither this instantaneous budget nor zero covariance closes future
+dynamics. The [composition owner](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md#regional-phase-mobility-balance)
+states the identity and its limits.
+
+### Reduction and derived memory
+
+Exact linear observation closure is owned by
+[`mathematics/linear_observation.py`](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/mathematics/linear_observation.py)
+with positive-sign `z'=Jz`; the existing diffusion wrapper retains `x'=-Ax+b`
+and its independent admission. The fixed single-bridge paired-C5 study
+requires ten linear coordinates for six regional mean/port observations,
+but those coordinates fail to close the nonlinear law near equilibrium.
+Adding their instantaneous predicted rate still fails: hidden form contrast
+can change coarse acceleration while both observations agree. Rational matrix
+probes do not certify irrational trigonometric coefficients; the
+[analytic composition result](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md)
+owns that distinction. A minimal tangent realization is not an effective
+canonical node or a replacement for the full engine state.
+
+The [joint memory theorem](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/RELATIONAL_PATTERN_MEMORY.md)
+retains ten even and eight odd coordinates after removing only common offsets.
+Exact elimination preserves hidden initial state and nonlinear forcing. For
+small initially even preparations, parity yields quadratic hidden generation
+and cubic visible tangent error on a fixed admitted horizon. For the declared
+prepared family, the quadratic hidden and cubic visible corrections have a
+conditional fifth-order visible remainder; neither its constants nor a common
+amplitude radius are numerically certified. A frozen finite comparison finds
+better prediction than both tangent and direct cubic controls using matched
+Euler grids. This is evidence for
+derived hidden feedback in that preparation, not continuous-ODE accuracy or an
+empirical scaling law. Decimal re-evaluation checks arithmetic on represented
+coefficients, not exact irrational constants. These research instruments install
+no reduced nonlinear SDK solver, fitted kernel, universal positive memory law
+or finite-memory cutoff.
+
+### Protected capture and conditional formation
+
+The following certificates use two C5 rings with bridges at matching positions
+zero and one. This is a different support from the single-bridge memory study.
+
+`Network.relational_capture` applies the conditional protected-basin theorem
+through [relational_capture.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/relational_capture.py).
+It requires exact copied/reflected state, unit capacities, positive coefficients,
+an admitted phase rectangle and rigorously enclosed storage below `7*beta`.
+This support-specific bound
+is derived from the phase landscape. The read-only report separates current
+winding from the ideal limiting sector `-1`, `0` or `1`; it neither selects
+operators nor certifies Euler trajectories. Nonzero symmetry defects and
+inconclusive bounds remain unavailable. The theorem does not establish entry
+from winding zero into a nonzero-sector basin or physical pattern identity.
+`Network.relational_local_capture` applies the same owner's full-state local
+energy theorem near a declared sector on that support, with unit capacity and
+storage scale. Exact quotient-distance and excess-energy bounds replace the
+reflection premise. It certifies ideal continuation from the represented
+snapshot, not numerical error from an earlier state or future Euler execution.
+`Network.relational_sector_capture` supplies a full-state acute-sector
+energy barrier for sectors `-1` and `+1` on the same support. Exact pi-affine
+gaps and cycle periods replace both symmetry and local-distance assumptions;
+its barrier is derived
+from the costs of acute-sector faces. All three certificates are read-only
+applications of separate sufficient theorems, not automatic dynamics policies.
+The sector certificate admits arbitrary positive held capacities and positive
+storage scale. Its normalized energy deficit gives uniform future acute,
+resultant and phase-metric margins under that ideal law. Unit-value flags
+are descriptive; missing admission makes future bounds unavailable. Capacity
+events and entry-error certificates remain separate obligations.
+
+`Network.relational_transit_capture` supplies a read-only validated continuous
+enclosure through [relational_transit.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/relational_transit.py).
+It requires exact reflected initial state, unit held capacity and positive
+coefficients on the same support, with `phase_domain="positive_resultant"`
+and declared exact horizon, step and Taylor order. Whole-time
+Picard admission, derivative remainders and signed-diagonal flow comparison
+retain propagated error and every resultant, including central rows omitted
+by symmetry. Capture requires the entire endpoint box in the protected basin.
+Validated winding-zero entry to positive-twist maintenance establishes
+conditional formation for a supplied preparation and support, not substrate
+creation or physical identification. It also implies a qualitative
+open neighborhood of full states and positive held capacities with the same
+outcome, without quantifying its radius. Earlier finite-executor verdicts remain
+unchanged; an unresolved proof bound retains its prefix and is unavailable.
+The default transit target is +1; `requested_sector=None` classifies any of the
+three protected basins through the shared affine-margin ledger. Consensus is
+sector 0, distinct from unavailable. The zero-form control converges to consensus
+despite transient form and winding; phase-to-form exchange alone does not prove
+maintained identity. The form-sign reversal also converges to consensus while
+keeping the reference's initial energy, loss and phase geometry. These scalar
+summaries therefore do not select the basin. Signed exchange remains a derived
+work read-out, not a primitive or controller; the
+negative controls and their exact hypotheses belong to the
+[form-direction control](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-reversed-form-control).
+
+`relational_report_to_dict` projects field, step, pattern, capture and transit
+reports for the shared JSON writer, retaining rational evidence and distinct
+verdicts. It does not authenticate provenance or create a resumable checkpoint.
 
 ## 10. Development workflow
 
@@ -436,6 +615,8 @@ than duplicate derivations and delivery histories. The documentation map owns
 navigation and responsibilities; the example and benchmark indexes identify
 maintained entry points and their scope. Historical paths or retired notebooks
 are evidence to inspect, not current instructions to restore automatically.
+Preserve frozen protocols, predictions, responses and source archives unchanged.
+Later corrections must identify their scope without rewriting an old verdict.
 
 ### Commit / PR templates
 

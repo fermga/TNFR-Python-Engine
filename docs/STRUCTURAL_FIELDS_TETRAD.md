@@ -9,7 +9,12 @@ centralized in
 The four channels are structural potential Φ_s, phase-gradient magnitude
 |∇φ|, circular curvature K_φ, and coherence length ξ_C. They complement the
 structural triad and global C(t)/Si measurements. They do not by themselves
-reconstruct every graph state or determine its evolution.
+reconstruct every graph state or determine its evolution. The
+[same-tetrad future witness](../theory/TNFR_VARIATIONAL_PRINCIPLE.md#cotangent-tetrad-future-witness)
+fixes one conditional joint law and exhibits identical snapshot fields with
+different field derivatives and later relative form. It tests state loss,
+not just uncertainty about the chosen law; temporal observability is a
+separate question.
 
 `metrics.collect_tetrad_snapshot` reuses the unified field-summary owner for
 finite means and population spreads. An invalid node value makes that whole
@@ -33,10 +38,10 @@ these field formulas on the coarse graph. In particular, aggregating fine
 potential can retain sources inside each coarse node that the self-excluded
 macro formula removes. Preserve the observation map and metric separately
 from the dynamical quotient; the
-[prism inheritance test](../theory/NODAL_PARAMETER_FOUNDATIONS.md#13-faithful-macro-state-and-tetrad-inheritance-on-the-retained-prism)
+[prism inheritance test](../theory/nodal/INHERITED_FORM_DYNAMICS.md#13-faithful-macro-state-and-tetrad-inheritance-on-the-retained-prism)
 gives an exact counterexample and the correct inherited kernel.
 
-A separate [restricted prism identity](../theory/NODAL_PARAMETER_FOUNDATIONS.md#183-the-same-oriented-area-is-readable-through-the-tetrad)
+A separate [restricted prism identity](../theory/nodal/PRIMITIVE_PHASE_CLOSURE.md#183-the-same-oriented-area-is-readable-through-the-tetrad)
 recovers relative phase/form oriented area from projected potential and
 curvature, using known channel coefficients and fresh pressure. It requires
 the repeated unit-distance support and retains a pressure-defect correction;
