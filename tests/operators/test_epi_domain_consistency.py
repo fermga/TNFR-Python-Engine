@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from fractions import Fraction
 
 import networkx as nx
 import pytest
@@ -10,7 +11,8 @@ import pytest
 from tnfr.errors import TNFRValueError
 from tnfr.mathematics import BEPIElement
 from tnfr.operators import apply_glyph
-from tnfr.operators.definitions import Emission, Reception
+from tnfr.operators.definitions import Coherence, Emission, Reception
+from tnfr.operators.word_execution import execute_network_operator_stage
 from tnfr.types import Glyph, ensure_bepi, real_scalar_epi, serialize_bepi
 
 
@@ -102,3 +104,49 @@ def test_public_emission_rejects_rich_epi_before_lineage_or_history() -> None:
     assert _plain_state(graph) == before
     assert "_emission_activated" not in graph.nodes[0]
     assert "glyph_history" not in graph.nodes[0]
+
+
+def _serialized_scalar(value):
+    return {"continuous": [value, value], "discrete": [value], "grid": [0.0, 1.0]}
+
+
+@pytest.mark.parametrize("route", ["glyph", "public", "stage"])
+@pytest.mark.parametrize(
+    "invalid",
+    [
+        Fraction(1, 10**400),
+        -Fraction(1, 10**400),
+        _serialized_scalar(Fraction(1, 10**400)),
+        _serialized_scalar(True),
+    ],
+)
+def test_scalar_admission_precedes_operator_materialization_and_all_writes(
+    route, invalid
+):
+    graph = _graph(target=invalid)
+    before = _plain_state(graph)
+    with pytest.raises(TNFRValueError, match="uniform-real BEPI"):
+        if route == "glyph":
+            apply_glyph(graph, 0, Glyph.AL)
+        elif route == "public":
+            Emission()(graph, 0)
+        else:
+            execute_network_operator_stage(graph, Emission(), [0])
+    assert _plain_state(graph) == before
+
+
+def test_reception_rejects_nonzero_neighbor_form_before_recording_sources():
+    graph = _graph(neighbor=Fraction(1, 10**400))
+    before = _plain_state(graph)
+    with pytest.raises(TNFRValueError, match="uniform-real BEPI"):
+        Reception()(graph, 0)
+    assert _plain_state(graph) == before
+
+
+@pytest.mark.parametrize("invalid", [True, Fraction(1, 10**400), _rich_bepi()])
+def test_public_coherence_checks_raw_scalar_epi_without_magnitude_projection(invalid):
+    graph = _graph(target=invalid)
+    before = _plain_state(graph)
+    with pytest.raises(TNFRValueError, match="scalar EPI|uniform-real BEPI"):
+        Coherence()(graph, 0)
+    assert _plain_state(graph) == before

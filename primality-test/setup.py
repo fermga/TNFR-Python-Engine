@@ -1,15 +1,35 @@
+import ast
+import os
+from pathlib import Path
+
 from setuptools import find_packages, setup
 
-with open("README.md", "r", encoding="utf-8") as fh:
-    long_description = fh.read()
+PACKAGE_ROOT = Path(__file__).resolve().parent
+# Prevent a caller's pyproject.toml from replacing this distribution's metadata.
+os.chdir(PACKAGE_ROOT)
+long_description = (PACKAGE_ROOT / "README.md").read_text(encoding="utf-8")
+module = ast.parse(
+    (PACKAGE_ROOT / "tnfr_primality" / "__init__.py").read_text(encoding="utf-8")
+)
+version = next(
+    ast.literal_eval(statement.value)
+    for statement in module.body
+    if isinstance(statement, ast.Assign)
+    and any(
+        isinstance(target, ast.Name) and target.id == "__version__"
+        for target in statement.targets
+    )
+)
 
 setup(
     name="tnfr-primality",
-    version="1.1.0",
+    version=version,
     author="F. F. Martinez Gamo",
-    description="Advanced TNFR-based primality testing with full repository integration and structural coherence analysis",
+    description="Standalone arithmetic-pressure primality tests with optional TNFR adapters",
     long_description=long_description,
     long_description_content_type="text/markdown",
+    license="MIT",
+    license_files=["LICENSE"],
     url="https://doi.org/10.5281/zenodo.17764749",
     project_urls={
         "Repository": "https://github.com/fermga/TNFR-Python-Engine",
@@ -20,7 +40,6 @@ setup(
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Science/Research",
-        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.8",
@@ -38,10 +57,8 @@ setup(
     ],
     extras_require={
         "full": [
-            # Full TNFR infrastructure (automatically detected)
-            "numpy>=1.20",
-            "scipy>=1.8",
-            "networkx>=2.8",
+            # Engine dependencies have their owner in the engine distribution.
+            "tnfr>=0.0.3.7",
             "sympy>=1.10",
         ],
         "dev": [

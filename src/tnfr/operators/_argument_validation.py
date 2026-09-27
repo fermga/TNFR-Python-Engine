@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import math
 from collections.abc import Iterable, Mapping
-from numbers import Integral, Real
+from numbers import Integral
 from typing import Any, NoReturn
+
+from .._exact_time import finite_represented_real
 
 
 def reject_operator_argument(operator: str, detail: str) -> NoReturn:
@@ -26,18 +28,10 @@ def finite_real(
 ) -> float:
     """Return one non-boolean finite real inside an optional closed interval."""
 
-    if isinstance(value, bool) or not isinstance(value, Real):
-        reject_operator_argument(
-            operator, f"{label} must be a finite real scalar, got {value!r}"
-        )
     try:
-        result = float(value)
-    except (OverflowError, TypeError, ValueError):
-        reject_operator_argument(
-            operator, f"{label} must be representable as a finite scalar, got {value!r}"
-        )
-    if not math.isfinite(result):
-        reject_operator_argument(operator, f"{label} must be finite, got {value!r}")
+        result = finite_represented_real(value, label)[0]
+    except (TypeError, ValueError) as exc:
+        reject_operator_argument(operator, f"{exc}; got {value!r}")
     if lower is not None and result < lower:
         reject_operator_argument(
             operator, f"{label} must be >= {lower!r}, got {result!r}"

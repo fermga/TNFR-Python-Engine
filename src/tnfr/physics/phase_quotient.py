@@ -40,6 +40,7 @@ import numpy as np
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_THETA, ALIAS_VF
 from ..utils import angle_diff
+from ._finite_linear_algebra import _finite_difference, _finite_norm, _finite_product
 from .operator_quotient import OperatorQuotientCertificate, certify_operator_quotient
 from .structural_morphism import _build_reversible_partition_geometry
 
@@ -146,48 +147,6 @@ def _readonly(value: Any) -> np.ndarray:
     """Return an isolated read-only binary64 array."""
     result = np.array(value, dtype=float, copy=True)
     result.setflags(write=False)
-    return result
-
-
-def _finite_product(left: np.ndarray, right: np.ndarray, name: str) -> np.ndarray:
-    """Multiply finite arrays or reject an unrepresentable result."""
-    try:
-        with np.errstate(over="raise", invalid="raise", divide="raise"):
-            result = left @ right
-    except (FloatingPointError, OverflowError) as exc:
-        raise ValueError(f"{name} exceeds finite floating-point range") from exc
-    if not np.all(np.isfinite(result)):
-        raise ValueError(f"{name} exceeds finite floating-point range")
-    return result
-
-
-def _finite_difference(left: np.ndarray, right: np.ndarray, name: str) -> np.ndarray:
-    """Subtract finite arrays or reject an unrepresentable result."""
-    try:
-        with np.errstate(over="raise", invalid="raise"):
-            result = left - right
-    except (FloatingPointError, OverflowError) as exc:
-        raise ValueError(f"{name} exceeds finite floating-point range") from exc
-    if not np.all(np.isfinite(result)):
-        raise ValueError(f"{name} exceeds finite floating-point range")
-    return result
-
-
-def _finite_norm(value: np.ndarray, *, matrix: bool, name: str) -> float:
-    """Return a scale-safe Euclidean or spectral norm."""
-    array = np.asarray(value, dtype=float)
-    scale = float(np.max(np.abs(array), initial=0.0))
-    if scale == 0.0:
-        return 0.0
-    try:
-        with np.errstate(over="raise", invalid="raise", divide="raise"):
-            normalized = array / scale
-            norm = float(np.linalg.norm(normalized, 2 if matrix else None))
-            result = scale * norm
-    except (FloatingPointError, OverflowError, np.linalg.LinAlgError) as exc:
-        raise ValueError(f"{name} exceeds finite floating-point range") from exc
-    if not math.isfinite(result):
-        raise ValueError(f"{name} exceeds finite floating-point range")
     return result
 
 

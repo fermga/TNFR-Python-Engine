@@ -33,6 +33,10 @@ The source inventory is discoverable without starting any experiment:
 rg --files benchmarks -g '*.py'
 ```
 
+The retained graph-preparation helper serves the curvature safety illustration.
+Unused generic CLI scaffolding and handwritten grammar validators are removed;
+use each instrument's actual CLI and the shared engine grammar/executor owners.
+
 ## Reuse the mechanism appropriate to the question
 
 - [Local relational composition](relational_local_composition.py) checks exact

@@ -1,10 +1,8 @@
-"""Tests for the canonical TNFR-Riemann nodal-pulse foundation.
+"""Finite arithmetic pulse and graph-helper implementation checks.
 
-The obsolete combinatorial-Laplacian track (H = L_k + V_sigma) was eliminated and
-the attack re-founded on the emergent prime-NFR nodal pulse
-``zeta(1/2 + iT) = sum_n n^{-1/2} e^{-i (log n) T}`` (structural frequency
-``nu_f = log n``); zeros are the heights where the integer-NFR pulses
-destructively interfere.
+The finite Dirichlet sum is compared with supplied reference ordinates; it
+neither equals the continued zeta function nor independently locates its zeros.
+Logarithmic frequencies and prime graph labels are declared arithmetic inputs.
 """
 
 from __future__ import annotations
@@ -31,13 +29,22 @@ def test_first_primes():
     assert first_primes(0) == []
 
 
+def test_auxiliary_prime_graph_uses_shared_arithmetic_labels():
+    from tnfr.riemann.operator import build_prime_path_graph
+
+    graph = build_prime_path_graph(4, weight_by_log_gap=False)
+    assert [data["label"] for _, data in graph.nodes(data=True)] == first_primes(4)
+    assert list(graph.edges) == [(0, 1), (1, 2), (2, 3)]
+    assert all(data["weight"] == 1.0 for _, _, data in graph.edges(data=True))
+
+
 def test_prime_structural_frequencies_are_log_primes():
     freqs = prime_structural_frequencies(5)
     assert freqs == [math.log(p) for p in (2, 3, 5, 7, 11)]
 
 
 def test_nu_f_is_additive_under_multiplication():
-    # The emergent structural frequency is log-additive: nu_f(p*q)=nu_f(p)+nu_f(q).
+    # The supplied logarithmic frequency is additive under multiplication.
     assert math.isclose(math.log(6), math.log(2) + math.log(3))
 
 

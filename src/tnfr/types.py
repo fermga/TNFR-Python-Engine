@@ -14,7 +14,7 @@ from collections.abc import (
 )
 from dataclasses import dataclass
 from enum import Enum
-from numbers import Real
+from numbers import Complex, Real
 from types import SimpleNamespace
 from typing import (
     TYPE_CHECKING,
@@ -26,6 +26,7 @@ from typing import (
 )
 
 from ._compat import TypeAlias
+from ._exact_time import finite_represented_real
 from .errors import TNFRValueError
 
 if TYPE_CHECKING:
@@ -364,7 +365,8 @@ def require_finite_real_scalar_epi(value: Any, label: str = "EPI") -> float:
 
     Scalar-only diagnostics must not collapse a richer BEPI element to a
     magnitude, parse textual values, or turn logical state into physical
-    zero/one. This is the shared boundary for those read-outs.
+    zero/one. Admission precedes materialization so nonzero real inputs cannot
+    underflow to zero, including components of serialized BEPI values.
     """
 
     numpy_bool = getattr(np, "bool_", None)
@@ -373,14 +375,57 @@ def require_finite_real_scalar_epi(value: Any, label: str = "EPI") -> float:
     ):
         raise TNFRValueError(f"{label} must be a finite uniform-real EPI value")
     try:
+        if isinstance(value, Complex):
+            return _represented_real_epi_component(value, label)
+        if isinstance(value, Mapping):
+            value = {
+                "continuous": tuple(
+                    _represented_real_epi_component(item, label)
+                    for item in value["continuous"]
+                ),
+                "discrete": tuple(
+                    _represented_real_epi_component(item, label)
+                    for item in value["discrete"]
+                ),
+                "grid": value["grid"],
+            }
+        elif isinstance(value, Sequence) and not isinstance(
+            value, (str, bytes, bytearray)
+        ):
+            continuous, discrete, grid = value
+            value = (
+                tuple(
+                    _represented_real_epi_component(item, label) for item in continuous
+                ),
+                tuple(
+                    _represented_real_epi_component(item, label) for item in discrete
+                ),
+                grid,
+            )
         scalar = real_scalar_epi(value)
-    except (OverflowError, TypeError, ValueError) as exc:
+    except (KeyError, OverflowError, TypeError, ValueError) as exc:
         raise TNFRValueError(
             f"{label} must be a finite uniform-real EPI value"
         ) from exc
     if scalar is None or not math.isfinite(scalar):
         raise TNFRValueError(f"{label} must be a finite uniform-real EPI value")
     return float(scalar)
+
+
+def _represented_real_epi_component(value: Any, label: str) -> float:
+    """Admit a scalar or a serialized complex component before BEPI coercion."""
+
+    if isinstance(value, Mapping):
+        imaginary = finite_represented_real(value["imag"], label)[0]
+        value = value["real"]
+    elif isinstance(value, Complex) and not isinstance(value, Real):
+        imaginary = value.imag
+        value = value.real
+    else:
+        imaginary = 0.0
+    if imaginary != 0.0:
+        raise ValueError(f"{label} must be real")
+    return finite_represented_real(value, label)[0]
 
 
 def serialize_bepi(value: Any) -> dict[str, tuple[complex, ...] | tuple[float, ...]]:

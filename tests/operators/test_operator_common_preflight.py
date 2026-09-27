@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from fractions import Fraction
 
 import networkx as nx
 import pytest
 
 from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, THETA_PRIMARY, VF_PRIMARY
-from tnfr.operators.definitions import Emission
+from tnfr.operators.definitions import Coherence, Emission
 from tnfr.operators.preconditions import OperatorPreconditionError
 
 
@@ -81,3 +82,28 @@ def test_invalid_integrity_monitor_rejects_before_emission():
         Emission()(graph, 0)
 
     assert dict(graph.nodes[0]) == before_node
+
+
+@pytest.mark.parametrize(
+    "field",
+    [VF_PRIMARY, DNFR_PRIMARY, THETA_PRIMARY],
+)
+def test_consumed_nonzero_node_scalars_cannot_underflow_through_public_preflight(field):
+    graph = _graph()
+    graph.nodes[0][field] = -Fraction(1, 10**400)
+    before_node = deepcopy(dict(graph.nodes[0]))
+    before_graph = deepcopy(graph.graph)
+    with pytest.raises(OperatorPreconditionError, match="underflows"):
+        Coherence()(graph, 0)
+    assert dict(graph.nodes[0]) == before_node
+    assert graph.graph == before_graph
+
+
+def test_nonzero_public_phase_coefficient_cannot_be_silently_disabled():
+    graph = _graph()
+    before_node = deepcopy(dict(graph.nodes[0]))
+    before_graph = deepcopy(graph.graph)
+    with pytest.raises(OperatorPreconditionError, match="underflows"):
+        Coherence()(graph, 0, phase_locking_coefficient=Fraction(1, 10**400))
+    assert dict(graph.nodes[0]) == before_node
+    assert graph.graph == before_graph

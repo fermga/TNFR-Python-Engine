@@ -1778,7 +1778,14 @@ def execute_event_remesh_cycle(
             if epi_time_histories is None:
                 raise RuntimeError("applied REMESH lost its physical history")
             _require_same_epi_time_histories(graph, epi_time_histories)
-            if not _contract_values_equal(
+            # Numerical admission normalizes signed zero. The existing raw
+            # callback guard also captures representation-only EPI changes,
+            # so retain its evidence when choosing the specific diagnostic.
+            raw_epi_changed = isinstance(refresh_guard_failure, TNFRValueError) and (
+                "epi_preserved"
+                in refresh_guard_failure.context.get("failed_preservation_checks", ())
+            )
+            if raw_epi_changed or not _contract_values_equal(
                 _epi_values(graph, nodes),
                 post_remesh_epi.epi_values,
             ):

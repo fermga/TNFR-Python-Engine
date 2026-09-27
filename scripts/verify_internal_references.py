@@ -6,8 +6,9 @@ from __future__ import annotations
 import argparse
 import os
 import re
+from bisect import bisect_right
+from collections.abc import Callable, Iterable, Iterator
 from pathlib import Path
-from typing import Iterable
 from urllib.parse import unquote, urlsplit
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -79,26 +80,80 @@ def _github_slug(text: str) -> str:
     return re.sub(r"\s+", "-", text.strip())
 
 
-def _without_fenced_code(content: str) -> str:
-    """Ignore examples containing Markdown syntax rather than rendered links."""
-    lines: list[str] = []
+def _markdown_lines(content: str) -> Iterator[tuple[str, bool]]:
+    """Share fenced-code boundaries between link validation and site staging."""
     fence = ""
-    for line in content.splitlines():
+    for line in content.splitlines(keepends=True):
         if fence:
             if re.fullmatch(
                 r"\s{0,3}" + re.escape(fence[0]) + "{" + str(len(fence)) + r",}\s*",
                 line,
             ):
                 fence = ""
-            lines.append("")
+            yield line, False
         else:
             match = re.match(r"^\s{0,3}(`{3,}|~{3,})", line)
             if match:
                 fence = match.group(1)
-                lines.append("")
+                yield line, False
             else:
-                lines.append(line)
-    return "\n".join(lines)
+                yield line, True
+
+
+def _without_fenced_code(content: str) -> str:
+    """Ignore examples containing Markdown syntax rather than rendered links."""
+    return "".join(line if prose else "\n" for line, prose in _markdown_lines(content))
+
+
+def _inline_segments(content: str) -> Iterator[tuple[str, bool]]:
+    """Recognize equal backtick runs, including multiline spans and escapes."""
+    runs = list(re.finditer(r"`+", content))
+    positions: dict[int, list[int]] = {}
+    for run in runs:
+        positions.setdefault(run.end() - run.start(), []).append(run.start())
+    cursor = 0
+    for run in runs:
+        start = run.start()
+        if start < cursor:
+            continue
+        before = start
+        while before > 0 and content[before - 1] == "\\":
+            before -= 1
+        if (start - before) % 2:
+            start += 1  # Only the first backtick is escaped outside a span.
+        width = run.end() - start
+        if not width:
+            continue
+        candidates = positions.get(width, [])
+        following = bisect_right(candidates, run.start())
+        if following == len(candidates):
+            continue
+        end = candidates[following] + width
+        yield content[cursor:start], True
+        yield content[start:end], False
+        cursor = end
+    yield content[cursor:], True
+
+
+def _markdown_segments(content: str) -> Iterator[tuple[str, bool]]:
+    """Share paragraph, fenced-code and inline-code boundaries across consumers."""
+    pending: list[str] = []
+    for line, prose in _markdown_lines(content):
+        if prose and line.strip():
+            pending.append(line)
+        else:
+            yield from _inline_segments("".join(pending))
+            pending.clear()
+            yield line, prose
+    yield from _inline_segments("".join(pending))
+
+
+def rewrite_markdown_prose(content: str, transform: Callable[[str], str]) -> str:
+    """Transform prose while preserving fenced and inline code verbatim."""
+    return "".join(
+        transform(text) if prose else text
+        for text, prose in _markdown_segments(content)
+    )
 
 
 def _anchors(markdown: Path) -> set[str]:
@@ -148,11 +203,15 @@ def verify(search_roots: Iterable[str], verbose: bool = False) -> tuple[int, lis
     anchor_cache: dict[Path, set[str]] = {}
 
     for source in _markdown_files(search_roots):
-        content = _without_fenced_code(source.read_text(encoding="utf-8-sig"))
+        content = "".join(
+            text if prose else "\n" * text.count("\n")
+            for text, prose in _markdown_segments(
+                source.read_text(encoding="utf-8-sig")
+            )
+        )
         # Algebra such as [1-s](q-k) is not a link inside a math wrapper.
         content = re.sub(r"(?<!\\)\$\$[\s\S]*?(?<!\\)\$\$", "", content)
         content = re.sub(r"(?<!\\)\$(?!\s)[^\n$]*?(?<!\s)(?<!\\)\$", "", content)
-        content = re.sub(r"(`+).*?\1", "", content)
         targets = [value for _, value in LINK_PATTERN.findall(content)]
         targets.extend(REFERENCE_PATTERN.findall(content))
         for raw_target in targets:

@@ -17,12 +17,6 @@ repos:
         files: ^src/tnfr/
   - repo: local
     hooks:
-      - id: code-review-check
-        name: Code review quality check
-        entry: bash -c 'echo "Remember to run code review before committing significant changes (make lint test)" && exit 0'
-        language: system
-        pass_filenames: false
-        stages: [pre-commit]
       - id: check-bandit-format
         name: Check for invalid bandit -f sarif usage
         entry: bash -c 'if grep -r "bandit.*-f sarif" .github/workflows/ scripts/ --exclude=lint-workflows.yml 2>/dev/null; then echo "ERROR - bandit does not support SARIF format. Use -f json instead."; exit 1; fi'

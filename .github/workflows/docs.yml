@@ -17,6 +17,7 @@ on:
       - 'src/tnfr/_version.py'
       - 'scripts/check_documentation.py'
       - 'scripts/prepare_docs.py'
+      - 'scripts/clean_repository.py'
       - 'scripts/verify_internal_references.py'
       - '.github/workflows/docs.yml'
   pull_request:
@@ -35,6 +36,7 @@ on:
       - 'src/tnfr/_version.py'
       - 'scripts/check_documentation.py'
       - 'scripts/prepare_docs.py'
+      - 'scripts/clean_repository.py'
       - 'scripts/verify_internal_references.py'
       - '.github/workflows/docs.yml'
   workflow_dispatch: {}

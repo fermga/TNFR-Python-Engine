@@ -15,7 +15,6 @@ not establish current GitHub run health, branch protection or enabled secrets.
 | [pip-audit.yml](workflows/pip-audit.yml) | Push/PR to main/master, Monday 05:00 UTC and manual invocation. Audits the installed core, test-all and serialization environment; captures available reports and fails when the JSON audit fails. |
 | [pypi-zenodo.yml](workflows/pypi-zenodo.yml) | Published GitHub release or manual invocation. Builds and checks distributions; publishes on release or when the existing manual force-publish input is true. |
 | [lint-workflows.yml](workflows/lint-workflows.yml) | Filtered workflow/script changes on PRs and pushes to main. Searches for unsupported Bandit SARIF invocation; this is not a general Actions schema linter. |
-| [code-review.yml](workflows/code-review.yml) | PR opened, synchronized or reopened on main. Advisory Black/mypy checks and an automated PR comment; no external code-review service is implemented. |
 | [copilot-setup-steps.yml](workflows/copilot-setup-steps.yml) | Manual invocation or edits to its own workflow. Installs a Python 3.11 development/test environment and verifies importability. |
 
 The default pytest selection is the routine engine/API gate and excludes slow
@@ -77,6 +76,11 @@ integration may archive a release; this workflow does not upload an archive or
 verify a DOI. No GitHub/PyPI/Zenodo settings are inferred from this file.
 
 ## Retired automation
+
+The former `code-review.yml` job and reminder-only pre-commit hook are retired.
+Black and advisory mypy already have maintained owners in `ci.yml`; repeating
+them in another environment and posting an automatic PR comment added no
+independent review coverage. The main CI gates retain their existing scope.
 
 The test consolidation removed `tests.yml`, which repeated the complete SDK
 suite on Python 3.11 already included in `ci.yml`. The main matrix retains the

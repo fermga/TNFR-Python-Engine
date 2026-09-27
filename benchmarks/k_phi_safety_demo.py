@@ -24,11 +24,11 @@ from benchmarks.benchmark_utils import (  # noqa: E402
     create_tnfr_topology,
     initialize_tnfr_nodes,
 )
-from src.tnfr.operators.definitions import Coherence, Dissonance  # noqa: E402
-from src.tnfr.constants.canonical import (  # noqa: E402
+from tnfr.constants.canonical import (  # noqa: E402
     U6_STRUCTURAL_POTENTIAL_LIMIT,
 )
-from src.tnfr.physics.fields import (  # noqa: E402
+from tnfr.operators.definitions import Coherence, Dissonance  # noqa: E402
+from tnfr.physics.fields import (  # noqa: E402
     compute_phase_gradient,
     compute_structural_potential,
     k_phi_multiscale_safety,
@@ -36,7 +36,7 @@ from src.tnfr.physics.fields import (  # noqa: E402
 
 
 def main():
-    print("🛡️ TNFR Safety Triad Demo (Φ_s, |∇φ|, K_φ)")
+    print("TNFR configured safety observations (Phi_s, abs(grad phi), K_phi)")
     topo = "ws"
     seed = 1234
     n_nodes = 40
@@ -68,20 +68,21 @@ def main():
     grad_mean_before = float(np.mean(list(grad_before.values())))
     grad_mean_after = float(np.mean(list(grad_after.values())))
 
-    # K_φ safety (use global alpha_hint from Task 3)
-    safety = k_phi_multiscale_safety(G, alpha_hint=2.76)
+    # Use the field owner's configured fit policy; no exponent is a derived law.
+    safety = k_phi_multiscale_safety(G)
 
     print("\nResults:")
     print(f"- Topology: {topo}, nodes={n_nodes}, seed={seed}")
     print(
-        f"- Φ_s drift (selected U6 policy < "
+        f"- Phi_s drift (selected U6 policy < "
         f"{U6_STRUCTURAL_POTENTIAL_LIMIT:.3f}): {drift:.3f}"
     )
-    print(f"- |∇φ| mean: {grad_mean_before:.3f} → {grad_mean_after:.3f}")
-    print("- K_φ multiscale safety:")
+    print(f"- abs(grad phi) mean: {grad_mean_before:.3f} -> {grad_mean_after:.3f}")
+    print("- K_phi multiscale safety (configured advisory):")
     print(
-        f"   safe={safety['safe']} fit: α={safety['fit']['alpha']:.2f}, "
-        f"R²={safety['fit']['r_squared']:.3f}, "
+        f"   available={safety['available']} safe={safety['safe']} "
+        f"fit: alpha={safety['fit']['alpha']:.2f}, "
+        f"R_squared={safety['fit']['r_squared']:.3f}, "
         f"n={len(safety['variance_by_scale'])}"
     )
     if safety.get("violations"):

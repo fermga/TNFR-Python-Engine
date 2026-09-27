@@ -1,26 +1,9 @@
-"""TNFR Unified Cache System - Consolidated Memory Management.
+"""Shared LRU storage, named cache regions and computational telemetry.
 
-CONSOLIDATION ACHIEVEMENT: This module unifies caching strategies across
-TNFR codebase under a single coherent interface with monitoring and policies.
-
-Unified Architecture:
-- Centralized cache manager with named regions
-- Consistent LRU eviction policies
-- Memory usage monitoring and limits
-- Unified hit/miss statistics
-- Thread-safe operations
-
-Theoretical Foundation:
-Efficient caching preserves computational coherence by minimizing redundant
-reorganization (ΔNFR) calculations, analogous to structural memory (ξ_C)
-persistence in the nodal equation.
-
-Consolidates:
-- Ad-hoc caching in validation/telemetry systems
-- Legacy cache implementations in utils/cache.py (interface wrapper)
-- Scattered memoization decorators
-
-Status: UNIFIED CACHE CONSOLIDATION
+``utils.cache`` supplies graph invalidation, persistence and computation
+decorators; its ``InstrumentedLRUCache`` and ``ManagedLRUCache`` compatibility
+names refer to ``UnifiedLRUCache`` here. Cache reuse is an implementation
+optimization, not a model of structural memory or a nodal evolution law.
 """
 
 from __future__ import annotations

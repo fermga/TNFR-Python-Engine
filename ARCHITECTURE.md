@@ -18,6 +18,11 @@ boundary, not a measured speedup. Other state/configuration dependencies remain
 part of each consumer's key or explicit invalidation contract. Graph views use
 fresh computations; concurrent mutation during a read is unsupported.
 
+LRU storage and callback handling have one implementation in
+[`utils/unified_cache.py`](src/tnfr/utils/unified_cache.py). The historical
+`InstrumentedLRUCache` and `ManagedLRUCache` names remain aliases in `utils.cache`;
+graph invalidation and persistence retain their separate responsibilities.
+
 ## Implementation owners
 
 | Concern | Source of truth |
@@ -35,6 +40,8 @@ fresh computations; concurrent mutation during a read is unsupported.
 | Nodal integration | [`integrators.py`](src/tnfr/dynamics/integrators.py) |
 | Runtime invocation ordinals | [`_runtime_steps.py`](src/tnfr/_runtime_steps.py); separate from physical time, operator counts and retained metric samples |
 | Represented-real scalar admission | [`_exact_time.py`](src/tnfr/_exact_time.py), reused by clocks, phases, rates and operator gates |
+| Signed scalar EPI admission | [`types.py`](src/tnfr/types.py), validating raw scalars and serialized components before BEPI coercion; shared by standard and optimized execution |
+| Finite matrix products, differences and norms for reductions | [`physics/_finite_linear_algebra.py`](src/tnfr/physics/_finite_linear_algebra.py); quotient and morphism checks preserve finite-range failures |
 | Active acceleration history and detached evidence | [`nodal_equation.py`](src/tnfr/operators/nodal_equation.py), `observe_structural_acceleration` |
 | Optional THOL preconditions and threshold resolution | [`preconditions/self_organization.py`](src/tnfr/operators/preconditions/self_organization.py), [`_thol_config.py`](src/tnfr/operators/_thol_config.py) |
 | Public THOL birth proposals | [`self_organization.py`](src/tnfr/operators/self_organization.py) |
@@ -49,6 +56,7 @@ fresh computations; concurrent mutation during a read is unsupported.
 | Validated relational transit | [`physics/relational_transit.py`](src/tnfr/physics/relational_transit.py); exact reflected ODE enclosure using shared rational intervals, Taylor derivatives and signed-diagonal comparison; read-only proof computation, not live engine evolution |
 | Coherence and equilibrium kernel | [`common.py`](src/tnfr/metrics/common.py) |
 | Public high-level API | [`sdk/simple.py`](src/tnfr/sdk/simple.py) |
+| JSON report I/O | [`sdk/utils.py`](src/tnfr/sdk/utils.py); strict decoding and atomic export, also used by the CLI and fluent `save()` |
 
 These are implementation responsibilities. The [documentation ownership map](docs/README.md)
 identifies the single maintained guide for each responsibility.

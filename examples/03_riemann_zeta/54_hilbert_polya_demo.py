@@ -13,8 +13,8 @@ This demo does NOT prove the Riemann Hypothesis. T_HP is populated by
 inputting the zeros computed via mpmath.zetazero. The scaffold makes
 the abstract Hilbert-Polya operator explicit and shows it is internally
 consistent with the TNFR stack on truncated Hilbert space. The
-structural derivation of T_HP from TNFR first principles (which is what
-gap G4 = RH would actually require) remains open.
+construction does not derive the input zeros from nodal dynamics or discharge
+the separate analytic and infinite-dimensional obligations of an RH proof.
 """
 
 from __future__ import annotations
@@ -61,7 +61,7 @@ def _print_certificate(cert: HilbertPolyaCertificate) -> None:
     print(f"    ||R||_1 (trace)             = {cert.schatten_1_norm:.6e}")
     print(f"    ||R||_2 (Hilbert-Schmidt)   = {cert.schatten_2_norm:.6e}")
     print(f"    ||R||_op                    = {cert.operator_norm_inverse:.6e}")
-    print(f"    trace_class                 = {cert.trace_class}")
+    print(f"    trace_class (finite only)   = {cert.trace_class}")
     print()
     print(f"  Weil-Guinand closure (sigma = {cert.gaussian_sigma:.3f}):")
     print(f"    zero_side (via T_HP)        = {cert.zero_side_via_hp:.10f}")
@@ -78,7 +78,7 @@ def _print_certificate(cert: HilbertPolyaCertificate) -> None:
     print(
         f"    Wasserstein-1(P14, T_HP)    = " f"{cert.spectral_gap_wasserstein_1:.6e}"
     )
-    print(f"    asymptotic growth ratio     = " f"{cert.spectral_gap_growth_ratio:.6e}")
+    print(f"    finite endpoint ratio       = " f"{cert.spectral_gap_growth_ratio:.6e}")
     print()
     print(f"  scaffold_consistent           = {cert.scaffold_consistent}")
 
@@ -121,19 +121,19 @@ def main() -> None:
     for i in range(n_show):
         print(f"    {i + 1:2d}   {p14_pos[i]:.10f}             " f"{gammas[i]:.10f}")
 
-    _print_header("Section 3: Honest scope (per AGENTS.md sec. 13.2)")
+    _print_header("Section 3: Finite scope (theory/TNFR_RIEMANN_RESEARCH_NOTES.md)")
     print(
         "  * T_HP is populated by mpmath.zetazero(n) for n = 1..N.\n"
         "    The zeros are an INPUT, not a TNFR derivation.\n"
         "  * The scaffold therefore certifies INTERNAL CONSISTENCY of\n"
         "    the abstract Hilbert-Polya slot with the TNFR stack\n"
         "    (P14 + P15) on truncated Hilbert space ell^2_N(N).\n"
-        "  * Gap G4 = RH remains the single OPEN gap (G1, G2, G3\n"
-        "    operationally closed; G5 superseded). The genuinely open\n"
-        "    piece is the structural derivation of T_HP from TNFR\n"
-        "    first principles, without inputting the zeros. P27\n"
-        "    quantifies that gap (Wasserstein-1 distance between\n"
-        "    spec(P14) and spec(T_HP)) but does not close it.\n"
+        "  * Finite trace_class and spectral distances describe this\n"
+        "    truncation. They prove no infinite trace-class property,\n"
+        "    canonical derivation of zeros or remaining-gap count.\n"
+        "  * All three resolvent norms refer to R=(T_HP^2+s^2 I)^(-1/2).\n"
+        "    Older reports mixed norms of R and R^2; their retained\n"
+        "    evidence is not rewritten by this corrected evaluator.\n"
     )
 
 

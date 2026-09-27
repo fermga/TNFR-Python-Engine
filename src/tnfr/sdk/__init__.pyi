@@ -1,9 +1,22 @@
 """Type stubs for tnfr.sdk module."""
 
-from typing import Any
-
 from ..dynamics.relational import RelationalExchangeModel as RelationalExchangeModel
+from .adaptive_system import TNFRAdaptiveSystem as TNFRAdaptiveSystem
+from .builders import TNFRExperimentBuilder as TNFRExperimentBuilder
+from .fluent import NetworkConfig as NetworkConfig
+from .fluent import NetworkResults as NetworkResults
+from .fluent import TNFRNetwork as TNFRNetwork
 from .relational_reports import relational_report_to_dict as relational_report_to_dict
+from .self_opt import (
+    run_batch_certificate_optimization as run_batch_certificate_optimization,
+)
+from .self_opt import (
+    run_fractal_partition_optimization as run_fractal_partition_optimization,
+)
+from .self_opt import run_partition_self_optimization as run_partition_self_optimization
+from .self_opt import (
+    run_pattern_discovery_optimization as run_pattern_discovery_optimization,
+)
 from .simple import TNFR as TNFR
 from .simple import ConservationReport as ConservationReport
 from .simple import FactorizationReport as FactorizationReport
@@ -20,23 +33,12 @@ from .study import StudySpec as StudySpec
 from .study import diagnose_network as diagnose_network
 from .study import list_sequences as list_sequences
 from .study import run_study as run_study
+from .templates import TNFRTemplates as TNFRTemplates
+from .utils import compare_networks as compare_networks
+from .utils import compute_network_statistics as compute_network_statistics
+from .utils import export_to_json as export_to_json
+from .utils import format_comparison_table as format_comparison_table
+from .utils import import_from_json as import_from_json
+from .utils import suggest_sequence_for_goal as suggest_sequence_for_goal
 
 __all__: list[str]
-
-TNFRNetwork: Any
-NetworkConfig: Any
-NetworkResults: Any
-TNFRTemplates: Any
-TNFRExperimentBuilder: Any
-TNFRAdaptiveSystem: Any
-
-compare_networks: Any
-compute_network_statistics: Any
-export_to_json: Any
-import_from_json: Any
-format_comparison_table: Any
-suggest_sequence_for_goal: Any
-run_partition_self_optimization: Any
-run_pattern_discovery_optimization: Any
-run_fractal_partition_optimization: Any
-run_batch_certificate_optimization: Any

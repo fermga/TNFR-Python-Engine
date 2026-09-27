@@ -18,13 +18,13 @@ Euler stability has not been certified.
 """
 
 import hashlib
-import math
 import weakref
 from dataclasses import dataclass, replace
-from numbers import Integral, Real
+from numbers import Integral
 from types import MappingProxyType
 from typing import Any, Mapping
 
+from .._exact_time import finite_represented_real
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ..errors import TNFRValueError
@@ -38,35 +38,25 @@ from ..operators.grammar_types import (
 )
 from ..physics._conductance import read_conductance
 from ..physics.structural_diffusion import structural_diffusion_operator
-from ..types import real_scalar_epi
+from ..types import require_finite_real_scalar_epi
 from ._euler_kernel import euler_update
 from .phase_evolution import propose_u3_gated_phase_step
 
 
 def _finite_real(value: Any, name: str) -> float:
-    """Return a finite non-Boolean scalar."""
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, Real):
-        raise TNFRValueError(f"{name} must be a finite real scalar.")
+    """Use shared represented admission before proposal array conversion."""
     try:
-        result = float(value)
-    except (OverflowError, TypeError, ValueError) as exc:
-        raise TNFRValueError(f"{name} must be a finite real scalar.") from exc
-    if not math.isfinite(result):
-        raise TNFRValueError(f"{name} must be a finite real scalar.")
-    return result
+        return finite_represented_real(value, name)[0]
+    except (TypeError, ValueError) as exc:
+        raise TNFRValueError(f"{name} must be a finite real scalar: {exc}") from exc
 
 
 def _finite_epi(value: Any, name: str) -> float:
     """Read signed scalar EPI without collapsing a richer BEPI state."""
-    if isinstance(value, (bool, np.bool_)):
-        raise TNFRValueError(f"{name} must be a finite scalar EPI embedding.")
     try:
-        result = real_scalar_epi(value)
+        return require_finite_real_scalar_epi(value, name)
     except (KeyError, OverflowError, TypeError, ValueError) as exc:
         raise TNFRValueError(f"{name} must be a finite scalar EPI embedding.") from exc
-    if result is None or not math.isfinite(float(result)):
-        raise TNFRValueError(f"{name} must be a finite scalar EPI embedding.")
-    return float(result)
 
 
 try:

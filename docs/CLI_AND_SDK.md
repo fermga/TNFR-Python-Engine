@@ -81,6 +81,11 @@ metric failures propagate; optional unified-field failures retain explicit
 maps are detached from the result. Comparison tables display unavailable
 measurements as unavailable and include columns present in any supplied row.
 
+Fluent `save(path)` delegates to `export_to_json`, refreshing the current
+measurements once and returning the network for chaining. It writes metadata
+and a measurement report, not a graph checkpoint. Validation and encoding
+precede atomic destination replacement.
+
 `StructuralObservation` detaches payloads on construction and export, validates
 provenance and optional tolerance, and retains Python value types. The graph
 adapters preserve opaque node-label identity while copying field containers.
@@ -565,6 +570,11 @@ and `null`, not a nonstandard `NaN` or `Infinity` token.
 The generic exporter also rejects recursively colliding encoded object keys
 (for example integer `1` and string `"1"`) before replacing the destination.
 Non-colliding key conversions retain the existing JSON encoder's behavior.
+`import_from_json`, also used for CLI recipe input, rejects duplicate decoded
+keys at every depth, nonfinite numbers and nonzero fractional literals that
+underflow to binary64 zero. Integer literals remain Python integers; ordinary
+fractional literals retain binary64 rounding. Decoding neither authenticates
+report provenance nor replaces `StudySpec` field validation.
 
 | Report key | Content |
 | --- | --- |
@@ -724,3 +734,18 @@ The [example index](../examples/README.md) classifies the other demonstrations.
 The SDK's fluent builders, auxiliary physics adapters and optimizer policies
 have their own scopes; this guide does not promote them into autonomous nodal
 laws.
+
+## Auxiliary arithmetic command
+
+`tnfr-is-prime` uses the declared integer arithmetic-pressure model, separately
+from network evolution. Basic execution reuses the shared divisor and factor
+functions. `--optimized` reuses one sieve/result-cache owner; `--batch` evaluates
+sorted distinct inputs. `--cached` and `--no-optimize` select the basic route.
+`--benchmark N` requires `N >= 100` and prints the mathematics benchmark report;
+its timings are machine/input dependent. Automatic arithmetic execution uses
+NumPy and requires no GPU runtime.
+
+The historical `tnfr.tools.tnfr_is_prime_cli_optimized` module delegates to this
+same command. Its `benchmark_basic` compatibility call now returns the shared
+benchmark schema (`total_numbers_tested`, `total_time_ms`, `cache_statistics`,
+and related fields), replacing its former basic-versus-cached timing schema.

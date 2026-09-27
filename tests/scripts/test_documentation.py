@@ -255,6 +255,53 @@ def test_fenced_markdown_examples_do_not_create_live_references(reference_worksp
     assert failures == []
 
 
+@pytest.mark.parametrize(
+    "original, expected",
+    [
+        (
+            "Before `multi\n[example](docs/)` after\n",
+            "Before `multi\n[example](docs/)` after\n",
+        ),
+        (r"Escaped \` [real](docs/) \`", r"Escaped \` [real](docs/README.md) \`"),
+        (
+            "``[example](docs/) `inner` `` [live](docs/)",
+            "``[example](docs/) `inner` `` [live](docs/README.md)",
+        ),
+        (
+            "`[example](docs/)\\` [live](docs/)",
+            "`[example](docs/)\\` [live](docs/README.md)",
+        ),
+    ],
+)
+def test_prose_rewriting_preserves_code_span_boundaries(original, expected):
+    from scripts.verify_internal_references import rewrite_markdown_prose
+
+    assert (
+        rewrite_markdown_prose(
+            original, lambda text: text.replace("(docs/)", "(docs/README.md)")
+        )
+        == expected
+    )
+
+
+def test_unmatched_backticks_cannot_hide_links_in_another_paragraph(
+    reference_workspace,
+):
+    _, examples, checker = reference_workspace
+    original = "Unmatched `\n\n[real](absent.md)\n\nAnother `\n"
+    (examples / "guide.md").write_text(original, encoding="utf-8")
+
+    rewritten = checker.rewrite_markdown_prose(
+        original, lambda text: text.replace("absent.md", "replacement.md")
+    )
+    references, failures = checker.verify(["."])
+
+    assert "[real](replacement.md)" in rewritten
+    assert references == 1
+    assert len(failures) == 1
+    assert "absent.md" in failures[0]
+
+
 @pytest.mark.parametrize("fragment", ("real-topic", "absent"))
 def test_directory_fragments_follow_the_index_used_by_site_staging(
     reference_workspace, fragment
@@ -293,6 +340,10 @@ def test_staging_preserves_inline_and_reference_link_destinations(
         "[Inline](../README.md#home)\n[Reference][home]\n"
         '[home]: <../README.md#home> "Home title"\n'
         "[Subdirectory](../docs/)\n[Source folder](../src/tnfr/)\n"
+        "`[Inline example](../README.md#home)`\n"
+        "````markdown\n[Code example](../README.md#home)\n"
+        "```\n[example]: ../README.md#home\n````\n"
+        "~~~markdown\n[Other example](../docs/)\n~~~\n"
     )
     (examples / "guide.md").write_text(original, encoding="utf-8")
     (tmp_path / "docs").mkdir()
@@ -306,6 +357,12 @@ def test_staging_preserves_inline_and_reference_link_destinations(
     assert '[home]: <../index.md#home> "Home title"' in rendered
     assert "[Subdirectory](../docs/README.md)" in rendered
     assert "https://github.com/fermga/TNFR-Python-Engine/tree/main/src/tnfr" in rendered
+    assert "`[Inline example](../README.md#home)`" in rendered
+    assert (
+        "````markdown\n[Code example](../README.md#home)\n"
+        "```\n[example]: ../README.md#home\n````\n"
+    ) in rendered
+    assert "~~~markdown\n[Other example](../docs/)\n~~~\n" in rendered
     assert (output / "index.md").is_file()
     assert not (output / "README.md").exists()
     assert (examples / "guide.md").read_text(encoding="utf-8") == original

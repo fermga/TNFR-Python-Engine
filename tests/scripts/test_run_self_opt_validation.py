@@ -52,6 +52,9 @@ def test_validation_status_classification(monkeypatch, tmp_path) -> None:
     assert summary["status_counts"]["regressed"] == 1
     assert summary["status_counts"]["pending"] == 1
     assert len(calls) == 2
+    assert summary["validation_scope"] == "current_code_regression_suites"
+    assert summary["recommendations_applied"] is False
+    assert summary["recommendation_effects_evaluated"] is False
 
     report_payload = json.loads((tmp_path / "report.json").read_text(encoding="utf-8"))
     statuses = {
@@ -77,3 +80,31 @@ def test_validation_fail_on_regression(monkeypatch, tmp_path) -> None:
     args = validator.parse_args(_build_args(tmp_path, extra=["--fail-on-regression"]))
     with pytest.raises(SystemExit):
         validator.run(args)
+
+
+def test_payload_discovery_skips_non_record_json_and_groups_shared_suites(
+    tmp_path, monkeypatch
+):
+    (tmp_path / "unrelated.json").write_text("[]", encoding="utf-8")
+    for index in range(2):
+        (tmp_path / f"record_{index}.json").write_text(
+            json.dumps({"metadata": {"operation_type": "paley_partition"}}),
+            encoding="utf-8",
+        )
+    calls = []
+    monkeypatch.setattr(
+        validator, "_run_pytest", lambda tests, **kwargs: calls.append(tests) or 0
+    )
+    args = validator.parse_args(
+        [
+            "--payload-root",
+            str(tmp_path),
+            "--report",
+            str(tmp_path / "report.json"),
+            "--quiet",
+        ]
+    )
+    result = validator.run(args)
+    assert len(calls) == 1
+    assert result["status_counts"]["validated"] == 2
+    assert result["recommendation_effects_evaluated"] is False

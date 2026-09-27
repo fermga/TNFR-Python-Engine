@@ -1,17 +1,10 @@
-"""
-Optimized TNFR Primality Testing Implementation
+"""CPU integer arithmetic primality with sieve and instance result reuse.
 
-This module provides an enhanced version of the TNFR primality test
-that leverages the full infrastructure of the TNFR repository:
-- Centralized caching system
-- Vectorized operations
-- Structural field computations
-- GPU backends when available
-- Mathematical optimization techniques
-
-Author: TNFR Research Team
-Date: 2025-11-29
-Status: OPTIMIZED IMPLEMENTATION
+The supplied positive pressure weights characterize the prime zero set; they
+are not derived physical constants. Arithmetic uses Python/NumPy integers,
+not GPU or vectorized graph evolution. Optional structural read-outs do not
+participate in the primality decision. Backend options remain compatibility
+metadata and adapters; automatic execution uses NumPy without optional imports.
 """
 
 from __future__ import annotations
@@ -22,12 +15,10 @@ import time
 from dataclasses import dataclass
 from typing import Any
 
-from ..backends.optimized_numpy import OptimizedNumpyBackend
+from ..backends.optimized_numpy import OptimizedNumPyBackend as OptimizedNumpyBackend
 from ..metrics.coherence import compute_coherence
 from ..physics.fields import compute_structural_potential
-
-# Core TNFR infrastructure
-from .unified_cache import CacheLevel, cache_tnfr_computation
+from .arithmetic_pressure import big_omega, divisor_sum, num_divisors
 from .unified_numerical import np
 
 # GPU acceleration if available
@@ -45,23 +36,17 @@ try:
 except ImportError:
     HAS_JAX = False
 
-# Mathematical libraries
-try:
-    HAS_NUMBA = True
-except ImportError:
-    HAS_NUMBA = False
-
 logger = logging.getLogger(__name__)
 
-# TNFR primality parameters: ΔNFR pressure coefficients.
-# Prime ⟺ ΔNFR = 0 with canonical unit-scale coefficients (TNFR_NUMBER_THEORY).
-ZETA_CANONICAL = 1.0  # Factorization pressure coefficient
-ETA_CANONICAL = 0.8  # Divisor pressure coefficient
-THETA_CANONICAL = 0.6  # Sigma pressure coefficient
+# Historical configured coefficients; names remain compatibility exports.
+# Every positive choice has the same prime zero set.
+ZETA_CANONICAL = 1.0
+ETA_CANONICAL = 0.8
+THETA_CANONICAL = 0.6
 
 # Primality decision cut on |ΔNFR|: primes give ΔNFR = 0 exactly while
-# composites give |ΔNFR| ≳ 2 with the coefficients above, so any threshold in
-# (0, 2) is robust. 0.5 is the plain canonical separator.
+# composites have Ω>=2 and τ>=3, giving pressure >=1.8 with these weights.
+# The retained 0.5 threshold lies below that bound; it is a configured cut.
 PRIME_THRESHOLD_HP = 0.5
 
 
@@ -80,15 +65,12 @@ class PrimalityResult:
 
 
 class OptimizedTNFRPrimality:
-    """
-    Optimized TNFR primality testing with multiple acceleration strategies.
+    """Sieve preprocessing and in-memory arithmetic/result dictionaries.
 
-    Features:
-    - Multi-tier caching (LRU + persistent)
-    - Vectorized batch operations
-    - GPU acceleration when available
-    - Sieve-based preprocessing
-    - Structural field integration
+    Batch execution processes sorted distinct integers serially. The retained
+    cache_size option does not currently impose eviction on these dictionaries;
+    clear_caches explicitly resets them. No persistent cache or GPU arithmetic
+    is implemented by this class.
     """
 
     def __init__(
@@ -123,12 +105,8 @@ class OptimizedTNFRPrimality:
     def _init_backend(self):
         """Initialize the computational backend."""
         if self.backend_name == "auto":
-            if HAS_JAX and self.enable_gpu:
-                return JAXBackend()
-            elif HAS_TORCH and self.enable_gpu:
-                return TorchBackend()
-            else:
-                return OptimizedNumpyBackend()
+            self.backend_name = "numpy"
+            return OptimizedNumpyBackend()
         elif self.backend_name == "jax" and HAS_JAX:
             return JAXBackend()
         elif self.backend_name == "torch" and HAS_TORCH:
@@ -183,7 +161,6 @@ class OptimizedTNFRPrimality:
         self.cache_hits = 0
         self.cache_misses = 0
 
-    @cache_tnfr_computation(level=CacheLevel.DERIVED_METRICS)
     def _fast_divisor_count(self, n: int) -> int:
         """Optimized divisor count using sieve when possible."""
         if n <= self.sieve_data["limit"] and n >= 1:
@@ -210,21 +187,9 @@ class OptimizedTNFRPrimality:
         return count
 
     def _trial_divisor_count(self, n: int) -> int:
-        """Fallback divisor count for large numbers."""
-        count = 0
-        i = 1
-        sqrt_n = int(math.sqrt(n))
+        """Reuse the shared integer divisor count beyond the sieve."""
+        return 1 if n == 1 else num_divisors(n)
 
-        while i <= sqrt_n:
-            if n % i == 0:
-                count += 1
-                if i != n // i:
-                    count += 1
-            i += 1
-
-        return count
-
-    @cache_tnfr_computation(level=CacheLevel.DERIVED_METRICS)
     def _fast_divisor_sum(self, n: int) -> int:
         """Optimized divisor sum using sieve when possible."""
         if n <= self.sieve_data["limit"] and n >= 1:
@@ -256,65 +221,33 @@ class OptimizedTNFRPrimality:
         return total
 
     def _trial_divisor_sum(self, n: int) -> int:
-        """Fallback divisor sum for large numbers."""
-        total = 0
-        i = 1
-        sqrt_n = int(math.sqrt(n))
+        """Reuse the shared integer divisor sum beyond the sieve."""
+        return 1 if n == 1 else divisor_sum(n)
 
-        while i <= sqrt_n:
-            if n % i == 0:
-                total += i
-                if i != n // i:
-                    total += n // i
-            i += 1
-
-        return total
-
-    @cache_tnfr_computation(level=CacheLevel.DERIVED_METRICS)
     def _fast_omega(self, n: int) -> int:
-        """Optimized prime factor count (ω function)."""
+        """Count prime factors with multiplicity, the pressure's Ω coordinate."""
         if n <= self.sieve_data["limit"] and n >= 1:
             return self._sieve_omega(n)
         return self._trial_omega(n)
 
     def _sieve_omega(self, n: int) -> int:
-        """Ultra-fast ω(n) using precomputed sieve."""
+        """Count Ω(n) using the precomputed least prime factors."""
         if n <= 1:
             return 0
 
         count = 0
         temp = n
         min_pf = self.sieve_data["min_prime_factor"]
-        last_p = 0
-
         while temp > 1:
             p = min_pf[temp]
-            if p != last_p:
-                count += 1
-                last_p = p
+            count += 1
             temp //= p
 
         return count
 
     def _trial_omega(self, n: int) -> int:
-        """Fallback ω(n) for large numbers."""
-        if n <= 1:
-            return 0
-
-        count = 0
-        d = 2
-
-        while d * d <= n:
-            if n % d == 0:
-                count += 1
-                while n % d == 0:
-                    n //= d
-            d += 1
-
-        if n > 1:
-            count += 1
-
-        return count
+        """Reuse the shared multiplicity count beyond the sieve."""
+        return 0 if n <= 1 else big_omega(n)
 
     def compute_delta_nfr(
         self,
@@ -325,9 +258,9 @@ class OptimizedTNFRPrimality:
         theta: float = THETA_CANONICAL,
     ) -> float:
         """
-        Optimized TNFR ΔNFR computation with caching and vectorization.
+        Arithmetic ΔNFR computation with instance dictionary reuse.
 
-        ΔNFR(n) = ζ·(ω(n)−1) + η·(τ(n)−2) + θ·(σ(n)/n − (1+1/n))
+        ΔNFR(n) = ζ·(Ω(n)−1) + η·(τ(n)−2) + θ·(σ(n)/n − (1+1/n))
         """
         if n < 2:
             return float("inf")
@@ -369,7 +302,7 @@ class OptimizedTNFRPrimality:
 
         Args:
             n: Integer to test for primality
-            threshold: ΔNFR threshold for primality (default: theoretical optimum)
+            threshold: Configured pressure cut (default: 0.5)
             include_metrics: Whether to compute structural field metrics
 
         Returns:
@@ -469,7 +402,7 @@ class OptimizedTNFRPrimality:
         include_metrics: bool = False,
     ) -> list[PrimalityResult]:
         """
-        Batch primality testing with vectorized optimizations.
+        Test sorted distinct inputs with the shared scalar arithmetic owner.
 
         Args:
             numbers: list of integers to test

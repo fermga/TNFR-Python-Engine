@@ -6,10 +6,17 @@ from __future__ import annotations
 import os
 import re
 import shutil
+import sys
 from pathlib import Path
 from urllib.parse import quote
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.clean_repository import generated_directory
+from scripts.verify_internal_references import rewrite_markdown_prose
+
 STAGE_DIR = REPO_ROOT / "build" / "docs-source"
 
 ROOT_FILES = (
@@ -72,8 +79,8 @@ def _copy_tree(relative: str) -> None:
 def prepare() -> Path:
     """Create a deterministic documentation source tree and return its path."""
 
-    expected = (REPO_ROOT / "build").resolve()
-    if STAGE_DIR.resolve().parent != expected:
+    expected = generated_directory(REPO_ROOT, "build/docs-source")
+    if STAGE_DIR.absolute() != expected:
         raise RuntimeError(f"unsafe documentation staging path: {STAGE_DIR}")
     shutil.rmtree(STAGE_DIR, ignore_errors=True)
     STAGE_DIR.mkdir(parents=True)
@@ -137,7 +144,6 @@ def prepare() -> Path:
             return "](" + relative + fragment + ")"
 
         content = document.read_text(encoding="utf-8")
-        rendered = re.sub(r"\]\(([^)#\s]*)(#[^)]*)?\)", site_link, content)
 
         def reference_link(match: re.Match[str]) -> str:
             prefix, raw, suffix = match.groups()
@@ -152,12 +158,16 @@ def prepare() -> Path:
                 target = "<" + target + ">"
             return prefix + target + suffix
 
-        rendered = re.sub(
-            r"^(\s{0,3}\[[^\]]+\]:\s*)(<[^>\n]+>|[^\s]+)([^\n]*)$",
-            reference_link,
-            rendered,
-            flags=re.MULTILINE,
-        )
+        def convert_links(prose: str) -> str:
+            rendered = re.sub(r"\]\(([^)#\s]*)(#[^)]*)?\)", site_link, prose)
+            return re.sub(
+                r"^(\s{0,3}\[[^\]]+\]:\s*)(<[^>\n]+>|[^\s]+)([^\n]*)$",
+                reference_link,
+                rendered,
+                flags=re.MULTILINE,
+            )
+
+        rendered = rewrite_markdown_prose(content, convert_links)
         if rendered != content:
             document.write_text(rendered, encoding="utf-8")
 

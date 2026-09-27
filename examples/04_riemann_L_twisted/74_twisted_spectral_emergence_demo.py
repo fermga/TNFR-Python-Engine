@@ -1,27 +1,10 @@
-r"""Example 74 -- chi-twisted spectral emergence under canonical coupling (P47).
+"""Finite character-twisted prime-ladder spectral-spacing comparison.
 
-L-track analogue of Example 56 (P29 spectral_emergence_demo).  For
-each primitive real Dirichlet character chi_3, chi_4, chi_5, sweeps
-three canonical TNFR chi-twisted inter-prime coupling laws on the
-P34 chi-twisted prime-ladder Hamiltonian and reports the
-Kolmogorov-Smirnov distance of the unfolded nearest-neighbour
-spacing distribution to the GUE Wigner surmise (conjectural
-universality class of the non-trivial zeros of L(s, chi)).
-
-Honest scope (AGENTS.md sec. 13.2):
-
-    * KS_GUE -> 0 across canonical chi-twisted laws would constitute
-      structural-compatibility evidence for the GUE-universality of
-      L(s, chi) zeros.
-    * Absence thereof documents a concrete computational obstruction.
-    * Either outcome leaves gap G4 = RH OPEN and does NOT prove GRH
-      for any L(s, chi).
-
-Usage::
-
-    $env:PYTHONPATH=(Resolve-Path ./src).Path
-    $env:PYTHONIOENCODING="utf-8"
-    & ./.venv312/Scripts/python.exe examples/04_riemann_L_twisted/74_twisted_spectral_emergence_demo.py
+For the supplied real characters chi_3, chi_4 and chi_5, configured auxiliary
+coupling matrices are compared with GUE and Poisson spacing references. A
+finite KS statistic proves neither asymptotic universality nor native UM/RA
+execution. Failure on this grid excludes no other coupling family. RH and GRH
+remain unproved. See theory/TNFR_RIEMANN_RESEARCH_NOTES.md.
 """
 
 from __future__ import annotations
@@ -133,7 +116,7 @@ def main() -> int:
                 f"{r.poisson_baseline_ks_gue:>12.4f}"
             )
     print()
-    print("Reminder: KS_GUE -> 0 is structural-compatibility evidence only.")
+    print("Reminder: finite KS comparisons do not prove asymptotic universality.")
     print("Gap G4 = RH and GRH for L(s, chi) remain OPEN.")
     return 0
 

@@ -216,6 +216,4 @@ __all__ = (
     "StructuralFeedbackLoop",
     "AdaptiveSequenceSelector",
     "StructuralHomeostasis",
-    "get_bifurcation_paths",
-    "compute_bifurcation_score",
 )

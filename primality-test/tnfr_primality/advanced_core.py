@@ -37,9 +37,9 @@ try:
         PrimeCertificate,
     )
 
-    _infrastructure_status.append("✓ Number theory engine")
+    _infrastructure_status.append("[available] Number theory engine")
 except ImportError:
-    _infrastructure_status.append("✗ Number theory engine")
+    _infrastructure_status.append("[unavailable] Number theory engine")
 
 try:
     from tnfr.constants.canonical import (
@@ -50,9 +50,9 @@ try:
         E,
     )
 
-    _infrastructure_status.append("✓ Canonical constants")
+    _infrastructure_status.append("[available] Canonical constants")
 except ImportError:
-    _infrastructure_status.append("✗ Canonical constants")
+    _infrastructure_status.append("[unavailable] Canonical constants")
     # Fallback constants
     PHI = 1.618033988749895
     GAMMA = 0.5772156649015329
@@ -67,16 +67,16 @@ try:
         cache_tnfr_computation,
     )
 
-    _infrastructure_status.append("✓ Advanced caching system")
+    _infrastructure_status.append("[available] Advanced caching system")
 except ImportError:
-    _infrastructure_status.append("✗ Advanced caching system")
+    _infrastructure_status.append("[unavailable] Advanced caching system")
 
 try:
     from tnfr.mathematics import get_backend
 
-    _infrastructure_status.append("✓ Multi-backend mathematics")
+    _infrastructure_status.append("[available] Multi-backend mathematics")
 except ImportError:
-    _infrastructure_status.append("✗ Multi-backend mathematics")
+    _infrastructure_status.append("[unavailable] Multi-backend mathematics")
 
 try:
     from tnfr.physics.fields import (
@@ -86,13 +86,13 @@ try:
         estimate_coherence_length,
     )
 
-    _infrastructure_status.append("✓ Structural field analysis")
+    _infrastructure_status.append("[available] Structural field analysis")
 except ImportError:
-    _infrastructure_status.append("✗ Structural field analysis")
+    _infrastructure_status.append("[unavailable] Structural field analysis")
 
 # Check if we have enough infrastructure
 HAS_TNFR_INFRASTRUCTURE = any(
-    "✓ Number theory engine" in s for s in _infrastructure_status
+    "[available] Number theory engine" in s for s in _infrastructure_status
 )
 
 

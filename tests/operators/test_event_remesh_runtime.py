@@ -1239,6 +1239,13 @@ def test_post_schedule_history_materialization_cannot_mutate_graph() -> None:
         calls = 0
         target: nx.Graph | None = None
 
+        def __eq__(self, other: object) -> bool:
+            # This numeric fixture represents zero; its intended fault is the
+            # second materialization's write, not a false nonzero declaration.
+            if isinstance(other, (int, float)):
+                return other == 0.0
+            return NotImplemented
+
         def __float__(self) -> float:
             type(self).calls += 1
             if type(self).calls == 2 and type(self).target is not None:

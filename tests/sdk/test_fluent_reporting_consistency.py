@@ -82,6 +82,51 @@ def test_export_reports_current_graph_after_a_previous_measurement():
     assert network.export_to_dict()["metrics"]["coherence"] == pytest.approx(expected)
 
 
+def test_save_refreshes_once_and_uses_the_shared_report_schema(tmp_path, monkeypatch):
+    network = TNFRNetwork("saved-report").add_nodes(2)
+    before = network.measure().coherence
+    for node in network.graph:
+        set_dnfr(network.graph, node, 10.0)
+    expected = compute_coherence(network.graph)
+    assert expected != before
+    reads = []
+    original = network.measure
+
+    def measure():
+        reads.append(None)
+        return original()
+
+    monkeypatch.setattr(network, "measure", measure)
+    destination = tmp_path / "nested" / "report.json"
+    assert network.save(destination) is network
+    assert len(reads) == 1
+    saved = import_from_json(destination)
+    assert saved["name"] == "saved-report"
+    assert saved["metadata"]["nodes"] == 2
+    assert saved["metrics"]["coherence"] == pytest.approx(expected)
+    assert saved == json.loads(json.dumps(network.export_to_dict()))
+
+
+def test_failed_save_preserves_existing_file(tmp_path):
+    network = TNFRNetwork().add_nodes(2)
+    destination = tmp_path / "result.json"
+    previous = '{"previous": true}'
+    destination.write_text(previous, encoding="utf-8")
+    for node in network.graph:
+        set_dnfr(network.graph, node, math.nan)
+    with pytest.raises(ValueError):
+        network.save(destination)
+    assert destination.read_text(encoding="utf-8") == previous
+    assert list(tmp_path.iterdir()) == [destination]
+
+
+def test_save_rejects_an_uninitialized_network_before_writing(tmp_path):
+    destination = tmp_path / "missing.json"
+    with pytest.raises(ValueError, match="No network created"):
+        TNFRNetwork().save(destination)
+    assert not destination.exists()
+
+
 def test_failed_json_export_preserves_existing_file(tmp_path):
     destination = tmp_path / "result.json"
     destination.write_text('{"previous": true}', encoding="utf-8")
@@ -124,6 +169,48 @@ def test_noncolliding_json_keys_retain_standard_encoder_behavior(tmp_path):
         "false": "boolean",
         "null": "none",
     }
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        '{"nodes": 1, "nodes": 2}',
+        '{"rows": [{"seed": 1, "seed": 2}]}',
+        r'{"nodes": 1, "no\u0064es": 2}',
+    ],
+)
+def test_json_import_rejects_duplicate_decoded_names(tmp_path, payload):
+    source = tmp_path / "ambiguous.json"
+    source.write_text(payload, encoding="utf-8")
+    with pytest.raises(ValueError, match="keys collide"):
+        import_from_json(source)
+    assert source.read_text(encoding="utf-8") == payload
+
+
+@pytest.mark.parametrize(
+    "token", ["NaN", "Infinity", "-Infinity", "1e999", "1e-999", "-1e-999"]
+)
+def test_json_import_rejects_nonfinite_or_lost_nonzero_numbers(tmp_path, token):
+    source = tmp_path / "invalid.json"
+    source.write_text('{"rows": [{"value": ' + token + "}]}", encoding="utf-8")
+    with pytest.raises(ValueError, match="finite|underflows"):
+        import_from_json(source)
+
+
+def test_json_number_roundtrip_retains_zero_subnormal_and_integer_domains(tmp_path):
+    source = tmp_path / "numbers.json"
+    tiny = float.fromhex("0x0.0000000000001p-1022")
+    values = {"tiny": tiny, "negative_zero": -0.0, "large_integer": 10**400}
+    export_to_json(values, source)
+    restored = import_from_json(source)
+    assert restored == values
+    assert math.copysign(1.0, restored["negative_zero"]) == -1.0
+
+
+def test_json_zero_does_not_depend_on_decimal_exponent_limits(tmp_path):
+    source = tmp_path / "zero.json"
+    source.write_text('{"zero": 0e-9999999999999999999999999999}', encoding="utf-8")
+    assert import_from_json(source) == {"zero": 0.0}
 
 
 def test_json_export_uses_shared_atomic_writer_for_new_directories(tmp_path):

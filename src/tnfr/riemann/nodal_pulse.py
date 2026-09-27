@@ -100,8 +100,8 @@ def first_primes(count: int) -> list[int]:
     """Return the first ``count`` primes as explicit arithmetic input labels.
 
     Deliberately minimalist trial division; not optimised for large ``count``.
-    Moved here from the eliminated combinatorial ``operator`` module so the
-    canonical νf-based modules no longer depend on the obsolete track.
+    Shared by the pulse, ladder and auxiliary graph constructions; enumerating
+    these supplied labels is not a derivation of primes from nodal dynamics.
     """
     if count <= 0:
         return []

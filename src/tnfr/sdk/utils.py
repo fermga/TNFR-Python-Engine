@@ -22,6 +22,36 @@ __all__ = [
 ]
 
 
+def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> None:
+    """Validate actual JSON names without retaining a second decoded tree."""
+    names: set[str] = set()
+    for name, _ in pairs:
+        if name in names:
+            raise ValueError(f"JSON object keys collide after serialization: {name!r}")
+        names.add(name)
+
+
+def _decoded_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    _reject_duplicate_keys(pairs)
+    return dict(pairs)
+
+
+def _reject_nonfinite_constant(token: str) -> None:
+    raise ValueError(f"JSON numbers must be finite; found {token}")
+
+
+def _represented_json_float(token: str) -> float:
+    """Preserve finite JSON numbers without silently losing nonzero input."""
+    value = float(token)
+    finite_represented_real(value, "JSON number")
+    # The JSON decoder has already admitted the numeric grammar. Only the
+    # mantissa decides exact zero, independently of any exponent magnitude.
+    mantissa = token.lower().split("e", 1)[0]
+    if value == 0.0 and any(digit in "123456789" for digit in mantissa):
+        raise ValueError("JSON number is nonzero but underflows to represented zero")
+    return value
+
+
 def compare_networks(
     networks: dict[str, Any],
     metrics: list[str] | None = None,
@@ -174,24 +204,21 @@ def export_to_json(
         separators=(",", ": ") if indent is not None else (", ", ": "),
     )
 
-    def reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> None:
-        names: set[str] = set()
-        for name, _ in pairs:
-            if name in names:
-                raise ValueError(
-                    f"JSON object keys collide after serialization: {name!r}"
-                )
-            names.add(name)
-
     # Check actual encoded names recursively instead of duplicating the
     # encoder's int/float/bool/None conversion rules. The hook need not retain
     # a second decoded object tree, and validation precedes any file writes.
-    json.loads(payload, object_pairs_hook=reject_duplicate_keys)
+    json.loads(payload, object_pairs_hook=_reject_duplicate_keys)
     safe_write(filepath, lambda stream: stream.write(payload))
 
 
 def import_from_json(filepath: Path | str) -> dict[str, Any]:
-    """Import network data from JSON file.
+    """Import JSON data without reconstructing a live network.
+
+    Duplicate object names and nonfinite numbers are rejected at every depth.
+    Nonzero fractional literals that underflow to binary64 zero are rejected;
+    representable fractional numbers retain standard JSON float rounding.
+    Integer literals retain Python's integer representation. Decoding does not
+    authenticate report provenance or validate a study recipe's model fields.
 
     Parameters
     ----------
@@ -212,7 +239,12 @@ def import_from_json(filepath: Path | str) -> dict[str, Any]:
     filepath = Path(filepath)
 
     with open(filepath, "r", encoding="utf-8") as f:
-        data = json.load(f)
+        data = json.load(
+            f,
+            object_pairs_hook=_decoded_object,
+            parse_constant=_reject_nonfinite_constant,
+            parse_float=_represented_json_float,
+        )
 
     return data
 

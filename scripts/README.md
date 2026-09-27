@@ -11,7 +11,7 @@ current repository.
 | `check_documentation.py` | Check the agent mirror, version references, operator contracts, public examples, theory-catalog coverage and generated navigation, and documentation build inputs. |
 | `verify_internal_references.py` | Validate repository-relative Markdown targets and GitHub-style heading fragments. |
 | `prepare_docs.py` | Build the deterministic MkDocs source tree under `build/docs-source`. |
-| `clean_repository.py` | Remove only known generated artifacts inside the repository. |
+| `clean_repository.py` | Preflight declared generated directories, including package metadata under `src/`, before deletion; reject redirected paths. |
 
 Run the complete documentation gate with:
 
@@ -40,6 +40,9 @@ it does not update documentation silently or maintain a second owner registry.
 This validates references and executable examples before running a strict MkDocs
 build. Generated documentation sources and the rendered `site/` directory are not
 canonical sources.
+Staging preserves fenced and inline code examples verbatim while rewriting
+rendered local links. Staging and cleanup share the generated-directory guard;
+neither follows a redirected output directory into source or another tree.
 
 ## Reproducibility and research
 
@@ -48,7 +51,7 @@ canonical sources.
 | `rebuild_failure_manifest.py` | Rebuild the failure manifest used by reproducibility investigations. |
 | `replay/register_manifest.py` | Register replay metadata for a stored run. |
 | `run_self_optimization.py` | Execute the manifest-driven self-optimization workflow. |
-| `run_self_opt_validation.py` | Validate outputs produced by the self-optimization workflow. |
+| `run_self_opt_validation.py` | Run current-code regression suites selected by recommendation operation type; it does not apply or evaluate the recommendations. |
 | `tnfr_is_prime.py` | Compatibility entry point for the TNFR primality tool. |
 
 Use `--help` on scripts that expose command-line options. Reproducible runs must
@@ -67,6 +70,11 @@ owns the retired validation entry point and its replacement.
 - `make validate` checks imports, documentation integrity, and the SDK test area.
 - `make self-optimize` and `make self-optimize-validate` run the manifest workflow.
 - `pip install -e ".[security]"` installs the tools required by `make security`.
+
+The regression report retains historical `validated`/`regressed` status labels
+for suite exit codes and explicitly reports its `validation_scope`. A passing
+mapped suite is not evidence that a recommendation was applied or improved the
+network; unknown operations remain pending.
 
 See [ARCHITECTURE.md](../ARCHITECTURE.md), [TESTING.md](../TESTING.md), and
 [SECURITY.md](../SECURITY.md) for the governing contracts.

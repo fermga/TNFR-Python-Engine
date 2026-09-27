@@ -1,18 +1,10 @@
-"""P31 — Prime-Ladder Oscillatory Correction Demo (branch B1 retry).
+"""Finite prime-ladder correction of classical smooth spectral targets.
 
-Reproduces the canonical TNFR reconstruction of the oscillatory
-remainder S(T) = pi^{-1} arg zeta(1/2 + iT) from the prime-ladder
-spectrum {(k log p, log p)} (P12 / P14 canonical) and applies it as
-a position-level correction to the P28 smooth targets {tilde gamma_i}.
-
-Compares the corrected W_1 gap to the true Riemann zeros against the
-P30 smooth-half baseline.  Reports honestly: positive improvement is
-**branch B1 evidence** (the existing canonical operator catalog plus
-prime-ladder data suffices to reduce the S(T) residual); negative
-improvement corroborates **branch B2** (a new canonical operator is
-required).
-
-This demo does NOT close gap G4 = RH under any interpretation.
+The supplied prime-ladder spectrum and a truncated classical oscillatory
+approximation define a candidate correction. A damping sweep compares it with
+reference zero ordinates. Improvement or failure concerns that finite candidate
+and grid; neither proves catalog sufficiency, requires a new canonical operator,
+nor proves RH. See theory/TNFR_RIEMANN_RESEARCH_NOTES.md.
 """
 
 from __future__ import annotations
@@ -40,14 +32,11 @@ def run(n_targets: int, n_primes: int, max_power: int) -> None:
 
 
 def main() -> None:
-    print(
-        "P31 — Prime-Ladder Oscillatory Correction"
-        " (canonical TNFR retry of branch B1)"
-    )
+    print("P31 — Prime-Ladder Oscillatory Correction" " (supplied finite candidate)")
     print("Honest scope: this is an experimental research diagnostic.")
     print(
-        "Positive improvement => branch B1 evidence."
-        "  Negative => branch B2 corroboration."
+        "Improvement concerns this finite candidate and grid."
+        " Failure does not require a new canonical operator."
     )
     print("Neither outcome closes gap G4 = RH.")
 

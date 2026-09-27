@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+from fractions import Fraction
 
 import networkx as nx
 import pytest
@@ -109,7 +110,7 @@ def test_explicit_seed_uses_the_shared_strict_domain(seed):
 
 @pytest.mark.parametrize(
     "normalization",
-    [0.0, -0.1, True, math.nan, math.inf, "0.1"],
+    [0.0, -0.1, True, math.nan, math.inf, "0.1", Fraction(1, 10**400), 10**400],
 )
 def test_adaptive_system_rejects_invalid_stress_normalization(normalization):
     with pytest.raises(ValueError, match="positive finite real"):
@@ -132,10 +133,31 @@ def test_adaptive_system_propagates_selector_seed():
     assert system.sequence_selector.seed == 29
 
 
-@pytest.mark.parametrize("pressure", [True, math.nan, math.inf, "0.1"])
+@pytest.mark.parametrize(
+    "pressure",
+    [
+        True,
+        math.nan,
+        math.inf,
+        "0.1",
+        Fraction(1, 10**400),
+        -Fraction(1, 10**400),
+        10**400,
+    ],
+)
 def test_adaptive_system_rejects_invalid_pressure_stress_input(pressure):
     graph = _graph()
     graph.nodes["node"][ALIAS_DNFR[0]] = pressure
     system = TNFRAdaptiveSystem(graph, "node")
     with pytest.raises(ValueError, match="DeltaNFR must be a finite real"):
         system._measure_stress()
+
+
+def test_adaptive_stress_retains_representable_pressure_and_normalization_scale():
+    tiny = Fraction.from_float(float.fromhex("0x0.0000000000001p-1022"))
+    graph = _graph()
+    graph.nodes["node"][ALIAS_DNFR[0]] = -tiny
+    system = TNFRAdaptiveSystem(graph, "node", stress_normalization=2 * tiny)
+    assert system._measure_stress() == 0.5
+    graph.nodes["node"][ALIAS_DNFR[0]] = 0
+    assert system._measure_stress() == 0.0

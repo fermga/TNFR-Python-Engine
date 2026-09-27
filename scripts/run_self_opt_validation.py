@@ -1,4 +1,9 @@
-"""Validate TNFR self-optimization recommendations against targeted pytest suites."""
+"""Run mapped regression suites for TNFR self-optimization operation types.
+
+Payloads select suites; this runner does not apply recommendations or compare
+their predicted effects. Legacy ``validated``/``regressed`` labels describe
+the current code's suite exit status, not recommendation-specific evidence.
+"""
 
 from __future__ import annotations
 
@@ -58,7 +63,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     parser.add_argument(
         "--fail-on-regression",
         action="store_true",
-        help="Exit with status 1 if any recommendation regresses",
+        help="Exit with status 1 if a mapped regression suite fails",
     )
     parser.add_argument(
         "--quiet",
@@ -131,6 +136,8 @@ def _discover_payloads(root: Path) -> List[RecommendationRecord]:
             data = json.loads(path.read_text(encoding="utf-8"))
         except Exception:
             continue
+        if not isinstance(data, dict):
+            continue
         metadata = data.get("metadata")
         if not isinstance(metadata, dict):
             continue
@@ -192,6 +199,9 @@ def _build_summary(
             }
         )
     summary = {
+        "validation_scope": "current_code_regression_suites",
+        "recommendations_applied": False,
+        "recommendation_effects_evaluated": False,
         "payload_root": str(payload_root),
         "total_recommendations": len(records),
         "status_counts": status_counts,

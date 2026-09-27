@@ -45,17 +45,7 @@ def _exact_square_matrix_product_unchecked(
 ) -> ExactSquareMatrix:
     """Multiply equally sized validated square rational matrices."""
 
-    dimension = len(left)
-    return tuple(
-        tuple(
-            sum(
-                (left[row][inner] * right[inner][column] for inner in range(dimension)),
-                Fraction(0),
-            )
-            for column in range(dimension)
-        )
-        for row in range(dimension)
-    )
+    return exact_matrix_product(left, right)
 
 
 def exact_square_matrix_product(

@@ -14,9 +14,11 @@ where ``gamma_n`` are the imaginary parts of the non-trivial Riemann zeros
 construction:
 
 * ``T_HP`` is self-adjoint (real diagonal).
-* For ``s > 0`` the shifted resolvent ``(T_HP^2 + s^2 I)^{-1/2}`` belongs
-  to Schatten class ``S_p`` for every ``p > 1``; its trace and
-  Hilbert-Schmidt norms are computed exactly from the gamma list.
+* For ``s > 0`` the finite shifted resolvent
+  ``R = (T_HP^2 + s^2 I)^{-1/2}`` has singular values
+  ``1 / sqrt(gamma_n^2 + s^2)``. Its Schatten and operator norms are
+  evaluated numerically on the supplied truncation. Finite ``trace_class``
+  does not establish trace-class membership of an infinite operator.
 * The zero-side ``sum 2 h(gamma_n)`` of Weil's explicit formula evaluated
   through ``T_HP`` reproduces P15 to machine precision because both sides
   consume the same gamma data.
@@ -33,14 +35,11 @@ populated by *inputting* the zeros from mpmath; we do not derive them
 from the nodal equation, conservation, or grammar.  What P27 delivers is
 the explicit operator-level slot into which a Hilbert-Polya-style attack
 must fit, plus numerical evidence that the TNFR stack is internally
-compatible with such a slot.  The genuinely open piece (gap G4 = RH) is
-the structural derivation of ``T_HP`` from TNFR first principles without
-reference to the zeros, which the framework here does not provide.
-
-Per AGENTS.md sec. 13.2, G1/G2/G3 are operationally closed by P12-P15
-and G5 is superseded.  G4 remains the single open gap and P27 does not
-attack it: it organises the existing ingredients into the canonical HP
-shape.
+compatible with such a slot. A derivation of ``T_HP`` independent of the
+supplied zero ordinates remains absent. Such a finite construction would
+still require separate infinite-dimensional and analytic arguments before
+it could establish RH. Historical G4 labels refer to that research gap;
+they do not certify that every other proof obligation has been resolved.
 """
 
 from __future__ import annotations
@@ -119,7 +118,11 @@ def build_hp_operator(gammas: np.ndarray) -> np.ndarray:
 
 
 def verify_hp_self_adjoint(T: np.ndarray, *, tol: float = 1e-12) -> dict:
-    """Check that ``T`` is self-adjoint within ``tol``."""
+    """Check ``T=T.conj().T`` within ``tol``, retaining imaginary telemetry.
+
+    A Hermitian matrix can have nonzero imaginary off-diagonal entries; the
+    imaginary Frobenius norm is not an additional self-adjointness condition.
+    """
     arr = np.asarray(T)
     if arr.ndim != 2 or arr.shape[0] != arr.shape[1]:
         raise ValueError("T must be a square matrix")
@@ -129,7 +132,7 @@ def verify_hp_self_adjoint(T: np.ndarray, *, tol: float = 1e-12) -> dict:
     return {
         "asymmetry_frobenius": asym_norm,
         "imaginary_frobenius": imag_norm,
-        "self_adjoint": asym_norm <= tol and imag_norm <= tol,
+        "self_adjoint": asym_norm <= tol,
         "tolerance": tol,
     }
 
@@ -141,19 +144,37 @@ def hp_resolvent_schatten_norms(
 ) -> dict:
     r"""Compute Schatten norms of the shifted resolvent of ``T_HP``.
 
-    Returns the trace norm ``sum 1 / (gamma_n^2 + s^2)``, the
-    Hilbert-Schmidt norm ``sqrt(sum 1 / (gamma_n^2 + s^2)^2)``, and the
-    operator norm ``1 / sqrt(gamma_min^2 + s^2)``.
+    For ``R = (T_HP^2 + s^2 I)^{-1/2}``, singular values are
+    ``r_n = 1 / sqrt(gamma_n^2 + s^2)``. Return ``sum r_n``,
+    ``sqrt(sum r_n^2)`` and ``max r_n`` for this same operator.
+    ``trace_class`` only describes the supplied finite truncation.
+
+    Earlier implementations used the trace and Hilbert-Schmidt norms of
+    ``R^2`` alongside the operator norm of ``R``. These fields now consistently
+    describe ``R``; historical reports retain their original arithmetic.
     """
-    gammas = np.asarray(gammas, dtype=float)
-    if shift <= 0.0:
-        raise ValueError("shift must be strictly positive")
-    denom = gammas**2 + shift**2
-    if not np.all(denom > 0):
-        raise ValueError("shifted spectrum is degenerate")
-    s1 = float(np.sum(1.0 / denom))
-    s2 = float(math.sqrt(np.sum(1.0 / denom**2)))
-    op_norm = float(1.0 / math.sqrt(np.min(denom)))
+    gammas = _finite_real_samples(gammas)
+    if not gammas.size:
+        raise ValueError("gammas must contain at least one spectral value")
+    if isinstance(shift, (bool, np.bool_)):
+        raise ValueError("shift must be finite and strictly positive")
+    try:
+        shift = float(shift)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError("shift must be finite and strictly positive") from exc
+    if not math.isfinite(shift) or shift <= 0.0:
+        raise ValueError("shift must be finite and strictly positive")
+    try:
+        with np.errstate(over="raise", invalid="raise", divide="raise"):
+            scale = np.maximum(np.abs(gammas), shift)
+            singular_values = (1.0 / np.hypot(gammas / scale, shift / scale)) / scale
+            s1 = float(np.sum(singular_values))
+            op_norm = float(np.max(singular_values))
+            s2 = op_norm * float(np.linalg.norm(singular_values / op_norm))
+    except (FloatingPointError, OverflowError) as exc:
+        raise ValueError("resolvent norms exceed finite floating-point range") from exc
+    if not all(math.isfinite(norm) for norm in (s1, s2, op_norm)):
+        raise ValueError("resolvent norms exceed finite floating-point range")
     return {
         "shift": float(shift),
         "schatten_1_norm": s1,
@@ -170,33 +191,82 @@ def hp_zero_side_from_operator(
     r"""Evaluate ``sum_n 2 h(gamma_n)`` directly from the diagonal of T_HP.
 
     This is identical to P15's :func:`weil_zero_side` evaluated on the
-    same gamma list, but exposes the dependence as an inner product
-    ``Tr h(T_HP^2)^{1/2}`` against the spectral measure of ``T_HP``.
+    same gamma list, namely ``2 Tr h(T_HP)`` in finite spectral calculus.
     """
     gammas = np.asarray(gammas, dtype=float)
     h_values = np.array([test.h(float(g)) for g in gammas], dtype=float)
     return float(2.0 * np.sum(h_values))
 
 
+def _finite_real_samples(values: np.ndarray) -> np.ndarray:
+    """Admit finite real one-dimensional samples for spectral diagnostics."""
+    if np.iscomplexobj(values):
+        raise ValueError("samples must be finite real 1-D arrays")
+    try:
+        array = np.asarray(values, dtype=float)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError("samples must be finite real 1-D arrays") from exc
+    if array.ndim != 1 or not np.all(np.isfinite(array)):
+        raise ValueError("samples must be finite real 1-D arrays")
+    return array
+
+
+def _empirical_distance(left: np.ndarray, right: np.ndarray) -> float:
+    """Evaluate an admitted empirical distance before range checking."""
+    if left.size == right.size:
+        return float(np.mean(np.abs(np.sort(left) - np.sort(right))))
+    from scipy.stats import wasserstein_distance
+
+    return float(wasserstein_distance(left, right))
+
+
+def _same_empirical_measure(left: np.ndarray, right: np.ndarray) -> bool:
+    """Compare atom weights exactly when a computed distance is zero."""
+    left_values, left_counts = np.unique(left, return_counts=True)
+    right_values, right_counts = np.unique(right, return_counts=True)
+    return np.array_equal(left_values, right_values) and all(
+        int(left_count) * right.size == int(right_count) * left.size
+        for left_count, right_count in zip(left_counts, right_counts)
+    )
+
+
 def wasserstein_1_distance(a: np.ndarray, b: np.ndarray) -> float:
     r"""Compute the 1-Wasserstein distance between two 1-D empirical measures.
 
-    Both inputs are interpreted as equally weighted samples; they are
-    sorted, padded to common length by interpolating the shorter one's
-    quantile function, and the integral ``int_0^1 |F_a^{-1}(u) -
-    F_b^{-1}(u)| du`` is approximated by trapezoidal quadrature.
+    Each finite sample has equal weight within its measure. Equal-size inputs
+    use sorted pairwise distances; otherwise SciPy integrates the empirical
+    CDF difference, retaining the discrete sample weights. Interpolating sample
+    quantiles would change those measures.
+    Two empty inputs return zero by the historical finite-report convention;
+    a single empty input cannot define a probability measure and is rejected.
+    Overflowing intermediate differences/reductions are retried after scaling;
+    an unrepresentable result or a lost nonzero distance is rejected.
     """
-    a_sorted = np.sort(np.asarray(a, dtype=float))
-    b_sorted = np.sort(np.asarray(b, dtype=float))
-    n = max(len(a_sorted), len(b_sorted))
-    if n == 0:
+    samples = [_finite_real_samples(values) for values in (a, b)]
+    if samples[0].size == samples[1].size == 0:
         return 0.0
-    u = (np.arange(n) + 0.5) / n
-    ua = (np.arange(len(a_sorted)) + 0.5) / len(a_sorted)
-    ub = (np.arange(len(b_sorted)) + 0.5) / len(b_sorted)
-    qa = np.interp(u, ua, a_sorted)
-    qb = np.interp(u, ub, b_sorted)
-    return float(np.mean(np.abs(qa - qb)))
+    if not samples[0].size or not samples[1].size:
+        raise ValueError("both empirical measures must contain samples")
+    try:
+        with np.errstate(over="raise", invalid="raise", divide="raise"):
+            result = _empirical_distance(*samples)
+    except (FloatingPointError, OverflowError):
+        result = math.inf
+    if not math.isfinite(result):
+        scale = max(float(np.max(np.abs(values))) for values in samples)
+        try:
+            with np.errstate(over="raise", invalid="raise", divide="raise"):
+                normalized = _empirical_distance(
+                    *(values / scale for values in samples)
+                )
+                result = scale * normalized
+        except (FloatingPointError, OverflowError) as exc:
+            raise ValueError("distance exceeds finite floating-point range") from exc
+    if not math.isfinite(result):
+        raise ValueError("distance exceeds finite floating-point range")
+    if result == 0.0 and not _same_empirical_measure(*samples):
+        raise ValueError("nonzero distance underflows to represented zero")
+    return result
 
 
 def structural_gap_p14_vs_hp(
@@ -211,11 +281,9 @@ def structural_gap_p14_vs_hp(
     are real and unbounded with different growth: P14 grows like
     ``log n`` while T_HP grows like ``2 pi n / log n``.
 
-    The growth-rate mismatch is the operator-level manifestation of the
-    open structural derivation problem (gap G4).  No transformation that
-    sends one spectrum to the other can be a smooth structural map; any
-    Hilbert-Polya-style derivation must therefore introduce a non-linear
-    spectral rescaling derived from TNFR first principles.
+    The distance quantifies this supplied finite comparison only. It neither
+    rules out smooth maps between infinite spectra nor forces a particular
+    nonlinear rescaling or a unique route to a Hilbert-Polya construction.
     """
     p14_eigs, _ = bundle.hamiltonian.get_spectrum()
     p14_eigs = np.sort(np.real(p14_eigs))

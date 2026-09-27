@@ -12,15 +12,15 @@ Coherence and stability flags are configured diagnostics, not future guarantees.
 
 def main() -> None:
     """Run the declared demonstration only on explicit invocation."""
-    print("🌊 TNFR SIMPLIFIED SDK - Quick Start Guide")
+    print("TNFR SIMPLIFIED SDK - Quick Start Guide")
     print("=" * 50)
     print()
 
     # === 1. INSTANT NETWORK CREATION ===
-    print("🚀 1. INSTANT NETWORK CREATION")
+    print("1. INSTANT NETWORK CREATION")
     print("-" * 30)
 
-    from tnfr.sdk.simple import TNFR
+    from tnfr.sdk import TNFR
 
     # Create networks with one line
     small_net = TNFR.create(5, seed=42)
@@ -41,7 +41,7 @@ def main() -> None:
     print()
 
     # === 2. TEMPLATES FOR COMMON PATTERNS ===
-    print("📋 2. READY-MADE TEMPLATES")
+    print("2. READY-MADE TEMPLATES")
     print("-" * 30)
 
     molecule = TNFR.template("molecule")
@@ -56,7 +56,7 @@ def main() -> None:
     print()
 
     # === 3. EVOLUTION & OPTIMIZATION ===
-    print("🧬 3. EVOLUTION & OPTIMIZATION")
+    print("3. EVOLUTION & OPTIMIZATION")
     print("-" * 30)
 
     # Create and evolve
@@ -75,7 +75,7 @@ def main() -> None:
     print()
 
     # === 4. CHAIN OPERATIONS ===
-    print("⛓️ 4. CHAIN OPERATIONS (FLUENT API)")
+    print("4. CHAIN OPERATIONS (FLUENT API)")
     print("-" * 30)
 
     # A ring preserves neighbors required by the supplied resonance word.
@@ -92,7 +92,7 @@ def main() -> None:
     print()
 
     # === 5. NETWORK COMPARISON ===
-    print("⚖️ 5. NETWORK ANALYSIS & COMPARISON")
+    print("5. NETWORK ANALYSIS & COMPARISON")
     print("-" * 30)
 
     # Evolved random preparations retain a ring so no node is isolated.
@@ -117,10 +117,10 @@ def main() -> None:
     print()
 
     # === 6. POWER USER SHORTCUTS ===
-    print("⚡ 6. POWER USER SHORTCUTS")
+    print("6. POWER USER SHORTCUTS")
     print("-" * 30)
 
-    from tnfr.sdk.simple import T  # Ultra-short alias
+    T = TNFR  # Local shorthand for the same public entry point
 
     # Ultra-compact syntax
     result = T.create(8, seed=42).complete().results()
@@ -129,9 +129,9 @@ def main() -> None:
     # Check coherence quickly
     net = T.template("star")
     if net.results().is_coherent():
-        print("✅ Network is coherent!")
+        print("Configured coherence flag passed")
     else:
-        print("❌ Network needs work")
+        print("Configured coherence flag failed")
 
     # Get detailed info
     info = net.info()
@@ -140,7 +140,7 @@ def main() -> None:
     print()
 
     # === 7. ILLUSTRATIVE TOPOLOGY LABELS ===
-    print("🌍 7. PREPARED TOPOLOGIES - Illustrative Social Labels")
+    print("7. PREPARED TOPOLOGIES - Illustrative Social Labels")
     print("-" * 30)
 
     # Assign illustrative labels to supplied topologies; no social data are used.
@@ -161,26 +161,28 @@ def main() -> None:
         evolved = net.evolve(3)
         result = evolved.results()
 
-        status = "👍 Stability flag passed" if result.is_stable() else "⚠️  Flag failed"
+        status = (
+            "Stability flag passed" if result.is_stable() else "Stability flag failed"
+        )
         print(f"  {name:12s}: C={result.coherence:.3f}, {status}")
 
     print()
 
-    print("🎉 TNFR SDK EXPLORATION COMPLETE!")
+    print("TNFR SDK EXPLORATION COMPLETE!")
     print("=" * 50)
     print()
-    print("🚀 NEXT STEPS:")
-    print("  • Try your own network topologies")
-    print("  • Experiment with evolution parameters")
-    print("  • Compare different optimization strategies")
-    print("  • Use templates as starting points")
-    print("  • Explore the full TNFR theory in AGENTS.md")
+    print("NEXT STEPS:")
+    print("  - Try your own network topologies")
+    print("  - Experiment with evolution parameters")
+    print("  - Compare different optimization strategies")
+    print("  - Use templates as starting points")
+    print("  - Read theory/README.md for current definitions and proof scope")
     print()
-    print("📚 LEARN MORE:")
-    print("  • Repository: https://github.com/fermga/TNFR-Python-Engine")
-    print("  • Theory: Read AGENTS.md for complete guide")
-    print("  • Examples: Check examples/ directory")
-    print("  • Install: pip install tnfr")
+    print("LEARN MORE:")
+    print("  - Repository: https://github.com/fermga/TNFR-Python-Engine")
+    print("  - Theory: theory/README.md; contributor contracts: AGENTS.md")
+    print("  - Examples: Check examples/ directory")
+    print("  - Install: pip install tnfr")
 
 
 if __name__ == "__main__":

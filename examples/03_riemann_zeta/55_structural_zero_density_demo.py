@@ -1,20 +1,11 @@
-"""Demo: P28 Structural derivation of the smooth Riemann zero density.
+"""Finite comparison of a supplied classical smooth zero-count approximation.
 
-TNFR-Riemann program — derives the smooth zero positions tilde gamma_n
-purely from the archimedean side of the Weil-Guinand explicit formula
-(Riemann-Siegel theta function = phase of the gamma factor of
-xi(s) = pi^(-s/2) Gamma(s/2) zeta(s)).  No mpmath.zetazero is invoked
-on the derivation side.
-
-Compares:
-  * P14 prime-ladder spectrum                   (P27 baseline)
-  * tilde T_HP = diag(tilde gamma_1, ..., tilde gamma_N) (P28 structural)
-  * actual T_HP = diag(gamma_1, ..., gamma_N)          (benchmark)
-
-Honest scope: closes the structural origin of the smooth zero density;
-the residuals r_n = gamma_n - tilde gamma_n are the oscillating part
-S(gamma_n) = (1/pi) arg zeta(1/2 + i gamma_n) -- the RH content.
-G4 = RH remains the only OPEN milestone.
+The gamma factor of the classical completed zeta function supplies the
+Riemann-Siegel theta function and the approximate targets. Reference ordinates
+come independently from mpmath.zetazero for this arithmetic comparison. Neither
+input is derived from a TNFR nodal trajectory. The target residual is a finite
+ordinate error, not an identity with S(T), a proof of RH, or an equivalent RH
+criterion. Current scope: theory/TNFR_RIEMANN_RESEARCH_NOTES.md.
 
 Usage:
     python examples/03_riemann_zeta/55_structural_zero_density_demo.py
@@ -23,7 +14,6 @@ Usage:
 from __future__ import annotations
 
 import io
-import math
 import sys
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -32,7 +22,6 @@ else:  # pragma: no cover - very old runtimes
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 
 from tnfr.riemann import (
-    build_structural_t_hp,
     compute_structural_zero_density_certificate,
     derive_smooth_zero_position,
     fetch_zero_imaginary_parts,
@@ -54,7 +43,7 @@ def main() -> None:
     print(
         "theta(T) = Im log Gamma(1/4 + iT/2) - (T/2) log pi\n"
         "bar N(T) = theta(T)/pi + 1     (Backlund smooth zero count)\n"
-        "bar N'(T) = (1/2 pi) log(T/2 pi)"
+        "bar N'(T) approx (1/2 pi) log(T/2 pi) at large T"
     )
     for T in (14.13, 25.0, 50.0, 100.0, 500.0):
         theta = riemann_siegel_theta(T)
@@ -83,7 +72,7 @@ def main() -> None:
     print(
         "Compute W_1 distance between:\n"
         "  * spec(P14)             -- P27 baseline\n"
-        "  * spec(tilde T_HP)      -- P28 structural prediction\n"
+        "  * spec(tilde T_HP)      -- P28 supplied smooth approximation\n"
         "  * spec(T_HP) = {gamma_n} -- benchmark\n"
     )
     for n_zeros in (30, 60, 100):
@@ -100,7 +89,7 @@ def main() -> None:
             f"  improvement ratio                  = " f"{cert.improvement_ratio:.2f}x"
         )
         print(f"  max |r_n|                          = " f"{cert.max_residual:.4e}")
-        print(f"  bound (C=2) satisfied              = " f"{cert.bound_satisfied}")
+        print(f"  selected finite C=2 check passed   = " f"{cert.bound_satisfied}")
 
     section("P28 — Section 4: Full certificate (N=80)")
     cert = compute_structural_zero_density_certificate(n_zeros=80)
@@ -108,28 +97,11 @@ def main() -> None:
 
     section("P28 — Section 5: Honest scope")
     print(
-        "WHAT P28 CLOSES (operationally):\n"
-        "  * The smooth eigenvalue density of T_HP is a TNFR-derivable\n"
-        "    object: it comes from the gamma factor of xi(s), which is\n"
-        "    exactly the archimedean kernel of the Weil-Guinand formula\n"
-        "    computed in P15 (weil_archimedean_integral).\n"
-        "  * tilde T_HP is built using ONLY archimedean ingredients\n"
-        "    (no mpmath.zetazero on the derivation side).\n"
-        "  * W_1 gap drops by ~30-40x at N=30..100 vs the P27 baseline.\n"
-        "\n"
-        "WHAT P28 DOES NOT CLOSE:\n"
-        "  * The residuals r_n = gamma_n - tilde gamma_n ARE the RH\n"
-        "    content: r_n encodes S(T) = (1/pi) arg zeta(1/2 + iT).\n"
-        "  * Showing |r_n| -> 0 in any uniform sense is equivalent to\n"
-        "    bounding S(T), which is the genuine arithmetic problem.\n"
-        "  * Exact eigenvalue match spec(tilde T_HP) = spec(T_HP) is\n"
-        "    impossible: smooth density cannot reproduce fluctuations.\n"
-        "\n"
-        "Status (AGENTS.md Sec.13.2): G1 closed (P14), G2 closed (P13),\n"
-        "G3 closed (P15), G5 superseded.  G4 = RH remains OPEN.\n"
-        "P28 transfers ~97% of the P27 operator-level gap from\n"
-        "'structural' to 'arithmetic' -- a clean separation that makes\n"
-        "the residual genuinely RH-shaped."
+        "The smooth targets reuse classical archimedean input; reference zeros\n"
+        "are supplied comparison data. Displayed distances and selected bounds\n"
+        "are finite diagnostics. They do not derive those inputs from nodal\n"
+        "dynamics, identify the ordinate error with S(T), or prove RH.\n"
+        "See theory/TNFR_RIEMANN_RESEARCH_NOTES.md for the current scope."
     )
 
     print()

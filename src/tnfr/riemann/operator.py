@@ -23,9 +23,9 @@ potential function ``V(n)`` defined on node labels ``n``, we form
 where ``L`` is the combinatorial Laplacian of ``G`` -- used here as the
 self-adjoint Schrödinger kinetic term (a real spectrum for the Hilbert-Pólya
 framing), NOT the canonical emergent structural operator L_rw = I - D⁻¹W of the
-nodal equation (which is non-self-adjoint).  This module is a non-canonical
-prototype; the canonical Riemann construction (P14, ``prime_ladder_hamiltonian``)
-puts the prime content in the emergent structural frequency νf = k·log p.
+nodal equation (which need not be self-adjoint in Euclidean coordinates).
+This module is an auxiliary prototype; the separate P14 construction
+(``prime_ladder_hamiltonian``) assigns the arithmetic frequency νf = k·log p.
 Eigenvalues of ``H_TNFR`` can then be inspected numerically.
 
 For convenience and reproducibility we provide a minimal constructor
@@ -41,32 +41,7 @@ import networkx as nx
 
 from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
-
-
-def _first_primes(count: int) -> list[int]:
-    """Return the first ``count`` prime numbers.
-
-    This is a tiny helper for experimentation and deliberately
-    minimalist; it is *not* optimized for large ``count``.
-    """
-
-    if count <= 0:
-        return []
-
-    primes: list[int] = []
-    n = 2
-    while len(primes) < count:
-        is_prime = True
-        for p in primes:
-            if p * p > n:
-                break
-            if n % p == 0:
-                is_prime = False
-                break
-        if is_prime:
-            primes.append(n)
-        n += 1
-    return primes
+from .nodal_pulse import first_primes as _first_primes
 
 
 def build_prime_path_graph(

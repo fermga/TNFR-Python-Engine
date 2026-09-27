@@ -17,9 +17,10 @@ import time
 import weakref
 from collections import deque
 from dataclasses import dataclass
-from numbers import Integral, Real
+from numbers import Integral
 from typing import TYPE_CHECKING, Any
 
+from .._exact_time import finite_represented_real
 from ..alias import get_attr, set_attr, set_dnfr, set_theta
 from ..config.operator_names import BIFURCATION_WINDOW
 from ..constants.aliases import (
@@ -33,7 +34,7 @@ from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
 from ..metrics.common import structural_coherence
 from ..operators.network_stage import GraphTransactionSnapshot
-from ..types import real_scalar_epi
+from ..types import require_finite_real_scalar_epi
 from .phase_evolution import propose_u3_gated_phase_step
 
 if TYPE_CHECKING:
@@ -92,31 +93,20 @@ _PHYSICAL_HISTORY_MAXLEN = max(2, BIFURCATION_WINDOW + 1)
 
 
 def _finite_real(value: Any, name: str) -> float:
-    """Return a finite, non-Boolean scalar used by the spectral flow."""
-
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, Real):
-        raise TNFRValueError(f"{name} must be a finite real scalar.")
+    """Use shared represented admission before spectral array conversion."""
     try:
-        result = float(value)
-    except (OverflowError, TypeError, ValueError) as exc:
-        raise TNFRValueError(f"{name} must be a finite real scalar.") from exc
-    if not math.isfinite(result):
-        raise TNFRValueError(f"{name} must be a finite real scalar.")
-    return result
+        return finite_represented_real(value, name)[0]
+    except (TypeError, ValueError) as exc:
+        raise TNFRValueError(f"{name} must be a finite real scalar: {exc}") from exc
 
 
 def _finite_epi(value: Any, name: str) -> float:
     """Read the signed scalar EPI chart without collapsing richer BEPI state."""
 
-    if isinstance(value, (bool, np.bool_)):
-        raise TNFRValueError(f"{name} must be a finite scalar EPI embedding.")
     try:
-        result = real_scalar_epi(value)
+        return require_finite_real_scalar_epi(value, name)
     except (KeyError, OverflowError, TypeError, ValueError) as exc:
         raise TNFRValueError(f"{name} must be a finite scalar EPI embedding.") from exc
-    if result is None or not math.isfinite(float(result)):
-        raise TNFRValueError(f"{name} must be a finite scalar EPI embedding.")
-    return float(result)
 
 
 def _eigenbasis_digest(eigenvalues: Any, eigenvectors: Any) -> str:
@@ -354,7 +344,13 @@ class FFTDynamicsEngine:
         phase_spatial = np.array(
             [
                 _finite_real(
-                    get_attr(G.nodes[node], ALIAS_THETA, 0.0, strict=True),
+                    get_attr(
+                        G.nodes[node],
+                        ALIAS_THETA,
+                        0.0,
+                        strict=True,
+                        conv=lambda value: value,
+                    ),
                     f"node {node!r} phase",
                 )
                 for node in nodes
@@ -402,7 +398,13 @@ class FFTDynamicsEngine:
         vf_spatial = np.array(
             [
                 _finite_real(
-                    get_attr(G.nodes[node], ALIAS_VF, 1.0, strict=True),
+                    get_attr(
+                        G.nodes[node],
+                        ALIAS_VF,
+                        1.0,
+                        strict=True,
+                        conv=lambda value: value,
+                    ),
                     f"node {node!r} structural frequency",
                 )
                 for node in nodes
@@ -597,7 +599,13 @@ class FFTDynamicsEngine:
         vf_spatial = np.array(
             [
                 _finite_real(
-                    get_attr(G.nodes[node], ALIAS_VF, 1.0, strict=True),
+                    get_attr(
+                        G.nodes[node],
+                        ALIAS_VF,
+                        1.0,
+                        strict=True,
+                        conv=lambda value: value,
+                    ),
                     f"node {node!r} structural frequency",
                 )
                 for node in nodes
@@ -810,7 +818,13 @@ class FFTDynamicsEngine:
         frequency = np.asarray(
             [
                 _finite_real(
-                    get_attr(G.nodes[node], ALIAS_VF, 1.0, strict=True),
+                    get_attr(
+                        G.nodes[node],
+                        ALIAS_VF,
+                        1.0,
+                        strict=True,
+                        conv=lambda value: value,
+                    ),
                     f"node {node!r} structural frequency",
                 )
                 for node in nodes

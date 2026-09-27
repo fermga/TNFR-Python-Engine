@@ -8,6 +8,7 @@ not autonomous default selection or endogenous occurrence of Mutation.
 from __future__ import annotations
 
 from copy import deepcopy
+from fractions import Fraction
 
 import networkx as nx
 import pytest
@@ -22,7 +23,9 @@ from tnfr.constants import (
 from tnfr.dynamics.runtime import _record_mutation_flow_boundary, _update_nodes
 from tnfr.dynamics.selectors import _apply_glyphs
 from tnfr.errors import TNFRValueError
+from tnfr.mathematics import BEPIElement
 from tnfr.physics.mutation_trigger import certify_mutation_trigger
+from tnfr.types import serialize_bepi
 
 
 def _graph(*, epi: float = 0.0, nu_f: float = 1.0, dnfr: float = 0.4):
@@ -106,6 +109,50 @@ def test_history_recording_is_atomic_across_nodes_on_invalid_input():
         _record_mutation_flow_boundary(graph)
 
     assert dict(graph.nodes[0]) == before
+
+
+@pytest.mark.parametrize(
+    "location", ["clock", "live_epi", "history_time", "history_epi"]
+)
+def test_history_rejects_lost_nonzero_samples_before_any_node_write(location):
+    graph = _graph()
+    graph.add_node(1, **dict(graph.nodes[0]))
+    tiny = Fraction(1, 10**400)
+    if location == "clock":
+        graph.graph["_t"] = tiny
+    elif location == "live_epi":
+        graph.nodes[1][EPI_PRIMARY] = tiny
+    elif location == "history_time":
+        graph.nodes[1]["epi_time_history"] = [(tiny, 0.0)]
+    else:
+        graph.nodes[1]["epi_time_history"] = [(0.0, tiny)]
+    before_nodes, before_graph = deepcopy(dict(graph.nodes(data=True))), deepcopy(
+        graph.graph
+    )
+    with pytest.raises(TNFRValueError):
+        _record_mutation_flow_boundary(graph)
+    assert dict(graph.nodes(data=True)) == before_nodes
+    assert graph.graph == before_graph
+
+
+@pytest.mark.parametrize("serialized", [False, True])
+def test_history_cannot_record_rich_form_magnitude_as_a_scalar_state(serialized):
+    rich = BEPIElement((0.25, -0.25), (0.25, -0.25), (0.0, 1.0))
+    graph = _graph()
+    graph.add_node(1, **dict(graph.nodes[0]))
+    graph.nodes[1][EPI_PRIMARY] = serialize_bepi(rich) if serialized else rich
+    before = deepcopy(dict(graph.nodes(data=True)))
+    with pytest.raises(TNFRValueError, match="uniform-real EPI"):
+        _record_mutation_flow_boundary(graph)
+    assert dict(graph.nodes(data=True)) == before
+
+
+def test_history_preserves_signed_uniform_form_and_representable_subnormal_time():
+    tiny = Fraction.from_float(float.fromhex("0x0.0000000000001p-1022"))
+    graph = _graph(epi=serialize_bepi(-0.25))
+    graph.graph["_t"] = tiny
+    _record_mutation_flow_boundary(graph)
+    assert tuple(graph.nodes[0]["epi_time_history"]) == ((float(tiny), -0.25),)
 
 
 def test_configured_selector_abstains_when_mutation_evidence_is_missing():

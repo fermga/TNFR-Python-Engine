@@ -45,7 +45,7 @@ def print_header():
 
     if HAS_ADVANCED:
         print(
-            f"✓ Advanced TNFR infrastructure: {'AVAILABLE' if HAS_TNFR_INFRASTRUCTURE else 'LIMITED'}"
+            f"Advanced TNFR infrastructure: {'AVAILABLE' if HAS_TNFR_INFRASTRUCTURE else 'LIMITED'}"
         )
     else:
         print("! Advanced infrastructure: NOT AVAILABLE (using fallback algorithms)")
@@ -143,7 +143,7 @@ def run_benchmark(
 
     test_numbers = [n for n in test_numbers if n <= max_n]
 
-    print(f"{'Number':<10} | {'Status':<9} | {'ΔNFR Value':<12} | {'Method'}")
+    print(f"{'Number':<10} | {'Status':<9} | {'DeltaNFR Value':<12} | {'Method'}")
     print("-" * 50)
 
     for n in test_numbers:
@@ -204,8 +204,8 @@ def run_validation(max_n: int, use_advanced: bool = False) -> Dict[str, Any]:
     print(f"  Accuracy: {results['accuracy']:.6f} ({results['accuracy'] * 100:.4f}%)")
 
     if "prime_mean_delta_nfr" in results:
-        print(f"  Prime mean ΔNFR: {results['prime_mean_delta_nfr']:.8f}")
-        print(f"  Composite mean ΔNFR: {results['composite_mean_delta_nfr']:.8f}")
+        print(f"  Prime mean DeltaNFR: {results['prime_mean_delta_nfr']:.8f}")
+        print(f"  Composite mean DeltaNFR: {results['composite_mean_delta_nfr']:.8f}")
 
     print(f"  Validation time: {elapsed_time * 1000:.2f} ms")
     print(f"  Numbers per second: {tested / elapsed_time:.1f}")
@@ -353,7 +353,9 @@ Arithmetic criterion (exact arithmetic, n >= 2, positive coefficients):
     # Test specific numbers
     if args.numbers:
         if not args.json_output:
-            print(f"{'Number':<10} | {'Status':<9} | {'ΔNFR Value':<12} | {'Method'}")
+            print(
+                f"{'Number':<10} | {'Status':<9} | {'DeltaNFR Value':<12} | {'Method'}"
+            )
             print("-" * 50)
 
         results = []

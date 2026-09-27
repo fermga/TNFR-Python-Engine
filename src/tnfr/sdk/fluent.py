@@ -1390,10 +1390,11 @@ class TNFRNetwork:
         )
 
     def save(self, filepath: str | Path) -> TNFRNetwork:
-        """Save network state and results to file.
+        """Save current metadata and measurements through the shared JSON writer.
 
-        Serializes the network graph and computed metrics to a file for
-        later analysis or reproduction.
+        This is the same report as ``export_to_json(self, filepath)``. It is
+        not a graph checkpoint or an independently resumable execution state.
+        Measurements are refreshed from the current graph before export.
 
         Parameters
         ----------
@@ -1412,21 +1413,16 @@ class TNFRNetwork:
 
         Notes
         -----
-        This is a placeholder for future I/O functionality.
-        Current implementation will raise NotImplementedError.
+        Serialization is validated before atomic file replacement; a failed
+        measurement or export leaves an existing destination intact.
         """
         if self._graph is None or self._graph.number_of_nodes() == 0:
             raise ValueError("No network created. Use add_nodes() first.")
 
-        # Compute metrics if not done yet
-        if self._results is None:
-            self.measure()
+        from .utils import export_to_json
 
-        # I/O functionality will be implemented in future PR
-        raise NotImplementedError(
-            "Save functionality will be added in a future update. "
-            "Use networkx.write_gpickle or similar for now."
-        )
+        export_to_json(self, filepath)
+        return self
 
     @property
     def graph(self) -> nx.Graph:

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from fractions import Fraction
 from types import SimpleNamespace
 
 import networkx as nx
@@ -68,6 +69,52 @@ def test_shared_scalar_epi_boundary_preserves_sign_and_rejects_lossy_inputs() ->
     for invalid in (_rich_epi(), 1.0j, True, np.bool_(False), np.inf, "1.0"):
         with pytest.raises(TNFRValueError, match="finite uniform-real EPI"):
             require_finite_real_scalar_epi(invalid)
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [Fraction(1, 10**400), Fraction(-1, 10**400), Fraction(10**400), True, "0"],
+)
+@pytest.mark.parametrize("storage", ["scalar", "mapping", "sequence", "json"])
+def test_scalar_epi_admission_precedes_lossy_storage_conversion(raw, storage) -> None:
+    if storage == "mapping":
+        value = {"continuous": (raw, raw), "discrete": (raw,), "grid": (0, 1)}
+    elif storage == "sequence":
+        value = ((raw, raw), (raw,), (0, 1))
+    elif storage == "json":
+        component = {"real": raw, "imag": 0.0}
+        value = {
+            "continuous": (component, component),
+            "discrete": (component,),
+            "grid": (0, 1),
+        }
+    else:
+        value = raw
+    with pytest.raises(TNFRValueError, match="finite uniform-real EPI"):
+        require_finite_real_scalar_epi(value)
+
+
+def test_scalar_epi_preserves_representable_subnormal_and_serialized_sign() -> None:
+    smallest = float.fromhex("0x0.0000000000001p-1022")
+    assert require_finite_real_scalar_epi(Fraction.from_float(-smallest)) == -smallest
+    assert (
+        require_finite_real_scalar_epi(
+            {
+                "continuous": [{"real": Fraction(-3, 2), "imag": 0}] * 2,
+                "discrete": [complex(-1.5, 0)],
+                "grid": (0, 1),
+            }
+        )
+        == -1.5
+    )
+    with pytest.raises(TNFRValueError, match="finite uniform-real EPI"):
+        require_finite_real_scalar_epi(
+            {
+                "continuous": [{"real": 1, "imag": Fraction(1, 10**400)}] * 2,
+                "discrete": [1],
+                "grid": (0, 1),
+            }
+        )
 
 
 def test_centralization_reads_aliases_and_signed_epi_consistently() -> None:

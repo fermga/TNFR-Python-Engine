@@ -35,6 +35,7 @@ from ._coherence_stage_kernel import (
     propose_coherence_phase,
     propose_coherence_stage,
 )
+from ._epi_domain import require_real_scalar_epi
 from .definitions_base import Operator
 from .factor_contracts import resolve_runtime_operator_factors
 
@@ -95,8 +96,10 @@ class Coherence(Operator):
     def _validate_state(self, G: TNFRGraph, node: Any) -> None:
         """Require a finite scalar IL state with nonnegative capacity."""
 
-        finite_real(
-            get_attr(G.nodes[node], ALIAS_EPI, 0.0, strict=True),
+        require_real_scalar_epi(
+            get_attr(
+                G.nodes[node], ALIAS_EPI, 0.0, strict=True, conv=lambda value: value
+            ),
             operator=self.name,
             label="EPI state",
         )

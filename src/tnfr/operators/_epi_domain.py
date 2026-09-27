@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
-import math
 from collections.abc import Mapping
 from typing import Any
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_EPI, ALIAS_THETA
 from ..errors import TNFRValueError
-from ..types import Glyph, real_scalar_epi
+from ..types import Glyph, require_finite_real_scalar_epi
 from ._phase_gate import U3PhaseGateError, resolve_u3_phase_neighbors
 
 __all__ = [
@@ -42,25 +41,16 @@ def require_real_scalar_epi(value: Any, *, operator: str, label: str) -> float:
             context={"operator": operator, "failed_condition": "scalar_epi"},
         )
     try:
-        scalar = real_scalar_epi(value)
+        scalar = require_finite_real_scalar_epi(value, label)
     except (OverflowError, TypeError, ValueError) as exc:
         raise TNFRValueError(
-            f"{operator} {label} requires a raw scalar or uniform-real BEPI",
+            f"{operator} {label} requires a finite raw scalar or uniform-real BEPI",
             context={
                 "operator": operator,
                 "failed_condition": "scalar_epi",
                 "value": repr(value),
             },
         ) from exc
-    if scalar is None or not math.isfinite(scalar):
-        raise TNFRValueError(
-            f"{operator} {label} requires a finite uniform-real BEPI embedding",
-            context={
-                "operator": operator,
-                "failed_condition": "scalar_epi",
-                "value": repr(value),
-            },
-        )
     return scalar
 
 

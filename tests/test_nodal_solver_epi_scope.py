@@ -138,6 +138,9 @@ def test_zero_step_does_not_represent_or_modify_rich_epi(
         ("default", ALIAS_VF, True, FrequencyError),
         ("extended", ALIAS_VF, -Fraction(1, 2**2000), FrequencyError),
         ("canonical", ALIAS_DNFR, "0.25", NetworkConfigError),
+        ("default", ALIAS_EPI, Fraction(1, 2**2000), TNFRValueError),
+        ("extended", ALIAS_EPI, -Fraction(1, 2**2000), TNFRValueError),
+        ("canonical", ALIAS_EPI, Fraction(1, 2**2000), TNFRValueError),
     ],
 )
 def test_invalid_raw_coefficient_rejects_before_any_solver_owned_write(

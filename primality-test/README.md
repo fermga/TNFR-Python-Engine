@@ -39,6 +39,17 @@ From the repository root:
 python -m pip install ./primality-test
 ```
 
+The core package is independent of the engine and retains Python 3.8+ support.
+The optional full adapter installation uses the engine's dependency metadata:
+
+```bash
+python -m pip install "./primality-test[full]"
+```
+
+That extra requires an interpreter supported by `tnfr` (currently Python 3.10+).
+Availability of engine adapters does not turn an arithmetic predicate into a
+physical nodal-evolution result.
+
 Documentation is built from the repository root using the root `.[docs]` extra;
 follow [the documentation checks](../TESTING.md#code-quality-and-documentation-checks).
 This package's `[docs]` extra remains an empty compatibility alias and does not

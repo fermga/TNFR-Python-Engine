@@ -65,6 +65,12 @@ The extended model reuses the same EPI derivative owner. Validation certifies
 these numeric domains, not the model's physical derivation; an explicitly
 unchecked call does not acquire that certificate.
 
+Scalar operator inputs use the same admission before coercion, including
+incoming form consumed from a neighbor. Runtime Mutation-history recording
+also requires signed scalar EPI; a rich BEPI magnitude cannot become observed
+scalar motion. Every node's sample and retained history are admitted before
+that recording boundary writes any node's history.
+
 Default pressure and optional EPI/capacity hooks reuse nodal capacity admission;
 phase pressure admits the authoritative finite phase before trigonometric
 conversion. Malformed primary aliases cannot be replaced by a valid secondary

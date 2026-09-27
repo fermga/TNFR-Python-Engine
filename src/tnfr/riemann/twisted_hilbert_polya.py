@@ -18,10 +18,11 @@ non-trivial zeros ``rho_n^{(chi)} = 1/2 + i gamma_n^{(chi)}`` of
 used by P36 in :mod:`twisted_weil_explicit_formula`).  By construction:
 
 * ``T_HP^{(chi)}`` is self-adjoint (real diagonal).
-* For ``s > 0`` the shifted resolvent
-  ``(T_HP^{(chi)})^2 + s^2 I)^{-1/2}`` belongs to Schatten class
-  ``S_p`` for every ``p > 1``; its trace and Hilbert-Schmidt norms
-  are computed exactly from the gamma list.
+* For ``s > 0`` the finite shifted resolvent
+  ``((T_HP^{(chi)})^2 + s^2 I)^{-1/2}`` has singular values
+  ``1 / sqrt((gamma_n^{(chi)})^2 + s^2)``. The shared HP norm owner
+  evaluates all norms on this supplied truncation; its ``trace_class``
+  field does not establish an infinite-dimensional trace-class result.
 * The zero-side ``2 sum h(gamma_n^{(chi)})`` of the chi-twisted Weil
   explicit formula evaluated through ``T_HP^{(chi)}`` reproduces P36
   to within the Hardy-Z truncation tolerance, because both routes
@@ -178,9 +179,7 @@ def twisted_hp_zero_side_from_operator(
     chi-twisted Weil explicit formula is twice the sum over positive
     ``gamma``.  This is identical to
     :func:`twisted_weil_zero_side` evaluated on the same gamma list,
-    but exposes the dependence as an inner product
-    ``Tr h((T_HP^{(chi)})^2)^{1/2}`` against the spectral measure of
-    ``T_HP^{(chi)}``.
+    namely ``2 Tr h(T_HP^{(chi)})`` in finite spectral calculus.
     """
     gammas = np.asarray(gammas, dtype=float)
     h_values = np.array([test.h(float(g)) for g in gammas], dtype=float)
@@ -201,12 +200,9 @@ def twisted_structural_gap_p34_vs_hp(
     different growth: P34 grows like ``log n`` (over the active primes)
     while ``T_HP^{(chi)}`` grows like ``2 pi n / log n``.
 
-    The growth-rate mismatch is the L-track operator-level
-    manifestation of the open structural derivation problem.  No
-    transformation that sends one spectrum to the other can be a
-    smooth structural map; any chi-twisted Hilbert-Polya-style
-    derivation must therefore introduce a non-linear spectral
-    rescaling derived from TNFR first principles.
+    The supplied finite distance does not rule out smooth maps between
+    infinite spectra or force a nonlinear spectral rescaling. A derivation
+    independent of the input zeros remains a separate research obligation.
     """
     p34_eigs, _ = bundle.hamiltonian.get_spectrum()
     p34_eigs = np.sort(np.real(p34_eigs))

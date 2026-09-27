@@ -7,13 +7,13 @@ does not imply that every adaptive mechanism runs in each cycle.
 
 from __future__ import annotations
 
-import math
-from numbers import Integral, Real
+from numbers import Integral
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ..types import TNFRGraph, NodeId
 
+from .._exact_time import finite_represented_real
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR
 from ..dynamics.adaptive_sequences import AdaptiveSequenceSelector
@@ -26,14 +26,11 @@ __all__ = ["TNFRAdaptiveSystem"]
 
 
 def _finite_pressure(value: object) -> float:
-    """Return one finite real DeltaNFR value without coercing booleans."""
-    if (
-        isinstance(value, bool)
-        or not isinstance(value, Real)
-        or not math.isfinite(float(value))
-    ):
-        raise ValueError("DeltaNFR must be a finite real")
-    return float(value)
+    """Reuse engine scalar admission without erasing nonzero pressure."""
+    try:
+        return finite_represented_real(value, "DeltaNFR")[0]
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"DeltaNFR must be a finite real: {exc}") from exc
 
 
 class TNFRAdaptiveSystem:
@@ -109,16 +106,19 @@ class TNFRAdaptiveSystem:
         *,
         random_seed: int | None = None,
     ) -> None:
-        if (
-            isinstance(stress_normalization, bool)
-            or not isinstance(stress_normalization, Real)
-            or not math.isfinite(float(stress_normalization))
-            or float(stress_normalization) <= 0.0
-        ):
+        try:
+            normalization = finite_represented_real(
+                stress_normalization, "stress_normalization"
+            )[0]
+        except (TypeError, ValueError) as exc:
+            raise ValueError(
+                f"stress_normalization must be a positive finite real: {exc}"
+            ) from exc
+        if normalization <= 0.0:
             raise ValueError("stress_normalization must be a positive finite real")
         self.G = graph
         self.node = node
-        self.STRESS_NORM = float(stress_normalization)
+        self.STRESS_NORM = normalization
 
         # Initialize all components
         self.feedback = StructuralFeedbackLoop(graph, node)

@@ -1,6 +1,6 @@
 r"""Example 72: TNFR-Riemann P45 demo - chi-twisted Hilbert-Polya scaffold.
 
-L-track analogue of P27 (Example 47).  Builds and certifies the
+L-track analogue of P27 (Example 54).  Builds and evaluates the
 explicit reference operator ``T_HP^{(chi)} = diag(gamma_n^{(chi)})``
 on the truncated chi-twisted Hilbert space for each primitive real
 character chi_3, chi_4, chi_5, where ``gamma_n^{(chi)}`` are positive
@@ -9,7 +9,7 @@ imaginary parts of zeros of ``L(s, chi)`` located by Hardy-Z bisection.
 Each certificate checks:
 
 * self-adjointness of ``T_HP^{(chi)}`` (real diagonal, exact);
-* trace-class shifted resolvent norms;
+* shifted resolvent norms on the supplied finite truncation;
 * chi-twisted Weil-Guinand consistency with the P34 chi-twisted
   prime-ladder Hamiltonian, using a Gaussian test function with
   sigma = 2.0;
@@ -64,7 +64,7 @@ def _print_certificate(cert) -> None:
     print(f"    ||R||_1           = {cert.schatten_1_norm:.6e}")
     print(f"    ||R||_2           = {cert.schatten_2_norm:.6e}")
     print(f"    ||R||_op          = {cert.operator_norm_inverse:.6e}")
-    print(f"    trace_class       = {cert.trace_class}")
+    print(f"    trace_class (finite only) = {cert.trace_class}")
     print()
     print("  chi-twisted Weil-Guinand identity")
     print(f"    zero side  (via T_HP)         = {cert.zero_side_via_hp:+.6e}")
@@ -184,8 +184,10 @@ def main() -> int:
     print("  Open structural piece: derive T_HP^(chi) on chi-twisted TNFR")
     print("  Hilbert space from the nodal equation, conservation, and")
     print("  grammar WITHOUT inputting the L-zeros.  P45 establishes the")
-    print("  operator-level slot such a derivation must fill; it does")
-    print("  not fill it.  P45 is the L-track structural mirror of P27.")
+    print("  finite comparison only. It does not establish an infinite")
+    print("  trace-class operator, derive zeros, or prove GRH.")
+    print("  R=(T_HP^2+s^2 I)^(-1/2) owns all three displayed norms;")
+    print("  historical mixed R/R^2 norm reports remain unchanged.")
     print()
 
     ok = all(c.scaffold_consistent for c in certs)

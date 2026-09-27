@@ -1,23 +1,11 @@
-"""Example 56 — Spectral emergence under canonical UM+RA coupling (P29).
+"""Finite spectral-spacing comparison for supplied prime-ladder couplings.
 
-Runs the P29 exploratory experiment: sweeps three canonical TNFR
-inter-prime coupling laws on the P14 prime-ladder Hamiltonian and
-reports the Kolmogorov-Smirnov distance of the unfolded
-nearest-neighbour spacing distribution to the GUE Wigner surmise
-(the conjectural universality class of the Riemann zeros).
-
-Honest scope (AGENTS.md sec. 13.2):
-
-    * Convergence to GUE under a canonical coupling law would
-      constitute structural-compatibility evidence.
-    * Absence of such convergence documents a concrete computational
-      obstruction.
-    * Either outcome leaves gap G4 = RH OPEN.
-
-Usage::
-
-    $env:PYTHONPATH=(Resolve-Path ./src).Path
-    python examples/03_riemann_zeta/56_spectral_emergence_demo.py
+The historical P29 laws are configured auxiliary arithmetic matrices, not
+execution of native UM/RA or a uniquely derived nodal interaction. The script
+compares unfolded nearest-neighbor spacings with GUE and Poisson references on
+its declared finite grid. A smaller KS statistic does not establish asymptotic
+universality, and failure on this grid excludes no other coupling family.
+Neither result proves RH. See theory/TNFR_RIEMANN_RESEARCH_NOTES.md.
 """
 
 from __future__ import annotations
@@ -93,7 +81,7 @@ def main() -> None:
             f"@ strength = {report.best_strength_gue:.4g}"
         )
     print()
-    print("Reminder: KS_GUE -> 0 is structural-compatibility evidence only;")
+    print("Reminder: finite KS comparisons do not prove asymptotic universality;")
     print("gap G4 = RH remains OPEN regardless of the outcome above.")
 
 

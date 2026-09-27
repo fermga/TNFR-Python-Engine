@@ -3,13 +3,12 @@
 from __future__ import annotations
 
 import inspect
-import math
 import sys
 from collections import deque
 from collections.abc import Mapping, MutableMapping
 from copy import deepcopy
 from itertools import islice
-from numbers import Integral, Real
+from numbers import Integral
 from typing import Any, cast
 
 from .._exact_time import finite_represented_real
@@ -21,7 +20,7 @@ from .._spectral_expectation import (
     spectral_expectation_payload,
     validate_spectral_operator,
 )
-from ..alias import _bepi_to_float, get_attr
+from ..alias import get_attr
 from ..config.defaults_metric import METRIC_DEFAULTS
 from ..config.operator_names import BIFURCATION_WINDOW
 from ..constants import get_graph_param, get_param
@@ -31,7 +30,7 @@ from ..metrics.coherence import _stability_observation_revision
 from ..metrics.sense_index import compute_Si
 from ..operators import apply_remesh_if_globally_stable
 from ..telemetry import publish_graph_cache_metrics
-from ..types import HistoryState, NodeId, TNFRGraph
+from ..types import HistoryState, NodeId, TNFRGraph, require_finite_real_scalar_epi
 from ..utils import CallbackEvent, callback_manager, normalize_optional_int
 from ..validation import apply_canonical_clamps
 from ..validation.window import validate_window
@@ -89,24 +88,13 @@ _MUTATION_TIME_HISTORY_MAXLEN = max(2, BIFURCATION_WINDOW + 1)
 def _finite_mutation_sample_scalar(value: Any, field: str) -> float:
     """Return one finite non-Boolean runtime sample scalar."""
 
-    if isinstance(value, bool) or not isinstance(value, Real):
-        raise TNFRValueError(
-            f"{field} must be a finite real scalar.",
-            context={"field": field, "value": repr(value)},
-        )
     try:
-        resolved = float(value)
-    except (OverflowError, TypeError, ValueError) as exc:
+        return finite_represented_real(value, field)[0]
+    except (TypeError, ValueError) as exc:
         raise TNFRValueError(
-            f"{field} must be representable as a finite real scalar.",
+            str(exc),
             context={"field": field, "value": repr(value)},
         ) from exc
-    if not math.isfinite(resolved):
-        raise TNFRValueError(
-            f"{field} must be finite.",
-            context={"field": field, "value": repr(value)},
-        )
-    return resolved
 
 
 def _validated_mutation_time_history(
@@ -171,6 +159,8 @@ def _record_mutation_flow_boundary(G: TNFRGraph) -> None:
     measures only continuous nodal flow and cannot absorb the jump into
     ``dEPI/dt``. A custom integrator that changes EPI without advancing
     ``G.graph['_t']`` therefore creates no fabricated physical rate.
+    Samples require the signed scalar EPI chart; a rich BEPI magnitude cannot
+    replace its state or supply evidence for scalar Mutation admission.
     """
 
     # The event executor calls this function inside a graph transaction.  Use
@@ -205,8 +195,8 @@ def _record_mutation_flow_boundary(G: TNFRGraph) -> None:
             ),
             0.0,
         )
-        epi = _finite_mutation_sample_scalar(
-            _bepi_to_float(raw_epi),
+        epi = require_finite_real_scalar_epi(
+            raw_epi,
             f"node {node!r} EPI",
         )
         raw_history = next(

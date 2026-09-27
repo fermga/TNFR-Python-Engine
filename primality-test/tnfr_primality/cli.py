@@ -137,7 +137,7 @@ Arithmetic criterion (exact arithmetic, n >= 2, positive coefficients):
         print(f"Primes found: {results['primes_found']:,}")
         print(f"Composites found: {results['composites_found']:,}")
         print(f"Total time: {results['total_time_ms']:.2f} ms")
-        print(f"Average time per number: {results['average_time_us']:.2f} μs")
+        print(f"Average time per number: {results['average_time_us']:.2f} us")
         print(f"Processing rate: {results['numbers_per_second']:.0f} numbers/second")
         print(f"Cache hit rate: {results['cache_hit_rate']:.2%}")
         print(f"Optimization level: {results['optimization_effectiveness']}")
@@ -206,11 +206,11 @@ Arithmetic criterion (exact arithmetic, n >= 2, positive coefficients):
             # Display results
             if args.timing:
                 print(
-                    f"{'Number':>12}  {'Prime':>8}  {'ΔNFR':>14}  {'Individual(μs)':>15}"
+                    f"{'Number':>12}  {'Prime':>8}  {'DeltaNFR':>14}  {'Individual(us)':>15}"
                 )
                 print("-" * 65)
             else:
-                print(f"{'Number':>12}  {'Prime':>8}  {'ΔNFR':>14}")
+                print(f"{'Number':>12}  {'Prime':>8}  {'DeltaNFR':>14}")
                 print("-" * 40)
 
             for n, is_prime, delta_nfr in results:
@@ -227,7 +227,7 @@ Arithmetic criterion (exact arithmetic, n >= 2, positive coefficients):
             print(f"Total numbers: {len(args.numbers)}")
             print(f"Batch time: {batch_time*1000:.2f} ms")
             print(
-                f"Average per number: {(batch_time/len(args.numbers))*1_000_000:.2f} μs"
+                f"Average per number: {(batch_time/len(args.numbers))*1_000_000:.2f} us"
             )
 
             if args.stats:
@@ -246,9 +246,11 @@ Arithmetic criterion (exact arithmetic, n >= 2, positive coefficients):
             print("=" * 38)
 
             if args.timing:
-                header = f"{'Number':>12}  {'Prime':>8}  {'ΔNFR':>14}  {'Time(μs)':>10}"
+                header = (
+                    f"{'Number':>12}  {'Prime':>8}  {'DeltaNFR':>14}  {'Time(us)':>10}"
+                )
             else:
-                header = f"{'Number':>12}  {'Prime':>8}  {'ΔNFR':>14}"
+                header = f"{'Number':>12}  {'Prime':>8}  {'DeltaNFR':>14}"
 
             print(header)
             print("-" * len(header))
@@ -283,9 +285,9 @@ Arithmetic criterion (exact arithmetic, n >= 2, positive coefficients):
         print("=" * 32)
 
         if args.timing:
-            header = f"{'Number':>12}  {'Prime':>8}  {'ΔNFR':>14}  {'Time(μs)':>10}"
+            header = f"{'Number':>12}  {'Prime':>8}  {'DeltaNFR':>14}  {'Time(us)':>10}"
         else:
-            header = f"{'Number':>12}  {'Prime':>8}  {'ΔNFR':>14}"
+            header = f"{'Number':>12}  {'Prime':>8}  {'DeltaNFR':>14}"
 
         print(header)
         print("-" * len(header))
@@ -308,7 +310,7 @@ Arithmetic criterion (exact arithmetic, n >= 2, positive coefficients):
 
         if args.timing and len(args.numbers) > 1:
             avg_time = total_time / len(args.numbers)
-            print(f"\nAverage time per number: {avg_time:.2f} μs")
+            print(f"\nAverage time per number: {avg_time:.2f} us")
 
     return 0
 
