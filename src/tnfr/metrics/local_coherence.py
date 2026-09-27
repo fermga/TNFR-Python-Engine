@@ -13,12 +13,13 @@ from __future__ import annotations
 from operator import index as integer_index
 from typing import Any
 
+from ..mathematics.unified_numerical import np
 from .common import _coherence_on_nodes
 
 
 def _radius_nodes(G: Any, node: Any, radius: int) -> tuple[Any, ...]:
     """Return the validated center-inclusive outgoing graph ball once per node."""
-    if isinstance(radius, bool) or type(radius).__name__ == "bool_":
+    if isinstance(radius, bool) or (np is not None and isinstance(radius, np.bool_)):
         raise TypeError("radius must be a nonnegative integer")
     try:
         resolved_radius = integer_index(radius)

@@ -29,6 +29,8 @@ All notable changes to this project will be documented in this file.
 - Centralize represented-real admission for pressure, phase, capacity, nodal
   arithmetic, coherence observations and validation consumers. Retain explicit
   unavailable evidence and reject invalid inputs before coercion or caching.
+- Reject NumPy booleans as neighborhood radii across supported NumPy versions,
+  while preserving integer-index inputs for structural and phase observations.
 - Consolidate JSON input/output and detached report serialization, including
   duplicate/colliding keys, unsupported labels and non-finite values. Reports
   and construction recipes remain distinct from resumable checkpoints.

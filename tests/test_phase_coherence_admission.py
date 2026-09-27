@@ -38,7 +38,9 @@ def test_phase_observations_reject_invalid_authoritative_alias(invalid, nodes):
             observe(graph)
 
 
-@pytest.mark.parametrize("radius", [True, np.bool_(True), -1, 0.5, "1", None])
+@pytest.mark.parametrize(
+    "radius", [True, False, np.bool_(True), np.bool_(False), -1, 0.5, "1", None]
+)
 def test_structural_and_phase_observations_share_radius_admission(radius):
     graph = nx.path_graph(2)
     for observe in (
@@ -48,6 +50,17 @@ def test_structural_and_phase_observations_share_radius_admission(radius):
     ):
         with pytest.raises((TypeError, ValueError), match="radius"):
             observe(graph, 0, radius)
+
+
+def test_radius_admission_preserves_integer_index_protocol():
+    class Radius:
+        def __index__(self):
+            return 1
+
+    graph = nx.path_graph(3)
+    graph.nodes[2][ALIAS_THETA[0]] = "outside radius one"
+    for radius in (1, np.int64(1), Radius()):
+        assert phase_coherence.compute_phase_alignment(graph, 0, radius) == 1.0
 
 
 @pytest.mark.parametrize("radius", [0, 1, 2])
