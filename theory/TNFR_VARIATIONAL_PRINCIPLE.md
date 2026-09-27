@@ -296,7 +296,7 @@ conditional linear family `z_dot=-e*z-k*zeta`, `zeta_dot=a*z+b*zeta`, with
 loss. At `b=0`, zero instantaneous loss need not imply zero velocity: a
 state with `z=0,zeta!=0` immediately leaves that set. The largest invariant
 zero-loss set is only the origin; the characteristic polynomial in the
-[joint-response classification](NODAL_PARAMETER_FOUNDATIONS.md#174-admission-conditions-for-a-joint-linear-response)
+[joint-response classification](nodal/PRIMITIVE_PHASE_CLOSURE.md#174-admission-conditions-for-a-joint-linear-response)
 gives asymptotic decay throughout this passive class, including damped
 oscillations where its discriminant is negative. This storage is a
 comparison quadratic, not a derived canonical joint energy.
@@ -669,7 +669,7 @@ obstruction without trajectories, new feedback coefficients or fitted laws.
 
 ### 13.5 Necessary restoring contribution on the compatible P2 preparation
 
-The [finite joint compatibility result](NODAL_PARAMETER_FOUNDATIONS.md#11-finite-joint-phase-capacity-source-compatibility)
+The [finite joint compatibility result](nodal/JOINT_PARAMETER_RESPONSE.md#11-finite-joint-phase-capacity-source-compatibility)
 does not select a maintenance mechanism. The same two-node preparation gives
 an exact test of what the conditional potential family in section 13 would
 require. Keep its EPI mobility premise and fixed unit P2 support. Write
@@ -1556,13 +1556,13 @@ here, while the implemented independent-pressure completion has a different
 and incompatible pressure slope. Exact and production-reader controls share
 [one test module](../tests/physics/test_extended_pressure_feedback_scope.py).
 
-The [phase/form exchange owner](NODAL_PARAMETER_FOUNDATIONS.md#16-phase-and-form-directed-exchange-frames-and-the-moving-mean)
+The [phase/form exchange owner](nodal/PHASE_FORM_EXCHANGE.md#16-phase-and-form-directed-exchange-frames-and-the-moving-mean)
 extends these work tests to radial/tangential source projections, transported
 internal frames and a supplied circular phase-contrast response with a moving
 mean. Its primitive source and clock remain prescribed. The full work includes
 the mean even when the time integral of the mean source is zero.
 
-The [phase-origin admission study](NODAL_PARAMETER_FOUNDATIONS.md#17-primitive-phase-origin-symmetry-retained-state-and-the-missing-row)
+The [phase-origin admission study](nodal/PRIMITIVE_PHASE_CLOSURE.md#17-primitive-phase-origin-symmetry-retained-state-and-the-missing-row)
 complements this work test with actual prism reflection constraints and the
 relative oriented-area budget of independent phase/form state. Its joint
 linear classification places the same hypothetical fresh-pressure feedback
@@ -1676,7 +1676,7 @@ depends only on degree, so it is common and constant on this fixed prism.
 A changing coefficient would add `(k*g_dot/3)*V` to the displayed balance
 and would require a new bound; it cannot silently inherit the result.
 
-The [finite-amplitude orientation witness](NODAL_PARAMETER_FOUNDATIONS.md#182-nonzero-oriented-area-production-from-initially-uniform-phase)
+The [finite-amplitude orientation witness](nodal/PRIMITIVE_PHASE_CLOSURE.md#182-nonzero-oriented-area-production-from-initially-uniform-phase)
 lies in this pressure class and creates oriented area while this storage
 decreases. Angular generation and sustained identity are therefore distinct
 even in one explicitly specified nonlinear comparison. The single G3 queue
@@ -2040,7 +2040,7 @@ tangent-map tests are different owners and cannot certify it.
 Controls: [Jacobi condition and exact obstruction](../tests/physics/test_phase_exchange_jacobi_scope.py).
 
 **Even a selected genuine symplectic structure leaves a potential to derive.**
-Reuse the [existing local pressure coordinates](NODAL_PARAMETER_FOUNDATIONS.md#214-local-wave-realizability-does-not-select-a-wave-law),
+Reuse the [existing local pressure coordinates](nodal/DERIVED_FORM_PHASE.md#214-local-wave-realizability-does-not-select-a-wave-law),
 `(y,theta modulo rotation)->(y,v=Pi*p)`, on global phase spread below `pi/2`.
 In orthonormal centered coordinates the selected canonical form is
 `3 sum(dy_alpha wedge dv_alpha)`. For an autonomous Hamiltonian on this
@@ -2238,6 +2238,857 @@ controls and five numerical regression cases. Shared owners supply the
 support, symmetries and pressure-coordinate inverse. Earlier research
 artifacts are preserved byte-for-byte. Source-bound checkpoint:
 `artifacts/research/locality_transport_closure_validation_2026_09_19.json`.
+
+### 13.21 Cotangent phase exchange: a conditional constitutive candidate
+
+<a id="cotangent-phase-exchange"></a>
+
+The failed Jacobi tensor in section 13.19 can be repaired by an actual
+coordinate construction. This supplies a **new conditional model**, not a
+derivation of the engine's unchanged pressure. Work in declared nondimensional
+coordinates, on finite simple loopless fixed regular reciprocal support with
+unit conductances and unique-neighbor degree `d>0`,
+with held unit capacity, positive phase weight `w`, and EPI weight `e>=0`.
+Let `H=H_phi(theta)>0`, `M=H^-1` and `g=-M*gradient V_phi` have exactly their
+section 13.6 meanings on the regular phase chart.
+
+The independent premise is that
+
+\[
+\pi_i=H_i(\theta)x_i
+\]
+
+is the canonical momentum conjugate to `theta_i`, with Hamiltonian
+`E=||x||^2/2+w*V_phi`. This chooses a symplectic structure, an uncentered
+form storage and a time normalization. The existing pressure metric alone
+does not force that identification or its units. Momentum adds no primitive
+state on this chart: `x_i=pi_i/H_i` is invertible. It is distinct from the
+centered `(y,v)` wave construction in sections 13.19-13.20.
+
+**The correction is forced by this premise.** Pushing the canonical bracket
+through `x=H^-1*pi`, in coordinate order `(x,theta)`, gives
+
+\[
+\mathcal J=\begin{pmatrix}K&-M\\M&0\end{pmatrix},\qquad
+K_{ij}=\frac{x_j\partial_i H_j-x_i\partial_j H_i}{H_iH_j}.
+\]
+
+Here `partial_i` differentiates `theta_i`. This tensor satisfies Jacobi
+because it is a genuine coordinate pullback; its additional `K=-K^T` block
+is fixed by the chosen momentum map. Dropping it generally recovers the
+non-Poisson tensor already rejected in section 13.19. The Hamiltonian rows,
+with optional existing form diffusion added separately, are
+
+\[
+\boxed{\dot x=-eLx+wg+Kx,\qquad \dot\theta=Mx,\qquad\dot\nu=0.}
+\]
+
+Thus the proposed pressure is `p_new=-eLx+wg+Kx`; `p_old=-eLx+wg` remains
+the configured two-channel engine pressure. A different phase row alone
+cannot turn the latter into this model. The correction is quadratic in form
+and cannot generally be absorbed into a phase-only potential `Psi`. On the
+retained nonrepeated prism, taking `x=(1,0,0,0,0,0)` gives
+
+\[
+(Kx)_1=\frac{3-9\sqrt3/\pi}{9(1+\sqrt3)^2}<0.
+\]
+
+This is an exact, regular-state discriminator, not a numerical trajectory.
+The phase row now has real form feedback, `D_x dot(theta)=M`; two states
+with identical phase and different form have different phase rates. At P2
+consensus, changing form from zero to `(1,-1)/4` changes phase velocity by
+`(1,-1)/(4*pi)` and phase acceleration by `-e*(1,-1)/(2*pi)`.
+
+`H_i` reads the node and its support neighbors; `Kx` generally reaches their
+neighbors and therefore has radius-two primitive dependence. Absolute form
+enters the phase row. A common EPI translation is not automatically a
+redundancy of this joint model, and centering its storage would change it.
+No operator selector, tetrad threshold, gain fitted to persistence, capacity
+adaptation or external phase clock has been added.
+
+**Complete storage and momentum balances.** Regularity of the support makes
+`L` symmetric positive semidefinite. Antisymmetry of `K` and `Hg=-grad V_phi`
+give the exact continuous balance
+
+\[
+\dot E=-e\,x^TLx\le0.
+\]
+
+The correction transfers form between components with `x^T Kx=0`; it does
+not inject storage. The complete form mean nevertheless obeys
+`mean(x)'=w*mean(g)+mean(Kx)`, which need not vanish. Common phase-rotation
+invariance supplies a different conserved quantity for the reversible row,
+the canonical momentum `P=sum_i H_i*x_i`. With diffusion included,
+
+\[
+\dot P=-e\sum_i H_i(Lx)_i.
+\]
+
+It need not remain conserved on a nonuniform phase state. Neither quantity
+is the engine's coherence telemetry or an experimentally identified energy.
+
+There is a useful forward-domain guarantee on any finite connected regular
+support. If initially `E_0<w`, every edge obeys
+`1-cos(gap)<=E_0/w<1` for all future times. Put
+`a=acos(1-E_0/w)<pi/2`. All edge gaps and local mean displacements stay
+within `[-a,a]`, all resultants have magnitude at least `d*cos(a)`, and
+`H_i>=pi*d*cos(a)*sinc(a)>0`. Bounded form and the compact phase torus then
+keep the smooth vector field away from its branch/resultant singularities,
+giving global existence within this conditional model. The bound establishes
+admission, not nontrivial persistence or full-state convergence.
+
+**A geometry-dependent linear prediction.** At zero form and phase consensus,
+`H=pi*d*I`, `DH=0` and `Dg=-L/pi`. A Laplacian mode with eigenvalue `ell>0`
+has characteristic polynomial
+
+\[
+s^2+e\ell s+\frac{w\ell}{\pi^2d}=0.
+\]
+
+This is a damped oscillatory mode exactly when
+`e^2*ell<4*w/(pi^2*d)`. With the same retained coefficients `e=w=1/2`,
+unit cycles have `d=2`: the lowest C6 mode `ell=1/2` fails this test,
+whereas the lowest C8 mode `ell=1-sqrt(2)/2` satisfies it. The elementary
+bounds `9<pi^2<10` separate both cases. Geometry supplies this difference
+without coefficient adjustment. This is a linear prediction of the new
+conditional model, unrelated to the earlier C6 full-runtime stability
+campaign. It does not certify a nonlinear waveform or maintained NFR.
+
+**A nonlinear sign-reversal discriminator without fitting a trajectory.**
+On that C8 comparison let `v_i=cos(2*pi*i/8)`, so `||v||^2=4`, and prepare
+`x(0)=epsilon*v`, `theta(0)=0`. Observe
+`A(t;epsilon)=v^T*x(t)/4`, not a refitted pattern amplitude. Write
+`alpha=e*ell/2` and `omega=sqrt(w*ell/(pi^2*d)-alpha^2)>0`.
+The linear initial-value problem predicts
+
+\[
+A_1(t)=e^{-\alpha t}\left(\cos(\omega t)
+             -\frac{\alpha}{\omega}\sin(\omega t)\right),\qquad
+A_1(T)=-\frac{\alpha}{\omega}e^{-\alpha T}<0,
+\quad T=\frac{\pi}{2\omega}.
+\]
+
+This implies a genuine nonlinear existence result. The metric is even under
+phase reflection, its derivative and `g` are odd, and
+`K(-x,-theta)=K(x,theta)`. The full vector field is therefore odd under the
+joint reflection and smooth near consensus. Smooth dependence on the signed
+preparation amplitude gives, at fixed finite `T`,
+`A(T;epsilon)=epsilon*A_1(T)+O(epsilon^3)`.
+Consequently there exists `epsilon_0>0` such that every sufficiently small
+positive preparation reverses this form mode's sign by `T`. Its initial
+storage is `2*epsilon^2`; `abs(epsilon)<1/2` guarantees the regular domain
+but is **not** a computed error bound or value of `epsilon_0`.
+
+The old held-capacity, two-channel continuous comparison with its supplied
+gated-sine phase row instead keeps phase consensus up to common rotation and
+has `A_old(t)=epsilon*exp(-e*ell*t)>0`. This distinguishes the two complete
+laws beyond merely renaming a phase variable. It does not compare the native
+operator runtime or prove formation. This existence argument alone does not
+select a finite amplitude. Section 13.22 supplies the quantitative nonlinear
+remainder, separate ideal-integration budget and frozen executable comparison.
+
+**A complete nonlinear P2 sector.** On P2 write `delta=theta_1-theta_0`
+in `(-pi,pi)`. Then `H=h(delta)*I`, `h=pi*sin(delta)/delta`, with `h(0)=pi`.
+The zero-momentum sector `x=(a,-a)` is invariant, `Kx=0` there, and
+
+\[
+\dot a=-2ea+w\delta/\pi,\qquad
+\dot\delta=-2a/h(\delta),\qquad
+E=a^2+w(1-\cos\delta),\qquad \dot E=-4ea^2.
+\]
+
+For `E_0<2w` its compact sublevel stays strictly inside the regular chart;
+`E_0<w` additionally preserves strict U3. At `e=0`, every nonzero energy
+level below `2w` is a regular closed curve with a nonvanishing vector field,
+so it gives periodic reversible form/phase exchange. At `e>0`, the largest
+invariant subset of `dot(E)=0` requires both `a=0` and `delta=0`; LaSalle's
+argument proves convergence to that point in this sector. The common phase
+is constant there. Positive diffusion therefore does not give indefinite
+nontrivial maintenance. In particular `e=w=1/2` is overdamped near P2
+consensus: the model is not made oscillatory by describing it as resonant.
+
+The constructive result is a closed, genuinely Poisson exchange law with a
+forced geometric pressure correction, an admitted global small-energy domain,
+and a discriminating graph-dependent response. Its cotangent premise remains
+open to independent justification or rejection. It is not installed in the
+motor, physically validated, uniquely selected by NFR identity, or shown to
+generate support/capacity. Exact pullback, Jacobi, production-source boundary,
+balance and mode controls are in
+[cotangent exchange scope](../tests/physics/test_cotangent_phase_exchange_scope.py).
+The [single plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) owns
+subsequent work; no trajectory was used to select this law.
+
+### 13.22 A finite C8 prediction fixed before numerical evaluation
+
+<a id="cotangent-c8-finite-response"></a>
+
+Keep every constitutive choice of section 13.21: the unit C8, unit held
+capacity, `e=w=1/2`, no forcing or operator events, and the cotangent pressure
+including `Kx`. Fix `epsilon=1/1024`, `x_i(0)=epsilon*cos(2*pi*i/8)` and
+`theta(0)=0`. The observable remains `A=v^T*x/4`. The amplitude, observable
+and response time are chosen from the preceding analytic prediction, before
+inspecting a trajectory. This comparison does not modify engine defaults.
+
+**A quantitative continuous bound.** On this degree-two support, with
+continuous phase lifts from the initial consensus, put
+
+\[
+a_i=(\theta_{i+1}+\theta_{i-1})/2-\theta_i=-(L\theta)_i,
+\qquad b_i=(\theta_{i+1}-\theta_{i-1})/2.
+\]
+
+While edges are acute, the exact metric and pressure source simplify to
+`H_i=2*pi*cos(b_i)*sinc(a_i)` and `g_i=a_i/pi`; the latter has no nonlinear
+remainder. For any `0<epsilon<=1/16`, the previously proved energy balance
+gives `||x||<=2*epsilon` and `V_phi<=4*epsilon^2`. Each edge separation is
+less than `1/2`, since its potential cost is below `1-cos(1/2)`. The bound
+`1-cos(delta)>=(47/96)*delta^2` on this interval then gives
+`||D theta||^2<9*epsilon^2`, where `D` is the oriented cycle incidence map.
+Consequently `abs(a_i),abs(b_i)<=3*epsilon` and
+
+\[
+H_i\ge2\pi(1-6\epsilon^2),\qquad \|M\|\le1/6.
+\]
+
+For `B_ij=partial_j log(H_i)`, the cycle difference operators have norms
+`||D_theta a||<=2` and `||D_theta b||<=1`. Using
+`abs(tan b)<=abs(b)/(1-b^2/2)` and
+`abs(sinc'(a)/sinc(a))<=abs(a)/(3*(1-a^2/6))` therefore yields
+
+\[
+\|B\|\le\left(\frac3{1-9\epsilon^2/2}
+                 +\frac2{1-3\epsilon^2/2}\right)\epsilon
+             \le\frac{21}{4}\epsilon.
+\]
+
+In particular, the exact expression
+`Kx=M*B^T*(x*x)-diag(x)*B*M*x`, with componentwise `x*x`, satisfies
+`||Kx||<=7*epsilon^3`. Also
+`||(M-I/(2*pi))*x||<=2*epsilon^3`.
+
+Use the phase-rotation quotient and its energy norm
+
+\[
+N(x,\theta)^2=\|x\|^2+\theta^TL\theta.
+\]
+
+The linearized generator `mathcal A` is dissipative in this norm; its
+semigroup is contractive. The complete nonlinear remainder `R` has
+`N(R)<=sqrt(57)*epsilon^3<8*epsilon^3` along the exact trajectory, because
+`||L||=2`. Duhamel's formula and `||v||/4=1/2` now give the finite bound
+
+\[
+\boxed{|A(t;\epsilon)-\epsilon A_1(t)|\le4t\epsilon^3.}
+\]
+
+For the fixed response time of section 13.21,
+`T=pi/(2*omega)=34.630474785...`, the linear response is
+`epsilon*A_1(T)=-1.2485970787...e-4`, whereas the continuous nonlinear
+allowance is less than `1.291e-7`. Thus this specific finite preparation,
+not merely an unspecified sufficiently small one, has `A(T)<0` in the
+exact continuous model. The displayed decimals summarize the explicit
+formulas; the sign has a wide margin under their rounding.
+
+**A separate exact-arithmetic Euler bound.** Freeze `h=1/2048`,
+`n=ceil(T/h)=70924` and `tau=n*h=34.630859375`, and evaluate the same
+observable at `tau`. A coarse, independently checkable error allowance
+suffices; no step-size search against an observed response is needed.
+
+For this purpose put `q^2=theta^T*L*theta`. At any state with `N<=0.1`,
+`abs(a_i),abs(b_i)<=q`, and `m=1-2*q^2/3>=149/150`. The identities above
+give `H_i` in `[2*pi*m,2*pi]`,
+`abs(H_a)<=2*pi*q/3`, `abs(H_b)<=2*pi*q`, and both the maximum row-sum
+and column-sum norms of `D H` at most `10*pi*q/3`. Hence
+
+\[
+\begin{split}
+\|Kx\|&\le\frac5{3\pi m^2}q\|x\|^2,\\
+\|L^{1/2}(M-I/(2\pi))x\|
+ &\le\frac{\sqrt2}{3\pi m}q^2\|x\|.
+\end{split}
+\]
+
+The Euclidean norm of these two coefficients is below `0.6`, so the
+convenient bound `N(R)<=N^3` holds throughout this domain. In energy
+coordinates each linear modal block is
+`[[-ell/2,-sqrt(ell)/(2*pi)],[sqrt(ell)/(2*pi),0]]`.
+For `0<=ell<=2`, its squared operator norm is at most `c^2=10/9`.
+Linear dissipativity therefore bounds one Euler step by
+`||I+h*mathcal A||<=exp(5*h^2/9)`.
+
+Let `B0=4*epsilon`. The bootstrap
+
+\[
+N(u_k)\le2\epsilon\exp[t_k(5h/9+B_0^2)]<2.021\epsilon<B_0
+\qquad(0\le k\le n)
+\]
+
+holds inductively, because `tau<=35` and the exponential is below `2`.
+Thus the numerical iterates also remain inside the domain used for the
+remainder estimate. Separating full Euler from linear Euler, and linear
+Euler from the exact linear flow, gives the observable bounds
+
+\[
+\begin{split}
+|A_{\rm Euler}(\tau)-A_{{\rm linear\ Euler}}(\tau)|
+ &\le\frac\tau2 e^{5h\tau/9}B_0^3,\\
+|A_{{\rm linear\ Euler}}(\tau)-\epsilon A_1(\tau)|
+ &\le\frac{\tau h}{2}\frac{10}{9}\epsilon e^{5h\tau/9}.
+\end{split}
+\]
+
+Their combined allowance is less than `1.044e-5`, using only
+`tau<=35` and `exp(5*h*tau/9)<1.01`. The declared linear target is
+`epsilon*A_1(tau)=-1.2485754095...e-4`; even this coarse allowance leaves
+the exact-arithmetic Euler response strictly negative. The old supplied
+phase law instead predicts the positive
+`epsilon*exp(-ell*tau/2)=6.1255393889...e-6`.
+
+These are **two separate bounds**: the continuous nonlinear deviation and
+the full Euler deviation from its linear target. Adding them is not needed
+to establish either statement. The Euler bound concerns exact arithmetic;
+it does not certify binary64 rounding or assign an unproved floating-point
+error allowance. A subsequent executable comparison must retain the frozen
+law, initial state, step, horizon and observable, and report floating-point
+execution as finite numerical evidence. Neither sign reversal nor its
+prediction establishes maintained identity, substrate generation or physical
+identification. The cotangent constitutive premise remains conditional.
+
+**Frozen finite execution, 2026-09-26.** The
+[bounded instrument](../benchmarks/cotangent_phase_exchange.py) executed one
+preparation with the amplitude and clock above. Every step reuses the shared
+fused production pressure and `dynamics._euler_kernel.euler_update` for both
+rows from the same preceding state; `Kx` is added explicitly. At steps
+`0,17731,35462,53193,70924`, the ordinary graph pressure owner independently
+checks the old-pressure component. Detached SDK diagnostics then observe the
+candidate pressure and its declared model rate. This is a research execution
+path, not the default phase coordinator or an operator study.
+
+| Quantity | Frozen prediction or admission | Observed binary64 result |
+| --- | --- | --- |
+| Final mode amplitude | Linear target `-1.2485754095182383e-4`; negative | `-1.2485839574377552e-4` |
+| Absolute deviation from linear target | At most `1.044e-5` | `8.5479195169e-10` |
+| Quotient energy norm, all endpoints | At most `4*epsilon=0.00390625` | Maximum `0.001953125` |
+| Old pressure residual | Each checkpoint and all-step formula residual at most `1e-12` | `0` and `5.4211e-20`, respectively |
+| Instantaneous storage balance residual | At most `1e-15` | Maximum `3.1764e-22` |
+| Geometric form-work residual | At most `1e-15` | Maximum `3.9444e-30` |
+
+The old continuous triangular comparison predicts `+6.1255393889e-6` at the
+same endpoint. No amplitude, coefficient, step, observation or acceptance cut
+was changed after the reserved execution. Maximum adjacent separation was
+`0.000521212` radians (rounded upward), with minimum metric `6.2831844537`.
+The tetrad was available at all five checkpoints; `xi_C=1.8477590650` came
+from the spectral fallback at every checkpoint, not an observed growing
+correlation length. No field selected or corrected the dynamics.
+
+The discrete energy fell overall from `1.9073486328e-6` to `7.4318907298e-8`,
+but explicit Euler had a maximum positive single-step increment of
+`5.6298e-16`. Its cumulative energy-balance defect reached `1.1397e-10`.
+These observations must not be called exact discrete dissipation or a
+validated floating-point enclosure. The analytic continuous and ideal Euler
+claims above remain separate from this finite check.
+
+Reproduce the fixed run with:
+
+```sh
+python benchmarks/cotangent_phase_exchange.py --amplitude 0.0009765625 --timestep 0.00048828125 --steps 70924 --checkpoint 17731 --checkpoint 35462 --checkpoint 53193 --output artifacts/research/cotangent_c8_execution_2026_09_26.json
+```
+
+The retained local records are
+`artifacts/research/cotangent_c8_protocol_2026_09_26.json`,
+`artifacts/research/cotangent_c8_execution_2026_09_26.json` and
+`artifacts/research/cotangent_c8_verdict_2026_09_26.json`. The protocol SHA-256
+is `a1ee858cece6371f177827658626adcea349aaeab5649ec44957ff0cbae14775`;
+the execution SHA-256 is
+`20d2aa43311dec4b13c49a41d3b7ef8ac9d56f3be0b0820d83470cf74c3e65f5`.
+Execution used Python 3.13.6, NumPy 2.5.3, Windows 11, binary64, no randomness,
+and base revision `f27413a0a29dddc132e5aafea081b0caee0b0135` with scoped
+working-source digest
+`sha256:af0c6fe2dd2428df0da278be4960aa90e271f375d0322538d40f341fd2b97940`.
+The source scope is this instrument and `src/tnfr`; the report retains full
+state at checkpoints and all-step extrema. The local artifacts are generated
+evidence, not a substitute for the reproducible recipe and scope above.
+[Small execution controls](../tests/physics/test_cotangent_phase_exchange_execution.py)
+check independent derivatives, pressure, balances, simultaneous integration
+and diagnostic provenance without regenerating the full trajectory.
+
+**What this comparison cannot select.** Suppressing `Kx` while retaining
+`theta_dot=Mx` has the same linearization at consensus; its storage balance
+also holds because `x^T Kx=0`. The sign reversal therefore discriminates
+reciprocal feedback from the old triangular law, not the cotangent premise
+from every alternative reciprocal law. Moreover, this preparation is
+antiperiodic under a four-node shift: `x_{i+4}=-x_i` and
+`theta_{i+4}=-theta_i`. Since the paired metrics agree, its exact total
+momentum is zero by symmetry. Near-zero observed momentum is not an
+independent test of the general momentum balance. The existing nonrepeated
+state and Jacobi witnesses in section 13.21 already distinguish the geometric
+correction algebraically; no second C8 sweep is needed to repeat that result.
+
+### 13.23 Nonzero momentum and relative identity on P2
+
+<a id="cotangent-p2-nonzero-momentum"></a>
+
+The same cotangent law admits an exact reduction beyond the zero-momentum
+sector in section 13.21. This changes the prepared state, not the closure.
+On P2, take the regular chart `delta=theta_1-theta_0` in `(-pi,pi)`, and set
+
+\[
+h(\delta)=\pi\operatorname{sinc}\delta,\quad
+\psi=(\theta_0+\theta_1)/2,\quad a=(x_0-x_1)/2,\quad
+P=h(\delta)(x_0+x_1).
+\]
+
+Here `H=h*I`, so the general momentum budget reduces to `P_dot=0`, even
+when `e>0`: `h*sum(Lx)=0`. This P2 simplification is not momentum conservation
+on every graph. Substitution into the complete law gives
+
+\[
+\begin{gathered}
+x_{0,1}=\frac{P}{2h}\mathbin{\pm}a,\qquad
+U_P(\delta)=\frac{P^2}{4h(\delta)^2}+w(1-\cos\delta),\\
+\boxed{\dot\delta=-\frac{2a}{h},\qquad
+\dot a=-2ea+\frac{U_P'(\delta)}h,\qquad
+\dot\psi=\frac{P}{2h^2}.}
+\end{gathered}
+\]
+
+In particular `U_P'/h=w*delta/pi-P^2*h'/(2*h^4)`. The momentum-dependent
+term comes from `Kx`; it is not a new potential inserted to maintain a
+pattern. The reduced storage and balance are exactly
+`E=a^2+U_P(delta)` and `E_dot=-4e*a^2`.
+
+**Regularity and the possible identity.** On `0<delta<pi`, `h>0` and
+`h'<0`: `sin(delta)-delta*cos(delta)` has derivative `delta*sin(delta)>0`
+and vanishes at zero. Thus `U_P` increases strictly with `abs(delta)`.
+For `P!=0` it diverges at the antipodal boundary. Every finite-energy
+sublevel consequently stays compactly inside the regular chart, without
+requiring the earlier sufficient bound `E_0<w`. Strict acute admission
+additionally follows from `E_0<U_P(pi/2)=P^2/16+w`; regularity alone must
+not be reported as U3 admission.
+
+For `e>0`, the only invariant part of `E_dot=0` in a fixed-`P` sublevel
+requires `a=0` and `U_P'=0`, hence `delta=0`. The reduced LaSalle argument
+therefore gives
+
+\[
+\delta,a\longrightarrow0,\qquad
+x_0,x_1\longrightarrow\frac{P}{2\pi},\qquad
+\dot\psi\longrightarrow\frac{P}{2\pi^2}.
+\]
+
+The resulting family is a uniform rotating **relative equilibrium**: its
+relative state is fixed while its common phase advances. It is labelled by
+prepared momentum. It does not retain a nonzero internal form or phase
+contrast, produce momentum from nothing, or identify a physical particle.
+At `e=0`, nonminimal fixed-energy curves give periodic relative exchange;
+the accumulated common phase need not make the full state periodic.
+
+**Geometric contribution and a local discriminator.** Since
+`h=pi*(1-delta^2/6+O(delta^4))`, the characteristic polynomial of relative
+perturbations about this rotating equilibrium is
+
+\[
+\lambda^2+2e\lambda+\frac{2w}{\pi^2}
+                         +\frac{P^2}{3\pi^4}=0.
+\]
+
+Thus prepared momentum changes relative restoring stiffness with no change
+of coefficients. Omitting `Kx` while keeping `theta_dot=Mx` preserves the
+same storage balance but generally gives
+`P_dot=h'*(x_1^2-x_0^2)/h`, rather than zero. The zero-momentum preparation
+hides that defect. Storage dissipation, a plausible oscillation and a
+genuine cotangent structure are therefore distinct obligations. The
+[exact scope controls](../tests/physics/test_cotangent_phase_exchange_scope.py)
+derive the reduced rows and momentum boundary from the full pullback law.
+On larger supports, use the actual momentum balance and test relative
+identity and its transverse stability; this P2 result does not supply them.
+
+### 13.24 Integration audit: inherited structure and missing selection
+
+<a id="cotangent-integration-audit"></a>
+
+Sections 13.21-13.23 establish consequences of a conditional completion.
+Before another pattern study, distinguish its integration with the nodal
+framework from selection of a fundamental law. No new production default,
+controller, fitted parameter or physical identification follows here.
+
+| Ingredient | Status in this comparison |
+| --- | --- |
+| Signed scalar form, circular phase, support and nodal product | Existing state/flow contracts; the comparison restricts capacity to one |
+| `g=-H^-1 grad(V_phi)` | Derived from the configured phasor pressure and declared cosine cost; neither its absolute cost scale nor a phase clock follows |
+| Canonical momentum `H*x`, uncentered quadratic form storage | Additional constitutive premises, not consequences of the NFR definition |
+| `Kx`, reciprocal phase row, Jacobi and balance | Forced after those premises; independently checked and conditionally predictive |
+| Support, initialization and held capacity | Supplied; no birth, adaptation or autonomous partition-selection law is derived |
+| Tetrad and grammar | Existing observers and event-admission contracts; neither selects this continuous law |
+
+**The existing principles admit more than one law.** The cost normalization
+freedom already identified in section 13.6 becomes dynamically consequential
+after the momentum premise. For any constant `eta>0`, take
+
+\[
+\pi_\eta=\eta Hx,\qquad
+E_\eta=\tfrac12\|x\|^2+\eta wV_\phi,\qquad
+\mathcal J_\eta=\mathcal J/\eta.
+\]
+
+The genuine coordinate pullback gives
+
+\[
+\dot x=-eLx+wg+\eta^{-1}Kx,\qquad
+\dot\theta=\eta^{-1}Mx,\qquad
+\dot E_\eta=-e\,x^TLx.
+\]
+
+The configured form/phase pressure part, circular symmetry, finite primitive
+locality, genuine Poisson structure and storage dissipation all survive.
+Nevertheless the consensus-mode polynomial becomes
+`s^2+e*ell*s+w*ell/(eta*pi^2*d)`. At fixed nonzero `e,w`, state chart and
+clock, changing `eta` preserves the trace while changing the determinant;
+it is not a common rescaling of time. The earlier C6/C8 prediction remains
+valid for its declared `eta=1`, not a parameter-free consequence of the
+phase-pressure identity.
+
+There is an exact finite-state discriminator without another trajectory.
+On P2 with `x=(a,-a)` and phase consensus, every member gives
+`a_dot(0)=-2e*a`, but
+
+\[
+\ddot a(0)=4e^2a-\frac{2wa}{\eta\pi^2}.
+\]
+
+This is exact because the zero-momentum P2 sector has `Kx=0`, not merely
+a linearized formula. The family is an underdetermination witness, not a
+new gain to tune until a pattern persists. It establishes that the listed
+conditions do not select `eta=1`; it does not establish that no stronger
+structural principle can do so.
+
+The difference is not removable by a **state-dependent** common clock either.
+At the same consensus preparation with `a,e>0`, the joint contrast tangent is
+`F_eta=(-2*e*a,-2*a/(eta*pi))` in coordinates `(a,delta)`. Consequently
+
+\[
+\frac{d\delta}{da}=\frac1{\eta\pi e},\qquad
+\det[F_1,F_\eta]=\frac{4ea^2}{\pi}(\eta^{-1}-1).
+\]
+
+A positive clock change divides both components by the same local value;
+it cannot change this slope. Only `eta=1` aligns the two tangents in the
+fixed state chart. This is an exact orbit discriminator, separate from a
+comparison of periods or a fitted time unit. The
+[clock control](../tests/physics/test_structural_clock_scope.py) derives it
+from the full nonlinear P2 field without another trajectory.
+
+Genuine unit/chart conversion remains distinct: for `x_new=A*x` and
+`t_new=B*t`, with positive constants, the same family has
+`e_new=e/B`, `w_new=A*w/B`, `eta_new=A*B*eta`. Thus `eta*e^2/w` is invariant
+under these conversions. Changing only `eta` changes that invariant.
+Likewise a fixed-formula EPI shift adds `beta/(eta*H_i)` to the phase rate;
+when `H` is nonuniform, relative phase rates change. The same physical law
+can be pushed into a shifted chart, but its storage and momentum origin
+must transform too. Pure-EPI offset covariance cannot silently be imposed
+on this joint law while retaining its unshifted formulas.
+
+**An exact hierarchy result supplies part of the scale information.** Reuse
+the [counted-support reduction](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#joint-constitutive-reduction-with-inherited-support-counts).
+Start with a regular simple base graph. Replace every node by `m` replicas,
+place no edges within a block, and replace every base edge by all `m^2`
+cross-block edges with unit conductance. Keep fine capacity one, `eta=1`,
+and identical form/phase within each block. Within-block permutation symmetry
+makes this manifold invariant under the complete cotangent vector field.
+This is an imposed exact preparation, not formation of coherent blocks.
+
+On that manifold, with base variables `X,Theta`,
+
+\[
+H_{\rm fine}=mH,\qquad g_{\rm fine}=g,\qquad
+L_{{\rm rw,fine}}X=L_{{\rm rw,base}}X,\qquad
+(K_{\rm fine}x_{\rm fine})_{i\alpha}=(KX)_i/m.
+\]
+
+For distinct blocks, each fine `K` entry is the base entry divided by `m^2`;
+summing its `m` equal neighbors gives the last identity. Off-diagonal entries
+inside a block vanish. Hence the **exact inherited** law is
+
+\[
+\dot X=-eLX+wg+KX/m,\qquad \dot\Theta=MX/m.
+\]
+
+Its effective exchange scale is `eta_eff=m`, although every fine capacity
+is still one and the old pressure is unchanged. There is no fitted rate or
+new primitive state. Fine storage divided by `m` equals
+`||X||^2/2+m*w*V_phi`; the pulled-back canonical one-form divided by `m` is
+`m*sum_i(H_i*X_i*dTheta_i)`, reproducing the same effective momentum.
+For a common fine scale `eta`, the inherited scale is `m*eta`; repeated
+equal-replica reductions multiply the counts consistently.
+
+This is a constructive link to nested effective NFR descriptions and a
+counterexample to discarding multiplicity and resetting `eta=1` at every
+scale. It does not select the microscopic exchange premise, make the chosen
+partition emerge, or establish transverse stability of its synchronized
+blocks. Outside this invariant manifold, existing closure and memory tools
+must retain hidden state or bound its effect; they cannot derive an unknown
+fine law from a chosen projection.
+
+If one additionally requires a degree-only scale `eta(d)` to retain the
+same bare-graph recipe under every such reduction, with unchanged form,
+clock and capacity, consistency imposes `eta(d)=m*eta(m*d)`. For all
+positive integer degrees this is equivalent to `eta(d)=C/d`: use `d=1`
+to obtain the necessary formula, which also satisfies every replication
+identity. Global `C>0` remains free. The extra requirement treats this
+particular replication as constitutive equivalence; physical replication
+is not automatically an observational redundancy. It would change the
+previous cross-degree `eta=1` predictions, and is not adopted here as a
+default or a chosen sustaining mechanism.
+
+**Capacity and support cannot be restored by substitution.** Common
+prescribed capacity `kappa(t)>=0` can multiply both rows, giving the same
+orbits under `s(t)=integral(kappa dt)` and storage rate
+`-kappa*e*x^T*L*x`. Infinite-structural-time results require `s(t)` to diverge;
+finite accumulated activity can stop earlier. Pausing both rows at zero is
+a chosen joint law: the nodal identity alone pauses only form. Multiplying
+by a positive state-dependent clock still reparameterizes orbits, but in
+general does not preserve the Poisson identity in dimension at least four.
+Time reparameterization and a Hamiltonian structure are separate claims.
+
+For held heterogeneous `N=diag(nu_i)>0`, naively multiplying both rows by
+`N` gives a form bracket `NK`, which is not generally skew. A genuine
+pullback through `pi_i=H_i*x_i/nu_i` instead requires
+
+\[
+(K_\nu)_{ij}
+=\frac{\nu_i x_j\partial_iH_j-\nu_jx_i\partial_jH_i}{H_iH_j}.
+\]
+
+Even this corrected pullback, with the same storage and diffusion `-eNLx`,
+has `E_dot=-e*x^T*N*L*x`, not an established nonpositive expression.
+At phase consensus on P2, `N=diag(1,4)` and `x=(2,1)` give `x^T*N*L*x=-2`.
+For `e=1/2` the storage grows at rate `1`, despite valid stable diffusion
+in its own capacity-weighted metric. This refutes a proposed extension of
+the storage theorem, not the existing diffusion theorem.
+
+The map `H/nu` also excludes zero capacity. On P2 at `delta=pi/3`,
+`x=(1,1)` and `nu_1=1`, its form rate as `nu_0` tends to zero is
+`2*(3*sqrt(3)-pi)/(9*pi)>0` at node zero. It therefore cannot extend
+continuously as a finite-pressure unforced nodal row there. Changing to
+inverse-capacity storage or another pressure can repair selected balances,
+but defines another model and does not resolve that boundary automatically.
+Evolving capacity additionally introduces moving-coordinate/storage terms.
+
+There is an independent graph-domain obstruction. On unit P3 with phase
+consensus and `x=(1,3/2,1)`, `x^T*L_rw*x=-1/4`; the unchanged Euclidean
+storage would grow at rate `e/4`. A degree-weighted Hamiltonian
+`E_D=x^T*D*x/2+w*V_phi` repairs diffusion on this reciprocal graph, but
+with momentum `Hx` its Hamiltonian rows are `K*D*x+wg` and `M*D*x`.
+Both change. Naming a weighted energy while retaining the old joint rows
+would not repair the proof. The full pressure also has configured capacity
+and topology source channels; none is included by these two-channel results.
+
+**Engine, events and formation.** The
+[default runtime](../src/tnfr/dynamics/runtime.py) interleaves pressure,
+glyphs, held-pressure form integration, clamps, phase coordination and
+capacity adaptation. Disabling glyphs or supplying a pressure callback does
+not implement the joint cotangent flow. The bounded producer correctly reuses
+pressure, Euler arithmetic and detached SDK diagnostics through a separate
+declared path. A future opt-in joint model must preserve that ownership and
+admit its scalar, support, capacity, clock and phase-chart domains explicitly.
+
+Operator/grammar admission does not imply preservation of this storage,
+momentum or regular chart. Support changes also change `H` and `V_phi`;
+THOL birth changes the state dimension. Their event balances and occurrence
+laws remain independent obligations. On fixed cycles in the strict acute
+domain, continuous phase motion preserves integer winding. Thus the
+small-energy theorem cannot also establish creation of nonzero winding
+from zero within that domain. This does not exclude non-topological patterns
+or finite lifetimes. Neither indefinite persistence nor a Hamiltonian form
+is required by the definition of every NFR.
+
+The audit verdict is **conditional model with a derived hierarchy law and
+explicit integration gaps**, not a complete emergent theory and not a failed
+nodal identity. Known principles permit several completions; no reviewed
+law yet derives formation, identity, interaction, capacity and support
+together from those principles. The
+[single plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) places
+constitutive/scale admission before further C8 identity experiments. The
+[scope tests](../tests/physics/test_cotangent_phase_exchange_scope.py) retain
+the exact alternative-family, inherited-scale and production-pressure
+counterexamples without another trajectory or a public tuning parameter.
+
+<a id="cotangent-unequal-block-closure"></a>
+### 13.25 Unequal coherent blocks inherit a joint law, not a bare graph
+
+Keep the section 13.21 fine law with `eta=1`, unit capacity, fixed unit C4
+support and no inputs or events. Prepare blocks `A={0}`, `B={1,3}`, `C={2}`
+with equal form and phase inside each block. The automorphism exchanging
+nodes 1 and 3 leaves the full vector field equivariant on its regular chart.
+Its fixed-point manifold is therefore invariant for as long as the solution
+stays in that chart. This is an exact preparation, not attraction or formation.
+
+The existing [counted-support owner](../src/tnfr/physics/quotient_structure.py)
+retains the neighbor counts and block mass
+
+\[
+N=\begin{pmatrix}0&2&0\\1&0&1\\0&2&0\end{pmatrix},\qquad
+S=\operatorname{diag}(1,2,1),\qquad \bar L=I-N/2.
+\]
+
+Choose a consistent real lift with acute edge differences, and put
+`u=Theta_B-Theta_A`, `v=Theta_B-Theta_C`, `a=-(u+v)/2`, `b=(u-v)/2`.
+In particular, `abs(u),abs(v)<pi/2`; the midpoint formulas below are not
+asserted across a resultant branch change.
+The inherited per-node phase metric, pressure source and phase cost are
+
+\[
+H=\operatorname{diag}(2\pi\operatorname{sinc}u,
+  2\pi\cos b\operatorname{sinc}a,2\pi\operatorname{sinc}v),\qquad
+g=\pi^{-1}(u,a,v)^T,
+\]
+\[
+\bar V=2(1-\cos u)+2(1-\cos v),\qquad SHg=-\nabla_\Theta\bar V.
+\]
+
+Here `sinc(0)=1`. The factors of two count actual fine edges and neighbors;
+they are not fitted coefficients. Restricting the canonical one-form and
+storage gives
+
+\[
+\bar\pi=SHX,\qquad
+\bar E=\tfrac12X^TSX+w\bar V.
+\]
+
+For block sizes `n=(1,2,1)` and diagonal entries `h_i` of `H`, the pullback
+connection is
+
+\[
+\bar K_{ij}=
+\frac{n_jX_j\partial_i h_j-n_iX_i\partial_jh_i}
+     {n_in_jh_ih_j}.
+\]
+
+It is skew, but acts on `grad_X E=S*X`. The exact restricted rows are
+
+\[
+\boxed{\dot X=-e\bar L X+wg+\bar K SX,\qquad
+\dot\Theta=H^{-1}X.}
+\]
+
+They follow either by restricting the fine field or by using the pulled-back
+canonical coordinates; no new primitive capacity is introduced. The balances
+are
+
+\[
+\dot{\bar E}=-eX^TS\bar LX
+  =-e[(X_A-X_B)^2+(X_C-X_B)^2],\qquad
+\dot P=-e\,\mathbf1^TSH\bar LX,
+\quad P=\mathbf1^TSHX.
+\]
+
+The first uses `S*Kbar*S` skew and the phase-gradient identity. The second
+uses common phase-rotation symmetry for the Hamiltonian part and retains
+the diffusion contribution. It does not assert conserved `P` in general.
+
+Recomputing a bare unit P3 keeps `Lbar` and `g`, but gives metric
+`diag(1/2,1,1/2)*H`. With the bare unweighted storage, the endpoint phase
+rates double and the geometric correction changes. No common exchange
+factor repairs this: nonzero endpoint forms require `eta=2`, whereas a
+nonzero center form requires `eta=1`. Thus preserving old pressure is
+insufficient to preserve the joint law. Inherited mass and multiplicity
+carry information needed for composition of effective regions.
+
+The [exact controls](../tests/physics/test_cotangent_quotient_scope.py) reuse
+production joint-quotient metadata, independently differentiate the macro
+trigonometric expressions, and compare fine and restricted fields at
+`Theta=(0,pi/6,pi/2)` for symbolic arbitrary `X`. There,
+`H=diag(6,6*(sqrt(3)-1),3*sqrt(3))`. These finite controls accompany the
+invariant-manifold argument; they do not test every phase preparation or
+establish an all-state quotient. Hidden differences inside block B,
+changing support, evolving capacity and the microscopic momentum premise
+remain outside this result.
+
+<a id="cotangent-tetrad-future-witness"></a>
+### 13.26 Identical snapshot fields can have different futures under one law
+
+Keep the same P2 cotangent law, unit capacity and clock, with `e=w=1/2`.
+Compare `x=(a,-a)` and `x=(m+a,m-a)` at phase consensus. Both have
+`Kx=0`, initial pressure `(-a,a)` and the same phase fields. Their stored
+nodal rates and coherence agree. This comparison fixes the law; it does
+not exploit uncertainty about which phase equation to choose.
+
+The full P2 reduction in section 13.23 gives, at that preparation,
+
+\[
+\dot a=-2ea,\qquad
+\ddot a=4e^2a-\frac{2wa}{\pi^2}-\frac{4m^2a}{3\pi^2}.
+\]
+
+Indeed `P=2*pi*m` there, and differentiating `U_P` gives
+`U_P''(0)=w+P^2/(6*pi^2)`. The resulting acceleration difference is in
+relative form, so it cannot be removed by common phase rotation. The
+uncentered form/storage premise makes the hidden mean dynamically relevant.
+
+For `a=1/8`, `m=0` versus `m=1/4`, the actual shared SDK diagnostic reports
+identical tetrads: `Phi_s=(1/8,-1/8)`, zero phase gradient and curvature,
+and `xi_C=1/sqrt(2)` with the same spectral-fallback provenance. Yet
+
+\[
+\Delta\ddot a=-\frac1{96\pi^2},\qquad
+\Delta\dot\Phi_s=
+\frac1{\pi^2}\left(\frac1{64},-\frac1{192}\right).
+\]
+
+For the last identity, unit-length P2 has `Phi_s=(p_1,p_0)` and the
+declared unit-capacity field has `p=xdot`. Pressure is independently given
+by the law, not reconstructed from an observed derivative. Its derivatives
+are computed from that law's full field before imposing consensus.
+
+Thus the snapshot tetrad does not close even its own evolution in this
+conditional model. This does not exclude observability from a time series
+or require a new fundamental variable: the omitted EPI mean was already
+part of the full state. The
+[single witness](../tests/physics/test_cotangent_observability_scope.py)
+checks both the exact field derivative and the actual SDK readout. At this
+initial state the default two-channel pressure agrees because `Kx=0`;
+the subsequent law is the declared cotangent comparison, not default runtime.
+No trajectory, synthetic measurement history or physical identification is
+claimed.
+
+**A passive chart translation does preserve the law.** This state comparison
+does not privilege a physical absolute EPI origin. For `y=x+beta*1`, with
+fixed coordinate offset beta, transform momentum and storage to
+
+\[
+\widetilde\pi=H(y-\beta\mathbf1),\qquad
+\widetilde E=\tfrac12\|y-\beta\mathbf1\|^2+wV_\phi.
+\]
+
+Writing `K_theta(x)` to expose the connection's form dependence, the same law
+in the new chart is
+
+\[
+\dot y=-eLy+wg+K_\theta(y-\beta\mathbf1)(y-\beta\mathbf1),\qquad
+\dot\theta=M(y-\beta\mathbf1).
+\]
+
+This uses `L*1=0`, not a new force. Resetting momentum to `Hy` and uncentered
+storage to `||y||^2/2` is a different premise. A positive control in the same
+test owner independently pushes the canonical bracket through `y=pi/h+beta`
+on regular P2, retaining both absolute phase rows, momentum and the storage
+balance. It complements the state-shift counterexample; it does not select
+the origin or microscopic law through mathematical consistency alone.
+
+### 13.27 Storage admission beyond the cotangent choice
+
+The [relational exchange owner](nodal/RELATIONAL_EXCHANGE_ADMISSION.md)
+compares the existing Dirichlet form storage with the uncentered cotangent
+storage. A declared nodewise work-cancellation premise supplies a different
+joint phase/form law while keeping the native two-channel pressure intact.
+It retains origin covariance, heterogeneous held capacity and inherited
+coherent replication; its modal restoring coefficient scales as the square
+of the diffusion eigenvalue, rather than the cotangent first power.
+The same owner gives a P2 Noether obstruction independent of the chosen
+smooth Hamiltonian storage: conserving both the native form mean and the
+cotangent momentum precludes relative phase motion on a full open state
+domain. These are conditional admission results, not a unique law selected
+by the nodal equation. Proofs and controls remain in that single owner.
 
 ## Implementation & Examples
 

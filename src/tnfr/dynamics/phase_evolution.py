@@ -7,6 +7,14 @@ and the coupling strength are constitutive premises, not deductions from
 ``dEPI/dt = nu_f*DeltaNFR``. The arithmetic uses radians per supplied time unit;
 it does not infer cycles per second or apply the optional physical Hz bridge.
 
+Reusing the operator-admission U3 gate as an interaction cutoff in this phase
+law is another constitutive choice. The phase row reads neither EPI nor
+pressure; at fixed supplied frequency, support and configuration, changing
+form or pressure cannot change its proposal. The pressure phase channel has
+its own full-support neighbor resultant, so an excluded phase interaction
+need not imply zero phase pressure. Crossing the cutoff changes both the sine
+sum and its admitted-neighbor denominator; the vector field can be discontinuous.
+
 The nodal optimizer and FFT engine share this model. Ordinary runtime phase
 coordination instead uses its separately configured relaxation map. Neither
 law may be substituted for the other based only on the nodal EPI identity.
@@ -69,6 +77,8 @@ def propose_u3_gated_phase_step(
     text or complex values. Validation precedes binary64 conversion; no
     imaginary component is discarded from an inverse spectral transform.
     Nonzero input scalars must remain nonzero when materialized as binary64.
+    The supplied frequency vector controls free advance; neither stored EPI
+    nor stored pressure enters this phase proposal.
     """
     if tuple(graph.nodes()) != tuple(nodes):
         raise TNFRValueError("Phase proposal node order differs from the graph.")

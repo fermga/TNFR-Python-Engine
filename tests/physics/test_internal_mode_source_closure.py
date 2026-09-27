@@ -20,13 +20,19 @@ from tests.physics._internal_mode_fixture import (
     _graph,
 )
 from tests.physics.test_joint_quotient_contract import _ordered_phasor_gradient
+from tnfr.dynamics.dnfr import default_compute_delta_nfr
 from tnfr.physics.forced_support import (
     derive_forced_support_balance,
     observe_forced_support_shape,
 )
 from tnfr.physics.forcing_realization import capture_non_epi_forcing
+from tnfr.physics.form_geometry import (
+    derive_regional_affine_closure,
+    observe_regional_form,
+)
 
 _COEFFICIENTS = (Q(1, 16), Q(0), Q(1, 16), Q(0))
+_REGIONS = (NODES[:3], NODES[3:])
 
 
 def _source(coefficients=_COEFFICIENTS):
@@ -253,3 +259,169 @@ def test_homogeneous_linear_pair_angles_cannot_match_a_nonzero_scaled_source():
     assert second.forcing != tuple(2 * value for value in first.forcing)
     # This obstruction excludes neither zero source nor other fine models;
     # state-dependent coefficients would be extra premises to justify.
+
+
+def test_held_capacity_source_moves_means_without_losing_sign_quotient_dynamics():
+    reports = []
+    for sign in (1, -1):
+        graph = _graph(tuple(sign * value for value in _COEFFICIENTS))
+        graph.graph["DNFR_WEIGHTS"] = {
+            "epi": 0.5,
+            "phase": 0.0,
+            "vf": 0.5,
+            "topo": 0.0,
+        }
+        for a, i in NODES:
+            graph.nodes[a, i]["nu_f"] = (0.25, 1.0)[a]
+        default_compute_delta_nfr(graph)
+        captured = capture_non_epi_forcing(graph)
+        report = observe_regional_form(graph, _REGIONS)
+        # One cross-fiber neighbor among three supplies capacity pressure
+        # +/- (1/2)*(3/4)/3. Capacity multiplies it only after assembly.
+        assert captured.forcing == (Q(1, 8),) * 3 + (Q(-1, 8),) * 3
+        source_rate = tuple(
+            nu * force
+            for nu, force in zip(report.capacity, captured.forcing, strict=True)
+        )
+        assert source_rate == (Q(1, 32),) * 3 + (Q(-1, 8),) * 3
+        assert _apply(PROJECTION, source_rate) == (0,) * 4
+        closure = derive_regional_affine_closure(
+            NODES,
+            _REGIONS,
+            generator=tuple(
+                tuple(captured.epi_weight * value for value in row)
+                for row in _exact_generator(captured.snapshot)
+            ),
+            source=source_rate,
+        )
+        assert closure.all_state_closed
+        assert closure.source == source_rate != captured.forcing
+        assert closure.source_contrast_a == closure.source_contrast_b == (0, 0)
+        assert closure.block_circulant_defect == ((0,) * 6,) * 6
+        assert closure.mean_generator == (
+            (Q(-1, 24), Q(1, 24)),
+            (Q(1, 6), Q(-1, 6)),
+        )
+        assert closure.mean_source == (Q(1, 32), Q(-1, 8))
+        assert closure.contrast_generator_real == (
+            (Q(-1, 6), Q(1, 24)),
+            (Q(1, 6), Q(-2, 3)),
+        )
+        assert closure.contrast_generator_imag_over_sqrt3 == ((0, 0),) * 2
+        expected_rate = (
+            Q(1, 32) - sign * Q(1, 128),
+            Q(1, 32) + sign * Q(1, 128),
+            Q(1, 32),
+            Q(-1, 8) - sign * Q(1, 32),
+            Q(-1, 8) + sign * Q(1, 32),
+            Q(-1, 8),
+        )
+        assert report.nodal_rate == expected_rate
+        assert captured.stored_pressure_residual == (0,) * 6
+        assert captured.kernel_pressure_defect == (0,) * 6
+        assert report.nodal_rate_rounding_defect == (0,) * 6
+        assert tuple(row.mean for row in report.regions) == (Q(1, 2),) * 2
+        assert tuple(row.mean_rate for row in report.regions) == (Q(1, 32), Q(-1, 8))
+        assert report.gram_real == ((Q(1, 128),) * 2,) * 2
+        assert report.gram_imag_numerator == ((0, 0),) * 2
+        # Both regional contrasts initially agree. Their linear rates are
+        # -nu_a*z_a/2, giving Qdot_ab=-(nu_a+nu_b)*Q_ab/2.
+        assert report.gram_rate_real == (
+            (Q(-1, 512), Q(-5, 1024)),
+            (Q(-5, 1024), Q(-1, 128)),
+        )
+        assert report.gram_rate_imag_numerator == ((0, 0),) * 2
+        reports.append(report)
+    assert reports[0].epi != reports[1].epi
+    assert reports[0].gram_real == reports[1].gram_real
+    assert reports[0].gram_rate_real == reports[1].gram_rate_real
+    # This exact dyadic execution control does not choose a phase/capacity law
+    # or assert that arbitrary future native events preserve this quotient.
+
+
+def test_held_contrast_source_separates_equal_gram_states_with_rate_defects():
+    reports, modeled_gram_rates, sources = [], [], []
+    nu = Q(0.1)
+    for sign in (1, -1):
+        graph = _source(tuple(sign * value for value in _COEFFICIENTS))
+        for a, i in NODES:
+            graph.nodes[a, i].update(nu_f=0.1, theta=(0.0, pi / 3, pi / 6)[i])
+        phases = tuple(graph.nodes[node]["theta"] for node in NODES)
+        rows = tuple(
+            tuple(NODES.index(other) for other in graph[node]) for node in NODES
+        )
+        expected_phase = _ordered_phasor_gradient(phases, rows)
+        expected_forcing = tuple(value / 4 for value in expected_phase)
+        default_compute_delta_nfr(graph)
+        captured = capture_non_epi_forcing(graph)
+        report = observe_regional_form(graph, _REGIONS)
+        assert captured.phase_gradient == expected_phase
+        assert captured.forcing == expected_forcing
+        f = expected_forcing[0]
+        assert f > Q(1, 32)
+        assert expected_forcing == (f, -f, 0) * 2
+        source_rate = tuple(nu * value for value in expected_forcing)
+        assert _apply(PROJECTION, source_rate) == (nu * f, 0, nu * f, 0)
+        closure = derive_regional_affine_closure(
+            NODES,
+            _REGIONS,
+            generator=tuple(
+                tuple(captured.epi_weight * value for value in row)
+                for row in _exact_generator(captured.snapshot)
+            ),
+            source=source_rate,
+        )
+        assert not closure.all_state_closed
+        assert closure.block_circulant_defect == ((0,) * 6,) * 6
+        assert closure.source == source_rate != captured.forcing
+        assert closure.source_contrast_a == (2 * nu * f,) * 2
+        assert closure.source_contrast_b == closure.mean_source == (0, 0)
+        assert closure.contrast_generator_real is None
+        assert closure.contrast_generator_imag_over_sqrt3 is None
+        inherited_pressure = (sign * Q(-1, 32), sign * Q(1, 32), 0) * 2
+        modeled_pressure = tuple(
+            drift + force
+            for drift, force in zip(inherited_pressure, expected_forcing, strict=True)
+        )
+        expected_pressure = tuple(
+            Q(float(drift) + float(force))
+            for drift, force in zip(inherited_pressure, expected_forcing, strict=True)
+        )
+        expected_rate = tuple(Q(0.1 * float(p)) for p in expected_pressure)
+        pressure_defect = tuple(
+            materialized - modeled
+            for materialized, modeled in zip(
+                expected_pressure, modeled_pressure, strict=True
+            )
+        )
+        rate_defect = tuple(
+            rate - nu * pressure
+            for rate, pressure in zip(expected_rate, expected_pressure, strict=True)
+        )
+        assert (
+            report.stored_pressure == captured.full_kernel_pressure == expected_pressure
+        )
+        assert report.nodal_rate == expected_rate
+        assert captured.kernel_pressure_defect == pressure_defect
+        assert captured.stored_pressure_residual == (0,) * 6
+        assert report.nodal_rate_rounding_defect == rate_defect
+        assert any(rate_defect)
+        assert tuple(row.mean for row in report.regions) == (Q(1, 2),) * 2
+        assert tuple(row.mean_rate for row in report.regions) == (0, 0)
+        assert report.gram_real == ((Q(1, 128),) * 2,) * 2
+        assert report.gram_imag_numerator == ((0, 0),) * 2
+        # Qdot=-nu*Q + c*z^*+z*c^*. Reversing the hidden common
+        # contrast orientation reverses only the additive-source cross term.
+        modeled = -nu / 128 + sign * nu * f / 4
+        defect = sign * (nu * pressure_defect[0] + rate_defect[0]) / 4
+        assert report.gram_rate_real == ((modeled + defect,) * 2,) * 2
+        assert report.gram_rate_imag_numerator == ((0, 0),) * 2
+        reports.append(report)
+        modeled_gram_rates.append(modeled)
+        sources.append(captured.forcing)
+    assert sources[0] == sources[1]
+    assert modeled_gram_rates[0] - modeled_gram_rates[1] == nu * sources[0][0] / 2
+    assert reports[0].gram_real == reports[1].gram_real
+    assert reports[0].gram_rate_real[0][0] > 0 > reports[1].gram_rate_real[0][0]
+    # This held law is well-defined on the full signed form state. The failed
+    # all-state quotient is the attempt to discard its source-relative angle.

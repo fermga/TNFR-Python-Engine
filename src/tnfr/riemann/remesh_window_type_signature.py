@@ -45,7 +45,7 @@ delays; its fixed modes are governed by gcd(tau_l, tau_g).
 References
 ----------
 - ``theory/TNFR_RIEMANN_RESEARCH_NOTES.md`` §13quadraginta-tertia
-- ``theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`` §4 row B4
+- ``theory/research/archive/README.md`` (finite catalog-audit scope)
 - ``theory/REMESH_INFINITY_DERIVATION.md`` §§1–8 (corrected finite
   fixed-delay cyclic surrogate and runtime-limit boundary)
 - ``src/tnfr/operators/remesh.py:1212::apply_network_remesh``

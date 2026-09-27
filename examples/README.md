@@ -8,20 +8,19 @@ owns the active research queue. Running an example does not reopen a parked bran
 
 ## Start with the intended task
 
-| Directory | Python files | Use and authority | Interpretation |
-| --- | --- | --- | --- |
-| `01_foundations` | 5 | SDK and [grammar scope](../theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md) | Supplied preparations, words and state ensembles |
-| `02_physics_regimes` | 37 | [Diffusion certificates](../theory/TNFR_DIFFUSION_STABILITY_THEOREM.md), diagnostics and auxiliary models | Read each model's hypotheses; a diagnostic decrease is not general stability |
-| `03_riemann_zeta` | 19 | Finite instruments in the [Riemann notebook](../theory/TNFR_RIEMANN_RESEARCH_NOTES.md) | Parked comparisons; disclose supplied zeros/primes |
-| `04_riemann_L_twisted` | 18 | Character/L-function instruments in the same [notebook](../theory/TNFR_RIEMANN_RESEARCH_NOTES.md) | Supplied arithmetic data and finite comparisons, not generalized RH |
-| `05_type_hygiene` | 4 | [Catalog and state-type controls](../theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md) | Finite delay projection, actual storage, event-count and registry observations |
-| `07_number_theory` | 14 | [Arithmetic definitions](../theory/TNFR_NUMBER_THEORY.md), residues and prime structure | Disclose factorization, sieves and other construction inputs |
-| `08_emergent_geometry` | 47 | [Scale/geometry bridge](../theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md), spectra and auxiliary models | Separate prescribed geometry, observed structure and autonomous generation |
-| `10_applications` | 6 | [Measurement protocol](../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md), adapters and backend provenance | Data admission and reserved prediction remain separate obligations |
+| Directory | Use and authority | Interpretation |
+| --- | --- | --- |
+| `01_foundations` | SDK and [grammar scope](../theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md) | Supplied preparations, words and state ensembles |
+| `02_physics_regimes` | [Diffusion certificates](../theory/TNFR_DIFFUSION_STABILITY_THEOREM.md), diagnostics and auxiliary models | Read each model's hypotheses; a diagnostic decrease is not general stability |
+| `03_riemann_zeta` | Finite instruments in the [Riemann notebook](../theory/TNFR_RIEMANN_RESEARCH_NOTES.md) | Parked comparisons; disclose supplied zeros/primes |
+| `04_riemann_L_twisted` | Character/L-function instruments in the same [notebook](../theory/TNFR_RIEMANN_RESEARCH_NOTES.md) | Supplied arithmetic data and finite comparisons, not generalized RH |
+| `05_type_hygiene` | [Operator and state-type scope](../theory/README.md#operators-grammar-and-support-events) | Finite delay projection, actual storage, event-count and registry observations |
+| `07_number_theory` | [Arithmetic definitions](../theory/TNFR_NUMBER_THEORY.md), residues and prime structure | Disclose factorization, sieves and other construction inputs |
+| `08_emergent_geometry` | [Scale/geometry bridge](../theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md), spectra and auxiliary models | Separate prescribed geometry, observed structure and autonomous generation |
+| `10_applications` | [Measurement protocol](../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md), adapters and backend provenance | Data admission and reserved prediction remain separate obligations |
 
-The inventory contains 149 executable demonstrations and one shared support
-module, `_flat_grammar_model.py`. Counts describe files, not independent research
-lines. The grammar automaton examples reuse that module; arithmetic and physical
+Use `rg --files examples -g "*.py"` for the current file inventory. The grammar
+automaton examples reuse `_flat_grammar_model.py`; arithmetic and physical
 examples reuse their package owners. A finite fixture may recur as a controlled
 comparison without constituting a second implementation of its governing law.
 
@@ -102,6 +101,26 @@ as a second theorem ledger here.
 
 ## Geometry and phase/form response
 
+[Example 180](08_emergent_geometry/180_relational_exchange.py) runs four small
+joint steps of the explicitly selected capacity-separable relational model,
+including a zero-capacity node. It calls the shared SDK/engine owner and
+prints actual storage increments and Euler defects. It also reports regional
+work/cut accounting and unweighted phase-response covariance with their exact
+arithmetic evidence, including at zero capacity. The supplied preparation,
+storage scale and capacity premise remain explicit; this is no formation
+or physical-validation claim. A separate read-only block applies all three
+capture certificates to supplied asymmetric two-ring snapshots. It shows why
+an unavailable exact-reflection certificate can coexist with admitted
+full-state local and sector certificates, and why positive heterogeneous
+capacity and a nonunit storage scale require the broader sector theorem.
+This comparison runs no additional trajectory and revises no frozen result.
+See the
+[execution guide](../docs/CLI_AND_SDK.md#execute-the-conditional-relational-model).
+
+```bash
+python examples/08_emergent_geometry/180_relational_exchange.py
+```
+
 The [scale bridge](../theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) owns effective
 geometry and observation closure. The tetrad is a required diagnostic interface,
 not a proven complete state; reflection equivalence and loss of hidden state are
@@ -118,7 +137,7 @@ validation claims have been removed.
 [Example 179](08_emergent_geometry/179_phase_form_driven_response.py) checks a
 prescribed rotating phase contrast and its derived EPI response on the six-node
 prism. It evaluates detached analytic snapshots rather than a native trajectory.
-The [phase/form owner](../theory/NODAL_PARAMETER_FOUNDATIONS.md#16-phase-and-form-directed-exchange-frames-and-the-moving-mean)
+The [phase/form owner](../theory/nodal/PHASE_FORM_EXCHANGE.md#16-phase-and-form-directed-exchange-frames-and-the-moving-mean)
 states the exact assumptions, moving mean and same-input contraction scope.
 The imposed phase clock is not a derived autonomous maintenance mechanism.
 

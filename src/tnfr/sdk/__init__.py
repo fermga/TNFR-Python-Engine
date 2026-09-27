@@ -21,6 +21,8 @@ __all__ = [
     "diagnose_network",
     "list_sequences",
     "STUDY_TOPOLOGIES",
+    "RelationalExchangeModel",
+    "relational_report_to_dict",
     # Simplified API (recommended entry point)
     "TNFR",
     "Network",
@@ -57,6 +59,14 @@ __all__ = [
 
 def __getattr__(name: str) -> Any:
     """Lazy load SDK components."""
+    if name == "relational_report_to_dict":
+        from .relational_reports import relational_report_to_dict
+
+        return relational_report_to_dict
+    if name == "RelationalExchangeModel":
+        from ..dynamics.relational import RelationalExchangeModel
+
+        return RelationalExchangeModel
     if name in (
         "StudySpec",
         "StudyResult",

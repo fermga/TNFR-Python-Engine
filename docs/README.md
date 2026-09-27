@@ -3,7 +3,9 @@
 This is the repository-wide map of maintained documentation. A topic has one
 primary owner; summaries, examples and translations point to that owner rather
 than introduce their own definitions. [The theory index](../theory/README.md)
-provides the detailed scientific-document inventory and status.
+provides the complete scientific-document catalog by topic, question-based
+reading routes and a theory-to-engine/test/SDK map. Its owner list is checked
+automatically; research priority remains in the portfolio and execution plan.
 
 ## One owner for each responsibility
 
@@ -27,6 +29,14 @@ provides the detailed scientific-document inventory and status.
 | Research branches | [Portfolio](../TNFR_lineas_de_investigacion.txt) | Main, supporting and parked lines |
 | Scientific rationale | [Strategy](../theory/NODAL_RESEARCH_STRATEGY.md) | Explains choices; does not create tasks |
 | Active research tasks and gates | [Execution plan](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md) | Sole active queue |
+| Physical phenomena and correspondence cards | [Physical atlas](../theory/PHYSICAL_REGIME_CORRESPONDENCES.md#physical-emergence-atlas) | Existing reductions, supplied analogues and unmet physical prerequisites; no second research queue |
+| Regional phase/amplitude measurement | [Observation contract](../theory/research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md) | Spatial sensor map, uncertainty and candidate-specific source admission; no physical validation yet |
+| Regional form APIs and representation | [SDK usage](CLI_AND_SDK.md#observe-regional-form-and-its-nodal-response) | Shared Cartesian/Gram and source-relative observations, plus separately supplied affine-law admission; no second evolution implementation |
+| Conditional relational execution | [SDK usage](CLI_AND_SDK.md#execute-the-conditional-relational-model), [execution contract](API_CONTRACTS.md#conditional-relational-execution) | One admitted engine field and atomic Euler step; [continuous local recovery](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-local-recovery) has stronger hypotheses than step admission |
+| Prepared relational pattern observations | [SDK usage](CLI_AND_SDK.md#observe-a-prepared-relational-pattern), [observation contract](API_CONTRACTS.md#prepared-relational-pattern-observations) | Explicit regions/reference lifts, separate form/phase geometry, reused winding/transport accounting and exact report projection; no pattern selection |
+| Joint pattern memory and approximation | [Joint memory](../theory/nodal/RELATIONAL_PATTERN_MEMORY.md) | Complete visible/hidden split, conditional error orders and a frozen finite prediction; research coefficients do not install a reduced nonlinear SDK solver |
+| Validated relational transit | [SDK usage](CLI_AND_SDK.md#validate-continuous-transit-to-a-protected-basin), [proof owner](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-validated-transit) | Whole-time continuous enclosure from an exact reflected initial state to a sufficient basin; preserves earlier finite-executor evidence |
+| Derived form geometry and reduction closure | [Derived form](../theory/nodal/DERIVED_FORM_PHASE.md) | Exact coordinate identities, conditional mean/Gram closure and source-relative response; fixed-law prediction is distinct from source selection |
 | Examples | [Example index](../examples/README.md) | Tutorial/model scope; not a theorem or performance inventory |
 | Benchmarks and research instruments | [Benchmark index](../benchmarks/README.md) | Record input, path, seed, hardware and scope for each actual run |
 | Factorization usage and configuration | [Factorization lab](../factorization-lab/README.md) | Candidate heuristics, arithmetic checks and fallback provenance |
@@ -44,7 +54,9 @@ summary only where the result or navigation changes. Do not copy long theorem
 proofs, dated delivery lists, configuration defaults or workflow matrices into
 entry-point documents. The registry-generated table in API Contracts is checked
 for exact agreement; use `python scripts/check_documentation.py --write-generated`
-when its source metadata changes. This command does not prove mathematical claims.
+when its source metadata changes. The same command generates theory navigation
+from the catalog in `theory/README.md`; edit its topic/owner rows rather than
+maintaining a second manual menu. This command does not prove mathematical claims.
 
 The agent mirror is the only intentionally exact prose duplicate. Templates
 provide structure and links; they do not define extra grammar or acceptance laws.

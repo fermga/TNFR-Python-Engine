@@ -271,7 +271,7 @@ data or dependencies can yield skipped reports, which are not validation passes.
 The P1 engineering boundary below is implemented; P2 physical admission remains
 `not_admitted` and the current programme's empirical outcome is `not_tested`.
 The historical numerical tables above were not rerun by these changes. The
-[five-stage plan](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md) owns stage
+[research execution plan](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md) owns stage
 status; the [passive transport protocol](../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md)
 owns the proposed measurement conditions.
 
@@ -396,8 +396,10 @@ cover capacities `(nu,0)` and a constant reference. Their contrast decay rate
 is `nu`, not `2*nu`; the arithmetic mean is not conserved. They share the
 rational log/exp kernels and do not fabricate a second measured channel.
 The [Volts benchmark](../benchmarks/volts_fixed_reference_exploration.py)
-uses that reference for a predeclared within-acquisition exploration only;
-it leaves the strict disjoint-acquisition scoring API unchanged. Its nominal
+uses that reference for the historical fixed-design within-acquisition exploration;
+its [model boundary](../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md#volts-model-boundary)
+separates that earlier comparison from the revised generative programme.
+It leaves the strict disjoint-acquisition scoring API unchanged. Its nominal
 arithmetic enclosures are not instrument error bounds. Data ingestion requires
 Python 3.11 or later and the pinned optional `research-data` extra. Physical
 mapping and results are owned by the same P2 annex.

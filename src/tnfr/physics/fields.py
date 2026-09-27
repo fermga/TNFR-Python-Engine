@@ -55,8 +55,7 @@ derive a physical interaction or an evolution law for the graph metric.
 References
 ----------
 - UNIFIED_GRAMMAR_RULES.md § U6: STRUCTURAL POTENTIAL CONFINEMENT
-- docs/STRUCTURAL_FIELDS_TETRAD.md: Field API and validation scope
-- docs/XI_C_CANONICAL_PROMOTION.md: ξ_C experimental validation
+- docs/STRUCTURAL_FIELDS_TETRAD.md: Field API, estimator provenance and validation scope
 - AGENTS.md § Structural Fields: Canonical tetrad documentation
 - TNFR.pdf § 2.1: Nodal equation foundation
 """
@@ -952,7 +951,7 @@ def compute_unified_telemetry(G: Any) -> dict[str, Any]:
 
     References:
         - Structural-field scope in docs/STRUCTURAL_FIELDS_TETRAD.md
-        - Coherence-length provenance in docs/XI_C_CANONICAL_PROMOTION.md
+        - Coherence-length estimator and provenance in that guide, section 2.4
     """
     from .unified import (
         _complex_geometric_field,

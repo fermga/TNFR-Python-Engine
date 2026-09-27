@@ -214,6 +214,7 @@ testpaths = [
   "tests/physics/test_epi_scalarization.py",
   "tests/physics/test_extended_pressure_feedback_scope.py",
   "tests/physics/test_field_*.py",
+  "tests/physics/test_form_geometry.py",
   "tests/physics/test_mutation_trigger.py",
   "tests/physics/test_native_phase_writer_boundaries.py",
   "tests/physics/test_nodal_foundation_scope.py",

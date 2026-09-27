@@ -2305,6 +2305,166 @@ class Network:
             _identity_labels=tuple(self.G),
         )
 
+    def regional_form(self, regions):
+        """Observe form in supplied ordered triples without evolving the graph.
+
+        Returns an immutable ``RegionalFormObservation`` with exact scaled
+        Cartesian/Gram coordinates, stored unforced nodal-rate pushforwards and
+        separately tagged numerical polar estimates. Regions must be disjoint
+        and cover this graph. No primitive phase, pressure or partition is
+        inferred, and instantaneous rates do not certify reduced closure.
+        """
+        from ..physics.form_geometry import observe_regional_form
+
+        return observe_regional_form(self.G, regions)
+
+    def source_relative_form(self, regions, *, held_source_rate):
+        """Observe complete source-relative contrasts with a declared held source.
+
+        Supply the independent form-rate source in graph node order, not a
+        pressure or a measured derivative. The shared immutable report reuses
+        ``regional_form`` admission and retains the full cross-region matrix.
+        Its rates hold that source fixed and do not imply a closed evolution.
+        """
+        from ..physics.source_relative_form import observe_source_relative_form
+
+        return observe_source_relative_form(
+            self.G, regions, held_source_rate=held_source_rate
+        )
+
+    def relational_exchange(self, model):
+        """Evaluate the explicitly selected relational model without mutation.
+
+        The shared owner refreshes its native two-channel pressure on a
+        detached preparation. Its immutable report retains the chosen storage,
+        held capacities, selected phase domain and numerical balance defects.
+        ``field.work`` separates exact represented nodal dissipation, signed
+        exchange and actual form/phase work; it does not select evolution.
+        The default domain is acute; explicit ``positive_resultant`` admission
+        retains certified rational real-part bounds for a sufficient regular
+        chamber, not the entire phase domain or exact rate-error bounds.
+        This is a conditional phase law, not the default operator controller.
+        """
+        from ..dynamics.relational import evaluate_relational_exchange
+
+        return evaluate_relational_exchange(self.G, model=model)
+
+    def relational_pattern(self, model, *, reference_phase, regions, cycles=()):
+        """Observe supplied regions and phase lifts under the selected joint law.
+
+        Retains complete centered coordinates, separate form/phase norms and
+        common offsets, plus shared winding and regional transport read-outs.
+        Pressure is refreshed on a detached preparation. References and regions
+        are supplied, not discovered; a snapshot is no recovery certificate.
+        The model's acute or positive-resultant admission remains unchanged.
+        Transport can be unavailable while geometric observations remain valid.
+        ``region.work`` sums captured nodal contributions; ``region.boundary``
+        pairs the actual weighted form and phase rates through a shared cut.
+        Divided rates require positive capacity in that region; they are not
+        a conserved regional phase total or a closed regional evolution law.
+        ``region.phase_response`` separates the unweighted rate into its
+        mean-mobility cut, mobility/form covariance and rounding residual.
+        It also admits zero capacity and retains an exact squared bound.
+        """
+        from ..physics.relational_observations import observe_relational_pattern
+
+        return observe_relational_pattern(
+            self.G,
+            model=model,
+            reference_phase=reference_phase,
+            regions=regions,
+            cycles=cycles,
+        )
+
+    def relational_capture(self, model, *, cycles):
+        """Check the sufficient exact reflected two-ring capture theorem.
+
+        The shared observer retains fresh native fields, exact symmetry
+        defects and rigorous storage/phase-domain bounds without mutation.
+        Admission concerns the conditional ideal ODE from this represented
+        state. It does not establish winding-zero entry or future numerical
+        execution; nearly symmetric states are never projected or repaired.
+        """
+        from ..physics.relational_capture import certify_relational_capture
+
+        return certify_relational_capture(self.G, model=model, cycles=cycles)
+
+    def relational_transit_capture(
+        self, *, model, cycles, horizon, time_step, order=12, requested_sector=1
+    ):
+        """Enclose a conditional continuous transit into a protected basin.
+
+        The shared owner validates its reflected two-ring model premises and
+        retains rational trajectory bounds for the requested structural time
+        horizon. This read-only calculation leaves the stored network intact.
+        An unresolved enclosure does not establish failure of the ideal law;
+        successful admission does not certify future numerical execution.
+        Set requested_sector=None to classify any of the three protected basins;
+        the default retains positive-twist admission only.
+        """
+        from ..physics.relational_transit import certify_relational_transit_capture
+
+        return certify_relational_transit_capture(
+            self.G,
+            model=model,
+            cycles=cycles,
+            horizon=horizon,
+            time_step=time_step,
+            order=order,
+            requested_sector=requested_sector,
+        )
+
+    def relational_local_capture(self, model, *, cycles, target_sector=1):
+        """Check a full-state local basin without projecting approximate symmetry.
+
+        This certificate requires two supplied five-node rings with bridges
+        at matching positions zero and one, unit capacities and storage scale,
+        and positive form/phase coefficients. The target sector is -1, 0 or +1.
+        Exact represented form and real phase lifts are compared with the
+        supplied ideal target using rigorous pi/cosine bounds. The report
+        certifies sufficient ideal-law recovery from this snapshot only;
+        earlier integration error and future binary64 execution are separate.
+        """
+        from ..physics.relational_capture import certify_relational_local_capture
+
+        return certify_relational_local_capture(
+            self.G, model=model, cycles=cycles, target_sector=target_sector
+        )
+
+    def relational_sector_capture(self, model, *, cycles, target_sector=1):
+        """Check a full acute-sector energy barrier around an aligned twist.
+
+        Exact pi-affine edge gaps and cycle periods establish the sector;
+        rigorous energy bounds establish the sufficient capture sublevel.
+        Strictly positive held capacities may differ by node, and any positive
+        storage scale multiplies the phase barrier. Unit-capacity/storage flags
+        describe the supplied model; they are not admission gates here.
+        No symmetry or local-distance gate is imposed. The detached report
+        concerns ideal continuation from this snapshot, not an earlier
+        numerical trajectory or a revised frozen prediction.
+        """
+        from ..physics.relational_capture import certify_relational_sector_capture
+
+        return certify_relational_sector_capture(
+            self.G, model=model, cycles=cycles, target_sector=target_sector
+        )
+
+    def step_relational(self, model, *, dt, t=None):
+        """Commit one admitted joint Euler step and return its detached evidence.
+
+        Uses the shared relational owner, with explicit structural duration,
+        held capacity/support and no clipping or operator selection. A failed
+        proposal does not advance the graph. The model selects the default
+        acute lift or a certified positive-resultant chamber. Its full straight
+        represented proposal is checked; this is not an exact ODE certificate.
+        Success records actual endpoint pressure, defects and optional rational
+        chamber margins. Continuous storage loss does not certify a finite
+        step's nonincrease or a physical clock.
+        """
+        from ..dynamics.relational import step_relational_exchange
+
+        return step_relational_exchange(self.G, model=model, dt=dt, t=t)
+
     def rhythm(self) -> dict[str, Any]:
         """Read the spectrum of the separately specified graph-wave model.
 

@@ -51,7 +51,12 @@ construction studied here:
 - **Composites carry structural pressure**: $\Delta\mathrm{NFR}(n) > 0$ whenever $n$ is composite, with a magnitude determined by the three selected arithmetic descriptors.
 - **Factorization as spectral decoding**: discovering the factors of a composite can be framed as resolving the coherent sub-modes of its structural pressure field.
 
-This document formalizes these observations, expresses the arithmetic constants as canonical units (only $\pi$ is a genuine structural scale), and maps the theory to its implementations in the repository.
+This document formalizes these observations, records the configured unit-weight
+arithmetic convention, and maps it to the implementations in the repository.
+The radian phase chart supplies the exact wrap scale $\pi$; it does not select
+the arithmetic coefficients or prove that no other structural scale can occur
+under a declared model. See the [parameter and scale
+ledger](NODAL_PARAMETER_FOUNDATIONS.md#2-parameter-and-dependency-ledger).
 
 ### Scope
 
@@ -509,19 +514,50 @@ The implementation uses Paley graphs — algebraic constructions from quadratic 
 
 1. **Graph construction**: For modulus $m$ (chosen near $n$), build the Paley graph $G(m)$ where nodes are $\{0, \ldots, m-1\}$ and edges connect quadratic residues.
 
-2. **Spectral decomposition**: Compute the spectrum of the **emergent structural-diffusion operator** $L_{rw} = I - D^{-1}W$ (the canonical ΔNFR EPI channel; `_laplacian_eigenvalues` routes through `structural_diffusion_operator`). On the residue/Paley graph, which is **regular**, $L_{rw}$ shares eigenvectors with the classical Laplacian and the eigenvalues differ only by the degree ($\lambda_{\text{classical}}=d\cdot\lambda_{rw}$), so the Fiedler-gap → prime-size map (a Paley Gauss-sum fact) is preserved while the operator provenance is the emergent TNFR transport operator.
+2. **Spectral decomposition**: The lab's `_laplacian_eigenvalues` returns the
+   **combinatorial** Laplacian spectrum on its unit-weight graphs. On regular
+   support of positive degree $d$, it reuses `structural_diffusion_operator`
+   and returns $d\,\operatorname{spec}(L_{rw})$, where
+   $L_{rw}=I-D^{-1}W$ is the isolated EPI-channel operator and
+   $D-W=dL_{rw}$. Irregular support uses the combinatorial Laplacian directly.
+   The shared eigenvectors and degree rescaling preserve the stated Paley
+   spectral comparison; the chosen residue graph and factor-inference rule
+   remain additional inputs. See the [lab implementation](../factorization-lab/tnfr_factorization/spectral_paley.py)
+   and [transport owner](../src/tnfr/physics/structural_diffusion.py).
 
-3. **Tetrad proxies** (HONEST SCOPE): the factorizer operates on the spectrum, not on a node-level ΔNFR field, so it uses **scalar proxies** of the tetrad — $\Phi_s\approx$ normalized edge density, $\xi_C\approx 1/(\nu_f\lambda_2)$ (the emergent diffusion relaxation time). These are labelled proxies in code (`_structural_potential`, `_coherence_length`); in the symmetric-seed fixtures of example 117 the genuine per-node tetrad (`tnfr.physics.canonical`) does not distinguish the factor cosets. This is a result for that state/observer pair, not unconditional per-node blindness.
+3. **Tetrad proxies**: The factorizer uses scalar lab features, including
+   normalized edge density (`_structural_potential`) and, on the fallback
+   path, the inverse selected combinatorial gap (`_coherence_length`). The
+   latter helper includes no capacity factor. If the selected gap is the true
+   positive $\lambda_2(D-W)$ on connected regular unit support, the pure-EPI
+   relaxation time at common capacity $\nu_f>0$ is instead
+   $1/(\nu_f\lambda_2(L_{rw}))=d/(\nu_f\lambda_2(D-W))$.
+   Gap selection skips values at or below `1e-9`; backend-supplied coherence
+   values retain their own convention. These quantities are not the canonical
+   nodewise potential or spatial coherence-product fit. The
+   [lab feature contract](../factorization-lab/README.md) owns their provenance.
+   In the symmetric-seed fixtures of example 117, the genuine per-node tetrad
+   does not distinguish the factor cosets; this is a result for that
+   state/observer pair, not unconditional per-node blindness.
 
-4. **Operator sequence**: Apply the canonical decoder $[\mathrm{UM}, \mathrm{RA}, \mathrm{IL}, \mathrm{THOL}]$ per partition:
-   - **UM** (Coupling): Phase-gated coupling between quadratic residues (U3 verified)
-   - **RA** (Resonance): Amplify coherent periodicity patterns
-   - **IL** (Coherence): Stabilize the partitioned structure
-   - **THOL** (Self-organization): Preserve multi-scale identity (U5)
+4. **Partition response surrogate**: The decoder records the labels
+   $[\mathrm{UM},\mathrm{RA},\mathrm{IL},\mathrm{THOL}]$, but its pressure
+   reduction calls `_simulate_partition_sequence`: a configured scalar
+   attenuation based on local edge density and partition size. This helper
+   does not execute those graph operators or integrate a closed
+   form/phase/support law. Its labels therefore do not verify circular U3
+   admission or hierarchical U5 preservation. Separate optimizer/workflow
+   records must be assessed against their actual execution. The
+   [implementation](../factorization-lab/tnfr_factorization/spectral_paley.py)
+   and [lab scope](../factorization-lab/README.md) preserve this distinction.
 
-5. **Factor inference**: Detect periodicities in the stabilized partitions that correspond to $n/p$ for candidate factors $p$.
+5. **Factor inference**: Read periodicities of the partition node indices and
+   use the declared modulus to propose candidate factors; the surrogate's
+   `stabilized` flag is a heuristic label, not a dynamical stability result.
 
-6. **TNFR certification**: Verify each candidate against 8 structural criteria (§9.3).
+6. **Heuristic verification**: Apply the eight configured feature criteria
+   (§9.3). The lab's `TNFR-certified` label is separate from arithmetic
+   divisibility verification and from actual nodal/operator execution.
 
 ### 9.3 Structural Verification Criteria
 
@@ -722,15 +758,34 @@ The false candidate scores **above $0.9$** (so the withdrawn threshold mis-fires
 
 §9.7 located the residue-digraph wall at vertex-transitivity. Example [123_symmetry_sector_decomposition.py](../examples/08_emergent_geometry/123_symmetry_sector_decomposition.py) shows that is a **special case** of a general representation-theoretic principle of the canonical emergent operator — the single structure behind every wall in the §9.5–§9.9 arc (and the Riemann residual).
 
-**The principle (Schur, applied to the canonical emergent operator).** For **any** graph $G$ with automorphism group $\mathrm{Aut}(G)$, the canonical emergent operator $L_{rw}=I-D^{-1}W$ is **equivariant**: it commutes with the permutation representation of every automorphism, $P_\sigma L_{rw}=L_{rw}P_\sigma$ for all $\sigma\in\mathrm{Aut}(G)$. By Schur's lemma an equivariant operator block-diagonalizes by the isotypic components (irreps) of $\mathrm{Aut}(G)$. The coarsest split is
+**The principle (symmetry sectors of fixed diffusion).** Let
+$\Gamma=\mathrm{Aut}(G,W)$ preserve the declared support, its direction when
+present, and its nonnegative conductance weights. The structural-diffusion
+operator has rows $L_{rw}=I-D^{-1}W$ where the outgoing strength is positive,
+and zero rows where it is zero, including isolates. Every $\sigma\in\Gamma$
+preserves this convention, so $P_\sigma L_{rw}=L_{rw}P_\sigma$. Bare-graph
+automorphisms that change conductances need not commute with it. The
+[symmetry-sector owner](TNFR_STRUCTURAL_OBSERVABILITY.md#2-the-diffusion-sector-result-derived)
+states the exact hypotheses; the [transport implementation](../src/tnfr/physics/structural_diffusion.py)
+owns the zero-strength convention. The operator preserves the isotypic
+components of this finite permutation representation. The coarsest split is
 
-$$\mathbb{R}^N=\mathrm{Fix}(G)\ \oplus\ \mathrm{Fix}(G)^\perp,$$
+$$\mathbb{R}^N=\mathrm{Fix}(\Gamma)\ \oplus\ \mathrm{Fix}(\Gamma)^\perp,$$
 
-where $\mathrm{Fix}(G)=\{\text{functions constant on the orbits of }\mathrm{Aut}(G)\}$ is the trivial isotypic component and $\dim\mathrm{Fix}(G)=$ the number of vertex orbits. $L_{rw}$ preserves each block. An equivariant per-node map sends an invariant input to $\mathrm{Fix}(G)$ and is then constant within each orbit. Arbitrary inputs can have nontrivial components; global spectral invariants and nontrivial eigenspaces are separate objects.
+where $\mathrm{Fix}(\Gamma)$ consists of functions constant on the
+$\Gamma$-orbits and its dimension is their number. Averaging the permutation
+matrices gives a Reynolds projector commuting with $L_{rw}$, which proves
+this two-sector split. The flow $\dot x=-\operatorname{diag}(\nu_f)L_{rw}x$
+preserves the same sectors when held capacity is constant within each orbit.
+An equivariant per-node map sends an invariant input to $\mathrm{Fix}(\Gamma)$
+and is then constant within each orbit. Arbitrary inputs can have nontrivial
+components; global spectral invariants and nontrivial eigenspaces are separate
+objects. These fixed-model conditions do not authenticate symmetry of an
+arbitrary operator sequence, state, source or capacity field.
 
 **Measured (five symmetry groups — cyclic, full-symmetric, star, path, product).**
 
-| Graph | $\lvert\mathrm{Aut}\rvert$ | orbits | $\dim\mathrm{Fix}(G)$ | equivariance | $L_{rw}$ preserves $\mathrm{Fix}(G)$ |
+| Graph | $\lvert\Gamma\rvert$ | orbits | $\dim\mathrm{Fix}(\Gamma)$ | equivariance | $L_{rw}$ preserves $\mathrm{Fix}(\Gamma)$ |
 |---|---:|---:|---:|---:|---:|
 | cycle $C_8$ ($D_8$) | 16 | 1 | 1 | $0$ | $0$ |
 | complete $K_6$ ($S_6$) | 720 | 1 | 1 | $0$ | $\sim10^{-17}$ |
@@ -740,7 +795,7 @@ where $\mathrm{Fix}(G)=\{\text{functions constant on the orbits of }\mathrm{Aut}
 
 - **M1**: equivariance $\lVert P_\sigma L_{rw}-L_{rw}P_\sigma\rVert=0$ (machine zero) for **every** automorphism.
 - **M2**: $\mathrm{rank}(P_{\mathrm{triv}})=$ #orbits exactly ($P_{\mathrm{triv}}=$ mean of $P_\sigma$).
-- **M3**: $L_{rw}$ preserves $\mathrm{Fix}(G)$ ($\sim10^{-17}$): block-diagonal.
+- **M3**: $L_{rw}$ preserves $\mathrm{Fix}(\Gamma)$ ($\sim10^{-17}$): block-diagonal.
 - **M4**: the extracted per-node field vector used to initialize the auxiliary
   substrate satisfies $P_{\mathrm{triv}}v=v$ for the symmetric seed
   (orbit-constant); vertex-transitive $\Rightarrow$ $\sigma(\Phi_s)=0$ in this
@@ -1124,7 +1179,7 @@ arithmetic reuse does not replace the current joint nodal emergence objective.
 - [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) — Conservation laws
 - [APPLIED_STRUCTURAL_ANALYSIS.md](APPLIED_STRUCTURAL_ANALYSIS.md) — Spectral factorization verification
 - [TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md) — Current arithmetic comparison scope and unresolved RH/Hilbert–Pólya boundary
-- [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) — Structural-field tetrad and declared scale conventions
+- [STRUCTURAL_FIELDS_TETRAD.md](../docs/STRUCTURAL_FIELDS_TETRAD.md) — Structural-field definitions, scale conventions and estimator provenance
 - [GLOSSARY.md](GLOSSARY.md) — Operational definitions
 
 ### External

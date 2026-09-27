@@ -64,8 +64,9 @@ The registry contains 13 public semantic transformations satisfying:
    declared probes, but global algebraic irreducibility remains open.
 
 A proof of completeness first requires a transformation space defined without
-reference to this catalog. That is research line S10 in
-[CORE_RESEARCH_PROGRAM.md](CORE_RESEARCH_PROGRAM.md).
+reference to this catalog. This remains the open catalog-completeness boundary
+(historical S10); the [theory catalog](README.md#operators-grammar-and-support-events)
+routes related contract and scope questions to their owners.
 
 ### 1.2 Conventions
 

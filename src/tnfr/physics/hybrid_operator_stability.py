@@ -82,6 +82,9 @@ from .._exact_time import fraction_upper_signed_float as _fraction_upper_signed_
 from .._exact_time import (
     materialize_nonnegative_time_sequence as _materialize_time_sequence,
 )
+from ..mathematics._exact_linear_algebra import (
+    exact_matrix_product as _exact_matrix_product,
+)
 from ..mathematics._weight_normalization import normalize_weights
 from ..mathematics.unified_numerical import np
 from ..utils._structural_signature import (
@@ -252,26 +255,6 @@ def _bounded_composition_gain_factor(
     if factor < exact_gain:
         raise RuntimeError("composition-gain quantization lost its upper bound")
     return factor
-
-
-def _exact_matrix_product(
-    left: tuple[tuple[Fraction, ...], ...],
-    right: tuple[tuple[Fraction, ...], ...],
-) -> tuple[tuple[Fraction, ...], ...]:
-    """Matrix product over exact rationals."""
-    rows = len(left)
-    inner = len(right)
-    columns = len(right[0])
-    return tuple(
-        tuple(
-            sum(
-                (left[i][k] * right[k][j] for k in range(inner)),
-                Fraction(0),
-            )
-            for j in range(columns)
-        )
-        for i in range(rows)
-    )
 
 
 def _exact_quotient_basis(

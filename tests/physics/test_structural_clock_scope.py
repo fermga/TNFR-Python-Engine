@@ -16,6 +16,7 @@ from tests.physics._internal_mode_fixture import (
     _graph,
     _phase_support,
 )
+from tests.physics.test_cotangent_phase_exchange_scope import _p2_field
 from tnfr.dynamics.canonical import compute_canonical_nodal_derivative
 from tnfr.dynamics.dnfr import default_compute_delta_nfr
 from tnfr.gamma import kuramoto_R_psi
@@ -140,3 +141,32 @@ def test_zero_tangent_and_stationary_field_have_distinct_clock_availability():
     assert stationary == h * zero  # every positive h works; none is identified
     assert s.solve(stationary - h * tangent, h) == []  # would require h=0
     assert tangent != h * zero  # nonzero field with zero tangent is impossible
+
+
+def test_cotangent_exchange_scale_changes_joint_orbit_not_only_clock():
+    s = pytest.importorskip("sympy")
+    coordinates, diffusion, weight, _, _, field = _p2_field(s)
+    x0, x1, delta = coordinates
+    amplitude, e, eta, clock_rate = s.symbols(
+        "amplitude e eta clock_rate", positive=True
+    )
+    reduced = field.subs({x0: amplitude, x1: -amplitude, diffusion: e})
+    reduced = reduced.applyfunc(s.simplify)
+    old_pressure = -2 * e * amplitude + weight * delta / s.pi
+    # In this full nonlinear zero-momentum sector the connection contributes
+    # no form rate. Scaling its coefficient therefore leaves this row intact.
+    assert s.simplify(reduced[0] - old_pressure) == 0
+    assert s.simplify(reduced[1] + old_pressure) == 0
+    form_rate = s.limit((reduced[0] - reduced[1]) / 2, delta, 0)
+    phase_rate = s.limit(reduced[2], delta, 0)
+    tangent_one = s.Matrix((form_rate, phase_rate))
+    tangent_eta = s.Matrix((form_rate, phase_rate / eta))
+    assert tangent_one == s.Matrix((-2 * e * amplitude, -2 * amplitude / s.pi))
+
+    wedge = s.simplify(tangent_one.row_join(tangent_eta).det())
+    assert s.simplify(wedge - 4 * e * amplitude**2 * (1 / eta - 1) / s.pi) == 0
+    assert s.solve(wedge, eta) == [1]
+    # At this state even a state-dependent positive common clock only divides
+    # both rows by its local value; it cannot alter their nonzero relative slope.
+    reparameterized = tangent_eta / clock_rate
+    assert s.simplify(reparameterized[1] / reparameterized[0]) == 1 / (eta * s.pi * e)

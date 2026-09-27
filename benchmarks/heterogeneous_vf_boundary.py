@@ -3,16 +3,20 @@
 
 The scalar-frequency structural-time theorem (N04) integrates xdot = -vf(t) L x
 to the clock change x(t) = e^{-s(t)L} x0 because all generators vf(tau)L commute.
-With a heterogeneous nodal frequency D_vf(t) = diag(vf_1,...,vf_n) the transport
-xdot = -D_vf(t) L x has non-commuting generators, so there is NO clock change:
-e^{-sbar(t)L} x0 is not the solution. This benchmark contrasts a common vs a
-heterogeneous schedule and reports the stability facts.
+With a heterogeneous nodal frequency D_vf(t) = diag(vf_1,...,vf_n), generators
+of xdot = -D_vf(t) L x need not commute. The scalar ansatz e^{-sbar(t)L} x0
+is not a general solution. A scalar multiple of one fixed heterogeneous
+profile still has a fixed generator of its own, D_0 L, and an activity clock;
+heterogeneity alone does not forbid every clock reduction. This benchmark
+contrasts one common and one noncommuting heterogeneous schedule.
 
 Honest result: the scalar-time ansatz is exact (~0) for a common schedule and
-FAILS (large residual) for a heterogeneous one -- N04 does not extend. A frozen
-positive D_vf keeps -D_vf L stable (spectral abscissa <= 0); uniform time-varying
-stability is only measured on the tested schedules, a general bound is OPEN
-(NT-P09 heterogeneous). U2/U6 unmodified. No complexity / crypto / Millennium.
+FAILS (large residual) for the supplied heterogeneous schedule. A frozen
+positive D_vf keeps -D_vf L stable (spectral abscissa <= 0). This benchmark's
+time-varying observations are finite; the shared heterogeneous_vf owner also
+provides conditional Dirichlet bounds on fixed symmetric conductance with
+capacities bounded above and away from zero. Neither result covers arbitrary
+schedules. U2/U6 unmodified. No complexity / crypto / Millennium.
 """
 
 from __future__ import annotations

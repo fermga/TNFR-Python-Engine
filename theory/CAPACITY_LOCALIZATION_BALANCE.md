@@ -1,7 +1,9 @@
 # Capacity-conditioned EPI balance on a canonical cycle
 
-**Status:** Exact fixed-capacity balance and relaxation theorem, with finite
-canonical preparation and runtime checks. General localization remains open.
+**Status:** Exact fixed-capacity balance and relaxation, a conditional local
+form/capacity classification, flow/event admission criteria, and finite
+canonical checks. Independent selection of the capacity law and general
+localization remain open.
 **Research links:** B2.d.2/O3.a, S3, S8, S9 and S16.
 
 ## 1. The canonical channels and the restricted preparation
@@ -183,6 +185,92 @@ The fixed-capacity conservation law and Lyapunov metric cannot be transferred
 without accounting for that forcing and the changing metric. This term is a
 consequence of the coordinate definition, not a new physical force.
 
+### A predeclared capacity-law discriminator
+
+The held-capacity model is mathematically closed when its omitted rows are
+stated as `nu_dot=0`, `theta_dot=0` and fixed support. Its differentiated
+equilibrium is a valid conditional result. The missing justification concerns
+these constitutive premises and the origin of the conserved capacity profile;
+closure, restoration of the supporting state and autonomous formation are
+different claims.
+
+One bounded comparison exposes the specific capacity premise without changing
+the pressure formula or fitting a sustaining source. Keep a fixed even unit
+cycle, equal zero phases, absent Gamma, and effective coefficients `e,f>0`.
+Compare held capacity with the declared alternative `nu_dot=-epsilon*L*nu`,
+`epsilon>0`. This uses the same support-averaging direction as section 4's
+UM capacity map. Its continuous clock and rate are additional comparison
+premises, not a continuous-limit theorem for default UM or an installed engine
+law. Work in one fixed nondimensional structural clock; dimensional epsilon
+would have inverse-clock units. Other zero pressure channels remain in the
+declared full normalization.
+
+For the checkerboard mode `v_i=(-1)^i`, `Lv=lambda*v`, `lambda=2`, write
+`nu=a+c(t)*v`, `x=b(t)*1+d(t)*v`, with `a>|c_0|>0`. Multiplication by
+capacity produces a mean term as well as a contrast term. The exact nodal
+projection is
+
+\[
+\dot c=-\epsilon\lambda c,\qquad
+\dot d=-a\lambda(ed+fc),\qquad
+\dot b=-\lambda c(ed+fc)=\frac ca\dot d.
+\]
+
+Start at the same zero-pressure preparation `d_0=-(f/e)*c_0` in both
+models. Let `alpha=e*a*lambda`, `beta=epsilon*lambda`. Then
+
+\[
+c(t)=c_0e^{-\beta t},\qquad
+d(t)=d_0\frac{\alpha e^{-\beta t}-\beta e^{-\alpha t}}{\alpha-\beta}.
+\]
+
+At `alpha=beta`, the continuous extension is
+`d(t)=d_0*(1+alpha*t)*exp(-alpha*t)`. For every `epsilon>0`, both
+contrasts vanish, capacity stays bounded below by `a-|c_0|`, and
+
+\[
+b_\infty-b_0=\frac{f c_0^2}{2(ea+\epsilon)}.
+\]
+
+This follows by integrating `b_dot=(c/a)*d_dot`; fixing the EPI mean would
+discard actual nodal dynamics. At exactly `epsilon=0`, the initial EPI and
+capacity instead remain unchanged. Consequently
+
+\[
+\lim_{\epsilon\downarrow0}\lim_{t\to\infty}d(t;\epsilon)=0,
+\qquad
+\lim_{t\to\infty}\lim_{\epsilon\downarrow0}d(t;\epsilon)=d_0\ne0.
+\]
+
+The mean limits differ too: the former is `b_0+f*c_0^2/(2*e*a)`, the
+latter `b_0`. The new information is this singular dependence on the
+conserved-capacity premise, not another proof that mixing can erase contrast.
+The [segmented mixing result](CYCLE_SUPPORT_DYNAMICS.md#5-positive-mobility-and-genuine-mixing-give-a-different-boundary)
+already establishes that latter boundary under its own reset/flow hypotheses.
+Weak capacity averaging can imitate the held preparation on a finite horizon
+without inheriting its infinite-time contrast.
+
+Both models have identical initial triad, zero pressure and zero EPI rate.
+The released model nevertheless has
+`p_dot(0)=f*epsilon*lambda^2*c_0*v` and
+`x_ddot(0)=f*epsilon*lambda^2*c_0*(a*v+c_0*1)`; the held model has zero
+acceleration. These are prospective consequences of the chosen capacity row,
+not a retrospective pressure reconstruction.
+
+**Fixed control.** With `e=f=1/2`, `a=1`, `c_0=1/4`, `b_0=1/2` and
+`epsilon=1/4`, put `r=exp(-t/2)`. The released prediction is
+`c=r/4`, `d=r^2/4-r/2`,
+`b=1/2+(1-r^2)/16-(1-r^3)/24`.
+For `t>=0`, its capacities stay in `[3/4,5/4]` and EPI in `[1/4,3/4]`;
+the limiting EPI is the uniform value `25/48`. The held model keeps its
+initial contrast `d=-1/4` and mean `1/2`. The
+[existing boundary test owner](../tests/physics/test_capacity_pressure_boundaries.py)
+checks the exact projection, solution, resonance and limit distinction, plus
+fresh production pressure and a shared Euler probe at a predeclared analytic
+snapshot. That probe is not an executed full trajectory or a physical test.
+Neither this comparison nor its outcome independently selects either
+capacity law or demonstrates generation of the supporting state.
+
 ## 5. Diminishing capacity can retain contrast by exhausting the nodal clock
 
 If capacity is spatially uniform during each EPI segment, its own pressure
@@ -245,7 +333,8 @@ loop or operator history is inferred from the detached vectors.
 cancellation, capacity dips, uniform-capacity dispersion, the two-lever
 scaling, and EPI-energy growth with decreasing shifted energies.
 [Boundary tests](../tests/physics/test_capacity_pressure_boundaries.py) exercise
-the weighted-walk mismatch and actual UM/Silence refresh effects.
+the weighted-walk mismatch, actual UM/Silence refresh effects and the declared
+continuous capacity-law comparison in section 4.
 [Clock tests](../tests/physics/test_capacity_clock_retention.py) connect actual
 uniform Silence attenuation to the finite-exposure obstruction using existing
 rational exponential bounds.
@@ -295,3 +384,306 @@ zero-pressure equilibrium. Both observers reuse one private exact cycle
 algebra; their hypotheses and public read-outs remain separate.
 Neither note opens a new cycle campaign; the
 [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) owns resumption.
+
+## 8. A local form-capacity relation: dissipation and restoration criteria
+
+Section 4 leaves primitive capacity evolution undetermined. A different,
+explicit constitutive premise removes capacity as an independent state:
+`nu_i=g(x_i)`, with one positive `C1` function `g` on an open scalar interval
+`I`. This is a conditional class to test, not a relation derived by the nodal
+identity or installed in the engine. Keep the fixed connected unit cycle,
+equal held phases, absent Gamma, fixed effective `e,f>0` and no events/clipping.
+Only preparations satisfying this same relation are admitted. Write
+`D=2I_n`, `B=DL`, and apply scalar functions componentwise. The unchanged
+pressure formula and the chain rule give
+
+$$
+h(s)=es+fg(s),\qquad p=-Lh(x),\qquad
+\dot x=-\operatorname{diag}(g(x))Lh(x),\qquad
+\dot\nu_i=g'(x_i)\dot x_i.
+$$
+
+The capacity rate now follows from the supplied relation; it is not an
+independently fitted restoring input. Equal phases and regular support make
+the other pressure channels zero without changing their normalization.
+Weighted conductances with a different capacity walk, changing support,
+phase response and arbitrary independently prepared capacities are outside
+this class. The same function `g` belongs to the declared form chart and clock;
+a chart change must transform that relation too.
+
+### Conserved coordinate and exact dissipation
+
+Choose any reference point in `I` and define the following primitives:
+
+$$
+q(s)=\int^s\frac{du}{g(u)},\qquad
+Q(x)=\sum_i d_i q(x_i),\qquad
+V(x)=\sum_i d_i\int^{x_i}\frac{h(u)}{g(u)}\,du.
+$$
+
+Their additive constants have no dynamical effect. Since `g>0`, `q` is an
+invertible scalar coordinate and `dot q=-Lh(x)`. Symmetry of `B` gives
+
+$$
+\dot Q=0,\qquad
+\dot V=-h(x)^T B h(x)
+       =-\sum_{\{i,j\}\in E}(h(x_i)-h(x_j))^2\leq0.
+$$
+
+This is a derived balance for the conditional reduced law, not an assertion
+about the tetrad energy or a full joint variational completion. The conserved
+quantity is generally neither total capacity nor arithmetic EPI mean.
+Stationarity is exactly `h(x_i)=c` for every node, by positive capacity and
+connectedness. Thus an injective `h` admits only uniform stationary form.
+
+If `h` is strictly increasing on `I`, maxima cannot grow and minima cannot
+decrease: the initial EPI hull is forward invariant. Its compactness inside
+`I` gives a positive lower capacity bound and a global solution. On this hull,
+`V` is bounded below, and its zero-dissipation set consists of uniform states.
+The conserved `Q` selects precisely one of them. Consequently every such
+solution converges to the uniform value `a` determined by
+`q(a)=sum_i d_i*q(x_i(0))/sum_i d_i`. No exponential rate is asserted when
+the increasing function has vanishing derivative.
+
+### The response slope distinguishes decay, growth and mere freezing
+
+At a uniform state `x=a*1`, differentiation of the full nodal row gives
+
+$$
+J=-g(a)\,[e+fg'(a)]L.
+$$
+
+The derivative of the mobility multiplies zero equilibrium pressure and
+therefore drops out here. Each nonuniform Laplacian mode has linear rate
+`-g(a)*(e+f*g'(a))*lambda`. Positive `e+f*g'(a)` gives local exponential
+decay of contrast; a negative value gives local growth. Zero gives only
+linear degeneracy. The threshold `g'(a)=-e/f` follows from the two retained
+pressure coefficients, not from telemetry or a new selected safety margin.
+
+If `h` is constant throughout `I`, equivalently `g(s)=(c-e*s)/f` on its
+positive domain, every admissible field has zero pressure and freezes.
+Choosing that cancellation would preserve every preparation without restoring
+any particular one. Cancellation alone cannot explain identity selection.
+
+### A sufficient conditional criterion for restoring differentiated form
+
+Suppose an independently specified `g` has an equilibrium `x*` with a common
+value `h(x_i*)=c` but nonuniform form. Assume all occupied slopes
+`s_i=h'(x_i*)` are strictly positive, and put `g_i=g(x_i*)`, `S=diag(s_i)`.
+The exact linearization and positive metric obey
+
+$$
+J_*=-\operatorname{diag}(g_i)L S,\qquad
+R=\operatorname{diag}(d_i s_i/g_i),\qquad R J_*=-S B S.
+$$
+
+Its single null direction is `S^-1*1`. Because `R*S^-1*1=grad Q(x*)`, the
+tangent space to `Q=Q(x*)` is precisely the `R`-orthogonal complement of that
+direction. All eigenvalues there are strictly negative. The continuously
+differentiable reduced flow restores `x*` locally and exponentially for small
+perturbations on that same conserved-Q surface. Perturbations changing `Q`
+cannot return to exactly `x*`. Positive occupied slopes are a sufficient
+criterion, not a classification of every possible stable equilibrium.
+
+For two distinct occupied values `a<b` with the same `h` and positive slopes
+at both, the mean value theorem forces `h'<0`, hence `g'<-e/f`, somewhere
+between them. This negative response need not occur at an occupied node or
+at the initial uniform state. A strictly increasing response cannot provide
+this branch. The condition does not select a function, prepare those values,
+prove their formation or choose a preferred arrangement on the cycle.
+
+The [constitutive capacity controls](../tests/physics/test_constitutive_capacity_scope.py)
+check these balances and linearizations, and compare affine decay, cancellation
+and initial growth with fresh production pressure and the shared joint-response
+owner. The probes use positive capacities in a declared finite chart; they
+neither execute this whole coupled flow nor supply a physically justified `g`.
+This gives an admission criterion for a proposed form/capacity mechanism while
+leaving its independent constitutive origin open.
+
+<a id="capacity-law-admission"></a>
+## 9. Capacity-law admission: a state relation must survive flow and events
+
+Section 8 classifies a **supplied** local relation; it does not establish that
+the engine preserves that relation. The admission question is whether one
+complete declared law stays on
+`M_g={nu_i=g(x_i) for every i}`. Keep a fixed finite support and conductances,
+scalar form, one declared clock and fixed pressure coefficients. On a regular consumed
+phase chart, let `P(x,theta,nu)` be the prospective configured pressure and
+write the continuous completion as
+
+\[
+\dot x_i=\nu_iP_i,\qquad \dot\theta_i=\Omega_i,
+\qquad \dot\nu_i=A_i.
+\]
+
+No Gamma, clipping or event is included in these continuous rows. The local
+function `g` is fixed and `C1` on the stated form domain; its parameters do
+not change silently after a response is observed. A relation depending on
+phase, neighbors or history would need the corresponding additional chain
+rule terms and is a different reduction.
+
+### Continuous and event tests have different meanings
+
+Differentiate the actual constraint, not the nodal identity alone:
+
+\[
+R_i:=\frac{d}{dt}(\nu_i-g(x_i))
+       =A_i-g'(x_i)\nu_iP_i.
+\]
+
+For a locally Lipschitz complete vector field, `R=0` at **every** admitted
+point of `M_g` is the tangency condition for its local invariance, for as long
+as the solution stays in the stated domain. Indeed, solve the restricted
+form/phase rows with `nu=g(x)`; the chain rule supplies exactly the full
+capacity row, and uniqueness identifies the two solutions. Conversely an
+invariant differentiable trajectory has zero constraint derivative. A zero
+residual at one preparation alone is not an invariance theorem. In particular,
+held capacity (`A=0`) is compatible only where `g'(x_i)nu_iP_i=0`; preparing
+the graph initially does not make a generic held-capacity flow remain on it.
+
+For an admitted operator or adaptation event, use its actual endpoints:
+
+\[
+J_i:=\nu_i^+-g(x_i^+).
+\]
+
+The same constrained model admits that event only if `J=0`. A finite jump is
+not a derivative, and dividing it by an invented duration cannot supply
+`A`. Changing `g` at the event would instead declare a switched constitutive
+model with a separate transition rule. Hybrid invariance requires both the
+continuous tangency condition and preservation by every realized event.
+
+### Capacity contributes to pressure as well as mobility
+
+Let `G_W` denote the conductance-weighted neighbor difference and `G_U` the
+unique-support neighbor difference, with zero rows at isolates. On fixed
+support and conductances the implemented mixture has the form
+`P=e*G_W*x+f*G_U*nu+w_phase*g_phase(theta)+fixed_topology_source`.
+The complete derivative on its regular phase chart is
+
+\[
+\dot P=eG_W(\nu\odot P)+fG_UA
+       +w_\phi Dg_\phi(\theta)\Omega,\qquad
+\ddot x=A\odot P+\nu\odot\dot P.
+\]
+
+The shared [joint-response owner](../src/tnfr/physics/phase_response.py)
+already evaluates these contributions along supplied rates. Setting
+`nu=g(x)` requires `A=g'(x)*(nu*P)` in **both** places; retaining only its
+mobility contribution drops the activated capacity-pressure derivative.
+Section 8's `p=-L(ex+fg(x))` is the common-walk specialization, not permission
+to replace `G_U` by `G_W` on arbitrary weighted support.
+
+### What the actual capacity writers preserve
+
+The [native adaptation owner](../src/tnfr/dynamics/adaptation.py) reads stored
+pressure and Si and counts consecutive qualifying calls. Eligibility means
+`abs(p)<=EPS_DNFR_STABLE`, `Si>=si_hi` for `VF_ADAPT_TAU` calls. Its
+immutable-snapshot update has the ideal-real form
+
+\[
+x^+=x,\qquad \nu^+=\nu+\mu E G_U\nu,
+\quad \mu=\texttt{VF_ADAPT_MU}\in[0,1],
+\]
+
+where `E` is the diagonal eligibility mask. Thus, from `M_g`,
+`J=mu*E*G_U*g(x)`. The actual arithmetic additionally retains represented
+means and updates inside their incoming capacity hull. It reads neither
+`g` nor an elapsed duration and does not refresh pressure or Si. A fresh
+gate therefore requires pressure refresh, then Si refresh, then adaptation;
+its counters and stored gate inputs belong to the operational state. The
+gate and invocation schedule remain configured policies. Uniform capacity
+is an exact represented fixed point, including partial eligibility, as
+checked by the [existing adaptation controls](../tests/test_structural_stability_adaptation.py).
+
+Other actual writers have separate event obligations:
+
+| Execution path | Capacity/form action relevant to `M_g` |
+| --- | --- |
+| [SHA proposal](../src/tnfr/operators/al_sha_stage_proposals.py) | `nu+=q*nu`, `x+=x`; hence `J=(q-1)g(x)` at the affected node. Latency metadata does not repair it. |
+| [Target-only UM](../src/tnfr/operators/_coupling_stage_kernel.py), with functional links disabled | Capacity blends toward U3-compatible neighbor capacities while EPI is retained. The same graph-law condition uses that compatible-neighbor mean; section 4 already proves the cycle profile release. |
+| [VAL/NUL proposal](../src/tnfr/operators/_scale_operator_kernel.py) | Capacity is multiplied by its admitted factor. With edge awareness disabled EPI is retained; when enabled, use the actual scaled/bounded EPI endpoint in `J`. NUL's inverse stored-pressure write preserves an ideal instantaneous product, not the relation `nu=g(x)` or refreshed pressure. |
+
+These are conditional event comparisons, not a claim that every graph or
+operator word passes the separate live/grammar admission. No operator is
+modified here to impose an otherwise unjustified `g`.
+
+### One exact live-policy witness and its zero boundary
+
+Use unit P2, held equal phases, absent Gamma and declared normalized
+`(phase,EPI,capacity,topology)=(0,1/2,1/2,0)`. In one fixed chart take
+`g(x)=x`, initially on its positive domain, and
+
+\[
+x=\nu=(5/8,3/8),\quad P=(-1/4,1/4),\quad
+\dot x=(-5/32,3/32).
+\]
+
+The pressure is freshly computed from the two existing channels, not from
+the observed rate. A tangent continuous capacity row is `A=dot x`; a held
+row instead gives `R=(5/32,-3/32)`. For the actual adaptation event set
+`VF_ADAPT_TAU=2`, `VF_ADAPT_MU=1/4`, `EPS_DNFR_STABLE=1/2` and `si_hi=0`.
+These explicit policy settings admit the freshly computed Si without
+replacing it by a favorable fixture value. After two qualifying calls from
+zero counters, with no intervening evolution,
+
+\[
+x^+=x,\quad \nu^+=(9/16,7/16),\quad J=(-1/16,1/16).
+\]
+
+Stored pressure is unchanged by the event, while a subsequent pressure
+refresh gives `P^+=(-3/16,3/16)`. This is a capacity-source change at fixed
+form, not a pressure-refresh error. The dyadic preparation exposes the
+different declared laws without a trajectory sweep or a fitted coefficient.
+
+Section 8 requires strictly positive `g`. For a **separate** nonnegative
+boundary extension `g(x)=x` on `x>=0`, take `x=nu=(0,1/2)` with the same
+pressure and event settings. Initially `P=(1/2,-1/2)` but `dot x_0=0`.
+Every finite `C1` local graph-law completion has `A_0=g'(0)*nu_0*P_0=0`
+there. This only uses the unforced row; it does not assert zero pressure or
+global equilibrium. The native event instead gives `nu^+=(1/8,3/8)` at
+unchanged form. After refresh `P^+=(3/8,-3/8)`, so the formerly frozen node
+has rate `3/64`. Nonnegative capacity permits this reactivation in an
+independent event model; it contradicts invariance of this particular local
+graph law, not the nodal equation. The positive-capacity `1/g` charge and
+metric from section 8 do not extend through zero by this argument.
+
+The [constitutive capacity controls](../tests/physics/test_constitutive_capacity_scope.py)
+retain the tangency and event distinctions through the production pressure,
+Si and adaptation owners. They test the declared finite preparation and
+separate exact-algebraic conclusions from general continuous existence.
+
+### Admission must transform with the form chart and clock
+
+For `y=a*x+b`, `tau=c*t`, with `a,c>0`, the same constrained model has
+
+\[
+\widetilde\nu=\nu/c,\qquad
+\widetilde g(y)=g((y-b)/a)/c,\qquad
+\widetilde P=aP,\qquad \widetilde A=A/c^2.
+\]
+
+Consequently `R_tilde=R/c^2` and `J_tilde=J/c`; zero admission defects are
+coordinate-independent. The capacity-pressure coefficient transforms as
+`f_tilde=a*c*f`, and every other channel coefficient, bound and gate must
+follow the existing [joint-unit rule](NODAL_PARAMETER_FOUNDATIONS.md#3-joint-changes-of-form-and-time-units).
+Keeping `g(y)=y` after shifting the form origin would change the model, even
+where the unrestricted pressure admits common form-offset symmetry. Common
+`g` is compatible with node relabeling; a node-specific family would have
+to be relabeled together with the state.
+
+A nonlinear/state-dependent clock also differentiates its rate, as proved
+by the [full-state covariance owner](NODAL_PARAMETER_FOUNDATIONS.md#pressure-clock-full-state-closure).
+It can turn a local autonomous `g` into a time- or joint-state-dependent
+relation. Treating capacity as an activity clock at its zero boundary is
+singular; invocation counts still do not become elapsed time. No choice of
+units selects a capacity law.
+
+**Admission result.** Held independent capacity, a supplied local graph law
+and native gated capacity events are different completed model choices.
+Their formulas can be tested against the same prospective pressure, but
+none follows uniquely from `dot x=nu*P`. Section 8's classification remains
+valid on its original invariant reduced law; it is not a certificate for
+the unrelated writers above. A proposed mechanism must state which choice
+it uses and satisfy its continuous, event, domain and covariance obligations
+before its restoration claim can be transferred to the engine.

@@ -27,7 +27,7 @@ fresh computations; concurrent mutation during a read is unsupported.
 | Operator-role derivation | [`physics_derivation.py`](src/tnfr/config/physics_derivation.py) |
 | Grammar specification | [`grammar_canon.py`](src/tnfr/operators/grammar_canon.py) |
 | Grammar validation facade | [`grammar.py`](src/tnfr/operators/grammar.py) |
-| Canonical and operational constants | [`constants/`](src/tnfr/constants/) |
+| Canonical and operational constants | [`constants/`](src/tnfr/constants) |
 | Shared selector and Si threshold resolution | [`selector_thresholds.py`](src/tnfr/config/selector_thresholds.py) |
 | U3 admission limits and phase-neighbor selection | [`_phase_gate.py`](src/tnfr/operators/_phase_gate.py) |
 | Resonance capacity proposal and identity predicates | [`_resonance_identity.py`](src/tnfr/operators/_resonance_identity.py) |
@@ -41,6 +41,12 @@ fresh computations; concurrent mutation during a read is unsupported.
 | All-node THOL eligibility and explicit finite dispatch | [`self_organization_selection.py`](src/tnfr/operators/self_organization_selection.py) |
 | Simultaneous stage execution and graph transactions | [`network_stage.py`](src/tnfr/operators/network_stage.py) |
 | Structural fields | [`fields.py`](src/tnfr/physics/fields.py) |
+| Regional form observations and affine mean/Gram closure | [`form_geometry.py`](src/tnfr/physics/form_geometry.py); the SDK delegates rather than defining another reduction |
+| Regional orientation relative to a supplied rate source | [`source_relative_form.py`](src/tnfr/physics/source_relative_form.py); reuses the regional form observer |
+| Conditional relational phase/form execution | [`dynamics/relational.py`](src/tnfr/dynamics/relational.py); one admitted field and atomic Euler step, reused by the SDK |
+| Prepared relational pattern observations | [`physics/relational_observations.py`](src/tnfr/physics/relational_observations.py); supplied regions/reference lifts, shared winding and regional support accounting |
+| Protected relational basins | [`physics/relational_capture.py`](src/tnfr/physics/relational_capture.py); reflected, full-state local and acute-sector theorems sharing exact phase/energy enclosures for conditional ideal-law limits |
+| Validated relational transit | [`physics/relational_transit.py`](src/tnfr/physics/relational_transit.py); exact reflected ODE enclosure using shared rational intervals, Taylor derivatives and signed-diagonal comparison; read-only proof computation, not live engine evolution |
 | Coherence and equilibrium kernel | [`common.py`](src/tnfr/metrics/common.py) |
 | Public high-level API | [`sdk/simple.py`](src/tnfr/sdk/simple.py) |
 
@@ -145,6 +151,81 @@ A multiscale curvature fit cannot override a measured variance-cut violation.
 These are diagnostic consistency requirements, not a complete state basis or
 a stability proof. Numerical precision settings preserve intended definitions
 but do not guarantee identical rounded decisions at every strict threshold.
+
+Regional form observations have a separate shared owner in
+[`form_geometry.py`](src/tnfr/physics/form_geometry.py). The supplied ordered
+triples define Cartesian contrasts, their Gram matrix and instantaneous rates
+from the same admitted `nu_f * stored_DeltaNFR` product used by the nodal
+kernel. Exact represented quantities retain the rate-rounding defect; polar
+estimates retain their own availability. No pressure refresh, graph mutation,
+primitive phase substitution or reduced evolution occurs in the observer.
+`Network.regional_form` is the public adapter.
+
+The same module's `derive_regional_affine_closure` checks an independently
+supplied fixed affine law on the full real fine-state domain. Source terms are
+rates; only sources constant within each region preserve the all-state
+mean/Gram closure when the generator passes its block-circulant test. A failed
+reduction retains defects and leaves the fine law usable. The report is not
+proof that runtime policy holds support, capacity, coefficients and primitive
+phase fixed. The [derived-form note](theory/nodal/DERIVED_FORM_PHASE.md) owns
+the proof and source-relative response; the
+[SDK guide](docs/CLI_AND_SDK.md#observe-regional-form-and-its-nodal-response)
+owns usage and representation conventions.
+
+[`source_relative_form.py`](src/tnfr/physics/source_relative_form.py) composes
+that observer with an independently supplied held source in form-rate units.
+It retains `W=z*c^dagger`, where `c` is the source's regional contrast, and its
+instantaneous held-source rate. A nonzero vector `c` makes regional contrast
+recoverable from `W`; a zero vector does not define a reference orientation.
+`Network.source_relative_form` delegates to this read-only owner. The observer
+does not derive the source, authenticate its future constancy or add a phase
+law to the engine.
+
+The opt-in relational execution owner also supplies the joint law used by the
+[local-recovery and paired-region studies](theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-local-recovery).
+Their continuous hypotheses and finite controls are distinct from step admission.
+The default acute domain and opt-in positive-resultant chamber share this
+owner. The latter uses the private rational cosine/resultant helper in
+`mathematics/_phase_resultant_chamber.py`, with the existing certified pi
+enclosure, to admit complete represented Euler chords. It retains exact
+margins without claiming an exact-flow enclosure or a new phase law.
+[`relational_observations.py`](src/tnfr/physics/relational_observations.py) reads a
+fresh detached field from that owner and projects supplied regions against an
+explicit phase reference. It keeps offsets and separate form/phase norms,
+delegates winding to `winding_certificates.py`, and reuses
+`support_transport.py` for admitted regional accounting. The dynamics field
+retains exact nodal dissipation/exchange/work and sums them for its global
+balance. Regional observations sum those same contributions and pair form/phase
+rates through a single shared outward-cut definition, retaining numerical
+defects and explicit divided-rate availability. The engine also retains exact
+phase mobility and phase-rate materialization defects. Regional unweighted
+phase response uses that same evidence and cut to separate mean-mobility
+boundary response from mobility/form covariance, with an exact squared bound.
+It remains available at zero capacity and adds no evolution,
+region selector or formation mechanism. `Network.relational_pattern` is a
+thin adapter; the SDK's `relational_report_to_dict` supplies the exact rational
+JSON projection for the existing writer. Reports are observations, not live
+checkpoints or authenticated execution histories.
+
+[`mathematics/linear_observation.py`](src/tnfr/mathematics/linear_observation.py)
+owns exact invariant-row realization for any supplied finite rational
+generator `z'=Jz`. The diffusion-specific `physics/epi_memory.py` wrapper
+retains its independently admitted `x'=-Ax+b` model and existing outputs;
+it delegates algebra without transferring diffusion premises to joint phase
+and form dynamics. Shared exact matrix products/inverses now live in
+`mathematics/_exact_linear_algebra.py`, with historical physics import paths
+preserved. The [composition study](theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md)
+separates that reusable computation from its exact analytic rank proof and
+nonlinear counterexample.
+The counterexample also rules out closing that coarse state by adding its
+instantaneous rate. Full centered nodal coordinates already retain the
+responsible internal contrast; the engine does not replace them with a coarse
+autonomous model. Static derivative controls check the existing field.
+The same composition instrument now verifies the complete visible/hidden
+split and quadratic energy balance. The
+[joint memory theorem](theory/nodal/RELATIONAL_PATTERN_MEMORY.md) owns its
+nonlinear initial-state dependence and conditional finite-time approximation
+orders. No new solver or autonomous regional state is installed.
 
 The unforced product, conditional diffusion identities, named operator
 contracts and coherent diagnostics are implemented foundations. Unique phase,

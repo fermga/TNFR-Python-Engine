@@ -10,6 +10,12 @@ closure and broader memory-to-operator realizations remain open.
 reversible partition geometry in
 [structural_morphism.py](../src/tnfr/physics/structural_morphism.py).
 
+For the selected nonlinear phase/form model, the
+[joint pattern memory](nodal/RELATIONAL_PATTERN_MEMORY.md) reuses the
+elimination and error-propagation methods below. Its hidden generator and
+nonlinear sources have their own admission; reversible kernel positivity,
+P5 truncation formulas and REMESH equivalence do not transfer automatically.
+
 ## 1. What is derived, and from what
 
 The microscopic dynamics is the existing pure-EPI channel of the TNFR nodal
@@ -1146,6 +1152,16 @@ bound. This extends the [P5 argument](#93-minimality-of-the-retained-linear-stat
 to the admitted held references without a single-seed or scalar-moment proxy.
 
 ### 11.2 Exact affine realization
+
+The invariant-row calculation now delegates to the shared
+[`mathematics/linear_observation.py`](../src/tnfr/mathematics/linear_observation.py)
+owner for supplied matrices. That owner uses `z'=Jz`; this diffusion-specific
+wrapper retains its original `x'=-Ax+b`, deterministic `O*A^k` basis and
+source/reference admission. The extraction preserves reports and resource
+counts. The [relational composition study](nodal/RELATIONAL_PATTERN_COMPOSITION.md)
+reuses only this algebra, not the diffusion law, reversible metric or memory
+positivity. Rational matrix identities cannot certify exact irrational
+coefficients without a separate argument.
 
 Select `r` independent columns `J` of `C`. Let `I_J` embed the corresponding
 coordinate vectors into the microscopic state space and define

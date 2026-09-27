@@ -1363,7 +1363,7 @@ fine potential. The inherited kernel retains within-block sources. Keeping
 four internal modes and the mean contrast instead reconstructs full exact
 model pressure and potential; primitive phase and field provenance remain
 separate. See the single
-[macro-state and tetrad derivation](NODAL_PARAMETER_FOUNDATIONS.md#13-faithful-macro-state-and-tetrad-inheritance-on-the-retained-prism).
+[macro-state and tetrad derivation](nodal/INHERITED_FORM_DYNAMICS.md#13-faithful-macro-state-and-tetrad-inheritance-on-the-retained-prism).
 
 ### Generic fixed-vector operator test
 

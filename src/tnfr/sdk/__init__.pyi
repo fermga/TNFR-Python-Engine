@@ -2,6 +2,8 @@
 
 from typing import Any
 
+from ..dynamics.relational import RelationalExchangeModel as RelationalExchangeModel
+from .relational_reports import relational_report_to_dict as relational_report_to_dict
 from .simple import TNFR as TNFR
 from .simple import ConservationReport as ConservationReport
 from .simple import FactorizationReport as FactorizationReport
@@ -19,7 +21,7 @@ from .study import diagnose_network as diagnose_network
 from .study import list_sequences as list_sequences
 from .study import run_study as run_study
 
-__all__: tuple[str, ...]
+__all__: list[str]
 
 TNFRNetwork: Any
 NetworkConfig: Any

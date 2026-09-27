@@ -38,6 +38,11 @@ interval-capacity tube, then separate finite absolute-form control from an
 explicit obstruction to an all-time scalar bound under those premises.
 None supplies an autonomous substrate law.
 
+The focused [contact result](COHERENT_PATTERN_CONTACT.md) reuses Sections
+29-33 for two interacting winding patterns. It owns that model, its
+prospective control and its bounds rather than extending this historical
+derivation ledger with another execution campaign.
+
 **Research status:** This note retains mathematical dependencies and historical
 finite studies, not an execution queue. Prepared regional-response work is
 parked; only the [current G3 gate](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
@@ -4393,8 +4398,8 @@ speed contrast. Section 33's accumulated capacity-contrast budget concerns
 its supplied oscillator law and cannot be transferred to this native map.
 
 The existing
-[native diameter bound](NODAL_PARAMETER_FOUNDATIONS.md#native-phase-contrast-budget),
-[writer audit](NODAL_PARAMETER_FOUNDATIONS.md#native-phase-writer-closure) and
+[native diameter bound](nodal/PRIMITIVE_PHASE_CLOSURE.md#native-phase-contrast-budget),
+[writer audit](nodal/PRIMITIVE_PHASE_CLOSURE.md#native-phase-writer-closure) and
 [selector reachability result](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#uniform-capacity-and-default-selector-reachability)
 remain the mathematical and policy owners. This section connects those
 results to the complete step boundary, extends the represented common-capacity

@@ -5,11 +5,14 @@ from __future__ import annotations
 
 import argparse
 import ast
+import importlib.util
 import json
 import re
 import sys
+from collections import Counter
 from datetime import date
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SRC = REPO_ROOT / "src"
@@ -104,6 +107,170 @@ def check_publication_metadata() -> None:
 
 CONTRACT_START = "<!-- BEGIN GENERATED OPERATOR CONTRACTS -->"
 CONTRACT_END = "<!-- END GENERATED OPERATOR CONTRACTS -->"
+THEORY_CATALOG_START = "<!-- BEGIN THEORY CATALOG -->"
+THEORY_CATALOG_END = "<!-- END THEORY CATALOG -->"
+THEORY_NAVIGATION_START = "# BEGIN GENERATED THEORY NAVIGATION"
+THEORY_NAVIGATION_END = "# END GENERATED THEORY NAVIGATION"
+
+
+def _theory_catalog_entries() -> list[tuple[str, str, Path]]:
+    """Read H2 groups and the first inline link of each primary table row."""
+    index = REPO_ROOT / "theory" / "README.md"
+    document = index.read_text(encoding="utf-8")
+    require(
+        document.count(THEORY_CATALOG_START) == 1
+        and document.count(THEORY_CATALOG_END) == 1,
+        "theory index must have exactly one primary catalog region",
+    )
+    start = document.index(THEORY_CATALOG_START) + len(THEORY_CATALOG_START)
+    end = document.index(THEORY_CATALOG_END)
+    require(start < end, "theory catalog markers are reversed")
+
+    # Load the existing syntax reader independently of cwd and import mode.
+    # Tests may redirect REPO_ROOT without copying the actual script modules.
+    reference_path = Path(__file__).with_name("verify_internal_references.py")
+    spec = importlib.util.spec_from_file_location(
+        "theory_catalog_references", reference_path
+    )
+    require(
+        spec is not None and spec.loader is not None, "reference checker is unavailable"
+    )
+    references = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(references)
+    region = references._without_fenced_code(document[start:end])
+    entries = []
+    group = None
+    for line in region.splitlines():
+        heading = re.match(r"^##[ \t]+(.+?)(?:[ \t]+#+)?[ \t]*$", line)
+        if heading:
+            group = heading.group(1)
+            continue
+        links = (
+            references.LINK_PATTERN.findall(line)
+            if line.lstrip().startswith("|")
+            else []
+        )
+        if not links:
+            continue
+        label, raw = links[0]
+        target = urlsplit(references._target(raw))
+        if target.scheme or target.netloc:
+            continue
+        relative = unquote(target.path)
+        if not relative.lower().endswith(".md"):
+            continue
+        require(
+            group is not None, "primary theory documents require an H2 catalog group"
+        )
+        entries.append((group, label, (index.parent / relative).resolve()))
+    return entries
+
+
+def check_theory_catalog() -> None:
+    """Require one primary table entry per maintained mathematical owner.
+
+    The index owns this inventory: no independently maintained filename list
+    or fixed document count is needed. Full link and fragment validation stays
+    with verify_internal_references.py; this gate checks catalog coverage.
+    """
+    index = REPO_ROOT / "theory" / "README.md"
+    counts = Counter(path for _, _, path in _theory_catalog_entries())
+
+    theory = index.parent.resolve()
+    archive = theory / "research" / "archive"
+    expected = {
+        path.resolve()
+        for path in theory.rglob("*.md")
+        if path.resolve() != index.resolve()
+        and not path.resolve().is_relative_to(archive)
+    }
+
+    def names(paths) -> str:
+        return ", ".join(
+            sorted(
+                (
+                    str(path.relative_to(REPO_ROOT.resolve()))
+                    if path.is_relative_to(REPO_ROOT.resolve())
+                    else str(path)
+                )
+                for path in paths
+            )
+        )
+
+    unknown = set(counts) - expected
+    require(
+        not unknown, "unknown or archived primary theory documents: " + names(unknown)
+    )
+    missing = expected - set(counts)
+    require(not missing, "missing primary theory documents: " + names(missing))
+    duplicates = {path for path, count in counts.items() if count != 1}
+    require(not duplicates, "duplicate primary theory documents: " + names(duplicates))
+
+
+def render_theory_navigation() -> str:
+    """Derive the MkDocs theory tree from the sole maintained owner catalog."""
+    check_theory_catalog()
+
+    def quote(value: str) -> str:
+        return json.dumps(value, ensure_ascii=False)
+
+    rows = [
+        "  - " + quote("Theory and research") + ":",
+        "      - "
+        + quote("Reading routes and implementation map")
+        + ": theory/README.md",
+    ]
+    previous_group = None
+    for group, label, path in _theory_catalog_entries():
+        if group != previous_group:
+            rows.append("      - " + quote(group) + ":")
+            previous_group = group
+        rows.append(
+            "          - "
+            + quote(label)
+            + ": "
+            + path.relative_to(REPO_ROOT.resolve()).as_posix()
+        )
+    return "\n".join(rows)
+
+
+def theory_navigation_region(document: str) -> tuple[int, int]:
+    starts = list(
+        re.finditer(
+            "^" + re.escape(THEORY_NAVIGATION_START) + "$", document, re.MULTILINE
+        )
+    )
+    ends = list(
+        re.finditer(
+            "^" + re.escape(THEORY_NAVIGATION_END) + "$", document, re.MULTILINE
+        )
+    )
+    require(
+        len(starts) == 1 and len(ends) == 1,
+        "MkDocs must have exactly one generated theory navigation region at column zero",
+    )
+    start, end = starts[0].end(), ends[0].start()
+    require(start < end, "theory navigation markers are reversed")
+    return start, end
+
+
+def update_theory_navigation() -> None:
+    path = REPO_ROOT / "mkdocs.yml"
+    document = path.read_text(encoding="utf-8")
+    start, end = theory_navigation_region(document)
+    rendered = render_theory_navigation()
+    path.write_text(
+        document[:start] + "\n" + rendered + "\n" + document[end:], encoding="utf-8"
+    )
+
+
+def check_theory_navigation() -> None:
+    document = (REPO_ROOT / "mkdocs.yml").read_text(encoding="utf-8")
+    start, end = theory_navigation_region(document)
+    require(
+        document[start:end].strip("\n") == render_theory_navigation(),
+        "theory navigation drifted; run scripts/check_documentation.py --write-generated",
+    )
 
 
 def render_contract_table() -> str:
@@ -215,16 +382,19 @@ def main() -> int:
     parser.add_argument(
         "--write-generated",
         action="store_true",
-        help="Refresh the registry-owned contract table before validating",
+        help="Refresh the registry-owned contract table and catalog-owned theory navigation",
     )
     args = parser.parse_args()
     if args.write_generated:
         update_contract_view()
+        update_theory_navigation()
     checks = (
         check_agent_mirror,
         check_versions_and_retired_claims,
         check_publication_metadata,
         check_contract_view,
+        check_theory_catalog,
+        check_theory_navigation,
         check_documented_examples,
         check_build_inputs,
     )

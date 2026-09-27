@@ -227,7 +227,8 @@ def validate_nodal_gradient(
         - ΔNFR = 0 gives zero EPI rate, not necessarily stationary capacity,
           phase, support or the full structural tetrad.
         - Do NOT reinterpret as classical "error gradient"
-        - Semantics: operator over EPI, not optimization target
+        - This scalar is an evaluated structural response. The constitutive
+          map producing it is a separate object, not an optimization target.
     """
     return _validate_real_parameter(delta_nfr, "delta_nfr")
 

@@ -1,4 +1,4 @@
-"""Scope of existing phase updates on repeated strict-chart prism triples.
+"""Scope of phase coordination and the separately supplied sine phase law.
 
 Ideal algebra, finite coordinator invocations and the separately configured
 free-advance proposal have distinct claims. These controls neither select a
@@ -7,11 +7,15 @@ primitive phase law nor certify a repeated full-runtime trajectory.
 
 import math
 
+import networkx as nx
 import pytest
 
+from tests.joint_phase_helpers import configure
 from tests.physics._internal_mode_fixture import NODES, _graph
-from tnfr.alias import get_theta_attr
+from tnfr.alias import get_attr, get_theta_attr
+from tnfr.constants.aliases import ALIAS_DNFR
 from tnfr.dynamics.coordination import coordinate_global_local_phase
+from tnfr.dynamics.dnfr import default_compute_delta_nfr
 from tnfr.dynamics.phase_evolution import propose_u3_gated_phase_step
 
 
@@ -140,3 +144,60 @@ def test_uniform_free_advance_moves_the_mean_while_sine_coupling_dissipates_cont
     # The proposal reads declared frequency vectors; it does not mutate a graph
     # or derive this angular-frequency identification from the EPI equation.
     assert tuple(get_theta_attr(graph.nodes[node]) for node in NODES) == phases
+
+
+def _phase_pressure_pair(gap):
+    """Keep the shared equal EPI/phase mixture on supplied unit P2 support."""
+    graph = nx.path_graph(2)
+    configure(graph)
+    graph.edges[0, 1].update(weight=1.0, length=1.0)
+    for node, phase in enumerate((0.0, gap)):
+        graph.nodes[node].update(EPI=0.0, nu_f=1.0, theta=phase)
+    default_compute_delta_nfr(graph)
+    return graph
+
+
+def test_sine_phase_proposal_does_not_receive_the_changed_form_pressure():
+    graph = _phase_pressure_pair(math.pi / 3)
+    nodes = tuple(graph)
+    phases = tuple(get_theta_attr(graph.nodes[node]) for node in nodes)
+    pressure_before = tuple(get_attr(graph.nodes[node], ALIAS_DNFR) for node in nodes)
+    before = propose_u3_gated_phase_step(
+        graph, nodes, phases, (1.0, 1.0), dt=1 / 8, coupling_strength=1 / 4
+    )
+
+    # The independent P2 mixture is (1/2)*((x_j-x_i) +/- 1/3).
+    # Refresh actual production pressure after changing only the form state.
+    graph.nodes[0]["EPI"], graph.nodes[1]["EPI"] = 1 / 4, -1 / 4
+    default_compute_delta_nfr(graph)
+    pressure_after = tuple(get_attr(graph.nodes[node], ALIAS_DNFR) for node in nodes)
+    after = propose_u3_gated_phase_step(
+        graph, nodes, phases, (1.0, 1.0), dt=1 / 8, coupling_strength=1 / 4
+    )
+
+    assert pressure_before == pytest.approx((1 / 6, -1 / 6), abs=2e-15, rel=0)
+    assert pressure_after == pytest.approx((-1 / 12, 1 / 12), abs=2e-15, rel=0)
+    # sin(pi/3)=sqrt(3)/2 supplies an independent active-coupling oracle.
+    expected = (1 / 8 + math.sqrt(3) / 64, math.pi / 3 + 1 / 8 - math.sqrt(3) / 64)
+    assert tuple(before) == pytest.approx(expected, abs=2e-15, rel=0)
+    assert tuple(after) == tuple(before)
+    assert tuple(get_theta_attr(graph.nodes[node]) for node in nodes) == phases
+
+
+def test_u3_exclusion_removes_phase_interaction_but_not_full_support_pressure():
+    graph = _phase_pressure_pair(3 * math.pi / 4)
+    nodes = tuple(graph)
+    phases = tuple(get_theta_attr(graph.nodes[node]) for node in nodes)
+    pressure = tuple(get_attr(graph.nodes[node], ALIAS_DNFR) for node in nodes)
+    proposal = propose_u3_gated_phase_step(
+        graph, nodes, phases, (1.0, 1.0), dt=1 / 8, coupling_strength=1 / 4
+    )
+
+    # Arg of the sole neighbor gives +/-3/4; the equal mixture halves it.
+    # The nonzero nodal pressure survives, although the phase law uses no edge.
+    assert pressure == pytest.approx((3 / 8, -3 / 8), abs=2e-15, rel=0)
+    assert tuple(proposal) == pytest.approx(
+        (1 / 8, 3 * math.pi / 4 + 1 / 8), abs=2e-15, rel=0
+    )
+    assert proposal[1] - proposal[0] == pytest.approx(phases[1], abs=2e-15, rel=0)
+    assert tuple(get_theta_attr(graph.nodes[node]) for node in nodes) == phases

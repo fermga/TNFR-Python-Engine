@@ -390,9 +390,11 @@ class BEPIElement(_EPIValidators):
     def __eq__(self, other: object) -> bool:
         """Check equality with another BEPIElement or numeric value.
 
-        Numeric comparison uses the same canonical scalar projection as
+        Numeric comparison uses the same legacy scalar projection as
         :class:`float`.  Thus scalar embeddings retain their sign while richer
         BEPI elements retain the established maximum-magnitude comparison.
+        This approximate, mixed-type comparison is not a transitive structural
+        equivalence and must not define state quotients or scalar admission.
         """
         if isinstance(other, BEPIElement):
             return (

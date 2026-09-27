@@ -137,11 +137,21 @@ provide that test; storage labels alone do not.
 A faithful chart of a full structural state and a closed scalar observable
 are different claims. For an observation h and a specified full law z'=F(z),
 autonomous observable evolution requires `Dh(z)F(z)` to agree for all states
-with the same h(z); events additionally require `h(J(z))=J_bar(h(z))`.
+with the same h(z). On a smooth domain where h is a submersion onto its image,
+this defines a smooth reduced vector field. Events additionally require
+`h(J(z))=J_bar(h(z))`; event guards and admission must also descend to the
+observation. Matching jump values alone does not fix when a jump occurs.
 An injective chart is sufficient to retain state but is not necessary for
 such a closed observable. Capacity, phase, support and history remain inputs
 unless their projected evolution also closes. These conditions test a proposed
 representation; they do not supply the missing full law by assuming it.
+
+If a declared group action g satisfies `h composed with g = h`, full
+equivariance `F(gz)=Dg(z)F(z)` is sufficient but stronger than necessary:
+projection only requires `Dh(gz)*(F(gz)-Dg(z)F(z))=0`. A component along
+discarded directions can be invisible. With a declared positive clock change
+`d tau/dt=alpha(z)`, apply the criterion to `F/alpha`. Equal tangent directions
+without equal rates establish at most the same unparameterized orbits.
 
 ### 2.5 Dimensional consistency and structural activity
 
@@ -265,7 +275,7 @@ autonomous constitutive laws.
 
 Its [pressure map](NODAL_PARAMETER_FOUNDATIONS.md#21-the-implemented-pressure-is-a-specified-relational-map)
 specifies the four channel signs, weights and distinct neighborhoods. The
-[low-degree reduction and nonlinear boundary](NODAL_PARAMETER_FOUNDATIONS.md#41-exact-low-degree-reduction-and-its-nonlinear-boundary)
+[low-degree reduction and nonlinear boundary](nodal/PRESSURE_CONSTITUTIVE_SCOPE.md#41-exact-low-degree-reduction-and-its-nonlinear-boundary)
 explain why phase/capacity compensation on a path does not imply a general
 conservation law for the mixed pressure. Capacity acts both as mobility and
 as a spatial source; a zero explicit topology coefficient does not remove
@@ -364,6 +374,213 @@ distinctions executable. An assumed initial state, even an active one, does
 not select the missing phase/capacity/support evolution or provide permanent
 renewal. “Primordial pulse” is not an additional model variable or a proved
 mechanism here.
+
+<a id="foundational-state-admission"></a>
+### 2.10 Foundation decision ledger: state, equivalence and origin
+
+This ledger records the scoped F1 reference admission of the revised
+[research plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).
+It is not a new axiom list or a declaration that every entry is uniquely
+necessary. The preceding sections own the definitions and counterexamples.
+
+| Decision | Admitted working statement | Unresolved identification or rejected shortcut |
+| --- | --- | --- |
+| Form type | The engine has a signed real scalar chart and exact uniform-real BEPI embedding; richer BEPI is finite storage | The nodal identity does not fix ontological dimension; spectral entropy cannot decide it |
+| Form zero | Zero is a value in the selected chart; the node, phase, capacity and support can remain present | Zero EPI is not absence of substrate; dropping its phase can change a neighbor's response |
+| Form origin/scale | A regular chart change transforms the full law, its storage, inputs and policies | Offset symmetry of the pressure row does not prove offset symmetry of the joint law or a physically preferred origin |
+| Primitive phase | In scalar reference S, theta is an independent circle coordinate, including at x=0 | Combining signed form and phase as x*exp(i*theta) is not generally a sufficient observation |
+| Derived phase | In reference D, regional orientation and amplitude are computed from fine form; Cartesian coordinates can remain regular at zero amplitude | Orientation is unavailable there; it is not automatically reference S's independent theta |
+| Capacity and clock | Capacity is nonnegative relative to a declared clock; a held value is an explicit model premise | A measured form rate, fitted product or phase speed need not identify it; time rescaling transforms auxiliary rows |
+| Relational data | Support, conductance, neighbor multiplicity and path length have distinct roles | A smaller bare graph need not preserve inherited dynamics or observations |
+| Mathematical state versus execution state | A fresh algebraic law can use p=P(z); the hybrid runtime additionally consumes retained pressure/history/context | A triad snapshot or serialized recipe is not automatically a complete runtime checkpoint |
+| Equivalence | Define the relation and prove its compatibility with the selected full law or target observation | Python comparison, numerical closeness and equal diagnostic values cannot establish the relation |
+
+**Reference S and reference D have compatible but different scope.** S
+retains the fine scalar state with independent primitive phase. Under a
+specified transport law, D is an observation of that same fine form, not
+a competing microscopic foundation. Identifying D's regional orientation
+with S's primitive phase is a separate constitutive hypothesis. The cards
+below make the admitted sector, target observations and lost information
+explicit. Neither establishes minimality for every observable or physical
+ontology.
+
+**An implementation comparison is not structural equivalence.** The legacy
+`BEPIElement.__eq__` compares arrays approximately and numeric operands through
+a scalar projection. For `a=BEPI((1,-1),(0,0))` and
+`b=BEPI((-1,1),(0,0))`, on the same grid, it gives `a==1`, `1==b`, but
+`a!=b`. The mixed comparison is not transitive. Its compatibility behavior
+must not define a quotient of forms. Likewise, `allclose` does not define
+structural equivalence, and magnitude projection is not an injective state
+chart. Scalar solver admission uses the
+separate represented-real reader, not this equality. No equality API or
+physical state space is changed by recording this boundary.
+
+**Origin decision.** The cotangent candidate assigns dynamical meaning to
+form relative to the origin in its stipulated momentum/storage. Its
+[same-tetrad witness and positive chart control](TNFR_VARIATIONAL_PRINCIPLE.md#cotangent-tetrad-future-witness)
+separate changing that state from changing coordinates. A passive translation
+can preserve the entire law; resetting its formulas unchanged need not.
+Thus the audit supplies no evidence of a physically absolute EPI origin.
+Whether a reference is independently meaningful, inherited from a finer
+state or removable by a valid reduction remains a constitutive question.
+
+The [source audit](NODAL_RESEARCH_STRATEGY.md#four-foundation-source-audit)
+records which current and historical calculations support these decisions.
+
+<a id="reference-s-state-admission"></a>
+#### Reference S: fine scalar state and a complete held baseline
+
+Fix a finite nonempty ordered node set, support U and nonnegative conductance
+W; directed support is admitted. Support neighbors and positive-conductance
+neighbors need not coincide. The mathematical state is
+`(x,theta,nu) in R^n x (S^1)^n x [0,infinity)^n`. Metric lengths are supplied
+only for observations that consume them. State and metadata must all transform
+under node relabeling; within frozen ordered data only their automorphisms
+are graph symmetries. No bitwise runtime equivariance follows from this algebra.
+
+Use a declared common clock, form units X and capacity units `T^-1`, so
+pressure has units X. Effective channel coefficients and their units follow
+the [parameter owner](NODAL_PARAMETER_FOUNDATIONS.md#3-joint-changes-of-form-and-time-units);
+a normalized numerical recipe is not independent metrology. Zero form retains
+the other coordinates, and zero capacity is admitted. Where phase is consumed,
+require nonzero neighbor resultants and regular wrapped displacements; isolates
+use the specified zero row. Primitive phase has a circle value even at x=0.
+
+A complete existing baseline S0 holds phase, capacity, support, conductances and coefficients,
+uses fresh configured pressure, and excludes inputs, events and clipping. With
+`N=diag(nu)`, `G_W=-L_rw` and constant non-form source F, its equations are
+
+\[
+p=eG_Wx+F,\qquad
+F=a g_\phi(\theta,U)+bG_U\nu+cG_Uk,\qquad
+\dot x=Np,\quad \dot\theta=\dot\nu=0.
+\]
+
+The [pressure owner](NODAL_PARAMETER_FOUNDATIONS.md#21-the-implemented-pressure-is-a-specified-relational-map)
+defines the distinct neighborhoods and zero rows. Holding phase preserves its
+admitted chart. S0 is a constant-coefficient affine ODE, so it has a unique
+solution for every finite time, including at zero capacity. Its forcing may
+cause indefinite mean drift; this is not a boundedness or formation theorem.
+The exact-real domain is real form; configured runtime rails and finite
+represented arithmetic are separate execution restrictions.
+
+For targets consisting of relative form, relative primitive phase and pressure,
+let `C=I-11^T/n`, `y=Cx` and `u_i=exp(i*(theta_i-theta_ref))`. At fixed
+metadata/capacity, declare two S0 states equivalent precisely when y and u
+agree. This discards a common form offset and common phase rotation. Both are
+symmetries of this held baseline, and the quotient closes:
+
+\[
+\dot y=CN[eG_Wy+F(u,\nu,U)],\qquad \dot u=0.
+\]
+
+Pressure and nodal rates follow from y, u and retained metadata. To recover
+absolute form, retain the initial mean and integrate
+`m_dot=1^T*N*(e*G_W*y+F)/n`. A form scale change is covariance with transformed
+units/coefficients, not equality of these observations. These are sufficient
+declared equivalences, not a classification of every possible symmetry.
+
+There is also a useful baseline consequence of the existing joint chain rule:
+`p_dot=e*G_W*N*p`. The initial pressure must be realized by this fixed source,
+`p(0)=e*G_W*x(0)+F`; the pressure flow preserves `F+image(e*G_W)`.
+Pressure alone has closed evolution at fixed N, W and e under these holds,
+although it is not complete state. Opening phase, capacity,
+support or events requires additional terms and projectability checks. This
+does not conflict with the same-tetrad future witness under the different
+cotangent law. S0 is a declared continuous reference, not the default runtime's
+sequence of pressure writes, held intervals, glyphs and adaptation.
+
+<a id="reference-d-state-admission"></a>
+#### Reference D: a derived collective observation of the transport sector
+
+Restrict S to fixed pure-EPI transport `x_dot=-diag(nu)*L_rw*x` with held
+positive capacities. Primitive phase is held and unused. Choose the existing
+two equally oriented directed unit triangles with matched reciprocal unit
+links; outgoing degree is two. The partition and the orthonormal frame
+`U=[(1,-1,0)/sqrt(2), (1,1,-2)/sqrt(6)]` are supplied relational data.
+
+For each region, `x_a=mu_a*1+U*(Re z_a,Im z_a)^T`. Thus `(mu,z)` is a
+complete real coordinate change; it adds no complex microscopic form. The
+derived angle `psi_a=arg z_a` exists only at nonzero amplitude. Cartesian
+coordinates remain defined at zero. The selected observation is `(mu,Q)`
+with `Q=zz^dagger`; Q is the Gram H of its
+[proof owner](nodal/DERIVED_FORM_PHASE.md#collective-interaction-closure-and-relational-state),
+not a cotangent metric. Its units are `X^2`; mu and z have units X.
+
+| Admission item | Reference D contract |
+| --- | --- |
+| Target | Regional contrast squares, retained means, relative orientations where defined, and cross-region contrast-budget terms |
+| Exact equivalence | Same means and Gram; for nonzero z, representatives differ by one common contrast rotation at fixed frames |
+| Realizable domain | Q is Hermitian positive semidefinite of rank at most one; a positive diagonal entry reconstructs a representative by `z_i=Q_iq/sqrt(Q_qq)` |
+| Zero stratum | Q=0 means zero internal contrasts, not zero means or absence of support; each zero contrast has no angle and a zero Gram row/column |
+| Excluded targets | Fine EPI, vertex pressure/current and general tetrad values can depend on the discarded common orientation |
+| Capacity/support scope | For the six-node graph, capacities are constant within each triangle for all-state Gram closure; the regional constants may differ. General interfaces need the existing matrix criterion |
+| Numerical restrictions | PSD/rank realizes real fine form, not necessarily configured EPI rails; constrained domains require checking admitted lifts |
+
+For regional capacities `nu_0,nu_1>0`, the existing complete reduction is
+
+\[
+\dot\mu_a=\frac{\nu_a}{2}(\mu_b-\mu_a),\qquad
+\dot z=Az,\quad
+A=\begin{pmatrix}
+-\nu_0(5+i\sqrt3)/4&\nu_0/2\\
+\nu_1/2&-\nu_1(5+i\sqrt3)/4
+\end{pmatrix},\qquad
+\dot Q=AQ+QA^\dagger.
+\]
+
+This is a derived law once the fine transport has been admitted, including
+the zero stratum through the Cartesian flow. The exact
+[capacity-domain theorem](nodal/DERIVED_FORM_PHASE.md#exact-capacity-domain-of-the-inherited-observation)
+and [interface criterion](nodal/DERIVED_FORM_PHASE.md#collective-interaction-closure-and-relational-state)
+own necessity, sufficiency and counterexamples; arbitrary capacities or ports
+do not inherit it. Cross blocks of the joint Gram are required when regions
+interact, and pairwise realizability alone is insufficient. The real-fine-state
+lift must realize one joint matrix.
+
+The [held affine-source extension](nodal/DERIVED_FORM_PHASE.md#held-affine-source-closure)
+now admits the same observation beyond pure transport precisely when the
+existing generator conditions and `U^T*N*F=0` both hold on the full real-form
+domain. It permits a regional mean source, but a fixed contrast source can
+retain orientation information lost by the Gram observation. This conditional
+extension leaves the transport reference above intact and supplies no new
+pressure law or complete-runtime closure.
+
+A reporting-frame change rotates z and conjugates both Q and A consistently.
+That is different from an active common modal rotation at fixed frames, which
+changes fine EPI but leaves this particular observation unchanged. Rescaling
+form changes Q quadratically and is not equality in this quotient.
+
+<a id="reference-s-d-admission-verdict"></a>
+#### F1 verdict and the specific obligations passed to F2
+
+S0 and D now have explicit domains, complete baseline laws, target observations
+and admitted equivalences. D is an exact lossy description of a restricted S
+transport sector. Neither their equivalence nor the existence of circle angles
+identifies D's regional psi with S's independently stored nodal theta.
+That proposed identification needs an explicit lift and tangency of the full
+law, including mean, amplitude, capacity and any source it activates.
+
+The unequal-capacity D theorem uses pure-EPI pressure. In the full mixture,
+capacity differences can activate an additional source. Common capacity,
+equal primitive phases and equal outgoing degree make the other channels
+vanish and give the existing embedding with rate `nu*w_epi` when `w_epi>0`.
+At `w_epi=0` the motion is the frozen zero-rate limit, not the stated
+positive-rate D family. This is not a general permission to discard channels.
+A phase-derived source fed back into
+pressure must be counted as a model change unless its full inherited response
+matches. Exact quotient equations do not create an additional physical force.
+
+F1's reference admission is complete in this scope. F2 must justify the fine
+pressure and support choices, the held capacity/phase premises or their
+replacements, and any identification between levels. Physical state minimality,
+a universal clock and autonomous selection remain open. Existing proofs and
+controls are reused rather than presented as newly discovered dynamics.
+The first [F2 identification control](nodal/DERIVED_FORM_PHASE.md#derived-phase-identification-admission)
+now separates preserved contrast from changed means, necessary phase tangency
+from a supplied phase row, and a regular Cartesian zero from an undefined
+angle-fed pressure. Its restricted positive bridge does not select a general
+law or sustain contrast.
 
 ## 3. Structural Field Tetrad
 
@@ -476,7 +693,7 @@ The phase bounds are kinematic identities. The warning margins and potential
 thresholds are unchanged engine policies. Fitted correlation lengths need not
 equal the graph-spectral reference for every state.
 The exact curvature exception and its support/chart premises belong to
-[the low-degree phase result](NODAL_PARAMETER_FOUNDATIONS.md#41-exact-low-degree-reduction-and-its-nonlinear-boundary).
+[the low-degree phase result](nodal/PRESSURE_CONSTITUTIVE_SCOPE.md#41-exact-low-degree-reduction-and-its-nonlinear-boundary).
 
 ### 4.2 The four fields
 
@@ -749,7 +966,7 @@ analysis = TNFR.analyze(net)               # Comprehensive analysis
 - [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) — U1–U6 derivations
 - [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md) — Four diagnostic channels and open reconstruction/minimality questions
 - [DIAGNOSTIC_AND_GRAMMAR_SCOPE.md](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md) — Exact hypotheses, numerical policies, and finite-graph witnesses
-- [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) — Broader derivative-tower context, read with the scope distinctions above
+- [Theory reading routes](README.md#choose-a-question) — Locate the state, evolution, diagnostic and implementation owner for a question
 - [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) — Balance diagnostics and restricted exact conservation results
 - [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md) — Lagrangian formulation
 - [GLOSSARY.md](GLOSSARY.md) — Operational definitions

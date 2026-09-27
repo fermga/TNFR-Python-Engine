@@ -3,6 +3,8 @@
 These small regular-chart cases compare represented evaluation with an
 independent exact-model formula. They neither certify all backends nor
 derive a phase/capacity law, conservation requirement or future trajectory.
+The final algebraic countermodels separate optional regularity premises; they
+are not additional implemented pressure mechanisms.
 """
 
 import math
@@ -182,3 +184,50 @@ def test_general_near_coherent_cubic_jet_distinguishes_argument_and_sine():
     )
     # Divide both jets by pi for matching linear pressure gain. Oddness
     # removes the fourth-order term; the documented remainder is O(epsilon^5).
+
+
+def test_rotation_invariant_source_countermodels_separate_smoothness_and_scale():
+    s = pytest.importorskip("sympy")
+    state = s.Matrix(s.symbols("uA vA uB vB", real=True))
+    u_a, v_a, u_b, v_b = state
+    scale = s.Symbol("lambda", positive=True)
+    linear_coefficients = s.Matrix(s.symbols("a0:4", real=True))
+    linear = linear_coefficients.dot(state)
+    half_turn = dict(zip(state, -state, strict=True))
+    # Homogeneity and differentiability at zero reduce the scalar response
+    # to a real linear map. Half-turn invariance annihilates every coefficient.
+    invariant_defect = linear.subs(half_turn, simultaneous=True) - linear
+    constraints = s.Matrix([invariant_defect]).jacobian(state)
+    assert constraints == -2 * linear_coefficients.T
+
+    area = u_a * v_b - v_a * u_b
+    radius_squared = state.dot(state)
+    normalized = area / s.sqrt(radius_squared)
+    scaled = dict(zip(state, scale * state, strict=True))
+    assert s.simplify(area.subs(scaled, simultaneous=True) - scale**2 * area) == 0
+    assert (
+        s.simplify(normalized.subs(scaled, simultaneous=True) - scale * normalized) == 0
+    )
+    assert s.simplify(normalized.subs(half_turn, simultaneous=True) - normalized) == 0
+    # This sum-of-squares identity proves |area|<=radius_squared/2,
+    # hence the value-zero extension is continuous at the origin.
+    i_a, i_b = u_a**2 + v_a**2, u_b**2 + v_b**2
+    dot = u_a * u_b + v_a * v_b
+    assert (
+        s.expand(radius_squared**2 - 4 * area**2 - (i_a - i_b) ** 2 - 4 * dot**2) == 0
+    )
+
+    # Derive the actual gradient, rather than assuming C1 regularity is
+    # necessary for a Lipschitz (and potentially well-posed) source.
+    gradient = s.Matrix([s.diff(normalized, coordinate) for coordinate in state])
+    assert s.simplify(gradient.dot(gradient) - 1 + 3 * area**2 / radius_squared**2) == 0
+    # Away from zero this norm is <=1; continuity and splitting a segment
+    # through zero then give the documented global 1-Lipschitz bound.
+    direction = {u_a: 1, v_a: 0, u_b: 0, v_b: 1}
+    opposite = {coordinate: -value for coordinate, value in direction.items()}
+    forward = normalized.subs(direction)
+    backward = normalized.subs(opposite)
+    assert forward == backward == 1 / s.sqrt(2)
+    assert forward + backward != 0  # Directional responses cannot be linear.
+    # The quadratic source is smooth but degree two; the normalized source
+    # is degree one and Lipschitz but has no total derivative at zero.

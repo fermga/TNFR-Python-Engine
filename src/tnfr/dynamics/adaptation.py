@@ -27,6 +27,8 @@ __all__ = (
     "adapt_vf_by_coherence",
 )
 
+_MISSING = object()
+
 
 def _finite_real(
     value: Any,
@@ -173,37 +175,46 @@ def _validated_node_state(
     vf_min: float,
     vf_max: float,
 ) -> tuple[
-    tuple[float, ...],
-    tuple[float, ...],
+    tuple[float | None, ...],
+    tuple[float | None, ...],
     tuple[float, ...],
     tuple[int, ...],
 ]:
     """Read and validate all node inputs before any state mutation."""
 
-    si_values: list[float] = []
-    dnfr_values: list[float] = []
+    si_values: list[float | None] = []
+    dnfr_values: list[float | None] = []
     vf_values: list[float] = []
     stable_counts: list[int] = []
 
     for node in nodes:
         attributes = G.nodes[node]
         prefix = f"node {node!r}"
+        raw_si = _first_alias_value(attributes, ALIAS_SI, _MISSING)
+        raw_pressure = _first_alias_value(attributes, ALIAS_DNFR, _MISSING)
+        raw_capacity = _first_alias_value(attributes, ALIAS_VF, _MISSING)
+        if raw_capacity is _MISSING:
+            raise ValueError(f"{prefix} nu_f is missing")
         si_values.append(
-            _finite_real(
-                _first_alias_value(attributes, ALIAS_SI, 0.0),
+            None
+            if raw_si is _MISSING
+            else _finite_real(
+                raw_si,
                 f"{prefix} Si",
                 minimum=0.0,
             )
         )
         dnfr_values.append(
-            _finite_real(
-                _first_alias_value(attributes, ALIAS_DNFR, 0.0),
+            None
+            if raw_pressure is _MISSING
+            else _finite_real(
+                raw_pressure,
                 f"{prefix} DeltaNFR",
             )
         )
         vf_values.append(
             _finite_real(
-                _first_alias_value(attributes, ALIAS_VF, 0.0),
+                raw_capacity,
                 f"{prefix} nu_f",
                 minimum=vf_min,
                 maximum=vf_max,
@@ -267,6 +278,13 @@ def adapt_vf_after_structural_stability(
     a phase/form target that depended on the previous capacities; see
     ``theory/FORCED_SUPPORT_BALANCE.md`` section 27.
 
+    Missing Si or stored pressure makes this node's gate unavailable: its
+    consecutive stability count resets and its capacity is not adapted.
+    Absence is not numerical zero, even with a zero Si threshold. Missing
+    capacity rejects the call before mutation because neighbor proposals
+    consume the capacity snapshot. Present invalid values still reject;
+    only an absent stable counter is initialized to zero.
+
     This routine does not read dEPI/dt and therefore does not compute or gate on
     canonical total coherence C(t). All parameters and node scalars are
     validated before mutation. Stable counters and frequency updates commit as
@@ -277,8 +295,8 @@ def adapt_vf_after_structural_stability(
     Parameters
     ----------
     G
-        Graph with injected TNFR defaults and scalar Si, DeltaNFR, nu_f, and
-        optional stable_count node attributes.
+        Graph with injected TNFR defaults and scalar nu_f. Si and DeltaNFR
+        are required to admit each node's gate; stable_count is optional.
     n_jobs
         None or 1 selects serial proposal calculation. A positive integer
         greater than one enables process-based proposal calculation.
@@ -331,7 +349,7 @@ def adapt_vf_after_structural_stability(
     )
 
     stable_flags = tuple(
-        si >= si_hi and abs(dnfr) <= eps_dnfr
+        si is not None and dnfr is not None and si >= si_hi and abs(dnfr) <= eps_dnfr
         for si, dnfr in zip(si_values, dnfr_values)
     )
     new_counts = tuple(

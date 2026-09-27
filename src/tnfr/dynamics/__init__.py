@@ -1,4 +1,4 @@
-"""Facade that keeps ΔNFR, νf and phase orchestration coherent across TNFR dynamics.
+"""Facade for configured ΔNFR, νf, phase and operator orchestration.
 
 Attributes
 ----------
@@ -16,8 +16,8 @@ set_delta_nfr_hook : callable
     coupled to νf drift and phase targets.
 default_glyph_selector, parametric_glyph_selector : AbstractSelector
     Selector implementations that choose glyphs according to ΔNFR trends,
-    νf ranges and phase synchrony, ensuring operator firing reinforces
-    coherence.
+    νf ranges and phase synchrony. These are configured policies, not derived
+    autonomous selection laws or guarantees of monotone coherence.
 coordination, dnfr, integrators : module
     Re-exported modules providing explicit control over phase alignment,
     ΔNFR caches and integrator lifecycles to centralize orchestration.
@@ -27,34 +27,29 @@ ProcessPoolExecutor, apply_glyph, compute_Si : callable
 
 Notes
 -----
-The facade aggregates runtime helpers that preserve canonical TNFR dynamics:
+The facade aggregates the default hybrid runtime's helpers:
 ``dnfr`` manages ΔNFR preparation and caching, ``integrators`` drives the
-numerical updates of νf and EPI, and ``coordination`` synchronizes global and
-local phase. Complementary exports such as
+declared nodal updates, and ``coordination`` applies phase coordination.
+Complementary exports such as
 :func:`~tnfr.dynamics.adaptation.adapt_vf_after_structural_stability` and
 :func:`~tnfr.dynamics.coordination.coordinate_global_local_phase` allow custom
-feedback loops without breaking operator closure.
+feedback loops under their own admission and provenance requirements.
+The explicitly selected joint model in ``dynamics.relational`` has separate
+field/step entry points. Its local recovery theorem is conditional on positive
+held capacities, positive form dissipation and an acute equilibrium geometry;
+it does not change this facade's runtime dispatch.
 
 Examples
 --------
->>> from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
->>> from tnfr.structural import Coherence, Emission, Resonance, create_nfr, run_sequence
->>> from tnfr.dynamics import parametric_glyph_selector, run, set_delta_nfr_hook, step
->>> G, node = create_nfr("seed", epi=0.22, vf=1.0)
->>> def regulate_delta(graph, *, n_jobs=None):
-...     for _, nd in graph.nodes(data=True):
-...         delta = nd[VF_PRIMARY] * 0.08
-...         nd[DNFR_PRIMARY] = delta
-...         nd[EPI_PRIMARY] += delta
-...         nd[VF_PRIMARY] += delta * 0.05
-...     return None
->>> set_delta_nfr_hook(G, regulate_delta, note="ΔNFR guided by νf")
->>> G.graph["glyph_selector"] = parametric_glyph_selector
->>> run_sequence(G, node, [Emission(), Resonance(), Coherence()])
->>> run(G, steps=2, dt=0.05)
->>> # Automatic integration keeps ΔNFR, νf and phase co-modulated.
->>> step(G, dt=0.05)
->>> # Manual control reuses the selector state to consolidate coherence traces.
+>>> import networkx as nx
+>>> from tnfr.alias import set_dnfr
+>>> from tnfr.dynamics import set_delta_nfr_hook
+>>> G = nx.path_graph(2)
+>>> def declared_pressure(graph, *, n_jobs=None):
+...     for node in graph:
+...         set_dnfr(graph, node, 0.08)
+>>> set_delta_nfr_hook(G, declared_pressure, note="supplied constant pressure")
+>>> # This hook writes pressure only; a declared integrator owns EPI evolution.
 """
 
 from __future__ import annotations
