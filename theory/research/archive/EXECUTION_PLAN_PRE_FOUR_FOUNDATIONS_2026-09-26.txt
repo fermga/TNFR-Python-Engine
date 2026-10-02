@@ -1,0 +1,1039 @@
+# Nodal research execution plan
+
+**Current status: 2026-09-26.** This is the sole active research queue.
+The primary objective is to determine whether material constituents and their
+observable properties can emerge as interacting coherent patterns from justified
+TNFR nodal structure and dynamics. Primitive EPI need not equal a directly
+measured physical magnitude. Existing foundational choices are revisable hypotheses,
+not outcomes the research must preserve. The current priority is testing an
+explicit geometric phase/form closure, with capacity held and its added premise
+kept separate from consequences, before further formation searches.
+Its target remains conditional pattern appearance, evolution and loss, with
+explicit premise discrimination. Neither indefinite persistence nor a
+unique completion of the nodal identity is a prerequisite for that work.
+
+The [portfolio](../../TNFR_lineas_de_investigacion.txt) classifies branches;
+[the strategy](../NODAL_RESEARCH_STRATEGY.md) owns interpretation and the
+[theory index](../README.md) identifies proof owners. The
+[pre-reassessment snapshots](archive/README.md#foundation-reassessment-2026-09-20)
+preserve the previous plan and portfolio, including uncommitted research history.
+Old next-step instructions are superseded; their mathematical results are not.
+
+## 1. Target, boundaries and completion
+
+Determine which observable structures and responses follow from an explicitly
+specified TNFR model, which survive justified changes of its premises, and
+which interpretations fail. A useful result may be a conditional model family,
+a sufficient reduced state, a discriminating prediction or a counterexample.
+Uniqueness of all physical laws is not a prerequisite for useful mathematics.
+
+The nodal identity `dEPI/dt=nu_f*DeltaNFR` relates a rate to supplied factors.
+It does not select the pressure realization, state space, phase/capacity laws,
+support, clock, initial conditions or operator schedule. Calling a quantity
+canonical or emergent does not supply those missing dependencies. The identity
+and its interpretation are themselves subject to explicit mathematical and
+empirical review; changing one defines a new model rather than retroactively
+changing an old theorem.
+
+A revised mechanism must specify its independent premises before seeing the
+response. It may use justified nodal relations or an explicitly identified
+candidate law. It cannot reconstruct pressure retrospectively, add a fitted
+sustaining force, or introduce a controller solely because it creates the
+wanted pattern. External models may serve as comparisons, not hidden TNFR laws.
+
+Observable identity can be geometric, orbital, transient or stationary, but
+must be declared before evaluation. A failed stationary scalar target does not
+rule out every pattern. Conversely, changing identity after failure does not
+turn that experiment into a success. Physical identification remains open.
+
+One fixed law can yield different responses under independently specified
+preparations, connectivity and surroundings. Formation, finite persistence,
+transformation and loss are legitimate targets; every pattern need not live
+forever. Distinguish appearance of an observable, birth of a graph region,
+restoration of identity and physical formation. Observation thresholds may
+define a reserved visibility window but cannot become undeclared dynamic
+switches or evidence of a bifurcation.
+
+Empirical work is restricted to publicly available terrestrial surface data or
+workstation/ordinary laboratory observations. Astronomical, satellite and
+large-facility data remain excluded. Physical claims require an independent
+measurement/clock map and reserved responses, beyond passing software tests.
+
+## 2. One status board and dependency chain
+
+| Objective | Current position | Decision needed |
+| --- | --- | --- |
+| Foundation reassessment | Conditional nodal laws, closure obstructions and collective-state results exist; physical constituents remain hypothetical | Reuse justified premises without substituting a sensor-to-EPI correspondence for collective emergence |
+| Derived geometry and effective state | Matched-interface closure, joint realizability and finite predictive bounds for one imperfect interface are established | Reuse the admitted state and information-loss criteria; no further passive-bound campaign |
+| Formation and persistence | Conditional cotangent responses are established, but its integration audit exposes unresolved exchange normalization and capacity/graph boundaries; equal-replica reduction derives an effective scale | Resolve inherited joint scale admission before more C8 identity studies; do not select a law or parameter from desired persistence. C5 gate itineraries remain deferred |
+| Physical identification — supporting, deferred | Measurement contracts and MOSTR metadata are retained; no physical admission | Resume only for an explicit bridge dependency; eventual observations may belong to collective patterns rather than primitive EPI |
+
+### Nine-point critique: assessment and acceptance obligations
+
+The critique correctly identifies limits on physical interpretation. Most are
+already documented open obligations or scope boundaries, not newly discovered
+implementation defects. The table makes their disposition explicit within this
+queue; it does not start nine additional research branches. The
+[strategy](../NODAL_RESEARCH_STRATEGY.md#what-the-nine-point-critique-establishes)
+distinguishes these requirements from unnecessarily demanding a unique law,
+complete diagnostics or spontaneous creation of the substrate.
+
+| Concern | Assessment and existing evidence | Required action and acceptance boundary |
+| --- | --- | --- |
+| 1. Empirical validation | **Open.** No physical prediction has passed the complete admission/evaluation chain in the [measurement protocol](PASSIVE_TRANSPORT_PROTOCOL.md). Its [historical Volts model](PASSIVE_TRANSPORT_PROTOCOL.md#volts-model-boundary) is not an evaluation of the revised generative candidate. | P2–P3 must admit an independently specified measurement model, preserve reserved acquisitions and compare equally informed alternatives. Report uncertainty, negative results and independent replication status; simulation agreement cannot close this item. |
+| 2. Dynamical closure | **Correct for the nodal identity; conditional closed models already exist.** The [closure audit](../NODAL_RESEARCH_STRATEGY.md#closure-audit-equations-events-and-identity) separates missing rows from explicitly held coordinates and supplied laws. | The next candidate must state all consumed state, continuous/event laws, support, inputs, clock and initialization. Establish a well-defined prediction on its stated domain, including uniqueness or a justified set-valued prediction where necessary. Distinguish mathematical closure from independent justification of the chosen laws. |
+| 3. Pressure selection | **Underdetermined.** The [constitutive ledger](../nodal/PRESSURE_CONSTITUTIVE_SCOPE.md#44-constitutive-admission-ledger-and-remaining-choices) and completed response discriminator constrain but do not uniquely select the implemented mixture. | State which structural premises derive each response and which choices remain hypotheses. Reuse existing discriminators to select a useful prediction; do not fit pressure to its observed derivative or repeat a search for uniqueness unsupported by the premises. |
+| 4. Measurement bridge | **Open for physical admission.** Structural coordinates and time are not automatically measured quantities; the protocol records missing calibration, clock and preparation evidence. | P2 must declare the observation map, units, identifiable parameters, clock and uncertainty independently of reserved responses. Every coordinate consumed by the candidate must be measured, independently held or handled as hidden state with justified bounds; unused coordinates need no invented measurement. |
+| 5. Auxiliary constructions | **Scope restriction.** The [variational owner](../TNFR_VARIATIONAL_PRINCIPLE.md) retains auxiliary exact results and graph-field realizability obstructions. These do not derive particles or the full engine. | Keep them supporting mathematics. Use them as a candidate mechanism only with a compatible graph-state lift, preserved realizability and the actual induced nodal laws. No physical promotion follows from the algebra alone; deriving every auxiliary construction is not a prerequisite for the selected model. |
+| 6. Tetrad completeness | **Known limitation, not failure as telemetry.** [Minimal degrees](../MINIMAL_STRUCTURAL_DEGREES.md) and [derived memory](../DERIVED_EPI_MEMORY.md) retain missing-state obstructions. | For the selected prediction, prove sufficient observation closure, retain necessary state/history or bound the omitted response. P4 must test this at the actual observation map. Do not require four diagnostics to reconstruct every possible state. |
+| 7. Grammar and thresholds | **Configured policies, with separate mathematical/representation boundaries.** [Grammar scope](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md) and [parameter foundations](../NODAL_PARAMETER_FOUNDATIONS.md) distinguish these roles. | Record every policy consumed by the candidate and its causal role, separately from read-only observations and numerical tolerances. A claimed policy-independent result needs a derivation or a declared robustness domain. An autonomous claim must include the event/selection law; admission rules alone do not select events. |
+| 8. Autonomous emergence | **Conditional patterns exist; stronger formation and physical claims remain open.** Existing identity, source-budget and restoration results do not generate their own initial support. | The current candidate/reachability task must distinguish prepared retention, imported form, recovery and formation from a declared preparation family. P5 extends that contract to maintenance, loss and transitions. Substrate origin, universal operator selection and physical NFR identification remain separate stronger claims, not hidden prerequisites for every conditional model. |
+| 9. Evidence and proof | **Correct about tests; analytical proofs are distinct.** Finite execution controls test realizations. Exact conditional theorems can cover infinite model families without establishing physical correspondence. | Every deliverable labels derivation, conditional theorem, numerical observation and empirical evidence separately, retaining assumptions and provenance. Software, mathematical and physical acceptance are separate decisions; failed or inconclusive evidence stays visible. |
+
+**Dependency order.** First admit one complete conditional candidate and its
+predeclared identity/reachability prediction at the current gate below. Then
+admit a physical observation and clock map in P2 before evaluating physical
+predictions in P3. P4–P5 reuse that evidence contract for hidden state, lifetime
+and transitions. An already specified transport model can support a narrower
+P2–P3 test without waiting for autonomous NFR formation; it cannot by itself
+validate the stronger generative interpretation. Scope checks for auxiliaries,
+policies and proof apply to these same deliverables, not separate campaigns.
+
+**Empirical interpretation.** Predeclared agreement within a
+justified error budget supports the tested model in scope. A comparison must
+report whether competing models are distinguishable under the available
+measurements. Identical observable predictions leave the interpretation
+underdetermined. A claim of additional predictive value needs a reserved
+discriminator and a fair comparison, rather than merely renaming a known
+equation. Universal superiority or an absolutely exclusive prediction is not
+required for a valid limited test. Stronger physical claims require evidence
+across independently acquired preparations/conditions and an explicit record
+of replication; one successful trace would not establish a fundamental theory.
+
+<a id="current-g3-gate"></a>
+### Current G3 gate: reassess premises before extending a mechanism
+
+This anchor is retained for repository links. It now points to the revised
+foundation gate, not an instruction to continue the old pressure-admission task.
+
+**Priority clarification, 2026-09-26.** The active question concerns emergence
+of effective constituents and their collective properties. Direct temperature,
+voltage or concentration mappings are auxiliary model realizations, not the
+definition of the ontological programme. The user's illustrative spin idea
+does not establish a spin mechanism; its scope is owned by
+[collective physical identification](../EMERGENT_ONTOLOGY.md#research-target-physical-properties-of-collective-patterns).
+MOSTR's previously scheduled intake is deferred. No source bytes are needed
+for the next theoretical obligation below.
+
+**Active decision after the phase-premise review.** The C5 gate-itinerary
+search is deferred. The completed
+[three-premise audit](../nodal/PRIMITIVE_PHASE_CLOSURE.md#phase-premise-review)
+separates the supplied sine row, reuse of operator U3 as a continuous cutoff,
+and the absence of form-to-phase feedback in that selected model. No new
+implementation defect explains the formation exclusions. The subsequent
+[constitutive admission](#prospective-constitutive-admission) identifies a
+conditional geometric comparison, not a replacement selected uniquely by NFR
+properties. Completed controls below remain evidence for their original laws;
+they are not additional tasks.
+
+**Completed review decision.** The existing mathematics already separates a
+configured engine from a fully justified physical law. Current C5 control,
+phase/capacity policies and auxiliary substrate assumptions cannot be promoted
+to necessary consequences of the nodal identity. Repeating their known closure
+obstructions does not select a missing law. Their evidence remains in the
+[strategy's admission matrix](../NODAL_RESEARCH_STRATEGY.md#mechanism-admission-existing-restoration-and-unresolved-feedback).
+
+**Model-admission requirements.** Reuse the existing fine-to-coarse and
+phase/form owners, rather than a new solver or topology sweep. Each selected
+comparison must record the [three-part variable contract](#variable-definition-identification-and-evolution)
+at the scope of its claim, together with:
+
+1. Supplied state/support/clock and each evolving or held coordinate.
+2. Every law's status: identity, explicit constitutive premise, inherited
+   effective law, configured event policy or numerical realization.
+3. A predeclared observation and identity, including amplitudes, mean drift and
+   hidden-state/history terms that its prediction needs.
+4. The smallest independently meaningful change of one unproved premise that
+   can distinguish two candidate explanations at the same observation budget.
+5. An analytical prediction or existing exact obstruction and one bounded
+   prospective control; use existing witnesses if they already decide it.
+
+**Completed bounded comparison: resultant direction versus amplitude in a
+finite phase-driven form response.** The acute P3 equal-mean, different-spread
+control now has four executed shared-engine trajectories. Phases, support and
+common capacity are explicitly held. The current Arg pressure is compared
+with the existing `J_phi/pi` readout as a declared alternative source, without
+installing it as default dynamics. The
+[prospective form-response calculation](../nodal/PRESSURE_CONSTITUTIVE_SCOPE.md#prospective-finite-response-discriminator)
+retains the same other pressure channels: they cancel in the paired response
+difference, rather than being silently removed from the full mixture.
+
+The two spreads, horizon, coefficients, unclipped domain and numerical budgets
+were fixed before execution. Independent modal and matrix predictions agree
+with the observed form responses: the paired central Arg change is compatible
+with zero, while the current model has a resolved nonzero change. Pressure,
+Euler integration and rounding defects are separated in the linked result.
+That bounded comparison is complete; repeating or enlarging it is not the next
+task. Agreement tests realization, not which law nature selects or autonomous
+pattern formation.
+
+**Completed bounded obligation: inherited phase information.** The existing
+directed-triangle fine model now supplies a closed evolution for regional
+contrast squares and complex cross-correlation. Its
+[observation identity and contrast budget](../nodal/DERIVED_FORM_PHASE.md#inherited-observation-identity-and-source-work)
+remain regular through zero regional amplitude. Identical complete angular
+traces and equal present total contrast can have different radial responses;
+phase direction alone therefore omits necessary information for this target.
+The reduction loses common orientation and means, and cannot stand for the
+whole fine state or tetrad. This meets the stated acceptance criterion through
+a sufficient conditional observation and an exact missing-state obstruction.
+It does not choose Arg versus current pressure for primitive phase: that
+identification still needs an independent observation/constitutive premise.
+
+**Completed capacity-domain obligation.** The
+[exact classification](../nodal/DERIVED_FORM_PHASE.md#exact-capacity-domain-of-the-inherited-observation)
+admits precisely capacities constant within each triangle, for autonomous
+Gram evolution at every fine preparation. Regional constants may differ.
+The proof retains independently varying hidden means, derives the weighted
+contrast/full-form budgets, and identifies fresh production pressure and
+nodal rates in a represented control. A separate same-Gram, same-mean witness
+shows that within-region heterogeneity can make discarded orientation relevant.
+This is a domain theorem, not just another failed capacity profile.
+
+**Admission decision.** The fixed-support passive family is now a justified
+conditional reference for derived phase, regional transfer and contrast decay.
+It cannot supply sustained nonzero contrast under its current premises.
+Further capacity sweeps or tighter decay bounds would not resolve the missing
+maintenance mechanism. The inherited source/correlation variables are
+observations and budget terms, not new primitive drivers.
+
+**Completed admission beyond the passive reference.** The
+[mechanism-admission matrix](../NODAL_RESEARCH_STRATEGY.md#mechanism-admission-existing-restoration-and-unresolved-feedback)
+identifies closed autonomous conditional maintenance already present in the
+repository. Holding primitive capacity is an explicit evolution law, although
+its independent justification remains open. The new
+[capacity-law discriminator](../CAPACITY_LOCALIZATION_BALANCE.md#a-predeclared-capacity-law-discriminator)
+compares that premise with declared continuous support averaging. Both models
+start from the same zero-pressure state and conserve total positive capacity.
+They nevertheless predict different initial accelerations and long-time form;
+the weak-averaging and long-time limits do not commute. The exact reduction
+retains the changing EPI mean. Three bounded controls reuse symbolic reduction,
+source capture, joint response and the shared Euler owner. The runtime probe
+checks an analytic snapshot, not a whole coupled trajectory or physical law.
+
+The admission result is precise underdetermination: the retained nodal identity,
+positivity, total-capacity conservation and fixed support do not select
+per-node capacity conservation. Existing P2 locking also supplies its phase
+law. These conditional results remain valid; no independently justified
+autonomous formation mechanism has been established by this review.
+
+**Completed primitive-capacity admission review.** The
+[strategy's premise classification](../NODAL_RESEARCH_STRATEGY.md#mechanism-admission-existing-restoration-and-unresolved-feedback)
+finds no independent per-node conservation principle in the audited owners.
+Native writers supply policies; a fixed transport measure fixes ratios but
+leaves a common clock free; the reciprocal variational class constrains a
+response without selecting its potential. Bare-cycle symmetry also prevents a
+graph-only equivariant assignment from creating unequal capacities. The
+activity-definition and inherited-mobility obstructions are reused, not rerun.
+This closes the conservation search with explicit underdetermination.
+
+**Completed conditional alternative: capacity as a function of local form.**
+The [local-relation classification](../CAPACITY_LOCALIZATION_BALANCE.md#8-a-local-form-capacity-relation-dissipation-and-restoration-criteria)
+supplies exact consequences for any declared positive relation `nu=g(EPI)`
+on a fixed cycle with equal held phases. It derives the conserved coordinate,
+energy balance and response slope from the unchanged pressure. Increasing
+combined response yields consensus; exact cancellation merely freezes every
+preparation. A separate sufficient criterion gives local restoration of
+nonuniform form on its conserved-coordinate surface. Four bounded controls
+check the algebra and production pressure/response. No particular restoring
+function, new driver or runtime solver has been introduced.
+
+**Capacity branches parked at their constitutive boundary.** Extending either
+held-capacity or local-relation models requires new independent evidence for
+the claimed capacity response. Preserve their slope, balance and symmetry
+criteria. Do not tune a restoring function, force hidden state into
+`nu=g(EPI)`, repeat completed audits or launch another parameter sweep.
+This unresolved constitutive choice does not block conditional predictions
+under an already specified fine law.
+
+**Completed regional episode under one law.** The
+[appearance and decay result](../nodal/DERIVED_FORM_PHASE.md#regional-appearance-and-decay-under-one-unchanged-law)
+reuses the coupled directed triangles and a positive full pressure mixture
+whose other channels vanish under the declared regular preparation. An
+initially uniform recipient region develops contrast, reaches a predicted
+unique peak and relaxes. Exact peak and crossing criteria distinguish strong,
+weak and disconnected preparations with one fixed observation threshold.
+The shared pressure/integrator controls retain complete fine states and
+separate numerical defects from the continuous prediction. Global contrast
+decreases; this is transported prepared form, not creation of a node or a
+physical entity. Finite threshold exit is not exact extinction or a phase
+transition. The earlier barbell and cycle windows remain reusable, without
+being relabeled as new findings.
+
+**Completed first phase/amplitude candidate, 2026-09-26.** The
+[unequal-capacity classification](../nodal/DERIVED_FORM_PHASE.md#unequal-capacity-mode-selection-and-a-finite-phase-only-discriminator)
+admits the existing pure-EPI coupled triangles as a conditional mathematical
+reference. It derives generic mode selection, a capacity-dependent bounded
+phase lag, exceptional fast-mode preparations and regular Cartesian crossings
+of zero regional amplitude. Every nonzero contrast still decays; varying the
+positive capacity ratio creates no locking threshold in this family.
+A predeclared phase-only approximation agrees initially on amplitude ratio,
+relative phase and its velocity but misses the exact subsequent acceleration.
+The bounded fine-generator comparison and existing engine path checks agree
+with that prediction. This completes the first atlas block's mathematical
+admission/discrimination obligation, not physical admission or NFR formation.
+
+**Completed operational specification, 2026-09-26.** The
+[measurement contract](PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md) now defines
+the six-channel spatial contrast observation, independently fixed chart and
+clock, identifiable rate combinations, amplitude-dependent error bounds and
+a finite circular comparison with the same uncertain initialization. The
+[reciprocity obstruction](../nodal/DERIVED_FORM_PHASE.md#reciprocity-boundary-for-a-physical-realization)
+excludes an exact identification with a passive reciprocal first-order scalar
+RC/thermal generator. Rechecking the four existing terrestrial candidates
+admits none for this specific prediction: the missing evidence concerns the
+closed directed law as well as simultaneous states, rates and uncertainty.
+No signal archive was downloaded or new response scored. Specification is
+complete; physical admission and evaluation remain open.
+
+**Completed bounded source decision, 2026-09-26.** The
+[six-study review](PASSIVE_TRANSPORT_PROTOCOL.md#directed-source-decision-2026-09-26)
+found no admitted realization of the exact six-node test. That physical
+experiment and further matching-data search are now parked. A nonreciprocal
+thermal row also fails the existing nonnegative-weight criterion at its
+published settings; no engine exception is justified. The selected alternative
+is MOSTR's accessible three-tank tracer record with separate calibration
+metadata, under a different prospective nodal transport model. This selection
+is based on apparatus/state accessibility, not response performance. No signal
+workbook was downloaded or scored. No physical dataset is yet admitted.
+
+**Completed collective-interaction obligation.** The
+[interaction theorem](../nodal/DERIVED_FORM_PHASE.md#collective-interaction-closure-and-relational-state)
+derives an all-state linear closure criterion and an exact joint mean/Gram
+description for two existing components joined through corresponding nodal
+ports. Separate component descriptions miss a relative common orientation:
+equal local data can yield different contrast responses in the same environment.
+The missing cross relation has its own inherited evolution. One dyadic paired
+control binds the prediction to fresh production pressure and the shared
+integrator, retaining full outgoing normalization. This closes the stated
+composition task for selected means/contrast responses, not individual port
+currents, arbitrary attachments, autonomous formation or material identity.
+
+**Completed imperfect-interface obligation.** Following the variable checkpoint,
+the [finite robustness result](../nodal/DERIVED_FORM_PHASE.md#imperfect-interface-ambiguity-and-a-finite-predictive-bound)
+retains full row normalization when only `0 -> 6` changes conductance. Any
+positive perturbation defeats exact joint mean/Gram closure, but the unchanged
+collective reference has observation-only finite error bounds. A same-observation
+pair gives an explicit unavoidable prediction error. Two frozen 32-step shared
+engine traces resolve the predicted mean separation above solver uncertainty;
+model error, discretization and represented arithmetic have separate budgets.
+This gate is complete. Do not extend its passive bounds or add perturbation
+sweeps; the model still does not sustain nonzero form contrast.
+
+**Completed finite-contact obligation.** The
+[contact owner](../COHERENT_PATTERN_CONTACT.md) states the model change from
+derived passive form angles to primitive phase following the supplied
+averaged-sine law. Two prepared unit `C5` rings interact through one supplied
+unit bridge for `T=1/2`, with held unit capacity and the explicitly selected
+equal-weight EPI/phase pressure sector. Capacity/topology channels are zero;
+there is no Gamma or glyph event. Full port degrees are retained.
+
+The energy barrier alone admits `beta=pi/24` and leaves `pi/12` inconclusive.
+A stronger comparison with the same graph's rotating reference admits both
+before execution: offsets stay in `[0,beta]` whenever `beta<pi/10`. The
+phasor-cone bound gives form radii `1/96` and `1/48` at the frozen endpoint.
+Both original windings survive despite nonzero interaction and deformation.
+Two 64-step shared-engine controls retain all-edge admission, lifted discrete
+paths, source/rounding defects and inactive clipping; no continuum numerical
+error certificate is inferred. Removal preserves nodal state. Subsequent
+recovery reuses the isolated-ring theorem for the unclipped continuous model.
+This gate is complete; tighter bounds or more contact offsets are not queued.
+
+**Completed isolated formation-admission obligation.** The
+[gap-excess theorem](../COHERENT_PATTERN_CONTACT.md#formation-boundary-under-the-same-gated-law)
+closes this question negatively for the declared fixed unit C5, common
+capacity and literal `pi/2`-gated averaged-sine law. On a winding-one branch,
+negative-gap mass is bounded by above-gate excess, whose decay satisfies
+`E_dot>=-2*E`. An initially winding-zero state cannot reach, or converge to,
+an entirely acute winding-one or winding-minus-one lock. The proof covers
+simultaneous gate boundaries and is conditional on absolutely continuous
+solutions of the literal equation; it does not assert global well-posedness
+at every discontinuity. The separate ideal-Euler result requires `h<1/2`.
+
+The predeclared pair/isolate control changes winding `0 -> -1` while its
+admitted phase support stays fragmented. Full-support pressure remains
+active and predicts `mean(EPI)=1/2+t/10`; the one 64-step production trace
+agrees with the endpoint prediction `0.55`, inside its retained arithmetic
+budget and without clipping. Three focused tests distinguish the exact ODE,
+discrete branch passage and pressure support. No parameter search was run.
+This is a limitation of the stated model, not all TNFR or all identities.
+Do not continue searching for isolated-C5 acute formation under these premises.
+
+**Completed environmental one-edge obligation.** The
+[regional phase budget](../COHERENT_PATTERN_CONTACT.md#one-external-phase-neighbor-budget-and-entrance-obstruction)
+retains the actual admitted-count denominator and evolving donor. The port
+rate correction `u` changes only its two adjacent recipient gap rates,
+giving `E_dot=R+u*sigma` with `R>=-2*E`. A signed accumulated contact budget
+is necessary for capture but not sufficient. Contact can accelerate or
+reverse the instantaneous excess change, so extending the isolated global
+exponential estimate unchanged would be incorrect.
+
+Nevertheless, a projection and exceptional-corner argument prove that the
+fixed single-edge interface cannot take a winding-zero recipient into a
+strictly acute winding-one or winding-minus-one state. The proof retains
+literal gate switching and reciprocal donor evolution and does not require
+a prescribed environment. It is a continuous conditional theorem, not an
+unrestricted Euler or binary64 guarantee. Three frozen non-mutating
+snapshots check the signed budget and full-support pressure through the
+existing owners. No induced-formation trajectory or offset sweep is needed;
+this route is closed for that interface and those phase-law premises.
+
+**Completed distributed-contact admission.** The
+[two-port theorem](../COHERENT_PATTERN_CONTACT.md#distributed-two-port-contact-a-realizable-entrance-witness)
+admits the fixed interface `(0,5),(1,6)` under the same supplied laws,
+unit capacities and equal EPI/phase pressure weights. The extra cycle
+constrains the two bridge phases. A jointly realizable preparation with
+recipient winding +1 and acute donor winding -1 has inward directions on
+both sides of its only recipient gate boundary. A quantitative short-time
+bound proves actual entrance into the strictly acute region while the
+donor evolves, all other edges stay admitted and pressure stays regular.
+This is recovery from a nonacute but already wound state, not formation
+from winding zero or indefinite retention under contact. The support
+change and donor preparation remain supplied. One frozen 32-step shared-
+engine control passes three focused tests: the recipient enters at step
+13, both ring windings persist, the donor deforms and pressure remains
+regular. The numerical gate bracket is not a continuous crossing-time
+enclosure. No parameter sweep was run; local admission is complete.
+
+**Completed formation-preparation exclusion.** The
+[gated-potential identity](../COHERENT_PATTERN_CONTACT.md#winding-zero-formation-a-dissipation-and-preparation-boundary)
+extends the acute cosine balance to the actual phase-gated law:
+`V_g=sum_edges(1-max(cos(gap),0))` dissipates as
+`V_g_dot=-sum_i admitted_degree_i*f_i^2`. It remains valid through gates
+and antipodal passages. This is a potential of the supplied phase closure,
+not physical energy or a full-engine Lyapunov theorem.
+
+An initially uniform-phase recipient and an acute wound donor with two
+contacts have `V_g(0)<6`. Two acute wound rings need at least
+`Q=(25-5*sqrt(5))/2`, approximately `6.90983`. Uniform-recipient formation
+is therefore excluded, even if the donor temporarily leaves its acute
+sector. A separate, nonuniform winding-zero preparation admits a local
+winding change yet has `V_g(0)<Q`, so its full formation target is excluded
+at every time. Two focused tests pass on one non-mutating production
+observation: the actual gated vector field and full-support pressure
+agree with the predicted budget. No proposal is applied and no further
+trajectory can rescue that case.
+
+**Completed joint admission and uninterrupted-route exclusion.** A
+[nonuniform winding-zero preparation](../COHERENT_PATTERN_CONTACT.md#joint-port-dynamics-sufficient-potential-does-not-give-a-formation-path)
+has exact joint cycle geometry, `V_g>Q`, a local antipodal passage and
+regular pressure with an acute evolving donor. It passes the previous
+preparation tests. It still cannot complete the target while the other
+four recipient edges and both bridges remain admitted and the donor
+remains strictly acute. The derived combination `Z=2*d+3*e` retains
+the actual port degrees and reciprocal donor response. Its barrier
+excludes the same-sign route, including repeated shared-edge slips;
+the opposite-sign donor has the wrong direction at the necessary
+passage. Reflection covers either target sign. Two non-mutating checks
+pass the potential and actual coupled-rate tests; no formation trajectory
+or parameter sweep was run.
+
+**Completed phase-premise review; remaining itinerary deferred.** The
+[audit and reuse ledger](../nodal/PRIMITIVE_PHASE_CLOSURE.md#phase-premise-review)
+identifies a triangular phase-to-form model: at fixed supplied capacity,
+changing EPI or pressure does not affect the phase proposal. The operator
+U3 gate is an admission policy; turning it into a continuous interaction
+cutoff is a separate modeling premise. Ordinary runtime coordination and
+the optional independent-pressure extension are different execution paths.
+Neither supplies an already justified replacement for this contact model.
+
+Changing or smoothing the gate changes its potential and preparation bounds;
+the uniform-recipient exclusion cannot be transferred unchanged. Conversely,
+positive state-dependent alignment mobility alone still dissipates the
+associated phase potential under the stated symmetric-interaction premises.
+Neither observation establishes a formation path. The unresolved old-model
+question is an itinerary with another edge excluded/re-admitted while the
+donor stays acute. It remains mathematically open and deferred, not disproved.
+
+<a id="prospective-constitutive-admission"></a>
+
+**Completed conditional admission: genuine geometric phase/form exchange.**
+The [NFR-property ledger](../EMERGENT_ONTOLOGY.md#12-can-nfr-properties-justify-a-joint-law)
+distinguishes identity, relational interaction and scale closure from an
+assumed maintaining force. One prospective premise is reversible internal
+exchange through the already derived phase metric. The
+[cotangent comparison](../TNFR_VARIATIONAL_PRINCIPLE.md#cotangent-phase-exchange)
+makes this premise precise using conjugate coordinates `momentum_i=H_phi,ii*x_i`,
+the canonical cotangent structure and the declared nondimensional storage
+`E=||x||^2/2+w*V_phi`.
+
+The resulting geometric pressure correction is forced by that chosen
+coordinate identification; omitting it generally loses the genuine Poisson
+structure. The full law has reciprocal form-to-phase response, a retained
+mean/momentum balance and `E_dot=-e*x^T*L*x` on fixed regular reciprocal
+support with held unit capacity. This is a new comparison law, not unchanged
+default pressure or an inference that NFR must be Hamiltonian. Absolute EPI,
+the storage normalization and the momentum interpretation are additional
+premises; capacity evolution and physical identification are not derived.
+
+The comparison makes two exact predictions before any trajectory. On the
+invariant zero-mean P2 sector, sublevels below the antipodal barrier give
+conservative periodic exchange when form diffusion is absent, and convergence
+when it is present. At consensus, with the same `e=w=1/2`, the lowest cycle
+mode is overdamped on C6 and underdamped on C8. Thus support can change the
+local response regime without changing coefficients. This is not the parked
+C6 full-runtime stability problem. Neither a conservative special case nor
+a damped mode establishes autonomous NFR formation.
+
+**Completed finite C8 comparison.** The
+[quantitative proof and frozen execution](../TNFR_VARIATIONAL_PRINCIPLE.md#cotangent-c8-finite-response)
+now establish a specific continuous nonlinear sign reversal and an independent
+exact-arithmetic Euler allowance. The single binary64 run passed its previously
+fixed recipe and acceptance checks, with no retuning. Shared pressure, Euler
+and SDK observation owners are reused; engine defaults remain unchanged.
+The theoretical bounds, exact preparation, observed values, residuals and
+source hashes belong to that proof owner, not a second table here.
+
+This distinguishes reciprocal phase/form feedback from the old triangular law.
+It does not uniquely select the geometric correction: a law omitting `Kx`
+shares the consensus linearization and storage balance. Moreover, the C8
+preparation's symmetry hides its general momentum budget. Repeating it is
+not the next scientific obligation.
+
+The [nonzero-momentum P2 reduction](../TNFR_VARIATIONAL_PRINCIPLE.md#cotangent-p2-nonzero-momentum)
+already resolves the smallest full relative-state case. Conserved momentum
+changes restoring stiffness and yields uniform rotation after relative
+contrast decays with positive diffusion. The correction supplies its exact
+momentum law, without adding a new force. A moving uniform state is not a
+maintained differentiated constituent.
+
+**Completed integration audit; identity experiments deferred.** At the user's
+request, [section 13.24](../TNFR_VARIATIONAL_PRINCIPLE.md#cotangent-integration-audit)
+now separates inherited structure from constitutive choices before expanding
+the C8 study. A family of exchange scales preserves the existing pressure and
+geometric balance while predicting different exact P2 accelerations. Capacity
+and irregular-support counterexamples prevent silently generalizing the unit,
+regular-graph law to the motor. Neither result rejects the nodal identity.
+
+There is also a constructive hierarchy result: equal replicated synchronized
+blocks inherit a scale fixed by their multiplicity, without fitting a rate or
+changing primitive capacity. This is exact on an invariant manifold, not an
+all-state quotient or proof of its autonomous formation. The related
+degree-normalization restriction needs an additional equivalence premise and
+still leaves a global scale. The microscopic momentum/storage premise remains
+unselected. No reviewed law yet derives all required formation, identity,
+interaction, capacity and support mechanisms together; that is an open
+derivation problem, not a proof of impossibility. Finite coherent lifetimes
+remain valid targets; eternal maintenance and a Hamiltonian structure are
+not universal NFR requirements.
+
+**Completed unequal-block closure and pressure/clock review.** The
+[C4 reduction](../TNFR_VARIATIONAL_PRINCIPLE.md#cotangent-unequal-block-closure)
+with partition `((0),(1,3),(2))` inherits the complete conditional joint law
+on its synchronized manifold. Block mass and counted support preserve both
+rows and the energy/momentum budgets. Recomputing bare P3 preserves the old
+pressure but changes phase motion and the geometric correction; no common
+exchange gain repairs it. The microscopic premise, clock and held unit
+capacity remain explicit. The finite derivative control supplies no global
+acute-trajectory or transverse-attraction certificate.
+
+The same review derives a clock-invariant joint-orbit discriminator for the
+exchange family and a [same-tetrad future witness](../TNFR_VARIATIONAL_PRINCIPLE.md#cotangent-tetrad-future-witness)
+under one fixed law. These distinguish missing law, clock freedom and lost
+state. [Full-law covariance](../NODAL_PARAMETER_FOUNDATIONS.md#pressure-clock-full-state-closure)
+also prevents hiding an unknown capacity law in pressure rescaling. The
+[reuse ledger](../NODAL_RESEARCH_STRATEGY.md#pressure-clock-archive-reuse)
+records actual benchmark and archived-source inspection, including why
+historical pulse and type instruments cannot supply the missing law.
+
+**Next single obligation: leading hidden-state feedback on that same C4.**
+Retain the existing fine law, support, clock and capacities. In a fixed acute
+real lift, write the size-two block as
+`x_1=X_B+r`, `x_3=X_B-r`, `theta_1=Theta_B+s`,
+`theta_3=Theta_B-s`. Keep the same block averages and compare their actual
+projected form/phase derivatives with the inherited synchronized law.
+Derive the first nonzero dependence on `(r,s)`, or prove its absence, before
+any trajectory. Swapping nodes 1 and 3 reverses both deviations, so an
+analytic averaged vector field is even under their simultaneous reversal;
+this does not by itself make the quadratic feedback vanish.
+
+Reuse the fine metric/connection and quotient observations. The deliverable
+is one exact same-average/different-rate witness or a closure proof, together
+with the missing retained information and its domain. This decides what an
+effective NFR must remember beyond an exactly synchronized preparation.
+Do not apply the affine memory certificate directly to a nonlinear law or
+add a new primitive variable when the information already exists in fine
+form/phase. A nonlinear error bound or memory model follows only if this
+control identifies a useful, necessary term; it is not a prerequisite to
+every other research question.
+
+Apply the [participation-in-form requirement](../EMERGENT_ONTOLOGY.md#nfr-participation-in-form):
+the three effective regions describe organizations of the same fine state.
+Their motion and mutual influence must be inherited from that state, with
+boundary relations retained where necessary, rather than introduced as extra
+external agents or counted a second time as independent forces. This does not
+identify the full collective configuration with one scalar EPI value or
+establish a physical-matter interpretation.
+
+This task tests a concrete NFR scale-composition requirement, not whether
+physics must be Hamiltonian. Exact synchronized reduction is now established;
+off-manifold closure and attraction are separate. No trajectory is required
+when the equations and exact control decide the question. Global capacity
+selection, justification of the microscopic exchange premise, autonomous
+grouping and physical admission remain dependencies, not parallel simulation
+campaigns.
+
+The former C8 relative-equilibrium/stability calculation is retained as a later
+conditional test, after this integration gate. It must use actual momentum
+balance, appropriate winding charts and valid energy domains; the completed
+unwound real-lift producer cannot silently execute a wound preparation.
+
+**Reusable admission contract.** For any subsequent candidate, record its
+independent structural premise and which phase object it evolves. The
+gradient-potential family and derived form phase remain alternatives with
+their existing boundaries; do not silently identify them with this cotangent
+comparison. Before any new trajectory, retain one admission record containing:
+
+1. The full state, pressure, phase and capacity rows (or explicit held values),
+   support, clock, inputs and domain; distinguish derived terms from choices.
+2. The actual mixed response for equal-phase states with different EPI,
+   including the resulting EPI acceleration. Reuse the reciprocal-response
+   and joint-state controls rather than selecting derivatives to get a period.
+3. The complete source/work and mean budget, including any capacity-dependent
+   angular rates, boundary input or state-dependent interaction. Dissipation
+   of a phase potential alone is not a full-state balance.
+4. The spectrum at a declared equilibrium, where differentiable, or an explicit
+   boundary where that test is unavailable. Reuse the existing phase-feedback
+   classification and capacity-slope criterion; an instability is not yet
+   nonlinear pattern formation, and local damping does not exclude every
+   finite-amplitude identity.
+5. A discriminating prediction and a decision: admitted conditional candidate,
+   excluded candidate, or named unresolved constitutive freedom. State the
+   old/new model boundary before reusing any contact theorem.
+
+Symmetry, locality, nodal arithmetic and a selected storage balance already
+leave freedom; do not repeat their failed uniqueness argument. If a premise
+leaves a model family, retain the family and derive a common consequence or
+a prospective discriminator. If no independent premise justifies a proposed
+term, record that gap instead of choosing its sign, gain or potential to
+force maintenance. A useful conditional family need not be uniquely physical.
+
+Only after that admission select one bounded control on the shared owners.
+No gate tuning, topology sweep, prescribed donor torque or additional source
+is authorized as an undeclared rescue. C6, further passive-transfer controls,
+the remaining C5 itinerary and empirical intake remain deferred. The target
+is still generative pattern dynamics; physical identity remains unestablished.
+
+The user's collision and musical-pattern suggestions are retained as
+[scoped comparison questions](../PHYSICAL_REGIME_CORRESPONDENCES.md#interaction-and-musical-analogies-questions-not-identifications).
+They motivate interaction outcomes and dynamical frequency relationships;
+they do not identify TNFR windings with particles, auditory preferences with
+universal laws, or initiate a collider/acoustic data campaign.
+
+**Deferred supporting intake: MOSTR schema and input/observation admission.**
+The following preparation is retained for a later explicit measurement need;
+it is not an active second task.
+Use the version-3 triple-system and two calibration files identified in the
+[source owner](PASSIVE_TRANSPORT_PROTOCOL.md#mostr-selected-intake-not-physical-admission).
+Cache only those three workbooks, at most 700,000 bytes combined, verify the
+advertised hashes where available and retain exact byte identities. Inspect
+container/schema, channel labels and preparation/calibration metadata before
+reading response values; cap expanded content at 20 MiB per workbook and do
+not execute macros or external links. Preserve the response arrays unscored.
+If metadata and response are inseparable, record the exposure boundary rather
+than pretend a future split is blind.
+
+The deliverable is a variable/input/clock admission table and a proposed split,
+or its precise missing fields: whether calibrations apply to the actual three
+sensors; known effective volumes and flow; location/duration of the injection
+or a justified post-injection initial state and inlet baseline; five-second
+averaging windows and channel synchronization; and independent acquisitions
+for calibration and evaluation. Example calibrations and nominal settings are
+not independent metrology. Do not infer the injection from the evaluated
+outlet curve, treat an averaged first sample as an instantaneous initial
+condition, fit hidden mixing corrections or manufacture independent runs
+from windows of one pulse. If these prerequisites are absent, stop at that
+source boundary without fitting or scoring. Reuse the existing directed
+generator, observation and evidence owners; no new simulator, broad search,
+hardware build or resumption of scored TCLab files is needed for this step.
+
+**General candidate contract retained for later revisions.** Use the
+[atlas selection below](#physical-atlas-selection-and-dependencies)
+and the relevant existing
+[identity contract](../NODAL_RESEARCH_STRATEGY.md#closure-audit-equations-events-and-identity).
+Use the admission matrix to distinguish specified laws from missing rows;
+do not reopen the completed broad audit or define a universal NFR criterion.
+Declare an initial family, environmental inputs and permitted symmetries
+before assessing whether trajectories enter and retain that identity class.
+Specify entry, exit and lifetime criteria, and what would reject the candidate
+or leave the prediction inconclusive, before executing the control.
+Supplied initial conditions are legitimate, but a source profile encoding the
+wanted form cannot establish its autonomous formation. A local recovery proof
+alone does not establish formation from a broader preparation family.
+
+The deliverable is one explicit candidate with a justified admission decision,
+and either a new reachability/lifetime consequence or the precise missing
+constitutive premise. Reuse the existing geometry, memory, response-slope and
+source-budget results before calculating. Finite, moving and topological
+identities remain admissible; indefinite life and universal recovery are not
+required. A single contrast threshold is not by itself complete NFR identity.
+If no candidate meets admission, report that dependency rather than substitute
+another passive-transfer experiment or fit a restoring function.
+
+This deliverable also records the applicable rows of the nine-point review:
+complete law and remaining choices, state sufficiency, any policy/auxiliary
+dependency, and the observation that could distinguish it from alternatives.
+Freeze those items before a bounded control. Passing that control can establish
+implementation agreement with the conditional prediction, not physical
+admission. A precise missing premise is an informative stopping result, not
+completion of the empirical objective.
+
+### Physical atlas selection and dependencies
+
+The [physical phenomena atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#physical-emergence-atlas)
+is integrated as a method for selecting and testing the primary candidate,
+not a replacement theory or a new queue for every named phenomenon. Its six
+card fields connect reference equations, observations, a TNFR dictionary,
+reduction and prospective discrimination. The atlas owns correspondence status
+and scientific caveats; this section owns work order. Physical identification
+continues through P2–P5, with computer-accessible terrestrial/laboratory data.
+
+**Completed intake:** the initial evidence map and phase-law card reuse pure
+diffusion, the exact directed-triangle amplitude/phase reduction, supplied P2
+locking, K3 closure and cycle branch-loss controls. The inherited sine term is
+an existing result, not a new discovery or derivation of superconductivity.
+The proposed "very high" physical ratings are replaced with exact restricted
+reduction, supplied comparison, missing prerequisite or deferred status.
+
+| Order / role | Next deliverable or reuse | Acceptance and stop boundary |
+| --- | --- | --- |
+| Existing reference: diffusion and thermal response | Reuse the diffusion theorem and frozen TCLab comparison | Keep unresolved measurement/input assumptions visible. Do not refit scored TCLab responses or rerun already established transport results. |
+| First theoretical block: phase and amplitude — complete in its internal-dynamics scope | Reuse exact mode selection, collective interaction/robustness and the [conditional measurement contract](PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md). G3 has moved to primitive-phase formation admission; physical intake is deferred. | Pure EPI, declared support/capacities and decaying contrast only. No physical NFR or spin follows; do not rerun completed internal-dynamics classifications. |
+| Identity control within that block: winding and defects | Reuse branch-safe cycle certificates and branch-slip witnesses as observations of the selected law | Retention, formation and physical defects have different hypotheses. No reopening of the parked C6 global-stability campaign. |
+| Conditional extension: transitions / Turing | Only for an admitted candidate, derive its homogeneous-state stability and spatial-mode response before a pattern campaign | Positive mobility alone in pure EPI diffusion is already insufficient; reuse the separate multichannel slope classification. Added feedback/reaction laws need independent motivation. Stop if no justified instability mechanism is present. |
+| Conditional extension: criticality then Kibble–Zurek | Admit an order parameter, physical correlation/relaxation observations, finite-size regime and quench/defect protocol | No substitution of static `xi_C`, configured `C` or capacity for these observables without a derivation. Freeze scaling and observation-time hypotheses before evaluating reserved outcomes. |
+| Separate, deferred constitutive bridge: Josephson | Require a concrete current/voltage/phase model and independent physical units before promoting the sine comparison | Josephson is not a prerequisite for KZ; a matching harmonic alone does not justify superconducting physics. No default new laboratory or data campaign. |
+| Deferred stronger cards: RG, solitons, BEC/superfluidity and fundamental geometry | Reuse existing quotient, memory, identity and geometry owners when a named dependency justifies the card | Missing closure/quantum/scale assumptions remain explicit. Neither REMESH nor a localized profile establishes these phenomena; gravity/particle claims stay parked. |
+
+**First-block completion:** one accepted reduction or controlled comparison,
+or a precise obstruction, with the applicable three-part variable contract.
+Any genuinely new numerical or empirical control must be prospective and bounded;
+an already settled identity needs no new run. A physical comparison may honestly
+report observational equivalence. Its success does not establish new physics;
+its failure constrains the stated model/map rather than every TNFR realization.
+Return the result to the primary identity/reachability obligation above. The
+atlas does not assume a universal sequence from synchronization to defects,
+nor require every later card to succeed before useful research can continue.
+
+**Secondary, deferred control: connectivity intervention.** Removing the
+regional crosslinks at a predeclared time remains a useful reserved response
+test. It does not address the missing constitutive or formation mechanism and
+is not a prerequisite for the primary work. Reopen it only to settle a named
+model-admission, execution or empirical dependency. Any later execution must
+retain its boundary state, changed normalization and explicit intervention
+provenance; it is not an autonomous support-loss law.
+
+Use the shared circular-difference, source-reduction and strict integration
+owners reviewed by the engine audits. Record Gamma as absent/zero for the
+unforced comparison, and retain field availability rather than interpreting a
+numerical failure as zero pressure, perfect alignment or a transition. This
+reuses the corrected implementation without opening another research campaign.
+
+The shared arithmetic audit covers nodal rates, clocks, pressure, consumed
+operator factors and phase/capacity admission, equilibrium, stored-pressure
+flux and temporal observation. A
+candidate must fail explicitly when its
+inputs or output cannot be represented; coercion to zero, an infinite flux or
+a swallowed operator failure cannot supply evidence for equilibrium, emergence
+or a transition. Retained evidence must not be mutable through returned
+containers, and numerical underflow must not supply a conservation claim.
+Retired synthetic stress/correlation sweeps are not model-discrimination
+evidence; reuse actual operator execution and shared diagnostic owners instead.
+Keep incremental candidate selection distinct from complete
+word execution. The completed finite-response comparison distinguishes the two
+constitutive responses without selecting which premise is physically valid.
+
+Automatic-decision admission now shares validated metric snapshots and weight
+normalization, and records the executed computation service. Phase labels and
+incomplete safety summaries remain diagnostic evidence with explicit scope.
+The disconnected-copy phase control rules out promoting a label change to
+autonomous formation. Runtime ordinals now remain independent of metric
+retention, and optional auxiliary telemetry retains explicit availability.
+These corrections neither add a controller to the comparison nor open another
+study queue.
+
+Acceptance is an admitted conditional model family with an informative
+prediction, a demonstrated missing-state obstruction, or explicit remaining
+underdetermination. Do not require a unique law where the premises leave a
+family, and do not describe a supplied supporting source as emergent. If the
+proposed comparison merely repeats an existing result, reuse that result and
+move to the missing dependency rather than rerunning it.
+
+**Stop and redirect criteria.** Stop a branch when its proposed conclusion is
+already refuted under its premises, when the next calculation cannot distinguish
+models, or when it needs the desired answer as an input. A loose failed bound
+is not a counterexample. An unsupported model is not repaired by changing a
+threshold after evaluation. Reopen a branch only for a named missing dependency
+or an independently justified revision, with its own prospective prediction.
+
+### Retained C5 result and explicit deferral
+
+[Forced-support sections 42–47](../FORCED_SUPPORT_BALANCE.md#42-a-geometric-identity-contract-for-the-retained-weighted-c5)
+retain conditional geometric identity, positive local response, capacity-tube
+and absolute-form bounds, the secular-drift counterexample and the first actual
+feedback balance. The source bias decreases in the recorded first update but
+is not cancelled. These results are not invalidated or generalized here.
+
+Persistent fresh-pressure admission, repeated capacity feedback and all-time
+absolute-form retention are **deferred conditional questions**, not the sole
+route to TNFR progress. Reopening requires a demonstrated dependency of the
+admitted model above. Preserve the original full mixture, phase law, cadence,
+Si gate, incoming extrema and numerical defects if that branch is reused.
+Native retained-input execution and the research fresh-gate schedule remain
+different models. No future eligibility mask or binary64 consensus is assumed.
+
+### Supporting measurement bridge
+
+| Stage | Status | Dependency |
+| --- | --- | --- |
+| P1: diagnostics and calibration/evaluation | Implemented infrastructure, maintained under the audit | Preserve availability and independent evaluation |
+| P2: measurement model | Source review and frozen TCLab approximation complete; no physical dataset admitted | Resolve ambient/initialization, input and metrology assumptions independently before another comparison |
+| P3: reserved prediction | Formal evaluation awaits P2; separate TCLab exploratory comparison complete | Preserve its scored files; a revised model needs fresh reserved responses |
+| P4: partial observation and memory | Internal mathematics reusable; physical stage deferred | A sufficient observation model or explicit hidden-state bounds |
+| P5: maintenance and transitions | Internal conditional cases reusable; physical stage deferred | Declared mechanism, identity and prospective endpoints |
+
+P1–P5 are measurement stages, not the path graphs P4 and P5. Their dependency
+chain is retained without making all internal mathematics await physical data.
+
+## 3. Shared evidence contract and resource discipline
+
+Record the model/domain, graph/node order, primitive inputs, active channels,
+seed where relevant, operator word, pressure-refresh and time policy, observation
+map, numerical defects and source version. Keep theorem, implementation,
+finite observation and empirical support separate. Classify a negative result
+against the premise it rejects, not against all TNFR possibilities.
+
+Use existing reductions, exact identities and captured controls before creating
+another test campaign. A local change should have an independent expected
+result or meaningful boundary check. Do not maintain another threshold table,
+solver, field estimator or research queue when an existing owner suffices.
+New candidate laws remain opt-in until their scope and compatibility are clear.
+
+### Variable definition, identification and evolution
+
+TNFR variables already have definitions within specified models. An application
+can nevertheless lack a closed operational/physical meaning or an independently
+justified evolution law. The following three obligations consolidate existing
+work; they are not three new research branches or a claim that the variables
+are undefined.
+
+| Question | Required evidence for the selected candidate | Existing owner |
+| --- | --- | --- |
+| What is the variable mathematically? | State space/domain, chart, units relative to the chosen clock, dependencies and admissible boundaries. Identify primitive, derived, held and diagnostic quantities. | [Form definitions](../FUNDAMENTAL_THEORY.md#24-physical-concepts-mathematical-types-and-implementation), [parameter ledger](../NODAL_PARAMETER_FOUNDATIONS.md#2-parameter-and-dependency-ledger) and [unit changes](../NODAL_PARAMETER_FOUNDATIONS.md#3-joint-changes-of-form-and-time-units) |
+| How is it identified physically? | Instrument/channel and observation map; offsets/scales, clock, calibration data and uncertainty; identifiable parameters/combinations; explicit hidden-state and preparation assumptions. Establish these independently of the reserved response. | P2 and the [measurement protocol](PASSIVE_TRANSPORT_PROTOCOL.md#state-clock-and-measurement-admission) |
+| What determines its evolution? | A prospective pressure map and every additional law actually consumed: phase, capacity, connections, history, inputs and events. State which laws are derived under premises, supplied constitutive hypotheses or configured policies, and establish a well-defined prediction in the declared domain. | [Constitutive pressure scope](../nodal/PRESSURE_CONSTITUTIVE_SCOPE.md#44-constitutive-admission-ledger-and-remaining-choices) and [closure audit](../NODAL_RESEARCH_STRATEGY.md#closure-audit-equations-events-and-identity) |
+
+**Deliverable before the next candidate comparison:** in that candidate's
+existing owner, record these three entries for EPI, `nu_f`, `DeltaNFR`, the
+clock and every consumed phase/support/input/history coordinate. Each entry
+links existing evidence and marks what is established, assumed, unidentified
+or inactive. A hidden coordinate needs a declared observation/initialization
+model and uncertainty treatment; it need not have its own instrument. A
+coordinate absent from the selected law needs no invented measurement.
+
+**Foundation checkpoint for the collective candidate, 2026-09-26.** The
+[parameter-property audit](../NODAL_PARAMETER_FOUNDATIONS.md#variable-properties-and-unresolved-foundations)
+separates existing definitions from unresolved state-space adequacy, pressure
+selection, primitive phase/capacity laws and the origin of time/support.
+The [candidate contract](../nodal/DERIVED_FORM_PHASE.md#variable-contract-for-the-derived-form-family)
+now states its variable domains, units, supplied/derived roles, frame dependence,
+zero boundaries and notation. Primitive phase is held and unused; derived
+form orientation is not identified with it. Capacity remains a declared fine
+premise, not a quantity inferred from the angle or the evaluated response.
+
+One missing collective-property contract is now explicit:
+[joint realizability](../nodal/DERIVED_FORM_PHASE.md#joint-realizability-of-collective-relations).
+Relations must come from one admissible fine state, not an arbitrary set of
+pairwise values. Exact composition identities, a constructive reconstruction
+and an incompatible-pairs witness settle that algebraic obligation. This
+does not complete the ontological foundations or select the missing primitive
+laws. It admits the stated conditional study and prevents its observations
+from being promoted to new free physical variables. Any later generative
+model must resolve its own consumed dependencies before execution; changing
+the name or storage type of EPI, phase or capacity is not such a resolution.
+
+For the primary ontological hypothesis, physical identification may apply to
+an effective collective variable or a pattern's interaction response. This
+contract does not require microscopic EPI, capacity and phase each to have a
+direct sensor equivalent. Latent fine states still require a justified route
+to predictions and uncertainties for the measured collective outcomes; omitting
+that route would make the physical claim untestable.
+
+**Acceptance:** mathematical definition, executable closure and physical
+identification receive separate verdicts. A conditional mathematical study
+can proceed with physical identification explicitly open. Physical P2 admission
+requires the measurement dependencies relevant to its claim; P3 then freezes
+the model, calibration and input/observation rules before issuing predictions.
+A successful forecast cannot retrospectively turn an assumed correspondence
+into a measured primitive or prove that a constitutive choice is unique.
+
+**Calibration and identifiability:** estimating `nu_f` or pressure-law
+coefficients from separate calibration acquisitions is allowed under a declared
+fit rule. Any estimate is conditional on that model and normalization;
+uniqueness and uncertainty require separate evidence.
+Report unresolved factor/clock/conductance scales and parameter combinations;
+do not infer independently measured capacity from a fitted nodal product. Reuse
+the [identifiability constraints](../NODAL_RESEARCH_STRATEGY.md#two-immediate-identifiability-constraints)
+before adding another fitting procedure.
+
+**Non-circular pressure:** `DeltaNFR=(dEPI/dt)/nu_f`, where `nu_f>0`, can
+reconstruct the unforced identity after observing a response. It is not an
+independent pressure prediction. Pressure for evaluation must instead be
+computable from the declared state/inputs and frozen law without the evaluated
+future derivative. The inverse formula is undefined at zero capacity and
+requires separate source accounting in the extended `+Gamma` row. Retrospective
+residual diagnostics may be reported as such; they cannot replace this gate.
+In open-loop forecasts, propagate the predicted state with the declared inputs;
+later measurements cannot silently update it. Any measurement-fed mode needs
+its own explicit information-access and evaluation contract.
+
+### Reuse map: existing owner, boundary and necessary new work
+
+| Need | Existing owner and boundary |
+| --- | --- |
+| State, units and model admission | [Foundations](../FUNDAMENTAL_THEORY.md), [parameter dependencies](../NODAL_PARAMETER_FOUNDATIONS.md); definitions do not select a unique law |
+| Effective geometry and mobility | [Scale bridge](../TNFR_SCALE_GEOMETRY_AND_BRIDGE.md); inherited transport mobility need not be a primitive phase clock |
+| Eliminated information and memory | [Derived EPI memory](../DERIVED_EPI_MEMORY.md); retain hidden initial state and the actual kernel |
+| Source, mean and restoring budgets | [Forced support](../FORCED_SUPPORT_BALANCE.md); maintain complete balance and preparation premises |
+| Birth and events | [THOL birth](../THOL_BIRTH_AND_TRANSPORT.md), [API contracts](../../docs/API_CONTRACTS.md); construction is not autonomous selection |
+| Symplectic/gauge tools | [Variational scope](../TNFR_VARIATIONAL_PRINCIPLE.md); graph-field realizability and tangency are required for an engine bridge |
+| Diagnostic availability | [Tetrad](../../docs/STRUCTURAL_FIELDS_TETRAD.md), [architecture](../../ARCHITECTURE.md); a readout is not a dynamical mechanism |
+
+## 4. P1 — Correct diagnostics and isolate evaluation
+
+The implemented instrument separates descriptive fit from evaluation and
+retains missing/degenerate-input outcomes. A positive diagnostic is not itself
+a dynamical law or physical evidence.
+
+### Implemented contract and migration
+
+Use the existing calibration/evaluation APIs and their validation owners.
+Preserve run/subject boundaries and causal feature access: full-record
+normalization, centered derivatives or transforms can leak future information.
+The current physical admission and source inventory live in the
+[passive-transport protocol](PASSIVE_TRANSPORT_PROTOCOL.md).
+
+## 5. P2 — Admit one measurement and dynamical model
+
+The user has only a computer and needs public data. No physical dataset has
+passed the complete measurement contract. Continuous P2 reference bounds and
+the historical fixed-reference Volts exploration do not fill missing instrument,
+clock or causal-preparation evidence. The protocol annex owns those details.
+Do not run physical P3 with assumed uncertainties or reopen public-data searches
+automatically. A new model must declare all input and observation dependencies
+before calibration and must reserve independent evaluation evidence.
+The earlier Volts outcome belongs to its frozen model and nominal measurement
+map. It neither rejects nor validates the revised candidate; evidence transfers
+only where the relevant predictions and measurement premises are equivalent.
+
+Resume source admission when a frozen candidate has a computable physical
+response and a proposed independent measurement map, or when new accessible
+evidence resolves the existing transport protocol's named gaps. A restricted
+transport test need not wait for a substrate-origin or universal emergence
+theorem. Retain the computer-only, public terrestrial-data constraint; this
+review does not start another unrestricted search or assume instrument bounds.
+
+The user's 2026-09-21 request reopened discovery and then authorized a first
+TCLab approximation under explicitly exploratory scope. The
+[frozen comparison](TCLAB_EXPLORATORY_PROTOCOL.md) calibrated two specified
+driven nodal models on two files and predicted three reserved files without
+refitting. Keeping latent heaters improves the predeclared joint RMSE, while
+systematic positive errors and unresolved measurement assumptions remain.
+This is evidence about those conditional realizations, not full physical
+admission, unique TNFR physics or autonomous formation. The source inventory
+and experiment owner retain all coefficients, observations and limitations;
+the passive P2 solver was not relabeled to cover the driven system.
+
+**Retained TCLab dependencies, not a parallel active task:** unresolved entries
+remain in the [TCLab variable contract](TCLAB_EXPLORATORY_PROTOCOL.md#variable-contract-for-this-approximation).
+In particular, distinguish fitted effective rates from independently identified
+physical capacity; determine which ambient, hidden-initial-state and
+input-conversion premises can be supported, retaining the actual acquisition
+and uncertainty gaps.
+Before a revised comparison, state
+the old/new model boundary and select genuinely uninspected acquisitions;
+the three scored files cannot be reserved again. Do not remove their bias by
+post-evaluation offsets, fit unknown forcing to the response, or treat generic
+sensor specifications as calibration. These obligations apply if that source
+is reopened. MOSTR's separate graph/input/measurement intake is also deferred.
+The [current G3 gate](#current-g3-gate) selects a conditional joint geometric comparison;
+neither supporting dataset is an active parallel empirical campaign.
+
+## 6. P3 — Make and evaluate a reserved prediction
+
+Save content-hashed predictions before revealing the reserved response.
+Separate open-loop forecasting from measurement-fed one-step scores. Evaluate
+all reserved runs without changing coefficients, thresholds or normalization.
+Report incompatibility, support in scope or inconclusiveness under the admitted
+measurement model. Agreement with a shared classical diffusion limit is not
+proof of a uniquely TNFR physical mechanism.
+
+Predeclare the relevant classical/empirical baseline, its information and
+calibration budget, the observable and horizon, and rejection/inconclusive
+criteria. Include measurement, parameter and numerical uncertainty, and allow
+for variation between independent preparations when estimating predictive
+performance. Report all reserved outcomes and whether differences between
+models are actually resolved. A fresh model revision requires fresh reserved
+evidence; an inspected response cannot regain holdout status. Record what has
+been independently replicated and what remains a single-source result.
+
+## 7. P4 — Partial observation and derived memory
+
+Declare the observation map and legitimately available initial information.
+Reuse the exact eliminated-state kernel and its hidden-initial-state source;
+a configured REMESH echo is not automatically that kernel. A reduced predictor
+may not consume the unobserved evaluation state. Require a sufficient-state
+contract, an error enclosure or a same-observation/different-future obstruction.
+
+## 8. P5 — Maintenance, recovery and transitions
+
+Pure EPI diffusion on fixed connected reciprocal support with positive fixed
+capacity relaxes toward uniform form. Any claimed differentiated maintenance
+must retain its declared source, boundary, history or admitted additional law.
+
+### P5.1. Fixed-target maintenance and recovery
+
+Specify original identity, amplitude, phase, boundary exchange and observation
+metric before perturbation. Distinguish passive retention, driven persistence,
+recovery and autonomous maintenance. Post-event recentering must not redefine
+a failed target as success.
+
+### P5.2. A causal regime study
+
+Fix the model, control parameter, observable and finite-size protocol before
+sampling. A classifier threshold, branch switch or static ensemble alone does
+not demonstrate a dynamical phase transition or a universality class.
+
+## 9. Resumption, archival work and final delivery
+
+Resume at the next single obligation in the [current G3 gate](#current-g3-gate),
+using the integration audit and equal-replica scale law to derive the joint
+C4-to-three-region closure. C8 relative identity follows that admission rather
+than preceding it. Do not resume the deferred C5 gate
+itinerary by default.
+The earlier weighted-C5 feedback continuation is also conditional and deferred.
+C6 remains parked at B75 (41/56 excluded first-exit labels, 15 open), with no
+global stability closure. Polyhedral geometry and public-data intake remain
+deferred; the bounded joint geometric comparison in G3 is active. MOSTR metadata
+and the completed TCLab comparison
+are retained.
+Unsupported external
+programmes and circular type probes have been retired; the
+[scope record](archive/README.md#foundation-reassessment-2026-09-20) owns their
+reasons, API removals and Git recovery.
+
+Keep task status here, rationale in the strategy, proofs in their current
+owners and delivery chronology in the archive. Preserve source-bound artifacts.
+Revising a foundational premise changes the scope of dependent claims; propagate
+that change to code, public readouts, tests and documentation without erasing
+valid old-model results or silently changing default dynamics.

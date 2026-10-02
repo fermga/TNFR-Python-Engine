@@ -1,0 +1,42 @@
+{
+  "n": 299,
+  "modulus": 1764526545,
+  "timestamp": 1732960000.0,
+  "partition_directory": "results/certificates/partitioned/sample_run",
+  "partition_files": [],
+  "entries": [
+    {
+      "partition_id": "partition_000",
+      "candidate_count": 12,
+      "node_count": 640,
+      "boundary_count": 32,
+      "telemetry": {
+        "phi_s": 0.52,
+        "phase_gradient": 0.11,
+        "phase_curvature": 0.21,
+        "coherence_length": 1.48
+      }
+    },
+    {
+      "partition_id": "partition_001",
+      "candidate_count": 8,
+      "node_count": 512,
+      "boundary_count": 24,
+      "telemetry": {
+        "phi_s": 0.47,
+        "phase_gradient": 0.09,
+        "phase_curvature": 0.19,
+        "coherence_length": 1.37
+      }
+    }
+  ],
+  "summary": {
+    "phi_s_mean": 0.495
+  },
+  "aggregation": {
+    "partition_batches": 1
+  },
+  "partition_file_archive": "_partition_files.txt.gz",
+  "partition_file_threshold": 1,
+  "partition_files_inlined": false
+}
