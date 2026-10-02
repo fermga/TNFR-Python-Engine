@@ -93,11 +93,12 @@ class GrammarValidator:
 
         Contract basis: the derivative ``νf·ΔNFR`` is defined at ``EPI=0``
         whenever its factors are finite. U1a is an operator-history policy:
-        a standalone word starting from the null state must declare how form
-        is generated or latent form is activated.
+        a standalone word starting from zero form must declare how form
+        is generated or latent form is activated. Zero EPI does not remove
+        the existing node, phase, capacity or support.
 
         Generators create structure from:
-        - AL (Emission): vacuum via emission
+        - AL (Emission): form change on an existing node
         - NAV (Transition): latent EPI via regime shift
         - REMESH (Recursivity): dormant structure across scales
 

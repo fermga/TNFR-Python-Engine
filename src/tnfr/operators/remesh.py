@@ -99,10 +99,10 @@ roles and are not, by themselves, complete grammar-valid words:
    - Dynamics: REMESH navigates between self-similar attractor states
    - Sequence: NAV → REMESH (transition → replicate new regime)
 
-3. **AL (Emission)**: Creates EPI from vacuum → generation
-   - Relationship: Fractal emission
-   - Dynamics: REMESH + AL generates self-similar patterns from origin
-   - Sequence: AL → REMESH (emit seed → replicate fractally)
+3. **AL (Emission)**: Sources form on an existing node with supplied capacity
+   - Relationship: Emission followed by delayed form mixing
+   - Dynamics: AL writes form on existing support; REMESH mixes retained form
+   - Sequence: AL → REMESH (emit form → mix delayed form)
 
 4. **EN (Reception)**: Updates EPI from network → reception
    - Relationship: Symmetric multi-scale reception

@@ -63,7 +63,10 @@ second inventory of research results or individual test cases.
 The routine gate includes regional/source-relative form observations, generic
 linear observation admission, relational field/step execution, pattern,
 attachment and relocation observations, work/cut/phase-response accounting,
-protected capture and the listed current production boundaries. The attachment
+protected capture and the listed current production boundaries. Coefficient
+jet/sample observers and read-only acquisition-audit admission are
+also covered by the routine top-level modules. The retained full-window record
+is an optional research audit, not an implicit producer invocation. The attachment
 observer evaluates two components and a hypothetical joined field; relocation
 compares the admitted fields before and after a supplied bridge exchange.
 Neither observer changes live support or certifies future pattern recovery.

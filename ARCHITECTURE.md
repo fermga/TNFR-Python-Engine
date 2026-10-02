@@ -53,6 +53,8 @@ graph invalidation and persistence retain their separate responsibilities.
 | Regional orientation relative to a supplied rate source | [`source_relative_form.py`](src/tnfr/physics/source_relative_form.py); reuses the regional form observer |
 | Conditional relational phase/form execution | [`dynamics/relational.py`](src/tnfr/dynamics/relational.py); one admitted field and atomic Euler step, reused by the SDK |
 | Prepared relational pattern observations | [`physics/relational_observations.py`](src/tnfr/physics/relational_observations.py); supplied regions/reference lifts, shared winding and regional support accounting |
+| Conditional coefficient uncertainty | [`physics/relational_observations.py`](src/tnfr/physics/relational_observations.py); exact three-sample stencils delegate to shared outward jet bounds, with declared preparation/clock/error premises |
+| Retained P2 acquisition audit | [`research/relational_acquisition.py`](src/tnfr/research/relational_acquisition.py); read-only protocol/archive and all-step error reconstruction; does not import the producer or evolve a graph |
 | Protected relational basins | [`physics/relational_capture.py`](src/tnfr/physics/relational_capture.py); reflected, full-state local and acute-sector theorems sharing exact phase/energy enclosures for conditional ideal-law limits |
 | Validated relational transit | [`physics/relational_transit.py`](src/tnfr/physics/relational_transit.py); exact reflected ODE enclosure using shared rational intervals, Taylor derivatives and signed-diagonal comparison; read-only proof computation, not live engine evolution |
 | Coherence and equilibrium kernel | [`common.py`](src/tnfr/metrics/common.py) |
@@ -219,6 +221,25 @@ region selector or formation mechanism. `Network.relational_pattern` is a
 thin adapter; the SDK's `relational_report_to_dict` supplies the exact rational
 JSON projection for the existing writer. Reports are observations, not live
 checkpoints or authenticated execution histories.
+
+The same observation owner exposes graph-independent coefficient-jet and
+three-sample bounds. Exact rational stencil/error propagation delegates to the
+shared outward interval kernel and mathematical-pi enclosure, rather than a
+second coefficient estimator. These are module-level APIs, not `Network`
+methods: the caller supplies preparation, affine timing, baseline/gain and
+independent uncertainty. The existing exact report exporter supports both
+immutable report types. [Usage](docs/guides/REGIONAL_AND_RELATIONAL.md#bound-a-prepared-coefficient-response)
+and [admission](docs/contracts/RELATIONAL_DYNAMICS.md#relational-coefficient-samples)
+keep those external premises separate from arithmetic availability.
+
+`research/relational_acquisition.py` reconstructs the retained known-source P2
+record without invoking `dynamics/relational.py` or importing a benchmark.
+It independently checks the declared model/window, reads saved states and
+rates, verifies protocol/source-archive bytes and recomputes error budgets
+through the shared observation and interval owners. Internal consistency,
+the original precision verdict and missing evidence have separate outputs.
+It neither authenticates execution nor requires current source to match a
+historical archive; the frozen producer and original records remain unchanged.
 
 The same observer's `Network.relational_attachment` route compares two
 separately admitted components with their hypothetical joined field. Port

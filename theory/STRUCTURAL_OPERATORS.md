@@ -29,6 +29,7 @@ independently defined admissible-transformation space remains open
 15. [Implementation Reference](#15-implementation-reference)
 16. [Summary](#16-summary)
 17. [Experimental Operator-Tetrad Synergies](#17-experimental-operator-tetrad-synergies)
+18. [Mechanism and Activation Audit](#operator-mechanism-and-activation-audit)
 
 ---
 
@@ -48,7 +49,7 @@ $$
 Each registered operator implements a specific transformation tied to (NE). The
 13-operator catalog covers the engine's declared transformation categories:
 creation, integration, stabilization, destabilization, coupling, propagation,
-freezing, dimensional change, self-organization, phase transformation, regime
+capacity attenuation/expansion, self-organization, phase transformation, regime
 transition, and multi-scale recursion. Coverage of this declared catalog does
 not prove that it generates every independently admissible TNFR transformation.
 
@@ -59,7 +60,7 @@ The registry contains 13 public semantic transformations satisfying:
 1. **Nodal equation compatibility**: Every transformation must declare its effect on
    EPI, $\nu_f$, $\Delta\text{NFR}$, phase, or the coupling structure.
 2. **Grammar closure**: The set must include generators (U1a), closures (U1b), stabilizers (U2), destabilizers (U2), coupling operators (U3), bifurcation triggers and handlers (U4), and multi-scale operators (U5).
-3. **Semantic distinction**: Each member has a named physical contract. The
+3. **Semantic distinction**: Each member has a named executable contract. The
    finite temporal-signature experiment separates their implementations on its
    declared probes, but global algebraic irreducibility remains open.
 
@@ -824,9 +825,10 @@ realization.
 
 ### 6.1 Coherence (IL)
 
-**Physics**: Stabilizes structural form through direct negative feedback on
-$|\Delta\text{NFR}|$. Bounded evolution still requires a specified trajectory,
-gains, timing and pressure law.
+**Implemented map**: Contracts stored $|\Delta\text{NFR}|$. The low-level
+glyph preserves EPI, capacity and phase; the public class and shared stage
+also apply the configured phase proposal below. Bounded future evolution
+still requires a specified law, gains and event schedule.
 
 **Transformation**:
 
@@ -838,13 +840,18 @@ where the default retention is
 $1-\rho=\pi/(\pi+1)\approx0.7585$, hence
 $\rho=1/(\pi+1)\approx0.2415$. The gain remains configurable.
 
-**Phase locking** (optional):
+**Public/staged phase locking**:
 
 $$
 \theta' = \theta + \lambda \cdot \text{wrap}\!\left(\bar{\theta}_{\mathcal{N}} - \theta\right)
 $$
 
-where $\lambda \approx 0.3$ is the phase locking coefficient and $\bar{\theta}_{\mathcal{N}}$ is the circular mean of neighbor phases.
+where the default is $\lambda=0.3$, with $0\leq\lambda\leq1$, and
+$\bar{\theta}_{\mathcal{N}}$ is the unweighted neighbor circular mean.
+Setting the coefficient to zero disables angular displacement. Isolates
+have no aligning direction; a joint-zero resultant uses the declared
+current-phase fallback. The same kernel owns direct public and staged
+proposals; an all-target stage reads an immutable snapshot.
 
 **Key constants**:
 
@@ -854,16 +861,33 @@ where $\lambda \approx 0.3$ is the phase locking coefficient and $\bar{\theta}_{
 | Pressure-square reduction | $1-f^2\approx0.425$ | Isolated $\Delta\mathrm{NFR}^2$ term at the default; not a full-energy bound |
 | Phase locking $\lambda$ | $\approx 0.3$ | Configurable coupling strength |
 
-**Properties**:
-- **Monotonic $C(t)$**: Global coherence must not decrease (except within explicit dissonance tests).
-- **Phase alignment**: Optional circular averaging drives neighborhood synchronization.
-- **Telemetry**: Records $C(t)$ before/after, ΔNFR reduction factors, and phase locking events.
+**Storage and observations**: The pressure-only glyph leaves
+$E_D+\beta V$ unchanged because that functional does not contain stored
+pressure. For one public IL target on simple undirected support, with all
+neighbor phases held fixed, write $R$ for their resultant magnitude and
+$a\in[-\pi,\pi]$ for the target's wrapped displacement from its direction.
+The ideal phase contribution is
+
+$$\Delta V=R\bigl[\cos a-\cos((1-\lambda)a)\bigr]\leq0.$$
+
+This single-target argument does not certify simultaneous phase changes,
+subsequent flow or represented transcendental rounding. Contracting stored
+pressure with unchanged stored EPI rates cannot decrease the configured
+structural $C$ read-out. An ensuing pressure refresh is a separate operation
+and need not preserve that comparison. Telemetry retains structural $C$,
+the separately named legacy pressure-dispersion statistic, pressure reduction
+and phase-locking observations.
 
 **Grammar**: Stabilizer (U2); Bifurcation Handler (U4a).
 
 **Contract**:
 - Pre: Active structure exists.
-- Post: $|\Delta\text{NFR}|$ reduced; $C(t)$ non-decreasing.
+- Post: Stored $|\Delta\text{NFR}|$ is not increased at the contraction;
+  EPI and capacity are preserved. No future-flow or autonomous-trigger claim.
+
+Implementation: [shared IL kernel](../src/tnfr/operators/_coherence_stage_kernel.py),
+[public lifecycle](../src/tnfr/operators/coherence.py);
+[stage and signed-pressure controls](../tests/operators/test_coherence_jacobi_stage.py).
 
 ### 6.2 Self-Organization (THOL)
 
@@ -981,17 +1005,28 @@ operator gains, timing, and state-space bounds.
 
 ### 7.1 Dissonance (OZ)
 
-**Physics**: Injects controlled instability by amplifying structural pressure. Probes bifurcation readiness by elevating $|\Delta\text{NFR}|$.
+**Implemented map**: Changes stored pressure while preserving EPI, capacity,
+phase and support. Deterministic amplification, fixed near-zero seeding,
+additive noise and network propagation are distinct branches.
 
 **Transformation**:
 
 $$
-\Delta\text{NFR}' = f \cdot \Delta\text{NFR}
+\Delta\text{NFR}' =
+\begin{cases}
+f\,\Delta\text{NFR},&|\Delta\text{NFR}|>10^{-9},\\
+0.1,&|\Delta\text{NFR}|\leq10^{-9}.
+\end{cases}
 $$
 
 where the default amplification is
 $f=(\pi+1)/\pi\approx1.3183$, the reciprocal of the default IL retention.
-It remains an operational gain; the contract fixes only $f>1$.
+It remains an operational gain with $f>1$. The fixed cutoff and nonzero seed
+are implementation choices, not a derived spontaneous source.
+With `OZ_NOISE_MODE=True`, positive `OZ_SIGMA` instead gives
+$p'=p+\mathrm{jitter}$; nonpositive sigma leaves the local pressure unchanged.
+An additive sample can decrease $|p|$, so amplification's local magnitude
+postcondition is not a theorem for the noise branch.
 
 **Bifurcation read-out**: The implementation compares the magnitude of its
 observed structural acceleration with the configured threshold $\tau$.
@@ -1006,7 +1041,10 @@ continuous law. U4a separately requires handler context for the trigger token.
 | Pressure-square increase | $f^2-1\approx0.738$ | Isolated $\Delta\mathrm{NFR}^2$ term at the default; not a full-energy bound |
 
 **Properties**:
-- **Network propagation**: Optional cascading to neighbors via phase-weighted, uniform, or frequency-weighted modes.
+- **Network propagation**: The public class and shared stage can add positive
+  increments to neighbors through phase-weighted, uniform or frequency-weighted
+  policies. Positive incoming increments can cancel a negative local pressure;
+  the local proposal and final accumulated pressure have separate contracts.
 - **Bifurcation detection**: Monitors $\partial^2\text{EPI}/\partial t^2$ against threshold $\tau$.
 - **Telemetry**: Records propagation events, affected nodes, and bifurcation flags.
 
@@ -1014,13 +1052,25 @@ continuous law. U4a separately requires handler context for the trigger token.
 
 **Contract**:
 - Pre: Sufficient EPI/$\nu_f$; $\Delta\text{NFR}$ below critical.
-- Post: $|\Delta\text{NFR}|$ increased; bifurcation flag set if acceleration exceeds $\tau$.
+- Post: The deterministic local branch increases pressure magnitude. Noise and
+  incoming propagation require their separately retained observations. An
+  acceleration-threshold flag is a configured diagnostic, not a bifurcation
+  proof or an endogenous instruction to execute another operator.
+
+Changing stored pressure alone leaves $E_D+\beta V$ unchanged. Recomputing
+pressure from unchanged constitutive inputs can erase the event's pressure
+write; persistent forcing or pressure memory must be supplied explicitly.
+Implementation: [local glyph](../src/tnfr/operators/__init__.py),
+[public propagation](../src/tnfr/operators/dissonance.py),
+[shared stage](../src/tnfr/operators/_dissonance_stage_kernel.py);
+[signed cancellation and noise controls](../tests/operators/test_dissonance_jacobi_stage.py).
 
 ### 7.2 Expansion (VAL)
 
-**Physics**: Raises the $\nu_f$ capacity channel. This increases the response
-rate to any nonzero pressure without asserting an instantaneous $\Delta\text{NFR}$
-or EPI change.
+**Implemented map**: Multiplies capacity by the configured factor. At held
+pressure this multiplies the nodal product by that factor. The default
+`EDGE_AWARE_ENABLED=True` branch also scales and projects EPI; disabling it
+leaves EPI untouched. Neither branch directly writes pressure, phase or support.
 
 **Transformation**:
 
@@ -1029,23 +1079,34 @@ $$
 f_{\text{VAL}}=\text{VAL\_scale}>1
 $$
 
+With edge awareness enabled, the form factor is limited by the configured
+sign-specific EPI boundary, then the selected hard/soft projection is applied.
+Thus a positive factor does not guarantee an increase in signed EPI: negative
+form, saturation and projection must retain their actual endpoint. This is
+an event map, not an increase of graph or state-space dimension. With edge
+awareness disabled, $E_D+\beta V$ is unchanged at the event; with it enabled,
+the actual EPI reset determines the storage change.
+
 **Key constants**:
 
 | Constant | Value | Derivation |
 |----------|-------|------------|
 | Default scale factor $f_{\text{VAL}}$ | $1+1/(4\pi)\approx1.0796$ | Operational capacity step |
 | Nominal square-factor change | $f^2-1\approx0.166$ at the default | Algebraic $\nu_f^2$ diagnostic; the structural candidate energy has no explicit $\nu_f$ term |
-| Min EPI | $1/(2\pi) \approx 0.159$ | minimum structural base (π-fraction, tunable) |
-| Min coherence | $\sin(\pi/3) \approx 0.866$ | 60° harmonic coherence |
-| Bifurcation threshold | $1/(\pi + 1) \approx 0.2415$ | Detection threshold |
+| Optional strict minimum EPI | $1/(2\pi) \approx 0.159$ | Supplied `VAL_MIN_EPI` admission policy |
 
 **Grammar**: Destabilizer (U2).
 
 **Contract**:
-- Pre: EPI above minimum; coherence above 0.866; bounded $\Delta\text{NFR}$.
+- Pre: When strict preconditions are enabled, configured capacity saturation,
+  minimum stored pressure and EPI, and optional network-size checks apply.
+  These policies are not consequences of the nodal identity.
 - Post: Capacity is not decreased; no EPI, graph or state-space dimension
   increase follows from multiplying $\nu_f$. U2 compensation and prefix-debt
   limits still apply.
+
+Implementation: [shared VAL/NUL kernel](../src/tnfr/operators/_scale_operator_kernel.py);
+[enabled/disabled boundary and signed-form controls](../tests/operators/test_scale_operator_kernel.py).
 
 ---
 
@@ -1088,7 +1149,9 @@ $$
 
 **Contract**:
 - Pre: Active EPI and $\nu_f$ above thresholds; $|\phi_i - \phi_j| \leq \Delta\phi_{\max}$; network edges exist.
-- Post: Phase spread narrowed; EPI identity preserved; links established.
+- Post: Configured circular phase proposals; EPI preserved. Optional functional
+  proposals may add admitted links. Neither global phase-spread decrease nor
+  the creation of at least one edge follows from a successful invocation.
 
 ### 8.2 Resonance (RA)
 
@@ -1361,7 +1424,11 @@ or sub-EPI creation belongs to THOL and must be expressed through that operator.
 
 ### 10.1 Silence (SHA)
 
-**Physics**: Freezes structural evolution by suppressing $\nu_f$. With $\nu_f \to 0$, the nodal equation yields $\partial\text{EPI}/\partial t \approx 0$ regardless of $\Delta\text{NFR}$.
+**Implemented map**: Attenuates capacity without changing EPI, stored pressure,
+phase or support. Finite attenuation need not stop later evolution. Even along
+a family with $\nu_f\to0$, vanishing nodal rate requires control of the product
+$\nu_f\Delta\mathrm{NFR}$, not of capacity alone. A subsequent pressure refresh
+may depend on the changed capacity; nonzero declared forcing is separate.
 
 **Transformation**:
 
@@ -1370,19 +1437,20 @@ $$
 f_{\text{SHA}}=1-1/(4\pi)\approx0.9204
 $$
 
-EPI is preserved via latency snapshot.
+EPI is preserved by leaving it untouched. The public class and shared stage
+record a latency snapshot; this metadata does not enforce future preservation.
 
 **Key constants**:
 
 | Constant | Value | Derivation |
 |----------|-------|------------|
 | $\nu_f$ suppression factor | $1-1/(4\pi)\approx0.9204$ | Operational `SHA_VF_FACTOR` |
-| Sampled $\lvert\Delta E\rvert$ | $\leq 0.187$ in the referenced protocol | Finite observation, not an operator contract |
 
 **Properties**:
 - **Latency state**: Activates a latent flag with timestamped EPI snapshot.
-- **EPI preservation**: Drift tolerance of 1% for established nodes, $0.330$ for initial nodes.
-- **Reactivation protocol**: AL or NAV recovery verifies silence duration and EPI drift, then clears latency attributes.
+- **Reactivation bookkeeping**: Later lifecycle code can inspect and clear
+  latency attributes. A drift tolerance or wall-clock timestamp is not a
+  structural-time evolution law or a physical preservation theorem.
 - **All-target time basis**: One accepted SHA stage gives every target the same
   latency-start timestamp while preserving a target-specific EPI snapshot.
 
@@ -1393,6 +1461,12 @@ EPI is preserved via latency snapshot.
 - Post: Capacity is not increased; EPI, pressure and phase remain fixed at
   the event, with the declared latency metadata. Finite attenuation need not
   produce zero capacity or freeze subsequent nodal evolution.
+
+Since the joint storage $E_D+\beta V$ has no capacity term, SHA alone has zero
+instantaneous change in this functional. It changes subsequent mobility under
+an admitted law rather than supplying event work or deciding when UM occurs.
+Implementation: [SHA proposal and lifecycle](../src/tnfr/operators/al_sha_stage_proposals.py);
+[shared lifecycle controls](../tests/operators/test_al_sha_stage_proposals.py).
 
 ### 10.2 Contraction (NUL)
 
@@ -1407,12 +1481,20 @@ $$
 f_{\text{NUL}}=1-1/(4\pi)\approx0.9204
 $$
 
-Local $\Delta\text{NFR}$ density increases due to compression:
+Stored pressure is multiplied by the reciprocal capacity factor:
 
 $$
 \Delta\text{NFR}'=\frac{1}{f_{\text{NUL}}}\Delta\text{NFR}
 \approx1.0865\,\Delta\text{NFR}
 $$
+
+The ideal product $\nu_f'p'=\nu_fp$ is preserved for this stored-pressure
+map. It is not a statement about pressure after constitutive refresh. As with
+VAL, `EDGE_AWARE_ENABLED=True` additionally multiplies EPI by $f_{\mathrm{NUL}}$
+and applies the configured projection; the disabled branch does not consume
+or change EPI. Capacity-only contraction leaves $E_D+\beta V$ unchanged;
+the enabled form reset has its own storage budget. Local contraction toward
+zero need not reduce differences from neighboring forms.
 
 **Key constants**:
 
@@ -1436,6 +1518,9 @@ misreported as densification.
 - Post: Capacity is not increased; stored pressure follows the checked
   reciprocal proposal, with zero pressure remaining zero. Subsequent pressure
   refresh is a separate constitutive operation.
+
+Implementation: [shared scale proposal](../src/tnfr/operators/_scale_operator_kernel.py);
+[reciprocal coefficient and branch controls](../tests/operators/test_scale_operator_kernel.py).
 
 ---
 
@@ -1833,23 +1918,21 @@ profiles, not unique or universal operator fingerprints:
 | NAV (Transition) | $-331.9$ | +45.1 | 0.0 | +187.4 |
 | SHA (Silence) | 0.0 | 0.0 | 0.0 | 0.0 |
 
-**Key findings**:
-1. **UM (Coupling) has the richest tetrad coupling**: it modifies all four fields simultaneously, consistent with its role as a phase-synchronization operator (U3).
-2. **NAV (Transition) dominates $\Phi_s$**: its $-332\%$ structural potential change is the largest single-operator perturbation, matching its physics as a regime-shift operator.
-3. **SHA (Silence) is tetrad-neutral**: $\nu_f \to 0$ freezes evolution without affecting field state, confirming its closure role (U1b).
-4. **IL and OZ produce identical tetrad signatures**: this is analyzed in §17.3.
+These recorded rows are finite sampled read-outs, not universal rankings.
+In particular, SHA's sampled zero field delta neither proves tetrad neutrality
+under every subsequent refresh nor freezes evolution at positive capacity.
+Identical IL/OZ rows do not imply identical maps or an exact symmetry.
 
 ### 17.3 IL-OZ Tetrad Symmetry
 
 **Observation**: Coherence (IL) and Dissonance (OZ) produce identical energy functional changes ($dE = -0.011$) and identical tetrad field perturbations when applied to the same initial state.
 
-**Interpretation**: Both operate exclusively via the $\Delta\text{NFR}$ lever with the same magnitude $|d(\Delta\text{NFR})| = 0.0096$, but with different physical semantics:
-- **IL** reduces $|\Delta\text{NFR}|$ via negative feedback (stabilizer contract).
-- **OZ** increases $|\Delta\text{NFR}|$ via positive feedback (destabilizer contract).
-
-The identical sampled response follows from this initial state and the absolute-
-value summaries used by the protocol. Repeated IL and OZ requests can separate,
-but U2 role labels alone do not determine convergence or divergence.
+This sampled equality does not establish its cause or persist across paths.
+IL contracts stored pressure and its public/staged path also aligns phase.
+OZ has a different pressure map, near-zero and jitter branches, and optional
+propagation. Recorded realized glyphs and pressure-refresh callbacks must be
+checked before interpreting a requested-operator response. U2 role labels
+alone do not determine convergence, divergence or a storage sign.
 
 ### 17.4 Structural Potential Linear Response
 
@@ -1905,7 +1988,135 @@ from grammar compliance.
 | `examples/02_physics_regimes/38_grammar_energy_landscape.py` | Energy trajectory and nominal multiplier comparison | Observed $E(t)$ for the declared sequence |
 | `examples/02_physics_regimes/39_nodal_equation_decomposition.py` | Lever classification, causal chain, waveform trajectory, response functions | $\nu_f$ vs $\Delta\text{NFR}$ per operator |
 
-All experiments use seed 42 for reproducibility (Invariant #6).
+Seed 42 is part of these preparations. Source, configuration, realized path,
+target order, backend and precision must also be retained for reproduction.
+
+---
+
+<a id="operator-mechanism-and-activation-audit"></a>
+## 18. Mechanism and activation audit
+
+This map addresses connection formation using the existing 13 operators. It
+does not add a second executable catalog: names, primary channels and contracts
+remain in [operator_contracts.py](../src/tnfr/operators/operator_contracts.py).
+The distinction between primitive glyphs, public classes and snapshot stages
+is essential. A primary channel is not a complete list of writes.
+
+For each proposed mechanism distinguish four questions: **what action is
+implemented, when it is admissible, who selects it, and what accounts for its
+actual state change**. Existing grammar, history gates and controllers answer
+parts of the first three under configured policies. They do not yet derive a
+unique autonomous law from an NFR's state. The storage `S=E_D+beta*V` below
+belongs to the [conditional relational model](nodal/RELATIONAL_EXCHANGE_ADMISSION.md),
+not to every operator runtime or a universal physical energy.
+
+### All thirteen actions: useful mechanisms and remaining premises
+
+| Operator | Actual mechanism relevant to interaction | Reusable synergy and boundary |
+| --- | --- | --- |
+| **AL — Emission** | Adds/projected form on existing support; basic event holds phase, capacity and stored pressure | A local form contrast changes the following relational phase rates. Emission from uniform form costs storage; amplitude, source and occurrence remain supplied. No node or edge creation. |
+| **EN — Reception** | Blends unweighted existing incoming-neighbor form; source ranking is telemetry | One unclipped target can reduce form storage and alter later phase compatibility. No U3 source filter or reception from an absent edge is implemented. |
+| **IL — Coherence** | Glyph contracts stored pressure; public/staged path also aligns target phase with its neighbor resultant | A single-target phase reset can release phase storage. The pressure-only change may disappear on refresh; no global or simultaneous-stage storage theorem follows from its stabilizer label. |
+| **OZ — Dissonance** | Perturbs stored pressure, with near-zero/jitter branches and optional neighbor propagation | Supplies a declared perturbation and grammar history; pressure-only change is neutral in this particular `S`. Refreshed constitutive pressure can erase it. Signed propagation can cancel another node's pressure. |
+| **UM — Coupling** | Moves phase, optionally aligns capacity/contracts stored pressure and proposes links to compatible nonneighbors | A phase reset can offset a positive new-edge cost. Requires an existing compatible neighbor at the acting target. Candidate inventory, affinity/Si threshold, tie policy and time are supplied; generated conductance is generally nonunit. |
+| **RA — Resonance** | Mixes form over existing U3-compatible neighbors; configured phase interpolation and triggered capacity amplification | RA then UM can reduce total storage while adding a positive-cost edge. RA itself creates no support and does not contract stored pressure. Sign/kind preservation does not imply maintained pattern identity. |
+| **SHA — Silence** | Attenuates capacity and records latency information, preserving form at the event | Capacity-only reset is neutral in `S` but changes future rates. A positive retention factor does not produce zero capacity in a finite ideal event; vanishing capacity alone does not prove `nu*p` vanishes. |
+| **VAL — Expansion** | Raises capacity; default edge-aware policy also scales/projects EPI | Capacity changes local speed, while the auxiliary form reset can change subsequent phase response and storage. Expansion does not derive a new state dimension, source or clock. |
+| **NUL — Contraction** | Lowers capacity and rescales stored pressure; default edge-aware policy also scales/projects EPI | Ideal stored-product preservation is distinct from the freshly evaluated relational rate. Account for the actual form jump; it is not generally a storage-neutral capacity-only event. |
+| **THOL — Self-organization** | Primitive signed acceleration/pressure reset; public/staged path can create an isolated nested child after history/U5 gates | Existing eligibility/dispatch and child-feedback tools can be reused. Parent metadata is not an edge. Child form/capacity and timing follow construction rules; absent edge storage does not mean free substrate creation. |
+| **ZHIR — Mutation** | Configured phase reset following a live signed EPI-growth test and separate grammar context | Can alter phase geometry without adding support. A valid growth trigger is eligibility, not a derived necessity to mutate. Rich-form magnitude is not signed scalar growth; the full reset may raise storage. |
+| **NAV — Transition** | Primitive pressure change; public/staged regimes can also change phase and capacity | A candidate preparation/phase-reset mechanism, with its own budget. Regime factors, optional random draw and invocation remain policies; latency metadata is not a structural event clock. |
+| **REMESH — Recursivity** | Advisory glyph, delayed same-support EPI mixing, and explicitly invoked topological replacement are distinct APIs | Fixed-node rewiring can reuse joint reset accounting. Delayed-history disagreement bounds are not a theorem for `S`; community replacement may change nodes and lies outside the same-node observer. |
+
+Execution owners are linked in §15. The particularly relevant shared kernels
+are [AL/SHA proposals](../src/tnfr/operators/al_sha_stage_proposals.py),
+[reception input](../src/tnfr/operators/_reception_kernel.py),
+[UM proposals](../src/tnfr/operators/_coupling_stage_kernel.py),
+[atomic stages](../src/tnfr/operators/network_stage.py),
+[Mutation admission](../src/tnfr/operators/_mutation_gate.py), and
+[THOL dispatch](../src/tnfr/operators/self_organization_selection.py).
+
+### Quantitative synergies, without inventing an activation law
+
+The [full-reset derivation](nodal/RELATIONAL_PATTERN_COMPOSITION.md#nodal-reorganization-and-contact)
+and shared `observe_relational_reset` separate nodal reorganization on old
+support from support work at the new state. They retain the actual endpoints
+instead of assigning energy signs from operator names.
+
+- **Form changes influence phase evolution.** For held support, phase and
+  capacity, an AL/EN jump `d` changes the next phase row by
+  `(w/beta)*diag(nu/H)*B*d`. One unclipped EN target has nonpositive form cost;
+  an AL jump from uniform form supplies positive cost. RA/VAL/NUL may also
+  change form, but their auxiliary writes and clipping must be included.
+- **Nodal relaxation can accompany attachment.** Actual UM and RA-then-UM
+  witnesses have positive bridge cost but negative complete storage change.
+  This removes the frozen-triad budget obstruction for those declared actions.
+  It does not derive their selection, time or subsequent maintenance.
+- **Phase-only IL can prepare a budget.** On simple undirected support, one
+  target with fixed neighbors and nonzero resultant `R*exp(i*mu)` moves from
+  `theta` toward `mu` by a fraction `lambda` in `[0,1]`. With the selected
+  shortest displacement `a=wrap(mu-theta)`, the ideal phase cost change is
+  `R*(cos(a)-cos((1-lambda)*a))<=0`. This proves a conditional single-target
+  result; it does not extend automatically to overlapping simultaneous resets.
+- **Capacity controls response, not stored identity.** Held form/phase/support
+  makes a capacity-only reset neutral in `S`. The later dynamics still changes.
+  VAL/NUL's default EPI effects and post-event pressure refresh prevent a
+  blanket capacity-only interpretation. Zero capacity and nonzero Gamma must
+  retain their separate contracts.
+- **History can gate an event without explaining its origin.** ZHIR uses a
+  measured signed secant, THOL uses its configured history and construction,
+  REMESH consumes declared delayed state. These are useful causal inputs;
+  none turns a diagnostic label into an independently derived event law.
+
+### Hidden assumptions exposed by the map
+
+**Stored pressure versus an independently evaluated law.** Pure stored-pressure
+changes from IL/OZ/THOL/NAV affect a held-pressure interval. If every argument
+of a state-based constitutive law is unchanged, its next refresh restores the
+same pressure. A pressure intervention needs an explicit lifetime or retained
+state to have a lasting role. The relational observer does not infer either.
+
+**Continuous evolution versus a finite operator action.** Uniform form gives
+`q=0` and zero instantaneous relational phase velocity, even at nonuniform
+admitted phase. UM can still move phase in that state. Its finite reset is not
+automatically a time step of the current continuous law. Any proposed internal
+NFR activation must justify this boundary, not merely pass a storage check.
+
+**Potential contact versus existing support.** UM's search over graph nodes
+or a supplied sample assumes candidate access. EN/RA consume existing edges;
+they cannot themselves transmit input across a missing edge. THOL children
+start isolated. Two isolates cannot bootstrap UM because its initial U3 gate
+needs an existing neighbor. The potential-contact relation is therefore a
+separate hypothesis from the realized transport graph.
+
+**Symmetry versus a configured score.** UM's absolute-form similarity changes
+under a common form offset, while the selected relational law does not. Si
+enters its affinity, and rank resolves some ties. Successful execution of that
+policy does not derive it from offset-covariant nodal dynamics. The existing
+[event-action audit](nodal/RELATIONAL_PATTERN_COMPOSITION.md#support-law-choice-and-clock)
+supplies the appropriate symmetry/clock controls.
+
+**Phase compatibility versus synchronized rhythms.** A small instantaneous
+wrapped gap does not imply equal phase velocities or sustained locking. Equal
+velocities can retain a gap outside U3. A possible connection mechanism should
+retain both `delta=theta_j-theta_i` and `delta_dot` from the complete law, and
+state what makes the candidate observable before connection. Treating rhythm
+locking as a prerequisite is a testable hypothesis, not yet an event rule.
+The SDK's modal `rhythm()` and snapshot `resonance()` observations do not supply
+that missing temporal proof or clock. Synchronization produced by an already
+present link cannot circularly establish the cause of that link's birth.
+
+**Representation versus physical evidence.** Native AL/EN serialized
+uniform-real BEPI now reaches relational execution through shared signed
+scalar admission. Rich or complex form is still outside that scalar model.
+Mutation uses that same boundary for live history matching, rather than a
+magnitude surrogate. These are integration corrections, not new physics.
+
+The [sole research queue](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+prioritizes collective geometry; these action-law boundaries remain open.
+A justified negative result remains useful;
+the map provides mechanisms to test without asserting autonomous connection,
+substrate generation or physical identification.
 
 ---
 

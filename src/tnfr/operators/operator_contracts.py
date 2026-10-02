@@ -143,14 +143,13 @@ class StateChannel(Enum):
 
 
 class OperatorScale(Enum):
-    """The scale at which an operator acts (grammar rule U5 fractality axis).
+    """Invocation/target scale, orthogonal to the primary state channel.
 
-    Orthogonal to :class:`StateChannel`. Exactly one operator (REMESH) is
-    NETWORK-scale — it is the operational-fractality (U5) operator whose effect
-    is multi-scale rather than node-local.
+    REMESH alone is registered at NETWORK scale. NODE does not limit writes
+    to one node: UM can change neighbors and THOL can create children.
     """
 
-    NODE = "node"  # mutates one node's state channel (acts on the fiber)
+    NODE = "node"  # invocation has a node target; auxiliary writes may extend it
     NETWORK = "network"  # multi-scale echo (REMESH): temporal + topological
 
 
@@ -165,14 +164,14 @@ class EffectDirection(Enum):
 
 
 class ContractContext(Enum):
-    """The context where an operator's contract canonically manifests.
+    """Declared observation scope of a registered postcondition.
 
-    Because ΔNFR and C(t) are EMERGENT network fields, a contract is measured at
-    the level where it physically appears (established by the operator-contract
-    fidelity audit, example 115).
+    Actual event writes and the selected read-out determine the check. A
+    stored-pressure postcondition need not survive constitutive refresh;
+    the context label is not a physical or dynamical theorem.
     """
 
-    NETWORK = "network"  # emergent field (recompute ΔNFR / C(t) after)
+    NETWORK = "network"  # declared network read-out, retaining refresh semantics
     NODE = "node"  # node-local channel (e.g. local OZ pressure)
     IDENTITY = "identity"  # structural identity (EPI sign/kind preserved)
     PHASE = "phase"  # phase channel (θ transformed)

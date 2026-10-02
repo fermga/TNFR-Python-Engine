@@ -4,7 +4,7 @@ Purpose: attenuate capacity and mark latency without changing epi.
 Physics: later nodal flow vanishes only when νf·ΔNFR=0.
 Grammar: closure (U1b); used after IL for structural latency.
 Effects at the event: epi, dnfr and theta unchanged; vf attenuated.
-Preconditions: existing epi; dnfr not critical; context allows inactivity.
+Optional strict precondition: capacity above the configured minimum.
 Typical: IL->SHA; SHA->IL->AL; OZ->SHA (containment); SHA->NAV.
 Avoid: SHA->AL direct; SHA->OZ; redundant SHA->SHA.
 """

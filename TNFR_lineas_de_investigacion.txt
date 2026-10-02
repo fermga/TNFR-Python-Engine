@@ -1,6 +1,6 @@
 TNFR - RESEARCH PORTFOLIO
 ========================
-Updated: 2026-09-27.
+Updated: 2026-10-02.
 
 1. PURPOSE AND DOCUMENT RESPONSIBILITIES
 ========================================
@@ -43,9 +43,26 @@ identity alone does not determine pressure, phase, capacity, support or events.
 Source-relative observations and fixed-law closure criteria now have shared
 engine/SDK owners. They retain their supplied-source and domain assumptions.
 
+Connection foundations now distinguish declared support, normalized transport
+weight, observation distance and causal dependence. A zero-weight edge is not
+necessarily an absent relation, and first-neighbor normalization differs from
+contact between already active regions. The relation state and zero-boundary
+admissions retain distinct autonomous passive contact completions, without
+selecting relation-only storage or kinetics. Fixed-support nodal evolution
+cannot determine them. These are reusable foundational constraints, not an
+active parallel creation-law search.
+
+The coefficient audit likewise separates conditional model consistency from
+constitutive selection. Balance, independent capacity composition, clock
+covariance and synchronized replicas permit different chi values. Prepared
+response and memory can identify chi within the admitted two-channel family;
+they do not derive a universal coefficient or reduce all TNFR freedom to it.
+The execution plan alone sets the current calibration/discrimination gate.
+
 Primary owners:
   theory/FUNDAMENTAL_THEORY.md
   theory/NODAL_PARAMETER_FOUNDATIONS.md
+  theory/nodal/RELATION_FOUNDATIONS.md
   theory/nodal/PRESSURE_CONSTITUTIVE_SCOPE.md
   theory/nodal/JOINT_PARAMETER_RESPONSE.md
   theory/nodal/DERIVED_FORM_PHASE.md
@@ -62,6 +79,13 @@ derives joint phase response under additional storage/capacity assumptions.
 It has shared opt-in engine/SDK execution, signed-work and regional-response
 observations, and separate sufficient capture/transit certificates. The
 default operator runtime remains a different execution path.
+
+Coefficient-jet and three-sample uncertainty observers now share an engine
+owner and exact report export, with explicit abstention. One known-source P2
+temporal acquisition has a prior-derived nonlinear derivative bound and a
+retained numerical error chain. This verifies the procedure within the model,
+not blind calibration, a physical measurement or preference for one same-jet
+nonlinear completion. Its records remain immutable and independently auditable.
 
 On supplied two-ring support, a validated continuous transit joins formation
 to a protected maintained phase geometry. Controls with uniform or reversed
@@ -94,24 +118,35 @@ improved both tangent and direct-cubic controls on matched Euler grids.
 That result neither certifies an exact-ODE error at the evaluated amplitude
 nor supplies an autonomous compressed node or a fitted memory law.
 
-The component-to-joined interface is now admitted for one supplied acute unit
-bridge, retaining full internal state. Degree, internal form gradient and the
-complex neighbor resultant suffice for each new port row. Equal endpoint
-form/phase and zero event storage do not imply unchanged local rates, excluding
-the endpoint-difference-only control. The shared read-only engine/SDK report
-retains actual represented changes; it does not create a connection.
-Support-event accounting and nonselection are now explicit. With unchanged
-nodal state, pure addition costs nonnegative joint storage. An additional
-zero-supply passivity premise admits only equal form/phase endpoints and does
-not select occurrence; a continuous addition intensity on an open full-state
-domain must vanish. A supplied atomic edge exchange can lower storage on an
-open set. An explicit two-C5 bridge relocation now retains both internal
-cycles and a shared sufficient continuous recovery basin on a strict open
-domain. Its reverse can preserve recovery while failing the passive budget;
-the zero-perturbation control is a neutral exchange of equilibria.
-The shared observer/SDK compares the event without modifying live support.
-The remaining dependency is constitutive event choice and clock: a favorable
-budget and recoverable identity do not force a connection change to occur.
+Retained mechanisms in this branch are classified by what they preserve:
+- Attachment and relocation retain port neighborhoods, full state and event
+  work. A passive change and subsequent recovery have separate hypotheses;
+  neither selects the event or its time.
+- Joint resets retain simultaneous nodal/support changes. Actual UM and
+  RA-then-UM witnesses are conditional budget results, not autonomous birth.
+  The all-operator map owns configured actions and activation boundaries.
+- Mediation retains joint form/phase memory and hidden initial information.
+  A frozen intermediary can restore geometry without transmitting changes;
+  a causal-null control is therefore necessary for an effective relation.
+- Effective links combine mutual influence with local restoring geometry on
+  supplied fine support. Return paths and damped modes add scoped geometric
+  information; a visible or permanent pulse is not required.
+- Fast and series reductions retain selected phase lifts, original port
+  normalization, inherited storage and the initial transient. Stationary
+  composition and finite-capacity evolution have distinct error obligations.
+- Three-port reduction retains genuinely collective phase information;
+  independent pair interactions cannot generally replace the whole law.
+- Pressure-state counterexamples retain the environment's hidden coordinates.
+  Zero pressure is not absence of structure, and a physical vacuum remains
+  an unestablished interpretation.
+
+These results are linked from their owners below and the theory-to-execution
+map, rather than copied into a delivery chronology. Primitive support origin,
+unrestricted nonlinear composition and changes to another winding identity
+remain separate open/deferred questions. Physical analogies are prompts, not
+validated constituents or additional campaigns. The current coefficient and
+same-jet-law distinction uses these observation lessons without reopening
+their completed producers.
 Precise obligations and acceptance criteria belong only to:
   theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate
 
@@ -220,7 +255,9 @@ Preserve original model, inputs, source, precision, clock and frozen outcomes.
 A later theorem or code correction does not rewrite an earlier verdict.
 
 Autonomous support/capacity selection, unrestricted nonlinear composition and
-physical identification remain open. A restricted positive result need not
+physical identification remain open. The completed support-selection audit
+does not reopen an event-law search without an independently justified premise.
+A restricted positive result need not
 explain creation from nothing, prove infinite lifetime for every pattern or
 select every operator universally. Resume at the plan's current gate, using
 the substantive owners above and the archive as evidence, not as instructions.

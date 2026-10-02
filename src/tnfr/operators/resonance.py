@@ -3,7 +3,8 @@
 Purpose: propagate coherence through coupled phase-aligned nodes.
 Physics: circulates structural pattern preserving epi identity (sign/kind).
 Grammar: always requires phase-compatible coupling (U3).
-Effects: propagates/redistributes epi (identity preserved); amplifies vf.
+Effects: mixes epi preserving sign/kind; configured phase/capacity updates.
+No support or stored-pressure write is implied by the propagation label.
 Preconditions: coherent epi, edges, phase alignment, sufficient vf.
 Typical: UM->RA; IL->RA; AL->RA; RA->IL; RA->EN.
 Avoid: OZ->RA without IL; SHA->RA; repeated RA chains without IL.
@@ -19,9 +20,10 @@ from .definitions_base import Operator
 
 
 class Resonance(Operator):
-    """Propagate coherence across coupled nodes; amplify network alignment.
+    """Mix form across compatible neighbors with phase/capacity updates.
 
-    Invariants: preserve epi identity (sign/kind); amplify vf; limit dnfr.
+    Preserves epi sign/kind; capacity amplification has a separate trigger.
+    Global alignment increase and stored-pressure contraction are not promised.
     Typical: UM->RA, IL->RA, AL->RA, RA->IL, RA->EN. Avoid OZ->RA w/o IL.
     Metrics: propagation distance, amplification factor, phase order param.
     """

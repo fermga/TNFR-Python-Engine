@@ -29,9 +29,16 @@ cannot hide forcing.
 The executor admits connected, simple, loopless, undirected
 support with at least two nodes and unit conductance. Each node must supply
 finite signed real scalar EPI, primitive phase and nonnegative capacity.
-Materialized uniform-real BEPI is admitted and, like the scalar nodal solver,
-commits as its signed scalar; richer or unmaterialized serialized form rejects.
+Uniform-real BEPI, materialized or in its canonical serialized mapping, is
+admitted through the shared signed-scalar validator and, like the scalar nodal
+solver, commits as its signed scalar. Richer, complex or malformed form rejects.
 Raw Boolean/text values and nonzero inputs lost during materialization reject.
+This admission does not include isolated-node evolution or a continuous ramp
+from zero to unit conductance. Generic pressure has different channel support:
+a zero-weight graph edge can still contribute phase, capacity and topology.
+The [relation foundation](../../theory/nodal/RELATION_FOUNDATIONS.md#zero-relation-boundary)
+separates those cases from true absence; its weighted comparisons are not a
+new execution mode of this API.
 `model.phase_domain` selects one of two admission paths for the same joint law:
 
 - `"acute"` is the default and preserves the existing numerical path. Every
@@ -66,6 +73,196 @@ These explicit enclosures differ from exact arithmetic on rounded storage
 or work values: they certify mathematical cosine sums, not errors in the
 separately computed native pressure, phase metric or rates. The model and
 `scope` retain the selected chamber and enclosure-method provenance.
+
+### Conditional and fast-mediator observations
+
+The [nonlinear fast-mediator limit](../../theory/nodal/RELATIONAL_PATTERN_MEMORY.md#fast-mediator-reduction)
+has a separate continuous approximation contract. Its instantaneous reduced
+field is observed by evaluating a detached full graph with the mediator at
+the declared local midpoint, then selecting the visible rows. This does not
+make midpoint replacement an exact finite-capacity step or a supported
+ten-node direct-edge execution mode. The proof retains an initial transient,
+a regular neighborhood and a fixed finite horizon; it supplies no fixed-step
+Euler error guarantee as mediator capacity grows. Existing field/work reports
+suffice for its static controls; no reduced solver or infinite capacity is
+admitted by this API.
+
+The [two-intermediary and series result](../../theory/nodal/RELATIONAL_PATTERN_MEMORY.md#two-mediator-composition)
+uses the same detached evaluation after the declared path reconstruction.
+Keep its selected phase lift and original port degrees. Replacing a reduced
+segment by an ordinary unit edge, or choosing the principal endpoint phase
+difference without retaining the path's phase information, can change the
+response. Stationary composition is separate from the error bounds for a
+simultaneous fast limit; no sequential projection is a finite-capacity step.
+
+The [three-port reduction](../../theory/nodal/RELATIONAL_PATTERN_MEMORY.md#three-port-collective-interaction)
+uses a detached star reconstruction: mediator form is the mean of its three
+port forms, and mediator phase is the argument of their collective resultant.
+Admit the full reconstructed graph, including every acute fine edge, before
+selecting visible rows. A zero resultant does not define a mediator phase;
+nonzero resultant alone does not certify the acute domain. Retain original
+port degrees and internal neighbor resultants. The inherited storage and
+field generally require all three ports together; independent pair interfaces
+cannot replace them on an open neighborhood. The separate local fast bound
+retains the moving circular mean and hidden initial state. Reconstruction is
+an observation preparation, not an instantaneous reset of a live mediator.
+
+### Uniform-form tangent observation
+
+`evaluate_relational_uniform_tangent(graph, model=...)` and the thin SDK
+delegate `Network.relational_uniform_tangent(model)` reuse detached field
+admission. They require exactly uniform represented EPI, with no equilibrium
+tolerance. Nonzero phase pressure and form rates remain visible in the retained
+`field`; uniform form alone does not establish a critical phase geometry.
+
+`RelationalUniformTangent.generator` follows `(all form, all phase)` in field
+node order. It differentiates the declared smooth law with held support,
+capacities and model coefficients. The phase-source derivative uses the Arg
+formula with the captured relative resultants. Since `Bx=0`, derivatives of
+the phase metric contribute no phase-to-phase block at this state. This is a
+materialized ideal derivative, not the derivative of floating-point rounding
+or a certified spectral enclosure. Nonfinite or lost nonzero coefficients
+are rejected using shared admission.
+
+`phase_source_jacobian`, exact represented `common_offset_residuals` and the
+derived `phase_source_row_sum_residuals` retain numerical defects rather than
+projecting them to zero. The shared `relational_report_to_dict` exporter admits
+this report and validates its field's node labels. It exports stored dataclass
+fields; the derived row-sum property can be recomputed from the stored Jacobian.
+No eigenmode classification, event selection, source, time step or live graph
+mutation is part of this observer. Its use in a
+[collective pulse study](../../theory/nodal/RELATIONAL_PATTERN_MEMORY.md#shared-collective-pulse)
+keeps local modal evidence distinct from a maintained nonlinear oscillation.
+
+<a id="relational-coefficient-jet"></a>
+
+### Coefficient bounds from a declared initial response jet
+
+`bound_relational_coefficient_from_jet(*, form_bounds, rate_bounds,
+acceleration_bounds)` in the [observation owner](../../src/tnfr/physics/relational_observations.py)
+encloses `chi=m1^2/[pi^2*(m1^2-m0*m2)]`. Its
+[preparation theorem](../../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#prepared-coefficient-identification)
+requires the specified unforced two-channel law, held common positive capacity,
+a nonzero observed spatial mode and initial phase consensus. The function does
+not inspect or authenticate these conditions, estimate derivatives from samples,
+read a graph or change state. It does not take a supplied beta as its answer.
+
+Each argument is an ordered pair of finite real interval endpoints, lower then
+upper. Shared admission preserves exact rational values and otherwise retains
+represented real values; Booleans, text, nonfinite values, reversed endpoints,
+unordered containers and wrong lengths reject. One-shot iterables are accepted.
+The existing 128-bit outward dyadic interval owner encloses all arithmetic and
+mathematical pi. Very small exact intervals can widen across zero on this grid;
+that loss of resolution produces unavailability, not a zero-signal certificate.
+
+The frozen `RelationalCoefficientJetBounds` retains:
+
+- `form_bounds`, `rate_bounds`, `acceleration_bounds`: admitted, outward-rounded
+  jet intervals in one observation's value/time units;
+- `squared_rate_bounds` and `restoring_gap_bounds`: the intervals for
+  `m1^2` and `m1^2-m0*m2`, with squared rate units;
+- `coefficient_bounds`: an enclosing endpoint pair, or `None`;
+- `unavailable_reasons`, `arithmetic_method` and explicit conditional `scope`.
+
+No coefficient is returned if the form interval contains zero, the form/rate
+product is strictly positive (incompatible with the prepared `e>=0` decay), or
+the restoring gap is not proved positive. Reasons distinguish
+`initial_form_not_separated_from_zero`, `incompatible_initial_decay`,
+`nonpositive_restoring_gap` and `unresolved_restoring_gap`. Multiple reasons can
+coexist. A zero-rate interval with negative restoring acceleration can identify
+chi zero; critical repeated poles do not make this jet formula singular.
+
+An available interval is not an automatic precision pass or proof that the
+model fits the data. The caller must supply uncertainty that actually encloses
+the initial derivatives, baseline/gain and clock errors, and declare a useful
+width threshold separately. The
+[three-sample bounds](../../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#coefficient-jet-uncertainty)
+require an independent third-derivative bound on the whole sampling interval;
+neither three observations nor a solver work residual establishes it.
+Misprepared phase or unresolved modal mixtures can yield a plausible but
+inapplicable coefficient even when arithmetic succeeds.
+
+For example, exact declared intervals `(1,1)`, `(-3,-3)`, `(7,7)` give restoring
+gap 2 and enclose `9/(2*pi^2)`. These numbers illustrate the arithmetic, not a
+physical acquisition. `relational_report_to_dict` exports the report's bounds
+as exact fraction records and preserves `None` and all reasons. The usual
+atomic SDK writer can save that projection; it authenticates no preparation
+or calibration. [Routine controls](../../tests/test_relational_coefficient_identification.py)
+exercise input rejection, resolution boundaries, gain/clock covariance and export.
+
+<a id="relational-coefficient-samples"></a>
+
+### Coefficient bounds from three uniformly timed samples
+
+`bound_relational_coefficient_from_samples(samples, *, sample_step,
+sample_error_bound, third_derivative_bound)` in the same observation owner
+implements the [three-sample theorem](../../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#coefficient-jet-uncertainty).
+Supply exactly three ordered finite real values at relative times `0,h,2h`,
+positive h, nonnegative uniform sample error epsilon and an independently
+justified whole-window noiseless C3 bound M3. Shared exact/represented-real
+admission rejects Booleans, text, nonfinite values, unordered containers,
+wrong sample counts and invalid bound signs before estimation.
+
+The immutable `RelationalCoefficientSampleBounds` retains `samples`,
+`sample_step`, `sample_error_bound`, `third_derivative_bound`, exact rational
+`rate_estimate` and `acceleration_estimate`, and their `rate_error_bound`
+and `acceleration_error_bound`. It delegates the enclosing initial-value and
+derivative intervals to `bound_relational_coefficient_from_jet` and retains
+the full result as `jet`. Mathematical-pi and final outward-rounding provenance
+remain in that nested report; exact rational stencils add no hidden float step.
+The shared exporter supports this report, including nested unavailability.
+
+This helper infers neither timing accuracy nor C3 regularity/noise from three
+samples. It does not read a graph, fit beta, authenticate preparation or choose
+a precision threshold. Known-source computational use is demonstrated by the
+[P2 acquisition](../../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#coefficient-temporal-acquisition),
+whose independent nonlinear and numerical bounds are not general guarantees
+for arbitrary samples, graphs or physical measurements. The API changes no
+evolution law and adds no `Network` method for this graph-independent arithmetic.
+
+<a id="relational-acquisition-audit"></a>
+
+### Read-only retained coefficient-acquisition audit
+
+`audit_relational_coefficient_record(record, *, protocol)` in
+[`tnfr.research.relational_acquisition`](../../src/tnfr/research/relational_acquisition.py)
+checks the retained known-source P2 v1 record against an independently supplied
+frozen protocol. It verifies the supported preparation/model/observation and
+clock declarations, whole-window bounds, each saved state/rate contrast and
+numerical defect, accumulated error, sample report and original decisions.
+Malformed or contradictory mappings raise; a partial acquisition or failed
+analysis retains no coefficient. It neither constructs a graph nor imports a
+producer or evolves state.
+
+`audit_relational_coefficient_acquisition(response_path)` additionally reads
+the sibling `.protocol.json` and `.source.zip`. It uses the shared strict JSON
+reader, binds the embedded protocol to the original, verifies its digest and
+the source archive's inventory/member digests, and delegates reconstruction
+to the same owner. The archive is read without extraction; encrypted/unsupported
+compression rejects. Work budgets allow at most 4096 steps, 32 MiB per stored
+file and 128 MiB of expanded source content. These are audit policies, not
+physical constants. Current installed source/runtime is not required to match
+the historical archive; no replay compatibility verdict is inferred.
+
+The frozen `RelationalAcquisitionAudit` exposes `status`, `consistent`,
+`completed_steps`, `acquisition_complete`, `recorded_passed`,
+`reconstructed_passed`, optional `sample_bounds`, `unavailable_reasons` and
+`scope`. `status="consistent"` reports internal agreement, not experiment
+success: an original negative decision remains false. Missing files return
+`"unavailable"` and invalid records return `"inconsistent"`, with unavailable
+conclusions as `None`. A complete frame window can still have failed or
+unavailable coefficient analysis. `to_dict()` projects nested sample evidence
+through the existing exact exporter for the usual atomic writer.
+
+The [proof and original evidence](../../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#coefficient-temporal-acquisition)
+retain their own scope. Consistent bytes/arithmetic do not authenticate an
+executed history, trusted chronology, dependency binaries, parameter-blind
+uncertainty or physical admission. The audit never overwrites artifacts or
+changes the original prediction/precision rule. See
+[usage](../guides/REGIONAL_AND_RELATIONAL.md#audit-saved-acquisition-evidence-without-replay)
+and [routine negative controls](../../tests/test_relational_acquisition_audit.py).
+
+### Finite relational steps
 
 A step requires positive `dt` and a finite clock advance. It uses explicit
 `t`, or graph `_t` with initial default zero. Both Euler rows use the same
@@ -130,6 +327,22 @@ partial certificate. This is not graph, stability, nonlinear-law or exact
 transcendental admission. The old affine diffusion API retains its independent
 model checks and negative generator sign; see the
 [composition scope](../../theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md).
+
+`derive_coordinate_memory(generator, visible_indices)` in the same module
+derives the exact coordinate split `y_dot=A*y+B*h`, `h_dot=C*y+D*h` for a
+supplied fixed generator with sign `z_dot=J*z`. Visible indices must be an
+ordered, nonempty proper subset of distinct nonboolean integers; hidden
+indices retain the original complementary order. Scalar admission and
+detached immutable tuples follow the same exact/represented-real boundary.
+The report retains `generator`, both index tuples, `visible_generator`,
+`hidden_to_visible`, `visible_to_hidden`, `hidden_generator` and
+`kernel_at_zero=B*C`. The corresponding memory is `B*exp(D*t)*C`, with the
+separate initial-state source `B*exp(D*t)*h(0)`. No exponential sampler,
+stability/positivity assertion, graph authentication or nonlinear closure is
+provided. Zero `kernel_at_zero` does not imply zero memory at later lags.
+See the [joint mediator derivation](../../theory/nodal/RELATIONAL_PATTERN_MEMORY.md#mediated-pattern-interaction)
+for an admitted use with the relational tangent; it does not replace full
+`Network.step_relational` evolution with a fitted memory law.
 
 <a id="relational-pattern-observation"></a>
 
@@ -255,8 +468,10 @@ executes and reports the full nonlinear state.
 
 `tnfr.sdk.relational_report_to_dict(report)` accepts only a
 `RelationalExchangeField`, `RelationalExchangeStep`,
-`RelationalPatternObservation`, `RelationalAttachmentObservation`,
-`RelationalRelocationObservation`, `RelationalAttachmentSupplyAssessment`, or one of
+`RelationalUniformTangent`, `RelationalPatternObservation`,
+`RelationalAttachmentObservation`, `RelationalRelocationObservation`,
+`RelationalResetObservation`, `RelationalAttachmentSupplyAssessment`,
+`RelationalCoefficientJetBounds`, `RelationalCoefficientSampleBounds`, or one of
 the scoped capture/transit certificate types documented below.
 Its detached JSON-compatible envelope has
 `schema="tnfr.relational-report.v1"`, `report_type` and recursively projected
@@ -385,6 +600,54 @@ live attributes, histories and support remain unchanged. Floating phase
 evaluation supplies represented evidence, not an ideal trigonometric enclosure
 or an executable recovery certificate. See
 [usage](../guides/REGIONAL_AND_RELATIONAL.md#compare-a-supplied-bridge-relocation).
+
+<a id="relational-reset-observation"></a>
+### Supplied joint state and support reset
+
+`observe_relational_reset(before_graph, after_graph, *, storage_scale)` and
+`Network.relational_reset(after, *, storage_scale)` compare supplied endpoints
+without mutating either graph. They admit the same nonempty ordered nodes,
+simple undirected loopless support, symmetric nonnegative conductances and
+explicit finite phase at every node. Shared transport admission validates
+signed scalar form, nonnegative capacity and stored pressure. It retains its
+zero defaults when capacity or stored pressure is absent; these defaults are
+not evidence of explicit or measured zero values. Disconnected
+support, isolates and zero/nonunit weights are allowed **for observation**;
+neither endpoint is thereby admitted to the relational evolution law.
+
+The positive finite `storage_scale` is beta in `S=E_D+beta*V`. Form storage
+uses conductance, while phase storage uses every support edge, including zero
+conductance, consistently with the native phase neighborhood. The shared
+half-sine evaluation avoids cancellation in small phase costs. Reports use
+exact fractions of represented primitives, not ideal trigonometric enclosures.
+
+`RelationalResetObservation` retains:
+
+- `before`, `after`: detached transport snapshots, including capacity and stored
+  pressure with the inherited defaults above, and actual conductance;
+  `phase_before/after`, `edges_before/after`.
+- `form_state_change`, `phase_state_change`: changes on the old support.
+- `form_support_change`, `phase_support_change`: changes of support at the
+  new nodal state. `transport_reset.before` is this algebraic intermediate,
+  not another observed event.
+- `form_storage_change`, `phase_storage_change`, `phase_storage_before/after`,
+  `storage_before/after`, `storage_change` and `identity_residual`. Phase terms
+  are unscaled `V`; total storage applies beta. The exact decomposition is
+  `Delta S = Delta E_state + Delta E_support + beta*(Delta V_state + Delta V_support)`.
+
+The same budget mixin as attachment/relocation provides
+`represented_zero_supply_passive` and `assess_supply(supplied_work)`. The latter
+retains the signed `required_supply=storage_change` without clipping. These
+compare a declared work budget; they do not infer a reservoir, authenticate
+an actual event or assign an activation time. A sequence's net storage decline
+does not prove each constituent event was separately passive. Birth, deletion
+or relabeling of nodes lies outside this same-node interface.
+
+`relational_report_to_dict` retains these fields and exact fractions through
+the existing detached exporter; unsupported opaque node labels reject. See
+the [joint reset guide](../guides/REGIONAL_AND_RELATIONAL.md#compare-a-joint-state-and-support-reset),
+[theory](../../theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md#nodal-reorganization-and-contact)
+and [actual operator controls](../../tests/physics/test_coupling_attachment_budget.py).
 
 ### Conditional relational capture
 

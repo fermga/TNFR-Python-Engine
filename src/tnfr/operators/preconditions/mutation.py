@@ -38,14 +38,15 @@ __all__ = [
 
 
 def validate_mutation_strict(G: TNFRGraph, node: NodeId) -> None:
-    """Comprehensive canonical validation for ZHIR.
+    """Validate the declared ZHIR admission conditions.
 
-    Validates all TNFR requirements for mutation (AGENTS.md §11, TNFR.pdf §2.2.11):
+    The operator and grammar owners are theory/STRUCTURAL_OPERATORS.md and
+    theory/UNIFIED_GRAMMAR_RULES.md. The implemented checks require:
 
     1. **Minimum νf**: Reorganization capacity for phase transformation
     2. **Threshold crossing**: ∂EPI/∂t > ξ (structural velocity sufficient)
     3. **Grammar U4b Part 1**: Prior IL (Coherence) for stable base
-    4. **Grammar U4b Part 2**: Recent destabilizer (~3 ops) for threshold energy
+    4. **Grammar U4b Part 2**: Destabilizer within the configured recency window
     5. **Sufficient history**: EPI history for velocity calculation
 
     Parameters
@@ -110,9 +111,9 @@ def validate_threshold_crossing(
 ) -> None:
     """Validate ∂EPI/∂t > ξ requirement for phase transformation.
 
-    ZHIR is a phase transformation that requires sufficient structural reorganization
-    velocity to justify the transition. The threshold ξ represents the minimum rate
-    of structural change needed for a phase shift to be physically meaningful.
+    ZHIR admission compares the observed signed EPI secant with the configured
+    threshold ξ. The sample's clock fixes the rate units. This policy neither
+    derives the phase reset nor establishes its physical interpretation.
 
     Parameters
     ----------
@@ -156,11 +157,11 @@ def validate_grammar_u4b(
 
     Grammar rule U4b (BIFURCATION DYNAMICS - Transformers Need Context) requires:
 
-    1. **Prior IL (Coherence)**: Stable base for transformation
-    2. **Recent destabilizer**: OZ/VAL/etc within ~3 operations for threshold energy
+    1. **Prior IL (Coherence)**: Required operator history
+    2. **Recent destabilizer**: A recognized glyph within the configured window
 
-    This is a STRONG canonicity rule derived from bifurcation theory - phase
-    transformations need both stability (IL) and elevated energy (destabilizer).
+    These are configured grammar conditions. Operator labels and recency do not
+    certify stability, stored energy or a bifurcation of the continuous law.
 
     Parameters
     ----------

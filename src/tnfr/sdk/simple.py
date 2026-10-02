@@ -2348,6 +2348,17 @@ class Network:
 
         return evaluate_relational_exchange(self.G, model=model)
 
+    def relational_uniform_tangent(self, model):
+        """Observe the declared law's derivative at uniform represented form.
+
+        The report retains the native field and represented offset residuals.
+        Uniform form does not certify equilibrium, oscillation or recovery.
+        No time step, support event or live graph mutation is executed.
+        """
+        from ..dynamics.relational import evaluate_relational_uniform_tangent
+
+        return evaluate_relational_uniform_tangent(self.G, model=model)
+
     def relational_pattern(self, model, *, reference_phase, regions, cycles=()):
         """Observe supplied regions and phase lifts under the selected joint law.
 
@@ -2409,6 +2420,23 @@ class Network:
         return observe_relational_relocation(
             self.G, model=model, remove_bridge=remove_bridge, add_bridge=add_bridge
         )
+
+    def relational_reset(self, after, *, storage_scale):
+        """Compare joint state/support storage with a supplied endpoint network.
+
+        The shared observer retains weighted form and bare-support phase
+        storage, separating state changes on the old support from support
+        changes at the new state. Disconnected support and nonunit or zero
+        conductances are allowed; the node order must match. Neither network
+        is modified or evolved. The represented budget and declared-work
+        assessment do not authenticate a named event, select its occurrence
+        or certify admission to the conditional relational evolution law.
+        """
+        if not isinstance(after, Network):
+            raise TypeError("after must be a Network")
+        from ..physics.relational_observations import observe_relational_reset
+
+        return observe_relational_reset(self.G, after.G, storage_scale=storage_scale)
 
     def relational_capture(self, model, *, cycles):
         """Check the sufficient exact reflected two-ring capture theorem.

@@ -50,8 +50,10 @@ __all__ = (
     "RelationalExchangeModel",
     "RelationalWorkBalance",
     "RelationalExchangeField",
+    "RelationalUniformTangent",
     "RelationalExchangeStep",
     "evaluate_relational_exchange",
+    "evaluate_relational_uniform_tangent",
     "step_relational_exchange",
 )
 
@@ -73,6 +75,12 @@ _MISSING = object()
 
 def _finite(value, label):
     return finite_represented_real(value, label)[0]
+
+
+def _phase_edge_storage(gap):
+    """Represented cosine cost after the caller admits its phase-gap chart."""
+    half = _finite(Q(gap) / 2, "half phase gap")
+    return 2 * Q(math.sin(half)) ** 2
 
 
 @dataclass(frozen=True)
@@ -209,6 +217,38 @@ class RelationalExchangeField:
 
 
 @dataclass(frozen=True)
+class RelationalUniformTangent:
+    """Detached materialized derivative of the ideal uniform-form field.
+
+    ``generator`` acts on all form coordinates followed by all phase
+    coordinates, each in ``field.nodes`` order. ``phase_source_jacobian``
+    represents Dg, with trigonometry and resultants evaluated in the captured
+    field's phase chart. This is not the derivative of binary64 arithmetic or
+    a certified transcendental enclosure. Uniform form alone need not be an
+    equilibrium: ``field`` retains its actual pressure and nonzero rates.
+
+    ``common_offset_residuals`` has one pair per generator row: its exact
+    represented sum over the form columns and over the phase columns. These
+    rounding residuals are measured, never removed to force neutral modes.
+    """
+
+    field: RelationalExchangeField
+    generator: tuple[tuple[float, ...], ...]
+    phase_source_jacobian: tuple[tuple[float, ...], ...]
+    common_offset_residuals: tuple[tuple[Q, Q], ...]
+    scope: str = (
+        "materialized_ideal_derivative_at_exactly_uniform_represented_form; "
+        "held_support_capacity_and_model; inherited_phase_domain; "
+        "baseline_rates_retained; no_equilibrium_or_trajectory_certificate"
+    )
+
+    @property
+    def phase_source_row_sum_residuals(self) -> tuple[Q, ...]:
+        """Exact represented Dg row sums, without a neutrality projection."""
+        return tuple(sum(map(Q, row), Q(0)) for row in self.phase_source_jacobian)
+
+
+@dataclass(frozen=True)
 class RelationalExchangeStep:
     """One admitted Euler step; defects are not convergence certificates.
 
@@ -241,8 +281,8 @@ def _raw(data, aliases, label):
 def _epi(raw):
     if isinstance(raw, Real):
         return _finite(raw, "EPI")
-    if not isinstance(raw, BEPIElement):
-        raise TypeError("EPI must be a real scalar or materialized uniform-real BEPI")
+    if not isinstance(raw, (BEPIElement, Mapping)):
+        raise TypeError("EPI must be a real scalar or uniform-real BEPI representation")
     return _finite(require_finite_real_scalar_epi(raw), "EPI")
 
 
@@ -310,6 +350,12 @@ def _stage(graph, model):
     return staged
 
 
+def _relative_phase_gap(left, right, *, wider):
+    """Shared represented phase chart for field and detached derivatives."""
+    difference = _finite(Q(right) - Q(left), "phase difference")
+    return difference if wider else math.remainder(difference, math.tau)
+
+
 def _field(staged, model):
     nodes = tuple(staged)
     edges = tuple(staged.edges())
@@ -333,16 +379,14 @@ def _field(staged, model):
     form_storage = phase_storage = Q(0)
     for left, right in edges:
         i, j = indices[left], indices[right]
-        difference = _finite(Q(phase[j]) - Q(phase[i]), "phase difference")
-        gap = difference if wider else math.remainder(difference, math.tau)
+        gap = _relative_phase_gap(phase[i], phase[j], wider=wider)
         if not wider and abs(gap) >= math.pi / 2:
             raise ValueError(
                 "every represented wrapped edge gap must be strictly acute"
             )
         gaps[i, j], gaps[j, i] = gap, -gap
         form_storage += (xq[i] - xq[j]) ** 2 / 2
-        half = _finite(Q(gap) / 2, "half phase gap")
-        phase_storage += 2 * Q(math.sin(half)) ** 2
+        phase_storage += _phase_edge_storage(gap)
     q = tuple(
         sum((xq[i] - xq[j] for j in row), Q(0)) for i, row in enumerate(neighbors)
     )
@@ -462,6 +506,92 @@ def evaluate_relational_exchange(
 ) -> RelationalExchangeField:
     """Read a detached native-pressure field without changing the live graph."""
     return _field(_stage(graph, model), model)
+
+
+def evaluate_relational_uniform_tangent(
+    graph, *, model: RelationalExchangeModel
+) -> RelationalUniformTangent:
+    """Materialize the ideal joint Jacobian at exactly uniform signed form.
+
+    With B the unit-support Laplacian, D the degree diagonal and N held
+    capacity, its blocks are (-e*N*D^-1*B, w*N*Dg; (w/beta)*N*H^-1*B, 0).
+    Uniform form makes B*x exactly zero, so phase derivatives of H^-1
+    contribute no lower-right block. No tolerance establishes this premise.
+
+    For relative resultant R+i*S, an adjacent coefficient of Dg is
+    (R*cos(delta)+S*sin(delta))/(pi*(R**2+S**2)); its diagonal is -1/pi.
+    This is the phase-response owner's ideal Arg derivative, evaluated from
+    the captured native resultants rather than a fabricated exact Gram matrix.
+    Coefficient arithmetic is rational on materialized values before shared
+    finite-real admission; underflow and overflow are not silently accepted.
+    """
+    field = evaluate_relational_exchange(graph, model=model)
+    if any(value != field.epi[0] for value in field.epi):
+        raise ValueError("uniform tangent requires exactly uniform represented EPI")
+    if field.relative_resultant is None or field.phase_mobility is None:
+        raise RuntimeError("native field omitted its captured phase coefficients")
+    size = len(field.nodes)
+    indices = {node: i for i, node in enumerate(field.nodes)}
+    neighbors = [[] for _ in range(size)]
+    for left, right in field.edges:
+        i, j = indices[left], indices[right]
+        neighbors[i].append(j)
+        neighbors[j].append(i)
+    pi = Q(math.pi)
+    wider = model.phase_domain == "positive_resultant"
+    source_rows, upper_rows, lower_rows = [], [], []
+    for i, row in enumerate(neighbors):
+        real, imaginary = map(Q, field.relative_resultant[i])
+        denominator = pi * (real**2 + imaginary**2)
+        source = [Q(0)] * size
+        source[i] = -1 / pi
+        for j in row:
+            gap = _relative_phase_gap(field.phase[i], field.phase[j], wider=wider)
+            source[j] = (
+                real * Q(math.cos(gap)) + imaginary * Q(math.sin(gap))
+            ) / denominator
+        materialized_source = tuple(
+            _finite(value, "phase source derivative") for value in source
+        )
+        source_rows.append(materialized_source)
+        laplacian = [0] * size
+        laplacian[i] = len(row)
+        for j in row:
+            laplacian[j] = -1
+        capacity = Q(field.capacity[i])
+        upper_rows.append(
+            tuple(
+                _finite(
+                    -Q(model.epi_weight) * capacity * value / len(row), "form tangent"
+                )
+                for value in laplacian
+            )
+            + tuple(
+                _finite(
+                    Q(model.phase_weight) * capacity * Q(value), "phase-to-form tangent"
+                )
+                for value in materialized_source
+            )
+        )
+        lower_rows.append(
+            tuple(
+                _finite(
+                    Q(model.phase_weight)
+                    / Q(model.storage_scale)
+                    * field.phase_mobility[i]
+                    * value,
+                    "form-to-phase tangent",
+                )
+                for value in laplacian
+            )
+            + (0.0,) * size
+        )
+    generator = tuple(upper_rows + lower_rows)
+    residuals = tuple(
+        (sum(map(Q, row[:size]), Q(0)), sum(map(Q, row[size:]), Q(0)))
+        for row in generator
+    )
+    return RelationalUniformTangent(field, generator, tuple(source_rows), residuals)
 
 
 def _advance(value, rate, dt, label):

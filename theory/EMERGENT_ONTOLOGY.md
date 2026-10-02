@@ -76,6 +76,17 @@ nor a derivation of its own origin. A finer-scale TNFR realization would need
 the same explicit reduction obligations as any effective nodal description;
 see [assumed substrate and emergence between scales](FUNDAMENTAL_THEORY.md#29-assumed-substrate-and-emergence-between-scales).
 
+The deeper target can therefore be a **hypothetical relational substrate**
+whose collective configurations supply both effective objects and their
+environment. This does not require a second medium outside that structure,
+but it does require sufficient state and complete laws. The
+[environment/pressure admission](FUNDAMENTAL_THEORY.md#environment-substrate-and-pressure)
+shows why an unobserved background, zero EPI and zero pressure are not
+interchangeable notions of vacuum. Connected fine support and its global
+unity remain premises, not consequences of the effective-link proof.
+The current pressure is a state-dependent driving term; a pressure-based
+description must retain whatever coordinates or memory its closure needs.
+
 #### NFRs participate in the same structural configuration
 
 <a id="nfr-participation-in-form"></a>
@@ -263,8 +274,54 @@ a pattern when its defining cycle is changed. The
 retains the internal cycles and proves recovery after one supplied passive
 exchange on an explicit open set. It demonstrates compatibility of
 reorganization and maintained phase identity, not an autonomous event law or
-an identification of the patterns with physical particles. The plan next
-examines the independent choice and timing of such events.
+an identification of the patterns with physical particles. The
+[choice/clock audit](nodal/RELATIONAL_PATTERN_COMPOSITION.md#support-law-choice-and-clock)
+now proves that the stated budget, recovery and covariance requirements leave
+different compatible event laws. It justifies no automatic selector.
+The [complete-action revision](nodal/RELATIONAL_PATTERN_COMPOSITION.md#nodal-reorganization-and-contact)
+permits nodal reorganization while connecting: actual UM can offset positive
+edge cost, and existing continuous dynamics can create phase admission.
+The [operator map](STRUCTURAL_OPERATORS.md#operator-mechanism-and-activation-audit)
+separates these mechanisms from supplied candidates and invocation. Whether
+sustained synchronization justifies activation remains a hypothesis; neither
+an instantaneous U3 match nor the SDK's auxiliary modal rhythm establishes it.
+The selected precursor is now an explicit nodal intermediary under the same
+form/phase law. Its [derived memory](nodal/RELATIONAL_PATTERN_MEMORY.md#mediated-pattern-interaction)
+retains both hidden coordinates, predicts a capacity-dependent transient and
+admits local recovery of the supplied composite geometry. The
+[finite capacity intervention](nodal/RELATIONAL_PATTERN_MEMORY.md#finite-mediated-response)
+has passed its frozen prediction, while a shared frozen boundary supplies a
+control for apparent joint restoration without mutual influence. This is
+conditional interaction and restoration, not capture from initially
+disconnected support. A supplied
+[return path](nodal/RELATIONAL_PATTERN_MEMORY.md#return-path-equilibrium)
+admits distinct recoverable geometries for equal and opposite windings, with
+a necessary extra storage budget for the opposite equilibrium. It does not
+establish a maintained oscillation. Connection as a causally shared rhythm now
+has [conditional local evidence](nodal/RELATIONAL_PATTERN_MEMORY.md#shared-collective-pulse):
+an ideal damped complex mode is proved and native causal residues resolve a
+receiver response. This does not show a perpetual pulse or a nonlinear limit
+cycle. Prepared synchronization alone is insufficient, and effective connection
+need not mean primitive edge creation. The
+[connection-mechanism audit](nodal/RELATIONAL_PATTERN_COMPOSITION.md#connection-mechanisms-and-mediators)
+distinguishes hidden-node mediation, reinforcement and primitive support birth.
+The [continuous contact comparisons](nodal/RELATION_FOUNDATIONS.md#the-origin-of-relation-storage-is-a-nonselection-classification)
+and [event-law comparisons](nodal/RELATIONAL_PATTERN_COMPOSITION.md#support-law-choice-and-clock)
+leave multiple compatible laws under their respective premises. They prove
+neither impossibility of autonomous formation nor an exhaustive classification
+of future mechanisms. Primitive formation and selection of its complete law
+remain open; a supplied autonomous countermodel is not a derived occurrence law.
+The
+[effective-link admission](nodal/RELATIONAL_PATTERN_COMPOSITION.md#effective-link-admission)
+defines a scoped research criterion: mutual causal response and restoration
+of a declared joint geometry. Active paths, retained mediator memory and the
+existing recovery theorem yield sufficient conditions and an explicit local
+formation family. An unchanged frozen separator supplies a causal null even
+when the regions appear geometrically aligned. These are conditions for a
+collective relation on supplied fine support, not physical spatial binding or
+the origin of that support. A sustained common pulse is not required by this
+criterion. Autonomous coarse closure and transitions to another winding
+identity remain separate obligations.
 Completed collective-state and contact results retain their original hypotheses.
 The target is an effective-constituent mechanism, not yet a spin or particle
 identification.

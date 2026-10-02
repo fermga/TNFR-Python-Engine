@@ -2,8 +2,8 @@
 
 Emission structural operator (AL) - Foundational activation of nodal resonance.
 
-**Physics**: See AGENTS.md § Emission
-**Grammar**: UNIFIED_GRAMMAR_RULES.md
+**Operator contract**: See theory/STRUCTURAL_OPERATORS.md
+**Grammar**: theory/UNIFIED_GRAMMAR_RULES.md
 """  # flake8: noqa
 
 from __future__ import annotations

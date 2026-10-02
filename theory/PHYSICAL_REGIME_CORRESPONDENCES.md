@@ -2,7 +2,7 @@
 
 **Status**: Technical reference
 **Version source**: [pyproject.toml](../pyproject.toml)
-**Reviewed**: 2026-09-26
+**Reviewed**: 2026-09-27
 
 ---
 
@@ -22,6 +22,29 @@ cards, reuse and evidence boundaries. The
 [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#physical-atlas-selection-and-dependencies)
 alone selects work and its order. The atlas does not replace the generative
 objective or establish that physical entities emerge from TNFR.
+
+<a id="vacuum-and-substrate-scope"></a>
+### Vacuum, ether and a relational substrate
+
+An underlying structure is a broad hypothesis; the historical luminiferous
+ether was a more specific proposed medium for light. Einstein's
+[1905 formulation](https://sites.pitt.edu/~jdnorton/teaching/HPS_0410/chapters/origins_pathway/On-the_electrodynamics/index.html)
+explicitly dispenses with that medium and an absolutely stationary space.
+This is not a mathematical exclusion of every possible relational ontology,
+nor evidence in favor of a TNFR substrate. Calling the latter "ether" would
+not supply light propagation, a physical clock, a preferred-frame prediction
+or compatibility with observed electrodynamics.
+
+TNFR currently identifies neither its fine nodes nor zero structural pressure
+with a physical vacuum. Its [substrate admission](FUNDAMENTAL_THEORY.md#environment-substrate-and-pressure)
+distinguishes an empty domain, a quiescent but responsive background, channel
+cancellation and an unobserved environment. The
+[native pressure-state counterexample](nodal/JOINT_PARAMETER_RESPONSE.md#pressure-state-closure)
+tests informational sufficiency within one supplied nodal law, not vacuum
+physics. A proposed physical identification must first specify the background
+state, inherited observables, clock and response; any comparison then follows
+the same independent terrestrial P1-P5 protocol. No new empirical campaign
+or imported vacuum dynamics is admitted by this terminology.
 
 ### Verification Status
 
@@ -115,6 +138,136 @@ output signal, clock and prediction; sonifying telemetry does not validate
 the dynamics. These are supporting prompts for the sole research queue,
 not two new experimental programmes or a reason to select pleasing results.
 
+<a id="physical-binding-and-interaction"></a>
+#### Binding: a stable relation is not the origin of interaction
+
+Three laboratory examples distinguish formation of a bound configuration from
+creation of a previously nonexistent fundamental interaction. They supply
+mechanism comparisons, not admitted TNFR reductions or additional task queues.
+
+| Observed phenomenon | Mechanism and supplied conditions | Useful TNFR question |
+| --- | --- | --- |
+| [Single NaCs molecule assembled from two trapped atoms](https://arxiv.org/abs/1804.04752) | Two separately trapped atoms are brought together; optical excitation produces an excited molecular state. Atomic structure, electromagnetic interaction and laser preparation are inputs. | Can the declared dynamics form a joint state, and what interaction and preparation make that transition possible? Phase agreement alone is not a molecular binding law. |
+| [Optical binding of dielectric microspheres](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.63.1233) | An applied optical field induces separation-dependent forces with alternating sign and experimentally observed bound configurations. The illuminating field and particles already exist. | Can a retained mediator produce a restoring relative geometry, including configurations that do not bind? A stable relative configuration need not be a newly created primitive edge. |
+| [Orbiting pairs of walking droplets](https://journals.aps.org/prfluids/abstract/10.1103/PhysRevFluids.2.053601) | A vertically driven liquid bath mediates wave interactions. Spatial wave damping and adaptation of impact phase affect orbital stability. The bath, droplets and driving are supplied. | Can phase, internal deformation and retained history predict capture or loss of a collective state, with the driving and dissipation accounted for? |
+
+The droplet mechanism is particularly close to the question about rhythm and
+geometry: [controlled changes of impact phase](https://journals.aps.org/prfluids/abstract/10.1103/8z1k-c144)
+also rearrange bound droplet lattices. This is evidence for the reported fluid
+system, not for a primitive TNFR phase or the emergence of matter. Its external
+vibration must not be silently identified with an internally derived pulse.
+
+For these comparisons, keep four obligations separate: the channel that lets
+components influence each other; an admitted joint state; a dynamical route
+into it; and its response to perturbations or separation. A favorable final
+state alone supplies neither a capture trajectory nor its timing. Quantum
+molecular binding, driven optical organization and dissipative fluid orbits
+also need not share the same energy function or constitute one mechanism.
+
+TNFR's positive form/phase storage is not an identified chemical binding
+energy. Adding a negative edge reward to make attraction occur would be a new
+constitutive premise, not a derivation from these experiments. The
+[connection-mechanism audit](nodal/RELATIONAL_PATTERN_COMPOSITION.md#connection-mechanisms-and-mediators)
+instead reuses native memory, support work and joint reset accounting to
+separate effective interaction, reinforcement and primitive support birth.
+Explaining known binding as a later consequence of a more primitive theory is
+a legitimate research objective; these analogies do not establish that such
+a theory exists or that its microscopic mechanisms must be identical.
+
+<a id="magnetic-binding-comparison"></a>
+#### Magnetic binding: orientation is a test, not an identification
+
+Magnetic interactions can organize matter before permanent contact. In
+[field-induced colloidal assembly](https://www.nist.gov/publications/field-induced-formation-linear-mesoscopic-polymer-chains-ferromagnetic-nanoparticles),
+dipolar attraction organizes coated cobalt particles into chains; a separate
+process fixes those chains permanently. Experiments on
+[magnetic Janus rods](https://www.nature.com/articles/ncomms2520) also show how
+particle shape and permanent dipoles affect the assembled geometry. These
+results concern existing matter and magnetic interactions, not their origin.
+
+A magnetic dipole comparison requires an orientation-sensitive observable and
+response. The [dipole energy and torque](https://ocw.mit.edu/courses/8-07-electromagnetism-ii-fall-2012/4c8c6cd312d191f598cde03893a5f614_MIT8_07F12_ln11.pdf)
+depend on the dipole moment and the local magnetic field; a scalar attractive
+response or phase agreement alone does not identify that mechanism. A physical
+bridge must independently specify the spatial orientation, field/response,
+units and applicable regime. Magnetic assembly is also not a general account
+of chemical bonding. No magnetic force or dipole law is imported into TNFR
+by this comparison.
+
+The current intermediary model retains phase geometry, signed memory and
+joint recovery, but its [single-port reflection symmetry](nodal/RELATIONAL_PATTERN_MEMORY.md#mediator-orientation-scope)
+makes the receiver insensitive to a reflected donor winding for the matched
+preparations. It supplies no observable magnetic polarity in that experiment.
+The existing [gauge readout](GAUGE_SYMMETRY_AND_UNIFICATION.md#23-cycle-closure-residual)
+is an exact vertex-phase difference whose wrapped cycle sum vanishes; it is
+not an independent magnetic flux. Likewise the legacy
+[chirality contraction](EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md#31-chirality-chi)
+is a diagnostic, not a derived magnetic moment.
+
+The useful supporting question is whether a justified nodal geometry and
+mediator can produce a reproducible orientation-sensitive interaction, and
+only then whether its law matches a specified magnetic regime. This is a
+future correspondence obligation within the existing programme, not a new
+particle/magnetism campaign or evidence of a pre-material origin.
+
+<a id="vibrational-organization-and-binding"></a>
+#### Vibrational organization and effective binding
+
+A dynamically maintained relation can be an effective bond; it need not be
+a permanent material connector. The relevant distinction is between response
+to a shared drive and interaction mediated by the driven environment.
+
+In ordinary Chladni experiments, grains reveal a vibrating plate's or
+membrane's mode geometry by accumulating near vibration nodes. A
+[measured space-dependent diffusion model](https://doi.org/10.1103/PhysRevResearch.7.L032001)
+explains accumulation through lower grain mobility in those regions. This
+is a tested mechanism in the reported regime, not a universal law for all
+particle sizes, media and excitation amplitudes. The resulting pattern alone
+does not establish mutual binding between grains.
+
+There are also actual wave-mediated bonds. In
+[acoustically levitated lock-and-key grains](https://doi.org/10.1103/PhysRevResearch.5.013116),
+secondary sound scattering creates shape-dependent attractive interactions
+and selective assembly. A separate experiment
+[measures interparticle scattering forces and collective deformation](https://arxiv.org/abs/2406.18710).
+Thus common vibrational organization and binding can coexist in one physical
+system, while requiring distinct causal evidence. These experiments supply
+matter, an acoustic medium and external driving; they do not derive them.
+
+For TNFR, reuse the modal scope below and the
+[derived mediator memory](nodal/RELATIONAL_PATTERN_MEMORY.md#mediated-pattern-interaction).
+The useful control holds the external preparation fixed and perturbs one
+region: does the other's response depend on that perturbation through the
+mediator, and is a declared relative configuration restored? Shared motion
+alone does not establish that dependence; dependence alone does not prove
+capture or binding. Current supplied-support mediation establishes an
+interaction channel, not spatial acoustic forces or spontaneous support.
+This comparison informs the existing work package without importing a sound
+wave equation or reopening a separate empirical campaign.
+
+<a id="collective-flocking-comparison"></a>
+#### Flocking: maintained organization with changing neighbours
+
+Starling flocks provide a comparison for collective coherence maintained by
+active responses. A
+[three-dimensional field study](https://doi.org/10.1073/pnas.0711437105)
+inferred an interaction neighbourhood of roughly six to seven nearest birds,
+across the observed flock densities. This is a domain-specific empirical
+finding, not a universal neighbour count or a TNFR support law. Measurements
+of [collective turns](https://doi.org/10.1038/nphys3035) found propagating
+direction changes with little attenuation and motivated a model including
+behavioural inertia, rather than purely diffusive information transport.
+
+The reusable question is how local interaction, response time and changing
+neighbourhoods maintain a collective organization through deformation.
+Coherence need not require a rigid outline or permanently identical edges.
+The birds supply propulsion and sensory responses; a shared pattern does not
+identify magnetic or acoustic binding, nor does it equate flight heading or
+wingbeat with the primitive TNFR phase. A TNFR reduction would have to justify
+its state, support updates and propagation law and then predict a reserved
+collective response. The structural analogy is a supporting comparison, not
+evidence that these systems share one microscopic law.
+
 #### First card: derived and supplied phase dynamics
 
 The reference comparison is a declared Kuramoto-type law
@@ -149,6 +302,7 @@ not sustained oscillators, a many-body threshold or primitive-phase identity.
 | Derived form phase | Regional contrasts observed from the fine diffusion generator; [existing controls](../tests/physics/test_coupled_directed_form_phase.py) | Exact conditional amplitude/phase reduction; the two observed phases close without amplitude information only on restricted invariant preparations. |
 | Supplied sine evolution | [`propose_u3_gated_phase_step`](../src/tnfr/dynamics/phase_evolution.py); [P2 locking](FORCED_SUPPORT_BALANCE.md#26-conditional-phase-locking-and-form-restoration-on-fixed-p2), [K3 reduction](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#joint-evolving-phaseform-reduction-on-fixed-k3) | Capacity-as-angular-rate, gain, admitted-neighbor averaging and U3 gate are supplied premises; not unrestricted Kuramoto. |
 | Native phase coordination | [Per-call circular-mean relaxation](FORCED_SUPPORT_BALANCE.md#34-native-runtime-admission-uses-relaxation-not-the-supplied-sine-clock) | Different execution law; it has no supplied physical `dt` or free angular advance. |
+| Conditional joint form/phase exchange | [Native pulse scope](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-pulse-scope) and [precontact locking](nodal/RELATIONAL_PATTERN_COMPOSITION.md#precontact-rhythm-and-locking) | Geometry-dependent damped modes and a reversible periodic boundary are properties of the stated law. Matching rhythms does not derive an edge, and a modal graph-wave spectrum is not an observed nodal pulse. |
 | Phase contribution to EPI pressure | Arg of a neighbor resultant, through [configured pressure](NODAL_PARAMETER_FOUNDATIONS.md#21-the-implemented-pressure-is-a-specified-relational-map) | Not the sine phase row or an electrical current. The [existing Arg/current discriminator](nodal/PRESSURE_CONSTITUTIVE_SCOPE.md) must not be repeated as a new discovery. |
 | Named UM/RA events and cycle readouts | [Operator contracts](STRUCTURAL_OPERATORS.md) and [winding certificates](../src/tnfr/physics/winding_certificates.py) | U3 compatibility is admission; RA primarily blends EPI. A name or gate does not select an oscillator law. |
 
@@ -206,6 +360,49 @@ The relevant full generator/Jacobian and observation determine relaxation in
 other models. A finite plot or fitted power law does not establish universality;
 the [critical-phenomena reference](https://journals.aps.org/rmp/abstract/10.1103/RevModPhys.71.S358)
 provides physical context, not a TNFR bridge.
+
+**Coupled form-phase relaxation and underdamping:** The
+[relational spectral owner](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#5-a-prospective-spectral-discriminator)
+already derives the consensus tangent of the opt-in two-channel law. For common
+positive capacity its mode block is
+`nu_f*lambda_k*[[-e,-w/pi],[w/(beta*pi),0]]`; P2 has `lambda_k=2`.
+For `e>0`, its nonzero-mode poles are negative real, repeated, or a damped
+complex pair according to the sign of `e^2-4*w^2/(beta*pi^2)`. At `e=0` the
+nonzero poles are purely imaginary, not damped. These statements concern the
+local derivative of the conditional phase law, not the full operator runtime.
+
+The [coefficient audit](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#coefficient-synergy-audit)
+connects this classification to units, capacity composition and
+`chi=beta*(e/w)^2`. The numeric consensus boundary `4/pi^2` uses the chosen
+phase-source normalization; it is not a universal physical constant. A uniform
+cycle twist instead has boundary `chi*cos(kappa)=4/pi^2`. General phase
+geometries require their actual metric and Hessian. The same default
+coefficients give real poles at consensus and complex poles on winding-one C5.
+
+Pole class is not a monotonicity test on a measured signal. Even the overdamped
+P2 tangent can overshoot, and mixtures of pure-diffusion modes can be
+nonmonotone at one node. A reversible scalar-diffusion model does have only
+real poles, but a physical comparison needs the actual observation and an
+equally informed alternative. Damped modes alone neither select TNFR nor
+establish a physical phase transition.
+
+**Realizability and calibration (P1-P3).** No independent physical bridge for
+this candidate is admitted here. Similarity to a two-dimensional oscillator
+does not establish the same nonlinear law, spatial structure or instrument
+dictionary; not every amplitude-phase system has this spectrum. Conversely,
+no absence theorem for physical realizations or quantitative tests has been
+proved. The atlas permits either exact reduction or a controlled approximation
+with a declared error budget.
+
+The [same-mode pole identity](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#coefficient-memory-identification)
+can identify chi when both rates are observable and excited; a single decay or
+unresolved modal mixture need not suffice. The
+[calibration contract](research/FIVE_STAGE_EXECUTION_PLAN.md#variable-definition-identification-and-evolution)
+permits fitting identifiable combinations on separate data. Freeze that model,
+observation, clock and uncertainties before evaluating reserved responses.
+Estimating a coefficient is neither deriving its universal value nor evidence
+against the possibility of later quantitative testing. The missing bridge
+remains an admission obligation, not a declaration that the paradigm is exhausted.
 
 **Discrete winding:** on a declared cycle, the wrapped edge sum divided by
 `2*pi` is invariant along continuous trajectories that avoid antipodal edges.

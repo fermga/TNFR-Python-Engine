@@ -16,8 +16,12 @@ research campaign, and a filename containing `emergent` proves no emergence.
 | Does a held source retain information absent from regional contrast/rate? | [Source-relative response](source_relative_form_response.py) | [Derived form](../theory/nodal/DERIVED_FORM_PHASE.md#source-relative-future-response); supplied affine law and zero-source ablation |
 | How do supplied joint form/phase laws differ? | [Constitutive probes](phase_form_exchange_comparison.py), [cotangent C8](cotangent_phase_exchange.py) | [Relational exchange](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#finite-modal-exchange-discriminator), [cotangent scope](../theory/TNFR_VARIATIONAL_PRINCIPLE.md#cotangent-c8-finite-response); probes and trajectories are distinct |
 | How does capacity change the response? | [Capacity producer](relational_capacity_response.py), [record audit](relational_capacity_audit.py) | [Capacity response](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#finite-capacity-intervention-response); the audit does not rerun trajectories |
+| Can a prepared temporal readout identify chi with bounded error? | [P2 acquisition](relational_coefficient_acquisition.py), [read-only audit](../src/tnfr/research/relational_acquisition.py) | [Temporal admission](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#coefficient-temporal-acquisition); known-source software control, prior-derived nonlinear bounds and native Euler defects, not blind physical calibration |
 | Does a prepared pattern recover or transmit deformation? | [Local recovery](relational_local_recovery.py), [regional interaction](relational_region_interaction.py) | [Joint-law owner](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md); supplied support and reference geometry |
 | Which observations close, and what hidden state carries memory? | [Local composition](relational_local_composition.py), [memory coefficients](relational_memory_prediction.py), [reserved response](relational_memory_response.py) | [Composition](../theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md), [memory](../theory/nodal/RELATIONAL_PATTERN_MEMORY.md); fixed rational probes and finite/continuous error have separate scopes |
+| Does an intermediary transmit a capacity-dependent response? | [Mediated response](relational_mediation_response.py) | [Finite mediator protocol](../theory/nodal/RELATIONAL_PATTERN_MEMORY.md#finite-mediated-response); shared tangent memory versus omitted or instantaneous memory, with a frozen-capacity control |
+| Does a return path distinguish regional orientations? | [Static return geometry](relational_return_geometry.py) | [Equilibrium admission](../theory/nodal/RELATIONAL_PATTERN_MEMORY.md#return-path-equilibrium); exact cycle reconstruction, certified scalar root and native residuals, with no trajectory or event |
+| Does the native law have a causally shared oscillatory mode? | [Static collective pulse](relational_collective_pulse.py) | [Pulse admission](../theory/nodal/RELATIONAL_PATTERN_MEMORY.md#shared-collective-pulse); ideal trace-sign certificate, native tangent poles/residues and no-communication control, without a sustained-pulse claim |
 | Does a finite trajectory change sector or enter a sufficient basin? | [Formation response](relational_formation_response.py), [capture response](relational_capture_response.py), [endpoint audit](relational_capture_audit.py) | [Capture scope](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-upper-corner-response); endpoint evidence is not a whole-path error bound |
 | Is an ideal continuous transit enclosed rigorously? | [Transit proof](relational_transit_proof.py) | [Validated transit](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-validated-transit); also zero-form and reversed-form controls, with their own frozen protocols |
 | What holds for directed transport? | [Dynamics](directed_nonnormal_dynamics.py), [U2 metrics](directed_u2_metrics.py), [transients](directed_transient_u2.py), [time](directed_structural_time.py), [capacity boundary](heterogeneous_vf_boundary.py) | [Directed transport](../theory/TNFR_DIRECTED_NONNORMAL_DYNAMICS.md); conditional matrix/metric comparisons |
@@ -106,10 +110,12 @@ same command and path without `--prepare`:
 | `source_relative_form_response` | Held-source prediction and ablation |
 | `phase_form_exchange_comparison` | Prepared constitutive probes, not a trajectory |
 | `relational_capacity_response` | Capacity intervention |
+| `relational_coefficient_acquisition` | One known-source P2 acquisition; full retained state/error chain and source archive |
 | `relational_local_recovery` | Prepared local recovery |
 | `relational_region_interaction` | Transmitted regional response |
 | `relational_formation_response`, `relational_capture_response` | Finite sector/endpoint responses |
 | `relational_memory_response` | Matched-grid memory prediction and full-engine comparison |
+| `relational_mediation_response` | Matched-grid mediator-capacity intervention; retained memory versus instantaneous and omitted-memory controls |
 | `relational_transit_proof` | Continuous proof audit; `--zero-form` and `--reverse-form` are mutually exclusive controls |
 
 For example, use a fresh path for a current-source regression:
@@ -137,6 +143,24 @@ For every new numerical claim, retain source/configuration, input construction,
 seed, backend/precision, law or operator sequence, raw artifact and provenance.
 Separate calibration from evaluation and disclose supplied labels or factors.
 Finite measurements establish their measured scope, not universal physical laws.
+
+### Read-only temporal-acquisition audit
+
+Inspect the existing P2 response without regenerating it:
+
+```bash
+python -m tnfr.research.relational_acquisition artifacts/research/relational_coefficient_acquisition/result.json
+```
+
+This command reads the sibling protocol and archive, then reconstructs saved
+contrast/error evidence through the [shared auditor](../src/tnfr/research/relational_acquisition.py).
+It has no prepare/evaluate mode and writes no artifacts. Exit 0 means record
+consistency, **not** that the experiment passed; `recorded_passed` and
+`reconstructed_passed` retain the original verdict separately. Exit 1 denotes
+inconsistent evidence and 2 missing/unavailable files. Local artifacts may be
+absent after cloning; their absence is not permission to replay the producer.
+The [contract](../docs/contracts/RELATIONAL_DYNAMICS.md#relational-acquisition-audit)
+owns admission, work limits and the authentication boundary.
 
 ### Multichannel observation records
 

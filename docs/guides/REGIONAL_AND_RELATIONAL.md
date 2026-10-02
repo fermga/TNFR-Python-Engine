@@ -1,6 +1,7 @@
 # Regional and relational SDK workflows
 
-This guide uses shared engine owners through `Network`. It complements the
+This guide uses shared engine owners through `Network` and module-level
+observers. It complements the
 [CLI and SDK introduction](../CLI_AND_SDK.md); these Python routes are not
 additional CLI study modes. Supplied partitions, models, references and support
 are inputs, not evidence of spontaneous NFR formation.
@@ -9,10 +10,13 @@ are inputs, not evidence of spontaneous NFR formation.
 | --- | --- | --- |
 | Observe stored form and its rate | `regional_form`, `source_relative_form` | [Form geometry and closure](../../theory/nodal/DERIVED_FORM_PHASE.md) |
 | Evaluate or advance a declared joint law | `relational_exchange`, `step_relational` | [Relational execution](../contracts/RELATIONAL_DYNAMICS.md#conditional-relational-execution) |
+| Differentiate the joint law at uniform form | `relational_uniform_tangent` | [Tangent contract](../contracts/RELATIONAL_DYNAMICS.md#uniform-form-tangent-observation); detached derivative, not an equilibrium or pulse certificate |
 | Observe a prepared region | `relational_pattern` | [Pattern report](../contracts/RELATIONAL_DYNAMICS.md#prepared-relational-pattern-observations) |
 | Compare a supplied bridge | `relational_attachment` | [Attachment](../contracts/RELATIONAL_DYNAMICS.md#relational-attachment-observation) |
 | Compare a supplied bridge relocation | `relational_relocation` | [Relocation](../contracts/RELATIONAL_DYNAMICS.md#relational-relocation-observation) |
 | Test an endpoint basin or a continuous transit | Capture methods below | [Capture scopes](../contracts/RELATIONAL_DYNAMICS.md#conditional-relational-capture) |
+| Bound a prepared coefficient response | Jet/sample functions below, not `Network` methods | [Coefficient uncertainty](../contracts/RELATIONAL_DYNAMICS.md#relational-coefficient-samples) |
+| Audit a retained P2 acquisition | `tnfr.research.relational_acquisition` | [Read-only record audit](../contracts/RELATIONAL_DYNAMICS.md#relational-acquisition-audit) |
 
 ## Observe regional form and its nodal response
 
@@ -64,6 +68,88 @@ requires a different rate calculation. The
 [source-relative owner](../../theory/nodal/DERIVED_FORM_PHASE.md#source-relative-engine-integration)
 defines exact scaling and reconstruction scope; this flag does not identify
 primitive phase/capacity or justify the source physically.
+
+## Bound a prepared coefficient response
+
+These graph-independent functions apply the
+[prepared-mode identification theorem](../../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#prepared-coefficient-identification).
+They do not infer phase preparation, modal isolation, baseline/gain or an affine
+clock from a plausible scalar waveform. They identify a coefficient combination
+conditionally, not the correct nonlinear law or a physical constant.
+
+For independently declared initial value/rate/acceleration intervals:
+
+```python
+from tnfr.physics.relational_observations import bound_relational_coefficient_from_jet
+
+jet = bound_relational_coefficient_from_jet(
+    form_bounds=(1, 1), rate_bounds=(-3, -3), acceleration_bounds=(7, 7)
+)
+if jet.coefficient_bounds is None:
+    print(jet.unavailable_reasons)
+else:
+    print(jet.coefficient_bounds)  # Exact outward endpoints; not a precision verdict.
+```
+
+For samples at `0,h,2h`, supply independent sample-error and whole-window C3
+bounds. This next example is an **exact synthetic quadratic**
+`y(t)=1-3*t+7*t*t/2`, not an acquired TNFR trajectory. Zero error and zero third
+derivative are justified by that supplied polynomial, not inferred from three
+samples:
+
+```python
+from fractions import Fraction
+from tnfr.physics.relational_observations import bound_relational_coefficient_from_samples
+from tnfr.sdk import export_to_json, relational_report_to_dict
+
+samples = bound_relational_coefficient_from_samples(
+    (1, Fraction(423, 512), Fraction(87, 128)),
+    sample_step=Fraction(1, 16),
+    sample_error_bound=0,
+    third_derivative_bound=0,
+)
+assert samples.rate_estimate == -3
+assert samples.acceleration_estimate == 7
+if samples.jet.coefficient_bounds is None:
+    print(samples.jet.unavailable_reasons)
+else:
+    print(samples.jet.coefficient_bounds)
+export_to_json(relational_report_to_dict(samples), "coefficient-samples.json")
+```
+
+Inspect the nested `jet`, and keep an independently frozen useful-width policy
+separate from availability. Actual numerical/acquired samples require their own
+error, timing and regularity evidence. The
+[jet](../contracts/RELATIONAL_DYNAMICS.md#relational-coefficient-jet) and
+[sample contracts](../contracts/RELATIONAL_DYNAMICS.md#relational-coefficient-samples)
+own admission and report fields; the
+[known-source P2 control](../../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#coefficient-temporal-acquisition)
+supplies one specific nonlinear/numerical budget, not a general measurement
+model. There is no corresponding `tnfr network` execution mode.
+
+### Audit saved acquisition evidence without replay
+
+```python
+from tnfr.research.relational_acquisition import audit_relational_coefficient_acquisition
+
+audit = audit_relational_coefficient_acquisition(
+    "artifacts/research/relational_coefficient_acquisition/result.json"
+)
+if audit.consistent:
+    print(audit.completed_steps, audit.recorded_passed, audit.reconstructed_passed)
+else:
+    print(audit.status, audit.unavailable_reasons)
+```
+
+The response, sibling protocol and source archive must be retained together.
+Missing local files return `unavailable`; conflicting evidence returns
+`inconsistent`. A consistent failed acquisition remains failed. The audit reads
+saved fields and reconstructs their error chain without invoking the producer,
+evolving a graph or rewriting the files. It does not authenticate acquisition
+chronology or admit a physical model. The
+[audit contract](../contracts/RELATIONAL_DYNAMICS.md#relational-acquisition-audit)
+and [instrument guide](../../benchmarks/README.md#read-only-temporal-acquisition-audit)
+own the supported record and command boundary.
 
 ## Execute the conditional relational model
 
@@ -226,6 +312,43 @@ extraction; zero work also satisfies the additional passivity premise.
 This static comparison does not execute the exchange, choose its time or
 certify recovery of a pattern. The conditional two-C5 result has separate
 theorem hypotheses; this general graph example does not inherit them.
+
+### Compare a joint state and support reset
+
+Unlike a frozen-state attachment, a complete action can change form or phase
+while adding a link. Compare the actual stored endpoints through one owner:
+
+```python
+from fractions import Fraction
+import networkx as nx
+from tnfr.sdk import Network, relational_report_to_dict
+
+before_graph = nx.Graph(((0, 1), (2, 3)))
+for node, form in enumerate((0.75, 0.25, 0.25, 0.75)):
+    before_graph.nodes[node].update(
+        EPI=form, theta=0.0, nu_f=1.0, delta_nfr=0.0
+    )
+after_graph = before_graph.copy()
+for node, form in enumerate((0.625, 0.375, 0.375, 0.625)):
+    after_graph.nodes[node]["EPI"] = form
+after_graph.add_edge(0, 2, weight=0.5)
+reset = Network(before_graph).relational_reset(
+    Network(after_graph), storage_scale=1.0
+)
+assert reset.form_state_change == Fraction(-3, 16)
+assert reset.form_support_change == Fraction(1, 64)
+assert reset.storage_change == Fraction(-11, 64)
+assert reset.identity_residual == 0
+payload = relational_report_to_dict(reset)
+```
+
+These are supplied snapshots, not execution of an authenticated operator or
+an autonomous connection. The positive edge cost is offset by form change
+in the complete comparison. The report does not credit earlier dissipation
+as stored work or prove separate passivity of intermediate events. Nonunit
+support is admissible to this observation but rejects the current unit-support
+relational executor. Real UM and RA-then-UM controls are linked from the
+[reset contract](../contracts/RELATIONAL_DYNAMICS.md#relational-reset-observation).
 
 ### Check a protected relational basin
 

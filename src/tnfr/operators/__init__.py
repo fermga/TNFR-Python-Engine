@@ -1715,7 +1715,7 @@ def _op_NAV(node: NodeProtocol, gf: GlyphFactors) -> None:  # NAV — Transition
     >>> node = MockNode(-0.6, 0.4)
     >>> _op_NAV(node, {"NAV_eta": 0.5, "NAV_jitter": 0.0})
     >>> round(node.dnfr, 2)
-    -0.1
+    -0.5
     """
     dnfr = _finite_operator_scalar(node.dnfr, "NAV DeltaNFR state")
     vf = _finite_operator_scalar(node.vf, "NAV nu_f state")

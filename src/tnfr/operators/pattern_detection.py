@@ -188,8 +188,9 @@ class UnifiedPatternDetector:
     def detect_initiation_patterns(self, sequence: Sequence[str]) -> list[PatternMatch]:
         """Detect U1a-based initiation patterns.
 
-        Patterns that use GENERATORS (emission, transition, recursivity) to
-        create structure from null/dormant states.
+        Recognize generator positions in the supplied operator sequence.
+        No nodal state is inspected, so a match does not establish zero EPI,
+        successful execution or creation of a substrate.
 
         Parameters
         ----------
@@ -203,7 +204,7 @@ class UnifiedPatternDetector:
         """
         patterns = []
 
-        # Cold start: Begins with AL (Emission) from EPI=0
+        # Legacy cold-start label: AL begins the word; initial EPI is unknown.
         if sequence and sequence[0] == EMISSION:
             patterns.append(
                 PatternMatch(
@@ -212,7 +213,9 @@ class UnifiedPatternDetector:
                     end_idx=0,
                     confidence=1.0,
                     grammar_rule="U1a",
-                    description="Emission from vacuum (EPI=0 → active structure)",
+                    description=(
+                        "Sequence begins with Emission; initial nodal state is not inspected"
+                    ),
                 )
             )
 

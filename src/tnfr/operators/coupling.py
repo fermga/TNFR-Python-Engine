@@ -3,7 +3,8 @@
 Purpose: synchronize phases; establish structural links; enable resonance.
 Physics: aligns theta across neighbors; may reduce dnfr locally.
 Grammar: coupling always requires phase compatibility (U3).
-Effects: phase spread narrows; vf may align; epi untouched.
+Effects: configured circular phase alignment; vf may align; epi untouched.
+Functional-link proposals may add compatible nonneighbors; invocation is supplied.
 Preconditions: active epi & vf; mandatory phase gate; connectivity.
 Typical: AL->UM; UM->RA; UM->IL; EN->UM; UM->THOL.
 Avoid: UM with insufficient epi/vf or extreme phase mismatch.
@@ -19,7 +20,7 @@ from .definitions_base import Operator
 
 
 class Coupling(Operator):
-    """Synchronize phases; create/strengthen links; enable resonance.
+    """Apply circular phase alignment and optional new functional links.
 
     Invariants: preserves epi; adjusts theta; may align vf; can lower dnfr.
     Config: UM_MIN_EPI, UM_MIN_VF, UM_STRICT_PHASE_CHECK, UM_MAX_PHASE_DIFF.

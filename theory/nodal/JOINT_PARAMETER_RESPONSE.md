@@ -348,6 +348,93 @@ G3 plan records their ownership and keeps autonomous maintenance unresolved.
 Historical source-bound validation record:
 `artifacts/research/joint_geometry_admission_validation_2026_09_19.json`.
 
+<a id="pressure-state-closure"></a>
+### 10.6 Pressure as an observation or a sufficient state coordinate
+
+The previous controls distinguish possible completions and supplied changes.
+There is also a pressure-only closure obstruction within **one fixed complete
+law**. Use the [native relational exchange model](RELATIONAL_EXCHANGE_ADMISSION.md#1-state-inherited-geometry-and-the-independent-premise)
+on unit P2 with equal held capacity `nu>0`, effective pressure coefficients
+`e,w>0`, storage scale `beta>0`, and a lifted acute phase difference
+`abs(delta)<pi/2`. There are no inputs, events, clipping or support changes.
+With the two nodes numbered 1 and 2, write
+
+\[
+d=x_2-x_1,\qquad \delta=\theta_2-\theta_1,\qquad
+a=\frac w\pi,\qquad H(\delta)=\pi\operatorname{sinc}\delta>0,
+\qquad p=p_1=-p_2=ed+a\delta.
+\]
+
+Here `sinc(delta)=sin(delta)/delta`, extended by one at zero. The full law
+gives the exact relative-state equations
+
+\[
+\dot d=-2\nu p,\qquad
+\dot\delta=\frac{2\nu w d}{\beta H(\delta)},\qquad
+\dot p=-2e\nu p+\frac{\kappa d}{H(\delta)},\qquad
+\kappa=\frac{2\nu w^2}{\beta\pi}.
+\]
+
+Choose any nonzero acute `delta` and `d=-a*delta/e`. Both nodal pressures and
+both form rates then vanish, but
+
+\[
+\dot p=-\frac{2\nu w^3\delta}{\beta\pi^2eH(\delta)}\ne0.
+\]
+
+At consensus `d=delta=0`, the same pressure vector `(0,0)` has zero pressure
+rate and remains stationary. Therefore no autonomous first-order map of the
+instantaneous pressure vector alone can reproduce both states, even with
+support, capacity, coefficients and clock fixed. The difference comes from
+retained phase/form geometry, not an unspecified external phase velocity.
+The compensated state has positive joint storage
+`E=d^2/2+beta*(1-cos(delta))` and instantaneous loss
+`E_dot=-2*e*nu*d^2<0`: phase changes while form is instantaneously stationary.
+Zero net pressure is a cancellation of channels, not absence of structure.
+
+This does **not** exclude pressure coordinates. Keeping one additional
+relative coordinate gives an exact alternative chart:
+
+\[
+(d,\delta)\longleftrightarrow(p,d),\qquad
+\delta=\frac{p-ed}{a},\qquad
+\dot d=-2\nu p,\qquad
+\dot p=-2e\nu p+
+\frac{\kappa d}{H((p-ed)/a)}.
+\]
+
+The transformation is invertible on the admitted domain
+`abs((p-ed)/a)<pi/2`, since `a>0`. These are the existing equations in different
+coordinates, not a new pressure law or primitive variable. On this equal-
+capacity P2 the common form and lifted phase means are constant; retain their
+initial values too when reconstructing absolute nodal state. The two displayed
+coordinates describe only the relative state.
+
+Alternatively, eliminating the retained form difference gives exact pressure
+memory. Set
+
+\[
+d_p(t)=d(0)-2\nu\int_0^t p(s)\,ds.
+\]
+
+Substituting `d=d_p(t)` into the displayed pressure row produces a closed
+history-dependent equation on its admitted domain. The initial hidden value
+`d(0)` must remain supplied: `p(0)` cannot determine it. This is the same
+[hidden-state obligation](RELATIONAL_PATTERN_MEMORY.md#3-exact-hidden-memory-retains-its-initial-condition)
+as in the joint memory construction, here with an explicit one-coordinate
+elimination. It is not a memory-free pressure law, a claim that one hidden
+scalar suffices on arbitrary networks, or a reconstruction of pressure from
+an evaluated form derivative.
+
+The [substrate and scale distinction](../FUNDAMENTAL_THEORY.md#29-assumed-substrate-and-emergence-between-scales)
+still applies. A uniform form origin, pressure cancellation and an empty
+support are different statements. This calculation neither identifies a
+physical vacuum nor derives nodes, support or an external source from
+pressure alone. The [focused native controls](../../tests/physics/test_relational_pressure_state.py)
+check the cancellation and sufficient-coordinate identities against the
+shared evaluator, with represented arithmetic kept separate from this
+ideal continuous derivation.
+
 ## 11. Finite joint phase-capacity source compatibility
 
 The instantaneous condition in section 10.3 has a finite algebraic counterpart

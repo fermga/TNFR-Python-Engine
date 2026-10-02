@@ -119,16 +119,16 @@ def validate_resonance_strict(
 ) -> None:
     """Validate the configured strict policy for RA (Resonance).
 
-    According to TNFR theory, Resonance (RA - Resonancia) requires:
+    The selected Resonance admission policy checks:
 
-    1. **Coherent source**: EPI >= threshold (sufficient structure to propagate)
+    1. **Source form**: |EPI| >= the configured threshold
     2. **Network connectivity**: degree > 0 (edges for propagation)
     3. **Phase compatibility**: alignment with neighbors (synchronization)
-    4. **Controlled dissonance**: |ΔNFR| < threshold (stable for resonance)
-    5. **Sufficient νf**: νf > threshold (capacity for propagation dynamics)
+    4. **Stored pressure**: |ΔNFR| <= the configured threshold
+    5. **Capacity**: νf >= the configured threshold
 
     Example compositions; every step still requires live admission:
-    - **UM → RA**: Coupling establishes connections, then resonance propagates
+    - **UM → RA**: Admitted coupling can align neighbors before propagation
     - **AL → RA**: Emission activates source, then resonance broadcasts
     - **IL → RA**: Coherence stabilizes, then propagates stable form
 
@@ -203,7 +203,7 @@ def validate_resonance_strict(
     >>> validate_resonance_strict(G3, node3)  # doctest: +SKIP
     Traceback (most recent call last):
         ...
-    ValueError: RA requires network connectivity (node has no edges). Apply UM (Coupling) first.
+    ValueError: RA requires network connectivity (node has no edges). Supply an admissible attachment first; UM also requires an existing phase-compatible neighbor.
 
     See Also
     --------
@@ -240,14 +240,18 @@ def validate_resonance_strict(
         if not neighbors:
             raise TNFRValueError(
                 "RA requires network connectivity (node has no edges). "
-                "Apply UM (Coupling) first to establish resonant links.",
-                suggestion="Apply UM (Coupling) first to establish resonant links.",
+                "Supply an admissible attachment first; UM also requires an "
+                "existing phase-compatible neighbor.",
+                suggestion=(
+                    "Supply an admissible attachment; UM cannot start on an "
+                    "isolated target."
+                ),
             )
     elif not neighbors:
         # Node is isolated but require_coupling=False - issue warning
         warnings.warn(
-            f"Node {node} is isolated - RA will have no propagation effect. "
-            "Consider applying UM (Coupling) first.",
+            f"Node {node} is isolated - no neighbor field is available. "
+            "Supply an admissible attachment before invoking RA or UM on this target.",
             UserWarning,
             stacklevel=3,
         )
@@ -291,7 +295,8 @@ def validate_resonance_strict(
             warnings.warn(
                 f"RA phase misalignment: Δφ = {phase_diff:.2f} > "
                 f"{max_phase_diff:.2f}. "
-                "Consider applying UM (Coupling) first for better resonance.",
+                "UM can align an existing compatible neighborhood only if its "
+                "own live U3 gate and other preconditions are satisfied.",
                 UserWarning,
                 stacklevel=3,
             )
@@ -381,7 +386,8 @@ def diagnose_resonance_readiness(G: TNFRGraph, node: Any) -> dict[str, Any]:
     else:
         checks["network_connectivity"] = "failed"
         recommendations.append(
-            "Apply UM (Coupling) to establish network connections before RA"
+            "Supply an admissible attachment before RA; UM also requires an "
+            "existing phase-compatible neighbor"
         )
 
     # Check 3: Structural frequency
@@ -415,7 +421,7 @@ def diagnose_resonance_readiness(G: TNFRGraph, node: Any) -> dict[str, Any]:
         else:
             checks["phase_alignment"] = "warning"
             recommendations.append(
-                f"Consider applying UM (Coupling) to improve phase alignment "
+                "UM may improve alignment if its own live admission is satisfied "
                 f"(current: Δφ = {phase_diff:.2f}, optimal: <= {max_phase_diff:.2f})"
             )
     else:

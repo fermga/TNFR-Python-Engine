@@ -1092,7 +1092,7 @@ Structural triad: $\mathrm{EPI}(30) \approx 7.48$, $\nu_f(30) \approx 2.15$, $C_
 | **Optimized batch** | `applications/primality-test/tnfr_primality/optimized.py` | Caching, benchmarking, batch processing |
 | **Spectral factorization** | `applications/factorization-lab/tnfr_factorization/spectral_paley.py` | Paley-Jacobi spectral decoder |
 | **Factorization API** | `applications/factorization-lab/tnfr_factorization/api.py` | High-level `factorize()` function |
-| **Nodal-pulse foundation** | `src/tnfr/riemann/nodal_pulse.py` | Emergent prime-NFR nodal pulse ($\nu_f = \log n$; zeros as destructive interference) |
+| **Arithmetic pulse model** | `src/tnfr/riemann/nodal_pulse.py` | Finite spectral sums with assigned logarithmic frequencies; separate from native nodal dynamics or a derived NFR pulse |
 | **Prime-ladder Hamiltonian** | `src/tnfr/riemann/prime_ladder_hamiltonian.py` | Canonical $\nu_f$ prime-ladder (P14) |
 | **Canonical constants (repo)** | `src/tnfr/constants/canonical.py` | Repository-wide canonical constant definitions |
 
