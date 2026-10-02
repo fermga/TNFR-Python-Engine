@@ -29,24 +29,72 @@ does not establish its derivation from the identity.
 | [Relational exchange](nodal/RELATIONAL_EXCHANGE_ADMISSION.md) | Native-pressure-compatible reciprocal exchange, conditional recovery and capacity discrimination follow under explicit storage and local-capacity premises. |
 | [Validated formation and controls](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-validated-transit) | A supplied winding-zero preparation reaches a maintained positive twist; zero-form and reversed-form controls reach consensus. This is conditional pattern formation, not substrate creation or physical identification. |
 | [Composition](nodal/RELATIONAL_PATTERN_COMPOSITION.md) and [memory](nodal/RELATIONAL_PATTERN_MEMORY.md) | Lost internal information changes future regional response, and its derived feedback improves one frozen finite prediction. These results do not supply an autonomous coarse replacement. |
+| [Coefficient identification](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#prepared-coefficient-identification) and [bounded temporal acquisition](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#coefficient-temporal-acquisition) | A prepared response identifies chi conditionally; shared uncertainty propagation and one known-source software control do not select a universal coefficient or the nonlinear law. |
 
-The finite memory-approximation gate and the
-[one-bridge interface](nodal/RELATIONAL_PATTERN_COMPOSITION.md#one-bridge-interface-admission)
-are complete in their stated scopes. A supplied connection changes degree
-normalization and neighbor-resultant geometry even at equal endpoint state
-and zero event storage cost. Full internal state and sufficient port messages
-expose that effect without assuming an autonomous coarse node. The
-[support-event premise audit](nodal/RELATIONAL_PATTERN_COMPOSITION.md#support-event-premise-admission)
-establishes the remaining selection freedom even under additional zero-supply
-passivity. Pure additions then lie on an empty-interior endpoint-coincidence
-set; a continuous addition intensity on the open full-state domain is zero.
-Atomic edge exchange can instead have strict passive slack. An
-[identity-preserving relocation](nodal/RELATIONAL_PATTERN_COMPOSITION.md#identity-preserving-bridge-relocation)
-now shares an explicit recovery basin before and after one bridge change,
-on an open set of two-ring preparations. Reversing the change can retain
-recovery while failing passivity. The next bounded question is the remaining
-constitutive choice of candidate and event clock, before proposing any rule.
-The existing transmission result needs no repeat.
+**Mechanisms are reusable without being selected laws.** The
+[attachment interface](nodal/RELATIONAL_PATTERN_COMPOSITION.md#one-bridge-interface-admission),
+[passive relocation](nodal/RELATIONAL_PATTERN_COMPOSITION.md#identity-preserving-bridge-relocation)
+and [complete nodal reset](nodal/RELATIONAL_PATTERN_COMPOSITION.md#nodal-reorganization-and-contact)
+retain distinct frozen-state and joint-action budgets. Their shared observers
+do not select occurrence. The [choice/clock audit](nodal/RELATIONAL_PATTERN_COMPOSITION.md#support-law-choice-and-clock)
+and [operator map](STRUCTURAL_OPERATORS.md#operator-mechanism-and-activation-audit)
+explain why admissible actions and configured activation are separate.
+
+**A collective relation needs information and causal controls.** The
+[mediator response](nodal/RELATIONAL_PATTERN_MEMORY.md#finite-mediated-response)
+distinguishes retained memory from instantaneous elimination. A common geometry
+can recover without transmitting a donor change, so the
+[effective-link admission](nodal/RELATIONAL_PATTERN_COMPOSITION.md#effective-link-admission)
+requires both causal influence and restoration. The
+[return geometry](nodal/RELATIONAL_PATTERN_MEMORY.md#return-path-equilibrium)
+and [damped modes](nodal/RELATIONAL_PATTERN_MEMORY.md#shared-collective-pulse)
+retain their local, supplied-support scope; a visible or permanent pulse is not
+the definition of connection. [Fast reduction](nodal/RELATIONAL_PATTERN_MEMORY.md#fast-mediator-reduction),
+[series composition](nodal/RELATIONAL_PATTERN_MEMORY.md#two-mediator-composition)
+and [three-port interaction](nodal/RELATIONAL_PATTERN_MEMORY.md#three-port-collective-interaction)
+must carry inherited phase, normalization, hidden initialization and memory,
+not reapply a bare pair-edge recipe to the coarse state.
+
+**Nonselection directs the present method toward discrimination.** The
+[relation foundation](nodal/RELATION_FOUNDATIONS.md) admits conditional contact
+but leaves relation storage/kinetics unselected. The
+[coefficient audit](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#coefficient-synergy-audit)
+likewise leaves chi free under the reviewed balance, capacity, clock and
+variational premises. Its [memory/response relation](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#coefficient-memory-identification)
+and prepared identification make that freedom observable, not uniquely true.
+The bounded P2 acquisition closes a known-source software uncertainty check;
+it cannot supply truth-independent experimental error or distinguish all laws
+sharing the consensus jets. That is why the
+[single active gate](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+separates calibration from a nonconsensus, uncertainty-aware constitutive test.
+Primitive activation and physical identification remain open, not impossible.
+More transmission, winding-identity or birth-law sweeps do not replace the
+missing admission. The plan alone specifies their possible resumption.
+
+The [environment/substrate admission](FUNDAMENTAL_THEORY.md#environment-substrate-and-pressure)
+is part of this same mechanism question. A quiet or unobserved nodal background
+can mediate response; naming it a vacuum or ether does not determine its law.
+The [same-law P2 counterexample](nodal/JOINT_PARAMETER_RESPONSE.md#pressure-state-closure)
+shows why instantaneous pressure alone loses predictive information, while
+an exact pressure/form chart or its memory retains it. Earlier auxiliary
+substrate studies supplied field-space Hamiltonians or topology updates;
+they provide no missing native vacuum law. In particular,
+`be3a8d37:examples/08_emergent_geometry/125_node_is_the_emergent_substrate.py`
+interpreted extracted fields as substrate coordinates, and
+`29c1596d:examples/08_emergent_geometry/128_base_substrate_coemergence.py`
+alternated diffusion with a chosen EPI-based MST. Their maintained scope and
+the [archive](research/archive/README.md) retain useful comparisons without
+promoting those supplied constructions to substrate origin.
+
+The [pulse/locking admission](nodal/RELATIONAL_PATTERN_COMPOSITION.md#precontact-rhythm-and-locking)
+reuses the actual joint modes and storage balance. Oscillatory recovery,
+reversible periodic exchange and a permanent pulse at every NFR are different
+claims. Independent regions can remain exactly matched by preparation alone;
+matching instantaneous port phase/speed can also hide different accelerations.
+The supplied fine-bridge control distinguishes approaching port phases from
+initially separating regional means. Together with the existing joint recovery
+and reduction results, it informs collective-rhythm admission,
+without installing a synchronization score or auxiliary spectrum as a clock.
 
 A finite-lived structure can be informative. Eternal persistence, an
 unrestricted global basin, Hamiltonian form or creation from nothing is not
@@ -219,6 +267,35 @@ logarithmic frequencies or a graph wave do not establish a primordial pulse.
 The [regime comparisons](PHYSICAL_REGIME_CORRESPONDENCES.md) and
 [parameter foundations](NODAL_PARAMETER_FOUNDATIONS.md) own these boundaries.
 
+The pulse studies contain several different models. Reuse their calculations
+only after identifying which law actually generates their motion:
+
+| Study and owner | Supplied premise | Reusable result and limit |
+| --- | --- | --- |
+| [Graph-wave rhythm](../benchmarks/emergent_rhythm.py) | Fixed graph and the additional second-order law `q_ddot=-L_sym*q` | Modal frequencies, beats and observation dependence; no derivation of this wave law from the native joint flow |
+| [Hierarchical phase pulse](../benchmarks/emergent_fractal_pulse.py) | Constructed hierarchy and weighted sine phase flow | Linearized relaxation scales; nested order inequalities can hold statically and do not establish an autonomous oscillator |
+| [Ambient harmonic substrate](TNFR_VARIATIONAL_PRINCIPLE.md) | Assigned symplectic form and quadratic Hamiltonian on field coordinates | Conditional harmonic algebra; the graph-field image need not be invariant, as the P2 tangency obstruction shows |
+| [Arithmetic pulses](TNFR_ARITHMETIC_DYNAMICS.md) and [finite nodal sum](../src/tnfr/riemann/nodal_pulse.py) | Supplied arithmetic graph, or assigned logarithmic frequencies | Pointed moments and observability controls, or finite interference; neither selects native oscillation or support birth |
+| [Native collective pulse](nodal/RELATIONAL_PATTERN_MEMORY.md#shared-collective-pulse) | Declared relational pressure, phase law, held support and capacities | Conditional damped complex modes and causal participation; no maintained full-state cycle under the dissipative premises |
+
+Historical inspection also distinguishes configured operator sequences from
+these continuous laws: `9f506c59:src/tnfr/sdk/simple.py` observed threshold
+crossings during a supplied word, while
+`e6d5e731:benchmarks/emergent_rhythm.py` supplied a graph wave. The retired
+`a8f49c036d00cd81d6a84a3db6049537bdf8852f:benchmarks/emergent_atom_dynamics.py`
+explicitly added edges before comparing spectra. These Git sources remain
+recoverable through the [archive](research/archive/README.md); their labels
+do not supply a missing autonomous connection law.
+
+The useful synthesis is a
+[mediated restoring relation](nodal/RELATIONAL_PATTERN_COMPOSITION.md#mediated-restoring-geometry):
+existing phase-storage curvature gives a positive effective stiffness, while
+joint form/phase feedback supplies local recovery and hidden-state elimination
+retains memory. A stationary coherent geometry can have that restoring
+response without a perpetual pulse. Supplied fine support remains a premise;
+the [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+keeps that origin question distinct from conditions for effective-link formation.
+
 <a id="relational-capture-reuse-audit"></a>
 ### Relational capture and compositional reuse
 
@@ -294,11 +371,26 @@ Fixed edge count and the atomic event are declared premises. The reverse and
 neutral controls distinguish passivity, recovery and a supplied event.
 
 This removes a concrete identity/budget obstruction without deriving an
-occurrence law. The next admission concerns choice and clock on the full state,
-using symmetry and the existing event accounting. If those premises leave
-multiple laws, retain that freedom explicitly; do not add a ranking or event
-rate to the runtime under an emergent label. Repeated-switching stability is
-a separate question from the one-event recovery theorem.
+occurrence law. The completed full-state choice/clock audit retains that
+freedom explicitly: equivariant passive clocks can disagree in timing and
+candidate probabilities. The exact finite-action owner is reused through an
+event-incidence representation; the shared engine verifies both continuous
+rows under clock conversion. No ranking, timer or random law is added to the
+runtime. Repeated-switching stability remains separate from one-event recovery.
+
+Primitive rewiring is not required for the existing formation or interaction
+mechanisms. Studying complete nodal actions is nevertheless a distinct revision
+of the frozen-state event premise. It reuses phase/form coupling, actual
+operator stages and common storage accounting. The present UM score, candidate
+search and nonunit links do not inherit the selected relational law's symmetry
+or continuation theorem. A synchronization hypothesis must distinguish phase
+eligibility, sustained locking and event occurrence without assuming a future
+edge to explain its own origin. No new autonomous selector is installed.
+
+A donor-induced transient and a lasting receiver-identity change remain
+different outcomes for later work. Their recovery/domain controls and supplied
+preparation budgets remain valid; that deferred question is not another active
+campaign alongside the current coefficient/constitutive gate.
 
 ## 4. Source and implementation reuse ledger
 
@@ -311,7 +403,8 @@ entrypoint catalog. For model admission, the following reuse boundaries matter:
 | [Form geometry](../src/tnfr/physics/form_geometry.py) and [source-relative form](../src/tnfr/physics/source_relative_form.py) | Stored-rate projections and supplied partitions/sources; no authentication of a live complete law. |
 | [Pressure response](../src/tnfr/physics/phase_response.py) and [joint quotient](../src/tnfr/physics/joint_quotient.py) | Chain rules and counted support; supplied phase/capacity rows remain premises. |
 | [Linear observation](../src/tnfr/mathematics/linear_observation.py) and [affine memory](../src/tnfr/physics/epi_memory.py) | Exact invariant-row algebra for a supplied rational generator and its affine diffusion wrapper; preserve their sign conventions and admission limits. |
-| [Support transport](../src/tnfr/physics/support_transport.py) and [relational observations](../src/tnfr/physics/relational_observations.py) | Cut, source, signed-work and covariance accounting; distinguish divided mobility from undivided rates, especially at zero capacity. |
+| [Support transport](../src/tnfr/physics/support_transport.py) and [relational observations](../src/tnfr/physics/relational_observations.py) | Cut, source, signed-work, covariance and coefficient uncertainty; jet/sample bounds retain supplied preparation, affine timing and independent error budgets, rather than certifying them. |
+| [Retained acquisition audit](../src/tnfr/research/relational_acquisition.py) | Protocol/archive binding and complete saved error reconstruction without producer import, source replay or evolution; consistent records and original scientific decisions remain separate. |
 | [Capture](../src/tnfr/physics/relational_capture.py) and [transit](../src/tnfr/physics/relational_transit.py) | Current-state basin certificates, supplied interval sets and preceding validated paths are different evidence. |
 | [Quotient structure](../src/tnfr/physics/quotient_structure.py) and causal operator records | Support counts, observer resets and actual hybrid jumps; they do not select event occurrence. |
 

@@ -21,6 +21,7 @@ mathematical references can still be located. No proof is duplicated here.
 
 | Question | Detailed owner | Sections |
 | --- | --- | --- |
+| What is a connection, what vanishes when it is absent, and what must a birth law specify? | [Relation foundations](nodal/RELATION_FOUNDATIONS.md) | Support, conductance, metric and causal distinctions; zero-relation admission and remaining constitutive freedom |
 | Locality, covariance, phase-domain boundaries and the prospective pressure comparison. | [Pressure premises and constitutive response](nodal/PRESSURE_CONSTITUTIVE_SCOPE.md) | 4 |
 | Signed representation, pressure derivatives and finite phase/capacity compatibility. | [Joint form, phase and capacity response](nodal/JOINT_PARAMETER_RESPONSE.md) | 9–11 |
 | Fine-to-coarse form, inherited pressure and metric, tetrad reconstruction and changing support. | [Inherited form dynamics and observation](nodal/INHERITED_FORM_DYNAMICS.md) | 12–14 |
@@ -173,8 +174,8 @@ Neither helper establishes graph-wide relaxation or event occurrence.
 | Phase `theta` | Circle coordinate and wrapped neighbor separation; [phase response](../src/tnfr/physics/phase_response.py) | A common rotation is a symmetry of the regular difference/phasor formulas. Relative phase is independent of scalar EPI in the present representation. The nodal product does not imply `theta_dot=nu` or any synchronization law. |
 | Clock `t`, `dt` | Declared time coordinate and numerical increment; [integrator](../src/tnfr/dynamics/integrators.py), [directed structural time](../src/tnfr/physics/directed_diffusion.py) | Physical time, operator position, invocation count and history index are different. A step size alone supplies no stability guarantee. A changing clock rate transforms the capacity law too; synchronization need not be a monotone clock (section 3.1). |
 | Channel coefficients | `p=w_phi*g_phi+w_epi*g_epi+w_vf*g_vf+w_topo*g_topo`; [defaults](../src/tnfr/config/defaults_core.py) | Numeric sum one is a selected normalization, not physical dimensional analysis. Priority phase/EPI/capacity is configured. See section 3. |
-| Support `G` | Which nodes can be neighbors, including zero-conductance support edges | Phase and capacity support need not equal positive EPI transport support. Isolates, self-loops, multiple edges and directionality require explicit conventions. |
-| Conductance `W` | Nonnegative transport strength; [support transport](../src/tnfr/physics/support_transport.py) | Common positive rescaling leaves row-normalized EPI transport unchanged. Reciprocal conductance is an additional assumption, not a consequence of undirected support alone. |
+| Support `G` | Declared neighbor relation, including zero-conductance support edges; [relation foundations](nodal/RELATION_FOUNDATIONS.md) | Phase and capacity support need not equal positive EPI transport support. Isolates, self-loops, multiple edges and directionality require explicit conventions. Support availability, instantaneous response and emergent effective interaction are distinct. |
+| Conductance `W` | Nonnegative form-transport weight; [support transport](../src/tnfr/physics/support_transport.py) | Common positive rescaling leaves row-normalized EPI transport unchanged. It is therefore not an absolute interaction rate at held capacity. The [zero-relation boundary](nodal/RELATION_FOUNDATIONS.md#zero-relation-boundary) differs between a first neighbor and a new bridge between already active regions. |
 | Distance `ell`, kernel exponent | Structural path-distance read-out; [edge semantics](../src/tnfr/physics/_edge_semantics.py) | Explicit `length` wins; absent length, `weight` is a compatibility fallback, then unit length. Undirected distances can be a pseudometric; distinct-node zero distances are omitted from the potential and coherence fit. Parallel lengths combine by minimum; directed distances follow outgoing arcs and can be asymmetric. No equation here derives distance from conductance or selects inverse-square exponent 2 uniquely. |
 | Tetrad | Potential, phase gradient, phase curvature, coherence length; [fields](../src/tnfr/physics/fields.py) | Required complementary diagnostics, not a proved closed state or a four-dimensional complete basis. Section 5 states their different units and domains. |
 | Coherence `C`, Sense Index `Si` | Shared diagnostic conventions; [metrics common](../src/tnfr/metrics/common.py), [sense index](../src/tnfr/metrics/sense_index.py) | Normalized read-outs are not new dynamical laws. Their use as feedback is a separately configured controller, including where an old runtime already does so. |
@@ -414,6 +415,30 @@ conversion is `theta_dot=2*pi*nu`. Neither choice follows from
 `xdot=nu*p`; their relationship requires a stated constitutive premise.
 Writing angles in radians gives the exact pi bound, not a universal ceiling
 on a rate or a unique coefficient for other channels.
+
+<a id="dimensionless-relaxation-invariant"></a>
+
+**A dimensionless invariant of the selected two-channel family.** With joint
+storage `E_D+beta*V_phi`, form storage has units `X^2` and phase cost is
+dimensionless, hence `[beta]=X^2`. The
+[coefficient audit](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#coefficient-synergy-audit)
+derives `chi=beta*(e/w)^2`, invariant under the declared form/time changes,
+including compensated engine weight normalization. This does not reduce the
+full four-channel pressure or all preparation/geometry data to one number.
+
+At uniform form and phase consensus, the selected law has real, critical or
+complex nonzero-mode poles separated by `chi=4/pi^2`. This is conditional on
+the phase-row and `Arg/pi` normalization, not a universal physical constant
+forced by the circle alone. Real poles do not imply monotone observations;
+nonconsensus phase geometry can change the boundary. Capacity separability,
+storage balance, clock covariance and complete synchronized replicas leave
+different chi values admissible.
+
+The same owner's [memory and pole identity](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#coefficient-memory-identification)
+connects chi to the hidden-phase memory kernel and two temporal poles of one
+resolved spatial mode. This can identify a parameter within an admitted model,
+not derive its universal value. Independent calibration and reserved evaluation
+remain distinct; no coefficient fit or physical realization is supplied here.
 
 ### 3.1 Capacity, clock and positivity require compatible laws
 

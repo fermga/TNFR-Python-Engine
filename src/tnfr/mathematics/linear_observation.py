@@ -1,4 +1,4 @@
-"""Exact sufficient linear observations of one supplied fixed generator.
+"""Exact linear observations and coordinate memory of a supplied generator.
 
 The positive-sign convention is z'=J*z. The invariant row space is a model
 property, not a graph, constitutive-law, trajectory or provenance certificate.
@@ -10,6 +10,7 @@ from __future__ import annotations
 from collections.abc import Mapping, Set
 from dataclasses import dataclass
 from fractions import Fraction
+from numbers import Integral
 
 from .._exact_time import exact_or_represented_real
 from ._exact_linear_algebra import exact_matrix_inverse, exact_matrix_product
@@ -19,6 +20,8 @@ __all__ = [
     "LinearObservationLevel",
     "LinearObservation",
     "derive_linear_observation",
+    "LinearCoordinateMemory",
+    "derive_coordinate_memory",
 ]
 
 Vector = tuple[Fraction, ...]
@@ -72,6 +75,28 @@ class LinearObservation:
     scope: str
 
 
+@dataclass(frozen=True)
+class LinearCoordinateMemory:
+    """Exact blocks of y'=A*y+B*h, h'=C*y+D*h under z'=J*z.
+
+    Visible coordinates retain the requested order; hidden coordinates keep
+    their original order. Eliminating h gives the initial-state contribution
+    B*exp(D*t)*h0 and convolution kernel K(t)=B*exp(D*t)*C. Only K(0)=B*C is
+    evaluated here. A vanishing K(0) does not imply a vanishing kernel or
+    initial-state contribution. Blocks may be signed and D need not be stable.
+    """
+
+    generator: Matrix
+    visible_indices: tuple[int, ...]
+    hidden_indices: tuple[int, ...]
+    visible_generator: Matrix
+    hidden_to_visible: Matrix
+    visible_to_hidden: Matrix
+    hidden_generator: Matrix
+    kernel_at_zero: Matrix
+    scope: str
+
+
 def _ordered(values, label):
     if isinstance(values, (str, bytes, bytearray, Mapping, Set)):
         raise TypeError(f"{label} must be an ordered collection")
@@ -91,6 +116,71 @@ def _matrix(values, label):
             for value in _ordered(row, f"{label}[{i}]")
         )
         for i, row in enumerate(rows)
+    )
+
+
+def derive_coordinate_memory(generator, visible_indices) -> LinearCoordinateMemory:
+    """Partition a fixed linear law without discarding its hidden dynamics.
+
+    J is a finite, ordered, nonempty square matrix with the shared exact-or-
+    represented scalar admission. Rational coefficients remain exact; other
+    admitted real coefficients retain their binary64 values. Visible indices
+    must be an ordered, nonempty proper subset of distinct nonboolean integers.
+
+    For z'=J*z and visible/hidden blocks (y,h), the exact elimination identity is
+
+        y'(t) = A*y(t) + B*exp(D*t)*h(0)
+                + integral_0^t B*exp(D*(t-s))*C*y(s) ds.
+
+    The returned matrices specify this identity without evaluating an
+    exponential, supplying an initial state or evolving a graph. Neither
+    memory decay, kernel positivity, autonomous instantaneous closure nor a
+    physical connection follows from this decomposition. In particular, a
+    zero B*C need not make B*exp(D*t)*C identically zero. No approximation,
+    Schur-complement substitution or selected constitutive law is introduced.
+    """
+    admitted = _matrix(generator, "generator")
+    dimension = len(admitted)
+    if any(len(row) != dimension for row in admitted):
+        raise ValueError("generator must be a nonempty square matrix")
+    supplied_indices = _ordered(visible_indices, "visible_indices")
+    if any(
+        isinstance(index, bool) or not isinstance(index, Integral)
+        for index in supplied_indices
+    ):
+        raise TypeError("visible_indices must contain non-boolean integers")
+    visible = tuple(int(index) for index in supplied_indices)
+    if not 0 < len(visible) < dimension:
+        raise ValueError("visible_indices must be a nonempty proper subset")
+    selected = set(visible)
+    if len(selected) != len(visible):
+        raise ValueError("visible_indices must be distinct")
+    if any(index < 0 or index >= dimension for index in visible):
+        raise ValueError("visible_indices must lie within the generator dimension")
+    hidden = tuple(index for index in range(dimension) if index not in selected)
+
+    def block(rows, columns):
+        return tuple(tuple(admitted[i][j] for j in columns) for i in rows)
+
+    a, b = block(visible, visible), block(visible, hidden)
+    c, d = block(hidden, visible), block(hidden, hidden)
+    return LinearCoordinateMemory(
+        generator=admitted,
+        visible_indices=visible,
+        hidden_indices=hidden,
+        visible_generator=a,
+        hidden_to_visible=b,
+        visible_to_hidden=c,
+        hidden_generator=d,
+        kernel_at_zero=exact_matrix_product(b, c),
+        scope=(
+            "Exact coordinate decomposition of one supplied fixed rational generator "
+            "with positive sign z'=J*z. General initial-hidden-state influence is retained. "
+            "No exponential evaluation, decay/positivity/instantaneous-closure theorem, "
+            "graph authentication, autonomous connection law or physical identity "
+            "is certified. Represented coefficients do not certify an ideal "
+            "transcendental generator."
+        ),
     )
 
 

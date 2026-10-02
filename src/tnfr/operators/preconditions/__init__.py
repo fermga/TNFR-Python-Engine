@@ -624,7 +624,7 @@ def validate_contraction(G: "TNFRGraph", node: "NodeId") -> None:
     From nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
 
     For safe contraction:
-    - EPI must have sufficient magnitude (can't compress vacuum)
+    - EPI must meet the configured minimum; zero EPI is not an absent node
     - Density ρ = |ΔNFR| / EPI must not exceed critical threshold
     - Over-compression (ρ → ∞) causes structural collapse
 

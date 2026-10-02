@@ -91,10 +91,20 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
     joined field and supplied ports without representing a committed event.
     Relocation observations retain the old/new fields and the unchanged
     component partition with the same support-change accounting semantics.
+    Joint reset observations retain two stored snapshots and separate state
+    and support costs, without requiring unit support or flow admission.
     Supply assessments compare declared work with represented storage; they
     neither authenticate that work nor select or certify an actual event.
+    Coefficient-jet bounds preserve supplied uncertainty and explicit abstention,
+    without authenticating the preparation, clock or measurement model.
+    Coefficient-sample bounds additionally retain the samples, exact stencils
+    and supplied error/smoothness budget, with the same authentication boundary.
     """
-    from ..dynamics.relational import RelationalExchangeField, RelationalExchangeStep
+    from ..dynamics.relational import (
+        RelationalExchangeField,
+        RelationalExchangeStep,
+        RelationalUniformTangent,
+    )
     from ..physics.relational_capture import (
         RelationalCaptureCertificate,
         RelationalLocalCaptureCertificate,
@@ -103,8 +113,11 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
     from ..physics.relational_observations import (
         RelationalAttachmentObservation,
         RelationalAttachmentSupplyAssessment,
+        RelationalCoefficientJetBounds,
+        RelationalCoefficientSampleBounds,
         RelationalPatternObservation,
         RelationalRelocationObservation,
+        RelationalResetObservation,
     )
     from ..physics.relational_transit import RelationalTransitCertificate
 
@@ -113,10 +126,14 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
         (
             RelationalExchangeField,
             RelationalExchangeStep,
+            RelationalUniformTangent,
             RelationalPatternObservation,
             RelationalAttachmentObservation,
             RelationalAttachmentSupplyAssessment,
+            RelationalCoefficientJetBounds,
+            RelationalCoefficientSampleBounds,
             RelationalRelocationObservation,
+            RelationalResetObservation,
             RelationalCaptureCertificate,
             RelationalLocalCaptureCertificate,
             RelationalSectorCaptureCertificate,
@@ -124,13 +141,20 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
         ),
     ):
         raise TypeError(
-            "expected a relational field, step, pattern, attachment, relocation, supply assessment, "
-            "capture or continuous-transit report"
+            "expected a relational field, step, uniform tangent, pattern, attachment, relocation, reset, supply assessment, "
+            "coefficient-jet, coefficient-sample, capture or continuous-transit report"
         )
     observation = (
         report.initial if isinstance(report, RelationalTransitCertificate) else report
     )
-    if isinstance(observation, RelationalAttachmentSupplyAssessment):
+    if isinstance(
+        observation,
+        (
+            RelationalAttachmentSupplyAssessment,
+            RelationalCoefficientJetBounds,
+            RelationalCoefficientSampleBounds,
+        ),
+    ):
         states = ()
     elif isinstance(observation, RelationalAttachmentObservation):
         states = (*observation.components, observation.joined)
@@ -146,6 +170,18 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
             (observation.cut_before, observation.cut_after),
             observation.components,
         )
+    elif isinstance(observation, RelationalResetObservation):
+        states = (
+            observation.before,
+            observation.after,
+            observation.transport_reset.before,
+            observation.transport_reset.after,
+        )
+        for edge in (*observation.edges_before, *observation.edges_after):
+            for node in edge:
+                _validate_label(node)
+    elif isinstance(observation, RelationalUniformTangent):
+        states = (observation.field,)
     elif isinstance(observation, RelationalExchangeStep):
         states = (observation.before, observation.after)
     elif isinstance(
@@ -173,6 +209,14 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
         report, (RelationalAttachmentObservation, RelationalRelocationObservation)
     ):
         projected["continuous_loss_change"] = _project(report.continuous_loss_change)
+    if isinstance(
+        report,
+        (
+            RelationalAttachmentObservation,
+            RelationalRelocationObservation,
+            RelationalResetObservation,
+        ),
+    ):
         projected["represented_zero_supply_passive"] = (
             report.represented_zero_supply_passive
         )

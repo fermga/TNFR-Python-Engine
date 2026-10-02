@@ -124,6 +124,39 @@ def test_disabled_linear_channels_and_zero_edges_do_not_evaluate_extreme_pairs(
 
 
 @pytest.mark.parametrize("path", PATHS)
+def test_normalized_epi_activation_distinguishes_zero_and_positive_row_strength(
+    path, monkeypatch
+):
+    tiny = 2.0**-100
+    for conductance in (None, 0.0, tiny, 1.0):
+        isolated_pair = _graph([0.0, 2.0])
+        if conductance is None:
+            isolated_pair.remove_edge(0, 1)
+        else:
+            isolated_pair[0][1]["weight"] = conductance
+        expected = (2.0, -2.0) if conductance else (0.0, 0.0)
+        np.testing.assert_array_equal(_run(isolated_pair, path, monkeypatch), expected)
+
+    # Positive pre-existing strength changes the limit at node 0: the new
+    # contribution is 2*epsilon/(1+epsilon), not a full contrast for every
+    # positive epsilon. Node 2 still starts with zero transport strength.
+    for conductance in (0.0, tiny, 0.25):
+        background = _graph([0.0, 0.0, 2.0])
+        background.remove_edge(1, 2)
+        background.add_edge(0, 2, weight=conductance)
+        exact = Fraction.from_float(conductance)
+        expected = (
+            float(2 * exact / (1 + exact)),
+            0.0,
+            -2.0 if conductance else 0.0,
+        )
+        np.testing.assert_array_equal(_run(background, path, monkeypatch), expected)
+    # This is the declared normalized pressure boundary, not a conductance
+    # evolution law. A small positive weight alone does not make an isolated
+    # receiver's nodal response small at fixed positive capacity.
+
+
+@pytest.mark.parametrize("path", PATHS)
 def test_unrepresentable_active_pressure_rejected_before_pressure_write(
     path, monkeypatch
 ):

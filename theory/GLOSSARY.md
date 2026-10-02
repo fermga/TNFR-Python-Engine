@@ -134,11 +134,11 @@ The cards are the only editable concept catalog. Generate their index with
 - **Domain:** The graph model declares direction, multiplicity, isolates and admissible weights.
 - **Premises:** Initial support and any support evolution or intervention must be stated.
 - **Dependencies:** none
-- **Owner:** [Pressure dependencies](NODAL_PARAMETER_FOUNDATIONS.md#21-the-implemented-pressure-is-a-specified-relational-map).
-- **Evidence:** [Representation contract](NODAL_PARAMETER_FOUNDATIONS.md#22-pressure-execution-and-representation-contract).
+- **Owner:** [Relation foundations](nodal/RELATION_FOUNDATIONS.md).
+- **Evidence:** [Zero-relation boundary](nodal/RELATION_FOUNDATIONS.md#zero-relation-boundary); [pressure contract](NODAL_PARAMETER_FOUNDATIONS.md#21-the-implemented-pressure-is-a-specified-relational-map).
 - **Implementation:** [Support transport](../src/tnfr/physics/support_transport.py).
 - **Tests:** [Regional cut](../tests/test_regional_support_cut.py).
-- **Limits:** A zero-conductance edge can remain a phase neighbor. Transport weights and diagnostic lengths need not coincide.
+- **Limits:** A zero-conductance edge can remain a phase neighbor. Normalized transport weight is not an absolute interaction rate; distance is separate. No autonomous relation-birth law is derived.
 
 <a id="clock"></a>
 

@@ -140,6 +140,13 @@ def derive_selector_symmetry(
     are declarations, not observations authenticated against a live graph;
     omitted state, history and policy marks are outside the conclusion.
 
+    An event action can reuse this same owner by adjoining typed event slots
+    to the node slots. Declare their added/removed endpoint incidences in the
+    relation matrix and lift each node permutation to the induced event
+    permutation. Select the event slots as candidates; an optional separately
+    typed fixed slot represents abstention. These slots are an exact incidence
+    encoding, not new physical nodes or an implemented event-selection law.
+
     The nonempty candidate set must be invariant under the label stabilizer.
     A noninvariant set carries additional asymmetric information, which must
     instead be declared in the state labels. Subsets of a larger true group

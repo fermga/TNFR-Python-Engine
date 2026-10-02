@@ -24,8 +24,9 @@ from .definitions_base import Operator
 class Mutation(Operator):
     """Controlled phase transform; regime shift with identity preserved.
 
-    Invariants: maintain EPI and epi_kind; theta shifts; vf stable; dnfr
-    elevated before the transformation.
+    Invariants: maintain EPI and epi_kind; theta shifts; vf and stored dnfr
+    remain unchanged. The signed branch reads dnfr only for rotation direction;
+    admission separately requires observed positive EPI growth and grammar.
     The phase proposal is RNG-free and depends only on the validated state and
     configuration; it does not consume or depend on a random seed.
     Grammar: needs prior IL + recent OZ/VAL (U4b); may flag bifurcation.

@@ -361,7 +361,7 @@ class AdelicDynamics:
         Run the dynamics to find resonances (Zeros).
         Returns the trajectory of the system.
         """
-        # Initial state: Uniform superposition (Vacuum)
+        # Supplied equal-amplitude prime-mode state, not a derived physical vacuum.
         n_primes = len(self.primes)
         initial_amplitudes = np.ones(n_primes, dtype=complex) / np.sqrt(n_primes)
 

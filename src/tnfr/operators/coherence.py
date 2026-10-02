@@ -1,9 +1,9 @@
 """Coherence (IL) operator.
 
-Purpose: stabilize form; reduce delta NFR; raise coherence.
-Physics: negative feedback drives delta NFR toward 0.
+Purpose: contract stored pressure and apply a configured circular phase step.
+The public phase proposal is distinct from the pressure-only low-level glyph.
 Grammar: stabilizer (U2); safe closure component.
-Effects: pressure lowers; EPI preserved; optional phase locking.
+Effects: pressure magnitude contracts; EPI and capacity preserved.
 Preconditions: active structure; prior destabilizer if recent IL already.
 Typical: AL->UM->IL; OZ->IL; VAL->IL. Avoid redundant IL chains.
 """
@@ -41,10 +41,11 @@ from .factor_contracts import resolve_runtime_operator_factors
 
 
 class Coherence(Operator):
-    """Stabilize alignment; compress delta NFR; boost coherence.
+    """Contract stored pressure and apply the shared circular phase proposal.
 
-    Drives local equilibrium (delta NFR down). Often follows
-    Emission/Coupling or contains OZ/VAL effects. Phase locking optional.
+    Phase locking defaults to coefficient 0.3; zero disables displacement.
+    EPI and capacity are preserved. A stored-pressure contraction is not a
+    theorem of equilibrium, monotonicity after refresh or future convergence.
     """
 
     __slots__ = ()

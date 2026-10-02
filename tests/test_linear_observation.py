@@ -5,7 +5,11 @@ from fractions import Fraction as Q
 
 import pytest
 
-from tnfr.mathematics.linear_observation import derive_linear_observation
+from tnfr.mathematics._exact_linear_algebra import exact_matrix_product
+from tnfr.mathematics.linear_observation import (
+    derive_coordinate_memory,
+    derive_linear_observation,
+)
 
 
 def test_damped_exchange_needs_hidden_phase_and_retains_positive_generator_sign():
@@ -105,3 +109,159 @@ def test_real_input_is_its_represented_rational_not_an_inferred_exact_constant()
     result = derive_linear_observation(((0.1,),), ((1.0,),))
     assert result.generator == ((Q(0.1),),)
     assert result.generator != ((Q(1, 10),),)
+
+
+def test_coordinate_memory_of_normalized_p3_retains_mediator_and_initial_source():
+    nu = Q(3, 2)
+    generator = ((-nu, nu, 0), (nu / 2, -nu, nu / 2), (0, nu, -nu))
+    result = derive_coordinate_memory(generator, (0, 2))
+    assert result.visible_indices == (0, 2) and result.hidden_indices == (1,)
+    assert result.visible_generator == ((-nu, 0), (0, -nu))
+    assert result.hidden_to_visible == ((nu,), (nu,))
+    assert result.visible_to_hidden == ((nu / 2, nu / 2),)
+    assert result.hidden_generator == ((-nu,),)
+    assert result.kernel_at_zero == ((nu**2 / 2,) * 2,) * 2
+
+    # A mediator-only initial difference changes both endpoint rates even
+    # with y0=0; dropping the initial hidden term would erase this response.
+    hidden_initial = Q(2, 3)
+    full_rate = tuple(row[1] * hidden_initial for row in result.generator)
+    assert (full_rate[0], full_rate[2]) == (nu * hidden_initial,) * 2
+    assert (
+        tuple(row[0] * hidden_initial for row in result.hidden_to_visible)
+        == (nu * hidden_initial,) * 2
+    )
+    # A donor-only difference has no direct recipient rate, but its second
+    # derivative sees the two-edge path. No exponential or trajectory needed.
+    squared = exact_matrix_product(result.generator, result.generator)
+    assert result.generator[2][0] == 0
+    assert squared[2][0] == nu**2 / 2 == result.kernel_at_zero[1][0]
+
+
+def test_damped_joint_coordinate_memory_has_signed_kernel_and_hidden_source():
+    # x'=-x-theta, theta'=x-2theta gives K(t)=-exp(-2t), not a
+    # nonnegative diffusion kernel. The initial source is -exp(-2t)*theta0.
+    result = derive_coordinate_memory(((-1, -1), (1, -2)), (0,))
+    assert result.visible_generator == ((-1,),)
+    assert result.hidden_to_visible == ((-1,),)
+    assert result.visible_to_hidden == ((1,),)
+    assert result.hidden_generator == ((-2,),)
+    assert result.kernel_at_zero == ((-1,),)
+    assert result.hidden_to_visible[0][0] * Q(3, 2) == Q(-3, 2)
+
+
+def test_zero_instantaneous_kernel_does_not_remove_later_memory():
+    # y'=h1, h1'=h2, h2'=y. D^2=0 gives exp(Dt)=I+tD, so
+    # K(0)=BC=0 while K(t)=t*BDC=t is nonzero for positive time.
+    result = derive_coordinate_memory(((0, 1, 0), (0, 0, 1), (1, 0, 0)), (0,))
+    assert result.hidden_indices == (1, 2)
+    assert result.kernel_at_zero == ((0,),)
+    assert exact_matrix_product(result.hidden_generator, result.hidden_generator) == (
+        (0, 0),
+        (0, 0),
+    )
+    first_kernel_derivative = exact_matrix_product(
+        exact_matrix_product(result.hidden_to_visible, result.hidden_generator),
+        result.visible_to_hidden,
+    )
+    assert first_kernel_derivative == ((1,),)
+
+
+def test_hidden_instability_and_initial_source_are_not_silently_excluded():
+    result = derive_coordinate_memory(((-1, 2), (0, 7)), (0,))
+    assert result.hidden_generator == ((7,),)
+    assert result.kernel_at_zero == ((0,),)
+    # C=0 makes the kernel vanish, but the source 2*exp(7t)*h0 remains.
+    assert result.visible_to_hidden == ((0,),)
+    assert result.hidden_to_visible == ((2,),)
+
+
+def test_coordinate_memory_reorders_coordinates_and_detaches_one_shot_inputs():
+    generator = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+    visible = [2, 0]
+    result = derive_coordinate_memory((iter(row) for row in generator), iter(visible))
+    assert generator == [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+    assert visible == [2, 0]
+    assert result.visible_indices == (2, 0) and result.hidden_indices == (1,)
+    assert result.visible_generator == ((9, 7), (3, 1))
+    assert result.hidden_to_visible == ((8,), (2,))
+    assert result.visible_to_hidden == ((6, 4),)
+    assert result.hidden_generator == ((5,),)
+    assert result.kernel_at_zero == ((48, 32), (12, 8))
+    generator[2][0] = 999
+    visible.reverse()
+    assert result.generator == ((1, 2, 3), (4, 5, 6), (7, 8, 9))
+    assert result.visible_indices == (2, 0)
+    with pytest.raises(FrozenInstanceError):
+        result.visible_indices = (0, 2)
+
+
+def test_coordinate_memory_keeps_tiny_rational_and_represented_coefficients():
+    tiny = Q(1, 10**400)
+    result = derive_coordinate_memory(((0, tiny), (0.1, 0)), (0,))
+    assert result.hidden_to_visible == ((tiny,),)
+    assert result.visible_to_hidden == ((Q(0.1),),)
+    assert result.kernel_at_zero == ((tiny * Q(0.1),),)
+    assert result.kernel_at_zero[0][0] != 0
+    assert result.kernel_at_zero[0][0] != tiny / 10
+
+
+@pytest.mark.parametrize(
+    "visible",
+    (
+        (),
+        (0, 1, 2),
+        (0, 0),
+        (-1,),
+        (3,),
+        (True,),
+        (0.0,),
+        (Q(0),),
+        "0",
+        {0},
+        {0: 1},
+        None,
+    ),
+)
+def test_coordinate_memory_rejects_ambiguous_or_invalid_index_selection(visible):
+    with pytest.raises((TypeError, ValueError)):
+        derive_coordinate_memory(((0, 1, 0), (0, 0, 1), (1, 0, 0)), visible)
+
+
+@pytest.mark.parametrize(
+    "generator",
+    (
+        (),
+        ((1,),),
+        ((1, 2), (3,)),
+        ((1, 2), (3, True)),
+        ((1, 2), (3, float("nan"))),
+        ((1, 2), (3, float("inf"))),
+        ((1, 2), (3, 1j)),
+        ((1, 2), (3, "4")),
+        {(1, 2), (3, 4)},
+        {"rows": ((1, 2), (3, 4))},
+        ((1, 2), {3, 4}),
+    ),
+)
+def test_coordinate_memory_validates_the_full_raw_generator(generator):
+    with pytest.raises((TypeError, ValueError)):
+        derive_coordinate_memory(generator, (0,))
+
+
+def test_coordinate_memory_accepts_numpy_integer_indices_but_not_boolean_indices():
+    np = pytest.importorskip("numpy")
+    result = derive_coordinate_memory(((0, 1), (1, 0)), (np.int64(0),))
+    assert result.visible_indices == (0,)
+    assert type(result.visible_indices[0]) is int
+    with pytest.raises(TypeError, match="non-boolean integers"):
+        derive_coordinate_memory(((0, 1), (1, 0)), (np.bool_(False),))
+
+
+def test_coordinate_memory_rejects_real_underflow_before_zero_substitution():
+    class UnderflowingReal(float):
+        def __float__(self):
+            return 0.0
+
+    with pytest.raises(ValueError, match="underflows"):
+        derive_coordinate_memory(((0, 1), (UnderflowingReal(1.0), 0)), (0,))

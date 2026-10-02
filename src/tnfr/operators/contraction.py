@@ -1,10 +1,10 @@
 """Contraction (NUL) operator.
 
-Purpose: densify & consolidate; reduce vf; amplify local delta NFR.
-Grammar: support; pair with IL for safe stabilization.
+Purpose: reduce vf and reciprocally scale stored delta NFR.
+Grammar: support; sequence admission is separate from a stability theorem.
 Typical: VAL->NUL->IL; THOL->NUL (refine emergent structure).
 Avoid: chain NUL; NUL->OZ (destabilize); NUL when EPI≈0.
-Effects: volume shrinks; delta NFR density up; coherence may tighten.
+Effects: optional edge-aware EPI scaling; phase and support unchanged.
 Preconditions: non-trivial EPI; integrity; recent expansion optional.
 """
 
@@ -18,10 +18,12 @@ from .definitions_base import Operator
 
 
 class Contraction(Operator):
-    """Densify structure; amplify local delta NFR; prep for IL.
+    """Attenuate capacity and multiply stored pressure by its reciprocal gain.
 
-    Minimal contraction consolidates exploration (VAL/THOL). Follow with
-    IL or SHA to preserve coherence; avoid chaining or NUL->OZ.
+    The ideal stored nodal product is unchanged. The default edge-aware
+    branch also scales/projects EPI; disabling it preserves EPI. Neither
+    graph dimension nor physical volume is defined by this map, and a later
+    pressure refresh need not preserve the stored-product identity.
     """
 
     __slots__ = ()

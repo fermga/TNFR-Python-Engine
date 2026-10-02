@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import gzip
+import math
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -63,12 +65,27 @@ def test_factorize_emits_manifest_for_multiple_partitions(
     monkeypatch.setenv("TNFR_PARTITION_OVERLAP", "0")
     partition_root = tmp_path / "partition_outputs"
     monkeypatch.setenv("TNFR_PARTITION_OUTPUT_DIR", str(partition_root))
-    factorization_module._DEFAULT_FACTORIZER = None
+    monkeypatch.setattr(factorization_module, "_DEFAULT_FACTORIZER", None)
+    backend = factorization_module._get_factorizer()._fft_backend
+    native_spectral_state = backend.get_spectral_state
+    captured_states = []
+
+    def unavailable_length(*args, **kwargs):
+        # Supply the missing-observation case instead of requiring the native
+        # spectrum to be unavailable. Leave spectra and export owners unchanged.
+        state = native_spectral_state(*args, **kwargs)
+        captured_states.append(state)
+        return replace(state, coherence_length=math.inf)
+
+    monkeypatch.setattr(backend, "get_spectral_state", unavailable_length)
 
     result = factorization_module.factorize(
         299, trace_certificates=True, certificate_dir=tmp_path
     )
 
+    assert captured_states, "The availability fixture must exercise the native backend"
+    assert result.coherence_length == math.inf
+    assert math.isnan(result.partition_aggregation["coherence_ratio"])
     assert result.partition_artifact_dir
     assert result.partition_manifest_path
 

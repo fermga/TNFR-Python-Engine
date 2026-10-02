@@ -24,6 +24,7 @@ remains the sole task queue.
 | Conditional derivation | The phase row follows from the chosen storage balance, [independent own-capacity dependence and zero-capacity freezing](#capacity-separable-exchange) | Those premises are not selected by the nodal product alone |
 | Exact continuous balances and recovery | Joint storage loss, complete receiver identity and [local exponential recovery of acute equilibria](#relational-local-recovery) under positive held capacity and form dissipation | No unrestricted attraction or autonomous one-node closure follows |
 | Engine contract | Shared [acute and positive-resultant Euler execution](#relational-positive-resultant-execution), detached observations and represented defects | Proposal-chord admission is not an exact-ODE error enclosure; a step need not inherit continuous storage nonincrease |
+| Prepared coefficient observation | [Initial jets](#prepared-coefficient-identification), shared [uncertainty propagation](#coefficient-jet-uncertainty) and one [bounded known-source temporal acquisition](#coefficient-temporal-acquisition) | Preparation/observation/clock/error premises remain explicit; identification is not nonlinear-law selection or physical calibration |
 | Prepared responses | Frozen [capacity-intervention](#finite-capacity-intervention-response) and [paired-region transmission](#relational-region-interaction) controls meet their stated finite-response criteria under the declared law | Supplied preparations and connections; finite numerical evidence does not establish physical validity or select a unique capacity law |
 | Formation-domain boundaries | A [pure-cycle resultant invariant](#relational-cycle-resultant-obstruction) restricts sector changes; supplied higher-degree support permits [regular winding crossing](#relational-regular-winding-crossing) | These support-specific boundaries are not a universal formation obstruction or unrestricted regular-domain guarantee |
 | Formation and maintenance | [Validated continuous transit and protected capture](#relational-validated-transit) prove that the admitted winding-zero preparation generates a winding-one pattern and converges to its maintained twist; smooth dependence gives a qualitative nearby-state result | Fixed two-ring/two-bridge support and constitutive premises remain supplied; no quantified robustness radius, arbitrary-support formation or physical identification |
@@ -249,6 +250,598 @@ cancel the respective unknown storage/exchange scale and common clock.
 This is a conditional linear prediction. Section 9 establishes a separate
 finite-amplitude projected identity and a prepared-state implementation
 control; neither identifies physical matter.
+
+<a id="coefficient-synergy-audit"></a>
+
+### Coefficient audit: selection, covariance and identifiable response
+
+The dimensions and unit changes in section 4 give the invariant
+`chi=beta*(e/w)^2`. Here `chi` names only this coefficient combination, not a
+field diagnostic. It characterizes the two-channel family, not the complete
+four-channel pressure, an arbitrary phase closure or a physical constant.
+For a fixed positive reference capacity `nu_ref`, set
+`u=x/sqrt(beta)`, `tau=nu_ref*w*t/sqrt(beta)` and `R=N/nu_ref`. The full
+nonlinear rows, on the same regular phase chart, become
+
+\[
+\frac{du}{d\tau}=R(-\sqrt\chi Lu+g),\qquad
+\frac{d\theta}{d\tau}=RH^{-1}Bu.
+\]
+
+Thus one dimensionless coefficient remains after these form/time scale choices
+within this family. Support, relative capacities, initial `u`, phase geometry
+and the observation remain independent data. This does not reduce four pressure
+weights to one parameter or identify a physical clock.
+
+**Balance and composition leave a family.** The section 3 loss identity holds
+for every `e>=0`, `w,beta>0`. Capacity separability/additivity in section 11
+selects the phase-row form for each such choice, not its numerical coefficient.
+For instance, `e=w=1/2` with either `beta=1` or `beta=1/4` satisfies the same
+admission premises, while `chi=1` and `chi=1/4` have different consensus pole
+classes. At the same state their form rates agree and their phase rates differ
+by four. Complete synchronized replicas in section 4 preserve beta rather than
+selecting it. These are countermodels to selection by the stated premises,
+not a proof that an additional independently justified premise cannot select.
+
+**A clock cannot choose the invariant.** Section 4's normalized representation
+`e_new=e/k`, `w_new=a*w/k`, `beta_new=a^2*beta`, `N_new=k*N/b`, with `k=e+a*w`,
+leaves chi unchanged. Omitting the capacity compensation is a different law.
+A regular positive state-dependent clock change scales the Jacobian at an
+equilibrium by a common positive factor; it cannot remove its pole class.
+Away from equilibrium every row and memory argument must transform according
+to the [whole-law clock contract](../NODAL_PARAMETER_FOUNDATIONS.md#pressure-clock-full-state-closure).
+
+The numeric `4/pi^2` boundary uses the declared normalization `g=Arg(Z)/pi`.
+For any constant `r>0`, re-express the same unnormalized mathematical law as
+`g_new=r*g`, `H_new=H/r`, `w_new=w/r`. Both rows and storage are unchanged,
+but `chi_new=r^2*chi` and its numeric boundary is `4*r^2/pi^2`. The squared
+damping ratio `zeta^2=pi^2*chi/4` in the original normalization is unchanged
+when expressed consistently in the new one. Circular phase does not select an
+absolute coefficient from that normalization. No engine convention is changed.
+
+**Capacity dependence does not supply a hidden selection rule.** If the same
+two rows are composed with a smooth positive function `N(x,theta)` on fixed
+support, then at a joint equilibrium `Bx=g=0` all capacity-derivative terms
+multiply zero. Its nodal Jacobian is the held-capacity one evaluated at `N_*`.
+For an independent law `nu_dot=A(x,theta,nu)` at a full equilibrium the full
+Jacobian has blocks `[[J_*,0],[A_(x,theta),A_nu]]`. Capacity modes may affect
+stability, but no equation fixing chi follows from this block structure.
+Since storage has no capacity argument, its instantaneous loss identity also
+holds along such a composition while capacities are nonnegative. Positivity,
+continuation and long-time recovery require their own capacity-law hypotheses.
+The executor still holds capacity; no continuous capacity law is installed.
+Restoring the capacity-pressure channel changes these premises. At a state
+with `g!=0`, even uniform form does not cancel the capacity-derivative terms.
+
+A common capacity factor `nu(t)>0` instead changes accumulated activity
+`s(t)=integral_0^t nu(u) du`. It does not choose chi, and finite total activity
+need not realize the entire constant-capacity asymptotic response. This reuses
+the [capacity-clock boundary](../NODAL_PARAMETER_FOUNDATIONS.md#31-capacity-clock-and-positivity-require-compatible-laws),
+not an assertion that arbitrary heterogeneous capacity changes are a clock.
+
+**Variational structure is a distinct premise.** Power cancellation permits
+the skew tensor `(w/beta)*[[0,-NH^-1],[NH^-1,0]]`, not automatically a Poisson
+tensor. Already on P2, for `delta=theta_1-theta_0` and
+`h=pi*sinc(delta)`, its Jacobiator on `(x_1,x_0,theta_0)` is
+`-(w/beta)^2*nu_0*nu_1*h'(delta)/h(delta)^3`, nonzero for
+`0<delta<pi/2` and positive capacities. Choosing a positive beta cannot repair
+that defect. The [Jacobi and cotangent owner](../TNFR_VARIATIONAL_PRINCIPLE.md#1319-structural-closure-tests-exchange-jacobi-and-the-remaining-potential)
+retains alternative geometric premises; they cannot select a coefficient of
+this unchanged tensor merely by being called variational. Selecting critical
+damping as an optimum likewise supplies an objective and constraints, rather
+than deriving a law from storage balance.
+
+<a id="coefficient-memory-identification"></a>
+
+### The same invariant in hidden-phase memory and temporal poles
+
+Return to the fixed tangent at uniform form and phase consensus. Allow
+heterogeneous strictly positive held capacities and put `T=ND^-1 B`.
+With `M=ND^-1`, `T=M B` is similar to `sqrt(M)*B*sqrt(M)`, so its nonzero
+eigenvalues `mu` are positive. The complete tangent is
+
+\[
+J=\begin{pmatrix}-eT&-(w/\pi)T\\(w/(\beta\pi))T&0\end{pmatrix}.
+\]
+
+For common capacity, `mu=nu*lambda`; the spatial eigenvalue does not multiply
+the P2 block a second time. At other phase equilibria the actual Hessian and
+phase metric are needed. Section 15's uniform cycle twist gives the boundary
+`chi*cos(kappa)=4/pi^2`, not the consensus value at every winding.
+
+Eliminate only the phase perturbations, keeping all form coordinates and their
+initial hidden phase. With `k=w^2/(beta*pi^2)`, exact elimination gives
+
+\[
+\dot x(t)=-eTx(t)-\frac w\pi T\theta_0
+      -kT^2\int_0^t x(s)\,ds,\qquad
+\ddot x+eT\dot x+kT^2x=0.
+\]
+
+The second-order equation inherits
+`xdot(0)=-eT*x(0)-(w/pi)*T*theta_0`; arbitrary initial velocity would add
+solutions not belonging to the original state, including uniform-form drift.
+The hidden block is zero, so its kernel is constant `K(t)=-kT^2`, not a decaying
+exponential. In the metric `M^-1`, `M^-1 K=-k B M B` is negative semidefinite;
+this is not an entrywise sign assertion. Stable joint dynamics can therefore
+have nondecaying projected memory. No reservoir or forcing is added by this
+exact rewrite. Writing `A_x=-eT` exposes the common coefficient identity
+
+\[
+\boxed{A_x^2=-\pi^2\chi K.}
+\]
+
+The [coordinate-memory owner](../../src/tnfr/mathematics/linear_observation.py)
+already derives these blocks and the hidden-initial-state source. Only this
+phase-only elimination of the fixed consensus tangent has the constant kernel;
+eliminating fine nodes, nonlinear evolution or varying capacities generally
+gives a different kernel and retains its own closure obligations.
+
+For one resolved nonzero spatial mode, the two temporal poles satisfy
+`sigma_1+sigma_2=-e*mu` and `sigma_1*sigma_2=k*mu^2`. Consequently
+
+\[
+\boxed{\chi=\frac{(\sigma_1+\sigma_2)^2}
+          {\pi^2\sigma_1\sigma_2}.}
+\]
+
+This is a conditional identification formula: spatial rate and a constant
+clock scale cancel. Both poles must belong to the same mode and be present in
+the observation and preparation. An eigenline preparation can excite only one
+pole despite a two-dimensional all-state observation; mixing poles from
+different spatial modes can give a false value, or accidental agreement without
+valid identification. Critical repeated poles require
+their generalized response to be resolved. Common modes, partial observation,
+noise, finite sampling and time-varying clocks need separate admission.
+Even an identified chi neither determines every physical scale nor selects
+one universal microscopic coefficient.
+
+**Real poles do not imply monotone form.** On the P2 consensus tangent with
+`e=w=1/2`, `beta=nu=1`, the roots `sigma_+>sigma_-` are both negative.
+Initial form contrast `u_0>0` and zero phase contrast give
+
+\[
+\frac{u(t)}{u_0}=
+\frac{\sigma_+e^{\sigma_+t}-\sigma_-e^{\sigma_-t}}
+  {\sigma_+-\sigma_-}.
+\]
+
+Its slow residue is negative; the signal crosses zero and approaches zero
+from below. A sum of pure-diffusion modes can also be nonmonotone at one node,
+although each diffusion mode has a single real decay rate. Pole class,
+prepared response and nonlinear trajectory are different statements.
+
+The [coefficient audit controls](../../tests/physics/test_relational_coefficient_scope.py)
+reuse the native field/tangent and exact observation/memory owners. Rational
+references use represented pi explicitly; numerical comparisons do not certify
+mathematical pi or a continuous trajectory. The existing symbolic exchange,
+replica and Jacobi controls retain their independent proofs. Separate
+calibration could estimate identifiable combinations under an admitted
+measurement model; only subsequently frozen, reserved responses would test
+them. This audit supplies no physical dataset, fit, selected coefficient or
+new runtime law.
+
+<a id="prepared-coefficient-identification"></a>
+
+### A prepared mode identifies chi from its initial response jet
+
+This specifies a sufficient preparation/observation for the preceding
+identification relation. Keep the fixed connected simple reciprocal unit
+support, common held capacity `nu>0`, fixed `e>=0`, `w,beta>0`, and the
+unforced two-channel law. Choose a real nonzero mode from the support alone,
+`Lv=lambda*v`, `lambda>0`, and prepare
+
+\[
+x(0)=m\mathbf1+A v,\quad A\ne0,\qquad \theta(0)=\theta_c\mathbf1.
+\]
+
+No coefficient value is needed to select v. A constant common capacity does
+not change its spatial shape. Declare the observation `y=ell^T x` with
+`ell=Dv/(v^TDv)`. Reversibility gives `ell^T L=lambda*ell^T`,
+`ell^T v=1` and `ell^T 1=0`. On irregular graphs the unweighted projection
+`v/(v^Tv)` need not remove the common form offset. For example, on P3 choose
+`v=(1,-1,1)`, `lambda=2` and `y=(x_0-2*x_1+x_2)/4`.
+The full node order, support and phase preparation remain recorded; a scalar
+signal alone does not prove those premises.
+
+Put `mu=nu*lambda` and `m_j=y^(j)(0)`. Consensus gives `g=0`,
+`Dg=-L/pi`, `H=pi D`. Differentiating the actual form row once, using the
+actual phase row rather than a reconstructed pressure, yields
+
+\[
+m_0=A,\qquad m_1=-e\mu A,\qquad
+m_2=\mu^2\left(e^2-\frac{w^2}{\beta\pi^2}\right)A.
+\]
+
+These initial jets are exact for finite A within the stated model: the
+form row is linear in x and the source derivative is evaluated at prepared
+phase consensus. This reuses section 9's instantaneous response identity;
+it does not assert that the nonlinear trajectory stays in one Fourier mode.
+Consequently
+
+\[
+\Delta=m_1^2-m_0m_2
+  =\frac{w^2\mu^2 A^2}{\beta\pi^2}>0,\qquad
+\boxed{\chi=\frac{m_1^2}{\pi^2\Delta}.}
+\]
+
+The ratio cancels amplitude and a constant clock scale. All three jets must
+be expressed in the same measurement units: an unknown constant nonzero
+gain multiplying y also cancels, but replacing measured m0 by a differently
+scaled latent A does not. A residual additive sensor offset does not cancel.
+For `e>=0`, the preparation further requires `m_0*m_1<=0`; an incompatible
+sign cannot be repaired by squaring m1. The `e=0` limit gives chi zero without
+singular division. A single pure-diffusion mode instead has Delta zero.
+
+**No unexcited-pole exception in the tangent preparation.** Write the modal
+tangent as `J_m=[[-a,-b],[c,0]]`, with `a=e*mu`, `b=w*mu/pi>0` and
+`c=w*mu/(beta*pi)>0`. For `z_0=(A,0)` and `O=(1,0)`,
+
+\[
+\det[z_0,J_mz_0]=cA^2\ne0,\qquad
+\det\begin{pmatrix}O\\OJ_m\end{pmatrix}=-b\ne0.
+\]
+
+The initial direction excites, and the form observation retains, both tangent
+state dimensions. This includes the critical repeated pole and its generalized
+response. The general cancellation counterexamples still apply to different
+preparations or observations. A nonzero initial phase component changes m1,
+so the ratio cannot silently assume that omitted phase was zero. The phase
+is prepared once, not held fixed during the subsequent joint evolution.
+
+**Clock boundary.** If `tau=T(t)`, `alpha=T'>0`, then in that clock
+
+\[
+\widetilde m_1=m_1/\alpha,\quad
+\widetilde m_2=m_2/\alpha^2-m_1\dot\alpha/\alpha^3,\quad
+\widetilde\Delta=\Delta/\alpha^2+m_0m_1\dot\alpha/\alpha^3.
+\]
+
+An affine time conversion cancels; a general changing clock can bias the
+ratio. This is a measurement-clock condition, not a new capacity law.
+
+<a id="coefficient-jet-uncertainty"></a>
+
+### Finite samples require a declared error budget and abstention
+
+Suppose the noiseless observed y is C3 on one regular interval `[0,2h]`,
+`h>0`, and an independently justified bound `abs(y''')<=M_3` holds there.
+Uniform samples `z_j=y(j*h)+eta_j`, `abs(eta_j)<=epsilon`, give estimators
+
+\[
+\widehat m_1=\frac{-3z_0+4z_1-z_2}{2h},\qquad
+\widehat m_2=\frac{z_2-2z_1+z_0}{h^2},
+\]
+\[
+|\widehat m_1-m_1|\le\frac{4\epsilon}{h}+\frac{M_3h^2}{3},\qquad
+|\widehat m_2-m_2|\le\frac{4\epsilon}{h^2}+M_3h.
+\]
+
+Taylor's integral remainder gives one-signed kernels with absolute integrals
+`h^2/3` and h, respectively; the noise constants are the absolute sums of
+the stencil weights. These are bounds for the full noiseless observation,
+not automatically for a tangent approximation or an Euler sample sequence.
+M3, error bounds, timing accuracy and the regular horizon must be justified
+in the measurement units before using the bound. Three samples cannot infer
+their own third-derivative ceiling. Numerical solver error, if relevant,
+needs its own enclosure; a work residual alone is insufficient.
+
+Use `I0=[z_0-epsilon,z_0+epsilon]` and the two derivative-error intervals
+`I1,I2`. With outward interval arithmetic set `S1=I1^2` and
+`D1=S1-I0*I2`. A sufficient arithmetic admission requires `0 notin I0`,
+`inf(D1)>0` and no strictly positive `I0*I1` interval. Then
+
+\[
+\chi\in\frac{S_1}{\pi^2 D_1}.
+\]
+
+Shared samples create interval dependence and can widen this enclosure; they
+do not justify treating correlated quantities as measured independently.
+If signal or restoring gap is unresolved, no point estimate is certified.
+Denominator positivity also does not imply useful precision: freeze a maximum
+permitted width separately. An interval crossing `4/pi^2` does not establish
+criticality. At fixed noise, decreasing h increases derivative noise and can
+turn an available bound into abstention.
+
+The [shared observer](../../src/tnfr/physics/relational_observations.py)
+`bound_relational_coefficient_from_jet` accepts declared jet intervals and
+uses the existing outward dyadic and mathematical-pi enclosure. Its immutable
+report retains the widened inputs, restoring gap, coefficient bounds or
+unavailable reasons. It does not estimate derivatives, inspect a graph, or
+authenticate phase preparation, modal isolation, timing or physical data.
+Its [API contract](../../docs/contracts/RELATIONAL_DYNAMICS.md#relational-coefficient-jet)
+and shared JSON exporter keep that boundary explicit.
+
+Native P2/P3 controls use the shared pressure-derivative owner with the actual
+phase rates; symbolic controls check excitation, criticality and Taylor-error
+constants. A separate synthetic C3 sample control exercises uncertainty, not a
+physical acquisition or a TNFR trajectory. A local mixture
+`3*exp(-t)-exp(-2t)` has jets `(2,-1,-1)` and positive Delta despite containing
+only diffusion modes: passing arithmetic cannot establish modal provenance.
+The [research controls](../../tests/physics/test_relational_coefficient_scope.py)
+retain this and the hidden-phase, irregular-projection and nonaffine-clock
+counterexamples; [API controls](../../tests/test_relational_coefficient_identification.py)
+cover malformed intervals, unresolved data and exact export.
+
+This completes a conditional preparation/observation admission, not a selection
+of chi or the nonlinear law: sections 10–12 allow different completions with
+the same consensus jets. Physical use still needs the independent observation,
+preparation, clock and uncertainty bridge. Calibration may estimate chi; a
+separately reserved response under frozen conditions must test the result.
+
+<a id="coefficient-temporal-acquisition"></a>
+
+### A bounded computational temporal acquisition on P2
+
+This admits one **known-source software acquisition**, not physical data,
+blind calibration or a comparison selecting the constitutive law. Use the
+unchanged unit-P2 model with `nu=1`, `e=w=1/2`, held support/capacity and no
+Gamma, events or clipping. Before evaluating the response, declare the prior
+`beta in [1/2,2]`, source `beta=1`, preparation `x=(1/16,-1/16)`,
+`theta=(0,0)`, and observation `u=x_0-x_1`. Its gain is one and baseline zero
+by construction; this is twice the dual-mode amplitude, an admissible constant
+gain in the preceding identification. Primitive phase is prepared at consensus
+only initially. The clock is independent structural time, not inferred phase.
+
+Write `phi=theta_0-theta_1`, the opposite orientation to the P2 pulse subsection
+below. The exact nonlinear contrast dynamics, including the removable limit,
+are
+
+\[
+\dot u=-u-\phi/\pi,\qquad
+\dot\phi=\frac{u}{\beta\pi}Q(\phi),\qquad
+Q(\phi)=\phi/\sin\phi,\quad Q(0)=1,
+\]
+\[
+\mathcal E=\tfrac12u^2+\beta(1-\cos\phi),\qquad
+\dot{\mathcal E}=-u^2.
+\]
+
+These are not tangent rows. The ideal arithmetic means are constant on P2;
+the numerical acquisition retains both nodal coordinates without imposing
+mean conservation or reflection. The error proof concerns the two contrasts,
+not individual-node or common-mode errors. Use a fixed normalized form chart,
+radians and the declared structural clock. The sup norm on `(u,phi)` below
+uses those fixed coordinate scales, not an untyped sum of physical units.
+
+**Whole-window bounds before sampling.** Set `U=1/8`, `r=1/256`,
+`h=2^-10`, and `H=2h=1/512`. On `abs(phi)<=r`, sinc's integral representation
+gives `sinc(phi)>=1-r^2/6` and `abs(sinc'(phi))<=r/3`. Thus
+
+\[
+q_0=\frac1{1-r^2/6},\qquad
+q_1=\frac{r}{3(1-r^2/6)^2},\qquad
+|Q|\le q_0,\quad |Q'|\le q_1.
+\]
+
+Using mathematical `pi>3` and the prior, define rational upper bounds
+
+\[
+P=U+r/3,\quad R=(2/3)Uq_0,\quad
+U_2=P+R/3,\quad
+\Phi_2=(2/3)(Pq_0+Uq_1R),
+\]
+\[
+M_2=\max(U_2,\Phi_2),\qquad M_3=U_2+\Phi_2/3.
+\]
+
+Until a first phase exit, nonincreasing storage gives `abs(u)<=U`, then
+`abs(phi_dot)<=R`. Since `H*R=64/393215<r`, that exit cannot occur before H.
+The smooth field continues throughout the window on this compact regular
+rectangle. Differentiation gives `abs(u_ddot)<=U2`,
+`abs(phi_ddot)<=Phi2`, and `u'''=-u''-phi''/pi`, establishing the displayed
+M2 and M3 for the **full nonlinear** trajectory uniformly over the prior.
+The field is Lipschitz on the convex rectangle with
+`L=max(4/3,(2/3)*(q0+U*q1))<2`. No measured sample is used to fit these bounds.
+
+**Native acquisition and continuous error.** The
+[instrument](../../benchmarks/relational_coefficient_acquisition.py) advances
+only through `step_relational_exchange`, with `s=2^-21`, 4096 steps and
+sample indices `(0,2048,4096)`. Every actual numerical contrast point must
+remain in the same rectangle. Every actual graph/report clock must equal
+its exact dyadic grid value; a clock defect rejects the acquisition.
+Native pressure and both rows are refreshed at every step. The predeclared
+precision gate is an available chi interval of width at most `1/8` containing
+the source truth 1. No refinement or retuning follows an evaluated failure.
+
+At each numerical point `z_k`, bound the ideal field `F(z_k)` independently
+with the shared mathematical-pi interval and the alternating-series sandwich
+
+\[
+1-\phi^2/6\le\operatorname{sinc}\phi
+\le1-\phi^2/6+\phi^4/120.
+\]
+
+This is positive and zero-safe on the rectangle. Form both state and rate
+contrasts by **exact subtraction of rationalized nodal values**, not by
+rationalizing an already rounded difference. If the actual contrast rate is
+`fhat_k`, retain
+
+\[
+\delta_k\ge\|\widehat F_k-F(z_k)\|_\infty,\qquad
+\gamma_k=z_{k+1}-z_k-s\widehat F_k.
+\]
+
+The first bound includes native transcendental, pressure and rate arithmetic;
+the second is the actual numerical update defect, not physical Gamma. For
+`e_k=||z_k-z(k*s)||_infinity`, Taylor's integral remainder and Lipschitzness give
+
+\[
+e_{k+1}\le(1+2s)e_k+s\delta_k+\|\gamma_k\|_\infty+M_2s^2/2.
+\]
+
+The initial represented preparation is exact, hence `e_0=0`. Summing and taking
+a prefix maximum, using `k*s<=H<1/2`, yields the conservative enclosure
+
+\[
+e_k\le E_k=
+\frac{\sum_{j<k}(s\delta_j+\|\gamma_j\|_\infty)+kM_2s^2/2}{1-2H}.
+\]
+
+The separately bootstrapped ideal trajectory and every checked numerical
+point lie in the same convex rectangle, so the comparison needs no assumed
+error tube. It neither treats a small work residual as a solver bound nor
+uses empirical grid convergence. Set `epsilon=max(E_0,E_2048,E_4096)` and
+use the preceding three-sample theorem with M3. The shared
+`bound_relational_coefficient_from_samples` retains exact stencils and error
+terms and delegates coefficient arithmetic to the existing jet observer.
+
+**Evidence boundary.** The truth-side field residual uses the predeclared
+source beta; the estimator receives samples and their justified error budget,
+not beta as its answer. This is not parameter-blind experimental uncertainty.
+The derivative bound uses the full prior, not the estimated value. A separate
+CLI invocation freezes the protocol and an archive of all project Python
+sources under `src/tnfr`, the producer and `pyproject.toml` before execution.
+Imported TNFR modules must resolve to that checkout. All accepted states,
+rates, clock checks, separate error contributions and the original verdict
+are retained; an analysis failure does not discard the acquired frames.
+Unresolved bounds give unavailable conclusions, not a passing precision flag.
+
+The [controls](../../tests/physics/test_relational_coefficient_acquisition.py)
+check nonlinear derivative identities, independent high-precision interval
+references, short-step wiring and protocol/source rejection. The shared
+[read-only auditor](../../src/tnfr/research/relational_acquisition.py) binds the
+embedded protocol to the frozen original before reconstructing all saved errors
+and the verdict. Its [admission controls](../../tests/test_relational_acquisition_audit.py)
+separate record consistency, original success and unavailable evidence without
+invoking the producer or evolving a graph. The
+[API contract](../../docs/contracts/RELATIONAL_DYNAMICS.md#relational-acquisition-audit)
+owns the supported record and numerical work limits. Source
+hashes do not authenticate chronology, physical provenance, or installed
+dependency binaries. No claim of universal chi or laboratory identification
+follows from this computational admission.
+
+**First retained evaluation, 2026-10-02.** The separate prepare and evaluate
+invocations produced `artifacts/research/relational_coefficient_acquisition/`
+with `result.protocol.json`, `result.source.zip` and `result.json`. The source
+archive contains 608 project files. All 4096 steps completed on the frozen
+grid, stayed inside the contrast rectangle and used `fused_canonical` native
+pressure. No source, preparation, budget or precision rule was revised after
+the response. The exact rational chi enclosure lies inside the outward
+decimal display
+
+\[
+\boxed{\chi\in[0.9563498759,\ 1.0312342932].}
+\]
+
+Its width is approximately `0.0748844172`, below the predeclared `1/8`, and
+contains the known value 1. This is a deterministic conditional enclosure,
+not a statistical confidence interval. Approximate recorded error quantities
+in the declared coordinates and clock are:
+
+| Quantity | Recorded value, rounded for display |
+| --- | --- |
+| Uniform sample-error ceiling epsilon | `7.2044724626e-11` |
+| Prior whole-window third-form-derivative ceiling M3 | `0.1821501469` |
+| Initial-rate error ceiling | `3.5299916433e-7` |
+| Initial-acceleration error ceiling | `4.8005847948e-4` |
+| Accumulated field-evaluation contribution before growth factor | `8.7884015660e-21` |
+| Accumulated update-rounding contribution before growth factor | `1.4240542810e-14` |
+| Accumulated Euler-truncation contribution before growth factor | `7.1749059369e-11` |
+
+The record retains the exact rational quantities rather than these rounded
+displays. The read-only audit reconstructed every step's contrast defects,
+accumulated bounds, three sample stencils and original verdict without
+regenerating the trajectory. Independent ideal initial-jet values also lie
+inside the recorded jet bounds. SHA-256 identifiers are:
+
+- Protocol: `02cbaa7de7ebb9a6e10ef71a0095b7de72fbdb441eded286ed6b9de2cdfbdd55`.
+- Response: `68e3e8f99c78a7d8f3ec2d5d6733e51f324d7976c1bf8bd9f7d9a9121aa59879`.
+- Source archive: `6a0213a8c0ec43aa7811d69d6d56576ea30d8d09d8deeb9fa1abf59c8b630ee4`.
+
+This closes the computational temporal-acquisition gate. It does not test
+which same-jet nonlinear completion is correct, nor provide a physical
+preparation or parameter-blind sample-error model. The local artifact audit
+is unavailable when these retained files are absent; it never substitutes a
+new producer run. Subsequent calibration and reserved discrimination remain
+separate obligations in the sole execution plan.
+
+<a id="relational-pulse-scope"></a>
+
+### Pulse, recurrence and the nondissipative boundary
+
+Use the complete law of sections 1–3 on fixed connected unit support, with
+held strictly positive capacities, `w,beta>0` and a regular chamber where
+every `H_i>0`. There are no inputs, events, clipping or extra common phase
+velocity. These hypotheses distinguish this model from a generic runtime
+or the auxiliary graph-wave spectrum reported by `Network.rhythm()`.
+
+**Positive dissipation excludes a nonstationary full-state cycle.** Suppose
+`e>0` and a solution returns after `T>0` modulo common form and phase offsets:
+`x(T)=x(0)+a*1`, `theta(T)=theta(0)+b*1` on the phase circles. Joint storage
+is invariant under both offsets. Its exact balance therefore gives
+
+\[
+0=\mathcal E(T)-\mathcal E(0)
+ =-e\int_0^T\sum_i\frac{\nu_i}{d_i}q_i(t)^2\,dt.
+\]
+
+Continuity and positive capacities force `q=0` throughout. Connectivity
+then gives `x=c(t)*1`, while the selected phase row gives `theta_dot=0`.
+The form row requires `c'=w*nu_i*g_i` at every node. Multiplying by
+`H_i/nu_i` and summing yields `c'*sum(H_i/nu_i)=w*sum(H_i*g_i)=0` because
+`Hg=-grad(V_phi)` and common phase rotation leaves `V_phi` unchanged.
+Thus `c'=0` and `g=0`: the entire solution is stationary. This excludes
+nonstationary periodic and relative-periodic full-state solutions inside
+the admitted chamber. It does not establish global attraction or classify
+every lossy observable; the existing [local recovery theorem](#relational-local-recovery)
+supplies its separate neighborhood and convergence hypotheses.
+
+The selected phase representative also obeys, at every admitted state,
+
+\[
+\sum_i\frac{H_i}{\nu_i}\dot\theta_i
+ =\frac w\beta\sum_i q_i=0.
+\]
+
+Consequently a common rigid phase velocity `theta_dot=Omega*1` requires
+`Omega=0`, even when `e=0`. This does not freeze the arithmetic mean during
+general nonuniform phase motion. Adding a common phase velocity would be a
+different full-state law, although storage alone would not detect it.
+
+**P2 admits a precise oscillation comparison.** With common capacity `nu>0`,
+write `u=x_0-x_1`, `delta=theta_1-theta_0`, `h(delta)=pi*sinc(delta)`.
+On `|delta|<pi/2`, both arithmetic means are constant and the exact rows are
+
+\[
+\dot u=-2e\nu u+\frac{2w\nu}{\pi}\delta,\qquad
+\dot\delta=-\frac{2w\nu}{\beta h(\delta)}u,\qquad
+\mathcal E=\tfrac12u^2+\beta(1-\cos\delta),\quad
+\dot{\mathcal E}=-2e\nu u^2.
+\]
+
+At consensus the roots are
+`-e*nu +/- nu*sqrt(e^2-4*w^2/(beta*pi^2))`, the `lambda=2` case above.
+Oscillatory roots at `e>0` describe damped small perturbations, not a
+maintained pulse. In particular, `e=w=1/2`, `beta=1` is overdamped on P2;
+the [cycle-mode calculation](#cycle-rates-competing-laws-and-excluded-boundaries)
+explains why the same coefficients can give damped oscillations around a
+nonuniform winding geometry.
+
+At `e=0`, every level `0<E<beta` is a compact smooth closed curve wholly
+inside the acute chamber. The vector field has no zero on that curve, so
+it gives a genuine nonlinear periodic form/phase exchange. Its period is
+
+\[
+T(E)=\frac{2\beta\pi}{w\nu}
+\int_0^{A}\frac{\operatorname{sinc}\delta}
+ {\sqrt{2[E-\beta(1-\cos\delta)]}}\,d\delta,
+\qquad A=\arccos(1-E/\beta).
+\]
+
+The turning-point singularity is integrable, and
+`T(E) -> pi^2*sqrt(beta)/(w*nu)` as `E -> 0`. Conservation of storage
+prevents attraction to one such orbit from an open neighborhood of other
+energy levels; amplitude, relative timing and an attracting synchronization
+law are not selected. This consolidates the exact P2 sector equivalence in
+[section 8](#8-comparing-the-premises-before-selecting-a-model) and the
+[existing reversible cotangent sector](../TNFR_VARIATIONAL_PRINCIPLE.md#cotangent-phase-exchange),
+rather than introducing a new oscillator mechanism. The engine already
+admits `epi_weight=0`, with effective normalized `phase_weight=1`; that
+constitutive boundary is not inferred from a desire for sustained pulses.
+These continuous statements neither certify finite Euler periodicity nor
+exclude pulses in other justified TNFR completions, driven regions or
+declared hybrid systems.
 
 ## 6. Why changing cotangent storage alone cannot retain native pressure
 
@@ -3336,4 +3929,5 @@ into another basin sweep. The [composition owner](RELATIONAL_PATTERN_COMPOSITION
 retains the tangent reduction, nonlinear closure obstructions and conditional
 passive bridge-relocation result. The
 [sole execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-owns the remaining support-law choice and event-clock question.
+retains the completed support-law nonselection result and owns the next
+fixed-support causal identity question.

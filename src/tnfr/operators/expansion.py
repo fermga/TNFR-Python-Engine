@@ -1,9 +1,9 @@
 """Expansion (VAL) operator.
 
-Purpose: increase structural degrees of freedom for exploration.
-Physics: raises EPI + vf; may widen ΔNFR. Grammar: destabilizer (U2).
-Effects: form scales, pressure can rise, phase unchanged.
-Preconditions: bounded ΔNFR; follow with IL/THOL for convergence.
+Purpose: apply the configured capacity and optional form scale.
+Effect: raises vf; edge-aware mode also scales/projects EPI.
+Stored pressure, phase and support are unchanged. Grammar: destabilizer (U2).
+Optional strict thresholds and U2 admission do not prove convergence.
 Typical: VAL -> IL (stabilize); OZ -> VAL (dissonance then expand).
 Avoid: repeated VAL without stabilization; immediate VAL -> NUL.
 """
@@ -18,10 +18,13 @@ from .definitions_base import Operator
 
 
 class Expansion(Operator):
-    """Expand structural scope for exploration.
+    """Scale capacity and, in edge-aware mode, the admitted scalar form.
 
-    Raises EPI and vf; may elevate delta NFR (needs later IL/THOL).
-    Grammar: destabilizer (U2) so stabilizers must follow.
+    The default edge-aware branch respects configured EPI bounds. Disabling
+    it preserves EPI. Neither branch directly changes pressure or support;
+    any subsequent pressure refresh is a separate operation. Multiplying
+    capacity does not create state dimensions or an autonomous growth law.
+    Grammar classifies VAL as a destabilizer under the U2 policy.
 
     Example:
       expand then stabilize.
@@ -30,7 +33,6 @@ class Expansion(Operator):
       >>> G, node = create_nfr("theta", epi=0.47, vf=0.95)
       >>> run_sequence(G, node, [Expansion(), Coherence()])
 
-    Domains: biomedical growth; cognitive broadening; social scaling.
     """
 
     __slots__ = ()

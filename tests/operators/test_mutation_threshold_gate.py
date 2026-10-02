@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from fractions import Fraction
 
 import networkx as nx
 import pytest
 
 from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from tnfr.mathematics.epi import BEPIElement
 from tnfr.node import NodeNX
 from tnfr.operators import apply_glyph, apply_glyph_obj
 from tnfr.operators._mutation_gate import (
@@ -21,6 +23,7 @@ from tnfr.operators.factor_contracts import GlyphFactorValidationError
 from tnfr.operators.metrics_structural import mutation_metrics
 from tnfr.operators.preconditions import OperatorPreconditionError
 from tnfr.operators.preconditions.mutation import diagnose_mutation_readiness
+from tnfr.types import real_scalar_epi, serialize_bepi
 
 
 def _node(history):
@@ -50,6 +53,62 @@ def test_positive_signed_sample_strictly_above_xi_is_admissible():
     assert sample.depi_dt == pytest.approx(0.2)
     assert sample.xi == 0.1
     assert sample.crossed
+
+
+@pytest.mark.parametrize("serialized", (False, True))
+def test_live_rich_epi_cannot_match_signed_history_through_its_magnitude(serialized):
+    rich = BEPIElement((0.5, 1.0), (0.5, 1.0), (0.0, 1.0))
+    assert real_scalar_epi(rich) is None
+    graph = _graph((0.5, 1.0))
+    graph.nodes[0][ALIAS_EPI[0]] = serialize_bepi(rich) if serialized else rich
+    graph.nodes[0]["epi_time_history"] = [(0.0, 0.5), (1.0, 1.0)]
+    node_before = deepcopy(dict(graph.nodes[0]))
+    graph_before = deepcopy(graph.graph)
+
+    # The old magnitude coercion manufactured a matching endpoint and a +0.5
+    # signed secant from a live state having no signed scalar representative.
+    with pytest.raises(OperatorPreconditionError, match="signed uniform-real EPI"):
+        validate_mutation_runtime_gate(graph.nodes[0], graph.graph)
+    with pytest.raises(OperatorPreconditionError, match="signed uniform-real EPI"):
+        apply_glyph(graph, 0, "ZHIR")
+    assert dict(graph.nodes[0]) == node_before
+    assert graph.graph == graph_before
+
+
+@pytest.mark.parametrize("serialized", (False, True))
+def test_negative_uniform_epi_retains_signed_positive_growth(serialized):
+    form = BEPIElement((-0.5, -0.5), (-0.5, -0.5), (0.0, 1.0))
+    graph = _graph((-0.75, -0.5))
+    graph.nodes[0][ALIAS_EPI[0]] = serialize_bepi(form) if serialized else form
+    graph.nodes[0]["epi_time_history"] = [(0.0, -0.75), (1.0, -0.5)]
+    form_before = deepcopy(graph.nodes[0][ALIAS_EPI[0]])
+    phase_before = graph.nodes[0][ALIAS_THETA[0]]
+
+    gate = validate_mutation_runtime_gate(graph.nodes[0], graph.graph)
+    assert gate.threshold.previous_epi == -0.75
+    assert gate.threshold.current_epi == -0.5
+    assert gate.threshold.depi_dt == 0.25
+    assert gate.threshold.crossed
+    assert gate.threshold.physical_time_resolved
+    apply_glyph(graph, 0, "ZHIR")
+    assert graph.nodes[0][ALIAS_EPI[0]] == form_before
+    assert real_scalar_epi(graph.nodes[0][ALIAS_EPI[0]]) == -0.5
+    assert graph.nodes[0][ALIAS_THETA[0]] != phase_before
+
+
+def test_serialized_live_epi_cannot_underflow_into_a_matching_history_endpoint():
+    tiny = Fraction(1, 10**400)
+    graph = _graph((-0.25, 0.0))
+    graph.nodes[0][ALIAS_EPI[0]] = {
+        "continuous": (tiny, tiny),
+        "discrete": (tiny, tiny),
+        "grid": (0.0, 1.0),
+    }
+    graph.nodes[0]["epi_time_history"] = [(0.0, -0.25), (1.0, 0.0)]
+    before = deepcopy(dict(graph.nodes[0]))
+    with pytest.raises(OperatorPreconditionError, match="signed uniform-real EPI"):
+        validate_mutation_runtime_gate(graph.nodes[0], graph.graph)
+    assert dict(graph.nodes[0]) == before
 
 
 @pytest.mark.parametrize(

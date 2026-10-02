@@ -364,6 +364,52 @@ physical entities with one substrate. Repeating a nodal description at a
 finer scale also leaves that finer state/law as premises; it is not an
 explanation of existence from no assumptions.
 
+<a id="environment-substrate-and-pressure"></a>
+**Environment, substrate and a proposed vacuum.** In the current relational
+model, an environment consists of other nodal degrees of freedom and their
+relations, not an independently defined surrounding substance. A fine node
+is not thereby a physical particle or a point in a pre-existing physical
+space. A hypothetical relational substrate could underlie both patterns and
+their apparent environment, but this identification is an open generative
+claim. Connected support is a premise of the relational executor; it does
+not prove that all physical reality belongs to one connected network.
+
+Keep the following cases separate:
+
+| Preparation or description | What remains in the current model |
+| --- | --- |
+| Zero or uniform EPI | Phase, capacity and support remain; choosing a form origin does not remove nodes |
+| Zero total structural pressure | Channels can cancel while phase evolves; this need not be full equilibrium |
+| Full nodal equilibrium | Present rates vanish, but response to a perturbation can be nonzero, including mediated transmission |
+| Unobserved environment | Its state can enter the retained dynamics through memory and a hidden initial-state contribution |
+| No nodes or relations | The present nodal pressure has no such substrate-free domain; this is a model boundary, not proof that physical emptiness is impossible |
+
+For an exact full equilibrium of the admitted smooth unforced law, uniqueness
+keeps the state there. Being able to respond does not generate an initial
+perturbation or spontaneous fluctuations. A region can instead receive a
+disturbance from another part of the same fine structure; an environmental
+source in its reduced description need not be external to the whole model.
+
+The [same-law pressure-state counterexample](nodal/JOINT_PARAMETER_RESPONSE.md#pressure-state-closure)
+rules out using the current pressure vector alone as an autonomous state in
+general. Its constructive P2 chart retains pressure plus one relative form
+coordinate, or the corresponding exact memory and initial datum. That is a
+change of description of the same dynamics, not a new substance or a uniquely
+fundamental pressure law. A stored pressure, an independently supplied source
+`Gamma`, and a freshly calculated `P(z)` have different contracts.
+The [mediator chart](nodal/RELATIONAL_PATTERN_MEMORY.md#mediator-pressure-boundary-chart)
+extends this distinction to interacting regions: retaining the environment
+also requires its initial information and the movement of its boundary.
+
+Calling a background a physical vacuum therefore requires an independently
+specified state class, its response and a measurement bridge. No present
+zero condition makes that identification. Likewise, a relational substrate
+is not automatically the historical light-carrying ether; the
+[physical comparison](PHYSICAL_REGIME_CORRESPONDENCES.md#vacuum-and-substrate-scope)
+keeps those hypotheses distinct. The effective-link study can investigate
+which environmental information carries a relation without first asserting
+either physical identification.
+
 **Initial activity is not a sustained pulse.** Positive capacity with zero
 pressure gives zero EPI rate. Nonzero `nu_i*p_i` at an initial state gives
 activity, but need not give oscillation: pure-EPI diffusion provides active

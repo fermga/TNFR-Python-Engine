@@ -8,6 +8,7 @@ identity certificate, reduced closure or automatic selection policy.
 
 from __future__ import annotations
 
+import math
 from collections.abc import Mapping, Set
 from dataclasses import dataclass
 from fractions import Fraction
@@ -17,16 +18,20 @@ from typing import Any
 import networkx as nx
 
 from .._exact_time import exact_or_represented_real, finite_represented_real
+from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ..dynamics.relational import (
     RelationalExchangeField,
     RelationalExchangeModel,
+    _phase_edge_storage,
     evaluate_relational_exchange,
 )
 from .support_transport import (
     RegionalSupportBalance,
     RegionalSupportCut,
     SupportTransportReset,
+    SupportTransportSnapshot,
+    _from_data,
     observe_regional_support_balance,
     observe_regional_support_cut,
     observe_support_transport,
@@ -48,7 +53,57 @@ __all__ = (
     "observe_relational_attachment",
     "RelationalRelocationObservation",
     "observe_relational_relocation",
+    "RelationalResetObservation",
+    "observe_relational_reset",
+    "RelationalCoefficientJetBounds",
+    "bound_relational_coefficient_from_jet",
+    "RelationalCoefficientSampleBounds",
+    "bound_relational_coefficient_from_samples",
 )
+
+
+@dataclass(frozen=True)
+class RelationalCoefficientJetBounds:
+    """Conditional chi bounds from declared initial form-response intervals."""
+
+    form_bounds: tuple[Fraction, Fraction]
+    rate_bounds: tuple[Fraction, Fraction]
+    acceleration_bounds: tuple[Fraction, Fraction]
+    squared_rate_bounds: tuple[Fraction, Fraction]
+    restoring_gap_bounds: tuple[Fraction, Fraction]
+    coefficient_bounds: tuple[Fraction, Fraction] | None
+    unavailable_reasons: tuple[str, ...]
+    arithmetic_method: str
+    scope: tuple[str, ...] = (
+        "conditional_two_channel_relational_consensus_preparation",
+        "one_nonzero_spatial_mode_with_initial_phase_consensus",
+        "declared_value_rate_acceleration_intervals_in_one_gain_and_affine_clock",
+        "rational_outward_bounds_with_mathematical_pi_enclosure",
+        "no_graph_read_preparation_authentication_derivative_estimation_or_evolution",
+        "no_automatic_precision_acceptance_physical_bridge_or_universal_coefficient",
+    )
+
+
+@dataclass(frozen=True)
+class RelationalCoefficientSampleBounds:
+    """Three-sample jet bounds conditional on a supplied smoothness/noise budget."""
+
+    samples: tuple[Fraction, Fraction, Fraction]
+    sample_step: Fraction
+    sample_error_bound: Fraction
+    third_derivative_bound: Fraction
+    rate_estimate: Fraction
+    acceleration_estimate: Fraction
+    rate_error_bound: Fraction
+    acceleration_error_bound: Fraction
+    jet: RelationalCoefficientJetBounds
+    scope: tuple[str, ...] = (
+        "samples_at_relative_times_zero_h_two_h_in_one_affine_clock",
+        "supplied_uniform_sample_error_and_whole_window_C3_bound",
+        "exact_rational_stencils_and_shared_outward_jet_enclosure",
+        "no_source_preparation_clock_noise_or_smoothness_authentication",
+        "no_graph_read_evolution_fit_or_physical_admission",
+    )
 
 
 @dataclass(frozen=True)
@@ -351,6 +406,169 @@ class RelationalRelocationObservation(_RelationalSupportBudget):
         return self.after.continuous_loss - self.before.continuous_loss
 
 
+@dataclass(frozen=True)
+class RelationalResetObservation(_RelationalSupportBudget):
+    """Joint state/support storage accounting between two supplied snapshots.
+
+    Form storage uses conductance; phase storage uses every bare support edge,
+    including zero-conductance edges. The decomposition first changes state on
+    the old support, then changes support at the new state. Phase terms are
+    unscaled V; total storage multiplies them by the supplied positive beta.
+    ``transport_reset.before`` retains the new state on the old support.
+    Capacity and stored pressure use the shared transport snapshot, including
+    its zero defaults when absent; those defaults are not measured zeros.
+    Snapshot comparison does not authenticate an executed operator or certify
+    that either endpoint admits the conditional unit-support relational flow.
+    """
+
+    before: SupportTransportSnapshot
+    after: SupportTransportSnapshot
+    phase_before: tuple[float, ...]
+    phase_after: tuple[float, ...]
+    edges_before: tuple[tuple[Any, Any], ...]
+    edges_after: tuple[tuple[Any, Any], ...]
+    storage_scale: float
+    form_state_change: Fraction
+    form_support_change: Fraction
+    form_storage_change: Fraction
+    phase_state_change: Fraction
+    phase_support_change: Fraction
+    phase_storage_change: Fraction
+    phase_storage_before: Fraction
+    phase_storage_after: Fraction
+    storage_before: Fraction
+    storage_after: Fraction
+    storage_change: Fraction
+    identity_residual: Fraction
+    transport_reset: SupportTransportReset
+    scope: tuple[str, ...] = (
+        "supplied_nonempty_same_ordered_nodes_simple_undirected_support",
+        "symmetric_nonnegative_conductance_with_disconnected_and_zero_weight_support_allowed",
+        "weighted_form_storage_and_unweighted_bare_support_phase_storage",
+        "state_change_on_old_support_then_support_change_at_new_state",
+        "raw_phase_admission_and_shared_represented_half_sine_cost",
+        "exact_represented_accounting_not_an_ideal_trigonometric_bound",
+        "detached_stored_state_without_pressure_refresh_or_live_writes",
+        "transport_snapshot_defaults_absent_capacity_and_stored_pressure_to_zero",
+        "no_event_authentication_selection_clock_or_continuation_certificate",
+    )
+
+
+def observe_relational_reset(before_graph, after_graph, *, storage_scale):
+    """Observe the full storage budget of a supplied joint state/support reset.
+
+    Both graphs must have the same nonempty node order and simple undirected
+    loop-free support. Shared transport admission validates scalar form,
+    nonnegative capacity, stored pressure and symmetric nonnegative weights;
+    absent capacity/stored pressure retain that owner's zero defaults.
+    Explicit finite phase values are required at every node, including isolates.
+    Graphs may be disconnected and have zero or nonunit conductances; no acute
+    chamber, pressure law, held capacity or continuation admission is asserted.
+
+    Storage is ``E_D + storage_scale * V`` with ``V`` the sum of the shared
+    represented half-sine cost on every support edge. The positive scale is
+    materialized through the same boundary as the relational model. The result
+    separates simultaneous nodal reorganization from support work without
+    crediting earlier continuous dissipation or introducing an event law.
+    """
+    beta, beta_q = finite_represented_real(storage_scale, "storage_scale")
+    if beta <= 0:
+        raise ValueError("storage_scale must be positive")
+    for graph in (before_graph, after_graph):
+        if not isinstance(graph, nx.Graph):
+            raise TypeError("reset endpoints must be networkx graphs")
+        if (
+            graph.is_directed()
+            or graph.is_multigraph()
+            or nx.number_of_selfloops(graph)
+        ):
+            raise ValueError("reset support must be simple undirected without loops")
+    nodes = tuple(before_graph)
+    if not nodes or nodes != tuple(after_graph):
+        raise ValueError("reset endpoints require the same nonempty ordered nodes")
+
+    def phases(graph):
+        return tuple(
+            finite_represented_real(
+                get_attr(
+                    graph.nodes[node],
+                    ALIAS_THETA,
+                    None,
+                    conv=lambda value: value,
+                    strict=True,
+                ),
+                "phase",
+            )[0]
+            for node in nodes
+        )
+
+    phase_before, phase_after = phases(before_graph), phases(after_graph)
+    before = observe_support_transport(before_graph)
+    after = observe_support_transport(after_graph)
+    intermediate = _from_data(
+        nodes,
+        before.conductance,
+        before.support_neighbors,
+        after.epi,
+        after.capacity,
+        after.stored_pressure,
+    )
+    transport_reset = observe_support_transport_reset(intermediate, after)
+    old_edges = tuple(
+        (i, j) for i, row in enumerate(before.support_neighbors) for j in row if i < j
+    )
+    new_edges = tuple(
+        (i, j) for i, row in enumerate(after.support_neighbors) for j in row if i < j
+    )
+
+    def phase_cost(phase, edges):
+        total = Fraction(0)
+        for i, j in edges:
+            difference = finite_represented_real(
+                Fraction(phase[j]) - Fraction(phase[i]), "phase difference"
+            )[0]
+            total += _phase_edge_storage(math.remainder(difference, math.tau))
+        return total
+
+    phase_old = phase_cost(phase_before, old_edges)
+    phase_intermediate = phase_cost(phase_after, old_edges)
+    phase_new = phase_cost(phase_after, new_edges)
+    form_state = intermediate.dirichlet_energy - before.dirichlet_energy
+    form_support = transport_reset.energy_change
+    phase_state = phase_intermediate - phase_old
+    phase_support = phase_new - phase_intermediate
+    storage_before = before.dirichlet_energy + beta_q * phase_old
+    storage_after = after.dirichlet_energy + beta_q * phase_new
+    storage_change = storage_after - storage_before
+    return RelationalResetObservation(
+        before=before,
+        after=after,
+        phase_before=phase_before,
+        phase_after=phase_after,
+        edges_before=tuple((nodes[i], nodes[j]) for i, j in old_edges),
+        edges_after=tuple((nodes[i], nodes[j]) for i, j in new_edges),
+        storage_scale=beta,
+        form_state_change=form_state,
+        form_support_change=form_support,
+        form_storage_change=after.dirichlet_energy - before.dirichlet_energy,
+        phase_state_change=phase_state,
+        phase_support_change=phase_support,
+        phase_storage_change=phase_new - phase_old,
+        phase_storage_before=phase_old,
+        phase_storage_after=phase_new,
+        storage_before=storage_before,
+        storage_after=storage_after,
+        storage_change=storage_change,
+        identity_residual=(
+            storage_change
+            - form_state
+            - form_support
+            - beta_q * (phase_state + phase_support)
+        ),
+        transport_reset=transport_reset,
+    )
+
+
 def _ordered(value, label, *, limit=None):
     if isinstance(value, (str, bytes, bytearray, Mapping, Set)):
         raise TypeError(f"{label} must be an ordered iterable")
@@ -358,6 +576,95 @@ def _ordered(value, label, *, limit=None):
         return tuple(value) if limit is None else tuple(islice(iter(value), limit))
     except TypeError as exc:
         raise TypeError(f"{label} must be an ordered iterable") from exc
+
+
+def bound_relational_coefficient_from_jet(
+    *, form_bounds, rate_bounds, acceleration_bounds
+) -> RelationalCoefficientJetBounds:
+    """Enclose chi=m1²/[pi²*(m1²-m0*m2)] under declared preparation premises.
+
+    Each input is an ordered pair of finite exact/represented real endpoints.
+    Bounds include outward arithmetic, not unprovided measurement or derivative
+    error. Unresolved signal/gap or incompatible decay returns no coefficient.
+    This function neither validates a physical preparation nor reads a graph.
+    """
+    from ..mathematics._rational_interval import INTERVAL_METHOD, I, pi_interval
+
+    def interval(raw, label):
+        values = _ordered(raw, label, limit=3)
+        if len(values) != 2:
+            raise ValueError(f"{label} must contain two ordered endpoints")
+        return I(*(exact_or_represented_real(value, label) for value in values))
+
+    form = interval(form_bounds, "form_bounds")
+    rate = interval(rate_bounds, "rate_bounds")
+    acceleration = interval(acceleration_bounds, "acceleration_bounds")
+    square = rate**2
+    gap = square - form * acceleration
+    reasons = []
+    if form.contains(0):
+        reasons.append("initial_form_not_separated_from_zero")
+    if (form.lo > 0 and rate.lo > 0) or (form.hi < 0 and rate.hi < 0):
+        reasons.append("incompatible_initial_decay")
+    if gap.hi <= 0:
+        reasons.append("nonpositive_restoring_gap")
+    elif gap.lo <= 0:
+        reasons.append("unresolved_restoring_gap")
+    coefficient = None if reasons else square / (pi_interval() ** 2 * gap)
+    return RelationalCoefficientJetBounds(
+        form_bounds=(form.lo, form.hi),
+        rate_bounds=(rate.lo, rate.hi),
+        acceleration_bounds=(acceleration.lo, acceleration.hi),
+        squared_rate_bounds=(square.lo, square.hi),
+        restoring_gap_bounds=(gap.lo, gap.hi),
+        coefficient_bounds=(
+            (coefficient.lo, coefficient.hi) if coefficient is not None else None
+        ),
+        unavailable_reasons=tuple(reasons),
+        arithmetic_method=INTERVAL_METHOD,
+    )
+
+
+def bound_relational_coefficient_from_samples(
+    samples, *, sample_step, sample_error_bound, third_derivative_bound
+) -> RelationalCoefficientSampleBounds:
+    """Propagate three uniform samples and declared errors into the jet observer.
+
+    The noise bound covers every sample and the C3 bound covers the complete
+    noiseless window. Neither bound, nor uniform timing, is inferred here.
+    """
+    raw = _ordered(samples, "samples", limit=4)
+    if len(raw) != 3:
+        raise ValueError("samples must contain exactly three ordered values")
+    values = tuple(exact_or_represented_real(value, "sample") for value in raw)
+    step = exact_or_represented_real(sample_step, "sample_step")
+    error = exact_or_represented_real(sample_error_bound, "sample_error_bound")
+    third = exact_or_represented_real(third_derivative_bound, "third_derivative_bound")
+    if step <= 0 or error < 0 or third < 0:
+        raise ValueError("require positive sample_step and nonnegative error bounds")
+    rate = (-3 * values[0] + 4 * values[1] - values[2]) / (2 * step)
+    acceleration = (values[2] - 2 * values[1] + values[0]) / step**2
+    rate_error = 4 * error / step + third * step**2 / 3
+    acceleration_error = 4 * error / step**2 + third * step
+    jet = bound_relational_coefficient_from_jet(
+        form_bounds=(values[0] - error, values[0] + error),
+        rate_bounds=(rate - rate_error, rate + rate_error),
+        acceleration_bounds=(
+            acceleration - acceleration_error,
+            acceleration + acceleration_error,
+        ),
+    )
+    return RelationalCoefficientSampleBounds(
+        samples=values,
+        sample_step=step,
+        sample_error_bound=error,
+        third_derivative_bound=third,
+        rate_estimate=rate,
+        acceleration_estimate=acceleration,
+        rate_error_bound=rate_error,
+        acceleration_error_bound=acceleration_error,
+        jet=jet,
+    )
 
 
 def _regions(nodes, regions):

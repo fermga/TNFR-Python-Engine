@@ -4,11 +4,18 @@
 state-plus-rate counterexamples, a regional response budget, a sufficient
 instantaneous attachment interface, conditional support-event budget and
 nonselection results, and passive bridge relocation with an explicit shared
-recovery domain. These use the admitted relational law; they add no
-pressure, phase, capacity or support rule. The
+recovery domain. The support-law closure audit derives symmetry and clock
+restrictions but proves that they do not select occurrence. The complete-action
+audit additionally admits nodal resets: actual UM and RA-then-UM examples
+can offset positive attachment cost, and the existing continuous law can
+produce phase compatibility. These results retain the distinction between
+operator events and relational flow; no autonomous activation rule is added.
+The [effective-link admission](#effective-link-admission) combines causal
+paths, restoring geometry and an explicit local formation family through a
+mediator, retaining the supplied fine support and complete nodal law. The
 [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-owns the next task. Formation, local recovery and the supplied interaction
-preparation remain in [relational exchange](RELATIONAL_EXCHANGE_ADMISSION.md).
+owns the next task. The general formation and local-recovery theorems remain
+in [relational exchange](RELATIONAL_EXCHANGE_ADMISSION.md).
 
 ## 1. Fixed model and observation
 
@@ -1179,3 +1186,1216 @@ whether, when or which relocation occurs. The
 [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 owns the constitutive decision that remains; no autonomous event law is
 introduced here.
+
+<a id="support-law-choice-and-clock"></a>
+## 11. Support-law closure: restrictions do not select occurrence
+
+### State, candidates and the missing row
+
+Retain `X=(x,theta,nu)`, the actual unit support `E`, held positive capacities,
+and the complete relational field `F_E`. Fix a finite supplied family of
+atomic bridge exchanges `a=(removed edge, added edge)`. Each reset is
+`R_a(E,X)=(E_a,X)`: it changes support and retains every nodal coordinate.
+Admit the old and new fields separately. If recovery is claimed, require a
+valid common-basin argument such as section 10, not merely unchanged winding
+or a favorable represented storage jump.
+
+The continuous law and the reset map leave distinct data unspecified:
+
+| Item | Restriction inherited from the present premises | Remaining choice |
+| --- | --- | --- |
+| Candidate family | Must transform with the full state and preserve the declared internal support | Which exchanges are eligible is itself a premise |
+| Event budget | Additional zero-supply passivity requires `Delta S_a<=0` | A nonpositive cost does not require execution or rank two eligible events |
+| Identity | The stated pre/post recovery conditions must both hold | Recovery does not choose an event or prove repeated-switching stability |
+| Selection | An equivariant deterministic choice must be fixed by the state stabilizer | Several fixed choices can remain; ties need not be symmetries |
+| Timing | Event rates have inverse-clock units and transform with the complete flow | Waiting law, guard, threshold, randomness or memory remains unspecified |
+| History | Include every consumed mark, age, budget or previous event | Such memory is not present merely because a diagnostic report is retained |
+
+Abstention, denoted `bottom`, is a valid outcome. A candidate set, a selected
+candidate, an occurrence and a waiting time are not interchangeable. The
+current read-only observers provide the candidate's field/budget comparison;
+they implement none of these missing causal choices.
+
+### Exact symmetry acts on events, not their list positions
+
+Let a supplied finite group act on nodes, the support and every consumed
+state/history coordinate. It acts on each event by sending **both** its
+removed and added edges to their images. Candidate eligibility must be
+invariant under the stabilizer `H` of the complete declared state. For a
+deterministic equivariant selector `s`,
+
+\[
+s(E,X)=s(h(E,X))=h\,s(E,X)\qquad(h\in H).
+\]
+
+Thus only stabilizer-fixed events or abstention are possible. If no eligible
+event is fixed, a unique deterministic non-abstaining choice is obstructed.
+A singleton candidate orbit removes this particular obstruction; it does
+not derive a selector, its continuity, or an event time. Sorting node names,
+taking the first candidate or hiding a mark in insertion order does not
+respect this premise.
+
+The existing [finite-action owner](../../src/tnfr/physics/selector_symmetry.py)
+already proves this restriction. To apply it to edges without a parallel
+selector, lift the action to typed node and event slots. Retain the complete
+exact nodal labels, actual support relations and each event's added/removed
+endpoint incidences. Permute the event slots by the induced edge action, then
+pass those slots as candidates. This is an exact declaration, not a live
+graph certificate or an assertion that rounded phases have exact symmetry.
+
+A strict passive witness exists without breaking node-label symmetry. Use
+two C5 rings and bridge `(0,5)`, synchronized phase zero, common positive
+capacity, and `x=epsilon*e_0`, `epsilon!=0`. Restrict candidates structurally
+to replacement bridges between neighbors of the two old ports:
+`{1,4} x {6,9}`. Every candidate has
+
+\[
+\Delta S_a=-\epsilon^2/2<0.
+\]
+
+The independent reflections of the two rings fix the complete old state
+and act transitively on these four events. None is fixed. Hence strict
+storage preference for relocation does not supply a unique equivariant
+choice. This synchronized witness is distinct from the winding-one recovery
+preparation in section 10. With that latter primitive phase held fixed,
+equal costs need not be generated by any full-state symmetry.
+
+If randomness is independently postulated, invariance forces equal
+probabilities or intensities **within** each stabilizer orbit. It does not
+fix the total event rate, the mass assigned to different orbits, or the
+probability of abstention. Symmetry therefore does not derive stochastic
+dynamics either.
+
+### The event clock must transform with both continuous rows
+
+For a constant clock conversion `tau=b*t`, `b>0`, with form units held fixed,
+the same mathematical paths are represented by
+
+\[
+\nu_i'=\nu_i/b,\qquad F'_E=F_E/b,\qquad
+\lambda'_a=\lambda_a/b.
+\]
+
+Here `lambda_a` is an independently supplied occurrence intensity, when such
+a law is chosen. The integrated hazard `integral(lambda_a dt)` and event
+choice probabilities are invariant. Storage and its event jump are unchanged;
+continuous storage work and loss are divided by `b`. Increasing solver `dt`
+without transforming capacity changes the evaluated evolution, not its units.
+The engine normalizes its two pressure weights: dividing both by `b` leaves
+the effective weights unchanged and cannot substitute for this conversion.
+
+For `d tau/dt=alpha(t)>0`, absorbing the clock into capacity instead gives
+
+\[
+\nu'_i=\nu_i/\alpha,\qquad
+\frac{d\nu'_i}{d\tau}=-\frac{\nu_i\dot\alpha}{\alpha^3}.
+\]
+
+A nonconstant `alpha` generally leaves the held-capacity family. A
+state-dependent clock has `dot(alpha)=L_F alpha`; if it depends on support,
+an event can also reset the transformed capacity. One cannot suppress those
+terms to manufacture a native event clock. The
+[full-state clock owner](../NODAL_PARAMETER_FOUNDATIONS.md#pressure-clock-full-state-closure)
+retains the regularity requirements for treating this as a state chart.
+For example, dividing all capacities by their mean discards their common
+scale unless it is retained separately; it is not an invertible full-state
+chart. Held transformed capacity requires `alpha` to be constant along each
+flow segment and preserved at its events, not merely positive.
+
+At a complete equilibrium a time-independent deterministic guard sees the
+same state forever. It cannot both remain inactive initially and first become
+active after a positive finite delay without additional time/history input.
+This excludes that particular state-only waiting mechanism, not every event
+law. An event-rate postulate can introduce randomness, but the equilibrium
+does not derive it.
+
+### Explicit compatible rival laws
+
+Nonuniqueness remains even when a supplied candidate has strict passive slack
+and both supports have proved recovery. Work on a common open domain `U`
+where the finitely many supplied candidates satisfy these hypotheses. Follow
+the admitted deterministic old-support flow until its first event or first
+exit from `U`. Stop this comparison at exit; after an event retain its new
+support and the existing recovery law. This construction needs at most one
+event and asserts no arbitrary repeated-switching result.
+
+Define the dimensionless slack and a rate from quantities already present:
+
+\[
+s_a=-\Delta S_a/\beta>0,\qquad
+r=e\,\overline\nu>0.
+\]
+
+These do not select a law. For example, the following are **independent
+logical countermodels**, not inferred TNFR rules or proposed engine defaults:
+
+\[
+\lambda_a^{(0)}=0,\qquad
+\lambda_a^{(1)}=r s_a,\qquad
+\lambda_a^{(2)}=r s_a^2.
+\]
+
+The last two explicitly postulate competing stochastic first-event clocks.
+On every compact subdomain they have finite continuous rates and positive
+total rate. Their first-event survival probability along the unchanged
+pre-event path is
+
+\[
+\Pr(T>t)=\exp\!\left[-\int_0^t\sum_a\lambda_a(E,X(u))\,du\right],
+\]
+
+up to the stopping time. The conditional instantaneous event-type weights
+are `lambda_a/sum_b lambda_b`; they are not generally the probabilities
+integrated over the entire future path. All three models retain the same
+continuous field, passive budget, recovery premise, node relabeling and
+common form/phase origins. Two strictly positive models remain different
+even if abstention is excluded. Multiplying every rate by a positive
+dimensionless constant changes waiting while preserving instantaneous type
+weights; holding `F_E` fixed makes this a different event law, not a common
+clock conversion.
+
+The rates also satisfy the selected model's
+[form-unit covariance](RELATIONAL_EXCHANGE_ADMISSION.md#4-origin-units-and-exact-replication).
+Under `x'=a*x`, `beta'=a^2*beta`, `tau=b*t`, `a,b>0`, and normalized coefficients, put
+`k=e+a*w`, `e'=e/k`, `w'=a*w/k`, `nu'=k*nu/b`. Then `s'_a=s_a` and
+`r'=r/b`. Transform `U` and its recovery inequalities as well; keeping a
+numerical radius in mixed form/phase coordinates unchanged is not a unit
+conversion. This covariance restricts admissible formulas without choosing
+the exponent or probability law.
+
+A concrete discriminator uses the aligned winding-one phases and
+`x=epsilon*e_0+(epsilon/2)*e_1`, with supplied candidates `(1,6)` and `(2,7)`
+replacing `(0,5)`. Their exact jumps are `-3*epsilon^2/8` and
+`-epsilon^2/2`. Their ideal common equilibrium has zero bridge gaps; the
+section 10 basin proof applies to each support for sufficiently small
+nonzero `epsilon`. The two positive rival models predict instantaneous
+type ratios `3/4` and `9/16`, hence first-type weights `3/7` and `9/25`.
+These are analytic conditional predictions of different **assumed** laws,
+not measured event frequencies or a reason to install either law.
+
+### Integration and disposition
+
+The [selection controls](../../tests/physics/test_relational_event_selection.py)
+exercise the existing exact-action owner and real relocation observer; the
+[clock controls](../../tests/physics/test_relational_event_clock.py) compare
+the complete shared fields and a bounded Euler unit-conversion control.
+Exact arithmetic on represented storage is kept separate from the ideal
+phase preparation and its recovery proof. No event selector, random generator,
+timer, automatic graph mutation or duplicate SDK report is introduced.
+
+**Result:** full-state availability, event passivity, recovery, symmetry and
+clock covariance do not uniquely close support evolution. No independently
+justified additional occurrence premise was obtained in this audit. Retain
+support changes as supplied interventions. This closes the bounded
+nonselection question; it does not prove that a future independently justified
+principle could never determine an event law. Fixed-support pattern formation
+and interaction remain valid and need no primitive rewiring to exist.
+
+<a id="nodal-reorganization-and-contact"></a>
+## 12. Nodal reorganization and connection in one action
+
+### Revising the event premise, not discarding the nonselection result
+
+An NFR's proposed ability to act through operators belongs to the same
+research question as connection formation. An operator specifies an action
+on state. Deriving its internal activation additionally requires a map from
+the acting pattern's state to the target, action and time. Neither an external
+controller nor a conscious agent is required by that question; the current
+implementation's invocation rules do not already supply its physical answer.
+
+The earlier pure-addition restriction held every nodal coordinate fixed.
+Actual UM changes phase and can change capacity while adding edges. RA, EN
+and AL can change form. It is therefore necessary to examine a complete reset
+`(E,X)->(E_plus,R X)`, rather than transfer the frozen-triad restriction to
+every operator-mediated contact.
+
+The implementation audit reuses existing owners:
+
+| Action | Existing mechanism | Premises still supplied |
+| --- | --- | --- |
+| UM, Coupling | Snapshot phase proposals and optional capacity alignment; functional links to phase-compatible nonneighbors | Invocation, candidate inventory, phase limit, affinity mixture/threshold, sampling and merge policy |
+| RA, Resonance | Form mixing and configured phase/capacity changes on existing compatible neighbors | Invocation, factors, target set and ordering; RA itself creates no edges |
+| EN, Reception | Incoming-form blending on its declared execution path | Which incoming data are available and when the operator runs |
+| AL, Emission | Form change on an existing node | Source/amplitude and invocation; it does not create the substrate |
+
+EN's actual form input is the unweighted mean of existing incoming neighbors
+(predecessors on a directed graph), not a U3-filtered or phase-ranked mix.
+Its source-ranking telemetry does not select or weight that mean. AL and EN
+write no phase or support on these basic paths. Operator-class callbacks and
+complete words retain their separate execution contracts.
+
+The [UM kernel](../../src/tnfr/operators/_coupling_stage_kernel.py) searches
+all graph nodes or the supplied `_node_sample` for nonneighbors. That inventory
+is a potential-contact relation, not a relation created by the search itself.
+UM first needs an existing compatible neighbor at its target; it can join
+nontrivial components or attach an isolate, but does not bootstrap two
+isolates. RA uses the [shared neighbor stage](../../src/tnfr/operators/network_stage.py).
+The existing [child/coupling feedback](../CHILD_COUPLING_FEEDBACK.md) and
+[THOL transport](../THOL_BIRTH_AND_TRANSPORT.md) already retain supplied
+targets and schedules; they are useful mechanisms, not forgotten autonomous
+selection theorems.
+
+In particular, UM's functional-link score mixes phase affinity, normalized
+absolute-form similarity and Si similarity. Its form term changes under a
+common EPI offset, whereas the selected continuous relational law is offset
+invariant. Limited proximity sampling also uses snapshot rank for ties.
+These configured policies cannot be imported as a derived relational law
+without revising and testing their premises. They remain separate from the
+read-only storage accounting below.
+
+### Full reset accounting
+
+For symmetric nonnegative conductance `W` and simple undirected support `U`,
+define the same storage functional, with their distinct roles retained:
+
+\[
+S(W,U,x,\theta)=\frac12\sum_{\{i,j\}\in U}W_{ij}(x_i-x_j)^2
+ +\beta\sum_{\{i,j\}\in U}[1-\cos(\theta_j-\theta_i)].
+\]
+
+At unit weights this is the selected relational storage. Reading it on other
+weights is valid endpoint accounting, not admission of a weighted relational
+evolution law. In particular a zero-weight support edge still contributes
+phase storage, consistently with the native unweighted phase neighborhood.
+
+Writing `X_minus` and `X_plus` for the actual endpoint states gives the exact
+decomposition
+
+\[
+\begin{aligned}
+\Delta S={}&S(W_-,U_-,X_+)-S(W_-,U_-,X_-)\\
+ &+S(W_+,U_+,X_+)-S(W_-,U_-,X_+).
+\end{aligned}
+\]
+
+The first term is nodal reorganization on the old support; the second is
+support work at the new nodal state. This intermediate evaluation is an
+algebraic counterfactual, not an asserted execution order or an extra event.
+Capacity does not enter this storage explicitly, but any capacity change
+must be retained because it changes subsequent rates. A negative first term
+can offset a positive second term in **this same action**. No reservoir of
+past dissipation is inferred. Event passivity remains an additional premise,
+tested against the full `Delta S`, and no timing law follows.
+
+### A strict UM attachment funded by its own phase reset
+
+Take two existing unit edges `(0,1)` and `(2,3)`, constant form `x_i=m>0`,
+equal positive capacities and equal Si. Set
+
+\[
+\theta=(0,2h,2h,4h),\qquad 0<h<\pi/4.
+\]
+
+Invoke one bidirectional UM stage at node 1 with phase factor
+`0<eta<=1`, and explicitly supply node 2 as its only candidate nonneighbor.
+The compatible old pair has circular mean `h`, so the ideal phase proposal is
+
+\[
+\theta^+=(\eta h,(2-\eta)h,2h,4h).
+\]
+
+The proposed bridge `(1,2)` has positive phase cost
+`beta*(1-cos(eta*h))`. Uniform form makes its transport cost zero for any
+nonnegative functional-link weight. The full change is nevertheless
+
+\[
+\Delta S=\beta f(\eta),\qquad
+f(\eta)=\cos(2h)-\cos(2(1-\eta)h)+1-\cos(\eta h)<0.
+\]
+
+Indeed `f(0)=0`, `f(1)=cos(2h)-cos(h)<0`, and
+
+\[
+f''(\eta)=4h^2\cos(2(1-\eta)h)+h^2\cos(\eta h)>0.
+\]
+
+Convexity gives `f(eta)<=eta*f(1)<0`. This is a conditional finite-action
+theorem for the declared one-candidate UM reset. It proves neither universal
+UM passivity nor its autonomous invocation, and these two-node components
+are a minimal mechanism witness, not a demonstrated maintained NFR identity.
+
+The concrete production control uses `h=pi/8`, `eta=1/4`, `m=1/2`, capacities
+one and Si `0.8`. All phase gates and the compatibility threshold have strict
+slack. The ideal new weight is `63/64`, and the new gap is `pi/32`.
+The strictly negative budget therefore also persists under sufficiently small
+admitted perturbations of the inputs with this candidate policy fixed.
+The theorem concerns exact-real phases; the test separately reads the actual
+binary64 stage endpoints and their represented storage.
+
+The generated weight is **not one**. The current unit-support relational
+executor consequently rejects that output. Do not silently replace its weight
+or reuse the unit-bridge recovery theorem as if this operator event were the
+same model. The result establishes feasible contemporaneous reorganization
+and attachment, not subsequent pattern maintenance.
+
+### RA form redistribution can also offset an attachment cost
+
+On the same two edges, take forms `(m+d,m-d,m-d,m+d)`, `m>d>0`, uniform
+phase and equal positive capacities. One all-target RA stage with unclipped
+form-mix factor `rho` changes each pair's contrast from `d` to
+`c*d`, where `c=1-2*rho`. A subsequent admitted UM stage at node 0, with only
+candidate 2, can add their positive-conductance bridge. Calling its actual
+conductance `omega`, uniform phase gives
+
+\[
+\Delta S=\big[(4+2\omega)(1-2\rho)^2-4\big]d^2.
+\]
+
+For `rho=1/4` and `0<omega<=1`, this is strictly negative, while the new
+edge cost `2*omega*c^2*d^2` is positive. The production control uses `m=1/2`,
+`d=1/8`; RA produces forms `(9/16,7/16,7/16,9/16)`. It retains the actual
+capacity amplification and UM conductance. The combined two-event budget is
+telescoping endpoint accounting: RA's reduction and UM's positive increment
+must also be reported separately. This is not zero-supply passivity of each
+individual event or a claim that prior dissipation is a stored work reserve.
+An internally justified composite action would still need its own definition.
+
+### The continuous law can create phase admission
+
+At held unit support, phase and capacity, an AL/EN form jump `d` changes the
+next freshly evaluated relational phase row by an exact linear identity:
+
+\[
+q^+=q+B d,\qquad
+\dot\theta^+-\dot\theta^-=\frac w\beta
+\operatorname{diag}(\nu_i/H_i)B d,\qquad
+\Delta S=q^T d+\tfrac12 d^T B d.
+\]
+
+For one unclipped EN target `i` with mix `0<=rho<=1`, its existing neighbor
+mean gives `d_i=-rho*q_i/degree_i` and all other entries zero. Consequently
+
+\[
+\Delta S=-\rho(1-\rho/2)q_i^2/\operatorname{degree}_i\le0.
+\]
+
+This redistributes existing contrast; uniform form remains uniform. A
+targeted AL increment `a` from uniform form instead costs
+`degree_i*a^2/2` on nonisolated support. Such an increment can provide a phase
+response, but its supplied action and budget must remain explicit. The
+identities do not transfer unchanged to simultaneous multi-target EN,
+clipping, a capacity/phase reset or arbitrary operator words.
+
+For a supplied candidate pair `i,j` in independently admitted components,
+retain a common phase reference and a declared native U3 limit
+`0<gamma<=pi/2`. On a
+regular lift, set `delta=theta_j-theta_i` and
+`M=cos(delta)-cos(gamma)`. The existing phase row gives
+
+\[
+\dot M=-\frac w\beta\sin\delta
+\left(\frac{\nu_jq_j}{H_j}-\frac{\nu_iq_i}{H_i}\right).
+\]
+
+Positive `M` is phase compatibility for this limit. It is not an edge or an
+instruction to invoke UM. Consider the two separate edges `(0,1)` and `(2,3)`
+with phases `(0,0,gamma,gamma)`, unit capacities and forms `(m+a,m,m,m)`.
+For `a>0`, `H_i=pi`, `q=(a,-a,0,0)`, so
+
+\[
+M_{02}(0)=0,\qquad \dot M_{02}(0)=\frac{wa\sin\gamma}{\beta\pi}>0.
+\]
+
+Smoothness supplies a transverse crossing and nearby preparations with the
+second component rotated to `gamma+epsilon` that start incompatible and enter
+compatibility in finite positive time for sufficiently small `epsilon>0`.
+The implicit-function argument also gives
+`t_cross(epsilon)=beta*pi*epsilon/(w*a)+O(epsilon^2)`.
+At `a=0` each component is an equilibrium and remains incompatible after that
+rotation. Reversing `a` reverses the initial crossing direction. Thus this
+admission timing is inherited from the complete continuous law; no new
+phase-speed equation is imposed.
+
+Both components can rotate independently without changing their internal
+dynamics. Their cross-component phase difference therefore requires the
+supplied common reference; it is not reconstructible from independently
+phase-quotiented observations. Moreover the unit bridge at the displayed
+boundary would cost `a^2/2+beta*(1-cos(gamma))>0`. Phase admission alone still
+does not make a frozen-state attachment passive or cause its occurrence.
+
+### Integration and the all-operator audit
+
+The shared [reset observer](../../src/tnfr/physics/relational_observations.py)
+and `Network.relational_reset(after, storage_scale=...)` retain both supplied
+endpoints, actual conductances and phases, plus the shared transport snapshot's
+capacity and stored pressure (zero defaults when those attributes are absent).
+Those defaults are not evidence of measured zero capacity or pressure. They
+reuse the transport reset and represented half-sine phase cost to separate
+form/phase changes into state and support contributions. Exact rational
+accounting of represented values is not an enclosure of ideal trigonometric
+error, authentication of an operator event, or admission of future flow.
+The [API contract](../../docs/contracts/RELATIONAL_DYNAMICS.md#relational-reset-observation)
+owns the wider snapshot domain and supplied-work assessment.
+
+[Actual UM/RA controls](../../tests/physics/test_coupling_attachment_budget.py),
+[AL/EN and phase-admission controls](../../tests/physics/test_relational_contact_admission.py)
+and [SDK/export controls](../../tests/sdk/test_relational_reset.py) reuse these
+owners. Native AL/EN serialized uniform-real BEPI passes shared signed-scalar
+admission directly; no test-only state conversion substitutes for integration.
+Rich, complex and unrepresentable scalar inputs still reject.
+
+The [all-thirteen mechanism map](../STRUCTURAL_OPERATORS.md#operator-mechanism-and-activation-audit)
+adds IL phase relaxation, capacity-only versus edge-aware VAL/NUL resets,
+stored-pressure lifetime, THOL's isolated birth and the three REMESH paths.
+It distinguishes implemented writes, eligibility, configured dispatch and
+autonomous occurrence. In particular UM can move phase at uniform form where
+the relational phase velocity is zero; its reset is not automatically a
+continuous step of the selected law.
+
+Sustained rhythm synchronization is a candidate activation premise, distinct
+from instantaneous U3 compatibility. The fields already give
+`delta_dot=theta_dot_j-theta_dot_i`. Equal rates once do not prove persistence;
+equal sustained rates can retain a noncompatible offset. A locking hypothesis
+needs a declared time interval or an invariant dynamical condition, a candidate
+relation/common reference and a separate reason why locking causes attachment.
+Internal precontact evolution above avoids using the future bridge to explain
+its own admission; it does not establish the remaining occurrence principle.
+
+### What this opens, and what remains to derive
+
+The two results are complementary: existing form/phase dynamics can create
+admission, and an actual nodal action can make a positive-cost connection
+compatible with total nonincrease. They are not yet one autonomous trajectory:
+their preparations, candidate access and execution contracts differ.
+
+Continuous conductance is another possible model revision, but the native
+phase channel uses support independently of weight. A missing edge is not
+the limit of a present edge with weight approaching zero for that channel.
+Weighting phase too would change the constitutive model. The current operator
+reset route can be studied before introducing that separate extension.
+
+An open mechanism is a justified internal activation/contact rule
+for a complete action: candidate access and common reference, state reset,
+occurrence and clock, and the post-action evolution domain. Emission or
+Reception may supply the form contrast used by the phase mechanism, but their
+input and work must then be included in the same account. A named operator
+does not by itself justify its source or timing. The
+[sole plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) defers that
+primitive-event question while prioritizing collective geometry below; no
+functional-link policy is relabeled as emergent.
+
+<a id="precontact-rhythm-and-locking"></a>
+## 13. Precontact rhythm, phase agreement and sustained locking
+
+The hypothesis that a connection is caused by synchronized rhythms first
+requires an identified rhythm of the **actual** nodal law. The
+[native pulse admission](RELATIONAL_EXCHANGE_ADMISSION.md#relational-pulse-scope)
+reuses the existing phase/form modes and storage balance. A capacity is not
+an angular velocity; a maintained phase pattern need not be a periodic orbit.
+The auxiliary `Network.rhythm()` spectrum and arithmetic pulse studies have
+separate laws. No additional primitive pulse variable follows from their names.
+
+### Matching phase and speed can still hide different futures
+
+Fix a candidate port in each independently admitted P2 component. Write the
+relative port phase as `c=theta_b0-theta_a0`, retaining a common reference.
+The complete fields give `c_dot=theta_dot_b0-theta_dot_a0`. Instantaneous U3
+compatibility bounds `abs(wrap(c))`; equality of phase speeds gives `c_dot=0`
+at that instant. Neither assertion says that this equality is invariant.
+
+An explicit counterexample needs no forcing or new parameter. Prepare both
+pairs with uniform form `m` and common positive capacity `nu`. Their phases
+are `(0,a)` and `(0,-a)`, with `0<a<pi/2`. Both candidate ports therefore have
+the same form, phase, capacity and instantaneous phase velocity (zero).
+Each pair has `q=0`, metric `H=pi*sinc(a)` and nonzero opposite form rates.
+Differentiating the existing full field gives
+
+\[
+\ddot\theta_{a0}(0)=\frac{2w^2\nu^2 a}{\beta\pi^2\operatorname{sinc}(a)},
+\qquad
+\ddot\theta_{b0}(0)=-\ddot\theta_{a0}(0),
+\]
+
+\[
+c(0)=\dot c(0)=0,\qquad
+\ddot c(0)=-\frac{4w^2\nu^2 a}{\beta\pi^2\operatorname{sinc}(a)}<0.
+\]
+
+Indeed each port has `theta_dot=w*nu*u/(beta*H)`, where `u=x_0-x_1`.
+Initially `u=0`, so the differentiated metric term vanishes, while
+`u_dot=2*w*nu*delta/pi`. The acceleration comes from retained internal
+phase geometry through form evolution, not a hidden external frequency.
+The damping term also vanishes at this instant; the result holds for `e>=0`.
+The two pairs even have the same consensus tangent spectrum. Matching that
+spectrum or a port's current phase/speed cannot certify sustained locking.
+
+### Exact prepared locking does not select attachment
+
+Conversely, let two supplied components be isomorphic with corresponding
+capacities and model coefficients. Prepare their full forms/phases related
+by the same node correspondence and constant offsets `b,c`:
+
+\[
+x_B(0)=P x_A(0)+b\mathbf1,\qquad
+\theta_B(0)=P\theta_A(0)+c\mathbf1.
+\]
+
+Relabeling and common-offset equivariance, followed by uniqueness on a shared
+regular domain, preserve these relations for as long as both solutions exist
+there. Their corresponding phase velocities agree at every time. The
+components have no cross-edge, however; the existing law keeps their supports
+unchanged. This is inherited matching from a supplied preparation, not mutual
+entrainment across a missing connection or evidence that locking causes birth.
+
+Any offset `c` is allowed by this independent-component symmetry. Thus sustained
+equal rates can coexist with a port separation outside the selected U3 limit.
+Even `c=0` supplies no event law. The relative offset is a neutral preparation
+freedom: replacing component B by a further constant phase rotation produces
+another exact solution. Independent evolution cannot select a unique relative
+phase for all those rotated preparations. Adding a contact rule which compares
+the components introduces a potential-contact relation and a common reference
+that must be declared and justified.
+
+### Existing fine support aligns ports while deforming regional geometry
+
+An NFR understood as a coherent **region** need not have the same relations
+as an individual fine node. Distinguish the birth of a primitive graph edge
+from an effective interaction between regions on supplied fine support. The
+existing directed-triangle [derived-form phase reduction](DERIVED_FORM_PHASE.md#212-a-coupled-amplitude-and-phase-law-derived-from-fine-diffusion)
+already illustrates the latter under a different law and observation. Its
+contrast angle cannot be silently substituted for primitive relational phase.
+
+There is also a direct causal control in the current joint law, without an
+invoked UM event. Reuse the two unit C5 rings, common capacity `nu>0`, uniform
+form, winding-one internal twist `kappa=2*pi/5`, and the supplied fine bridge
+`(0,5)`. Rotate the second ring by a small positive offset `c`. At that initial
+state only the two ports have an ideal nonzero phase source. Define
+
+\[
+z=2\cos\kappa+e^{ic}=R e^{i\alpha},\quad
+g_0=\alpha/\pi=-g_5,\quad H_p=\pi R\operatorname{sinc}\alpha.
+\]
+
+Since `q=0`, all primitive phase velocities initially vanish. Nevertheless
+`x_dot_0=w*nu*g_0=-x_dot_5`, so the full-support Laplacian gives
+`q_dot_0=4*w*nu*g_0=-q_dot_5`. Differentiating the admitted phase row yields
+
+\[
+\ddot\theta_0=\frac{4w^2\nu^2g_0}{\beta H_p},\qquad
+\ddot\theta_5=-\ddot\theta_0,\qquad
+\ddot c=-\frac{8w^2\nu^2g_0}{\beta H_p}<0.
+\]
+
+Here `c` initially equals the port phase difference; once other nodes respond,
+one must retain their full state rather than assume a closed rigid-ring angle.
+For `0<c<pi/2`, `g_0>0` and all initial edges are acute. Removing the fine
+bridge while keeping both prepared rings unchanged makes each a twist
+equilibrium, so this acceleration vanishes. The dependency is thus
+**existing relation -> phase pressure -> form contrast -> phase response**.
+It supplies an interaction-induced port response, not a connection caused
+by an already assumed alignment. Crucially, it is not instantaneous alignment
+of the entire regions. Each internal neighbor of port 0 has initial phase
+acceleration `-w^2*nu^2*g_0/(beta*H_n)`, with `H_n=2*pi*cos(kappa)`, and
+the corresponding neighbors of port 5 have the opposite sign. Hence the
+difference of the two regional mean phases satisfies
+
+\[
+\ddot c_{\rm mean}(0)=-\frac{2w^2\nu^2g_0}{5\beta}
+\left(\frac4{H_p}-\frac2{H_n}\right)>0
+\]
+
+for sufficiently small positive `c` on C5. At zero offset,
+`H_p=pi*(1+2*cos(kappa))>2*H_n` because `cos(2*pi/5)<1/2`.
+Thus the ports initially approach while the regional means initially separate.
+This is an explicit geometry-dependent deformation, not a contradiction or
+evidence that one scalar phase per region closes the future response.
+
+For positive dissipation and sufficiently small offset, the existing
+[local recovery theorem](RELATIONAL_EXCHANGE_ADMISSION.md#relational-local-recovery)
+also gives convergence to the common aligned-twist equilibrium modulo common
+offsets. This reuses its local theorem, not a new quantified basin or a
+global synchronization result. The bridge already belongs to the fine model;
+interpreting a resulting regional relation as an emergent effective connection
+must state that distinction. It does not derive the underlying graph's birth.
+
+### A candidate composite identity, with full internal geometry retained
+
+This suggests a more precise ontological target than primitive edge creation:
+two coherent regions may acquire a joint geometric identity on supplied fine
+support. The existing [interaction theorem](RELATIONAL_EXCHANGE_ADMISSION.md#relational-region-interaction)
+already establishes the relevant local distinction. Disconnected acute C5
+twists have four independent neutral offsets (form and phase per component)
+and sixteen stable tangent directions. The joined graph has only two global
+neutral offsets and eighteen stable tangent directions under the positive-
+capacity/dissipation hypotheses. Relative offsets are restored by the joint
+dynamics rather than remaining arbitrary independent choices.
+
+At aligned ports the bridge adds quadratic stiffness
+`[(u_0-u_5)^2+beta*(v_0-v_5)^2]/2` to perturbations of form and phase.
+Degrees and phase metrics change too. The two lost neutral freedoms therefore
+do not define an isolated two-dimensional oscillator; they mix with internal
+deformation. The [existing tangent and nonlinear closure results](#1-fixed-model-and-observation)
+already prevent replacing this state by just two rigid regional clocks.
+
+The full joined equilibrium geometry, modulo common form/phase origins,
+is a **conditional candidate composite identity**: it has a restoring response
+to sufficiently small relative perturbations under the same law. Calling it
+a closed autonomous coarse NFR additionally requires a sufficient retained
+state and justified constitutive reduction; the known hidden-state memory
+cannot be discarded. A sustained composite pulse is also a separate claim,
+subject to the dissipative/reversible distinction above. Supplied fine support
+and prepared component patterns remain explicit premises.
+
+The smallest useful discriminator observes internal shape. For the receiver
+ring define `chi_x=x_5-mean(x_6,...,x_9)`. The phase-offset preparation gives
+`chi_x_dot(0)=-w*nu*g_0<0`. Independent components or a rigid-region
+approximation give zero. This is already a static analytic distinction; a
+new run is justified only to test a separately frozen quantitative finite-time
+prediction, not to rediscover transmission or claim physical constituents.
+
+### Execution evidence and research consequence
+
+The [contact controls](../../tests/physics/test_relational_contact_admission.py)
+differentiate the actual native field for the acceleration counterexample and
+advance the shared Euler owner for short prepared matching controls. The former
+is a static directional-derivative check; the latter verifies finite execution,
+not exact sustained locking or continuous error bounds. The ideal result is
+the equivariance/uniqueness argument above. A separate static two-C5 control
+checks both signs of the bridge-induced response and its removed-bridge null
+case. It does not rerun the completed transmission or recovery campaigns.
+No new oscillator, selector,
+observation window or phase law is installed. Full `field.phase_rate`, internal
+state and the existing port/work observations supply the needed information.
+
+The collective-identity question retains independent-component and rigid-region
+controls. Primitive support birth remains unresolved and has its own admission
+below; collective organization on finer support does not settle that question.
+A threshold, dwell time or phase-slip count can define a configured observation,
+but is not derived merely by naming synchronization. The
+[sole queue](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns the next quantitative admission without reopening completed modal,
+transmission or memory calculations.
+
+<a id="connection-mechanisms-and-mediators"></a>
+## 14. Connection mechanisms: mediation, reinforcement and primitive birth
+
+The [physical binding comparisons](../PHYSICAL_REGIME_CORRESPONDENCES.md#physical-binding-and-interaction)
+motivate a precise distinction. A channel of influence, a dynamically bound
+configuration and a primitive support event are different model claims.
+Existing interactions can organize a composite without creating a new
+fundamental interaction. This does not explain the origin of the fine support.
+
+### A mediated effective connection follows from existing nodal transport
+
+Reuse [exact hidden-state elimination](../DERIVED_EPI_MEMORY.md#3-exact-elimination-including-the-initial-hidden-state)
+on unit P3, `A--M--B`, with common held capacity `nu>0` and pure-EPI pressure.
+Observe `y=(x_A,x_B)` and hide `h=x_M`. The actual normalized nodal law gives
+
+\[
+\dot y=-\nu y+\nu\mathbf1h,\qquad
+\dot h=\frac\nu2\mathbf1^Ty-\nu h.
+\]
+
+Eliminating the mediator gives the exact endpoint law
+
+\[
+\dot y(t)=-\nu y(t)+\nu e^{-\nu t}\mathbf1h(0)
++\int_0^t\frac{\nu^2}{2}e^{-\nu(t-s)}
+\mathbf1\mathbf1^Ty(s)\,ds.
+\]
+
+Its off-diagonal memory term transmits influence without a direct A--B edge.
+For an initial donor-only difference `(delta x_A,delta h,delta x_B)=(a,0,0)`,
+
+\[
+\delta x_B(t)=\frac a4(1-e^{-\nu t})^2
+=\frac{a\nu^2}{4}t^2+O(t^3).
+\]
+
+The recipient's initial rate difference is zero; its acceleration difference
+is `a*nu^2/2`.
+Removing the mediator paths removes that influence. An instantaneous direct
+edge with positive conductance instead gives a nonzero initial recipient rate
+difference for `a!=0`. This is a bounded analytic discriminator, not a new
+simulation campaign, autonomous edge birth or a bound-state theorem.
+
+Replacing the hidden row by `h=(x_A+x_B)/2` gives a direct reduced coupling,
+but here it is exact only on that invariant preparation manifold; the donor-
+only control is outside it. The
+[minimal realization](../DERIVED_EPI_MEMORY.md#11-minimal-linear-state-retaining-a-declared-observation)
+requires three linear coordinates for arbitrary preparations: endpoint
+observation rows have rank two, and their first generator products raise the
+rank to three. The partition-based `observe_epi_memory` API cannot be called
+with the mediator omitted from its partition. Reuse the elimination algebra
+or the general linear-realization owner instead. The older unnormalized Kron
+example has a different capacity law, as that document already specifies.
+
+The [joint mediator extension](RELATIONAL_PATTERN_MEMORY.md#mediated-pattern-interaction)
+now uses the existing nonlinear form/phase law on two C5 regions linked through
+one nodal intermediary. It derives a two-coordinate tangent memory, a
+capacity-dependent transient and a direct-versus-mediated onset discriminator;
+the existing local theorem admits recovery of the supplied joint geometry.
+This extends the mechanism beyond pure diffusion without explaining primitive
+support origin or replacing a finite capture study.
+
+<a id="mediated-restoring-geometry"></a>
+### The same phase geometry induces a restoring relation through a mediator
+
+The [local recovery theorem](RELATIONAL_EXCHANGE_ADMISSION.md#relational-local-recovery)
+uses the Hessian of the existing phase storage, with edge weights
+`k_ij=cos(delta_ij)>0` at an acute equilibrium. These are derived curvatures,
+not new conductances or physical spring constants. Restrict its quadratic
+form to a two-edge path `A--M--B`, holding regional shapes fixed and allowing
+phase offsets `a,b` at its endpoints and `h` at its mediator. Its contribution is
+
+\[
+Q(a,h,b)=\frac\beta2\big[k_1(h-a)^2+k_2(b-h)^2\big].
+\]
+
+Completing the square gives the exact quadratic identity
+
+\[
+Q=\frac{\beta(k_1+k_2)}2(h-h_*)^2
++\frac{\beta k_{\rm eff}}2(b-a)^2,\qquad
+h_* = \frac{k_1a+k_2b}{k_1+k_2},\quad
+k_{\rm eff}=\frac{k_1k_2}{k_1+k_2}>0.
+\]
+
+Thus eliminating a hidden coordinate in a **static constrained minimum**
+leaves positive curvature in the endpoints' relative phase despite no direct
+edge. A common offset costs nothing. Other routes and internal deformations
+retain their own contributions; this two-edge expression is not the complete
+stiffness of the return-path graph.
+
+For an aligned unit path, `k_1=k_2=1`, so `k_eff=1/2`. More than the local
+quadratic term is available here. With lifted endpoint difference
+`d=b-a` satisfying `abs(d)<pi` and both path gaps acute, its exact constrained
+phase-storage minimum is
+
+\[
+\min_h\beta[2-\cos(h-a)-\cos(b-h)]
+=2\beta[1-\cos(d/2)]
+=\frac\beta4d^2+O(d^4).
+\]
+
+Indeed the expression before minimization is
+`2*beta*[1-cos(d/2)*cos(h-(a+b)/2)]`; its unique minimum in this acute lift
+is at the midpoint. This calculation restricts the existing storage rather
+than selecting another pressure law or introducing a synchronization threshold.
+
+Static minimization is **not dynamic elimination**. Endpoints and ring shapes
+are fixed only for this calculation; that constrained family need not be
+invariant under the actual flow. Neither `h=h_*` nor a direct endpoint law
+may replace the mediator's form and phase rows without another argument.
+The [derived memory](RELATIONAL_PATTERN_MEMORY.md#mediated-pattern-interaction)
+retains those rows, their initial state and their capacity. In particular a
+zero-capacity mediator can stay away from this constrained minimum: geometric
+curvature does not by itself make an inactive node move.
+The [native mediation controls](../../tests/physics/test_relational_mediation.py)
+check the exact path cost and its gradient against engine observations,
+including this zero-capacity boundary, without a trajectory campaign.
+
+Under the full local theorem's positive-capacity premises, phase deformation
+drives form through pressure, and form contrast feeds back into phase; form
+loss then damps the joint deviation. A restored configuration can remain at
+rest with all rates zero. What follows is a conditional restoring collective
+relation, not a requirement for perpetual oscillation. Holding fine support
+fixed still explains why its edges persist in the model; this curvature
+calculation does not explain their primitive birth or physical identification.
+
+### Simultaneous nodal loss can admit continuous reinforcement
+
+The shared [transport derivative](../../src/tnfr/physics/support_transport.py)
+and [joint response](JOINT_PARAMETER_RESPONSE.md#10-joint-pressure-response-and-the-capacity-product-rule)
+already separate changing conductance from nodal change. Fix a simple bare
+support `U`, positive symmetric conductances `a_ij`, strengths `d_i>0`, held
+positive `N=diag(nu_i)` and regular `H_U>0`, with `H_U*g_U=-grad(V_U)`.
+Let `e>=0`, `w>0`, `beta>0` and declare the conductance/storage scales.
+Consider the **explicit weighted extension**, not the unit-only executor,
+
+\[
+q=B_a x,\quad
+\dot x=N(-eD_a^{-1}q+w g_U),\quad
+\dot\theta=(w/\beta)H_U^{-1}Nq,\quad
+S=\tfrac12x^TB_a x+\beta V_U.
+\]
+
+For held `e,w,beta,nu_i`, differentiating and cancelling the exchange terms gives
+
+\[
+\dot S=-e\sum_i\frac{\nu_iq_i^2}{d_i}
++\frac12\sum_{\{i,j\}\in U}\dot a_{ij}(x_i-x_j)^2.
+\]
+
+Thus contemporaneous form loss can accommodate positive conductance work
+under an additional `S_dot<=0` premise. This is not expenditure of past loss
+from an invented reservoir. It is an admissibility inequality, leaving the
+allocation, speed and occurrence of reinforcement undetermined. It supplies
+no evolution law for `a`, and no weighted executor or global recovery theorem
+is installed by this calculation.
+For common-capacity P2 with nonzero form contrast it reduces to
+`a_dot<=4*e*nu*a`: positive reinforcement can be admitted without selecting
+its rate. Conductance scaling leaves normalized form transport unchanged but
+changes this extension's phase row at fixed `beta`; the storage budget is not
+an independently calibrated physical growth law.
+
+This calculation holds bare phase support fixed. A zero-weight edge already
+belongs to that support and participates in its phase pressure; it is not an
+absent relation. The existing fixed-active-edge derivative rejects birth from
+zero, and a zero-strength row needs separate admission. Adding a genuinely
+absent edge also changes `V_U`, `g_U`, `H_U` and support degrees, so its event
+needs the [complete reset budget](#nodal-reorganization-and-contact).
+At unchanged phase, its added phase cost `beta*(1-cos(theta_j-theta_i))`
+does not vanish as the newborn conductance tends to zero. Small transport
+weight therefore does not regularize native bare-support birth.
+Likewise a regular multiplicative rule `a_dot=a*f` preserves an initially zero
+weight when `f` is locally bounded: `a(t)=a(0)*exp(integral(f))`. Naming such a
+rule adaptive does not make it a birth mechanism.
+
+### What the repository supplies, and what is still missing
+
+The [relation foundation](RELATION_FOUNDATIONS.md) defines support, conductance,
+metric and causal dependence as distinct objects. Its
+[zero-relation admission](RELATION_FOUNDATIONS.md#zero-relation-boundary)
+shows why a small transport weight need not describe a weak or newly forming
+interaction, including the separate first-neighbor normalization boundary.
+That foundational contract precedes a proposed law for creating a relation;
+the effective-link results below retain their supplied fine support.
+
+UM can add a chord and create a new cycle sector; the existing
+[sector-birth control](../FORCED_SUPPORT_BALANCE.md#31-one-added-chord-extends-the-cycle-lattice-not-a-phase-generation-law)
+separates that event from simultaneous phase writes and its configured Si
+gate. Topological REMESH constructs MST/kNN support from supplied EPI distances
+and settings. The runtime's ordinary REMESH gate instead invokes delayed EPI
+mixing. Topology and coupling-support observations do not install either law.
+These are reusable mechanisms and controls, not a hidden autonomous selector.
+
+With a component-local fixed-support vector field, genuinely disconnected
+components have no causal cross-response. Shared initial rhythms do not alter
+that fact. A prospective binding model must therefore declare whether its
+precursor interaction is an existing fine path, an explicitly supplied field
+or candidate relation, or a newly postulated support law. Relabeling a
+zero-weight edge or a globally read candidate as no prior interaction conceals
+that premise. A pre-material interpretation remains open until this state and
+law are justified and a prospective response is derived. The
+[sole queue](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) admits that
+mechanism before extending the composite-identity experiment.
+
+<a id="effective-link-admission"></a>
+## 15. Sufficient conditions for a restoring effective link
+
+### Operational meaning and fixed premises
+
+Here a **local restoring effective link** means two properties under the same
+declared law: interventions in a region's retained form/phase state affect the
+other region, and sufficiently small joint perturbations recover the reference
+geometry modulo common offsets. This is an operational criterion for the
+present model, not a universal definition of an NFR, a microscopic edge-birth
+law or a physical spatial binding claim. A reference equilibrium need not
+oscillate or carry a nonzero signal to have this response to perturbations.
+
+Fix the [complete relational law](RELATIONAL_EXCHANGE_ADMISSION.md#1-state-inherited-geometry-and-the-independent-premise)
+on a finite connected simple unit graph, with held positive capacities,
+`e,w,beta>0`, no forcing or events, and an acute equilibrium
+`x_*=c*1`, `theta_*` with zero neighbor sine sums. Use local lifted phase
+deviations and interleave the coordinates as `z_i=(u_i,v_i)` for each node.
+This is a permutation of the native tangent's all-form, then all-phase order.
+The following identities concern the ideal equilibrium and real-valued field;
+a materialized tangent retains its own numerical residuals.
+
+### A unique shortest path gives a full-pair causal response
+
+Let `J=DF(z_*)`. Its off-diagonal block on an edge `j--i` is
+
+\[
+J_{ij}=\begin{pmatrix}
+e\nu_i/d_i & w\nu_i\cos(\theta_{*,j}-\theta_{*,i})/H_i\\
+-w\nu_i/(\beta H_i)&0
+\end{pmatrix},\qquad
+\det J_{ij}=\frac{w^2\nu_i^2\cos(\theta_{*,j}-\theta_{*,i})}
+ {\beta H_i^2}>0.
+\]
+
+Nonadjacent off-diagonal blocks vanish. This follows directly from the
+[equilibrium Jacobian](RELATIONAL_EXCHANGE_ADMISSION.md#quotient-linearization-and-the-restoring-mechanism),
+not from a graph-wave equation. Suppose distinct nodes `a,b` have a unique
+shortest support path `a=v_0,...,v_ell=b`, with length `ell>=1`. Locality gives
+`(J^k)_{ba}=0` for `k<ell`. At order `ell`, a contributing walk cannot contain
+a diagonal stay or a detour; uniqueness therefore gives
+
+\[
+P_{ba}=(J^\ell)_{ba}
+=J_{v_\ell v_{\ell-1}}\cdots J_{v_1v_0},\qquad \det P_{ba}>0.
+\]
+
+For the flow `Phi_t`, the tangent transfer of the donor's two coordinates to
+the receiver's two coordinates is consequently
+
+\[
+T_{ba}(t)=D_{z_a}(\Phi_t)_b(z_*)=(e^{tJ})_{ba}
+=\frac{t^\ell}{\ell!}P_{ba}+O(t^{\ell+1}),
+\]
+
+\[
+\det T_{ba}(t)
+=\frac{t^{2\ell}}{(\ell!)^2}\det P_{ba}+O(t^{2\ell+1})>0
+\]
+
+for every sufficiently small positive `t`. The reversed unique path gives
+the reciprocal statement. This is a rank-two response, not a guarantee that
+each matrix entry, a chosen scalar sensor or a regional average is nonzero.
+For each such fixed time, smoothness and the inverse function theorem also
+make the actual nonlinear map from the donor pair to the receiver pair locally
+invertible, with other initial coordinates held fixed. The neighborhood may
+depend on time; no arbitrary-amplitude or global response follows.
+
+With several shortest paths the leading coefficient is the **sum** of their
+ordered block products. Invertibility of each product alone does not establish
+invertibility of the sum. The unique-path result is sufficient, not necessary;
+the following consensus specialization removes that restriction.
+
+### At consensus, all shortest active paths reinforce the same block
+
+At phase consensus, `H_i=pi*d_i` and every edge cosine is one. Here even held
+nonnegative capacities are allowed for the transfer calculation. Put
+
+\[
+A=ND^{-1}B,\qquad
+T=\begin{pmatrix}e&w/\pi\\-w/(\beta\pi)&0\end{pmatrix},
+\qquad J=-A\otimes T,\qquad \det T=\frac{w^2}{\beta\pi^2}>0.
+\]
+
+Call the directed step `j -> i` active when `j--i` is a support edge and
+`nu_i>0`: the receiving row determines transmission. If the shortest active
+path from `a` to `b` has length `ell`, the same walk expansion gives
+
+\[
+(J^\ell)_{ba}=s_{ba}T^\ell,\qquad
+s_{ba}=\sum_{\substack{a=v_0\to\cdots\to v_\ell=b\\
+                         \text{shortest active paths}}}
+               \prod_{r=1}^\ell\frac{\nu_{v_r}}{d_{v_r}}>0.
+\]
+
+Thus all such paths have the same matrix factor and there is no leading-block
+cancellation, regardless of their number. The full-pair small-time conclusion
+holds whenever an active path exists. The degrees remain those of the actual
+support, including neighbors of zero capacity. In particular, `nu_a=0` does
+not prevent a perturbed donor value from acting as a fixed boundary source;
+capacity zero freezes its response, not its neighbors' dependence on its state.
+This extension concerns transfer only: the whole-network recovery theorem
+below still requires strictly positive capacities. Positive `e` is required
+there for attraction, not for the displayed off-diagonal determinants.
+
+### A frozen separator is an exact nonlinear causal null
+
+Let a set of zero-capacity vertices separate the donor and receiver in the
+support, and hold capacities and support fixed. Compare two admitted solutions
+with identical initial separator and receiver-side states, changing only the
+donor side. Both rows of every separator node are identically zero under the
+selected joint law. Its state therefore stays the same in both solutions.
+The receiver-side equations consume only their own evolving state and this
+same fixed boundary. Local uniqueness makes their solutions identical for
+their common existence interval. The argument is nonlinear and does not use
+a tangent approximation. A remaining active route invalidates this null.
+
+The [grounded recovery control](RELATIONAL_PATTERN_MEMORY.md#finite-mediated-response)
+shows why this distinction matters: independent regions can each restore a
+geometry imposed by one frozen boundary without transmitting changes to one
+another. Neither similar shapes nor equal rhythms establishes causal linkage.
+
+### Static effective curvature and dynamic recovery are complementary
+
+Let `K` be the acute equilibrium's cosine-weighted phase Hessian. Retain two
+distinct endpoints `R={a,b}` and minimize its quadratic storage over the other
+vertices `I`. When `I` is nonempty, connected positive edge weights give
+`K_II>0`; the unique constrained minimum has effective Hessian
+
+\[
+K_{\rm eff}=K_{RR}-K_{RI}K_{II}^{-1}K_{IR}
+=k_{ab}\begin{pmatrix}1&-1\\-1&1\end{pmatrix},\qquad k_{ab}>0.
+\]
+
+Indeed the minimized quadratic is nonnegative, vanishes for common endpoint
+offsets, and cannot vanish for unequal offsets: a zero full-graph quadratic
+requires every phase deviation to be equal. These facts give the displayed
+rank-one form and strict coefficient. For two vertices with no interior, use
+`K` itself. The minimum phase contribution is
+`beta*k_ab*(v_b-v_a)^2/2`. This generalizes the
+[two-edge calculation](#mediated-restoring-geometry); it is static curvature,
+not a new pressure, conductance or instantaneous evolution law.
+
+Under the positive-capacity premises, the existing
+[local recovery theorem and sufficient basin](RELATIONAL_EXCHANGE_ADMISSION.md#relational-local-recovery)
+complete the restoring claim. In its notation, `||z(0)||<r` and
+`E_rel(0)<k_r*r^2` keep the joint state in an admitted acute neighborhood and
+give convergence to the reference geometry modulo common form/phase offsets.
+The effective-curvature coefficient `k_ab` is distinct from that basin bound
+`k_r`. The causal theorem plus this recovery result supplies a sufficient
+restoring effective link for the stated pairs; no extra synchronization
+threshold, pulse variable or operator schedule is required.
+
+If hidden nodes are eliminated dynamically, the resulting effective law must
+retain the [derived memory and hidden initial state](RELATIONAL_PATTERN_MEMORY.md#mediated-pattern-interaction).
+The [pressure-state obstruction](JOINT_PARAMETER_RESPONSE.md#pressure-state-closure)
+also rules out replacing this environment in general by its instantaneous
+total pressure: equal pressure can conceal different future responses under
+the same law. Zero pressure is not an empty substrate.
+Static Schur minimization cannot replace that law. A trajectory entering the
+sufficient basin can be said to acquire the maintained joint geometry; proving
+entry from another preparation is a separate capture obligation. When a fine
+active path already exists, causal influence has no positive waiting interval
+in this local ODE argument. A detection threshold does not create its onset,
+and neither this result nor capture explains the birth of primitive support.
+
+### An explicit local formation-to-maintenance preparation
+
+The same two unit C5 rings with path `0--10--5` provide a capture statement
+without another trajectory calculation. Fix unit capacities,
+`e=w=1/2`, `beta=1`, and the aligned winding-one reference of the
+[mediator owner](RELATIONAL_PATTERN_MEMORY.md#mediated-pattern-interaction).
+Prepare uniform zero form, leave the first ring's phases at the reference,
+rotate the entire second ring by `delta`, and set the mediator phase to
+`delta/2`. Both internal windings are unchanged. The common phase offset is
+`delta/2`, so the initial quotient norm and excess storage are exactly
+
+\[
+\|z(0)\|^2=\frac52\delta^2,\qquad
+\mathcal E_{\rm rel}(0)=2[1-\cos(\delta/2)]\le\frac{\delta^2}4.
+\]
+
+This graph has eleven nodes and diameter six. For any centered vertex vector,
+its squared norm is at most `n*(max-min)^2/4`, while Cauchy--Schwarz along a
+shortest path between its extrema bounds the graph energy below by
+`(max-min)^2/diameter`. Thus `lambda_2(B)>=4/(n*diameter)=2/33`.
+The reference acute margin is `m=pi/10`. Taking
+
+\[
+r=\frac{\pi}{20\sqrt2},\qquad
+c_r=\sin(\pi/20),\qquad
+\underline k=\frac{\sin(\pi/20)}{33}\le k_r
+\]
+
+in the existing basin theorem proves capture whenever
+
+\[
+|\delta|<\min\{r\sqrt{2/5},\ 2r\sqrt{\underline k}\}.
+\]
+
+For example, `delta=1/128` satisfies the strict bounds without a floating
+evaluation: `pi>3` and `sin(pi/20)>1/10` give `r^2>9/800` and
+`underline(k)*r^2>9/264000>1/65536`, whereas the preparation has
+`||z(0)||^2=5/32768` and `E_rel(0)<=1/65536`.
+
+The full continuous law therefore keeps this preparation acute and converges
+to the aligned joint geometry modulo one common phase and one common form
+offset. It restores an initially nonzero relative regional offset and retains
+both windings. This establishes local acquisition and maintenance of the
+joint geometry on supplied support; it is not creation of the already active
+causal path. No monotone regional phase difference, finite-time exact locking,
+global capture, autonomous preparation or Euler-trajectory certificate is
+asserted. The static midpoint preparation does not keep the mediator or the
+ring shapes constrained during this subsequent evolution.
+
+The [focused controls](../../tests/physics/test_relational_effective_link.py)
+check the path, consensus and frozen-separator distinctions through the shared
+native tangent and field owners. Finite represented checks support integration;
+they do not replace the ideal proofs or certify a numerical recovery trajectory.
+
+<a id="environmental-capture-domain"></a>
+### A capture domain retaining the intermediary's initial state
+
+Keep the preceding two-C5 plus mediator support, aligned winding-one reference,
+unit capacities, `e=w=1/2` and `beta=1`. A wider preparation gives the mediator
+form `a` while all ring forms are zero. Leave the first ring's phases at their
+reference, rotate the second ring by `delta`, and set the mediator phase to
+`delta/2+eta`. These are three supplied initial coordinates, not an invariant
+restriction on the later evolution or a new environment law.
+
+The common offsets of the deviations from the reference are `a/11` in form
+and `delta/2+eta/11` in phase. Subtracting them gives exactly
+
+\[
+\|z(0)\|^2=\frac{10}{11}(a^2+\eta^2)+\frac52\delta^2.
+\]
+
+Only the two mediator edges change storage relative to the reference. Their
+form contribution is `a^2`, and their phase gaps are `delta/2+eta` and
+`delta/2-eta`. Therefore
+
+\[
+\begin{aligned}
+\mathcal E_{\rm rel}(0)
+ &=a^2+2[1-\cos(\delta/2)\cos\eta]\\
+ &\le a^2+\eta^2+\frac{\delta^2}4
+ =:\mathcal B(a,\eta,\delta).
+\end{aligned}
+\]
+
+The inequality follows by applying `1-cos(u)<=u^2/2` to each gap. Reuse the
+same `r` and `underline(k)` as above and define
+`kappa=underline(k)*r^2`. The single sufficient condition
+
+\[
+\boxed{\quad \mathcal B(a,\eta,\delta)<\kappa\quad}
+\]
+
+implies both basin hypotheses: `E_rel(0)<kappa<=k_r*r^2`, and
+`||z(0)||^2<=10*B<10*underline(k)*r^2<r^2`, since
+`10*underline(k)<10/33<1`. Thus the initial state is in the acute neighborhood
+and its full continuous evolution remains there and approaches the same joint
+geometry modulo common offsets. The mediator's nonzero initial form and phase
+are included in this theorem, rather than replaced by their equilibrium values.
+
+A wholly nonzero rational example is
+`delta=1/256`, `a=eta=1/512`. It has
+`B=3/262144<9/264000<kappa`, using the preceding exact lower bound. No
+trajectory or transcendental rounding assumption enters this sufficient
+admission. Violating this conservative bound establishes neither escape nor
+failure to recover; it leaves the stated certificate unavailable.
+
+### Identical mediator pressure does not specify the environment
+
+The family also connects capture to the
+[pressure-state obstruction](JOINT_PARAMETER_RESPONSE.md#pressure-state-closure).
+In the admitted lift the two port phases are zero and `delta`, so their
+resultant points at `delta/2`. The mediator phase source and total pressure are
+
+\[
+g_m=-\eta/\pi,\qquad p_m=-ea-\frac w\pi\eta.
+\]
+
+Fix the same `delta` and compare the reference intermediary `a=eta=0` with
+a compensated intermediary
+
+\[
+\eta\ne0,\qquad a=-\frac{w\eta}{\pi e}.
+\]
+
+Both preparations have identical ring form/phase coordinates, identical
+capacities and the same instantaneous mediator pressure `p_m=0`. Nevertheless
+the receiving port has form gradient `q_5=-a`, hence
+
+\[
+\dot\theta_5=-\frac{wa}{\beta H_5}\ne0
+\]
+
+in the compensated preparation, whereas its phase rate is zero in the
+reference preparation. For example, with `c=cos(2*pi/5)` and
+`alpha=Arg(2*c+exp(i*(eta-delta/2)))`, the metric is the native
+`H_5=pi*abs(2*c+exp(i*(eta-delta/2)))*sinc(alpha)>0`. The distinction uses the
+existing phase row and the complete hidden state, not a pressure reconstructed
+from the receiver's observed derivative.
+
+At the fixed coefficients, choose `delta=1/256`, `eta=1/512` and
+`a=-eta/pi`. Then `B=(2+1/pi^2)/262144<3/262144<kappa`; the reference
+intermediary also satisfies the bound. Thus both environments belong to the
+same proved capture domain but produce different initial receiver responses.
+The claim concerns the **mediator's** pressure, not equality of every nodal
+pressure or every subsequent trajectory.
+
+The [existing two-coordinate memory result](RELATIONAL_PATTERN_MEMORY.md#mediated-pattern-interaction)
+already proves why both hidden mediator coordinates must be retained for the
+specified all-ring tangent observation. This example shows concretely why
+replacing them by the single mediator pressure loses information. The memory
+owner retains hidden initial state and nonlinear forcing; it does not replace
+the mediator by instantaneous static minimization. The initial preparation
+family above need not remain rigid, pressure-compensated or otherwise closed
+under the full flow.
+
+The [effective-link controls](../../tests/physics/test_relational_effective_link.py)
+check these static identities and native response distinctions without treating
+finite arithmetic as the continuous capture proof. The
+[sole execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns subsequent work. Supplied fine support, model premises and preparation
+remain explicit; this result does not establish physical vacuum, autonomous
+substrate creation or a universal zero-pressure criterion.

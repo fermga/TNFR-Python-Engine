@@ -27,7 +27,12 @@ from tnfr.gamma import GAMMA_REGISTRY, GammaEntry
 from tnfr.mathematics import BEPIElement
 from tnfr.metrics.trig_cache import get_trig_cache
 from tnfr.sdk import Network
-from tnfr.types import ensure_bepi, require_finite_real_scalar_epi
+from tnfr.types import (
+    ensure_bepi,
+    require_finite_real_scalar_epi,
+    serialize_bepi,
+    serialize_bepi_json,
+)
 
 ADMISSION_ERRORS = (TypeError, ValueError, TNFRUserError)
 
@@ -172,7 +177,13 @@ def test_model_rejects_unsupported_scales_without_boolean_coercion(arguments):
 
 @pytest.mark.parametrize(
     "attribute,value",
-    (("theta", True), ("nu_f", Q(1, 2**2000)), ("EPI", "0.5")),
+    (
+        ("theta", True),
+        ("nu_f", Q(1, 2**2000)),
+        ("EPI", "0.5"),
+        ("EPI", True),
+        ("EPI", Q(1, 2**2000)),
+    ),
 )
 def test_raw_last_node_rejection_is_atomic(attribute, value):
     graph = _graph()
@@ -219,6 +230,60 @@ def test_uniform_negative_bepi_and_legacy_aliases_keep_the_signed_chart():
     assert tuple(cached_phase[node] for node in graph) == pytest.approx(
         report.after.phase
     )
+
+
+@pytest.mark.parametrize("serialize", (serialize_bepi, serialize_bepi_json))
+def test_serialized_uniform_real_epi_uses_the_same_field_and_atomic_step(serialize):
+    from tnfr.physics.relational_observations import observe_relational_reset
+
+    scalar = _pair(form=(-0.5, -0.25))
+    serialized = _pair(form=(-0.5, -0.25))
+    for node in serialized:
+        serialized.nodes[node]["EPI"] = serialize(serialized.nodes[node]["EPI"])
+    model = RelationalExchangeModel(1.0)
+    before = _snapshot(serialized)
+    field = evaluate_relational_exchange(serialized, model=model)
+    assert field == evaluate_relational_exchange(scalar, model=model)
+    assert field.epi == (-0.5, -0.25)
+    # The reset/transport observer already admits this canonical representation.
+    reset = observe_relational_reset(serialized, serialized, storage_scale=1.0)
+    assert reset.before.epi == (Q(-0.5), Q(-0.25))
+    assert reset.storage_before == field.storage
+    assert reset.storage_change == reset.identity_residual == 0
+    assert _snapshot(serialized) == before
+    actual = step_relational_exchange(serialized, model=model, dt=1 / 8)
+    expected = step_relational_exchange(scalar, model=model, dt=1 / 8)
+    assert actual == expected
+    assert actual.after.epi == (-0.484375, -0.265625)
+
+
+@pytest.mark.parametrize(
+    "invalid",
+    (
+        {"not_epi": 0.5},
+        {"continuous": (0.5, 0.25), "discrete": (0.5, 0.5), "grid": (0, 1)},
+        {"continuous": (0.5j, 0.5j), "discrete": (0.5j, 0.5j), "grid": (0, 1)},
+        {"continuous": (True, True), "discrete": (1.0, 1.0), "grid": (0, 1)},
+        {
+            "continuous": (Q(1, 2**2000),) * 2,
+            "discrete": (0.0, 0.0),
+            "grid": (0, 1),
+        },
+        {
+            "continuous": ({"real": 0.5, "imag": Q(1, 2**2000)},) * 2,
+            "discrete": (0.5, 0.5),
+            "grid": (0, 1),
+        },
+    ),
+)
+def test_serialized_epi_admission_rejects_rich_or_lost_state_atomically(invalid):
+    graph = _pair()
+    graph.nodes[1]["EPI"] = invalid
+    graph.nodes[1]["nu_f"] = 0.0
+    before = _snapshot(graph)
+    with pytest.raises(ADMISSION_ERRORS):
+        step_relational_exchange(graph, model=RelationalExchangeModel(1), dt=1 / 8)
+    assert _snapshot(graph) == before
 
 
 def test_nonzero_underflowed_nodal_rate_is_not_certified_as_equilibrium():
@@ -313,6 +378,126 @@ def test_failed_cache_hook_cannot_commit_a_valid_candidate_partially():
     with pytest.raises(ADMISSION_ERRORS):
         step_relational_exchange(graph, model=RelationalExchangeModel(2.0), dt=0.1)
     assert _snapshot(graph) == before
+
+
+def _p2_coupled_jacobian(model, *, nu=1.0):
+    """Axis probes of the ideal consensus derivative, with represented rates."""
+
+    def antisym(xi, phi):
+        graph = nx.Graph()
+        graph.add_edge(0, 1, weight=1.0)
+        graph.graph.update(GAMMA={"type": "none"}, _t=0.0)
+        for node, (x, th) in zip((0, 1), ((xi / 2, phi / 2), (-xi / 2, -phi / 2))):
+            graph.nodes[node].update(EPI=x, theta=th, nu_f=nu, delta_nfr=0.0)
+        field = evaluate_relational_exchange(graph, model=model)
+        return (
+            field.form_rate[0] - field.form_rate[1],
+            field.phase_rate[0] - field.phase_rate[1],
+        )
+
+    fx, px = antisym(0.25, 0.0)
+    fp, pp = antisym(0.0, 0.25)
+    return ((fx / 0.25, fp / 0.25), (px / 0.25, pp / 0.25))
+
+
+@pytest.mark.parametrize(
+    "epi_w,beta,nu",
+    ((0.25, 1.0, 1.0), (0.5, 1.0, 2.0), (0.25, 4.0, 1.0)),
+)
+def test_coupled_form_phase_relaxation_jacobian_and_underdamping_threshold(
+    epi_w, beta, nu
+):
+    model = RelationalExchangeModel(beta, epi_weight=epi_w, phase_weight=1.0 - epi_w)
+    e, w = model.epi_weight, model.phase_weight
+    (a, b), (c, d) = _p2_coupled_jacobian(model, nu=nu)
+    # P2 axis probes recover the consensus derivative, not a full nonlinear flow.
+    assert a == pytest.approx(-2 * nu * e, rel=0, abs=1e-15)
+    assert b == pytest.approx(-2 * nu * w / math.pi, rel=0, abs=1e-15)
+    assert c == pytest.approx(2 * nu * w / (beta * math.pi), rel=0, abs=1e-15)
+    assert d == pytest.approx(0.0, rel=0, abs=1e-15)
+    # The discriminant classifies poles, not monotonicity of an observation.
+    discriminant = e**2 - 4 * w**2 / (beta * math.pi**2)
+    threshold = 2 / (math.pi * math.sqrt(beta))
+    assert (discriminant < 0) == (e / w < threshold)
+    trace, determinant = a + d, a * d - b * c
+    assert trace == pytest.approx(-2 * nu * e, rel=0, abs=1e-15)
+    assert determinant == pytest.approx(
+        4 * nu**2 * w**2 / (beta * math.pi**2), rel=0, abs=1e-15
+    )
+    assert trace**2 - 4 * determinant == pytest.approx(
+        4 * nu**2 * discriminant, rel=0, abs=1e-14
+    )
+
+
+@pytest.mark.parametrize("beta", (1.0, 4.0, 0.25))
+def test_coupled_relaxation_critical_damping_at_pi_sqrt_beta(beta):
+    # e/w = 2/(pi sqrt(beta)) with e + w = 1 gives a vanishing discriminant.
+    ratio = 2 / (math.pi * math.sqrt(beta))
+    epi_w = ratio / (1 + ratio)
+    model = RelationalExchangeModel(beta, epi_weight=epi_w, phase_weight=1 - epi_w)
+    e, w = model.epi_weight, model.phase_weight
+    assert e / w == pytest.approx(ratio, rel=0, abs=1e-15)
+    assert e**2 - 4 * w**2 / (beta * math.pi**2) == pytest.approx(0.0, abs=1e-15)
+    (a, b), (c, d) = _p2_coupled_jacobian(model)
+    assert (a + d) ** 2 - 4 * (a * d - b * c) == pytest.approx(0.0, abs=2e-15)
+
+
+@pytest.mark.parametrize(
+    "epi_w,phase_w,beta,oscillatory",
+    (
+        (1, 3, 1.0, True),  # (e/w)^2 beta = 1/9 < 4/pi^2
+        (1, 1, 1.0, False),  # 1 > 4/pi^2
+        (2, 3, 0.5, True),  # (2/3)^2 * 1/2 = 2/9 < 4/pi^2
+        (1, 2, 2.0, False),  # 1/2 > 4/pi^2
+    ),
+)
+def test_coupled_relaxation_character_is_the_dimensionless_invariant(
+    epi_w, phase_w, beta, oscillatory
+):
+    model = RelationalExchangeModel(beta, epi_weight=epi_w, phase_weight=phase_w)
+    e, w = model.epi_weight, model.phase_weight
+    # This boundary belongs to the declared consensus law and phase normalization.
+    invariant = (e / w) ** 2 * beta
+    assert (invariant < 4 / math.pi**2) == oscillatory
+    (a, b), (c, d) = _p2_coupled_jacobian(model)
+    assert ((a + d) ** 2 - 4 * (a * d - b * c) < 0) == oscillatory
+
+
+def test_coupled_underdamping_threshold_is_mode_independent_on_a_regular_ring():
+    np = pytest.importorskip("numpy")
+    n, beta, nu = 5, 1.0, 1.0
+    ring = nx.cycle_graph(n)
+    for node in ring:
+        ring.add_edge(node, (node + 1) % n, weight=1.0)
+    nodes = tuple(ring)
+    threshold = 2 / (math.pi * math.sqrt(beta))
+
+    def jacobian(model):
+        def rates(vector):
+            for i, node in enumerate(nodes):
+                ring.nodes[node].update(
+                    EPI=vector[i], theta=vector[n + i], nu_f=nu, delta_nfr=0.0
+                )
+            field = evaluate_relational_exchange(ring, model=model)
+            assert field.nodes == nodes
+            return [*field.form_rate, *field.phase_rate]
+
+        h, columns = 1e-6, []
+        for k in range(2 * n):
+            plus, minus = [0.0] * (2 * n), [0.0] * (2 * n)
+            plus[k], minus[k] = h, -h
+            rp, rm = rates(plus), rates(minus)
+            columns.append([(rp[i] - rm[i]) / (2 * h) for i in range(2 * n)])
+        return np.array(columns).T
+
+    for epi_w, oscillatory in ((0.25, True), (0.5, False)):
+        model = RelationalExchangeModel(beta, epi_weight=epi_w, phase_weight=1 - epi_w)
+        e, w = model.epi_weight, model.phase_weight
+        assert (e / w < threshold) == oscillatory
+        eigenvalues = np.linalg.eigvals(jacobian(model))
+        complex_modes = int(np.sum(np.abs(eigenvalues.imag) > 1e-6))
+        # At consensus the spatial modes share a pole class, not monotone readings.
+        assert complex_modes == (2 * (n - 1) if oscillatory else 0)
 
 
 def test_wrapped_acute_endpoint_cannot_hide_nonacute_euler_segment():

@@ -13,7 +13,7 @@ from ..physics.mutation_trigger import (
     MutationTriggerInputError,
     certify_mutation_trigger,
 )
-from ..types import BEPIProtocol, scalarize_epi
+from ..types import BEPIProtocol, require_finite_real_scalar_epi
 
 __all__ = (
     "MutationThresholdSample",
@@ -94,10 +94,10 @@ def _certificate(
     }.issubset(current_epi)
     if isinstance(current_epi, BEPIProtocol) or serialized_bepi:
         try:
-            current_epi = scalarize_epi(current_epi)
-        except (OverflowError, TypeError, ValueError) as exc:
+            current_epi = require_finite_real_scalar_epi(current_epi, "current_epi")
+        except (OverflowError, TypeError, ValueError):
             _reject(
-                "current_epi must have a finite canonical scalar projection; "
+                "current_epi must have a finite signed uniform-real EPI embedding; "
                 f"got {current_epi!r}"
             )
 

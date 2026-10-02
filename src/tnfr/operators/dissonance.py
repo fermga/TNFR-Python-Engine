@@ -1,9 +1,9 @@
 """Dissonance (OZ) operator.
 
-Purpose: inject controlled instability; widen dnfr; test bifurcation.
-Physics: raises structural pressure; may push second derivative over tau.
+Purpose: modify stored pressure through configured amplification or jitter.
+Amplification includes an explicit near-zero seed; noise can reduce magnitude.
 Grammar: destabilizer (U2); trigger (U4a); closure-capable.
-Effects: dnfr up (the direct OZ channel); epi, vf and phase unaffected.
+Effects: pressure changes; epi, vf, phase and support are unaffected.
 Preconditions: sufficient epi/vf; dnfr below critical; prior stability.
 Typical: OZ->IL; OZ->THOL; IL->OZ->THOL growth cycle; AL->OZ->RA.
 Avoid: OZ->SHA; repeated OZ without IL/THOL containment.
@@ -222,10 +222,12 @@ def _resolve_dissonance_propagation(
 
 
 class Dissonance(Operator):
-    """Raise dnfr; induce exploratory instability; probe bifurcation.
+    """Apply local pressure amplification or jitter with optional propagation.
 
-    Contracts: must increase dnfr; follow with IL/THOL. Avoid SHA
-    immediately. See also: Coherence, SelfOrganization, Mutation.
+    The deterministic local branch increases magnitude. Noise can reduce it;
+    positive incoming increments can also cancel negative local pressure.
+    These observations do not prove a bifurcation or select another operator.
+    U2 sequence admission remains separate from the actual storage budget.
     """
 
     __slots__ = ()

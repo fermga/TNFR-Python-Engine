@@ -124,8 +124,9 @@ def validate_emission_strict(G: TNFRGraph, node: Any) -> None:
     if node_degree < min_degree and network_size > 1:
         warnings.warn(
             f"AL warning: Node {node!r} has degree {node_degree} < {min_degree}. "
-            f"Emission possible but phase coupling limited (isolated node). "
-            f"Consider UM (Coupling) to establish network connections first.",
+            "Emission is possible but available coupling is limited. "
+            "Supply an admissible connection if needed; UM itself requires "
+            "an existing phase-compatible neighbor.",
             UserWarning,
             stacklevel=3,
         )

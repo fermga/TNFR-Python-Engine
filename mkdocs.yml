@@ -67,6 +67,7 @@ nav:
       - "State and laws":
           - "Fundamental theory": theory/FUNDAMENTAL_THEORY.md
           - "Parameter foundations": theory/NODAL_PARAMETER_FOUNDATIONS.md
+          - "Relation foundations": theory/nodal/RELATION_FOUNDATIONS.md
           - "Pressure premises": theory/nodal/PRESSURE_CONSTITUTIVE_SCOPE.md
           - "Joint parameter response": theory/nodal/JOINT_PARAMETER_RESPONSE.md
           - "Glossary": theory/GLOSSARY.md

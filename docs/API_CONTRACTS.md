@@ -411,6 +411,10 @@ See [Prepared relational pattern observations](contracts/RELATIONAL_DYNAMICS.md#
 
 See [Supplied relational attachment observation](contracts/RELATIONAL_DYNAMICS.md#supplied-relational-attachment-observation).
 
+### Supplied joint state and support reset
+
+See [Joint reset accounting](contracts/RELATIONAL_DYNAMICS.md#relational-reset-observation).
+
 ### Conditional relational capture
 
 See [Conditional relational capture](contracts/RELATIONAL_DYNAMICS.md#conditional-relational-capture).

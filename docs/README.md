@@ -17,7 +17,7 @@ definitions to engine modules, tests and SDK entry points.
 | Maintained owner | Use it for | Boundary |
 | --- | --- | --- |
 | [CLI and SDK](CLI_AND_SDK.md) | Network creation, operator studies, diagnostics, JSON and command routes | Word counts are not physical time; reports are not checkpoints |
-| [Regional and relational SDK](guides/REGIONAL_AND_RELATIONAL.md) | Form observations, supplied joint models, pattern reports, attachment and capture | Preparations and references are inputs; method admission is distinct from a theorem's hypotheses |
+| [Regional and relational SDK](guides/REGIONAL_AND_RELATIONAL.md) | Form observations, joint models, pattern/support reports, capture and graph-independent coefficient bounds | Preparations, references and uncertainty are inputs; method admission is distinct from a theorem's hypotheses |
 | [Observational interfaces](STRUCTURAL_INTERFACE_THEORY.md) | Feature graphs, multichannel signals, comparisons and reserved forecasts | Engineering adapters do not independently identify canonical physical variables |
 | [Optional Torch backend](TORCH_BACKEND.md) | Backend selection, device checks and execution limits | Requested backend, effective device and measured acceleration are different claims |
 
@@ -26,7 +26,7 @@ definitions to engine modules, tests and SDK entry points.
 | Maintained owner | Responsibility | Primary evidence |
 | --- | --- | --- |
 | [API contracts](API_CONTRACTS.md) | Shared admission, nodal solvers and generated operator metadata | Actual execution owners and operator registry |
-| [Relational dynamics](contracts/RELATIONAL_DYNAMICS.md) | Joint field/step, pattern, attachment and capture report contracts | Admitted model and exact/finite certificate implementations |
+| [Relational dynamics](contracts/RELATIONAL_DYNAMICS.md) | Joint field/step, support/capture reports, coefficient uncertainty and retained acquisition audit | Admitted model and exact/finite implementations; record consistency is not experiment success or physical provenance |
 | [Operator events](contracts/OPERATOR_EVENTS.md) | Schedules, jumps, atomic stages, REMESH and finite executor evidence | Shared event and history owners; no unrestricted stability guarantee |
 | [Structural fields](STRUCTURAL_FIELDS_TETRAD.md) | Tetrad definitions, units, availability and estimator provenance | Shared field readers; the tetrad is not a complete state basis |
 
@@ -44,7 +44,7 @@ definitions to engine modules, tests and SDK entry points.
 | Definitions, derivations and scientific scope | [Theory catalog](../theory/README.md); [glossary](../theory/GLOSSARY.md) for classified concept cards |
 | Grammar policies and verification | [Unified grammar](../theory/UNIFIED_GRAMMAR_RULES.md#9-verification-and-reporting); rules and evidence share that owner |
 | Research priorities | [Portfolio](../TNFR_lineas_de_investigacion.txt) classifies branches; [strategy](../theory/NODAL_RESEARCH_STRATEGY.md) explains them |
-| Active tasks and gates | [Execution plan](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md), the sole task queue |
+| Current state, resumption and active gates | [Execution checkpoint](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-checkpoint) and its [single active gate](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate), not additional overview task lists |
 | Maintained runnable entry points | [Examples](../examples/README.md), [benchmarks](../benchmarks/README.md), [optional applications](../applications/README.md) |
 | Historical results and supersession | [Archive](../theory/research/archive/README.md), including [reported interface observations](../theory/research/archive/REPORTED_INTERFACE_OBSERVATIONS.md) |
 | Past publication statements | [Changelog](../CHANGELOG.md); historical claims are not current guarantees |

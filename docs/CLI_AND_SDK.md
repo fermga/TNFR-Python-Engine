@@ -105,8 +105,11 @@ rejects invalid numerical values before constructing a retained report.
 
 The [regional and relational SDK guide](guides/REGIONAL_AND_RELATIONAL.md)
 contains the Python preparations for form observations, supplied sources,
-conditional joint evolution, pattern reports, bridge comparisons and capture
-certificates. Its methods share engine owners but do not add CLI study modes.
+conditional joint evolution, pattern reports, bridge/joint-reset comparisons
+and capture certificates. Its
+[coefficient-response workflow](guides/REGIONAL_AND_RELATIONAL.md#bound-a-prepared-coefficient-response)
+also covers module-level jet/sample uncertainty, exact export and read-only
+acquisition audits. These are not `Network` methods or extra CLI study modes.
 Detailed admission and report fields belong to the
 [relational contracts](contracts/RELATIONAL_DYNAMICS.md); their theorems remain
 in the [theory catalog](../theory/README.md).
