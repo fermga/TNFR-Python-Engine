@@ -7,6 +7,8 @@ Symbolic controls separate an execution cutoff from actual field singularities.
 import math
 import pickle
 from fractions import Fraction as Q
+from hashlib import sha256
+from pathlib import Path
 
 import networkx as nx
 import pytest
@@ -781,3 +783,220 @@ def test_reduced_flux_coordinates_reuse_full_support_storage_and_loss(symbolic):
     loss = sum(flux[i] ** 2 / graph.degree(i) for i in graph)
     assert s.simplify(loss - (4 * q**2 / 3 + 2 * r**2)) == 0
     assert s.simplify(3 * A - B - q) == s.simplify(2 * B - A - r) == 0
+
+
+def test_consensus_preparation_metric_spectrum_and_energy_comparison(symbolic):
+    s = symbolic
+    A, B, t, F = s.symbols("A B t F", real=True)
+    graph = _paired_cycles(0.0)
+    form = (A, -A, -B, 0, B) * 2
+    storage = s.expand(sum((form[j] - form[i]) ** 2 / 2 for i, j in graph.edges))
+    assert storage == 6 * A**2 - 4 * A * B + 4 * B**2
+    K, D = s.Matrix([[3, -1], [-1, 2]]), s.diag(3, 2)
+    assert s.expand(2 * (s.Matrix([A, B]).T * K * s.Matrix([A, B]))[0]) == storage
+    eigenvalues = set((D.inv() * K).eigenvals())
+    assert eigenvalues == {1 - s.sqrt(6) / 6, 1 + s.sqrt(6) / 6}
+    # The strict spectrum bounds justify L>F_D/2 away from zero and the
+    # phase metric speed estimate; they are not fitted decay constants.
+    assert Q(1, 6) < Q(1, 2) ** 2
+    supersolution = F * (1 - t / 2 + t**2 / 6)
+    comparison_rhs = -supersolution / 2 + F * t**2 / 8
+    assert (
+        s.simplify(s.diff(supersolution, t) - comparison_rhs - F * t * (2 - t) / 24)
+        == 0
+    )
+    assert supersolution.subs(t, 0) == F
+    assert supersolution.subs(t, 1) == 2 * F / 3
+    # At F<=9, pi>3 makes both bootstrap phase bounds strictly less than
+    # 1/2. This verifies the noncircular bootstrap before entering E<7.
+    assert Q(3, 2) * 9 / (3 * 3) ** 2 < Q(1, 4)
+    assert Q(9, (2 * 3) ** 2) == Q(1, 4)
+    assert Q(2, 3) * 9 == 6 < 7
+
+
+def test_consensus_preparation_exact_rows_match_the_full_native_field():
+    A, B = Q(1), -Q(1, 2)
+    graph = _paired_cycles(0.0, (A, -A, -B, 0, B))
+    field = evaluate_relational_exchange(graph, model=RelationalExchangeModel(1.0))
+    q, r = 3 * A - B, 2 * B - A
+    expected_form = (-q / 6, q / 6, r / 4, 0, -r / 4) * 2
+    expected_phase = (
+        float(q) / (6 * math.pi),
+        -float(q) / (6 * math.pi),
+        -float(r) / (4 * math.pi),
+        0,
+        float(r) / (4 * math.pi),
+    ) * 2
+    assert field.form_rate == pytest.approx(tuple(map(float, expected_form)), abs=1e-15)
+    assert field.phase_rate == pytest.approx(expected_phase, abs=1e-15)
+    assert field.phase_source == (0.0,) * 10
+    assert field.form_storage == 6 * A**2 - 4 * A * B + 4 * B**2 == 9
+    assert field.continuous_loss == Q(2, 3) * q**2 + r**2
+    A_dot, B_dot = Q(field.form_rate[0]), Q(field.form_rate[4])
+    assert float(3 * A_dot - B_dot) == pytest.approx(float(-q / 2 + r / 4))
+    assert float(2 * B_dot - A_dot) == pytest.approx(float(q / 6 - r / 2))
+
+
+def test_full_consensus_modal_response_and_storage_bound_have_independent_algebra(
+    symbolic,
+):
+    from tnfr.mathematics._rational_interval import pi_interval
+
+    s = symbolic
+    slow, gap, b, t, spatial = s.symbols("slow gap b t spatial", positive=True)
+    pole = s.Symbol("pole")
+    # Parameterize every strict overdamped block by its two positive decay
+    # rates. The spatial eigenvalue remains arbitrary, not a sampled mode.
+    e, a = 2 * slow + gap, slow * (slow + gap) / b
+    generator = spatial * s.Matrix([[-e, -a], [b, 0]])
+    characteristic = generator.charpoly(pole).as_expr()
+    factored = (pole + spatial * slow) * (pole + spatial * (slow + gap))
+    assert s.expand(characteristic - factored) == 0
+    h = b * (s.exp(-slow * t) - s.exp(-(slow + gap) * t)) / gap
+    u = s.diff(h, t) / b
+    assert h.subs(t, 0) == 0 and s.simplify(u.subs(t, 0)) == 1
+    assert s.simplify(s.diff(u, t) + e * u + a * h) == 0
+    assert s.simplify(s.diff(h, t) - b * u) == 0
+
+    # Positive ordered exponentials make h positive after time zero. Its
+    # unique maximum has u=0, so this integrated row gives h_max<b/e.
+    scaled_derivative = s.simplify(s.exp(slow * t) * s.diff(h, t) * gap / b)
+    assert s.simplify(scaled_derivative - ((slow + gap) * s.exp(-gap * t) - slow)) == 0
+    peak_time = s.log((slow + gap) / slow) / gap
+    assert s.simplify(scaled_derivative.subs(t, peak_time)) == 0
+    integral = s.integrate(h, (t, 0, t))
+    assert s.simplify(u + e * h / b + a * integral - 1) == 0
+
+    beta, w, loss = s.symbols("beta w loss", positive=True)
+    gain_squared = beta * (w / (beta * s.pi * loss)) ** 2
+    chi = beta * (loss / w) ** 2
+    assert s.simplify(gain_squared - 1 / (s.pi**2 * chi)) == 0
+    # At beta=chi=1 and F<=9, the bound on a single lifted edge is
+    # sqrt(18)/pi. Certified pi gives its strict separation from pi/2.
+    pi = pi_interval()
+    assert pi.lo > 3
+    assert 8 * 9 < pi.lo**4
+    # The current pole discriminant is strictly positive independently
+    # of the support eigenvalue, using the same outward constant owner.
+    assert Q(1, 4) - 1 / pi.lo**2 > 0
+
+
+def test_full_form_native_storage_ceiling_uses_full_support_and_signed_exchange(
+    symbolic,
+):
+    s = symbolic
+    graph = _paired_cycles(0.0)
+    cycle = (0, 4, 3, 2, 1, 6, 7, 8, 9, 5)
+    cycle_edges = tuple(zip(cycle, cycle[1:] + cycle[:1]))
+    assert len(set(cycle)) == len(graph) == 10
+    assert all(graph.has_edge(i, j) for i, j in cycle_edges)
+    assert max(dict(graph.degree).values()) == 3
+    x = s.symbols("x:10", real=True)
+    full_quadratic = sum((x[i] - x[j]) ** 2 for i, j in graph.edges)
+    cycle_quadratic = sum((x[i] - x[j]) ** 2 for i, j in cycle_edges)
+    assert (
+        s.expand(
+            full_quadratic - cycle_quadratic - (x[0] - x[1]) ** 2 - (x[5] - x[6]) ** 2
+        )
+        == 0
+    )
+    cycle_gap = 2 - 2 * s.cos(2 * s.pi / 10)
+    assert s.simplify(cycle_gap / 3 - (3 - s.sqrt(5)) / 6) == 0
+    assert Q(7, 3) ** 2 > 5  # hence the full normalized gap exceeds 1/9
+    c = s.Symbol("center", real=True)
+    volume = sum(dict(graph.degree).values())
+    mean = sum(graph.degree(i) * x[i] for i in graph) / volume
+    weighted_variance = sum(graph.degree(i) * (x[i] - mean) ** 2 for i in graph)
+    assert (
+        s.expand(
+            sum(graph.degree(i) * (x[i] - c) ** 2 for i in graph)
+            - weighted_variance
+            - volume * (c - mean) ** 2
+        )
+        == 0
+    )
+
+    f, y, k, slack = s.symbols("f y k slack", positive=True)
+    h, angle = s.symbols("h angle", real=True)
+    f_dot, y_dot = -k * f / 2 - h * y, h * f
+    assert s.simplify(2 * f * f_dot + 2 * y * y_dot + k * f**2) == 0
+    angle_dot = (f * y_dot - y * f_dot) / (f**2 + y**2)
+    assert s.simplify(angle_dot - h - k * f * y / (2 * (f**2 + y**2))) == 0
+    psi = s.Rational(2, 7) * (angle + s.sin(angle) * s.cos(angle))
+    assert s.trigsimp(s.diff(psi, angle) - 4 * s.cos(angle) ** 2 / 7) == 0
+    log_rate = -k * s.cos(angle) ** 2 + s.diff(psi, angle) * (
+        3 * k / 2 - slack + k * s.sin(angle) * s.cos(angle) / 2
+    )
+    negative_squares = (
+        -k * s.cos(angle) ** 2 * (s.sin(angle) - s.cos(angle)) ** 2 / 7
+        - 4 * slack * s.cos(angle) ** 2 / 7
+    )
+    assert s.trigsimp(log_rate - negative_squares) == 0
+    ratio_log_derivative = 2 * s.cos(angle) / s.sin(angle) - s.diff(psi, angle)
+    positive_factor = (
+        2 * s.cos(angle) * (7 - 2 * s.sin(angle) * s.cos(angle)) / (7 * s.sin(angle))
+    )
+    assert s.trigsimp(s.expand(ratio_log_derivative - positive_factor)) == 0
+    assert psi.subs(angle, 0) == 0 and psi.subs(angle, s.pi / 2) == s.pi / 7
+    assert 1 + Q(3, 7) == Q(10, 7)  # exp(pi/7)>1+pi/7>10/7
+    assert Q(7, 10) * 9 == Q(63, 10) < Q(55, 8)
+    assert Q(9, 4) ** 2 > 5  # target cost exceeds 55/8
+
+
+def test_storage_passive_reset_can_raise_the_derived_phase_comparison(symbolic):
+    s = symbolic
+    graph = _paired_cycles(0.0)
+    form = tuple(3 if node == 2 else 0 for node in graph)
+    initial_storage = sum((Q(form[i]) - Q(form[j])) ** 2 / 2 for i, j in graph.edges)
+    phase = tuple(2 * s.pi * (node % 5) / 5 for node in graph)
+    target_storage = s.simplify(
+        sum(1 - s.cos(phase[j] - phase[i]) for i, j in graph.edges)
+    )
+    assert initial_storage == 9
+    assert s.simplify(target_storage - (25 - 5 * s.sqrt(5)) / 2) == 0
+    assert s.simplify(9 - target_storage).is_positive
+    # The uniform-form target has angle pi/2 in (sqrt(F),sqrt(P)), so
+    # its W is P_target*exp(pi/7). Exact lower factors prove W increased
+    # despite the decrease of the real structural storage E.
+    assert Q(55, 8) * Q(10, 7) == Q(275, 28) > initial_storage
+    assert Q(275, 28) - initial_storage == Q(23, 28)
+
+
+def test_original_preparation_budget_is_enclosed_without_replaying_its_response():
+    from tnfr.physics.relational_capture import certify_relational_capture
+    from tnfr.utils.io import json_loads
+
+    path = (
+        Path(__file__).resolve().parents[2]
+        / "docs/assets/relational_capture_response/continuous-transit.audit.protocol.json"
+    )
+    source = path.read_bytes()
+    assert sha256(source).hexdigest() == (
+        "d8913d6af0d40fd1c903eaf24be29fb8ebeb6d3be28d6415d4e8dafb9974db99"
+    )
+    protocol = json_loads(source.decode("utf-8"))
+    graph = nx.Graph()
+    graph.add_nodes_from(protocol["nodes"])
+    graph.add_edges_from(protocol["edges"])
+    for node, form, phase, capacity in zip(
+        protocol["nodes"],
+        protocol["initial_form"],
+        protocol["initial_phase"],
+        protocol["capacity"],
+        strict=True,
+    ):
+        graph.nodes[node].update(EPI=form, theta=phase, nu_f=capacity)
+    model = RelationalExchangeModel(**protocol["model"])
+    report = certify_relational_capture(graph, model=model, cycles=protocol["cycles"])
+    assert report.exact_symmetry and report.unit_capacity
+    assert model.effective_weights == (0.5, 0.5) and model.storage_scale == 1
+    lower, upper = report.storage_bounds
+    # These are outward summaries, not a rounded replacement of E_ref.
+    assert Q("8.7365260600707") < lower <= upper < Q("8.7365260600729") < 9
+    form = tuple(map(Q, protocol["initial_form"]))
+    independent_form_storage = sum(
+        (form[left] - form[right]) ** 2 / 2 for left, right in protocol["edges"]
+    )
+    assert report.field.form_storage == independent_form_storage < lower
+    assert not report.energy_admitted  # later capture requires the retained transit
+    assert path.read_bytes() == source

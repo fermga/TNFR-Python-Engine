@@ -407,14 +407,48 @@ def test_invalid_components_or_joined_domain_reject_atomically(defect):
     assert tuple(_snapshot(graph) for graph in (left, right)) == snapshots
 
 
-def test_attachment_scope_keeps_the_current_acute_model_boundary():
+@pytest.mark.parametrize("domain", ("acute", "positive_resultant", "regular"))
+def test_attachment_uses_the_same_selected_domain_for_all_three_fields(domain):
     left, right = _pair()
-    with pytest.raises(ADMISSION_ERRORS):
+    model = RelationalExchangeModel(1.0, phase_domain=domain)
+    report = _observe(left, right, model=model)
+    assert all(field.model == model for field in (*report.components, report.joined))
+
+
+def test_regular_attachment_admits_negative_real_resultants_without_writes():
+    left, right = _pair()
+    left.nodes[1]["theta"] = right.nodes[3]["theta"] = 2.0
+    before = tuple(_snapshot(graph) for graph in (left, right))
+    with pytest.raises(ValueError, match="positive"):
         _observe(
             left,
             right,
             model=RelationalExchangeModel(1.0, phase_domain="positive_resultant"),
         )
+    report = _observe(
+        left, right, model=RelationalExchangeModel(1.0, phase_domain="regular")
+    )
+    assert all(field.relative_resultant[0][0] < 0 for field in report.components)
+    assert all(
+        field.pressure_path == "relative_resultant_canonical"
+        for field in (*report.components, report.joined)
+    )
+    assert report.phase_storage_change == 0
+    assert tuple(_snapshot(graph) for graph in (left, right)) == before
+
+
+def test_regular_attachment_rejects_a_joined_resultant_on_the_argument_cut():
+    left, right = _pair()
+    left.nodes[1]["theta"] = 2.0
+    right.nodes[2]["theta"] = -2.0
+    before = tuple(_snapshot(graph) for graph in (left, right))
+    # Both isolated pairs are regular. At joined node zero the two relative
+    # phasors exp(2i)+exp(-2i) sum to a strictly negative real number.
+    with pytest.raises(ValueError, match="nonpositive-real ray"):
+        _observe(
+            left, right, model=RelationalExchangeModel(1.0, phase_domain="regular")
+        )
+    assert tuple(_snapshot(graph) for graph in (left, right)) == before
 
 
 def _relocation_graph():
@@ -599,15 +633,13 @@ def test_relocation_requires_two_nontrivial_components():
     assert _snapshot(graph) == before
 
 
-@pytest.mark.parametrize("defect", ("model", "domain", "weight", "forcing", "acute"))
+@pytest.mark.parametrize("defect", ("model", "weight", "forcing", "acute"))
 def test_relocation_native_model_admission_is_not_bypassed(defect):
     graph = _relocation_graph()
     model = MODEL
     new = (1, 6)
     if defect == "model":
         model = None
-    elif defect == "domain":
-        model = RelationalExchangeModel(1.0, phase_domain="positive_resultant")
     elif defect == "weight":
         graph.edges[0, 5]["weight"] = 0.5
     elif defect == "forcing":
@@ -617,4 +649,51 @@ def test_relocation_native_model_admission_is_not_bypassed(defect):
     before = _snapshot(graph)
     with pytest.raises(ADMISSION_ERRORS):
         _relocate(graph, new=new, model=model)
+    assert _snapshot(graph) == before
+
+
+@pytest.mark.parametrize("domain", ("acute", "positive_resultant", "regular"))
+def test_relocation_uses_the_same_selected_domain_before_and_after(domain):
+    graph = _relocation_graph()
+    model = RelationalExchangeModel(1.0, phase_domain=domain)
+    report = _relocate(graph, model=model)
+    assert report.before.model == report.after.model == model
+
+
+def test_regular_relocation_retains_nonacute_internal_edges_and_event_cost():
+    left, right = _pair()
+    left.nodes[1]["theta"] = right.nodes[3]["theta"] = 2.0
+    graph = nx.compose(left, right)
+    graph.add_edge(1, 2, weight=1.0)
+    before = _snapshot(graph)
+    report = _relocate(
+        graph,
+        old=(1, 2),
+        new=(0, 2),
+        model=RelationalExchangeModel(1.0, phase_domain="regular"),
+    )
+    assert report.phase_storage_change == -2 * Q(math.sin(1.0)) ** 2
+    assert report.phase_storage_change < 0
+    assert (
+        report.before.pressure_path
+        == report.after.pressure_path
+        == "relative_resultant_canonical"
+    )
+    assert _snapshot(graph) == before
+
+
+def test_regular_relocation_rechecks_the_new_resultants_before_returning():
+    left, right = _pair()
+    left.nodes[1]["theta"] = 2.0
+    right.nodes[2]["theta"] = -2.0
+    graph = nx.compose(left, right)
+    graph.add_edge(1, 2, weight=1.0)
+    before = _snapshot(graph)
+    with pytest.raises(ValueError, match="nonpositive-real ray"):
+        _relocate(
+            graph,
+            old=(1, 2),
+            new=(0, 2),
+            model=RelationalExchangeModel(1.0, phase_domain="regular"),
+        )
     assert _snapshot(graph) == before

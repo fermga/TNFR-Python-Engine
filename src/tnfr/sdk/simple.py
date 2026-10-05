@@ -1304,10 +1304,11 @@ class Network:
             [Emission, Reception, Coherence, Expansion, Resonance, Silence].
         record : bool
             When True, sample the canonical metrics step after each cycle so
-            the per-step rhythm series (the pulse in motion: ``kuramoto_R``,
-            ``C_steps``, ``phase_sync``, ``Si_mean``) are recorded into the
-            graph history, readable via :meth:`history`. Default False (the
-            fast path, no recording overhead).
+            ``kuramoto_R``, ``C_steps``, ``phase_sync`` and ``Si_mean`` are
+            recorded in graph history, readable via :meth:`history`. Samples
+            count complete operator-word cycles; recording these diagnostics
+            does not establish periodic motion. Default False (no recording
+            overhead).
 
         Returns
         -------
@@ -1344,8 +1345,7 @@ class Network:
         # threshold) makes Reception correctly find no sources; that transient
         # warning is silenced on the high-level SDK surface.
         if record:
-            # cycle-by-cycle so the canonical metrics step samples the rhythm
-            # (kuramoto_R, C_steps, ...) after each cycle: the pulse in motion
+            # Sample diagnostic history after each complete operator-word cycle.
             from ..metrics.core import _metrics_step
 
             for _ in range(step_count):
@@ -1465,15 +1465,14 @@ class Network:
         return history
 
     def history(self) -> dict[str, list[float]]:
-        """The recorded pulse in motion: the canonical per-step rhythm series.
+        """Read stored coherence and phase-alignment diagnostic series.
 
         After :meth:`evolve` with ``record=True`` the engine's metrics step
-        records the canonical temporal series in the graph history. This
-        surfaces the rhythm ones -- the collective resonance ``kuramoto_R``,
-        the coherence ``C_steps``, the phase synchrony ``phase_sync`` and the
-        mean sense index ``Si_mean`` -- as the engine actually recorded them
-        over the run (the resonance forming, not a snapshot). Empty lists if
-        the network was not evolved with ``record=True``.
+        records one sample after each complete operator-word cycle. This
+        reader returns the available ``kuramoto_R``, ``C_steps``,
+        ``phase_sync`` and ``Si_mean`` series; missing series are empty.
+        These observations do not establish a pulse, a period, autonomous
+        resonance formation or a conversion from cycle count to model time.
 
         Returns
         -------
@@ -2341,7 +2340,9 @@ class Network:
         exchange and actual form/phase work; it does not select evolution.
         The default domain is acute; explicit ``positive_resultant`` admission
         retains certified rational real-part bounds for a sufficient regular
-        chamber, not the entire phase domain or exact rate-error bounds.
+        chamber. Explicit ``regular`` admission instead certifies separation
+        from the excluded nonpositive-real ray, including resolved left-half-plane
+        resultants. Neither certificate bounds the computed rate error.
         This is a conditional phase law, not the default operator controller.
         """
         from ..dynamics.relational import evaluate_relational_exchange
@@ -2359,6 +2360,17 @@ class Network:
 
         return evaluate_relational_uniform_tangent(self.G, model=model)
 
+    def relational_consensus_tangent(self, model):
+        """Observe the native Jacobian at phase consensus with arbitrary form.
+
+        Exact captured phase equality admits the shared derivative; the
+        retained source may be moving. This local derivative is not a global
+        linear replacement of the nonlinear law or a formation certificate.
+        """
+        from ..dynamics.relational import evaluate_relational_consensus_tangent
+
+        return evaluate_relational_consensus_tangent(self.G, model=model)
+
     def relational_pattern(self, model, *, reference_phase, regions, cycles=()):
         """Observe supplied regions and phase lifts under the selected joint law.
 
@@ -2366,7 +2378,7 @@ class Network:
         common offsets, plus shared winding and regional transport read-outs.
         Pressure is refreshed on a detached preparation. References and regions
         are supplied, not discovered; a snapshot is no recovery certificate.
-        The model's acute or positive-resultant admission remains unchanged.
+        The model's selected acute, positive-resultant or regular admission applies.
         Transport can be unavailable while geometric observations remain valid.
         ``region.work`` sums captured nodal contributions; ``region.boundary``
         pairs the actual weighted form and phase rates through a shared cut.
@@ -2389,7 +2401,8 @@ class Network:
     def relational_attachment(self, other, model, *, bridge):
         """Compare two admitted networks with one supplied hypothetical bridge.
 
-        The shared observer requires disjoint components and the acute model.
+        The shared observer requires disjoint components and independently
+        admits the component and joined fields in the model's selected domain.
         ``bridge`` orders this network's port before ``other``'s port. Complete
         component fields, the joined field and exact represented changes are
         retained. Neither network is modified; the report does not execute an
@@ -2410,7 +2423,7 @@ class Network:
 
         Removing the ordered old bridge must separate two nontrivial connected
         components; the missing new bridge must cross them in the same order.
-        The shared acute-model observer retains both fresh full fields, cuts,
+        The shared observer retains both freshly admitted full fields, cuts,
         unique port cards and exact represented storage/rate changes. Its
         declared-work assessment neither executes nor selects the event and
         does not certify subsequent pattern recovery.
@@ -2438,6 +2451,29 @@ class Network:
 
         return observe_relational_reset(self.G, after.G, storage_scale=storage_scale)
 
+    def relational_sine_pair_emission(
+        self, reference_model, *, pairs, pair_index, boost, phase_turns=None
+    ):
+        """Assess structural AL outcomes on an exact unordered sine pair.
+
+        The shared owner captures the conservative normalized-sine comparison
+        once and uses actual AL scalar admission and clipping. It compares
+        either single-member target with the common action on both members.
+        This detached assessment neither executes Emission nor certifies its
+        grammar, lifecycle, occurrence or admission to the native Arg runtime.
+        The boost is explicit; configured default gains are not inferred.
+        """
+        from ..physics.relational_sine_scale import assess_sine_pair_emission
+
+        return assess_sine_pair_emission(
+            self.G,
+            reference_model=reference_model,
+            pairs=pairs,
+            pair_index=pair_index,
+            boost=boost,
+            phase_turns=phase_turns,
+        )
+
     def relational_capture(self, model, *, cycles):
         """Check the sufficient exact reflected two-ring capture theorem.
 
@@ -2450,6 +2486,36 @@ class Network:
         from ..physics.relational_capture import certify_relational_capture
 
         return certify_relational_capture(self.G, model=model, cycles=cycles)
+
+    def relational_consensus_capture(self, model, *, cycles):
+        """Bound ideal relaxation from a reflected phase-consensus preparation.
+
+        The shared owner checks the fixed native law, support and form budget,
+        then certifies entry into the protected consensus basin by structural
+        time one. This detached analytic report retains its initial capture;
+        it neither integrates a trajectory nor fabricates an endpoint state.
+        Unavailable admission does not establish formation or instability.
+        """
+        from ..physics.relational_capture import certify_relational_consensus_capture
+
+        return certify_relational_consensus_capture(self.G, model=model, cycles=cycles)
+
+    def relational_consensus_formation_obstruction(self, model, *, cycles):
+        """Exclude aligned unit winding from bounded full-form phase consensus.
+
+        The shared owner retains arbitrary form on the declared two-ring
+        support and checks its fixed law and preparation budget. The analytic
+        phase-storage bound holds during regular continuous existence; it
+        certifies neither global continuation nor convergence to consensus.
+        This observer does not evolve or project the source state.
+        """
+        from ..physics.relational_capture import (
+            certify_relational_consensus_formation_obstruction,
+        )
+
+        return certify_relational_consensus_formation_obstruction(
+            self.G, model=model, cycles=cycles
+        )
 
     def relational_transit_capture(
         self, *, model, cycles, horizon, time_step, order=12, requested_sector=1
@@ -2491,6 +2557,53 @@ class Network:
 
         return certify_relational_local_capture(
             self.G, model=model, cycles=cycles, target_sector=target_sector
+        )
+
+    def relational_cycle_capture(self, model, *, cycle, target_sector=1):
+        """Check the sufficient acute winding basin on one supplied unit C5.
+
+        Exact phase lifts and cosine bounds test the single-ring energy
+        barrier. Positive held capacities and the reference evolution law
+        are admitted separately. This read-only snapshot certificate does
+        not establish how the ring formed or certify a numerical trajectory.
+        """
+        from ..physics.relational_capture import certify_relational_cycle_capture
+
+        return certify_relational_cycle_capture(
+            self.G, model=model, cycle=cycle, target_sector=target_sector
+        )
+
+    def relational_detachment(self, model, *, cycles, target_sector=1):
+        """Assess removal of the two matching bridges without executing it.
+
+        The supplied two-ring support is observed before the hypothetical
+        removal; each resulting C5 is admitted and checked separately. The
+        report keeps the shared event-storage ledger, changed native rates
+        and independent capture evidence. It does not select a removal time,
+        evolve the disconnected union or modify the network.
+        """
+        from ..physics.relational_capture import observe_relational_detachment
+
+        return observe_relational_detachment(
+            self.G, model=model, cycles=cycles, target_sector=target_sector
+        )
+
+    def relational_sector_geometry(self, *, storage_scale, cycles, target_sector=1):
+        """Observe the two-ring acute sector and storage barrier without a law.
+
+        Only supplied unit support, signed form, circular phase and the positive
+        storage scale are consumed. Exact gap, cycle-period and energy evidence
+        describes a geometric sublevel; admission does not certify any evolution,
+        capacity law, forcing, convergence or creation of the pattern. The shared
+        reader leaves the graph intact and does not evaluate reference rates.
+        """
+        from ..physics.relational_capture import observe_relational_sector_geometry
+
+        return observe_relational_sector_geometry(
+            self.G,
+            storage_scale=storage_scale,
+            cycles=cycles,
+            target_sector=target_sector,
         )
 
     def relational_sector_capture(self, model, *, cycles, target_sector=1):

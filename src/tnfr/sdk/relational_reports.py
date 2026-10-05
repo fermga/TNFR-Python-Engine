@@ -52,74 +52,198 @@ def _project(value: Any) -> Any:
     )
 
 
-def _validate_support_change_labels(report, states, bridges, cuts, partitions=()):
-    for state in states:
-        for edge in state.edges:
-            for node in edge:
-                _validate_label(node)
-    for labels in (*bridges, *partitions):
+def _validate_label_groups(*groups):
+    for labels in groups:
         for node in labels:
             _validate_label(node)
+
+
+def _validate_cut_labels(cut):
+    _validate_label_groups(cut.nodes, cut.region, cut.environment)
+    for a, b, _ in cut.cut_edges:
+        _validate_label(a)
+        _validate_label(b)
+
+
+def _validate_pattern_labels(report):
+    for region in report.regions:
+        _validate_label_groups(region.nodes)
+        if region.transport is not None:
+            transport = region.transport
+            _validate_label_groups(
+                transport.source.nodes, transport.region, transport.environment
+            )
+        if region.boundary is not None:
+            _validate_cut_labels(region.boundary.cut)
+
+
+def _validate_support_change_labels(report, bridges, cuts, partitions=()):
+    _validate_label_groups(*bridges, *partitions)
     for port in report.ports:
         _validate_label(port.before.node)
         _validate_label(port.after.node)
     for snapshot in (report.transport_reset.before, report.transport_reset.after):
-        for node in snapshot.nodes:
-            _validate_label(node)
+        _validate_label_groups(snapshot.nodes)
     for cut in cuts:
-        for labels in (cut.nodes, cut.region, cut.environment):
-            for node in labels:
-                _validate_label(node)
-        for a, b, _ in cut.cut_edges:
-            _validate_label(a)
-            _validate_label(b)
+        _validate_cut_labels(cut)
+
+
+def _reset_states(report):
+    """Share label validation for standalone and nested support budgets."""
+    for edge in (*report.edges_before, *report.edges_after):
+        for node in edge:
+            _validate_label(node)
+    return (
+        report.before,
+        report.after,
+        report.transport_reset.before,
+        report.transport_reset.after,
+    )
 
 
 def relational_report_to_dict(report: Any) -> dict[str, Any]:
-    """Project a relational field, step, observation or scoped certificate.
+    """Project a supported relational report without changing its verdicts.
 
-    Use ``export_to_json(relational_report_to_dict(report), path)`` to save the
-    result atomically. Fractions become ``{numerator, denominator}`` records;
-    tuples become arrays, including tuple node labels. Opaque node labels are
-    rejected rather than rendered with potentially ambiguous ``str``/``repr``.
-    The result is detached, but is not a typed round trip or resumable checkpoint.
-    Public dataclass construction is not proof of scientific provenance.
-    Capture and continuous-transit certificates retain their exact rational
-    bounds and independent theorem admission; projection never combines their
-    verdicts or authenticates a publicly constructed report.
-    Attachment observations retain both component fields, the hypothetical
-    joined field and supplied ports without representing a committed event.
-    Relocation observations retain the old/new fields and the unchanged
-    component partition with the same support-change accounting semantics.
-    Joint reset observations retain two stored snapshots and separate state
-    and support costs, without requiring unit support or flow admission.
-    Supply assessments compare declared work with represented storage; they
-    neither authenticate that work nor select or certify an actual event.
-    Coefficient-jet bounds preserve supplied uncertainty and explicit abstention,
-    without authenticating the preparation, clock or measurement model.
-    Coefficient-sample bounds additionally retain the samples, exact stencils
-    and supplied error/smoothness budget, with the same authentication boundary.
+    The envelope has schema ``tnfr.relational-report.v1``, its concrete
+    ``report_type`` and an exact projected ``report`` body. Owner-managed
+    reports delegate to their ``to_dict`` method, preserving label admission,
+    nested evidence, unavailable values and model-specific scope.
+
+    Fractions become ``{numerator, denominator}`` records; tuples become
+    ordered arrays, including tuple node labels. Opaque labels and nonfinite
+    numbers reject. Save with ``export_to_json(relational_report_to_dict(report),
+    path)`` to use the shared atomic writer. Projection is detached, not a
+    typed round trip, resumable checkpoint or provenance authentication.
+    No theorem eligibility is recomputed and no producer or trajectory runs.
     """
     from ..dynamics.relational import (
+        RelationalConsensusTangent,
         RelationalExchangeField,
         RelationalExchangeStep,
         RelationalUniformTangent,
     )
     from ..physics.relational_capture import (
         RelationalCaptureCertificate,
+        RelationalConsensusCaptureCertificate,
+        RelationalConsensusFormationObstruction,
+        RelationalCycleCaptureCertificate,
+        RelationalDetachmentObservation,
         RelationalLocalCaptureCertificate,
         RelationalSectorCaptureCertificate,
+        RelationalSectorGeometry,
+        RelationalSeededFormationObstruction,
+    )
+    from ..physics.relational_cycle_memory import (
+        RelationalCycleMemoryBounds,
+        RelationalFiniteMemoryCertificate,
+        RelationalMemoryReadoutCertificate,
+    )
+    from ..physics.relational_memory_contact import (
+        RelationalMemoryContactCertificate,
+        RelationalMemoryRetentionCertificate,
     )
     from ..physics.relational_observations import (
         RelationalAttachmentObservation,
         RelationalAttachmentSupplyAssessment,
         RelationalCoefficientJetBounds,
         RelationalCoefficientSampleBounds,
+        RelationalJetSampleBounds,
         RelationalPatternObservation,
+        RelationalRateContrastBounds,
+        RelationalRateSampleBounds,
         RelationalRelocationObservation,
         RelationalResetObservation,
+        RelationalSampleJetBudget,
     )
+    from ..physics.relational_sine_budget import SineBudgetConsensus
+    from ..physics.relational_sine_comparison import (
+        SineFormIncrementAssessment,
+        SineMobilityComparison,
+        SineMobilityRelativeBalance,
+        SineRegionalTransfer,
+    )
+    from ..physics.relational_sine_entry import SinePreparedEntry
+    from ..physics.relational_sine_recovery import SineCycleIdentityAssessment
+    from ..physics.relational_sine_reduction import SineSlowCapture, SineSlowPhaseBound
+    from ..physics.relational_sine_resonance import (
+        SineCycleResonance,
+        SineMediatedResponse,
+        SineModeGain,
+        SinePairPulseAssessment,
+        SinePathMemoryAssessment,
+        SineRecoveryResonance,
+        SineRecurrenceAssessment,
+    )
+    from ..physics.relational_sine_scale import (
+        JointPairObservation,
+        PhasePairObservation,
+        SineJointPairingProjection,
+        SineJointPairingWindowAssessment,
+        SineMixedPairStateAssessment,
+        SineMobilityGeometryAssessment,
+        SinePairEmissionAssessment,
+        SinePairingMobilityAssessment,
+        SinePairingTransitionAssessment,
+        SinePairingWindowAssessment,
+        SinePairSupportSymmetryAssessment,
+        SineReplicaCapacityAssessment,
+        SineReplicaEquilibriaAssessment,
+        SineReplicaPersistenceAssessment,
+        SineReplicaPulseAssessment,
+        SineReplicaPulseSplitting,
+        SineReplicaPulseVariation,
+        SineReplicaScaleAssessment,
+        SineStatePairingAssessment,
+    )
+    from ..physics.relational_sine_symmetry import SineCycleSymmetryAssessment
     from ..physics.relational_transit import RelationalTransitCertificate
+
+    if isinstance(
+        report,
+        (
+            SineBudgetConsensus,
+            SinePreparedEntry,
+            SineSlowCapture,
+            SineSlowPhaseBound,
+            SineCycleSymmetryAssessment,
+            SineCycleResonance,
+            SineModeGain,
+            SineRecoveryResonance,
+            SineMediatedResponse,
+            SinePairPulseAssessment,
+            SinePathMemoryAssessment,
+            SineRecurrenceAssessment,
+            SineCycleIdentityAssessment,
+            SineFormIncrementAssessment,
+            SineMobilityComparison,
+            SineMobilityRelativeBalance,
+            SineRegionalTransfer,
+            SineMobilityGeometryAssessment,
+            SineReplicaScaleAssessment,
+            JointPairObservation,
+            PhasePairObservation,
+            SineJointPairingProjection,
+            SineJointPairingWindowAssessment,
+            SineMixedPairStateAssessment,
+            SinePairEmissionAssessment,
+            SinePairSupportSymmetryAssessment,
+            SinePairingMobilityAssessment,
+            SinePairingTransitionAssessment,
+            SinePairingWindowAssessment,
+            SineStatePairingAssessment,
+            SineReplicaCapacityAssessment,
+            SineReplicaEquilibriaAssessment,
+            SineReplicaPersistenceAssessment,
+            SineReplicaPulseAssessment,
+            SineReplicaPulseSplitting,
+            SineReplicaPulseVariation,
+        ),
+    ):
+        return {
+            "schema": "tnfr.relational-report.v1",
+            "report_type": type(report).__name__,
+            "report": report.to_dict()["report"],
+        }
 
     if not isinstance(
         report,
@@ -127,25 +251,46 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
             RelationalExchangeField,
             RelationalExchangeStep,
             RelationalUniformTangent,
+            RelationalConsensusTangent,
             RelationalPatternObservation,
             RelationalAttachmentObservation,
             RelationalAttachmentSupplyAssessment,
             RelationalCoefficientJetBounds,
             RelationalCoefficientSampleBounds,
+            RelationalJetSampleBounds,
+            RelationalRateContrastBounds,
+            RelationalRateSampleBounds,
             RelationalRelocationObservation,
             RelationalResetObservation,
+            RelationalSampleJetBudget,
             RelationalCaptureCertificate,
+            RelationalConsensusCaptureCertificate,
+            RelationalConsensusFormationObstruction,
+            RelationalCycleCaptureCertificate,
+            RelationalDetachmentObservation,
+            RelationalCycleMemoryBounds,
+            RelationalFiniteMemoryCertificate,
+            RelationalMemoryReadoutCertificate,
+            RelationalMemoryContactCertificate,
+            RelationalMemoryRetentionCertificate,
             RelationalLocalCaptureCertificate,
+            RelationalSeededFormationObstruction,
             RelationalSectorCaptureCertificate,
+            RelationalSectorGeometry,
             RelationalTransitCertificate,
         ),
     ):
         raise TypeError(
-            "expected a relational field, step, uniform tangent, pattern, attachment, relocation, reset, supply assessment, "
-            "coefficient-jet, coefficient-sample, capture or continuous-transit report"
+            "expected a relational field, step, joint tangent, pattern, attachment, relocation, reset, supply assessment, "
+            "coefficient-jet, coefficient-sample, rate-contrast, sample-rate, sample-jet, sample-jet-budget, cycle-memory, sector-geometry, capture, detachment or continuous-transit report"
         )
     observation = (
-        report.initial if isinstance(report, RelationalTransitCertificate) else report
+        report.initial
+        if isinstance(
+            report,
+            (RelationalTransitCertificate, RelationalConsensusCaptureCertificate),
+        )
+        else report
     )
     if isinstance(
         observation,
@@ -153,34 +298,57 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
             RelationalAttachmentSupplyAssessment,
             RelationalCoefficientJetBounds,
             RelationalCoefficientSampleBounds,
+            RelationalJetSampleBounds,
+            RelationalRateContrastBounds,
+            RelationalRateSampleBounds,
+            RelationalSampleJetBudget,
+            RelationalCycleMemoryBounds,
+            RelationalFiniteMemoryCertificate,
+            RelationalMemoryReadoutCertificate,
+            RelationalMemoryContactCertificate,
+            RelationalMemoryRetentionCertificate,
+            RelationalSeededFormationObstruction,
         ),
     ):
         states = ()
+    elif isinstance(observation, RelationalDetachmentObservation):
+        states = (
+            observation.before,
+            *(component.field for component in observation.components),
+            *_reset_states(observation.reset),
+        )
+        _validate_label_groups(
+            *observation.removed_bridges,
+            *(component.cycle for component in observation.components),
+        )
+    elif isinstance(observation, RelationalConsensusFormationObstruction):
+        states = (observation.field,)
+        _validate_label_groups(*observation.cycles)
+    elif isinstance(observation, RelationalCycleCaptureCertificate):
+        states = (observation.field,)
+        _validate_label_groups(observation.cycle)
+    elif isinstance(observation, RelationalSectorGeometry):
+        states = (observation,)
+        # Public dataclasses can be constructed with labels outside their nodes.
+        _validate_label_groups(*observation.cycles, observation.bridge_cycle)
     elif isinstance(observation, RelationalAttachmentObservation):
         states = (*observation.components, observation.joined)
         _validate_support_change_labels(
-            observation, states, (observation.bridge,), (observation.cut,)
+            observation, (observation.bridge,), (observation.cut,)
         )
     elif isinstance(observation, RelationalRelocationObservation):
         states = (observation.before, observation.after)
         _validate_support_change_labels(
             observation,
-            states,
             (observation.remove_bridge, observation.add_bridge),
             (observation.cut_before, observation.cut_after),
             observation.components,
         )
     elif isinstance(observation, RelationalResetObservation):
-        states = (
-            observation.before,
-            observation.after,
-            observation.transport_reset.before,
-            observation.transport_reset.after,
-        )
-        for edge in (*observation.edges_before, *observation.edges_after):
-            for node in edge:
-                _validate_label(node)
-    elif isinstance(observation, RelationalUniformTangent):
+        states = _reset_states(observation)
+    elif isinstance(
+        observation, (RelationalUniformTangent, RelationalConsensusTangent)
+    ):
         states = (observation.field,)
     elif isinstance(observation, RelationalExchangeStep):
         states = (observation.before, observation.after)
@@ -197,14 +365,32 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
         # Undefined cycles can retain nodes absent from the admitted graph.
         # Those labels must not bypass admission through dataclass projection.
         for certificate in observation.winding:
-            for node in certificate.cycle_nodes:
-                _validate_label(node)
+            _validate_label_groups(certificate.cycle_nodes)
+        if isinstance(observation, RelationalPatternObservation):
+            _validate_pattern_labels(observation)
+        else:
+            _validate_label_groups(*observation.cycles)
+            if isinstance(observation, RelationalSectorCaptureCertificate):
+                _validate_label_groups(observation.bridge_cycle)
     else:
         states = (observation,)
     for state in states:
-        for node in state.nodes:
-            _validate_label(node)
+        _validate_label_groups(state.nodes)
+        if isinstance(state, (RelationalExchangeField, RelationalSectorGeometry)):
+            _validate_label_groups(*state.edges)
     projected = _project(report)
+    if isinstance(
+        report,
+        (
+            RelationalFiniteMemoryCertificate,
+            RelationalMemoryReadoutCertificate,
+            RelationalMemoryContactCertificate,
+            RelationalMemoryRetentionCertificate,
+        ),
+    ):
+        projected["admitted"] = report.admitted
+    if isinstance(report, RelationalDetachmentObservation):
+        projected["capture_admitted"] = report.capture_admitted
     if isinstance(
         report, (RelationalAttachmentObservation, RelationalRelocationObservation)
     ):

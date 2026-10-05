@@ -15,6 +15,7 @@ import math
 import sys
 from collections.abc import Callable, Iterator, Mapping, MutableMapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
+from fractions import Fraction
 from time import perf_counter
 from types import ModuleType
 from typing import Any, cast
@@ -1722,6 +1723,106 @@ def _compute_dnfr_common(
         n_jobs=n_jobs,
         profile=profile,
     )
+
+
+def _compute_delta_nfr_from_relative_sources(
+    G, *, nodes, phase, neighbors, phase_sources, profile=None
+) -> None:
+    """Mix admitted relative-resultant phase sources with native EPI pressure.
+
+    This private relational adapter consumes the same captured Arg(C+iS)/pi
+    as each explicitly admitted relational phase law. It never reconstructs
+    that branch by subtracting a rounded global circular mean. The caller owns
+    the selected phase-domain admission and any resultant certification;
+    matching live node order, phase and support are checked here, but supplied
+    source values are not independently authenticated.
+
+    Only the configured EPI/phase mixture is supported. All values and final
+    pressures are validated before graph writes; existing default, fused and
+    phase-only pressure paths retain their numerical contracts.
+    """
+    nodes = tuple(nodes)
+    if nodes != tuple(G):
+        raise ValueError("relative phase sources require the live node order")
+    if (
+        G.is_directed()
+        or G.is_multigraph()
+        or any(
+            left == right
+            or finite_represented_real(attrs.get("weight", 1.0), "conductance")[0]
+            != 1.0
+            for left, right, attrs in G.edges(data=True)
+        )
+    ):
+        raise ValueError("relative phase sources require simple unit support")
+    indices = {node: index for index, node in enumerate(nodes)}
+    captured_phase = tuple(
+        finite_represented_real(value, "captured pressure phase")[0] for value in phase
+    )
+    live_phase = tuple(_read_phase(G.nodes[node]) for node in nodes)
+    if captured_phase != live_phase:
+        raise ValueError("relative phase sources require the live phase state")
+    captured_neighbors = tuple(tuple(row) for row in neighbors)
+    live_neighbors = tuple(
+        tuple(indices[neighbor] for neighbor in G.neighbors(node)) for node in nodes
+    )
+    if (
+        any(type(index) is not int for row in captured_neighbors for index in row)
+        or captured_neighbors != live_neighbors
+    ):
+        raise ValueError("relative phase sources require the live support order")
+    sources = tuple(
+        finite_represented_real(value, "relative phase source")[1]
+        for value in phase_sources
+    )
+    if len(sources) != len(nodes) or any(abs(value) >= 1 for value in sources):
+        raise ValueError("relative phase sources must match nodes and lie in (-1,1)")
+    weights = _resolve_dnfr_weights(G)
+    if (
+        weights.get("vf", 0.0) != 0.0
+        or weights.get("topo", 0.0) != 0.0
+        or weights.get("phase", 0.0) <= 0.0
+    ):
+        raise ValueError("relative sources require the EPI/positive-phase mixture")
+    data = {
+        "nodes": nodes,
+        "idx": indices,
+        "epi": tuple(_read_scalar_epi(G.nodes[node]) for node in nodes),
+        "vf": tuple(_read_capacity(G.nodes[node]) for node in nodes),
+        "w_epi": weights.get("epi", 0.0),
+        "w_vf": 0.0,
+    }
+    epi_gradient, _ = _linear_neighbor_gradients(G, data)
+    for index, epi_term in enumerate(epi_gradient):
+        if epi_term == 0.0 and data["w_epi"] != 0.0 and live_neighbors[index]:
+            exact_difference = sum(
+                (
+                    Fraction(data["epi"][neighbor]) - Fraction(data["epi"][index])
+                    for neighbor in live_neighbors[index]
+                ),
+                Fraction(0),
+            )
+            if exact_difference:
+                raise ValueError("nonzero EPI pressure underflows to represented zero")
+    phase_weight = Fraction(weights["phase"])
+    pressures = tuple(
+        finite_represented_real(
+            Fraction(float(epi_term)) + phase_weight * source,
+            "relative-source pressure",
+        )[0]
+        for epi_term, source in zip(epi_gradient, sources, strict=True)
+    )
+    _require_finite_pressure(pressures)
+    for node, pressure in zip(nodes, pressures, strict=True):
+        set_dnfr(G, node, pressure)
+    _write_dnfr_metadata(
+        G,
+        weights=weights,
+        hook_name="relative_resultant_canonical",
+        note="relative_resultant_canonical: shared captured relational phase source",
+    )
+    if profile is not None:
+        profile["dnfr_path"] = "relative_resultant_canonical"
 
 
 def _reset_numpy_buffer(

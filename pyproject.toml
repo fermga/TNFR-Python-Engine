@@ -200,6 +200,7 @@ testpaths = [
   "tests/physics/test_coherence_geometry.py",
   "tests/physics/test_coherence_spectral_selection_scope.py",
   "tests/physics/test_conductance_readout_synergy.py",
+  "tests/physics/test_conservation_gauge_unification.py",
   "tests/physics/test_conservation_observation_admission.py",
   "tests/physics/test_curvature_multiscale.py",
   "tests/physics/test_diffusion_energy_balance.py",

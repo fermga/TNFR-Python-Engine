@@ -257,6 +257,12 @@ current changes; no coupling coefficient is fitted and no alternative dynamics
 is installed. These are model-discrimination controls, not laboratory evidence
 selecting either response. Reflection symmetry or agreement to first order
 likewise does not select a unique smooth periodic response function.
+The [complete exchange comparison](RELATIONAL_EXCHANGE_ADMISSION.md#global-closure-pressure-comparison)
+now derives the associated phase row, global continuation and work balance.
+It also shows why a bounded phase-only repair cannot preserve global
+passivity with native Arg pressure and cosine storage. Normalized pairwise
+superposition selects the sine response within an explicit comparison class;
+it is not a consequence of circular phase alone or a default pressure change.
 
 #### Prospective finite-response discriminator
 

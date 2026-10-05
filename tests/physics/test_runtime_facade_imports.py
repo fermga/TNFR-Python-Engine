@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 import subprocess
 import sys
 from pathlib import Path
@@ -17,12 +16,10 @@ import pytest
         "import tnfr.operators; import tnfr.physics",
     ),
 )
-def test_runtime_facades_are_cold_import_order_safe(imports: str) -> None:
+def test_runtime_facades_are_cold_import_order_safe(
+    imports: str, source_tree_environment
+) -> None:
     root = Path(__file__).resolve().parents[2]
-    environment = os.environ.copy()
-    environment["PYTHONPATH"] = os.pathsep.join(
-        part for part in (str(root / "src"), environment.get("PYTHONPATH")) if part
-    )
     # Check actual facade resolution after both import orders, not just import.
     code = (
         imports
@@ -49,7 +46,7 @@ for name in (
     completed = subprocess.run(
         [sys.executable, "-c", code],
         cwd=root,
-        env=environment,
+        env=source_tree_environment,
         capture_output=True,
         text=True,
         check=False,

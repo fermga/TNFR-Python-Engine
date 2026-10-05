@@ -11,6 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from fractions import Fraction as Q
 from functools import lru_cache
+from math import isqrt
 
 from ._phase_midpoint import _pi_bounds
 from ._phase_resultant_chamber import certified_cosine_bounds
@@ -25,6 +26,8 @@ __all__ = (
     "cos",
     "atan",
     "atan_ratio",
+    "arg",
+    "sqrt",
 )
 
 INTERVAL_BITS = 128
@@ -180,6 +183,29 @@ def pi_interval():
     return I(*_pi_bounds())
 
 
+def sqrt(value):
+    """Enclose the nonnegative square root by exact integer inequalities.
+
+    Every admitted endpoint must be nonnegative. An interval crossing zero
+    is rejected rather than silently clipped to an assumed physical domain.
+    Integer square roots locate the adjacent dyadic grid points without a
+    floating estimate, including very small and very large exact inputs.
+    """
+    value = I.coerce(value)
+    if value.lo < 0:
+        raise ValueError("square-root interval must be nonnegative")
+
+    def floor_root(endpoint):
+        scaled = endpoint.numerator * _SCALE * _SCALE
+        return isqrt(scaled // endpoint.denominator)
+
+    lower = floor_root(value.lo)
+    upper = floor_root(value.hi)
+    if Q(upper, _SCALE) ** 2 < value.hi:
+        upper += 1
+    return I(Q(lower, _SCALE), Q(upper, _SCALE))
+
+
 def cos(value):
     """Enclose cosine with midpoint bounds and its global unit Lipschitz bound."""
     value = I.coerce(value)
@@ -228,6 +254,30 @@ def atan(value):
     """Enclose the principal arctangent using monotonicity and rational series."""
     value = I.coerce(value)
     return I(_atan_point(value.lo).lo, _atan_point(value.hi).hi)
+
+
+def arg(real, imaginary):
+    """Enclose principal Arg(real+i*imaginary) on a whole regular rectangle.
+
+    The nonpositive real ray, including zero, is excluded. A rectangle must
+    have strictly positive real part or a sign-separated imaginary part;
+    intervals intersecting the cut reject, including unresolved rounded
+    boxes. The positive real axis is regular and has argument zero.
+
+    A right-half-plane chart uses atan(imaginary/real). On the upper/lower
+    chart, +/-pi/2-atan(real/imaginary) avoids division by a real interval
+    crossing zero. No floating branch convention or represented pi decides
+    admission. The returned enclosure may meet a branch endpoint through
+    conservative rounding; it does not claim that such an endpoint occurs.
+    """
+    real, imaginary = I.coerce(real), I.coerce(imaginary)
+    if real.lo > 0:
+        return atan(imaginary / real)
+    if imaginary.lo > 0:
+        return pi_interval() / 2 - atan(real / imaginary)
+    if imaginary.hi < 0:
+        return -pi_interval() / 2 - atan(real / imaginary)
+    raise ValueError("principal argument rectangle intersects the nonpositive real ray")
 
 
 @lru_cache(maxsize=4096)

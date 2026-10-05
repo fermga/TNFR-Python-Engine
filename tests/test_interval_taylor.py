@@ -7,7 +7,7 @@ from math import comb, factorial
 import pytest
 
 import tnfr.mathematics._interval_taylor as owner
-from tnfr.mathematics._interval_taylor import Jet, atan_ratio, cos, sin, sinc
+from tnfr.mathematics._interval_taylor import Jet, arg, atan_ratio, cos, sin, sinc
 from tnfr.mathematics._rational_interval import I
 
 
@@ -292,3 +292,98 @@ def test_order_zero_functions_and_exact_constant_series_are_supported():
         assert all(
             value == I(0) for value in function(Jet.constant(Q(1, 4), 16)).coeffs[1:]
         )
+
+
+def _argument_derivatives(real, imaginary, dx, dy, order):
+    """Exact coefficients from Im(log(z+v*t)), independent of the recurrence.
+
+    The local expansion has degree-n coefficient
+    Im((-1)**(n+1) * (v/z)**n / n). Complex arithmetic uses rational pairs.
+    """
+    radius = real**2 + imaginary**2
+    ratio = (dx * real + dy * imaginary) / radius, (dy * real - dx * imaginary) / radius
+    power = Q(1), Q(0)
+    result = []
+    for degree in range(1, order + 1):
+        power = (
+            power[0] * ratio[0] - power[1] * ratio[1],
+            power[0] * ratio[1] + power[1] * ratio[0],
+        )
+        result.append(Q((-1) ** (degree + 1), degree) * power[1])
+    return result
+
+
+@pytest.mark.parametrize("real,imaginary", ((-2, 1), (-2, -1), (2, 0), (0, 2), (0, -2)))
+def test_arg_jet_encloses_independent_complex_log_coefficients(real, imaginary):
+    real, imaginary = Q(real), Q(imaginary)
+    x = Jet((I(real), I(1)) + (I(0),) * 15)
+    y = Jet((I(imaginary), I(2)) + (I(0),) * 15)
+    result = arg(x, y)
+    reference = _argument_derivatives(real, imaginary, Q(1), Q(2), 16)
+    _assert_encloses(result.coeffs[1:], reference)
+    assert all(value.width < Q(1, 10**27) for value in result.coeffs)
+    quarter = _atan_bounds(Q(1))
+    if real == 0:
+        lower, upper = (2 * endpoint for endpoint in quarter)
+        if imaginary < 0:
+            lower, upper = -upper, -lower
+    else:
+        lower, upper = _atan_bounds(imaginary / real)
+        if real < 0 and imaginary > 0:
+            lower, upper = lower + 4 * quarter[0], upper + 4 * quarter[1]
+        elif real < 0:
+            lower, upper = lower - 4 * quarter[1], upper - 4 * quarter[0]
+    assert result.coeffs[0].lo <= lower <= upper <= result.coeffs[0].hi
+
+
+def test_arg_jet_encloses_nonlinear_composition_without_scalar_error_derivatives():
+    # z=(-2+i)+(1+2i)*(t+t²); binomial coefficients compose the independently
+    # calculated complex-log coefficients, exercising every order through16.
+    x = Jet((I(-2), I(1), I(1)) + (I(0),) * 14)
+    y = Jet((I(1), I(2), I(2)) + (I(0),) * 14)
+    coefficients = _argument_derivatives(Q(-2), Q(1), Q(1), Q(2), 16)
+    expected = [
+        sum(
+            (
+                comb(power, degree - power) * coefficients[power - 1]
+                for power in range(1, degree + 1)
+                if power <= degree <= 2 * power
+            ),
+            Q(0),
+        )
+        for degree in range(1, 17)
+    ]
+    _assert_encloses(arg(x, y).coeffs[1:], expected)
+
+
+def test_arg_jet_handles_a_real_box_crossing_zero_without_inventing_a_pole():
+    real, imaginary = I(-3, 3), I(1, 2)
+    x = Jet((real, I(1)) + (I(0),) * 7)
+    y = Jet((imaginary, I(2)) + (I(0),) * 7)
+    result = arg(x, y)
+    for a in (real.lo, real.midpoint, real.hi):
+        for b in (imaginary.lo, imaginary.midpoint, imaginary.hi):
+            expected = _argument_derivatives(a, b, Q(1), Q(2), 8)
+            _assert_encloses(result.coeffs[1:], expected)
+
+
+def test_arg_jet_requires_regular_constant_box_and_matching_jet_orders():
+    for real, imaginary in ((I(-2, 1), I(-1, 1)), (I(-1), I(0)), (I(0), I(0))):
+        with pytest.raises(ValueError, match="nonpositive real ray"):
+            arg(Jet.constant(real, 2), Jet.constant(imaginary, 2))
+    with pytest.raises(ValueError, match="same order"):
+        arg(Jet.constant(1, 2), Jet.constant(1, 3))
+    for invalid in (I(1), 1, True, 1.0):
+        with pytest.raises(TypeError, match="require a Jet"):
+            arg(invalid, Jet.constant(1, 2))
+        with pytest.raises(TypeError, match="require a Jet"):
+            arg(Jet.constant(1, 2), invalid)
+
+
+def test_arg_jet_zero_order_and_constant_series_preserve_the_positive_axis():
+    assert arg(Jet.constant(2, 0), Jet.constant(0, 0)).coeffs == (I(0),)
+    assert arg(Jet.constant(2, 16), Jet.constant(0, 16)).coeffs == (I(0),) * 17
+    assert all(
+        value == I(0)
+        for value in arg(Jet.constant(-2, 16), Jet.constant(1, 16)).coeffs[1:]
+    )

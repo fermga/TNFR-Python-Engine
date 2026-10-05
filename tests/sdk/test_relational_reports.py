@@ -25,6 +25,357 @@ def _network():
     return Network(graph)
 
 
+def test_pair_emission_sdk_delegates_explicit_action_and_lifts(monkeypatch):
+    from tnfr.physics import relational_sine_scale as owner
+
+    network, model = _network(), RelationalExchangeModel(1)
+    pairs = ((("port", 0), "right"),)
+    turns = (2, 2)
+    result = object()
+
+    def assess(graph, **kwargs):
+        assert graph is network.G
+        assert kwargs == {
+            "reference_model": model,
+            "pairs": pairs,
+            "pair_index": 0,
+            "boost": Fraction(1, 8),
+            "phase_turns": turns,
+        }
+        return result
+
+    monkeypatch.setattr(owner, "assess_sine_pair_emission", assess)
+    assert (
+        network.relational_sine_pair_emission(
+            model, pairs=pairs, pair_index=0, boost=Fraction(1, 8), phase_turns=turns
+        )
+        is result
+    )
+
+
+def test_pair_emission_exact_export_keeps_target_distinction(tmp_path):
+    graph = nx.complete_bipartite_graph(2, 2)
+    for node, form in zip(graph, (0.25, 0.75, 0.0, 0.0), strict=True):
+        graph.nodes[node].update(EPI=form, theta=0.0, nu_f=1.0)
+    graph.graph["GAMMA"] = {"type": "none"}
+    report = Network(graph).relational_sine_pair_emission(
+        RelationalExchangeModel(1, epi_weight=0, phase_domain="regular"),
+        pairs=((0, 1), (2, 3)),
+        pair_index=0,
+        boost=0.125,
+    )
+    evidence = relational_report_to_dict(report)
+    path = tmp_path / "pair-emission.json"
+    export_to_json(evidence, path)
+    saved = json.loads(path.read_text(encoding="utf-8"))
+    assert saved["schema"] == "tnfr.relational-report.v1"
+    assert saved["report_type"] == "SinePairEmissionAssessment"
+    body = saved["report"]
+    assert not body["single_member_source_orbit_equal"]
+    assert body["whole_pair_structural_descent_certified"]
+    assert not body["runtime_admission_certified"]
+    assert not body["event_occurrence_derived"]
+    for field, numerator in (("first_member", 9), ("second_member", 25)):
+        assert body[field]["internal_form_squared"] == {
+            "numerator": numerator,
+            "denominator": 256,
+        }
+    assert body["whole_pair"]["form_mean"] == {"numerator": 5, "denominator": 8}
+    body["first_member"]["form_pair"][0]["numerator"] = 999
+    assert report.first_member.form_pair[0] == Fraction(3, 8)
+
+    increment = report.form_increment(outcome="whole_pair")
+    assert increment.comparison is report.comparison
+    increment_data = relational_report_to_dict(increment)
+    assert increment_data["report_type"] == "SineFormIncrementAssessment"
+    assert increment_data["report"]["weighted_form_change"] == {
+        "numerator": 1,
+        "denominator": 2,
+    }
+    assert increment_data["report"]["closed_flow_endpoint_obstructed"]
+    assert not increment_data["report"]["endpoint_reachability_certified"]
+    transfer = report.comparison.regional_transfer(region=(0, 1))
+    transfer_data = relational_report_to_dict(transfer)
+    assert transfer_data["report_type"] == "SineRegionalTransfer"
+    assert transfer_data["report"]["region_indices"] == [0, 1]
+    assert transfer_data["report"]["regional_weighted_form"] == {
+        "numerator": 2,
+        "denominator": 1,
+    }
+    path = tmp_path / "form-balance.json"
+    export_to_json({"transfer": transfer_data, "increment": increment_data}, path)
+    saved = json.loads(path.read_text(encoding="utf-8"))
+    assert saved == {"transfer": transfer_data, "increment": increment_data}
+
+
+@pytest.mark.parametrize(
+    "kind",
+    (
+        "identity",
+        "replica",
+        "replica_capacity",
+        "replica_equilibria",
+        "phase_pairs",
+        "joint_pairs",
+        "joint_pairing_projection",
+        "joint_pairing_window",
+        "state_pairing",
+        "pairing_transition",
+        "pairing_window",
+        "pair_support_symmetry",
+        "mixed_pair_state",
+        "pair_emission",
+        "regional_transfer",
+        "form_increment",
+        "mobility_comparison",
+        "mobility_relative_balance",
+        "mobility_geometry",
+        "pairing_mobility",
+        "replica_persistence",
+        "replica_pulse",
+        "replica_variation",
+        "replica_splitting",
+    ),
+)
+def test_extended_sine_export_delegates_owner_verdicts(monkeypatch, kind):
+    from tnfr.physics.relational_sine_comparison import (
+        SineFormIncrementAssessment,
+        SineMobilityComparison,
+        SineMobilityRelativeBalance,
+        SineRegionalTransfer,
+    )
+    from tnfr.physics.relational_sine_recovery import SineCycleIdentityAssessment
+    from tnfr.physics.relational_sine_scale import (
+        JointPairObservation,
+        PhasePairObservation,
+        SineJointPairingProjection,
+        SineJointPairingWindowAssessment,
+        SineMixedPairStateAssessment,
+        SineMobilityGeometryAssessment,
+        SinePairEmissionAssessment,
+        SinePairingMobilityAssessment,
+        SinePairingTransitionAssessment,
+        SinePairingWindowAssessment,
+        SinePairSupportSymmetryAssessment,
+        SineReplicaCapacityAssessment,
+        SineReplicaEquilibriaAssessment,
+        SineReplicaPersistenceAssessment,
+        SineReplicaPulseAssessment,
+        SineReplicaPulseSplitting,
+        SineReplicaPulseVariation,
+        SineReplicaScaleAssessment,
+        SineStatePairingAssessment,
+    )
+
+    if kind == "identity":
+        report_type = SineCycleIdentityAssessment
+        schema = "tnfr.relational-sine-cycle-identity.v1"
+        body = {
+            "family_almost_everywhere_recurrence_certified": True,
+            "source_set_trapping_certified": False,
+            "relative_source_family_membership": "unresolved",
+            "individual_recurrence_status": "unavailable_for_chosen_state",
+        }
+    elif kind == "replica":
+        report_type = SineReplicaScaleAssessment
+        schema = "tnfr.relational-sine-replica-scale.v1"
+        body = {
+            "synchronized_submanifold_invariant": True,
+            "source_in_synchronized_submanifold": False,
+            "same_law_reduced_flow_certified_for_source": False,
+            "all_state_coarse_closure_obstructed": True,
+            "unordered_pair_state_closure_certified": True,
+            "unordered_pair_state_identifies_swap_orbits": True,
+        }
+    elif kind == "replica_capacity":
+        report_type = SineReplicaCapacityAssessment
+        schema = "tnfr.relational-sine-replica-capacity.v1"
+        body = {
+            "family": {
+                "family_admitted": False,
+                "source_set_trapping_certified": False,
+                "individual_recurrence_status": "unavailable_for_chosen_state",
+            },
+            "all_time_internal_activity_status": "not_certified_by_this_reader",
+        }
+    elif kind == "replica_equilibria":
+        report_type = SineReplicaEquilibriaAssessment
+        schema = "tnfr.relational-sine-replica-equilibria.v1"
+        body = {
+            "source_equilibrium_status": "unavailable",
+            "source_equilibrium_winding": None,
+            "acute_equilibrium_classification_certified": True,
+        }
+    elif kind == "phase_pairs":
+        report_type = PhasePairObservation
+        schema = "tnfr.phase-pairs.v1"
+        body = {"candidate_pairs": None, "status": "unavailable"}
+    elif kind == "joint_pairs":
+        report_type = JointPairObservation
+        schema = "tnfr.joint-pairs.v1"
+        body = {"candidate_pairs": None, "status": "unavailable"}
+    elif kind == "joint_pairing_projection":
+        report_type = SineJointPairingProjection
+        schema = "tnfr.relational-sine-joint-pairing-projection.v1"
+        body = {
+            "candidate_pairs": None,
+            "status": "unavailable",
+            "same_pairing_as_initial_box": None,
+        }
+    elif kind == "joint_pairing_window":
+        report_type = SineJointPairingWindowAssessment
+        schema = "tnfr.relational-sine-joint-pairing-window.v1"
+        body = {
+            "reference_identity_certified": True,
+            "candidate_pairs": None,
+            "status": "unavailable",
+        }
+    elif kind == "state_pairing":
+        report_type = SineStatePairingAssessment
+        schema = "tnfr.relational-sine-state-pairing.v1"
+        body = {
+            "capacity_admission_status": "rejected",
+            "capacity": None,
+            "all_time_pairing_persistence_certified": False,
+        }
+    elif kind == "pairing_transition":
+        report_type = SinePairingTransitionAssessment
+        schema = "tnfr.relational-sine-pairing-transition.v1"
+        body = {
+            "forward": {
+                "status": "certified_matching",
+                "local_interval_existence_certified": True,
+                "certified_time_horizon": None,
+                "support_admission_status": "rejected",
+            },
+            "backward": {"status": "unavailable"},
+        }
+    elif kind == "pairing_window":
+        report_type = SinePairingWindowAssessment
+        schema = "tnfr.relational-sine-pairing-window.v1"
+        body = {
+            "status": "unavailable",
+            "candidate_pairs": None,
+            "support_admission_status": "not_attempted",
+        }
+    elif kind == "pair_support_symmetry":
+        report_type = SinePairSupportSymmetryAssessment
+        schema = "tnfr.relational-sine-pair-support-symmetry.v1"
+        body = {
+            "independent_pair_swaps_equivariant": True,
+            "unordered_pair_quotient_status": "certified_by_independent_swap_symmetry",
+            "strict_replica_admission_status": "rejected",
+            "witness": None,
+        }
+    elif kind == "mixed_pair_state":
+        report_type = SineMixedPairStateAssessment
+        schema = "tnfr.relational-sine-mixed-pair-state.v1"
+        body = {
+            "coordinates": ({"mode": "ordered"}, {"mode": "unordered"}),
+            "support_symmetry": {"strict_replica_admission_status": "rejected"},
+        }
+    elif kind == "pair_emission":
+        report_type = SinePairEmissionAssessment
+        schema = "tnfr.relational-sine-pair-emission.v1"
+        body = {
+            "single_member_source_orbit_equal": False,
+            "whole_pair_structural_descent_certified": True,
+            "runtime_admission_certified": False,
+            "event_occurrence_derived": False,
+        }
+    elif kind == "regional_transfer":
+        report_type = SineRegionalTransfer
+        schema = "tnfr.relational-sine-regional-transfer.v1"
+        body = {
+            "global_weighted_form_conserved": True,
+            "global_weighted_form_rate_bounds": {
+                "lo": {"numerator": -1, "denominator": 100},
+                "hi": {"numerator": 1, "denominator": 100},
+            },
+        }
+    elif kind == "form_increment":
+        report_type = SineFormIncrementAssessment
+        schema = "tnfr.relational-sine-form-increment.v1"
+        body = {
+            "closed_flow_endpoint_obstructed": False,
+            "endpoint_reachability_certified": False,
+        }
+    elif kind == "mobility_comparison":
+        report_type = SineMobilityComparison
+        schema = "tnfr.relational-sine-mobility-comparison.v1"
+        body = {
+            "law": "current_squared_reciprocal_mobility",
+            "epsilon": {"numerator": 1, "denominator": 1},
+        }
+    elif kind == "mobility_relative_balance":
+        report_type = SineMobilityRelativeBalance
+        schema = "tnfr.relational-sine-mobility-relative-balance.v1"
+        body = {
+            "relative_field_closure_certified": True,
+            "constant_mobility_mean_and_volume_identities_certified": False,
+        }
+    elif kind == "mobility_geometry":
+        report_type = SineMobilityGeometryAssessment
+        schema = "tnfr.relational-sine-mobility-geometry.v1"
+        body = {
+            "source_set_trapping_certified": True,
+            "relative_family_recurrence_status": "unavailable_invariant_measure_unproved",
+            "full_state_recurrence_status": "not_assessed_removed_origins",
+        }
+    elif kind == "pairing_mobility":
+        report_type = SinePairingMobilityAssessment
+        schema = "tnfr.relational-sine-pairing-mobility.v1"
+        body = {"certified_time_horizon": None}
+    elif kind == "replica_persistence":
+        report_type = SineReplicaPersistenceAssessment
+        schema = "tnfr.relational-sine-replica-persistence.v1"
+        body = {
+            "family_admitted": True,
+            "source_set_trapping_certified": False,
+            "individual_recurrence_status": "unavailable_for_chosen_state",
+        }
+    elif kind == "replica_pulse":
+        report_type = SineReplicaPulseAssessment
+        schema = "tnfr.relational-sine-replica-pulse.v1"
+        body = {
+            "nonlinear_periodic_exchange_certified": True,
+            "graph_membership_certified": False,
+            "all_fine_edges_acute_status": "excluded",
+        }
+    elif kind == "replica_variation":
+        report_type = SineReplicaPulseVariation
+        schema = "tnfr.relational-sine-replica-pulse-variation.v1"
+        body = {
+            "variation_identity_certified": True,
+            "periodic_reference_certified": True,
+            "orbital_stability_status": "not_assessed",
+        }
+    else:
+        report_type = SineReplicaPulseSplitting
+        schema = "tnfr.relational-sine-replica-pulse-splitting.v1"
+        body = {
+            "sufficiently_small_nonlinear_orbital_instability_certified": True,
+            "amplitude_upper_bound": None,
+            "finite_preparation_assessed": False,
+            "return_multipliers_computed": False,
+        }
+    report = object.__new__(report_type)
+    calls = []
+
+    def project(self):
+        calls.append(self)
+        return {"schema": schema, "report": body}
+
+    monkeypatch.setattr(report_type, "to_dict", project)
+    result = relational_report_to_dict(report)
+    assert calls == [report]
+    assert result == {
+        "schema": "tnfr.relational-report.v1",
+        "report_type": report_type.__name__,
+        "report": body,
+    }
+
+
 def test_pattern_sdk_is_a_thin_delegate(monkeypatch):
     from tnfr.physics import relational_observations as owner
 
@@ -52,6 +403,31 @@ def test_pattern_sdk_is_a_thin_delegate(monkeypatch):
             ),
         )
     ]
+
+
+def test_seeded_formation_obstruction_export_preserves_scope_and_exact_deficits():
+    from tnfr.physics.relational_capture import (
+        certify_relational_seeded_formation_obstruction,
+    )
+
+    report = certify_relational_seeded_formation_obstruction()
+    data = relational_report_to_dict(report)
+    assert data["report_type"] == "RelationalSeededFormationObstruction"
+    body = data["report"]
+    assert body["status"] == "obstructed" and body["obstruction_certified"]
+    assert "admitted" not in body
+    for case, original in zip(body["cases"], report.cases):
+        assert case["matching_ports"] == [
+            list(pair) for pair in original.matching_ports
+        ]
+        deficit = case["additional_storage_gap_lower_bound"]
+        assert Fraction(deficit["numerator"], deficit["denominator"]) == (
+            original.additional_storage_gap_lower_bound
+        )
+        assert original.additional_storage_gap_lower_bound > 0
+    assert json.loads(json.dumps(data)) == data
+    body["cases"][0]["additional_storage_gap_lower_bound"]["numerator"] = 0
+    assert report.cases[0].additional_storage_gap_lower_bound > 0
 
 
 def test_exact_field_step_and_pattern_export_reuses_atomic_writer(tmp_path):
@@ -221,6 +597,105 @@ def test_projection_rejects_opaque_labels_and_nonfinite_tampering(tmp_path):
         relational_report_to_dict(model)
 
 
+def _replace_report_path(report, path, value):
+    """Alter one retained record without changing any other captured evidence."""
+    if not path:
+        return value
+    key, *remaining = path
+    if isinstance(key, int):
+        return tuple(
+            _replace_report_path(item, remaining, value) if index == key else item
+            for index, item in enumerate(report)
+        )
+    return replace(
+        report, **{key: _replace_report_path(getattr(report, key), remaining, value)}
+    )
+
+
+@pytest.fixture(scope="module")
+def native_label_reports():
+    from tnfr.dynamics.relational import RelationalExchangeStep
+
+    network, model = _network(), RelationalExchangeModel(1)
+    for node in network.G:
+        network.G.nodes[node]["EPI"] = 0
+    field = network.relational_exchange(model)
+    # A constructed equilibrium step exercises the report format without evolution.
+    step = RelationalExchangeStep(
+        before=field,
+        after=field,
+        dt=1.0,
+        t_before=0.0,
+        t_after=1.0,
+        epi_update_defect=(Fraction(0),) * 2,
+        phase_update_defect=(Fraction(0),) * 2,
+        clock_defect=Fraction(0),
+        energy_change=Fraction(0),
+        energy_step_defect=Fraction(0),
+    )
+    return {
+        "field": field,
+        "step": step,
+        "uniform_tangent": network.relational_uniform_tangent(model),
+        "consensus_tangent": network.relational_consensus_tangent(model),
+        "pattern": network.relational_pattern(
+            model,
+            reference_phase=dict.fromkeys(network.G, 0),
+            regions=(("right",),),
+        ),
+    }
+
+
+@pytest.mark.parametrize(
+    "kind,path",
+    (
+        ("field", ("edges",)),
+        ("step", ("before", "edges")),
+        ("step", ("after", "edges")),
+        ("uniform_tangent", ("field", "edges")),
+        ("consensus_tangent", ("field", "edges")),
+        ("pattern", ("field", "edges")),
+    ),
+)
+def test_native_report_export_rejects_dataclass_edge_labels(
+    native_label_reports, kind, path
+):
+    @dataclass(frozen=True)
+    class OpaqueLabel:
+        value: int
+
+    report = native_label_reports[kind]
+    assert json.loads(json.dumps(relational_report_to_dict(report)))
+    altered = _replace_report_path(report, path, ((("nested", OpaqueLabel(3)), 1),))
+    with pytest.raises(TypeError, match="node labels"):
+        relational_report_to_dict(altered)
+
+
+@pytest.mark.parametrize(
+    "path",
+    (
+        ("nodes",),
+        ("transport", "source", "nodes"),
+        ("transport", "region"),
+        ("transport", "environment"),
+        ("boundary", "cut", "nodes"),
+        ("boundary", "cut", "region"),
+        ("boundary", "cut", "environment"),
+    ),
+)
+def test_pattern_export_rejects_dataclass_labels_in_nested_regional_evidence(
+    native_label_reports, path
+):
+    @dataclass(frozen=True)
+    class OpaqueLabel:
+        value: int
+
+    report = native_label_reports["pattern"]
+    altered = _replace_report_path(report, ("regions", 0, *path), (OpaqueLabel(3),))
+    with pytest.raises(TypeError, match="node labels"):
+        relational_report_to_dict(altered)
+
+
 def test_undefined_cycle_cannot_smuggle_opaque_labels_through_record_projection():
     @dataclass(frozen=True)
     class OpaqueLabel:
@@ -242,6 +717,12 @@ def test_undefined_cycle_cannot_smuggle_opaque_labels_through_record_projection(
     "method, owner_name, target",
     (
         ("relational_capture", "certify_relational_capture", {}),
+        ("relational_consensus_capture", "certify_relational_consensus_capture", {}),
+        (
+            "relational_consensus_formation_obstruction",
+            "certify_relational_consensus_formation_obstruction",
+            {},
+        ),
         (
             "relational_local_capture",
             "certify_relational_local_capture",
@@ -269,6 +750,28 @@ def test_capture_sdk_delegates_without_own_admission(
     monkeypatch.setattr(owner, owner_name, capture)
     assert getattr(network, method)(model, cycles=cycles, **target) is marker
     assert calls == [(network.G, dict(model=model, cycles=cycles, **target))]
+
+
+def test_sector_geometry_sdk_delegates_without_law_admission(monkeypatch):
+    from tnfr.physics import relational_capture as owner
+
+    network = _network()
+    cycles, calls, marker = (("supplied",),), [], object()
+
+    def observe(graph, **kwargs):
+        calls.append((graph, kwargs))
+        return marker
+
+    monkeypatch.setattr(owner, "observe_relational_sector_geometry", observe)
+    assert (
+        network.relational_sector_geometry(
+            storage_scale=2, cycles=cycles, target_sector=-1
+        )
+        is marker
+    )
+    assert calls == [
+        (network.G, dict(storage_scale=2, cycles=cycles, target_sector=-1))
+    ]
 
 
 def _stub_transit_owner(monkeypatch):
@@ -354,8 +857,11 @@ def test_transit_export_preserves_nested_initial_evidence_without_execution(
     assert initial.field.epi[0] == 0
 
 
-@pytest.mark.parametrize("location", ("field", "winding"))
-def test_transit_export_checks_nested_initial_labels(monkeypatch, location):
+@pytest.mark.parametrize("location", ("field", "field_edge", "cycles", "winding"))
+@pytest.mark.parametrize("report_kind", ("transit", "consensus"))
+def test_capture_wrapper_export_checks_nested_initial_labels(
+    monkeypatch, location, report_kind
+):
     @dataclass(frozen=True)
     class OpaqueLabel:
         value: int
@@ -368,13 +874,121 @@ def test_transit_export_checks_nested_initial_labels(monkeypatch, location):
             initial,
             field=replace(initial.field, nodes=(opaque,) + initial.field.nodes[1:]),
         )
+    elif location == "field_edge":
+        initial = replace(initial, field=replace(initial.field, edges=((opaque, 1),)))
+    elif location == "cycles":
+        initial = replace(initial, cycles=((opaque,), initial.cycles[1]))
     else:
         winding = replace(initial.winding[0], cycle_nodes=(opaque,))
         initial = replace(initial, winding=(winding, initial.winding[1]))
     with pytest.raises(TypeError, match="node labels"):
-        relational_report_to_dict(
+        report = (
             owner.RelationalTransitCertificate(initial, Fraction(0))
+            if report_kind == "transit"
+            else replace(_consensus_capture(), initial=initial)
         )
+        relational_report_to_dict(report)
+
+
+def _consensus_capture(*, phase_perturbation=0):
+    graph = nx.disjoint_union(nx.cycle_graph(5), nx.cycle_graph(5))
+    graph.add_edges_from(((0, 5), (1, 6)))
+    form = (1, -1, Fraction(-3, 2), 0, Fraction(3, 2))
+    for node in graph:
+        graph.nodes[node].update(EPI=form[node % 5], theta=0, nu_f=1)
+    graph.nodes[0]["theta"] = phase_perturbation
+    return Network(graph).relational_consensus_capture(
+        RelationalExchangeModel(1, epi_weight=1, phase_weight=1),
+        cycles=(tuple(range(5)), tuple(range(5, 10))),
+    )
+
+
+@pytest.mark.parametrize("phase_perturbation", (0, Fraction(1, 1024)))
+def test_consensus_capture_export_preserves_initial_and_analytic_availability(
+    tmp_path, phase_perturbation
+):
+    report = _consensus_capture(phase_perturbation=phase_perturbation)
+    output = relational_report_to_dict(report)
+    path = tmp_path / "consensus-capture.json"
+    export_to_json(output, path)
+    assert json.loads(path.read_text(encoding="utf-8")) == output
+    assert output["report_type"] == "RelationalConsensusCaptureCertificate"
+    data = output["report"]
+    assert data["initial"] == relational_report_to_dict(report.initial)["report"]
+    assert not report.initial.energy_admitted
+    if phase_perturbation:
+        assert data["status"] == "unavailable"
+        assert data["target_sector"] is None
+        assert data["endpoint_storage_upper_bound"] is None
+    else:
+        assert data["status"] == "admitted"
+        assert data["target_sector"] == 0
+        assert data["initial_form_storage"] == {"numerator": 9, "denominator": 1}
+        assert data["endpoint_storage_upper_bound"] == {
+            "numerator": 6,
+            "denominator": 1,
+        }
+    data["initial"]["field"]["epi"][0] = 999
+    assert report.initial.field.epi[0] == 1
+
+
+def _full_form_consensus_obstruction(*, phase=0):
+    graph = nx.disjoint_union(nx.cycle_graph(5), nx.cycle_graph(5))
+    graph.add_edges_from(((0, 5), (1, 6)))
+    for node in graph:
+        graph.nodes[node].update(EPI=Fraction(node, 16), theta=0, nu_f=1)
+    graph.nodes[0]["theta"] = phase
+    return Network(graph).relational_consensus_formation_obstruction(
+        RelationalExchangeModel(1),
+        cycles=(tuple(range(5)), tuple(range(5, 10))),
+    )
+
+
+@pytest.mark.parametrize("phase", (0, Fraction(1, 1024)))
+def test_full_form_obstruction_export_keeps_exclusion_and_continuation_separate(
+    tmp_path, phase
+):
+    report = _full_form_consensus_obstruction(phase=phase)
+    output = relational_report_to_dict(report)
+    path = tmp_path / "formation-obstruction.json"
+    export_to_json(output, path)
+    assert json.loads(path.read_text(encoding="utf-8")) == output
+    assert output["report_type"] == "RelationalConsensusFormationObstruction"
+    data = output["report"]
+    assert data["field"] == relational_report_to_dict(report.field)["report"]
+    assert data["continuation_status"] == "not_certified"
+    if phase:
+        assert data["status"] == "unavailable"
+        assert data["all_regular_time_phase_storage_upper_bound"] is None
+        assert data["excluded_target_sectors"] is None
+    else:
+        assert data["status"] == "admitted"
+        assert data["excluded_target_sectors"] == [-1, 1]
+        upper = data["all_regular_time_phase_storage_upper_bound"]
+        assert Fraction(upper["numerator"], upper["denominator"]) == (
+            Fraction(7, 10) * report.initial_form_storage
+        )
+    data["cycles"][0].clear()
+    data["field"]["epi"][0] = 999
+    assert report.cycles[0] == tuple(range(5))
+    assert report.field.epi[0] == 0
+
+
+@pytest.mark.parametrize("location", ("node", "edge", "cycle"))
+def test_full_form_obstruction_export_rejects_opaque_labels(location):
+    @dataclass(frozen=True)
+    class OpaqueLabel:
+        value: int
+
+    report, opaque = _full_form_consensus_obstruction(), OpaqueLabel(3)
+    if location == "node":
+        report = replace(report, field=replace(report.field, nodes=(opaque,)))
+    elif location == "edge":
+        report = replace(report, field=replace(report.field, edges=((opaque, 1),)))
+    else:
+        report = replace(report, cycles=((opaque,), report.cycles[1]))
+    with pytest.raises(TypeError, match="node labels"):
+        relational_report_to_dict(report)
 
 
 def test_local_capture_report_exports_complete_exact_endpoint_evidence(tmp_path):
@@ -442,6 +1056,73 @@ def test_sector_capture_export_retains_exact_acute_gap_and_barrier_evidence(
     ]
     output["report"]["field"]["epi"][0] = 123.0
     assert report.field.epi[0] == graph.nodes[0]["EPI"] == 0.0
+
+    @dataclass(frozen=True)
+    class OpaqueLabel:
+        value: int
+
+    for path, labels in (
+        (("cycles",), ((OpaqueLabel(3),), report.cycles[1])),
+        (("bridge_cycle",), (OpaqueLabel(3),)),
+        (("field", "edges"), ((OpaqueLabel(3), 1),)),
+    ):
+        with pytest.raises(TypeError, match="node labels"):
+            relational_report_to_dict(_replace_report_path(report, path, labels))
+
+
+@pytest.fixture(scope="module")
+def sector_geometry_report():
+    import math
+
+    graph = nx.disjoint_union(nx.cycle_graph(5), nx.cycle_graph(5))
+    graph.add_edges_from(((0, 5), (1, 6)))
+    # No capacity or evolution law is needed for the geometric observation.
+    for node in graph:
+        graph.nodes[node].update(EPI=0.0, theta=2 * math.pi * (node % 5) / 5)
+    return Network(graph).relational_sector_geometry(
+        storage_scale=2, cycles=(tuple(range(5)), tuple(range(5, 10)))
+    )
+
+
+def test_sector_geometry_exports_exact_sublevel_without_law_claims(
+    sector_geometry_report, tmp_path
+):
+    report = sector_geometry_report
+    assert report.admitted
+    output = relational_report_to_dict(report)
+    path = tmp_path / "sector-geometry.json"
+    export_to_json(output, path)
+    assert json.loads(path.read_text(encoding="utf-8")) == output
+    assert output["report_type"] == "RelationalSectorGeometry"
+    data = output["report"]
+    assert data["ring_windings"] == [1, 1]
+    assert data["bridge_winding"] == 0
+    lower = report.sublevel_acute_margin_lower_bound
+    assert data["sublevel_acute_margin_lower_bound"] == {
+        "numerator": lower.numerator,
+        "denominator": lower.denominator,
+    }
+    assert all(
+        key not in data for key in ("field", "model", "capacity", "target_sector")
+    )
+    assert not any(key.startswith("future_") for key in data)
+    data["epi"][0] = 123.0
+    assert report.epi[0] == 0.0
+
+
+@pytest.mark.parametrize("label_location", ("nodes", "edges", "cycles", "bridge_cycle"))
+def test_sector_geometry_export_rejects_opaque_labels_everywhere(
+    sector_geometry_report, label_location
+):
+    @dataclass(frozen=True)
+    class OpaqueLabel:
+        value: int
+
+    label = OpaqueLabel(7)
+    labels = (label,) if label_location in ("nodes", "bridge_cycle") else ((label,),)
+    report = replace(sector_geometry_report, **{label_location: labels})
+    with pytest.raises(TypeError, match="node labels"):
+        relational_report_to_dict(report)
 
 
 def _attachment_networks():
@@ -750,3 +1431,94 @@ def test_relocation_export_rejects_opaque_labels_in_nested_evidence(
         )
     with pytest.raises(TypeError, match="node labels"):
         relational_report_to_dict(report)
+
+
+@pytest.fixture(scope="module")
+def analytic_sine_reports():
+    """Zero-horizon consensus controls exercise projection, not formation runs."""
+    from tnfr.physics.relational_sine_comparison import bound_relational_sine_exchange
+    from tnfr.physics.relational_sine_entry import certify_sine_prepared_entry
+    from tnfr.physics.relational_sine_reduction import (
+        bound_sine_slow_phase,
+        certify_sine_slow_capture,
+    )
+
+    labels = (("node", 0), "node-1", "node-2", "node-3", "node-4")
+    graph = nx.relabel_nodes(nx.cycle_graph(5), dict(enumerate(labels)))
+    for node in graph:
+        graph.nodes[node].update(EPI=Fraction(1, 8), theta=Fraction(1, 4), nu_f=1)
+    graph.graph["GAMMA"] = {"type": "none"}
+    source = bound_relational_sine_exchange(
+        graph, reference_model=RelationalExchangeModel(1, phase_domain="regular")
+    )
+    return {
+        "prepared_entry": certify_sine_prepared_entry(
+            source, scaled_time=0, edge_turn_offsets=(0,) * 5
+        ),
+        "slow_phase": bound_sine_slow_phase(source, slow_time=0),
+        "slow_capture": certify_sine_slow_capture(
+            source, slow_time=0, target_phase_turns=(0,) * 5
+        ),
+    }
+
+
+@pytest.mark.parametrize("kind", ("prepared_entry", "slow_phase", "slow_capture"))
+def test_analytic_sine_reports_delegate_exact_zero_horizon_evidence(
+    analytic_sine_reports, kind, tmp_path
+):
+    report = analytic_sine_reports[kind]
+    generic = relational_report_to_dict(report)
+    direct = report.to_dict()
+    assert generic["schema"] == "tnfr.relational-report.v1"
+    assert (
+        generic["report_type"]
+        == {
+            "prepared_entry": "SinePreparedEntry",
+            "slow_phase": "SineSlowPhaseBound",
+            "slow_capture": "SineSlowCapture",
+        }[kind]
+    )
+    assert generic["report"] == direct["report"]
+    body = generic["report"]
+    assert body["source"]["nodes"] == [
+        ["node", 0],
+        "node-1",
+        "node-2",
+        "node-3",
+        "node-4",
+    ]
+    assert body["source"]["epi"] == [{"numerator": 1, "denominator": 8}] * 5
+    assert body["source"]["phase"] == [{"numerator": 1, "denominator": 4}] * 5
+    zero = {"numerator": 0, "denominator": 1}
+    if kind == "prepared_entry":
+        assert body["scaled_time"] == body["horizon"] == zero
+        assert body["initial_form_storage"] == zero
+        assert body["initial_cycle_periods"] == [0]
+        assert body["capture"]["cycle_periods"] == [0]
+        assert body["capture"]["status"] == "admitted"
+        assert body["status"] == "unavailable"  # Capture is not winding acquisition.
+    elif kind == "slow_phase":
+        assert body["slow_time"] == zero
+        assert body["horizon_bounds"] == {"lo": zero, "hi": zero}
+        assert body["composite_phase_error_upper_bound"] == zero
+        assert "admitted" not in body  # An error bound has no accuracy verdict.
+    else:
+        assert body["actual_phase_distance_upper_bound"] == zero
+        assert body["capture"]["status"] == "admitted"
+        assert body["capture"]["observation_time"] is None
+        assert body["slow_phase"]["horizon_bounds"] == {"lo": zero, "hi": zero}
+    path = tmp_path / f"{kind}.json"
+    export_to_json(generic, path)
+    assert json.loads(path.read_text(encoding="utf-8")) == generic
+    body["source"]["epi"][0]["numerator"] = 999
+    assert report.source.epi[0] == Fraction(1, 8)
+
+
+@pytest.mark.parametrize("kind", ("prepared_entry", "slow_phase", "slow_capture"))
+def test_analytic_sine_delegation_retains_owner_node_label_rejection(
+    analytic_sine_reports, kind
+):
+    report = analytic_sine_reports[kind]
+    source = replace(report.source, nodes=(object(), *report.source.nodes[1:]))
+    with pytest.raises(TypeError, match="node labels"):
+        relational_report_to_dict(replace(report, source=source))

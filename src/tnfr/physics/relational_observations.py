@@ -8,7 +8,6 @@ identity certificate, reduced closure or automatic selection policy.
 
 from __future__ import annotations
 
-import math
 from collections.abc import Mapping, Set
 from dataclasses import dataclass
 from fractions import Fraction
@@ -26,6 +25,7 @@ from ..dynamics.relational import (
     _phase_edge_storage,
     evaluate_relational_exchange,
 )
+from ..utils.numeric import angle_diff
 from .support_transport import (
     RegionalSupportBalance,
     RegionalSupportCut,
@@ -59,6 +59,14 @@ __all__ = (
     "bound_relational_coefficient_from_jet",
     "RelationalCoefficientSampleBounds",
     "bound_relational_coefficient_from_samples",
+    "RelationalRateContrastBounds",
+    "bound_relational_rate_contrast",
+    "RelationalRateSampleBounds",
+    "bound_relational_rate_from_samples",
+    "RelationalSampleJetBudget",
+    "bound_relational_sample_jet_budget",
+    "RelationalJetSampleBounds",
+    "bound_relational_jet_from_samples",
 )
 
 
@@ -103,6 +111,119 @@ class RelationalCoefficientSampleBounds:
         "exact_rational_stencils_and_shared_outward_jet_enclosure",
         "no_source_preparation_clock_noise_or_smoothness_authentication",
         "no_graph_read_evolution_fit_or_physical_admission",
+    )
+
+
+@dataclass(frozen=True)
+class RelationalRateSampleBounds:
+    """Initial rate from three samples and an independently supplied C3 budget."""
+
+    samples: tuple[Fraction, Fraction, Fraction]
+    sample_step: Fraction
+    sample_error_bound: Fraction
+    third_derivative_bound: Fraction
+    rate_estimate: Fraction
+    rate_error_bound: Fraction
+    rate_bounds: tuple[Fraction, Fraction]
+    scope: tuple[str, ...] = (
+        "samples_at_relative_times_zero_h_two_h_in_one_affine_clock",
+        "supplied_uniform_sample_error_and_whole_window_C3_bound",
+        "exact_rational_forward_rate_stencil_and_error_enclosure",
+        "no_source_preparation_phase_lift_clock_noise_or_smoothness_authentication",
+        "no_graph_read_evolution_fit_or_constitutive_selection",
+    )
+
+
+@dataclass(frozen=True)
+class RelationalSampleJetBudget:
+    """Sample-independent error bounds for a three-sample initial jet.
+
+    The nominal sampling clock is fixed. Timestamp uncertainty is bounded
+    jitter in that clock, not an inferred conversion to another clock. A
+    supplied speed bound controls its effect on sampled values. The complete
+    evidence window includes both the nominal and possible actual times.
+    """
+
+    observation_time: Fraction
+    sample_times: tuple[Fraction, Fraction, Fraction]
+    sample_step: Fraction
+    sample_error_bounds: tuple[Fraction, Fraction, Fraction]
+    timestamp_error_bounds: tuple[Fraction, Fraction, Fraction]
+    third_derivative_bound: Fraction
+    first_derivative_bound: Fraction | None
+    evidence_window: tuple[Fraction, Fraction]
+    timing_value_error_bounds: tuple[Fraction, Fraction, Fraction]
+    total_sample_error_bounds: tuple[Fraction, Fraction, Fraction]
+    value_error_bound: Fraction
+    rate_sample_error_bound: Fraction
+    rate_timing_error_bound: Fraction
+    rate_truncation_error_bound: Fraction
+    rate_error_bound: Fraction
+    acceleration_sample_error_bound: Fraction
+    acceleration_timing_error_bound: Fraction
+    acceleration_truncation_error_bound: Fraction
+    acceleration_error_bound: Fraction
+    scope: tuple[str, ...] = (
+        "nominal_samples_at_observation_time_plus_zero_h_two_h_in_one_clock",
+        "separately_supplied_per_sample_value_and_timestamp_error_bounds",
+        "supplied_C3_bound_on_nominal_window_and_speed_bound_on_enlarged_window",
+        "first_and_second_derivatives_at_the_first_nominal_sample_time",
+        "correlated_errors_conservatively_enclosed_not_statistically_independent",
+        "angular_samples_require_a_supplied_continuous_real_lift",
+        "nonzero_initial_value_error_cannot_be_replaced_by_an_exact_state",
+        "no_sample_source_clock_lift_or_smoothness_authentication",
+        "no_graph_read_response_evaluation_fit_or_constitutive_selection",
+    )
+
+
+@dataclass(frozen=True)
+class RelationalJetSampleBounds:
+    """Joint conservative value/rate/acceleration boxes from three samples.
+
+    Sharing a budget retains the uncertainty of the same measured samples.
+    The Cartesian boxes do not assert independent errors or the existence
+    of a model trajectory reproducing those samples.
+    """
+
+    samples: tuple[Fraction, Fraction, Fraction]
+    budget: RelationalSampleJetBudget
+    rate_estimate: Fraction
+    acceleration_estimate: Fraction
+    value_bounds: tuple[Fraction, Fraction]
+    rate_bounds: tuple[Fraction, Fraction]
+    acceleration_bounds: tuple[Fraction, Fraction]
+    scope: tuple[str, ...] = (
+        "exact_rational_forward_stencils_with_shared_sample_budget",
+        "joint_conservative_enclosures_not_a_sample_compatibility_certificate",
+        "supplied_continuous_phase_lift_without_automatic_unwrapping",
+        "initial_visible_state_uncertainty_remains_in_value_bounds",
+        "no_hidden_state_reconstruction_or_future_response_evaluation",
+    )
+
+
+@dataclass(frozen=True)
+class RelationalRateContrastBounds:
+    """Conditional relative change of two declared rate observations.
+
+    The baseline may have either sign but its interval must exclude zero.
+    Equal intervals do not imply equal unknown rates. No correlation between
+    their uncertainties is assumed; shared gain/clock cancellation requires
+    the same nonzero multiplicative factor for both actual observations.
+    """
+
+    before_bounds: tuple[Fraction, Fraction]
+    after_bounds: tuple[Fraction, Fraction]
+    change_bounds: tuple[Fraction, Fraction]
+    normalized_change_bounds: tuple[Fraction, Fraction] | None
+    unavailable_reasons: tuple[str, ...]
+    arithmetic_method: str
+    scope: tuple[str, ...] = (
+        "two_declared_rate_intervals_in_one_gain_and_clock_rate_convention",
+        "normalized_change_is_after_over_before_minus_one",
+        "either_baseline_sign_with_zero_separation_required",
+        "rational_outward_bounds_without_assumed_uncertainty_correlation",
+        "no_graph_read_preparation_authentication_derivative_estimation_or_evolution",
+        "no_automatic_precision_acceptance_constitutive_selection_or_physical_bridge",
     )
 
 
@@ -347,7 +468,7 @@ class RelationalAttachmentObservation(_RelationalSupportBudget):
     scope: tuple[str, ...] = (
         "two_disjoint_separately_admitted_connected_components",
         "supplied_ordered_unit_bridge_left_port_to_right_port",
-        "acute_model_only_with_unchanged_form_phase_and_held_capacity",
+        "same_selected_phase_domain_with_unchanged_form_phase_and_held_capacity",
         "three_fresh_native_fields_without_live_graph_writes",
         "exact_represented_differences_not_transcendental_error_bounds",
         "hypothetical_support_comparison_not_an_executed_event",
@@ -394,7 +515,7 @@ class RelationalRelocationObservation(_RelationalSupportBudget):
         "supplied_graph_bridge_separates_two_nontrivial_connected_components",
         "supplied_missing_unit_edge_crosses_the_same_ordered_components",
         "all_internal_edges_and_primitive_form_phase_capacity_are_preserved",
-        "acute_model_only_with_two_fresh_fields_without_live_graph_writes",
+        "same_selected_phase_domain_with_two_fresh_fields_without_live_graph_writes",
         "exact_represented_differences_not_transcendental_error_bounds",
         "hypothetical_support_comparison_not_an_executed_event",
         "no_autonomous_selection_timing_reduced_closure_or_recovery_certificate",
@@ -466,7 +587,9 @@ def observe_relational_reset(before_graph, after_graph, *, storage_scale):
     chamber, pressure law, held capacity or continuation admission is asserted.
 
     Storage is ``E_D + storage_scale * V`` with ``V`` the sum of the shared
-    represented half-sine cost on every support edge. The positive scale is
+    represented half-sine cost on every support edge. Raw differences retain
+    finite-output admission before the shared signed atan2 chart is selected;
+    binary64 tau is not substituted for the trigonometric period. The scale is
     materialized through the same boundary as the relational model. The result
     separates simultaneous nodal reorganization from support work without
     crediting earlier continuous dissipation or introducing an event law.
@@ -527,7 +650,7 @@ def observe_relational_reset(before_graph, after_graph, *, storage_scale):
             difference = finite_represented_real(
                 Fraction(phase[j]) - Fraction(phase[i]), "phase difference"
             )[0]
-            total += _phase_edge_storage(math.remainder(difference, math.tau))
+            total += _phase_edge_storage(angle_diff(difference, 0.0))
         return total
 
     phase_old = phase_cost(phase_before, old_edges)
@@ -578,6 +701,48 @@ def _ordered(value, label, *, limit=None):
         raise TypeError(f"{label} must be an ordered iterable") from exc
 
 
+def _interval(raw, label):
+    """Admit an ordered real endpoint pair into shared outward arithmetic."""
+    from ..mathematics._rational_interval import I
+
+    values = _ordered(raw, label, limit=3)
+    if len(values) != 2:
+        raise ValueError(f"{label} must contain two ordered endpoints")
+    return I(*(exact_or_represented_real(value, label) for value in values))
+
+
+def bound_relational_rate_contrast(
+    *, before_bounds, after_bounds
+) -> RelationalRateContrastBounds:
+    """Enclose (after-before)/before from supplied rate uncertainty intervals.
+
+    Compute after/before-1 to avoid duplicating the uncertain baseline in the
+    numerator and denominator. Intervals include outward arithmetic, not any
+    missing measurement, preparation, derivative or clock error. The same
+    nonzero gain and clock-rate factor cancels between both observations;
+    different factors or additive rate offsets do not generally cancel.
+    An unresolved baseline returns no normalized change, while retaining the
+    absolute change. Neither a graph nor a law or precision target is selected.
+    """
+    from ..mathematics._rational_interval import INTERVAL_METHOD
+
+    before = _interval(before_bounds, "before_bounds")
+    after = _interval(after_bounds, "after_bounds")
+    change = after - before
+    reasons = ("baseline_rate_not_separated_from_zero",) if before.contains(0) else ()
+    normalized = None if reasons else after / before - 1
+    return RelationalRateContrastBounds(
+        before_bounds=(before.lo, before.hi),
+        after_bounds=(after.lo, after.hi),
+        change_bounds=(change.lo, change.hi),
+        normalized_change_bounds=(
+            (normalized.lo, normalized.hi) if normalized is not None else None
+        ),
+        unavailable_reasons=reasons,
+        arithmetic_method=INTERVAL_METHOD,
+    )
+
+
 def bound_relational_coefficient_from_jet(
     *, form_bounds, rate_bounds, acceleration_bounds
 ) -> RelationalCoefficientJetBounds:
@@ -588,17 +753,11 @@ def bound_relational_coefficient_from_jet(
     error. Unresolved signal/gap or incompatible decay returns no coefficient.
     This function neither validates a physical preparation nor reads a graph.
     """
-    from ..mathematics._rational_interval import INTERVAL_METHOD, I, pi_interval
+    from ..mathematics._rational_interval import INTERVAL_METHOD, pi_interval
 
-    def interval(raw, label):
-        values = _ordered(raw, label, limit=3)
-        if len(values) != 2:
-            raise ValueError(f"{label} must contain two ordered endpoints")
-        return I(*(exact_or_represented_real(value, label) for value in values))
-
-    form = interval(form_bounds, "form_bounds")
-    rate = interval(rate_bounds, "rate_bounds")
-    acceleration = interval(acceleration_bounds, "acceleration_bounds")
+    form = _interval(form_bounds, "form_bounds")
+    rate = _interval(rate_bounds, "rate_bounds")
+    acceleration = _interval(acceleration_bounds, "acceleration_bounds")
     square = rate**2
     gap = square - form * acceleration
     reasons = []
@@ -625,44 +784,220 @@ def bound_relational_coefficient_from_jet(
     )
 
 
+def _sample_triple(values, label, *, nonnegative=False):
+    raw = _ordered(values, label, limit=4)
+    if len(raw) != 3:
+        raise ValueError(f"{label} must contain exactly three ordered values")
+    result = tuple(exact_or_represented_real(value, label) for value in raw)
+    if nonnegative and any(value < 0 for value in result):
+        raise ValueError(f"{label} must be nonnegative")
+    return result
+
+
+def _sample_jet_clock(
+    *, sample_step, timestamp_error_bounds=(0, 0, 0), observation_time=0
+):
+    """Admit the sampling clock without inventing observation or speed bounds."""
+    step = exact_or_represented_real(sample_step, "sample_step")
+    at = exact_or_represented_real(observation_time, "observation_time")
+    if step <= 0 or at < 0:
+        raise ValueError(
+            "require positive sample_step and nonnegative observation_time"
+        )
+    jitter = _sample_triple(
+        timestamp_error_bounds, "timestamp_error_bounds", nonnegative=True
+    )
+    times = tuple(at + index * step for index in range(3))
+    window = (
+        min(time - error for time, error in zip(times, jitter)),
+        max(time + error for time, error in zip(times, jitter)),
+    )
+    if window[0] < 0:
+        raise ValueError("the complete evidence window must be nonnegative")
+    return step, times, jitter, window
+
+
+def bound_relational_sample_jet_budget(
+    *,
+    sample_step,
+    sample_error_bounds,
+    third_derivative_bound,
+    timestamp_error_bounds=(0, 0, 0),
+    first_derivative_bound=None,
+    observation_time=0,
+) -> RelationalSampleJetBudget:
+    """Bound prospective derivative errors without reading any response.
+
+    At the nominal times t0+j*h the supplied sample errors are e_j and the
+    timestamp errors are tau_j. A nonzero timestamp error requires a separate
+    bound L on |q'| throughout the enlarged evidence window. Then each nominal
+    value error is at most e_j+L*tau_j. A supplied bound M on |q'''| over the
+    nominal window bounds the forward-stencil remainders by M*h**2/3 and M*h.
+
+    Neither derivative bound can be obtained from three samples alone. For
+    phase data the bounds and samples refer to the same continuous real lift;
+    no lift is inferred. Bounds on jitter do not admit an unknown clock scale.
+    """
+    step, times, jitter, window = _sample_jet_clock(
+        sample_step=sample_step,
+        timestamp_error_bounds=timestamp_error_bounds,
+        observation_time=observation_time,
+    )
+    third = exact_or_represented_real(third_derivative_bound, "third_derivative_bound")
+    if third < 0:
+        raise ValueError("third_derivative_bound must be nonnegative")
+    errors = _sample_triple(
+        sample_error_bounds, "sample_error_bounds", nonnegative=True
+    )
+    speed = (
+        None
+        if first_derivative_bound is None
+        else exact_or_represented_real(first_derivative_bound, "first_derivative_bound")
+    )
+    if speed is not None and speed < 0:
+        raise ValueError("first_derivative_bound must be nonnegative")
+    if any(jitter) and speed is None:
+        raise ValueError("nonzero timestamp error requires first_derivative_bound")
+    timing = tuple((speed or Fraction(0)) * error for error in jitter)
+    effective = tuple(error + shift for error, shift in zip(errors, timing))
+
+    def rate_error(values):
+        return (3 * values[0] + 4 * values[1] + values[2]) / (2 * step)
+
+    def acceleration_error(values):
+        return (values[0] + 2 * values[1] + values[2]) / step**2
+
+    rate_sample, rate_timing = rate_error(errors), rate_error(timing)
+    accel_sample, accel_timing = acceleration_error(errors), acceleration_error(timing)
+    rate_truncation, accel_truncation = third * step**2 / 3, third * step
+    return RelationalSampleJetBudget(
+        observation_time=times[0],
+        sample_times=times,
+        sample_step=step,
+        sample_error_bounds=errors,
+        timestamp_error_bounds=jitter,
+        third_derivative_bound=third,
+        first_derivative_bound=speed,
+        evidence_window=window,
+        timing_value_error_bounds=timing,
+        total_sample_error_bounds=effective,
+        value_error_bound=effective[0],
+        rate_sample_error_bound=rate_sample,
+        rate_timing_error_bound=rate_timing,
+        rate_truncation_error_bound=rate_truncation,
+        rate_error_bound=rate_sample + rate_timing + rate_truncation,
+        acceleration_sample_error_bound=accel_sample,
+        acceleration_timing_error_bound=accel_timing,
+        acceleration_truncation_error_bound=accel_truncation,
+        acceleration_error_bound=accel_sample + accel_timing + accel_truncation,
+    )
+
+
+def bound_relational_jet_from_samples(
+    samples,
+    *,
+    sample_step,
+    sample_error_bounds,
+    third_derivative_bound,
+    timestamp_error_bounds=(0, 0, 0),
+    first_derivative_bound=None,
+    observation_time=0,
+) -> RelationalJetSampleBounds:
+    """Enclose the initial value, rate and acceleration in one declared clock.
+
+    The first and second derivatives use the same three observed values and
+    independent error/smoothness declarations. Their enclosing intervals are
+    correlated; compatibility with those boxes alone does not establish a
+    trajectory fitting the underlying samples. A nonzero initial value bound
+    cannot be silently substituted into an exact-state inverse or forecast.
+    """
+    values = _sample_triple(samples, "samples")
+    budget = bound_relational_sample_jet_budget(
+        sample_step=sample_step,
+        sample_error_bounds=sample_error_bounds,
+        timestamp_error_bounds=timestamp_error_bounds,
+        first_derivative_bound=first_derivative_bound,
+        third_derivative_bound=third_derivative_bound,
+        observation_time=observation_time,
+    )
+    step = budget.sample_step
+    rate = (-3 * values[0] + 4 * values[1] - values[2]) / (2 * step)
+    acceleration = (values[2] - 2 * values[1] + values[0]) / step**2
+    return RelationalJetSampleBounds(
+        samples=values,
+        budget=budget,
+        rate_estimate=rate,
+        acceleration_estimate=acceleration,
+        value_bounds=(
+            values[0] - budget.value_error_bound,
+            values[0] + budget.value_error_bound,
+        ),
+        rate_bounds=(rate - budget.rate_error_bound, rate + budget.rate_error_bound),
+        acceleration_bounds=(
+            acceleration - budget.acceleration_error_bound,
+            acceleration + budget.acceleration_error_bound,
+        ),
+    )
+
+
+def bound_relational_rate_from_samples(
+    samples, *, sample_step, sample_error_bound, third_derivative_bound
+) -> RelationalRateSampleBounds:
+    """Retain the uniform-error initial-rate adapter over the shared jet owner.
+
+    The uniform sample error and noiseless whole-window C3 bound are supplied
+    independently. Angular samples require a supplied consistent real lift.
+    This adapter retains exact uniform timing and its existing report schema.
+    """
+    error = exact_or_represented_real(sample_error_bound, "sample_error_bound")
+    observation = bound_relational_jet_from_samples(
+        samples,
+        sample_step=sample_step,
+        sample_error_bounds=(error,) * 3,
+        third_derivative_bound=third_derivative_bound,
+    )
+    budget = observation.budget
+    return RelationalRateSampleBounds(
+        samples=observation.samples,
+        sample_step=budget.sample_step,
+        sample_error_bound=error,
+        third_derivative_bound=budget.third_derivative_bound,
+        rate_estimate=observation.rate_estimate,
+        rate_error_bound=budget.rate_error_bound,
+        rate_bounds=observation.rate_bounds,
+    )
+
+
 def bound_relational_coefficient_from_samples(
     samples, *, sample_step, sample_error_bound, third_derivative_bound
 ) -> RelationalCoefficientSampleBounds:
-    """Propagate three uniform samples and declared errors into the jet observer.
+    """Propagate shared sample/rate admission into the conditional jet observer.
 
     The noise bound covers every sample and the C3 bound covers the complete
     noiseless window. Neither bound, nor uniform timing, is inferred here.
     """
-    raw = _ordered(samples, "samples", limit=4)
-    if len(raw) != 3:
-        raise ValueError("samples must contain exactly three ordered values")
-    values = tuple(exact_or_represented_real(value, "sample") for value in raw)
-    step = exact_or_represented_real(sample_step, "sample_step")
     error = exact_or_represented_real(sample_error_bound, "sample_error_bound")
-    third = exact_or_represented_real(third_derivative_bound, "third_derivative_bound")
-    if step <= 0 or error < 0 or third < 0:
-        raise ValueError("require positive sample_step and nonnegative error bounds")
-    rate = (-3 * values[0] + 4 * values[1] - values[2]) / (2 * step)
-    acceleration = (values[2] - 2 * values[1] + values[0]) / step**2
-    rate_error = 4 * error / step + third * step**2 / 3
-    acceleration_error = 4 * error / step**2 + third * step
+    observation = bound_relational_jet_from_samples(
+        samples,
+        sample_step=sample_step,
+        sample_error_bounds=(error,) * 3,
+        third_derivative_bound=third_derivative_bound,
+    )
+    budget = observation.budget
     jet = bound_relational_coefficient_from_jet(
-        form_bounds=(values[0] - error, values[0] + error),
-        rate_bounds=(rate - rate_error, rate + rate_error),
-        acceleration_bounds=(
-            acceleration - acceleration_error,
-            acceleration + acceleration_error,
-        ),
+        form_bounds=observation.value_bounds,
+        rate_bounds=observation.rate_bounds,
+        acceleration_bounds=observation.acceleration_bounds,
     )
     return RelationalCoefficientSampleBounds(
-        samples=values,
-        sample_step=step,
+        samples=observation.samples,
+        sample_step=budget.sample_step,
         sample_error_bound=error,
-        third_derivative_bound=third,
-        rate_estimate=rate,
-        acceleration_estimate=acceleration,
-        rate_error_bound=rate_error,
-        acceleration_error_bound=acceleration_error,
+        third_derivative_bound=budget.third_derivative_bound,
+        rate_estimate=observation.rate_estimate,
+        acceleration_estimate=observation.acceleration_estimate,
+        rate_error_bound=budget.rate_error_bound,
+        acceleration_error_bound=budget.acceleration_error_bound,
         jet=jet,
     )
 
@@ -755,10 +1090,11 @@ def observe_relational_attachment(left, right, *, model, bridge):
 
     ``left`` and ``right`` must each satisfy the native relational graph/state
     contract, with disjoint node labels. ``bridge`` is an ordered pair naming
-    one left port and one right port. The selected model must use the acute
-    phase domain; the joined field must independently pass that same admission.
-    Invalid components or a nonacute new edge raise without changing either
-    graph. Zero capacities retain the native frozen-row semantics.
+    one left port and one right port. Components and joined field must each
+    independently pass the selected model's phase-domain admission. Invalid
+    components or an inadmissible joined field raise without changing either
+    graph. Zero capacities retain the native frozen-row semantics. Admission
+    of the disconnected components need not imply admission after joining.
 
     Both components are evaluated separately. Their disconnected union is
     used only for shared transport accounting, never as a relational field.
@@ -768,8 +1104,6 @@ def observe_relational_attachment(left, right, *, model, bridge):
     """
     if not isinstance(model, RelationalExchangeModel):
         raise TypeError("model must be a RelationalExchangeModel")
-    if model.phase_domain != "acute":
-        raise ValueError("relational attachment requires the acute phase domain")
     endpoints = _ordered(bridge, "bridge", limit=3)
     if len(endpoints) != 2:
         raise ValueError("bridge must contain exactly two ordered ports")
@@ -818,8 +1152,8 @@ def observe_relational_attachment(left, right, *, model, bridge):
 def observe_relational_relocation(graph, *, model, remove_bridge, add_bridge):
     """Compare a supplied bridge relocation at unchanged primitive state.
 
-    The acute simple unit connected input is evaluated through the native
-    owner. Removing ``remove_bridge`` must leave exactly two connected
+    The simple unit connected input is evaluated through the native owner
+    in the selected phase domain. Removing ``remove_bridge`` must leave two connected
     components with at least two nodes each. Its ordered endpoints identify
     the first and second components; ``add_bridge`` must join them in that
     same order and must be absent from the original graph. All internal
@@ -833,8 +1167,6 @@ def observe_relational_relocation(graph, *, model, remove_bridge, add_bridge):
     """
     if not isinstance(model, RelationalExchangeModel):
         raise TypeError("model must be a RelationalExchangeModel")
-    if model.phase_domain != "acute":
-        raise ValueError("relational relocation requires the acute phase domain")
     old = _ordered(remove_bridge, "remove_bridge", limit=3)
     new = _ordered(add_bridge, "add_bridge", limit=3)
     if len(old) != 2 or len(new) != 2:

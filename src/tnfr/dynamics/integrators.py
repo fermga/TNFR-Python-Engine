@@ -978,7 +978,7 @@ def update_epi_via_nodal_equation(
       - Γi(R) is optional network coupling via Kuramoto order
 
     **Extended**: Coupled system with flux fields (when use_extended_dynamics=True)
-      - ∂EPI/∂t = νf · ΔNFR(t) [Classical equation unchanged]
+      - ∂EPI/∂t = νf · ΔNFR(t) + Γi(R) [Same live source registry]
       - ∂θ/∂t = f(νf, ΔNFR, J_φ) [Phase evolution with transport]
       - ∂ΔNFR/∂t = g(∇·J_ΔNFR) [Configured independent pressure response]
 
@@ -1001,7 +1001,7 @@ def update_epi_via_nodal_equation(
         - Ordinary runtime dispatches its integrator directly; this flag alone
           does not replace that integrator or its later coordination substep
         - Extended dynamics require J_φ and J_ΔNFR fields (from physics module)
-        - Zero flux leaves the EPI product but can leave a nonzero phase response
+        - Zero flux leaves the forced EPI row and can leave a phase response
         - Extended system preserves backward compatibility (default: False)
 
     Examples:
@@ -1084,6 +1084,9 @@ def _update_extended_nodal_system(
     Each substep evaluates canonical fields and all nodal derivatives from the
     same graph state before writing any updates. This optional coupled system
     currently supports Euler only; unsupported methods are rejected explicitly.
+    The EPI row reuses the ordinary integrator's live Gamma registry at every
+    substep, including at zero capacity. Gamma is a supplied source, not an
+    inferred contribution from the diagnostic fluxes.
     Clipping is a boundary policy, not a proof of numerical stability.
     Pressure is independently evolved, not refreshed from EPI/phase/capacity;
     consistency with that constitutive map requires a separate chain-rule test.
@@ -1123,6 +1126,9 @@ def _update_extended_nodal_system(
             phase_current = compute_phase_current(G)
             pressure_flux = compute_dnfr_flux(G)
             divergences = compute_flux_divergence_vectorized(G, pressure_flux)
+            increments = _build_gamma_increments(
+                G, dt_step, t_local, method="euler", n_jobs=n_jobs
+            )
             updates = {}
             for node in G:
                 nd = G.nodes[node]
@@ -1137,7 +1143,7 @@ def _update_extended_nodal_system(
                     coupling_strength=_estimate_local_coupling_strength(G, node),
                     validate_units=False,
                 )
-                rate = _finite_output(result.classical_derivative, "dEPI_dt")
+                rate = _finite_output(increments[node][0], "dEPI_dt")
                 phase_rate = _finite_output(result.phase_derivative, "dtheta_dt")
                 pressure_rate = _finite_output(result.dnfr_derivative, "ddnfr_dt")
                 d2epi = _finite_output(

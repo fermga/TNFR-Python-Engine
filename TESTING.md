@@ -60,18 +60,95 @@ then inspect their source and tests. That map links shared implementations,
 representative controls and theorem owners; this guide does not maintain a
 second inventory of research results or individual test cases.
 
-The routine gate includes regional/source-relative form observations, generic
-linear observation admission, relational field/step execution, pattern,
-attachment and relocation observations, work/cut/phase-response accounting,
-protected capture and the listed current production boundaries. Coefficient
-jet/sample observers and read-only acquisition-audit admission are
-also covered by the routine top-level modules. The retained full-window record
-is an optional research audit, not an implicit producer invocation. The attachment
-observer evaluates two components and a hypothetical joined field; relocation
-compares the admitted fields before and after a supplied bridge exchange.
-Neither observer changes live support or certifies future pattern recovery.
-Routine integration tests and a theorem's explicit research selection have
-different scope; check `testpaths` rather than inferring inclusion from a filename.
+## Select research checks by contract
+
+Select the changed mathematical owner and its consuming APIs through the
+[theory-to-execution map](theory/README.md#theory-to-execution). The map owns
+individual module/test links; proofs own model-specific hypotheses, constants
+and frozen preparations. This guide groups the obligations needed to choose
+coverage, rather than repeating each research result.
+
+Shared admission changes can cross the routine/research selection boundary.
+The default gate includes native relational execution through `tests/test_*.py`
+and the listed conservation-diagnostic tests. It does **not** select
+[`test_sine_admission.py`](tests/physics/test_sine_admission.py), the
+`tests/physics/test_relational_sine_*.py` family, or the regional-transfer
+research modules. For a change to the common stored-coefficient boundary,
+exercise both native execution and its sine adapter explicitly:
+
+```sh
+python -m pytest tests/test_relational_exchange_execution.py tests/test_relational_regular_execution.py tests/physics/test_sine_admission.py -q
+```
+
+Then select the affected consumers from the theory-to-execution map. For a
+chained report, cover the producer's primitive admission and the downstream
+calculation: sampling smoothness to sample budgets, cycle modes to gains,
+visible evidence to hidden-state/capacity inference and prior forecasts, or
+captured states to regional currents and supplied increments. An SDK pass
+checks its adapters and projection; it does not replace those mathematical
+controls. A shared primitive-source change also needs the relative-pattern
+and forecast-endpoint association controls, including unchanged held capacities
+and partial validated horizons.
+
+| Changed contract | Required independent controls |
+| --- | --- |
+| Complete law, state and coordinates | Differentiate both full nodal rows; retain support, degree normalization, capacity, clock and inputs. Compare native Arg, baseline sine and alternative-mobility laws only under their actual premises. Test moving references, common origins, zero coordinates and same-observation/different-response counterexamples. |
+| Primitive and numerical admission | Reject malformed support, law identifiers, authoritative aliases, nonfinite values, Boolean physical scalars, invalid radii and missing consumed coordinates before arithmetic. Rebuild consumed geometry and gradients; cached flags or displayed intervals cannot widen exact admission. Preserve each consumer's zero-capacity/loss and work-limit domain. |
+| Algebra, derivatives and storage | Use independent edge sums, high-precision evaluations, exact matrix identities or analytic solutions. Check signed work and loss, all field directions, endpoint events and strict boundaries. Symbolic irrational targets, rational probes and rounded graph states provide different evidence. |
+| Relative state, uncertainty and memory | Retain hidden initialization, every environmental node, original port degrees, actual observation times and each member's conserved means. Distinguish unknown common origins, independent nodal residuals and correlated relative coordinates. Inference compatibility is not existence, identifiability or a replayed response. |
+| Forecasts and continuous enclosures | Exercise strict Picard inclusion, Taylor remainders, whole-time tubes, endpoint chains and held-parameter semantics against separate analytic fixtures. Retain partial-horizon status and actual validated time. Samples, Euler chords and held-pressure integration cannot replace a coupled continuous enclosure. |
+| Geometry, equilibrium and recovery | Check exact circular reconstruction, full sine-current cancellation, weighted gaps and Hessian inertia with independent full-node equations. Geometric feasibility is not equilibrium. Local recovery, all-sector capture and conservative trapping have different initial sets and loss premises. Failed sufficient inequalities remain unavailable. |
+| Formation, preparation and budgets | Separate identity absent initially from a supplied target. Keep the original form cost, phase uncertainty and complete law in positive and negative controls. Distinguish scalar storage, directional loss, transient barrier passage, maintained endpoints and accumulated port work; an instantaneous sign is not an integrated supply. |
+| Symmetry and composition | Test whole-support/state/capacity equivariance, cycle orientation, relabeling and genuine quotient reconstruction. Ordinary reflection, combined sign/reflection and set-invariant uncertainty boxes have different consequences. Retain external attachments, relative zero modes and noncommuting weighted operators. |
+| Collective observations and structural events | Check all competitors, mutuality, unresolved ties and state/support admission separately. Compare quotient and inherited rates with the full fine field. Hypothetical bridges, cuts, AL proposals and resets retain their work budgets and read-only scope; conservation or eligible contact does not prove occurrence. |
+| Resonance, pulse and recurrence | Retain the selected port/readout, full tangent pencil and actual coefficient domain. Distinguish gain peaks from complex poles, exact periodicity from orbital stability, and family recurrence from a chosen-state verdict. Independent quadrature or static variation controls do not prove a nonlinear infinite-time response. |
+| SDK, CLI and evidence projection | Check delegation, one-source capture, immutable observations, unavailable values, supported node labels and exact fraction export. Direct report schemas and the generic SDK envelope are separate contracts. Malformed reports and source changes must not authenticate themselves through serialization. |
+
+### Boundaries that need explicit regression coverage
+
+- **Chained evidence is rebuilt from its premises.** Change primitive inputs
+  independently of cached fields, and check that downstream bounds are
+  recomputed or unsupported declarations reject. Retain valid stored
+  coefficients without renormalizing them. Test stale favorable flags, zeroed
+  derivative bounds and inconsistent state/support associations with independent
+  expected results. Invalid source declarations must fail before a solver runs
+  or independent one-shot samples are consumed; a supplied signed endpoint
+  increment must not be replaced by an evaluated form rate.
+- **Shared admission does not mean shared theorem domains.** Specialized
+  sine-cycle recovery retains its larger support domain (including the
+  51-node control); general phase geometry has separate work caps. The
+  validated Taylor/comparison owner has a 24-coordinate limit, with boundary
+  refusal and independent 23-coordinate controls. Its sine layout uses
+  `2*n+1` coordinates; dimension admission alone certifies no response.
+- **Exact and represented geometry remain distinct.** A rounded `pi`, a
+  small field residual or overlapping intervals cannot establish an exact
+  antipodal state, equilibrium or symmetry. Test zero resultants, branch
+  limits, unresolved denominators and strict equality boundaries explicitly.
+  An admitted native proposal chord is not a continuous trajectory proof.
+- **Preparation and endpoint sets retain their provenance.** A tighter
+  correlated source bound cannot replace a forecast's larger Cartesian
+  endpoint enclosure. Partial forecasts keep their validated time and
+  original requested-horizon status. Full-state capture must include remaining
+  form storage, every sector face and the actual phase uncertainty; favorable
+  phase geometry alone is insufficient.
+- **Reduction retains information and scale.** Memory/second-order identities
+  keep initial form, the weighted constant mode and moving history. Slow-phase
+  controls retain the fast transient, memberwise references, original form
+  remainder and preparation cost. Test zero horizon, tiny positive feedback,
+  large growth and monotone exponential tails without silently clipping time.
+- **All-time and symmetry verdicts have different scope.** Fixed-budget
+  consensus tests need an independent mixed-Lyapunov derivative from both
+  full rows, zero-budget and failed-premise controls. Reflection excludes
+  winding only at nonantipodal observations; it proves neither antipodal
+  avoidance nor consensus. Equal-budget sources, tiny exact asymmetries and
+  combined sign/reflection provide discriminating controls.
+- **Classification is not a numerical case survey.** Exact factorized
+  critical sets, full-support Hessian congruences and mode counts need
+  independent witnesses and invalid-domain controls. Do not replace their
+  completeness proofs by enumerating thousands of trajectories or transfer
+  a positive-loss convergence result to zero loss or frozen capacities.
+
+## Current checks and retained evidence
 
 Distinguish three kinds of validation when a research owner changes:
 
@@ -96,6 +173,12 @@ The [benchmark guide](benchmarks/README.md#running-and-reporting) owns producer
 invocation, freezing and artifact lifecycle. Reuse the appropriate saved evidence
 or shared fixture; do not regenerate completed responses for unrelated changes.
 A new reserved prediction needs its own declared inputs and prospective protocol.
+
+Optional retained-record audits skip explicitly when local evidence is absent;
+they must not recreate a producer or count missing evidence as a passed response.
+Synthetic intervals, step records and stubbed producers test consumer logic,
+not historical execution. Preserve original source archives, failures and
+inconclusive verdicts; corrections require separately identified evidence.
 
 Local execution is serial by default. To use the main CI scheduling policy,
 run `python -m pytest -n 2 --dist loadfile`; this keeps the same `not slow`
@@ -170,6 +253,16 @@ a sentinel protocol and synthetic report, without rerunning a scientific produce
 [Runtime facade tests](tests/physics/test_runtime_facade_imports.py) own the two
 cold import orders for the P2/REMESH example families; those checks still use
 fresh processes and resolve the actual public APIs.
+
+Cold subprocesses that test this checkout explicitly request the
+`source_tree_environment` fixture from [conftest.py](tests/conftest.py) and pass
+it as `subprocess.run(..., env=source_tree_environment)`. It copies the process
+environment and prepends pytest's configured source paths to `PYTHONPATH`,
+without changing the parent's environment. Pytest's `pythonpath` setting only
+updates its own interpreter; a fresh Python process can otherwise import a
+different installed package. Keep the fixture opt-in: tests of installed-package
+discovery or intentional import isolation retain their declared environments.
+Working directories, timeouts and optimized-mode flags remain test-specific.
 
 The [Makefile](Makefile) target `make test` uses the routine engine selection;
 `make test-all` includes the retained research suites, still excluding `slow`.

@@ -923,7 +923,7 @@ def compute_unified_telemetry(G: Any) -> dict[str, Any]:
     - Unified complex field (Ψ = K_φ + i·J_φ)
     - Emergent fields (χ, S, C)
     - Tensor invariants (ε, Q, conservation)
-    - Emergent pulse (conservative rhythm: ω_k = √λ_k, beats, vibration energy)
+    - Auxiliary graph-wave spectrum (ω_k = √λ_k and spectral summaries)
 
     The canonical/extended blocks are graph-state diagnostics. The ``pulse``
     block belongs to the auxiliary graph-wave model. Their joint presence in
@@ -1006,10 +1006,8 @@ def compute_unified_telemetry(G: Any) -> dict[str, Any]:
             "liouville_divergence": liouville_divergence(_pt),
         }
 
-    # Auxiliary graph-wave pulse -- the resonant
-    # spectrum omega_k = sqrt(lambda_k), the dominant beat and the
-    # self-similar signature), computed from the structural spectrum
-    # (structural_diffusion.py). It is not an inferred engine trajectory.
+    # Auxiliary graph-wave spectrum and retained frequency-gap/multiplicity
+    # summaries. These do not infer an engine trajectory or self-similarity.
     def read_pulse() -> dict[str, Any]:
         from .structural_diffusion import compute_emergent_pulse
 

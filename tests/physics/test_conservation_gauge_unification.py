@@ -13,6 +13,7 @@ from __future__ import annotations
 import math
 import os
 import sys
+from fractions import Fraction
 
 import networkx as nx
 import numpy as np
@@ -134,7 +135,17 @@ class TestGrammarSymmetryMapping:
         assert u3.assessment_status == "not_assessed"
         assert "finite phase" in u3.required_evidence
 
-    @pytest.mark.parametrize("bad_phase", [None, "0.1", float("nan"), 10**1000])
+    @pytest.mark.parametrize(
+        "bad_phase",
+        [
+            None,
+            "0.1",
+            float("nan"),
+            10**1000,
+            Fraction(1, 10**400),
+            -Fraction(1, 10**400),
+        ],
+    )
     def test_u3_is_unassessed_when_edge_phase_is_invalid(self, bad_phase):
         graph = nx.path_graph(2)
         inject_defaults(graph)
@@ -145,7 +156,8 @@ class TestGrammarSymmetryMapping:
         assert u3.assessment_status == "not_assessed"
 
     @pytest.mark.parametrize(
-        "bad_gate", [True, -0.1, float("inf"), float("nan"), "bad", 10**1000, math.pi]
+        "bad_gate",
+        [True, -0.1, float("inf"), float("nan"), "bad", "0.1", 10**1000, math.pi],
     )
     def test_u3_is_unassessed_when_phase_gate_is_invalid(self, bad_gate):
         graph = nx.path_graph(2)
@@ -157,13 +169,12 @@ class TestGrammarSymmetryMapping:
         assert not u3.is_applicable
         assert "DELTA_PHI_MAX" in u3.required_evidence
 
-    @pytest.mark.parametrize("gate", [0.1, "0.1"])
-    def test_u3_tightened_graph_gate_matches_live_rejection(self, gate):
+    def test_u3_tightened_graph_gate_matches_live_rejection(self):
         graph = nx.path_graph(2)
         inject_defaults(graph)
         graph.nodes[0]["phase"] = 0.0
         graph.nodes[1]["phase"] = 0.5
-        graph.graph.update(DELTA_PHI_MAX=gate, delta_phi_max=3.0)
+        graph.graph.update(DELTA_PHI_MAX=0.1, delta_phi_max=3.0)
         u3 = next(m for m in compute_grammar_symmetry_mapping(graph) if m.rule == "U3")
         assert u3.is_applicable
         assert not u3.is_satisfied
@@ -219,6 +230,24 @@ class TestGrammarSymmetryMapping:
         assert not u6.is_satisfied
         assert u6.assessment_status == "not_assessed"
         assert "reference" in u6.required_evidence
+
+    @pytest.mark.parametrize("source", ["current", "reference"])
+    def test_u6_cannot_assess_a_pressure_lost_during_materialization(self, source):
+        graph = _make_tnfr_graph(4, "cycle", seed=42)
+        reference = graph.copy()
+        target = graph if source == "current" else reference
+        target.nodes[next(iter(target))]["delta_nfr"] = Fraction(1, 10**400)
+        u6 = next(
+            row
+            for row in compute_grammar_symmetry_mapping(
+                graph, reference_graph=reference
+            )
+            if row.rule == "U6"
+        )
+        assert not u6.is_applicable
+        assert not u6.is_satisfied
+        assert u6.assessment_status == "not_assessed"
+        assert "delta_nfr" in u6.required_evidence
 
     def test_u6_is_unassessed_when_required_dnfr_is_missing(self, ws_graph):
         reference = ws_graph.copy()

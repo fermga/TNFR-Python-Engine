@@ -78,7 +78,9 @@ nav:
           - "Derived form phase": theory/nodal/DERIVED_FORM_PHASE.md
           - "Relational exchange, recovery and formation": theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md
           - "Relational pattern composition": theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md
+          - "Smooth-sine pattern dynamics": theory/nodal/SINE_PATTERN_DYNAMICS.md
           - "Relational pattern memory": theory/nodal/RELATIONAL_PATTERN_MEMORY.md
+          - "Resonance foundations": theory/nodal/RESONANCE_FOUNDATIONS.md
           - "Emergence and ontology": theory/EMERGENT_ONTOLOGY.md
       - "Transport, memory and clocks":
           - "EPI diffusion stability": theory/TNFR_DIFFUSION_STABILITY_THEOREM.md

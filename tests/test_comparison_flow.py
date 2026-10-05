@@ -10,7 +10,7 @@ from tnfr.mathematics._comparison_flow import comparison_flow_upper
 
 def _diagonal(values):
     return tuple(
-        tuple(value if i == j else Q(0) for j in range(4))
+        tuple(value if i == j else Q(0) for j in range(len(values)))
         for i, value in enumerate(values)
     )
 
@@ -104,12 +104,62 @@ def test_comparison_encloses_exact_nonlinear_flow_separation_on_convex_tube():
     assert bound < Q(1, 2)
 
 
+def test_eight_coordinate_diagonal_matches_independent_scalar_exponentials():
+    diagonal = tuple(Q(-index, 8) for index in range(1, 9))
+    radii = tuple(Q(index, 3) for index in range(8))
+    h = Q(1, 2)
+    result = comparison_flow_upper(_diagonal(diagonal), radii, h)
+    for rate, radius, bound in zip(diagonal, radii, result):
+        _, decay_upper = _negative_exp_reference(-rate * h)
+        reference = radius * decay_upper
+        assert reference <= bound < reference + Q(1, 10**34)
+
+
+def test_eight_coordinate_blocks_match_independent_nilpotent_exponentials():
+    # Each 2x2 block is -a*Id+N, N^2=0, so its exact response is
+    # exp(-a*h)*(Id+h*N). Blocks have distinct decay and coupling rates.
+    decay = tuple(Q(index, 4) for index in range(1, 5))
+    coupling = tuple(Q(index, 16) for index in range(1, 5))
+    matrix = tuple(
+        tuple(
+            (
+                -decay[i // 2]
+                if i == j
+                else coupling[i // 2] if i % 2 == 0 and j == i + 1 else Q(0)
+            )
+            for j in range(8)
+        )
+        for i in range(8)
+    )
+    radii, h = (Q(0), Q(2), Q(1), Q(3), Q(4), Q(0), Q(2), Q(5)), Q(1, 2)
+    result = comparison_flow_upper(matrix, radii, h)
+    for index, bound in enumerate(result):
+        _, decay_upper = _negative_exp_reference(decay[index // 2] * h)
+        polynomial = radii[index]
+        if index % 2 == 0:
+            polynomial += h * coupling[index // 2] * radii[index + 1]
+        reference = polynomial * decay_upper
+        assert reference <= bound < reference + Q(1, 10**34)
+
+
+@pytest.mark.parametrize("dimension", (1, 3, 16, 23, 24))
+def test_admitted_dimension_boundaries_retain_contraction(dimension):
+    result = comparison_flow_upper(
+        _diagonal((-1,) * dimension), (1,) * dimension, Q(1, 2)
+    )
+    _, decay_upper = _negative_exp_reference(Q(1, 2))
+    assert len(result) == dimension
+    assert all(decay_upper <= bound < 1 for bound in result)
+
+
 @pytest.mark.parametrize(
     "matrix,radii,duration,message",
     (
-        (((0,) * 4,) * 3, (0,) * 4, Q(1), "four by four"),
-        (((0,) * 3,) * 4, (0,) * 4, Q(1), "four by four"),
-        (_diagonal((0,) * 4), (0,) * 3, Q(1), "four values"),
+        ((), (), Q(1), "dimension.*1 and 24"),
+        (_diagonal((0,) * 25), (0,) * 25, Q(1), "dimension.*1 and 24"),
+        (((0,) * 4,) * 3, (0,) * 4, Q(1), "square"),
+        (((0,) * 3,) * 4, (0,) * 4, Q(1), "square"),
+        (_diagonal((0,) * 4), (0,) * 3, Q(1), "match the matrix dimension"),
         (
             ((0, -1, 0, 0), (0,) * 4, (0,) * 4, (0,) * 4),
             (1,) * 4,

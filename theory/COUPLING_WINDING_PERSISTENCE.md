@@ -2,8 +2,8 @@
 
 **Status: retained conditional derivations and finite evidence; C6 campaign
 parked.** The B75 boundary remains 41 of 56 first-exit labels excluded and 15
-open; global C6 stability is not proved. Dated priorities below record earlier
-research steps. Only the [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md)
+open; global C6 stability is not proved. Local extension conditions and dated
+audit dispositions below do not schedule work. Only the [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md)
 owns current work; the [mechanism audit](C6_RESEARCH_MECHANISM_AUDIT.md) records
 verification fixes and supersession. Mathematical claims retain their local
 hypotheses and source-bound evidence.
@@ -1964,7 +1964,8 @@ cell while all reconstructed coordinates remain in the positive band.
 This is a cell exit, not a positive-band exit. The pressure may change
 after it; the earlier mean source must not be extrapolated indefinitely.
 
-### Evidence and the next gate
+<a id="evidence-and-the-next-gate"></a>
+### Evidence and extension conditions
 
 [`c6_winding_pressure_equilibrium.py`](../benchmarks/c6_winding_pressure_equilibrium.py)
 validates and analyzes one historical phase-bearing capture. It executes
@@ -1979,10 +1980,10 @@ B23's schedule, whose next UM/IL occurs after four steps.
 .venv313\Scripts\python.exe -X utf8 benchmarks/c6_winding_pressure_equilibrium.py
 ```
 
-The next gate is a joint generated-pressure/domain argument that permits
-the finite-resolution behavior actually present. Test a signed block
+Extending this result requires a joint generated-pressure/domain argument
+that permits the finite-resolution behavior actually present: a signed block
 source bound and a preserved trapping region under the actual UM/IL phase
-updates, rather than require a fixed-phase exact zero that this numerical
+updates, rather than a fixed-phase exact zero that this numerical
 map cannot attain. The existing centered contraction controls disagreement
 but still removes the common mean; retain both quantities. A trapping
 region would not by itself prove point convergence, autonomous formation
@@ -2303,7 +2304,8 @@ endpoints to these 13 states would not satisfy the per-update hypothesis.
 The balanced six-step control already leaves this class at its first
 cell exit, when two coordinates are predecessors of `0.5`.
 
-### Ownership and next gate
+<a id="ownership-and-next-gate"></a>
+### Ownership and scope
 
 [`c6_winding_pressure_lattice.py`](../benchmarks/c6_winding_pressure_lattice.py)
 revalidates the retained B25 phase path, uses the shared local lattice
@@ -2460,7 +2462,8 @@ This conservative bound covers every admissible initial carry and requires
 no additional trajectory. It excludes a carried cycle contained in these
 four states, not a larger return class, a slab exit or a physical timescale.
 
-### Next gate: close a relational class or exclude it structurally
+<a id="next-gate-close-a-relational-class-or-exclude-it-structurally"></a>
+### Requirements for closure or structural exclusion of a relational class
 
 Use these whole-word intersections when proposing return paths or a finite
 union of carried cells. A candidate must pass coordinatewise area balance
@@ -2641,9 +2644,9 @@ preparation's tail reachability or repeated live-runtime stability follows.
 .venv313\Scripts\python.exe -X utf8 benchmarks/c6_winding_pressure_sign.py
 ```
 
-The next gate is the positive sector's admissible duration and signed
-area, coupled to the remaining five node budgets. Determine whether
-canonical subsequent transitions can compensate prior negative area
+The remaining condition at this boundary is the positive sector's admissible
+duration and signed area, coupled to the other five node budgets. Subsequent
+transitions would have to compensate prior negative area
 without violating their carry constraints. A proposed return must still
 pass the complete vector-area and whole-itinerary tests. The completed
 sign crossing removes the old four-state separator's hypothesis after
@@ -2765,7 +2768,8 @@ falls outside this two-level counting argument. It excludes neither
 bounded motion nor a larger invariant class, and no trajectory of this
 length is attempted.
 
-### Evidence owner and next gate
+<a id="evidence-owner-and-next-gate"></a>
+### Evidence owner and extension conditions
 
 [`c6_winding_pressure_repayment.py`](../benchmarks/c6_winding_pressure_repayment.py)
 revalidates the retained B28 report through its B27/B26 inputs, preserves
@@ -2920,7 +2924,7 @@ retains the B27 area reference. Resource exhaustion is reported as censoring,
 not as absence of another pressure level. This remains a conditional
 numerical path, without live graph or original-preparation reachability.
 
-The next gate is a compatible change of the neighborhood sustaining the
+Extending this retained path requires a compatible change of the neighborhood sustaining the
 positive node-4 drift, together with the full signed vector-area budget.
 The node-1 sign search, first positive episode and first third-level hit
 are complete on this retained path. Do not repeat them or attempt the
@@ -3024,7 +3028,8 @@ area vector. The previous callers already checked their full prefix
 areas elsewhere; centralization makes that obligation explicit in the
 reusable owner and preserves their existing report payloads.
 
-### Evidence and next gate
+<a id="evidence-and-next-gate"></a>
+### Evidence and remaining requirements
 
 [`c6_winding_pressure_stencil.py`](../benchmarks/c6_winding_pressure_stencil.py)
 revalidates B30 through the retained B29/B28/B27/B26 chain, uses only the
@@ -3033,7 +3038,7 @@ all six signed area budgets. Its ceiling is computational censoring, not
 an impossibility theorem for reaching negative pressure. Neither a live
 graph nor original-preparation reachability is promoted by this audit.
 
-The next gate is a coupled neighborhood reachability or trapping argument
+Extending this boundary result requires a coupled neighborhood reachability or trapping argument
 using the remaining gradient cut, exact carry and signed vector budget.
 Simply adding another fixed number of boundaries would not supply that
 argument. Pressure reduction alone is insufficient; any candidate bounded
@@ -4444,8 +4449,8 @@ the report establishes that numerical lineage separately by replay.
 The retained result is `artifacts/research/c6_winding_relay_handoff.json`.
 Its `B47_conditional_first_exit.endpoint` is the next conditional input,
 with the full remainder. Node 1's changed value now modifies node 0's
-pressure as well as the corrected-coordinate budget. The next gate is
-therefore a new dependency boundary: rederive the affected relay and
+pressure as well as the corrected-coordinate budget. Continuing from this
+dependency boundary requires rederiving the affected relay to
 account for any change in correction potential before composing another
 budget. Repeating B47's formula beyond this endpoint is invalid. The result
 does not establish a global signed budget, invariant trapping, future
@@ -4925,7 +4930,7 @@ intersection guard, all 32 remaining queries are still inconclusive after
 33 or 34 complete layers; no further slab is excluded. Evidence:
 `artifacts/research/c6_b51_iterated_certified_cuts.json`.
 
-The next task is a compact proof over the four remaining exit classes,
+The unresolved obligation at this stage is a compact proof over the four remaining exit classes,
 preserving more of their coupled pressure, carry and temporal relations.
 Merely repeating the certified cuts, increasing a resource guard or testing
 additional isolated points cannot supply the missing universal proof.
@@ -5770,7 +5775,8 @@ continuing B57's unfinished worklist. The later bounded worklist tightens
 459 projections relative to the sealed B57 cover; that larger count alone
 cannot be attributed to the partition.
 
-### Bounded results and the next gate
+<a id="bounded-results-and-the-next-gate"></a>
+### Bounded results and unresolved scope
 
 The partition prototype constructs 6,924 guarded arcs and uses 499,996
 forward work items. No original target disappears from its full direct and
@@ -6892,7 +6898,8 @@ parents39/66 concerns these target-conditioned histories, not two further
 whole exit slabs. Neither finer RN-coordinate feasibility, actual origin
 reachability, indefinite C6 boundedness nor future runtime is established.
 
-### Smaller observations, complete histories, one shared next gate
+<a id="smaller-observations-complete-histories-one-shared-next-gate"></a>
+### Smaller observations and complete histories
 
 Exact pairwise endpoint inclusion reduces the23-piece observation union to19
 DBMs. With zero-based indices in the retained complete-observation order,
@@ -7026,7 +7033,8 @@ from B47. Records and independent checks are retained in
 `c6_b68_coset_relevance.py/.json` and its matching `.validation.json` under
 `artifacts/research`; `b68_final_validation.json` seals both B68 studies.
 
-### Change the next gate, preserve the unresolved objective
+<a id="change-the-next-gate-preserve-the-unresolved-objective"></a>
+### Limits of refinement and the retained separator audit
 
 Whole-label coverage has remained41/56 since B61. B66–B68 have demonstrated
 strict geometric improvements, but no bound on the number of further
@@ -7035,9 +7043,9 @@ candidates buy no geometric improvement, and its modular control cannot
 close a survivor. Further predecessor depth is therefore deferred as the
 automatic next action.
 
-The next task audits whether existing exact separator obstructions still
-apply to the retained history cover and the current origin-to-target
-obligation. The selected bounded audit is result0 of
+The subsequent audit asks whether existing exact separator obstructions still
+apply to the retained history cover and the stated origin-to-target
+obligation. Its selected bounded case is result0 of
 `c6_b56_affine_frontier_probe.json`:64 supported inequalities at backward
 depth6 for the mask8 lower target, over11 RN modes and77 affine coefficients.
 Completion requires classifying every witness and target implication, and
@@ -7363,9 +7371,10 @@ certificate. Independent post-run validation passes; nodal dynamics and
 source remain unchanged.
 
 A no-optimization audit confirms that selecting `highs-ipm` preserves every
-outgoing B75 model array and changes only the solver selector. The next gate
-is one separately versioned 20-second comparison on the frozen B75 matrix,
-after independent preflight. No further cuts or history are added; any
+outgoing B75 model array and changes only the solver selector. A deferred
+comparison would use a separately versioned 20-second run on the frozen B75
+matrix after independent preflight; only the execution plan can reopen it.
+No further cuts or history would be added; any
 candidate retains the same reconstruction, root/cap and exact full-guard
 requirements. Algorithm choice guarantees no speed or feasibility gain.
 The checkpoint is b75_final_validation.json (`artifacts/research/b75_final_validation.json`, local evidence):

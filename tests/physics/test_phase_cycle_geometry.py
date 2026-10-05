@@ -19,10 +19,69 @@ from tnfr.dynamics.dnfr import default_compute_delta_nfr
 from tnfr.mathematics.krylov import exact_rank
 from tnfr.physics.phase_cycle_geometry import (
     derive_phase_cycle_geometry,
+    reconstruct_circular_phase_state,
     reconstruct_phase_cycle_state,
 )
 from tnfr.physics.phase_response import observe_phase_lock_source
 from tnfr.physics.winding_certificates import certify_phase_winding
+
+
+def test_circular_reconstruction_proves_supplementary_balance_without_relaxing_acute():
+    graph = nx.cycle_graph(5)
+    geometry = derive_phase_cycle_geometry(graph)
+    turns = tuple(F(i, 6) for i in range(5))
+    gaps = tuple(turns[j] - turns[i] for i, j in geometry.edges)
+    circular = reconstruct_circular_phase_state(geometry, edge_turns=gaps)
+    assert circular.nodal_turns == turns
+    assert not any(circular.symbolic_sine_coefficients)
+    assert circular.sine_balance_status == "proved_by_period_reflection_cancellation"
+    with pytest.raises(ValueError, match="strictly acute"):
+        reconstruct_phase_cycle_state(geometry, edge_turns=gaps)
+    # Integral edge-lift changes preserve the circular phases and sine proof,
+    # while their recorded circulations and edge offsets remain distinct.
+    lifted = reconstruct_circular_phase_state(
+        geometry, edge_turns=tuple(value + 7 * (i + 1) for i, value in enumerate(gaps))
+    )
+    assert lifted.nodal_turns == circular.nodal_turns
+    assert lifted.symbolic_sine_coefficients == circular.symbolic_sine_coefficients
+    assert lifted.edge_integer_offsets != circular.edge_integer_offsets
+
+
+def test_circular_half_turn_is_exact_zero_current_not_an_acute_or_winding_claim():
+    geometry = derive_phase_cycle_geometry(nx.path_graph(2))
+    result = reconstruct_circular_phase_state(geometry, edge_turns=(F(1, 2),))
+    assert result.nodal_turns == (F(0), F(1, 2))
+    assert result.symbolic_sine_coefficients == ((), ())
+    assert result.cycle_periods == ()
+    assert (
+        "edge_lift_periods_are_not_principal_windings_at_antipodal_edges"
+        in result.scope
+    )
+    assert (
+        reconstruct_circular_phase_state(
+            geometry, edge_turns=(F(1, 4),)
+        ).sine_balance_status
+        == "unresolved"
+    )
+    with pytest.raises(ValueError, match="strictly acute"):
+        reconstruct_phase_cycle_state(geometry, edge_turns=(F(1, 2),))
+
+
+@pytest.mark.parametrize("value", (True, float("nan"), complex(0, 1)))
+def test_circular_reconstruction_retains_shared_real_turn_admission(value):
+    geometry = derive_phase_cycle_geometry(nx.path_graph(2))
+    with pytest.raises((TypeError, ValueError)):
+        reconstruct_circular_phase_state(geometry, edge_turns=(value,))
+
+
+def test_circular_reconstruction_rejects_nonintegral_period_and_tampered_support():
+    geometry = derive_phase_cycle_geometry(nx.cycle_graph(5))
+    with pytest.raises(ValueError, match="integral"):
+        reconstruct_circular_phase_state(geometry, edge_turns=(F(1, 7),) * 5)
+    with pytest.raises(ValueError, match="derived fields"):
+        reconstruct_circular_phase_state(
+            replace(geometry, cycle_rank=4), edge_turns=(0,) * 5
+        )
 
 
 @pytest.mark.parametrize(

@@ -108,8 +108,16 @@ def _two_certified_cycles(
     return left, right
 
 
-def test_two_committed_cycles_bind_every_recorded_exact_boundary() -> None:
-    left, right = _two_certified_cycles()
+@pytest.fixture(scope="module")
+def certified_cycles():
+    """Reuse executed evidence only for consumers that do not mutate it."""
+    return _two_certified_cycles()
+
+
+def test_two_committed_cycles_bind_every_recorded_exact_boundary(
+    certified_cycles,
+) -> None:
+    left, right = certified_cycles
 
     sequence = compose_event_remesh_cycle_observations(cycle for cycle in (left, right))
 
@@ -300,8 +308,10 @@ def test_composer_requires_two_exact_cycle_results(
         compose_event_remesh_cycle_observations(cycles)
 
 
-def test_composer_rejects_noncycle_when_cardinality_is_sufficient() -> None:
-    left, _ = _two_certified_cycles()
+def test_composer_rejects_noncycle_when_cardinality_is_sufficient(
+    certified_cycles,
+) -> None:
+    left, _ = certified_cycles
     with pytest.raises(TypeError, match=r"cycles\[1\]"):
         compose_event_remesh_cycle_observations((left, object()))
 
@@ -397,8 +407,8 @@ def _graph_with_nodes(
     return graph
 
 
-def test_input_iterable_equality_is_never_consulted() -> None:
-    left, right = _two_certified_cycles()
+def test_input_iterable_equality_is_never_consulted(certified_cycles) -> None:
+    left, right = certified_cycles
 
     sequence = compose_event_remesh_cycle_observations(_EqIterable((left, right)))
 
@@ -427,8 +437,8 @@ def test_mutable_structural_node_keys_fail_closed_before_execution() -> None:
     assert tuple(dict(graph.nodes[node]) for node in nodes) == node_data_before
 
 
-def test_conditions_require_exact_pairs_and_canonical_order() -> None:
-    left, right = _two_certified_cycles()
+def test_conditions_require_exact_pairs_and_canonical_order(certified_cycles) -> None:
+    left, right = certified_cycles
     sequence = compose_event_remesh_cycle_observations((left, right))
     boundary = sequence.boundaries[0]
 
@@ -441,8 +451,8 @@ def test_conditions_require_exact_pairs_and_canonical_order() -> None:
         )
 
 
-def test_nested_records_require_cycle_owned_identity() -> None:
-    left, right = _two_certified_cycles()
+def test_nested_records_require_cycle_owned_identity(certified_cycles) -> None:
+    left, right = certified_cycles
     sequence = compose_event_remesh_cycle_observations((left, right))
     first_schedule = sequence.schedule_compositions[0]
     assert first_schedule is not None
@@ -483,8 +493,10 @@ def test_scope_is_sealed_for_boundaries_and_sequences() -> None:
     assert not clean.exact_common_metric_cycle_sequence_certified
 
 
-def test_same_cycle_identity_cannot_masquerade_as_two_observations() -> None:
-    left, _ = _two_certified_cycles()
+def test_same_cycle_identity_cannot_masquerade_as_two_observations(
+    certified_cycles,
+) -> None:
+    left, _ = certified_cycles
 
     with pytest.raises(ValueError, match="distinct identities"):
         compose_event_remesh_cycle_observations((left, left))

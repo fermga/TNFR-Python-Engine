@@ -1,8 +1,9 @@
 # Emergence: admissible claims and reusable mechanisms
 
-**Status:** research scope and reuse map. Conditional formation and maintenance
-are established for the supplied two-ring relational preparation below;
-universal pattern selection and identification with physical entities remain open. The
+**Status:** research scope and reuse map. Conditional formation, maintenance,
+recurrence and internal-pulse results retain their individual complete-law
+hypotheses. Universal pattern selection and identification with physical
+entities remain open. The
 [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md) owns priorities; this
 reference introduces no additional campaign.
 
@@ -59,7 +60,7 @@ and, where used, probability rule must be justified independently of the
 evaluated outcomes. Direct sensor-to-EPI transport experiments are supporting
 realizations; success there would not derive the sensor's material constituents.
 
-The user's spin example is a research question about such collective properties,
+Physical spin is a possible research question about such collective properties,
 not a proposed identification already established. A balanced configuration,
 phase rotation, winding integer or classical U(2)/Stokes representation is
 insufficient to establish physical spin. A spin claim would need the appropriate
@@ -91,7 +92,7 @@ description must retain whatever coordinates or memory its closure needs.
 
 <a id="nfr-participation-in-form"></a>
 
-The programme adopts the user's ontological clarification as a constitutive
+The programme adopts participation in form as a constitutive
 requirement: an NFR is an organization of the same structural configuration
 in which it acts. Its identity and interactions must be represented within
 that configuration. This participation in form is not, by itself, evidence
@@ -106,6 +107,22 @@ the same fine interaction, without counting it again as an independent force
 exerted by a second copy of the pattern. The
 [collective interaction owner](nodal/DERIVED_FORM_PHASE.md#collective-interaction-closure-and-relational-state)
 already shows why relations between patterns can carry necessary state.
+
+A larger NFR would organize the internal nodes or patterns without erasing
+their existence or motion. The [conservative sine replica calculation](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-inheritance)
+gives a restricted exact example of inherited influence: internal phase
+dispersion changes a group's phase-driven form response, and internal form
+contrast drives that dispersion. The full mean/internal coordinate change
+retains both fine nodes in each supplied pair. Synchronized pairs inherit
+the same nodal rows, but their means alone do not close the general nearby
+dynamics. This identifies information needed for a collective description;
+it does not prove that the partition or a new NFR has formed autonomously.
+
+The [exact unordered-pair state](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-unordered-state)
+retains that internal influence in a closed collective description, removing
+only the interchangeable constituent labels. Its constrained coordinates keep
+the continuous degrees of freedom and do not derive spontaneous scale
+formation or a universally sufficient scalar macro-node.
 
 Here structural participation does not identify the entire joint state with
 one scalar EPI coordinate. The current representation also retains phase,
@@ -145,23 +162,32 @@ selectors can request events, but their requests do not establish autonomous
 occurrence in a proposed ontological realization. Each operator still requires
 its own live-state and composition conditions.
 
-| Question | Maintained owner | Reusable result and boundary |
-| --- | --- | --- |
-| What can be observed on a supplied region? | [Fields](../src/tnfr/physics/fields.py), [SDK](../docs/CLI_AND_SDK.md) | Triad, pressure/rate availability, fitted or spectral-fallback correlation, configured topology diagnostics; no endogenous partition or persistence certificate |
-| Can one complete law form and maintain a new winding pattern? | [Validated relational transit](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-validated-transit) | The exact represented winding-zero two-ring preparation reaches a protected positive basin under the unforced conditional law; an open neighborhood of states/held capacities shares the outcome qualitatively. Supplied graph and phase/form storage, no quantified neighborhood or physical identification |
-| Does phase-driven structure necessarily persist? | [Zero-form control](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-zero-form-control) | The same phase/support preparation immediately generates form contrast and transient winding but converges to consensus when initial form is uniform. Balanced phase sources remain stationary; supplied phase geometry is not creation from nothing |
-| What is exact for a declared transport channel? | [Diffusion](TNFR_DIFFUSION_STABILITY_THEOREM.md), [variational balance](TNFR_VARIATIONAL_PRINCIPLE.md) | Conditional diffusion, weighted conservation, dissipation and scoped numerical certificates; no general multichannel attractor theorem |
-| Can fewer coordinates predict a collection? | [Scale bridge](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md), [derived memory](DERIVED_EPI_MEMORY.md) | Exact restricted quotients, hidden-state counterexamples and memory kernels; do not repeat failed closure using the same insufficient coordinates |
-| Can effective descriptions predict an interaction? | [Collective interaction closure](nodal/DERIVED_FORM_PHASE.md#collective-interaction-closure-and-relational-state) | A specified matched interface has an exact joint mean/Gram law; separate component descriptions omit relative orientation. No arbitrary-port closure, sustained pattern or physical constituent follows |
-| Can an identity survive interaction? | [Coherent pattern contact](COHERENT_PATTERN_CONTACT.md) | Two prepared winding-one rings retain identity with bounded phase/form deformation under a supplied phase law and bridge schedule; this is not formation from a different sector |
-| Does a winding change establish formation? | [Formation boundary](COHERENT_PATTERN_CONTACT.md#formation-boundary-under-the-same-gated-law) | Isolated gated C5 cannot enter an acute winding sector from winding zero. An explicit branch passage changes winding while phase coupling stays fragmented and mean form drifts; an integer alone is insufficient |
-| Does any environmental contact remove that boundary? | [One-neighbor contact budget](COHERENT_PATTERN_CONTACT.md#one-external-phase-neighbor-budget-and-entrance-obstruction) | A fixed single-edge contact can improve instantaneous phase excess but cannot induce the acute C5 identity under the same law; local improvement and coherent capture remain different claims |
-| Can distributed contact admit local recovery? | [Two-port entrance](COHERENT_PATTERN_CONTACT.md#distributed-two-port-contact-a-realizable-entrance-witness) | A jointly realizable opposite-winding donor allows a nonacute recipient with existing winding to enter its acute region under the same supplied law; winding-zero formation and indefinite retention remain unproved |
-| Can a uniform recipient acquire that identity through two contacts? | [Formation preparation budget](COHERENT_PATTERN_CONTACT.md#winding-zero-formation-a-dissipation-and-preparation-boundary) | The supplied gated phase potential dissipates and excludes two acute wound rings from a uniform recipient plus an acute donor. Nonuniform winding-zero preparations require sufficient initial potential and a realizable path; EPI does not replenish this closed phase row |
-| Do potential and local passage suffice for a nonuniform recipient? | [Joint port barrier](COHERENT_PATTERN_CONTACT.md#joint-port-dynamics-sufficient-potential-does-not-give-a-formation-path) | Actual donor motion excludes formation while the other four recipient edges and both bridges stay phase-admitted and the donor stays strictly acute. A route outside this admission class is necessary, not yet a demonstrated formation mechanism |
-| Can a child be born and exchange structure? | [THOL pressure](THOL_PRESSURE_FEEDBACK.md), [birth and transport](THOL_BIRTH_AND_TRANSPORT.md) | Causal event/transport evidence and the retained sixteen-coordinate family realization; configured trigger and amplitude are not uniquely derived |
-| What supports differentiated form? | [Capacity balance](CAPACITY_LOCALIZATION_BALANCE.md), [cycle support](CYCLE_SUPPORT_DYNAMICS.md), [forced balance](FORCED_SUPPORT_BALANCE.md) | Conditional profile retention, capacity and source budgets; prepared contrast and supplied forcing do not establish autonomous formation |
-| What can survive phase reorganization? | [Winding persistence](COUPLING_WINDING_PERSISTENCE.md), [phase-cycle geometry](../src/tnfr/physics/phase_cycle_geometry.py) | Declared-cycle winding, protected sectors and loss mechanisms; neither a physical particle nor a formation law follows from an integer read-out |
+The [collective-action criterion](STRUCTURAL_OPERATORS.md#collective-operator-descent)
+makes this distinction testable: an NFR description must predict both its
+continuous response and any claimed event independently of discarded fine
+labels. Event targets, history and occurrence can require additional retained
+state even when a continuous quotient already closes. The native full-form
+formation obstruction also supplies a conditional phase-acquisition budget;
+it does not turn a storage-passive reset into an autonomous mechanism.
+
+The [formation premise ledger](NODAL_RESEARCH_STRATEGY.md#formation-premise-ledger)
+owns the cross-model distinction between positive results and exclusions;
+the [theory-to-execution map](README.md#theory-to-execution) locates proofs,
+code and tests. The ontological obligations can be stated without maintaining
+a second inventory of preparations:
+
+| Claim about an organization | Required distinction |
+| --- | --- |
+| Formation and maintenance | Show entry from an initial set lacking the claimed identity, then its declared lifetime or recovery. Native validated transit and sine prepared acquisition have separate law/domain and uncertainty hypotheses. |
+| Effective description | Prove sufficient collective state, or retain hidden initialization through derived memory. Means, winding and instantaneous rates alone need not close. |
+| Interaction and composition | Retain environmental influence, relative frames and causal controls. Compatible isolated identities need not remain compatible after attachment. |
+| Birth or structural action | Admit state/support jumps and their costs separately from occurrence. A configured child, favorable budget or named operator does not derive its own activation. |
+
+The [smooth-sine dynamics owner](nodal/SINE_PATTERN_DYNAMICS.md) includes
+positive acquisition with bounded full-state uncertainty and complementary
+budget/symmetry exclusions. These coexist with the native law's prepared
+formation and its differently scoped counterexamples. None selects an initial
+substrate, preparation or physical interpretation.
 
 A regional calculation must retain its environmental boundary influence.
 Recomputing pressure only on an induced subgraph changes the model. The
@@ -184,7 +210,7 @@ equation or a conserved quantity.
 | Relational interaction | Explicit support, boundary exchange and response to neighboring state | Pressure law, reciprocity and any state-dependent metric |
 | Circular phase | A circle-valued coordinate, chart boundaries and transformation rules | Its clock and relation to form; phase reflection is not automatically a redundancy |
 | Nested effective nodes | A state map with exact closure, derived memory or controlled error | Autonomous region selection and whether the same law survives reduction |
-| Resonant internal exchange | If proposed, an explicit reversible exchange structure and its balance | The exchange premise itself, compatible dissipation and physical interpretation |
+| Resonant internal exchange and response | Explicit reciprocal dynamics, storage balance and a declared input/output susceptibility; [conditional sine-law foundation](nodal/RESONANCE_FOUNDATIONS.md) | Selection of the complete law, autonomous formation and robustness beyond the proved families, and physical interpretation |
 
 The existing [scale bridge](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#1-pure-epi-coarse-graining)
 already supplies one useful positive example. On its reversible pure-EPI
@@ -212,12 +238,61 @@ with supplied fine dynamics and grouping; it neither selects the microscopic
 law nor shows that those groups form autonomously. NFR properties can impose
 checkable composition requirements without presupposing the desired pattern.
 
+The complete sine law supplies a distinct result: its existing skew exchange
+and dissipation derive a [full-network response theorem](nodal/RESONANCE_FOUNDATIONS.md#collocated-resonance)
+near stable critical patterns. Every active collocated structural-work port
+has a positive finite-frequency gain maximum. This is an actual consequence
+of those nodal rows, including when free poles are real; it does not assign
+an auxiliary oscillator. The input/readout remain declared, and the theorem
+does not turn susceptibility into spontaneous excitation or matter.
+
 The faithful scalar state remains the cylinder `(x, exp(i*theta))`.
 The [representation controls](../tests/physics/test_epi_phase_representation_scope.py)
 already show why replacing it by `x*exp(i*theta)` loses relevant sign and
 zero-form phase information under the current multichannel law. A geometric
 proposal must retain this state or justify its changed quotient and pressure;
 calling the result an NFR does not supply that justification.
+
+<a id="organization-and-internal-pulse"></a>
+### 1.3 Organization, internal motion and waveform stability
+
+The [finite-amplitude internal pulse](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-internal-pulse)
+provides a precise instance of organized internal motion. On the supplied
+doubled-C5 support, a symmetric preparation evolves periodically under the
+existing zero-loss reciprocal sine law, with fixed collective mean form and
+phase. The smaller constituents remain present and active. The motion is
+endogenous to those complete rows, without adding an external periodic drive
+or a new primitive pulse variable. Its initial preparation, support and
+zero-loss premise remain supplied; no birth from equilibrium, universal
+oscillation or physical constituent is thereby derived.
+
+Which state defines identity matters. The fine labeled state and the exact
+unordered-pair state have different minimal periods, while the means are
+constant. These results justify retaining internal information when
+describing a larger organization. They do not prove autonomous nesting or
+fractal inheritance at arbitrary scales.
+
+A persistent geometric identity also need not preserve one waveform. The
+[transverse splitting](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-pulse-splitting)
+proves orbital instability of sufficiently small nonzero members of that
+pulse family. The same law still conserves storage: growth of a perturbation
+away from the prepared waveform is not dissipation or proof that every
+nearby organization disappears. Conversely, a geometric trapping theorem
+does not prove synchronization of the internal rhythms. Joint claims must
+retain the hypotheses of both results; no selected numerical amplitude is
+certified by the existential small-amplitude theorem.
+
+The [nonlinear recurrence theorem](nodal/RESONANCE_FOUNDATIONS.md#nonlinear-recurrence)
+gives almost-everywhere returns of the full circular state in admitted
+finite-volume families of the reversible sine law. Recurrence alone does not
+protect a particular organization. The
+[conservative identity theorem](nodal/RELATIONAL_PATTERN_MEMORY.md#sine-conservative-identity)
+already combines all-state geometric trapping with almost-everywhere
+nonstationary recurrence for admitted isolated-cycle families. It preserves
+a stated winding identity without an attracting waveform. This is stronger
+than a recurrent read-out but remains weaker than a common period, a return
+time for a selected state, autonomous pattern formation or physical
+identification.
 
 ## 2. Geometry and diagnostics do not close the dynamics
 
@@ -254,74 +329,30 @@ evaluation. Preserve counterexamples and null outcomes. A model that needs
 an added source must expose that source; a closure that loses information
 must expose the missing state or memory.
 
-The completed
-[prospective finite-response discriminator](nodal/PRESSURE_CONSTITUTIVE_SCOPE.md#prospective-finite-response-discriminator)
-between resultant-direction and current-amplitude phase sources on fixed P3
-retains its finite engine checks. It does not select a unique pressure law or
-demonstrate autonomous NFR formation. It is not a pending task. The
-[sole execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-selects the remaining work. The conditional relational law, formation/control
-results and bounded memory prediction have their existing proof owners; their
-admission is not a pending law-selection campaign. Composition must retain the
-internal state needed by that law and declare any supplied support event.
-The [event-premise result](nodal/RELATIONAL_PATTERN_COMPOSITION.md#support-event-premise-admission)
-shows that even an additional zero-supply passivity premise does not select
-attachment. State-preserving pure addition then requires equal endpoint form
-and phase; an atomic edge exchange can instead lower declared storage on an
-open set. Neither observation proves autonomous occurrence or preservation of
-a pattern when its defining cycle is changed. The
-[bridge-relocation theorem](nodal/RELATIONAL_PATTERN_COMPOSITION.md#identity-preserving-bridge-relocation)
-retains the internal cycles and proves recovery after one supplied passive
-exchange on an explicit open set. It demonstrates compatibility of
-reorganization and maintained phase identity, not an autonomous event law or
-an identification of the patterns with physical particles. The
-[choice/clock audit](nodal/RELATIONAL_PATTERN_COMPOSITION.md#support-law-choice-and-clock)
-now proves that the stated budget, recovery and covariance requirements leave
-different compatible event laws. It justifies no automatic selector.
-The [complete-action revision](nodal/RELATIONAL_PATTERN_COMPOSITION.md#nodal-reorganization-and-contact)
-permits nodal reorganization while connecting: actual UM can offset positive
-edge cost, and existing continuous dynamics can create phase admission.
-The [operator map](STRUCTURAL_OPERATORS.md#operator-mechanism-and-activation-audit)
-separates these mechanisms from supplied candidates and invocation. Whether
-sustained synchronization justifies activation remains a hypothesis; neither
-an instantaneous U3 match nor the SDK's auxiliary modal rhythm establishes it.
-The selected precursor is now an explicit nodal intermediary under the same
-form/phase law. Its [derived memory](nodal/RELATIONAL_PATTERN_MEMORY.md#mediated-pattern-interaction)
-retains both hidden coordinates, predicts a capacity-dependent transient and
-admits local recovery of the supplied composite geometry. The
-[finite capacity intervention](nodal/RELATIONAL_PATTERN_MEMORY.md#finite-mediated-response)
-has passed its frozen prediction, while a shared frozen boundary supplies a
-control for apparent joint restoration without mutual influence. This is
-conditional interaction and restoration, not capture from initially
-disconnected support. A supplied
-[return path](nodal/RELATIONAL_PATTERN_MEMORY.md#return-path-equilibrium)
-admits distinct recoverable geometries for equal and opposite windings, with
-a necessary extra storage budget for the opposite equilibrium. It does not
-establish a maintained oscillation. Connection as a causally shared rhythm now
-has [conditional local evidence](nodal/RELATIONAL_PATTERN_MEMORY.md#shared-collective-pulse):
-an ideal damped complex mode is proved and native causal residues resolve a
-receiver response. This does not show a perpetual pulse or a nonlinear limit
-cycle. Prepared synchronization alone is insufficient, and effective connection
-need not mean primitive edge creation. The
-[connection-mechanism audit](nodal/RELATIONAL_PATTERN_COMPOSITION.md#connection-mechanisms-and-mediators)
-distinguishes hidden-node mediation, reinforcement and primitive support birth.
-The [continuous contact comparisons](nodal/RELATION_FOUNDATIONS.md#the-origin-of-relation-storage-is-a-nonselection-classification)
-and [event-law comparisons](nodal/RELATIONAL_PATTERN_COMPOSITION.md#support-law-choice-and-clock)
-leave multiple compatible laws under their respective premises. They prove
-neither impossibility of autonomous formation nor an exhaustive classification
-of future mechanisms. Primitive formation and selection of its complete law
-remain open; a supplied autonomous countermodel is not a derived occurrence law.
-The
-[effective-link admission](nodal/RELATIONAL_PATTERN_COMPOSITION.md#effective-link-admission)
-defines a scoped research criterion: mutual causal response and restoration
-of a declared joint geometry. Active paths, retained mediator memory and the
-existing recovery theorem yield sufficient conditions and an explicit local
-formation family. An unchanged frozen separator supplies a causal null even
-when the regions appear geometrically aligned. These are conditions for a
-collective relation on supplied fine support, not physical spatial binding or
-the origin of that support. A sustained common pulse is not required by this
-criterion. Autonomous coarse closure and transitions to another winding
-identity remain separate obligations.
-Completed collective-state and contact results retain their original hypotheses.
-The target is an effective-constituent mechanism, not yet a spin or particle
-identification.
+The [sole execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+selects the next bounded question. Existing conditional laws, formation,
+controls and memory forecasts are reusable evidence; their presence does not
+start additional law-selection or contact campaigns.
+
+For structural contact, distinguish three independent obligations:
+
+- **State and causal influence:** keep full internal and boundary information,
+  including relative origins. The [effective-link criterion](nodal/RELATIONAL_PATTERN_COMPOSITION.md#effective-link-admission)
+  requires mutual causal response and restoration of a stated joint geometry.
+  Hidden-node mediation can provide this on supplied fine support. A frozen
+  separator is a causal null even when two regions look aligned.
+- **Event and storage:** [event admission](nodal/RELATIONAL_PATTERN_COMPOSITION.md#support-event-premise-admission)
+  keeps continuous loss separate from support/reset work. Passive pure addition,
+  edge exchange and [nodal reorganization](nodal/RELATIONAL_PATTERN_COMPOSITION.md#nodal-reorganization-and-contact)
+  are different contracts. A supplied event can preserve a pattern without
+  selecting why or when the event occurs.
+- **Complete-law selection:** [continuous relation comparisons](nodal/RELATION_FOUNDATIONS.md#the-origin-of-relation-storage-is-a-nonselection-classification)
+  and [support-law comparisons](nodal/RELATIONAL_PATTERN_COMPOSITION.md#support-law-choice-and-clock)
+  retain multiple compatible choices. Neither synchrony, an eligible contact,
+  storage passivity nor a successful prepared response uniquely chooses one.
+
+A sustained shared pulse is not required by the effective-link criterion.
+A damped collective response, maintained geometry, primitive edge birth and
+physical spatial binding remain different claims. The target is a justified
+effective-constituent mechanism; spin, particles and a universal microscopic
+law require additional evidence.

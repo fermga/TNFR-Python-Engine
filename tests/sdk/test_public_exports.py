@@ -31,21 +31,32 @@ def test_typed_public_exports_resolve_to_the_same_live_owners():
         getattr(sdk, "not_a_supported_sdk_export")
 
 
-def test_importing_sdk_does_not_eagerly_import_its_execution_owners():
+def test_importing_sdk_does_not_eagerly_import_its_execution_owners(
+    source_tree_environment,
+):
     code = """
 import sys
+from pathlib import Path
+import tnfr
 import tnfr.sdk as sdk
+assert Path(tnfr.__file__).resolve() == Path(sys.argv[1]), tnfr.__file__
 owners = ('tnfr.sdk.study', 'tnfr.sdk.simple', 'tnfr.sdk.fluent', 'tnfr.sdk.self_opt')
 assert not any(name in sys.modules for name in owners)
 assert sdk.StudySpec is __import__('tnfr.sdk.study', fromlist=['StudySpec']).StudySpec
 assert 'tnfr.sdk.self_opt' not in sys.modules
 """
     result = subprocess.run(
-        [sys.executable, "-c", code],
+        [
+            sys.executable,
+            "-c",
+            code,
+            str(Path(__file__).resolve().parents[2] / "src" / "tnfr" / "__init__.py"),
+        ],
         check=False,
         capture_output=True,
         text=True,
         timeout=60,
+        env=source_tree_environment,
     )
     assert result.returncode == 0, result.stderr
 

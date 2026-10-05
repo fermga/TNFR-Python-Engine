@@ -15,11 +15,12 @@ from functools import lru_cache
 from math import comb, factorial
 
 from ._rational_interval import I
+from ._rational_interval import arg as interval_arg
 from ._rational_interval import atan as interval_atan
 from ._rational_interval import cos as interval_cos
 from ._rational_interval import sin as interval_sin
 
-__all__ = ("Jet", "MAX_ORDER", "sin", "cos", "sinc", "atan_ratio")
+__all__ = ("Jet", "MAX_ORDER", "sin", "cos", "sinc", "atan_ratio", "arg")
 
 MAX_ORDER = 16
 _ZERO = I(0)
@@ -187,6 +188,42 @@ def sin(value):
 def cos(value):
     """Enclose the cosine jet through the coupled sine/cosine recurrence."""
     return Jet(_sincos_coefficients(_jet(value).coeffs)[1])
+
+
+def arg(real, imaginary):
+    """Enclose the principal argument jet on a regular constant rectangle.
+
+    Both arguments must be same-order jets. The interval Arg owner admits
+    the entire constant rectangle against the nonpositive-real branch cut.
+    Higher normalized derivatives follow analytically from
+    ``Arg(x+i*y)'=(x*y'-y*x')/(x*x+y*y)`` and formal integration. They are
+    not obtained by differentiating an approximate scalar angle or by
+    extending a bounded atan-ratio power series beyond its domain.
+
+    The squared-radius constant uses interval squares to preserve a known
+    positive denominator even when one coordinate crosses zero. Unresolved
+    denominator rounding still rejects. This local derivative enclosure
+    does not certify that a future trajectory remains in the regular domain.
+    """
+    real, imaginary = _jet(real), _jet(imaginary)
+    real._same_order(imaginary)
+    coefficients = [interval_arg(real.coeffs[0], imaginary.coeffs[0])]
+    if not real.order:
+        return Jet(tuple(coefficients))
+    x, y = Jet(real.coeffs[:-1]), Jet(imaginary.coeffs[:-1])
+    dx = Jet(tuple(index * real.coeffs[index] for index in range(1, real.order + 1)))
+    dy = Jet(
+        tuple(index * imaginary.coeffs[index] for index in range(1, real.order + 1))
+    )
+    radius_squared = x**2 + y**2
+    radius_squared = Jet(
+        (real.coeffs[0] ** 2 + imaginary.coeffs[0] ** 2,) + radius_squared.coeffs[1:]
+    )
+    derivative = (x * dy - y * dx) / radius_squared
+    coefficients.extend(
+        coefficient / index for index, coefficient in enumerate(derivative.coeffs, 1)
+    )
+    return Jet(tuple(coefficients))
 
 
 @lru_cache(maxsize=2)

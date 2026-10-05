@@ -865,6 +865,27 @@ displayed pressure/cost representation; they are not primitive capacity
 or an angular clock. A positive constant rescaling of the cost rescales this metric by the
 same factor without changing `g`, so no absolute energy scale is inferred.
 
+Equivalently, set `z_i=exp(-i*theta_i)*S_i=C_i+i*A_i`, using `A_i` here
+only for the imaginary resultant component. The full regular domain is
+`z_i` outside the nonpositive real axis. It is wider than either strict
+acute edges or positive real relative resultants. On that domain
+
+\[
+H_i=\pi A_i/\operatorname{Arg}z_i
+\quad(\operatorname{Arg}z_i\ne0),\qquad
+H_i=\pi C_i\quad(z_i=C_i>0).
+\]
+
+The imaginary component and principal argument have the same sign,
+including when `C_i<0`; the metric therefore stays positive. The second
+formula is its removable limit, not a value assigned at a negative-real
+branch or zero resultant. No new state variable or phase law is introduced
+by this wider domain. The [relational execution owner](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-full-regular-execution)
+separately certifies sufficient point and straight-proposal margins using
+rational enclosures; it retains the existing acute and positive-resultant
+options. This representation does not establish phase dynamics from the
+nodal form equation alone or turn every regular state into a stable pattern.
+
 The previously established constant-metric obstruction remains correct.
 Here differentiating `H_phi*g=-gradient V_phi` includes
 `(dH_phi)*g` as well as `H_phi*Dg`. Testing only the latter for symmetry
@@ -947,6 +968,123 @@ For example binary64 `sin(pi)` is not ideal zero. The shared forcing capture
 and current/curvature owners verify numerical readings with their explicit
 residual or tolerance; exact symbolic controls establish the limiting and
 branch statements. No trigonometric reimplementation or energy API is needed.
+
+#### Classification of edge-additive storage aligned with native pressure
+
+<a id="native-phase-storage-classification"></a>
+
+The cosine cost is also selected within a specific **additional storage
+class**, not merely an available representation. Restrict here to all finite
+connected simple unit graphs with at least two vertices, and the full regular
+phase domain above. Let the same even, `2*pi`-periodic, continuously
+differentiable edge cost `u` define
+
+\[
+U_\phi=\sum_{\{i,j\}\in E}u(\theta_i-\theta_j),\qquad u(0)=0.
+\]
+
+Assume that, on every admitted state and graph, a finite positive diagonal
+metric satisfies `grad(U_phi)=-H_U*g`, with the native resultant pressure
+`g` unchanged. Edge additivity and this alignment are explicit premises;
+neither follows from the nodal product. Then, for one positive constant
+`kappa`,
+
+\[
+\boxed{u(\delta)=\kappa(1-\cos\delta),\qquad
+U_\phi=\kappa V_\phi.}
+\]
+
+`C1` regularity is sufficient; no assertion that it is minimal is needed.
+Metric continuity is not required to classify the cost, but has a separate
+role at zero pressure below.
+
+**Proof.** Write `f=u'`, which is odd with `f(0)=0`. Reuse the
+[phase-balanced star construction](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#primitive-locality-phase-clock).
+For any finite nonantipodal gaps `delta_1,...,delta_m` with zero sine sum,
+append `m+1` aligned leaves. The center has positive real resultant at least
+one and `g_center=0`, and every leaf is regular. Finite-metric alignment
+therefore requires
+
+\[
+0=\partial_{\theta_{center}}U_\phi
+ =-\sum_{r=1}^m f(\delta_r).
+\]
+
+Aligned leaves contribute `f(0)=0`. The balanced pair
+`delta,-arcsin(sin(delta))` shows that `f` factors through the sine, including
+obtuse gaps. Define `b(s)=f(arcsin(s))` on `[-1,1]`. Balanced triples give
+`b(s+t)=b(s)+b(t)` whenever all three arguments are in that interval. The
+same continuous additive-function argument as in the linked proof gives
+`b(s)=kappa*s`. Thus `u'(delta)=kappa*sin(delta)` on nonantipodal gaps;
+continuity and periodicity include the endpoints. Integrating and using
+`u(0)=0` yields the displayed cost. On P2 at a nonzero regular gap, alignment
+requires `H_U=kappa*pi*sinc(delta)>0`, so `kappa>0`. Conversely, the existing
+representation supplies `H_U=kappa*H_phi`, proving sufficiency.
+
+**Metric at zero pressure.** Where `g_i!=0`, the product fixes
+`(H_U)_i=kappa*(H_phi)_i`. Where `g_i=0`, both sides vanish, and any finite
+positive value at that point satisfies the product. Continuity on the full
+regular phase domain selects the same removable limit: nonzero `g_i` states
+are locally dense, since varying the node phase with neighbors held gives
+`partial_i g_i=-1/pi`. Without that continuity condition, changing only the
+zero-pressure metric entries preserves alignment but not the regular metric
+field. A numerical tolerance is not an exact zero set or a continuation rule.
+
+**An acute obstruction to the alternative edge cost.** Section 13.8's
+`V_phi+Q_phi`, with `Q_phi=sum_edges(1-cos(delta))^2`, retains its stated
+symmetries and consensus Hessian, but fails this stronger alignment condition
+even if a different finite diagonal metric is allowed. Take a three-leaf
+star with center phase zero and leaf phases
+`(alpha,alpha,-pi/6)`, where `alpha=arcsin(1/4)`. Every edge is strictly
+acute. The center resultant is `(sqrt(15)+sqrt(3))/2>0`, its sine sum is
+zero, and therefore
+
+\[
+g_{center}=\partial_{center}V_\phi=0,\qquad
+\partial_{center}Q_\phi=\frac{\sqrt{15}-2\sqrt3}{4}>0.
+\]
+
+No finite diagonal metric can multiply zero pressure into that nonzero
+gradient. This is a static obstruction, not a failed trajectory. It does not
+invalidate section 13.8's auxiliary-potential nonselection, which did not
+impose the present native-pressure alignment.
+
+**Limits of selection.** If alignment is required only on strictly acute
+edge states, the argument fixes the cost only for `|wrap(delta)|<pi/2`.
+A smooth even periodic addition `epsilon*b(cos(delta))`, with
+`b(t)=exp(-1/t^2)` for `t<0` and zero otherwise, vanishes throughout that
+acute interval but changes obtuse costs. Global classification therefore
+uses the stated full regular graph family; a restricted execution chamber
+cannot establish that global classification on its own. Nor does alignment derive edge
+additivity: `U=V_phi+V_phi^2` has the positive metric
+`(1+2*V_phi)*H_phi` on the regular domain. That different construction
+generally consumes global storage and is outside the shared edge-cost class;
+its induced global metric factor is not an admitted primitive-local phase
+completion under the separate locality theorem.
+
+**Scale and joint-law integration.** With fixed Dirichlet form storage,
+`E_D+beta_U*U_phi=E_D+beta_eff*V_phi`, where `beta_eff=kappa*beta_U`.
+The existing relational engine fixes the edge-cost normalization to one and
+already consumes this effective value as `RelationalExchangeModel.storage_scale`.
+No second cost-scale parameter is needed. Holding `beta_U` fixed while changing
+`kappa` changes the phase rates; it is not a harmless relabeling. The relative
+invariant remains `chi=beta_eff*(e/w)^2`, whose value is not selected here.
+The condition `u(0)=0` also fixes an otherwise free constant per edge; such a
+constant drops out of fixed-support flow but can change support-event storage
+jumps. A convention for the former is not a derived event budget for the latter.
+
+The [alignment controls](../tests/physics/test_phase_alignment_metric.py)
+retain the exact obstruction, metric continuation, nonadditive alternative
+and effective-scale accounting, alongside the existing
+[balanced-star controls](../tests/physics/test_relational_locality_selection.py).
+This result classifies a cost under explicit premises. It does not derive
+Dirichlet form storage, joint separability, an absolute energy scale, physical
+energy or primitive support formation.
+The separate [joint-cost theorem](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#joint-storage-locality-classification)
+does derive the quadratic/cosine split from a prescribed exact loss and uniform
+primitive-local completion on the full regular graph family. It admits mixed
+terms initially and needs neither the alignment premise used here nor a
+preselected phase row. Its stronger premises retain their own proof and scope.
 
 ### 13.7 Phase alignment representation does not close the joint law
 
@@ -1076,6 +1214,10 @@ of binary64 trigonometric execution. The captured current-pressure residual
 is retained separately. Nor does `V_phi+Q_phi` represent the original isolated
 `g` under the same metric: this comparison concerns the still-free auxiliary
 part of the joint potential. No phase clock or full-pattern stability follows.
+The [edge-storage classification](#native-phase-storage-classification) gives
+the separate acute zero-pressure obstruction to representing `V_phi+Q_phi`
+with any finite diagonal metric while retaining native `g`. Its added alignment
+premise does not change the present auxiliary-potential result.
 
 ### 13.9 Joint source compatibility and the common-mean saddle
 
@@ -1908,6 +2050,12 @@ law must determine its value independently and retain any changing capacity,
 support, boundary, memory or event contributions. Those terms cannot be
 inserted retrospectively to make the balance close.
 Controls: [passive joint storage and duration bounds](../tests/physics/test_phase_form_passive_transfer_budget.py).
+
+The [relational passive-loss comparison](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-passive-loss-completion)
+reuses this work method with Dirichlet form storage and heterogeneous held
+capacities. Its equilibrium, response and local-recovery statements belong to
+that complete law; the centered-storage prism budget here is not transferred
+by replacing symbols or setting a damping coefficient in the production engine.
 
 The geometric asymmetry branch is therefore resolved in scope. Its metric
 correction and actual work have separate owners, and no further matrix or

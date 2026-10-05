@@ -17,7 +17,7 @@ from fractions import Fraction as Q
 from pathlib import Path
 
 from .._exact_time import finite_represented_real
-from ..mathematics._rational_interval import I, INTERVAL_METHOD, pi_interval
+from ..mathematics._rational_interval import INTERVAL_METHOD, I, pi_interval
 from ..physics.relational_observations import (
     RelationalCoefficientSampleBounds,
     bound_relational_coefficient_from_samples,

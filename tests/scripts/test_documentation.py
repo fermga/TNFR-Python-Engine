@@ -28,6 +28,43 @@ getattr(checker, sys.argv[3])()
 """
 
 
+def test_documentation_uses_checkout_when_source_path_already_follows_installed_package(
+    tmp_path,
+):
+    stale = tmp_path / "installed" / "tnfr"
+    stale.mkdir(parents=True)
+    (stale / "__init__.py").write_text(
+        'raise RuntimeError("obsolete installed TNFR imported")\n', encoding="utf-8"
+    )
+    child = """
+import importlib.util
+import sys
+from pathlib import Path
+
+checker_path = Path(sys.argv[1])
+source = checker_path.parent.parent / "src"
+sys.path[:0] = [sys.argv[2], str(source)]
+spec = importlib.util.spec_from_file_location("checkout_checker", checker_path)
+checker = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(checker)
+checker.render_contract_table()
+import tnfr
+if Path(tnfr.__file__).resolve() != (source / "tnfr" / "__init__.py").resolve():
+    raise RuntimeError("documentation did not use the requested checkout")
+"""
+    result = subprocess.run(
+        [sys.executable, "-c", child, str(CHECKER), str(stale.parent)],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        timeout=30,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+
+
 @pytest.fixture
 def documented_workspace(tmp_path):
     spec = importlib.util.spec_from_file_location("documentation_fixture", CHECKER)

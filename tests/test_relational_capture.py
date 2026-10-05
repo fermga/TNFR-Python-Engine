@@ -3,7 +3,7 @@
 import json
 import math
 import pickle
-from dataclasses import replace
+from dataclasses import fields, replace
 from decimal import Decimal, localcontext
 from fractions import Fraction as Q
 from pathlib import Path
@@ -15,8 +15,12 @@ from tnfr.dynamics.relational import RelationalExchangeModel
 from tnfr.mathematics._phase_midpoint import _affine_interval, _pi_bounds
 from tnfr.physics.relational_capture import (
     certify_relational_capture,
+    certify_relational_consensus_capture,
+    certify_relational_consensus_formation_obstruction,
     certify_relational_local_capture,
     certify_relational_sector_capture,
+    certify_relational_seeded_formation_obstruction,
+    observe_relational_sector_geometry,
 )
 from tnfr.sdk import Network, relational_report_to_dict
 
@@ -122,6 +126,291 @@ def test_consensus_storage_is_exact_and_strict_energy_boundary_is_not_tolerated(
     inside = certify_relational_capture(graph, model=model, cycles=CYCLES)
     assert inside.storage_bounds == (Q(3, 2), Q(3, 2))
     assert inside.admitted and inside.target_sector == 0
+
+
+@pytest.mark.parametrize("phase_domain", ("acute", "positive_resultant", "regular"))
+def test_consensus_preparation_boundary_has_future_capture_without_initial_capture(
+    phase_domain,
+):
+    graph = _graph(a=0.0, b=0.0, amplitude=1.0, contrast=-0.5)
+    before = _state(graph)
+    report = certify_relational_consensus_capture(
+        graph,
+        model=RelationalExchangeModel(1.0, phase_domain=phase_domain),
+        cycles=CYCLES,
+    )
+    assert _state(graph) == before
+    assert report.admitted and report.target_sector == 0
+    assert report.initial_form_storage == report.form_storage_ceiling == 9
+    assert report.form_storage_margin == 0
+    assert report.initial.storage_bounds == (9, 9)
+    assert not report.initial.admitted and report.initial.target_sector is None
+    assert report.initial.unavailable_reasons == (
+        "strict_storage_sublevel_not_certified",
+    )
+    assert report.bootstrap_time == 1
+    a_upper, b_upper = report.bootstrap_phase_absolute_upper_bounds
+    assert 0 < a_upper < Q(1, 2) and 0 < b_upper < Q(1, 2)
+    assert report.bootstrap_phase_radius_margins == (
+        Q(1, 2) - a_upper,
+        Q(1, 2) - b_upper,
+    )
+    assert report.endpoint_phase_storage_upper_bound == Q(9, 4)
+    assert report.endpoint_storage_upper_bound == 6
+    assert report.capture_margin == 1
+    assert all(lo > 0 for lo, _ in report.endpoint_consensus_rectangle_margin_bounds)
+    assert any("no_future_finite_step_guard" in item for item in report.scope)
+
+
+def test_consensus_preparation_stationary_origin_and_exact_offsets():
+    stationary = certify_relational_consensus_capture(
+        _graph(a=0.0, b=0.0, form_offset=8.0, center=3.0),
+        model=_model(storage_scale=1.0),
+        cycles=CYCLES,
+    )
+    assert stationary.admitted and stationary.initial_form_storage == 0
+    assert stationary.bootstrap_phase_absolute_upper_bounds == (0, 0)
+    assert stationary.endpoint_storage_upper_bound == 0
+    assert stationary.capture_margin == 7
+    assert stationary.initial.form_offset == 8 and stationary.initial.phase_center == 3
+    positive = certify_relational_consensus_capture(
+        _graph(a=0.0, b=0.0, amplitude=1.0, contrast=-0.5),
+        model=_model(storage_scale=1.0),
+        cycles=CYCLES,
+    )
+    reversed_shifted = certify_relational_consensus_capture(
+        _graph(a=0.0, b=0.0, amplitude=-1.0, contrast=0.5, form_offset=8.0, center=3.0),
+        model=_model(storage_scale=1.0, epi_weight=2.0, phase_weight=2.0),
+        cycles=CYCLES,
+    )
+    assert reversed_shifted.admitted and reversed_shifted.fixed_coefficients_admitted
+    assert reversed_shifted.initial_form_storage == positive.initial_form_storage
+    assert reversed_shifted.initial.coordinates[:2] == (-1, Q(1, 2))
+    assert reversed_shifted.bootstrap_phase_absolute_upper_bounds == (
+        positive.bootstrap_phase_absolute_upper_bounds
+    )
+    assert (
+        reversed_shifted.endpoint_storage_upper_bound
+        == positive.endpoint_storage_upper_bound
+    )
+
+
+@pytest.mark.parametrize(
+    "change,reason",
+    (
+        ("above_budget", "initial_form_storage_at_most_nine_required"),
+        ("phase", "exact_initial_phase_consensus_required"),
+        ("copy", "exact_copy_reflection_required"),
+        ("zero_capacity", "unit_held_capacity_required"),
+        ("half_capacity", "unit_held_capacity_required"),
+        ("beta", "unit_storage_scale_required"),
+        ("weight", "normalized_epi_and_phase_weights_one_half_required"),
+    ),
+)
+def test_consensus_preparation_failed_premises_withhold_all_dynamic_bounds(
+    change, reason
+):
+    graph = _graph(a=0.0, b=0.0, amplitude=1.0, contrast=-0.5)
+    model = _model(storage_scale=1.0)
+    if change == "above_budget":
+        graph = _graph(a=0.0, b=0.0, amplitude=1.0 + 2**-40, contrast=-0.5)
+    elif change == "phase":
+        graph = _graph(a=2**-40, b=0.0, amplitude=1.0, contrast=-0.5)
+    elif change == "copy":
+        graph.nodes[0]["EPI"] += 2**-40
+    elif change in ("zero_capacity", "half_capacity"):
+        for node in graph:
+            graph.nodes[node]["nu_f"] = 0.0 if change == "zero_capacity" else 0.5
+    elif change == "beta":
+        model = _model(storage_scale=2.0)
+    else:
+        model = _model(storage_scale=1.0, epi_weight=1.0, phase_weight=2.0)
+    before = _state(graph)
+    report = certify_relational_consensus_capture(graph, model=model, cycles=CYCLES)
+    assert _state(graph) == before
+    assert not report.admitted and report.target_sector is None
+    assert reason in report.unavailable_reasons
+    assert report.initial_form_storage == report.initial.field.form_storage > 0
+    for name in (
+        "bootstrap_phase_absolute_upper_bounds",
+        "bootstrap_phase_radius_margins",
+        "endpoint_phase_storage_upper_bound",
+        "endpoint_storage_upper_bound",
+        "endpoint_consensus_rectangle_margin_bounds",
+        "capture_margin",
+    ):
+        assert getattr(report, name) is None
+    if change == "above_budget":
+        assert report.form_storage_margin < 0
+
+
+def test_consensus_preparation_inherits_authoritative_value_and_support_admission():
+    from tnfr.constants.aliases import ALIAS_EPI
+
+    graph = _graph(a=0.0, b=0.0)
+    graph.nodes[0].update({alias: 0.0 for alias in ALIAS_EPI})
+    graph.nodes[0][ALIAS_EPI[0]] = True
+    with pytest.raises((TypeError, ValueError), match="EPI|bool"):
+        certify_relational_consensus_capture(
+            graph, model=_model(storage_scale=1), cycles=CYCLES
+        )
+    graph = _graph(a=0.0, b=0.0)
+    graph.remove_edge(0, 5)
+    with pytest.raises(ValueError, match="two supplied cycles"):
+        certify_relational_consensus_capture(
+            graph, model=_model(storage_scale=1), cycles=CYCLES
+        )
+
+
+@pytest.mark.parametrize("phase_domain", ("acute", "positive_resultant", "regular"))
+def test_full_form_consensus_obstruction_retains_asymmetry_and_captures_once(
+    phase_domain, monkeypatch
+):
+    from tnfr.physics import relational_capture as owner
+
+    graph = _graph(a=0.0, b=0.0)
+    graph.nodes[2]["EPI"] = 3.0
+    calls = []
+    evaluate = owner.evaluate_relational_exchange
+
+    def captured(*args, **kwargs):
+        calls.append(1)
+        return evaluate(*args, **kwargs)
+
+    monkeypatch.setattr(owner, "evaluate_relational_exchange", captured)
+    before = _state(graph)
+    report = certify_relational_consensus_formation_obstruction(
+        graph,
+        model=RelationalExchangeModel(1, phase_domain=phase_domain),
+        cycles=CYCLES,
+    )
+    assert calls == [1] and _state(graph) == before
+    assert report.admitted and report.excluded_target_sectors == (-1, 1)
+    independent_form = sum(
+        (Q(graph.nodes[i]["EPI"]) - Q(graph.nodes[j]["EPI"])) ** 2 / 2
+        for i, j in graph.edges
+    )
+    assert report.initial_form_storage == independent_form == 9
+    assert report.form_storage_margin == 0
+    assert report.field.epi[2] == 3 and report.field.epi[7] == 0
+    assert report.normalized_gap_lower_bound == Q(1, 9)
+    assert report.all_regular_time_phase_storage_upper_bound == Q(63, 10)
+    low, high = report.target_phase_storage_bounds
+    assert Q(55, 8) < low < high < 7
+    assert report.exclusion_margin == low - Q(63, 10) > 0
+    assert report.continuation_status == "not_certified"
+    assert not hasattr(report, "target_sector")
+
+
+def test_full_form_consensus_obstruction_counts_bridge_cost_and_zero_strata():
+    model = _model(storage_scale=1, epi_weight=2, phase_weight=2)
+    for sign in (-1, 0, 1):
+        graph = _graph(a=0.0, b=0.0, form_offset=8.0, center=3.0)
+        graph.nodes[0]["EPI"] += 2 * sign
+        report = certify_relational_consensus_formation_obstruction(
+            graph, model=model, cycles=CYCLES
+        )
+        assert report.admitted and report.exact_phase_consensus
+        # The unmatched bridge contributes two units beyond the two ring
+        # edges. Common offsets and a form reversal change no storage.
+        assert report.initial_form_storage == 6 * sign**2
+        assert report.all_regular_time_phase_storage_upper_bound == Q(21, 5) * sign**2
+        assert report.field.phase == (3.0,) * 10
+        assert report.field.epi[5] == 8
+        assert report.continuation_status == "not_certified"
+
+
+@pytest.mark.parametrize(
+    "change,reason",
+    (
+        ("budget", "initial_form_storage_at_most_nine_required"),
+        ("phase", "exact_initial_phase_consensus_required"),
+        ("capacity", "unit_held_capacity_required"),
+        ("beta", "unit_storage_scale_required"),
+        ("weight", "normalized_epi_and_phase_weights_one_half_required"),
+    ),
+)
+def test_full_form_consensus_obstruction_withholds_conclusion_outside_its_law(
+    change, reason
+):
+    graph = _graph(a=0.0, b=0.0)
+    graph.nodes[2]["EPI"] = 3
+    model = _model(storage_scale=1)
+    if change == "budget":
+        graph.nodes[2]["EPI"] = 3 + 2**-40
+    elif change == "phase":
+        graph.nodes[0]["theta"] = 2**-40
+    elif change == "capacity":
+        graph.nodes[2]["nu_f"] = 0
+    elif change == "beta":
+        model = _model(storage_scale=2)
+    else:
+        model = _model(storage_scale=1, epi_weight=1, phase_weight=2)
+    before = _state(graph)
+    report = certify_relational_consensus_formation_obstruction(
+        graph, model=model, cycles=CYCLES
+    )
+    assert _state(graph) == before
+    assert not report.admitted and reason in report.unavailable_reasons
+    for name in (
+        "normalized_gap_lower_bound",
+        "all_regular_time_phase_storage_upper_bound",
+        "target_phase_storage_bounds",
+        "exclusion_margin",
+        "excluded_target_sectors",
+    ):
+        assert getattr(report, name) is None
+    assert report.continuation_status == "not_certified"
+
+
+def test_full_form_consensus_obstruction_inherits_support_and_input_admission():
+    graph = _graph(a=0.0, b=0.0)
+    graph.add_edge(0, 2)
+    with pytest.raises(ValueError, match="two supplied cycles"):
+        certify_relational_consensus_formation_obstruction(
+            graph, model=_model(storage_scale=1), cycles=CYCLES
+        )
+    graph = _graph(a=0.0, b=0.0)
+    graph.graph["GAMMA"] = {"type": "constant", "value": 1}
+    with pytest.raises(ValueError, match="Gamma"):
+        certify_relational_consensus_formation_obstruction(
+            graph, model=_model(storage_scale=1), cycles=CYCLES
+        )
+
+
+def test_consensus_preparation_sdk_captures_once_and_exports_nested_source(monkeypatch):
+    from tnfr.physics import relational_capture as owner
+
+    calls = []
+    evaluate = owner.evaluate_relational_exchange
+
+    def observed(*args, **kwargs):
+        calls.append(1)
+        return evaluate(*args, **kwargs)
+
+    monkeypatch.setattr(owner, "evaluate_relational_exchange", observed)
+    network = Network(_graph(a=0.0, b=0.0, amplitude=1.0, contrast=-0.5))
+    before = _state(network.G)
+    report = network.relational_consensus_capture(
+        _model(storage_scale=1), cycles=CYCLES
+    )
+    assert calls == [1] and _state(network.G) == before
+    output = relational_report_to_dict(report)
+    assert output["report_type"] == "RelationalConsensusCaptureCertificate"
+    assert output["report"]["endpoint_storage_upper_bound"] == {
+        "numerator": 6,
+        "denominator": 1,
+    }
+    assert output["report"]["initial"]["target_sector"] is None
+    output["report"]["initial"]["field"]["epi"][0] = 123.0
+    assert report.initial.field.epi[0] == 1 and _state(network.G) == before
+    bad_field = replace(
+        report.initial.field, nodes=(object(),) + report.initial.field.nodes[1:]
+    )
+    with pytest.raises((TypeError, ValueError)):
+        relational_report_to_dict(
+            replace(report, initial=replace(report.initial, field=bad_field))
+        )
 
 
 def test_common_offsets_are_retained_and_do_not_change_the_certificate():
@@ -520,6 +809,12 @@ def test_true_pi_acute_boundary_is_distinct_from_the_represented_half_pi():
         graph = _local_graph()
         graph.nodes[2]["theta"] = -gap
         certificate = _sector_capture(graph)
+        geometry = observe_relational_sector_geometry(
+            graph, storage_scale=1, cycles=CYCLES
+        )
+        assert geometry.edge_gap_bounds == certificate.edge_gap_bounds
+        assert geometry.edge_acute_margin_bounds == certificate.edge_acute_margin_bounds
+        assert geometry.acute_admitted is admitted
         assert certificate.acute_admitted is admitted
         if admitted:
             assert certificate.ring_windings == (1, 1)
@@ -564,12 +859,106 @@ def test_sector_certificate_retains_unsupported_model_premises(premise):
         model = _model(storage_scale=1, epi_weight=0, phase_weight=1)
         reason = "positive_epi_weight_required"
     certificate = _sector_capture(graph, model=model)
+    geometry = observe_relational_sector_geometry(
+        graph, storage_scale=model.storage_scale, cycles=CYCLES
+    )
+    assert geometry.admitted and not geometry.unavailable_reasons
+    assert geometry.sublevel_acute_margin_lower_bound > 0
     assert certificate.acute_admitted and certificate.energy_admitted
     assert certificate.unavailable_reasons == (reason,)
     assert not certificate.admitted and certificate.target_sector is None
     assert certificate.future_acute_margin_lower_bound is None
     assert certificate.future_resultant_real_lower_bounds is None
     assert certificate.future_phase_metric_lower_bounds is None
+
+
+def test_sector_geometry_and_reference_certificate_share_exact_snapshot_evidence():
+    graph = _local_graph()
+    graph.nodes[0]["EPI"] = 1 / 16
+    graph.nodes[7]["theta"] += 1 / 64
+    before = _state(graph)
+    geometry = observe_relational_sector_geometry(graph, storage_scale=2, cycles=CYCLES)
+    certificate = _sector_capture(graph, model=_model(storage_scale=2))
+    assert _state(graph) == before
+    assert geometry.admitted and certificate.admitted
+    certificate_fields = {field.name for field in fields(certificate)}
+    for field in fields(geometry):
+        if field.name in certificate_fields and field.name != "scope":
+            assert getattr(geometry, field.name) == getattr(certificate, field.name)
+    assert geometry.nodes == certificate.field.nodes
+    assert geometry.edges == certificate.field.edges
+    assert geometry.epi == tuple(map(Q, certificate.field.epi))
+    assert geometry.phase == tuple(map(Q, certificate.field.phase))
+    assert geometry.form_storage == certificate.field.form_storage == Q(3, 512)
+    for name in (
+        "acute_margin_lower_bound",
+        "resultant_real_lower_bounds",
+        "phase_metric_lower_bounds",
+    ):
+        assert getattr(geometry, "sublevel_" + name) == getattr(
+            certificate, "future_" + name
+        )
+    # Provenance is a detached supplied snapshot, not a law admission or a
+    # hidden prospective target. Later live mutations do not rewrite it.
+    assert not {
+        "field",
+        "model",
+        "capacity",
+        "target_sector",
+        "future_acute_margin_lower_bound",
+    } & {field.name for field in fields(geometry)}
+    graph.nodes[0]["EPI"] = 42
+    assert geometry.epi[0] == Q(1, 16)
+
+
+def test_sector_geometry_never_consumes_capacity_pressure_forcing_or_rate_evaluation(
+    monkeypatch,
+):
+    from tnfr.physics import relational_capture as owner
+
+    graph = _local_graph()
+    expected = observe_relational_sector_geometry(graph, storage_scale=1, cycles=CYCLES)
+    for node in graph:
+        graph.nodes[node].pop("nu_f")
+        graph.nodes[node].pop("delta_nfr")
+    graph.nodes[0]["nu_f"] = True
+    graph.nodes[1]["delta_nfr"] = {"unconsumed": "not a pressure"}
+    graph.graph.update(GAMMA={"type": "external"}, use_extended_dynamics=True)
+    with pytest.raises(ValueError, match="independent-pressure extension"):
+        _sector_capture(graph)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError(
+            "geometric evidence must not evaluate a law or winding telemetry"
+        )
+
+    monkeypatch.setattr(owner, "evaluate_relational_exchange", forbidden)
+    monkeypatch.setattr(owner, "certify_phase_winding", forbidden)
+    before = _state(graph)
+    actual = observe_relational_sector_geometry(graph, storage_scale=1, cycles=CYCLES)
+    assert actual == expected
+    assert _state(graph) == before
+
+
+@pytest.mark.parametrize("quantity", ("EPI", "phase", "storage_scale", "conductance"))
+def test_sector_geometry_rejects_invalid_consumed_values_before_fallback(quantity):
+    from tnfr.constants.aliases import ALIAS_EPI, ALIAS_THETA
+
+    graph, beta = _local_graph(), 1
+    if quantity == "EPI":
+        graph.nodes[0][ALIAS_EPI[0]] = True
+        graph.nodes[0][ALIAS_EPI[1]] = 0.0
+    elif quantity == "phase":
+        graph.nodes[0][ALIAS_THETA[0]] = float("inf")
+        graph.nodes[0][ALIAS_THETA[1]] = 0.0
+    elif quantity == "storage_scale":
+        beta = True
+    else:
+        graph.edges[0, 1]["weight"] = True
+    before = _state(graph)
+    with pytest.raises((TypeError, ValueError)):
+        observe_relational_sector_geometry(graph, storage_scale=beta, cycles=CYCLES)
+    assert _state(graph) == before
 
 
 @pytest.mark.parametrize(
@@ -734,3 +1123,105 @@ def test_new_sector_reading_does_not_rewrite_the_failed_frozen_endpoint_gate():
     assert endpoint["local"]["report"]["status"] == "unavailable"
     assert endpoint["reflected"]["report"]["status"] == "unavailable"
     assert path.read_bytes() == original
+
+
+def test_equal_form_seed_has_a_uniform_energy_obstruction_for_both_supplied_supports():
+    report = certify_relational_seeded_formation_obstruction()
+    assert report.obstruction_certified and report.status == "obstructed"
+    assert report.unavailable_reasons == ()
+    assert tuple(case.bridge_count for case in report.cases) == (1, 2)
+    assert tuple(case.matching_ports for case in report.cases) == (
+        ((0, 0),),
+        ((0, 0), (1, 1)),
+    )
+    for case in report.cases:
+        assert case.obstruction_certified and case.unavailable_reasons == ()
+        assert case.initial_storage_bound_is_strict
+        assert 0 < case.bridge_storage_upper_bound < case.initial_storage_upper_bound
+        assert (
+            case.initial_storage_upper_bound < report.target_minimum_storage_bounds[0]
+        )
+        assert case.additional_storage_gap_lower_bound > 0
+        assert case.additional_storage_gap_lower_bound == (
+            report.target_minimum_storage_bounds[0] - case.initial_storage_upper_bound
+        )
+    # An energy exclusion is neither a successful capture nor an event proposal.
+    assert not hasattr(report, "admitted")
+    assert report.cases[0].additional_storage_gap_lower_bound > (
+        report.cases[1].additional_storage_gap_lower_bound
+    )
+
+
+def test_seed_obstruction_bounds_enclose_independent_exact_surd_geometry():
+    report = certify_relational_seeded_formation_obstruction()
+    with localcontext() as context:
+        context.prec = 90
+        # Independent closed form, rather than the owner's trigonometric series.
+        c = (Decimal(5).sqrt() - 1) / 4
+        cosine = Q(c)
+        source = Q(5 * (1 - c))
+        target = Q(10 * (1 - c))
+        assert report.twist_cosine_bounds[0] < cosine < report.twist_cosine_bounds[1]
+        assert (
+            report.source_storage_bounds[0] < source < report.source_storage_bounds[1]
+        )
+        assert (
+            report.target_minimum_storage_bounds[0]
+            < target
+            < report.target_minimum_storage_bounds[1]
+        )
+        for case in report.cases:
+            k = case.bridge_count
+            mathematical_ceiling = Q(5 * (1 - c) + k * (1 + 2 * c))
+            mathematical_gap = Q(5 - k - (5 + 2 * k) * c)
+            assert mathematical_ceiling < case.initial_storage_upper_bound
+            assert 0 < case.additional_storage_gap_lower_bound < mathematical_gap
+            # These constants certify a broad positive gap, not a tolerance alert.
+            assert case.additional_storage_gap_lower_bound > (
+                Q(1) if k == 1 else Q(1, 5)
+            )
+
+
+def test_seed_obstruction_exposes_initial_and_target_domain_boundaries():
+    report = certify_relational_seeded_formation_obstruction()
+    assert (
+        "initial_positive_resultant_premise_not_the_full_regular_phase_domain"
+        in report.scope
+    )
+    assert "acute_initial_bridge_admission_is_a_stronger_subset" in report.scope
+    assert (
+        "target_is_both_acute_winding_plus_one_sectors_or_recovered_twists_not_winding_alone"
+        in report.scope
+    )
+    assert (
+        "additional_storage_deficit_is_necessary_not_a_sufficient_formation_condition"
+        in report.scope
+    )
+
+
+def test_coarse_seed_geometry_keeps_bounds_without_claiming_an_obstruction(monkeypatch):
+    from tnfr.physics import relational_capture as owner
+
+    # A valid but deliberately unresolved cosine enclosure must abstain,
+    # retaining the conditional initial ceilings and their failed margins.
+    monkeypatch.setattr(owner, "_pi_cosine_bounds", lambda *_: (Q(0), Q(1)))
+    report = owner.certify_relational_seeded_formation_obstruction()
+    assert not report.obstruction_certified and report.status == "unavailable"
+    assert report.unavailable_reasons
+    for case in report.cases:
+        assert not case.obstruction_certified and case.unavailable_reasons
+        assert case.initial_storage_bound_is_strict
+        assert case.additional_storage_gap_lower_bound < 0
+        assert case.initial_storage_upper_bound > 0
+
+
+def test_seed_obstruction_never_evaluates_or_evolves_a_native_field(monkeypatch):
+    from tnfr.dynamics import relational
+    from tnfr.physics import relational_capture as owner
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("static obstruction attempted native field execution")
+
+    monkeypatch.setattr(owner, "evaluate_relational_exchange", forbidden)
+    monkeypatch.setattr(relational, "step_relational_exchange", forbidden)
+    assert owner.certify_relational_seeded_formation_obstruction().obstruction_certified

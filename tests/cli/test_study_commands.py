@@ -10,7 +10,6 @@ from __future__ import annotations
 import io
 import json
 import logging
-import os
 import subprocess
 import sys
 from contextlib import contextmanager
@@ -85,7 +84,27 @@ def _distinct_logging_configuration():
             handler.close()
 
 
-def test_python_module_entrypoint_exposes_version_and_one_json_study():
+def test_python_module_entrypoint_exposes_version_and_one_json_study(
+    source_tree_environment,
+):
+    environment = {**source_tree_environment, "PYTHONIOENCODING": "ascii:strict"}
+    expected = Path(__file__).resolve().parents[2] / "src" / "tnfr" / "__init__.py"
+    source_check = """
+import sys
+from pathlib import Path
+import tnfr
+assert Path(tnfr.__file__).resolve() == Path(sys.argv[1]), tnfr.__file__
+"""
+    source = subprocess.run(
+        [sys.executable, "-c", source_check, str(expected)],
+        check=False,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        timeout=60,
+        env=environment,
+    )
+    assert source.returncode == 0, source.stderr
     version = subprocess.run(
         [sys.executable, "-m", "tnfr", "--version"],
         check=False,
@@ -93,7 +112,7 @@ def test_python_module_entrypoint_exposes_version_and_one_json_study():
         text=True,
         encoding="utf-8",
         timeout=60,
-        env={**os.environ, "PYTHONIOENCODING": "ascii:strict"},
+        env=environment,
     )
     assert version.returncode == 0, version.stderr
     assert version.stdout.strip() == __version__
@@ -116,7 +135,7 @@ def test_python_module_entrypoint_exposes_version_and_one_json_study():
         text=True,
         encoding="utf-8",
         timeout=60,
-        env={**os.environ, "PYTHONIOENCODING": "ascii:strict"},
+        env=environment,
     )
     assert study.returncode == 0, study.stderr
     payload = _json(study.stdout)

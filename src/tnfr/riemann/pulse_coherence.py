@@ -1,30 +1,24 @@
-r"""TNFR-Riemann: the pulse-phase / coherence layer.
+r"""Finite arithmetic phase diagnostics and numerical zeta comparisons.
 
-Operationalises the re-founded attack surface (see
-``examples/03_riemann_zeta/157_nodal_pulse_phase_attack.py``): the RH-content
-oscillation ``S(T)`` is the collective phase of the integer-NFR nodal pulse, and
-the critical line is its coherence axis.  This module makes those accessible as
-reusable tooling -- the capability the eliminated combinatorial track lacked (its
-``S_n``-invariant self-adjoint spectrum was provably blind to ``S(T)``).
+``argument_fluctuation(T)`` returns the principal phase of the finite sum
+``P_N(T)=sum(n**(-1/2)*exp(-i*log(n)*T), n=1..N)``, divided by pi.
+``zero_count(T)`` adds that diagnostic to the shared smooth Riemann-Siegel
+count. These retained API names do not identify the partial sum with analytic
+zeta, specify the continuous argument branch defining the classical S(T), or
+certify an integer zero count. Finite oracle comparisons remain useful under
+their declared truncation, heights and tolerances.
 
-Canonical objects
------------------
-* ``argument_fluctuation(T)`` -- ``S(T) = (1/π) arg ζ(1/2+iT)``, read straight
-  off the nodal pulse ``P(T) = Σ n^{-1/2} e^{-i(log n)T}`` as ``arg(P)/π``.
-* ``smooth_zero_count(T)`` -- ``θ(T)/π + 1`` (the archimedean Riemann-Siegel
-  count; ``θ`` is the same gamma kernel as the Weil-Guinand archimedean term).
-* ``zero_count(T)`` -- the Riemann-von Mangoldt count ``N(T) = θ/π + 1 + S(T)``.
-* ``rectified_pulse(T, σ)`` / ``coherence_defect(T, σ)`` -- the rectified field
-  ``Z = e^{iθ} P_σ`` and its departure from reality; the coherence axis is
-  ``Re(s) = 1/2`` (the ``ΔNFR = 0`` reflection axis), where ``Z`` is exactly real.
+``rectified_pulse`` instead evaluates ``exp(i*theta(T))*zeta(sigma+i*T)``
+numerically with mpmath and converts it to a Python complex value. The exact
+functional equation makes this expression real on sigma=1/2; numerical values
+retain approximation error. ``coherence_defect`` measures its regularized
+relative imaginary part, not nodal pressure or physical coherence.
 
-Honest scope
-------------
-The pulse phase *accesses* ``S(T)`` (the arithmetic ``Fix(S_n)^⊥`` content); it
-does not *bound* it.  The prime-side reconstruction
-``S(T) = (1/π) Σ_{p,k} (1/k) p^{-k/2} sin(kT log p)`` **diverges** on the line
-(its abscissa of convergence is ``Re(s)=1``): that boundary non-convergence is
-exactly the localized RH obstruction, made explicit here.  ``G4 = RH`` is open.
+``prime_side_fluctuation`` is a separately truncated prime-power sine sum.
+The absolutely convergent Euler-product expansion at Re(s)>1 supplies no
+automatic error bound for this unregularized critical-line truncation.
+Neither construction derives frequencies from the nodal law, identifies a
+DeltaNFR=0 axis, establishes an autonomous TNFR pulse, or proves RH.
 """
 
 from __future__ import annotations
@@ -50,26 +44,28 @@ __all__ = [
 
 
 def argument_fluctuation(t: float, n_terms: int | None = None) -> float:
-    r"""``S(T) = (1/π) arg ζ(1/2+iT)`` read off the nodal-pulse phase.
+    r"""Principal ``arg(P_N(T))/pi`` of the declared finite arithmetic sum.
 
-    Accurate away from the zeros (near a zero ``arg`` turns through ``π`` and the
-    truncated pulse carries a ``±1`` ambiguity resolved by the integer
-    :func:`zero_count`).
+    The principal branch can jump at its cut. No analytic-continuation error
+    or continuous zeta-argument branch is supplied, and :func:`zero_count`
+    does not resolve that missing branch information.
     """
     return cmath.phase(nodal_pulse(t, n_terms)) / math.pi
 
 
 def zero_count(t: float, n_terms: int | None = None) -> float:
-    r"""Riemann-von Mangoldt count ``N(T) = θ(T)/π + 1 + S(T)`` from the pulse.
+    r"""Return the smooth count plus the finite-sum principal-phase diagnostic.
 
-    ``smooth_zero_count`` (``θ/π + 1``) is the canonical archimedean count from
-    :mod:`tnfr.riemann.structural_zero_density`; the pulse contributes ``S(T)``.
+    ``smooth_zero_count`` supplies ``theta(T)/pi+1``. The added phase comes
+    from :func:`argument_fluctuation`; this finite real-valued estimate is
+    not an exact Riemann-von Mangoldt count. Rounding it is a comparison
+    procedure, with no general zero-count or remainder certificate.
     """
     return smooth_zero_count(t) + argument_fluctuation(t, n_terms)
 
 
 def _n_terms(t: float) -> int:
-    """Canonical nodal-pulse truncation length (matches nodal_pulse defaults)."""
+    """Finite truncation policy matching the nodal_pulse default length."""
     return int(max(10, round(3.0 * math.sqrt(max(t, 1.0) / (2.0 * math.pi)) + 6.0)))
 
 
@@ -82,14 +78,13 @@ def generalized_pulse(t: float, sigma: float, n_terms: int | None = None) -> com
 
 
 def rectified_pulse(t: float, sigma: float = 0.5) -> complex:
-    r"""The Riemann-Siegel-rectified field ``Z = e^{iθ(T)} ζ(σ+iT)`` (exact).
+    r"""Numerically evaluate ``exp(i*theta(T))*zeta(sigma+i*T)``.
 
-    On the coherence axis ``σ = 1/2`` the functional equation forces ``Z`` real
-    (the classical real Riemann-Siegel Z-function); off it ``Z`` acquires an
-    imaginary part.  Computed from the exact ``ζ``: the coherence axis is a
-    functional-equation property that the truncated nodal pulse is too coarse to
-    resolve (at some heights the truncation even mis-ranks ``σ``), so the exact
-    ``ζ`` is used here rather than manufacturing agreement from the crude sum.
+    This uses mpmath's zeta evaluation and returns a Python complex value,
+    independently of :func:`generalized_pulse`. For real T, the exact
+    functional equation gives the real Riemann-Siegel Z-function at sigma=1/2.
+    The numerical result has finite precision; reality at a point neither
+    identifies nodal pressure nor characterizes the critical line uniquely.
     """
     import mpmath as mp
 
@@ -98,22 +93,24 @@ def rectified_pulse(t: float, sigma: float = 0.5) -> complex:
 
 
 def coherence_defect(t: float, sigma: float = 0.5) -> float:
-    r"""``|Im Z| / |Z|`` of the exact rectified field.
+    r"""Return ``abs(Im Z)/(abs(Z)+1e-30)`` for the numerical rectified value.
 
-    Zero on the coherence axis ``σ = 1/2`` (functional-equation reality),
-    positive off it.
+    The denominator includes the implemented numerical regularizer. Exact
+    critical-line reality motivates this diagnostic, but finite residuals
+    remain and zero can also occur away from that line. This is not a
+    TNFR pressure or a certified zero-location test.
     """
     z = rectified_pulse(t, sigma)
     return abs(z.imag) / (abs(z) + 1e-30)
 
 
 def prime_side_fluctuation(t: float, n_primes: int = 60, max_k: int = 6) -> float:
-    r"""The prime-side series for ``S(T)`` -- ``(1/π) Σ_{p,k}(1/k)p^{-k/2}sin(kT log p)``.
+    r"""Evaluate the finite ``sum(p**(-k/2)*sin(k*T*log(p))/k)/pi``.
 
-    WARNING: this series has abscissa of convergence ``Re(s)=1``, so on the
-    critical line it does **not** converge; adding more prime NFRs does not
-    improve it.  Exposed to make the localized RH obstruction explicit (the RH
-    content is exactly this boundary non-convergence), not as a usable estimator.
+    Prime and power cutoffs are supplied numerical choices. The Euler-product
+    argument from Re(s)>1 does not give this critical-line truncation a
+    certified limit, zeta-argument branch or error bound. Increasing a cutoff
+    is not itself a convergence test or a reformulation of RH.
     """
     total = 0.0
     for p in first_primes(n_primes):
@@ -176,7 +173,7 @@ def verify_pulse_coherence(
     *,
     s_tol: float = 0.05,
 ) -> PulseCoherenceCertificate:
-    r"""Verify the pulse-phase layer against the numerical oracle.
+    r"""Compare finite arithmetic diagnostics with a numerical zeta oracle.
 
     At heights chosen away from zeros, report (i) the maximum discrepancy of
     the pulse phase from ``(1/π) arg ζ``; (ii) whether ``round(N(T))`` matches
@@ -187,6 +184,9 @@ def verify_pulse_coherence(
     unavailable, the report is explicitly partial with no measured error;
     comparing the pulse with itself cannot supply oracle evidence.
     Arithmetic uses a temporary 25-digit context, restored even on failure.
+    Both argument values use their principal branches; a finite PASS does not
+    identify the classical continuous S(T), certify untested zero counts, or
+    establish a nodal pressure law or a physical pulse.
     """
     if isinstance(s_tol, (bool, np.bool_)):
         raise ValueError("s_tol must be finite, nonnegative and nonboolean")

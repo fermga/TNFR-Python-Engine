@@ -6,7 +6,7 @@ autonomous-law selection, trajectory persistence or physical bridge is inferred.
 
 import math
 import pickle
-from copy import deepcopy
+from copy import copy, deepcopy
 from dataclasses import FrozenInstanceError
 from fractions import Fraction as Q
 
@@ -35,6 +35,36 @@ from tnfr.types import (
 )
 
 ADMISSION_ERRORS = (TypeError, ValueError, TNFRUserError)
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    (
+        ("storage_scale", True),
+        ("storage_scale", 0),
+        ("storage_scale", float("nan")),
+        ("epi_weight", True),
+        ("epi_weight", -0.5),
+        ("phase_weight", True),
+        ("phase_weight", 0),
+        ("phase_domain", "unrecognized"),
+    ),
+)
+def test_stored_model_admission_precedes_field_or_step_work(monkeypatch, field, value):
+    graph = _graph()
+    before = pickle.dumps(graph)
+    model = copy(RelationalExchangeModel(1))
+    object.__setattr__(model, field, value)
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("invalid stored model must reject before field arithmetic")
+
+    monkeypatch.setattr(relational, "_field", forbidden)
+    with pytest.raises((TypeError, ValueError)):
+        evaluate_relational_exchange(graph, model=model)
+    with pytest.raises((TypeError, ValueError)):
+        step_relational_exchange(graph, model=model, dt=Q(1, 128))
+    assert pickle.dumps(graph) == before
 
 
 def _graph():
@@ -114,6 +144,81 @@ def test_consensus_metric_limit_and_receiver_capacity_separation():
     assert changed.phase_rate[1] != original.phase_rate[1]
 
 
+@pytest.mark.parametrize("phase_domain", ("acute", "positive_resultant"))
+def test_primitive_star_row_survives_remote_changes_and_neighbor_degree_changes(
+    phase_domain,
+):
+    graph = nx.Graph(((0, 1), (0, 2), (0, 3), (1, 4)))
+    for node, form, phase, capacity in zip(
+        graph,
+        (0.75, 0.25, -0.25, 0.5, -0.125),
+        (0.0625, 0.125, -0.25, 0.375, 0.25),
+        (1.5, 0.5, 2.0, 0.75, 1.0),
+        strict=True,
+    ):
+        graph.nodes[node].update(EPI=form, theta=phase, nu_f=capacity)
+    extended = deepcopy(graph)
+    extended.nodes[4].update(EPI=2.0, theta=-0.375, nu_f=4.0)
+    extended.add_node(5, EPI=-1.0, theta=0.125, nu_f=0.0)
+    extended.add_node(6, EPI=0.0, theta=0.25, nu_f=3.0)
+    extended.add_edges_from(((1, 2), (2, 5), (5, 6)))
+    assert tuple(graph[0]) == tuple(extended[0]) == (1, 2, 3)
+    assert all(graph.nodes[node] == extended.nodes[node] for node in (0, 1, 2, 3))
+    assert graph.degree[1] != extended.degree[1]
+    assert graph.degree[2] != extended.degree[2]
+    snapshots = _snapshot(graph), _snapshot(extended)
+    model = RelationalExchangeModel(2.0, phase_domain=phase_domain)
+    before = evaluate_relational_exchange(graph, model=model)
+    after = evaluate_relational_exchange(extended, model=model)
+
+    # Neither neighboring degrees nor edges among neighbors are inputs to the
+    # primitive row. Keep the same neighbor order and small native backend;
+    # locality of the ideal law is not a cross-backend bitwise guarantee.
+    assert before.pressure_path == after.pressure_path
+    assert before.form_gradient[0] == after.form_gradient[0] == 1.75
+    for name in (
+        "phase_source",
+        "phase_metric",
+        "phase_gradient",
+        "phase_rate",
+        "phase_mobility",
+        "relative_resultant",
+        "phase_rate_rounding_defect",
+    ):
+        assert getattr(before, name)[0] == getattr(after, name)[0]
+    for name in ("pressure", "form_rate"):
+        assert getattr(before, name)[0] == pytest.approx(
+            getattr(after, name)[0], rel=2e-15, abs=2e-15
+        )
+    for field in (before, after):
+        split = -Q(model.epi_weight) * Q(7, 4) / 3 + Q(model.phase_weight) * Q(
+            field.phase_source[0]
+        )
+        assert field.pressure_split_residual[0] == Q(field.pressure[0]) - split
+        assert abs(field.pressure_split_residual[0]) < Q(1, 10**14)
+    assert before.storage != after.storage
+    assert (_snapshot(graph), _snapshot(extended)) == snapshots
+
+
+@pytest.mark.parametrize("phase_domain", ("acute", "positive_resultant"))
+def test_primitive_row_locality_does_not_bypass_remote_domain_admission(phase_domain):
+    graph = nx.path_graph(3)
+    for node in graph:
+        graph.nodes[node].update(EPI=float(node), theta=0.0, nu_f=1.0)
+    model = RelationalExchangeModel(2.0, phase_domain=phase_domain)
+    admitted = evaluate_relational_exchange(graph, model=model)
+    assert admitted.phase_rate[0] != 0.0
+    local_state = tuple(dict(graph.nodes[node]) for node in (0, 1))
+    # Node 2 is outside node 0's primitive star. The complete API still admits
+    # the whole graph, so its remote invalid phase chart rejects evaluation.
+    graph.nodes[2]["theta"] = math.pi
+    assert tuple(dict(graph.nodes[node]) for node in (0, 1)) == local_state
+    before = _snapshot(graph)
+    with pytest.raises(ValueError, match="acute|positive real part"):
+        evaluate_relational_exchange(graph, model=model)
+    assert _snapshot(graph) == before
+
+
 def test_pressure_uses_explicit_model_and_matches_the_native_owner():
     graph = _graph()
     before = _snapshot(graph)
@@ -124,6 +229,89 @@ def test_pressure_uses_explicit_model_and_matches_the_native_owner():
     default_compute_delta_nfr(native)
     expected = tuple(get_attr(native.nodes[node], ALIAS_DNFR) for node in native)
     assert report.pressure == pytest.approx(expected, abs=1e-15)
+    assert _snapshot(graph) == before
+
+
+def test_acute_phase_admission_does_not_use_binary64_tau_as_a_trigonometric_period():
+    raw = math.tau * 2**55
+    # A floating-tau modulo falsely reports consensus. The phasor is instead
+    # obtuse, so it cannot be a source for the acute-only execution contract.
+    assert math.remainder(raw, math.tau) == 0
+    assert math.cos(raw) < 0
+    graph = _pair(form=(0.0, 1.0), phase=(0.0, raw))
+    before = _snapshot(graph)
+    for operation in (
+        lambda: evaluate_relational_exchange(graph, model=RelationalExchangeModel(1.0)),
+        lambda: step_relational_exchange(
+            graph, model=RelationalExchangeModel(1.0), dt=1 / 32
+        ),
+    ):
+        with pytest.raises(ValueError, match="strictly acute"):
+            operation()
+        assert _snapshot(graph) == before
+
+
+@pytest.mark.parametrize("domain", ("acute", "positive_resultant", "regular"))
+def test_large_raw_lift_uses_one_phase_source_for_pressure_storage_and_rates(domain):
+    raw = math.tau * 2**56
+    sine, cosine = math.sin(raw), math.cos(raw)
+    gap = math.atan2(sine, cosine)
+    assert math.remainder(raw, math.tau) == 0
+    assert 0 < gap < math.pi / 2 and cosine > 0
+    graph = _pair(form=(0.0, 1.0), phase=(0.0, raw))
+    before = _snapshot(graph)
+    report = evaluate_relational_exchange(
+        graph, model=RelationalExchangeModel(1.0, phase_domain=domain)
+    )
+    assert _snapshot(graph) == before
+    assert report.phase == (0.0, raw)
+    assert report.phase_source == pytest.approx(
+        (gap / math.pi, -gap / math.pi), abs=1e-15
+    )
+    assert report.phase_metric == pytest.approx((math.pi * sine / gap,) * 2, rel=2e-15)
+    expected_pressure = 0.5 + gap / (2 * math.pi)
+    assert report.pressure == pytest.approx(
+        (expected_pressure, -expected_pressure), abs=1e-15
+    )
+    assert float(report.storage) == pytest.approx(0.5 + 1 - cosine, abs=1e-15)
+    assert abs(float(report.balance_residual)) < 1e-14
+    assert all(abs(float(value)) < 1e-15 for value in report.pressure_split_residual)
+    assert report.pressure_path == "relative_resultant_canonical"
+
+
+@pytest.mark.parametrize("domain", ("acute", "positive_resultant", "regular"))
+def test_every_relational_mode_reuses_its_captured_pressure_source_and_provenance(
+    monkeypatch, domain
+):
+    from tnfr.dynamics import dnfr
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("a relational field must not reconstruct a second phase source")
+
+    monkeypatch.setattr(dnfr, "default_compute_delta_nfr", forbidden)
+    graph = _graph()
+    model = RelationalExchangeModel(2.0, phase_domain=domain)
+    report = step_relational_exchange(graph, model=model, dt=1 / 64)
+    assert (
+        report.before.pressure_path
+        == report.after.pressure_path
+        == "relative_resultant_canonical"
+    )
+    assert graph.graph["_DNFR_META"]["hook"] == "relative_resultant_canonical"
+    assert graph.graph["_dnfr_hook_name"] == "relative_resultant_canonical"
+
+
+def test_large_acute_lift_keeps_the_real_initial_gap_in_whole_segment_admission():
+    graph = _pair(form=(0.0, 1.0), phase=(0.0, math.tau * 2**56))
+    model = RelationalExchangeModel(1.0)
+    initial = evaluate_relational_exchange(graph, model=model)
+    assert 0 < initial.phase_source[0] < 0.5
+    # The right raw lift cannot materialize this small increment, but the
+    # left node moves. Its proposal crosses the actual initial acute face;
+    # treating the initial gap as a binary64-tau remainder would miss it.
+    before = _snapshot(graph)
+    with pytest.raises(ValueError, match="initial acute lift"):
+        step_relational_exchange(graph, model=model, dt=2.0)
     assert _snapshot(graph) == before
 
 

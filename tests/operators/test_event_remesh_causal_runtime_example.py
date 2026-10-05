@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import importlib.util
 import json
-import os
 import subprocess
 import sys
 from pathlib import Path
@@ -69,17 +68,12 @@ def test_module_stub_and_facade_expose_causal_sequence_api() -> None:
 )
 def test_operator_and_physics_facades_are_cold_import_order_safe(
     imports: str,
+    source_tree_environment,
 ) -> None:
-    environment = os.environ.copy()
-    source_path = str(REPOSITORY_ROOT / "src")
-    existing = environment.get("PYTHONPATH")
-    environment["PYTHONPATH"] = (
-        source_path if not existing else os.pathsep.join((source_path, existing))
-    )
     completed = subprocess.run(
         [sys.executable, "-c", imports],
         cwd=REPOSITORY_ROOT,
-        env=environment,
+        env=source_tree_environment,
         capture_output=True,
         text=True,
         check=False,
