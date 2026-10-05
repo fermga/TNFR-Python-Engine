@@ -6479,7 +6479,7 @@ nonuniform eigenvector v and sufficiently small epsilon. With held
 interval durations h_k, its accumulated detuning is proportional to
 `sum_k h_k*r^k`. Bounded durations make this sum finite; `h_k=r^(-k)` makes it
 diverge despite convergence by call index. This reuses Section 23's clock
-distinction and the response-action condition of Section 43. The next task
+distinction and the response-action condition of Section 43. A combined bound
 must carry eligibility, physical timing and represented defects together,
 and distinguish exact-model recovery from a numerically resolved tube.
 
@@ -6707,6 +6707,85 @@ reweights even at unchanged EPI. That jump is already owned by
 `observe_forced_support_reset`, which reports `mean_reweighting` separately
 from form evolution. No derivative of a merely measurable capacity schedule
 is assumed by the new fixed-weight observer or interval theorem.
+
+<a id="prescribed-capacity-and-event-mean-balance"></a>
+
+### Prescribed capacity changes distinguish form charge from its mean
+
+The moving-weight identity has a useful consequence for the complete
+[normalized-sine law](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#global-closure-pressure-comparison).
+Keep fixed finite connected simple unit support with positive degrees, fixed `e>=0`,
+`w,beta>0`, no Gamma or other forcing, and both prescribed sine rows.
+Let capacities be strictly positive `C^1` time schedules, supplied
+independently of form and phase. Set `rho_i=d_i/nu_i(t)`, `W=sum_i rho_i`,
+`Q=rho^T*x` and `M=Q/W`. Reciprocity cancels the instantaneous source and
+diffusion contributions even while these weights vary, giving
+
+\[
+\dot Q=\dot\rho^{\mathsf T}x,\qquad
+\dot M=\frac{\dot\rho^{\mathsf T}(x-M\mathbf1)}W.
+\]
+
+For this prescribed schedule, `dot M=0` at every form state is equivalent
+to `dot rho=(dot W/W)*rho`. Integrating on a connected time interval gives
+`rho(t)=rho(0)/a(t)`, or
+
+\[
+\nu_i(t)=a(t)\nu_i(0),\qquad a(t)>0,\quad a(0)=1.
+\]
+
+Thus a common proportional capacity schedule is necessary and sufficient
+for universal conservation of this normalized mean under the stated law.
+For raw `Q`, universal conservation instead requires `dot rho=0`.
+These necessities concern prescribed state-independent schedules. A
+state-dependent capacity law can make `dot rho` orthogonal to the particular
+centered form without being proportional; that different admission problem
+is not resolved here.
+
+The common factor multiplies **both** consumed sine rows, so
+`tau(t)=integral_0^t a(s) ds` gives the existing fixed-capacity law in the
+activity clock. Along the corresponding solution,
+`Q(t)=Q(0)/a(t)` and `W(t)=W(0)/a(t)`, while `M` stays constant.
+This is consistent with the [whole-law clock contract](NODAL_PARAMETER_FOUNDATIONS.md#31-capacity-clock-and-positivity-require-compatible-laws),
+not a clock inferred from phase or a derived capacity mechanism. An
+unbounded activity horizon is additionally needed to transfer an entire
+fixed-capacity asymptotic limit. The held-capacity form-charge theorem and
+this variable-capacity accounting therefore have distinct hypotheses.
+
+### A no-reset support event must retain its changed weights
+
+For two supplied snapshots on the same ordered node set, assume all old and
+new degrees and capacities are positive and `x^+=x^-=x`. Define prescribed
+state-independent weights `rho_i^\pm=d_i^\pm/nu_i^\pm`, with
+`W^\pm=sum_i rho_i^\pm`, `Q^\pm=(rho^\pm)^T*x` and
+`M^\pm=Q^\pm/W^\pm`. Direct subtraction gives
+
+\[
+M^+-M^-=
+\frac{(\rho^+-\rho^-)^{\mathsf T}(x-M^-\mathbf1)}{W^+}.
+\]
+
+Mean preservation for every form state is therefore equivalent to
+`rho^+/W^+=rho^-/W^-`, or `rho^+=c*rho^-` for one positive scalar `c`.
+For example, a supplied update
+`nu_i^+=(d_i^+/d_i^-)*nu_i^-/c` has that property; it is one compatible
+event prescription, not a cause of support change or a selected capacity law.
+Raw charge is preserved for all forms only when `rho^+=rho^-`.
+
+Common-origin covariance makes the distinction unavoidable. Replacing
+`x` by `x+h*1` changes `Q^+-Q^-` by `h*(W^+-W^-)`, whereas it leaves
+`M^+-M^-` unchanged. Thus requiring raw-charge conservation across an event
+with changing `W` requires a fixed form-origin convention unless additional state
+or event terms transform with it. This is separate from the support's
+Dirichlet-storage jump, which depends on form differences.
+
+The existing `observe_forced_support_reset` already reports the exact
+same-EPI `mean_reweighting` and independent support-storage change; its
+detached snapshots do not assert that an event occurred. The
+[static composition controls](../tests/physics/test_relational_pressure_composition.py)
+reuse that reader for a supplied P3-to-K3 comparison and check the complete
+sine rows under common capacity scaling. No new runtime, support event,
+capacity law or frozen trajectory is introduced.
 
 ### The complete scalar field has a finite-prefix enclosure
 

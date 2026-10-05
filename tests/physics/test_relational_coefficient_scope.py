@@ -267,8 +267,10 @@ def test_pairing_poles_from_different_spatial_modes_gives_a_false_ratio():
 def test_real_poles_allow_form_overshoot_in_the_consensus_tangent():
     generator = _difference_generator(RelationalExchangeModel(1.0))
     poles = np.linalg.eigvals(generator)
-    assert np.isreal(poles).all() and (poles < 0).all()
-    slow, fast = sorted(poles, reverse=True)
+    assert np.isreal(poles).all()
+    real_poles = poles.real
+    assert (real_poles < 0).all()
+    slow, fast = sorted(real_poles, reverse=True)
     initial = np.array((1.0, 0.0))
     assert (generator @ initial)[0] == -1.0
     ratio_at_four = (slow * math.exp(4 * slow) - fast * math.exp(4 * fast)) / (

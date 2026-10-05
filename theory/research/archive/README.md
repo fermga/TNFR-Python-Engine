@@ -167,10 +167,44 @@ queues. Their mathematical results retain the topical owners in the live index.
 
 Base Git revision at capture: `f27413a0a29dddc132e5aafea081b0caee0b0135`.
 These hashes refer to captured bytes, including their line endings; they do
-not claim the contents were committed at that revision. The
-[source audit](../../NODAL_RESEARCH_STRATEGY.md#four-foundation-source-audit)
-records the current code, PDF, experiments and historical blobs inspected for
-the revised foundations. No retired implementation was restored by the review.
+not claim the contents were committed at that revision. The source audit below
+records the code, PDF, experiments and historical blobs inspected for the
+revised foundations. No retired implementation was restored by the review.
+
+<a id="four-foundation-source-audit"></a>
+### Historical source audit for the foundational stages
+
+The retained audit supports state-adequacy tests, not every historical claim.
+The [original PDF](../../TNFR.pdf), printed/physical pages 212–219, mixes derivative,
+distance and response meanings; the [dimensional correction](../../FUNDAMENTAL_THEORY.md#25-dimensional-consistency-and-structural-activity)
+owns the remedy. Earlier mandatory Banach/irreducibility assertions and
+entropy-based type selection are not foundation proofs. Signed-scalar,
+zero-form phase and same-observation/different-future controls supply usable
+counterexamples instead.
+
+These are retained audit identifiers, not new runs.
+
+| Material | Retained identifier |
+| --- | --- |
+| Original PDF, SHA-256 | `5ba0f4a2da2d01e550e7004c3c09c6927e6620826052df84cd28babbcbd34fc3` |
+| Foundation at `c80c99ee`; Git blob | `4bac2484007fe3d1edc844ec92d3ea19cdf070c0` |
+| EPI instrument at `81e21f6d`; Git blob | `81cbccaaec5076129c57865401425d3856067531` |
+| Retired pressure and tetrad probe blobs | `ebb5dec0883e56892867fc6f103a906cd2b31902`; `03048368d3cedd08d5238a0e1ccbcacf3792350f` |
+| Retired substrate examples | `be3a8d37:examples/08_emergent_geometry/125_node_is_the_emergent_substrate.py`; `29c1596d:examples/08_emergent_geometry/128_base_substrate_coemergence.py` |
+| Retired pulse/edge examples | `9f506c59:src/tnfr/sdk/simple.py`; `e6d5e731:benchmarks/emergent_rhythm.py`; `a8f49c036d00cd81d6a84a3db6049537bdf8852f:benchmarks/emergent_atom_dynamics.py` |
+| Capacity and phase probe blobs | `6bbcc6de69e784ceb24cdf5998b785111f305767`; `fbcd99eefa153818941742f913af83c5a060d605` |
+| `artifacts/research/capacity_feedback.json`, SHA-256 | `ef270001e219934b8ee23038a584ac47571d7ac170e0436835119142bd284ba1` |
+| `artifacts/research/capacity_localization.json`, SHA-256 | `c98cf2907d6f70c38d26a1baa2fc178feb8a74a276fbf984f1ec7c38a5a11df8` |
+| `artifacts/research/compatible_capacity_regions.json`, SHA-256 | `0d26959ca0e87226bb8bbda2d2a3b9ca1c33d9a30adb60432096d984b2242057` |
+
+The three artifacts recorded dirty source and were not reproduced on the
+current tree. A bin-dependent entropy threshold does not identify capacity's
+mathematical type. Unwrapped invocation samples without elapsed time and an
+intersample phase bound do not identify a primitive phase clock. Current
+[foundation controls](../../../tests/physics/test_nodal_foundation_scope.py),
+[representation controls](../../../tests/physics/test_epi_phase_representation_scope.py)
+and [relational admission](../../../tests/physics/test_relational_exchange_admission.py)
+retain the relevant mathematical questions without reviving those instruments.
 
 ## Earlier maintenance records
 

@@ -620,15 +620,18 @@ $$
 
 **Contract**:
 - Pre: Valid regime state detectable.
-- Post: Smooth transition without coherence collapse; latency attributes cleared if applicable.
+- Post: Configured capacity, phase and pressure proposals; applicable latency
+  metadata is cleared. No general future-coherence bound follows.
 
 ### 4.3 Recursivity (REMESH)
 
-**Physics**: Propagates fractal pattern echoes across nested EPIs. Tracks
-multi-scale identity by linking current structure to prior states; whether a
-particular trajectory preserves identity is checked from the resulting state.
+**Execution**: The named REMESH glyph records a network advisory with a
+declared recursion depth. It does not execute delayed mixing or create nested
+structure. The separately requested network history map below mixes supplied
+current and past form; it does not derive fractality or preserve an arbitrary
+pattern identity.
 
-**Transformation**:
+**Separately requested network history transformation**:
 
 $$
 \text{EPI}_{\rm raw}(t) = (1-\alpha)^2\text{EPI}(t)
@@ -692,8 +695,10 @@ nonlinear.
 **Grammar**: Generator (U1a), Closure (U1b).
 
 **Contract**:
-- Pre: Parent EPI properly formed; depth $\geq 1$.
-- Post: Nested structure maintained; parent identity preserved.
+- Pre: Declared depth $\geq 1$, configured minimum support and applicable U5
+  context. The network history map has its additional admission above.
+- Post: The node-level call records an advisory. Explicit network mixing has
+  the stated conditional bounds, not a universal nested-identity guarantee.
 
 **Fixed-delay Cesàro surrogate (historical N15 programme)**:
 
@@ -1108,17 +1113,35 @@ the actual EPI reset determines the storage change.
 Implementation: [shared VAL/NUL kernel](../src/tnfr/operators/_scale_operator_kernel.py);
 [enabled/disabled boundary and signed-form controls](../tests/operators/test_scale_operator_kernel.py).
 
+**Optional VAL telemetry.** `expansion_metrics` reports signed relative form
+and capacity changes only when their denominators are nonzero. Missing stored
+acceleration and undefined growth ratios remain `None`; present invalid values
+and nonfinite or unordered thresholds reject the observation. Stored acceleration
+has unverified provenance and is not a temporal bifurcation certificate.
+`coherence_above_threshold` reads the current immediate-neighbor proxy, without
+a pre-event baseline. `growth_ratio_within_policy` applies a configured numeric
+band, not a derived fractality test. The legacy `coherence_preserved` and
+`fractal_preserved` keys alias these respective policies. `expansion_healthy`
+is `False` when a known policy fails, `None` when no failure is known but
+required evidence is unavailable, and `True` only when every policy passes;
+`assessment_status`, `failed_policies` and `unavailable_policies` separate those
+cases. This is optional post-event reporting, not a new VAL precondition,
+rollback promise or future-health theorem. The
+[focused telemetry controls](../tests/operators/test_expansion_metrics_scope.py)
+cover signed form, invalid authoritative aliases, policy boundaries and absence.
+
 ---
 
 ## 8. Coupling and Propagation
 
-Coupling operators establish and utilize phase-compatible links between nodes.
+Coupling operators propose or use phase-compatible interactions between nodes.
 Grammar rule U3 verifies circular separation:
 $|\operatorname{wrap}(\phi_i-\phi_j)|\leq\Delta\phi_{\max}$.
 
 ### 8.1 Coupling (UM)
 
-**Physics**: Synchronizes phases across neighbors, establishing structural links for resonance exchange.
+**Execution**: Proposes configured circular phase alignment across admitted
+neighbors and, when requested, functional links for subsequent interaction.
 
 **Transformation**:
 
@@ -2112,8 +2135,67 @@ scalar admission. Rich or complex form is still outside that scalar model.
 Mutation uses that same boundary for live history matching, rather than a
 magnitude surrogate. These are integration corrections, not new physics.
 
-The [sole research queue](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-prioritizes collective geometry; these action-law boundaries remain open.
+<a id="collective-operator-descent"></a>
+### When an internal transformation defines a collective operator
+
+Let `z'=f(z)` be one declared complete fine law, `y=R(z)` a proposed NFR
+description, and `T` a supplied event map. An autonomous continuous law in `y`
+requires `DR(z) f(z)` to agree on every admitted state with the same `R(z)`.
+An event on that same description additionally exists precisely when
+
+`R(z1)=R(z2) => R(T(z1))=R(T(z2))`.
+
+Necessity follows by evaluating the proposed collective event at the same
+input. Sufficiency follows by defining its output using any admitted lift;
+the displayed condition makes that definition independent of the lift.
+Admission, target/port choice, retained history and any occurrence rule must
+also be well defined on those classes. If a transformation changes the state
+space, specify the before and after observation maps separately. Covariance
+of an event family with a transformed target does not establish closure after
+discarding that target. These are conditional descent criteria, not claims
+that the named engine operators already satisfy them.
+
+The [unordered-pair state](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-unordered-state)
+provides an existing exact continuous quotient under its sine-law premises.
+It retains internal coordinates; means alone generally fail. Whether an action
+at one constituent descends requires its own target and symmetry test. A
+continuous fine flow cannot cause a finite jump in a continuous observation;
+an apparent jump in a selected partition instead requires an explicit change
+of observation or event law. Neither interpretation creates extra fine nodes.
+
+The [full-form formation obstruction](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-full-consensus-formation-obstruction)
+adds a complementary native-law constraint. Its monotone quantity `W` bounds
+phase acquisition during smooth flow, and its reset corollary supplies a
+necessary jump budget when the same graph, capacity and law are retained.
+`W` is not energy: even a storage-passive reset can increase it. Existing
+`observe_relational_reset` retains the endpoint data needed for such a
+comparison; its represented phase costs are not ideal trigonometric bounds.
+Refreshing pressure can erase a pressure-only intervention; changing capacity
+or support requires new theorem admission. None of these endpoint checks
+selects an action or proves that it follows from the fine continuous dynamics.
+
+The [AL pair comparison](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-pair-emission-descent)
+now supplies an exact example: the same admitted scalar form map on both
+interchangeable members descends, whereas a fixed singleton target generally
+needs a retained port mark. Its two exceptional source cases are a synchronized
+tip and two actual no-ops. Equal reset storage costs need not give equal
+collective outputs. This result uses actual AL form clipping, without claiming
+closure of its complete grammar, history and lifecycle runtime.
+
+The [regional-transfer identity](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-autonomous-regional-transfer)
+adds a distinct realizability test: the closed normalized-sine law preserves
+degree/capacity-weighted form. Any actual positive AL-only increment changes
+that invariant, even when the event descends to a collective state. Autonomous
+regional gain instead has a compensating change outside the region. The
+synchronized-pair control also derives its subsequent phase response.
+This is an internal exchange mechanism under
+the stated law, not the autonomous execution of the registered AL event.
+
+Thus an NFR's identity, its inherited response, a realizable event and the
+event's occurrence are separate proof obligations. A useful operator can be
+a supplied intervention while autonomous occurrence remains open. The
+[sole research queue](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+selects the next bounded comparison from these obligations.
 A justified negative result remains useful;
 the map provides mechanisms to test without asserting autonomous connection,
 substrate generation or physical identification.

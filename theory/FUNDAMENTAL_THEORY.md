@@ -35,15 +35,21 @@ where:
 | Symbol | Definition | Units |
 |--------|-----------|-------|
 | EPI | Primary Information Structure — structural configuration in a declared chart | Declared form unit X |
-| $\nu_f$ | Structural frequency — reorganization capacity | Hz_str |
+| $\nu_f$ | Reorganization capacity, conventionally named structural frequency | Hz_str: inverse declared structural time |
 | $\Delta\mathrm{NFR}$ | Nodal field response — directed structural pressure | X when capacity has inverse-time units |
+
+Equation (1) is a nodal identity within a complete model. A prediction also
+requires a pressure map and laws for every consumed phase, capacity, support,
+input and event, including an explicit premise when a quantity is held fixed.
+A derived oscillation is a trajectory of those joint laws; the identity alone
+does not supply an oscillator or select its frequency.
 
 ### 2.2 Structural Triad
 
 The engine's structural triad distinguishes three attributes:
 
 1. **Form (EPI)**: coherent structural configuration in a declared state space. A Banach-space formulation and the engine's signed scalar chart are representations whose scope must be stated; the nodal equation alone does not choose their dimension. Named operators use their jump contracts; declared solvers use the shared nodal integrator.
-2. **Frequency ($\nu_f$)**: nonnegative reorganization capacity; $\nu_f=0$ suppresses continuous EPI flow, without necessarily erasing stored form.
+2. **Capacity ($\nu_f$)**: nonnegative reorganization rate relative to the declared clock; $\nu_f=0$ suppresses continuous EPI flow, without necessarily erasing stored form. A held capacity is not automatically the frequency of a periodic trajectory.
 3. **Phase ($\phi$ or $\theta$)**: circular synchronization coordinate; coupling uses $|\mathrm{wrap}(\phi_i-\phi_j)|\leq\Delta\phi_{\max}$. The EPI equation alone supplies no phase clock.
 
 ### 2.3 Integrated Form and Stability Criterion
@@ -322,6 +328,14 @@ the observed partition. Conversely, taking a fine substrate as a premise does
 not assert a substance outside the framework. Structural scale is not an
 assertion of an earlier physical time.
 
+A larger NFR would be an organization of its internal constituents, not their
+replacement or disappearance. Changing the scale of description must preserve
+their influence through retained state or justified memory. The
+[conservative replica calculation](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-inheritance)
+demonstrates why this matters: internal phase geometry changes collective
+response even when the observed mean form and phase are unchanged. A supplied
+partition still needs its own formation and identity evidence.
+
 In particular, a non-EPI pressure contribution from neighboring phases or
 capacities can be an internal relational effect, even when a decomposition
 calls it a "source". It need not be a force from an ambient external reality.
@@ -410,16 +424,97 @@ keeps those hypotheses distinct. The effective-link study can investigate
 which environmental information carries a relation without first asserting
 either physical identification.
 
-**Initial activity is not a sustained pulse.** Positive capacity with zero
+<a id="derived-pulse-foundation"></a>
+
+**A pulse can be derived without becoming a new primitive.** The selected
+zero-loss sine law has an [exact finite-amplitude internal pulse](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-internal-pulse)
+on a supplied doubled-C5 geometry. Reciprocal form/phase evolution sustains
+the prepared internal motion while the collective mean form and phase remain
+fixed. No external periodic drive or additional pulse coordinate is inserted.
+Its existence depends on the complete law, held capacities, support and
+initial state; it does not derive those premises or the substrate's origin.
+
+**Initial activity is not a universal sustained pulse.** Positive capacity with zero
 pressure gives zero EPI rate. Nonzero `nu_i*p_i` at an initial state gives
 activity, but need not give oscillation: pure-EPI diffusion provides active
 relaxation. An auxiliary wave spectrum or a configured phase clock supplies
-a different claim. The [pulse audit](NODAL_RESEARCH_STRATEGY.md#resonant-persistence-and-pulse-audit)
-and [clock controls](../tests/physics/test_structural_clock_scope.py) keep these
-distinctions executable. An assumed initial state, even an active one, does
-not select the missing phase/capacity/support evolution or provide permanent
-renewal. “Primordial pulse” is not an additional model variable or a proved
-mechanism here.
+a different claim. The [permanent-pulse boundary](nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission)
+proves approach to the equilibrium set for the finite connected, unforced
+sine law with positive loss and held nonnegative capacities. Equilibria also
+remain stationary in the reversible law. A universal primordial oscillation
+or an independently selected microscopic zero-loss law does not follow.
+
+**Identity, waveform and clock are distinct.** The internal pulse is periodic
+in the full labeled state, while its exact unordered-pair description has
+half that period. Capacity is a factor in the derived timescale; geometry,
+amplitude and the other law coefficients also matter. A repeated observation
+does not itself define a monotone clock. Moreover, the
+[small-amplitude transverse result](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-pulse-splitting)
+proves orbital instability of sufficiently small nonzero members of this
+prepared pulse family, without storage loss. Maintaining a geometric identity
+and maintaining one precise waveform require different proofs; an unstable
+waveform does not by itself imply loss of all organization. The
+[parameter foundation](NODAL_PARAMETER_FOUNDATIONS.md#derived-pulse-scales)
+owns the resulting capacity, clock and observation distinctions.
+
+**Resonant susceptibility is a separate derived property.** The
+[resonance foundation](nodal/RESONANCE_FOUNDATIONS.md) proves a bounded
+positive-frequency work-port gain maximum near stable critical patterns of
+the complete sine law. It follows from the joint form/phase dynamics and
+positive stiffness/loss, including cases with no oscillatory free poles.
+The declared probe is not an inferred primordial drive; pure diffusion and
+the nodal identity alone do not inherit this theorem.
+
+<a id="resonance-fractality-foundation-audit"></a>
+**Resonance and fractality are precise obligations, not a complete law.**
+Reciprocal exchange, a response peak, a permanent pulse and formation of an
+identity require different evidence. The complete native law already contains
+form-to-phase and phase-to-form feedback; a negative formation result does not
+by itself reveal a missing resonance term. Its loss coefficient is nevertheless
+a constitutive premise. The [full consensus derivative](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#native-consensus-full-state-tangent)
+shows that the current half-weight law has overdamped relative modes on any
+admitted connected support with positive held capacities. That classification
+does not forbid frequency-selective driven response or finite nonlinear
+formation. It identifies a restriction of that law near consensus, rather
+than a restriction of every possible TNFR completion.
+
+The [nonlinear full-form bound](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-full-consensus-formation-obstruction)
+separately excludes the aligned unit-winding target from every phase-consensus
+preparation in the fixed two-ring form budget. It accounts for full native
+exchange and loss, without a linear approximation or a symmetry restriction.
+Global continuation remains unproved for that whole class. Its event corollary
+also shows why an energy-passive reset need not preserve the continuous-flow
+obstruction. The [collective-operator criteria](STRUCTURAL_OPERATORS.md#collective-operator-descent)
+require closed state, action and target information before an internal event
+can be interpreted as an operator of an effective NFR.
+
+For **dynamical scale inheritance**, specify a fine law, a scale map and the
+family of states on which the inherited law has the same declared form after
+any stated unit changes. Repeated inheritance must compose consistently.
+A nested container, repeated graph or fitted dimension alone does not meet
+this condition. The [replica construction](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-inheritance)
+establishes it on a supplied synchronized submanifold. Outside that submanifold,
+the existing sufficient collective state retains internal form, phase and
+capacity information; those constituents have not disappeared. Autonomous
+selection and formation of such a hierarchy remain separate obligations.
+
+These structural requirements also leave constitutive freedom. The
+[replication counterfamily](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-constitutive-nonselection)
+preserves the same storage, synchronized inheritance and equilibrium derivative
+while changing nonlinear response. This consolidates existing nonselection
+results: replication consistency and small-perturbation behavior do not uniquely
+select a microscopic pressure/mobility law. Stronger claims about a complete
+nonlinear response, pulse or recurrence still require their own proof.
+
+Finally, determine what **loss** means at the retained scale. In the declared
+positive-loss laws it is a negative total-storage rate. In a conservative fine
+model, a visible region may instead exchange storage with retained hidden
+nodes. The [finite-memory calculation](nodal/RESONANCE_FOUNDATIONS.md#finite-conservative-memory)
+retains that hidden state and possible return; it does not derive an exact
+memoryless damping term. Interpreting microscopic loss as unresolved internal
+exchange therefore needs a reduction and approximation bound, not relabeling.
+These distinctions locate the unfinished foundations without discarding valid
+conditional results or adding feedback merely to obtain a preferred pattern.
 
 <a id="foundational-state-admission"></a>
 ### 2.10 Foundation decision ledger: state, equivalence and origin
@@ -470,7 +565,7 @@ Thus the audit supplies no evidence of a physically absolute EPI origin.
 Whether a reference is independently meaningful, inherited from a finer
 state or removable by a valid reduction remains a constitutive question.
 
-The [source audit](NODAL_RESEARCH_STRATEGY.md#four-foundation-source-audit)
+The [source audit](research/archive/README.md#four-foundation-source-audit)
 records which current and historical calculations support these decisions.
 
 <a id="reference-s-state-admission"></a>

@@ -10,6 +10,7 @@ from __future__ import annotations
 import math
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -30,18 +31,33 @@ from tnfr.constants.canonical import (
 
 
 @pytest.mark.parametrize("precision", [15, 80])
-def test_import_preserves_caller_precision_and_binary64_constants(precision):
+def test_import_preserves_caller_precision_and_binary64_constants(
+    precision, source_tree_environment
+):
     """Configuration imports must not alter an ongoing numerical experiment."""
     program = f"""
+import sys
+from pathlib import Path
 import mpmath as mp
 mp.mp.dps = {precision}
+import tnfr
+assert Path(tnfr.__file__).resolve() == Path(sys.argv[1]), tnfr.__file__
 from tnfr.constants.canonical import PI, LN_2
 assert mp.mp.dps == {precision}, mp.mp.dps
 assert PI.hex() == '0x1.921fb54442d18p+1'
 assert LN_2.hex() == '0x1.62e42fefa39efp-1'
 """
     result = subprocess.run(
-        [sys.executable, "-c", program], capture_output=True, text=True, check=False
+        [
+            sys.executable,
+            "-c",
+            program,
+            str(Path(__file__).resolve().parents[2] / "src" / "tnfr" / "__init__.py"),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+        env=source_tree_environment,
     )
     assert result.returncode == 0, result.stdout + result.stderr
 

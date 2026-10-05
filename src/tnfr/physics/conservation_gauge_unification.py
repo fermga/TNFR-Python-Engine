@@ -25,7 +25,7 @@ References
 - Action functional: src/tnfr/physics/variational.py
 - Conservation laws: src/tnfr/physics/conservation.py
 - Gauge structure: src/tnfr/physics/gauge.py
-- Nodal-pulse foundation: src/tnfr/riemann/nodal_pulse.py
+- Separate finite arithmetic pulse comparison: src/tnfr/riemann/nodal_pulse.py
 - Nodal equation: ∂EPI/∂t = νf · ΔNFR(t)  [TNFR.pdf §2.1]
 - Grammar: theory/UNIFIED_GRAMMAR_RULES.md (U1-U6)
 """
@@ -34,9 +34,9 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from numbers import Real
 from typing import Any
 
+from .._exact_time import finite_represented_real
 from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA
 from ..constants.canonical import U6_STRUCTURAL_POTENTIAL_LIMIT
 from ..mathematics.unified_numerical import np
@@ -97,14 +97,11 @@ __all__ = [
 
 
 def _as_finite_real(value: Any) -> float | None:
-    """Return a finite real scalar, rejecting booleans and overflow."""
-    if isinstance(value, bool) or not isinstance(value, Real):
-        return None
+    """Apply shared scalar admission while retaining diagnostic unavailability."""
     try:
-        scalar = float(value)
-    except (OverflowError, TypeError, ValueError):
+        return finite_represented_real(value, "diagnostic field")[0]
+    except (TypeError, ValueError):
         return None
-    return scalar if math.isfinite(scalar) else None
 
 
 def _finite_node_field_issue(G: Any, aliases: tuple[str, ...], field_name: str) -> str:

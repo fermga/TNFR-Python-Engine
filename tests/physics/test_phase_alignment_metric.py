@@ -11,6 +11,11 @@ from math import atan2, isfinite, pi, sin, sqrt
 import networkx as nx
 import pytest
 
+from tests.physics._internal_mode_fixture import _metric_differential
+from tnfr.dynamics.relational import (
+    RelationalExchangeModel,
+    evaluate_relational_exchange,
+)
 from tnfr.mathematics.phasor_resultant import reduce_phasor_components
 from tnfr.physics.canonical import compute_phase_curvature, observe_phase_curvature
 from tnfr.physics.extended import compute_phase_current
@@ -211,3 +216,133 @@ def test_nonreciprocal_support_current_is_not_the_gradient_of_an_undirected_pair
     assert pair_gradient_at_one != -len(tuple(graph.neighbors(1))) * current[1]
     # Reciprocal support is a hypothesis of the metric identity, not a
     # property silently imposed on this more general diagnostic API.
+
+
+def test_acute_balanced_star_excludes_quartic_cost_from_native_diagonal_alignment():
+    s = pytest.importorskip("sympy")
+    graph = nx.star_graph(3)
+    coordinates = s.symbols("theta0:4", real=True)
+    edge_costs = [1 - s.cos(coordinates[j] - coordinates[i]) for i, j in graph.edges]
+    cosine_cost = sum(edge_costs)
+    quartic_cost = sum(value**2 for value in edge_costs)
+    phases = (0, s.asin(s.Rational(1, 4)), s.asin(s.Rational(1, 4)), -s.pi / 6)
+    prepared = dict(zip(coordinates, phases, strict=True))
+    rows = tuple(tuple(graph[node]) for node in graph)
+    metric, _, source, _ = _metric_differential(s, rows, phases)
+    assert all(s.cos(phases[j] - phases[i]).is_positive for i, j in graph.edges)
+    assert source[0] == 0
+    assert s.simplify(metric[0, 0] - s.pi * (s.sqrt(15) + s.sqrt(3)) / 2) == 0
+    assert s.simplify(s.diff(cosine_cost, coordinates[0]).subs(prepared)) == 0
+    obstruction = s.simplify(
+        s.diff(cosine_cost + quartic_cost, coordinates[0]).subs(prepared)
+    )
+    assert s.simplify(obstruction - (s.sqrt(15) - 2 * s.sqrt(3)) / 4) == 0
+    assert obstruction.is_positive
+    # A finite diagonal entry cannot send this exact zero native source to
+    # the nonzero alternative gradient. The counterexample is wholly acute.
+    assert s.hessian(quartic_cost, coordinates).subs(
+        dict.fromkeys(coordinates, 0)
+    ) == s.zeros(4)
+    # Thus equality of consensus Hessians in the auxiliary-potential study
+    # does not imply alignment of either potential with the same native g.
+
+
+def test_cosine_scale_is_positive_but_zero_source_metric_requires_continuation():
+    s = pytest.importorskip("sympy")
+    delta, scale = s.symbols("delta scale", real=True)
+    coordinate = s.Symbol("coordinate", real=True)
+    # The all-star functional classification belongs to the proof owner.
+    # Check its integrated normalized edge cost and the independent P2 sign.
+    cost = s.integrate(scale * s.sin(coordinate), (coordinate, 0, delta))
+    assert s.simplify(cost - scale * (1 - s.cos(delta))) == 0
+    pair_metric = s.pi * s.diff(cost, delta) / delta
+    positive_entry = s.Symbol("positive_entry", positive=True)
+    selected_scale = s.solve(pair_metric.subs(delta, s.pi / 6) - positive_entry, scale)
+    assert selected_scale == [positive_entry / 3]
+    assert selected_scale[0].is_positive
+    continued = s.limit(pair_metric, delta, 0)
+    assert continued == s.pi * scale
+    # Every finite positive entry at delta=0 obeys the product identity there.
+    # Choosing twice the removable limit preserves that identity but breaks
+    # continuity; the alignment equation alone cannot select this zero row.
+    positive_scale = s.Symbol("positive_scale", positive=True)
+    alternative_at_zero = 2 * s.pi * positive_scale
+    assert alternative_at_zero.is_positive
+    assert -alternative_at_zero * (delta / s.pi).subs(delta, 0) == -s.diff(
+        cost, delta
+    ).subs(delta, 0)
+    assert alternative_at_zero != continued.subs(scale, positive_scale)
+    assert s.limit(pair_metric, delta, s.pi, dir="-") == 0
+    # The half-turn branch is excluded, rather than assigned a positive metric.
+
+
+def test_native_storage_scale_absorbs_positive_edge_cost_normalization():
+    graph = _state(nx.path_graph(3), (0.0, 0.125, 0.25))
+    for node, form, capacity in zip(
+        graph, (0.5, -0.25, 0.125), (1.0, 2.0, 3.0), strict=True
+    ):
+        graph.nodes[node].update(EPI=form, nu_f=capacity)
+    beta_u, cost_scale = Q(2), Q(3)
+    baseline = evaluate_relational_exchange(
+        graph, model=RelationalExchangeModel(float(beta_u))
+    )
+    effective = evaluate_relational_exchange(
+        graph, model=RelationalExchangeModel(float(beta_u * cost_scale))
+    )
+    assert effective.pressure == baseline.pressure
+    assert effective.form_rate == baseline.form_rate
+    assert effective.phase_metric == baseline.phase_metric
+    assert effective.phase_storage == baseline.phase_storage
+    assert (
+        effective.storage
+        == effective.form_storage + beta_u * cost_scale * effective.phase_storage
+    )
+    assert any(value != 0 for value in effective.phase_rate)
+    for index, actual in enumerate(effective.phase_rate):
+        # U=cV, H_U=cH and E_D+beta_U*U are represented by the existing
+        # beta_eff=c*beta_U; no new potential mode is added to the executor.
+        expected = (
+            Q(effective.model.phase_weight)
+            * Q(effective.capacity[index])
+            * effective.work.form_gradient[index]
+            / (beta_u * cost_scale * Q(effective.phase_metric[index]))
+        )
+        assert Q(actual) - expected == effective.phase_rate_rounding_defect[index]
+        assert actual == pytest.approx(
+            baseline.phase_rate[index] / cost_scale, rel=2e-15, abs=1e-15
+        )
+    assert effective.storage != baseline.storage
+    # Holding beta_U fixed while changing c changes dynamics. Pure cost
+    # renormalization keeps c*beta_U fixed by compensating beta_U instead.
+
+
+def test_non_edge_additive_storage_retains_alignment_with_a_global_metric_factor():
+    s = pytest.importorskip("sympy")
+    graph = nx.path_graph(3)
+    coordinates = s.symbols("theta0:3", real=True)
+    cost = sum(1 - s.cos(coordinates[j] - coordinates[i]) for i, j in graph.edges)
+    alternative = cost + cost**2
+    gradient = s.Matrix([s.diff(cost, coordinate) for coordinate in coordinates])
+    alternative_gradient = s.Matrix(
+        [s.diff(alternative, coordinate) for coordinate in coordinates]
+    )
+    assert (alternative_gradient - (1 + 2 * cost) * gradient).applyfunc(
+        s.simplify
+    ) == s.zeros(3, 1)
+    phases = (0, s.pi / 6, s.pi / 3)
+    prepared = dict(zip(coordinates, phases, strict=True))
+    rows = tuple(tuple(graph[node]) for node in graph)
+    metric, _, source, _ = _metric_differential(s, rows, phases)
+    factor = s.simplify((1 + 2 * cost).subs(prepared))
+    assert factor.is_positive
+    assert (alternative_gradient.subs(prepared) + factor * metric * source).applyfunc(
+        s.simplify
+    ) == s.zeros(3, 1)
+    # An edge sum on P3 has zero mixed partial between nonadjacent endpoints.
+    # The monotone function V+V^2 does not: it lies outside that storage class.
+    assert s.diff(cost, coordinates[0], coordinates[2]) == 0
+    assert s.simplify(
+        s.diff(alternative, coordinates[0], coordinates[2]).subs(prepared)
+    ) == -s.Rational(1, 2)
+    # Globally, V>=0 makes 1+2V positive. This alternative uses total storage
+    # in its metric; diagonal alignment alone does not force edge additivity.

@@ -9,11 +9,13 @@ import pytest
 from tnfr.mathematics._rational_interval import (
     INTERVAL_BITS,
     I,
+    arg,
     atan,
     atan_ratio,
     cos,
     pi_interval,
     sin,
+    sqrt,
 )
 
 
@@ -192,3 +194,99 @@ def test_atan_range_uses_monotonicity_across_multiple_reductions():
     bounds = atan(I(-10, 5))
     for value in (Q(-10), Q(-2), Q(-1, 2), Q(0), Q(1), Q(5)):
         assert bounds.contains(atan(I(value)))
+
+
+def _arg_reference(real, imaginary):
+    """Independent quadrant formula with the direct-series pi/4 reference."""
+    quarter = _atan_reference(Q(1))
+    if real == 0:
+        endpoints = tuple(2 * value for value in quarter)
+        return endpoints if imaginary > 0 else (-endpoints[1], -endpoints[0])
+    lower, upper = _atan_reference(imaginary / real)
+    if real > 0:
+        return lower, upper
+    if imaginary > 0:
+        return lower + 4 * quarter[0], upper + 4 * quarter[1]
+    return lower - 4 * quarter[1], upper - 4 * quarter[0]
+
+
+@pytest.mark.parametrize(
+    "real,imaginary",
+    ((1, 0), (1, 2), (1, -2), (0, 1), (0, -1), (-2, 1), (-2, -1)),
+)
+def test_arg_encloses_independent_quadrant_reference(real, imaginary):
+    real, imaginary = Q(real), Q(imaginary)
+    result = arg(real, imaginary)
+    lower, upper = _arg_reference(real, imaginary)
+    assert result.lo <= lower <= upper <= result.hi
+    assert result.width < Q(1, 10**34)
+    assert arg(real, -imaginary) == -result
+
+
+@pytest.mark.parametrize(
+    "real,imaginary",
+    (
+        (I(1, 3), I(-2, 2)),
+        (I(-3, 2), I(1, 2)),
+        (I(-3, 2), I(-2, -1)),
+        (I(-3, -1), I(1, 2)),
+    ),
+)
+def test_arg_rectangle_encloses_reference_across_admitted_chart_axes(real, imaginary):
+    result = arg(real, imaginary)
+    for x in (real.lo, real.midpoint, real.hi):
+        for y in (imaginary.lo, imaginary.midpoint, imaginary.hi):
+            lower, upper = _arg_reference(x, y)
+            assert result.lo <= lower <= upper <= result.hi
+
+
+@pytest.mark.parametrize(
+    "real,imaginary",
+    (
+        (I(0), I(0)),
+        (I(-2, -1), I(0)),
+        (I(-2, 1), I(-1, 1)),
+        (I(0, 1), I(0)),
+        (I(-1), I(Q(1, 2**200))),
+    ),
+)
+def test_arg_rejects_cut_intersections_and_unresolved_rounded_separation(
+    real, imaginary
+):
+    with pytest.raises(ValueError, match="nonpositive real ray"):
+        arg(real, imaginary)
+
+
+def test_arg_admits_exact_positive_axis_but_not_implicit_physical_scalars():
+    assert arg(I(1, 2), I(0)) == I(0)
+    for invalid in (True, 1.0, "1", None):
+        with pytest.raises(TypeError):
+            arg(invalid, 1)
+        with pytest.raises(TypeError):
+            arg(1, invalid)
+
+
+@pytest.mark.parametrize(
+    "value",
+    (I(0), I(4), I(0, 9), I(Q(2, 3)), I(Q(1, 10**180)), I(10**180)),
+)
+def test_square_root_has_outward_adjacent_dyadic_endpoints(value):
+    result = sqrt(value)
+    grid = Q(1, 1 << INTERVAL_BITS)
+    assert result.lo >= 0
+    assert result.lo**2 <= value.lo
+    assert result.hi**2 >= value.hi
+    assert (result.lo + grid) ** 2 > value.lo
+    if result.hi:
+        assert (result.hi - grid) ** 2 < value.hi
+    assert sqrt(I(4)) == I(2)
+    assert sqrt(I(0, 9)) == I(0, 3)
+
+
+def test_square_root_rejects_negative_domains_and_implicit_scalar_admission():
+    for value in (I(-1), I(-1, 1)):
+        with pytest.raises(ValueError, match="nonnegative"):
+            sqrt(value)
+    for invalid in (True, 1.0, "1", None):
+        with pytest.raises(TypeError):
+            sqrt(invalid)

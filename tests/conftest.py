@@ -52,6 +52,24 @@ def structural_tolerances() -> dict[str, float]:
 
 
 @pytest.fixture
+def source_tree_environment(pytestconfig: pytest.Config) -> dict[str, str]:
+    """Give an opt-in child process the same configured source paths as pytest.
+
+    Pytest's pythonpath setting changes only the current process's sys.path.
+    Preserve the caller environment without mutating it or affecting tests of
+    installed distributions, which deliberately do not request this fixture.
+    """
+    environment = os.environ.copy()
+    paths = [str(path) for path in pytestconfig.getini("pythonpath")]
+    inherited = environment.get("PYTHONPATH")
+    if inherited:
+        paths.append(inherited)
+    if paths:
+        environment["PYTHONPATH"] = os.pathsep.join(paths)
+    return environment
+
+
+@pytest.fixture
 def structural_rng() -> np.random.Generator:
     """Provide a reproducible RNG aligned with TNFR structural conventions."""
 

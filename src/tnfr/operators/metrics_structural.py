@@ -55,15 +55,30 @@ def _detect_regime_from_state(epi: float, vf: float, latent: bool) -> str:
 
 
 def expansion_metrics(G, node, vf_before: float, epi_before: float) -> dict[str, Any]:
-    """VAL - Enhanced expansion metrics with structural indicators (Issue #2724).
+    """VAL event deltas and configured diagnostic policies, not stability proofs.
 
-    Captures comprehensive metrics reflecting canonical VAL effects:
+    Signed relative changes use their nonzero signed baselines. Missing stored
+    acceleration and undefined ratios stay unavailable. Present invalid scalars
+    or thresholds reject this observation instead of becoming healthy zeros.
+    A stored acceleration is not authenticated temporal evidence. Coherence is
+    the historical immediate-neighbor proxy, without a pre-event baseline.
+
+    ``coherence_preserved`` and ``fractal_preserved`` are retained compatibility
+    aliases for ``coherence_above_threshold`` and ``growth_ratio_within_policy``.
+    The latter is only a configured ratio policy, not fractality or scale
+    inheritance. ``expansion_healthy`` is False for a known failed policy, None
+    when no policy fails but needed evidence is unavailable, and True only when
+    every policy can be evaluated and passes. No future health is certified.
+    Shared neighbor readers may rebuild caches; node state and support are not
+    changed by this collector.
+
+    Captures configured VAL observations:
     - Basic growth metrics (Δνf, ΔEPI)
-    - Bifurcation risk (∂²EPI/∂t²)
-    - Coherence preservation (local C(t))
-    - Fractality indicators (growth ratios)
+    - Stored acceleration threshold
+    - Current neighbor-coherence threshold
+    - Relative growth-ratio policy
     - Network impact (phase coherence with neighbors)
-    - Structural stability (ΔNFR bounds)
+    - Stored-pressure policies
 
     Parameters
     ----------
@@ -86,26 +101,26 @@ def expansion_metrics(G, node, vf_before: float, epi_before: float) -> dict[str,
         - delta_epi, epi_final: EPI changes
         - expansion_factor: Relative νf increase
 
-        **Structural Stability (NEW)**:
+        **Stored-pressure policies**:
         - dnfr_final: Final reorganization gradient
-        - dnfr_positive: True if ΔNFR > 0 (required for expansion)
-        - dnfr_stable: True if 0 < ΔNFR < 1.0 (bounded growth)
+        - dnfr_positive: Current stored ΔNFR > 0 policy
+        - dnfr_stable: Compatibility label for 0 < stored ΔNFR < 1.0
 
-        **Bifurcation Risk (ENHANCED)**:
-        - d2epi: EPI acceleration (∂²EPI/∂t²)
+        **Stored acceleration**:
+        - d2epi: Unverified stored acceleration, or None
         - bifurcation_risk: True when |∂²EPI/∂t²| > threshold
         - bifurcation_magnitude: Ratio of d2epi to threshold
         - bifurcation_threshold: Configurable threshold value
 
-        **Coherence Preservation (ENHANCED)**:
+        **Current neighbor coherence**:
         - coherence_local: Local coherence measurement [0,1]
         - coherence_preserved: True when C_local > threshold
 
-        **Fractality Indicators (ENHANCED)**:
+        **Configured growth-ratio policy**:
         - epi_growth_rate: Relative EPI growth
         - vf_growth_rate: Relative νf growth
         - growth_ratio: vf_growth_rate / epi_growth_rate
-        - fractal_preserved: True when ratio in valid range [0.5, 2.0]
+        - fractal_preserved: Compatibility growth-policy alias, or None
 
         **Network Impact (NEW)**:
         - neighbor_count: Number of neighbors
@@ -113,16 +128,16 @@ def expansion_metrics(G, node, vf_before: float, epi_before: float) -> dict[str,
         - network_coupled: True if neighbors exist and phase_coherence > 0.5
         - theta_final: Final phase value
 
-        **Overall Health (NEW)**:
-        - expansion_healthy: Combined indicator of all health metrics
+        **Combined policy assessment**:
+        - expansion_healthy: True, False, or None with explicit availability
 
     Notes
     -----
     Key indicators:
     - bifurcation_risk: True when |∂²EPI/∂t²| > threshold
-    - fractal_preserved: True when growth rates maintain scaling relationship
-    - coherence_preserved: True when local C(t) remains above threshold
-    - dnfr_positive: True when ΔNFR > 0 (required for expansion)
+    - fractal_preserved: Compatibility alias for the available growth policy
+    - coherence_preserved: Current proxy above threshold, not preservation
+    - dnfr_positive: Current stored ΔNFR > 0 policy, not operator admission
 
     Thresholds are configurable via graph metadata:
     - VAL_BIFURCATION_THRESHOLD (default: 0.3)
@@ -142,8 +157,8 @@ def expansion_metrics(G, node, vf_before: float, epi_before: float) -> dict[str,
     >>> metrics = G.graph["operator_metrics"][-1]
     >>> if metrics["bifurcation_risk"]:
     ...     print(f"WARNING: Bifurcation risk! d2epi={metrics['d2epi']:.3f}")
-    >>> if not metrics["coherence_preserved"]:
-    ...     print(f"WARNING: Coherence degraded! C={metrics['coherence_local']:.3f}")
+    >>> if not metrics["coherence_above_threshold"]:
+    ...     print(f"Current neighbor proxy below policy: C={metrics['coherence_local']:.3f}")
 
     See Also
     --------
@@ -151,36 +166,78 @@ def expansion_metrics(G, node, vf_before: float, epi_before: float) -> dict[str,
     validate_expansion : Preconditions ensuring valid expansion
     """
     import math
+    from fractions import Fraction
+
+    from .._exact_time import finite_represented_real
+    from ..types import require_finite_real_scalar_epi
+
+    def finite(value, label):
+        return finite_represented_real(value, label)[0]
+
+    def raw(aliases):
+        return get_attr(
+            G.nodes[node], aliases, None, strict=True, conv=lambda value: value
+        )
+
+    def ratio(numerator, denominator, label):
+        if denominator == 0:
+            return None
+        return finite(Fraction(numerator) / Fraction(denominator), label)
 
     # Basic state
-    vf_after = _get_node_attr(G, node, ALIAS_VF)
-    epi_after = _get_node_attr(G, node, ALIAS_EPI)
-    dnfr = _get_node_attr(G, node, ALIAS_DNFR)
-    d2epi = _get_node_attr(G, node, ALIAS_D2EPI)
-    theta = _get_node_attr(G, node, ALIAS_THETA)
+    vf_before = finite(vf_before, "VAL initial capacity")
+    vf_after = finite(raw(ALIAS_VF), "VAL current capacity")
+    if min(vf_before, vf_after) < 0:
+        raise ValueError("VAL capacity must be nonnegative")
+    epi_before = require_finite_real_scalar_epi(epi_before, "VAL initial EPI")
+    epi_after = require_finite_real_scalar_epi(raw(ALIAS_EPI), "VAL current EPI")
+    dnfr = finite(raw(ALIAS_DNFR), "VAL stored pressure")
+    acceleration_present = any(alias in G.nodes[node] for alias in ALIAS_D2EPI)
+    d2epi = (
+        finite(raw(ALIAS_D2EPI), "VAL stored acceleration")
+        if acceleration_present
+        else None
+    )
+    theta = finite(raw(ALIAS_THETA), "VAL phase")
 
     # Network context
     neighbors = list(G.neighbors(node))
     neighbor_count = len(neighbors)
 
     # Thresholds (configurable)
-    bifurcation_threshold = float(G.graph.get("VAL_BIFURCATION_THRESHOLD", 0.3))
-    coherence_threshold = float(G.graph.get("VAL_MIN_COHERENCE", 0.5))
-    fractal_ratio_min = float(G.graph.get("VAL_FRACTAL_RATIO_MIN", 0.5))
-    fractal_ratio_max = float(G.graph.get("VAL_FRACTAL_RATIO_MAX", 2.0))
+    bifurcation_threshold = finite(
+        G.graph.get("VAL_BIFURCATION_THRESHOLD", 0.3), "VAL_BIFURCATION_THRESHOLD"
+    )
+    coherence_threshold = finite(
+        G.graph.get("VAL_MIN_COHERENCE", 0.5), "VAL_MIN_COHERENCE"
+    )
+    fractal_ratio_min = finite(
+        G.graph.get("VAL_FRACTAL_RATIO_MIN", 0.5), "VAL_FRACTAL_RATIO_MIN"
+    )
+    fractal_ratio_max = finite(
+        G.graph.get("VAL_FRACTAL_RATIO_MAX", 2.0), "VAL_FRACTAL_RATIO_MAX"
+    )
+    if bifurcation_threshold <= 0:
+        raise ValueError("VAL_BIFURCATION_THRESHOLD must be positive")
+    if not 0 <= coherence_threshold <= 1:
+        raise ValueError("VAL_MIN_COHERENCE must lie in [0, 1]")
+    if fractal_ratio_min >= fractal_ratio_max:
+        raise ValueError("VAL growth-ratio bounds must be strictly ordered")
 
     # Growth deltas
-    delta_epi = epi_after - epi_before
-    delta_vf = vf_after - vf_before
+    delta_epi = finite(Fraction(epi_after) - Fraction(epi_before), "VAL EPI change")
+    delta_vf = finite(Fraction(vf_after) - Fraction(vf_before), "VAL capacity change")
 
     # Growth rates (relative to initial values)
-    epi_growth_rate = (delta_epi / epi_before) if epi_before > 1e-9 else 0.0
-    vf_growth_rate = (delta_vf / vf_before) if vf_before > 1e-9 else 0.0
+    epi_growth_rate = ratio(delta_epi, epi_before, "VAL relative EPI change")
+    vf_growth_rate = ratio(delta_vf, vf_before, "VAL relative capacity change")
     growth_ratio = (
-        vf_growth_rate / epi_growth_rate if abs(epi_growth_rate) > 1e-9 else 0.0
+        ratio(vf_growth_rate, epi_growth_rate, "VAL growth ratio")
+        if epi_growth_rate is not None and vf_growth_rate is not None
+        else None
     )
 
-    # Coherence preservation
+    # Current neighbor proxy; no before/after preservation test is supplied.
     # Local coherence via extracted helper
     from ..metrics.local_coherence import compute_local_coherence_fallback
 
@@ -197,30 +254,37 @@ def expansion_metrics(G, node, vf_before: float, epi_before: float) -> dict[str,
 
     # Bifurcation magnitude (ratio to threshold)
     bifurcation_magnitude = (
-        abs(d2epi) / bifurcation_threshold if bifurcation_threshold > 0 else 0.0
+        ratio(abs(d2epi), bifurcation_threshold, "VAL acceleration threshold ratio")
+        if d2epi is not None
+        else None
     )
 
     # Boolean indicators
-    bifurcation_risk = abs(d2epi) > bifurcation_threshold
+    bifurcation_risk = abs(d2epi) > bifurcation_threshold if d2epi is not None else None
     coherence_preserved = c_local > coherence_threshold
     dnfr_positive = dnfr > 0
     dnfr_stable = 0 < dnfr < 1.0
     fractal_preserved = (
         fractal_ratio_min < growth_ratio < fractal_ratio_max
-        if abs(epi_growth_rate) > 1e-9
-        else True
+        if growth_ratio is not None
+        else None
     )
     network_coupled = (
         neighbor_count > 0 and phase_coherence_neighbors > _PHASE_COHERENCE_COUPLING
     )
 
     # Overall health indicator
-    expansion_healthy = (
-        dnfr_positive
-        and not bifurcation_risk
-        and coherence_preserved
-        and fractal_preserved
-    )
+    policies = {
+        "positive_stored_pressure": dnfr_positive,
+        "acceleration_below_threshold": (
+            None if bifurcation_risk is None else not bifurcation_risk
+        ),
+        "coherence_above_threshold": coherence_preserved,
+        "growth_ratio_within_policy": fractal_preserved,
+    }
+    failed = tuple(name for name, value in policies.items() if value is False)
+    unavailable = tuple(name for name, value in policies.items() if value is None)
+    expansion_healthy = False if failed else (None if unavailable else True)
 
     return {
         # Core identification
@@ -231,7 +295,7 @@ def expansion_metrics(G, node, vf_before: float, epi_before: float) -> dict[str,
         "vf_final": vf_after,
         "delta_epi": delta_epi,
         "epi_final": epi_after,
-        "expansion_factor": vf_after / vf_before if vf_before > 1e-9 else 1.0,
+        "expansion_factor": ratio(vf_after, vf_before, "VAL capacity factor"),
         # NEW: Structural stability
         "dnfr_final": dnfr,
         "dnfr_positive": dnfr_positive,
@@ -244,11 +308,13 @@ def expansion_metrics(G, node, vf_before: float, epi_before: float) -> dict[str,
         # NEW: Coherence preservation
         "coherence_local": c_local,
         "coherence_preserved": coherence_preserved,
-        # NEW: Fractality indicators
+        "coherence_above_threshold": coherence_preserved,
+        # Configured growth policy; the old fractal label is a compatibility key.
         "epi_growth_rate": epi_growth_rate,
         "vf_growth_rate": vf_growth_rate,
         "growth_ratio": growth_ratio,
         "fractal_preserved": fractal_preserved,
+        "growth_ratio_within_policy": fractal_preserved,
         # NEW: Network impact
         "neighbor_count": neighbor_count,
         "phase_coherence_neighbors": max(0.0, phase_coherence_neighbors),
@@ -256,8 +322,16 @@ def expansion_metrics(G, node, vf_before: float, epi_before: float) -> dict[str,
         "theta_final": theta,
         # NEW: Overall health
         "expansion_healthy": expansion_healthy,
+        "assessment_status": (
+            "fail" if failed else ("unavailable" if unavailable else "pass")
+        ),
+        "failed_policies": failed,
+        "unavailable_policies": unavailable,
+        "acceleration_source": "stored_unverified" if acceleration_present else None,
+        "coherence_scope": "current_immediate_neighbors_without_pre_event_baseline",
+        "growth_policy_scope": "configured_ratio_not_fractality_or_scale_inheritance",
         # Metadata
-        "metrics_version": "3.0_canonical",
+        "metrics_version": "3.1_scoped",
     }
 
 

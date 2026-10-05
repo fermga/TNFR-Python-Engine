@@ -1,13 +1,11 @@
 """Independent finite checks of the shared exact history-affine boundary."""
 
-import os
 import subprocess
 import sys
 from copy import deepcopy
 from dataclasses import FrozenInstanceError, replace
 from fractions import Fraction
 from itertools import product
-from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -528,7 +526,9 @@ def test_owner_receipt_is_independently_checked(monkeypatch, kind):
 
 
 @pytest.mark.parametrize("flag", ["-O", "-OO"])
-def test_optimized_python_preserves_explicit_admission_and_refuses_exact_owner(flag):
+def test_optimized_python_preserves_explicit_admission_and_refuses_exact_owner(
+    flag, source_tree_environment
+):
     raw = raw_fixture()
     proposal = candidate(admit(raw))
     code = f"""
@@ -564,12 +564,9 @@ else:
     raise SystemExit('optimized extrema were not refused')
 print('explicit admission active; exact owner refused')
 """
-    environment = dict(
-        os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[2] / "src")
-    )
     result = subprocess.run(
         [sys.executable, flag, "-c", code],
-        env=environment,
+        env=source_tree_environment,
         text=True,
         capture_output=True,
         timeout=30,

@@ -13,6 +13,11 @@ import networkx as nx
 import pytest
 
 from tests.physics._internal_mode_fixture import _metric_differential
+from tnfr.dynamics.relational import (
+    RelationalExchangeModel,
+    evaluate_relational_exchange,
+    evaluate_relational_uniform_tangent,
+)
 from tnfr.physics.forcing_realization import capture_non_epi_forcing
 from tnfr.physics.phase_response import (
     derive_joint_nodal_response,
@@ -46,6 +51,18 @@ def path_reference():
     for node, pressure in zip(graph, capture.full_kernel_pressure, strict=True):
         graph.nodes[node]["delta_nfr"] = float(pressure)
     return s, graph, phases, metric, source, jacobian, degree, laplacian, form, capacity
+
+
+def _nonlinear_phase_correction(s, q, degree, source, capacity, e, beta, eta):
+    """A supplied comparison row, not an installed execution option."""
+    normalized_form = degree.inv() * q / s.sqrt(beta)
+    response = s.Matrix(
+        [
+            value**3 * pressure**2 / (1 + value**2)
+            for value, pressure in zip(normalized_form, source, strict=True)
+        ]
+    )
+    return (eta * e / s.pi) * capacity * response
 
 
 def test_native_p2_and_cotangent_noether_momentum_exclude_relative_exchange():
@@ -327,6 +344,38 @@ def test_equal_replica_reduction_preserves_this_law_without_exchange_rescaling()
     assert sum(
         1 - s.cos(angle) for i in range(4) for j in range(i + 1, 4) if adjacency[i, j]
     ) == 4 * (1 - s.cos(angle))
+    rho = s.Symbol("rho", nonnegative=True)
+    source = s.Matrix((angle, -angle)) / s.pi
+    fine_source = lift * source
+    comparison = base_phase_rate + rho * nu * source
+    fine_comparison = fine_phase_rate + rho * nu * fine_source
+    assert (fine_comparison - lift * comparison).applyfunc(s.simplify) == s.zeros(4, 1)
+    extra_loss = beta * rho * source.dot(h * nu * source)
+    fine_extra_loss = beta * rho * fine_source.dot(2 * h * nu * fine_source)
+    assert s.simplify(fine_extra_loss - 4 * extra_loss) == 0
+    # The supplied passive phase term also respects counted replication;
+    # this property alone therefore cannot select zero extra loss.
+    e, eta = s.symbols("e eta", positive=True)
+    nonlinear = _nonlinear_phase_correction(
+        s, base_laplacian * form, s.eye(2), source, nu * s.eye(2), e, beta, eta
+    )
+    fine_nonlinear = _nonlinear_phase_correction(
+        s,
+        fine_laplacian * lift * form,
+        2 * s.eye(4),
+        fine_source,
+        nu * s.eye(4),
+        e,
+        beta,
+        eta,
+    )
+    assert (fine_nonlinear - lift * nonlinear).applyfunc(s.simplify) == s.zeros(4, 1)
+    assert (
+        s.simplify(
+            fine_source.dot(2 * h * fine_nonlinear) - 4 * source.dot(h * nonlinear)
+        )
+        == 0
+    )
 
 
 def test_global_work_identifies_capacity_separable_coefficients_away_from_consensus():
@@ -375,3 +424,454 @@ def test_global_work_identifies_capacity_separable_coefficients_away_from_consen
     assert selected.subs(dict.fromkeys(capacities, 0)) == s.zeros(3, 1)
     # This finite nonlinear candidate family tests the theorem's mechanism;
     # the proof for arbitrary continuous own-capacity dependence is in §11.
+
+
+def test_additional_phase_loss_is_passive_but_violates_fixed_form_homogeneity(
+    path_reference,
+):
+    s, _, _, metric, source, _, degree, laplacian, x, _ = path_reference
+    e, w, beta = s.symbols("e w beta", positive=True)
+    rho = s.Symbol("rho", nonnegative=True)
+    capacities = s.symbols("nu0:3", nonnegative=True)
+    capacity = s.diag(*capacities)
+    q = laplacian * x
+    form_rate = capacity * (-e * degree.inv() * q + w * source)
+    reference = (w / beta) * metric.inv() * capacity * q
+    additional = rho * capacity * source
+    comparison = reference + additional
+    phase_gradient = -metric * source
+    loss = e * q.dot(capacity * degree.inv() * q)
+    extra_loss = beta * rho * source.dot(metric * capacity * source)
+    work = q.dot(form_rate) + beta * phase_gradient.dot(comparison)
+    assert s.simplify(work + loss + extra_loss) == 0
+    assert loss.is_nonnegative and extra_loss.is_nonnegative
+    for index, nu in enumerate(capacities):
+        assert comparison[index].subs(nu, 0) == form_rate[index].subs(nu, 0) == 0
+    multiplier = s.Symbol("multiplier", positive=True)
+    assert (
+        comparison.subs({nu: multiplier * nu for nu in capacities}, simultaneous=True)
+        - multiplier * comparison
+    ).applyfunc(s.simplify) == s.zeros(3, 1)
+    # The complete mean is retained: the new term need not be a zero-mean
+    # relative correction when capacities differ.
+    mean_change = s.simplify(sum(additional) / 3)
+    assert (
+        s.simplify(
+            mean_change
+            - rho
+            * s.atan(s.Rational(4, 3))
+            * (capacities[0] - capacities[2])
+            / (3 * s.pi)
+        )
+        == 0
+    )
+
+    # At every active node the unchanged stationary form row supplies
+    # g=e*q/(d*w). Substitution in the full compared phase row gives a strictly
+    # positive multiple of q, so q=g=0 remains necessary and sufficient.
+    degree_i, metric_i, nu_i = s.symbols("degree_i metric_i nu_i", positive=True)
+    q_i = s.Symbol("q_i", real=True)
+    equilibrium_coefficient = w / (beta * metric_i) + rho * e / (degree_i * w)
+    assert equilibrium_coefficient.is_positive
+    assert s.solve(nu_i * q_i * equilibrium_coefficient, q_i) == [0]
+
+    changed_form = multiplier * reference + additional
+    homogeneity_defect = (changed_form - multiplier * comparison).applyfunc(s.simplify)
+    assert (homogeneity_defect - (1 - multiplier) * additional).applyfunc(
+        s.simplify
+    ) == s.zeros(3, 1)
+    assert homogeneity_defect.subs(
+        {multiplier: 2, rho: 1, **dict.fromkeys(capacities, 1)}
+    ) != s.zeros(3, 1)
+    # For a signed homogeneous phase response, exchange scales linearly in
+    # form while L scales quadratically. Any nonzero signed residual then
+    # violates passivity at a sufficiently small amplitude of the right sign.
+    loss_value = s.Symbol("loss_value", nonnegative=True)
+    residual_magnitude = s.Symbol("residual_magnitude", positive=True)
+    amplitude = residual_magnitude / (2 * (loss_value + 1))
+    positive_work = s.factor(
+        -(amplitude**2) * loss_value + amplitude * residual_magnitude
+    )
+    assert positive_work == residual_magnitude**2 * (loss_value + 2) / (
+        4 * (loss_value + 1) ** 2
+    )
+    assert positive_work.is_positive
+
+
+def test_passive_phase_coefficient_transforms_with_normalized_capacity(path_reference):
+    s, _, _, metric, source, _, _, laplacian, x, capacity = path_reference
+    e, w, beta, amplitude, clock = s.symbols("e w beta amplitude clock", positive=True)
+    rho = s.Symbol("rho", nonnegative=True)
+
+    def phase_row(form, mobility, weight, scale, relaxation):
+        return (
+            weight / scale
+        ) * metric.inv() * mobility * laplacian * form + relaxation * mobility * source
+
+    original = phase_row(x, capacity, w, beta, rho)
+    converted = phase_row(
+        amplitude * x, capacity / clock, amplitude * w, amplitude**2 * beta, rho
+    )
+    assert (converted - original / clock).applyfunc(s.simplify) == s.zeros(3, 1)
+    normalization = e + amplitude * w
+    normalized = phase_row(
+        amplitude * x,
+        normalization * capacity / clock,
+        amplitude * w / normalization,
+        amplitude**2 * beta,
+        rho / normalization,
+    )
+    assert (normalized - converted).applyfunc(s.simplify) == s.zeros(3, 1)
+    wrong = phase_row(
+        amplitude * x,
+        normalization * capacity / clock,
+        amplitude * w / normalization,
+        amplitude**2 * beta,
+        rho,
+    )
+    assert (
+        wrong - converted - (normalization - 1) * rho * capacity * source / clock
+    ).applyfunc(s.simplify) == s.zeros(3, 1)
+    # This is chart/clock covariance with all parameters transformed, not the
+    # fixed-model signed form-response homogeneity tested above.
+
+
+def test_fixed_pair_jet_separates_passive_completion_without_a_trajectory():
+    s = pytest.importorskip("sympy")
+    phases = (s.pi / 3, s.S.Zero)
+    rows = ((1,), (0,))
+    metric, _, source, jacobian = _metric_differential(s, rows, phases)
+    capacity = s.diag(1, 2)
+    laplacian = s.Matrix(((1, -1), (-1, 1)))
+    e = w = s.Rational(1, 2)
+    rho = s.Symbol("rho", nonnegative=True)
+    form = s.zeros(2, 1)
+    q = laplacian * form
+    original_phase_rate = w * metric.inv() * capacity * q
+    extra_phase_rate = rho * capacity * source
+    form_rate = capacity * (-e * q + w * source)
+    assert source == s.Matrix((-s.Rational(1, 3), s.Rational(1, 3)))
+    assert form_rate == s.Matrix((-s.Rational(1, 6), s.Rational(1, 3)))
+    assert original_phase_rate == s.zeros(2, 1)
+    assert s.simplify(extra_phase_rate[0] - extra_phase_rate[1]) == -rho
+    acceleration_change = (w * capacity * jacobian * extra_phase_rate).applyfunc(
+        s.simplify
+    )
+    assert acceleration_change == s.Matrix((rho / (2 * s.pi), -rho / s.pi))
+    assert s.simplify(acceleration_change[0] - acceleration_change[1]) == 3 * rho / (
+        2 * s.pi
+    )
+    assert (
+        s.simplify(rho * source.dot(metric * capacity * source)) == s.sqrt(3) * rho / 2
+    )
+
+    graph = nx.path_graph(2)
+    for node, phase in zip(graph, phases, strict=True):
+        graph.nodes[node].update(
+            EPI=0.0,
+            theta=float(phase),
+            nu_f=float(capacity[node, node]),
+            delta_nfr=99.0,
+        )
+    saved = deepcopy(graph)
+    model = RelationalExchangeModel(storage_scale=1.0)
+    field = evaluate_relational_exchange(graph, model=model)
+    tangent = evaluate_relational_uniform_tangent(graph, model=model)
+    assert tangent.field == field
+    assert field.phase_rate == (0.0, 0.0)
+    assert field.form_rate == pytest.approx(tuple(map(float, form_rate)), abs=2e-15)
+    for index in range(2):
+        assert field.pressure_split_residual[index] == Q(field.pressure[index]) - Q(
+            model.phase_weight
+        ) * Q(field.phase_source[index])
+        assert field.nodal_rate_rounding_defect[index] == Q(field.form_rate[index]) - Q(
+            field.capacity[index]
+        ) * Q(field.pressure[index])
+    # Supplied comparison rates are computed beside the captured baseline,
+    # never written into its model/report or installed as an execution mode.
+    represented_extra = tuple(
+        Q(nu) * Q(g) for nu, g in zip(field.capacity, field.phase_source, strict=True)
+    )
+    represented_change = tuple(
+        Q(model.phase_weight)
+        * Q(field.capacity[index])
+        * sum(
+            (
+                Q(coefficient) * rate
+                for coefficient, rate in zip(row, represented_extra, strict=True)
+            ),
+            Q(0),
+        )
+        for index, row in enumerate(tangent.phase_source_jacobian)
+    )
+    assert tuple(map(float, represented_change)) == pytest.approx(
+        tuple(float(value.subs(rho, 1)) for value in acceleration_change), abs=2e-15
+    )
+    assert nx.utils.graphs_equal(graph, saved)
+    # The ideal derivative evaluated with materialized coefficients is not
+    # a derivative of binary64 execution or a certified trajectory enclosure.
+
+
+def test_phase_loss_changes_consensus_poles_without_selecting_an_equilibrium():
+    s = pytest.importorskip("sympy")
+    e, w, beta, nu, mode = s.symbols("e w beta nu mode", positive=True)
+    rho = s.Symbol("rho", nonnegative=True)
+    rate = s.Symbol("rate")
+    generator = (
+        nu * mode * s.Matrix(((-e, -w / s.pi), (w / (beta * s.pi), -rho / s.pi)))
+    )
+    polynomial = (rate * s.eye(2) - generator).det()
+    trace_coefficient = nu * mode * (e + rho / s.pi)
+    determinant = (nu * mode) ** 2 * (e * rho / s.pi + w**2 / (beta * s.pi**2))
+    assert s.expand(polynomial - rate**2 - trace_coefficient * rate - determinant) == 0
+    assert trace_coefficient.is_positive and determinant.is_positive
+    assert (
+        s.simplify(
+            s.discriminant(polynomial, rate)
+            - (nu * mode) ** 2 * ((e - rho / s.pi) ** 2 - 4 * w**2 / (beta * s.pi**2))
+        )
+        == 0
+    )
+    storage_coordinates = s.diag(1, s.sqrt(beta))
+    transformed = storage_coordinates * generator * storage_coordinates.inv()
+    assert s.simplify(
+        transformed + transformed.T + 2 * nu * mode * s.diag(e, rho / s.pi)
+    ) == s.zeros(2)
+    assert (
+        s.simplify(
+            polynomial.subs(rho, 0)
+            - rate**2
+            - e * nu * mode * rate
+            - w**2 * nu**2 * mode**2 / (beta * s.pi**2)
+        )
+        == 0
+    )
+    normalized_discriminant = s.simplify(
+        s.discriminant(polynomial, rate) / (nu * mode) ** 2
+    ).subs({e: s.Rational(1, 2), w: s.Rational(1, 2), beta: 1})
+    real_decay = s.simplify(normalized_discriminant.subs(rho, 0))
+    oscillatory_decay = s.simplify(normalized_discriminant.subs(rho, 1))
+    assert s.simplify(real_decay - (s.Rational(1, 4) - 1 / s.pi**2)) == 0
+    assert s.simplify(oscillatory_decay - (s.Rational(1, 4) - 1 / s.pi)) == 0
+    assert real_decay.is_positive and oscillatory_decay.is_negative
+    # The same e=w=1/2 and beta=1 therefore admit real decay at rho=0 and
+    # damped oscillation at rho=1, despite both having strictly stable poles.
+    # Different losses preserve the positive-coefficient modal stability
+    # criterion. Existing numerical recovery/capture bounds are not reused.
+
+
+def test_odd_nonlinear_response_has_fifth_order_equilibrium_jet_not_degree_one():
+    s = pytest.importorskip("sympy")
+    value, amplitude, contrast, angle = s.symbols(
+        "value amplitude contrast angle", real=True
+    )
+    h = value**3 / (1 + value**2)
+    assert s.simplify(h.subs(value, -value) + h) == 0
+    assert s.factor(h.subs(value, 2 * value) - 2 * h) == (
+        6 * value**3 / ((1 + value**2) * (1 + 4 * value**2))
+    )
+    # |h(u)| <= u²/2 is a global rational-square certificate. It is not
+    # inferred from a collection of finite sampled amplitudes.
+    magnitude = s.Symbol("magnitude", nonnegative=True)
+    gap = magnitude**2 / 2 - h.subs(value, magnitude)
+    certificate = magnitude**2 * (magnitude - 1) ** 2 / (2 * (1 + magnitude**2))
+    assert s.factor(gap - certificate) == 0
+    assert certificate.is_nonnegative
+
+    e, beta, eta, nu = s.symbols("e beta eta nu", positive=True)
+    # On an exact P2 chart, q=amplitude*contrast and
+    # g=-amplitude*angle/pi. Both deviations vanish at equilibrium.
+    correction = (
+        eta
+        * e
+        * nu
+        / s.pi
+        * h.subs(value, amplitude * contrast / s.sqrt(beta))
+        * (amplitude * angle / s.pi) ** 2
+    )
+    assert all(
+        s.diff(correction, amplitude, order).subs(amplitude, 0) == 0
+        for order in range(5)
+    )
+    assert (
+        s.simplify(
+            s.diff(correction, amplitude, 5).subs(amplitude, 0) / s.factorial(5)
+            - eta
+            * e
+            * nu
+            * contrast**3
+            * angle**2
+            / (s.pi**3 * beta ** s.Rational(3, 2))
+        )
+        == 0
+    )
+    # The equilibrium tangent, and hence its modes, cannot distinguish this
+    # law from the reference. Finite-amplitude responses can.
+
+
+def test_nonlinear_signed_work_has_a_coercive_total_passivity_majorant():
+    s = pytest.importorskip("sympy")
+    e, beta, degree, metric = s.symbols("e beta degree metric", positive=True)
+    nu = s.Symbol("nu", nonnegative=True)
+    eta, q, source = s.symbols("eta q source", real=True)
+    correction = _nonlinear_phase_correction(
+        s, s.Matrix((q,)), s.diag(degree), s.Matrix((source,)), s.diag(nu), e, beta, eta
+    )[0]
+    loss = e * nu * q**2 / degree
+    signed_work = -beta * metric * source * correction
+    u, relative_metric = s.symbols("u relative_metric", real=True)
+    substitutions = {
+        q: degree * s.sqrt(beta) * u,
+        metric: s.pi * degree * relative_metric,
+    }
+    assert (
+        s.simplify(
+            signed_work.subs(substitutions)
+            + eta
+            * relative_metric
+            * source**3
+            * u
+            / (1 + u**2)
+            * loss.subs(substitutions)
+        )
+        == 0
+    )
+    assert correction.subs(nu, 0) == correction.subs(q, 0) == 0
+    scale = s.Symbol("scale", positive=True)
+    assert s.simplify(correction.subs(nu, scale * nu) - scale * correction) == 0
+
+    # On the regular domain 0<H/(pi*d)<=1 and |g|<1. Write their bounded
+    # product H*|g|³/(pi*d) as 1/(1+slack); its zero limit is separate.
+    magnitude, slack, loss_value, eta_value = s.symbols(
+        "magnitude slack loss_value eta_value", nonnegative=True
+    )
+    bound_product = 1 / (1 + slack)
+    absolute_work = (
+        eta_value * loss_value * bound_product * magnitude / (1 + magnitude**2)
+    )
+    gap = eta_value * loss_value / 2 - absolute_work
+    certificate = (
+        eta_value
+        * loss_value
+        / (2 * (1 + slack))
+        * (slack + (magnitude - 1) ** 2 / (1 + magnitude**2))
+    )
+    assert s.factor(gap - certificate) == 0
+    assert certificate.is_nonnegative
+    margin = s.Symbol("margin", positive=True)
+    # eta=2/(1+margin) covers exactly 0<eta<2. A zero loss forces all
+    # active q rows to vanish; the unchanged form row then forces active g=0.
+    assert s.simplify(
+        (1 - eta_value / 2).subs(eta_value, 2 / (1 + margin))
+    ) == margin / (1 + margin)
+    assert (margin / (1 + margin)).is_positive
+    assert (-(1 - eta_value / 2) * loss_value).subs(loss_value, 0) == 0
+    w = s.Symbol("w", positive=True)
+    admitted_eta = 2 / (1 + margin)
+    stationary_phase_rate = nu * w * q / (beta * metric) + correction.subs(
+        {source: e * q / (degree * w), eta: admitted_eta}
+    )
+    coefficient = w / (beta * metric) + (
+        admitted_eta
+        * e**3
+        * q**4
+        / (s.pi * degree**3 * s.sqrt(beta) * w**2 * (degree**2 * beta + q**2))
+    )
+    assert s.simplify(stationary_phase_rate - nu * q * coefficient) == 0
+    assert coefficient.is_positive
+    # Thus at every active node joint stationarity requires q=0 and then
+    # g=0. Inactive nodes impose neither condition on their stored geometry.
+
+
+def test_nonlinear_response_preserves_whole_law_units_but_not_form_proportionality(
+    path_reference,
+):
+    s, _, _, metric, source, _, degree, laplacian, x, capacity = path_reference
+    e, w, beta, eta, amplitude, clock = s.symbols(
+        "e w beta eta amplitude clock", positive=True
+    )
+
+    def phase_row(form, mobility, diffusion, weight, storage_scale):
+        q = laplacian * form
+        return (
+            weight / storage_scale
+        ) * metric.inv() * mobility * q + _nonlinear_phase_correction(
+            s, q, degree, source, mobility, diffusion, storage_scale, eta
+        )
+
+    original = phase_row(x, capacity, e, w, beta)
+    converted = phase_row(
+        amplitude * x, capacity / clock, e, amplitude * w, amplitude**2 * beta
+    )
+    assert (converted - original / clock).applyfunc(s.simplify) == s.zeros(3, 1)
+    normalization = e + amplitude * w
+    normalized = phase_row(
+        amplitude * x,
+        normalization * capacity / clock,
+        e / normalization,
+        amplitude * w / normalization,
+        amplitude**2 * beta,
+    )
+    assert (normalized - converted).applyfunc(s.simplify) == s.zeros(3, 1)
+    doubled_form = phase_row(2 * x, capacity, e, w, beta)
+    assert (doubled_form - 2 * original).applyfunc(s.simplify) != s.zeros(3, 1)
+    # beta, pressure weights and capacity transform in a unit conversion.
+    # Keeping those coefficients fixed tests a different constitutive claim.
+
+
+def test_nonlinear_pair_response_changes_signed_exchange_and_relative_motion():
+    s = pytest.importorskip("sympy")
+    phases = (s.pi / 3, s.S.Zero)
+    metric, _, source, jacobian = _metric_differential(s, ((1,), (0,)), phases)
+    capacity, degree = s.diag(1, 2), s.eye(2)
+    laplacian = s.Matrix(((1, -1), (-1, 1)))
+    form = s.Matrix((s.Rational(1, 2), -s.Rational(1, 2)))
+    q = laplacian * form
+    e = w = s.Rational(1, 2)
+    correction = _nonlinear_phase_correction(s, q, degree, source, capacity, e, 1, 1)
+    assert correction == s.Matrix((1 / (36 * s.pi), -1 / (18 * s.pi)))
+    signed_work = s.simplify(-source.dot(metric * correction))
+    assert signed_work == s.sqrt(3) / (24 * s.pi)
+    loss = e * q.dot(capacity * q)
+    assert loss == s.Rational(3, 2)
+    assert (loss - signed_work).is_positive
+    reflected = _nonlinear_phase_correction(s, -q, degree, source, capacity, e, 1, 1)
+    assert reflected == -correction
+    assert s.simplify(-source.dot(metric * reflected)) == -signed_work
+    assert s.simplify(correction[0] - correction[1]) == 1 / (12 * s.pi)
+    acceleration_change = (w * capacity * jacobian * correction).applyfunc(s.simplify)
+    assert acceleration_change == s.Matrix((-1 / (24 * s.pi**2), 1 / (12 * s.pi**2)))
+
+    graph = nx.path_graph(2)
+    for node in graph:
+        graph.nodes[node].update(
+            EPI=float(form[node]),
+            theta=float(phases[node]),
+            nu_f=float(capacity[node, node]),
+            delta_nfr=99.0,
+        )
+    saved = deepcopy(graph)
+    model = RelationalExchangeModel(storage_scale=1.0)
+    baseline = evaluate_relational_exchange(graph, model=model)
+    expected_form = capacity * (-e * q + w * source)
+    expected_phase = w * metric.inv() * capacity * q
+    assert baseline.form_rate == pytest.approx(
+        tuple(map(float, expected_form)), abs=2e-15
+    )
+    assert baseline.phase_rate == pytest.approx(
+        tuple(map(float, expected_phase)), abs=2e-15
+    )
+    for index in range(2):
+        assert baseline.pressure_split_residual[index] == (
+            Q(baseline.pressure[index])
+            - Q(model.epi_weight) * Q(-q[index])
+            - Q(model.phase_weight) * Q(baseline.phase_source[index])
+        )
+        assert baseline.nodal_rate_rounding_defect[index] == (
+            Q(baseline.form_rate[index])
+            - Q(baseline.capacity[index]) * Q(baseline.pressure[index])
+        )
+    assert nx.utils.graphs_equal(graph, saved)
+    # Only the native baseline is evaluated. The comparison is exact analytic
+    # algebra beside it; no nonuniform state is sent to a uniform tangent API,
+    # and neither field supplies a numerical trajectory error enclosure.

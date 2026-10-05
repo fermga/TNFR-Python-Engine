@@ -17,8 +17,11 @@ from urllib.parse import unquote, urlsplit
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SRC = REPO_ROOT / "src"
-if str(SRC) not in sys.path:
-    sys.path.insert(0, str(SRC))
+# The path may already follow site-packages (for example through PYTHONPATH).
+# Documentation must consume this checkout, never an older installed release.
+if str(SRC) in sys.path:
+    sys.path.remove(str(SRC))
+sys.path.insert(0, str(SRC))
 
 
 def require(condition: bool, message: str) -> None:

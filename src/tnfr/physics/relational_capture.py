@@ -1,24 +1,34 @@
-"""Conditional continuous capture from detached two-ring states.
+"""Detached cycle geometry, capture, energy obstructions and bridge removal.
 
-Three read-only owners admit exact reflected protected regions, a full-state
-local neighborhood, or a full acute winding sector. They share fresh native
-fields, topology and rigorous trigonometric bounds. They neither project
-nearly symmetric states, integrate a reduced model, certify future binary64
-steps, nor equate floating winding telemetry with a proven target. Exact
-energy enclosures remain separate from production storage arithmetic. All
-claims concern ideal continuation from the supplied snapshot, independently
-of an earlier numerical trajectory's error or a frozen experimental verdict.
+The sector geometry observer reads supplied support, form, phase and storage
+scale without a rate evaluation or dynamical admission. Conditional capture
+owners additionally use fresh native fields to admit reflected protected
+regions, a full-state local neighborhood, a joined acute winding sector or
+one C5. The detachment observer evaluates the supplied joined state and its
+components separately, with the shared reset owner retaining event work.
+Their shared exact geometry does not project states, integrate a model,
+certify binary64 steps or substitute winding telemetry for proof.
+Static seeded-formation obstructions use that geometry without evaluating a field.
+Energy enclosures remain separate from production storage arithmetic.
+Capture concerns ideal continuation from the supplied snapshot, independently
+of earlier integration error or a frozen experimental verdict.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 from fractions import Fraction as Q
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
+import networkx as nx
+
+from ..constants.aliases import ALIAS_EPI, ALIAS_THETA
 from ..dynamics.relational import (
     RelationalExchangeField,
     RelationalExchangeModel,
+    _epi,
+    _finite,
+    _raw,
     evaluate_relational_exchange,
 )
 from ..mathematics._phase_midpoint import _affine_interval, _pi_bounds
@@ -26,16 +36,33 @@ from ..mathematics._phase_resultant_chamber import (
     COSINE_ENCLOSURE_METHOD,
     certified_cosine_bounds,
 )
+from ..mathematics._rational_interval import INTERVAL_METHOD, I, pi_interval, sqrt
 from .relational_observations import _detached_graph, _ordered
 from .winding_certificates import WindingCertificate, certify_phase_winding
 
+if TYPE_CHECKING:
+    from .relational_observations import RelationalResetObservation
+
 __all__ = (
     "RelationalCaptureCertificate",
+    "RelationalConsensusCaptureCertificate",
+    "RelationalConsensusFormationObstruction",
     "RelationalLocalCaptureCertificate",
     "RelationalSectorCaptureCertificate",
+    "RelationalSectorGeometry",
+    "RelationalCycleCaptureCertificate",
+    "RelationalDetachmentObservation",
+    "RelationalSeededFormationCase",
+    "RelationalSeededFormationObstruction",
     "certify_relational_capture",
+    "certify_relational_consensus_capture",
+    "certify_relational_consensus_formation_obstruction",
     "certify_relational_local_capture",
     "certify_relational_sector_capture",
+    "observe_relational_sector_geometry",
+    "certify_relational_cycle_capture",
+    "observe_relational_detachment",
+    "certify_relational_seeded_formation_obstruction",
 )
 
 
@@ -150,16 +177,20 @@ class RelationalCaptureCertificate:
 
 
 def _cycles(field, cycles):
+    return _cycle_support(field.nodes, field.edges, cycles)
+
+
+def _cycle_support(nodes, edges, cycles):
     rows = tuple(_ordered(row, "cycle") for row in _ordered(cycles, "cycles"))
     if len(rows) != 2 or any(len(row) != 5 for row in rows):
         raise ValueError("cycles must contain exactly two ordered five-node rings")
-    lookup = {node: index for index, node in enumerate(field.nodes)}
+    lookup = {node: index for index, node in enumerate(nodes)}
     try:
         indices = tuple(tuple(lookup[node] for node in row) for row in rows)
     except (TypeError, KeyError) as exc:
         raise ValueError("cycle nodes must belong to the captured support") from exc
     flat = tuple(i for row in indices for i in row)
-    if len(field.nodes) != 10 or len(set(flat)) != 10:
+    if len(nodes) != 10 or len(set(flat)) != 10:
         raise ValueError("the two cycles must cover the full support exactly once")
     expected = {
         frozenset((left, right))
@@ -167,7 +198,7 @@ def _cycles(field, cycles):
         for left, right in zip(row, row[1:] + row[:1])
     }
     expected.update(frozenset((indices[0][i], indices[1][i])) for i in (0, 1))
-    actual = {frozenset((lookup[a], lookup[b])) for a, b in field.edges}
+    actual = {frozenset((lookup[a], lookup[b])) for a, b in edges}
     if actual != expected:
         raise ValueError(
             "support must be the two supplied cycles and bridges at matching positions 0 and 1"
@@ -176,11 +207,15 @@ def _cycles(field, cycles):
 
 
 def _phase_storage_bounds(field):
-    phase = tuple(map(Q, field.phase))
-    position = {node: i for i, node in enumerate(field.nodes)}
+    return _phase_storage_bounds_at(field.nodes, field.edges, field.phase)
+
+
+def _phase_storage_bounds_at(nodes, edges, phases):
+    phase = tuple(map(Q, phases))
+    position = {node: i for i, node in enumerate(nodes)}
     bounds = tuple(
         certified_cosine_bounds(phase[position[j]] - phase[position[i]])
-        for i, j in field.edges
+        for i, j in edges
     )
     return (
         sum((1 - upper for _, upper in bounds), Q(0)),
@@ -305,6 +340,254 @@ def certify_relational_capture(
 
 
 @dataclass(frozen=True)
+class RelationalConsensusCaptureCertificate:
+    """Analytic consensus capture from a bounded reflected form preparation.
+
+    The declared theorem has beta=nu=1, e=w=1/2, exact initial phase
+    consensus and copied reflected form on the supplied two-bridge support.
+    Its fixed form-storage ceiling is 9. It bounds the full ideal trajectory
+    through structural time one, then applies the existing strict consensus
+    capture theorem. No numerical endpoint or integrated response is supplied.
+
+    Dynamic estimates remain unavailable when any premise fails. The initial
+    field and form budget remain observable. Native domain admission concerns
+    that captured source; a theorem about ideal continuation does not promise
+    admission of future finite steps under a configured execution guard.
+    """
+
+    initial: RelationalCaptureCertificate
+    initial_form_storage: Q
+    form_storage_ceiling: Q
+    form_storage_margin: Q
+    exact_phase_consensus: bool
+    fixed_coefficients_admitted: bool
+    unit_storage_scale: bool
+    bootstrap_time: Q
+    bootstrap_phase_absolute_upper_bounds: tuple[Q, Q] | None
+    bootstrap_phase_radius_margins: tuple[Q, Q] | None
+    endpoint_phase_storage_upper_bound: Q | None
+    endpoint_storage_upper_bound: Q | None
+    endpoint_consensus_rectangle_margin_bounds: tuple[tuple[Q, Q], ...] | None
+    capture_margin: Q | None
+    target_sector: int | None
+    status: str
+    unavailable_reasons: tuple[str, ...]
+    arithmetic_method: str = INTERVAL_METHOD
+    scope: tuple[str, ...] = (
+        "single_existing_native_capture_and_exact_copied_reflected_two_bridge_admission",
+        "exact_initial_raw_phase_consensus_with_supplied_common_offsets_retained",
+        "unit_held_capacity_unit_storage_scale_and_normalized_e_w_equal_one_half",
+        "form_storage_at_most_nine_is_a_conditional_theorem_not_a_fitted_threshold",
+        "whole_initial_unit_time_bootstrap_keeps_both_phase_coordinates_below_one_half",
+        "initial_storage_equals_form_storage_only_under_admitted_phase_consensus",
+        "strict_loss_and_phase_potential_bound_give_endpoint_storage_at_most_two_F_over_three",
+        "endpoint_box_enters_existing_consensus_rectangle_below_its_strict_storage_barrier",
+        "ideal_continuous_capture_to_consensus_excludes_maintained_unit_winding_in_this_class",
+        "failed_sufficient_admission_does_not_certify_formation_or_instability",
+        "no_integrated_endpoint_response_solver_or_modified_existing_strict_capture_semantics",
+        "no_future_finite_step_guard_guarantee_support_selection_or_physical_identification",
+    )
+
+    @property
+    def admitted(self):
+        return self.status == "admitted"
+
+
+def certify_relational_consensus_capture(
+    graph, *, model: RelationalExchangeModel, cycles
+) -> RelationalConsensusCaptureCertificate:
+    """Certify a finite-time entry bound and subsequent ideal consensus capture.
+
+    Admit the actual represented source through ``certify_relational_capture``
+    once. For its exact copied reflected coordinates (A,B,a,b), the new theorem
+    requires a=b=0 and F=6*A**2-4*A*B+4*B**2<=9 at beta=nu=1,e=w=1/2.
+    Common form and phase offsets do not affect this conditional result.
+
+    On 0<=t<=1 the proof gives |a|<=sqrt(3F/2)/(3*pi) and
+    |b|<=sqrt(F)/(2*pi), both strictly below 1/2. At t=1 the total
+    storage is at most 2F/3<=6<7 in the consensus rectangle. These
+    are analytic bounds on ideal continuous evolution, not evaluated samples.
+    The older initial E<7 capture certificate remains unchanged.
+    """
+    initial = certify_relational_capture(graph, model=model, cycles=cycles)
+    field = initial.field
+    form = field.form_storage
+    ceiling = Q(9)
+    consensus = len(set(map(Q, field.phase))) == 1
+    coefficients = tuple(map(Q, field.model.effective_weights)) == (Q(1, 2), Q(1, 2))
+    unit_beta = Q(field.model.storage_scale) == 1
+    reasons = tuple(
+        reason
+        for condition, reason in (
+            (initial.exact_symmetry, "exact_copy_reflection_required"),
+            (consensus, "exact_initial_phase_consensus_required"),
+            (initial.unit_capacity, "unit_held_capacity_required"),
+            (coefficients, "normalized_epi_and_phase_weights_one_half_required"),
+            (unit_beta, "unit_storage_scale_required"),
+            (form <= ceiling, "initial_form_storage_at_most_nine_required"),
+        )
+        if not condition
+    )
+    phase_bounds = phase_margins = rectangle = endpoint_storage = capture_margin = None
+    if not reasons:
+        pi = pi_interval()
+        phase_bounds = (
+            (sqrt(I(Q(3, 2) * form)) / (3 * pi)).hi,
+            (sqrt(I(form)) / (2 * pi)).hi,
+        )
+        phase_margins = tuple(Q(1, 2) - value for value in phase_bounds)
+        candidates = _capture_rectangle_candidates(
+            I(-phase_bounds[0], phase_bounds[0]),
+            I(-phase_bounds[1], phase_bounds[1]),
+            lambda coordinate, coefficient: coordinate + coefficient * pi,
+        )
+        rectangle = tuple(
+            (value.lo, value.hi)
+            for sector, margins in candidates
+            if sector == 0
+            for value in margins
+        )
+        endpoint_storage = Q(2, 3) * form
+        capture_margin = initial.capture_threshold - endpoint_storage
+        if (
+            min(phase_margins) <= 0
+            or min(value[0] for value in rectangle) <= 0
+            or capture_margin <= 0
+        ):
+            raise ArithmeticError(
+                "consensus bootstrap constants failed their strict theorem margins"
+            )
+    return RelationalConsensusCaptureCertificate(
+        initial=initial,
+        initial_form_storage=form,
+        form_storage_ceiling=ceiling,
+        form_storage_margin=ceiling - form,
+        exact_phase_consensus=consensus,
+        fixed_coefficients_admitted=coefficients,
+        unit_storage_scale=unit_beta,
+        bootstrap_time=Q(1),
+        bootstrap_phase_absolute_upper_bounds=phase_bounds,
+        bootstrap_phase_radius_margins=phase_margins,
+        endpoint_phase_storage_upper_bound=Q(1, 4) * form if not reasons else None,
+        endpoint_storage_upper_bound=endpoint_storage,
+        endpoint_consensus_rectangle_margin_bounds=rectangle,
+        capture_margin=capture_margin,
+        target_sector=None if reasons else 0,
+        status="unavailable" if reasons else "admitted",
+        unavailable_reasons=reasons,
+    )
+
+
+@dataclass(frozen=True)
+class RelationalConsensusFormationObstruction:
+    """All-form exclusion of the aligned unit-winding target from consensus.
+
+    At the admitted source, phase storage is zero and full form storage is
+    at most nine. The native half-weight law keeps phase storage below the
+    aligned target's cost on every regular existence interval. Arbitrary
+    represented form is retained; no copy or reflection premise is imposed.
+    The bound does not certify global regular continuation or convergence
+    to consensus. Failed premises leave all prospective bounds unavailable.
+    """
+
+    field: RelationalExchangeField
+    cycles: tuple[tuple[Any, ...], tuple[Any, ...]]
+    initial_form_storage: Q
+    form_storage_ceiling: Q
+    form_storage_margin: Q
+    exact_phase_consensus: bool
+    unit_capacity: bool
+    fixed_coefficients_admitted: bool
+    unit_storage_scale: bool
+    normalized_gap_lower_bound: Q | None
+    all_regular_time_phase_storage_upper_bound: Q | None
+    target_phase_storage_bounds: tuple[Q, Q] | None
+    exclusion_margin: Q | None
+    excluded_target_sectors: tuple[int, int] | None
+    status: str
+    unavailable_reasons: tuple[str, ...]
+    continuation_status: str = "not_certified"
+    arithmetic_method: str = INTERVAL_METHOD
+    scope: tuple[str, ...] = (
+        "one_fresh_detached_native_field_and_exact_two_C5_matching_adjacent_bridge_support",
+        "arbitrary_full_form_without_copy_reflection_or_projection",
+        "exact_initial_raw_phase_consensus_unit_held_capacity_and_storage_scale",
+        "normalized_epi_phase_weights_one_half_no_input_events_or_coefficient_change",
+        "full_support_form_storage_at_most_nine_including_all_bridge_costs",
+        "native_argument_pressure_work_and_full_graph_gap_bound_control_phase_storage",
+        "all_regular_existence_times_phase_storage_at_most_seven_initial_F_over_ten",
+        "aligned_acute_unit_winding_targets_of_either_orientation_are_excluded",
+        "zero_form_source_included_without_division_by_form_or_phase_storage",
+        "no_global_continuation_consensus_limit_transient_winding_or_new_target_claim",
+        "no_solver_response_replay_finite_step_guarantee_operator_event_or_physical_identification",
+    )
+
+    @property
+    def admitted(self):
+        return self.status == "admitted"
+
+
+def certify_relational_consensus_formation_obstruction(
+    graph, *, model: RelationalExchangeModel, cycles
+) -> RelationalConsensusFormationObstruction:
+    """Exclude maintained aligned unit winding for the full bounded form class.
+
+    Reuse native source admission and the actual two-ring support. With exact
+    common raw phase, beta=nu=1 and normalized e=w=1/2, the analytic theorem
+    gives P(t)<=7F(0)/10 for every regular existence time when F(0)<=9.
+    This excludes entry into either acute unit-winding target component and
+    convergence to its aligned target. It does not prove that the native
+    solution exists forever or converges to consensus. No reflected source
+    coordinates, trajectory integration or numerical endpoint are used.
+    """
+    field = evaluate_relational_exchange(graph, model=model)
+    cycles, _ = _cycles(field, cycles)
+    form, ceiling = field.form_storage, Q(9)
+    consensus = len(set(map(Q, field.phase))) == 1
+    unit_capacity = all(Q(value) == 1 for value in field.capacity)
+    coefficients = tuple(map(Q, field.model.effective_weights)) == (Q(1, 2), Q(1, 2))
+    unit_beta = Q(field.model.storage_scale) == 1
+    reasons = tuple(
+        reason
+        for condition, reason in (
+            (consensus, "exact_initial_phase_consensus_required"),
+            (unit_capacity, "unit_held_capacity_required"),
+            (coefficients, "normalized_epi_and_phase_weights_one_half_required"),
+            (unit_beta, "unit_storage_scale_required"),
+            (form <= ceiling, "initial_form_storage_at_most_nine_required"),
+        )
+        if not condition
+    )
+    phase_bound = target_bounds = margin = None
+    if not reasons:
+        phase_bound = Q(7, 10) * form
+        target_bounds = _twist_storage_bounds(_pi_bounds())
+        margin = target_bounds[0] - phase_bound
+        if margin <= 0:
+            raise ArithmeticError(
+                "consensus formation constants failed their target separation"
+            )
+    return RelationalConsensusFormationObstruction(
+        field=field,
+        cycles=cycles,
+        initial_form_storage=form,
+        form_storage_ceiling=ceiling,
+        form_storage_margin=ceiling - form,
+        exact_phase_consensus=consensus,
+        unit_capacity=unit_capacity,
+        fixed_coefficients_admitted=coefficients,
+        unit_storage_scale=unit_beta,
+        normalized_gap_lower_bound=Q(1, 9) if not reasons else None,
+        all_regular_time_phase_storage_upper_bound=phase_bound,
+        target_phase_storage_bounds=target_bounds,
+        exclusion_margin=margin,
+        excluded_target_sectors=(-1, 1) if not reasons else None,
+        status="unavailable" if reasons else "admitted",
+        unavailable_reasons=reasons,
+    )
+
+
+@dataclass(frozen=True)
 class RelationalLocalCaptureCertificate:
     """Sufficient full-state local basin around one declared phase target.
 
@@ -391,6 +674,143 @@ def _twist_storage_bounds(pi_bounds):
     cosine_lower, cosine_upper = _pi_cosine_bounds(Q(2, 5), pi_bounds)
     # The aligned bridges have zero cost and both rings have five twist edges.
     return 10 * (1 - cosine_upper), 10 * (1 - cosine_lower)
+
+
+def _cycle_barrier_constants(pi_bounds):
+    """C5 acute winding-one face cost, independently of a chosen law.
+
+    One edge reaches pi/2; the other four sum to 3*pi/2. Convexity of
+    1-cos on the closed acute chart gives 5-4*cos(3*pi/8). Return the
+    original cosine enclosure as well as the resulting unscaled cost.
+    """
+    cosine = _pi_cosine_bounds(Q(3, 8), pi_bounds)
+    return cosine, (5 - 4 * cosine[1], 5 - 4 * cosine[0])
+
+
+@dataclass(frozen=True)
+class RelationalSeededFormationCase:
+    """One supplied support's uniform initial-energy obstruction.
+
+    Matching ports index the ordered source and receiver cycles separately.
+    The strict initial storage bound includes all supplied bridge costs.
+    Its positive deficit from the two-pattern target is only a necessary
+    additional storage requirement, not sufficient work, an available
+    reservoir or a guarantee of formation after changing the preparation.
+    """
+
+    bridge_count: int
+    matching_ports: tuple[tuple[int, int], ...]
+    bridge_storage_upper_bound: Q
+    initial_storage_upper_bound: Q
+    initial_storage_bound_is_strict: bool
+    additional_storage_gap_lower_bound: Q
+    obstruction_certified: bool
+    unavailable_reasons: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class RelationalSeededFormationObstruction:
+    """Conditional exclusion of a particular two-pattern formation target.
+
+    The source is an exact winding+1 C5 twist; the receiver is a uniform-phase
+    C5. Both have the same constant form and beta=capacity=1, with e=w=1/2.
+    One or two matching bridges are supplied. Every relative phase admitted
+    by the initial positive-real-resultant chamber obeys the energy ceiling.
+
+    The excluded target has BOTH rings in acute winding+1 sectors, or both
+    recovered winding+1 twists, under subsequent unforced fixed-support
+    native evolution. Winding alone on a nonacute state is not this target.
+    The report does not exclude receiver formation accompanied by source
+    loss, other transient organization or preparations with form contrast.
+    """
+
+    pi_bounds: tuple[Q, Q]
+    twist_cosine_bounds: tuple[Q, Q]
+    source_storage_bounds: tuple[Q, Q]
+    target_minimum_storage_bounds: tuple[Q, Q]
+    cases: tuple[RelationalSeededFormationCase, RelationalSeededFormationCase]
+    obstruction_certified: bool
+    status: str
+    unavailable_reasons: tuple[str, ...]
+    enclosure_method: str = COSINE_ENCLOSURE_METHOD
+    scope: tuple[str, ...] = (
+        "exact_winding_plus_one_C5_source_and_uniform_phase_C5_receiver",
+        "same_constant_form_unit_capacity_beta_one_equal_half_pressure_weights",
+        "one_or_two_supplied_matching_bridges_with_their_initial_storage_included",
+        "uniform_over_all_relative_phases_in_initial_positive_real_resultant_chamber",
+        "acute_initial_bridge_admission_is_a_stronger_subset",
+        "initial_positive_resultant_premise_not_the_full_regular_phase_domain",
+        "target_is_both_acute_winding_plus_one_sectors_or_recovered_twists_not_winding_alone",
+        "native_unforced_fixed_support_continuation_has_nonincreasing_storage",
+        "additional_storage_deficit_is_necessary_not_a_sufficient_formation_condition",
+        "no_graph_admission_field_evaluation_trajectory_event_or_physical_claim",
+    )
+
+
+def certify_relational_seeded_formation_obstruction() -> (
+    RelationalSeededFormationObstruction
+):
+    """Exclude the fixed equal-form seed's two-pattern target by storage.
+
+    Write c=cos(2*pi/5), V*=5*(1-c). Each source port has initial relative
+    resultant real part ``2*c+cos(delta_j)``. Strict positivity implies
+    bridge cost ``1-cos(delta_j) < 1+2*c``. Receiver real parts are
+    ``2+cos(delta_j)>=1``; nonport source real parts are ``2*c>0``.
+    Thus with k in {1,2}, initial storage is strictly below
+    ``V*+k*(1+2*c)``, whereas the declared target requires at least ``2*V*``.
+    The difference ``5-k-(5+2*k)*c`` is strictly positive for both supports.
+
+    All constants reuse the shared exact pi/cosine geometry. Outward upper
+    initial bounds and the lower target bound certify the strict deficit;
+    no relative phase is sampled or fitted. For acute initial bridges the
+    stronger cost bound is k, but the report covers the larger positive-real
+    initial chamber. It does not transfer to the entire regular phase domain:
+    a two-bridge initial state can have negative source resultant real parts
+    with nonzero imaginary parts and more bridge storage than this ceiling.
+    Nor does it certify global existence of a continuation. Whenever the
+    unforced native continuation exists, its storage cannot reach the target.
+    """
+    pi_bounds = _pi_bounds()
+    cosine = _pi_cosine_bounds(Q(2, 5), pi_bounds)
+    target = _twist_storage_bounds(pi_bounds)
+    source = tuple(value / 2 for value in target)
+    cases = []
+    for count in (1, 2):
+        bridge_upper = count * (1 + 2 * cosine[1])
+        initial_upper = source[1] + bridge_upper
+        gap = target[0] - initial_upper
+        obstruction = gap > 0
+        reasons = (
+            ()
+            if obstruction
+            else ("strict_initial_to_target_storage_gap_not_certified",)
+        )
+        cases.append(
+            RelationalSeededFormationCase(
+                bridge_count=count,
+                matching_ports=tuple((index, index) for index in range(count)),
+                bridge_storage_upper_bound=bridge_upper,
+                initial_storage_upper_bound=initial_upper,
+                initial_storage_bound_is_strict=True,
+                additional_storage_gap_lower_bound=gap,
+                obstruction_certified=obstruction,
+                unavailable_reasons=reasons,
+            )
+        )
+    obstruction = all(case.obstruction_certified for case in cases)
+    reasons = (
+        () if obstruction else ("both_supplied_support_obstructions_not_certified",)
+    )
+    return RelationalSeededFormationObstruction(
+        pi_bounds=pi_bounds,
+        twist_cosine_bounds=cosine,
+        source_storage_bounds=source,
+        target_minimum_storage_bounds=target,
+        cases=tuple(cases),
+        obstruction_certified=obstruction,
+        status="obstructed" if obstruction else "unavailable",
+        unavailable_reasons=reasons,
+    )
 
 
 def certify_relational_local_capture(
@@ -504,6 +924,67 @@ def certify_relational_local_capture(
 
 
 @dataclass(frozen=True)
+class RelationalSectorGeometry:
+    """Law-neutral exact sector and storage evidence on supplied unit support.
+
+    Form, raw phase and beta are exact ratios of admitted materialized values.
+    Edges retain graph order and orientation. ``admitted`` means only that
+    the acute edge gaps, declared cycle periods and strict energy sublevel
+    were resolved. The sublevel bounds concern states in the same sector
+    below this storage ceiling; no trajectory, capture law or limiting target
+    is certified. Capacity, pressure, forcing and evolution are not consumed.
+    Public construction and JSON projection do not authenticate provenance.
+    """
+
+    nodes: tuple[Any, ...]
+    edges: tuple[tuple[Any, Any], ...]
+    epi: tuple[Q, ...]
+    phase: tuple[Q, ...]
+    storage_scale: Q
+    form_storage: Q
+    cycles: tuple[tuple[Any, ...], tuple[Any, ...]]
+    declared_target_sector: int
+    pi_bounds: tuple[Q, Q]
+    edge_turn_candidates: tuple[int, ...]
+    edge_gap_affine: tuple[tuple[Q, int], ...]
+    edge_gap_bounds: tuple[tuple[Q, Q], ...]
+    edge_acute_margin_bounds: tuple[tuple[tuple[Q, Q], tuple[Q, Q]], ...]
+    edge_acute_admitted: tuple[bool, ...]
+    acute_admitted: bool
+    ring_windings: tuple[int | None, int | None]
+    bridge_cycle: tuple[Any, ...]
+    bridge_winding: int | None
+    sector_admitted: bool
+    phase_storage_bounds: tuple[Q, Q]
+    storage_bounds: tuple[Q, Q]
+    barrier_cosine_bounds: tuple[tuple[Q, tuple[Q, Q]], ...]
+    geometric_barrier_bounds: tuple[Q, Q]
+    capture_barrier_bounds: tuple[Q, Q]
+    storage_margin_lower_bound: Q
+    normalized_energy_margin_lower_bound: Q
+    energy_admitted: bool
+    sublevel_acute_margin_lower_bound: Q | None
+    sublevel_resultant_real_lower_bounds: tuple[Q, ...] | None
+    sublevel_phase_metric_lower_bounds: tuple[Q, ...] | None
+    status: str
+    unavailable_reasons: tuple[str, ...]
+    enclosure_method: str = COSINE_ENCLOSURE_METHOD
+    scope: tuple[str, ...] = (
+        "detached_materialized_signed_form_raw_phase_and_supplied_positive_storage_scale",
+        "simple_unit_two_C5_two_adjacent_bridge_support",
+        "exact_pi_affine_acute_gaps_cycle_periods_and_certified_cosine_storage",
+        "sublevel_geometry_only_without_capacity_pressure_forcing_or_rate_evaluation",
+        "sublevel_bounds_require_the_same_sector_and_storage_not_above_this_ceiling",
+        "no_evolution_law_admission_future_capture_or_trajectory_error_certificate",
+    )
+
+    @property
+    def admitted(self) -> bool:
+        """Whether all geometric sector and storage premises resolved."""
+        return self.status == "admitted"
+
+
+@dataclass(frozen=True)
 class RelationalSectorCaptureCertificate:
     """Sufficient full-state capture inside a declared acute winding sector.
 
@@ -599,130 +1080,112 @@ def _acute_gap_evidence(difference, pi_bounds):
     return turn, affine, interval, margins, all(lower > 0 for lower, _ in margins)
 
 
-def certify_relational_sector_capture(
-    graph, *, model: RelationalExchangeModel, cycles, target_sector: int = 1
-) -> RelationalSectorCaptureCertificate:
-    """Check sufficient capture on the whole acute aligned-twist sector.
-
-    The declared ring sector is +1 or -1, excluding Booleans. Each raw edge
-    difference receives an integer full-turn candidate and rigorous affine-pi
-    acute-margin tests. These tests, not floating remainders or the separate
-    winding read-out, establish all exact cycle periods. The independent
-    bridge square must have period zero; four strictly acute gaps imply this.
-
-    On the fixed paired support, an acute ring-sector face costs at least
-    ``5-4*cos(3*pi/8)`` while the other ring costs at least
-    ``5-5*cos(2*pi/5)``. Bridge faces cost more. Thus the certified energy
-    upper bound below a certified lower bound on their sum prevents exit.
-    With positive held capacities, beta and e,w, LaSalle and strict convexity
-    in the fixed cycle-period chart give the circular aligned-twist target.
-    No exact copy/reflection or small full-state displacement is assumed.
-
-    The barrier is scaled by beta. For a certified normalized deficit eta,
-    the ring Jensen profile gives every future acute margin greater than
-    13*eta: its boundary slope is less than 1/13. This implies per-node
-    Re(z)>=26*degree*eta/pi and H>=26*degree*eta. These derived bounds
-    are not a controller, capacity-evolution law or integration certificate.
-
-    The result concerns the ideal continuous law from this snapshot. It does
-    not revise previous frozen finite criteria or certify the trajectory
-    producing the state. Existing engine-domain/topology errors still raise;
-    unmet sufficient capture premises return detached unavailable evidence.
-    """
+def _require_sector(target_sector):
     if type(target_sector) is not int:
         raise TypeError("target_sector must be a nonboolean integer")
     if target_sector not in (-1, 1):
         raise ValueError("target_sector must be -1 or 1")
-    field = evaluate_relational_exchange(graph, model=model)
-    cycles, _ = _cycles(field, cycles)
-    phase = {node: Q(value) for node, value in zip(field.nodes, field.phase)}
-    pi_bounds = _pi_bounds()
+
+
+def _acute_period_evidence(edges, phases, cycles, pi_bounds):
+    """Shared exact edge gaps and oriented periods, without winding telemetry."""
     evidence = tuple(
-        _acute_gap_evidence(phase[right] - phase[left], pi_bounds)
-        for left, right in field.edges
+        _acute_gap_evidence(phases[right] - phases[left], pi_bounds)
+        for left, right in edges
     )
     turns = tuple(row[0] for row in evidence)
-    affine = tuple(row[1] for row in evidence)
-    gaps = tuple(row[2] for row in evidence)
-    margins = tuple(row[3] for row in evidence)
-    admitted_edges = tuple(row[4] for row in evidence)
+    admitted = tuple(row[4] for row in evidence)
     oriented = {}
-    for (left, right), turn, admitted in zip(field.edges, turns, admitted_edges):
-        oriented[left, right] = turn, admitted
-        oriented[right, left] = -turn, admitted
-
-    def period(cycle):
+    for (left, right), turn, valid in zip(edges, turns, admitted):
+        oriented[left, right] = turn, valid
+        oriented[right, left] = -turn, valid
+    periods = []
+    for cycle in cycles:
         rows = tuple(
             oriented[left, right] for left, right in zip(cycle, cycle[1:] + cycle[:1])
         )
-        return sum(turn for turn, _ in rows) if all(ok for _, ok in rows) else None
+        periods.append(
+            sum(turn for turn, _ in rows) if all(ok for _, ok in rows) else None
+        )
+    return {
+        "edge_turn_candidates": turns,
+        "edge_gap_affine": tuple(row[1] for row in evidence),
+        "edge_gap_bounds": tuple(row[2] for row in evidence),
+        "edge_acute_margin_bounds": tuple(row[3] for row in evidence),
+        "edge_acute_admitted": admitted,
+        "acute_admitted": all(admitted),
+    }, tuple(periods)
 
-    ring_windings = tuple(period(row) for row in cycles)
+
+def _sector_geometry(nodes, edges, epi, phases, beta, cycles, target_sector):
+    """One exact geometry kernel for admitted primitive snapshots."""
+    cycles, _ = _cycle_support(nodes, edges, cycles)
+    epi, phases, beta = tuple(map(Q, epi)), tuple(map(Q, phases)), Q(beta)
+    phase = dict(zip(nodes, phases))
+    form = dict(zip(nodes, epi))
+    form_storage = sum(
+        ((form[left] - form[right]) ** 2 / 2 for left, right in edges), Q(0)
+    )
+    pi_bounds = _pi_bounds()
     bridge_cycle = (cycles[0][0], cycles[0][1], cycles[1][1], cycles[1][0])
-    bridge_winding = period(bridge_cycle)
+    evidence, periods = _acute_period_evidence(
+        edges, phase, (*cycles, bridge_cycle), pi_bounds
+    )
+    ring_windings, bridge_winding = periods[:2], periods[2]
     if bridge_winding not in (None, 0):
         raise ArithmeticError("four strictly acute gaps cannot have nonzero winding")
-    acute = all(admitted_edges)
+    acute = evidence["acute_admitted"]
     sector = ring_windings == (target_sector, target_sector) and bridge_winding == 0
-    phase_bounds = _phase_storage_bounds(field)
-    beta = Q(field.model.storage_scale)
-    storage_bounds = tuple(field.form_storage + beta * value for value in phase_bounds)
-    cosines = tuple(
-        (coefficient, _pi_cosine_bounds(coefficient, pi_bounds))
-        for coefficient in (Q(2, 5), Q(3, 8))
-    )
-    first, second = cosines[0][1], cosines[1][1]
+    phase_bounds = _phase_storage_bounds_at(nodes, edges, phases)
+    storage_bounds = tuple(form_storage + beta * value for value in phase_bounds)
+    first = _pi_cosine_bounds(Q(2, 5), pi_bounds)
+    second, cycle_barrier = _cycle_barrier_constants(pi_bounds)
+    cosines = ((Q(2, 5), first), (Q(3, 8), second))
     geometric_barrier_bounds = (
-        10 - 5 * first[1] - 4 * second[1],
-        10 - 5 * first[0] - 4 * second[0],
+        5 - 5 * first[1] + cycle_barrier[0],
+        5 - 5 * first[0] + cycle_barrier[1],
     )
     barrier_bounds = tuple(beta * value for value in geometric_barrier_bounds)
     storage_margin = barrier_bounds[0] - storage_bounds[1]
     normalized_margin = storage_margin / beta
     energy = storage_margin > 0
-    positive_capacity = all(value > 0.0 for value in field.capacity)
-    unit_capacity = all(value == 1.0 for value in field.capacity)
-    unit_beta, positive_epi = beta == 1, field.model.epi_weight > 0.0
     reasons = tuple(
         reason
         for admitted, reason in (
-            (positive_capacity, "strictly_positive_held_capacity_required"),
-            (positive_epi, "positive_epi_weight_required"),
             (acute, "strict_acute_edge_lifts_not_certified"),
             (sector, "declared_cycle_periods_not_certified"),
             (energy, "strict_sector_energy_barrier_not_certified"),
         )
         if not admitted
     )
-    # The Jensen deficit controls the entire ideal future, not only the
-    # independently retained acute margins of this snapshot.
-    future_acute = 13 * normalized_margin if not reasons else None
-    degrees = dict.fromkeys(field.nodes, 0)
-    for left, right in field.edges:
+    # These margins describe the geometric sublevel. A dynamical consumer
+    # must independently establish that its trajectory stays in that set.
+    sublevel_acute = 13 * normalized_margin if not reasons else None
+    degrees = dict.fromkeys(nodes, 0)
+    for left, right in edges:
         degrees[left] += 1
         degrees[right] += 1
-    future_metric = (
-        tuple(26 * degrees[node] * normalized_margin for node in field.nodes)
+    sublevel_metric = (
+        tuple(26 * degrees[node] * normalized_margin for node in nodes)
         if not reasons
         else None
     )
-    future_resultant = (
-        tuple(value / pi_bounds[1] for value in future_metric)
-        if future_metric is not None
+    sublevel_resultant = (
+        tuple(value / pi_bounds[1] for value in sublevel_metric)
+        if sublevel_metric is not None
         else None
     )
-    detached = _detached_graph(field)
-    return RelationalSectorCaptureCertificate(
-        field=field,
+    return RelationalSectorGeometry(
+        nodes=nodes,
+        edges=edges,
+        epi=epi,
+        phase=phases,
+        storage_scale=beta,
+        form_storage=form_storage,
         cycles=cycles,
         declared_target_sector=target_sector,
         pi_bounds=pi_bounds,
-        edge_turn_candidates=turns,
-        edge_gap_affine=affine,
-        edge_gap_bounds=gaps,
-        edge_acute_margin_bounds=margins,
-        edge_acute_admitted=admitted_edges,
-        acute_admitted=acute,
+        **evidence,
         ring_windings=ring_windings,
         bridge_cycle=bridge_cycle,
         bridge_winding=bridge_winding,
@@ -735,15 +1198,381 @@ def certify_relational_sector_capture(
         storage_margin_lower_bound=storage_margin,
         normalized_energy_margin_lower_bound=normalized_margin,
         energy_admitted=energy,
+        sublevel_acute_margin_lower_bound=sublevel_acute,
+        sublevel_resultant_real_lower_bounds=sublevel_resultant,
+        sublevel_phase_metric_lower_bounds=sublevel_metric,
+        status="unavailable" if reasons else "admitted",
+        unavailable_reasons=reasons,
+    )
+
+
+def observe_relational_sector_geometry(
+    graph, *, storage_scale, cycles, target_sector: int = 1
+) -> RelationalSectorGeometry:
+    """Read exact acute-sector geometry without evaluating a dynamical law.
+
+    Only simple unit support, signed scalar form, raw phase and a supplied
+    positive beta are consumed. Missing capacities, stored pressure, Gamma
+    and other evolution settings neither admit nor reject this geometric
+    observation. They must be admitted separately before drawing a future
+    capture conclusion. The shared scalar readers preserve alias authority,
+    nonfinite/Boolean rejection and representability requirements.
+    """
+    _require_sector(target_sector)
+    if not isinstance(graph, nx.Graph):
+        raise TypeError("graph must be a NetworkX graph")
+    if graph.is_directed() or graph.is_multigraph() or nx.number_of_selfloops(graph):
+        raise ValueError("sector geometry requires simple undirected loopless support")
+    beta = _finite(storage_scale, "storage_scale")
+    if beta <= 0:
+        raise ValueError("storage_scale must be positive")
+    for _, _, data in graph.edges(data=True):
+        if _finite(data.get("weight", 1.0), "conductance") != 1.0:
+            raise ValueError("sector geometry requires unit conductances")
+    nodes, edges = tuple(graph), tuple(graph.edges())
+    epi = tuple(_epi(_raw(graph.nodes[node], ALIAS_EPI, "EPI")) for node in nodes)
+    phase = tuple(
+        _finite(_raw(graph.nodes[node], ALIAS_THETA, "phase"), "phase")
+        for node in nodes
+    )
+    return _sector_geometry(nodes, edges, epi, phase, beta, cycles, target_sector)
+
+
+def certify_relational_sector_capture(
+    graph, *, model: RelationalExchangeModel, cycles, target_sector: int = 1
+) -> RelationalSectorCaptureCertificate:
+    """Check sufficient ideal reference-law capture on an acute twist sector.
+
+    One fresh detached native field supplies the snapshot to the shared exact
+    geometry kernel. Its true-pi edge gaps, integer cycle periods and rigorous
+    energy sublevel are independent of the represented winding telemetry.
+    The reference law additionally requires positive held capacities and
+    positive form/phase coefficients. No geometric report alone admits them.
+
+    On full admission, storage nonincrease protects this same sublevel and
+    the native law converges to its aligned twist modulo common offsets.
+    The Jensen deficit eta gives future acute margins greater than 13*eta,
+    Re(z)>=26*degree*eta/pi and H>=26*degree*eta. These bounds do not certify
+    earlier trajectory error, future binary64 steps or another phase law.
+    Existing engine-domain/topology errors raise; unresolved sufficient
+    premises return unavailable evidence. The flat report API is retained.
+    """
+    _require_sector(target_sector)
+    field = evaluate_relational_exchange(graph, model=model)
+    geometry = _sector_geometry(
+        field.nodes,
+        field.edges,
+        field.epi,
+        field.phase,
+        field.model.storage_scale,
+        cycles,
+        target_sector,
+    )
+    positive_capacity = all(value > 0.0 for value in field.capacity)
+    positive_epi = field.model.epi_weight > 0.0
+    reasons = (
+        tuple(
+            reason
+            for admitted, reason in (
+                (positive_capacity, "strictly_positive_held_capacity_required"),
+                (positive_epi, "positive_epi_weight_required"),
+            )
+            if not admitted
+        )
+        + geometry.unavailable_reasons
+    )
+    detached = _detached_graph(field)
+    return RelationalSectorCaptureCertificate(
+        field=field,
+        cycles=geometry.cycles,
+        declared_target_sector=geometry.declared_target_sector,
+        pi_bounds=geometry.pi_bounds,
+        edge_turn_candidates=geometry.edge_turn_candidates,
+        edge_gap_affine=geometry.edge_gap_affine,
+        edge_gap_bounds=geometry.edge_gap_bounds,
+        edge_acute_margin_bounds=geometry.edge_acute_margin_bounds,
+        edge_acute_admitted=geometry.edge_acute_admitted,
+        acute_admitted=geometry.acute_admitted,
+        ring_windings=geometry.ring_windings,
+        bridge_cycle=geometry.bridge_cycle,
+        bridge_winding=geometry.bridge_winding,
+        sector_admitted=geometry.sector_admitted,
+        phase_storage_bounds=geometry.phase_storage_bounds,
+        storage_bounds=geometry.storage_bounds,
+        barrier_cosine_bounds=geometry.barrier_cosine_bounds,
+        geometric_barrier_bounds=geometry.geometric_barrier_bounds,
+        capture_barrier_bounds=geometry.capture_barrier_bounds,
+        storage_margin_lower_bound=geometry.storage_margin_lower_bound,
+        normalized_energy_margin_lower_bound=geometry.normalized_energy_margin_lower_bound,
+        energy_admitted=geometry.energy_admitted,
         positive_capacity=positive_capacity,
-        unit_capacity=unit_capacity,
-        unit_storage_scale=unit_beta,
+        unit_capacity=all(value == 1.0 for value in field.capacity),
+        unit_storage_scale=geometry.storage_scale == 1,
         positive_epi_weight=positive_epi,
-        future_acute_margin_lower_bound=future_acute,
-        future_resultant_real_lower_bounds=future_resultant,
-        future_phase_metric_lower_bounds=future_metric,
-        winding=tuple(certify_phase_winding(detached, row) for row in cycles),
+        future_acute_margin_lower_bound=(
+            geometry.sublevel_acute_margin_lower_bound if not reasons else None
+        ),
+        future_resultant_real_lower_bounds=(
+            geometry.sublevel_resultant_real_lower_bounds if not reasons else None
+        ),
+        future_phase_metric_lower_bounds=(
+            geometry.sublevel_phase_metric_lower_bounds if not reasons else None
+        ),
+        winding=tuple(certify_phase_winding(detached, row) for row in geometry.cycles),
         target_sector=target_sector if not reasons else None,
         status="unavailable" if reasons else "admitted",
         unavailable_reasons=reasons,
+    )
+
+
+@dataclass(frozen=True)
+class RelationalCycleCaptureCertificate:
+    """Conditional acute winding-one capture on one supplied unit C5.
+
+    Exact pi-affine gaps establish the oriented period. The mathematical
+    storage upper bound must lie below beta*(5-4*cos(3*pi/8)); represented
+    field storage is retained separately. Positive capacities may differ.
+    This admits the native fixed-support law from this snapshot, not a
+    support event, an earlier transit or arbitrary completion of the phase row.
+    """
+
+    field: RelationalExchangeField
+    cycle: tuple[Any, ...]
+    declared_target_sector: int
+    pi_bounds: tuple[Q, Q]
+    edge_turn_candidates: tuple[int, ...]
+    edge_gap_affine: tuple[tuple[Q, int], ...]
+    edge_gap_bounds: tuple[tuple[Q, Q], ...]
+    edge_acute_margin_bounds: tuple[tuple[tuple[Q, Q], tuple[Q, Q]], ...]
+    edge_acute_admitted: tuple[bool, ...]
+    acute_admitted: bool
+    cycle_winding: int | None
+    sector_admitted: bool
+    phase_storage_bounds: tuple[Q, Q]
+    storage_bounds: tuple[Q, Q]
+    barrier_cosine_bounds: tuple[Q, Q]
+    geometric_barrier_bounds: tuple[Q, Q]
+    capture_barrier_bounds: tuple[Q, Q]
+    storage_margin_lower_bound: Q
+    normalized_energy_margin_lower_bound: Q
+    energy_admitted: bool
+    positive_capacity: bool
+    positive_epi_weight: bool
+    target_sector: int | None
+    status: str
+    unavailable_reasons: tuple[str, ...]
+    enclosure_method: str = COSINE_ENCLOSURE_METHOD
+    scope: tuple[str, ...] = (
+        "one_fresh_detached_native_field_on_exactly_the_supplied_simple_unit_C5",
+        "strict_true_pi_acute_gaps_oriented_period_plus_or_minus_one",
+        "mathematical_storage_upper_below_beta_times_certified_cycle_face_barrier",
+        "strictly_positive_held_capacities_and_positive_epi_phase_storage_coefficients",
+        "conditional_ideal_capture_to_uniform_form_and_cycle_twist_modulo_own_common_offsets",
+        "no_support_event_occurrence_transit_error_or_physical_identity_claim",
+    )
+
+    @property
+    def admitted(self) -> bool:
+        return self.status == "admitted"
+
+
+def _single_cycle_support(field, cycle):
+    cycle = _ordered(cycle, "cycle", limit=6)
+    if len(cycle) != 5:
+        raise ValueError("cycle must contain exactly five ordered nodes")
+    try:
+        valid = len(field.nodes) == len(set(cycle)) == 5 and set(cycle) == set(
+            field.nodes
+        )
+    except TypeError as exc:
+        raise ValueError("cycle nodes must belong to the captured support") from exc
+    if not valid:
+        raise ValueError("the cycle must cover the full five-node support exactly once")
+    expected = {
+        frozenset((left, right)) for left, right in zip(cycle, cycle[1:] + cycle[:1])
+    }
+    if {frozenset(edge) for edge in field.edges} != expected:
+        raise ValueError("support must be exactly the supplied five-node cycle")
+    return cycle
+
+
+def _cycle_capture_from_field(field, cycle, target_sector):
+    cycle = _single_cycle_support(field, cycle)
+    pi_bounds = _pi_bounds()
+    phase = {node: Q(value) for node, value in zip(field.nodes, field.phase)}
+    gaps, periods = _acute_period_evidence(field.edges, phase, (cycle,), pi_bounds)
+    sector = periods[0] == target_sector
+    phase_bounds = _phase_storage_bounds(field)
+    beta = Q(field.model.storage_scale)
+    storage_bounds = tuple(field.form_storage + beta * value for value in phase_bounds)
+    cosine, geometric = _cycle_barrier_constants(pi_bounds)
+    barrier = tuple(beta * value for value in geometric)
+    margin = barrier[0] - storage_bounds[1]
+    energy = margin > 0
+    positive_capacity = all(value > 0 for value in field.capacity)
+    positive_epi = field.model.epi_weight > 0
+    reasons = tuple(
+        reason
+        for admitted, reason in (
+            (positive_capacity, "strictly_positive_held_capacity_required"),
+            (positive_epi, "positive_epi_weight_required"),
+            (gaps["acute_admitted"], "strict_acute_edge_lifts_not_certified"),
+            (sector, "declared_cycle_period_not_certified"),
+            (energy, "strict_cycle_energy_barrier_not_certified"),
+        )
+        if not admitted
+    )
+    return RelationalCycleCaptureCertificate(
+        field=field,
+        cycle=cycle,
+        declared_target_sector=target_sector,
+        pi_bounds=pi_bounds,
+        **gaps,
+        cycle_winding=periods[0],
+        sector_admitted=sector,
+        phase_storage_bounds=phase_bounds,
+        storage_bounds=storage_bounds,
+        barrier_cosine_bounds=cosine,
+        geometric_barrier_bounds=geometric,
+        capture_barrier_bounds=barrier,
+        storage_margin_lower_bound=margin,
+        normalized_energy_margin_lower_bound=margin / beta,
+        energy_admitted=energy,
+        positive_capacity=positive_capacity,
+        positive_epi_weight=positive_epi,
+        target_sector=target_sector if not reasons else None,
+        status="unavailable" if reasons else "admitted",
+        unavailable_reasons=reasons,
+    )
+
+
+def certify_relational_cycle_capture(
+    graph, *, model: RelationalExchangeModel, cycle, target_sector: int = 1
+) -> RelationalCycleCaptureCertificate:
+    """Admit an acute C5 winding +/-1 and its sufficient native-law basin.
+
+    The connected field is evaluated once. Invalid field/support admission
+    raises; unresolved sufficient capacity, period or storage premises return
+    unavailable evidence. The state and graph remain unchanged. This small
+    certificate does not generalize the cycle length, permit disconnected
+    execution or select a removal event.
+    """
+    _require_sector(target_sector)
+    return _cycle_capture_from_field(
+        evaluate_relational_exchange(graph, model=model), cycle, target_sector
+    )
+
+
+@dataclass(frozen=True)
+class RelationalDetachmentObservation:
+    """One hypothetical two-bridge cut with unchanged primitive node state.
+
+    Changes follow ``before.nodes`` and compare the connected before field
+    with fresh fields inside the two component certificates. ``reset`` owns
+    event accounting. Its represented wrapped phase cost can differ from the
+    native field's raw-gap cost, so field storage changes are named separately
+    and their reconciliation residual is retained. No edge is removed live.
+    """
+
+    before: RelationalExchangeField
+    components: tuple[
+        RelationalCycleCaptureCertificate, RelationalCycleCaptureCertificate
+    ]
+    removed_bridges: tuple[tuple[Any, Any], tuple[Any, Any]]
+    reset: RelationalResetObservation
+    form_rate_change: tuple[Q, ...]
+    phase_rate_change: tuple[Q, ...]
+    pressure_change: tuple[Q, ...]
+    phase_metric_change: tuple[Q, ...]
+    field_form_storage_change: Q
+    field_phase_storage_change: Q
+    field_storage_change: Q
+    storage_reconciliation_residual: Q
+    scope: tuple[str, ...] = (
+        "supplied_two_C5_rings_and_matching_bridges_at_positions_zero_and_one",
+        "hypothetical_state_preserving_removal_of_both_bridges_without_live_writes",
+        "one_connected_before_field_and_two_separately_admitted_component_fields",
+        "disconnected_union_used_only_for_shared_reset_accounting_never_field_execution",
+        "per_node_changes_follow_before_node_order_and_retain_materialized_defects",
+        "reset_owns_event_budget_field_storage_differences_have_separate_representation",
+        "independent_C5_capture_is_sufficient_not_an_event_selector_or_known_removal_time",
+        "no_reuse_of_continuous_loss_as_event_supply_or_substrate_origin_claim",
+    )
+
+    @property
+    def capture_admitted(self) -> bool:
+        """Whether both post-cut native fields meet their sufficient basin."""
+        return all(component.admitted for component in self.components)
+
+
+def observe_relational_detachment(
+    graph, *, model: RelationalExchangeModel, cycles, target_sector: int = 1
+) -> RelationalDetachmentObservation:
+    """Observe removal of the two supplied formation bridges, without mutation.
+
+    Each resulting C5 must separately admit the selected native field model.
+    Field admission errors raise, just as in attachment. A valid field outside
+    its sufficient capture basin remains available with an unavailable cycle
+    certificate. The deletion does not supply its own trigger, occurrence
+    law, clock, or proof that an earlier formation trajectory reached this
+    state. In particular zero removed-edge storage need not mean zero rate
+    change or a safe detachment time.
+    """
+    from .relational_observations import _field_changes, observe_relational_reset
+
+    _require_sector(target_sector)
+    before = evaluate_relational_exchange(graph, model=model)
+    cycles, _ = _cycles(before, cycles)
+    bridges = tuple((cycles[0][index], cycles[1][index]) for index in (0, 1))
+    source = _detached_graph(before)
+    source.graph["GAMMA"] = {"type": "none"}
+    detached = source.copy()
+    detached.remove_edges_from(bridges)
+    components = tuple(
+        certify_relational_cycle_capture(
+            detached.subgraph(cycle).copy(),
+            model=model,
+            cycle=cycle,
+            target_sector=target_sector,
+        )
+        for cycle in cycles
+    )
+    # Preserve original node order for the reset snapshot while recording
+    # each component's refreshed derived pressure. EPI/phase/capacity agree.
+    for component in components:
+        for node, data in _detached_graph(component.field).nodes(data=True):
+            detached.nodes[node].update(data)
+    reset = observe_relational_reset(
+        source, detached, storage_scale=model.storage_scale
+    )
+    reversed_changes = _field_changes(
+        tuple(component.field for component in components), before
+    )
+    changes = {
+        name: tuple(-value for value in reversed_changes[name])
+        for name in (
+            "form_rate_change",
+            "phase_rate_change",
+            "pressure_change",
+            "phase_metric_change",
+        )
+    }
+    changes.update(
+        {
+            "field_" + name: -reversed_changes[name]
+            for name in (
+                "form_storage_change",
+                "phase_storage_change",
+                "storage_change",
+            )
+        }
+    )
+    return RelationalDetachmentObservation(
+        before=before,
+        components=components,
+        removed_bridges=bridges,
+        reset=reset,
+        **changes,
+        storage_reconciliation_residual=changes["field_storage_change"]
+        - reset.storage_change,
     )

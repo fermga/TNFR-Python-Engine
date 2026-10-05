@@ -30,6 +30,10 @@ mathematical references can still be located. No proof is duplicated here.
 | Directed diffusion, sufficient amplitude/phase observations, wave-coordinate scope and regular continuation. | [Derived form phase and inherited closure](nodal/DERIVED_FORM_PHASE.md) | 21 |
 | A declared phase/form closure, finite predictions, inherited exchange scale and integration boundaries. | [Conditional cotangent exchange](TNFR_VARIATIONAL_PRINCIPLE.md#cotangent-phase-exchange) | 13.21-13.26; added premise, held capacity; [integration audit](TNFR_VARIATIONAL_PRINCIPLE.md#cotangent-integration-audit), unequal blocks and same-tetrad future witness |
 | A relational storage premise compatible with native pressure, its local exchange law and an independent spectral discriminator. | [Relational exchange admission](nodal/RELATIONAL_EXCHANGE_ADMISSION.md) | Conditional alternative; full mean/source balance, origin/scale admission and the arbitrary-storage P2 momentum obstruction |
+| When do reciprocal dynamics permit oscillation, recurrence or a frequency-selective response? | [Resonance foundations](nodal/RESONANCE_FOUNDATIONS.md) | Complete sine law; positive-loss obstruction, conservative pulse and almost-everywhere recurrence have different hypotheses |
+| Which internal coordinates, periods and stability properties survive grouping? | [Nonlinear replica state](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-unordered-state), [joint persistence](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-joint-persistence), [capacity asymmetry](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-capacity-asymmetry) | Exact finite-symmetry quotient with capacity-state correlations; geometric trapping survives unequal positive held capacities, while internal circulation needs its symmetry premises |
+| Can phase identify constituent pairs without a supplied partition? | [Phase-only pairing](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-phase-pairing) | Strict mutual nearest partners inside the protected tube; independent support and complete-law admission, with no claim of formation |
+| Which equilibria does the complete law permit without choosing a target winding? | [Fully acute critical geometries](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-acute-critical) | Exhaustive doubled-C5 classification with arbitrary positive held capacities: uniform form and consensus or uniform phase winding of either sign; represented-state admission is separate |
 
 ## 1. Start from a typed law, not from its defaults
 
@@ -169,7 +173,7 @@ Neither helper establishes graph-wide relaxation or event occurrence.
 | Family | Meaning and owner | Established boundary |
 | --- | --- | --- |
 | EPI `x` | Coherent form in a declared chart; [foundation types](FUNDAMENTAL_THEORY.md#24-physical-concepts-mathematical-types-and-implementation), [scalarization](../src/tnfr/mathematics/epi.py) | Signed real storage and finite BEPI storage exist. Neither storage complexity nor temporal entropy selects the necessary physical state space. Differential equivalence needs a regular chart and transformed pressure/mobility; injective storage alone is insufficient. |
-| Capacity `nu` | Nonnegative local mobility/rate in `xdot=nu*p`; [adaptation](../src/tnfr/dynamics/adaptation.py) | Zero freezes this unforced EPI channel; it need not destroy stored form or freeze all other channels. `nu<=2*pi` is a configured rail, not a phase theorem. No unique autonomous capacity law follows from the product; even a fixed pressure law can have distinct capacities with the same instantaneous EPI rate (section 3.2). |
+| Capacity `nu` | Nonnegative local mobility/rate in `xdot=nu*p`; [adaptation](../src/tnfr/dynamics/adaptation.py) | Zero freezes this unforced EPI channel; it need not destroy stored form or freeze all other channels. Held capacity is not a measured oscillation frequency (section 3.4). `nu<=2*pi` is a configured rail, not a phase theorem. No unique autonomous capacity law follows from the product; even a fixed pressure law can have distinct capacities with the same instantaneous EPI rate (section 3.2). |
 | Pressure `p` | Directed tangent response, evaluated from a declared constitutive map; [dnfr](../src/tnfr/dynamics/dnfr.py), [support transport](../src/tnfr/physics/support_transport.py) | The EPI channel is a graph difference. The full pressure does not by itself specify a joint potential or joint dynamics. Its sign is chart-dependent and does not name an operator. Stored pressure need not be freshly evaluated pressure. |
 | Phase `theta` | Circle coordinate and wrapped neighbor separation; [phase response](../src/tnfr/physics/phase_response.py) | A common rotation is a symmetry of the regular difference/phasor formulas. Relative phase is independent of scalar EPI in the present representation. The nodal product does not imply `theta_dot=nu` or any synchronization law. |
 | Clock `t`, `dt` | Declared time coordinate and numerical increment; [integrator](../src/tnfr/dynamics/integrators.py), [directed structural time](../src/tnfr/physics/directed_diffusion.py) | Physical time, operator position, invocation count and history index are different. A step size alone supplies no stability guarantee. A changing clock rate transforms the capacity law too; synchronization need not be a monotone clock (section 3.1). |
@@ -221,13 +225,16 @@ The [inherited metric](nodal/INHERITED_FORM_DYNAMICS.md#132-inherited-metric-res
 already distinguishes coordinate mobility from primitive capacity. Reusing
 these results prevents another investigation based on an unproved identification.
 
-The current collective study has its own compact
+The derived-form realization has its own compact
 [variable contract](nodal/DERIVED_FORM_PHASE.md#variable-contract-for-the-derived-form-family)
 and [joint-realizability result](nodal/DERIVED_FORM_PHASE.md#joint-realizability-of-collective-relations).
 It is a conditional mathematical realization: its fine scalar form evolves,
 capacity/support are held, pressure is evaluated prospectively, primitive
-phase is unused, and the regional phase/correlations are derived. None of
-these choices selects a fundamental physical substrate. Resolving a variable's
+phase is unused, and the regional phase/correlations are derived. The
+[reciprocal sine realization](nodal/RESONANCE_FOUNDATIONS.md#reciprocal-exchange)
+instead retains primitive phase and its feedback into form; its pulse results
+cannot be transferred to the phase-unused realization. Neither set of
+choices selects a fundamental physical substrate. Resolving a variable's
 mathematical admission and justifying its ontological role are distinct tasks.
 
 ### 2.1 The implemented pressure is a specified relational map
@@ -573,6 +580,37 @@ orbit direction cannot be hidden in a common clock, as the
 shows. The [same-tetrad future witness](TNFR_VARIATIONAL_PRINCIPLE.md#cotangent-tetrad-future-witness)
 then separates clock/law ambiguity from lost state under one fixed law.
 
+<a id="derived-pulse-scales"></a>
+### 3.4 Derived pulse scales and observation periods
+
+A pulse is a property of a complete trajectory, not a fourth primitive
+coordinate added to the form/capacity/phase triad. The
+[finite-amplitude doubled-C5 pulse](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-internal-pulse)
+is derived from the existing reciprocal sine rows with held common positive
+capacity, fixed support and zero loss. Its frequency depends on geometry,
+amplitude, capacity and the declared exchange/storage coefficients. Capacity
+scales time in that family, but neither `theta_dot=nu` nor `frequency=nu`
+follows. A physical frequency additionally needs an independent clock bridge.
+
+The observation must be specified before assigning a period. The full labeled
+fine state has period T; its exact unordered-pair state has minimal period
+T/2 because a half-cycle exchanges the two constituents. A mean observation
+can remain constant throughout the same motion. These are different retained
+descriptions of one trajectory, not different microscopic clocks. A common
+clock change transforms all rows and periods; neither a periodic read-out
+nor synchronization alone gives a globally monotone time coordinate.
+
+Existence and robustness are separate properties. The
+[full transverse calculation](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-pulse-splitting)
+retains internal and collective feedback and proves instability of the
+prepared waveform for sufficiently small nonzero amplitude, without a
+numerical amplitude radius. Changing common capacity or time units cannot
+remove that dimensionless instability at fixed normalized amplitude. The
+[positive-loss obstruction and reversible alternatives](nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission)
+also preclude treating permanent oscillation as a consequence of positive
+capacity alone. Zero loss remains a declared law premise, not a measured or
+uniquely derived microscopic property.
+
 ## 4. What locality and symmetry can derive
 
 The [pressure note](nodal/PRESSURE_CONSTITUTIVE_SCOPE.md) owns the
@@ -763,6 +801,13 @@ unit conversion nor a physical quantum state. The existing variational and
 conservation owners already separate trajectory residuals, auxiliary flows
 and restricted dissipation; reuse those distinctions for every new claim.
 
+The [joint sine storage](nodal/RESONANCE_FOUNDATIONS.md#reciprocal-exchange)
+is different from an auxiliary Hamiltonian: its balance follows from the
+complete form/phase rows themselves. Zero loss conserves that storage while
+permitting internal exchange; positive loss has its stated dissipation term.
+Conservation alone gives neither a particular waveform nor its stability,
+and does not identify this structural storage with physical energy.
+
 ## 7. Memory, operators and scale
 
 Eliminating hidden coordinates in a declared linear system produces an exact
@@ -772,6 +817,16 @@ renaming the kernel. The existing
 [derived-memory analysis](DERIVED_EPI_MEMORY.md) and `epi_memory` owner test
 continuous closure and minimal realizations. Event closure additionally
 requires the existing event-intertwining check.
+
+Keeping internal state can instead give an exact nonlinear collective law.
+In the [unordered replica description](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-unordered-state),
+`R=cos(delta)`, `U=u^2` and `Q=u*sin(delta)` retain internal phase dispersion,
+form contrast and their correlation. R enters the inherited phase-to-form
+coupling through the derived product `R_i*R_j`; its dynamical role follows
+from the fine law, not from a controller reading a coherence score. Q is not
+nodal pressure. This constrained state removes only pair labels, retains the
+continuous degrees of freedom and requires its local phase chart; R or the
+means alone do not close the dynamics.
 
 REMESH instead references retained pre-jump snapshots at integer positions
 `history[-(tau+1)]`. A delay in samples becomes a fixed physical delay only
@@ -813,7 +868,7 @@ part of the same model. This is the link to the original generative objective,
 not permission to add a tuned stabilizer or a desired attractor.
 
 The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md) alone records the
-current gate and next action. Autonomous multichannel closure, a unique
+current gate and next action. A universally selected multichannel closure, a unique
 selection of all numerical coefficients, and emergence of laboratory particles
 or the observable world remain unproved. The audit covers foundational
 parameter families and their principal owners; it is not an exhaustive proof

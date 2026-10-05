@@ -1,12 +1,10 @@
-"""Canonical TNFR Operator Registry (Immutable).
+"""Lazy operator-class lookup with compatibility registration.
 
-TNFR physics defines exactly 13 canonical structural operators. The registry
-is now static and immutable; dynamic discovery, auto-registration, telemetry
-and cache invalidation have been removed to preserve canonicity.
-
-Attempting to register new operators violates the paradigm (no arbitrary
-transformations outside the unified grammar). This module exposes a fixed
-``OPERATORS`` mapping only.
+The lookup loads the 13 built-in classes and accepts distinct-name legacy
+registrations. The canonical inventory belongs to ``operator_contracts``;
+adding a class here does not add a canonical contract, executable glyph,
+grammar role or atomic-stage guarantee. ``TNFR.operators()`` reads that
+contract inventory rather than this mutable compatibility mapping.
 """
 
 from __future__ import annotations
@@ -30,7 +28,7 @@ def _ensure_loaded() -> None:
     """Populate OPERATORS lazily to avoid circular imports.
 
     Operator modules may import `registry` for the (now no-op) decorator.
-    Lazy loading prevents cycles while preserving immutable canonical set.
+    Lazy loading avoids an eager dependency on the built-in definitions.
     """
     if OPERATORS:
         return
@@ -74,9 +72,9 @@ def register_operator(
 ) -> type["Operator"]:  # pragma: no cover
     """Register an operator subclass (backward compatibility only).
 
-    Canonical purity: only the 13 core operators are meaningful; extra
-    test-only registrations do not extend TNFR physics and are ignored
-    by grammar logic but retained for legacy tests.
+    Add a previously unused name to the compatibility lookup. Existing names
+    are retained. Registration alone supplies no canonical execution contract
+    or grammar role.
     """
     _ensure_loaded()
     if cls.name not in OPERATORS:
@@ -86,9 +84,9 @@ def register_operator(
 
 
 def get_operator_class(name: str) -> type["Operator"]:
-    """Return canonical operator class for ``name``.
+    """Return the registered operator class for ``name``.
 
-    Raises KeyError if not one of the 13 canonical names.
+    Raise KeyError if the name is absent from the compatibility lookup.
     """
     _ensure_loaded()
     return OPERATORS[name]
@@ -103,7 +101,7 @@ __all__ = (
     "OPERATORS",
     "get_operator_class",
     "discover_operators",  # backward compatibility
-    "register_operator",  # always raises
+    "register_operator",  # backward compatibility
 )
 
 
@@ -115,8 +113,7 @@ def structural_operator(cls):  # pragma: no cover
 def invalidate_operator_cache(hard: bool = False):  # pragma: no cover
     """Invalidate operator cache (legacy telemetry only).
 
-    Since registry is static, nothing is cleared; counters updated for
-    backward-compatible tests.
+    Nothing is cleared; counters are updated for backward compatibility.
     """
     _ensure_loaded()
     if hard:
@@ -142,8 +139,8 @@ class OperatorMetaAuto(type):  # pragma: no cover
 
     Subclasses are registered for backward compatibility unless their class
     body explicitly sets ``__register__ = False``. This guard lets internal
-    probes and application-only subclasses preserve the declared 13-member
-    registry surface.
+    probes and application-only subclasses avoid changing the lookup. The
+    separate canonical contract inventory is unaffected either way.
     """
 
     def __init__(cls, name, bases, attrs):  # noqa: D401

@@ -268,3 +268,41 @@ def test_storage_observation_does_not_require_an_acute_phase_field():
     assert report.form_storage_change == 0
     assert report.phase_support_change == 0
     assert report.phase_state_change == report.storage_change == 2
+
+
+def test_large_raw_phase_reset_matches_the_native_phasor_storage():
+    before = nx.path_graph(2)
+    before.graph["GAMMA"] = {"type": "none"}
+    for node in before:
+        before.nodes[node].update(EPI=float(node), theta=0.0, nu_f=1.0, delta_nfr=0.0)
+    after = deepcopy(before)
+    raw = math.tau * 2**56
+    after.nodes[1]["theta"] = raw
+    originals = deepcopy(before), deepcopy(after)
+    assert math.remainder(raw, math.tau) == 0
+    assert 0 < math.cos(raw) < 1
+    field = evaluate_relational_exchange(after, model=RelationalExchangeModel(1.0))
+    report = observe_relational_reset(before, after, storage_scale=1.0)
+    assert report.phase_after == (0.0, raw)
+    assert report.phase_storage_before == 0
+    assert report.phase_storage_after == field.phase_storage > 0
+    assert report.storage_after == field.storage
+    assert float(report.phase_storage_after) == pytest.approx(
+        1 - math.cos(raw), abs=1e-15
+    )
+    assert report.phase_state_change == report.phase_storage_after
+    assert report.phase_support_change == 0 and report.identity_residual == 0
+    assert not report.represented_zero_supply_passive
+    assert nx.utils.graphs_equal(before, originals[0])
+    assert nx.utils.graphs_equal(after, originals[1])
+
+
+def test_phase_reset_cannot_hide_an_unrepresentable_raw_difference_by_wrapping():
+    before = _prepared()
+    after = deepcopy(before)
+    after.nodes[0]["theta"], after.nodes[1]["theta"] = -1e308, 1e308
+    originals = deepcopy(before), deepcopy(after)
+    with pytest.raises(ValueError, match="phase difference"):
+        observe_relational_reset(before, after, storage_scale=1.0)
+    assert nx.utils.graphs_equal(before, originals[0])
+    assert nx.utils.graphs_equal(after, originals[1])

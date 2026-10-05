@@ -10,6 +10,38 @@ Start with the [root README](../README.md) for installation and first use. For
 a scientific question, use the theory index's reading routes and its map from
 definitions to engine modules, tests and SDK entry points.
 
+Choose the execution contract before following an example:
+
+- **Operator words:** [CLI and SDK](CLI_AND_SDK.md) and
+  [event contracts](contracts/OPERATOR_EVENTS.md) cover registered operators,
+  grammar and live admission. Word counts are not elapsed structural time.
+- **Native relational evolution:** the
+  [joint execution guide](guides/REGIONAL_AND_RELATIONAL.md#execute-the-conditional-relational-model)
+  and [contract](contracts/RELATIONAL_DYNAMICS.md#conditional-relational-execution)
+  describe the argument-based law, held capacity and phase-domain checks.
+- **Normalized-sine comparison:** the
+  [comparison guide](guides/REGIONAL_AND_RELATIONAL.md#inspect-the-separate-smooth-pressure-comparison)
+  and [contract](contracts/RELATIONAL_DYNAMICS.md#detached-normalized-sine-complete-law-comparison)
+  identify a separate smooth law. Its observation, certificate and forecast
+  APIs do not silently select a new law for `Network.step_relational`. Reports
+  for alternative reciprocal mobilities retain their own complete laws;
+  shared storage does not transfer every theorem between them.
+
+For meanings and proofs, use the
+[resonance distinctions](../theory/nodal/RESONANCE_FOUNDATIONS.md#resonance-scope)
+and [scale owner](../theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-inheritance).
+A gain peak, prepared periodic pulse, recurrent family and protected geometry
+are different results. For formation, the guide separates
+[validated native transit](guides/REGIONAL_AND_RELATIONAL.md#validate-continuous-transit-to-a-protected-basin)
+and its [robustness audit](guides/REGIONAL_AND_RELATIONAL.md#audit-robustness-of-the-retained-formation-proof)
+from [sine preparation barriers](guides/REGIONAL_AND_RELATIONAL.md#check-a-formation-preparation-before-evolving-it).
+The [sine dynamics reading map](../theory/nodal/SINE_PATTERN_DYNAMICS.md#reading-map)
+connects positive prepared acquisition, capture, controlled reduction and
+budget/symmetry controls under that same smooth law.
+These tools answer different questions: source, complete law, uncertainty and
+admission determine what each report establishes. The execution plan selects
+the research task; an available guide does not create an active campaign.
+
 <!-- BEGIN DOCS CATALOG -->
 
 ## Usage guides
@@ -17,7 +49,7 @@ definitions to engine modules, tests and SDK entry points.
 | Maintained owner | Use it for | Boundary |
 | --- | --- | --- |
 | [CLI and SDK](CLI_AND_SDK.md) | Network creation, operator studies, diagnostics, JSON and command routes | Word counts are not physical time; reports are not checkpoints |
-| [Regional and relational SDK](guides/REGIONAL_AND_RELATIONAL.md) | Form observations, joint models, pattern/support reports, capture and graph-independent coefficient bounds | Preparations, references and uncertainty are inputs; method admission is distinct from a theorem's hypotheses |
+| [Regional and relational SDK](guides/REGIONAL_AND_RELATIONAL.md) | Native joint evolution, separate sine assessments, regional observations and scoped certificates | Preparations, references and uncertainty are inputs; captured states and declared exact families have different admission |
 | [Observational interfaces](STRUCTURAL_INTERFACE_THEORY.md) | Feature graphs, multichannel signals, comparisons and reserved forecasts | Engineering adapters do not independently identify canonical physical variables |
 | [Optional Torch backend](TORCH_BACKEND.md) | Backend selection, device checks and execution limits | Requested backend, effective device and measured acceleration are different claims |
 
@@ -26,7 +58,7 @@ definitions to engine modules, tests and SDK entry points.
 | Maintained owner | Responsibility | Primary evidence |
 | --- | --- | --- |
 | [API contracts](API_CONTRACTS.md) | Shared admission, nodal solvers and generated operator metadata | Actual execution owners and operator registry |
-| [Relational dynamics](contracts/RELATIONAL_DYNAMICS.md) | Joint field/step, support/capture reports, coefficient uncertainty and retained acquisition audit | Admitted model and exact/finite implementations; record consistency is not experiment success or physical provenance |
+| [Relational dynamics](contracts/RELATIONAL_DYNAMICS.md) | Native field/step, separate sine-law reports, support budgets, uncertainty and forecast admission | Exact continuous theorems, finite steps, validated enclosures and retained records have distinct guarantees |
 | [Operator events](contracts/OPERATOR_EVENTS.md) | Schedules, jumps, atomic stages, REMESH and finite executor evidence | Shared event and history owners; no unrestricted stability guarantee |
 | [Structural fields](STRUCTURAL_FIELDS_TETRAD.md) | Tetrad definitions, units, availability and estimator provenance | Shared field readers; the tetrad is not a complete state basis |
 
@@ -43,7 +75,7 @@ definitions to engine modules, tests and SDK entry points.
 | Documentation commands and staging | [Scripts](../scripts/README.md) |
 | Definitions, derivations and scientific scope | [Theory catalog](../theory/README.md); [glossary](../theory/GLOSSARY.md) for classified concept cards |
 | Grammar policies and verification | [Unified grammar](../theory/UNIFIED_GRAMMAR_RULES.md#9-verification-and-reporting); rules and evidence share that owner |
-| Research priorities | [Portfolio](../TNFR_lineas_de_investigacion.txt) classifies branches; [strategy](../theory/NODAL_RESEARCH_STRATEGY.md) explains them |
+| Research rationale and branch roles | [Portfolio](../TNFR_lineas_de_investigacion.txt) classifies branches; [strategy](../theory/NODAL_RESEARCH_STRATEGY.md) explains their scientific purpose |
 | Current state, resumption and active gates | [Execution checkpoint](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-checkpoint) and its [single active gate](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate), not additional overview task lists |
 | Maintained runnable entry points | [Examples](../examples/README.md), [benchmarks](../benchmarks/README.md), [optional applications](../applications/README.md) |
 | Historical results and supersession | [Archive](../theory/research/archive/README.md), including [reported interface observations](../theory/research/archive/REPORTED_INTERFACE_OBSERVATIONS.md) |

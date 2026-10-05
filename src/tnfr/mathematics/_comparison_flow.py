@@ -1,4 +1,4 @@
-"""Rational upper bounds for a four-coordinate Metzler comparison flow.
+"""Rational upper bounds for a bounded-dimensional Metzler comparison flow.
 
 For two solutions remaining in the same convex smooth-domain tube, let
 ``M[i,i] >= sup J[i,i]`` and ``M[i,j] >= sup abs(J[i,j])`` for ``i != j``.
@@ -22,11 +22,15 @@ from fractions import Fraction as Q
 from .._exact_time import exp_unit_bounds
 from ._rational_interval import I
 
-__all__ = ("comparison_flow_upper", "COMPARISON_FLOW_METHOD")
+__all__ = (
+    "comparison_flow_upper",
+    "COMPARISON_FLOW_METHOD",
+    "MAX_COMPARISON_DIMENSION",
+)
 
 COMPARISON_FLOW_METHOD = "metzler_shift_nonnegative_series32_dyadic128_norm_tail_v1"
 _TERMS = 32
-_DIMENSION = 4
+MAX_COMPARISON_DIMENSION = 24
 
 
 def _exact(value):
@@ -49,8 +53,11 @@ def _ordered(values, label):
 def comparison_flow_upper(matrix, radii, duration) -> tuple[Q, ...]:
     """Bound ``exp(duration*matrix) radii`` componentwise from above.
 
-    The matrix must be four by four and Metzler (nonnegative off-diagonals),
-    with signed diagonal entries. Radii and duration must be nonnegative.
+    The matrix must be square and Metzler (nonnegative off-diagonals), with
+    signed diagonal entries. Its dimension is admitted from one to twenty-four;
+    this work cap is numerical policy, not a mathematical restriction of the
+    comparison theorem. Radii must match that dimension, and radii and
+    duration must be nonnegative.
     Values must already be exact rationals or integers; floats and booleans
     are rejected. For ``alpha=max(0,-min(diagonal))`` and ``N=M+alpha*Id``,
     the admitted numerical domain is ``h*max_row_sum(N)<=1`` and
@@ -64,21 +71,26 @@ def comparison_flow_upper(matrix, radii, duration) -> tuple[Q, ...]:
     """
     rows = _ordered(matrix, "matrix")
     rows = tuple(_ordered(row, "matrix row") for row in rows)
-    if len(rows) != _DIMENSION or any(len(row) != _DIMENSION for row in rows):
-        raise ValueError("comparison matrix must be four by four")
+    dimension = len(rows)
+    if not 1 <= dimension <= MAX_COMPARISON_DIMENSION:
+        raise ValueError(
+            f"comparison matrix dimension must lie between 1 and {MAX_COMPARISON_DIMENSION}"
+        )
+    if any(len(row) != dimension for row in rows):
+        raise ValueError("comparison matrix must be square")
     rows = tuple(tuple(_exact(value) for value in row) for row in rows)
     radius = tuple(_exact(value) for value in _ordered(radii, "radii"))
-    if len(radius) != _DIMENSION:
-        raise ValueError("comparison radii must contain four values")
+    if len(radius) != dimension:
+        raise ValueError("comparison radii must match the matrix dimension")
     h = _exact(duration)
     if h < 0 or any(value < 0 for value in radius):
         raise ValueError("comparison duration and radii must be nonnegative")
     if any(
-        rows[i][j] < 0 for i in range(_DIMENSION) for j in range(_DIMENSION) if i != j
+        rows[i][j] < 0 for i in range(dimension) for j in range(dimension) if i != j
     ):
         raise ValueError("comparison matrix must have nonnegative off-diagonals")
 
-    alpha = max(Q(0), -min(rows[i][i] for i in range(_DIMENSION)))
+    alpha = max(Q(0), -min(rows[i][i] for i in range(dimension)))
     shifted = tuple(
         tuple(value + (alpha if i == j else 0) for j, value in enumerate(row))
         for i, row in enumerate(rows)

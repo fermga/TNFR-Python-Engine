@@ -86,14 +86,15 @@ def test_disabled_gamma_array_uses_graph_support_without_consuming_phase(unused_
 
 @pytest.mark.parametrize("vectorized", [False, True])
 @pytest.mark.parametrize("forced", [False, True])
+@pytest.mark.parametrize("extended", [False, True])
 def test_zero_capacity_freezes_only_the_unforced_nodal_channel(
-    monkeypatch, vectorized, forced
+    monkeypatch, vectorized, forced, extended
 ):
     if not vectorized:
         monkeypatch.setattr(integrators, "np", None)
     graph = nx.empty_graph(1)
     inject_defaults(graph)
-    graph.graph.update(DT_MIN=0.0, CLIP_MODE="hard", use_extended_dynamics=False)
+    graph.graph.update(DT_MIN=0.0, CLIP_MODE="hard", use_extended_dynamics=extended)
     graph.nodes[0].update({EPI_PRIMARY: 0.25, VF_PRIMARY: 0.0, DNFR_PRIMARY: 2.0})
     graph.graph["GAMMA"] = (
         {"type": "harmonic", "beta": 0.125, "omega": 0.0, "phi": math.pi / 2}
@@ -148,8 +149,12 @@ def test_runtime_rejects_malformed_source_container(container):
 @pytest.mark.parametrize(
     "value", [True, "0.125", math.nan, 0.125 + 0j, Fraction(1, 2**2000)]
 )
-def test_runtime_validates_callback_result_before_numeric_coercion(monkeypatch, value):
+@pytest.mark.parametrize("extended", [False, True])
+def test_runtime_validates_callback_result_before_numeric_coercion(
+    monkeypatch, value, extended
+):
     graph = _graph()
+    graph.graph["use_extended_dynamics"] = extended
     graph.graph["GAMMA"] = {"type": "invalid-output"}
     before = deepcopy(dict(graph.nodes(data=True)))
     calls = []
@@ -166,8 +171,10 @@ def test_runtime_validates_callback_result_before_numeric_coercion(monkeypatch, 
     assert calls == [0]
 
 
-def test_zero_duration_does_not_resolve_or_evaluate_forcing():
+@pytest.mark.parametrize("extended", [False, True])
+def test_zero_duration_does_not_resolve_or_evaluate_forcing(extended):
     graph = _graph()
+    graph.graph["use_extended_dynamics"] = extended
     graph.graph["GAMMA"] = {"type": "invalid-unused-source"}
     before = deepcopy(graph)
     integrators.update_epi_via_nodal_equation(graph, dt=0.0)
@@ -185,20 +192,23 @@ def test_declared_read_only_source_mapping_is_accepted():
 
 
 @pytest.mark.parametrize(
-    "vectorized,name,method,stage_count,n_jobs",
+    "vectorized,name,method,stage_count,n_jobs,extended",
     [
-        (False, "custom-source", "euler", 1, 2),
-        (False, "custom-source", "rk4", 3, None),
-        (True, "custom-source", "euler", 1, None),
-        (True, "custom-source", "rk4", 3, None),
-        (True, "none", "euler", 1, None),
-        (True, "harmonic", "rk4", 3, None),
+        (False, "custom-source", "euler", 1, 2, False),
+        (False, "custom-source", "rk4", 3, None, False),
+        (True, "custom-source", "euler", 1, None, False),
+        (True, "custom-source", "rk4", 3, None, False),
+        (True, "none", "euler", 1, None, False),
+        (True, "harmonic", "rk4", 3, None, False),
+        (False, "custom-source", "euler", 1, 2, True),
+        (True, "none", "euler", 1, None, True),
     ],
 )
 def test_registered_callback_uses_same_live_substeps_once_per_node_and_stage(
-    monkeypatch, vectorized, name, method, stage_count, n_jobs
+    monkeypatch, vectorized, name, method, stage_count, n_jobs, extended
 ):
     graph = _graph()
+    graph.graph["use_extended_dynamics"] = extended
     graph.graph["GAMMA"] = {"type": name}
     calls = []
 
@@ -253,8 +263,12 @@ def test_custom_callback_stays_live_when_parallel_workers_are_requested(monkeypa
 
 
 @pytest.mark.parametrize("vectorized", [False, True])
-def test_late_callback_failure_restores_owned_solver_outputs(monkeypatch, vectorized):
+@pytest.mark.parametrize("extended", [False, True])
+def test_late_callback_failure_restores_owned_solver_outputs(
+    monkeypatch, vectorized, extended
+):
     graph = _graph()
+    graph.graph["use_extended_dynamics"] = extended
     graph.graph["GAMMA"] = {"type": "failing-source"}
     graph.graph["_t"] = 0.0
     before = deepcopy(dict(graph.nodes(data=True)))

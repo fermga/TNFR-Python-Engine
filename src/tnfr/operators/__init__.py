@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import heapq
 import math
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterator, Mapping
 from contextlib import contextmanager
 from itertools import islice
 from statistics import StatisticsError
@@ -1375,18 +1375,18 @@ factor_nul = NUL_SCALE_FACTOR  # canonical Contraction ν_f↓ gain
 _SCALE_FACTORS = {Glyph.VAL: factor_val, Glyph.NUL: factor_nul}
 
 
-def _validated_epi_assignment_value(
-    node: NodeProtocol, new_epi: float, *, apply_clip: bool = True
-) -> float:
-    """Return a finite, structurally bounded EPI proposal without committing it."""
+def _operator_epi_clip_policy(
+    graph_attrs: Mapping[str, Any],
+) -> tuple[float, float, str, float]:
+    """Resolve the existing operator assignment boundary without projecting.
 
-    from ..dynamics.structural_clip import structural_clip
+    This adapter preserves the operator runtime's hard-mode fallback and its
+    default soft steepness. The graph's ``CLIP_SOFT_K`` is not consumed here.
+    The stricter configurable integrator clipping policy is a separate
+    contract; detached operator observations must use this actual adapter.
+    """
+    from ..config.defaults_core import CORE_DEFAULTS
 
-    new_epi_float = _finite_operator_scalar(new_epi, "EPI proposal")
-    if not apply_clip:
-        return new_epi_float
-
-    graph_attrs = getattr(node, "graph", {})
     epi_min = _finite_operator_scalar(
         graph_attrs.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)), "EPI_MIN"
     )
@@ -1399,15 +1399,35 @@ def _validated_epi_assignment_value(
             context={"EPI_MIN": epi_min, "EPI_MAX": epi_max},
         )
 
+    mode = str(graph_attrs.get("CLIP_MODE", "hard"))
+    return (
+        epi_min,
+        epi_max,
+        mode if mode in ("hard", "soft") else "hard",
+        CORE_DEFAULTS["CLIP_SOFT_K"],
+    )
+
+
+def _validated_epi_assignment_value(
+    node: NodeProtocol, new_epi: float, *, apply_clip: bool = True
+) -> float:
+    """Return a finite, structurally bounded EPI proposal without committing it."""
+
+    from ..dynamics.structural_clip import structural_clip
+
+    new_epi_float = _finite_operator_scalar(new_epi, "EPI proposal")
+    if not apply_clip:
+        return new_epi_float
+
+    epi_min, epi_max, mode, steepness = _operator_epi_clip_policy(
+        getattr(node, "graph", {})
+    )
     clipped_epi = structural_clip(
         new_epi_float,
         lo=epi_min,
         hi=epi_max,
-        mode=(
-            str(graph_attrs.get("CLIP_MODE", "hard"))
-            if str(graph_attrs.get("CLIP_MODE", "hard")) in ("hard", "soft")
-            else "hard"
-        ),
+        mode=mode,
+        k=steepness,
         record_stats=False,
     )
     return _finite_operator_scalar(clipped_epi, "clipped EPI proposal")

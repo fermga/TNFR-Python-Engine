@@ -11,13 +11,18 @@ from __future__ import annotations
 from dataclasses import dataclass
 from fractions import Fraction as Q
 
-from ..mathematics._comparison_flow import comparison_flow_upper
 from ..mathematics._interval_taylor import Jet
 from ..mathematics._interval_taylor import atan_ratio as jet_atan_ratio
 from ..mathematics._interval_taylor import cos as jet_cos
 from ..mathematics._interval_taylor import sin as jet_sin
 from ..mathematics._interval_taylor import sinc as jet_sinc
 from ..mathematics._rational_interval import I, atan_ratio, cos, pi_interval, sin
+from ..mathematics._validated_taylor import (
+    comparison_matrix,
+    flow_jets,
+    picard_tube,
+    validated_taylor_step,
+)
 from .relational_capture import (
     RelationalCaptureCertificate,
     _capture_rectangle_candidates,
@@ -137,92 +142,45 @@ def _flow(state, e, w, beta):
 
 
 def _flow_jets(box, order, e, w, beta):
-    coefficients = [[value] for value in box]
-    for index in range(1, order + 1):
-        rows = _flow(tuple(Jet(tuple(row)) for row in coefficients), e, w, beta)
-        for row, rate in zip(coefficients, rows):
-            row.append(rate.coeffs[index - 1] / index)
-    return tuple(tuple(row) for row in coefficients)
+    return flow_jets(box, order, lambda state: _flow(state, e, w, beta))
 
 
 def _comparison_matrix(tube, e, w, beta):
-    columns = []
-    for column in range(4):
-        variables = tuple(
-            Jet((value, I(int(index == column)))) for index, value in enumerate(tube)
-        )
-        columns.append(tuple(row.coeffs[1] for row in _flow(variables, e, w, beta)))
-    return tuple(
-        tuple(columns[j][i].hi if i == j else columns[j][i].abs_max for j in range(4))
-        for i in range(4)
-    )
+    return comparison_matrix(tube, lambda state: _flow(state, e, w, beta))
 
 
 def _tube(box, duration, e, w, beta):
-    """Attempt a strict first-exit enclosure; inflation alone never admits."""
-    tube = box
-    epsilon = Q(1, 1 << 90)
-    for _ in range(16):
-        try:
-            lower = _regular_bounds(tube)
-            if min(lower) <= 0:
-                return None, tube, "whole_tube_resultant_not_positive"
-            rate = _flow(tube, e, w, beta)
-            image = tuple(x + f * I(0, duration) for x, f in zip(box, rate))
-            margin = min(min(y.lo - b.lo, b.hi - y.hi) for y, b in zip(image, tube))
-            if margin > 0:
-                return (tube, margin, lower), None, None
-            enlarged = tuple(x.hull(y) for x, y in zip(box, image))
-            tube = tuple(
-                I(
-                    value.midpoint - value.radius * Q(5, 4) - epsilon,
-                    value.midpoint + value.radius * Q(5, 4) + epsilon,
-                )
-                for value in enlarged
-            )
-        except (ValueError, ZeroDivisionError, ArithmeticError) as exc:
-            return None, tube, f"tube_arithmetic_unavailable: {exc}"
-    return None, tube, "strict_Picard_inclusion_not_resolved"
+    return picard_tube(
+        box,
+        duration,
+        lambda state: _flow(state, e, w, beta),
+        _regular_bounds,
+        domain_failure="whole_tube_resultant_not_positive",
+    )
 
 
 def _validated_step(box, duration, e, w, beta, order, time):
-    admission, failed, reason = _tube(box, duration, e, w, beta)
-    if admission is None:
+    step, failed, reason = validated_taylor_step(
+        box,
+        duration,
+        lambda state: _flow(state, e, w, beta),
+        _regular_bounds,
+        order=order,
+        time=time,
+        domain_failure="whole_tube_resultant_not_positive",
+    )
+    if step is None:
         return None, failed, reason
-    tube, margin, resultants = admission
-    try:
-        center = tuple(I(value.midpoint) for value in box)
-        series = _flow_jets(center, order, e, w, beta)
-        remainder = tuple(
-            row[-1] * duration ** (order + 1)
-            for row in _flow_jets(tube, order + 1, e, w, beta)
-        )
-        polynomial = []
-        for row in series:
-            value = row[-1]
-            for coefficient in reversed(row[:-1]):
-                value = value * duration + coefficient
-            polynomial.append(value)
-        propagated = comparison_flow_upper(
-            _comparison_matrix(tube, e, w, beta),
-            tuple(value.radius for value in box),
-            duration,
-        )
-        endpoint = tuple(
-            value + error + I(-radius, radius)
-            for value, error, radius in zip(polynomial, remainder, propagated)
-        )
-        # Both are proven enclosures; intersection only removes overestimation.
-        if any(max(x.lo, b.lo) > min(x.hi, b.hi) for x, b in zip(endpoint, tube)):
-            raise ArithmeticError("disjoint endpoint and whole-time enclosures")
-        endpoint = tuple(
-            I(max(x.lo, b.lo), min(x.hi, b.hi)) for x, b in zip(endpoint, tube)
-        )
-    except (ValueError, ZeroDivisionError, ArithmeticError) as exc:
-        return None, tube, f"Taylor_comparison_unavailable: {exc}"
     return (
         TransitStep(
-            time, duration, tube, endpoint, margin, resultants, propagated, remainder
+            step.time,
+            step.duration,
+            step.tube,
+            step.endpoint,
+            step.picard_interior_margin,
+            step.domain_lower_bounds,
+            step.propagated_initial_radii,
+            step.local_remainder_bounds,
         ),
         None,
         None,

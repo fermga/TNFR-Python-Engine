@@ -19,6 +19,10 @@ For executable calls and examples, use the [CLI and SDK guide](CLI_AND_SDK.md).
 Mathematical definitions, hypotheses and proofs remain with the linked theory
 owners. A serialized declaration or diagnostic report does not bypass live
 preconditions or certify future stability.
+For calculations that consume conditional sine reports, the
+[chained-report contract](contracts/RELATIONAL_DYNAMICS.md#sine-chained-report-admission)
+owns primitive re-admission, derived-field rebuilding and source-association
+limits. Public adapters delegate to those shared consumers.
 
 ## Contract model
 
@@ -240,8 +244,14 @@ unchanged. The permissive public `eval_gamma(..., strict=False)` read retains
 its explicit zero-on-error compatibility behavior; it is not solver admission.
 Callback effects outside the integrator's documented write boundary are not
 made transactional by source dispatch.
-The opt-in extended EPI/phase/pressure model is a separate unforced law; these
-Gamma dispatch rules do not add a source to that model.
+The opt-in extended EPI/phase/pressure integrator uses this same live source
+registry once per node at each synchronous Euler substep. Its form row is
+`dEPI/dt=nu_f*DeltaNFR+Gamma`, including at zero capacity; its independently
+configured phase and pressure rows are unchanged. The scalar helper
+`compute_extended_nodal_system` evaluates the unforced local rows and does
+not itself consume a graph registry. Zero-duration calls evaluate no source.
+Restoration after failure covers solver-owned outputs, not callback side
+effects or diagnostic caches.
 
 ## Canonical contracts
 
@@ -382,7 +392,10 @@ values on every read, including when they would coerce to a cached value.
 U3 phase/limit admission, Coupling coefficients and consumed known numeric glyph
 factors use the shared represented-real boundary. A tiny nonzero factor cannot
 silently select a zero-valued policy; unknown extension keys remain outside
-the canonical factor schema. Direct and simultaneous Resonance reuse one capacity proposal: finite
+the canonical factor schema. The conservation/gauge snapshot mapper applies the
+same scalar admission to consumed U3 phases and U6 pressure/reference fields;
+nonzero underflow makes that diagnostic unavailable, not a passing zero.
+Direct and simultaneous Resonance reuse one capacity proposal: finite
 nonnegative capacity is required even when amplification is inactive. Graphless
 unidirectional Coupling updates only the target phase. On graph paths, UM/RA
 means use unique outgoing support neighbors, including zero-weight edges;

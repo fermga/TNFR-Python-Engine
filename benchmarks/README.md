@@ -17,13 +17,16 @@ research campaign, and a filename containing `emergent` proves no emergence.
 | How do supplied joint form/phase laws differ? | [Constitutive probes](phase_form_exchange_comparison.py), [cotangent C8](cotangent_phase_exchange.py) | [Relational exchange](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#finite-modal-exchange-discriminator), [cotangent scope](../theory/TNFR_VARIATIONAL_PRINCIPLE.md#cotangent-c8-finite-response); probes and trajectories are distinct |
 | How does capacity change the response? | [Capacity producer](relational_capacity_response.py), [record audit](relational_capacity_audit.py) | [Capacity response](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#finite-capacity-intervention-response); the audit does not rerun trajectories |
 | Can a prepared temporal readout identify chi with bounded error? | [P2 acquisition](relational_coefficient_acquisition.py), [read-only audit](../src/tnfr/research/relational_acquisition.py) | [Temporal admission](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#coefficient-temporal-acquisition); known-source software control, prior-derived nonlinear bounds and native Euler defects, not blind physical calibration |
+| Can bounded phase samples distinguish the two named capacity laws? | [K3 sampling response](relational_capacity_sampling_response.py) | [Frozen interval-Taylor method](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#capacity-discriminator-sampled-response); supplied models, certified sample errors and shared observations, not unknown physical-law selection |
 | Does a prepared pattern recover or transmit deformation? | [Local recovery](relational_local_recovery.py), [regional interaction](relational_region_interaction.py) | [Joint-law owner](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md); supplied support and reference geometry |
 | Which observations close, and what hidden state carries memory? | [Local composition](relational_local_composition.py), [memory coefficients](relational_memory_prediction.py), [reserved response](relational_memory_response.py) | [Composition](../theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md), [memory](../theory/nodal/RELATIONAL_PATTERN_MEMORY.md); fixed rational probes and finite/continuous error have separate scopes |
 | Does an intermediary transmit a capacity-dependent response? | [Mediated response](relational_mediation_response.py) | [Finite mediator protocol](../theory/nodal/RELATIONAL_PATTERN_MEMORY.md#finite-mediated-response); shared tangent memory versus omitted or instantaneous memory, with a frozen-capacity control |
+| Can prior visible observations support a later sine-law prediction? | [Three-stage prior forecast](relational_sine_prior_forecast.py) | [Joint admission and analytic separation](../theory/nodal/RELATIONAL_PATTERN_MEMORY.md#sine-prior-reserved-forecast); separate preparation, prediction and evaluation, synthetic derivative evidence, full uncertainty and a counterfactual frozen intermediary |
 | Does a return path distinguish regional orientations? | [Static return geometry](relational_return_geometry.py) | [Equilibrium admission](../theory/nodal/RELATIONAL_PATTERN_MEMORY.md#return-path-equilibrium); exact cycle reconstruction, certified scalar root and native residuals, with no trajectory or event |
 | Does the native law have a causally shared oscillatory mode? | [Static collective pulse](relational_collective_pulse.py) | [Pulse admission](../theory/nodal/RELATIONAL_PATTERN_MEMORY.md#shared-collective-pulse); ideal trace-sign certificate, native tangent poles/residues and no-communication control, without a sustained-pulse claim |
 | Does a finite trajectory change sector or enter a sufficient basin? | [Formation response](relational_formation_response.py), [capture response](relational_capture_response.py), [endpoint audit](relational_capture_audit.py) | [Capture scope](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-upper-corner-response); endpoint evidence is not a whole-path error bound |
 | Is an ideal continuous transit enclosed rigorously? | [Transit proof](relational_transit_proof.py) | [Validated transit](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-validated-transit); also zero-form and reversed-form controls, with their own frozen protocols |
+| What does the fixed regular source/receiver preparation do initially? | [Seeded short response](relational_seeded_response.py) | [Eight-coordinate continuous proof](../theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md#regular-seeded-continuous-response); exact-pi IVP, retained regular tubes and loss, no capture claim |
 | What holds for directed transport? | [Dynamics](directed_nonnormal_dynamics.py), [U2 metrics](directed_u2_metrics.py), [transients](directed_transient_u2.py), [time](directed_structural_time.py), [capacity boundary](heterogeneous_vf_boundary.py) | [Directed transport](../theory/TNFR_DIRECTED_NONNORMAL_DYNAMICS.md); conditional matrix/metric comparisons |
 | What do support changes and capacity actually do? | [Birth/transport](thol_birth_transport.py), [pressure feedback](thol_pressure_feedback.py), [forced support](forced_support_balance.py), [capacity](capacity_localization.py), [selection](selection_birth_closure.py) | [THOL](../theory/THOL_BIRTH_AND_TRANSPORT.md), [capacity](../theory/CAPACITY_LOCALIZATION_BALANCE.md), [support balance](../theory/FORCED_SUPPORT_BALANCE.md); declared operators and laws |
 | Can prior THOL or C6 evidence answer the question without another run? | `thol_*audit.py`, regional THOL instruments, `c6_winding_*.py` | [THOL feedback](../theory/THOL_PRESSURE_FEEDBACK.md), [C6 audit](../theory/C6_RESEARCH_MECHANISM_AUDIT.md); retained chains of producers, exact controls and audits, not independent new campaigns |
@@ -111,6 +114,9 @@ same command and path without `--prepare`:
 | `phase_form_exchange_comparison` | Prepared constitutive probes, not a trajectory |
 | `relational_capacity_response` | Capacity intervention |
 | `relational_coefficient_acquisition` | One known-source P2 acquisition; full retained state/error chain and source archive |
+| `relational_capacity_sampling_response` | Four fixed K3 candidate/arm cases; single-origin Taylor enclosures and frozen sample/contrast error gates |
+| `relational_seeded_response` | Fixed regular source/receiver short response; exact-pi interval initial state, whole-time proof and storage ledger |
+| `relational_receiver_barrier` | One fixed full eleven-node sine source; whole-prefix receiver potential and dissipative full-storage tail, with failed or unresolved evidence retained |
 | `relational_local_recovery` | Prepared local recovery |
 | `relational_region_interaction` | Transmitted regional response |
 | `relational_formation_response`, `relational_capture_response` | Finite sector/endpoint responses |
@@ -126,8 +132,25 @@ python -m benchmarks.relational_capacity_response --output artifacts/relational-
 ```
 
 Preparation and evaluation are separate invocations. Keep sibling prediction
-or protocol files and any source archives together. Admission binds declared
-inputs and recorded source/runtime fingerprints; changing source bytes, line
+or protocol files and any source archives together. For a separately identified
+numerical correction of `relational_seeded_response`, use a fresh output path
+and supply `--correction-of PRIOR_RECORD` to both invocations. This retains the
+prior bytes' digest and labels the calculation as a correction, not an
+independent blind replication.
+
+For the fixed source/receiver target-budget study, pass `--study target-budget`
+and an explicit fresh `--output` to both invocations. This declares total time
+one from the original exact initial state; it does not substitute the previous
+response's rounded endpoint. A separately frozen continuation can pass the
+same `--horizon 9/8` to both invocations, still starting from the original IVP.
+The shared owner admits a positive exact horizon of at most 256 steps; no
+automatic extension is performed. A resolved negative budget and a resolved positive
+budget both pass the numerical discrimination gate. Read the separate target
+verdict: positive storage is not successful formation. The default `short`
+study and its retained declarations remain unchanged.
+
+Admission binds declared inputs and recorded source/runtime fingerprints;
+changing source bytes, line
 endings or dependency versions can invalidate a replay. Prepare a new pair
 rather than rewrite the first experiment. Use the CLI rather than feeding raw
 JSON into producer functions that expect native exact-rational mappings.

@@ -163,6 +163,11 @@ JSON readers share `utils.io.json_loads`; SDK exports use the shared atomic
 writer. Preserve duplicate-key rejection, finite-number admission and explicit
 availability for projected values. A recipe/export is neither a complete
 checkpoint nor provenance authentication.
+When a report feeds another calculation, re-admit its primitive state, law
+and evidence and rebuild the derived fields consumed by that calculation.
+Cached bounds and verdicts cannot replace those premises. Compute with
+normalized values before retaining an equivalent original report association;
+Python equality alone is not scalar admission or evidence authentication.
 
 ## 5. Research and evidence discipline
 
@@ -170,7 +175,12 @@ The [execution plan](https://github.com/fermga/TNFR-Python-Engine/blob/main/theo
 is the sole task queue. The [portfolio](https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR_lineas_de_investigacion.txt)
 classifies branches; the [strategy](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_RESEARCH_STRATEGY.md)
 explains their rationale. An existing example or theorem does not create an
-active campaign. Use the plan's F1-F4 admission method:
+active campaign. When a gate closes, replace its queue status and link its
+result owner; do not append per-turn completion narratives to the plan,
+strategy or portfolio. Preserve unresolved dependencies and frozen evidence
+without maintaining duplicate result inventories. A unified account still
+distinguishes models with different complete laws. Use the plan's F1-F4
+admission method:
 
 1. Define sufficient state, domains, units, observations and discarded information.
 2. Declare all laws, separating assumptions, derived restrictions and remaining

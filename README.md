@@ -67,6 +67,14 @@ The research asks which rules can be justified from stated structural principles
 and which remain independent assumptions. It does not obtain pressure by working
 backward from the answer that an experiment was supposed to predict.
 
+The repository keeps three paths distinct. **Operator execution** applies
+registered transformations and grammar. The **native relational law** evolves
+form and phase using the direction of the neighboring phase average, with
+explicit limits on where that direction is defined. A separate **normalized-sine
+comparison law** uses sums of neighboring sine differences. Its smoother
+equations support additional mathematical studies, but a result about that law
+does not automatically apply to the native runtime or an operator sequence.
+
 ### What counts as a coherent pattern
 
 A coherent pattern has organized relationships that can be followed over time.
@@ -75,12 +83,50 @@ identity is an arrangement in which phase advances around a loop. A useful
 persistence claim must say what defines that identity, which disturbances it
 survives and under which evolution rule.
 
+The nodes and their environment evolve together under the chosen complete
+law. Describing a pattern relative to one node does not hold that node still:
+its motion must also be subtracted. Some models keep capacities and connections
+fixed to study internal evolution. They can admit equilibria, so change at
+every node at every moment is not a universal consequence of the nodal equation.
+
 TNFR calls a region carrying such organization a **fractal-resonant node**, or
 **NFR**. The research explores whether larger patterns can be understood in
 terms of interacting smaller patterns. Treating a whole region as a new node
 requires checking what information is retained and whether its dynamics can
 really be predicted at that larger scale. Nesting regions does not by itself
 prove a universal fractal structure.
+
+A larger NFR would be a collective organization of its constituents, which
+continue to exist and evolve. A description at a larger scale does not erase
+them. The [scale analysis](theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) derives
+collective descriptions from specified fine-node laws. They retain internal
+phase spread, form differences and the connections that distinguish the
+constituents. Two groups with the same average can respond differently because
+their internal arrangements differ. Only labels that the complete law treats
+as interchangeable can be discarded without losing information.
+
+One concrete example is a ring of five pairs, with each member connected to
+both members of the neighboring pairs. Under a stated zero-loss sine law and
+equal fixed capacities, a [persistence theorem](theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-joint-persistence)
+protects the collective phase arrangement while initially active pairs keep
+exchanging form and phase. The moving parts need not repeat exactly the same
+motion. This establishes maintenance of a prepared organization, with its
+network supplied in advance. It does not establish how that organization forms.
+
+The distinction matters when comparing laws. A specified
+[alternative exchange law](theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-mobility-relative-geometry)
+preserves the protected relative geometry, but the same proof of repeated
+return does not carry over. Likewise, an exactly prepared periodic pulse can
+be unstable even when nearby collective organization stays protected.
+**Formation, preserved identity, internal activity and repeated return are
+different questions.** A result about one must not silently answer the others.
+
+Resonance, pulse or vibration, and fractality are the three organizing ideas
+of this research. Each needs its own mathematical statement: selective
+response to an interaction, continuing internal motion, and dynamics that
+can be inherited when smaller patterns are viewed as larger ones. The
+program seeks to connect them through the same nodal laws; their names
+alone do not make them universal properties of every admitted model.
 
 The engine offers two complementary ways to investigate change. Named
 **operators** carry out specified transformations, such as adding form, coupling
@@ -95,105 +141,141 @@ tetrad**. Think of them as instruments on a dashboard: they reveal useful
 features without describing every internal detail. A high coherence score
 alone does not establish that a pattern has formed or will persist.
 
+### What resonance means here
+
+Resonance asks whether a pattern responds more strongly to some rhythms than
+to others. In the normalized-sine comparison law, form and phase exchange
+structural storage while form differences also dissipate it. Near a stable
+pattern, this produces a mathematically derived maximum response at a nonzero
+frequency for a specified input and its matching structural-work readout.
+The result applies even when a freely disturbed pattern returns to equilibrium
+without oscillating. A phase readout can behave differently, so the chosen
+measurement is part of the claim.
+
+This [resonance foundation](theory/nodal/RESONANCE_FOUNDATIONS.md) connects
+the nodal dynamics to a testable response. It does not mean that every node
+must vibrate forever, that the input appears by itself, or that all admitted
+TNFR laws have the same response. The Resonance operator is a separately
+configured transformation. Physical interpretation still needs measurements.
+
+A permanent pulse requires a separate result. The finite closed sine model
+with positive loss approaches its equilibrium set. At its already permitted
+zero-loss boundary, however, an isolated pair can exchange form and phase
+periodically for indefinitely long time in the exact equations. The motion
+follows from the existing rows and a nonzero initial preparation. This
+[reversible pulse](theory/nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission)
+does not yet explain why zero loss should be selected or how the initial
+activity appears. The research therefore distinguishes fundamental loss from
+apparent local loss caused by exchange with an unobserved environment.
+
+That distinction has a concrete mechanism: in the conservative three-node
+model, structural storage can leave one connection and enter the other.
+Near consensus, the exact linearized equations carry it back again. The
+[environmental-memory result](theory/nodal/RESONANCE_FOUNDATIONS.md#finite-conservative-memory)
+retains this exchange when the middle node is hidden. A fading local signal
+therefore need not mean that the whole network loses its activity.
+
+Under additional hypotheses, [nonlinear recurrence](theory/nodal/RESONANCE_FOUNDATIONS.md#nonlinear-recurrence)
+means that almost every state in a bounded family returns arbitrarily close
+to an earlier configuration. It gives neither a waiting time nor a shared
+rhythm, and does not certify every chosen state. These distinctions let the
+research ask about continued organization without assuming one perfect pulse.
+
 ### What the research establishes
 
-The results connect several parts of this picture:
+The results are conditional: each names its evolution law, preparation and
+observation. A mathematical proof establishes what follows from those premises.
+Tests check the implementation, while a numerical experiment supplies evidence
+for its specified case. Neither establishes a physical identification by itself.
 
-1. **Relaxation has a firm mathematical reference.** With only form diffusion
-   active, fixed connection strengths that are nonnegative and equal in both
-   directions, and positive fixed capacities, form differences decay toward
-   agreement inside each group connected by positive-strength links. This gives
-   a precisely understood starting point for studying richer dynamics.
-2. **Form and phase can support a maintained pattern under a specified joint
-   law.** In the relational model, differences between neighboring phases drive
-   changes in form, while form differences affect phase. On a supplied network
-   of two five-node rings joined by two connections, mathematical bounds
-   verified by computation establish a route from a particular preparation
-   into a protected phase pattern. A theorem then establishes its continued
-   maintenance under that law. The starting network, capacities and model
-   assumptions are part of this result.
-3. **Patterns can recover and transmit responses in admitted settings.** There
-   are local recovery results and finite tests of interaction between prepared
-   regions. These study the mechanism and its limits, rather than assuming that
-   every network or disturbance behaves the same way.
-4. **Hidden detail matters when we simplify.** Two preparations can have the
-   same observed averages and current rates yet develop differently because
-   their internal arrangements differ. Eliminating hidden variables
-   mathematically produces a memory term: the simplified description retains
-   an effect of internal state and past evolution. One numerical test, with
-   its conditions fixed before evaluating the result, found that a derived
-   memory correction improved prediction over two simpler controls. That result
-   concerns the declared preparation and numerical comparison; it does not
-   provide a complete replacement for the full network state.
-5. **A new connection can change more than its endpoints suggest.** The engine
-   can compare separate components with the same components joined by a supplied
-   connection. Equal values at the endpoints do not guarantee unchanged local
-   rates: each endpoint's surrounding relationships also matter.
-6. **Changing connections has a budget.** The joint model assigns storage to
-   differences along connections. Adding a connection without changing the
-   nodes cannot lower this storage. If we additionally require no supplied
-   work, the endpoints must agree in form and phase. Even then, nothing in the
-   budget forces a connection to appear. Exchanging an existing connection for
-   another can lower storage instead. For two prepared five-node rings, a
-   specified relocation preserves their phase patterns and leaves both in a
-   proved recovery region. The result also admits sufficiently small changes
-   to the preparation. It concerns one supplied change followed by the declared
-   dynamics, not an automatically chosen sequence of changes.
-7. **A response can identify a coefficient without selecting a law.** For the
-   stated relational family, a prepared form mode and initial phase consensus
-   let value, rate and acceleration identify one coefficient combination.
-   Shared tools propagate uncertainty and abstain when it is unresolved. A
-   known-source two-node computational acquisition now has a whole-window
-   nonlinear and numerical error budget, rather than relying on a small solver
-   residual. It verifies the estimation procedure inside that model; different
-   nonlinear laws can still share the same initial response.
+- **Relaxation and recovery.** Pure form diffusion has precise convergence
+  results on its admitted support. Joint form/phase laws also admit protected
+  phase patterns and recovery from specified disturbances. One prepared
+  formation result under the native relational law combines a validated
+  numerical transit with a theorem for the reached region; it is not a
+  guarantee for every starting network.
+- **Prepared formation and its controls.** Under the separate smooth sine
+  law, supplied nonuniform form can generate phase winding and enter a
+  protected region, with explicit preparation uncertainty. The
+  [same-law analysis](theory/nodal/SINE_PATTERN_DYNAMICS.md) also proves
+  consensus for a sufficient bounded-budget class and shows why two states
+  with equal storage can have different formation outcomes. The initial
+  organization, support and law are premises; they are not selected autonomously.
+- **Interaction and memory.** A retained environment can transmit changes
+  between patterns. Removing its coordinates from an observation produces
+  memory and retains its initial state. Shared inference and forecast tools
+  bound what earlier observations establish, and report unresolved information.
+- **Coherent geometry with internal motion.** The sine comparison supplies
+  conservative identity barriers, recurrence results and exact prepared
+  periodic families. Their meanings differ: preserving a phase pattern does
+  not require repeating one waveform, and an exact periodic orbit need not
+  resist nearby disturbances.
+- **Scale descriptions with retained constituents.** For an admitted replica
+  graph, a closed description keeps both group means and internal organization.
+  It removes interchangeable labels without removing the smaller nodes.
+  Means alone generally lose information needed to predict the future.
+- **Support changes and formation limits.** Hypothetical connections and
+  disconnections have separate state, storage and recovery conditions.
+  Storage barriers, symmetry and early dissipation rule out some proposed
+  formations even when the target itself has an affordable storage value.
+  For example, an admitted family starting with equal phases relaxes to
+  consensus throughout the declared preparation budget; the
+  [whole-class proof](theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-consensus-preparation-obstruction)
+  does not require a trajectory search.
+  Passing a budget check does not select an event or guarantee its outcome.
 
-Negative controls are useful parts of these results. For example, two
-preparations with the same model-defined initial energy can reach different
-final patterns. They show why one convenient number cannot stand in for the
-complete state.
-The [theory catalog](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md)
-connects each result to its assumptions, derivation, implementation and tests.
+The [theory-to-execution map](theory/README.md#theory-to-execution) connects
+these mechanisms to their proofs, shared implementation and independent checks.
+Counterexamples belong to that account: equal averages, initial energy or
+instantaneous rates can conceal states with different subsequent behavior.
 
-### The research direction and the next question
+### The research direction
 
-The main route is to specify what information a prediction needs, justify a
-complete set of rules, check that the rules work together, and predict something
-not used to choose those rules. Reusable results are integrated into shared tools
-and the engine where their scope supports it, with explicit conditions for use.
+The long-term objective is to determine whether coherent interacting patterns,
+their internal motion and their organization across scales can yield a
+predictive account of physical properties. The immediate method is to state
+sufficient information, specify all evolution laws, check their joint
+consistency and make a discriminating prediction or prove an obstruction.
+Reusable results enter shared engine or assessment owners with their hypotheses
+intact; an observation report does not install a new dynamical law.
 
-**The current bounded question is how to distinguish constitutive laws after
-estimating a coefficient.** Two laws can obey the same storage balance and
-produce the same initial response around phase consensus, yet respond
-differently away from it. Calibration determines a setting; a separate,
-uncertainty-aware prediction must test which candidate response is compatible.
-Estimating the setting is not evidence that the law is true.
+The [foundational work](theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md) studies
+how locality and a declared storage balance constrain pressure, phase evolution
+and admissible states. A [conditional selection result](theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#closed-form-balance-and-source-selection)
+identifies assumptions that select sine exchange: a conserved weighted total
+of form, a specified local information class, a fixed storage formula and
+additional capacity and phase conditions. These assumptions need justification
+of their own. Two laws can share conservation and a small-disturbance response
+while differing for larger changes, so those similarities alone do not choose
+a fundamental law.
+The [resonance and scale foundations](theory/FUNDAMENTAL_THEORY.md#resonance-fractality-foundation-audit)
+connect reciprocal interaction to internal motion. Dissipation and the detailed
+nonlinear response still depend on declared laws; repeating a compatible
+structure across scales does not explain how the hierarchy forms.
 
-The [coefficient study](theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#coefficient-synergy-audit)
-connects coefficient freedom, hidden-phase memory and observable response.
-Its [prepared identification and bounded acquisition](theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#prepared-coefficient-identification)
-provide shared engine observations and a verified known-source software control.
-The next specification must carry an admitted calibration interval into both
-named candidates without refitting, and establish a discriminating prediction
-or a precise obstruction before another trajectory. This remains an internal
-model-admission question, not a new physical-data campaign.
+The central generative question is how an organization appears from a declared
+family of initial states, what maintains it and how it interacts with its
+environment. An autonomous evolution law still needs supplied initial
+conditions; "formation" must specify which property was initially absent and
+later appears. Recognizing a temporary group, recovering an already prepared
+pattern and entering a protected family have different requirements. Exact
+periodicity is not a prerequisite for answering that formation question.
 
-The [effective-link and collective-memory results](theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md#effective-link-admission)
-remain reusable: supplied nodal environments can transmit deformation and
-restore joint geometry, and reductions must retain their hidden information.
-The [connection-foundation results](theory/nodal/RELATION_FOUNDATIONS.md)
-separate primitive support from transport weight and effective interaction.
-They admit conditional contact mechanisms but do not select a birth law.
-Formation of the initial substrate, autonomous law selection and physical
-identification remain open; this does not make the valid conditional results
-obsolete or prove that those open goals are impossible.
+Support and preparation remain supplied. The
+[relation foundations](theory/nodal/RELATION_FOUNDATIONS.md) distinguish an
+existing connection, an effective interaction through other nodes and an
+autonomously occurring support change. Formation of the initial substrate,
+selection of the microscopic law and physical identification remain open.
 
-For the current repository checkpoint, deliverables and stopping rule, use the
-[execution plan](theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-as the sole task queue. Its [resumption map](theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-checkpoint)
-locates reusable results and evidence; the
-[research portfolio](https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR_lineas_de_investigacion.txt)
-classifies the supporting branches without scheduling additional campaigns.
+The strategy's [fundamental questions](theory/NODAL_RESEARCH_STRATEGY.md#fundamental-research-dependencies)
+connect sufficient state, law selection and composition. The
+[portfolio](TNFR_lineas_de_investigacion.txt) classifies supporting branches.
+The [execution plan](theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+is the sole task queue: it owns the current question, admission conditions,
+deliverables and stopping rule. Its
+[checkpoint](theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-checkpoint)
+locates the reusable evidence for resuming work. This introduction describes
+the scientific framework rather than maintaining a parallel progress log.
 
 ### How this could connect to physical reality
 
@@ -282,7 +364,8 @@ seeds; direct `TNFR.create(..., seed=...)` sets the topology seed.
 | Task | Public interface | Scope |
 | --- | --- | --- |
 | Build networks and run operator words | `TNFR`, `StudySpec`, `run_study`, `tnfr network` | Shared registered operators, grammar and live preconditions |
-| Evolve joint form and phase | `RelationalExchangeModel`, `Network.step_relational` | Opt-in law with declared support, held capacity and phase-domain admission |
+| Evolve native relational form and phase | `RelationalExchangeModel`, `Network.step_relational` | Argument-based law with declared support, held capacity and phase-domain admission |
+| Assess the smooth sine comparison | `bound_relational_sine_exchange`, `assess_sine_replica_pulse` and related module-level reports | Separate sine law; read-only assessments do not switch the native runtime or certify arbitrary graph membership |
 | Observe stored state | `diagnose_network` | Detached observations with independent availability; pressure is not refreshed |
 | Observe regions and their relations | `regional_form`, `source_relative_form`, `relational_pattern` | Supplied regions and references; no automatic closed dynamics for the reduced state |
 | Compare an attachment | `relational_attachment` | Fresh separate/joined fields for a hypothetical connection; does not change live support |
@@ -294,7 +377,11 @@ The [regional and relational guide](https://github.com/fermga/TNFR-Python-Engine
 provides preparations and examples for joint dynamics. The
 [API contracts](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/API_CONTRACTS.md)
 define admission, numerical behavior, atomic stages and reporting. These routes
-share owners while retaining distinct mathematical contracts.
+share owners while retaining distinct mathematical contracts. Supplying a
+`reference_model` to a sine assessment carries its coefficients and admission
+premises; it does not make `step_relational` execute the sine law. Continuous
+theorems, finite numerical steps and validated enclosures also provide different
+guarantees.
 
 ## Observe the network
 
@@ -313,24 +400,18 @@ belong to the [structural field guide](https://github.com/fermga/TNFR-Python-Eng
 
 ## Read the research
 
-| Question | Mathematical owner |
-| --- | --- |
-| What state and complete laws are needed? | [Foundations](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/FUNDAMENTAL_THEORY.md), [parameter definitions](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md), [pressure premises](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/PRESSURE_CONSTITUTIVE_SCOPE.md) |
-| When does form diffusion relax? | [Diffusion and stability](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_DIFFUSION_STABILITY_THEOREM.md) |
-| How can form and phase form and maintain a pattern? | [Relational law, recovery and validated formation](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-validated-transit) |
-| What information is needed to combine regions? | [Composition and attachment](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md) |
-| What constrains a change of connections? | [Event storage, passivity and selection limits](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md#support-event-premise-admission) |
-| Can a pattern survive a relocated connection? | [Passive relocation and recovery](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md#identity-preserving-bridge-relocation) |
-| How does hidden state produce memory? | [Derived pattern memory](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/RELATIONAL_PATTERN_MEMORY.md) |
-| What can identify a coefficient, and what does not select its law? | [Coefficient, memory and preparation admission](theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#coefficient-synergy-audit) |
-| Which terms are assumptions, results or observations? | [Classified glossary](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/GLOSSARY.md) |
-| How will physical claims be tested? | [Measurement and reserved evaluation](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/research/FIVE_STAGE_EXECUTION_PLAN.md#supporting-measurement-bridge) |
+Start with the [theory catalog's question routes](theory/README.md#choose-a-question)
+to find definitions and derivations, then its
+[theory-to-execution map](theory/README.md#theory-to-execution) for shared engine
+owners and representative tests. The [glossary](theory/GLOSSARY.md) classifies
+concepts as supplied premises, conditional results, diagnostics or open claims.
 
-The [theory catalog](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md)
-is the complete map of derivations, engine implementations and representative
-tests. It also locates auxiliary Hamiltonian, graph-wave, geometric and
-arithmetic studies. Each contributes within its own assumptions; their presence
-does not make them interchangeable with the main generative model.
+The [strategy](theory/NODAL_RESEARCH_STRATEGY.md) explains how state, law selection
+and formation connect; the [execution plan](theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+specifies the next bounded question. Auxiliary Hamiltonian, graph-wave,
+geometric and arithmetic studies remain in the catalog under their own
+assumptions. Their presence does not make them interchangeable with the main
+generative model.
 
 ## Repository map
 

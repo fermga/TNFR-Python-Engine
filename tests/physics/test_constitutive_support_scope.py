@@ -424,7 +424,7 @@ def _contact_storage(s):
     return x, theta, a, nodal + a**2 / 2 - a
 
 
-def test_gradient_support_row_sets_uncoupled_stability_by_mismatch_cost():
+def test_gradient_support_row_has_mismatch_dependent_boundary_drive_and_storage_slope():
     s = pytest.importorskip("sympy")
     x, theta, a, stored = _contact_storage(s)
     flat = {v: 0 for v in theta}
@@ -433,8 +433,8 @@ def test_gradient_support_row_sets_uncoupled_stability_by_mismatch_cost():
     def uncoupled(jump):
         return {**dict(zip(x, (jump, jump, 0, 0), strict=True)), **flat, a: 0}
 
-    # k*=c*-kappa with c*=jump^2/2 and kappa=-Psi'(0)=1; the sign changes at
-    # c*=kappa, where the uncoupled state stops being a local minimum.
+    # k*=c*-kappa with c*=jump^2/2 and kappa=-Psi'(0)=1. Its zero locates a
+    # support-slope change, not dynamical stability or the equality-case outcome.
     jump = s.Symbol("jump", positive=True)
     assert s.solve(force.subs(uncoupled(jump)), jump) == [s.sqrt(2)]
     assert [force.subs(uncoupled(value)) for value in (1, 2)] == [-s.Rational(1, 2), 1]
@@ -442,8 +442,8 @@ def test_gradient_support_row_sets_uncoupled_stability_by_mismatch_cost():
     along = {v: stored.subs({**uncoupled(v), a: F(1, 10)}) for v in (1, 2)}
     assert along[1] < 0 < along[2]
 
-    # At an equilibrium D=0 natively, so passivity (-D+k*a_dot<=0) bounds a_dot
-    # by D/k=0 when k*>0 and leaves the gradient row a_dot=-k>0 when k*<0.
+    # At component equilibrium D=0 natively. Passivity forces a_dot=0 for k*>0;
+    # the supplied unit-mobility gradient row gives a_dot=-k>0 when k*<0.
     for base, forced_zero in ((2, True), (1, False)):
         _, _, loss, _, _ = _uncoupled_contact(F(0), base=base)
         assert loss == 0

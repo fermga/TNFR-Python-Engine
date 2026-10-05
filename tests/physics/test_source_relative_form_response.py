@@ -8,7 +8,6 @@ Neither the source preparation nor this model check identifies a physical law.
 
 import hashlib
 import json
-import os
 import subprocess
 import sys
 import textwrap
@@ -290,11 +289,7 @@ def test_changed_frozen_prediction_is_rejected_before_execution(monkeypatch):
         campaign.evaluate_prediction(changed)
 
 
-def _optimized_process(script, *arguments):
-    environment = dict(os.environ)
-    environment["PYTHONPATH"] = (
-        str(campaign.ROOT / "src") + os.pathsep + str(campaign.ROOT)
-    )
+def _optimized_process(environment, script, *arguments):
     return subprocess.run(
         [sys.executable, "-O", "-c", textwrap.dedent(script), *map(str, arguments)],
         cwd=campaign.ROOT,
@@ -306,8 +301,11 @@ def _optimized_process(script, *arguments):
     )
 
 
-def test_optimized_execution_retains_source_arithmetic_and_held_state_admission():
+def test_optimized_execution_retains_source_arithmetic_and_held_state_admission(
+    source_tree_environment,
+):
     process = _optimized_process(
+        source_tree_environment,
         """
         from fractions import Fraction as Q
         from benchmarks import source_relative_form_response as campaign
@@ -351,18 +349,19 @@ def test_optimized_execution_retains_source_arithmetic_and_held_state_admission(
             lambda: campaign._execute("plus", campaign.IDEAL_SOURCE),
             "boundary projection may have acted",
         )
-        """
+        """,
     )
     assert process.returncode == 0, process.stderr
 
 
 @pytest.mark.parametrize("failure", ("decision", "exception"))
 def test_cli_failure_is_recorded_and_exits_nonzero_under_optimization(
-    tmp_path, failure
+    tmp_path, failure, source_tree_environment
 ):
     output = tmp_path / "regression.json"
     output.with_suffix(".prediction.json").write_text("{}\n", encoding="utf-8")
     process = _optimized_process(
+        source_tree_environment,
         """
         import sys
         from fractions import Fraction as Q
