@@ -20,6 +20,7 @@ from fractions import Fraction
 from numbers import Integral
 
 from .._exact_time import exact_or_represented_real, finite_represented_real
+from ..mathematics._rational_interval import I, pi_interval
 from ..mathematics.krylov import exact_rank
 from ._cycle_algebra import Matrix, Vector, dot, ordered_vector
 from ._exact_linear_algebra import exact_matrix_inverse
@@ -50,7 +51,524 @@ __all__ = [
     "JointLinearSample",
     "SynchronizedJointPrediction",
     "predict_synchronized_joint_euler",
+    "PhaseMomentInformationAssessment",
+    "assess_phase_moment_information",
+    "PhaseInformationResponse",
+    "assess_phase_information_response",
+    "PhaseMomentMotion",
+    "derive_phase_moment_motion",
+    "SineStarMomentClosure",
+    "derive_sine_star_moment_closure",
 ]
+
+
+def _admit_relative_phasors(values, label):
+    from .relational_observations import _ordered
+
+    rows = _ordered(values, label, limit=129)
+    if not rows or len(rows) > 128:
+        raise ValueError("phasors require 1..128 ordered neighbor pairs")
+    admitted = []
+    for index, row in enumerate(rows):
+        pair = _ordered(row, f"{label}[{index}]", limit=3)
+        if len(pair) != 2:
+            raise ValueError("each phasor must be one cosine/sine pair")
+        c, s = (exact_or_represented_real(value, f"{label}[{index}]") for value in pair)
+        if c**2 + s**2 != 1:
+            raise ValueError("phasor coefficients must have exact unit norm")
+        admitted.append((c, s))
+    return tuple(admitted)
+
+
+def _phase_moments(phasors, multipliers=None):
+    """Exact first/third moments, retaining each phasor's own multiplier."""
+    if multipliers is None:
+        multipliers = (Fraction(1),) * len(phasors)
+    first = [Fraction(0), Fraction(0)]
+    third = [Fraction(0), Fraction(0)]
+    for (c, s), factor in zip(phasors, multipliers):
+        first[0] += factor * c
+        first[1] += factor * s
+        third[0] += factor * (c**3 - 3 * c * s**2)
+        third[1] += factor * (3 * c**2 * s - s**3)
+    return tuple(first), tuple(third)
+
+
+def _phase_source_storage(first, third, degree, coefficient):
+    scale = 1 + 3 * coefficient / 4
+    return (
+        first[1] / degree,
+        (scale * first[1] - coefficient * third[1] / 4) / degree,
+        degree - first[0],
+        (1 + 2 * coefficient / 3) * degree
+        - scale * first[0]
+        + coefficient * third[0] / 12,
+    )
+
+
+@dataclass(frozen=True)
+class PhaseMomentInformationAssessment:
+    """Exact first/third moment information for two declared rooted multisets.
+
+    Phasor pairs are exact admitted rational cosine/sine coordinates of
+    relative circular gaps, including repeated gaps at distinct neighbors.
+    Floating inputs denote their represented coefficients and must satisfy
+    the unit-circle identity exactly; no approximate normalization is made.
+    Source numerators are multiplied by mathematical pi. Storage values are
+    sums over the root's incidences, not a whole graph's energy or its rate.
+    """
+
+    left_phasors: tuple[tuple[Fraction, Fraction], ...]
+    right_phasors: tuple[tuple[Fraction, Fraction], ...]
+    degree: int
+    epsilon: Fraction
+    first_resultants: tuple[tuple[Fraction, Fraction], tuple[Fraction, Fraction]]
+    third_resultants: tuple[tuple[Fraction, Fraction], tuple[Fraction, Fraction]]
+    sine_source_pi_numerators: tuple[Fraction, Fraction]
+    cubic_source_pi_numerators: tuple[Fraction, Fraction]
+    cosine_storage_sums: tuple[Fraction, Fraction]
+    cubic_storage_sums: tuple[Fraction, Fraction]
+    first_resultants_equal: bool
+    nonzero_first_resultants: tuple[bool, bool]
+    strictly_acute: tuple[bool, bool]
+    cubic_source_difference_pi_numerator: Fraction
+    cubic_source_difference_bounds: I
+    cosine_storage_difference: Fraction
+    cubic_storage_difference: Fraction
+    sufficiency_obstruction: bool
+    scope: tuple[str, ...] = (
+        "ordered_equal_degree_rooted_relative_unit_phasor_multisets",
+        "exact_unit_circle_admission_without_angle_reconstruction_or_renormalization",
+        "represented_real_inputs_retain_only_their_exact_represented_coefficients",
+        "first_and_third_circular_moments_computed_by_exact_complex_powers",
+        "epsilon_declares_the_existing_sine_cubic_static_countermodel",
+        "right_minus_left_signed_source_and_incident_potential_differences",
+        "first_moment_match_does_not_assert_full_state_or_future_equivalence",
+        "obstruction_requires_exact_equal_first_moment_and_nonzero_source_difference",
+        "no_obstruction_for_this_pair_is_not_a_universal_sufficiency_certificate",
+        "128_neighbor_budget_is_computational_not_a_physical_degree_bound",
+        "no_graph_capture_pressure_law_installation_flow_or_physical_identification",
+    )
+
+    def to_dict(self):
+        """Project exact declared coordinates and their detached static evidence."""
+        from ..sdk.relational_reports import _project
+
+        return {
+            "schema": "tnfr.phase-moment-information.v1",
+            "report": _project(self),
+        }
+
+
+def assess_phase_moment_information(
+    left_phasors, right_phasors, *, epsilon=1
+) -> PhaseMomentInformationAssessment:
+    """Test first-resultant information against the declared cubic sine source.
+
+    Both nonempty ordered collections contain at most 128 exact unit phasors
+    (c,s), with equal degree d. They describe relative gaps, not absolute phase
+    measurements. The existing countermodel has pi*d*P=sum(s+epsilon*s**3)
+    and incident potential sum(1-c+epsilon*(2/3-c+c**3/3)), epsilon>=0.
+    The sine source and cosine potential are retained as controls. This
+    static readout neither supplies companion evolution rows nor selects a
+    unique pressure law. A zero epsilon is an admitted equal-law control.
+
+    Exact agreement of degree and Z1, together with unequal cubic sources,
+    disproves first-resultant sufficiency for that declared source. Overlapping
+    numerical enclosures never replace the exact equality test. A comparison
+    without such a collision establishes no universal information theorem.
+    """
+    coefficient = exact_or_represented_real(epsilon, "epsilon")
+    if coefficient < 0:
+        raise ValueError("epsilon must be nonnegative")
+
+    left = _admit_relative_phasors(left_phasors, "left_phasors")
+    right = _admit_relative_phasors(right_phasors, "right_phasors")
+    if len(left) != len(right):
+        raise ValueError("the two phase multisets must have equal degree")
+    degree = len(left)
+    first, third, sine, cubic, cosine_storage, cubic_storage = [], [], [], [], [], []
+    for phasors in (left, right):
+        z1, z3 = _phase_moments(phasors)
+        first.append(z1)
+        third.append(z3)
+        values = _phase_source_storage(z1, z3, degree, coefficient)
+        for column, value in zip((sine, cubic, cosine_storage, cubic_storage), values):
+            column.append(value)
+    same = first[0] == first[1]
+    difference = cubic[1] - cubic[0]
+    return PhaseMomentInformationAssessment(
+        left_phasors=left,
+        right_phasors=right,
+        degree=degree,
+        epsilon=coefficient,
+        first_resultants=tuple(first),
+        third_resultants=tuple(third),
+        sine_source_pi_numerators=tuple(sine),
+        cubic_source_pi_numerators=tuple(cubic),
+        cosine_storage_sums=tuple(cosine_storage),
+        cubic_storage_sums=tuple(cubic_storage),
+        first_resultants_equal=same,
+        nonzero_first_resultants=tuple(any(value != 0 for value in z) for z in first),
+        strictly_acute=tuple(all(c > 0 for c, _ in row) for row in (left, right)),
+        cubic_source_difference_pi_numerator=difference,
+        cubic_source_difference_bounds=I(difference) / pi_interval(),
+        cosine_storage_difference=cosine_storage[1] - cosine_storage[0],
+        cubic_storage_difference=cubic_storage[1] - cubic_storage[0],
+        sufficiency_obstruction=same and difference != 0,
+    )
+
+
+@dataclass(frozen=True)
+class PhaseInformationResponse:
+    """Finite root-form predictions for two equal-information preparations.
+
+    Model-indexed tuples put sine first and the supplied cubic member second.
+    Within each model, initial root rates put the left preparation first.
+    Preparation error bounds every initial form and lifted radian coordinate;
+    observation error bounds each endpoint root reading independently.
+    """
+
+    information: PhaseMomentInformationAssessment
+    duration: Fraction
+    preparation_error: Fraction
+    observation_error: Fraction
+    model_epsilon_values: tuple[Fraction, Fraction]
+    root_initial_rate_values: tuple[tuple[Fraction, Fraction], ...]
+    current_abs_upper_bounds: tuple[Fraction, Fraction]
+    current_lipschitz_upper_bounds: tuple[Fraction, Fraction]
+    form_contrast_centers: tuple[Fraction, Fraction]
+    finite_time_error_upper_bounds: tuple[Fraction, Fraction]
+    preparation_error_upper_bounds: tuple[Fraction, Fraction]
+    observation_error_upper_bound: Fraction
+    form_contrast_radii: tuple[Fraction, Fraction]
+    form_contrast_prediction_bounds: tuple[I, I]
+    separation_margin_lower_bound: Fraction
+    discrimination_certified: bool
+    status: str
+    reasons: tuple[str, ...]
+    clock: str = "tau=t/pi"
+    observable: str = "x_root_right(duration)-x_root_left(duration)"
+    complete_rows: tuple[str, ...] = (
+        "dx_i/dtau=sum_j j(theta_j-theta_i)/d_i",
+        "dtheta_i/dtau=x_i-sum_j x_j/d_i",
+        "j(delta)=sin(delta)+eta*sin(delta)^3; eta=0 or epsilon",
+        "fixed simple unit star; held unit capacities; e=0,w=beta=1; no inputs or events",
+    )
+    scope: tuple[str, ...] = (
+        "independently_declared_equal_degree_and_exact_equal_first_moment_preparations",
+        "root_first_node_order_followed_by_the_ordered_incident_unit_phasors",
+        "ideal_forms_zero_root_phase_zero_and_leaf_phases_given_on_the_circle",
+        "all_full_star_form_and_phase_coordinates_evolve_under_each_complete_law",
+        "independent_initial_form_and_lifted_radian_error_at_every_node_in_each_trial",
+        "each_endpoint_root_reading_has_its_own_absolute_observation_error",
+        "one_fixed_common_model_clock_and_duration_for_both_preparations_and_laws",
+        "global_current_and_derivative_bounds_control_the_whole_continuous_window",
+        "equal_initial_sine_sources_do_not_assert_equal_finite_sine_responses",
+        "cubic_current_uses_its_own_supplied_phase_potential_and_conserved_full_storage",
+        "overlapping_prediction_intervals_are_unavailable_not_equivalent_models",
+        "no_sampled_pressure_reconstruction_trajectory_replay_or_graph_mutation",
+        "no_clock_calibration_physical_source_admission_or_fundamental_law_selection",
+    )
+
+    def to_dict(self):
+        from ..sdk.relational_reports import _project
+
+        return {
+            "schema": "tnfr.phase-information-response.v1",
+            "report": _project(self),
+        }
+
+
+def assess_phase_information_response(
+    left_phasors,
+    right_phasors,
+    *,
+    duration,
+    epsilon=1,
+    preparation_error=0,
+    observation_error=0,
+) -> PhaseInformationResponse:
+    """Bound a finite root-form contrast from independently supplied preparation.
+
+    Rebuild exact static information from primitive unit phasors. Equal degree
+    and Z1 are required; positive epsilon declares the existing cubic current
+    and its own potential. Both complete conservative star laws use held unit
+    capacities and tau=t/pi, with zero ideal forms and no forcing or events.
+    Phases are not held fixed. No observed response enters the prediction.
+
+    For eta=0 or epsilon put J=1+eta, L=1+3*eta, h=duration and
+    rho=preparation_error. Globally |j|<=J and |j'|<=L. Every actual
+    coordinate satisfies |x(tau)|<=rho+J*tau, hence each phase moves by at
+    most 2*rho*tau+J*tau**2. Relative departure from its ideal initial gap
+    is at most 2*rho+4*rho*tau+2*J*tau**2. Integrating the root row gives
+    the per-root error rho*(1+2*L*h+2*L*h**2)+(2/3)*L*J*h**3 about its
+    independently predicted h*mean(j). Two preparations double this bound;
+    two endpoint readings add 2*observation_error. Errors refer to initial
+    lifted phase angles, not coordinate errors in the supplied phasor pairs.
+
+    Outward intervals certify separation in either signed direction. Failed
+    separation returns unavailable, never physical equivalence or rejection.
+    The clock and all remaining complete-law premises are supplied, not
+    selected by the first-moment classification or by this finite bound.
+    """
+    h, coefficient, rho, sigma = (
+        exact_or_represented_real(value, name)
+        for name, value in (
+            ("duration", duration),
+            ("epsilon", epsilon),
+            ("preparation_error", preparation_error),
+            ("observation_error", observation_error),
+        )
+    )
+    if h <= 0 or coefficient <= 0 or rho < 0 or sigma < 0:
+        raise ValueError(
+            "positive duration/epsilon and nonnegative preparation/observation errors required"
+        )
+    information = assess_phase_moment_information(
+        left_phasors, right_phasors, epsilon=coefficient
+    )
+    if not information.first_resultants_equal:
+        raise ValueError("the two preparations must have equal first resultants")
+    coefficients = (Fraction(0), coefficient)
+    currents = tuple(1 + eta for eta in coefficients)
+    lipschitz = tuple(1 + 3 * eta for eta in coefficients)
+    rates = (
+        information.sine_source_pi_numerators,
+        information.cubic_source_pi_numerators,
+    )
+    centers = tuple(h * (right - left) for left, right in rates)
+    finite_errors = tuple(
+        Fraction(4, 3) * bound * current * h**3
+        for bound, current in zip(lipschitz, currents)
+    )
+    preparation_errors = tuple(
+        2 * rho * (1 + 2 * bound * h + 2 * bound * h**2) for bound in lipschitz
+    )
+    reading_error = 2 * sigma
+    radii = tuple(
+        finite + preparation + reading_error
+        for finite, preparation in zip(finite_errors, preparation_errors)
+    )
+    predictions = tuple(
+        I(center - radius, center + radius) for center, radius in zip(centers, radii)
+    )
+    separation = max(
+        predictions[0].lo - predictions[1].hi,
+        predictions[1].lo - predictions[0].hi,
+    )
+    certified = separation > 0
+    return PhaseInformationResponse(
+        information=information,
+        duration=h,
+        preparation_error=rho,
+        observation_error=sigma,
+        model_epsilon_values=coefficients,
+        root_initial_rate_values=rates,
+        current_abs_upper_bounds=currents,
+        current_lipschitz_upper_bounds=lipschitz,
+        form_contrast_centers=centers,
+        finite_time_error_upper_bounds=finite_errors,
+        preparation_error_upper_bounds=preparation_errors,
+        observation_error_upper_bound=reading_error,
+        form_contrast_radii=radii,
+        form_contrast_prediction_bounds=predictions,
+        separation_margin_lower_bound=separation,
+        discrimination_certified=certified,
+        status="certified" if certified else "unavailable",
+        reasons=() if certified else ("finite_response_intervals_not_separated",),
+    )
+
+
+@dataclass(frozen=True)
+class PhaseMomentMotion:
+    """Derived moment motion for exact gaps paired with supplied angular rates."""
+
+    phasors: tuple[tuple[Fraction, Fraction], ...]
+    gap_rates: tuple[Fraction, ...]
+    epsilon: Fraction
+    degree: int
+    first_resultant: tuple[Fraction, Fraction]
+    third_resultant: tuple[Fraction, Fraction]
+    first_rate_weighted_resultant: tuple[Fraction, Fraction]
+    third_rate_weighted_resultant: tuple[Fraction, Fraction]
+    first_resultant_rate: tuple[Fraction, Fraction]
+    third_resultant_rate: tuple[Fraction, Fraction]
+    sine_source_pi_numerator: Fraction
+    cubic_source_pi_numerator: Fraction
+    cosine_storage_sum: Fraction
+    cubic_storage_sum: Fraction
+    sine_source_rate_pi_numerator: Fraction
+    cubic_source_rate_pi_numerator: Fraction
+    cosine_storage_rate: Fraction
+    cubic_storage_rate: Fraction
+    scope: tuple[str, ...] = (
+        "exact_relative_unit_phasors_with_paired_supplied_radian_rates_in_one_declared_clock",
+        "same_unweighted_equal_gain_incident_source_and_potential_as_phase_moment_information",
+        "fixed_incidence_and_epsilon_on_the_declared_differentiable_segment",
+        "source_and_source_rate_numerators_include_the_common_mathematical_pi_factor",
+        "storage_and_work_are_incident_sums_not_whole_network_energy_or_balance",
+        "rate_weighted_moments_are_derived_observables_not_independent_state_or_new_laws",
+        "rates_require_their_own_complete_law_or_independent_kinematic_provenance",
+        "current_and_rate_equality_do_not_establish_future_closure_or_finite_equivalence",
+        "no_angle_reconstruction_no_measured_phasor_renormalization_no_graph_or_state_mutation",
+        "no_trajectory_capacity_law_clock_identification_or_physical_validation",
+    )
+
+    def to_dict(self):
+        from ..sdk.relational_reports import _project
+
+        return {"schema": "tnfr.phase-moment-motion.v1", "report": _project(self)}
+
+
+def derive_phase_moment_motion(phasors, gap_rates, *, epsilon=1) -> PhaseMomentMotion:
+    """Differentiate the admitted sine/cubic current and incident potential.
+
+    Each rate is delta_dot in radians per the caller's declared time, paired
+    with its own exact relative unit phasor. For Z_m=sum exp(i*m*delta) and
+    M_m=sum delta_dot*exp(i*m*delta), Z_m_dot=i*m*M_m. The existing pressure
+    convention is pi*d*p=sum(sin(delta)+epsilon*sin(delta)^3).
+
+    Return exact numerators pi*p and pi*p_dot, and the incident potential and
+    its rate. Supplying a rate does not derive its law. These instantaneous
+    observations do not generally determine the mixed moments and accelerations
+    needed to evolve. A separately admitted closure, such as the regular star
+    chart below, needs its complete law and domain; none is inferred here.
+    """
+    from .relational_observations import _ordered
+
+    phase = _admit_relative_phasors(phasors, "phasors")
+    raw_rates = _ordered(gap_rates, "gap_rates", limit=len(phase) + 1)
+    if len(raw_rates) != len(phase):
+        raise ValueError("one ordered gap rate is required for each phasor")
+    rates = tuple(exact_or_represented_real(value, "gap_rates") for value in raw_rates)
+    coefficient = exact_or_represented_real(epsilon, "epsilon")
+    if coefficient < 0:
+        raise ValueError("epsilon must be nonnegative")
+    first, third = _phase_moments(phase)
+    motion1, motion3 = _phase_moments(phase, rates)
+    sine, cubic, storage, cubic_storage = _phase_source_storage(
+        first, third, len(phase), coefficient
+    )
+    scale = 1 + 3 * coefficient / 4
+    return PhaseMomentMotion(
+        phasors=phase,
+        gap_rates=rates,
+        epsilon=coefficient,
+        degree=len(phase),
+        first_resultant=first,
+        third_resultant=third,
+        first_rate_weighted_resultant=motion1,
+        third_rate_weighted_resultant=motion3,
+        first_resultant_rate=(-motion1[1], motion1[0]),
+        third_resultant_rate=(-3 * motion3[1], 3 * motion3[0]),
+        sine_source_pi_numerator=sine,
+        cubic_source_pi_numerator=cubic,
+        cosine_storage_sum=storage,
+        cubic_storage_sum=cubic_storage,
+        sine_source_rate_pi_numerator=motion1[0] / len(phase),
+        cubic_source_rate_pi_numerator=(
+            scale * motion1[0] - 3 * coefficient * motion3[0] / 4
+        )
+        / len(phase),
+        cosine_storage_rate=motion1[1],
+        cubic_storage_rate=scale * motion1[1] - coefficient * motion3[1] / 4,
+    )
+
+
+@dataclass(frozen=True)
+class SineStarMomentClosure:
+    """Exact regular observation chart of the conservative three-node star.
+
+    Complex quantities are (real, imaginary) Fraction pairs. Rates use only
+    tau=t/pi, unit held capacity, e=0 and w=beta=1. This is the full relative
+    state modulo simultaneous leaf exchange, not a lower-dimensional model.
+    """
+
+    first_resultant: tuple[Fraction, Fraction]
+    first_rate_weighted_resultant: tuple[Fraction, Fraction]
+    resultant_norm_squared: Fraction
+    relative_mean_form: Fraction
+    internal_form_squared: Fraction
+    phase_product: tuple[Fraction, Fraction]
+    first_resultant_rate: tuple[Fraction, Fraction]
+    first_rate_weighted_resultant_rate: tuple[Fraction, Fraction]
+    full_storage: Fraction
+    scope: tuple[str, ...] = (
+        "complete_three_node_star_unit_support_and_held_unit_capacities",
+        "conservative_sine_e_zero_w_beta_one_no_inputs_or_events",
+        "gap_rates_and_all_reported_derivatives_use_tau_equals_t_over_pi",
+        "strict_regular_chart_zero_less_than_resultant_norm_squared_less_than_four",
+        "faithful_relative_state_modulo_common_origins_and_simultaneous_leaf_swap",
+        "four_real_coordinates_no_continuous_degree_of_freedom_removed",
+        "exact_observable_inputs_may_lift_to_irrational_unit_phasors",
+        "local_chart_not_an_all_time_domain_or_a_numerical_trajectory_certificate",
+        "singular_observations_require_retained_state_not_tolerance_clipping",
+        "no_fundamental_law_selection_graph_mutation_or_physical_identification",
+    )
+
+    def to_dict(self):
+        from ..sdk.relational_reports import _project
+
+        return {"schema": "tnfr.sine-star-moment-closure.v1", "report": _project(self)}
+
+
+def derive_sine_star_moment_closure(
+    first_resultant, first_rate_weighted_resultant
+) -> SineStarMomentClosure:
+    """Push forward the complete sine star law in its regular moment chart.
+
+    Z=sum exp(i*delta_j), M=sum delta_j'*exp(i*delta_j), where delta_j is
+    relative to the root and prime means d/d(t/pi). Each input is an ordered
+    (real, imaginary) pair of finite represented reals. Require 0<|Z|^2<4;
+    coincident/antipodal phases lose state information and are rejected here,
+    though the fine nodal law remains smooth. No uncertainty is inferred.
+
+    With a+i*b=M/Z, recover X=a/2 and U=b^2*|Z|^2/(4-|Z|^2). The unordered
+    phase product is P=Z/conj(Z), and Z2=Z^2-2P. The inherited exact rows are
+    Z'=i*M and M'=i*(Z2-2)/2-3*Im(Z)*Z/2+i*((U-a^2)*Z+2*a*M).
+    Full storage is X^2+U+2-Re(Z), not just incident phase storage.
+    This specialization reuses the retained pair-state proof; its coefficients
+    do not transfer to other attachments, capacities, clocks or laws.
+    """
+    from .relational_observations import _ordered
+
+    pairs = []
+    for values, label in (
+        (first_resultant, "first_resultant"),
+        (first_rate_weighted_resultant, "first_rate_weighted_resultant"),
+    ):
+        row = _ordered(values, label, limit=3)
+        if len(row) != 2:
+            raise ValueError(f"{label} requires one real/imaginary pair")
+        pairs.append(tuple(exact_or_represented_real(v, label) for v in row))
+    z, m = pairs
+    c, s = z
+    mr, mi = m
+    norm = c * c + s * s
+    if not 0 < norm < 4:
+        raise ValueError("regular star moment chart requires 0 < |Z|^2 < 4")
+    a, b = (mr * c + mi * s) / norm, (mi * c - mr * s) / norm
+    x = a / 2
+    u2 = b * b * norm / (4 - norm)
+    product = ((c * c - s * s) / norm, 2 * c * s / norm)
+    z2 = (c * c - s * s - 2 * product[0], 2 * c * s - 2 * product[1])
+    rate2 = ((u2 - a * a) * c + 2 * a * mr, (u2 - a * a) * s + 2 * a * mi)
+    mdot = (
+        -z2[1] / 2 - 3 * s * c / 2 - rate2[1],
+        (z2[0] - 2) / 2 - 3 * s * s / 2 + rate2[0],
+    )
+    return SineStarMomentClosure(
+        first_resultant=z,
+        first_rate_weighted_resultant=m,
+        resultant_norm_squared=norm,
+        relative_mean_form=x,
+        internal_form_squared=u2,
+        phase_product=product,
+        first_resultant_rate=(-mi, mr),
+        first_rate_weighted_resultant_rate=mdot,
+        full_storage=x * x + u2 + 2 - c,
+    )
 
 
 @dataclass(frozen=True)

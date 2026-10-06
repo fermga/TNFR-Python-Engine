@@ -44,8 +44,10 @@ The cards are the only editable concept catalog. Generate their index with
 | [Joint storage and signed exchange work](#storage-work) | derived | not-claimed | maintained |
 | [Pure-EPI diffusion and relaxation](#diffusion) | derived | conditional | maintained |
 | [Conditional pattern formation and recovery](#pattern-recovery) | derived | conditional | maintained |
+| [Conditional moving-pattern retention](#moving-pattern-retention) | derived | conditional | maintained |
 | [Conditional structural resonance](#resonance) | derived | conditional | maintained |
 | [Conditional autonomous nonlinear pulse](#autonomous-pulse) | derived | conditional | maintained |
+| [Collective contact pulse and internal feedback](#collective-pulse) | derived | not-claimed | maintained |
 | [Conditional parametric pulse instability](#parametric-instability) | derived | conditional | maintained |
 | [Conditional nonlinear recurrence](#nonlinear-recurrence) | derived | conditional | maintained |
 | [Derived form geometry](#form-geometry) | derived | not-claimed | maintained |
@@ -176,7 +178,7 @@ The cards are the only editable concept catalog. Generate their index with
 - **Premises:** Specify membership, internal state and coupling before testing persistence or formation.
 - **Dependencies:** epi, capacity, phase, support
 - **Owner:** [Substrate and scale](FUNDAMENTAL_THEORY.md#29-assumed-substrate-and-emergence-between-scales).
-- **Evidence:** [Identity obligations](NODAL_RESEARCH_STRATEGY.md#closure-audit-equations-events-and-identity), [retained constituent influence](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-inheritance), [exact unordered-pair state](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-unordered-state).
+- **Evidence:** [Identity obligations](NODAL_RESEARCH_STRATEGY.md#closure-audit-equations-events-and-identity), [retained constituent influence](nodal/SINE_PAIR_STATE.md#sine-replica-inheritance), [exact unordered-pair state](nodal/SINE_PAIR_STATE.md#sine-replica-unordered-state).
 - **Implementation:** [SDK NFR observation](../src/tnfr/sdk/simple.py), [detached fine-to-collective assessment](../src/tnfr/physics/relational_sine_scale.py).
 - **Tests:** [NFR observation scope](../tests/sdk/test_nfr_observation_scope.py), [retained fine-state and symmetry controls](../tests/physics/test_relational_sine_replica.py).
 - **Limits:** A graph node, nested child or topology label does not establish autopoiesis, persistent identity or a physical constituent. A collective description retains its constituents and their dynamics; the exact pair quotient removes interchangeable labels, not internal continuous coordinates. Nesting alone does not derive a closed scale law.
@@ -243,11 +245,11 @@ The cards are the only editable concept catalog. Generate their index with
 - **Domain:** Fixed finite connected simple reciprocal unit support with at least two nodes, held nonnegative capacities, e>=0, w,beta>0 and finite signed form/circular phase.
 - **Premises:** Select the complete normalized-sine law, cosine storage, fixed clock and no forcing/events. Conditional selection retains the owner's conservation/composition, information, storage and capacity premises; the nodal identity alone does not select them.
 - **Dependencies:** nodal-equation, phase, capacity, support
-- **Owner:** [Complete smooth-law comparison](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#global-closure-pressure-comparison).
-- **Evidence:** [Balance and global continuation](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#complete-balance-continuation-and-inherited-geometry), [conditional restrictions and nonselection](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#global-closure-pressure-comparison), [form-balance selection of pressure with separate phase-row premises](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#closed-form-balance-and-source-selection).
+- **Owner:** [Complete smooth-law comparison](nodal/SINE_CONSTITUTIVE_INFORMATION.md#global-closure-pressure-comparison).
+- **Evidence:** [Balance and global continuation](nodal/SINE_CONSTITUTIVE_INFORMATION.md#complete-balance-continuation-and-inherited-geometry), [conditional restrictions and nonselection](nodal/SINE_CONSTITUTIVE_INFORMATION.md#global-closure-pressure-comparison), [form-balance selection of pressure with separate phase-row premises](nodal/SINE_CONSTITUTIVE_INFORMATION.md#closed-form-balance-and-source-selection).
 - **Implementation:** [Detached comparison and shared rates](../src/tnfr/physics/relational_sine_comparison.py), [primitive admission](../src/tnfr/physics/_sine_admission.py).
 - **Tests:** [Independent complete-law controls](../tests/physics/test_relational_sine_comparison.py), [source and theorem-domain admission](../tests/physics/test_sine_admission.py), [balance, composition and branching controls](../tests/physics/test_relational_pressure_composition.py).
-- **Limits:** This changes both native form/phase rows, not just the native phase-domain setting. Smoothness and shared storage do not uniquely select the law; alternative mobilities remain separate models. [Changing the phase-storage premise](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#phase-storage-selection-boundary) also permits different nonlinear laws with the same form balance and consensus tangent. Individual proofs may require strictly positive loss/capacity. Detached readers and scoped forecasts do not replace Network.step_relational.
+- **Limits:** This changes both native form/phase rows, not just the native phase-domain setting. Smoothness and shared storage do not uniquely select the law; alternative mobilities remain separate models. [Changing the phase-storage premise](nodal/SINE_CONSTITUTIVE_INFORMATION.md#phase-storage-selection-boundary) also permits different nonlinear laws with the same form balance and consensus tangent. Individual proofs may require strictly positive loss/capacity. Detached readers and scoped forecasts do not replace Network.step_relational.
 
 ## Derived structure and scoped dynamical results
 
@@ -263,7 +265,7 @@ The cards are the only editable concept catalog. Generate their index with
 - **Premises:** Use the unweighted neighbor resultant and sinc(a)=sin(a)/a, continuously extended to 1 at zero.
 - **Dependencies:** phase, support, capacity
 - **Owner:** [Relational geometry](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#1-state-inherited-geometry-and-the-independent-premise).
-- **Evidence:** [Phase row and domain](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#2-forced-phase-row-and-its-domain); [aligned edge-cost classification and metric continuation](TNFR_VARIATIONAL_PRINCIPLE.md#native-phase-storage-classification); [regular point/chord admission](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-full-regular-execution).
+- **Evidence:** [Phase row and domain](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#2-forced-phase-row-and-its-domain); [aligned edge-cost classification and metric continuation](TNFR_VARIATIONAL_PRINCIPLE.md#native-phase-storage-classification); [regular point/chord admission](nodal/RELATIONAL_DOMAIN_AND_CAPTURE.md#relational-full-regular-execution).
 - **Implementation:** [Captured relational field](../src/tnfr/dynamics/relational.py).
 - **Tests:** [Regular execution](../tests/test_relational_regular_execution.py).
 - **Limits:** Resultant/branch boundaries are not successful zero values. Certified regular-domain bounds are separate from materialized sums and work defects; they do not enclose rates or the continuous trajectory. Numerically unresolved regular states can be rejected.
@@ -279,11 +281,11 @@ The cards are the only editable concept catalog. Generate their index with
 - **Domain:** The selected native or baseline smooth-sine law on held unit support. With q=L*x, both have D_i=e*nu_i*q_i^2/d_i; native exchange is J_i=w*nu_i*q_i*g_i, while sine exchange is J_i=(w/pi)*(nu_i/d_i)*q_i*S_i.
 - **Premises:** Use one admitted complete law without forcing or support events. Native joint-cost classification additionally assumes its own local-law and prescribed-loss class; sine storage is retained as a separate model premise.
 - **Dependencies:** relational-law, sine-law
-- **Owner:** [Native signed work](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-work-integration), [sine balance](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#complete-balance-continuation-and-inherited-geometry).
-- **Evidence:** [Joint storage balances](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#3-complete-source-storage-and-mean-balances); [joint-cost classification](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#joint-storage-locality-classification).
+- **Owner:** [Native signed work](nodal/RELATIONAL_RECOVERY_AND_INTERACTION.md#relational-work-integration), [sine balance](nodal/SINE_CONSTITUTIVE_INFORMATION.md#complete-balance-continuation-and-inherited-geometry), [regional channel balance](nodal/SINE_REGIONAL_FORMATION.md#sine-regional-channel-accessibility).
+- **Evidence:** [Joint storage balances](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#3-complete-source-storage-and-mean-balances); [joint-cost classification](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#joint-storage-locality-classification); regional form/phase rates retain internal conversion and distinct boundary inputs.
 - **Implementation:** [Native field work](../src/tnfr/dynamics/relational.py), [sine rate/work kernel](../src/tnfr/physics/relational_sine_comparison.py).
 - **Tests:** [Native work](../tests/test_relational_work_observation.py), [sine complete-law controls](../tests/physics/test_relational_sine_comparison.py).
-- **Limits:** This is not measured physical energy or tetrad energy. Shared total storage/loss does not imply identical exchange, trajectories or conserved means; alternative reciprocal mobilities retain their own loss/exchange rows. Numerical residuals and support-event costs remain explicit.
+- **Limits:** This is not measured physical energy or tetrad energy. Shared total storage/loss does not imply identical exchange, trajectories or conserved means; alternative reciprocal mobilities retain their own rows. Running boundary work, endpoint storage and instantaneous power are different evidence; the collective-pulse remainder is signed. Numerical residuals and support-event costs remain explicit.
 
 <a id="diffusion"></a>
 
@@ -310,14 +312,31 @@ The cards are the only editable concept catalog. Generate their index with
 - **Basis:** derived
 - **Emergence:** conditional
 - **Definition:** A declared geometric identity can recover locally, or be reached from a preparation initially lacking that identity, under a specified complete law.
-- **Domain:** Native acute recovery and certified two-ring transit; separately, the baseline smooth-sine law with its whole-sector capture and prepared-entry hypotheses.
-- **Premises:** Retain each theorem's supplied support, complete law, positive capacities/loss, phase domain, initial form and uncertainty. Recovery and formation have different initial sets.
+- **Domain:** Native acute recovery and certified two-ring transit; separately, positive-loss sine capture and prepared entry, or zero-loss finite regional acquisition.
+- **Premises:** Retain each theorem's supplied support, complete law, capacity and loss conditions, phase domain, initial form and uncertainty. Recovery, acquisition and maintained formation have different initial and target sets.
 - **Dependencies:** relational-law, sine-law, storage-work, winding, nfr
-- **Owner:** [Native recovery](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-local-recovery), [sine pattern dynamics](nodal/SINE_PATTERN_DYNAMICS.md).
-- **Evidence:** [Native validated transit](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-validated-transit), [sine sector capture](nodal/SINE_PATTERN_DYNAMICS.md#sine-target-free-sector-capture), [prepared acquisition and uncertainty](nodal/SINE_PATTERN_DYNAMICS.md#sine-prepared-sector-entry).
+- **Owner:** [Native recovery](nodal/RELATIONAL_RECOVERY_AND_INTERACTION.md#relational-local-recovery), [sine pattern dynamics](nodal/SINE_PATTERN_DYNAMICS.md).
+- **Evidence:** [Native validated transit](nodal/RELATIONAL_FORMATION_CONTROLS.md#relational-validated-transit), [sine sector capture](nodal/SINE_PATTERN_DYNAMICS.md#sine-target-free-sector-capture), [prepared acquisition](nodal/SINE_PATTERN_DYNAMICS.md#sine-prepared-sector-entry), [conservative source geometry and finite acute entry](nodal/SINE_REGIONAL_FORMATION.md#sine-conservative-source-geometry).
 - **Implementation:** [Native capture](../src/tnfr/physics/relational_capture.py), [native transit](../src/tnfr/physics/relational_transit.py), [sine recovery](../src/tnfr/physics/relational_sine_recovery.py), [sine entry](../src/tnfr/physics/relational_sine_entry.py).
-- **Tests:** [Native transit](../tests/physics/test_relational_transit_proof.py), [whole-sector capture](../tests/physics/test_relational_sine_sector_capture.py), [prepared entry](../tests/physics/test_relational_sine_entry.py).
-- **Limits:** Recovery, finite lifetime and formation remain different obligations. Adequate storage does not guarantee reachability or select preparation; [budget and symmetry controls](nodal/SINE_PATTERN_DYNAMICS.md#sine-budget-consensus) retain their own domains. A failed sufficient certificate is unavailable, not impossibility. Support selection and physical identity remain open.
+- **Tests:** [Native transit](../tests/physics/test_relational_transit_proof.py), [whole-sector capture](../tests/physics/test_relational_sine_sector_capture.py), [prepared entry](../tests/physics/test_relational_sine_entry.py), [conservative source geometry](../tests/physics/test_sine_conservative_source_geometry.py).
+- **Limits:** Finite winding need not be acute; acute acquisition can subsequently leave its sector. Adequate storage, internal growth or broken reflection symmetry does not guarantee a maintained identity or select preparation. A failed sufficient certificate is unavailable, not impossibility. Support selection and physical identity remain open.
+
+<a id="moving-pattern-retention"></a>
+
+### Conditional moving-pattern retention
+
+- **Status:** maintained
+- **Basis:** derived
+- **Emergence:** conditional
+- **Definition:** An identity already present in an admitted full-state neighborhood persists for a specified finite interval around an evolving compatible reference.
+- **Domain:** Conservative unit-capacity sine law on C5 with five private leaves; an acute unit twist, contact libration and bounded errors on every receiver and leaf coordinate.
+- **Premises:** Supplied support and reference, explicit phase chart, structural clock, positive chart margins and a strict relative-storage growth bound. The actual environment remains part of the state.
+- **Dependencies:** sine-law, storage-work, winding, closure
+- **Owner:** [Moving-reference retention](nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-moving-pattern-window).
+- **Evidence:** [Full-storage derivative and finite-window bootstrap](nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-moving-pattern-window); correlated cycle/storage bounds and backward-time identity constrain possible entry.
+- **Implementation:** [Shared partition and window owner](../src/tnfr/physics/relational_sine_partition.py).
+- **Tests:** [Window admission](../tests/physics/test_sine_moving_pattern_window.py), [independent full-row derivative and hidden-environment controls](../tests/physics/test_sine_moving_pattern_window_dynamics.py).
+- **Limits:** This is finite maintenance, not attraction or autonomous preparation. Low regional storage alone is insufficient. The certificate extends backward as well as forward; first appearance is not certified at its central instant. Formation needs a separate same-law, full-state entry proof.
 
 <a id="resonance"></a>
 
@@ -348,10 +367,27 @@ The cards are the only editable concept catalog. Generate their index with
 - **Premises:** Supplied support, nonzero preparation, positive beta and coupling, structural clock and exactly zero loss. The doubled-C5 result requires its exact symbolic invariant family; no rounded graph membership is inferred. These premises do not follow from the demand for permanence.
 - **Dependencies:** sine-law, phase, capacity, support, clock
 - **Owner:** [Permanent-pulse admission](nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission).
-- **Evidence:** [P2 libration and dissipative obstruction](nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission), [exact internal pulse and observation-dependent period](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-internal-pulse).
+- **Evidence:** [P2 libration and dissipative obstruction](nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission), [exact internal pulse and observation-dependent period](nodal/SINE_REPLICA_PULSE.md#sine-replica-internal-pulse).
 - **Implementation:** [Detached pair-pulse assessment](../src/tnfr/physics/relational_sine_resonance.py), [prepared replica-pulse assessment](../src/tnfr/physics/relational_sine_scale.py).
 - **Tests:** [P2 field, period and boundaries](../tests/physics/test_relational_sine_resonance.py), [complete replica field and elliptic-solution controls](../tests/physics/test_relational_sine_replica.py).
-- **Limits:** The period belongs to the exact continuous law, not an Euler orbit. In the replica family the labeled period is twice the unordered-pair period while collective means remain constant; every constituent remains present. Existence does not prove stability: sufficiently small nonzero replica pulses are transversely unstable, without a certified numerical amplitude threshold. Conservation does not select an attracting amplitude, justify zero loss or create activity from equilibrium.
+- **Limits:** The period belongs to the exact continuous law, not an Euler orbit. In the replica family the labeled period is twice the unordered-pair period while collective means remain constant; every constituent remains present. Existence does not prove stability: sufficiently small nonzero replica pulses are transversely unstable, without a certified numerical amplitude threshold. The actual [mean-contact coordinate](#collective-pulse) need not close or be periodic; the [auxiliary spectral pulse](#pulse) uses another generator. Conservation does not select an attracting amplitude, justify zero loss or create activity from equilibrium.
+
+<a id="collective-pulse"></a>
+
+### Collective contact pulse and internal feedback
+
+- **Status:** maintained
+- **Basis:** derived
+- **Emergence:** not-claimed
+- **Definition:** Mean receiver/leaf form contrast and mean lifted contact phase obey exact projected rows; unequal contact phases supply the correction to the compatible pendulum family.
+- **Domain:** Conservative unit-capacity sine law on C5 with five private leaves, using declared continuous contact phase lifts and clock tau=t/pi.
+- **Premises:** Retain actual forms, phases and contact deviations. Collective contact storage h_c is an observation, not a second invariant; its complement H-5h_c is signed and lift-dependent.
+- **Dependencies:** sine-law, storage-work, phase, closure
+- **Owner:** [Actual mean-contact balance](nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-collective-pulse-transfer).
+- **Evidence:** [Exact projected feedback, storage split and local derivatives](nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-collective-pulse-transfer); matched reflected contact-lag preparations separate transfer/internal onset from directed winding.
+- **Implementation:** [Collective-pulse observer](../src/tnfr/physics/relational_sine_partition.py).
+- **Tests:** [Primitive and lift admission](../tests/physics/test_sine_collective_pulse_balance.py), [independent full-row derivatives and symmetry controls](../tests/physics/test_sine_collective_pulse_balance_dynamics.py).
+- **Limits:** Mean coordinates do not generally close away from the admitted uniform-contact family. Negative collective transfer, a positive internal derivative or sufficient total storage does not prove finite winding, retention, a resonance response or a physical energy reservoir.
 
 <a id="parametric-instability"></a>
 
@@ -364,8 +400,8 @@ The cards are the only editable concept catalog. Generate their index with
 - **Domain:** Sufficiently small positive internal amplitude in the exact conservative doubled-C5 pulse family, with the full twenty real state directions retained.
 - **Premises:** The same support, law, common positive capacity and exact preparation as the pulse theorem; collective feedback and the amplitude-dependent period remain in the transverse calculation.
 - **Dependencies:** autonomous-pulse, storage-work
-- **Owner:** [Complete variation and symmetry-correct return](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-pulse-variation).
-- **Evidence:** [Exact small-amplitude splitting and analytic remainder](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-pulse-splitting).
+- **Owner:** [Complete variation and symmetry-correct return](nodal/SINE_REPLICA_PULSE.md#sine-replica-pulse-variation).
+- **Evidence:** [Exact small-amplitude splitting and analytic remainder](nodal/SINE_REPLICA_PULSE.md#sine-replica-pulse-splitting).
 - **Implementation:** [Detached variation and asymptotic splitting assessments](../src/tnfr/physics/relational_sine_scale.py).
 - **Tests:** [Full fine Jacobian, harmonic solvability and return-scope controls](../tests/physics/test_relational_sine_replica.py).
 - **Limits:** This is an existential small-amplitude instability interval, not a computed monodromy, numerical threshold or verdict for a chosen nonzero amplitude. Neutral time-amplitude shear is distinct from transverse exponential growth. Leaving one periodic waveform need not destroy a trapped geometric identity; no fundamental pulse, external drive or particle identification follows.
@@ -382,7 +418,7 @@ The cards are the only editable concept catalog. Generate their index with
 - **Premises:** Fixed support, positive beta and coupling, supplied finite state, declared clock and no input, clipping or events; circular phases and ambient product volume are essential.
 - **Dependencies:** sine-law, phase, capacity, support, clock
 - **Owner:** [Full nonlinear recurrence](nodal/RESONANCE_FOUNDATIONS.md#nonlinear-recurrence).
-- **Evidence:** [Compactness, volume preservation, recurrence and separatrix exception](nodal/RESONANCE_FOUNDATIONS.md#nonlinear-recurrence); [additional acute-cycle identity barrier](nodal/RELATIONAL_PATTERN_MEMORY.md#sine-conservative-identity).
+- **Evidence:** [Compactness, volume preservation, recurrence and separatrix exception](nodal/RESONANCE_FOUNDATIONS.md#nonlinear-recurrence); [additional acute-cycle identity barrier](nodal/SINE_PATTERN_RECOVERY.md#sine-conservative-identity).
 - **Implementation:** [Family-level recurrence assessment](../src/tnfr/physics/relational_sine_resonance.py), [shared cycle identity/barrier assessment](../src/tnfr/physics/relational_sine_recovery.py).
 - **Tests:** [Invariant, admission and exception controls](../tests/physics/test_relational_sine_resonance.py), [cycle geometry and recovery controls](../tests/physics/test_relational_sine_recovery.py).
 - **Limits:** The nonstationary result holds almost everywhere in the stated ambient measure. It does not certify a chosen state, finite grid or fixed-energy surface, give a return time, establish one frequency or derive the loss-free law. Winding preservation requires the separate acute barrier; it does not follow from recurrence alone.
@@ -415,8 +451,8 @@ The cards are the only editable concept catalog. Generate their index with
 - **Domain:** The supplied synchronized replica submanifold of the native or separately declared sine law; retained internal coordinates are required away from synchronization.
 - **Premises:** Fixed replicated support, equal capacity within each fiber, compatible state preparation and a complete law; iterated maps must compose.
 - **Dependencies:** relational-law, support, capacity, phase, clock
-- **Owner:** [Scale inheritance](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-inheritance).
-- **Evidence:** [Native exact replication](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#4-origin-units-and-exact-replication), [replica composition and constitutive freedom](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-constitutive-nonselection).
+- **Owner:** [Scale inheritance](nodal/SINE_PAIR_STATE.md#sine-replica-inheritance).
+- **Evidence:** [Native exact replication](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#4-origin-units-and-exact-replication), [replica composition and constitutive freedom](nodal/SINE_PAIR_MOBILITY.md#sine-replica-constitutive-nonselection).
 - **Implementation:** [Native field](../src/tnfr/dynamics/relational.py), [sine comparison and mobility](../src/tnfr/physics/relational_sine_comparison.py), [retained replica state](../src/tnfr/physics/relational_sine_scale.py).
 - **Tests:** [Complete replica rows](../tests/physics/test_relational_sine_replica.py), [counterfamily inheritance](../tests/physics/test_relational_sine_comparison.py).
 - **Limits:** This conditional result does not establish generic fractality, spontaneous hierarchy formation, a universal fractal dimension or unique microscopic dynamics. Losing internal coordinates requires a closure or memory proof; a repeated graph is insufficient.
@@ -429,13 +465,13 @@ The cards are the only editable concept catalog. Generate their index with
 - **Basis:** derived
 - **Emergence:** not-claimed
 - **Definition:** A retained observation closes only when its rate is determined by the retained state under the specified law.
-- **Domain:** Exact linear realizations and separately admitted nonlinear pair observations; the complete bipartite replica support and matched within-pair capacities define the sine reduction.
+- **Domain:** Exact linear realizations, separately admitted replica observations, the global realized pair state on conservative unit doubled C5, and sine phase-offset families satisfying their full-support count/moment conditions. Each reduction keeps its own domain.
 - **Premises:** Fix the fine law, observation and state domain before proving sufficiency or giving a counterexample.
-- **Dependencies:** nodal-equation, relational-law
-- **Owner:** [Pattern composition](nodal/RELATIONAL_PATTERN_COMPOSITION.md), [exact replica scale and symmetry](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-inheritance).
-- **Evidence:** [State and current rates fail to close](nodal/RELATIONAL_PATTERN_COMPOSITION.md#state-rate-predictivity), [closed unordered state with retained internals](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-unordered-state).
-- **Implementation:** [Invariant-row realization](../src/tnfr/mathematics/linear_observation.py), [retained replica observation](../src/tnfr/physics/relational_sine_scale.py).
-- **Tests:** [Linear observation](../tests/test_linear_observation.py), [nonlinear obstruction](../tests/physics/test_relational_local_composition.py), [exact symmetry and closure](../tests/physics/test_relational_sine_replica.py).
+- **Dependencies:** nodal-equation, relational-law, sine-law
+- **Owner:** [Pattern composition](nodal/RELATIONAL_PATTERN_COMPOSITION.md), [replica scale and symmetry](nodal/SINE_PAIR_STATE.md#sine-replica-inheritance), [phase-offset partitions](nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-phase-offset-partition).
+- **Evidence:** [State and current rates fail to close](nodal/RELATIONAL_PATTERN_COMPOSITION.md#state-rate-predictivity), [regular unordered state](nodal/SINE_PAIR_STATE.md#sine-replica-unordered-state), [global continuation through cancellation](nodal/SINE_PAIR_STATE.md#sine-global-pair-state); normalized cross counts, complex phase moments and internal balance characterize fixed-offset families under the sine law.
+- **Implementation:** [Invariant-row realization](../src/tnfr/mathematics/linear_observation.py), [retained replica observation](../src/tnfr/physics/relational_sine_scale.py), [phase-offset partitions](../src/tnfr/physics/relational_sine_partition.py).
+- **Tests:** [Linear observation](../tests/test_linear_observation.py), [nonlinear obstruction](../tests/physics/test_relational_local_composition.py), [exact replica closure](../tests/physics/test_relational_sine_replica.py), [global pair full rows and realizability](../tests/physics/test_sine_global_pair_state.py), [independent partition full rows](../tests/physics/test_sine_phase_offset_partition_dynamics.py).
 - **Limits:** Ten-coordinate tangent closure does not establish nonlinear closure. Replica means alone fail to close outside their exact synchronized sector; the complete unordered state closes without deleting internal degrees of freedom. A zero snapshot defect is not proof of future closure; failure of one observation is not impossibility of every reduction.
 
 <a id="hidden-memory"></a>
@@ -453,7 +489,7 @@ The cards are the only editable concept catalog. Generate their index with
 - **Evidence:** [Exact elimination](DERIVED_EPI_MEMORY.md#3-exact-elimination-including-the-initial-hidden-state), [cubic forecast](nodal/RELATIONAL_PATTERN_MEMORY.md#derived-cubic-memory-forecast), [conservative transfer and tangent memory](nodal/RESONANCE_FOUNDATIONS.md#finite-conservative-memory).
 - **Implementation:** [EPI memory](../src/tnfr/physics/epi_memory.py), [exact coordinate elimination](../src/tnfr/mathematics/linear_observation.py), [conservative path adapter](../src/tnfr/physics/relational_sine_resonance.py).
 - **Tests:** [Linear memory](../tests/physics/test_epi_memory.py), [relational memory](../tests/physics/test_relational_pattern_memory.py), [conservative path controls](../tests/physics/test_relational_sine_resonance.py).
-- **Limits:** Memory does not choose a missing microscopic law. The finite forecast is not a universal finite-history closure, fitted kernel or certified ODE error bound.
+- **Limits:** Memory does not choose a missing microscopic law. The finite forecast is not a universal finite-history closure, fitted kernel or certified ODE error bound. A signed storage remainder is not a sufficient hidden state; exact finite conservative elimination retains its initial source and does not manufacture irreversible damping.
 
 <a id="retained-phase-offset"></a>
 
@@ -466,8 +502,8 @@ The cards are the only editable concept catalog. Generate their index with
 - **Domain:** The ideal native isolated unit C5 law near an acute winding-one twist, with centered perturbations and a common phase frame.
 - **Premises:** Positive homogeneous held capacity, positive coefficients, no input/event during recovery, and a separately declared reference/readout.
 - **Dependencies:** phase, relational-law, pattern-recovery
-- **Owner:** [Retained collective phase](nodal/RELATIONAL_PATTERN_MEMORY.md#relational-retained-phase-memory).
-- **Evidence:** [Integrated skew pairing](nodal/RELATIONAL_PATTERN_MEMORY.md#the-first-nonzero-retained-offset), [fixed finite-amplitude error bound](nodal/RELATIONAL_PATTERN_MEMORY.md#relational-finite-phase-memory), [finite-clock readout](nodal/RELATIONAL_PATTERN_MEMORY.md#relational-finite-time-memory), [finite-duration contact](nodal/RELATIONAL_PATTERN_MEMORY.md#relational-finite-contact-memory) and [retained receiver mean](nodal/RELATIONAL_PATTERN_MEMORY.md#relational-retained-receiver-record); contact cost alone cannot distinguish opposite offsets.
+- **Owner:** [Retained collective phase](nodal/RELATIONAL_PHASE_MEMORY.md#relational-retained-phase-memory).
+- **Evidence:** [Integrated skew pairing](nodal/RELATIONAL_PHASE_MEMORY.md#the-first-nonzero-retained-offset), [fixed finite-amplitude error bound](nodal/RELATIONAL_PHASE_MEMORY.md#relational-finite-phase-memory), [finite-clock readout](nodal/RELATIONAL_PHASE_MEMORY.md#relational-finite-time-memory), [finite-duration contact](nodal/RELATIONAL_PHASE_MEMORY.md#relational-finite-contact-memory) and [retained receiver mean](nodal/RELATIONAL_PHASE_MEMORY.md#relational-retained-receiver-record); contact cost alone cannot distinguish opposite offsets.
 - **Implementation:** [Cycle-memory coefficients and finite certificate](../src/tnfr/physics/relational_cycle_memory.py), [accumulated contact and retention](../src/tnfr/physics/relational_memory_contact.py), existing regional/attachment observations.
 - **Tests:** [Coefficient bounds](../tests/test_relational_cycle_memory.py), [independent mechanism](../tests/physics/test_relational_cycle_memory_mechanism.py), [finite certificate](../tests/test_relational_finite_memory.py), [finite-clock readout](../tests/test_relational_memory_readout.py), [finite contact](../tests/test_relational_memory_contact.py), [exact error-budget controls](../tests/physics/test_relational_finite_memory_proof.py).
 - **Limits:** A common phase is not an intrinsic isolated-ring label. The cubic, finite-clock and contact/removal bounds apply to their stated preparations. A lasting receiver mean additionally requires regional response and isolated capture/conservation; a port signal alone is insufficient. Persistence under later interventions, nondestructive measurement and physical identification are not established; no contact is executed.
@@ -500,11 +536,11 @@ The cards are the only editable concept catalog. Generate their index with
 - **Domain:** A supplied oriented cycle and declared branch/availability conditions.
 - **Premises:** Constancy along a path requires exclusion of relevant branch crossings and accounting for support changes.
 - **Dependencies:** phase, support
-- **Owner:** [Cycle boundary](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-cycle-resultant-obstruction).
-- **Evidence:** [Cycle invariant and scoped obstruction](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-cycle-resultant-obstruction).
+- **Owner:** [Native cycle boundary](nodal/RELATIONAL_DOMAIN_AND_CAPTURE.md#relational-cycle-resultant-obstruction), [conservative regional passage](nodal/SINE_REGIONAL_FORMATION.md#conservative-regional-winding-entry).
+- **Evidence:** [Native cycle invariant](nodal/RELATIONAL_DOMAIN_AND_CAPTURE.md#relational-cycle-resultant-obstruction) under its phase-domain premises; [conservative passage](nodal/SINE_REGIONAL_FORMATION.md#conservative-regional-winding-entry) on supplied full support uses whole-window branch bounds, not an instantaneous integer alone.
 - **Implementation:** [Winding certificates](../src/tnfr/physics/winding_certificates.py).
 - **Tests:** [Winding admission](../tests/physics/test_phase_winding_certificates.py).
-- **Limits:** Snapshot winding proves neither formation nor physical charge, spin or particle species.
+- **Limits:** Winding, strictly acute geometry and a maintained full-state pattern are distinct. A discrete phase edge can cross the principal branch without a singularity of the smooth sine law. Snapshot winding proves neither formation nor physical charge, spin or particle species.
 
 ## Diagnostics and their availability
 
@@ -726,10 +762,10 @@ The cards are the only editable concept catalog. Generate their index with
 - **Premises:** The wave law and units are additional choices, distinct from first-order diffusion.
 - **Dependencies:** support, capacity, phase
 - **Owner:** [Wave correspondence](PHYSICAL_REGIME_CORRESPONDENCES.md#4-finite-spectral-and-wave-correspondence).
-- **Evidence:** [Finite mode calculation](PHYSICAL_REGIME_CORRESPONDENCES.md#43-retained-graph-mode-calculation).
+- **Evidence:** [Finite mode calculation](PHYSICAL_REGIME_CORRESPONDENCES.md#43-retained-graph-mode-calculation), [archived rhythm and actual-generator audit](nodal/RESONANCE_FOUNDATIONS.md#spectral-rhythm-reuse).
 - **Implementation:** [Pulse read-outs](../src/tnfr/physics/structural_diffusion.py).
 - **Tests:** [Pulse scope](../tests/physics/test_nodal_pulse_scope.py).
-- **Limits:** Modal rhythm and synchronization differ; neither derives a primordial pulse, universal clock or maintained engine wave. Same-law periodic states require the separate [autonomous-pulse theorem](#autonomous-pulse), not this auxiliary spectrum.
+- **Limits:** Modal rhythm and synchronization differ; neither derives a primordial pulse, universal clock or maintained engine wave. The unit conservative sine consensus tangent has frequency lambda in tau=t/pi, not sqrt(lambda). Same-law periodic states require the separate [autonomous-pulse theorem](#autonomous-pulse); actual mean-contact feedback has its own [full-state balance](#collective-pulse).
 
 <a id="symplectic"></a>
 

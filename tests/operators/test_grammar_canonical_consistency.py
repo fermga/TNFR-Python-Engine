@@ -3,10 +3,9 @@
 These tests guard the SINGLE SOURCE OF TRUTH for the U1-U6 operator
 classification. Every grammar set collects the declared per-operator role
 predicates in ``tnfr.config.physics_derivation`` and is re-exported
-by ``tnfr.operators.grammar_types``.  All other modules that carry a copy of
-these sets (config.operator_names graduated taxonomy, math.grammar_validators
-glyph sets) must agree with the canonical source — these tests fail loudly if any
-of them drifts.
+by ``tnfr.operators.grammar_types``. Public configuration views of these sets
+must agree with that source; consumer checks below exercise actual word
+admission and calibration boundaries.
 
 Background: a prior audit (June 2026) found divergent definitions —
 config.operator_names listed NAV as a destabilizer and EN as a weak destabilizer,
@@ -242,15 +241,6 @@ class TestNoDivergentModule:
         assert "transition" not in on.DESTABILIZERS  # NAV is NOT a destabilizer
         assert "reception" not in on.DESTABILIZERS  # EN is NOT a destabilizer
         assert set(on.TRANSFORMERS) == CANONICAL_TRANSFORMERS
-
-    def test_math_grammar_validators_match(self) -> None:
-        from tnfr.math import grammar_validators as mv
-
-        destab_names = {g.value for g in mv.DESTABILIZERS}
-        stab_names = {g.value for g in mv.STABILIZERS}
-        # OZ, ZHIR, VAL / IL, THOL (glyph codes)
-        assert destab_names == {"OZ", "ZHIR", "VAL"}
-        assert stab_names == {"IL", "THOL"}
 
     def test_telemetry_sets_are_not_grammar(self) -> None:
         # config.constants STABILIZERS/DISRUPTORS are TELEMETRY, distinct from

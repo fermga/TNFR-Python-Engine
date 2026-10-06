@@ -3,9 +3,8 @@
 from __future__ import annotations
 
 import math
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
 
-from ..compat.dataclass import dataclass
 from ..constants.canonical import (
     CONFIG_INIT_VF_MEAN_CANONICAL,
     CONFIG_INIT_VF_STD_CANONICAL,

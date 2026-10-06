@@ -11,9 +11,15 @@ import networkx as nx
 import pytest
 
 from tnfr.dynamics.relational import RelationalExchangeModel
+from tnfr.mathematics._exact_linear_algebra import (
+    exact_matrix_inverse,
+    exact_matrix_product,
+)
+from tnfr.physics.relational_sine_comparison import bound_relational_sine_exchange
 from tnfr.physics.relational_sine_pattern import bound_relational_sine_pattern
 from tnfr.physics.relational_sine_recovery import certify_sine_pattern_recovery
 from tnfr.physics.relational_sine_resonance import (
+    assess_bridge_storage_family,
     assess_sine_cycle_resonance,
     assess_sine_mediated_response,
     assess_sine_pair_pulse,
@@ -455,6 +461,131 @@ def test_full_noncommuting_support_has_collocated_gain_bound_without_cycle_reduc
         assert mp.norm(laplacian * mp.matrix([1] * n)) == 0
     assert report.to_dict()["schema"] == "tnfr.relational-sine-recovery-resonance.v1"
     assert relational_report_to_dict(report)["report"] == report.to_dict()["report"]
+
+
+@pytest.fixture(scope="module")
+def reciprocal_bridge():
+    graph = nx.disjoint_union(nx.cycle_graph(6), nx.cycle_graph(6))
+    graph.add_edge(0, 6)
+    graph.graph["GAMMA"] = {"type": "none"}
+    for node in graph:
+        graph.nodes[node].update(EPI=0, theta=0, nu_f=1)
+    source = bound_relational_sine_exchange(
+        graph, reference_model=_model(epi_weight=0, phase_weight=1)
+    )
+    report = assess_bridge_storage_family(
+        source,
+        left_cycle=tuple(range(6)),
+        right_cycle=tuple(range(6, 12)),
+        target_phase_turns=tuple(Q(i % 6, 6) for i in range(12)),
+        epsilon=0,
+    )
+    return graph, source, report
+
+
+def _exact_transfer(generator, inputs, outputs, frequency):
+    resolvent = exact_matrix_inverse(
+        tuple(
+            tuple(frequency * (i == j) - entry for j, entry in enumerate(row))
+            for i, row in enumerate(generator)
+        )
+    )
+    return exact_matrix_product(exact_matrix_product(outputs, resolvent), inputs)
+
+
+def test_form_work_multiport_reciprocity_survives_noncommuting_full_geometry(
+    reciprocal_bridge,
+):
+    graph, _, report = reciprocal_bridge
+    product = exact_matrix_product
+    laplacian, hessian = report.form_laplacian, report.phase_hessian
+    mobility = tuple(tuple(Q(i == j, graph.degree[i]) for j in graph) for i in graph)
+    # Multiplying the B,C commutator by nonsingular K factors removes square
+    # roots: L K H != H K L proves this is not a simultaneous-mode fixture.
+    assert product(product(laplacian, mobility), hessian) != product(
+        product(hessian, mobility), laplacian
+    )
+    ports = ((0, 1), (6, 7), (0, 6))
+    force = tuple(
+        tuple(Q((i == left) - (i == right), graph.degree[i]) for left, right in ports)
+        for i in graph
+    )
+    work_columns = product(laplacian, force)
+    inputs = force + ((Q(0),) * len(ports),) * len(graph)
+    outputs = tuple(row + (Q(0),) * len(graph) for row in zip(*work_columns))
+    # Independently eliminate phase from the full rows. Multiplication by L
+    # gives the symmetric stiffness s^2 L + L K H K L. The all-ones term only
+    # fixes its common-origin nullspace, which the work ports do not observe.
+    stiffness = product(
+        product(product(product(laplacian, mobility), hessian), mobility), laplacian
+    )
+    for frequency in (Q(1, 3), Q(2)):
+        response = _exact_transfer(
+            report.full_tangent_generator, inputs, outputs, frequency
+        )
+        dynamic = tuple(
+            tuple(frequency**2 * laplacian[i][j] + stiffness[i][j] + 1 for j in graph)
+            for i in graph
+        )
+        independent = product(
+            product(tuple(zip(*work_columns)), exact_matrix_inverse(dynamic)),
+            work_columns,
+        )
+        assert response == tuple(
+            tuple(frequency * value for value in row) for row in independent
+        )
+        assert response == tuple(zip(*response))
+        assert response[0][1] != 0  # Reciprocity is not a disconnected-port null.
+
+
+def test_reversed_twist_retains_all_equilibrium_form_work_transfers(
+    reciprocal_bridge,
+):
+    graph, source, report = reciprocal_bridge
+    opposite = assess_bridge_storage_family(
+        source,
+        left_cycle=tuple(range(6)),
+        right_cycle=tuple(range(6, 12)),
+        target_phase_turns=tuple(-turn for turn in report.target_phase_turns),
+        epsilon=0,
+    )
+    assert opposite.target_phase_turns != report.target_phase_turns
+    assert opposite.full_tangent_generator == report.full_tangent_generator
+    assert opposite.full_energy_metric == report.full_energy_metric
+    assert opposite.target_storage == report.target_storage
+    # The identity of the complete tangent applies to every linear port. It
+    # does not identify the nonlinear fields away from these equilibria.
+    with mp.workdps(90):
+        second_variations = []
+        for target in (report, opposite):
+            theta = [2 * mp.pi * _mp(turn) for turn in target.target_phase_turns]
+            for node in graph:
+                current = sum(mp.sin(theta[j] - theta[node]) for j in graph[node])
+                assert abs(current) < mp.mpf("1e-80")
+            second_variations.append(
+                mp.diff(lambda delta: mp.sin(theta[2] + delta - theta[1]) / 2, 0, 2)
+            )
+        assert mp.almosteq(second_variations[0], -mp.sqrt(3) / 4)
+        assert mp.almosteq(second_variations[1], mp.sqrt(3) / 4)
+    assert source.phase == (0,) * 12  # Symbolic targets do not rewrite the capture.
+
+
+def test_mixed_canonical_ports_can_be_antisymmetric_without_hall_response(
+    reciprocal_bridge,
+):
+    _, _, report = reciprocal_bridge
+    preparation = report.nodal_bridge_preparation
+    outputs = exact_matrix_product(tuple(zip(*preparation)), report.full_energy_metric)
+    assert outputs == report.bridge_observation_rows
+    response = _exact_transfer(
+        report.full_tangent_generator, preparation, outputs, Q(1, 3)
+    )
+    # These are one form-rate input and one phase-rate input, both with their
+    # energy-conjugate outputs. Canonical exchange makes their cross responses
+    # antisymmetric even though the same-type spatial work ports are reciprocal.
+    # An antisymmetric mixed-channel matrix alone is therefore not Hall evidence.
+    assert response[0][1] == -response[1][0]
+    assert response[0][1] < 0
 
 
 def test_recovery_port_revalidates_admission_and_rejects_forged_certificates():
@@ -1060,6 +1191,83 @@ def test_conservative_path_generator_is_full_consensus_derivative_in_declared_cl
             report.full_tangent_period_bounds,
             2 * mp.pi**2 * mp.sqrt(_mp(beta)) / _mp(nu),
         )
+
+
+def test_conservative_edge_chart_preserves_storage_and_retains_hidden_pair():
+    from tnfr.mathematics.linear_observation import (
+        bound_form_loss_observation_error,
+        derive_coordinate_memory,
+        derive_linear_observation,
+    )
+
+    report = assess_sine_path_memory(
+        _path_graph(), reference_model=_model(epi_weight=0), mediator=1
+    )
+    full = report.coordinate_memory.generator
+    # Actual edge contrasts, not rounded energy eigenvectors; tau=t/pi.
+    chart = (
+        (1, -1, 0, 0, 0, 0),
+        (0, -1, 1, 0, 0, 0),
+        (0, 0, 0, 1, -1, 0),
+        (0, 0, 0, 0, -1, 1),
+    )
+    half = Q(1, 2)
+    expected = (
+        (0, 0, -3 * half, -half),
+        (0, 0, -half, -3 * half),
+        (3 * half, half, 0, 0),
+        (half, 3 * half, 0, 0),
+    )
+    assert _q_product(chart, full) == _q_product(expected, chart)
+    assert all(expected[i][j] == -expected[j][i] for i in range(4) for j in range(4))
+    metric = _q_product(tuple(zip(*chart)), chart)
+    for initial in ((1, 2, -3, 4, -2, 1), (7, 7, 7, -3, -3, -3)):
+        image = tuple(row[0] for row in _q_product(chart, tuple((q,) for q in initial)))
+        edge_storage = sum((initial[i] - initial[1]) ** 2 for i in (0, 2))
+        edge_storage += sum((initial[i] - initial[4]) ** 2 for i in (3, 5))
+        assert sum(q**2 for q in image) == edge_storage
+        assert (
+            _q_product((initial,), _q_product(metric, tuple((q,) for q in initial)))[0][
+                0
+            ]
+            == edge_storage
+        )
+
+    closure = derive_linear_observation(full, chart)
+    assert closure.dimension == 4
+    assert closure.extra_coordinates == 0
+    assert closure.reduced_generator == expected
+    memory = derive_coordinate_memory(closure.reduced_generator, (0, 2))
+    assert memory.hidden_indices == (1, 3)
+    assert (
+        memory.visible_generator
+        == memory.hidden_generator
+        == (
+            (0, -3 * half),
+            (3 * half, 0),
+        )
+    )
+    assert (
+        memory.hidden_to_visible
+        == memory.visible_to_hidden
+        == (
+            (0, -half),
+            (half, 0),
+        )
+    )
+    assert memory.kernel_at_zero == ((Q(-1, 4), 0), (0, Q(-1, 4)))
+    hidden = ((2,), (3,))
+    assert _q_product(memory.hidden_to_visible, hidden) == ((Q(-3, 2),), (Q(1),))
+    visible_rows = tuple(tuple(int(i == j) for i in range(4)) for j in (0, 2))
+    assert derive_linear_observation(expected, visible_rows).extra_coordinates == 2
+    loss_bound = bound_form_loss_observation_error(
+        closure.reduced_generator,
+        visible_rows,
+        damping=1,
+        exchange=1,
+        horizon=Q(1, 4),
+    )
+    assert loss_bound.uniform_error_lower_bound == Q(1, 16) > Q(1, 32)
 
 
 def test_conservative_hidden_memory_keeps_initial_state_and_prevents_instantaneous_closure():

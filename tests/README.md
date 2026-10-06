@@ -10,7 +10,7 @@ The routine engine selection is owned by `testpaths` in
 the full retained inventory. Specialized research controls are run when their
 models change, rather than on every engine/API edit.
 [conftest.py](conftest.py) owns shared pytest configuration and fixtures;
-[utils.py](utils.py) supplies additional helpers; [data/](data/) stores fixtures.
+[utils.py](utils.py) supplies additional helpers; [data/](data) stores fixtures.
 Keep test-specific assumptions explicit. Research producers and retained
 evidence have separate provenance requirements in
 [benchmarks/README.md](../benchmarks/README.md).

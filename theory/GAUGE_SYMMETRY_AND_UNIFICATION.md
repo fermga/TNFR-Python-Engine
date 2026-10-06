@@ -228,7 +228,7 @@ are not derived by the implementation:
 |------------------|----------------|
 | UM creates $A_{ij}$ | Unsupported: $A$ is computed after the fact from $\Psi$ on every existing graph edge |
 | IL minimizes $\vert D\Psi\vert $ | Unsupported without before/after operator telemetry or a theorem |
-| OZ sources $F_C$ | Incompatible with the current exact connection, whose cycle sum is always zero |
+| OZ sources $F_C$ | Incompatible with a nonzero analytic final wrapped closure residual; the underlying wrapped-edge sum can be a nonzero integer multiple of $2\pi$ |
 | RA transports gauge invariants | Unsupported without an induced-map covariance check |
 
 Grammar rule **U3** constrains the node phase $\phi$ before coupling via
@@ -241,77 +241,50 @@ freedom.
 
 ## 5. Auxiliary Conservation-Gauge Comparison
 
-### 5.1 Legacy auxiliary action functional
+<a id="51-legacy-auxiliary-action-functional"></a>
+<a id="52-scoped-symmetry-statements"></a>
+<a id="53-unification-structure"></a>
+The [variational owner](TNFR_VARIATIONAL_PRINCIPLE.md#2-the-tnfr-lagrangian)
+defines the shared quadratic action/energy readouts and
+[harmonic coordinate model](TNFR_VARIATIONAL_PRINCIPLE.md#3-harmonic-model-and-the-unresolved-nodal-correspondence).
+Agreement of the five squared-field sums is a snapshot algebraic identity.
+Auxiliary Hamiltonian conservation applies to its declared autonomous flow,
+not automatically to engine trajectories. The
+[conservation owner](STRUCTURAL_CONSERVATION_THEOREM.md#main-result)
+defines the measured balance residual, including its normalization and units;
+grammar validity does not force that residual to vanish.
 
-The historical model introduced the finite field functional
+<a id="54-grammar-conservation-mapping"></a>
+### 5.4 Availability of the grammar diagnostic
 
-$$
-S_{\mathrm{TNFR}} = \sum_n \Delta t \cdot \sum_i \left[\frac{1}{2}(J_\phi^2 + J_{\Delta\mathrm{NFR}}^2) - \frac{1}{2}(\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2)\right]
-$$
+`compute_grammar_symmetry_mapping` in
+[conservation_gauge_unification.py](../src/tnfr/physics/conservation_gauge_unification.py)
+reports the evidence it can assess, rather than deriving conservation from
+historical rule labels:
 
-The same five squared fields also appear in the structural energy diagnostic,
-so the corresponding Hamiltonian and energy read-outs agree algebraically
-when evaluated on one snapshot. A variational derivation of
-$\partial\mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}(t)$ from
-this functional has not been established: EPI and $\nu_f\Delta\mathrm{NFR}$
-are not supplied here as an Euler-Lagrange coordinate/force pair.
+| Rules | Actual assessment boundary |
+| --- | --- |
+| U1, U2, U4 | Always `not_assessed` by this snapshot API; validation needs ordered operator/trigger/debt history and execution context |
+| U5 | Always `not_assessed` here; validation needs declared parent/child hierarchy and normalization |
+| U3 | Current-edge phase compatibility requires explicit finite endpoint phases and the shared U3 gate |
+| U6 | Mean absolute potential drift requires a declared earlier graph or captured potential field; missing reference remains unavailable |
 
-### 5.2 Scoped symmetry statements
+These observations do not execute a grammar word, prove a Noether law or supply
+an all-time storage bound. [Grammar](UNIFIED_GRAMMAR_RULES.md) owns sequence
+admission. The different `analyze_grammar_stationarity` snapshot heuristics
+retain their [separate variational scope](TNFR_VARIATIONAL_PRINCIPLE.md#4-grammar-labelled-heuristics).
 
-The auxiliary model and the runtime diagnostics support different statements:
+<a id="55-symplectic-structure"></a>
+### 5.5 Constant oscillator rotation
 
-| Structure | What is established | Boundary |
-|----------|---------------------|----------|
-| Time translation | Conserves the auxiliary Hamiltonian along the exact autonomous auxiliary flow | Does not imply conservation along engine trajectories |
-| Internal U(1) | The isotropic $(K_\phi,J_\phi)$ quadratic sector and listed norms are rotation invariant | This is an auxiliary field-space identity |
-| Structural balance | $\partial_t\rho+\nabla\cdot\mathbf J=S_{\text{grammar}}$ defines a measurable residual | Grammar validity does not force $S_{\text{grammar}}=0$ |
-| Symplectic form | Defines the ambient two-pair phase space; its exact harmonic flow preserves $\omega$ | Each engine operator needs its own Jacobian-level check |
-
-### 5.3 Unification Structure
-
-The historical unification diagram joined four arrows: stationarity to the
-nodal equation, time translation to energy conservation, U(1) invariance to
-the gauge construction, and U1–U6 to structural continuity. Only the U(1)
-algebra and the auxiliary-flow symmetry statements are established as exact
-identities here. The first and fourth arrows remain correspondence questions,
-and trajectory-level energy change must be measured.
-
-### 5.4 Grammar → Conservation Mapping
-
-The legacy implementation exposes the following diagnostic associations. They
-are useful labels for measurements; they are not Noether correspondences or
-conservation consequences of sequence validity.
-
-| Grammar rule | Diagnostic association | What must be checked separately |
-|--------------|------------------------|---------------------------------|
-| **U1** (Initiation/Closure) | Sequence boundary conditions | Finite values on the actual trajectory |
-| **U2** (Stabilization/debt) | Energy and coherence trend | The sign of measured $\Delta E$ |
-| **U3** (Resonant Coupling) | External phase-admissibility gate | Gauge-link behaviour of the induced map |
-| **U4** (Bifurcation) | Trigger/handler and transformer context | Any proposed topological invariant |
-| **U5** (Multi-Scale) | Hierarchical coherence checks | Factorisation for a specified nesting model |
-| **U6** (Confinement) | Selected drift policy $\Delta\Phi_s<\pi/2$ | It is not a magnitude or potential-energy bound |
-
-### 5.5 Symplectic Structure
-
-The symplectic 2-form on the structural phase space:
-
-$$
-\omega = \sum_i \left[dK_\phi(i) \wedge dJ_\phi(i) + d\Phi_s(i) \wedge dJ_{\Delta\mathrm{NFR}}(i)\right]
-$$
-
-Two conjugate pairs:
-- **Geometric sector**: $(K_\phi, J_\phi)$ — curvature and current
-- **Potential sector**: $(\Phi_s, J_{\Delta\mathrm{NFR}})$ — potential and flux
-
-The exact harmonic flow of the auxiliary substrate preserves $\omega$. The 13
-engine operators have not been proved to preserve this form; a before/after
-snapshot or the fact that an operator is canonical in the TNFR registry is not
-a symplecticity certificate.
-
-**Implementation**: `src/tnfr/physics/conservation_gauge_unification.py` —
-`ConservationGaugeUnification`, `GrammarSymmetryMapping`, and
-`SymplecticGaugeCompatibility` are legacy-named diagnostic dataclasses; their
-names do not promote the reported checks to dynamical theorems.
+`verify_symplectic_gauge_compatibility` checks one constant global `SO(2)`
+rotation of the auxiliary `(K_phi,J_phi)` pair. It computes the `2x2` pullback
+`R.T @ omega @ R` and determinant residual, with
+`transformation_scope="global_constant_oscillator_rotation"` and
+`local_gauge_assessed=False`. The legacy product/volume fields are snapshot
+statistics, not geometric certificates. This check does not supply local gauge
+dynamics or the derivative of any of the 13 engine operators. A proposed
+operator map needs the [separate Jacobian-level test](TNFR_VARIATIONAL_PRINCIPLE.md#5-operator-energy-heuristics-and-local-symplectic-checks).
 
 ---
 
@@ -339,7 +312,7 @@ where:
 - $\hat{\rho}_k = \langle\psi_k | \rho\rangle$ — charge density in mode $k$
 - $\widehat{\operatorname{div}\mathbf J}_k = \langle\psi_k | \operatorname{div}\mathbf{J}\rangle$ — current divergence in mode $k$
 - $\hat{S}_k = \langle\psi_k | S\rangle$ — source term in mode $k$
-- $\lambda_k$ — Laplacian eigenvalue (mode frequency)
+- $\lambda_k$ — graph Laplacian eigenvalue; a temporal frequency requires a separate evolution law and clock
 
 A factor $\lambda_k$ appears only after separately representing the divergence
 as a Laplacian acting on a declared scalar current potential; it must not be
@@ -349,8 +322,8 @@ multiplied into a quantity already defined as the projected divergence.
 
 | Mode regime | Condition | Behaviour |
 |-------------|-----------|-----------|
-| Low-frequency (small $\lambda_k$) | Global graph modes | Measure $\hat S_k$; neither small residual nor a U5 interpretation follows from frequency alone |
-| High-frequency (large $\lambda_k$) | Local graph modes | Measure redistribution and residuals; rapid dissipation requires a specified dissipative evolution |
+| Small $\lambda_k$ | Slowly varying graph modes | Measure $\hat S_k$; neither a small residual nor a U5 interpretation follows from the eigenvalue alone |
+| Large $\lambda_k$ | Rapidly varying graph modes | Measure redistribution and residuals; rapid temporal dissipation requires a specified dissipative evolution |
 
 ### 6.3 Parseval Conservation
 
@@ -380,21 +353,14 @@ does not imply $dE_k/dt\le0$, even for a word containing stabilizers.
 
 ---
 
-## 7. Historical Spectral-Gauge Conjecture
+<a id="7-historical-spectral-gauge-conjecture"></a>
+## 7. Spectral claims require a separate model
 
-The original note proposed that the TNFR-Riemann operator
-$H^{(k)}(\sigma) = L_k + V_\sigma$ might have spectral properties constrained
-by both:
-
-- **Conservation**: Eigenvalues satisfy sum rules from $E = \text{const}$
-- **Gauge**: U(1)-symmetric spectrum at $\sigma = 1/2$ (self-dual point)
-- **Together**: Critical parameter $\sigma_c^{(k)} \to 1/2$ as $k \to \infty$
-
-These bullets are a research conjecture, not a consequence of the U(1)
-rotation identities or of Parseval's theorem. In particular, neither
-$\sigma_c^{(k)}\to1/2$ nor the Riemann critical line follows from the results
-in this note. The nodal-pulse implementation can supply numerical evidence for
-a declared experiment, but it does not turn the correspondence into a proof.
+U(1) coordinate rotations and Parseval identities do not select a critical
+parameter, an analytic zeta representation or a nodal pulse law. The
+[Riemann scope](TNFR_RIEMANN_RESEARCH_NOTES.md) retains the inserted-threshold
+counterexample and finite arithmetic comparisons. Those independent models
+cannot acquire a dynamical bridge from the gauge diagnostics defined here.
 
 ---
 

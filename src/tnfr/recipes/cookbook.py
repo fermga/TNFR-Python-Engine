@@ -17,9 +17,9 @@ Examples
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Any
 
-from ..compat.dataclass import dataclass
 from ..operators.grammar import validate_sequence_with_health
 from ..operators.health_analyzer import SequenceHealthAnalyzer, SequenceHealthMetrics
 

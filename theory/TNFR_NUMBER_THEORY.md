@@ -8,9 +8,8 @@
 > graph constructors and assigned logarithmic frequencies are declared inputs.
 > Conditional spectral consequences can be derived from those inputs; this is
 > not a derivation of physical particles or of the arithmetic carrier itself
-> from the nodal equation. The historical Riemann family in §§10.1–10.4 is
-> superseded. General symmetry-complement and REMESH-infinity claims below are
-> restricted by the current
+> from the nodal equation. The retired prime-path model and unsupported
+> symmetry-complement and REMESH-infinity identifications are bounded by the current
 > [Riemann program memo](TNFR_RIEMANN_RESEARCH_NOTES.md): no analytic location
 > of `S(T)`, universal operator equivariance or RH result has been established.
 > Historical numerical results are retained, not re-executed by this correction.
@@ -502,81 +501,40 @@ Operator-tetrad synergy experiments (examples 37-39) confirmed:
 
 ## 9. Factorization as Spectral Decoding
 
-### 9.1 The Factorization Problem in TNFR Terms
+<a id="91-the-factorization-problem-in-tnfr-terms"></a>
+### 9.1 Candidate generation is not factor recovery
 
-Given a composite $n$ with $\Delta\mathrm{NFR}(n) > 0$, factorization is the process of decomposing the structural pressure into coherent sub-modes, each corresponding to a prime factor.
+The lab constructs a supplied residue graph, computes spectral features and
+proposes candidates. A coherent label or spectral sub-mode does not prove that
+a candidate divides the input or arose autonomously from nodal evolution.
+Every claimed proper factor needs `1 < d < n` and `n % d == 0`.
 
-**Physical analogy**: A composite number is like a coupled oscillator system with multiple resonant frequencies. Factorization identifies the individual frequencies (prime factors) from the combined signal.
+<a id="92-spectral-paley-jacobi-method"></a>
+### 9.2 Spectral Paley-Jacobi scope
 
-### 9.2 Spectral Paley-Jacobi Method
+The [application guide](../applications/factorization-lab/README.md)
+owns graph/modulus selection, combinatorial versus normalized spectra,
+capacity/time conversion, noncanonical field proxies and the partition
+attenuation surrogate. Its recorded operator labels are not a graph-owned
+operator trace. The genuine tetrad's inability to distinguish factor cosets in
+example 117 concerns that supplied symmetric state and observer, not arbitrary
+per-node information.
 
-The implementation uses Paley graphs — algebraic constructions from quadratic residues:
+<a id="93-structural-verification-criteria"></a>
+### 9.3 Configured verification
 
-1. **Graph construction**: For modulus $m$ (chosen near $n$), build the Paley graph $G(m)$ where nodes are $\{0, \ldots, m-1\}$ and edges connect quadratic residues.
+The [result and verification contract](../applications/factorization-lab/README.md#results-and-verification)
+distinguishes heuristic acceptance from arithmetic divisibility. Thresholds,
+coverage and endorsement cuts are configured filters, not mathematical factor
+certificates or constants derived from the nodal identity.
 
-2. **Spectral decomposition**: The lab's `_laplacian_eigenvalues` returns the
-   **combinatorial** Laplacian spectrum on its unit-weight graphs. On regular
-   support of positive degree $d$, it reuses `structural_diffusion_operator`
-   and returns $d\,\operatorname{spec}(L_{rw})$, where
-   $L_{rw}=I-D^{-1}W$ is the isolated EPI-channel operator and
-   $D-W=dL_{rw}$. Irregular support uses the combinatorial Laplacian directly.
-   The shared eigenvectors and degree rescaling preserve the stated Paley
-   spectral comparison; the chosen residue graph and factor-inference rule
-   remain additional inputs. See the [lab implementation](../applications/factorization-lab/tnfr_factorization/spectral_paley.py)
-   and [transport owner](../src/tnfr/physics/structural_diffusion.py).
+<a id="94-pure-mode"></a>
+### 9.4 Partial pure-mode policy
 
-3. **Tetrad proxies**: The factorizer uses scalar lab features, including
-   normalized edge density (`_structural_potential`) and, on the fallback
-   path, the inverse selected combinatorial gap (`_coherence_length`). The
-   latter helper includes no capacity factor. If the selected gap is the true
-   positive $\lambda_2(D-W)$ on connected regular unit support, the pure-EPI
-   relaxation time at common capacity $\nu_f>0$ is instead
-   $1/(\nu_f\lambda_2(L_{rw}))=d/(\nu_f\lambda_2(D-W))$.
-   Gap selection skips values at or below `1e-9`; backend-supplied coherence
-   values retain their own convention. These quantities are not the canonical
-   nodewise potential or spatial coherence-product fit. The
-   [lab feature contract](../applications/factorization-lab/README.md) owns their provenance.
-   In the symmetric-seed fixtures of example 117, the genuine per-node tetrad
-   does not distinguish the factor cosets; this is a result for that
-   state/observer pair, not unconditional per-node blindness.
-
-4. **Partition response surrogate**: The decoder records the labels
-   $[\mathrm{UM},\mathrm{RA},\mathrm{IL},\mathrm{THOL}]$, but its pressure
-   reduction calls `_simulate_partition_sequence`: a configured scalar
-   attenuation based on local edge density and partition size. This helper
-   does not execute those graph operators or integrate a closed
-   form/phase/support law. Its labels therefore do not verify circular U3
-   admission or hierarchical U5 preservation. Separate optimizer/workflow
-   records must be assessed against their actual execution. The
-   [implementation](../applications/factorization-lab/tnfr_factorization/spectral_paley.py)
-   and [lab scope](../applications/factorization-lab/README.md) preserve this distinction.
-
-5. **Factor inference**: Read periodicities of the partition node indices and
-   use the declared modulus to propose candidate factors; the surrogate's
-   `stabilized` flag is a heuristic label, not a dynamical stability result.
-
-6. **Heuristic verification**: Apply the eight configured feature criteria
-   (§9.3). The lab's `TNFR-certified` label is separate from arithmetic
-   divisibility verification and from actual nodal/operator execution.
-
-### 9.3 Structural Verification Criteria
-
-A factor candidate is TNFR-certified when $\geq 4$ of 8 criteria hold and $\geq 50\%$ of partition endorsements are positive:
-
-| Criterion | Threshold | Configured feature interpretation |
-|-----------|-----------|---------------|
-| $\Delta\mathrm{NFR}$ gain | $\geq 0.15$ drop | Selected heuristic drop, not a convergence theorem |
-| Coherence ratio | $0.72 \leq r \leq 1.38$ | Structural similarity |
-| $\Phi_s$ delta | $\leq 0.35$ | Selected factor-certification feature; not the canonical U6 $\pi/2$ drift policy |
-| Gradient delta | $\leq 0.40$ | Phase desynchronization limit |
-| Curvature delta | $\leq 0.45$ | Geometric stability |
-| Periodicity confidence | $\geq 0.55$ | Structural mode certainty |
-| Stabilized fraction | $\geq 0.30$ | Selected heuristic fraction; not a U5 proof |
-| Coverage fraction | $\geq 0.15$ | Spatial completeness |
-
-### 9.4 Pure Mode
-
-Setting `TNFR_PURE_MODE=1` requests the factorizer's structural-confidence policy. A positive heuristic label without arithmetic divisibility verification is not a mathematical factor certificate or proof of a TNFR-specific mechanism.
+The [candidate policy](../applications/factorization-lab/README.md#candidate-policy-and-configuration)
+states which arithmetic inputs and fallbacks remain active. Pure mode is not
+an arithmetic-free pipeline. Comparisons must retain those dependencies,
+actual operator execution and reserved-evaluation provenance.
 
 ### 9.5 Three Sectors of Primality (Unification — MEASURED)
 
@@ -584,8 +542,11 @@ The factorization machinery (§9.1–9.4), arithmetic pressure criterion (§4) a
 residue-graph diagnostics reuse selected arithmetic structures, but they have
 different inputs and observations. Example
 [117_emergent_geometry_residue_graph.py](../examples/08_emergent_geometry/117_emergent_geometry_residue_graph.py)
-and `benchmarks/primes_as_consequence.py` compare them. Using the same
-`L_rw` owner does not identify their full dynamics or prove one common carrier:
+compares these scopes. The focused instruments
+[`arithmetic_pressure_audit.py`](../benchmarks/arithmetic_pressure_audit.py)
+and [`paley_bridge.py`](../benchmarks/paley_bridge.py) own the arithmetic and
+Paley controls respectively. Using the same `L_rw` owner does not identify
+their full dynamics or prove one common carrier:
 
 | Sector | Method | Input | Emergent? |
 |--------|--------|-------|-----------|
@@ -754,66 +715,21 @@ The false candidate scores **above $0.9$** (so the withdrawn threshold mis-fires
 
 **Honest scope.** This is a **periodicity diagnostic** of CRT structure in the canonical emergent spectrum — **not** a factoring algorithm. The residue (di)graph has $n$ nodes; building and diagonalizing it is $\mathrm{poly}(n)=\mathrm{poly}(2^L)$, i.e. **exponential in the input size** $L=\log_2 n$ bits, and the candidate scan is $O(\sqrt n)$ prime divisors (the order of trial division). There is **no speedup** and **no cryptographic consequence**. The correction relative to earlier drafts: the read is expressed with a basis-invariant subspace score and a derived-tolerance certificate; the non-canonical $\eta^2>0.9$ rule is withdrawn.
 
-### 9.10 The Symmetry-Sector Decomposition — the General Principle Behind the Whole Arc (MEASURED, CAPSTONE)
+<a id="910-the-symmetry-sector-decomposition-the-general-principle-behind-the-whole-arc-measured-capstone"></a>
+### 9.10 Symmetry-sector interpretation
 
-§9.7 located the residue-digraph wall at vertex-transitivity. Example [123_symmetry_sector_decomposition.py](../examples/08_emergent_geometry/123_symmetry_sector_decomposition.py) shows that is a **special case** of a general representation-theoretic principle of the canonical emergent operator — the single structure behind every wall in the §9.5–§9.9 arc (and the Riemann residual).
+The [structural-observability owner](TNFR_STRUCTURAL_OBSERVABILITY.md#2-the-diffusion-sector-result-derived)
+proves fixed weighted/directed diffusion equivariance and its Reynolds-sector
+split, including zero-strength rows and orbit-constant held capacity. It also
+owns the finite graph controls and the distinction between pointed covariance,
+nonlinear fixed sets and complete-state symmetry.
 
-**The principle (symmetry sectors of fixed diffusion).** Let
-$\Gamma=\mathrm{Aut}(G,W)$ preserve the declared support, its direction when
-present, and its nonnegative conductance weights. The structural-diffusion
-operator has rows $L_{rw}=I-D^{-1}W$ where the outgoing strength is positive,
-and zero rows where it is zero, including isolates. Every $\sigma\in\Gamma$
-preserves this convention, so $P_\sigma L_{rw}=L_{rw}P_\sigma$. Bare-graph
-automorphisms that change conductances need not commute with it. The
-[symmetry-sector owner](TNFR_STRUCTURAL_OBSERVABILITY.md#2-the-diffusion-sector-result-derived)
-states the exact hypotheses; the [transport implementation](../src/tnfr/physics/structural_diffusion.py)
-owns the zero-strength convention. The operator preserves the isotypic
-components of this finite permutation representation. The coarsest split is
-
-$$\mathbb{R}^N=\mathrm{Fix}(\Gamma)\ \oplus\ \mathrm{Fix}(\Gamma)^\perp,$$
-
-where $\mathrm{Fix}(\Gamma)$ consists of functions constant on the
-$\Gamma$-orbits and its dimension is their number. Averaging the permutation
-matrices gives a Reynolds projector commuting with $L_{rw}$, which proves
-this two-sector split. The flow $\dot x=-\operatorname{diag}(\nu_f)L_{rw}x$
-preserves the same sectors when held capacity is constant within each orbit.
-An equivariant per-node map sends an invariant input to $\mathrm{Fix}(\Gamma)$
-and is then constant within each orbit. Arbitrary inputs can have nontrivial
-components; global spectral invariants and nontrivial eigenspaces are separate
-objects. These fixed-model conditions do not authenticate symmetry of an
-arbitrary operator sequence, state, source or capacity field.
-
-**Measured (five symmetry groups — cyclic, full-symmetric, star, path, product).**
-
-| Graph | $\lvert\Gamma\rvert$ | orbits | $\dim\mathrm{Fix}(\Gamma)$ | equivariance | $L_{rw}$ preserves $\mathrm{Fix}(\Gamma)$ |
-|---|---:|---:|---:|---:|---:|
-| cycle $C_8$ ($D_8$) | 16 | 1 | 1 | $0$ | $0$ |
-| complete $K_6$ ($S_6$) | 720 | 1 | 1 | $0$ | $\sim10^{-17}$ |
-| star $K_{1,5}$ ($S_5$) | 120 | 2 | 2 | $0$ | $\sim10^{-17}$ |
-| path $P_6$ ($\mathbb{Z}_2$) | 2 | 3 | 3 | $0$ | $0$ |
-| torus $C_3\square C_3$ | 72 | 1 | 1 | $0$ | $0$ |
-
-- **M1**: equivariance $\lVert P_\sigma L_{rw}-L_{rw}P_\sigma\rVert=0$ (machine zero) for **every** automorphism.
-- **M2**: $\mathrm{rank}(P_{\mathrm{triv}})=$ #orbits exactly ($P_{\mathrm{triv}}=$ mean of $P_\sigma$).
-- **M3**: $L_{rw}$ preserves $\mathrm{Fix}(\Gamma)$ ($\sim10^{-17}$): block-diagonal.
-- **M4**: the extracted per-node field vector used to initialize the auxiliary
-  substrate satisfies $P_{\mathrm{triv}}v=v$ for the symmetric seed
-  (orbit-constant); vertex-transitive $\Rightarrow$ $\sigma(\Phi_s)=0$ in this
-  declared construction.
-- **M5**: on vertex-transitive cases, the fixed sector consists only of
-  constants. On the star and path it has several dimensions, so nonconstant
-  orbit-constant modes also belong to that sector. Commuting projectors permit
-  a sector-adapted eigenbasis; an arbitrary basis in a degenerate eigenspace
-  need not consist of pure-sector vectors.
-
-**The comparison.** Residue-graph symmetry, the measured substrate limitation,
-spectral primality and the Riemann programme can each be organized using a
-fixed/nontrivial-sector decomposition after their respective group actions are
-defined. This is a common method, not proof that their obstructions are the
-same object. On invariant inputs, star and path examples resolve orbit classes;
-arbitrary perturbed inputs fall outside that conclusion.
-
-**Honest scope.** This is the representation theory of graph automorphisms (Schur's lemma applied to an equivariant operator) re-expressed in the canonical emergent operator. It **explains and unifies** the arc's walls; it is not new mathematics and closes no open problem.
+For the invariant residue preparations studied here, an equivariant per-node
+reader is orbit-constant; a global spectrum may still distinguish graphs.
+Arbitrary perturbed inputs, changing support or a different pressure/phase law
+require fresh admission. This common method organizes several information-loss
+questions; it does not identify them as the same obstruction or locate analytic
+`S(T)` in a finite symmetry complement.
 
 ### 9.11 The Cyclotomy Law — Proof via Gauss Periods (PROVED)
 
@@ -850,20 +766,14 @@ the prime-field cyclotomy theorem; it does not invalidate the latter at two.
 
 **Honest scope.** The cyclotomy law is classical Gauss-period / cyclotomy theory (the $k$-th power Cayley eigenvalues are Gauss periods of degree $\gcd(k,p-1)$); the contribution is the **TNFR structural-diffusion framing** and the closed-form `power_residue_rank` — now a **proved** canonical fact, not a measured pattern. Verified computationally for $k\le 40$ across the primes $p<64$ (680 cases, 0 failures) and proved for all $k$. It detects primality/cyclotomy structurally; it does not factor, does not reach the continuous arg-$\zeta$ phase, and closes no open problem.
 
-### 9.12 The Ontological Position of a Number (the emergent ladder)
+<a id="912-the-ontological-position-of-a-number-the-emergent-ladder"></a>
+### 9.12 Arithmetic diagnostic profiles
 
-§9.5–9.7 compare which finite diagnostics distinguish primality. This
-subsection assembles them into a **diagnostic profile** for an integer, measured
-in example [155_ontological_position_of_numbers.py](../examples/08_emergent_geometry/155_ontological_position_of_numbers.py).
-
-| Layer | What $n$ **is** | Mechanism | Emergent? |
-|-------|-----------------|-----------|-----------|
-| 0 Substrate | — | $\mathbb{R}$ continuum + $\pi$ (the one structural scale) | assumed |
-| 1 Cardinal | a degeneracy $=\dim$ irrep of $\mathrm{Aut}(G)$ | Laplacian multiplicity | ✅ |
-| 2 Operations | $+, \times$ | graph products ($\square\!\to\!\sum$ spectra, $\otimes\!\to\!\prod$ spectra) | ✅ |
-| 3 Primality | $\rho(n)=3$ | directed residue operator (§9.6) | ✅ (Sector B) |
-| 3′ Arithmetic | the factorization type ($\Omega, \tau$) | the multiplicative rank $\rho(n)$ | ✅ (this §) |
-| 4 Missing bridge | prime identities and analytic $\arg\zeta$ | No established common symmetry-complement representation | Open, not an identified wall |
+Example [155](../examples/08_emergent_geometry/155_ontological_position_of_numbers.py)
+compares finite diagnostics of supplied integer/modular constructions.
+Multiplicity, graph-product identities and spectral ranks are properties of
+those constructions. They do not derive the arithmetic carrier or supply a
+complete ontology from nodal dynamics.
 
 **The annotated rank and sampled scalar coincidences.** On the declared
 **odd-modulus** domain, §9.7 proves the conductor-annotated product law
@@ -883,7 +793,7 @@ not a complete factorization: $\rho(15)=\rho(35)=9$, and $\rho=36$ is shared
 by $p^3q^3$ and $p^2qr$. Thus scalar rank does not determine even the type
 globally. The unannotated rank also aliases at high prime powers: §9.7 /
 example 154 reports scalar $191$ versus annotated product $192$ for
-$3^7\!\cdot5^2\!\cdot41^2$. The table is an organizing comparison, not a
+$3^7\!\cdot5^2\!\cdot41^2$. These are limited diagnostic distinctions, not a
 complete ontology theorem. The underlying integer/modular carrier, selected
 graph products and observation rules are supplied. No common obstruction
 identifies these information losses with analytic $\arg\zeta$, and no
@@ -925,103 +835,27 @@ particle identity or an analytic zeta bridge.
 
 ## 10. Prime Path Graphs and the TNFR-Riemann Connection
 
-### 10.1 The Discrete TNFR-Riemann Operator
+<a id="101-the-discrete-tnfr-riemann-operator"></a>
+<a id="102-critical-parameter-convergence"></a>
+<a id="103-connection-to-the-riemann-hypothesis"></a>
+<a id="104-tetrad-fields-on-the-prime-path"></a>
+### 10.1 The retired prime-path comparison
 
-**Historical, superseded construction.** Sections 10.1–10.4 retain the
-eliminated prime-path prototype for traceability. They are not the current
-program or evidence for an emergent critical line. The former family was
+The [inserted-threshold counterexample](TNFR_RIEMANN_RESEARCH_NOTES.md#an-inserted-spectral-threshold-is-not-an-independent-prediction)
+retains the useful mathematical boundary: the old positive-diagonal model puts
+its sign change at `1/2` by construction. This works independently of prime
+distribution and is not a prediction of a Riemann critical line. Its old
+eigenvector-variation formulas are not canonical phase/tetrad definitions.
 
-$$H^{(k)}_{\mathrm{TNFR}}(\sigma) = L_k + V_\sigma$$
+<a id="105-refactoring-the-riemann-attack-from-the-self-adjoint-prime-ladder-to-the-non-self-adjoint-phase-operator-measured"></a>
+### 10.5 Distinct arithmetic models retain distinct premises
 
-where:
-- $L_k$ is the graph Laplacian of the **prime path graph** $G_k$ (first $k$ primes $p_1, p_2, \ldots, p_k$ connected sequentially)
-- $V_\sigma$ is a **structural potential** parametrized by $\sigma \in \mathbb{R}$:
-
-$$V_\sigma(i) = (\sigma - \tfrac{1}{2}) \log(p_i)$$
-
-### 10.2 Critical Parameter Convergence
-
-The historical report described the lowest-eigenvalue sign change as
-
-$$\sigma_c^{(k)} = \frac{1}{2} + O\!\left(\frac{1}{\log k}\right) \quad \text{as } k \to \infty$$
-
-For the displayed construction with a symmetric positive-semidefinite graph
-Laplacian $L_k\mathbf1=0$ and $p_i\ge2$, the sign change is already **exactly
-at the inserted value $1/2$ for every finite size**. At $\sigma=1/2$ the
-potential vanishes. Above it, adding the positive diagonal makes $H$ positive
-definite. Below it, the Rayleigh quotient of $\mathbf1$ is negative. This
-requires no prime-distribution theorem and works for any positive diagonal
-in place of $\log p_i$. The old asymptotic wording therefore supplies no
-independent critical-line evidence or generative phase-transition result.
-
-### 10.3 Connection to the Riemann Hypothesis
-
-At $\sigma=1/2$ this potential vanishes by definition; the transition does
-not constrain zeros of analytic $\zeta$. The current
-[Riemann program memo](TNFR_RIEMANN_RESEARCH_NOTES.md) supersedes this
-prototype and its former bridge interpretation. G4 = RH remains open.
-
-### 10.4 Tetrad Fields on the Prime Path
-
-The historical prototype used the following eigenvector-variation diagnostics
-from $(\lambda_j,\phi_j)$. Here $\phi_j$ is an eigenvector, not an independently
-defined circular nodal phase; these expressions are not the canonical wrapped
-tetrad kernels:
-
-**Phase gradient** (discrete):
-$$|\nabla\phi|^{(j)} = \frac{1}{k-1}\sum_{i=1}^{k-1}|\phi_j(p_{i+1}) - \phi_j(p_i)|$$
-
-**Phase curvature** (discrete):
-$$K_\phi^{(j)} = \frac{1}{k-2}\sum_{i=2}^{k-1}|\phi_j(p_{i+1}) - 2\phi_j(p_i) + \phi_j(p_{i-1})|$$
-
-**Coherence length** (from correlation decay):
-$$C_j(r) \approx A_j \cdot e^{-r/\xi_C^{(j)}}$$
-
-These retained formulas record the old comparison only. They do not provide
-a state map, an operator correspondence or a physical particle prediction.
-
-### 10.5 Refactoring the Riemann Attack — From the Self-Adjoint Prime-Ladder to the Non-Self-Adjoint Phase Operator (MEASURED)
-
-The prime-ladder P14 construction explicitly assigns prime labels and
-$\nu_{f,(p,k)}=k\log p$. Its diagonal spectrum is an encoding of those
-inputs. Selected finite symmetry tests establish the conditional implication
-$[L,P]=0\Rightarrow[f(L),P]=0$. They do not establish that every canonical
-operator commutes with prime relabeling, that a scalar spectrum is a vector
-in a fixed sector, or that analytic $S(T)$ lies in its orthogonal complement.
-The current Riemann memo explicitly withdraws those historical promotions.
-
-The number-theory reframe (§9.6, §9.8) supplies a **structurally different object** for the same residue: the **directed quadratic-residue diffusion operator** $L_{rw}=I-D^{-1}W$ on the Paley tournament ($n\equiv 3\pmod 4$). It is
-
-- **non-self-adjoint but normal**, since it is circulant; its complex
-  eigenvalues contain classical Gauss-sum information;
-- associated with a separately specified modular graph and symmetry action.
-  A symmetry restriction proved for P14 cannot simply be transferred to it.
-
-Complex eigenvalues alone do not identify zeta ordinates, nodal phase
-evolution or a physical oscillatory entity.
-
-So the natural question is whether the attack should pivot from "build a *self-adjoint* operator with spectrum $\{\gamma_n\}$" to "read the residue off the *non-self-adjoint* phase operator".
-
-**The pre-registered falsifier (MEASURED).** `benchmarks/residue_phase_vs_riemann.py` tests it on primes $p\equiv 3\pmod 4$:
-
-- **F-GAUSS** — $\max|\mathrm{Im}(\lambda)|(p)=\sqrt p/(p-1)$ **exactly** (ratio $1.000000$, 15/15 primes): the phase content is the **Paley Gauss-sum eigenvalue**, a classical fact.
-- **F-ALIGN** — $\mathrm{Pearson}\big(\max|\mathrm{Im}|(p_n),\,\gamma_n\big)=\mathbf{-0.9068}$: the residue phase content **decreases** like $1/\sqrt p$ while the zeros $\gamma_n$ **increase** — opposite trends.
-- **Verdict:** `GAUSS_CONFIRMED_RIEMANN_REFUTED`.
-
-**Honest net.** The retained result rejects the tested direct alignment of
-Gauss-sum imaginary parts with zeta ordinates. It does not locate a universal
-symmetry obstruction, exclude other representations or prove a physical
-phase mechanism. G4 = RH remains open.
-
-The current finite pulse helper instead evaluates
-$P_N(T)=\sum_{n=1}^N n^{-1/2}e^{-iT\log n}$ with prescribed amplitudes,
-logarithmic frequencies and truncation. This is not an identity for analytic
-$\zeta(1/2+iT)$: the ordinary infinite Dirichlet representation applies to
-$\mathrm{Re}(s)>1$, with analytic continuation elsewhere
-([DLMF §25.2](https://dlmf.nist.gov/25.2)). The functional-equation reflection
-axis ([DLMF §25.4](https://dlmf.nist.gov/25.4)) is not a derived
-$\Delta\mathrm{NFR}=0$ locus. Finite nearest-dip matches are comparisons
-against known ordinates, not autonomous nodal generation or RH certificates.
+The [Riemann scope memo](TNFR_RIEMANN_RESEARCH_NOTES.md) owns supplied
+prime-ladder spectra, finite logarithmic pulses, classical analytic domains
+and the [finite Gauss-scale comparison](TNFR_RIEMANN_RESEARCH_NOTES.md#a-finite-residue-spectrum-comparison).
+The latter supports the corrected verdict
+`GAUSS_SCALE_MATCHED_DIRECT_ORDERING_DIFFERS`, not an RH refutation. No new
+pulse, symmetry or spectral campaign follows from these reference comparisons.
 
 ---
 
@@ -1177,7 +1011,7 @@ arithmetic reuse does not replace the current joint nodal emergence objective.
 - [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) — U1-U6 grammar derivations
 - [STRUCTURAL_OPERATORS.md](STRUCTURAL_OPERATORS.md) — 13 canonical operators with tetrad synergies
 - [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) — Conservation laws
-- [APPLIED_STRUCTURAL_ANALYSIS.md](APPLIED_STRUCTURAL_ANALYSIS.md) — Spectral factorization verification
+- [Factorization application guide](../applications/factorization-lab/README.md) — Candidate policies, arithmetic verification, proxies and evaluation provenance
 - [TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md) — Current arithmetic comparison scope and unresolved RH/Hilbert–Pólya boundary
 - [STRUCTURAL_FIELDS_TETRAD.md](../docs/STRUCTURAL_FIELDS_TETRAD.md) — Structural-field definitions, scale conventions and estimator provenance
 - [GLOSSARY.md](GLOSSARY.md) — Operational definitions

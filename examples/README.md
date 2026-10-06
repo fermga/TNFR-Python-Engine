@@ -20,7 +20,7 @@ preserving the declared preparation.
 | `02_physics_regimes` | [Diffusion certificates](../theory/TNFR_DIFFUSION_STABILITY_THEOREM.md), diagnostics and auxiliary models | Read each model's hypotheses; a diagnostic decrease is not general stability |
 | `03_riemann_zeta` | Finite instruments in the [Riemann notebook](../theory/TNFR_RIEMANN_RESEARCH_NOTES.md) | Parked comparisons; disclose supplied zeros/primes |
 | `04_riemann_L_twisted` | Character/L-function instruments in the same [notebook](../theory/TNFR_RIEMANN_RESEARCH_NOTES.md) | Supplied arithmetic data and finite comparisons, not generalized RH |
-| `05_type_hygiene` | [Operator and state-type scope](../theory/README.md#operators-grammar-and-support-events) | Finite delay projection, actual storage, event-count and registry observations |
+| `05_type_hygiene` | [Operator and state-type scope](../theory/README.md#operators-grammar-and-support-events) | Finite delay projection, actual storage and event/window observations |
 | `07_number_theory` | [Arithmetic definitions](../theory/TNFR_NUMBER_THEORY.md), residues and prime structure | Disclose factorization, sieves and other construction inputs |
 | `08_emergent_geometry` | [Scale/geometry bridge](../theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md), spectra and auxiliary models | Separate prescribed geometry, observed structure and autonomous generation |
 | `10_applications` | [Measurement protocol](../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md), adapters and backend provenance | Data admission and reserved prediction remain separate obligations |
@@ -61,14 +61,13 @@ requirements to [Testing](../TESTING.md).
 
 ## Retained controls and shared owners
 
-The type-hygiene directory retains four scoped entry points:
+The type-hygiene directory retains these scoped entry points:
 
 | Entry | What it observes |
 | --- | --- |
 | [77](05_type_hygiene/77_remesh_infinity_residue_split_demo.py) | Finite fixed-delay Fourier projection and window sensitivity |
 | [79](05_type_hygiene/79_epi_type_signature_demo.py) | Actual scalar-chart storage membership and descriptive temporal entropy |
 | [82](05_type_hygiene/82_remesh_window_type_signature_demo.py) | Selected finite REMESH event/window comparisons |
-| [89](05_type_hygiene/89_operator_catalog_discipline_signature_demo.py) | The implemented registry and its idempotency |
 
 Entropy thresholds and scalar-only fixtures do not prove that a richer state
 type is necessary or impossible. The retired type-necessity and synthetic
@@ -84,8 +83,9 @@ Prescribed phase/form response belongs to [179](08_emergent_geometry/179_phase_f
 Removed chemistry and Millennium demonstrations supplied target laws or
 encodings without deriving them from nodal dynamics. Their removal does not
 affect the scoped diffusion, graph-wave, winding and arithmetic owners.
-Retirement reasons and API migrations have one
-[scope record](../theory/research/archive/README.md#foundation-reassessment-2026-09-20).
+Retirement reasons and source recovery belong to the
+[recovery index](../theory/research/archive/README.md#recovery-records);
+interface changes belong to the [API migrations](../docs/API_CONTRACTS.md#removed-unsupported-helpers).
 
 ## Diffusion and runtime evidence
 
@@ -121,7 +121,7 @@ full-state local and sector certificates, and why positive heterogeneous
 capacity and a nonunit storage scale require the broader sector theorem.
 This comparison runs no additional trajectory and revises no frozen result.
 See the
-[execution guide](../docs/guides/REGIONAL_AND_RELATIONAL.md#execute-the-conditional-relational-model).
+[execution guide](../docs/guides/relational/RELATIONAL_EXECUTION.md#execute-the-conditional-relational-model).
 
 ```bash
 python examples/08_emergent_geometry/180_relational_exchange.py

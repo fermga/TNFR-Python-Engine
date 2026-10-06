@@ -249,6 +249,91 @@ def test_unavailable_box_is_not_repaired_from_center_or_phase_matching():
         _frozen_grouping_window(form_error_bounds=(False,) * 10).joint_observation()
 
 
+def test_projection_rebuilds_cached_rates_and_whole_window_evidence(frozen_sources):
+    _, phase, expected = frozen_sources[0]
+    poisoned = replace(
+        phase,
+        comparison=replace(
+            phase.comparison,
+            form_rates=(owner.I(999),) * 10,
+            form_gradient=(Q(999),) * 10,
+        ),
+        distance_indices=((0, 1),),
+        form_speed_upper_bounds=(Q(0),) * 10,
+        squared_chord_window_bounds=(owner.I(0),),
+        candidate_pairs=None,
+        whole_window_nearest_relation_certified=False,
+    )
+    rebuilt = poisoned.joint_observation()
+    assert rebuilt == expected
+    assert rebuilt.phase_window is not poisoned
+    assert len(rebuilt.source_joint_distance_rate_bounds) == 45
+    assert any(radius > RHO for radius in rebuilt.form_remainder_bounds)
+
+
+def test_projection_changed_zero_capacity_rebuilds_both_rows(frozen_sources):
+    _, phase, _ = frozen_sources[0]
+    stationary = replace(
+        phase, comparison=replace(phase.comparison, capacity=(Q(0),) * 10)
+    ).joint_observation()
+    assert stationary.phase_window.form_speed_upper_bounds == (0,) * 10
+    assert stationary.phase_window.phase_rate_numerators == (0,) * 10
+    assert stationary.form_remainder_bounds == (RHO,) * 10
+    assert stationary.source_joint_distance_rate_bounds == (owner.I(0),) * 45
+    assert (
+        stationary.joint_distance_window_bounds
+        == stationary.initial_box_joint_distance_bounds
+    )
+
+
+def test_projection_normalizes_accepted_real_premises_before_arithmetic(
+    frozen_sources,
+):
+    _, phase, _ = frozen_sources[0]
+    represented = replace(
+        phase,
+        form_error_bounds=(0.1,) * 10,
+        phase_error_bounds=(0.1,) * 10,
+        window=(0.125, 0.25),
+    ).joint_observation()
+    rational = replace(
+        phase,
+        form_error_bounds=(Q(0.1),) * 10,
+        phase_error_bounds=(Q(0.1),) * 10,
+        window=(Q(1, 8), Q(1, 4)),
+    ).joint_observation()
+    assert represented == rational
+    assert not represented.whole_window_pairing_certified
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"window": (False, Q(1, 64))},
+        {"window": (0, 0)},
+        {"window": (0, float("inf"))},
+        {"form_error_bounds": (True,) * 10},
+        {"phase_error_bounds": (-Q(1, 1000),) * 10},
+        {"phase_error_bounds": (0,) * 9},
+    ],
+)
+def test_projection_readmits_declared_window_and_uncertainty(frozen_sources, changes):
+    with pytest.raises(ADMISSION_ERRORS):
+        replace(frozen_sources[0][1], **changes).joint_observation()
+
+
+@pytest.mark.parametrize("field", ["epi", "phase", "capacity"])
+def test_projection_rejects_boolean_source_even_with_valid_cached_window(
+    frozen_sources, field
+):
+    phase = frozen_sources[0][1]
+    source = replace(
+        phase.comparison, **{field: (True,) + getattr(phase.comparison, field)[1:]}
+    )
+    with pytest.raises(ADMISSION_ERRORS):
+        replace(phase, comparison=source).joint_observation()
+
+
 def test_general_beta_capacity_rows_and_resolved_nonmutual_observation():
     graph = nx.path_graph(4)
     for node, form, phase, capacity in zip(

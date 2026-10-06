@@ -14,18 +14,22 @@ research campaign, and a filename containing `emergent` proves no emergence.
 | Question | Instruments | Owner and scope |
 | --- | --- | --- |
 | Does a held source retain information absent from regional contrast/rate? | [Source-relative response](source_relative_form_response.py) | [Derived form](../theory/nodal/DERIVED_FORM_PHASE.md#source-relative-future-response); supplied affine law and zero-source ablation |
-| How do supplied joint form/phase laws differ? | [Constitutive probes](phase_form_exchange_comparison.py), [cotangent C8](cotangent_phase_exchange.py) | [Relational exchange](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#finite-modal-exchange-discriminator), [cotangent scope](../theory/TNFR_VARIATIONAL_PRINCIPLE.md#cotangent-c8-finite-response); probes and trajectories are distinct |
-| How does capacity change the response? | [Capacity producer](relational_capacity_response.py), [record audit](relational_capacity_audit.py) | [Capacity response](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#finite-capacity-intervention-response); the audit does not rerun trajectories |
-| Can a prepared temporal readout identify chi with bounded error? | [P2 acquisition](relational_coefficient_acquisition.py), [read-only audit](../src/tnfr/research/relational_acquisition.py) | [Temporal admission](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#coefficient-temporal-acquisition); known-source software control, prior-derived nonlinear bounds and native Euler defects, not blind physical calibration |
-| Can bounded phase samples distinguish the two named capacity laws? | [K3 sampling response](relational_capacity_sampling_response.py) | [Frozen interval-Taylor method](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#capacity-discriminator-sampled-response); supplied models, certified sample errors and shared observations, not unknown physical-law selection |
+| How do supplied joint form/phase laws differ? | [Constitutive probes](phase_form_exchange_comparison.py), [cotangent C8](cotangent_phase_exchange.py) | [Relational exchange](../theory/nodal/RELATIONAL_RESPONSE_IDENTIFICATION.md#finite-modal-exchange-discriminator), [cotangent scope](../theory/TNFR_VARIATIONAL_PRINCIPLE.md#cotangent-c8-finite-response); probes and trajectories are distinct |
+| How does capacity change the response? | [Capacity producer](relational_capacity_response.py), [record audit](relational_capacity_audit.py) | [Capacity response](../theory/nodal/RELATIONAL_RESPONSE_IDENTIFICATION.md#finite-capacity-intervention-response); the audit does not rerun trajectories |
+| Can a prepared temporal readout identify chi with bounded error? | [P2 acquisition](relational_coefficient_acquisition.py), [read-only audit](../src/tnfr/research/relational_acquisition.py) | [Temporal admission](../theory/nodal/RELATIONAL_RESPONSE_IDENTIFICATION.md#coefficient-temporal-acquisition); known-source software control, prior-derived nonlinear bounds and native Euler defects, not blind physical calibration |
+| Can bounded phase samples distinguish the two named capacity laws? | [K3 sampling response](relational_capacity_sampling_response.py) | [Frozen interval-Taylor method](../theory/nodal/RELATIONAL_RESPONSE_IDENTIFICATION.md#capacity-discriminator-sampled-response); supplied models, certified sample errors and shared observations, not unknown physical-law selection |
 | Does a prepared pattern recover or transmit deformation? | [Local recovery](relational_local_recovery.py), [regional interaction](relational_region_interaction.py) | [Joint-law owner](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md); supplied support and reference geometry |
 | Which observations close, and what hidden state carries memory? | [Local composition](relational_local_composition.py), [memory coefficients](relational_memory_prediction.py), [reserved response](relational_memory_response.py) | [Composition](../theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md), [memory](../theory/nodal/RELATIONAL_PATTERN_MEMORY.md); fixed rational probes and finite/continuous error have separate scopes |
-| Does an intermediary transmit a capacity-dependent response? | [Mediated response](relational_mediation_response.py) | [Finite mediator protocol](../theory/nodal/RELATIONAL_PATTERN_MEMORY.md#finite-mediated-response); shared tangent memory versus omitted or instantaneous memory, with a frozen-capacity control |
-| Can prior visible observations support a later sine-law prediction? | [Three-stage prior forecast](relational_sine_prior_forecast.py) | [Joint admission and analytic separation](../theory/nodal/RELATIONAL_PATTERN_MEMORY.md#sine-prior-reserved-forecast); separate preparation, prediction and evaluation, synthetic derivative evidence, full uncertainty and a counterfactual frozen intermediary |
-| Does a return path distinguish regional orientations? | [Static return geometry](relational_return_geometry.py) | [Equilibrium admission](../theory/nodal/RELATIONAL_PATTERN_MEMORY.md#return-path-equilibrium); exact cycle reconstruction, certified scalar root and native residuals, with no trajectory or event |
-| Does the native law have a causally shared oscillatory mode? | [Static collective pulse](relational_collective_pulse.py) | [Pulse admission](../theory/nodal/RELATIONAL_PATTERN_MEMORY.md#shared-collective-pulse); ideal trace-sign certificate, native tangent poles/residues and no-communication control, without a sustained-pulse claim |
-| Does a finite trajectory change sector or enter a sufficient basin? | [Formation response](relational_formation_response.py), [capture response](relational_capture_response.py), [endpoint audit](relational_capture_audit.py) | [Capture scope](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-upper-corner-response); endpoint evidence is not a whole-path error bound |
-| Is an ideal continuous transit enclosed rigorously? | [Transit proof](relational_transit_proof.py) | [Validated transit](../theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-validated-transit); also zero-form and reversed-form controls, with their own frozen protocols |
+| Does an intermediary transmit a capacity-dependent response? | [Mediated response](relational_mediation_response.py) | [Finite mediator protocol](../theory/nodal/RELATIONAL_MEDIATOR_DYNAMICS.md#finite-mediated-response); shared tangent memory versus omitted or instantaneous memory, with a frozen-capacity control |
+| Can prior visible observations support a later sine-law prediction? | [Three-stage prior forecast](relational_sine_prior_forecast.py) | [Joint admission and analytic separation](../theory/nodal/SINE_ENVIRONMENTAL_MEMORY.md#sine-prior-reserved-forecast); separate preparation, prediction and evaluation, synthetic derivative evidence, full uncertainty and a counterfactual frozen intermediary |
+| Does a return path distinguish regional orientations? | [Static return geometry](relational_return_geometry.py) | [Equilibrium admission](../theory/nodal/RELATIONAL_RETURN_PATH_GEOMETRY.md#return-path-equilibrium); exact cycle reconstruction, certified scalar root and native residuals, with no trajectory or event |
+| Does a geometric interval constrain a separate dynamic response? | [Geometry-to-response producer](return_path_geometry_response.py) | [Inverse geometry and response](../theory/nodal/RELATIONAL_RETURN_PATH_GEOMETRY.md#return-path-geometry-response); separate preparation, prediction and evaluation with fixed scales, one known-source control and no positive-time trajectory |
+| Can retained environmental exchange induce finite regional winding? | [Conservative winding certificate](conservative_regional_winding.py) | [Whole-window acquisition](../theory/nodal/SINE_REGIONAL_FORMATION.md#conservative-regional-winding-entry) and [distributed source geometry](../theory/nodal/SINE_REGIONAL_FORMATION.md#sine-conservative-source-geometry); one shared analytic instrument, full-law bounds, equal-storage reflection control for acute entry, no trajectory search or indefinite-maintenance claim |
+| Does one retained environment produce a finite acute regional episode, and where does its storage go? | [Conservative regional organization](conservative_regional_organization.py) | [Frozen environmental control](../theory/nodal/SINE_REGIONAL_FORMATION.md#conservative-regional-organization-control), [collective-pulse control](../theory/nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-collective-pulse-transfer), [channel accessibility](../theory/nodal/SINE_REGIONAL_FORMATION.md#sine-regional-channel-accessibility) and [reversible preparation](../theory/nodal/SINE_CONSERVATIVE_PREPARATION.md#sine-reversible-preparation); one instrument and separately frozen declarations. Optional `evaluation_kind=reversible_preparation` checks a source-to-retention inclusion. Historical defaults and saved-tube channel readers retain their own schemas; invocation modes belong below |
+| Can the rational saddle preparation connect absent winding to a finite acute identity? | [Metric connection trial](sine_metric_connection.py) | [Retained-metric proof](../theory/nodal/SINE_CONSERVATIVE_PREPARATION.md#sine-operational-saddle-preparation), [shared connection owner](../src/tnfr/physics/relational_sine_metric_connection.py); two fresh full-state directions, frozen literal source and whole-time growth/identity checks. A same-orbit connection is distinct from an independent source ball |
+| Does the native law have a causally shared oscillatory mode? | [Static collective pulse](relational_collective_pulse.py) | [Pulse admission](../theory/nodal/RELATIONAL_RETURN_PATH_GEOMETRY.md#shared-collective-pulse); ideal trace-sign certificate, native tangent poles/residues and no-communication control, without a sustained-pulse claim |
+| Does a finite trajectory change sector or enter a sufficient basin? | [Formation response](relational_formation_response.py), [capture response](relational_capture_response.py), [endpoint audit](relational_capture_audit.py) | [Capture scope](../theory/nodal/RELATIONAL_DOMAIN_AND_CAPTURE.md#relational-upper-corner-response); endpoint evidence is not a whole-path error bound |
+| Is an ideal continuous transit enclosed rigorously? | [Transit proof](relational_transit_proof.py) | [Validated transit](../theory/nodal/RELATIONAL_FORMATION_CONTROLS.md#relational-validated-transit); also zero-form and reversed-form controls, with their own frozen protocols |
 | What does the fixed regular source/receiver preparation do initially? | [Seeded short response](relational_seeded_response.py) | [Eight-coordinate continuous proof](../theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md#regular-seeded-continuous-response); exact-pi IVP, retained regular tubes and loss, no capture claim |
 | What holds for directed transport? | [Dynamics](directed_nonnormal_dynamics.py), [U2 metrics](directed_u2_metrics.py), [transients](directed_transient_u2.py), [time](directed_structural_time.py), [capacity boundary](heterogeneous_vf_boundary.py) | [Directed transport](../theory/TNFR_DIRECTED_NONNORMAL_DYNAMICS.md); conditional matrix/metric comparisons |
 | What do support changes and capacity actually do? | [Birth/transport](thol_birth_transport.py), [pressure feedback](thol_pressure_feedback.py), [forced support](forced_support_balance.py), [capacity](capacity_localization.py), [selection](selection_birth_closure.py) | [THOL](../theory/THOL_BIRTH_AND_TRANSPORT.md), [capacity](../theory/CAPACITY_LOCALIZATION_BALANCE.md), [support balance](../theory/FORCED_SUPPORT_BALANCE.md); declared operators and laws |
@@ -123,6 +127,7 @@ same command and path without `--prepare`:
 | `relational_memory_response` | Matched-grid memory prediction and full-engine comparison |
 | `relational_mediation_response` | Matched-grid mediator-capacity intervention; retained memory versus instantaneous and omitted-memory controls |
 | `relational_transit_proof` | Continuous proof audit; `--zero-form` and `--reverse-form` are mutually exclusive controls |
+| `conservative_regional_organization` | Whole-time regional observation or reversible preparation, selected by the declaration; `--declaration PATH` requires an explicit new `--output PATH` and the same declaration in both preparation/evaluation invocations |
 
 For example, use a fresh path for a current-source regression:
 
@@ -130,6 +135,59 @@ For example, use a fresh path for a current-source regression:
 python -m benchmarks.relational_capacity_response --prepare --output artifacts/relational-capacity/result.json
 python -m benchmarks.relational_capacity_response --output artifacts/relational-capacity/result.json
 ```
+
+The inverse-geometry instrument has a third, independently retained prediction
+stage. For a separately declared current-source check, use one fresh path for
+all three invocations:
+
+```sh
+python -m benchmarks.return_path_geometry_response prepare --output artifacts/research/return_path_geometry_response/current-check.json
+python -m benchmarks.return_path_geometry_response predict --output artifacts/research/return_path_geometry_response/current-check.json
+python -m benchmarks.return_path_geometry_response evaluate --output artifacts/research/return_path_geometry_response/current-check.json
+```
+
+This fixed known-source protocol checks a bounded initial derivative. It does
+not run a positive-time trajectory or supply an independent physical measurement.
+The analytic `conservative_regional_winding` instrument instead writes one
+certificate and source archive; it has no `--prepare` stage and executes no
+solver. Its `--declaration` chooses the preparation, not a parameter search.
+
+`conservative_regional_organization --analyze-channels SOURCE_RESPONSE
+--output NEW_PATH` is a third kind of operation: a retrospective analysis of
+saved whole-time tubes. It does not take `--declaration`, replay a solver or
+rewrite the original response. Keep the separate analysis source archive,
+original file hashes and original verdict. A successful file audit or a new
+channel bound does not convert a negative acquisition result into a success.
+
+`sine_metric_connection` uses a separate declaration and mandatory output:
+
+```bash
+python -m benchmarks.sine_metric_connection --prepare --declaration PATH_TO_DECLARATION --output artifacts/research/sine_metric_connection/new-response.json
+python -m benchmarks.sine_metric_connection --declaration PATH_TO_DECLARATION --output artifacts/research/sine_metric_connection/new-response.json
+```
+
+Preparation verifies the literal rational saddle recipe without evolving it.
+Evaluation executes both declared directions once through the shared engine,
+retaining whole-time matrix and identity evidence, including partial failures.
+Its study-level pass requires the same-orbit connection and both complete
+horizons. An image of the prepared family remains distinct from an independent
+winding-zero source box. The retained declaration is not permission to replay
+an already evaluated response or scan alternative budgets.
+
+The [retained evidence bundle](../docs/assets/sine_metric_connection/response-v1.evidence.zip)
+contains the original response, protocol and evaluated source archive. Its
+[manifest](../docs/assets/sine_metric_connection/response-v1.manifest.json)
+records their unchanged byte hashes. Read the
+[result owner](../theory/nodal/SINE_CONSERVATIVE_PREPARATION.md#sine-operational-saddle-preparation)
+for the distinction between certified connection prefixes and the incomplete
+declared horizon; the producer's original `passed=false` is retained.
+
+The [same-source constitutive audit](../src/tnfr/research/sine_constitutive_robustness.py)
+consumes that bundle without rerunning the producer. Its fixed one-percent
+cubic-current comparison uses the unchanged source's full conserved storage
+and a proved sector barrier; see the [contract](../docs/contracts/relational/SINE_SADDLE_CERTIFICATES.md#sine-constitutive-robustness)
+and [retained result](../docs/assets/sine_metric_connection/derived-constitutive-v1.json).
+It is a read-only model comparison, not another trajectory campaign.
 
 Preparation and evaluation are separate invocations. Keep sibling prediction
 or protocol files and any source archives together. For a separately identified
@@ -157,6 +215,10 @@ JSON into producer functions that expect native exact-rational mappings.
 
 `docs/assets/` contains immutable first predictions, responses and source
 archives linked by each theorem owner. New output belongs in `artifacts/`.
+The commands above describe instrument use, not an instruction to replay every
+retained experiment. Consult the execution plan before a new scientific run;
+documentation, interface and admission checks normally reuse saved evidence
+or independent bounded fixtures.
 Failed decisions must remain visible; an inconclusive certificate is not a
 pass. The later continuous transit certificate does not replace the earlier
 finite-executor verdict. Consensus (`target_sector=0`) and unavailable evidence
@@ -182,7 +244,7 @@ consistency, **not** that the experiment passed; `recorded_passed` and
 `reconstructed_passed` retain the original verdict separately. Exit 1 denotes
 inconsistent evidence and 2 missing/unavailable files. Local artifacts may be
 absent after cloning; their absence is not permission to replay the producer.
-The [contract](../docs/contracts/RELATIONAL_DYNAMICS.md#relational-acquisition-audit)
+The [contract](../docs/contracts/relational/OBSERVATION_AND_INFORMATION.md#relational-acquisition-audit)
 owns admission, work limits and the authentication boundary.
 
 ### Multichannel observation records

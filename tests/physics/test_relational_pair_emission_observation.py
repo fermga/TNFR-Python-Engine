@@ -191,6 +191,120 @@ def test_exact_nonzero_phase_is_not_a_tip_and_rounded_boost_can_be_a_noop():
     assert noops.whole_pair.effective_form_increments == (0, 0)
 
 
+def test_increment_adapter_rebuilds_proposals_symmetry_and_target_indices():
+    report = _assess()
+    poisoned = replace(
+        report,
+        source_state=replace(
+            report.source_state,
+            support_symmetry=replace(
+                report.source_state.support_symmetry,
+                pair_indices=((1, 0),),
+                pair_swap_symmetry=(False,),
+            ),
+        ),
+        first_member=replace(
+            report.first_member,
+            effective_form_increments=(Q(0), Q(0)),
+            form_pair=(Q(0), Q(0)),
+        ),
+        member_proposals=(Q(0), Q(0)),
+    )
+    rebuilt = poisoned.form_increment(outcome="first_member")
+    assert rebuilt.increments == (Q(1, 8), Q(0))
+    assert rebuilt.weighted_form_change == Q(1, 8)
+    assert rebuilt.closed_flow_endpoint_obstructed
+    assert rebuilt == report.form_increment(outcome="first_member")
+
+
+def test_increment_adapter_rebuilds_changed_primitives_and_effective_clip():
+    report = _assess()
+    changed = replace(report, boost=Q(1, 2)).form_increment(outcome="whole_pair")
+    assert changed.increments == (Q(1, 2), Q(1, 2))
+    assert changed.weighted_form_change == 1
+
+    comparison = replace(report.comparison, epi=(Q(7, 8), Q(1)))
+    source = replace(
+        report.source_state,
+        support_symmetry=replace(
+            report.source_state.support_symmetry, comparison=comparison
+        ),
+    )
+    clipped = replace(report, source_state=source, boost=Q(1, 2)).form_increment(
+        outcome="whole_pair"
+    )
+    assert clipped.increments == (Q(1, 8), Q(0))
+    assert clipped.weighted_form_change == Q(1, 8)
+
+    policy = report.clip_policy
+    smaller = replace(report, clip_policy=(policy[0], Q(1, 4), *policy[2:]))
+    assert smaller.form_increment(outcome="whole_pair").increments == (0, Q(1, 8))
+
+
+def test_increment_adapter_normalizes_scalar_premises_before_using_them():
+    report = _assess()
+    source = replace(
+        report.source_state,
+        support_symmetry=replace(
+            report.source_state.support_symmetry,
+            comparison=replace(
+                report.comparison,
+                epi=(0.25, -0.25),
+                phase=(0.25, -0.25),
+                capacity=(1.0, 1.0),
+            ),
+        ),
+    )
+    changed = replace(report, source_state=source, boost=0.125)
+    assert changed.form_increment(outcome="whole_pair") == report.form_increment(
+        outcome="whole_pair"
+    )
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"boost": True},
+        {"boost": float("nan")},
+        {"pair_index": True},
+        {"pair_index": -1},
+        {"clip_policy": (False, 1, "hard", 4)},
+        {"clip_policy": (-1, float("inf"), "hard", 4)},
+        {"clip_policy": (-1, 1, "unrecognized", 4)},
+        {"clip_policy": (-1, 1, "hard", True)},
+    ],
+)
+def test_increment_adapter_readmits_event_primitives(changes):
+    with pytest.raises(ADMISSION_ERRORS):
+        replace(_assess(), **changes).form_increment(outcome="whole_pair")
+
+
+@pytest.mark.parametrize("capacity", [(True, 1), (1, 2)])
+def test_increment_adapter_cannot_inherit_swap_admission_after_capacity_changes(
+    capacity,
+):
+    report = _assess()
+    source = replace(
+        report.source_state,
+        support_symmetry=replace(
+            report.source_state.support_symmetry,
+            comparison=replace(report.comparison, capacity=capacity),
+        ),
+    )
+    with pytest.raises(ADMISSION_ERRORS):
+        replace(report, source_state=source).form_increment(outcome="whole_pair")
+
+
+def test_increment_adapter_readmits_declared_phase_chart():
+    report = _assess()
+    for turns in ((True, 0), (0, 1)):
+        changed = replace(
+            report, source_state=replace(report.source_state, phase_turns=turns)
+        )
+        with pytest.raises(ADMISSION_ERRORS):
+            changed.form_increment(outcome="whole_pair")
+
+
 def test_whole_member_swap_and_pair_orientation_preserve_the_unmarked_results():
     graph = _graph(form=(Q(3, 4), -Q(1, 4)))
     report = _assess(graph, boost=Q(1, 2))

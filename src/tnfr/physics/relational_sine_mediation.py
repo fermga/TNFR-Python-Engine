@@ -23,6 +23,7 @@ from .relational_sine_comparison import (
     SineExchangeComparison,
     _capture_sine_state,
     _comparison_neighbors,
+    _rebuild_sine_comparison,
     _sine_work,
     _validate_comparison_labels,
 )
@@ -103,6 +104,7 @@ class SineMediatedPressure:
         "pressure_and_phase_rate_splits_do_not_imply_additive_squared_dissipations",
         "computed_reconstruction_and_balance_residuals_are_not_forced_to_zero",
         "no_graph_reread_solver_stationary_replacement_support_event_or_new_law",
+        "derived_fields_rebuilt_from_readmitted_primitives_without_recapture",
         "supplied_comparison_is_retained_not_authenticated_by_dataclass_projection",
     )
     port_boundary_form_work: tuple[I, ...] | None = None
@@ -123,9 +125,13 @@ class SineMediatedPressure:
 
 
 def _mediated_pressure(comparison, *, mediator):
-    """Derive an incident-star decomposition from one existing comparison."""
-    if not isinstance(comparison, SineExchangeComparison):
-        raise TypeError("mediated pressure requires a captured sine comparison")
+    """Rebuild the complete field before decomposing its incident-star work."""
+    original = comparison
+    comparison = _rebuild_sine_comparison(comparison)
+    # Preserve the valid capture's existing association without consuming its
+    # cached numerical fields. A changed cache or representation retains the
+    # normalized rebuilt comparison instead, including in downstream exports.
+    association = original if original == comparison else comparison
     positions = {node: i for i, node in enumerate(comparison.nodes)}
     if mediator not in positions:
         raise ValueError("mediator must be a node of the captured support")
@@ -230,7 +236,7 @@ def _mediated_pressure(comparison, *, mediator):
     )
     hidden_loss = mu * e * k * contrast**2
     return SineMediatedPressure(
-        comparison=comparison,
+        comparison=association,
         mediator=mediator,
         ports=tuple(comparison.nodes[i] for i in port_indices),
         hidden_capacity=mu,

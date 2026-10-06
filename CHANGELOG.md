@@ -4,6 +4,191 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Retain the full unordered pair state through phase cancellation in the
+  conservative unit doubled-C5 sine model. Add exact realizability admission,
+  inherited polynomial rates, current derivatives and storage observations
+  with SDK export. The representation needs no midpoint angle, new law or
+  extra continuous degrees of freedom; existing regular adapters keep their
+  own domains.
+
+- Consolidate the retained moving-pair interaction contract from existing
+  replica, current and memory results. Distinguish constant collective means
+  from internally modulated compensating currents, and present messages from
+  sufficient future state. Regional-transfer and form-increment reports now
+  attach a rebuilt comparison, preventing stale nested evidence from contradicting
+  the freshly computed ledger.
+
+- Connect phase/rate observations to the existing unordered pair state through
+  an exact regular three-node star chart. Recover relative form and inherited
+  evolution, reject singular observation domains, and retain explicit coincident
+  and antipodal counterexamples. This changes representation without selecting
+  a law or removing continuous degrees of freedom.
+
+- Consolidate phase information and its motion through shared exact phasor
+  admission, harmonic moments and source/storage calculations. Add a derived
+  phase/rate association observer with an explicit full-star counterexample;
+  no new free parameter or reduced evolution law is introduced. Correct the
+  distinction between odd currents and cancellation under a half turn.
+- Rebuild sine comparison, mobility and environmental-mediation calculations
+  from admitted primitive state before consuming gradients, rates or work.
+  Altered cached values no longer change those derived results; invalid
+  primitive state remains rejected.
+- Apply the same report-consumption boundary to joint pairing windows and
+  structural Emission increments. Reuse shared source/window and AL proposal
+  builders so cached bounds, target indices and increments cannot become
+  independent dynamical premises.
+
+- Add finite bridge-response discriminators for the sine and one-percent
+  cubic-current laws. Opposite form preparations and an independent phase
+  preparation give exact finite-amplitude curvature coefficients. Shared
+  full-state bounds retain preparation, reading and time-remainder errors;
+  complete endpoint budgets also certify a ratio under a common unknown clock
+  scale within ten percent. These analytical predictions neither install a
+  law nor supply a physical measurement.
+
+- Resolve the fixed one-percent cubic-current comparison by a conserved-storage
+  obstruction: the unchanged mapped source cannot acquire either acute unit
+  winding under that law, although its critical geometries remain available.
+  Add a read-only evidence audit without replaying or replacing the frozen
+  sine response; distinguish energetic accessibility from equilibrium stability.
+
+- Add a complete smooth phase-storage countermodel with exact local agreement
+  and a different global winding barrier. Integrate a static full-state
+  discriminator and SDK projection, retaining uncertainty, both time directions
+  and the distinction between smooth and real-analytic law classes.
+
+- Add a fresh two-direction conservative connection evaluator and freeze its
+  declaration, full response and source. Certify formation and finite acute
+  retention on validated prefixes while preserving the incomplete forward
+  horizon and the separate independent-source obligation.
+- Reuse cached trigonometric Taylor prefixes without changing recurrence
+  arithmetic; verify nonlinear composition and cache eviction against exact
+  analytic coefficients. Preserve the earlier frozen calculation's source.
+
+- Certify metric growth from the actual whole-tube Jacobian using exact
+  rational matrix inequalities and a fixed rate bracket. Reuse signed
+  derivative admission across comparison solvers; retain original-time
+  rates and explicit failures beyond a declared numerical budget.
+
+- Add a shared Picard/Taylor step retaining full-state metric uncertainty
+  between steps, with complete local rounding/remainder bounds. Integrate
+  the conservative C5 saddle adapter, original-clock forward/reverse rates,
+  strict whole-time phase admission and SDK export. Keep partial coverage
+  explicit and distinguish solver verification from a formation experiment.
+
+- Admit explicit rational near-saddle preparations with retained representation
+  error, resolved near-critical storage and both local directional gates.
+  Centralize full and regional sine storage on the shared 128-bit interval
+  cosine. Add an exact full-state sensitivity metric and conditional nonlinear
+  phase-tube growth bound, without claiming a validated metric forecast or an
+  available zero-winding source.
+
+- Prove a same-orbit conservative formation-to-retention construction on
+  C5/private-leaf support, including independent full-state source and target
+  widths and one scaled unit of acute retention. Reuse nonlinear corridors
+  and a phase-band dwell bound in shared analytical reports and SDK exports;
+  keep event-defined centers unavailable and the tiny positive source radius
+  symbolic. Separate this existence result from operational preparation.
+
+- Add a full-law conservative saddle-corridor certificate: retained receiver
+  and leaf momentum can select a finite principal-seam passage without a
+  trajectory or tangent extrapolation. Expose the conditional result through
+  shared SDK reports; acute retention and transverse uncertainty remain
+  separate obligations. Extend the cycle-sector obstruction to the exact
+  barrier energy using boundary equilibrium and flow uniqueness.
+
+### Conditional dynamics and shared evidence
+
+- Integrate conservative bridge memory and collective observations with
+  explicit hidden initialization, channel distinctions and source admission.
+  Add form-loss observation obstructions without identifying apparent local
+  attenuation with microscopic dissipation.
+- Extend phase/storage information and inverse-geometry controls, preserving
+  constitutive freedom and independently frozen response evaluation.
+- Add retained-frame composition, conservative regional entry/work observers,
+  invariant phase-offset families, finite moving-pattern retention and actual
+  collective-pulse feedback. Formation, maintenance and physical identification
+  retain separate hypotheses; conservative transfer does not select support
+  birth or autonomous preparation.
+- Preserve positive witnesses, handoff obstructions and frozen negative
+  controls through shared validated flow, exact report projection and SDK
+  export. Correlated cycle storage sharpens target-budget admission; the
+  collective pulse's signed storage split retains its phase-lift dependence.
+- Add source admission from the conservative C5 sector barrier and a finite
+  rapid-contact averaging bound. The former includes nonflat zero-winding
+  sources; the latter can exclude acute formation despite large storage.
+  Neither passing an admission nor preserving the wider sector proves acute
+  formation, acute retention or physical identity.
+- Extend the existing conservative entry certificate with full-state source
+  uncertainty and an explicit independently continuable entry box. Separate
+  nominal storage from uncertain source storage and robust short passage
+  from the stronger research requirement of extended finite retention.
+- Resolve receiver phase velocity, acceleration and third derivative through
+  the existing collective-pulse observer. Retain environmental feedback and
+  document the conditional rigid-motion classification and a compensated
+  initial state whose relative phase motion reappears at third order.
+- Add a full-state C5 retention window from conserved storage and actual
+  full-support phase-speed bounds. It covers uncertain, internally moving
+  targets without an invariant reference; prepared retention and acquisition
+  from zero winding remain separate claims.
+- Add a shared reversible-preparation certificate that retains inverse-flow
+  enclosure error and an independent source radius in a strict forward
+  inclusion bound. Reuse the existing frozen producer with a separately
+  admitted declaration mode; preserve historical response schemas and defaults.
+- Add exact signed-involution reconstruction and a conservative C5/private-leaf
+  saddle assessment. Reuse full support admission and tangent assembly;
+  distinguish invariant families, captured-source membership, local unstable
+  directions and nonlinear passage from actual winding acquisition.
+
+### Consolidated documentation
+
+- Align the introduction, foundations, architecture and public contracts with
+  the implemented mechanisms and their limitations. Connect pulse, resonance,
+  retained memory and scale inheritance without transferring results between
+  incompatible laws or supports.
+- Keep the execution plan as the sole task queue, the portfolio as branch
+  classification and the strategy as rationale. Frozen evidence and historical
+  source identifiers remain preserved; no new release is implied by this entry.
+
+### Cleanup and interface corrections
+
+- Remove five ineffective global structural-validation settings and normalize
+  the consumed flags/severity through shared parsers. Reject unknown or invalid
+  update batches before committing any setting. Expose that policy as
+  `StructuralValidationConfig` without changing the existing unified-validator
+  `ValidationConfig` export, and align runtime and stub declarations. Point the
+  resumption gate directly to its retained pair-state and observation contracts.
+- Execute the actual README quick start in documentation checks and reject
+  duplicate keys in publication metadata through shared JSON admission. Check
+  finite-work responses against independently constructed doubled-C5 support.
+  Replace two sine-recovery forwarding wrappers with direct shared-owner aliases.
+- Install declared core dependencies in the publication workflow before running
+  the shared metadata validator; retain one dependency source in package metadata.
+- Preserve explicitly zero partition overlap in the optional factorization lab
+  instead of silently creating overlapping partitions. Keep test singleton
+  configuration isolated and classical-adapter subtest labels serializable for
+  parallel execution.
+- Remove unused parallel mathematical score/field helpers, duplicate registry
+  observations and grammar-cache wrappers. Preserve shared nodal calculus,
+  graph fields, live grammar and class lookup; grammar typing now reexports
+  the actual owners, and `tnfr.math` uses the package version source.
+- Correct lifecycle phase/coherence formulas, missing-observation status and
+  capacity-clock factors in theory. Retire a duplicate arithmetic campaign
+  driver and unsupported Paley/zero-distance inference; keep scoped algebraic
+  controls and use circular distance in the directed phase diagnostic.
+- Restore nine advertised `tnfr.validation` exports through the existing
+  input-validation owner and correct the grammar type-stub import. Retire
+  unused registry no-ops and their counters while preserving live class lookup
+  and registration; [API migrations](docs/API_CONTRACTS.md#removed-unsupported-helpers)
+  identify the removed interfaces and retained contracts.
+- Consolidate duplicate equivariance, arithmetic and gauge discussions into
+  their current proof owners. Simplify architecture and workflow descriptions;
+  retain exact recovery records, conditional proofs and negative controls.
+- Correct the directed-diffusion instrument with an exact weighted growth
+  counterexample. Restrict arithmetic comparisons to their supplied fixtures;
+  spectral multiplicity alone no longer certifies a symmetry group. Incomplete
+  group enumeration and absent counterexample evidence cannot pass the control.
+
 ## [0.0.3.8] - 2026-09-27 — Relational patterns and consolidated engine contracts
 
 ### Relational dynamics and research

@@ -54,7 +54,9 @@ Edit source owners, not generated site copies.
 ## Package publication
 
 The retained publisher is [pypi-zenodo.yml](workflows/pypi-zenodo.yml); its filename
-is historical. It first checks publication metadata and, for a release event,
+is historical. It installs the checkout and its declared core dependencies with
+the build tools so metadata validation can use the shared JSON reader. It then
+checks publication metadata and, for a release event,
 requires the tag to match the declared package version. It then performs build
 and Twine checks and requests PyPI trusted publishing. It neither creates a
 release nor runs the numerical test suite.
@@ -75,35 +77,14 @@ The final Zenodo step only prints a reminder. A separately configured external
 integration may archive a release; this workflow does not upload an archive or
 verify a DOI. No GitHub/PyPI/Zenodo settings are inferred from this file.
 
-## Retired automation
+## Research verification boundary
 
-The former `code-review.yml` job and reminder-only pre-commit hook are retired.
-Black and advisory mypy already have maintained owners in `ci.yml`; repeating
-them in another environment and posting an automatic PR comment added no
-independent review coverage. The main CI gates retain their existing scope.
-
-The test consolidation removed `tests.yml`, which repeated the complete SDK
-suite on Python 3.11 already included in `ci.yml`. The main matrix retains the
-SDK assertions, environment checks and JUnit/coverage reporting.
-
-The second documentation cleanup removed stale workflows after preserving their
-original files under
-`artifacts/research/documentation_second_cleanup_originals_2026_09_19/`.
-The reasons are recorded here to prevent restoring broken obligations:
-
-- The former push-to-main release workflow duplicated PyPI publication and
-  depended on absent changelog configuration, fragment checker and test script.
-  The missing changelog job was also removed from CI.
-- The performance guard targeted an absent performance-test directory.
-- The tetrad smoke workflow invoked an absent runner.
-- The manual reproducibility workflow targeted an absent profiler and manifest
-  comparison script.
-
-Retained CI provides the stated checks; it is not equivalent replacement
-coverage for those retired benchmark protocols. Research checks use their
-maintained, explicitly documented entry points in
-[benchmarks/README.md](../benchmarks/README.md). There is no automatic benchmark
-or reproducibility guarantee implied by an ordinary CI pass.
+Ordinary CI exercises the declared engine/API selection. Research campaigns
+use the explicitly selected owners in [Testing](../TESTING.md) and
+[benchmarks](../benchmarks/README.md). A routine pass is not an automatic
+benchmark, reproducibility certificate or replay of every retained experiment.
+Retirement and recovery records belong to the
+[archive](../theory/research/archive/README.md), not this workflow inventory.
 
 ## Maintenance rules
 

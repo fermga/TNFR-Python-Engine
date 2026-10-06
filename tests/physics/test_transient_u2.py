@@ -8,6 +8,9 @@ stationary-weighted contraction is tested separately.
 from __future__ import annotations
 
 from dataclasses import asdict, replace
+from fractions import Fraction
+from pathlib import Path
+from runpy import run_path
 
 import numpy as np
 import pytest
@@ -66,7 +69,7 @@ def test_restricted_generator_shape():
 
 
 # --------------------------------------------------------------------------- #
-# The canonical finding: Euclidean per-node contraction (no transient)
+# Euclidean contraction on the three supplied fixtures
 # --------------------------------------------------------------------------- #
 def test_symmetric_part_positive_definite_normal_and_nonnormal():
     assert symmetric_part_min_eig(NORMAL) > 0.0
@@ -288,6 +291,26 @@ def test_weighted_nonconsensus_euclidean_contraction_has_counterexample():
     symmetric_part = (restricted + restricted.T) / 2.0
     assert np.min(np.linalg.eigvalsh(symmetric_part)) < -1e-4
     assert np.linalg.norm(restricted @ (basis.T @ vector)) > 0.0
+
+    instrument = run_path(
+        str(Path(__file__).resolve().parents[2] / "benchmarks/directed_transient_u2.py")
+    )
+    np.testing.assert_array_equal(instrument["COUNTEREXAMPLE_WEIGHTS"], weights)
+    np.testing.assert_array_equal(instrument["COUNTEREXAMPLE_STATE"], vector)
+
+    # Independently differentiate the norm via an exact symmetric difference
+    # along the initial velocity. Quadratic energy makes this identity exact.
+    state = tuple(Fraction(int(value)) for value in vector)
+    velocity = tuple(
+        sum(Fraction(int(w), int(sum(row))) * y for w, y in zip(row, state)) - x
+        for row, x in zip(weights, state)
+    )
+    epsilon = Fraction(1, 100)
+    plus = sum((x + epsilon * v) ** 2 for x, v in zip(state, velocity))
+    minus = sum((x - epsilon * v) ** 2 for x, v in zip(state, velocity))
+    derivative = (plus - minus) / (2 * epsilon)
+    assert derivative > 0
+    assert instrument["counterexample_energy_derivative"]() == derivative
 
 
 def test_module_exports_complete():

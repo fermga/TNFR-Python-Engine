@@ -1,20 +1,18 @@
+"""Symbolic calculus for the unforced form row ``dEPI/dt = nu_f * DELTA_NFR``.
+
+The helpers express its integral, product rule and solution with supplied
+constant parameters. The exponential example supplies its own pressure law.
+These calculations do not establish grammar U2, bifurcation, full-state
+equilibrium or stability, and do not select operators or a complete model.
 """
-Symbolic Mathematics for TNFR.
 
-Provides symbolic calculus tools for analyzing the nodal equation:
-    ∂EPI/∂t = νf · ΔNFR
-
-Key capabilities:
-- Symbolic differentiation and integration
-- Convergence analysis for U2 grammar rule
-- Bifurcation threshold analysis (∂²EPI/∂t²)
-- Analytical solutions for simple cases
-
-Physics basis: AGENTS.md § Foundational Physics, TNFR.pdf § 2.1
-"""
+import math
 
 import sympy as sp
 from sympy import Derivative, Eq, Function, Integral, integrate, simplify, symbols
+from sympy.core.evalf import PrecisionExhausted
+
+from .._exact_time import finite_represented_real, nonnegative_represented_time
 
 # ============================================================================
 # SYMBOLIC VARIABLES (TNFR canonical)
@@ -23,7 +21,7 @@ from sympy import Derivative, Eq, Function, Integral, integrate, simplify, symbo
 # Time variable
 t = symbols("t", real=True, positive=True)
 
-# Structural frequency (Hz_str) - always positive
+# Positive-capacity symbol for the calculations below.
 nu_f = symbols("nu_f", real=True, positive=True)
 
 # Nodal gradient (reorganization pressure) - can be positive or negative
@@ -45,21 +43,15 @@ phi = symbols("phi", real=True)
 
 def get_nodal_equation() -> Eq:
     """
-    Return the canonical TNFR nodal equation.
+    Return the unforced scalar form row.
 
     ∂EPI/∂t = νf · ΔNFR
 
     Returns:
-        Sympy equation representing the fundamental TNFR dynamics
+        Sympy equation with symbolic capacity and signed pressure.
 
-    Physics:
-        - Rate of structural change = Reorganization capacity ×
-          Structural pressure
-        - νf = 0: Node frozen, cannot reorganize
-        - ΔNFR = 0: Equilibrium, no drive to change
-        - Both > 0: Active reorganization
-
-    See: AGENTS.md § The Nodal Equation
+    A zero product freezes this form row only. Other state rows and the
+    pressure law must be specified separately; full equilibrium does not follow.
     """
     return Eq(Derivative(EPI(t), t), nu_f * DELTA_NFR)
 
@@ -73,17 +65,16 @@ def solve_nodal_equation_constant_params(
     Solution: EPI(t) = EPI_0 + νf · ΔNFR · (t - t0)
 
     Args:
-        nu_f_val: Structural frequency (Hz_str)
-        delta_nfr_val: Reorganization gradient
+        nu_f_val: Held reorganization capacity
+        delta_nfr_val: Held signed pressure
         EPI_0: Initial EPI value
         t0: Initial time
 
     Returns:
         Symbolic expression for EPI(t)
 
-    Physics:
-        Linear evolution when both parameters constant.
-        Real systems have time-varying νf and ΔNFR.
+    This is the linear solution under the stated held-parameter premise.
+    Inputs are symbolic substitutions, not execution-admission certificates.
     """
     eq = get_nodal_equation()
     # Substitute constant values
@@ -100,28 +91,21 @@ def solve_nodal_equation_constant_params(
 
 
 # ============================================================================
-# INTEGRATION AND CONVERGENCE (U2 Grammar Rule)
+# INTEGRATION UNDER SUPPLIED LAWS
 # ============================================================================
 
 
 def integrated_evolution_symbolic() -> sp.Integral:
     """
-    Return symbolic form of integrated nodal equation.
+    Return the symbolic form increment integrated over a supplied interval.
 
     EPI(t_f) = EPI(t_0) + ∫[t_0 to t_f] νf(τ) · ΔNFR(τ) dτ
 
     Returns:
-        Symbolic integral expression
+        Integral of capacity times pressure, without the initial form value.
 
-    Physics:
-        For bounded evolution (coherence preservation):
-            ∫ νf·ΔNFR dt < ∞  (convergence requirement)
-
-        Without stabilizers (IL, THOL):
-            - ΔNFR grows unbounded (positive feedback)
-            - Integral diverges → system fragments
-
-    See: AGENTS.md § U2: CONVERGENCE & BOUNDEDNESS
+    No capacity or pressure evolution law is selected here. Convergence,
+    coherence and grammar admission require their own hypotheses.
     """
     tau = symbols("tau", real=True, positive=True)
     t_0, t_f = symbols("t_0 t_f", real=True, positive=True)
@@ -138,25 +122,27 @@ def check_convergence_exponential(
     growth_rate: float, time_horizon: float
 ) -> tuple[bool, str, float | None]:
     """
-    Check convergence for exponential ΔNFR growth.
+    Integrate a supplied exponential pressure with unit capacity and amplitude.
 
-    Models destabilizers without stabilizers:
-        ΔNFR(t) = ΔNFR_0 · e^(λt)
+    The prescribed law is ``DELTA_NFR(t) = exp(growth_rate * t)``.
 
     Args:
-        growth_rate: λ (exponential rate)
-        time_horizon: Integration limit
+        growth_rate: Finite represented λ (exponential rate).
+        time_horizon: Finite nonnegative represented integration limit.
 
     Returns:
-        (converges, explanation, integral_value)
+        ``(converges, explanation, integral_value)``. The Boolean concerns
+        the improper integral over ``[0, infinity)`` under this supplied law.
+        The value instead concerns the supplied finite horizon, or is ``None``
+        when it cannot be materialized as a finite nonzero-preserving float.
 
-    Physics:
-        - λ < 0: Decaying → converges (stabilized)
-        - λ = 0: Constant → converges (equilibrium)
-        - λ > 0: Growing → diverges (needs stabilizers!)
-
-    Grammar: Validates U2 requirement for stabilizers
+    For real finite rates and a finite nonnegative horizon the mathematical
+    integral is finite for every rate. Over an infinite horizon it converges
+    only for a negative rate; zero rate gives linear form growth. This does not
+    establish grammar U2, equilibrium or an operator-selection rule.
     """
+    growth_rate, exact_rate = finite_represented_real(growth_rate, "growth_rate")
+    _, exact_horizon = nonnegative_represented_time(time_horizon, "time_horizon")
     lambda_sym = symbols("lambda", real=True)
     tau = symbols("tau", real=True, positive=True)
     DELTA_NFR_0 = symbols("DELTA_NFR_0", real=True, positive=True)
@@ -175,57 +161,55 @@ def check_convergence_exponential(
     # Substitute actual values
     integral_value = integral_simplified.subs(
         [
-            (lambda_sym, growth_rate),
-            (T, time_horizon),
-            (nu_f, 1.0),  # Normalized
-            (DELTA_NFR_0, 1.0),
+            (lambda_sym, sp.Rational(exact_rate.numerator, exact_rate.denominator)),
+            (T, sp.Rational(exact_horizon.numerator, exact_horizon.denominator)),
+            (nu_f, 1),  # Normalized
+            (DELTA_NFR_0, 1),
         ]
     )
 
-    converges = growth_rate <= 0
+    converges = growth_rate < 0
 
     if growth_rate < 0:
-        explanation = f"Converges: λ={growth_rate} < 0 (decaying, stabilized)"
+        explanation = f"Convergent improper integral: λ={growth_rate} < 0"
     elif growth_rate == 0:
-        explanation = f"Converges: λ={growth_rate} = 0 (constant, equilibrium)"
+        explanation = (
+            f"Divergent improper integral: λ={growth_rate} = 0 (linear form growth)"
+        )
     else:
-        explanation = f"DIVERGES: λ={growth_rate} > 0 (growing, NEEDS STABILIZERS!)"
+        explanation = f"Divergent improper integral: λ={growth_rate} > 0"
 
     try:
-        val = float(integral_value)
-    except (TypeError, ValueError):
+        # Small represented rates require extra precision for exp(lambda*T)-1.
+        val = float(integral_value.evalf(17, maxn=1000, strict=True))
+    except (OverflowError, TypeError, ValueError, PrecisionExhausted):
+        val = None
+    if val is not None and (
+        not math.isfinite(val) or (val == 0.0 and exact_horizon != 0)
+    ):
         val = None
 
     return converges, explanation, val
 
 
 # ============================================================================
-# BIFURCATION ANALYSIS (U4 Grammar Rule)
+# PRODUCT RULE FOR THE UNFORCED FORM ROW
 # ============================================================================
 
 
-def compute_second_derivative_symbolic() -> Derivative:
+def compute_second_derivative_symbolic() -> sp.Expr:
     """
-    Return second derivative of EPI for bifurcation analysis.
+    Return the product-rule expression for the second form derivative.
 
     ∂²EPI/∂t² = ∂(νf · ΔNFR)/∂t = (∂νf/∂t)·ΔNFR + νf·(∂ΔNFR/∂t)
 
     Returns:
         Symbolic second derivative expression
 
-    Physics:
-        Bifurcation trigger: ∂²EPI/∂t² > τ (threshold)
-
-        High second derivative indicates:
-        - Rapid acceleration of reorganization
-        - Potential phase transition
-        - Need for handlers (THOL, IL) per U4a
-
-    See: AGENTS.md § U4: BIFURCATION DYNAMICS
+    The identity assumes differentiable capacity and pressure in the same
+    clock, with no additive source in the form row. Its magnitude alone does
+    not establish stability, bifurcation or admission of a named operator.
     """
-    # First derivative (nodal equation)
-    nu_f * DELTA_NFR
-
     # Second derivative (product rule)
     nu_f_func = Function("nu_f")
     delta_nfr_func = Function("DELTA_NFR")
@@ -236,52 +220,6 @@ def compute_second_derivative_symbolic() -> Derivative:
     ) * Derivative(delta_nfr_func(t), t)
 
     return second_deriv
-
-
-def evaluate_bifurcation_risk(
-    nu_f_val: float,
-    delta_nfr_val: float,
-    d_nu_f_dt: float,
-    d_delta_nfr_dt: float,
-    threshold: float = 1.0,
-) -> tuple[bool, float, str]:
-    """
-    Evaluate if system is near bifurcation threshold.
-
-    Args:
-        nu_f_val: Current structural frequency
-        delta_nfr_val: Current reorganization gradient
-        d_nu_f_dt: Rate of change of νf
-        d_delta_nfr_dt: Rate of change of ΔNFR
-        threshold: Bifurcation threshold τ
-
-    Returns:
-        (at_risk, second_derivative_value, recommendation)
-
-    Physics:
-        ∂²EPI/∂t² = (∂νf/∂t)·ΔNFR + νf·(∂ΔNFR/∂t)
-
-        If > τ: Apply handlers (THOL, IL) per U4a
-
-    Grammar: Validates U4a requirement
-    """
-    # Compute second derivative
-    second_deriv_val = d_nu_f_dt * delta_nfr_val + nu_f_val * d_delta_nfr_dt
-
-    at_risk = abs(second_deriv_val) > threshold
-
-    if at_risk:
-        recommendation = (
-            f"⚠️ BIFURCATION RISK: |∂²EPI/∂t²| = {abs(second_deriv_val):.4f} > τ = {threshold}\n"
-            f"ACTION REQUIRED: Apply handlers {{THOL, IL}} per U4a grammar rule"
-        )
-    else:
-        recommendation = (
-            f"✓ Stable: |∂²EPI/∂t²| = {abs(second_deriv_val):.4f} ≤ τ = {threshold}\n"
-            f"System within normal reorganization regime"
-        )
-
-    return at_risk, second_deriv_val, recommendation
 
 
 # ============================================================================
@@ -313,70 +251,3 @@ def pretty_print(expr: sp.Expr) -> str:
         Human-readable string representation
     """
     return sp.pretty(expr)
-
-
-# ============================================================================
-# EXAMPLE USAGE AND VALIDATION
-# ============================================================================
-
-if __name__ == "__main__":
-    print("=" * 70)
-    print("TNFR Symbolic Mathematics Module")
-    print("=" * 70)
-
-    # 1. Display nodal equation
-    print("\n1. CANONICAL NODAL EQUATION:")
-    nodal_eq = get_nodal_equation()
-    print(pretty_print(nodal_eq))
-    print(f"LaTeX: {latex_export(nodal_eq)}")
-
-    # 2. Solve for constant parameters
-    print("\n2. ANALYTICAL SOLUTION (constant νf, ΔNFR):")
-    solution = solve_nodal_equation_constant_params(
-        nu_f_val=2.0, delta_nfr_val=0.5, EPI_0=1.0, t0=0  # 2 Hz_str
-    )
-    print(f"EPI(t) = {solution}")
-
-    # 3. Convergence analysis
-    print("\n3. CONVERGENCE ANALYSIS (U2 Grammar):")
-    print("\nCase A: Stabilized (λ = -0.1)")
-    conv_a, exp_a, val_a = check_convergence_exponential(-0.1, 10.0)
-    print(f"  {exp_a}")
-    print(f"  Integral value: {val_a:.4f}")
-
-    print("\nCase B: Divergent (λ = +0.1) - NEEDS STABILIZERS!")
-    conv_b, exp_b, val_b = check_convergence_exponential(0.1, 10.0)
-    print(f"  {exp_b}")
-    if val_b:
-        print(f"  Integral value: {val_b:.4f}")
-
-    # 4. Bifurcation analysis
-    print("\n4. BIFURCATION ANALYSIS (U4 Grammar):")
-    print("\nCase A: Normal operation")
-    risk_a, deriv_a, rec_a = evaluate_bifurcation_risk(
-        nu_f_val=1.0,
-        delta_nfr_val=0.3,
-        d_nu_f_dt=0.1,
-        d_delta_nfr_dt=0.2,
-        threshold=1.0,
-    )
-    print(rec_a)
-
-    print("\nCase B: High acceleration - bifurcation risk")
-    risk_b, deriv_b, rec_b = evaluate_bifurcation_risk(
-        nu_f_val=2.0,
-        delta_nfr_val=1.5,
-        d_nu_f_dt=0.5,
-        d_delta_nfr_dt=1.0,
-        threshold=1.0,
-    )
-    print(rec_b)
-
-    # 5. Second derivative formula
-    print("\n5. SECOND DERIVATIVE (Bifurcation Indicator):")
-    second_deriv = compute_second_derivative_symbolic()
-    print(pretty_print(second_deriv))
-
-    print("\n" + "=" * 70)
-    print("✓ Symbolic module operational - Ready for TNFR analysis")
-    print("=" * 70)

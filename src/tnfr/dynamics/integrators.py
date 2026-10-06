@@ -37,11 +37,10 @@ from concurrent.futures import ProcessPoolExecutor
 from contextlib import contextmanager
 from fractions import Fraction
 from multiprocessing import get_context
-from typing import Any, Literal, cast
+from typing import Any, Literal, TypeAlias, cast
 
 import networkx as nx
 
-from .._compat import TypeAlias
 from .._exact_time import finite_represented_real
 from ..alias import get_attr, get_attr_str, set_attr, set_attr_str
 from ..config.parsing import parse_bool

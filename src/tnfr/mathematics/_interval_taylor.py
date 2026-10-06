@@ -166,18 +166,19 @@ def _jet(value):
 
 @lru_cache(maxsize=256)
 def _sincos_coefficients(coefficients):
-    sine = [interval_sin(coefficients[0])]
-    cosine = [interval_cos(coefficients[0])]
-    for degree in range(1, len(coefficients)):
-        sine_total = cosine_total = _ZERO
-        for index in range(1, degree + 1):
-            if not _zero(coefficients[index]):
-                factor = coefficients[index] * index
-                sine_total = sine_total + factor * cosine[degree - index]
-                cosine_total = cosine_total - factor * sine[degree - index]
-        sine.append(sine_total / degree)
-        cosine.append(cosine_total / degree)
-    return tuple(sine), tuple(cosine)
+    if len(coefficients) <= 1:
+        return (interval_sin(coefficients[0]),), (interval_cos(coefficients[0]),)
+    # Flow jets request ascending orders. Reuse the cached prefix while
+    # retaining the original summation and outward-rounding order.
+    sine, cosine = _sincos_coefficients(coefficients[:-1])
+    degree = len(coefficients) - 1
+    sine_total = cosine_total = _ZERO
+    for index in range(1, degree + 1):
+        if not _zero(coefficients[index]):
+            factor = coefficients[index] * index
+            sine_total = sine_total + factor * cosine[degree - index]
+            cosine_total = cosine_total - factor * sine[degree - index]
+    return sine + (sine_total / degree,), cosine + (cosine_total / degree,)
 
 
 def sin(value):

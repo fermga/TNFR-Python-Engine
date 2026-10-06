@@ -880,7 +880,7 @@ The imaginary component and principal argument have the same sign,
 including when `C_i<0`; the metric therefore stays positive. The second
 formula is its removable limit, not a value assigned at a negative-real
 branch or zero resultant. No new state variable or phase law is introduced
-by this wider domain. The [relational execution owner](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-full-regular-execution)
+by this wider domain. The [relational execution owner](nodal/RELATIONAL_DOMAIN_AND_CAPTURE.md#relational-full-regular-execution)
 separately certifies sufficient point and straight-proposal margins using
 rational enclosures; it retains the existing acute and positive-resultant
 options. This representation does not establish phase dynamics from the
@@ -1564,7 +1564,7 @@ The positive value is a necessary admission result, not a derivation of the
 loop, its clock, attraction or autonomous phase feedback. The existing
 common-mean/phase saddle and gradient recurrence exclusions are not bypassed:
 any proposed reciprocal completion still needs its full energy/work balance.
-The [relational-clock tangent test](FORCED_SUPPORT_BALANCE.md#25-relational-time-and-synchronization-are-separate-claims)
+The [relational-clock tangent test](nodal/FORCED_SOURCE_AND_CLOCK.md#25-relational-time-and-synchronization-are-separate-claims)
 supplies another necessary condition before a curve may be called a trajectory.
 Exact controls reuse the shared conductance and phase geometry in
 [test_phase_form_cycle_work_scope.py](../tests/physics/test_phase_form_cycle_work_scope.py).
@@ -3256,7 +3256,7 @@ by the nodal equation. Proofs and controls remain in that single owner.
 
 ## References
 
-- Nodal equation: `TNFR.pdf` §2.1, `AGENTS.md` §Foundational Physics
+- Nodal equation and model premises: [Fundamental theory](FUNDAMENTAL_THEORY.md), [parameter foundations](NODAL_PARAMETER_FOUNDATIONS.md)
 - Conservation theorem: [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md)
 - Grammar rules: [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)
 - Classical mechanics analogy: `src/tnfr/physics/classical_mechanics.py`

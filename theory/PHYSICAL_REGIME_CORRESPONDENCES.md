@@ -2,7 +2,7 @@
 
 **Status**: Technical reference
 **Version source**: [pyproject.toml](../pyproject.toml)
-**Reviewed**: 2026-09-27
+**Reviewed**: 2026-10-06
 
 ---
 
@@ -86,7 +86,7 @@ No entry currently has complete physical admission under the P2 protocol.
    an additional justified premise before claiming predictive novelty.
 
 Proofs and raw evidence stay in their existing owners. The table is an index
-of cards and prerequisites, not thirteen independently active campaigns.
+of cards and prerequisites, not independently active campaigns.
 
 #### Current evidence map
 
@@ -104,7 +104,379 @@ of cards and prerequisites, not thirteen independently active campaigns.
 | BEC / superfluidity | **Deferred physical bridge:** classical phase observations are available | Quantum state/statistics, observables and constitutive bridge; classical phase order does not establish condensation or superfluidity. |
 | Renormalization / universality | **Exact restricted coarse reductions and memory:** [scale bridge](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md), [elimination](DERIVED_EPI_MEMORY.md) | Declared scale/time/field transformations and effective-model flow/fixed points; REMESH and nesting are not automatically RG. |
 | Emergent geometry | **Conditional inherited geometry:** the same scale and observation owners | Demonstrate realizability and retained dynamics; a tetrad readout does not derive a fundamental physical geometry. |
-| Gravity / fundamental quantum theory | **Parked strong interpretation:** existing adapters retain their limited roles below | No derivation or physical admission; this atlas does not reopen particle, cosmology or substrate-origin campaigns. |
+| Time-dependent directional response | **Exact tangent representation and controlled finite kicks:** [moving-pulse oscillator/reversal identities](nodal/SINE_REPLICA_PULSE.md#sine-moving-pulse-parametric-representation), [physical comparisons](#moving-pattern-physical-synergies) | Transient, steady-state, work and power responses differ. Physical preparation, observation, clock and uncertainty remain unadmitted. |
+| Fundamental particle properties / quantum theory | **Collective-property admission:** compare the [mechanisms and missing observations below](#collective-properties-and-fundamental-phenomena) | No particle or quantum identification; a bounded symmetry/interaction comparison is distinct from deriving a complete physical theory. Gravity, cosmology and substrate-origin campaigns remain deferred. |
+
+<a id="collective-properties-and-fundamental-phenomena"></a>
+#### Collective properties and fundamental phenomena
+
+The target is a generative explanation, not a primitive-variable dictionary:
+`joint nodal dynamics -> organized pattern -> interaction signature -> physical observation`.
+A combination of form, phase, capacity, support and internal motion can have
+properties absent from any individual coordinate. Whether those properties
+explain charge, spin or another observed phenomenon is a further question.
+The [ontology contract](EMERGENT_ONTOLOGY.md#research-target-physical-properties-of-collective-patterns)
+and the sole [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+govern that distinction. The following are reusable mechanisms and tests,
+not established correspondences or independent research queues.
+
+The [oscillator preparation/readout admission](research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#rossler-phase-information-admission)
+illustrates this requirement: documented support and repeated scalar recordings
+still need a justified state reduction, complete law and measurement model
+before they can discriminate the TNFR candidates.
+
+| Physical question | Actual TNFR mechanism available for reuse | Discriminating obligation |
+| --- | --- | --- |
+| Can one substrate generate distinct material families? | [Collective organization and scale hypotheses](EMERGENT_ONTOLOGY.md#research-target-physical-properties-of-collective-patterns), with conditional pattern and reduction results | Derive distinguishable dynamics, composition and measured responses. A shared substrate or scale change alone does not identify elements or derive the substrate's origin. |
+| Can an organized excitation carry a conserved, transferable property? | [Weighted-form balance and boundary currents](nodal/SINE_PAIR_INTERACTION.md#sine-autonomous-regional-transfer), under fixed support, positive held capacities and the specified unforced sine law | Apply the [charge and magnetic-response boundary](#charge-and-magnetic-response-boundary): conservation, sign and additivity do not establish electric charge or electromagnetic coupling. |
+| Can topology distinguish persistent identities and their responses? | Conditional winding sectors, [formation and retention](nodal/SINE_CONSERVATIVE_PREPARATION.md#sine-conservative-formation-retention), and [interface reflection controls](nodal/RELATIONAL_MEDIATOR_DYNAMICS.md#mediator-orientation-scope) | A cycle integer is not generally conserved across phase slips. Determine whether a retained probe distinguishes the proposed identity, rather than merely reading a supplied oriented cycle. |
+| Can internal motion produce spin-like observable behavior? | [Global unordered pair state](nodal/SINE_PAIR_STATE.md#sine-global-pair-state), exact internal phase action and retained constituent motion | Derive physical spatial rotation, its observable action and outcome statistics. Circular phase symmetry and exchanging constituent labels do not supply these. |
+| Can pulse, storage and response account for energy or inertia? | Same-law joint storage, regional work and the [nonlinear storage representation](nodal/SINE_PATTERN_DYNAMICS.md); conditional maintained internal pulses | Derive the observation of motion and force, clock and energy units. A storage invariant, oscillation frequency or graph kinetic metric alone supplies neither mass nor an energy-frequency quantum relation. |
+| Can mediated interactions acquire an effective field description? | [Causal hidden-state elimination](nodal/RELATIONAL_MEDIATOR_DYNAMICS.md#mediated-pattern-interaction) retaining memory, initial state and forcing | Establish the effective field's dynamics and response, including its [observation geometry](#physical-geometry-comparison). Directional response and gauge diagnostics retain the [magnetic-identification boundary](#charge-and-magnetic-response-boundary). |
+| Can collective patterns exhibit quantum properties? | Phase, internal motion, interference and memory are possible ingredients under their declared laws | Meet the [quantum-emergence obligations](#quantum-emergence-obligations), including transformations and detector statistics. These ingredients do not by themselves derive quantum mechanics. |
+
+<a id="physical-geometry-comparison"></a>
+
+**Geometry can guide this comparison.** In fundamental physics the relevant
+geometry often concerns states and their transformations, not a spatial
+polyhedron. TNFR already represents circular phase and its common-rotation
+symmetry. Superconducting phase differences and closed-loop constraints are
+a useful physical comparator, but their electromagnetic coupling, units and
+quantum state are additional obligations; see
+[Feynman's superconductivity discussion](https://www.feynmanlectures.caltech.edu/III_21.html).
+The geometry of spin-one-half transformations instead concerns two complex
+amplitudes and their response to spatial rotations; see
+[Feynman's spin derivation](https://www.feynmanlectures.caltech.edu/III_06.html).
+The current TNFR phase action does not supply that rotation/measurement model.
+
+The [balanced-neighborhood admission](nodal/SINE_CONSTITUTIVE_INFORMATION.md#balanced-neighborhood-information-admission)
+makes the internal issue concrete: a zero sum of phase vectors does not by
+itself determine every admissible phase current. Requiring cancellation for
+all such geometries adds the information restriction that selects sine within
+the stated kernel class. A geometric resemblance is therefore a way to pose
+a discriminating question, not a substitute for its complete dynamics.
+
+Three exact boundaries already sharpen this comparison:
+
+1. The conserved weighted form changes under a common form-origin shift,
+   while the declared relative dynamics do not. If the physical observation
+   discards that origin, the uncentered total cannot alone define its intrinsic
+   charge. The [common-origin owner](nodal/SINE_CONSTITUTIVE_INFORMATION.md#form-balance-common-origin)
+   supplies the distinction; it does not exclude all future charge mechanisms.
+2. In the global pair coordinates, common internal phase rotation acts as
+   `(X,Z,P,U,W) -> (X,exp(i alpha)Z,exp(2i alpha)P,U,exp(i alpha)W)`.
+   Every coordinate returns at `alpha=2*pi`. This is not an action of physical
+   spatial rotations; the integer weights are not spin quantum numbers.
+   Square-root branch exchange reconstructs the same unordered pair, not an
+   antisymmetric quantum amplitude. The auxiliary U(2) construction has its
+   own premises and does not repair that missing derivation.
+3. Reflection can reverse a donor's winding while fixing its sole contact
+   and the entire environment. Equivariance and uniqueness then give identical
+   external responses for the matched preparations. A second labeled contact
+   can break this indistinguishability, but its geometry is an explicit input.
+   The [finite two-contact sine response](nodal/SINE_PAIR_INTERACTION.md#sine-two-contact-orientation-response)
+   makes that distinction constructive: opposite acute C5 twists with equal
+   storage give separated ordered probe responses while retaining their
+   winding through the specified readout. The contacts and backreaction are
+   retained. This is an orientation-sensitive interaction, not intrinsic charge.
+
+<a id="charge-and-magnetic-response-boundary"></a>
+
+**Charge and magnetic response remain physical identifications to establish.**
+The [relative-inventory construction](nodal/SINE_PAIR_INTERACTION.md#relative-inventory-and-a-physical-property-boundary)
+removes the common-form-origin dependence above and inherits the same boundary
+current under its fixed-support, positive-held-capacity, unforced sine law.
+It remains a continuous excess relative to a fixed whole support. Its zero
+total follows from centering; it is not evidence of physical neutrality or
+charge quantization. Equal inventory also need not give equal subsequent
+interaction. The balance is a reusable mechanism, not an electromagnetic law.
+
+The [two-contact response](nodal/SINE_PAIR_INTERACTION.md#sine-two-contact-orientation-response)
+already establishes orientation-sensitive interaction in a specified finite
+experiment with evolving source and probes. The
+[moving-pulse work response](nodal/SINE_REPLICA_PULSE.md#sine-moving-pulse-finite-work-response)
+supplies a different finite-delay contrast about an internally moving pattern.
+Neither overrides the [equilibrium same-type reciprocity result](nodal/RESONANCE_FOUNDATIONS.md#same-type-port-reciprocity).
+Their preparations, probes and observables differ; an ordered transient or
+finite-delay work contrast is not a winding-odd Hall susceptibility. The
+[magnetic-texture admission](#skyrmion-directional-response-admission) records
+the missing spatial-motion, drive and measurement bridge.
+
+The auxiliary [gauge readout](GAUGE_SYMMETRY_AND_UNIFICATION.md#23-cycle-closure-residual)
+is a vertex-derived connection with identity U(1) cycle holonomy on its
+admitted domain. Individual wrapped differences may sum to a multiple of
+`2*pi`; this does not supply independent magnetic flux or curvature. Likewise,
+the [chirality contraction](EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md#31-chirality-chi)
+is a diagnostic, not a derived magnetic moment. Names assigned to diagnostic
+charges do not establish physical sources or conserved electric charge.
+
+A proposed electromagnetic realization must connect a pattern's property,
+its transport and its interaction under compatible complete laws, with
+independently justified spatial orientation/motion, observation, clock and
+units. It must predict the force or field behavior of the claimed regime;
+see the [electromagnetic force and field relations](https://www.feynmanlectures.caltech.edu/II_01.html).
+Supplying those physical laws as extra equations is a constitutive model,
+not their emergence from TNFR. These obligations refine the common research
+target without opening a separate charge or magnetism campaign.
+
+<a id="quantum-emergence-obligations"></a>
+
+**Quantum emergence remains a hypothesis.** A common relational substrate
+could be proposed as an explanation of quantum properties, but no such
+derivation is established here. Phase, interference, persistent patterns or
+hidden memory alone do not supply quantum detector statistics. A claimed
+realization must derive the relevant preparation, interaction with a detector
+and outcome probabilities, including the Born rule where claimed; see
+[Feynman's comparison of wave and quantum interference](https://www.feynmanlectures.caltech.edu/III_01.html).
+Spin requires the rotation and measurement obligations above. Correlations
+between separated measurements must also respect the restrictions exposed by
+[Bell experiments](https://arxiv.org/abs/1508.05949): a locally causal hidden-state
+model with measurement-setting independence obeys Bell bounds. A shared
+history or rhythm does not evade those premises. Graph adjacency is not an
+established physical causal structure. A proposed TNFR realization must state
+which assumptions it satisfies; adding a desired quantum probability rule
+does not derive it. These are future acceptance obligations, not a quantum
+implementation or an additional research queue.
+
+**Independent physical comparisons.** These primary sources identify concrete
+phenomena and measurement obligations; they do not validate TNFR:
+
+- [Saminadayar et al., fractional quasiparticle charge](https://arxiv.org/abs/cond-mat/9706307)
+  measure charge through tunneling noise in a fractional quantum Hall system.
+  This demonstrates a measurable collective excitation property in an already
+  material, quantum system. It motivates testing transport and measurement
+  together, without deriving electrons or quantum dynamics from TNFR.
+- [Jiang et al., skyrmion Hall response](https://arxiv.org/abs/1603.07393)
+  observe transverse motion of magnetic textures under applied current.
+  This provides an example of geometric organization connected to a measured
+  response. Its magnetic substrate and driving remain physical inputs; a
+  graph winding or persistent TNFR region alone does not reproduce that law.
+- [Fan et al., single-electron magnetic moment](https://arxiv.org/abs/2209.13084)
+  supplies a stringent, dimensionless response benchmark. A proposed electron
+  would need mutually compatible charge, spin and magnetic-response predictions,
+  not a tuned value in one channel. The [spin-one-half rotation reference](https://www.feynmanlectures.caltech.edu/III_06.html)
+  explains why a relative spinor phase in an interference/measurement model is
+  different from a classical coordinate branch or an unobservable global sign.
+
+The useful near-term comparison is **pattern identity plus interaction
+response**. The first two examples concern collective excitations of existing
+matter, whereas the third concerns an elementary particle; this difference in
+explanatory depth must survive any future successful comparison. Published
+results are known constraints, not unseen validation data. No raw response
+archive from these studies has been admitted here, no electron constants have
+been fitted, and no additional force or quantum measurement rule is installed.
+
+<a id="skyrmion-directional-response-admission"></a>
+#### Selected comparison: directional motion of a magnetic texture
+
+**Admission result:** `physical_bridge=not_admitted`, `evaluation=not_tested`.
+The [Jiang experiment and methods](https://arxiv.org/pdf/1603.07393)
+provide an ordinary-laboratory comparison of collective identity and response:
+optical MOKE imaging measures planar texture motion under electrical pulses.
+Its topological sign belongs to a two-dimensional magnetization texture, an
+S2-valued field. Its current-driven motion and magnetic preparation are
+independent experimental inputs. Pinning and boundary effects limit a simple
+rigid-texture description. These observations are published prior knowledge.
+
+For a declared interval and nonzero longitudinal displacement, a candidate
+dimensionless observation is `R=Delta_y/Delta_x`. A matched, approximately
+linear drift regime motivates three distinct controls:
+
+| Operation | Comparison obligation |
+| --- | --- |
+| Reverse texture polarity at fixed drive and axes | Test the change of transverse response relative to longitudinal response |
+| Reverse drive at fixed texture and axes | Test whether both displacement components reverse, preserving their ratio in the claimed regime |
+| Reverse a reporting axis only | Track the conventional sign change without claiming a different physical state |
+
+This is an admission design, not an assumption that arbitrary experimental
+regimes satisfy those parities. The [publisher's supplementary listing](https://www.nature.com/articles/nphys3883)
+contains methods and movies, but the published movie descriptions concern
+different drive regimes. They are not a verified matched reversal holdout.
+No independently indexed raw trajectory archive or calibration/evaluation
+split was located in this bounded review; movies and response arrays were
+not opened. No claim of exhaustive dataset absence is made.
+
+**The missing TNFR bridge is specific.** The present two-contact result
+observes `x_A-x_B` on supplied fixed support. It has no admitted observation
+of a translating spatial center, magnetization texture or physical drive.
+S1 cycle winding does not identify the S2 texture degree. Joint TNFR variables
+could in principle support a more complete collective observation, but that
+map must follow their dynamics and preparation rather than fitting the
+already published Hall angle. Importing a magnetic/Thiele equation would
+supply the missing dynamics instead of deriving it.
+
+There is also an exact dynamical screen, before any data fitting. The
+[same-type port reciprocity result](nodal/RESONANCE_FOUNDATIONS.md#same-type-port-reciprocity)
+shows that equilibrium linear form-input/work-output response is symmetric
+and unchanged by reversing a critical twist. The signed two-contact
+transient therefore cannot be reinterpreted as a winding-odd linear Hall
+susceptibility. An antisymmetric mixed form/phase response is insufficient
+as well: an ordinary canonical oscillator already supplies it.
+
+**Retained internal motion** supplies a scoped mathematical distinction. The
+[moving doubled-C5 pulse](nodal/SINE_REPLICA_PULSE.md#sine-moving-pulse-work-response)
+has a certified nonzero finite-delay response contrast between two distributed
+form probes with matched work outputs. Its varying symmetric stiffnesses
+need not commute over time. Static reciprocity, winding and motion reversal,
+and member/port relabeling remain separate controls. That result concerns
+infinitesimal probes about a moving preparation.
+The [finite-kick continuation](nodal/SINE_REPLICA_PULSE.md#sine-moving-pulse-finite-work-response)
+provides a sufficient positive probe radius, but does not resolve that physical
+admission. It is not identified magnetism. The
+[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+determines whether this comparison is reopened after its information,
+complete-law and measurement dependencies are admitted. No large data
+download or magnetic-law fit is justified by the present comparison.
+
+<a id="moving-pattern-physical-synergies"></a>
+#### Moving-pattern response: precise physical synergies
+
+The closest admitted mathematical comparison is with **time-dependent
+oscillator response**, a mechanism used in physics of wave transport.
+This does not identify a particle; it makes the collective response amenable
+to established symmetry, energy and observation tests. The
+[exact representation and reversal proof](nodal/SINE_REPLICA_PULSE.md#sine-moving-pulse-parametric-representation)
+own the TNFR derivation. The following cards identify reuse and missing
+premises; the execution plan remains the sole queue.
+
+**Time-varying oscillator card.**
+
+1. **Phenomenon.** Source/receiver interchange can change vibration response
+   in a modulated system. [Wu and Yousefzadeh, Eqs. (1)-(7)](https://arxiv.org/html/2410.08533v1)
+   study two oscillators with prescribed stiffness modulation, damping and
+   harmonic forcing. Their response comparison includes phase; unequal
+   transmitted signals need not mean unequal time-averaged output norms.
+2. **Reference equation.** Their model has the form
+   `r''+2*zeta*r'+K(t)*r=f(t)`, with symmetric K and phase-shifted modulation
+   of its diagonal entries. It is a driven model, not a proposed TNFR law.
+3. **Observables.** Their exchanged source/receiver responses are steady
+   quasiperiodic displacements, including sidebands, phases and norms. TNFR's
+   present observation is instead a finite-delay centered work difference
+   after initial form kicks. These are distinct experiments.
+4. **TNFR dictionary.** The collective tangent coordinates satisfy
+   `y''+S(tau)*y=0`, with `y=D^(-1/2)q` and symmetric
+   `S=D^(1/2)*C(tau)*D^(1/2)`. Its variation is inherited from the autonomous
+   internal pulse. No primitive variable is identified with a sensor or mass.
+5. **Reduction.** This is an exact invertible transformation of the admitted
+   tangent block. The actual work kernel is
+   `H=20*D^(1/2)*G'(tau)*D^(1/2)`, where `G(0)=0,G'(0)=I`.
+   It therefore compares initial-velocity to velocity, not force to
+   displacement or a steady scattering matrix. Finite kicks retain the full
+   fine nonlinear law and have a separate error theorem.
+6. **Prediction and decision.** The fixed pulse produces a finite centered
+   contrast with a positive bound; the frozen-stiffness linear control does
+   not. This is a mathematical compatibility result, with **no physical
+   discriminating prediction established**. A physical comparison must admit
+   the collective preparation, matched readout, clock and noise, and retain
+   the source of modulation energy. Do not import the external pump and then
+   describe the resulting dynamics as autonomous TNFR emergence.
+
+**Reversibility card.** A forward-window directional contrast is compatible
+with a reversible complete law. [Brandner, Saito and Seifert, Eq. (42)](https://arxiv.org/pdf/1505.07771)
+relate thermodynamic response coefficients after reversing the driving
+protocol and magnetic field; their stochastic, cycle-averaged setting permits
+unequal off-diagonal coefficients for a fixed asymmetric protocol. Its
+Onsager-Casimir coefficients are not the deterministic TNFR work kernel.
+Similarly, [Wapenaar, sections 7, 10 and 11](https://pure.tudelft.nl/ws/portalfiles/portal/236831004/wapenaar-2025-green-s-functions-propagation-invariants-reciprocity-theorems-wave-field-representations-and-propagator.pdf)
+derives endpoint-swapped reciprocity and propagator relations for
+time-dependent wave equations. Their transferable method is to compare the
+complete two-time propagator and its bilinear invariant, retaining endpoint
+and field parities. TNFR supplies its own exact `M_R=R*M^-1*R` identity;
+the reversed history starts at the reversed original endpoint. There is no
+thermal ensemble, temperature or measured magnetic field identified here.
+The empirical obligation is a declared reversal operation and measured
+response under both preparations; an asymmetric matrix entry cannot itself
+be scored as microscopic time-reversal violation.
+
+**Effective geometric-force card, conditional and deferred.**
+[Berry and Robbins](https://michaelberryphysics.wordpress.com/wp-content/uploads/2013/07/berry242.pdf)
+derive geometric reaction forces from an explicitly supplied classical
+slow-fast Hamiltonian, including a magnetic-like antisymmetric contribution.
+Their example contains a classical spin rather than deriving one. TNFR's
+retained hidden-state/memory results suggest examining such reduction methods
+only when a justified time-scale separation and collective observation demand
+them. A candidate must specify slow and fast state, preparation, clock,
+controlled elimination error and the resulting measured force response.
+Neither that reduction nor a Berry curvature is supplied by the present
+finite-delay commutator. In fact the existing stiffness depends on one
+regular coordinate delta and retraces its path over a libration; its
+[adiabatic stiffness-mode holonomy](nodal/SINE_REPLICA_PULSE.md#sine-moving-pulse-parametric-representation)
+is trivial. Other retained-state or nonadiabatic constructions have separate
+obligations. The term "geometric magnetism" therefore labels
+the external comparison, not a TNFR discovery of magnetic charge or spin.
+
+The immediate empirical limitation is quantitative as well as conceptual:
+the sufficient finite kick has a raw four-reading lower margin of about
+`1.15e-15` in the declared structural units. There is no admitted conversion
+to a laboratory signal or noise floor. A positive mathematical margin does
+not select a practical experimental regime. Published responses above are
+known constraints; no raw dataset, holdout prediction or physical fit has
+been admitted in this comparison.
+
+<a id="metabeam-physical-admission"></a>
+#### Mechanical temporal-interface candidate: data exist, direct bridge excluded
+
+**Decision:** `physical_bridge=not_admitted`, `evaluation=not_tested`.
+[Wang et al., temporal refraction and reflection in elastic beams](https://www.nature.com/articles/s41467-025-64530-8)
+provide the strongest mechanical candidate inspected in this bounded intake.
+Their Eq. (1) uses prescribed scalar bending stiffness D(t) and fixed mass
+density. Thirty controlled piezoelectric patches modulate the medium; a
+separate actuator launches three-cycle bursts, and laser Doppler vibrometry
+measures transverse velocity. The mechanical subsystem exchanges energy
+with the shunting circuit. Its externally controlled preparation is not the
+autonomous pulse plus matched initial kicks of the current TNFR protocol.
+
+**Data status.** The [public record](https://pmc.ncbi.nlm.nih.gov/articles/PMC12568997/)
+lists a 23.8 MB Source Data workbook. The successfully inspected
+[article XML](https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12568997/fullTextXML)
+identifies `41467_2025_64530_MOESM3_ESM.xlsx`. Retrieval did not complete;
+no workbook sheets or response cells were read, no local archive/hash was
+created, and no calibration/evaluation split was admitted. This is verified
+published availability, not absence of public data.
+
+**The model obstruction precedes fitting.** Under the ideal fixed-mass,
+fixed two-mode reduction of uniform bending stiffness, `K(t)=D(t)*K_0`.
+The [clock/basis-independent discriminator](nodal/SINE_REPLICA_PULSE.md#sine-pulse-stiffness-discriminator)
+excludes its equality with the current varying TNFR pulse stiffness: the
+determinant-versus-trace quadratic coefficient is at most one quarter for
+any symmetric affine one-control family, whereas the selected TNFR geometry
+requires `(1160+480*sqrt(5))/1089`. Changing the time scale or fitting an
+arbitrary temporal D cannot remove that distinction. This is an exact
+restriction on the declared families, not a fitted discrepancy in the data.
+
+The source also describes frequency-dependent effective stiffness and
+coupled electromechanical numerical equations; its cited supplementary
+approximations were not inspected. Therefore the obstruction is **not** a
+claim about every circuit-coupled beam model, projection or additional mode.
+Prescribed stiffness switching and the published input/output roles also
+do not supply the current TNFR preparation or work kernel. The unverified
+noise/readout bridge remains open independently of the structural exclusion.
+
+A related [microwave time-interface experiment](https://pmc.ncbi.nlm.nih.gov/articles/PMC11310315/)
+announces data and code at [PURR](https://doi.org/10.4231/W2W3-8H49). Its
+optically switched circuit is another externally controlled comparison;
+no repository files or response arrays were inspected, and it was not
+selected as a fallback physical fit.
+
+#### Composed mechanisms and the constituent hypothesis
+
+The negative direct comparison does not exclude properties emerging from
+a combination of TNFR mechanisms. A scoped composition can retain geometric
+identity, internal motion, storage/boundary work and interface response under
+one complete law. The present stiffness discriminator specifies a property
+of that combined motion which is absent from a simpler scalar control.
+It does not add a primitive variable or identify a matter constituent.
+
+For a proposed physical property, declare the joint state and interactions,
+derive its symmetry and composition rules, and test an independently
+observable response. A conserved quantity, a winding integer and a directional
+response cannot be combined into electric charge or spin by naming them so;
+the physical transformation and measurement laws must agree as well.
+Retained circuit or material degrees of freedom may supply relevant
+comparisons, but their external laws remain comparators until a justified
+TNFR reduction has been established. The plan determines whether a specific
+comparison is needed by an admitted information/law claim; this paragraph
+does not start multiple constituent campaigns.
 
 #### Interaction and musical analogies: questions, not identifications
 
@@ -194,21 +566,14 @@ units and applicable regime. Magnetic assembly is also not a general account
 of chemical bonding. No magnetic force or dipole law is imported into TNFR
 by this comparison.
 
-The current intermediary model retains phase geometry, signed memory and
-joint recovery, but its [single-port reflection symmetry](nodal/RELATIONAL_PATTERN_MEMORY.md#mediator-orientation-scope)
-makes the receiver insensitive to a reflected donor winding for the matched
-preparations. It supplies no observable magnetic polarity in that experiment.
-The existing [gauge readout](GAUGE_SYMMETRY_AND_UNIFICATION.md#23-cycle-closure-residual)
-is an exact vertex-phase difference whose wrapped cycle sum vanishes; it is
-not an independent magnetic flux. Likewise the legacy
-[chirality contraction](EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md#31-chirality-chi)
-is a diagnostic, not a derived magnetic moment.
-
-The useful supporting question is whether a justified nodal geometry and
-mediator can produce a reproducible orientation-sensitive interaction, and
-only then whether its law matches a specified magnetic regime. This is a
-future correspondence obligation within the existing programme, not a new
-particle/magnetism campaign or evidence of a pre-material origin.
+The [charge and magnetic-response boundary](#charge-and-magnetic-response-boundary)
+centralizes the available TNFR mechanisms and their limits. Two-contact
+orientation responses and moving-pulse work contrasts are established under their
+respective hypotheses; the single-contact reflection obstruction retains its
+own scope. The remaining physical question is whether an independently admitted
+preparation and observation connect a derived interaction to a specified
+magnetic regime. Neither these responses nor the assembly examples establish
+magnetic binding or a pre-material origin from TNFR.
 
 <a id="vibrational-organization-and-binding"></a>
 #### Vibrational organization and effective binding
@@ -235,7 +600,7 @@ system, while requiring distinct causal evidence. These experiments supply
 matter, an acoustic medium and external driving; they do not derive them.
 
 For TNFR, reuse the modal scope below and the
-[derived mediator memory](nodal/RELATIONAL_PATTERN_MEMORY.md#mediated-pattern-interaction).
+[derived mediator memory](nodal/RELATIONAL_MEDIATOR_DYNAMICS.md#mediated-pattern-interaction).
 The useful control holds the external preparation fixed and perturbs one
 region: does the other's response depend on that perturbation through the
 mediator, and is a declared relative configuration restored? Shared motion
@@ -300,9 +665,9 @@ not sustained oscillators, a many-body threshold or primitive-phase identity.
 | Mechanism | Actual role and reusable owner | Correspondence verdict |
 | --- | --- | --- |
 | Derived form phase | Regional contrasts observed from the fine diffusion generator; [existing controls](../tests/physics/test_coupled_directed_form_phase.py) | Exact conditional amplitude/phase reduction; the two observed phases close without amplitude information only on restricted invariant preparations. |
-| Supplied sine evolution | [`propose_u3_gated_phase_step`](../src/tnfr/dynamics/phase_evolution.py); [P2 locking](FORCED_SUPPORT_BALANCE.md#26-conditional-phase-locking-and-form-restoration-on-fixed-p2), [K3 reduction](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#joint-evolving-phaseform-reduction-on-fixed-k3) | Capacity-as-angular-rate, gain, admitted-neighbor averaging and U3 gate are supplied premises; not unrestricted Kuramoto. |
-| Native phase coordination | [Per-call circular-mean relaxation](FORCED_SUPPORT_BALANCE.md#34-native-runtime-admission-uses-relaxation-not-the-supplied-sine-clock) | Different execution law; it has no supplied physical `dt` or free angular advance. |
-| Conditional joint form/phase exchange | [Native pulse scope](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-pulse-scope) and [precontact locking](nodal/RELATIONAL_PATTERN_COMPOSITION.md#precontact-rhythm-and-locking) | Geometry-dependent damped modes and a reversible periodic boundary are properties of the stated law. Matching rhythms does not derive an edge, and a modal graph-wave spectrum is not an observed nodal pulse. |
+| Supplied sine evolution | [`propose_u3_gated_phase_step`](../src/tnfr/dynamics/phase_evolution.py); [P2 locking](nodal/FORCED_PHASE_LOCKING.md#26-conditional-phase-locking-and-form-restoration-on-fixed-p2), [K3 reduction](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#joint-evolving-phaseform-reduction-on-fixed-k3) | Capacity-as-angular-rate, gain, admitted-neighbor averaging and U3 gate are supplied premises; not unrestricted Kuramoto. |
+| Native phase coordination | [Per-call circular-mean relaxation](nodal/FORCED_WINDING_AND_WRITERS.md#34-native-runtime-admission-uses-relaxation-not-the-supplied-sine-clock) | Different execution law; it has no supplied physical `dt` or free angular advance. |
+| Conditional joint form/phase exchange | [Native pulse scope](nodal/RELATIONAL_RESPONSE_IDENTIFICATION.md#relational-pulse-scope) and [precontact locking](nodal/RELATIONAL_PATTERN_COMPOSITION.md#precontact-rhythm-and-locking) | Geometry-dependent damped modes and a reversible periodic boundary are properties of the stated law. Matching rhythms does not derive an edge, and a modal graph-wave spectrum is not an observed nodal pulse. |
 | Phase contribution to EPI pressure | Arg of a neighbor resultant, through [configured pressure](NODAL_PARAMETER_FOUNDATIONS.md#21-the-implemented-pressure-is-a-specified-relational-map) | Not the sine phase row or an electrical current. The [existing Arg/current discriminator](nodal/PRESSURE_CONSTITUTIVE_SCOPE.md) must not be repeated as a new discovery. |
 | Named UM/RA events and cycle readouts | [Operator contracts](STRUCTURAL_OPERATORS.md) and [winding certificates](../src/tnfr/physics/winding_certificates.py) | U3 compatibility is admission; RA primarily blends EPI. A name or gate does not select an oscillator law. |
 
@@ -328,7 +693,7 @@ This closes the first mathematical card. The
 [conditional measurement contract](research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md)
 now specifies the spatial observation and uncertainty test, but admits none
 of the existing public sources for this directed law. The subsequent
-[six-study review](research/PASSIVE_TRANSPORT_PROTOCOL.md#directed-source-decision-2026-09-26)
+[six-study review](research/archive/measurement/TRANSPORT_SOURCE_REVIEWS.md#directed-source-decision-2026-09-26)
 also admits none; the exact-model physical test is parked. MOSTR is a deferred
 three-tank transport lead, not evidence of this phase mechanism. The primary
 [collective-emergence objective](EMERGENT_ONTOLOGY.md#research-target-physical-properties-of-collective-patterns)
@@ -362,7 +727,7 @@ the [critical-phenomena reference](https://journals.aps.org/rmp/abstract/10.1103
 provides physical context, not a TNFR bridge.
 
 **Coupled form-phase relaxation and underdamping:** The
-[relational spectral owner](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#5-a-prospective-spectral-discriminator)
+[relational spectral owner](nodal/RELATIONAL_RESPONSE_IDENTIFICATION.md#5-a-prospective-spectral-discriminator)
 already derives the consensus tangent of the opt-in two-channel law. For common
 positive capacity its mode block is
 `nu_f*lambda_k*[[-e,-w/pi],[w/(beta*pi),0]]`; P2 has `lambda_k=2`.
@@ -371,7 +736,7 @@ complex pair according to the sign of `e^2-4*w^2/(beta*pi^2)`. At `e=0` the
 nonzero poles are purely imaginary, not damped. These statements concern the
 local derivative of the conditional phase law, not the full operator runtime.
 
-The [coefficient audit](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#coefficient-synergy-audit)
+The [coefficient audit](nodal/RELATIONAL_RESPONSE_IDENTIFICATION.md#coefficient-synergy-audit)
 connects this classification to units, capacity composition and
 `chi=beta*(e/w)^2`. The numeric consensus boundary `4/pi^2` uses the chosen
 phase-source normalization; it is not a universal physical constant. A uniform
@@ -394,7 +759,7 @@ no absence theorem for physical realizations or quantitative tests has been
 proved. The atlas permits either exact reduction or a controlled approximation
 with a declared error budget.
 
-The [same-mode pole identity](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#coefficient-memory-identification)
+The [same-mode pole identity](nodal/RELATIONAL_RESPONSE_IDENTIFICATION.md#coefficient-memory-identification)
 can identify chi when both rates are observable and excited; a single decay or
 unresolved modal mixture need not suffice. The
 [calibration contract](research/FIVE_STAGE_EXECUTION_PLAN.md#variable-definition-identification-and-evolution)

@@ -38,6 +38,83 @@ def test_nilpotent_chain_requires_complete_last_level_without_stability_premise(
     assert result.matrix_product_calls == 9
 
 
+@pytest.mark.parametrize(
+    "third_rows",
+    (
+        ((0,) * 6,) * 2,
+        ((1, -2, Q(3, 7), 0, Q(1, 5), -1), (0, Q(5, 11), -2, Q(1, 3), 0, 2)),
+    ),
+    ids=("held-third-block", "coupled-third-block"),
+)
+def test_first_two_source_rows_reveal_all_three_state_blocks(third_rows):
+    """Check the first jets, not a global linearization of a nonlinear source.
+
+    For y'=-a*u+M*y and u'=-d*u-e*y-f*w, y, y', y'' do not
+    consume w'. Changing that third row must preserve their information.
+    """
+    a, d, e, f = Q(3, 2), Q(2, 3), Q(5, 6), Q(7, 4)
+    coupling = ((Q(-9, 35), Q(2, 5)), (Q(2, 5), Q(-9, 35)))
+    generator = (
+        (*coupling[0], -a, 0, 0, 0),
+        (*coupling[1], 0, -a, 0, 0),
+        (-e, 0, -d, 0, -f, 0),
+        (0, -e, 0, -d, 0, -f),
+        *third_rows,
+    )
+    result = derive_linear_observation(
+        generator, ((1, 0, 0, 0, 0, 0), (0, 1, 0, 0, 0, 0))
+    )
+    assert result.output_rank == 2 and result.dimension == 6
+    assert result.rank_progression == (2, 4, 6, 6)
+    assert result.selected_row_labels == tuple(
+        (power, node) for power in range(3) for node in range(2)
+    )
+
+    def mv(matrix, vector):
+        return tuple(
+            sum(entry * value for entry, value in zip(row, vector)) for row in matrix
+        )
+
+    # A basis checks the whole linear observation map; a mixed state also
+    # exercises reconstruction with both spatial coupling terms present.
+    mixed = (Q(2, 3), Q(-5, 7), Q(11, 13), Q(-3, 4), Q(-4, 9), Q(7, 5))
+    basis = tuple(tuple(Q(i == j) for i in range(6)) for j in range(6))
+    for state in (*basis, mixed):
+        y, u, w = state[:2], state[2:4], state[4:]
+        my = mv(coupling, y)
+        dy = tuple(my[i] - a * u[i] for i in range(2))
+        du = tuple(-d * u[i] - e * y[i] - f * w[i] for i in range(2))
+        mdy = mv(coupling, dy)
+        ddy = tuple(mdy[i] - a * du[i] for i in range(2))
+        jet = mv(result.observation, state)
+        assert jet == (*y, *dy, *ddy)
+
+        read_y, read_dy, read_ddy = jet[:2], jet[2:4], jet[4:]
+        read_my, read_mdy = mv(coupling, read_y), mv(coupling, read_dy)
+        recovered_u = tuple((read_my[i] - read_dy[i]) / a for i in range(2))
+        recovered_w = tuple(
+            (read_ddy[i] - read_mdy[i] - a * d * recovered_u[i] - a * e * read_y[i])
+            / (a * f)
+            for i in range(2)
+        )
+        assert (*read_y, *recovered_u, *recovered_w) == state
+        assert mv(result.right_inverse, jet) == state
+
+    # Equal readings can hide u; equal readings and first rates can hide w.
+    base_jet = mv(result.observation, mixed)
+    for block, multiplier in ((1, -a), (2, a * f)):
+        change = (Q(4, 5), Q(-3, 2))
+        altered = list(mixed)
+        for node in range(2):
+            altered[2 * block + node] += change[node]
+        altered_jet = mv(result.observation, altered)
+        assert altered_jet[: 2 * block] == base_jet[: 2 * block]
+        assert tuple(
+            altered_jet[2 * block + node] - base_jet[2 * block + node]
+            for node in range(2)
+        ) == tuple(multiplier * value for value in change)
+
+
 def test_unobservable_unstable_direction_does_not_enter_the_minimal_output_state():
     result = derive_linear_observation(((-2, 0), (0, 7)), ((1, 0), (2, 0)))
     assert result.dimension == result.output_rank == 1

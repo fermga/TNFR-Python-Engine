@@ -47,10 +47,9 @@ table below; glyphs are internal symbols.
 | Transformers | Mutation (ZHIR), Self-organization (THOL) | U4b |
 
 Transition is not a U2 destabilizer: its contract describes a controlled regime
-change. Contraction is not a runtime closure. The historical TNFR.pdf syntax
-includes Contraction as a return-to-potential closure; the engine's supported
-closure set is the one above, as documented in grammar_canon.py. Consumers must
-import the shared sets rather than reproduce them.
+change. Contraction is not a runtime closure. Consumers must import the shared
+role sets rather than reproduce them. Source quotations exposed by
+`grammar_canon.py` are provenance metadata and do not override these roles.
 
 These roles classify sequence obligations. The operator's primary dynamical
 channel is a separate classification in

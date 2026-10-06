@@ -6,9 +6,9 @@ never certify or populate ``history['C_steps']``.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Any, Mapping, Sequence
 
-from ..compat.dataclass import dataclass
 from ..errors import TNFRValueError
 from ..mathematics.operators import CoherenceOperator, FrequencyOperator
 from ..mathematics.runtime import frequency_positive as runtime_frequency_positive

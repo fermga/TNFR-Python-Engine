@@ -58,7 +58,7 @@ class TestClassicalAdapter(unittest.TestCase):
             (np.array([[1.0 + 1.0j]]), np.array([1.0])),
             (np.array([[True]]), np.array([1.0])),
         ):
-            with self.subTest(forces=forces):
+            with self.subTest(force_dtype=forces.dtype.name):
                 with self.assertRaises(TNFRValueError):
                     ClassicalMechanicsMapper.equations_of_motion_to_operators(
                         forces, masses

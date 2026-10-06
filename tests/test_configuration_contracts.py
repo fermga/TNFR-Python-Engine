@@ -340,3 +340,71 @@ def test_invalid_backend_boolean_environment_preserves_default(monkeypatch):
     monkeypatch.setenv("TNFR_CUDA_ENABLED", "unrecognized")
     with pytest.warns(UserWarning, match="TNFR_CUDA_ENABLED"):
         assert BackendConfig(cuda_enabled=True).cuda_enabled is True
+
+
+@pytest.fixture
+def structural_validation_policy(monkeypatch):
+    from tnfr.validation import config
+
+    policy = config.ValidationConfig()
+    monkeypatch.setattr(config, "validation_config", policy)
+    return config, policy
+
+
+@pytest.mark.parametrize(
+    "key",
+    [
+        "epi_range",
+        "vf_range",
+        "phase_coupling_threshold",
+        "cache_validation_results",
+        "max_validation_time_ms",
+        "__dict__",
+    ],
+)
+def test_structural_validation_rejects_ineffective_or_nonfield_updates_atomically(
+    structural_validation_policy, key
+):
+    from tnfr.errors import TNFRValueError
+
+    config, policy = structural_validation_policy
+    before = vars(policy).copy()
+    with pytest.raises(TNFRValueError, match="Unknown validation config key"):
+        config.configure_validation(validate_invariants=False, **{key: None})
+    assert vars(policy) == before
+    with pytest.raises(TypeError):
+        config.ValidationConfig(**{key: None})
+
+
+@pytest.mark.parametrize(
+    "invalid", [{"validate_each_step": "perhaps"}, {"min_severity": "invalid"}]
+)
+def test_structural_validation_rejects_invalid_values_without_partial_commit(
+    structural_validation_policy, invalid
+):
+    from tnfr.errors import TNFRValueError
+
+    config, policy = structural_validation_policy
+    before = vars(policy).copy()
+    with pytest.raises(TNFRValueError, match="Invalid validation config value"):
+        config.configure_validation(validate_invariants=False, **invalid)
+    assert vars(policy) == before
+    with pytest.raises(TNFRValueError, match="Invalid validation config value"):
+        config.ValidationConfig(**invalid)
+
+
+def test_structural_validation_normalizes_flags_and_severity_at_both_boundaries(
+    structural_validation_policy,
+):
+    from tnfr.validation import configure_validation
+    from tnfr.validation.invariants import InvariantSeverity
+
+    config, policy = structural_validation_policy
+    constructed = config.ValidationConfig(
+        validate_invariants="false", min_severity="warning"
+    )
+    configure_validation(validate_invariants="false", min_severity="warning")
+    assert policy is config.validation_config
+    for admitted in (constructed, policy):
+        assert admitted.validate_invariants is False
+        assert admitted.min_severity is InvariantSeverity.WARNING

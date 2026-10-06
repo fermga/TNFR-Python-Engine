@@ -1,74 +1,23 @@
-"""
-Inverse Falsifier: Spectrum -> Symmetry Group -> Predict an UNMEASURED Degeneracy
-=================================================================================
+"""Supplied-group spectral comparisons and a multiplicity ambiguity control.
 
-The forward harness (``emergent_integers_symmetry.py``) showed that the integers
-emerging as structural-Laplacian multiplicities match the irreducible-representation
-(irrep) dimensions of the manifold's symmetry group. That is necessary but weak:
-a skeptic can say "you matched a template you already knew."
+The icosahedral rotation group and its irrep dimensions are declared inputs.
+The demo compares dimensions absent from a selected low-mode list with the
+remaining dodecahedron spectrum and a related icosahedron spectrum. Membership
+in an irrep table neither forces that irrep to occur in a given graph nor
+bounds every accidental eigenspace multiplicity. These preselected examples
+have no independent record of prospective preparation or held-out evaluation.
 
-This harness runs the HARD test — a genuine out-of-sample prediction:
+The retained truncated-cube counterexample is essential: a five-dimensional
+eigenspace can split as 2+3 under octahedral symmetry, whereas the icosahedron
+has an irreducible five-dimensional eigenspace. A count of five therefore does
+not certify the icosahedral group. The executable result reports this ambiguity
+and never infers a symmetry group from multiplicity alone.
 
-    1. OBSERVE only the low modes of a manifold (hide the rest).
-    2. INFER the symmetry group from the partial multiplicity fingerprint alone.
-    3. PREDICT, from pure group theory, a degeneracy that was NOT in the observed
-       data (an irrep dimension the low modes never revealed).
-    4. REVEAL the hidden modes (or a held-out sibling manifold) and check whether
-       the predicted integer actually appears.
-
-If the prediction lands, the integer was dictated by structure, not fitted —
-the claim "TNFR explains what an integer IS (a structural invariant)" survives a
-real falsification attempt. If it fails, the earlier match was a template artifact.
-
-HEADLINE CASE (the cleanest, least circular):
-  The icosahedral rotation group I has irreps of dimensions {1, 3, 3, 4, 5}
-  (sum of squares 1+9+9+16+25 = 60 = |I|). But the 12-vertex icosahedron graph
-  decomposes as 12 = 1+3+5+3 and NEVER exhibits a multiplicity of 4. So:
-
-      observe icosahedron low modes [1, 3, 5]
-        -> the 5 forces group = I (no smaller point group has a 5D irrep)
-        -> group theory: I HAS a 4D irrep (the "G" representation)
-        -> PREDICT a degeneracy of 4 must appear in this symmetry family,
-           even though the icosahedron itself never shows it.
-      verify on the held-out dodecahedron (dual polyhedron, same group I_h):
-        20 = 1+3+5+4+4+3  -> the 4 APPEARS.  Prediction confirmed.
-
-  The integer 4 was absent from the input and predicted from structure alone.
-
-IRREDUCIBLE vs COMPOSITE DEGENERACY (the deeper finding):
-  A naive "ceiling" prediction (no multiplicity above the max irrep dim) is FALSE:
-  the truncated cube (octahedral, max irrep dim 3) shows a 5-fold degeneracy,
-  because 5 = 2 + 3 is an ACCIDENTAL coincidence of a 2D and a 3D irrep. So
-  emergent degeneracies split into two kinds:
-    - PROTECTED  (irreducible rep): multiplicity = a single irrep dimension,
-      symmetry-forced, stable.  <chi,chi> = 1.
-    - ACCIDENTAL (reducible / direct sum): multiplicity = a SUM of irrep dims,
-      not symmetry-forced.  <chi,chi> = number of irreps in the sum > 1.
-  We verify this with the representation-theoretic inner product <chi,chi>
-  computed from the graph's automorphism group: the icosahedron's 5 is
-  irreducible (protected); the truncated cube's 5 is reducible (2 + 3,
-  accidental). This is the rep-theory notion of irreducibility — the
-  "indivisible building block" idea, realized for degeneracies (the same
-  irreducible/composite intuition that underlies primes).
-
-  SHARP EXCLUSION that DOES hold: the icosahedral group has no 2D irrep, so an
-  icosahedral manifold shows NO generic 2-fold degeneracy. Verified on the
-  icosahedron and the dodecahedron.
-
-HONEST SCOPE:
-  The predictive engine is any Aut(G)-equivariant operator commuting with Aut(G)
-  (a known theorem); TNFR supplies the physical reading: the emergent
-  L_rw = I - D^-1 W is the discrete ΔNFR / phase curvature (D - A shares its
-  eigenspaces on these vertex-transitive graphs). We predict
-  CARDINALS (degeneracies), not the arithmetic ring. This does not derive (+, ×)
-  or primality. It does demonstrate that the emergent integers carry, and let us
-  predict, structural facts we did not put in.
-
-Run:
-    python benchmarks/inverse_spectrum_to_symmetry.py
-
-Theoretical anchor: AGENTS.md (nodal equation; discrete-mode regime; the emergent
-L_rw = I - D^-1 W as discrete ΔNFR). Status: RESEARCH (inverse falsifier).
+All graphs and matrix operators are supplied. Comparisons use numerical
+spectral clustering and complete finite automorphism enumeration on the stated
+fixtures; no universal physical or arithmetic-emergence interpretation follows.
+See theory/TNFR_STRUCTURAL_OBSERVABILITY.md#6-limits-beyond-linear-symmetry and the independent exact
+counterexample in tests/physics/test_platonic_equilibrium_scope.py.
 """
 
 from __future__ import annotations
@@ -79,20 +28,19 @@ import networkx as nx
 import numpy as np
 
 # ---------------------------------------------------------------------------
-# Emergent integers: eigenvalue multiplicities of the canonical emergent operator
-# L_rw = I - D^-1 W (the discrete ΔNFR); on vertex-transitive graphs these equal
-# the multiplicities of the imposed D - A used below (operator-invariant).
+# Numerical multiplicities of the supplied symmetric normalized Laplacian.
+# On the regular fixtures it is a scalar multiple of D-A.
 # ---------------------------------------------------------------------------
 
 
 def laplacian_multiplicities(
     G: nx.Graph, *, tol: float = 1e-6
 ) -> list[tuple[float, int]]:
-    """Return (eigenvalue, multiplicity) pairs of the canonical EMERGENT operator
-    L_sym (self-adjoint twin of the ΔNFR random-walk L_rw), ascending. On
-    vertex-transitive graphs L_sym shares D - A's eigenspaces, so the
-    multiplicities (the emergent integers) are operator-invariant; the geometry
-    read is now emergent, not imposed."""
+    """Return numerically clustered L_sym eigenvalues and multiplicities.
+
+    The graph is supplied. The selected regular fixtures make L_sym and D-A
+    scalar multiples; no equality with arbitrary equivariant operators follows.
+    """
     from tnfr.physics.structural_diffusion import symmetric_normalized_laplacian
 
     G = nx.Graph(G)
@@ -108,13 +56,12 @@ def laplacian_multiplicities(
 
 
 # ---------------------------------------------------------------------------
-# Group inference from a partial multiplicity fingerprint (rep-theory table)
+# Supplied finite rotation-group tables, not inferred graph symmetries
 # ---------------------------------------------------------------------------
 
 # Rotation point groups relevant to the polyhedral manifolds, with the full
 # multiset of irreducible-representation dimensions (independent ground truth).
 IRREP_DIMS: dict[str, list[int]] = {
-    "C/D (cyclic/dihedral)": [1, 1, 2],  # dims that occur: {1,2}
     "T (tetrahedral)": [1, 1, 1, 3],  # |T| = 12
     "O (octahedral)": [1, 1, 2, 3, 3],  # |O| = 24
     "I (icosahedral)": [1, 3, 3, 4, 5],  # |I| = 60
@@ -125,51 +72,35 @@ def allowed_dims(group: str) -> set[int]:
     return set(IRREP_DIMS[group])
 
 
-def infer_group(observed_mults: set[int]) -> str:
-    """Infer the minimal symmetry group consistent with the observed nontrivial
-    multiplicities. The inference uses ONLY the observed integers.
-    """
-    nz = {m for m in observed_mults if m > 1}
-    if 5 in nz or 4 in nz:
-        return "I (icosahedral)"  # only icosahedral has dims 4 or 5
-    if 3 in nz and 2 in nz:
-        return "O (octahedral)"  # 2 and 3 together -> octahedral
-    if 3 in nz:
-        return "T (tetrahedral)"  # 3 without 2 -> tetrahedral
-    if 2 in nz:
-        return "C/D (cyclic/dihedral)"
-    return "C/D (cyclic/dihedral)"
-
-
 # ---------------------------------------------------------------------------
-# Prediction primitives
+# Conditional comparison under an explicitly supplied group
 # ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
-class Prediction:
-    inferred_group: str
+class SuppliedGroupComparison:
+    supplied_group: str
     observed: list[int]
-    predicted_existing: set[int]  # irrep dims the group HAS but we have not seen
-    forbidden_above: int  # no multiplicity may exceed this
+    unseen_irrep_dimensions: set[int]  # listed dimensions, not required occurrences
+    group_inference_available: bool = False
 
 
-def make_prediction(observed_seq: list[int]) -> Prediction:
-    group = infer_group(set(observed_seq))
+def compare_supplied_group(
+    observed_seq: list[int], *, group: str
+) -> SuppliedGroupComparison:
+    """Compare a coarse mode list with a supplied irrep table, without inference."""
     dims = allowed_dims(group)
     seen = {m for m in observed_seq}
-    predicted_existing = {d for d in dims if d > 1 and d not in seen}
-    return Prediction(
-        inferred_group=group,
+    unseen = {d for d in dims if d > 1 and d not in seen}
+    return SuppliedGroupComparison(
+        supplied_group=group,
         observed=observed_seq,
-        predicted_existing=predicted_existing,
-        forbidden_above=max(dims),
+        unseen_irrep_dimensions=unseen,
     )
 
 
 def low_modes(G: nx.Graph, n_groups: int) -> list[int]:
-    """Reveal only the multiplicities of the first ``n_groups`` distinct
-    eigenvalues (the lowest structural modes). The rest stay hidden."""
+    """Select the multiplicities of the first ``n_groups`` distinct eigenvalues."""
     return [m for _ev, m in laplacian_multiplicities(G)][:n_groups]
 
 
@@ -183,25 +114,27 @@ def full_modes(G: nx.Graph) -> list[int]:
 
 
 def automorphism_matrices(G: nx.Graph, *, limit: int = 5000) -> list[np.ndarray]:
-    """All graph automorphisms of G as permutation matrices (capped at ``limit``).
+    """Enumerate the complete group, rejecting if it exceeds ``limit``.
 
     Aut(G) is exactly the symmetry group with which L = D - A commutes; averaging
     over it gives the rep-theory inner product used to detect irreducibility.
     """
     from networkx.algorithms.isomorphism import GraphMatcher
 
+    if isinstance(limit, bool) or not isinstance(limit, int) or limit <= 0:
+        raise ValueError("automorphism limit must be a positive integer")
     G = nx.Graph(G)
     nodes = sorted(G.nodes())
     idx = {v: i for i, v in enumerate(nodes)}
     n = len(nodes)
     mats: list[np.ndarray] = []
     for mapping in GraphMatcher(G, G).isomorphisms_iter():
+        if len(mats) >= limit:
+            raise ValueError("incomplete automorphism enumeration: limit exceeded")
         M = np.zeros((n, n))
         for src, dst in mapping.items():
             M[idx[dst], idx[src]] = 1.0
         mats.append(M)
-        if len(mats) >= limit:
-            break
     return mats
 
 
@@ -210,9 +143,9 @@ def eigenspace_irreducibility(
 ) -> list[tuple[float, int, float]]:
     """For each Laplacian eigenspace return (eigenvalue, multiplicity, <chi,chi>).
 
-    <chi,chi> = (1/|Aut|) Σ_g |trace(P_λ · M_g)|² counts the irreducible
-    representations inside the eigenspace: 1 => irreducible (symmetry-protected);
-    k>1 => reducible (an accidental sum of k irreps).
+    With complete enumeration, <chi,chi> is the sum of squared irrep
+    multiplicities: 1 means irreducible and a value above 1 means reducible.
+    The fixture groups have fewer than the enumeration cap of 5000 elements.
     """
     G = nx.Graph(G)
     nodes = sorted(G.nodes())
@@ -249,84 +182,79 @@ def _rule(title: str) -> None:
     print("=" * 78)
 
 
-def headline_icosahedral_prediction() -> bool:
-    """Predict the unmeasured '4' from the icosahedron's low modes; verify on
-    the held-out dodecahedron AND on the icosahedron's own hidden modes."""
-    _rule("HEADLINE — predict an unmeasured degeneracy (the hidden '4')")
+def compare_icosahedral_graphs() -> bool:
+    """Compare two chosen graphs with the supplied icosahedral irrep table."""
+    _rule("SUPPLIED ICOSAHEDRAL GROUP — compare two selected graph spectra")
 
     ico = nx.icosahedral_graph()
-    observed = low_modes(ico, 3)  # reveal only [1, 3, 5]
-    pred = make_prediction(observed)
+    observed = low_modes(ico, 3)
+    comparison = compare_supplied_group(observed, group="I (icosahedral)")
     print(f"  observed (icosahedron, low modes only): {observed}")
-    print(f"  inferred group (from the 5)           : {pred.inferred_group}")
+    print(f"  externally supplied group           : {comparison.supplied_group}")
     print(
-        f"  group-theory irrep dims               : "
-        f"{sorted(allowed_dims(pred.inferred_group))}"
+        f"  group inference available           : {comparison.group_inference_available}"
     )
     print(
-        f"  PREDICTION: a degeneracy in {sorted(pred.predicted_existing)} must exist in"
+        f"  listed but unseen irrep dimensions  : {sorted(comparison.unseen_irrep_dimensions)}"
     )
-    print("              this symmetry family, though unseen in the input.")
-    print(f"  PREDICTION: no multiplicity will ever exceed {pred.forbidden_above}.")
+    print("  An irrep table does not require every dimension to occur in a graph.")
 
-    # Verify on the held-out dodecahedron (dual polyhedron, same group I_h).
+    # Both graph families were selected before this descriptive comparison.
     dodeca_full = full_modes(nx.dodecahedral_graph())
     dodeca_set = set(dodeca_full)
-    print(f"\n  held-out dodecahedron full spectrum   : {dodeca_full}")
+    print(f"\n  selected dodecahedron spectrum        : {dodeca_full}")
     four_appears = 4 in dodeca_set
-    no_excess = max(dodeca_full) <= pred.forbidden_above
-    print(f"  predicted 4 appears in dodecahedron   : {four_appears}")
-    print(f"  no multiplicity exceeds {pred.forbidden_above}            : {no_excess}")
+    print(f"  listed 4 appears in dodecahedron      : {four_appears}")
 
-    # Also confirm the icosahedron itself genuinely hides the 4.
+    # The absent 4 also shows that an allowed irrep need not occur.
     ico_full = full_modes(ico)
     print(
         f"  icosahedron full spectrum             : {ico_full}  "
         f"(note: never shows a 4)"
     )
 
-    ok = four_appears and no_excess and (4 not in set(ico_full))
-    print(
-        f"\n  VERDICT: {'PASS — predicted an integer absent from the input' if ok else 'FAIL'}"
-    )
+    ok = four_appears and (4 not in set(ico_full))
+    print(f"\n  FINITE COMPARISON: {'PASS' if ok else 'FAIL'}")
     return ok
 
 
 def control_irreducibility() -> bool:
-    """Prove the protected/accidental split with the character inner product, and
-    verify the sharp exclusion (no 2-fold degeneracy in icosahedral symmetry)."""
+    """Retain the fivefold ambiguity and finite character-inner-product controls."""
     _rule("IRREDUCIBLE vs COMPOSITE — protected degeneracy = irreducible rep")
-    print("  <chi,chi> counts irreps in an eigenspace: 1 => irreducible (protected),")
-    print("  k>1 => reducible (accidental sum of k irreps). Computed over Aut(G).\n")
+    print("  <chi,chi> sums squared irrep multiplicities: 1 => irreducible,")
+    print("  values above 1 => reducible. Computed over the complete fixture group.\n")
 
     ok = True
+    icosahedral_five_seen = False
 
     print("  Icosahedron (group I — HAS a 5D irrep):")
     for _ev, mult, norm in eigenspace_irreducibility(nx.icosahedral_graph()):
         kind = (
             "irreducible (protected)"
             if abs(norm - 1) < 0.3
-            else f"reducible (~{round(norm)} irreps)"
+            else f"reducible (character norm {norm:.4f})"
         )
         flag = "   <- the 5 is a PROTECTED irrep" if mult == 5 else ""
         print(f"    mult={mult}  <chi,chi>={norm:4.1f}  {kind}{flag}")
         if mult == 5:
+            icosahedral_five_seen = True
             ok = ok and abs(norm - 1) < 0.3
 
-    tc = getattr(nx, "truncated_cube_graph", None)
-    if tc is not None:
-        print("\n  Truncated cube (group O — NO 5D irrep, so a 5 must be accidental):")
-        for _ev, mult, norm in eigenspace_irreducibility(tc()):
-            if abs(norm - 1) < 0.3:
-                kind = "irreducible (protected)"
-            else:
-                kind = f"reducible: {mult} = sum of {round(norm)} irreps (ACCIDENTAL)"
-            flag = "   <- the 5 = 2(+)3, NOT protected" if mult == 5 else ""
-            print(f"    mult={mult}  <chi,chi>={norm:4.1f}  {kind}{flag}")
-            if mult == 5:
-                ok = ok and (round(norm) == 2)
+    octahedral_five_seen = False
+    print("\n  Truncated cube (group O — selected reducible fivefold control):")
+    for _ev, mult, norm in eigenspace_irreducibility(nx.truncated_cube_graph()):
+        if abs(norm - 1) < 0.3:
+            kind = "irreducible (protected)"
+        else:
+            kind = f"reducible (character norm {norm:.4f})"
+        flag = "   <- fivefold eigenspace" if mult == 5 else ""
+        print(f"    mult={mult}  <chi,chi>={norm:4.1f}  {kind}{flag}")
+        if mult == 5:
+            octahedral_five_seen = True
+            ok = ok and (round(norm) == 2)
+    ok = ok and icosahedral_five_seen and octahedral_five_seen
 
-    print("\n  Sharp exclusion (icosahedral has NO 2D irrep -> no generic 2-fold):")
+    print("\n  Finite absence check: neither selected spectrum has multiplicity two.")
     ico_m = full_modes(nx.icosahedral_graph())
     dod_m = full_modes(nx.dodecahedral_graph())
     no2 = (2 not in ico_m) and (2 not in dod_m)
@@ -334,58 +262,54 @@ def control_irreducibility() -> bool:
     ok = ok and no2
 
     print(
-        f"\n  VERDICT: {'PASS — same integer 5 is irreducible in I, reducible (2+3) in O; exclusion holds' if ok else 'FAIL'}"
+        f"\n  VERDICT: {'PASS — fivefold multiplicity is ambiguous across the two groups' if ok else 'FAIL'}"
+    )
+    print(
+        "  The count five alone does not certify I; the truncated cube has O symmetry."
     )
     return ok
 
 
-def within_manifold_prediction() -> bool:
-    """Strongest non-circular form: reveal a manifold's low modes, predict its
-    OWN hidden higher modes contain a structurally-required integer."""
-    _rule("WITHIN-MANIFOLD — predict a manifold's own hidden modes")
+def compare_dodecahedron_mode_subsets() -> bool:
+    """Describe two selected mode subsets under the supplied group assumption."""
+    _rule("DODECAHEDRON — compare low and remaining mode subsets")
 
     dodeca = nx.dodecahedral_graph()
     full = full_modes(dodeca)
     observed = full[:3]  # reveal [1, 3, 5]; hide [4, 4, 3]
     hidden = full[3:]
-    pred = make_prediction(observed)
+    comparison = compare_supplied_group(observed, group="I (icosahedral)")
     print(f"  dodecahedron — revealed low modes     : {observed}")
-    print(f"  dodecahedron — hidden higher modes    : {'?' * len(hidden)} (concealed)")
-    print(f"  inferred group (from the 5)           : {pred.inferred_group}")
+    print(f"  externally supplied group           : {comparison.supplied_group}")
     print(
-        f"  PREDICTION: hidden modes must include a degeneracy in "
-        f"{sorted(pred.predicted_existing)}."
+        f"  listed dimensions absent below      : {sorted(comparison.unseen_irrep_dimensions)}"
     )
 
     revealed_hidden = hidden
-    hit = bool(pred.predicted_existing & set(revealed_hidden))
+    hit = bool(comparison.unseen_irrep_dimensions & set(revealed_hidden))
     print(f"\n  reveal hidden modes                   : {revealed_hidden}")
-    print(f"  predicted integer found in hidden set : {hit}")
-    print(
-        f"\n  VERDICT: {'PASS — hidden degeneracy predicted before revealing' if hit else 'FAIL'}"
-    )
+    print(f"  listed dimension occurs in remaining set: {hit}")
+    print(f"\n  FINITE COMPARISON: {'PASS' if hit else 'FAIL'}")
     return hit
 
 
-def main() -> None:
+def main() -> int:
     print(__doc__)
-    r1 = headline_icosahedral_prediction()
-    r2 = within_manifold_prediction()
+    r1 = compare_icosahedral_graphs()
+    r2 = compare_dodecahedron_mode_subsets()
     r3 = control_irreducibility()
 
     _rule("SUMMARY")
-    print(f"  headline (predict hidden 4 on sibling)   : {'PASS' if r1 else 'FAIL'}")
-    print(f"  within-manifold (predict own hidden mode): {'PASS' if r2 else 'FAIL'}")
-    print(f"  irreducible/composite + sharp exclusion  : {'PASS' if r3 else 'FAIL'}")
+    print(f"  supplied-group graph comparison        : {'PASS' if r1 else 'FAIL'}")
+    print(f"  selected dodecahedron mode subsets      : {'PASS' if r2 else 'FAIL'}")
+    print(f"  fivefold multiplicity ambiguity control : {'PASS' if r3 else 'FAIL'}")
     overall = r1 and r2 and r3
     print(f"\n  OVERALL: {'ALL PASS' if overall else 'MISMATCH'}")
-    print("\n  Reading: the inverse map (partial spectrum -> group -> unseen integer)")
-    print("  succeeds, and the emergent degeneracies carry an irreducible/composite")
-    print("  structure: protected integers are irreducible reps, accidental ones are")
-    print("  sums. This is the structural reading of Aut(G)-equivariance; the emergent")
-    print("  L_rw = discrete ΔNFR yields cardinals and their irreducibility,")
-    print("  NOT the arithmetic ring; (+, ×, primality) of integers stay open.")
+    print("\n  Group inference from these coarse multiplicities: UNAVAILABLE.")
+    print("  The group table and graph choices were supplied; no prospective")
+    print("  validation or required occurrence of unseen irreps is claimed.")
+    return 0 if overall else 1
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

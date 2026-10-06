@@ -1,65 +1,22 @@
-"""TNFR Canonical Grammar Specification — the single source of truth.
+"""Shared grammar specification for the registered operator runtime.
 
-This module is the authoritative, physics-grounded, TNFR.pdf-anchored
-specification of the grammar of the 13 structural operators. It does NOT
-re-implement validation (that lives in :mod:`grammar_core` / :mod:`grammar_validate`)
-and it does NOT re-define the classification sets (those are derived in
-:mod:`tnfr.config.physics_derivation` and re-exported by :mod:`grammar_types`).
-Instead it *materialises*, in one place, the canonical knowledge that was
-previously scattered across modules and prose:
+``OPERATOR_ROLES`` derives role membership from shared contract predicates.
+``GRAMMAR_RULES`` and ``GRAMMAR_BASES`` declare U1-U6 admission and monitoring
+policies; validators live in ``grammar_core`` and ``grammar_validate``.
+``STRUCTURAL_TYPOLOGY`` classifies word shapes and
+``CANONICAL_GLYPHIC_FUNCTIONS`` supplies fragments to compose into words.
+These language descriptions do not establish trajectory stability, physical
+necessity or autonomous operator selection.
 
-1. ``OPERATOR_ROLES`` — the per-operator grammatical role table (the 13 operators
-   × their U1-U6 roles), materialized from the contract-role predicates in
-   :mod:`physics_derivation`. One query point instead of eight separate sets.
+The maintained contract is ``theory/UNIFIED_GRAMMAR_RULES.md``. PDF reference
+fields, Spanish quotations and ``FORMAL_SYNTAX_SCHEMA`` retain source metadata
+for public introspection. They do not override the runtime roles: in particular,
+Contraction is not an admitted closure. Silence attenuates capacity and does not
+generally set it to zero or certify equilibrium. Named fragments and structural
+types likewise do not prove a dynamical bifurcation or fractal scale closure.
 
-2. ``GRAMMAR_RULES`` — the U1-U6 rule registry as data (id, name, physics basis,
-   operator sets involved, canonical invariant, TNFR.pdf reference). The
-   declarative spec that the validator, the error factory, and the docs share.
-
-3. ``STRUCTURAL_TYPOLOGY`` — the canonical structural typology from TNFR.pdf §2.3
-   "Tabla comparativa de estructuras glíficas": the five structure shapes
-   (LINEAR, BIFURCATED, FRACTAL, CYCLIC, HIERARCHICAL) with their combinator and
-   Chomsky class (established in examples 143-144), required glyphs, activation
-   conditions and common errors (TNFR.pdf "Validación estructural de las
-   tipologías glíficas").
-
-4. ``CANONICAL_GLYPHIC_FUNCTIONS`` — the canonical glyphic functions / macros from
-   TNFR.pdf §2.3 "Tabla de funciones glíficas operativas" and "Macros glíficas".
-   These are structural FRAGMENTS (words to compose), not standalone valid
-   sequences (see example 143).
-
-Theoretical anchor (TNFR.pdf §2.3.3 "Reglas sintácticas glíficas")
-------------------------------------------------------------------
-The PDF formalises the glyphic syntax with an "Esquema formal de sintaxis":
-
-    Inicio válido (valid start):      AL, NAV   (+ REMESH as structural reactivator)
-    Desarrollo necesario (develop):   IL, THOL, UM
-    Transición opcional (optional):   OZ, ZHIR, REMESH
-    Cierre requerido (required close): SHA, NUL
-
-plus the rules: order is non-commutative (AL→IL ≠ IL→AL); ZHIR must be preceded
-by OZ (no mutation without dissonance); brackets THOL[...] encapsulate nested
-nodes; every coherent sequence closes with a latency/containment glyph; OZ
-triggers bifurcation OZ→[ZHIR|NUL].
-
-Theory↔engine note (NUL as closure)
------------------------------------
-TNFR.pdf lists ``NUL`` (contraction, "retorno al estado potencial") among the
-required closures. The engine's supported endpoint policy does NOT include
-NUL. Its ``CLOSURES`` = {SHA, NAV, REMESH, OZ} is a contract-role set (see
-``physics_derivation.achieves_operational_closure`` /
-``can_stabilize_reorganization``). This module documents the PDF nuance without
-overriding the supported policy. A single SHA attenuates capacity without
-generally setting it to zero; bounded pressure and repeated rate suppression
-are additional premises for asymptotic inactivity. NAV, REMESH and OZ closure
-labels likewise do not certify a stationary endpoint. The nodal equation alone
-does not uniquely choose between the historical and implemented closure sets.
-
-The role table is derived rather than hand-maintained: it is built by querying
-the shared classification predicates, and a self-check
-(:func:`verify_canon_consistency`) asserts that the materialised roles reproduce
-the canonical sets in :mod:`grammar_types` exactly.  The rule descriptions and
-PDF typology are declarative specifications with explicit policy scope.
+``verify_canon_consistency`` checks agreement of the shared policy tables, not
+whether the nodal identity uniquely selects those policies.
 """
 
 from __future__ import annotations
@@ -203,7 +160,7 @@ def _glyph_of(op: str) -> str:
     return getattr(glyph, "name", str(op))
 
 
-#: The 13 operators in canonical order (matches the nodal-equation operator set).
+#: The registered operators in catalog order; completeness is not a theorem.
 CANONICAL_ORDER: tuple[str, ...] = (
     EMISSION,
     RECEPTION,
@@ -243,8 +200,8 @@ class GrammarRule:
 
     The validator (:mod:`grammar_core`, :mod:`grammar_u6`) implements these; the
     error factory and the documentation reference them. This registry is the
-    shared declarative description, anchored to the nodal equation and to the
-    TNFR.pdf formal syntax (§2.3.3).
+    shared declarative description of the implemented policy. ``pdf_reference``
+    retains source provenance, not an independent derivation of the rule.
     """
 
     rule_id: str  # "U1a", "U2", "U4b", ...
@@ -764,7 +721,7 @@ def operator_role_metadata(op: str) -> dict:
     }
 
 
-#: The TNFR.pdf §2.3.3 "Esquema formal de sintaxis" positions (theory anchor).
+#: The Historical formal-syntax positions; runtime roles are owned by OPERATOR_ROLES.
 #: Quoted Spanish terms are verbatim citations of the source schema headers.
 FORMAL_SYNTAX_SCHEMA: dict[str, tuple[str, ...]] = {
     "start": (
@@ -782,7 +739,10 @@ FORMAL_SYNTAX_SCHEMA: dict[str, tuple[str, ...]] = {
         "ZHIR",
         "REMESH",
     ),  # optional transition ("Transición opcional")
-    "closure": ("SHA", "NUL"),  # required closure ("Cierre requerido"); see NUL note
+    "closure": (
+        "SHA",
+        "NUL",
+    ),  # source closure ("Cierre requerido"); not the runtime closure set
 }
 
 

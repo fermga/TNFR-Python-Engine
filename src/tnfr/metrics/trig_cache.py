@@ -9,11 +9,11 @@ from __future__ import annotations
 import hashlib
 import math
 import struct
+from dataclasses import dataclass
 from typing import Any, Iterable, Mapping
 
 from .._exact_time import finite_represented_real
 from ..alias import get_theta_attr
-from ..compat.dataclass import dataclass
 from ..mathematics.unified_numerical import np
 from ..types import GraphLike, NodeAttrMap
 from ..utils import edge_version_cache

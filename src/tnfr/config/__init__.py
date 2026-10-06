@@ -1,19 +1,9 @@
-"""Canonical TNFR configuration system.
+"""Shared configuration, defaults and parameter admission.
 
-This package provides the unified configuration system for TNFR, consolidating:
-- TNFRConfig class with structural invariant validation
-- Secure configuration management (moved from secure_config.py)
-- All default configurations organized by subsystem
-- TNFR semantic mapping (νf, θ, ΔNFR)
-
-Single import path philosophy:
-    from tnfr.config import TNFRConfig, DEFAULTS, get_param
-
-Key Changes (Phase 3):
-- Consolidated constants from constants/ package
-- Integrated secure_config functionality
-- Added TNFR invariant validation
-- Explicit structural coherence principles
+Use ``TNFRConfig``, ``DEFAULTS`` and ``get_param`` from this package.
+Subsystems own their configured policies; validation does not derive those
+choices from the nodal identity. Safe configuration parsing and validation
+live in ``tnfr.config.security``.
 """
 
 from __future__ import annotations

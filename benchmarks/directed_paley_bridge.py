@@ -1,70 +1,21 @@
-"""Camino 14 -- the == 3 (mod 4) complement of the Paley bridge.
+"""Finite Paley graph/tournament comparisons on supplied modular arithmetic.
 
-CONTEXT (where this sits in the emergence-of-numbers line)
-----------------------------------------------------------
-Camino 9 (``paley_bridge.py``) conceded a sharp point: the prime support of the
-adelic carrier nu_f = log p is NOT sieved -- it EMERGES from a self-adjoint
-spectral identity, the Paley gap g(n) = 0, which realises primality as a
-DNFR = 0 structural equilibrium. But that mechanism is REAL / self-adjoint, so
-it only reaches the primes p == 1 (mod 4). Camino 9 left an explicit, honest
-gap (echoed in ``primes_as_consequence.py``):
+The instrument compares symmetric and directed quadratic-residue circulants,
+checks the classical prime-case Gauss-sum spectrum, and scans candidates up to
+200 with a stated numerical gap tolerance. The real and imaginary gap union
+is compared with trial-division labels and the separately supplied adelic
+prime list. These are finite classification checks, not a universal primality
+proof or a mechanism generating arithmetic from nodal dynamics.
 
-    "the == 3 (mod 4) primes (and 2) need a complementary construction."
+A separate block reports normality on six graphs and sampled principal zeta
+arguments (or an explicitly labeled finite prime-oscillator fallback). It does
+not map analytic S(T) into a graph state or prove it unreachable. Normal finite
+spectra and continuous observations have no universal obstruction merely from
+being different objects. The prime 2 lies outside the two chosen odd classes.
 
-This harness IS that complementary construction. Its thesis:
-
-    The prime residue classes mod 4 split EXACTLY along the real/phase boundary
-    of the Equivariance Wall, because the split is the arithmetic of whether -1
-    is a quadratic residue.
-
-        p == 1 (mod 4)  <=>  -1 is a QR  <=>  symmetric Paley GRAPH
-                              (A = A^T, real spectrum, SCALE sector) [C9]
-
-        p == 3 (mod 4)  <=>  -1 is NOT a QR  <=>  Paley TOURNAMENT
-                              (A + A^T = J - I, spectrum on Re = -1/2,
-                               PURELY IMAGINARY secondary part, PHASE sector)
-
-For a prime q == 3 (mod 4) the Gauss sum is g = i*sqrt(q), so the directed
-quadratic-residue circulant has eigenvalues
-
-        { (q - 1)/2 ;  (-1 +/- i*sqrt q)/2  (each (q-1)/2 times) } .
-
-The sqrt(q) Gauss-sum signature now appears as the IMAGINARY part +/- sqrt(q)/2
-(the real counterpart of Camino 9's real signature -1/2 +/- sqrt(q)/2). The new
-detector
-
-        h(n) = deviation of the directed residue circulant from the doubly
-               regular tournament spectrum {(n-1)/2, (-1 +/- i sqrt n)/2}
-
-satisfies h(n) = 0  <=>  n is a prime == 3 (mod 4). It is built ONLY from the
-squares x*x % n (never from trial division n % k), so it is a genuine
-primes-OUT emergence, extending Camino 9's Reading B to the second odd class.
-
-Together:  == 1 (mod 4) [real, Camino 9]  (+)  == 3 (mod 4) [imaginary, here]
-           =  ALL odd primes, by two NORMAL spectral identities.
-
-HONEST SCOPE (this closes NOTHING)
-----------------------------------
-1. The == 3 (mod 4) operator is a circulant, hence NORMAL, with a DISCRETE
-   point spectrum on the vertical line Re = -1/2. "Self-adjoint up to a factor
-   i" is still a normal, discrete object -- NOT the continuous phase
-   S(T) = (1/pi) arg zeta(1/2 + iT), which remains RH-equivalent and
-   unreachable.
-2. The prime 2 (== 2 mod 4) belongs to NEITHER class: it is the even,
-   characteristic-2 exception, outside both the real and the imaginary sector.
-3. R and pi remain assumed substrate. G4 = RH stays OPEN.
-
-So Camino 14 LOCATES and EXTENDS the emergence-of-numbers line (all odd primes
-now emerge structurally, split exactly by the real/phase wall) and CONNECTS the
-mod-4 prime split to the wall -- but it does not move the wall.
-
-Reuses canonical helpers from ``paley_bridge.py`` (is_prime,
-quadratic_residues, paley_gap, riemann_s_phase) and cross-checks the
-== 3 (mod 4) prime support against the canonical ``tnfr.dynamics.adelic``
-carrier when available.
-
-Run:
-    python benchmarks/directed_paley_bridge.py
+See theory/TNFR_NUMBER_THEORY.md and
+theory/TNFR_STRUCTURAL_OBSERVABILITY.md#6-limits-beyond-linear-symmetry for the current conditional scope.
+The retained comparisons execute no canonical operator word or physical model.
 """
 
 from __future__ import annotations
@@ -89,14 +40,16 @@ from paley_bridge import (  # noqa: E402  (path set above)
     riemann_s_phase,
 )
 
-try:  # canonical adelic carrier (same guarded import as Camino 9)
+from tnfr.utils.numeric import angle_diff_array  # noqa: E402
+
+try:  # Optional supplied adelic prime list for the finite comparison
     from tnfr.dynamics.adelic import AdelicDynamics  # noqa: E402
 
     _HAVE_ADELIC = True
 except Exception:  # pragma: no cover
     _HAVE_ADELIC = False
 
-try:  # mpmath only used for the S(T) wall sample (Camino 9 parity)
+try:  # Optional principal zeta arguments for the finite sample
     import mpmath  # noqa: F401, E402
 
     _HAVE_MPMATH = True
@@ -107,7 +60,7 @@ TOL = 1e-9
 _GAP_EPS = 1e-9  # h(n) below this counts as a tournament zero
 _REAL_AXIS = np.array([0.0, np.pi, -np.pi])  # arg of a real number
 
-# First few Riemann non-trivial zero heights (the continuous-phase witness).
+# Supplied approximate zeta-zero heights used only to locate finite samples.
 _KNOWN_ORDINATES = (14.1347, 21.0220, 25.0109, 30.4249, 32.9351, 37.5862)
 
 
@@ -163,8 +116,9 @@ def tournament_gap(n: int) -> float:
     A prime q == 3 (mod 4) yields secondary eigenvalues exactly at
     (-1 +/- i sqrt q)/2: real part -1/2 and |imag| = sqrt(q)/2. h(n) measures
     the worst deviation of the secondary eigenvalues from that target, so
-    h(n) = 0  <=>  n is a prime == 3 (mod 4). Defined (finite) only on that
-    class; +inf otherwise.
+    only the prime-case formula is used as the reference here. The bounded
+    composite scan below is separate evidence, not a converse proof. The
+    diagnostic is finite only for n == 3 (mod 4); +inf otherwise.
     """
     if n % 4 != 3:
         return float("inf")
@@ -177,14 +131,14 @@ def tournament_gap(n: int) -> float:
 
 
 # --------------------------------------------------------------------------- #
-# TEST 1 -- the mod-4 prime split IS the real/phase split of the wall
+# TEST 1 -- symmetric graphs and tournaments on the selected prime inputs
 # --------------------------------------------------------------------------- #
-def test_mod4_split_is_real_phase_split() -> bool:
+def test_mod4_graph_and_tournament_controls() -> bool:
     print("=" * 78)
     print("TEST 1 -- the SAME residue-QR circulant is real for")
     print("          p == 1 (mod 4) and imaginary for p == 3 (mod 4):")
     print("          the split tracks whether -1 is a quadratic residue")
-    print("          (= the real/phase boundary of the wall)")
+    print("          (classical finite quadratic-residue constructions)")
     print("=" * 78)
 
     real_class = (13, 17, 29, 37)  # p == 1 (mod 4): -1 is a QR
@@ -231,7 +185,7 @@ def test_mod4_split_is_real_phase_split() -> bool:
     )
     msg = (
         (
-            "mod-4 prime split == real/phase wall split "
+            "selected mod-4 graph/tournament formulas agree "
             "(the arithmetic of -1 being a QR)"
         )
         if ok
@@ -243,13 +197,13 @@ def test_mod4_split_is_real_phase_split() -> bool:
 
 
 # --------------------------------------------------------------------------- #
-# TEST 2 -- the == 3 (mod 4) primes EMERGE (primes-OUT, squares only)
+# TEST 2 -- finite gap classification versus trial-division labels
 # --------------------------------------------------------------------------- #
 def test_imag_gap_produces_primes(limit: int = 200) -> bool:
     print("=" * 78)
     print("TEST 2 -- the imaginary gap h(n) = 0 reproduces the primes")
     print("          == 3 (mod 4), built ONLY from squares x*x % n")
-    print("          (genuine primes-OUT, never trial division)")
+    print("          (trial division supplies independent comparison labels)")
     print("=" * 78)
 
     candidates = [m for m in range(3, limit + 1) if m % 4 == 3]
@@ -269,8 +223,8 @@ def test_imag_gap_produces_primes(limit: int = 200) -> bool:
     ok = exact
     msg = (
         (
-            "h(n)=0 IS primality (== 3 mod 4) via the imaginary "
-            "Gauss-sum identity (squares only)"
+            "the chosen gap tolerance matches prime labels in this finite range; "
+            "the Gauss-sum formula supplies the prime-case reference"
         )
         if ok
         else "mismatch"
@@ -281,13 +235,13 @@ def test_imag_gap_produces_primes(limit: int = 200) -> bool:
 
 
 # --------------------------------------------------------------------------- #
-# TEST 3 -- completion: real (==1) (+) imaginary (==3) = ALL odd primes
+# TEST 3 -- finite union of the two selected odd residue classes
 # --------------------------------------------------------------------------- #
 def test_real_plus_imag_covers_odd_primes(limit: int = 200) -> bool:
     print("=" * 78)
     print("TEST 3 -- == 1 (mod 4) real gap g(n) [Camino 9] UNION")
-    print("          == 3 (mod 4) imaginary gap h(n) [here] = ALL odd")
-    print("          primes (the only residual is the even prime 2)")
+    print("          == 3 (mod 4) imaginary gap h(n), compared with odd")
+    print("          prime labels through the supplied finite limit")
     print("=" * 78)
 
     real_primes = [
@@ -301,17 +255,17 @@ def test_real_plus_imag_covers_odd_primes(limit: int = 200) -> bool:
     odd_primes = [m for m in range(3, limit + 1) if is_prime(m)]
     cover_ok = emerged == odd_primes
 
-    # the ONLY prime not covered by either class is 2 (== 2 mod 4)
+    # Compare the finite label set; 2 is outside the two odd classes.
     all_primes = [m for m in range(2, limit + 1) if is_prime(m)]
     residual = sorted(set(all_primes) - set(emerged))
 
-    src = "sieve fallback"
+    src = "trial-division labels; no adelic comparison"
     carrier_ok = True
     if _HAVE_ADELIC:
         eng = AdelicDynamics(max_prime=limit)
         carrier_odd = sorted(int(p) for p in eng.primes if int(p) >= 3)
         carrier_ok = carrier_odd == emerged
-        src = "tnfr.dynamics.adelic (CANONICAL)"
+        src = "tnfr.dynamics.adelic (supplied prime list)"
 
     print(
         f"  real primes  (== 1 mod 4)    : {len(real_primes)}  "
@@ -329,7 +283,7 @@ def test_real_plus_imag_covers_odd_primes(limit: int = 200) -> bool:
     print(f"  carrier cross-check ({src}) : {carrier_ok}")
     ok = cover_ok and residual == [2] and carrier_ok
     msg = (
-        ("real (+) imaginary = every odd prime; only 2 sits " "outside both sectors")
+        ("finite union matches the odd-prime labels; 2 is outside both classes")
         if ok
         else "coverage gap"
     )
@@ -339,18 +293,24 @@ def test_real_plus_imag_covers_odd_primes(limit: int = 200) -> bool:
 
 
 # --------------------------------------------------------------------------- #
-# TEST 4 -- honest scope: discrete/normal sectors do NOT reach S(T); 2 remains
+# TEST 4 -- independent finite normality and phase-sample comparisons
 # --------------------------------------------------------------------------- #
-def test_does_not_reach_the_phase(limit: int = 200) -> bool:
+def real_axis_distances(phases: np.ndarray) -> np.ndarray:
+    """Shortest circular distance of each supplied angle from the real axis."""
+    return np.min(
+        np.abs(angle_diff_array(phases[:, None], _REAL_AXIS[None, :], np=np)),
+        axis=1,
+    )
+
+
+def test_finite_spectra_and_phase_samples(limit: int = 200) -> bool:
     print("=" * 78)
-    print("TEST 4 -- the == 3 (mod 4) operator is NORMAL with a")
-    print("          DISCRETE spectrum on Re = -1/2; 'i times")
-    print("          self-adjoint' is still not the continuous phase")
-    print("          S(T); and the prime 2 stays outside both classes")
+    print("TEST 4 -- selected normal circulants and independent phase samples")
+    print("          No analytic phase reachability or obstruction is tested.")
     print("=" * 78)
 
     # (a) the directed circulant is normal (A A^T = A^T A) with spectrum on the
-    #     vertical line Re = -1/2 (a DISCRETE point set), never a continuum.
+    #     secondary vertical line Re = -1/2 on these selected prime inputs.
     worst_normal = 0.0
     worst_re = 0.0
     for p in (3, 7, 11, 19, 23, 31):
@@ -361,7 +321,8 @@ def test_does_not_reach_the_phase(limit: int = 200) -> bool:
         worst_normal = max(worst_normal, comm)
         worst_re = max(worst_re, float(np.max(np.abs(sec.real + 0.5))))
 
-    # (b) S(T) is a CONTINUOUS phase off the {0, pi} axis near the ordinates.
+    # (b) Sample principal zeta arguments or the separately defined fallback.
+    # The 0.3-radian cut is a descriptive choice, not an analytic obstruction.
     imag_primes = [
         m for m in range(3, limit + 1) if m % 4 == 3 and tournament_gap(m) <= _GAP_EPS
     ]
@@ -372,13 +333,12 @@ def test_does_not_reach_the_phase(limit: int = 200) -> bool:
         for off in (-0.7, 0.0, 0.9):
             samples.append(riemann_s_phase(g + off, nu_f, primes_arr))
     phases = np.array(samples) * np.pi
-    off_axis = int(
-        np.sum(
-            np.min(np.abs(phases[:, None] % (2 * np.pi) - _REAL_AXIS[None, :]), axis=1)
-            > 0.3
-        )
+    off_axis = int(np.sum(real_axis_distances(phases) > 0.3))
+    s_src = (
+        "mpmath principal arg(zeta)/pi"
+        if _HAVE_MPMATH
+        else "finite prime-oscillator proxy"
     )
-    s_src = "mpmath zeta(1/2+iT)" if _HAVE_MPMATH else "prime-oscillator"
 
     # (c) the prime 2 is == 2 (mod 4): in neither the real nor the imaginary
     #     class -- the characteristic-2 exception.
@@ -388,11 +348,11 @@ def test_does_not_reach_the_phase(limit: int = 200) -> bool:
 
     print(f"  max ||A A^T - A^T A||        : {worst_normal:.2e}  (NORMAL)")
     print(f"  max |Re(secondary) + 1/2|    : {worst_re:.2e}  (vertical line)")
-    print("  => spectrum is a DISCRETE point set (i * real), not a continuum")
-    print(f"  S(T) source                  : {s_src}")
+    print("  Secondary eigenvalues match the specified vertical line in these cases.")
+    print(f"  phase-sample source          : {s_src}")
     print(
-        f"  S(T) samples off {{0,pi}}      : {off_axis} / {len(samples)} "
-        f"(continuous phase)"
+        f"  samples beyond chosen angular cut: {off_axis} / {len(samples)} "
+        f"(finite principal-phase observations)"
     )
     print(
         f"  prime 2 in real|imag class   : {two_in_real}|{two_in_imag}  "
@@ -406,12 +366,11 @@ def test_does_not_reach_the_phase(limit: int = 200) -> bool:
     )
     msg = (
         (
-            "real (+) imaginary cover the odd primes via "
-            "NORMAL/discrete identities; S(T) and 2 stay out -- "
-            "wall unchanged"
+            "finite normality and descriptive phase-sample checks agree; "
+            "no relation to an analytic symmetry complement follows"
         )
         if ok
-        else "phase reached?!"
+        else "finite comparison differs from the declared expectation"
     )
     print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- {msg}")
     print()
@@ -420,28 +379,28 @@ def test_does_not_reach_the_phase(limit: int = 200) -> bool:
 
 def main() -> int:
     print(__doc__)
-    r1 = test_mod4_split_is_real_phase_split()
+    r1 = test_mod4_graph_and_tournament_controls()
     r2 = test_imag_gap_produces_primes()
     r3 = test_real_plus_imag_covers_odd_primes()
-    r4 = test_does_not_reach_the_phase()
+    r4 = test_finite_spectra_and_phase_samples()
 
     print("=" * 78)
     print("SUMMARY")
     print("=" * 78)
     print(
-        f"  TEST 1 mod-4 split == real/phase wall split   : "
+        f"  TEST 1 selected graph/tournament formulas    : "
         f"{'PASS' if r1 else 'FAIL'}"
     )
     print(
-        f"  TEST 2 imaginary gap produces == 3 mod 4 primes: "
+        f"  TEST 2 finite imaginary-gap classification   : "
         f"{'PASS' if r2 else 'FAIL'}"
     )
     print(
-        f"  TEST 3 real (+) imaginary = all odd primes     : "
+        f"  TEST 3 finite union versus odd-prime labels  : "
         f"{'PASS' if r3 else 'FAIL'}"
     )
     print(
-        f"  TEST 4 discrete/normal sectors do NOT reach S(T): "
+        f"  TEST 4 finite normality/phase observations   : "
         f"{'PASS' if r4 else 'FAIL'}"
     )
     structural = r1 and r2 and r3 and r4
@@ -449,23 +408,9 @@ def main() -> int:
     label = "ALL PASS" if structural else "SOME FAILED"
     print(f"  STRUCTURAL CHECKS: {label}")
     print()
-    print("  THESIS VERDICT: OPEN, by design (it EXTENDS, it does")
-    print("  not close). Camino 9 grounded the == 1 (mod 4) primes in a")
-    print("  REAL/self-adjoint Paley gap (the scale sector). This harness")
-    print("  grounds the == 3 (mod 4) primes in the IMAGINARY Gauss-sum")
-    print("  signature of the Paley TOURNAMENT (eigenvalues")
-    print("  (-1 +/- i sqrt q)/2, the phase-sector counterpart). The two")
-    print("  together make EVERY odd prime emerge from squares alone,")
-    print("  split EXACTLY by whether -1 is a quadratic residue -- which")
-    print("  is precisely the real-vs-phase boundary of the Equivariance")
-    print("  Wall. But both sectors are NORMAL operators with DISCRETE")
-    print("  spectra: 'i times self-adjoint' is not the continuous phase")
-    print("  S(T) = (1/pi) arg zeta(1/2 + iT), which remains RH-equivalent")
-    print("  and unreachable; and the prime 2 sits outside both classes.")
-    print("  So the emergence-of-numbers line is EXTENDED to all odd")
-    print("  primes and CONNECTED to the wall, but the wall is not moved.")
-    print("  G4 = RH stays OPEN; R and pi remain assumed")
-    print("  substrate.")
+    print("  Scope: supplied modular arithmetic, a finite gap scan, and fixed")
+    print("  graph/phase comparisons. The results neither generate primes from")
+    print("  nodal dynamics nor place analytic S(T) in a symmetry complement.")
     return 0 if structural else 1
 
 

@@ -1735,9 +1735,10 @@ For a compatible sample count $n$:
 5. their inner product vanishes up to FFT roundoff;
 6. their squared-norm fractions sum to one for nonzero input.
 
-The operator-registry diagnostic in
-`src/tnfr/riemann/operator_catalog_discipline_signature.py` checks declared
-schema consistency only.
+Canonical catalog checks belong to
+[`operator_contracts.verify_contract_consistency()`](../src/tnfr/operators/operator_contracts.py)
+and [its tests](../tests/operators/test_operator_contracts.py). They check
+declared metadata consistency, not completeness of the possible dynamics.
 
 The finite companion theorem and its one-transition identity are exercised by
 `tests/physics/test_remesh_history_stability.py`. The executed residual bridge,

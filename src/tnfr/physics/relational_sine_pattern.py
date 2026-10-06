@@ -37,9 +37,10 @@ __all__ = (
 class SineRelativePattern:
     """Conditional full-pattern enclosures after removing shared offsets.
 
-    Nominal form and phase values are the engine's captured represented
-    coordinates. Actual values may differ by an arbitrary common offset and
-    separately bounded residual errors. Phase observations require mutually
+    Nominal form and phase values are captured represented coordinates or
+    admitted exact rows from a detached preparation. Actual values may differ
+    by an arbitrary common offset and separately bounded residual errors.
+    Phase observations require mutually
     consistent real lifts. Capacities and support are supplied exactly.
 
     The static edge bounds use each endpoint's original residual radius once.
@@ -95,6 +96,7 @@ class SineRelativePattern:
     )
 
     def to_dict(self):
+        """Export the original residual family and its exact field bounds."""
         from ..sdk.relational_reports import _project
 
         _validate_comparison_labels(self)
@@ -127,6 +129,31 @@ class SineRelativePattern:
         from .relational_sine_recovery import certify_sine_sector_capture
 
         return certify_sine_sector_capture(self, edge_turn_offsets=edge_turn_offsets)
+
+    def compose_with(
+        self,
+        other,
+        *,
+        bridge,
+        observation_time,
+        edge_turn_offsets,
+        form_origin_difference=None,
+        phase_origin_difference=None,
+        work_allowance=None,
+    ):
+        """Join two declared relative preparations without executing an event."""
+        from .relational_sine_composition import assess_sine_pattern_composition
+
+        return assess_sine_pattern_composition(
+            self,
+            other,
+            bridge=bridge,
+            observation_time=observation_time,
+            edge_turn_offsets=edge_turn_offsets,
+            form_origin_difference=form_origin_difference,
+            phase_origin_difference=phase_origin_difference,
+            work_allowance=work_allowance,
+        )
 
     def certify_prepared_entry(self, *, scaled_time, edge_turn_offsets):
         """Assess same-law acquisition for the complete residual preparation set."""
@@ -239,17 +266,21 @@ class SineRelativeForecast:
 
     @property
     def admitted(self):
+        """Return the underlying full-coordinate forecast admission."""
         return self.full_forecast.admitted
 
     @property
     def status(self):
+        """Return the underlying full-coordinate forecast status."""
         return self.full_forecast.status
 
     @property
     def reasons(self):
+        """Return the underlying forecast's admission reasons."""
         return self.full_forecast.reasons
 
     def to_dict(self):
+        """Export full forecast evidence and the relative endpoint projection."""
         from ..sdk.relational_reports import _project
 
         _validate_comparison_labels(self.pattern)
@@ -334,21 +365,54 @@ def bound_relational_sine_pattern(
     invoking the native Arg field or changing the graph.
     """
     state = _capture_sine_state(graph, reference_model)
-    positions = {node: index for index, node in enumerate(state.nodes)}
+    return _bound_sine_pattern_from_rows(
+        reference_node=reference_node,
+        reference_model=reference_model,
+        nodes=state.nodes,
+        edges=state.edges,
+        neighbors=state.neighbors,
+        capacity=state.capacity,
+        nominal_form=state.epi,
+        nominal_phase=state.phase,
+        form_error_bounds=form_error_bounds,
+        phase_error_bounds=phase_error_bounds,
+    )
+
+
+def _bound_sine_pattern_from_rows(
+    *,
+    reference_node,
+    reference_model,
+    nodes,
+    edges,
+    neighbors,
+    capacity,
+    nominal_form,
+    nominal_phase,
+    form_error_bounds,
+    phase_error_bounds,
+) -> SineRelativePattern:
+    """Rebuild fields from admitted exact primitives without materialization.
+
+    Callers own law, support, scalar and capacity admission. Original residual
+    radii stay attached to their nodes; cached fields supply no premises.
+    """
+    positions = {node: index for index, node in enumerate(nodes)}
     if reference_node not in positions:
         raise ValueError("reference_node must belong to the complete supplied support")
-    anchor, size = positions[reference_node], len(state.nodes)
+    anchor, size = positions[reference_node], len(nodes)
+    degrees = tuple(map(len, neighbors))
     form_errors = _error_radii(form_error_bounds, size, "form_error_bounds")
     phase_errors = _error_radii(phase_error_bounds, size, "phase_error_bounds")
-    relative_form = _relative_initial_rows(state.epi, form_errors, anchor)
-    relative_phase = _relative_initial_rows(state.phase, phase_errors, anchor)
+    relative_form = _relative_initial_rows(nominal_form, form_errors, anchor)
+    relative_phase = _relative_initial_rows(nominal_phase, phase_errors, anchor)
     edge_form, edge_phase = [], []
-    gradient, currents = [I(0) for _ in state.nodes], [I(0) for _ in state.nodes]
+    gradient, currents = [I(0) for _ in nodes], [I(0) for _ in nodes]
     form_storage = phase_storage = I(0)
-    for left, right in state.edges:
+    for left, right in edges:
         i, j = positions[left], positions[right]
-        form_gap = _difference_bounds(state.epi, form_errors, i, j)
-        phase_gap = _difference_bounds(state.phase, phase_errors, i, j)
+        form_gap = _difference_bounds(nominal_form, form_errors, i, j)
+        phase_gap = _difference_bounds(nominal_phase, phase_errors, i, j)
         edge_form.append(form_gap)
         edge_phase.append(phase_gap)
         current = sin(phase_gap)
@@ -357,20 +421,18 @@ def bound_relational_sine_pattern(
         form_storage += form_gap**2 / 2
         phase_storage += 1 - cos(phase_gap)
     gradient, currents = tuple(gradient), tuple(currents)
-    work = _sine_work(
-        reference_model, state.degrees, gradient, state.capacity, currents
-    )
+    work = _sine_work(reference_model, degrees, gradient, capacity, currents)
     forms, phases = work["form_rates"], work["phase_rates"]
     return SineRelativePattern(
         reference_model=reference_model,
         reference_node=reference_node,
-        nodes=state.nodes,
-        edges=state.edges,
-        neighbors=state.neighbors,
-        degrees=state.degrees,
-        capacity=state.capacity,
-        nominal_form=state.epi,
-        nominal_phase=state.phase,
+        nodes=nodes,
+        edges=edges,
+        neighbors=neighbors,
+        degrees=degrees,
+        capacity=capacity,
+        nominal_form=nominal_form,
+        nominal_phase=nominal_phase,
         form_error_bounds=form_errors,
         phase_error_bounds=phase_errors,
         relative_form_bounds=relative_form,

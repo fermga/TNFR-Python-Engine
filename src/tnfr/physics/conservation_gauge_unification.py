@@ -26,7 +26,7 @@ References
 - Conservation laws: src/tnfr/physics/conservation.py
 - Gauge structure: src/tnfr/physics/gauge.py
 - Separate finite arithmetic pulse comparison: src/tnfr/riemann/nodal_pulse.py
-- Nodal equation: ∂EPI/∂t = νf · ΔNFR(t)  [TNFR.pdf §2.1]
+- Nodal identity and complete-law premises: theory/FUNDAMENTAL_THEORY.md
 - Grammar: theory/UNIFIED_GRAMMAR_RULES.md (U1-U6)
 """
 

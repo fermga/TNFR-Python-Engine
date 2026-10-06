@@ -22,6 +22,9 @@ __all__ = [
     "derive_linear_observation",
     "LinearCoordinateMemory",
     "derive_coordinate_memory",
+    "FormLossObservationBound",
+    "bound_form_loss_observation_error",
+    "bound_orthogonal_form_loss_observation_error",
 ]
 
 Vector = tuple[Fraction, ...]
@@ -97,6 +100,35 @@ class LinearCoordinateMemory:
     scope: str
 
 
+@dataclass(frozen=True)
+class FormLossObservationBound:
+    """Conditional lower bound for a conservative two-channel observation.
+
+    The admitted generator is skew. Two orthonormal output rows define the
+    transpose preparation. The quadrature method additionally verifies the
+    canonical channel rotation and its output intertwiner; the initial-response
+    method instead retains a generator-norm upper bound. The bound concerns
+    the supremum of the Euclidean full-response error on [0, horizon] for
+    the unit visible ball
+    with zero hidden preparation. It also holds for enlarged preparation
+    families containing that subset. It is not an upper bound, the actual
+    error, or an authentication of graph, clock or energy coordinates.
+    """
+
+    generator: Matrix
+    output_rows: Matrix
+    preparation: Matrix
+    target_generator: Matrix
+    damping: Fraction
+    exchange: Fraction
+    horizon: Fraction
+    witness_time: Fraction
+    uniform_error_lower_bound: Fraction
+    scope: str
+    method: str = "quadrature_covariance"
+    generator_norm_upper_bound: Fraction | None = None
+
+
 def _ordered(values, label):
     if isinstance(values, (str, bytes, bytearray, Mapping, Set)):
         raise TypeError(f"{label} must be an ordered collection")
@@ -116,6 +148,147 @@ def _matrix(values, label):
             for value in _ordered(row, f"{label}[{i}]")
         )
         for i, row in enumerate(rows)
+    )
+
+
+def _conservative_observation(generator, output_rows):
+    """Admit the common conservative law, observation and transpose lift."""
+    admitted = _matrix(generator, "generator")
+    size = len(admitted)
+    if size % 2 or any(len(row) != size for row in admitted):
+        raise ValueError("generator must be an even-dimensional square matrix")
+    if any(admitted[i][j] != -admitted[j][i] for i in range(size) for j in range(size)):
+        raise ValueError("generator must be exactly skew-symmetric")
+    output = _matrix(output_rows, "output_rows")
+    if len(output) != 2 or any(len(row) != size for row in output):
+        raise ValueError("output_rows must have two rows matching the generator")
+    preparation = tuple(zip(*output))
+    if exact_matrix_product(output, preparation) != ((1, 0), (0, 1)):
+        raise ValueError("output_rows must be exactly orthonormal")
+    return admitted, output, preparation
+
+
+def _form_loss_parameters(damping, exchange, horizon):
+    """Admit one supplied two-channel target and comparison horizon."""
+    gamma = exact_or_represented_real(damping, "damping")
+    omega = exact_or_represented_real(exchange, "exchange")
+    time = exact_or_represented_real(horizon, "horizon")
+    if gamma < 0 or omega <= 0 or time < 0:
+        raise ValueError(
+            "damping and horizon must be nonnegative; exchange must be positive"
+        )
+    return gamma, omega, time
+
+
+def bound_form_loss_observation_error(
+    generator, output_rows, *, damping, exchange, horizon
+) -> FormLossObservationBound:
+    """Bound unavoidable error against a declared single-pair form-loss law.
+
+    J is an even-dimensional real skew generator ordered as (form, phase),
+    with equal-sized channel blocks. It must commute exactly with
+    R_n=[[0,-I],[I,0]]. The two rows O must satisfy O O^T=I_2 and O R_n=R_1 O.
+    The preparation is E=O^T and hidden preparation is zero; the law and
+    observations must already use the same clock and energy-normalized chart.
+
+    The target G=[[-gamma,-omega],[omega,0]] has nonnegative damping gamma
+    and positive exchange omega. For T>=0, put M=gamma+omega and
+    s=min(T,1/(2M)). The supremum over 0<=t<=T and ||y0||<=1 of
+    ||O exp(Jt) E y0 - exp(Gt) y0|| is at least gamma*s*(1-M*s)/2.
+    This uses exact covariance, target contractivity and the commutator
+    remainder bound; no trajectory, exponential or fitted coefficient is used.
+
+    Matrices and scalars share exact-or-represented admission. An exact
+    rational probe does not authenticate an irrational energy chart or an
+    ideal TNFR generator. Failed hypotheses raise rather than yielding a
+    zero certificate. Zero horizon/damping are valid zero-bound controls.
+    """
+    admitted, output, preparation = _conservative_observation(generator, output_rows)
+    size = len(admitted)
+    half = size // 2
+    rotation = tuple(
+        tuple(Fraction(int(i == j + half) - int(j == i + half)) for j in range(size))
+        for i in range(size)
+    )
+    if exact_matrix_product(admitted, rotation) != exact_matrix_product(
+        rotation, admitted
+    ):
+        raise ValueError("generator must commute with the canonical channel rotation")
+    visible_rotation = ((Fraction(0), Fraction(-1)), (Fraction(1), Fraction(0)))
+    if exact_matrix_product(output, rotation) != exact_matrix_product(
+        visible_rotation, output
+    ):
+        raise ValueError("output_rows must intertwine the canonical channel rotations")
+    gamma, omega, time = _form_loss_parameters(damping, exchange, horizon)
+    norm_upper = gamma + omega
+    witness = min(time, 1 / (2 * norm_upper))
+    lower = gamma * witness * (1 - norm_upper * witness) / 2
+    return FormLossObservationBound(
+        generator=admitted,
+        output_rows=output,
+        preparation=preparation,
+        target_generator=((-gamma, -omega), (omega, Fraction(0))),
+        damping=gamma,
+        exchange=omega,
+        horizon=time,
+        witness_time=witness,
+        uniform_error_lower_bound=lower,
+        scope=(
+            "Exact rational lower bound on uniform full-response error under the "
+            "admitted conservative channel covariance and transpose preparation. "
+            "The hidden-zero subset is retained; an enlarged independent hidden "
+            "family cannot reduce the supremum. No graph, clock, energy-chart, "
+            "nonlinear accuracy, effective-coefficient selection or physical "
+            "identification is authenticated. Represented matrices certify only "
+            "their supplied rational law."
+        ),
+    )
+
+
+def bound_orthogonal_form_loss_observation_error(
+    generator, output_rows, *, damping, exchange, horizon
+) -> FormLossObservationBound:
+    """Bound form-loss error without assuming equal-channel covariance.
+
+    J must be even-dimensional and skew, and O must have exactly two
+    orthonormal rows; the lift is O^T. All matrices, the target and the
+    nonnegative horizon share the supplied clock and Euclidean energy chart.
+    Target scalars have the same admission as bound_form_loss_observation_error.
+    Unlike that reader, this bound admits channel-asymmetric observations.
+
+    With N=max_i sum_j |J_ij|, M=gamma+omega, Q=N^2+M^2 and
+    s=min(T,gamma/Q), the unit-visible-ball response error over [0,T] is at
+    least gamma*s-Q*s^2/2. Skewness makes N a spectral norm upper bound.
+    The proof uses the skew initial observed derivative and contractive
+    Taylor remainders, not rotation covariance. The result does not admit
+    correlated hidden preparation, a discarded initial layer, a different
+    norm, nonlinear approximation or a graph/clock interpretation by itself.
+    """
+    admitted, output, preparation = _conservative_observation(generator, output_rows)
+    gamma, omega, time = _form_loss_parameters(damping, exchange, horizon)
+    norm_upper = max(sum(map(abs, row), Fraction(0)) for row in admitted)
+    remainder = norm_upper**2 + (gamma + omega) ** 2
+    witness = min(time, gamma / remainder)
+    return FormLossObservationBound(
+        generator=admitted,
+        output_rows=output,
+        preparation=preparation,
+        target_generator=((-gamma, -omega), (omega, Fraction(0))),
+        damping=gamma,
+        exchange=omega,
+        horizon=time,
+        witness_time=witness,
+        uniform_error_lower_bound=gamma * witness - remainder * witness**2 / 2,
+        method="orthogonal_initial_response",
+        generator_norm_upper_bound=norm_upper,
+        scope=(
+            "Exact rational lower bound from conservative initial-response skewness "
+            "and finite generator norm, under orthogonal zero-hidden preparation. "
+            "Channel covariance is not required. An enlarged hidden family containing "
+            "the zero-hidden subset cannot lower the supremum. No graph, energy "
+            "chart, clock, nonlinear accuracy or physical identity is authenticated. "
+            "Represented matrices certify only their supplied rational law."
+        ),
     )
 
 

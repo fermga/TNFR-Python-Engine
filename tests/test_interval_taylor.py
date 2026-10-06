@@ -58,6 +58,40 @@ def test_normalized_sine_and_cosine_coefficients_at_zero_are_exact_series():
     assert all(value.width < Q(1, 10**34) for value in sin(argument).coeffs)
 
 
+@pytest.mark.parametrize("function,parity", [(sin, 1), (cos, 0)])
+def test_quadratic_sincos_composition_survives_prefix_cache_eviction(function, parity):
+    # [t^j](t+t^2)^k=binom(k,j-k), independently of the jet recurrence.
+    expected = tuple(
+        sum(
+            (
+                Q((-1) ** ((k - parity) // 2) * comb(k, j - k), factorial(k))
+                for k in range(parity, j + 1, 2)
+                if k <= j <= 2 * k
+            ),
+            Q(0),
+        )
+        for j in range(17)
+    )
+    arguments = tuple(
+        Jet(tuple(I(int(j in (1, 2))) for j in range(order + 1))) for order in range(17)
+    )
+    cache = owner._sincos_coefficients
+    cache.cache_clear()
+    try:
+        cold = tuple(function(argument).coeffs for argument in arguments)
+        assert tuple(function(argument).coeffs for argument in arguments) == cold
+        # More distinct scalar entries than the LRU capacity evict all of the
+        # ascending-prefix entries, without changing any numerical premise.
+        for index in range(300):
+            function(Jet.constant(Q(index + 1, 301), 0))
+        recovered = tuple(function(argument).coeffs for argument in arguments)
+        assert recovered == cold
+        for order, coefficients in enumerate(recovered):
+            _assert_encloses(coefficients, expected[: order + 1])
+    finally:
+        cache.cache_clear()
+
+
 def test_reciprocal_of_exponential_jet_has_the_opposite_exponent():
     argument = Jet(tuple(I(Q(1, factorial(degree))) for degree in range(17)))
     inverse = 1 / argument

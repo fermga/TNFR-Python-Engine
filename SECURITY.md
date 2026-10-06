@@ -55,8 +55,7 @@ a warning setting or an in-memory cache's behavior.
 
 ### Secret and Credential Management
 
-[tnfr.config.security](src/tnfr/config/security.py) owns credential helpers;
-[tnfr.secure_config](src/tnfr/secure_config.py) is a compatibility re-export.
+[tnfr.config.security](src/tnfr/config/security.py) owns credential helpers.
 These helpers do not automatically secure every application configuration. Keep
 real credentials out of source, logs, examples, reports and artifacts. A
 gitignore rule does not remove an already tracked secret; revoke exposed

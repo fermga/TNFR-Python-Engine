@@ -75,7 +75,7 @@ flowchart TD
     C --> D[Phase coordination]
     D --> E[Capacity adaptation using retained pressure and Si]
     E --> F[History, optional REMESH, validators and callbacks]
-    F -.-> R[Read-only metrics, tetrad and reports]
+    F -.-> R[Metrics, tetrad and reports under their declared mutation scope]
 ```
 
 1. Nodes store EPI, structural frequency, phase, pressure, and trace metadata.
@@ -181,8 +181,8 @@ baseline law identifier is `normalized_sine_reciprocal_exchange`. The declared
 `current_squared_reciprocal_mobility` counterfamily shares that capture and
 storage but changes both rate rows; its readers retain the separate law ID.
 Shared arithmetic does not transfer baseline recurrence or pulse theorems. The
-[execution contract](docs/contracts/RELATIONAL_DYNAMICS.md#conditional-relational-execution)
-and [sine contract](docs/contracts/RELATIONAL_DYNAMICS.md#detached-normalized-sine-complete-law-comparison)
+[execution contract](docs/contracts/relational/RELATIONAL_EXECUTION.md#conditional-relational-execution)
+and [sine contract](docs/contracts/relational/SINE_COMPARISON_AND_INFERENCE.md#detached-normalized-sine-complete-law-comparison)
 own the exact domains and differences.
 
 Coefficient admission has one base owner:
@@ -202,10 +202,11 @@ lost in that conversion.
 | [`physics/form_geometry.py`](src/tnfr/physics/form_geometry.py) | Stored-pressure regional contrasts, Gram geometry and conditional affine closure; `Network.regional_form` delegates here. |
 | [`physics/source_relative_form.py`](src/tnfr/physics/source_relative_form.py) | Composes the form observer with an independently supplied held rate source; `Network.source_relative_form` is the adapter. |
 | [`physics/relational_observations.py`](src/tnfr/physics/relational_observations.py) | Native field, region and hypothetical support-change reports; separately, graph-independent coefficient/rate/sample-jet bounds. Sample adapters share stencils and outward error propagation. |
-| [`mathematics/linear_observation.py`](src/tnfr/mathematics/linear_observation.py) | Exact row-space realization and visible/hidden memory for a supplied rational generator. `physics/epi_memory.py` retains its own diffusion admission. |
+| [`mathematics/linear_observation.py`](src/tnfr/mathematics/linear_observation.py) | Exact row-space realization and visible/hidden memory for a supplied rational generator; scoped lower bounds distinguish conservative observation from a supplied form-loss model. `physics/epi_memory.py` retains its own diffusion admission. |
 | [`mathematics/_exact_linear_algebra.py`](src/tnfr/mathematics/_exact_linear_algebra.py) | Shared exact products, inverses and rank algebra; compatibility physics imports delegate here. |
 | [`mathematics/_phase_resultant_chamber.py`](src/tnfr/mathematics/_phase_resultant_chamber.py) | Rational trigonometric/resultant bounds, principal-argument charts and supplied-rate kinematics. Reused geometry does not transfer a law. |
 | [`mathematics/_validated_taylor.py`](src/tnfr/mathematics/_validated_taylor.py) | Strict Picard tubes, Taylor remainders and initial-box propagation; the comparison kernel owns the shared 1–24-coordinate work limit. Each flow adapter retains its layout and other admission budgets. |
+| [`mathematics/_validated_metric.py`](src/tnfr/mathematics/_validated_metric.py) | Reuses Picard/Taylor machinery while retaining an SPD-metric radius between steps. The caller proves its whole-tube logarithmic bound; local truncation/rounding errors enter the same norm. Coordinate projections do not replace the retained uncertainty. |
 | [`sdk/relational_reports.py`](src/tnfr/sdk/relational_reports.py) | Shared exact JSON projection and supported report delegation, using the atomic SDK writer; not a checkpoint or provenance authenticator. |
 
 Native regional reports consume `dynamics/relational.py`, preserving its nodal
@@ -218,76 +219,61 @@ for closure and hidden-information obligations.
 
 #### Native relational proof adapters
 
-| Owner | Responsibility and shared inputs |
-| --- | --- |
-| [`relational_capture.py`](src/tnfr/physics/relational_capture.py) | Protected basins, cycle/sector geometry, formation obstructions and hypothetical detachment; shared phase/storage and support-reset bounds. |
-| [`relational_cycle_memory.py`](src/tnfr/physics/relational_cycle_memory.py), [`relational_memory_contact.py`](src/tnfr/physics/relational_memory_contact.py) | Conditional limiting/finite-time memory and contact/retention certificates; reuse capture, exact exponential bounds and event accounting. |
-| [`relational_transit.py`](src/tnfr/physics/relational_transit.py), [`relational_reflected_transit.py`](src/tnfr/physics/relational_reflected_transit.py) | Separate four- and eight-coordinate reflected flow enclosures using the shared validated Taylor kernel; neither evolves a live graph. |
-| [`relational_reflected_equilibria.py`](src/tnfr/physics/relational_reflected_equilibria.py) | Named exact equilibrium enclosures and full-network stiffness, reusing the reflected field. |
-| [`relational_regularity.py`](src/tnfr/physics/relational_regularity.py), [`relational_reflected_boundary.py`](src/tnfr/physics/relational_reflected_boundary.py) | Native continuous-domain and boundary-access evidence; limiting algebra is not an execution bypass. |
+Native capture, memory, recovery and transit adapters reuse the admitted field
+from `dynamics/relational.py`. They add their own domain, symmetry, positive
+capacity/loss and uncertainty premises. Validated trajectories share the Taylor
+kernel; static basin readers do not execute an integrator or mutate a graph.
 
-These adapters retain their own state, symmetry and storage hypotheses. Their
-[contracts](docs/contracts/RELATIONAL_DYNAMICS.md#conditional-relational-capture)
-separate a static basin, an admitted finite step, continuous transit and future
-recovery. None follows merely from a small rate or work residual.
+The [theory-to-execution map](theory/README.md#theory-to-execution) owns the
+module/proof/test inventory. Public admission and outputs belong to the
+[native relational contract](docs/contracts/relational/RELATIONAL_CAPTURE_AND_MEMORY.md).
+A small residual cannot substitute for a theorem's full hypothesis set.
 
 #### Normalized-sine proof adapters
 
-| Owner | Responsibility and dependency |
-| --- | --- |
-| [`relational_sine_comparison.py`](src/tnfr/physics/relational_sine_comparison.py) | Shared detached capture, primitive-state gradient/current construction, `_sine_rates`, `_sine_work` and resultant kinematics. Regional accounting reuses source admission and rebuilds consumed rates; supplied endpoint increments remain a separate calculation. |
-| [`_sine_admission.py`](src/tnfr/physics/_sine_admission.py) | Shared regular-model and detached source admission; authoritative coefficient checks delegate to `dynamics/relational.py`, also used by native staging. Budget-neutral validation and a separate sector-budget wrapper. Does not load recovery, run a theorem or authenticate provenance. |
-| [`_sine_preparation.py`](src/tnfr/physics/_sine_preparation.py) | Shared weighted analytic domain, full-state preparation and uncertainty bounds for entry/reduction/budget readers; adds positive-loss and positive-capacity premises to primitive admission. |
-| [`relational_sine_mediation.py`](src/tnfr/physics/relational_sine_mediation.py) | Retained environmental pressure and a separately scoped conditional minimum; keeps hidden state, degrees and tracking defects. |
-| [`relational_sine_observation.py`](src/tnfr/physics/relational_sine_observation.py) | Hidden-state/capacity bounds from independently supplied earlier rate/acceleration evidence; shared primitive-evidence rebuilding for chained inverse and forecast consumers. |
-| [`relational_sine_sampling.py`](src/tnfr/physics/relational_sine_sampling.py) | Full-network smoothness bounds; `sample_budget` rebuilds the declared class before composing shared sample-jet budgets. Generates no observations. |
-| [`relational_sine_forecast.py`](src/tnfr/physics/relational_sine_forecast.py) | Joint prior admission rebuilds hidden-state/capacity evidence before checking a witness. Requested full-box propagation uses `_sine_rates` and the validated Taylor kernel; held hidden capacity remains an augmented coordinate. |
-| [`relational_sine_pattern.py`](src/tnfr/physics/relational_sine_pattern.py) | Full-state relative observations; forecasts rebuild initial boxes from nominal coordinates and original residual radii, then project against an evolving reference. Keeps every environmental node. |
-| [`relational_sine_recovery.py`](src/tnfr/physics/relational_sine_recovery.py) | Shared uncertainty/geometry bounds for positive-loss recovery and separately admitted conservative trapping families; reuses exact target reconstruction and full-support spectral gaps. |
-| [`relational_sine_formation.py`](src/tnfr/physics/relational_sine_formation.py) | Supplied donor preparations and necessary-condition/timed-exclusion bounds, sharing sine work and C5 face geometry; no evolution or event selection. |
-| [`relational_sine_entry.py`](src/tnfr/physics/relational_sine_entry.py), [`relational_sine_reduction.py`](src/tnfr/physics/relational_sine_reduction.py) | Prepared entry, finite slow-phase comparison and full-state capture handoff; share weighted preparation bounds and existing capture geometry without replacing a trajectory or dropping initial form information. |
-| [`relational_sine_budget.py`](src/tnfr/physics/relational_sine_budget.py), [`relational_sine_symmetry.py`](src/tnfr/physics/relational_sine_symmetry.py) | State-free budget-family consensus and exact captured-source symmetry discrimination, respectively; sufficient bounds and unavailable results retain distinct meanings. |
-| [`relational_sine_resonance.py`](src/tnfr/physics/relational_sine_resonance.py) | Declared tangent input/output response; `gain` rebuilds its mode before evaluating the transfer. Exact pair pulse, path memory and nonlinear recurrent-family assessments retain their own hypotheses. |
-| [`relational_sine_scale.py`](src/tnfr/physics/relational_sine_scale.py) | Full replica observations, unordered internal state and separate symbolic pulse/variation/splitting assessments; reuses capture/rates and the pair-pulse period bound. |
+The sine layer shares four boundaries:
 
-The chained sampling, modal-gain, inverse, forecast and regional-accounting
-readers rebuild consumed bounds from retained primitive declarations or
-observations through the owners above. Forecast endpoint readers instead check
-the complete source association at the actual validated time. The
-[chained-report contract](docs/contracts/RELATIONAL_DYNAMICS.md#sine-chained-report-admission)
-owns these distinct admission paths, normalized computation and retained-source
-limits. Serialization remains a separate projection boundary.
+1. `_sine_admission.py` delegates stored model coefficients to the native
+   coefficient owner, then adds the sine reference-model requirements.
+2. `relational_sine_comparison.py` owns detached state reconstruction, rates,
+   work and resultant kinematics. Mobility and regional/mediated readers reuse
+   these primitives while retaining their own complete-law identifiers.
+3. `_sine_preparation.py` supplies weighted preparation and uncertainty bounds.
+   Forecasts share validated Taylor/metric kernels and retain environmental
+   coordinates, hidden initialization and original error associations.
+4. `sdk/relational_reports.py` delegates reports and projects exact JSON values;
+   it neither installs a solver nor authenticates an evaluated response.
 
-Source-capture reports, symbolic preparation families and validated endpoints
-are different inputs. Static correlated errors are not a future Cartesian
-box; a chosen phase reference is not a frozen node. The
-[sine contracts](docs/contracts/RELATIONAL_DYNAMICS.md#detached-normalized-sine-complete-law-comparison)
-and [scale contracts](docs/contracts/RELATIONAL_DYNAMICS.md#sine-replica-scale)
-retain those distinctions. Proofs remain with the
-[pattern-memory](theory/nodal/RELATIONAL_PATTERN_MEMORY.md),
-[sine pattern dynamics](theory/nodal/SINE_PATTERN_DYNAMICS.md),
-[resonance](theory/nodal/RESONANCE_FOUNDATIONS.md) and
-[scale](theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) owners. Prepared periodicity,
-family recurrence and orbital stability are separate claims, not additional
-runtime variables or operator-selection rules.
+Downstream calculations re-admit the producer's primitive source and rebuild
+consumed gradients, rates, work and bounds. Forecast readers also check the
+source association at the actual validated time. The
+[chained-report contract](docs/contracts/relational/SINE_COMPARISON_AND_INFERENCE.md#sine-chained-report-admission)
+owns those interfaces. A static correlated error set, a captured state, a
+symbolic invariant family and a validated endpoint box are different inputs.
+A chosen moving reference is not a frozen environmental node.
+
+See the [theory-to-execution map](theory/README.md#theory-to-execution) for each
+proof adapter and its independent tests, and the
+[regional guide](docs/guides/REGIONAL_AND_RELATIONAL.md) for usage. Prepared
+periodicity, recurrence and orbital stability do not select an execution law.
+A tangent memory kernel cannot replace a different nonlinear environment;
+actual off-family deviations remain part of collective interaction.
+The [scientific connection map](theory/EMERGENT_ONTOLOGY.md#pulse-resonance-scale-connections)
+owns the mathematical implications of this reuse.
 
 #### Retained evidence adapters
 
-[`research/relational_acquisition.py`](src/tnfr/research/relational_acquisition.py)
-and [`research/relational_formation_robustness.py`](src/tnfr/research/relational_formation_robustness.py)
-read saved protocols, source archives and reports through the shared numerical
-owners. They do not replay producers or authenticate historical execution.
-The separately staged sine prior experiment keeps preparation, prior-only
-prediction and reserved evaluation distinct. Retained instruments and their
-verdicts belong to the [benchmark catalog](benchmarks/README.md); their presence
-does not authorize a new campaign.
+`tnfr.research` readers consume frozen protocols, source archives and responses
+through the shared numerical owners. They can reconstruct declared sources,
+compare retained bounds or analyze an evaluated trajectory without replaying
+the producer. A source hash binds bytes; it does not prove a mathematical model
+or authenticate the historical execution.
 
-The unforced product, conditional diffusion identities, named operator
-contracts and coherent diagnostics are implemented foundations. Unique phase,
-capacity, support-formation and autonomous operator-selection laws remain
-constitutive research obligations; the implementation does not label those
-supplied policies as derived emergence. The sole research queue remains the
-[execution plan](theory/research/FIVE_STAGE_EXECUTION_PLAN.md).
+The [benchmark catalog](benchmarks/README.md) owns instrument selection and
+lifecycle. Preparation, prospective prediction, reserved evaluation and
+retrospective analysis remain distinct. Available code or a saved verdict does
+not create another campaign: the [execution plan](theory/research/FIVE_STAGE_EXECUTION_PLAN.md)
+alone schedules research.
 
 ### Operator events and history
 
@@ -331,7 +317,7 @@ or second transport law is introduced.
 
 - `tnfr.constants` separates canonical structural quantities from operational
   tuning parameters.
-- `tnfr.config` owns attribute configuration and physics-derived operator
+- `tnfr.config` owns attribute configuration and contract-derived operator
   classifications.
 - `tnfr.errors` provides contextual public exceptions.
 - `tnfr.mathematics` owns numerical backends and domain-neutral mathematical
@@ -367,31 +353,25 @@ geometry and conditional algebra can be reused under their own contracts.
 
 ## Structural fields and scope
 
-The canonical diagnostic tetrad is `(Phi_s, |grad phi|, K_phi, xi_C)`.
-`Psi = K_phi + i J_phi` is a derived complex field and does not replace `K_phi`
-in the tetrad.
+`physics/fields.py` owns the tetrad `(Phi_s, |grad phi|, K_phi, xi_C)`;
+`metrics/common.py` owns coherence reductions. Consumers preserve undefined
+curvature and distinguish a fitted coherence length from its spectral fallback.
+The [field specification](docs/STRUCTURAL_FIELDS_TETRAD.md) owns formulas,
+geometry channels, thresholds and availability; this architecture guide does
+not maintain another parameter table.
 
-- Wrapped phase differences have magnitude bound `pi`; wrapped curvature has
-  that bound where its represented resultant defines a direction.
-- `0.9*pi` is an operational curvature warning margin.
-- `pi/4` per-node potential and `pi/2` potential drift are selected safety
-  policies, not topology-independent bounds.
-- Fitted coherence length is distinct from the tagged spectral fallback, which
-  selects the first eigenvalue above `1e-9`; it is `1/sqrt(lambda_2)` only under
-  the corresponding connectivity and cutoff hypotheses.
-- The tetrad is a diagnostic read-out and does not reconstruct arbitrary full
-  nodal states in general. Any sufficient reduced description requires its own
-  restricted state domain and closure proof.
-
-See [the field specification](docs/STRUCTURAL_FIELDS_TETRAD.md) and
-[the minimality scope note](theory/MINIMAL_STRUCTURAL_DEGREES.md).
+Derived fields and diagnostic reductions are observations of the admitted
+state. They do not reconstruct arbitrary full nodal states or predict future
+evolution. Restricted sufficient descriptions need their own closure proof;
+see [state-information scope](theory/MINIMAL_STRUCTURAL_DEGREES.md).
 
 ## Operator registry and grammar
 
-The registry in [`operators/registry.py`](src/tnfr/operators/registry.py) is a
-lazily populated fixed map of the 13 implementations. `discover_operators()` is
-a compatibility no-op; runtime package scanning is not part of current
-registration.
+The lookup in [`operators/registry.py`](src/tnfr/operators/registry.py) lazily
+loads the 13 built-in classes and retains distinct-name compatibility
+registration. Runtime package scanning is not part of registration. The
+canonical inventory remains `operator_contracts`; registering a class does not
+add a canonical glyph, grammar role or atomic-stage contract.
 
 Public operator identifiers are the canonical English tokens. Glyphs remain
 internal structural symbols. The grammar authority is split deliberately:
@@ -407,38 +387,15 @@ U6 confinement. The exact scope is stated in
 
 ## Public API
 
-The stable high-level entry point is:
+`tnfr.sdk.TNFR` owns the Simple interface; `tnfr.sdk.fluent.TNFRNetwork` owns
+fluent construction and measurement. Both delegate to shared runtime and report
+owners. `StudySpec` / `run_study` owns the common operator-study workflow used
+by the CLI. Public serialization uses the same strict JSON reader and atomic
+writer; exports retain their stated projection scope.
 
-```python
-from tnfr.sdk import TNFR
-
-net = TNFR.create(20).ring().evolve(5)
-result = net.results()
-tetrad = net.tetrad()
-telemetry = net.telemetry()
-analysis = TNFR.analyze(net)
-```
-
-The fluent network API supports chained construction, named sequences, and
-measurement:
-
-```python
-from tnfr.sdk.fluent import NetworkConfig, TNFRNetwork
-
-config = NetworkConfig(random_seed=7, default_epi_range=(0.1, 0.5))
-
-result = (
-    TNFRNetwork("experiment", config)
-    .add_nodes(20, phase_range=(0.0, 0.1))
-    .connect_nodes(connection_pattern="ring")
-    .apply_sequence(["emission", "coherence", "silence"])
-    .measure()
-)
-```
-
-Low-level operator and dynamics APIs remain available for research code, but
-documentation examples should prefer the SDK unless they demonstrate a
-specific contract.
+The [CLI/SDK guide](docs/CLI_AND_SDK.md) owns executable usage, and the
+[API contracts](docs/API_CONTRACTS.md) own admission and migration. Low-level
+operator and dynamics APIs retain their separate event/runtime contracts.
 
 ## Numerical backends
 

@@ -5,13 +5,13 @@ These tests guard the single-source-of-truth grammar specification introduced by
 
 1. the materialised per-operator role table reproduces the canonical
    classification sets in ``grammar_types`` exactly (no drift);
-2. the canonical structural typology has exactly the five TNFR.pdf types and
+2. the canonical structural typology has exactly the five registered word-shape types and
    agrees with ``grammar_types.CANONICAL_STRUCTURAL_TYPES`` and
    ``StructuralPattern``;
 3. the legacy ``StructuralPattern`` → canonical ``StructuralType`` reduction is
    total (covers every enum member);
 4. the canonical glyphic functions are well-formed fragments that COMPOSE into
-   grammar-valid words (TNFR.pdf §2.3);
+   grammar-valid words under the supported policy;
 5. the formal-syntax schema and the U1-U6 rule registry are internally coherent.
 """
 
@@ -94,7 +94,7 @@ class TestRoleTableReproducesCanon:
         assert gc.GrammarRole.TRANSFORMER in roles
 
     def test_contraction_is_not_a_closure(self) -> None:
-        # Engine derivation (NUL reduces dim(EPI), does not force ∂EPI/∂t→0).
+        # Contraction is excluded by the supported endpoint policy.
         assert not gc.OPERATOR_ROLES["contraction"].has(gc.GrammarRole.CLOSURE)
 
 
@@ -148,7 +148,7 @@ class TestGlyphicFunctionsCompose:
     """Canonical glyphic functions are fragments that compose into valid words."""
 
     def test_fragments_are_not_standalone_words(self) -> None:
-        # Per TNFR.pdf they are macros to COMPOSE, not standalone valid words
+        # The registry describes fragments to compose, not standalone valid words
         # (see example 143). At least the non-trivial ones are fragments.
         frag = gc.CANONICAL_GLYPHIC_FUNCTIONS["macro_init"]
         assert not _valid(list(frag.glyphs))  # [AL, IL, UM] lacks a closure

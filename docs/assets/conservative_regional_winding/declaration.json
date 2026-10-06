@@ -1,0 +1,37 @@
+{
+  "schema": "tnfr.conservative-regional-winding-declaration.v1",
+  "kind": "analytic_whole_interval_acquisition_not_a_reserved_trajectory",
+  "nodes": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+  "ring_edges": [[0, 1], [1, 2], [2, 3], [3, 4], [4, 0], [5, 6], [6, 7], [7, 8], [8, 9], [9, 5]],
+  "connecting_edges": [[0, 10], [10, 5], [1, 6]],
+  "unit_conductance": true,
+  "capacity": "held unit at every node",
+  "form": [0, -24, 0, 0, 0, 0, 0, 0, 0, 0, 24],
+  "phase": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  "law": "normalized_sine_reciprocal_exchange",
+  "loss": 0,
+  "exchange": 1,
+  "storage_scale": 1,
+  "clock": "tau=t/pi",
+  "forcing": "none",
+  "support_events": "none",
+  "receiver_cycle": [5, 6, 7, 8, 9],
+  "scaled_window": ["1/4", "1/3"],
+  "edge_turn_offsets": [1, 0, 0, 0, 0],
+  "declared_initial_winding": 0,
+  "declared_window_winding": -1,
+  "method": "global full-nodal |x_prime|<=1 and |theta_second|<=2, affine phase advance with rigorous quadratic remainder",
+  "arithmetic": "exact rational preparation, outward dyadic128 intervals and shared Machin pi",
+  "acceptance": "positive strict principal-branch margin on every receiver edge for the complete declared window, with a nonzero integer period derived by telescoping",
+  "controls": [
+    "same support with all environmental forms zero is exactly stationary",
+    "without edge1-6 receiver reflection excludes winding for initially uniform receiver form/phase, irrespective of environment; this is a different support and budget"
+  ],
+  "randomness": "none",
+  "scope": [
+    "supplied environmental form and fixed support, not autonomous preparation or support creation",
+    "full conservative law, no fitted damping or prescribed external path",
+    "finite nonacute winding identity, not an equilibrium, attractive capture or indefinite maintenance",
+    "analytic enclosure, no sampled trajectory or physical validation"
+  ]
+}

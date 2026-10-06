@@ -146,7 +146,7 @@ from .nodal_remainder_runtime import (
     NodalRemainderRuntimeBinding,
     execute_nodal_remainder_event_schedule,
 )
-from .registry import OPERATORS, discover_operators, get_operator_class
+from .registry import OPERATORS, get_operator_class
 from .remesh import (
     DelayedRemeshNodeProposal,
     DelayedRemeshPlan,
@@ -169,8 +169,6 @@ if apply_remesh_if_globally_stable.__doc__:
     apply_remesh_if_globally_stable.__doc__ += "\n\n" + _remesh_doc
 else:
     apply_remesh_if_globally_stable.__doc__ = _remesh_doc
-
-discover_operators()
 
 _DEFINITION_EXPORTS = {
     name: getattr(_definitions, name) for name in getattr(_definitions, "__all__", ())
@@ -289,7 +287,6 @@ __all__ = [
     "apply_topological_remesh",
     "apply_remesh_if_globally_stable",
     "OPERATORS",
-    "discover_operators",
     "get_operator_class",
     "SequenceHealthMetrics",
     "SequenceHealthAnalyzer",

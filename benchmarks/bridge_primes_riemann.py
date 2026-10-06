@@ -1,49 +1,19 @@
-"""
-benchmarks/bridge_primes_riemann.py
+"""Finite symmetry controls for a supplied prime-ladder graph.
 
-The bridge: does the prime structure of Z link to the TNFR-Riemann program?
+The five comparisons check that identical disconnected paths admit prime-label
+permutations, their Laplacian levels repeat across components, those eigenspaces
+carry a reducible permutation representation, a supplied k*log(p) diagonal
+breaks the bare-graph symmetry, and a Cartesian product inherits the specified
+product action and multiplies the connected-component count.
 
-This harness connects two threads that, so far, ran in parallel:
-  (A) composition_arithmetic.py -- the additive/multiplicative composition of
-      integers emerges from coupling coherent systems (graph products), and a
-      cardinal "factorises" or not depending on the SYSTEM's symmetry group.
-  (B) the TNFR-Riemann program -- the discrete prime-ladder Hamiltonian P14
-      reproduces -zeta'/zeta exactly, yet G4 = RH stays open; the residual
-      obstruction is the oscillatory term S(T) = (1/pi)*arg zeta(1/2 + iT),
-      which the Euler-Orthogonality Lemma (research notes section 13vicies-
-      novies.11) pins inside Fix(S_n)^perp.
-
-CLAIM UNDER TEST: the two threads meet at ONE structural object -- the
-prime-relabelling symmetry S_n -- through ONE shared machinery -- graph products.
-
-The canonical prime-ladder graph (build_prime_ladder_graph) is literally n
-disjoint identical copies of a path P_K, one ladder per prime, with NO edges
-between distinct primes (Euler-product orthogonality enforced at graph level).
-Hence:
-  * permuting the primes is a graph automorphism: S_n is a subgroup of Aut(G);
-  * the graph (Laplacian / adjacency) cannot tell primes apart -- its spectral
-    degeneracies are cardinals (= n) carrying the permutation rep of S_n;
-  * the individual primes enter ONLY through the diagonal label
-    nu_f = k*log(p) (the von Mangoldt weight), which breaks S_n by hand.
-
-So the SAME S_n that decides "factorises or not" in (A) is the obstruction that,
-in (B), traps every catalog construction in Fix(S_n) and leaves the
-RH-equivalent oscillatory residue S(T) in Fix(S_n)^perp unreachable.
-
-HONEST SCOPE:
-  This MAPS the link; it does NOT close G4 = RH. It shows (i) the prime-ladder
-  graph is S_n-symmetric, (ii) its spectral degeneracies are reducible cardinals
-  under S_n (<chi,chi> = 2 = trivial + standard, NOT irreducible), (iii) the prime
-  content lives only in the consumed diagonal label k*log(p), (iv) graph products
-  multiply the cardinals (the operation emerges, research notes Q1/Q2 of B0*-alpha)
-  yet preserve S_n x S_n equivariance -- so the product route cannot encode the
-  fine prime distribution either. The prime structure of Z is INPUT on the
-  fine-grained side of BOTH threads; it is not derived from pure dynamics.
-
-Run:
-    python benchmarks/bridge_primes_riemann.py
-
-Status: RESEARCH (A<->B bridge falsifier; shared obstruction = S_n).
+These finite algebraic statements do not characterize every engine operator,
+state or selector. In particular, no map places analytic zeta S(T) in a finite
+symmetry complement, and no universal Riemann obstruction follows. Prime
+labels, logarithmic weights and graph products are construction inputs.
+The conditional equivariance result belongs to
+theory/TNFR_STRUCTURAL_OBSERVABILITY.md#6-limits-beyond-linear-symmetry; the arithmetic construction is
+scoped in theory/TNFR_RIEMANN_RESEARCH_NOTES.md. Shared spectral helpers remain
+in composition_arithmetic.py.
 """
 
 from __future__ import annotations
@@ -210,8 +180,8 @@ def test_prime_degeneracy_is_reducible():
     print("  that would distinguish individual primes (the standard irrep) is present")
     print("  but COUPLED to the trivial mode -- nothing in the GRAPH separates them.")
     print(
-        f"  VERDICT: {'PASS' if all_reducible else 'FAIL'} -- primes are not "
-        "individuated by the dynamics"
+        f"  VERDICT: {'PASS' if all_reducible else 'FAIL'} -- bare-graph Laplacian levels do not distinguish "
+        "the supplied prime labels"
     )
     print()
     return all_reducible
@@ -222,7 +192,9 @@ def test_prime_degeneracy_is_reducible():
 # --------------------------------------------------------------------------- #
 def test_prime_content_is_diagonal_input():
     print("=" * 78)
-    print("(4) The Riemann content lives ONLY in the diagonal label nu_f = k*log p")
+    print(
+        "(4) The supplied k*log(p) diagonal breaks the bare-graph permutation symmetry"
+    )
     print("=" * 78)
     primes = [2, 3, 5, 7]
     K = 4
@@ -240,10 +212,9 @@ def test_prime_content_is_diagonal_input():
     print(
         f"  max ||[diag(nu_f), P_sigma]|| = {max_comm_D:.2e}   (label BREAKS S_n by hand)"
     )
-    print("  The values {k*log p} -- the entire Euler-product / von Mangoldt content")
-    print("  that P14 feeds into -zeta'/zeta -- sit in the diagonal label, CONSUMED as")
-    print("  input. The S_n-invariant graph dynamics carries none of it. This is")
-    print("  exactly the Euler-Orthogonality Lemma (13vicies-novies.11).")
+    print("  The unweighted Laplacian and supplied frequency diagonal are different")
+    print("  operators. Their different commutators do not establish a universal")
+    print("  information obstruction for the complete state or analytic zeta.")
     print(
         f"  VERDICT: {'PASS' if ok else 'FAIL'} -- prime structure is consumed, "
         "not generated"
@@ -284,13 +255,12 @@ def test_product_multiplies_but_preserves_symmetry():
     print(f"  cardinals multiply (n x n)?         {cardinals_multiply}")
     print(f"  max ||[L_(G[]G), P_sigma (x) P_tau]|| over S_n x S_n = {max_comm:.2e}")
     print(f"  S_n x S_n equivariance preserved?   {equivariance_preserved}")
-    print("  The product PRODUCES x on cardinals (operation emerges, like Q1/Q2 of")
-    print("  B0*-alpha) yet commutes with prime relabelling on BOTH factors -- the")
-    print("  Canonical Product Equivariance Lemma. So the product route still cannot")
-    print("  break S_n, hence cannot reach the fine prime distribution / S(T).")
+    print("  Connected-component counts multiply in this supplied Cartesian product.")
+    print("  Its Laplacian commutes with the specified action on both factors.")
+    print("  This conditional identity does not constrain every state or selector.")
     print(
-        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- operation emerges, obstruction "
-        "persists"
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- finite product identity and "
+        "declared symmetry hold"
     )
     print()
     return ok
@@ -327,16 +297,10 @@ def main():
     print()
     print(f"  OVERALL: {'ALL PASS' if overall else 'SOME FAILED'}")
     print()
-    print("  Reading: YES, the prime structure of Z links to the TNFR-Riemann")
-    print("  program -- through the prime-relabelling symmetry S_n and the shared")
-    print("  graph-product machinery. The SAME S_n that, in composition_arithmetic.py,")
-    print("  decides whether a cardinal 'factorises' is the obstruction that, in the")
-    print("  Riemann program (Euler-Orthogonality Lemma), traps every catalog")
-    print("  construction in Fix(S_n). The individual primes enter only as the")
-    print("  consumed diagonal label k*log p (von Mangoldt) on the fine-grained side")
-    print("  of BOTH threads. The link is real and structural; it does NOT close")
-    print("  G4 = RH: the RH-equivalent residue S(T) lives in Fix(S_n)^perp, exactly")
-    print("  where S_n-invariant dynamics cannot reach.")
+    print("  These five controls concern the supplied graph, diagonal and action.")
+    print("  They retain finite permutation/product identities and input provenance.")
+    print("  No claim places analytic S(T) in a finite symmetry complement or")
+    print("  characterizes every engine state, operator word or selector.")
 
 
 if __name__ == "__main__":

@@ -4,10 +4,10 @@ from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from types import ModuleType
 from typing import Any
+from typing import TypeAlias as TypeAlias
 
 from _typeshed import Incomplete
 
-from .._compat import TypeAlias as TypeAlias
 from ..alias import collect_attr as collect_attr
 from ..alias import collect_theta_attr as collect_theta_attr
 from ..alias import get_attr as get_attr

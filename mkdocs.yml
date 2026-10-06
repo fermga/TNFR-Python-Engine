@@ -53,11 +53,29 @@ nav:
       - "Usage guides":
           - "CLI and SDK": docs/CLI_AND_SDK.md
           - "Regional and relational SDK": docs/guides/REGIONAL_AND_RELATIONAL.md
+          - "Native relational execution and observations": docs/guides/relational/RELATIONAL_EXECUTION.md
+          - "Native relational capture, memory and continuous proofs": docs/guides/relational/RELATIONAL_CAPTURE_AND_MEMORY.md
+          - "Shared observations, information and finite-sample bounds": docs/guides/relational/OBSERVATION_AND_INFORMATION.md
+          - "Normalized-sine comparison, inference and forecasts": docs/guides/relational/SINE_COMPARISON_AND_INFERENCE.md
+          - "Sine response, constitutive comparisons and hidden memory": docs/guides/relational/SINE_RESPONSE_AND_MEMORY.md
+          - "Sine pattern geometry, formation and recovery": docs/guides/relational/SINE_PATTERNS.md
+          - "Conservative sine saddle preparations and certificates": docs/guides/relational/SINE_SADDLE_CERTIFICATES.md
+          - "Conservative sine regional and collective dynamics": docs/guides/relational/SINE_REGIONAL_DYNAMICS.md
+          - "Retained sine pair state, identification and pulses": docs/guides/relational/SINE_PAIR_DYNAMICS.md
           - "Observational interfaces": docs/STRUCTURAL_INTERFACE_THEORY.md
           - "Optional Torch backend": docs/TORCH_BACKEND.md
       - "Contracts and diagnostics":
           - "API contracts": docs/API_CONTRACTS.md
           - "Relational dynamics": docs/contracts/RELATIONAL_DYNAMICS.md
+          - "Native relational execution and observations": docs/contracts/relational/RELATIONAL_EXECUTION.md
+          - "Native relational capture, memory and continuous proofs": docs/contracts/relational/RELATIONAL_CAPTURE_AND_MEMORY.md
+          - "Shared observations, information and finite-sample bounds": docs/contracts/relational/OBSERVATION_AND_INFORMATION.md
+          - "Normalized-sine comparison, inference and forecasts": docs/contracts/relational/SINE_COMPARISON_AND_INFERENCE.md
+          - "Sine response, constitutive comparisons and hidden memory": docs/contracts/relational/SINE_RESPONSE_AND_MEMORY.md
+          - "Sine pattern geometry, formation and recovery": docs/contracts/relational/SINE_PATTERNS.md
+          - "Conservative sine saddle preparations and certificates": docs/contracts/relational/SINE_SADDLE_CERTIFICATES.md
+          - "Conservative sine regional and collective dynamics": docs/contracts/relational/SINE_REGIONAL_DYNAMICS.md
+          - "Retained sine pair state, identification and pulses": docs/contracts/relational/SINE_PAIR_DYNAMICS.md
           - "Operator events": docs/contracts/OPERATOR_EVENTS.md
           - "Structural fields": docs/STRUCTURAL_FIELDS_TETRAD.md
 # END GENERATED DOCS NAVIGATION
@@ -76,10 +94,24 @@ nav:
           - "Phase-to-form exchange": theory/nodal/PHASE_FORM_EXCHANGE.md
           - "Primitive phase closure": theory/nodal/PRIMITIVE_PHASE_CLOSURE.md
           - "Derived form phase": theory/nodal/DERIVED_FORM_PHASE.md
-          - "Relational exchange, recovery and formation": theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md
+          - "Relational law and chapter index": theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md
+          - "Relational coefficient and capacity identification": theory/nodal/RELATIONAL_RESPONSE_IDENTIFICATION.md
+          - "Sine law and constitutive information boundaries": theory/nodal/SINE_CONSTITUTIVE_INFORMATION.md
+          - "Native local recovery and regional interaction": theory/nodal/RELATIONAL_RECOVERY_AND_INTERACTION.md
+          - "Native phase domains and capture": theory/nodal/RELATIONAL_DOMAIN_AND_CAPTURE.md
+          - "Native validated transit and preparation controls": theory/nodal/RELATIONAL_FORMATION_CONTROLS.md
           - "Relational pattern composition": theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md
           - "Smooth-sine pattern dynamics": theory/nodal/SINE_PATTERN_DYNAMICS.md
-          - "Relational pattern memory": theory/nodal/RELATIONAL_PATTERN_MEMORY.md
+          - "Exact and controlled form-phase reductions": theory/nodal/SINE_FORM_PHASE_REDUCTION.md
+          - "Conservative regional formation and its barriers": theory/nodal/SINE_REGIONAL_FORMATION.md
+          - "Collective phase families and live contact feedback": theory/nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md
+          - "Conservative source preparation and finite retention": theory/nodal/SINE_CONSERVATIVE_PREPARATION.md
+          - "Native reduction and memory index": theory/nodal/RELATIONAL_PATTERN_MEMORY.md
+          - "Native mediated pattern dynamics": theory/nodal/RELATIONAL_MEDIATOR_DYNAMICS.md
+          - "Sine environmental state and causal memory": theory/nodal/SINE_ENVIRONMENTAL_MEMORY.md
+          - "Return-path geometry and collective response": theory/nodal/RELATIONAL_RETURN_PATH_GEOMETRY.md
+          - "Retained phase records and finite contact readout": theory/nodal/RELATIONAL_PHASE_MEMORY.md
+          - "Sine relative state, recovery and conservative identity": theory/nodal/SINE_PATTERN_RECOVERY.md
           - "Resonance foundations": theory/nodal/RESONANCE_FOUNDATIONS.md
           - "Emergence and ontology": theory/EMERGENT_ONTOLOGY.md
       - "Transport, memory and clocks":
@@ -90,8 +122,18 @@ nav:
           - "Cycle support dynamics": theory/CYCLE_SUPPORT_DYNAMICS.md
           - "Cycle memory relaxation": theory/CYCLE_MEMORY_RELAXATION.md
           - "Forced support balance": theory/FORCED_SUPPORT_BALANCE.md
+          - "Forced regional response and environmental readouts": theory/nodal/FORCED_REGIONAL_RESPONSE.md
+          - "Forced-source closure and phase clocks": theory/nodal/FORCED_SOURCE_AND_CLOCK.md
+          - "Conditional phase locking and circulation geometry": theory/nodal/FORCED_PHASE_LOCKING.md
+          - "Winding generation and native writer boundaries": theory/nodal/FORCED_WINDING_AND_WRITERS.md
+          - "Geometric identity and capacity-feedback bounds": theory/nodal/FORCED_GEOMETRIC_IDENTITY.md
           - "REMESH fixed-delay models": theory/REMESH_INFINITY_DERIVATION.md
-          - "Scale, geometry and bridge": theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md
+          - "Scale, geometry and collective-state index": theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md
+          - "Sufficient unordered pair state": theory/nodal/SINE_PAIR_STATE.md
+          - "Internal replica pulses and their perturbations": theory/nodal/SINE_REPLICA_PULSE.md
+          - "Phase and joint form-phase grouping": theory/nodal/SINE_PAIR_GROUPING.md
+          - "Pair geometry under alternative reciprocal mobility": theory/nodal/SINE_PAIR_MOBILITY.md
+          - "Pair actions, regional exchange and cancellation": theory/nodal/SINE_PAIR_INTERACTION.md
       - "Operators, grammar and support events":
           - "Structural operators": theory/STRUCTURAL_OPERATORS.md
           - "Unified grammar": theory/UNIFIED_GRAMMAR_RULES.md
@@ -122,16 +164,13 @@ nav:
           - "Arithmetic pressure — R7": theory/TNFR_ARITHMETIC_PRESSURE.md
           - "Arithmetic operators — R8": theory/TNFR_ARITHMETIC_OPERATORS.md
           - "Riemann scope": theory/TNFR_RIEMANN_RESEARCH_NOTES.md
-          - "Prime-ladder atlas": theory/NUCLEUS_A_PRIME_LADDER_ATLAS.md
-          - "Equivariance obstructions": theory/NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md
-          - "Applied structural analysis": theory/APPLIED_STRUCTURAL_ANALYSIS.md
       - "Research, measurement and parked evidence":
           - "Execution plan": theory/research/FIVE_STAGE_EXECUTION_PLAN.md
           - "Research strategy": theory/NODAL_RESEARCH_STRATEGY.md
           - "Passive transport protocol": theory/research/PASSIVE_TRANSPORT_PROTOCOL.md
           - "Regional phase/amplitude protocol": theory/research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md
-          - "TCLab exploratory protocol": theory/research/TCLAB_EXPLORATORY_PROTOCOL.md
-          - "C6 mechanism audit": theory/C6_RESEARCH_MECHANISM_AUDIT.md
+          - "TCLab comparison boundary": theory/research/TCLAB_EXPLORATORY_PROTOCOL.md
+          - "Parked C6 evidence boundary": theory/C6_RESEARCH_MECHANISM_AUDIT.md
 # END GENERATED THEORY NAVIGATION
       - Historical archive: theory/research/archive/README.md
       - Retired programme boundaries: theory/research/archive/RETIRED_PROGRAMME_BOUNDARIES.md

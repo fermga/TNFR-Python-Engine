@@ -19,7 +19,6 @@ from ..types import Glyph, PresetTokens
 __all__ = (
     "get_preset",
     "PREFERRED_PRESET_NAMES",
-    "legacy_preset_guidance",
 )
 
 _PRIMARY_PRESETS: dict[str, PresetTokens] = {
@@ -64,16 +63,6 @@ _PRIMARY_PRESETS: dict[str, PresetTokens] = {
 PREFERRED_PRESET_NAMES: tuple[str, ...] = tuple(_PRIMARY_PRESETS.keys())
 
 _PRESETS: dict[str, PresetTokens] = {**_PRIMARY_PRESETS}
-
-
-def legacy_preset_guidance(name: str) -> str | None:
-    """Return CLI guidance for preset lookups.
-
-    Legacy aliases were removed; the function now always returns ``None``.
-    ``name`` is accepted to preserve the public helper signature.
-    """
-
-    return None
 
 
 def get_preset(name: str) -> PresetTokens:

@@ -451,3 +451,88 @@ def test_export_rejects_unsupported_node_labels_before_projection(sample, field)
         changed = opaque
     with pytest.raises(TypeError, match="JSON scalar node labels"):
         replace(report, **{field: changed}).to_dict()
+
+
+def test_mediation_rebuilds_all_consumed_rates_and_work_from_primitives(sample):
+    _, full, expected = sample
+    poisoned = replace(
+        full,
+        form_gradient=(Q(900),) * 5,
+        relative_resultant=((I(-700), I(800)),) * 5,
+        phase_sources=(I(600),) * 5,
+        pressure=(I(500),) * 5,
+        form_rates=(I(-400),) * 5,
+        phase_rates=(I(300),) * 5,
+        form_storage=Q(-200),
+        phase_storage=I(-100),
+        storage=I(-300),
+        continuous_loss=Q(-900),
+        balance_residual=I(777),
+    )
+    before = pickle.dumps(poisoned)
+    report = poisoned.mediated_pressure(mediator=0)
+    assert report.comparison == full
+    assert report.comparison is not poisoned
+    for field in fields(report):
+        if field.name != "comparison":
+            assert getattr(report, field.name) == getattr(expected, field.name)
+    assert pickle.dumps(poisoned) == before
+    # A second consumer receives rebuilt evidence, including the fields that
+    # the first view only retained for source association and export.
+    assert report.comparison.mediated_pressure(mediator=0) == expected
+    assert report.to_dict() == expected.to_dict()
+
+
+def test_changed_hidden_primitives_rebuild_the_complete_environment(sample):
+    graph, full, _ = sample
+    changed_graph = graph.copy()
+    changed_graph.nodes[0].update(EPI=-2, theta=Q(3, 4), nu_f=0)
+    expected = _capture(changed_graph).mediated_pressure(mediator=0)
+    stale = replace(
+        full,
+        epi=(Q(-2), *full.epi[1:]),
+        phase=(Q(3, 4), *full.phase[1:]),
+        capacity=(Q(0), *full.capacity[1:]),
+    )
+    rebuilt = stale.mediated_pressure(mediator=0)
+    assert rebuilt == expected
+    assert rebuilt.hidden_form_rate == rebuilt.hidden_phase_rate == I(0)
+    assert rebuilt.hidden_loss == 0
+    assert rebuilt.boundary_work != sample[2].boundary_work
+    # Freezing the hidden rows does not freeze the independently moving ports.
+    assert not rebuilt.port_mean_form_rate.contains(0)
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    (
+        ("epi", (True, Q(1), Q(-1, 2), Q(3, 4), Q(-1))),
+        ("phase", (False, Q(0), Q(1, 2), Q(-3, 4), Q(1))),
+        ("phase", (float("nan"), Q(0), Q(1, 2), Q(-3, 4), Q(1))),
+        ("capacity", (True, Q(1), Q(2), Q(1, 2), Q(3, 2))),
+        ("capacity", (Q(-1), Q(1), Q(2), Q(1, 2), Q(3, 2))),
+        ("capacity", (Q(1),)),
+        ("degrees", (True, 2, 3, 1, 1)),
+        ("degrees", (3, 2, 2, 1, 1)),
+        ("edges", ((0, 1), (0, 2), (0, 3), (1, 2))),
+        ("law", "native_argument_pressure"),
+    ),
+)
+def test_mediation_rejects_invalid_primitive_rows_even_with_valid_caches(
+    sample, field, value
+):
+    with pytest.raises((TypeError, ValueError)):
+        replace(sample[1], **{field: value}).mediated_pressure(mediator=0)
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    (("storage_scale", True), ("epi_weight", False), ("phase_weight", True)),
+)
+def test_mediation_rejects_boolean_model_coefficients_before_rational_conversion(
+    sample, field, value
+):
+    model = replace(MODEL)
+    object.__setattr__(model, field, value)
+    with pytest.raises((TypeError, ValueError)):
+        replace(sample[1], reference_model=model).mediated_pressure(mediator=0)

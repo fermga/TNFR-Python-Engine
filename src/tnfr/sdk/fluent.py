@@ -1173,26 +1173,21 @@ class TNFRNetwork:
         node: int | None = None,
         collect_metrics: bool = True,
     ) -> TNFRNetwork:
-        """Apply a canonical predefined operator sequence from TNFR theory.
+        """Execute an ordered recipe from ``list_canonical_sequences()``.
 
-        Executes one of the 6 archetypal sequences involving OZ (Dissonance)
-        from "El pulso que nos atraviesa" (Table 2.5). These sequences represent
-        validated structural patterns with documented use cases and domain contexts.
+        The shared recipe registry owns its word and metadata. Recipe names
+        and domain tags are labels, not evidence of therapeutic, cognitive or
+        physical effects. Word admission does not guarantee live preconditions,
+        synchronization, a bifurcation or future stability.
 
         Parameters
         ----------
         sequence_name : str
-            Name of canonical sequence. Available sequences:
-            - 'bifurcated_base': OZ → ZHIR (mutation path)
-            - 'bifurcated_collapse': OZ → NUL (collapse path)
-            - 'therapeutic_protocol': Complete healing cycle
-            - 'theory_system': Epistemological construction
-            - 'full_deployment': Complete reorganization trajectory
-            - 'mod_stabilizer': OZ → ZHIR → IL (reusable macro)
+            Key returned by ``list_canonical_sequences()``.
         node : int, optional
-            Target node ID. If None, applies to the most recently added node.
+            Target node; defaults to the most recently added node.
         collect_metrics : bool, default=True
-            Whether to collect detailed operator metrics during execution.
+            Request operator diagnostics during execution.
 
         Returns
         -------
@@ -1202,33 +1197,13 @@ class TNFRNetwork:
         Raises
         ------
         ValueError
-            If sequence_name is not recognized or network has no nodes.
-
-        Examples
-        --------
-        Apply therapeutic protocol:
-
-        >>> net = TNFRNetwork("therapy_session")
-        >>> net.add_nodes(1).apply_canonical_sequence("therapeutic_protocol")
-        >>> results = net.measure()
-        >>> print(f"Coherence: {results.coherence:.3f}")
-
-        Apply MOD_STABILIZER as reusable transformation module:
-
-        >>> net = TNFRNetwork("modular")
-        >>> net.add_nodes(1)
-        >>> net.apply_canonical_sequence("mod_stabilizer").measure()
-
-        See Also
-        --------
-        list_canonical_sequences : list available sequences with filters
-        apply_sequence : Apply predefined or custom operator sequences
+            If the recipe or target is unknown, or the graph is empty.
 
         Notes
         -----
-        Canonical sequences are archetypal patterns from TNFR theory documented
-        in "El pulso que nos atraviesa", Tabla 2.5. Each sequence has been
-        validated for structural coherence and grammar compliance.
+        Execution uses the shared operator registry and ``run_sequence``.
+        Ordered operators retain their grammar, history and live-state checks.
+        No application-domain outcome follows from a successful invocation.
         """
         if self._graph is None or self._graph.number_of_nodes() == 0:
             raise ValueError("No nodes in graph. Call add_nodes() first.")
@@ -1275,59 +1250,26 @@ class TNFRNetwork:
         domain: str | None = None,
         with_oz: bool = False,
     ) -> dict[str, Any]:
-        """list available canonical sequences with optional filters.
-
-        Returns a dictionary of canonical operator sequences from TNFR theory.
-        Sequences can be filtered by domain or by presence of OZ (Dissonance).
+        """Return registered operator recipes with optional metadata filters.
 
         Parameters
         ----------
         domain : str, optional
-            Filter by domain. Options:
-            - 'general': Cross-domain patterns
-            - 'biomedical': Therapeutic and healing sequences
-            - 'cognitive': Epistemological and learning patterns
-            - 'social': Organizational and collective sequences
+            Exact domain tag. These retained labels, including ``biomedical``
+            and ``cognitive``, are not validated application claims.
         with_oz : bool, default=False
-            If True, only return sequences containing OZ (Dissonance) operator.
+            Restrict to words containing Dissonance (OZ).
 
         Returns
         -------
         dict
-            Dictionary mapping sequence names to CanonicalSequence objects.
-            Each entry contains: name, glyphs, pattern_type, description,
-            use_cases, domain, and references.
-
-        Examples
-        --------
-        list all canonical sequences:
-
-        >>> net = TNFRNetwork("explorer")
-        >>> sequences = net.list_canonical_sequences()
-        >>> for name in sequences:
-        ...     print(name)
-        bifurcated_base
-        bifurcated_collapse
-        therapeutic_protocol
-        theory_system
-        full_deployment
-        mod_stabilizer
-
-        list only sequences with OZ:
-
-        >>> oz_sequences = net.list_canonical_sequences(with_oz=True)
-        >>> print(f"Found {len(oz_sequences)} sequences with OZ")
-        Found 6 sequences with OZ
-
-        list biomedical domain sequences:
-
-        >>> bio_sequences = net.list_canonical_sequences(domain="biomedical")
-        >>> for name, seq in bio_sequences.items():
-        ...     print(f"{name}: {seq.description[:50]}...")
+            Names mapped to ``CanonicalSequence`` records. Each record contains
+            the ordered glyphs, pattern label, description, use cases, domain
+            and references. Read this registry instead of copying a recipe list.
 
         See Also
         --------
-        apply_canonical_sequence : Apply a canonical sequence to the network
+        apply_canonical_sequence : Execute a selected recipe with live checks.
         """
         from ..operators.canonical_patterns import CANONICAL_SEQUENCES
         from ..types import Glyph

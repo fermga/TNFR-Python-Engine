@@ -93,12 +93,3 @@ network; unknown operations remain pending.
 
 See [ARCHITECTURE.md](../ARCHITECTURE.md), [TESTING.md](../TESTING.md), and
 [SECURITY.md](../SECURITY.md) for the governing contracts.
-
-## Retired profiler wrapper
-
-The old `run_reproducible_benchmarks.py` registry referenced four absent profiler
-programs and had no runnable workload. It and the `tnfr profile-si` and
-`tnfr profile-pipeline` commands have been removed; the CLI rejects those names.
-The [benchmark guide](../benchmarks/README.md)
-lists the current instruments. Their individual provenance requirements remain
-necessary; a seed and checksum alone do not prove reproducibility.

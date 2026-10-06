@@ -1,29 +1,23 @@
 #!/usr/bin/env python3
-"""N05 transient U2/U6 certificate benchmark.
+"""Finite directed-diffusion controls and a weighted contraction counterexample.
 
-Shows the R9 canonical finding: directed random-walk diffusion has NO
-non-consensus transient in the Euclidean per-node energy. On the L-invariant
-non-consensus subspace {y : pi^T y = 0} (orthonormal basis) the symmetric part of
-the generator L_sub is positive definite, so the semigroup e^{-s L_sub} is a
-genuine contraction (peak_gain = 1, Kreiss lower bound <= 1). The naive ambient
-operator-norm gain > 1 is EXACTLY the oblique consensus-projection factor ||Q||
-(peak at s = 0) -- a coordinate artifact, not dynamical growth. This reinforces
-N03 (contraction in L2(pi)).
+Three supplied graphs contract in the restricted Euclidean comparisons. A
+fourth, already retained in the tests, has an exact non-consensus direction
+with positive initial energy derivative. It refutes universal Euclidean
+contraction; stationary-weighted contraction is a separate theorem.
 
-The U2 integral J is finite (J <= M ||LQ|| ||x0|| / omega, N04) and the U6
-structural potential Phi_s(s) = -B L e^{-sL} Q x0 (canonical inverse-square B) is
-confined below pi/2 over the FULL trajectory for a bounded perturbation.
-
-Honest scope: symmetric_part_min_eig > 0 is MEASURED (2e5 random + in-hub, no
-counterexample); the general positive-definiteness is CONJECTURAL. This does NOT
-decide the canonical U2 metric (NT-P09b/c OPEN) and does NOT modify U2/U6. No
-complexity / crypto / Millennium claim.
+The selected model is fixed-graph linear EPI diffusion with scalar capacity
+and structural time. Sampled semigroup, resolvent, variation and potential
+magnitude comparisons do not certify an unobserved tail or canonical U2/U6.
+See theory/TNFR_DIRECTED_NONNORMAL_DYNAMICS.md, sections 3-5. This corrected
+instrument does not revise or regenerate a historical experiment record.
 """
 
 from __future__ import annotations
 
 import platform
 import sys
+from fractions import Fraction
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
@@ -34,7 +28,6 @@ from tnfr.physics.directed_diffusion import directed_cayley_adjacency  # noqa: E
 from tnfr.physics.transient_u2 import certify_transient_u2  # noqa: E402
 from tnfr.research import (  # noqa: E402
     CircularityAudit,
-    ClaimStatus,
     ExperimentManifest,
     input_bit_length,
 )
@@ -63,24 +56,63 @@ CASES = [
     ),
 ]
 
+COUNTEREXAMPLE_WEIGHTS = (
+    (0, 1, 0, 0, 0, 12),
+    (0, 0, 1, 0, 0, 0),
+    (0, 0, 0, 15, 0, 0),
+    (0, 9, 0, 0, 1, 0),
+    (0, 0, 0, 0, 0, 10),
+    (1, 0, 0, 0, 0, 0),
+)
+COUNTEREXAMPLE_STATE = (4341, -4028, -4275, -4065, 2273, 4998)
+
+
+def counterexample_energy_derivative() -> Fraction:
+    """Evaluate -2*y.T*L*y exactly on the retained pi-orthogonal witness."""
+    stationary = tuple(Fraction(v, 57) for v in (13, 10, 10, 10, 1, 13))
+    transition = tuple(
+        tuple(Fraction(weight, sum(row)) for weight in row)
+        for row in COUNTEREXAMPLE_WEIGHTS
+    )
+    if (
+        any(
+            sum(stationary[i] * transition[i][j] for i in range(6)) != stationary[j]
+            for j in range(6)
+        )
+        or sum(p * y for p, y in zip(stationary, COUNTEREXAMPLE_STATE)) != 0
+    ):
+        raise ValueError("the fixed witness must lie in the non-consensus space")
+    ly = tuple(
+        y - sum(p * z for p, z in zip(row, COUNTEREXAMPLE_STATE))
+        for y, row in zip(COUNTEREXAMPLE_STATE, transition)
+    )
+    return -2 * sum(y * v for y, v in zip(COUNTEREXAMPLE_STATE, ly))
+
 
 def main() -> int:
-    print("N05 transient U2/U6: no per-node-energy transient; ambient >1 = ||Q||")
+    print(
+        "Finite directed diffusion: three contracting controls and one counterexample"
+    )
     header = (
         f"  {'graph':<38} {'||Q||':>6} {'symE':>6} {'peak':>6} "
         f"{'kreiss':>7} {'ambient':>8} {'J<=b':>5} {'noAmp':>6}"
     )
     print(header)
-    all_no_amp = True
-    all_artifact = True
+    controls_match = True
     all_bounds = True
-    for label, w, x in CASES:
+    cases = [(*case, True) for case in CASES]
+    cases.append(
+        (
+            "weighted counterexample",
+            np.array(COUNTEREXAMPLE_WEIGHTS, dtype=float),
+            _unit(COUNTEREXAMPLE_STATE),
+            False,
+        )
+    )
+    for label, w, x, expected_no_amp in cases:
         c = certify_transient_u2(w, x)
-        all_no_amp &= c.no_transient_amplification
+        controls_match &= c.no_transient_amplification == expected_no_amp
         all_bounds &= c.bounds_hold
-        # ambient gain is the oblique ||Q|| factor, not dynamics
-        if abs(c.ambient_oblique_gain - c.consensus_projection_norm) > 1e-3:
-            all_artifact = False
         print(
             f"  {label:<38} {c.consensus_projection_norm:>6.4f} "
             f"{c.symmetric_part_min_eig:>6.3f} {c.peak_gain:>6.4f} "
@@ -89,7 +121,9 @@ def main() -> int:
             f"{str(c.no_transient_amplification):>6}"
         )
 
-    audit = CircularityAudit()  # pure spectral / semigroup dynamics
+    derivative = counterexample_energy_derivative()
+    controls_match &= derivative > 0
+    audit = CircularityAudit()  # supplied spectral / semigroup model
     _ = ExperimentManifest(
         claim_id="NT-P09d",
         git_sha="local",
@@ -97,31 +131,25 @@ def main() -> int:
         seed=None,
         operator_sequence=(),
         uses_known_factors=False,
-        input_bits=input_bit_length(max(len(w) for _, w, _ in CASES)),
+        input_bits=input_bit_length(max(len(w) for _, w, _, _ in cases)),
         controls=(
             "normal_unit_gain",
-            "euclidean_pernode_contraction",
-            "ambient_equals_Q_norm",
-            "kreiss_le_peak",
-            "u2_finite",
-            "u6_confined",
+            "three_contracting_fixtures",
+            "weighted_nonconsensus_growth_counterexample",
+            "sampled_resolvent_semigroup_comparison",
+            "finite_window_variation_comparison",
+            "potential_magnitude_not_u6_drift",
         ),
         artifacts=(),
     )
     print()
-    print(f"  peak_gain == 1 (no per-node transient) : {all_no_amp}")
-    print(f"  ambient gain == ||Q|| (oblique artifact): {all_artifact}")
-    print(f"  U2/U6 inequality certificates hold      : {all_bounds}")
-    print(
-        f"  per-node contraction  : {ClaimStatus.DERIVED.value} form; "
-        f"PSD-on-subspace {ClaimStatus.CONJECTURAL.value} (2e5 + in-hub)"
-    )
-    print(
-        f"  canonical U2 metric   : {ClaimStatus.CONJECTURAL.value} / OPEN "
-        "(NT-P09d; U2/U6 unmodified)"
-    )
+    print(f"  Declared contraction/growth controls match: {controls_match}")
+    print(f"  Exact counterexample d||y||^2/ds at s=0: {derivative} > 0")
+    print(f"  Sampled inequality comparisons hold: {all_bounds}")
+    print("  Universal Euclidean contraction: REFUTED by the fixed witness")
+    print("  Canonical U2 metric: OPEN; tail and U6 drift: NOT ASSESSED")
     print(f"  circularity           : {audit.verdict.value}")
-    ok = all_no_amp and all_artifact and all_bounds
+    ok = controls_match and all_bounds
     return 0 if ok else 1
 
 

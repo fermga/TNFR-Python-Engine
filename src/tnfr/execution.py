@@ -4,9 +4,8 @@ from __future__ import annotations
 
 from collections import deque
 from collections.abc import Callable, Iterable, Sequence
-from typing import Any, cast
+from typing import Any, TypeAlias, cast
 
-from ._compat import TypeAlias
 from .constants import get_param
 from .dynamics import step
 from .flatten import _flatten

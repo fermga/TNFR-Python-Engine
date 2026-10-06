@@ -12,12 +12,12 @@ import sys
 from abc import ABC, abstractmethod
 from collections.abc import Mapping, MutableMapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
+from dataclasses import dataclass
 from operator import itemgetter
 from typing import Any, cast
 
 from .._exact_time import finite_represented_real
 from ..alias import get_attr
-from ..compat.dataclass import dataclass
 from ..constants import get_graph_param, get_param
 from ..mathematics.unified_numerical import np
 from ..metrics.common import merge_and_normalize_weights

@@ -20,10 +20,10 @@ from __future__ import annotations
 
 from collections import defaultdict
 from collections.abc import Iterable, Mapping, MutableMapping, Sized
+from dataclasses import dataclass
 from functools import lru_cache, partial
 from typing import TYPE_CHECKING, Any, Callable, Generic, Hashable, TypeVar, cast
 
-from .compat.dataclass import dataclass
 from .constants.aliases import ALIAS_DNFR, ALIAS_THETA, ALIAS_VF
 from .mathematics.unified_numerical import np
 from .types import FloatArray, NodeId, scalarize_epi

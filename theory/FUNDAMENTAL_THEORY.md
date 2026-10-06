@@ -165,7 +165,7 @@ Write `[x]=X`, `[t]=T`, `[nu]=T^-1`. The nodal product then requires `[p]=X`.
 For normalized dimensionless x, p is dimensionless and x_dot has units T^-1.
 This does not identify x with energy, probability or the diagnostic C(t).
 
-The preserved [original source](TNFR.pdf), printed/physical pages 212-219,
+The preserved [original source](https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/theory/TNFR.pdf), printed/physical pages 212-219,
 contains incompatible alternatives that must not be silently combined:
 
 - Pages 212 and 216 define DeltaNFR as a time derivative of internal structure.
@@ -206,7 +206,7 @@ this representation, not a second time derivative or an unsigned distance.
 This is a reparameterization of a supplied trajectory, not a definition of
 the unknown capacity law. Zero capacity makes the local clock singular;
 heterogeneous nodes generally do not share one removable clock. See the
-[existing derivation](FORCED_SUPPORT_BALANCE.md#23-capacity-exposure-does-not-determine-a-phase-clock).
+[existing derivation](nodal/FORCED_SOURCE_AND_CLOCK.md#23-capacity-exposure-does-not-determine-a-phase-clock).
 The [Hz bridge](../src/tnfr/units.py) is an explicit conversion convention;
 its default value does not independently calibrate laboratory time.
 
@@ -331,7 +331,7 @@ assertion of an earlier physical time.
 A larger NFR would be an organization of its internal constituents, not their
 replacement or disappearance. Changing the scale of description must preserve
 their influence through retained state or justified memory. The
-[conservative replica calculation](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-inheritance)
+[conservative replica calculation](nodal/SINE_PAIR_STATE.md#sine-replica-inheritance)
 demonstrates why this matters: internal phase geometry changes collective
 response even when the observed mean form and phase are unchanged. A supplied
 partition still needs its own formation and identity evidence.
@@ -411,7 +411,7 @@ coordinate, or the corresponding exact memory and initial datum. That is a
 change of description of the same dynamics, not a new substance or a uniquely
 fundamental pressure law. A stored pressure, an independently supplied source
 `Gamma`, and a freshly calculated `P(z)` have different contracts.
-The [mediator chart](nodal/RELATIONAL_PATTERN_MEMORY.md#mediator-pressure-boundary-chart)
+The [mediator chart](nodal/RELATIONAL_MEDIATOR_DYNAMICS.md#mediator-pressure-boundary-chart)
 extends this distinction to interacting regions: retaining the environment
 also requires its initial information and the movement of its boundary.
 
@@ -427,7 +427,7 @@ either physical identification.
 <a id="derived-pulse-foundation"></a>
 
 **A pulse can be derived without becoming a new primitive.** The selected
-zero-loss sine law has an [exact finite-amplitude internal pulse](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-internal-pulse)
+zero-loss sine law has an [exact finite-amplitude internal pulse](nodal/SINE_REPLICA_PULSE.md#sine-replica-internal-pulse)
 on a supplied doubled-C5 geometry. Reciprocal form/phase evolution sustains
 the prepared internal motion while the collective mean form and phase remain
 fixed. No external periodic drive or additional pulse coordinate is inserted.
@@ -449,7 +449,7 @@ in the full labeled state, while its exact unordered-pair description has
 half that period. Capacity is a factor in the derived timescale; geometry,
 amplitude and the other law coefficients also matter. A repeated observation
 does not itself define a monotone clock. Moreover, the
-[small-amplitude transverse result](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-pulse-splitting)
+[small-amplitude transverse result](nodal/SINE_REPLICA_PULSE.md#sine-replica-pulse-splitting)
 proves orbital instability of sufficiently small nonzero members of this
 prepared pulse family, without storage loss. Maintaining a geometric identity
 and maintaining one precise waveform require different proofs; an unstable
@@ -471,14 +471,14 @@ Reciprocal exchange, a response peak, a permanent pulse and formation of an
 identity require different evidence. The complete native law already contains
 form-to-phase and phase-to-form feedback; a negative formation result does not
 by itself reveal a missing resonance term. Its loss coefficient is nevertheless
-a constitutive premise. The [full consensus derivative](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#native-consensus-full-state-tangent)
+a constitutive premise. The [full consensus derivative](nodal/RELATIONAL_RESPONSE_IDENTIFICATION.md#native-consensus-full-state-tangent)
 shows that the current half-weight law has overdamped relative modes on any
 admitted connected support with positive held capacities. That classification
 does not forbid frequency-selective driven response or finite nonlinear
 formation. It identifies a restriction of that law near consensus, rather
 than a restriction of every possible TNFR completion.
 
-The [nonlinear full-form bound](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-full-consensus-formation-obstruction)
+The [nonlinear full-form bound](nodal/RELATIONAL_FORMATION_CONTROLS.md#relational-full-consensus-formation-obstruction)
 separately excludes the aligned unit-winding target from every phase-consensus
 preparation in the fixed two-ring form budget. It accounts for full native
 exchange and loss, without a linear approximation or a symmetry restriction.
@@ -492,14 +492,14 @@ For **dynamical scale inheritance**, specify a fine law, a scale map and the
 family of states on which the inherited law has the same declared form after
 any stated unit changes. Repeated inheritance must compose consistently.
 A nested container, repeated graph or fitted dimension alone does not meet
-this condition. The [replica construction](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-inheritance)
+this condition. The [replica construction](nodal/SINE_PAIR_STATE.md#sine-replica-inheritance)
 establishes it on a supplied synchronized submanifold. Outside that submanifold,
 the existing sufficient collective state retains internal form, phase and
 capacity information; those constituents have not disappeared. Autonomous
 selection and formation of such a hierarchy remain separate obligations.
 
 These structural requirements also leave constitutive freedom. The
-[replication counterfamily](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-constitutive-nonselection)
+[replication counterfamily](nodal/SINE_PAIR_MOBILITY.md#sine-replica-constitutive-nonselection)
 preserves the same storage, synchronized inheritance and equilibrium derivative
 while changing nonlinear response. This consolidates existing nonselection
 results: replication consistency and small-perturbation behavior do not uniquely
@@ -515,6 +515,16 @@ memoryless damping term. Interpreting microscopic loss as unresolved internal
 exchange therefore needs a reduction and approximation bound, not relabeling.
 These distinctions locate the unfinished foundations without discarding valid
 conditional results or adding feedback merely to obtain a preferred pattern.
+
+The [joint reuse map](EMERGENT_ONTOLOGY.md#pulse-resonance-scale-connections)
+connects these foundations to actual collective feedback, phase-offset closure
+and finite full-state retention. It keeps driven resonance, conservative pulse,
+scale inheritance and formation as separate obligations. In particular, the
+derived mean-contact balance exposes information lost by a scalar pulse
+description; compatible motion does not generally close without the internal
+contact deviations. Correlated storage and ordered geometry then constrain
+which preparations could reach a maintained identity. These are consequences
+of declared complete models, not a new universal term in the nodal equation.
 
 <a id="foundational-state-admission"></a>
 ### 2.10 Foundation decision ledger: state, equivalence and origin
@@ -1111,5 +1121,5 @@ analysis = TNFR.analyze(net)               # Comprehensive analysis
 - [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) — Balance diagnostics and restricted exact conservation results
 - [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md) — Lagrangian formulation
 - [GLOSSARY.md](GLOSSARY.md) — Operational definitions
-- [TNFR.pdf](TNFR.pdf) — Original theoretical derivations
+- [TNFR.pdf](https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/theory/TNFR.pdf) — Historical manuscript; current definitions and corrections are maintained here
 - [AGENTS.md](../AGENTS.md) — Primary repository reference

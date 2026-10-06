@@ -52,7 +52,7 @@ def _decimal(value):
 
 
 def _trig(value, *, sine=False):
-    """Independent Decimal series on the test's |angle| <= 1/2 domain."""
+    """Independent Decimal series on the test's strictly acute angle domain."""
     value = _decimal(value)
     term = total = value if sine else Decimal(1)
     for k in range(1, 120):
@@ -427,6 +427,142 @@ def test_odd_cubic_sine_kernel_conserves_form_without_selecting_sine():
         form_rate = capacities[i] * (-gradient / (2 * degree) + source / 2)
         total_rate += s.Rational(degree, capacities[i]) * form_rate
     assert s.simplify(total_rate) == 0
+
+
+def test_degree_three_acute_turn_family_preserves_first_moment_not_cubic_source():
+    s = pytest.importorskip("sympy")
+    alpha = s.Symbol("alpha", real=True)
+    epsilon = s.Symbol("epsilon", positive=True)
+    # For |alpha|<1/12, every edge gap is strictly acute and Re(Z)>0.
+    # The symbolic family is not materialized as binary64 phase coordinates.
+    left = (-s.Rational(1, 6), s.Rational(1, 6), alpha)
+    right = (s.S.Zero, alpha - s.Rational(1, 6), alpha + s.Rational(1, 6))
+    cosine_sums = tuple(
+        sum(s.cos(2 * s.pi * t) for t in turns) for turns in (left, right)
+    )
+    sine_sums = tuple(
+        sum(s.sin(2 * s.pi * t) for t in turns) for turns in (left, right)
+    )
+    assert all(
+        s.trigsimp(value - 1 - s.cos(2 * s.pi * alpha)) == 0 for value in cosine_sums
+    )
+    assert all(s.trigsimp(value - s.sin(2 * s.pi * alpha)) == 0 for value in sine_sums)
+
+    def source(turns):
+        return sum(
+            s.sin(2 * s.pi * t) + epsilon * s.sin(2 * s.pi * t) ** 3 for t in turns
+        ) / (3 * s.pi)
+
+    def storage(turns):
+        return sum(
+            1
+            - s.cos(2 * s.pi * t)
+            + epsilon
+            * (s.Rational(2, 3) - s.cos(2 * s.pi * t) + s.cos(2 * s.pi * t) ** 3 / 3)
+            for t in turns
+        )
+
+    source_difference = -epsilon * s.sin(6 * s.pi * alpha) / (4 * s.pi)
+    storage_difference = epsilon * (s.cos(6 * s.pi * alpha) - 1) / 4
+    assert (
+        s.trigsimp(s.expand_trig(source(left) - source(right) - source_difference)) == 0
+    )
+    assert (
+        s.trigsimp(s.expand_trig(storage(left) - storage(right) - storage_difference))
+        == 0
+    )
+    chosen = s.Rational(1, 24)
+    assert source_difference.subs(alpha, chosen) == -epsilon * s.sqrt(2) / (8 * s.pi)
+    assert storage_difference.subs(alpha, chosen) == epsilon * (-1 + s.sqrt(2) / 2) / 4
+
+    # Z=2 cos(pi alpha) exp(i pi alpha), with positive real prefactor in
+    # the admitted arc. Therefore native Arg(Z)/pi=alpha exactly there.
+    assert s.trigsimp(2 * s.cos(s.pi * alpha) ** 2 - cosine_sums[0]) == 0
+    assert s.trigsimp(2 * s.cos(s.pi * alpha) * s.sin(s.pi * alpha) - sine_sums[0]) == 0
+    native = chosen
+    additive_angle_sources = tuple(
+        s.simplify(2 * sum(turns) / 3).subs(alpha, chosen) for turns in (left, right)
+    )
+    assert additive_angle_sources == (s.Rational(1, 36), s.Rational(1, 18))
+    assert all(value != native for value in additive_angle_sources)
+
+
+def test_first_moment_counterexample_agrees_with_represented_native_and_sine_stars():
+    alpha = Q(1, 24)
+    turns = ((-Q(1, 6), Q(1, 6), alpha), (Q(0), alpha - Q(1, 6), alpha + Q(1, 6)))
+    reports = tuple(
+        _read(_state(nx.star_graph(3), phases=(0, *(math.tau * float(t) for t in row))))
+        for row in turns
+    )
+    with localcontext() as context:
+        context.prec = 100
+        cubic_sources, changed_storage = [], []
+        for native, sine in reports:
+            gaps = sine.phase[1:]
+            assert sine.degrees[0] == 3
+            assert all(abs(_decimal(gap)) < PI / 2 for gap in gaps)
+            sine_values = tuple(_trig(gap, sine=True) for gap in gaps)
+            cosine_values = tuple(_trig(gap) for gap in gaps)
+            real, imag = sum(cosine_values), sum(sine_values)
+            assert real > 1
+            expected_sine = imag / (3 * PI)
+            expected_native = _atan(imag / real) / PI
+            assert sine.phase_sources[0].contains(Q(expected_sine))
+            assert native.phase_source[0] == pytest.approx(
+                float(expected_native), abs=2e-15
+            )
+            assert native.phase_source[0] == pytest.approx(float(alpha), abs=2e-15)
+            assert native.form_rate[0] == pytest.approx(
+                float(expected_native / 2), abs=2e-15
+            )
+            assert sine.form_rates[0].contains(Q(expected_sine / 2))
+            cubic_sources.append(
+                sum(value + value**3 for value in sine_values) / (3 * PI)
+            )
+            changed_storage.append(
+                sum(
+                    1 - value + Decimal(2) / 3 - value + value**3 / 3
+                    for value in cosine_values
+                )
+            )
+        # The ideal exact fiber identity above becomes an approximation after
+        # storing floating phase angles. Do not claim equality of the two
+        # represented resultants or install the alternative cubic dynamics.
+        left_native, left_sine = reports[0]
+        right_native, right_sine = reports[1]
+        assert left_native.phase_source[0] == pytest.approx(
+            right_native.phase_source[0], abs=2e-15
+        )
+        assert float(left_sine.phase_sources[0].midpoint) == pytest.approx(
+            float(right_sine.phase_sources[0].midpoint), abs=2e-15
+        )
+        assert float(cubic_sources[0] - cubic_sources[1]) == pytest.approx(
+            -math.sqrt(2) / (8 * math.pi), abs=2e-15
+        )
+        assert float(changed_storage[0] - changed_storage[1]) == pytest.approx(
+            -0.25 + math.sqrt(2) / 8, abs=2e-15
+        )
+
+
+def test_degree_two_cubic_source_already_factors_through_nonzero_first_moment():
+    s = pytest.importorskip("sympy")
+    first, second = s.symbols("first second", nonzero=True)
+    # Unit phasors have conjugates 1/z. These Laurent identities are exact
+    # after restricting to |z1|=|z2|=1 and Z=z1+z2 !=0.
+    z = first + second
+    conjugate = 1 / first + 1 / second
+    third_moment = z**3 - 3 * z**2 / conjugate
+    third_conjugate = conjugate**3 - 3 * conjugate**2 / z
+    assert s.cancel(third_moment - first**3 - second**3) == 0
+    sin_sum = (z - conjugate) / (2 * s.I)
+    sin_third_sum = (third_moment - third_conjugate) / (2 * s.I)
+    cubic_from_first = (3 * sin_sum - sin_third_sum) / 4
+    direct_cubic = sum(
+        ((value - 1 / value) / (2 * s.I)) ** 3 for value in (first, second)
+    )
+    assert s.cancel(cubic_from_first - direct_cubic) == 0
+    # The additive sine+cubic law therefore needs no extra observation on
+    # this degree-two nonzero-resultant domain. Selection requires degree3.
 
 
 def test_cubic_sine_reciprocity_is_regular_through_degree_two_cancellation():

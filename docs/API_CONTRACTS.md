@@ -20,11 +20,88 @@ Mathematical definitions, hypotheses and proofs remain with the linked theory
 owners. A serialized declaration or diagnostic report does not bypass live
 preconditions or certify future stability.
 For calculations that consume conditional sine reports, the
-[chained-report contract](contracts/RELATIONAL_DYNAMICS.md#sine-chained-report-admission)
+[chained-report contract](contracts/relational/SINE_COMPARISON_AND_INFERENCE.md#sine-chained-report-admission)
 owns primitive re-admission, derived-field rebuilding and source-association
 limits. Public adapters delegate to those shared consumers.
+The [relational contract index](contracts/RELATIONAL_DYNAMICS.md) distinguishes
+complete-state observations, exact collective families, finite maintenance
+bounds and observations of saved forecasts. Sharing a storage identity or
+export format does not make their support, law or evidence interchangeable.
+The [conservative source-admission readers](contracts/relational/SINE_REGIONAL_DYNAMICS.md#sine-cycle-sector-barrier)
+can exclude formation by a geometric storage barrier or by finite rapid-contact
+averaging. They assess the declared source without evolving it; an unavailable
+exclusion is not a formation certificate.
+The [directed saddle-corridor reader](contracts/relational/SINE_SADDLE_CERTIFICATES.md#sine-directed-saddle-corridor)
+instead certifies a finite winding passage from strict nonlinear storage and
+momentum bounds on an exact symmetric source. It supplies neither an acute
+retention certificate nor an independently uncertain source box.
+The [same-orbit formation reader](contracts/relational/SINE_SADDLE_CERTIFICATES.md#sine-conservative-formation-retention)
+combines both nonlinear passages with a retained band and full-state error
+bounds. It certifies conditional existence; its event-defined centers remain
+unavailable as numerical preparations and its captured-state flags stay false.
+The [retained-metric forecast](contracts/relational/SINE_SADDLE_CERTIFICATES.md#sine-saddle-metric-forecast)
+instead advances an actual admitted source with full-coordinate uncertainty
+and checked whole-time phase domains. Its finite enclosure and any partial
+coverage remain distinct from a formation or retention verdict.
 
 ## Contract model
+
+### Removed unsupported helpers
+
+These removals have explicit replacements or scope boundaries; no compatibility
+alias substitutes a different mathematical model. The
+[recovery index](../theory/research/archive/README.md#recovery-records)
+retains the removed source identities.
+
+| Removed interface | Migration or retained contract |
+| --- | --- |
+| `tnfr.operators.algebra.validate_identity_property`, `validate_idempotence`, `validate_commutativity_nul` | Use the actual [operator event contracts](contracts/OPERATOR_EVENTS.md) and compare the same admitted transformations. The retired routines compared different words or unsupported words; they did not prove the advertised algebra. Silence attenuates capacity and is not generally idempotent. |
+| `tnfr.dynamics.DynamicLimits`, `DynamicLimitsConfig`, `compute_dynamic_limits` and `tnfr.dynamics.dynamic_limits` | No replacement emergent-limit law. The unused score-based proposal mixed configured coefficients and a fabricated missing-Si baseline. Declare application bounds explicitly through the model's existing configuration and admission. |
+| `tnfr.compat` and `tnfr._compat` | Import `dataclass` from `dataclasses` and `TypeAlias` from `typing` on supported Python versions. NumPy is required; optional dependencies use their actual libraries and the engine's existing dependency admission. Unused fake-library stubs are removed. |
+| `tnfr.secure_config` | Import the same implementations from `tnfr.config.security`. |
+| `evaluate_bifurcation_risk` from `tnfr`, `tnfr.math`, `tnfr.mathematics` and `tnfr.math.symbolic` | No bifurcation detector replaces it. A threshold on supplied acceleration neither proves stability nor justifies automatic operator selection. `compute_second_derivative_symbolic()` retains the product-rule identity; actual event admission belongs to the operator contracts. |
+| `tnfr.operators.discover_operators`, `tnfr.operators.registry.discover_operators` and `structural_operator` | Remove the no-op discovery calls and decorator. `get_operator_class()` retains lazy class lookup and explicit subclass registration; `TNFR.operators()` owns the canonical contract inventory. Registering a class does not create a canonical operator contract. |
+| `tnfr.operators.registry.invalidate_operator_cache` and `get_operator_cache_stats` | Removed unused telemetry; the invalidation function did not clear a cache. Operator class lookup and actual graph/state cache invalidation keep their separate owners. |
+| `tnfr.math.grammar_validators`, `tnfr.math.optimizer` and their facade exports | Use `tnfr.operators.grammar` for word admission. Removed duplicate role scores and a greedy score-based word extension; neither certified dynamical stability nor an optimum. Application objectives remain supplied policies. |
+| `tnfr.math.fields_symbolic` and its facade exports | Use `tnfr.physics.fields` for the implemented graph diagnostics. The removed continuum expressions were a different model, not symbolic versions of those fields. Nodal calculus in `tnfr.math.symbolic` remains available. |
+| `tnfr.riemann.operator_catalog_discipline_signature` and its facade exports | Use `TNFR.operators()` and `operator_contracts.verify_contract_consistency()` for canonical inventory checks. Those checks do not prove ontological completeness; compatibility class registration remains separate. |
+| `tnfr.operators.grammar.validate_sequence_cached`, `clear_validation_cache`, `get_validation_cache_stats` and `get_grammar_cache_stats` | Use `validate_grammar()` for operator objects, `validate_sequence()`/`parse_sequence()` for canonical names, and `GrammarValidator` for detailed configured checks. The retired cache wrapper did not validate live graph context; node/edge counts cannot replace live preconditions. |
+| `tnfr.utils.clear_orjson_param_warnings` (also in `tnfr.utils.io`) and `tnfr.config.presets.legacy_preset_guidance` | Remove these no-op calls. Shared JSON admission/encoding and `get_preset()` retain their existing behavior; unknown presets still raise `KeyError`. |
+| Global `tnfr.validation.config.ValidationConfig` fields `epi_range`, `vf_range`, `phase_coupling_threshold`, `cache_validation_results`, `max_validation_time_ms` | Removed unconsumed settings. Scalar domains, live U3 admission and the separate cached-validator configuration retain their own owners. Construction rejects the removed keywords; `configure_validation()` rejects them without committing other supplied settings. |
+
+The retained `check_convergence_exponential(growth_rate, time_horizon)` uses
+the specified unit-amplitude, unit-capacity exponential pressure law. Its
+Boolean describes infinite-horizon integral convergence, which requires a
+strictly negative rate. At zero rate it returns `False` and the finite integral
+is the supplied horizon: constant pressure produces linear form growth, not
+equilibrium. This is a corrected boundary, not a general U2 or stability result.
+
+### Shared input-validation facade
+
+The public `tnfr.validation` input validators re-export the implementations in
+`validation/input_validation.py`; no parallel validation rules are introduced.
+This includes signed form/pressure, nonnegative capacity, circular phase,
+node/glyph, graph-interface and operator-parameter adapters. Their configured
+input scope is distinct from live operator admission: a graph-interface check
+does not establish a complete nodal state, and an operator-parameter check does
+not authenticate an event or certify its trajectory.
+
+The global `tnfr.validation.config.ValidationConfig`, also exported as
+`tnfr.validation.StructuralValidationConfig`, supplies only the flags and
+minimum severity consumed by `structural.run_sequence`. The existing facade
+name `tnfr.validation.ValidationConfig` retains its separate meaning: the
+configuration of `TNFRUnifiedValidationSystem`, including its cache policy.
+These are different consumers, not interchangeable configurations.
+`StructuralValidationConfig` construction and `configure_validation()` use
+shared Boolean parsing and `InvariantSeverity`
+members or their exact string values. Updates admit all keys and values before
+mutating the shared object, so an invalid batch cannot partially disable its
+checks. Keys come from declared dataclass fields, not arbitrary attributes.
+Direct Python attribute assignment is outside that update contract. Scalar
+domains, live U3 admission and other validator configurations have separate
+owners; a successful audit is not a certificate for every nodal model.
+
+### Shared operator requirements
 
 Every canonical operator has:
 
@@ -406,39 +483,44 @@ also verify support-cache invalidation after functional-link creation.
 
 ## Conditional relational execution
 
-The maintained contract is [Conditional relational execution](contracts/RELATIONAL_DYNAMICS.md#conditional-relational-execution).
+The maintained contract is [Conditional relational execution](contracts/relational/RELATIONAL_EXECUTION.md#conditional-relational-execution).
+The separate [sine report admission](contracts/relational/SINE_COMPARISON_AND_INFERENCE.md#sine-chained-report-admission)
+also covers exact supplied primitives, captured binary64 coordinates and
+derived-field reconstruction. The [regional guide](guides/REGIONAL_AND_RELATIONAL.md)
+routes those readers by task; none is an implicit sine mode of the native
+relational executor.
 
 ### Exact linear observations of a supplied generator
 
-See [Exact linear observations](contracts/RELATIONAL_DYNAMICS.md#exact-linear-observations-of-a-supplied-generator).
+See [Exact linear observations](contracts/relational/OBSERVATION_AND_INFORMATION.md#exact-linear-observations-of-a-supplied-generator).
 
 <a id="relational-pattern-observation"></a>
 
 ### Prepared relational pattern observations
 
-See [Prepared relational pattern observations](contracts/RELATIONAL_DYNAMICS.md#prepared-relational-pattern-observations).
+See [Prepared relational pattern observations](contracts/relational/RELATIONAL_EXECUTION.md#prepared-relational-pattern-observations).
 
 <a id="relational-attachment-observation"></a>
 
 ### Supplied relational attachment observation
 
-See [Supplied relational attachment observation](contracts/RELATIONAL_DYNAMICS.md#supplied-relational-attachment-observation).
+See [Supplied relational attachment observation](contracts/relational/RELATIONAL_EXECUTION.md#supplied-relational-attachment-observation).
 
 ### Supplied joint state and support reset
 
-See [Joint reset accounting](contracts/RELATIONAL_DYNAMICS.md#relational-reset-observation).
+See [Joint reset accounting](contracts/relational/RELATIONAL_EXECUTION.md#relational-reset-observation).
 
 ### Conditional relational capture
 
-See [Conditional relational capture](contracts/RELATIONAL_DYNAMICS.md#conditional-relational-capture).
+See [Conditional relational capture](contracts/relational/RELATIONAL_CAPTURE_AND_MEMORY.md#conditional-relational-capture).
 
 ### Validated conditional relational transit
 
-See [Validated conditional relational transit](contracts/RELATIONAL_DYNAMICS.md#validated-conditional-relational-transit).
+See [Validated conditional relational transit](contracts/relational/RELATIONAL_CAPTURE_AND_MEMORY.md#validated-conditional-relational-transit).
 
 ### Exact cycle resultant sectors
 
-See [Exact cycle resultant sectors](contracts/RELATIONAL_DYNAMICS.md#exact-cycle-resultant-sectors).
+See [Exact cycle resultant sectors](contracts/relational/OBSERVATION_AND_INFORMATION.md#exact-cycle-resultant-sectors).
 
 ## Operator-event timeline
 

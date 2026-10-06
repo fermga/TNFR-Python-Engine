@@ -56,7 +56,7 @@ References
 - Structural conservation: src/tnfr/physics/conservation.py
 - Spectral math: src/tnfr/mathematics/spectral.py (GFT, Laplacian)
 - Theory: theory/STRUCTURAL_CONSERVATION_THEOREM.md §9.2
-- Nodal equation: ∂EPI/∂t = νf · ΔNFR(t) [TNFR.pdf §2.1]
+- Nodal identity and complete-law premises: theory/FUNDAMENTAL_THEORY.md
 """
 
 from __future__ import annotations

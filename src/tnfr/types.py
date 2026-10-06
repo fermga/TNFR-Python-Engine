@@ -21,11 +21,11 @@ from typing import (
     Any,
     ContextManager,
     Protocol,
+    TypeAlias,
     TypedDict,
     runtime_checkable,
 )
 
-from ._compat import TypeAlias
 from ._exact_time import finite_represented_real
 from .errors import TNFRValueError
 

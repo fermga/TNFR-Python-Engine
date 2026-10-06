@@ -7,10 +7,9 @@ The expectation ``<psi|A|psi>`` is an unbounded real observable in the units of
 
 from __future__ import annotations
 
-from dataclasses import field
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, ClassVar, Sequence
 
-from ..compat.dataclass import dataclass
 from ..constants.canonical import (
     MATH_SPECTRAL_EXPECTATION_FLOOR_DEFAULT,
     MATH_TOLERANCE_CANONICAL,

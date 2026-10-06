@@ -16,12 +16,11 @@ from typing import (
     ContextManager,
     Iterable,
     Protocol,
+    TypeAlias,
     TypedDict,
     Union,
     cast,
 )
-
-from ._compat import TypeAlias
 
 try:
     import networkx as nx  # type: ignore[import-not-found]

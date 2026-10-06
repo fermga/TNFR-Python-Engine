@@ -4,20 +4,110 @@ These controls differentiate the complete fine law and use its graph storage.
 They neither sample trajectories nor infer a hybrid event from a form rate.
 """
 
+from dataclasses import replace
 from fractions import Fraction as Q
 from math import nextafter, pi
 
 import mpmath as mp
+import networkx as nx
 import pytest
 
 from tests.physics.test_relational_sine_replica import MODEL, PAIRS, _graph
 from tnfr.mathematics._rational_interval import I, pi_interval
+from tnfr.physics import relational_sine_comparison as owner
 from tnfr.physics.relational_sine_comparison import bound_relational_sine_exchange
+from tnfr.sdk import relational_report_to_dict
 
 
 @pytest.fixture(scope="module")
 def symbolic():
     return pytest.importorskip("sympy")
+
+
+@pytest.mark.parametrize("reader", ("regional", "increment"))
+def test_accounting_exports_a_consistent_rebuilt_full_source(reader, monkeypatch):
+    graph = nx.path_graph(3)
+    for node in graph:
+        graph.nodes[node].update(EPI=0, theta=0, nu_f=1)
+    captured = bound_relational_sine_exchange(graph, reference_model=MODEL)
+    # Load the shared admission's lazy source types before replacing functions
+    # that dependent modules may import by name on their first use.
+    captured.phase_rate_numerators()
+    supplied = replace(
+        captured,
+        epi=(0.25, -0.5, 0.75),
+        phase=(0, 0.5, -0.25),
+        capacity=(0.5, 2, 3),
+        form_gradient=(Q(99),) * 3,
+        relative_resultant=((I(99), I(99)),) * 3,
+        form_rates=(I(99),) * 3,
+        phase_rates=(I(99),) * 3,
+        form_storage=Q(99),
+        phase_storage=I(99),
+        storage=I(198),
+    )
+    rebuild = owner._rebuild_sine_comparison
+    calls = []
+
+    def counted(source):
+        calls.append(source)
+        return rebuild(source)
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("accounting must rebuild detached primitives, not recapture")
+
+    monkeypatch.setattr(owner, "_rebuild_sine_comparison", counted)
+    monkeypatch.setattr(owner, "_capture_sine_state", forbidden)
+    monkeypatch.setattr(owner, "_stage", forbidden)
+    if reader == "regional":
+        report = supplied.regional_transfer(region=(0, 1))
+        assert report.regional_weighted_form == 0
+        assert report.complement_weighted_form == Q(1, 4)
+    else:
+        report = supplied.assess_form_increment(increments=(Q(1, 8), -Q(1, 4), 0))
+        assert report.weighted_form_before == report.weighted_form_after == Q(1, 4)
+        assert report.weighted_form_change == 0
+        assert not report.endpoint_reachability_certified
+    assert len(calls) == 1
+    source = report.comparison
+    assert source is not supplied
+    assert source.epi == (Q(1, 4), -Q(1, 2), Q(3, 4))
+    assert all(
+        type(value) is Q for value in source.epi + source.phase + source.capacity
+    )
+    assert source.form_gradient == (Q(3, 4), -Q(2), Q(5, 4))
+    assert source.form_storage == Q(17, 16)
+    with mp.workdps(90):
+        sine_half, sine_three_quarters = mp.sin(mp.mpf("0.5")), mp.sin(mp.mpf("0.75"))
+        expected_rates = (
+            sine_half / (2 * mp.pi),
+            (-sine_half - sine_three_quarters) / mp.pi,
+            3 * sine_three_quarters / mp.pi,
+        )
+        expected_phase_rates = (
+            mp.mpf(3) / (8 * mp.pi),
+            -2 / mp.pi,
+            mp.mpf(15) / (4 * mp.pi),
+        )
+        expected_storage = (
+            mp.mpf(17) / 16 + 2 - mp.cos(mp.mpf("0.5")) - mp.cos(mp.mpf("0.75"))
+        )
+
+        def contains(bound, value):
+            low = mp.mpf(bound.lo.numerator) / bound.lo.denominator
+            high = mp.mpf(bound.hi.numerator) / bound.hi.denominator
+            assert low <= value <= high
+
+        for bound, value in zip(source.form_rates, expected_rates):
+            contains(bound, value)
+        for bound, value in zip(source.phase_rates, expected_phase_rates):
+            contains(bound, value)
+        contains(source.storage, expected_storage)
+        if reader == "regional":
+            contains(report.regional_form_rate_bounds, -sine_three_quarters / mp.pi)
+    assert report.to_dict()["report"] == relational_report_to_dict(report)["report"]
+    assert supplied.form_rates == (I(99),) * 3
+    assert supplied.form_storage == 99
 
 
 def _fine_rows(s, edges, forms, phases, capacities, loss, phase_weight, beta):
@@ -245,6 +335,104 @@ def test_pair_phasor_current_uses_original_degree_and_weighted_boundary(symbolic
     weighted_contribution = cut / s.pi
     assert s.trigsimp(mean_contribution - phasor_current / (2 * s.pi)) == 0
     assert s.simplify(weighted_contribution - 8 * mean_contribution) == 0
+
+
+def test_single_port_reflection_retains_the_full_nonstationary_probe_response():
+    graph = nx.cycle_graph(5)
+    graph.add_edges_from(((0, 5), (5, 6)))
+    # These exact dyadic phases are near, not equal to, an ideal C5 twist.
+    # Reflection compares the actual captured representatives without using
+    # a rounded multiple of 2*pi as an exact circular identity.
+    angle = Q(5, 4)
+    phases = (0, angle, 2 * angle, -2 * angle, -angle, Q(1, 4), -Q(3, 8))
+    forms = (Q(1, 8), 0, 0, 0, 0, Q(3, 16), -Q(1, 2))
+    capacities = (1, 1, 1, 1, 1, 2, Q(1, 2))
+    for node, form, phase, capacity in zip(graph, forms, phases, capacities):
+        graph.nodes[node].update(EPI=form, theta=phase, nu_f=capacity)
+    reflection = (0, 4, 3, 2, 1, 5, 6)
+    reflected = graph.copy()
+    for node in graph:
+        reflected.nodes[node].update(graph.nodes[reflection[node]])
+    before = tuple(dict(node_data) for _, node_data in graph.nodes(data=True))
+    reflected_before = tuple(
+        dict(node_data) for _, node_data in reflected.nodes(data=True)
+    )
+
+    first = bound_relational_sine_exchange(graph, reference_model=MODEL)
+    second = bound_relational_sine_exchange(reflected, reference_model=MODEL)
+    assert second.phase == tuple(first.phase[node] for node in reflection)
+    assert second.form_rates == tuple(first.form_rates[node] for node in reflection)
+    assert second.phase_rates == tuple(first.phase_rates[node] for node in reflection)
+    assert second.storage == first.storage
+    first_probe = first.regional_transfer(region=(5, 6))
+    second_probe = second.regional_transfer(region=(5, 6))
+    assert (
+        first_probe.regional_form_rate_bounds == second_probe.regional_form_rate_bounds
+    )
+    # The null is the difference between handed preparations, not a frozen
+    # environment or zero current. Its internal edge cancels from the ledger.
+    current = first_probe.regional_form_rate_bounds
+    assert current.hi < 0
+    with mp.workdps(90):
+        expected = -mp.sin(mp.mpf(1) / 4) / mp.pi
+        assert mp.mpf(current.lo.numerator) / current.lo.denominator <= expected
+        assert expected <= mp.mpf(current.hi.numerator) / current.hi.denominator
+    assert tuple(dict(data) for _, data in graph.nodes(data=True)) == before
+    assert (
+        tuple(dict(data) for _, data in reflected.nodes(data=True)) == reflected_before
+    )
+
+
+def test_two_ordered_probe_contacts_resolve_orientation_at_equal_storage():
+    graphs, sources, probes = [], [], []
+    angle = 2 * pi / 5
+    for sign in (1, -1):
+        graph = nx.cycle_graph(5)
+        graph.add_edges_from(((1, 5), (4, 6)))
+        phases = (
+            0,
+            sign * angle,
+            sign * 2 * angle,
+            -sign * 2 * angle,
+            -sign * angle,
+            0,
+            0,
+        )
+        for node, phase in zip(graph, phases):
+            graph.nodes[node].update(EPI=0, theta=phase, nu_f=1)
+        before = tuple(dict(data) for _, data in graph.nodes(data=True))
+        source = bound_relational_sine_exchange(graph, reference_model=MODEL)
+        left = source.regional_transfer(region=(5,))
+        right = source.regional_transfer(region=(6,))
+        assert left.form_weights[5] == right.form_weights[6] == 1
+        assert left.regional_form_rate_bounds == -right.regional_form_rate_bounds
+        assert source.phase_rate_numerators() == (Q(0),) * 7
+        graphs.append((graph, before))
+        sources.append(source)
+        probes.append(left.regional_form_rate_bounds - right.regional_form_rate_bounds)
+
+    positive, negative = sources
+    assert positive.form_storage == negative.form_storage == 0
+    assert positive.storage == negative.storage
+    assert probes[0] == -probes[1]
+    assert probes[0].lo > 0
+    assert positive.phase[1] == Q(angle)
+    # Independently evaluate the represented angle, not mathematical 2*pi/5.
+    # Its closing cycle gap has cosine cos(4*angle), so the ideal simplification
+    # H=7*(1-cos(2*pi/5)) is deliberately not used for this captured state.
+    with mp.workdps(90):
+        represented = mp.mpf(Q(angle).numerator) / Q(angle).denominator
+        expected_current = 2 * mp.sin(represented) / mp.pi
+        expected_storage = 6 * (1 - mp.cos(represented)) + 1 - mp.cos(4 * represented)
+        assert represented != 2 * mp.pi / 5
+        for bound, expected in (
+            (probes[0], expected_current),
+            (positive.storage, expected_storage),
+        ):
+            assert mp.mpf(bound.lo.numerator) / bound.lo.denominator <= expected
+            assert expected <= mp.mpf(bound.hi.numerator) / bound.hi.denominator
+    for graph, before in graphs:
+        assert tuple(dict(data) for _, data in graph.nodes(data=True)) == before
 
 
 @pytest.mark.parametrize("phase", (pi, nextafter(pi, float("inf"))))

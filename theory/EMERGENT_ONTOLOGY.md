@@ -53,6 +53,36 @@ The fine state includes form, phase, capacity, support and any history actually
 consumed by the law. The effective object may carry properties of their joint
 configuration and trajectory which no individual node has.
 
+A common substrate could admit distinct, reproducible families of collective
+organization at different scales. This is stronger than a mere change of scale:
+the proposed families must have distinguishable dynamics, composition rules and
+observable responses. Sharing a substrate would not erase observed differences
+between material systems. Names such as hydrogen remain physical identifications
+to establish through those responses, not names for an assumed TNFR primitive.
+Neither a common substrate nor scale nesting alone derives the chemical elements.
+
+<a id="generative-bound-organization"></a>
+
+The intended physical question is whether nodal organization can generate the
+**effects** attributed to material constituents, including bound composite
+structure and reproducible changes under interaction. A nucleus/electron
+picture is a possible explanatory target, not a partition or force law to
+insert into the engine. Atomic comparison would eventually require spatial
+measurement distributions, bound-state energies and transition responses;
+see the [hydrogen-state calculation](https://www.feynmanlectures.caltech.edu/III_19.html).
+A classical orbit, a graph cycle or a discrete winding label alone does not
+establish those observations.
+
+The present [persistent collective organization](nodal/SINE_REPLICA_PULSE.md#sine-replica-joint-persistence)
+and [restoring effective relation](nodal/RELATIONAL_PATTERN_COMPOSITION.md#effective-link-admission)
+are reusable mathematical ingredients with different complete-law premises.
+Both retain supplied fine support. The
+[collective mean-closure restriction](nodal/SINE_PAIR_MOBILITY.md#collective-mean-closure-obstruction)
+explains why composing such organizations generally needs their internal
+information, even when their collective means coincide. This supports studying
+sufficient interaction state and inherited dynamics before physical naming;
+it does not derive an atom or a unique constitutive law.
+
 A collective observation/measurement map is eventually needed to test that
 hypothesis, but it may act on a pattern and its interaction with a measurement
 system rather than on one primitive coordinate. Its latent-state assumptions
@@ -70,6 +100,27 @@ statistics for the spin sector claimed; see the external
 These are comparison obligations, not laws to insert into TNFR and then claim
 as derived. Equilibrium can also be relative or dynamical; a static balance
 alone does not prove reachability, robustness, composability or physical identity.
+
+A physical property may therefore be a functional of a pattern's **joint
+state and dynamics**, including its internal motion and coupling to a retained
+environment. It need not be a primitive TNFR variable or a one-to-one relabeling
+of one. The intended explanation is generative: derive the organization,
+derive its interaction and observable response, then test that response against
+independent observations. Combining variables into a fitted expression for a
+known physical constant would not establish this chain.
+
+The [fundamental-phenomena comparison](PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena)
+connects existing conservation, topology, pulse and interaction results to
+specific physical obligations. Its source/probe distinction matters: a property
+can be internally different yet invisible through a particular interface.
+Conversely, an observed difference can belong to the supplied interface rather
+than to an intrinsic identity. Neither finding licenses naming a pattern an
+electron. The execution plan selects work after its dependencies are identified;
+this comparison supplies physical obligations, not another campaign. Its
+[charge and magnetic-response boundary](PHYSICAL_REGIME_CORRESPONDENCES.md#charge-and-magnetic-response-boundary)
+separates conserved inventories and directional interactions from physical
+identification; its [quantum-emergence boundary](PHYSICAL_REGIME_CORRESPONDENCES.md#quantum-emergence-obligations)
+specifies the transformation and measurement laws still to derive.
 
 The current engine assumes nodes, states and relations. That is the starting
 domain of this model, not evidence that the substrate is external to TNFR,
@@ -109,7 +160,7 @@ exerted by a second copy of the pattern. The
 already shows why relations between patterns can carry necessary state.
 
 A larger NFR would organize the internal nodes or patterns without erasing
-their existence or motion. The [conservative sine replica calculation](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-inheritance)
+their existence or motion. The [conservative sine replica calculation](nodal/SINE_PAIR_STATE.md#sine-replica-inheritance)
 gives a restricted exact example of inherited influence: internal phase
 dispersion changes a group's phase-driven form response, and internal form
 contrast drives that dispersion. The full mean/internal coordinate change
@@ -118,7 +169,7 @@ the same nodal rows, but their means alone do not close the general nearby
 dynamics. This identifies information needed for a collective description;
 it does not prove that the partition or a new NFR has formed autonomously.
 
-The [exact unordered-pair state](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-unordered-state)
+The [exact unordered-pair state](nodal/SINE_PAIR_STATE.md#sine-replica-unordered-state)
 retains that internal influence in a closed collective description, removing
 only the interchangeable constituent labels. Its constrained coordinates keep
 the continuous degrees of freedom and do not derive spontaneous scale
@@ -191,7 +242,7 @@ substrate, preparation or physical interpretation.
 
 A regional calculation must retain its environmental boundary influence.
 Recomputing pressure only on an induced subgraph changes the model. The
-[regional balance](FORCED_SUPPORT_BALANCE.md#7-a-region-and-its-environment-on-the-same-nodal-support)
+[regional balance](nodal/FORCED_REGIONAL_RESPONSE.md#7-a-region-and-its-environment-on-the-same-nodal-support)
 separates internal dissipation, environmental exchange, source channels and
 stored-pressure defects on the full graph. Its validity does not select the
 region or predict its indefinite maintenance.
@@ -256,7 +307,7 @@ calling the result an NFR does not supply that justification.
 <a id="organization-and-internal-pulse"></a>
 ### 1.3 Organization, internal motion and waveform stability
 
-The [finite-amplitude internal pulse](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-internal-pulse)
+The [finite-amplitude internal pulse](nodal/SINE_REPLICA_PULSE.md#sine-replica-internal-pulse)
 provides a precise instance of organized internal motion. On the supplied
 doubled-C5 support, a symmetric preparation evolves periodically under the
 existing zero-loss reciprocal sine law, with fixed collective mean form and
@@ -273,7 +324,7 @@ describing a larger organization. They do not prove autonomous nesting or
 fractal inheritance at arbitrary scales.
 
 A persistent geometric identity also need not preserve one waveform. The
-[transverse splitting](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-pulse-splitting)
+[transverse splitting](nodal/SINE_REPLICA_PULSE.md#sine-replica-pulse-splitting)
 proves orbital instability of sufficiently small nonzero members of that
 pulse family. The same law still conserves storage: growth of a perturbation
 away from the prepared waveform is not dissipation or proof that every
@@ -282,17 +333,85 @@ does not prove synchronization of the internal rhythms. Joint claims must
 retain the hypotheses of both results; no selected numerical amplitude is
 certified by the existential small-amplitude theorem.
 
+The [joint persistence theorem](nodal/SINE_REPLICA_PULSE.md#sine-replica-joint-persistence)
+establishes more than finite survival: every state in its admitted open
+full-state family preserves geometric organization and active constituents
+on the fixed conservative doubled C5. Almost every such state also recurs.
+These conclusions coexist with fragility of an exact common waveform.
+Support, positive held capacity, the complete law and the prepared family
+remain hypotheses; this does not prove entry into that invariant family
+from outside it or autonomous creation of its constituents.
+
 The [nonlinear recurrence theorem](nodal/RESONANCE_FOUNDATIONS.md#nonlinear-recurrence)
 gives almost-everywhere returns of the full circular state in admitted
 finite-volume families of the reversible sine law. Recurrence alone does not
 protect a particular organization. The
-[conservative identity theorem](nodal/RELATIONAL_PATTERN_MEMORY.md#sine-conservative-identity)
+[conservative identity theorem](nodal/SINE_PATTERN_RECOVERY.md#sine-conservative-identity)
 already combines all-state geometric trapping with almost-everywhere
 nonstationary recurrence for admitted isolated-cycle families. It preserves
 a stated winding identity without an attracting waveform. This is stronger
 than a recurrent read-out but remains weaker than a common period, a return
 time for a selected state, autonomous pattern formation or physical
 identification.
+
+<a id="pulse-resonance-scale-connections"></a>
+### 1.4 Connections between pulse, resonance, memory and scale
+
+These connections reuse established results under their declared laws. They
+are not additional research queues or evidence that the organizing concepts
+uniquely select those laws. The important common requirement is to retain
+the internal and environmental information consumed by the actual dynamics.
+The [derived-information ledger](NODAL_PARAMETER_FOUNDATIONS.md#derived-information-ledger)
+classifies the reusable quantities. In particular, the
+[paired phase/rate witness](nodal/SINE_CONSTITUTIVE_INFORMATION.md#phase-motion-information)
+shows that even every unweighted phase moment and a separate inventory of
+rates can miss the association controlling response and work. Retaining that
+association adds information to an observation, not a new primitive variable.
+The [moving-pair interaction contract](nodal/SINE_PAIR_INTERACTION.md#sine-moving-pattern-interface)
+also shows why constant collective means can conceal a changing circulation:
+on the established pulse family, internal motion modulates compensating
+neighbor currents. A larger pattern can retain active constituents without
+changing its mean form. The specified preparation and complete law remain
+premises; this does not establish physical matter or arbitrary-scale closure.
+The [global pair representation](nodal/SINE_PAIR_STATE.md#sine-global-pair-state)
+also shows that a vanishing collective phasor need not erase the constituents
+or their future interaction. Phase product and form/phase association retain
+their state through cancellation. This is continuity of a supplied pair's
+description, not a proof that its observed coherent identity persists.
+
+| Connection | Established result and compatible reuse | Missing implication |
+| --- | --- | --- |
+| Pulse and internal organization | The [actual mean-contact balance](nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-collective-pulse-transfer) derives exchange between collective motion and contact deviations on the conservative unit C5/private-leaf support. Certain phase preparations release collective storage and initiate internal form/phase motion. | The mean pulse is not generally closed; its lift-dependent remainder is signed. Release and internal growth do not prove the receiver acquires an identity. |
+| Resonance and environmental memory | The [work-port response](nodal/RESONANCE_FOUNDATIONS.md#collocated-resonance) and [causal bridge memory](nodal/RESONANCE_FOUNDATIONS.md#sine-bridge-causal-memory) both retain joint form/phase channels and an explicit input/readout or hidden source. Hidden initial state can drive visible response without an added external force. | A positive-loss driven gain theorem is not a conservative autonomous oscillation theorem. A two-C6 tangent kernel cannot be used as the nonlinear C5 environment; the reduction method, not its coefficients, transfers. |
+| Scale inheritance and moving geometry | [Replica inheritance](nodal/SINE_PAIR_STATE.md#sine-replica-inheritance) retains smaller constituents, while the [phase-offset criterion](nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-phase-offset-partition) identifies compatible collective families. Both expose the internal information required beyond group means. | Exact closure or prepared invariance does not establish spontaneous grouping, attraction, or the same scalar law at arbitrary scales. Different supports retain different inherited coefficients. |
+| Formation and finite maintenance | [Same-orbit formation](nodal/SINE_CONSERVATIVE_PREPARATION.md#sine-conservative-formation-retention) joins zero winding to a full-state target retaining acute identity for one scaled unit, using both nonlinear corridors, a phase band and complete-field error bounds. [Energy-speed windows](nodal/SINE_CONSERVATIVE_PREPARATION.md#sine-energy-speed-retention) and [moving-reference bounds](nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-moving-pattern-window) remain separate tools. | The source and target centers are defined by the exact flow, and the source tolerance is formally positive but extremely small. This is conditional existence, not an operational preparation, autonomous selection, indefinite maintenance or physical identification. |
+| Primitive information and constitutive freedom | [First-resultant sufficiency](nodal/SINE_CONSTITUTIVE_INFORMATION.md#first-phase-moment-sufficiency) conditionally selects a sine current, while [storage-family controls](nodal/RESONANCE_FOUNDATIONS.md#storage-family-pattern-robustness) distinguish a shared identity from potential-dependent response. | Supplying the information class, storage or mobility remains an independent premise. Equilibrium geometry and tangent agreement do not select every nonlinear interaction or timescale. |
+
+Two controls make the limits concrete. The retained phase-flat collective
+preparation has enough total storage to clear the necessary phase-path cost,
+yet its [complete frozen response](nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-collective-pulse-transfer)
+keeps zero receiver winding over its declared horizon. Separately, matched
+contact-lag multisets can have the same storage and initial collective
+transfer while their cyclic arrangements have different symmetries. A
+reflection-invariant arrangement excludes acute unit winding even though
+internal form and phase begin to grow. The
+[cycle-sector barrier](nodal/SINE_REGIONAL_FORMATION.md#sine-cycle-sector-barrier)
+also excludes both low-energy examples independently of that symmetry.
+Removing a reflection therefore does not make the other preparation a
+formation candidate. Conversely, a
+[rapid-contact averaging bound](nodal/SINE_REGIONAL_FORMATION.md#sine-contact-averaging)
+can exclude acquisition over a fixed interval despite abundant storage.
+That conditional cancellation mechanism links pulse rate to effective
+transfer; it neither establishes a resonant formation band nor selects a
+new law.
+
+Thus the useful synthesis is **retained internal dynamics plus ordered
+contact geometry**, with a compatible full-state maintenance budget. It
+does not require adding a new primitive pulse, treating resonance as an
+autonomous input, or assuming that a larger NFR erases its constituents.
+The [active admission gate](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns the next bounded question and any reopening of a physical preparation
+or operational formation dependency.
 
 ## 2. Geometry and diagnostics do not close the dynamics
 

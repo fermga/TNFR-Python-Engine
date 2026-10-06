@@ -21,6 +21,7 @@ functional while still benefiting from acceleration when present.
 from __future__ import annotations
 
 import os
+from dataclasses import dataclass
 from typing import (
     Any,
     Callable,
@@ -33,7 +34,6 @@ from typing import (
     runtime_checkable,
 )
 
-from ..compat.dataclass import dataclass
 from ..core.exceptions import BackendUnavailableError
 from ..errors import TNFRValueError
 from ..utils import cached_import, get_logger

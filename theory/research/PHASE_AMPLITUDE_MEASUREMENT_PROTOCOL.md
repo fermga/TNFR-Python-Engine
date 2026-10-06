@@ -5,7 +5,7 @@ physical prediction `not_tested`; exact-model data search parked after the
 bounded review below.** This is the observation annex for the
 [derived phase/amplitude candidate](../nodal/DERIVED_FORM_PHASE.md#unequal-capacity-mode-selection-and-a-finite-phase-only-discriminator).
 The [execution plan](FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) owns scheduling;
-the [existing source inventory](PASSIVE_TRANSPORT_PROTOCOL.md#terrestrial-source-review-2026-09-21)
+the [existing source inventory](archive/measurement/TRANSPORT_SOURCE_REVIEWS.md#terrestrial-source-review-2026-09-21)
 owns general dataset descriptions. This document owns the candidate-specific
 measurement map, resolution criterion and source admission decision. It does
 not add a simulator, a physical law or a second task queue.
@@ -224,7 +224,7 @@ approximation, not TNFR from mathematically equivalent external physics.
 
 The bounded review on 2026-09-26 rechecked source descriptions and apparatus
 equations, not reserved arrays. The earlier
-[inventory](PASSIVE_TRANSPORT_PROTOCOL.md#terrestrial-source-review-2026-09-21)
+[inventory](archive/measurement/TRANSPORT_SOURCE_REVIEWS.md#terrestrial-source-review-2026-09-21)
 retains licenses, archive sizes and repeat identities. No signal archive was
 downloaded, no new response scored and no calibration changed in this review.
 Published qualitative summaries are prior exposure, not blind evidence.
@@ -245,7 +245,7 @@ uncertainty evidence). Six sensor traces or oscillatory-looking signals alone
 would not close it. The protocol is ready to assess a matching source; the
 physical objective remains open.
 
-The subsequent [bounded directed-source review](PASSIVE_TRANSPORT_PROTOCOL.md#directed-source-decision-2026-09-26)
+The subsequent [bounded directed-source review](archive/measurement/TRANSPORT_SOURCE_REVIEWS.md#directed-source-decision-2026-09-26)
 examined six new studies and admitted none for this exact test. That closes
 the scheduled search and parks this physical experiment; it does not discard
 the conditional theorem or its observation/error machinery. MOSTR is retained
@@ -254,3 +254,168 @@ priority. Its directed open
 cascade has different boundaries and spectrum and cannot inherit the present
 phase-locking prediction. The source inventory owns that candidate's metadata
 and missing input/measurement dependencies; the plan owns the next action.
+
+<a id="primitive-phase-information-boundary"></a>
+## Boundary for a future primitive-phase information test
+
+This annex's six-state spatial form angle does **not** identify primitive
+phase in a different model. Only its calibration, provenance, uncertainty and
+reserved-evaluation conventions can be reused for that purpose. The
+[first-moment controls](../nodal/SINE_CONSTITUTIVE_INFORMATION.md#first-phase-moment-sufficiency)
+are exact algebraic designs, not instruments or noisy measured phasors; their
+static source equality does not imply equal future trajectories. A finite test
+must retain the actual support, companion laws, hidden state and phase/rate
+association. Imposing unit norm or equal moments on noisy readings would not
+supply an independent preparation.
+
+A preliminary metadata review on 2026-10-06 located
+[Nijholt et al., *Emergent hypernetworks in weakly coupled oscillators*](https://www.nature.com/articles/s41467-022-32282-4).
+Its four-electrode ring uses nonlinear delayed feedback. The authors'
+[data repository](https://github.com/jloespindola/Hypernetwork_data) describes
+time in seconds, four electrode potentials and four extracted phases in coupled
+and uncoupled files. Only published descriptions were inspected; no signal
+file was downloaded, no reserved prediction frozen and no response scored.
+The phase/closure bridge, uncertainty and controlled matched preparations are
+unadmitted. Published descriptions are prior exposure, not blind evidence.
+
+The information theorem also supplies a design restriction: two incident
+phasors with nonzero sum are determined up to permutation by that sum. At
+zero sum, the selected sine/cubic currents both cancel by their half-turn
+symmetry. Thus a degree-two instantaneous equal-moment witness cannot separate
+those two kernels. This algebraic restriction is not a rejection of the
+authors' different delayed-feedback model or of all odd currents.
+
+The following metadata remain a supporting source inventory for a future
+admitted comparison. The execution plan alone selects whether their missing
+bridges become active work. They supplement the phase-information option;
+they do not admit this annex's original six-state law, the two-C6 discriminator
+or a particle model. No raw signal archive was downloaded or decoded in this
+review. Published methods and qualitative results are prior exposure.
+
+| Supporting source | Metadata inspected on 2026-10-06 | Remaining admission boundary |
+| --- | --- | --- |
+| [28 Rössler circuits](https://zenodo.org/records/3521009) | CC BY 4.0; documented supports and three repetition labels; only the second circuit coordinate is recorded | [Direct-source admission below](#rossler-phase-information-admission) closes application of the existing star test. Additional state, a proved invariant preparation or controlled approximation would require separate admission. |
+| [Two resonant accelerometers](https://datadryad.org/dataset/doi:10.5061/dryad.xwdbrv1q2) | CC0; about 48.7 MB, figure-organized recordings including phase and mechanical perturbations | Independent acquisition identities, phase extraction and feedback/input laws are not yet admitted. Published curves cannot be recast as unseen predictions. |
+| [Two coupled MEMS resonators](https://zenodo.org/records/18336535) | CC BY 4.0; 125 kHz sensor records, coupling/feedback settings, about 35 GB total with smaller regime archives | External driving and feedback remain supplied. No verified independent-repeat allocation or TNFR measurement bridge. |
+| [Three Rössler circuits with higher-order interactions](https://zenodo.org/records/10392385) | CC BY 4.0; x/y channels for three oscillators, 30,000 samples per record; one block about 23.5 GB | Hidden z coordinates, programmed nonlinear coupling and unverified repeated acquisitions. Interaction order is not a phase-harmonic order. |
+
+The four-electrode repository above was inspected at revision
+`fe79902503e59f8fba1c635b5e01518d13b904dc`. Its coupled and uncoupled records
+are not repeated independent acquisitions; cropping a record does not create
+one. Delayed feedback and the published phase/filter procedure need causal
+admission, including possible future-sample access. No explicit data license
+was found in that repository during this inspection.
+
+All candidates retain `physical_status=not_admitted` and
+`evaluation=not_tested` here. An oscillator phase experiment could test a
+specified effective law; it would not derive that apparatus's material
+constituents. The [collective-property comparison](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena)
+has the main generative scope. The
+[execution plan](FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) owns selection;
+no archive size, available repetition or attractive waveform starts a campaign.
+
+<a id="rossler-phase-information-admission"></a>
+### Selected source: 28 electronic oscillators
+
+**Decision: direct source route closed; `physical_status=not_admitted`,
+`evaluation=not_tested`.** The 2026-10-06 review selected this existing lead
+because it documents connections and repetition identities, unlike a phase
+trace with unknown support. This is an admission of methods and observation
+scope, not an evaluation of either TNFR law against measured responses.
+
+The [dataset](https://zenodo.org/records/3521009) and
+[primary methods, Eqs. (1)-(3)](https://doi.org/10.1016/j.dib.2019.105012)
+describe three-state circuits, recording only voltage `v2`. Acquisition uses
+30 kS/s, a 16-bit range of +/-5 V and a third-order 1,500 Hz Butterworth
+filter. Coupling is increased in steps after an initial zero-coupling settling
+interval. This is not a documented preparation of our two matched full states.
+The inspected sources do not supply per-channel timing, calibrated uncertainty,
+filter realization/initialization or independently reset hidden states.
+Repetition labels alone do not establish those properties. Nominal component
+values are not measured error bounds; ADC bit depth is not sensor accuracy.
+
+The retained [admission record](../../docs/assets/phase_information_admission/rossler-28-v1.admission.json)
+and [source archive](../../docs/assets/phase_information_admission/rossler-28-v1.sources.zip)
+preserve the primary article XML, dataset metadata and small `Structure.zip`
+with their hashes and licenses. No signal archive was downloaded, no response
+was fitted and no measured trajectory became a reserved evaluation. Interpreting
+each support file as undirected endpoint pairs, all twenty graphs have 28
+vertices, 42 edges and are connected. At nonzero coupling, selecting seven
+channels therefore discards exterior contacts rather than producing the
+isolated seven-node star of the finite test. Column/label correspondence has
+not been independently checked against signal files.
+
+#### A precise observation obstruction
+
+This deduction uses the **published nominal circuit law**, not the measured
+arrays. Write `u=v1`, `y=v2`, `w=v3`, with fixed support and coupling. The
+first two circuit rows have the vector form
+
+\[
+u'=-d u-e y-f w,\qquad y'=-a u+M y,
+\qquad M=bI-cL,\qquad a,d,e,f>0,
+\]
+
+where `L` is the unnormalized support Laplacian. In physical seconds, the
+nominal second row is
+
+\[
+y_i'=-10000u_i+\frac{44200}{29}y_i
+       +2000\kappa\sum_j A_{ij}(y_j-y_i).
+\]
+
+Two circuit states can have identical `y` and different `u`, hence different
+`y'`. The [existing closure criterion](../FUNDAMENTAL_THEORY.md#24-physical-concepts-mathematical-types-and-implementation)
+therefore excludes an autonomous instantaneous law for `y` alone on an open
+source-state family. This is not pressure reconstructed from the response:
+the different derivatives follow from the independently supplied source law.
+
+The same rows give a stronger information result. The unfiltered observation
+and its first two derivatives determine all three coordinate blocks:
+
+\[
+u=(My-y')/a,\qquad
+w=(y''-My'-ad u-ae y)/(af).
+\]
+
+Thus the observation map `Psi=(y,y',y'')` has rank `3N`: in state order
+`(y,u,w)`, its Jacobian is block lower triangular with diagonal
+`I,-aI,afI`. The third evolution row can be nonlinear; it does not enter
+this identity. Suppose a sufficiently smooth autonomous target of dimension
+`m`, with smooth initialization `J` and readout `H`, reproduced these voltage
+histories for every source state in an open set and a fixed clock. Its first
+two output derivatives would factor through `J`, so `rank(DPsi)<=m`.
+Consequently `m>=3N`. A same-node-count, fixed-capacity form/phase target has
+only `2N` coordinates: 56 instead of 84 for this source. It cannot be an exact
+open-family realization of the full unfiltered voltage output.
+
+This does **not** determine the dimension of a recorded attractor, exclude a
+separately proved invariant preparation family, or rule out approximations,
+additional nodes/state or causal memory. It also does not identify the
+filtered recordings with `y`: filter dynamics and noisy differentiation need
+their own causal observation model. An extracted temporal phase is not an
+automatic escape from the state requirement. The
+[source-matching condition](../nodal/PHASE_FORM_EXCHANGE.md#151-source-matching-precedes-phase-tangency)
+must hold for both mapped rows, with an independently admitted clock.
+The [shared observation kernel controls](../../tests/test_linear_observation.py)
+check the block-rank mechanism with exact rational instances; the rank argument
+above supplies its general scope, not a numerical reconstruction of these data.
+
+#### Consequence for the finite information test
+
+The star theorem retains exact reference support, capacity, clock and form/phase
+laws. Its initial-state and endpoint-readout errors do not cover missing
+continuous source terms, sensor memory or discarded exterior interactions.
+The existing proof does not cover those effects merely by relabeling them as
+preparation error or renaming a voltage as form. A collective observation
+remains allowed, but must supply its own state, law and uncertainty justification.
+
+A potential approximate bridge would instead expose the two mapped-law
+defects `r_x` and `r_theta`, bound them independently throughout the prediction
+window and propagate their effect into the reference prediction intervals.
+These are errors relative to a declared law, not new fundamental TNFR variables
+or parameters fitted to an evaluated response. No such bounds are established
+for this source. The [execution plan](FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+retains this as an auxiliary, deferred route. The direct circuit comparison
+stays closed unless new preparation, reduction and measurement evidence
+resolves it; this review does not start another data or approximation campaign.

@@ -132,11 +132,6 @@ from .nodeaware_gauge_sweep import (  # P20: node-aware gauge sweep (nu_f + node
     build_test_state_nodeaware,
     sweep_alpha_nodeaware,
 )
-from .operator_catalog_discipline_signature import (  # §13sexagesima: Operator-Catalog Discipline Signature diagnostic (B11a)
-    CANONICAL_CATALOG_SIZE,
-    OperatorCatalogDisciplineSignatureCertificate,
-    compute_operator_catalog_discipline_signature,
-)
 from .oscillatory_correction import (  # P31: Prime-ladder oscillatory correction (branch B1 retry)
     OscillatoryCorrectionCertificate,
     apply_oscillatory_correction,
@@ -487,10 +482,6 @@ __all__ = [
     # §13quadraginta-tertia: REMESH-window-Type Signature (foundational diagnostic)
     "RemeshWindowTypeSignatureCertificate",
     "compute_remesh_window_type_signature",
-    # §13sexagesima: Operator-Catalog Discipline Signature (B11a)
-    "CANONICAL_CATALOG_SIZE",
-    "OperatorCatalogDisciplineSignatureCertificate",
-    "compute_operator_catalog_discipline_signature",
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     "DirichletCharacter",
     "principal_character",

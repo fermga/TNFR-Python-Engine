@@ -17,10 +17,6 @@ from .init import LazyImportProxy, cached_import, get_logger
 logger = get_logger(__name__)
 
 
-def clear_orjson_param_warnings() -> None:
-    """Compatibility no-op: JSON options are now honored by one encoder."""
-
-
 @dataclass(frozen=True)
 class JsonDumpsParams:
     """Container describing the parameters used by :func:`json_dumps`."""
@@ -582,7 +578,6 @@ def safe_write(
 __all__ = (
     "JsonDumpsParams",
     "DEFAULT_PARAMS",
-    "clear_orjson_param_warnings",
     "json_dumps",
     "json_loads",
     "read_structured_file",

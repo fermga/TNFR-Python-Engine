@@ -83,7 +83,6 @@ from .dnfr import (
     dnfr_phase_only,
     set_delta_nfr_hook,
 )
-from .dynamic_limits import DynamicLimits, DynamicLimitsConfig, compute_dynamic_limits
 from .feedback import StructuralFeedbackLoop
 from .homeostasis import StructuralHomeostasis
 from .integrators import (
@@ -205,9 +204,6 @@ __all__ = (
     "set_delta_nfr_hook",
     "step",
     "update_epi_via_nodal_equation",
-    "DynamicLimits",
-    "DynamicLimitsConfig",
-    "compute_dynamic_limits",
     "structural_clip",
     "StructuralClipStats",
     "get_clip_stats",

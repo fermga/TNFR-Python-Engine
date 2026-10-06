@@ -8,6 +8,8 @@ A separate all-phase reader also admits nonacute and antipodal edges, folding
 exact sine symmetries without changing that acute contract. These sufficient
 sine checks leave other identities unresolved. Neither reconstruction executes
 or derives a phase evolution law; the finite C5 classification is geometric.
+A separate return-path reader encloses an implicit equilibrium for a declared
+phase-storage family, keeping exact affine correlations apart from interval boxes.
 """
 
 from __future__ import annotations
@@ -16,10 +18,15 @@ from collections import deque
 from dataclasses import dataclass
 from fractions import Fraction
 from numbers import Integral
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
+from .._exact_time import exact_or_represented_real
+from ..mathematics._rational_interval import INTERVAL_METHOD, I, cos, pi_interval, sin
 from ..mathematics.krylov import exact_rank
 from ._cycle_algebra import Vector, ordered_vector
+
+if TYPE_CHECKING:
+    from .relational_sine_comparison import SineExchangeComparison
 
 __all__ = [
     "AcuteCyclePeriodAssessment",
@@ -27,11 +34,17 @@ __all__ = [
     "CircularPhaseState",
     "C5SineCriticalSet",
     "C5PhaseHessianInertia",
+    "C5_PHASE_SECTOR_BARRIER",
     "PhaseChordExtension",
     "PhaseChordReset",
     "PhaseCycleGeometry",
     "PhaseCycleState",
+    "PhaseRootBracket",
+    "ReturnPathGeometryResponseAssessment",
+    "ReturnPathStorageGeometryAssessment",
     "assess_acute_cycle_periods",
+    "assess_return_path_geometry_response",
+    "assess_return_path_storage_geometry",
     "derive_phase_chord_extension",
     "derive_phase_cycle_geometry",
     "classify_c5_sine_critical_set",
@@ -43,6 +56,11 @@ __all__ = [
 
 _MAX_NODES = 32
 _MAX_EDGES = 50
+
+# Minimum unit cosine potential on the boundary of a C5 winding +/-1
+# sector with every principal gap strictly between -2*pi/3 and 2*pi/3.
+# This phase-geometry barrier is not an acute-retention or occurrence law.
+C5_PHASE_SECTOR_BARRIER = Fraction(7, 2)
 
 
 @dataclass(frozen=True)
@@ -423,20 +441,33 @@ def _integral_turn_reconstruction(reference, values):
     )
 
 
+def _sine_turn_term(value, *, fold_circle=False):
+    """Return the exact odd/reflection normal form of one admitted sine turn.
+
+    ``None`` denotes an exact zero. This deliberately supplies only periodic,
+    odd and half-turn reflection identities, not a complete algebraic test of
+    rational-angle trigonometric identities.
+    """
+    if fold_circle:
+        value = (value + Fraction(1, 2)) % 1 - Fraction(1, 2)
+        if abs(value) == Fraction(1, 2):
+            return None
+    if not value:
+        return None
+    magnitude = abs(value)
+    if fold_circle:
+        magnitude = min(magnitude, Fraction(1, 2) - magnitude)
+    return magnitude, 1 if value > 0 else -1
+
+
 def _sine_coefficients(reference, values, *, fold_circle=False):
     """Collect sufficient exact sine identities without numerical zero tests."""
     coefficients = [{} for _ in reference.nodes]
     for (left, right), value in zip(reference.edges, values):
-        if fold_circle:
-            value = (value + Fraction(1, 2)) % 1 - Fraction(1, 2)
-            if abs(value) == Fraction(1, 2):
-                continue
-        if not value:
+        term = _sine_turn_term(value, fold_circle=fold_circle)
+        if term is None:
             continue
-        magnitude = abs(value)
-        if fold_circle:
-            magnitude = min(magnitude, Fraction(1, 2) - magnitude)
-        sign = 1 if value > 0 else -1
+        magnitude, sign = term
         for node, coefficient in ((left, sign), (right, -sign)):
             coefficients[node][magnitude] = (
                 coefficients[node].get(magnitude, 0) + coefficient
@@ -1170,4 +1201,602 @@ def observe_phase_chord_reset(before, after) -> PhaseChordReset:
         created_period_before_phase=old_phase_period,
         created_period_phase_change=period_phase_change,
         phase_unchanged_modulo_rotation=before.nodal_turns == after.nodal_turns,
+    )
+
+
+@dataclass(frozen=True)
+class PhaseRootBracket:
+    """Strict interval signs bracketing one implicitly defined phase root.
+
+    Endpoints are exact turns; interval residuals enclose ideal values.
+    The consuming equation supplies existence and monotonicity. A rational
+    midpoint is an approximation, never an exact equilibrium declaration.
+    """
+
+    lower: Fraction
+    upper: Fraction
+    lower_residual: I
+    upper_residual: I
+    refinements: int
+    interval_method: str = INTERVAL_METHOD
+
+    @property
+    def midpoint(self):
+        """Return a rational representative inside the certified bracket."""
+        return (self.lower + self.upper) / 2
+
+
+def _enclose_decreasing_phase_root(residual, *, lower, upper, refinements):
+    """Refine strict certified signs; the consumer owns the monotonicity proof."""
+    if type(refinements) is not int or not 1 <= refinements <= 64:
+        raise ValueError("refinements must be an integer from 1 through 64")
+    lower_value, upper_value = residual(lower), residual(upper)
+    if not lower_value.lo > 0 > upper_value.hi:
+        raise ArithmeticError("initial root signs are unresolved")
+    for _ in range(refinements):
+        midpoint = (lower + upper) / 2
+        value = residual(midpoint)
+        if value.lo > 0:
+            lower, lower_value = midpoint, value
+        elif value.hi < 0:
+            upper, upper_value = midpoint, value
+        else:
+            raise ArithmeticError("root refinement sign is unresolved")
+    return PhaseRootBracket(lower, upper, lower_value, upper_value, refinements)
+
+
+def _return_path_storage_terms(turns):
+    """Enclose the linear and cubic terms of the scalar balance equation."""
+    angle = 2 * pi_interval() * turns
+    bulk, special, connecting = cos(angle / 4), sin(angle), sin(2 * angle / 3)
+    return bulk - special - connecting, bulk**3 - special**3 - connecting**3
+
+
+def _return_path_storage_residual(turns, epsilon):
+    """Enclose F_epsilon(2*pi*turns)/(1+epsilon), without changing the law."""
+    first, third = _return_path_storage_terms(turns)
+    # Normalize exact coefficients before materializing intervals. This is a
+    # root-solving scale only; physical/model currents retain their full law.
+    linear = 1 / (1 + epsilon)
+    cubic = epsilon / (1 + epsilon)
+    return linear * first + cubic * third
+
+
+def _return_path_nodal_affine_coefficients():
+    """Return the retained eleven-node phase lift as intercept/slope in turns."""
+    q = Fraction
+    return (
+        (q(0), q(0)),
+        (q(0), q(1)),
+        (q(1, 4), q(3, 4)),
+        (q(1, 2), q(1, 2)),
+        (q(3, 4), q(1, 4)),
+        (q(0), q(4, 3)),
+        (q(0), q(1, 3)),
+        (q(-1, 4), q(7, 12)),
+        (q(-1, 2), q(5, 6)),
+        (q(-3, 4), q(13, 12)),
+        (q(0), q(2, 3)),
+    )
+
+
+def _return_path_geometry(source, left_cycle, right_cycle, mediator):
+    """Rebuild source, exact support and correlated phase family without a root."""
+    from ._sine_admission import _admit_sine_source, _sine_model_coefficients
+    from .relational_observations import _ordered
+    from .relational_sine_comparison import SineExchangeComparison
+
+    q = Fraction
+    if not isinstance(source, SineExchangeComparison):
+        raise TypeError("return-path geometry requires a SineExchangeComparison")
+    admitted, edges = _admit_sine_source(source)
+    loss, exchange, beta = _sine_model_coefficients(admitted.reference_model)
+    if (loss, exchange, beta) != (0, 1, 1) or any(v != 1 for v in admitted.capacity):
+        raise ValueError(
+            "return-path geometry requires zero loss and unit capacity, beta and exchange"
+        )
+    left = _ordered(left_cycle, "left_cycle", limit=6)
+    right = _ordered(right_cycle, "right_cycle", limit=6)
+    if len(left) != 5 or len(right) != 5:
+        raise ValueError("left_cycle and right_cycle must each contain five nodes")
+    positions = {node: i for i, node in enumerate(admitted.nodes)}
+    try:
+        ordered = tuple(positions[node] for node in left + right + (mediator,))
+    except (KeyError, TypeError) as exc:
+        raise ValueError("cycles and mediator must belong to the source") from exc
+    if len(positions) != 11 or len(set(ordered)) != 11:
+        raise ValueError(
+            "two disjoint cycles and a distinct mediator must cover the source"
+        )
+    li, ri, hidden = ordered[:5], ordered[5:10], ordered[10]
+    expected = {
+        tuple(sorted((i, j)))
+        for cycle in (li, ri)
+        for i, j in zip(cycle, cycle[1:] + cycle[:1])
+    }
+    expected.update(
+        tuple(sorted(edge))
+        for edge in ((li[0], hidden), (hidden, ri[0]), (li[1], ri[1]))
+    )
+    if set(edges) != expected:
+        raise ValueError(
+            "full support must contain exactly the two cycles, mediator path and return edge"
+        )
+    geometry = _derive(admitted.nodes, edges)
+    nodal_affine = [None] * 11
+    for position, pair in zip(ordered, _return_path_nodal_affine_coefficients()):
+        nodal_affine[position] = pair
+    nodal_affine = tuple(nodal_affine)
+    edge_affine, offsets = [], []
+    for i, j in geometry.edges:
+        constant = nodal_affine[j][0] - nodal_affine[i][0]
+        slope = nodal_affine[j][1] - nodal_affine[i][1]
+        middle = constant + slope * q(17, 120)
+        wrapped = (middle + q(1, 2)) % 1 - q(1, 2)
+        offset = middle - wrapped
+        if offset.denominator != 1:
+            raise ArithmeticError("phase lift lost an integral edge offset")
+        offsets.append(int(offset))
+        edge_affine.append((constant - offset, slope))
+    edge_affine = tuple(edge_affine)
+    named_cycles = (left, right, (left[0], mediator, right[0], right[1], left[1]))
+    edge_indices = {edge: i for i, edge in enumerate(geometry.edges)}
+    periods = []
+    for cycle in named_cycles:
+        row = _cycle_row(tuple(positions[node] for node in cycle), edge_indices)
+        constant = sum((entry * pair[0] for entry, pair in zip(row, edge_affine)), q(0))
+        slope = sum((entry * pair[1] for entry, pair in zip(row, edge_affine)), q(0))
+        if slope != 0:
+            raise ArithmeticError("declared cycle periods depend on the root parameter")
+        periods.append(constant)
+    if tuple(periods) != (1, -1, 0):
+        raise ArithmeticError("the reconstructed geometry has incorrect cycle periods")
+    # Oddness leaves three independent current symbols: f(A), f(t), f(u).
+    categories = ((q(1, 4), q(-1, 4)), (q(0), q(1)), (q(0), q(2, 3)))
+    currents_by_edge = []
+    for pair in edge_affine:
+        signed = next(
+            (
+                tuple(q(sign if i == category else 0) for i in range(3))
+                for category, reference in enumerate(categories)
+                for sign in (1, -1)
+                if pair == tuple(sign * value for value in reference)
+            ),
+            None,
+        )
+        if signed is None:
+            raise ArithmeticError(
+                "edge phase does not belong to the retained affine family"
+            )
+        currents_by_edge.append(signed)
+    multipliers = []
+    for incidence in geometry.incidence:
+        row = tuple(
+            sum(
+                (
+                    -entry * symbols[k]
+                    for entry, symbols in zip(incidence, currents_by_edge)
+                ),
+                q(0),
+            )
+            for k in range(3)
+        )
+        if row != (row[0], -row[0], -row[0]):
+            raise ArithmeticError(
+                "full nodal currents do not reduce to the root equation"
+            )
+        multipliers.append(row[0])
+    return (
+        admitted,
+        geometry,
+        left,
+        right,
+        named_cycles,
+        tuple(periods),
+        nodal_affine,
+        edge_affine,
+        tuple(offsets),
+        tuple(multipliers),
+    )
+
+
+@dataclass(frozen=True)
+class ReturnPathStorageGeometryAssessment:
+    """Implicit acute equilibrium on the supplied two-C5 return-path support.
+
+    The exact affine coefficients use s=t/(2*pi); each pair is (intercept,
+    slope). Their shared s is the unique implicit root, not eleven unrelated
+    interval coordinates. Nodal turns retain the real lift; edge turns are
+    acute representatives in geometry.edges orientation. Nodal residuals
+    are incoming currents, minus incidence times the unscaled U_epsilon'
+    edge currents. They give form rates after multiplication by mobility.
+    """
+
+    source: SineExchangeComparison
+    law: str
+    epsilon: Fraction
+    geometry: PhaseCycleGeometry
+    left_cycle: tuple[Any, ...]
+    right_cycle: tuple[Any, ...]
+    mediator: Any
+    named_cycles: tuple[tuple[Any, ...], ...]
+    named_cycle_periods: tuple[Fraction, ...]
+    root_turn_bracket: PhaseRootBracket
+    target_epi: tuple[Fraction, ...]
+    nodal_turn_affine_coefficients: tuple[tuple[Fraction, Fraction], ...]
+    edge_turn_affine_coefficients: tuple[tuple[Fraction, Fraction], ...]
+    edge_integer_offsets: tuple[int, ...]
+    nodal_turn_bounds: tuple[I, ...]
+    edge_turn_bounds: tuple[I, ...]
+    edge_current_bounds: tuple[I, ...]
+    nodal_current_residual_bounds: tuple[I, ...]
+    nodal_root_residual_multipliers: tuple[Fraction, ...]
+    edge_curvature_bounds: tuple[I, ...]
+    minimum_acute_margin_turns_bounds: I
+    target_phase_storage_bounds: I
+    criticality_status: str
+    uniqueness_status: str
+    arithmetic_method: str = INTERVAL_METHOD
+    scope: tuple[str, ...] = (
+        "supplied_sine_plus_cubic_storage_family_not_a_selected_microscopic_law",
+        "normalized_reference_source_supplies_primitives_not_an_equilibrium_observation",
+        "two_C5_rings_mediated_path_and_one_return_edge_are_the_complete_supplied_support",
+        "fixed_unit_capacity_beta_w_one_zero_loss_tau_t_over_pi_no_forcing_or_events",
+        "zero_uniform_form_and_opposite_ring_periods_with_zero_mixed_period",
+        "implicit_root_defines_one_equilibrium_not_every_point_in_the_interval_box",
+        "exact_affine_correlations_and_integral_periods_are_retained_separately",
+        "nodal_balance_follows_exact_incidence_factorization_and_the_root_equation",
+        "normalized_root_residual_does_not_rescale_the_actual_law_or_clock",
+        "strictly_convex_acute_period_cell_gives_uniqueness_modulo_common_phase",
+        "positive_phase_Hessian_does_not_supply_global_capture_or_attraction",
+        "bounded_refinement_policy_is_numerical_not_a_physical_parameter",
+        "no_native_recovery_certificate_or_observed_source_state_is_reinterpreted",
+        "no_default_change_runtime_installation_support_birth_or_physical_identification",
+    )
+
+    def to_dict(self):
+        """Project declared labels, affine geometry and rigorous root evidence."""
+        from ..sdk.relational_reports import _project, _validate_label_groups
+        from .relational_sine_comparison import _validate_comparison_labels
+
+        _validate_comparison_labels(self.source)
+        _validate_label_groups(
+            self.geometry.nodes,
+            self.left_cycle,
+            self.right_cycle,
+            (self.mediator,),
+            *self.named_cycles,
+        )
+        return {
+            "schema": "tnfr.return-path-storage-geometry.v1",
+            "report": _project(self),
+        }
+
+
+def assess_return_path_storage_geometry(
+    source, *, left_cycle, right_cycle, mediator, epsilon, refinements=40
+) -> ReturnPathStorageGeometryAssessment:
+    """Enclose the unique acute opposite-winding target for a supplied storage.
+
+    Each ordered cycle has five nodes. Its first node attaches to the
+    mediator; the second nodes have the return edge. Those thirteen edges
+    are the complete support. The reference source requires unit capacities,
+    beta=w=1 and zero loss; its observed phases are not the unknown target.
+
+    Write f(a)=sin(a)+epsilon*sin(a)^3. With A=pi/2-t/4 and u=2*t/3,
+    the implicit equation f(A)-f(t)-f(u)=0 is strictly decreasing in
+    0<t<pi/2, since f' is positive on acute gaps. For every epsilon>=0,
+    signs at t=pi/6 and t=2*pi/5 bracket its unique root. The affine
+    geometry has exact periods (1,-1,0); incidence reduces every nodal
+    current residual to a signed copy of that same scalar equation.
+    Strict convexity on the full acute period cell gives uniqueness there,
+    independently of the symmetry used to construct this representative.
+    """
+    q = Fraction
+    coefficient = exact_or_represented_real(epsilon, "epsilon")
+    if coefficient < 0:
+        raise ValueError("epsilon must be nonnegative")
+    (
+        admitted,
+        geometry,
+        left,
+        right,
+        named_cycles,
+        periods,
+        nodal_affine,
+        edge_affine,
+        offsets,
+        multipliers,
+    ) = _return_path_geometry(source, left_cycle, right_cycle, mediator)
+    bracket = _enclose_decreasing_phase_root(
+        lambda turns: _return_path_storage_residual(turns, coefficient),
+        lower=q(1, 12),
+        upper=q(1, 5),
+        refinements=refinements,
+    )
+    root = I(bracket.lower, bracket.upper)
+    nodal_bounds = tuple(I(a) + b * root for a, b in nodal_affine)
+    edge_bounds = tuple(I(a) + b * root for a, b in edge_affine)
+    if any(value.abs_max >= q(1, 4) for value in edge_bounds):
+        raise ArithmeticError("the enclosed return-path geometry is not strictly acute")
+    angles = tuple(2 * pi_interval() * turn for turn in edge_bounds)
+    sines, cosines = tuple(map(sin, angles)), tuple(map(cos, angles))
+    currents = tuple(value + coefficient * value**3 for value in sines)
+    residuals = tuple(
+        sum((-entry * current for entry, current in zip(row, currents)), I(0))
+        for row in geometry.incidence
+    )
+    curvatures = tuple(c * (1 + 3 * coefficient * s**2) for c, s in zip(cosines, sines))
+    if any(not value.contains(0) for value in residuals) or any(
+        c.lo <= 0 for c in curvatures
+    ):
+        raise ArithmeticError(
+            "implicit equilibrium enclosure failed its consistency checks"
+        )
+    storage = sum(
+        (1 - c + coefficient * (q(2, 3) - c + c**3 / 3) for c in cosines), I(0)
+    )
+    return ReturnPathStorageGeometryAssessment(
+        source=admitted,
+        law="normalized_sine_cubic_reciprocal_exchange",
+        epsilon=coefficient,
+        geometry=geometry,
+        left_cycle=left,
+        right_cycle=right,
+        mediator=mediator,
+        named_cycles=named_cycles,
+        named_cycle_periods=tuple(periods),
+        root_turn_bracket=bracket,
+        target_epi=(q(0),) * 11,
+        nodal_turn_affine_coefficients=nodal_affine,
+        edge_turn_affine_coefficients=edge_affine,
+        edge_integer_offsets=tuple(offsets),
+        nodal_turn_bounds=nodal_bounds,
+        edge_turn_bounds=edge_bounds,
+        edge_current_bounds=currents,
+        nodal_current_residual_bounds=residuals,
+        nodal_root_residual_multipliers=tuple(multipliers),
+        edge_curvature_bounds=curvatures,
+        minimum_acute_margin_turns_bounds=root / 4,
+        target_phase_storage_bounds=storage,
+        criticality_status="implicit_root_with_exact_full_incidence_factorization",
+        uniqueness_status="unique_in_declared_acute_period_cell_modulo_common_phase",
+    )
+
+
+@dataclass(frozen=True)
+class ReturnPathGeometryResponseAssessment:
+    """Constitutive inference and a separate initial form-acceleration bound.
+
+    The observed special edge has turns s in ``special_turn_bounds``. Only
+    the correlated equilibria satisfying epsilon=-F0(s)/F3(s) are candidates;
+    outer intervals for s and epsilon are not independent equilibrium states.
+    The response is the tangent initial acceleration to ``form_direction``
+    with zero initial phase perturbation, in the fixed clock tau=t/pi.
+    Supplied observation-origin metadata does not authenticate evidence.
+    """
+
+    source: SineExchangeComparison
+    law: str
+    clock: str
+    geometry: PhaseCycleGeometry
+    left_cycle: tuple[Any, ...]
+    right_cycle: tuple[Any, ...]
+    mediator: Any
+    named_cycles: tuple[tuple[Any, ...], ...]
+    named_cycle_periods: tuple[Fraction, ...]
+    special_turn_bounds: tuple[Fraction, Fraction]
+    observation_origin: str
+    coefficient_lower: Fraction | None
+    coefficient_upper: Fraction | None
+    coefficient_status: str
+    endpoint_classifications: tuple[str, str]
+    endpoint_linear_residual_bounds: tuple[I | None, I | None]
+    endpoint_cubic_residual_bounds: tuple[I | None, I | None]
+    geometric_outer_turn_bounds: tuple[Fraction, Fraction] | None
+    target_epi: tuple[Fraction, ...]
+    nodal_turn_affine_coefficients: tuple[tuple[Fraction, Fraction], ...]
+    edge_turn_affine_coefficients: tuple[tuple[Fraction, Fraction], ...]
+    edge_integer_offsets: tuple[int, ...]
+    form_direction: tuple[Fraction, ...]
+    phase_velocity_direction: tuple[Fraction, ...]
+    edge_curvature_bounds: tuple[I, ...] | None
+    response_acceleration_bounds: tuple[I, ...] | None
+    response_status: str
+    arithmetic_method: str = INTERVAL_METHOD
+    scope: tuple[str, ...] = (
+        "supplied_geometric_interval_is_the_only_constitutive_observation",
+        "observation_origin_is_a_declaration_not_provenance_authentication",
+        "reference_source_state_and_cached_rates_are_not_equilibrium_evidence",
+        "fixed_unit_capacity_beta_w_one_zero_loss_tau_t_over_pi_no_forcing_or_events",
+        "unique_acute_opposite_winding_family_requires_full_declared_support",
+        "coefficient_is_minus_F0_over_F3_on_the_same_shared_geometric_parameter",
+        "outer_parameter_boxes_enclose_candidates_but_do_not_define_independent_equilibria",
+        "geometry_does_not_identify_an_overall_current_scale_mobility_or_clock",
+        "unbounded_or_unresolved_coefficients_do_not_receive_a_finite_response_bound",
+        "response_is_minus_K_H_epsilon_K_L_h_from_full_nodal_linearization",
+        "zero_initial_phase_perturbation_and_uniform_zero_form_target",
+        "initial_tangent_acceleration_is_not_a_finite_amplitude_trajectory_forecast",
+        "no_runtime_installation_formation_event_selection_or_physical_identification",
+    )
+
+    def to_dict(self):
+        """Retain interval availability, declared labels and exact correlations."""
+        from ..sdk.relational_reports import _project, _validate_label_groups
+        from .relational_sine_comparison import _validate_comparison_labels
+
+        _validate_comparison_labels(self.source)
+        _validate_label_groups(
+            self.geometry.nodes,
+            self.left_cycle,
+            self.right_cycle,
+            (self.mediator,),
+            *self.named_cycles,
+        )
+        return {
+            "schema": "tnfr.return-path-geometry-response.v1",
+            "report": _project(self),
+        }
+
+
+def _return_path_inverse_endpoint(turns):
+    """Classify an exact observation endpoint without assuming rounded roots."""
+    # Both limiting roots lie strictly within these analytic bounds. Avoid
+    # evaluating trigonometry outside the domain of their monotonicity proof.
+    if turns <= Fraction(1, 12):
+        return "below_sine_root", None, None, None
+    if turns >= Fraction(1, 5):
+        return "above_cubic_limit", None, None, None
+    first, third = _return_path_storage_terms(turns)
+    if first.lo > 0:
+        return "below_sine_root", None, first, third
+    if third.hi < 0:
+        return "above_cubic_limit", None, first, third
+    if first.hi < 0 < third.lo:
+        return "finite_positive_coefficient", -first / third, first, third
+    return "unresolved_interval_arithmetic", None, first, third
+
+
+def _return_path_form_response(geometry, degrees, edge_affine, turns, coefficient, h):
+    """Enclose -K H K L h using the complete unweighted support incidence."""
+    q = Fraction
+    laplacian = [q(0)] * len(h)
+    for i, j in geometry.edges:
+        difference = h[i] - h[j]
+        laplacian[i] += difference
+        laplacian[j] -= difference
+    phase_velocity = tuple(value / degree for value, degree in zip(laplacian, degrees))
+    if coefficient is None:
+        return phase_velocity, None, None
+    angles = tuple(2 * pi_interval() * (I(a) + b * turns) for a, b in edge_affine)
+    curvatures = tuple(
+        cos(angle) * (1 + 3 * coefficient * sin(angle) ** 2) for angle in angles
+    )
+    response = [I(0)] * len(h)
+    for (i, j), curvature in zip(geometry.edges, curvatures):
+        difference = curvature * (phase_velocity[j] - phase_velocity[i])
+        response[i] += difference / degrees[i]
+        response[j] -= difference / degrees[j]
+    return phase_velocity, curvatures, tuple(response)
+
+
+def assess_return_path_geometry_response(
+    source,
+    *,
+    left_cycle,
+    right_cycle,
+    mediator,
+    special_turn_bounds,
+    form_direction,
+    observation_origin,
+) -> ReturnPathGeometryResponseAssessment:
+    """Infer a coefficient interval from geometry, then bound another response.
+
+    The family and support are the same as ``assess_return_path_storage_geometry``.
+    Supply two ordered exact or represented real endpoints for the special
+    edge angle divided by mathematical 2*pi. Its equilibrium parameter grows
+    strictly with epsilon, from the sine root through (but excluding) the
+    pure-cubic limiting root. The inverse uses epsilon=-F0/F3, not the observed
+    response. Endpoints outside this branch may yield an incompatible interval
+    or a compatible interval without a finite upper coefficient bound. An
+    unresolved outward sign remains explicitly unavailable.
+
+    A bounded interval predicts the full initial tangent form acceleration
+    -K H_epsilon K L h in tau=t/pi, with zero initial phase perturbation and
+    supplied h in source node order. Capacities, exchange, phase mobility and
+    clock are independent fixed premises. This is not a finite-time forecast.
+    """
+    from .relational_observations import _ordered
+
+    q = Fraction
+    bounds = _ordered(special_turn_bounds, "special_turn_bounds", limit=3)
+    if len(bounds) != 2:
+        raise ValueError("special_turn_bounds must contain two ordered endpoints")
+    bounds = tuple(
+        exact_or_represented_real(value, "special_turn_bounds") for value in bounds
+    )
+    if bounds[0] > bounds[1]:
+        raise ValueError("special_turn_bounds must be ordered from lower to upper")
+    if type(observation_origin) is not str or observation_origin not in (
+        "supplied_mathematical_interval",
+        "measured_interval",
+    ):
+        raise ValueError(
+            "observation_origin must declare a mathematical or measured interval"
+        )
+    (
+        admitted,
+        geometry,
+        left,
+        right,
+        named_cycles,
+        periods,
+        nodal_affine,
+        edge_affine,
+        offsets,
+        _,
+    ) = _return_path_geometry(source, left_cycle, right_cycle, mediator)
+    direction = _ordered(form_direction, "form_direction", limit=12)
+    if len(direction) != 11:
+        raise ValueError("form_direction must contain one value per source node")
+    direction = tuple(
+        exact_or_represented_real(value, "form_direction") for value in direction
+    )
+    endpoints = tuple(_return_path_inverse_endpoint(value) for value in bounds)
+    lower_kind, upper_kind = (entry[0] for entry in endpoints)
+    lower = upper = outer_turns = None
+    if lower_kind == "above_cubic_limit" or upper_kind == "below_sine_root":
+        status = "incompatible"
+    elif "unresolved_interval_arithmetic" in (lower_kind, upper_kind):
+        status = "unresolved_interval_arithmetic"
+    else:
+        lower = (
+            q(0) if lower_kind == "below_sine_root" else max(q(0), endpoints[0][1].lo)
+        )
+        outer_turns = (max(bounds[0], q(1, 12)), min(bounds[1], q(1, 5)))
+        if upper_kind == "above_cubic_limit":
+            status = "unbounded_above"
+        else:
+            upper = endpoints[1][1].hi
+            status = "bounded"
+    phase_velocity, curvatures, response = _return_path_form_response(
+        geometry,
+        admitted.degrees,
+        edge_affine,
+        I(*outer_turns) if outer_turns is not None else None,
+        I(lower, upper) if status == "bounded" else None,
+        direction,
+    )
+    return ReturnPathGeometryResponseAssessment(
+        source=admitted,
+        law="normalized_sine_cubic_reciprocal_exchange",
+        clock="tau=t/pi",
+        geometry=geometry,
+        left_cycle=left,
+        right_cycle=right,
+        mediator=mediator,
+        named_cycles=named_cycles,
+        named_cycle_periods=periods,
+        special_turn_bounds=bounds,
+        observation_origin=observation_origin,
+        coefficient_lower=lower,
+        coefficient_upper=upper,
+        coefficient_status=status,
+        endpoint_classifications=(lower_kind, upper_kind),
+        endpoint_linear_residual_bounds=tuple(entry[2] for entry in endpoints),
+        endpoint_cubic_residual_bounds=tuple(entry[3] for entry in endpoints),
+        geometric_outer_turn_bounds=outer_turns,
+        target_epi=(q(0),) * 11,
+        nodal_turn_affine_coefficients=nodal_affine,
+        edge_turn_affine_coefficients=edge_affine,
+        edge_integer_offsets=offsets,
+        form_direction=direction,
+        phase_velocity_direction=phase_velocity,
+        edge_curvature_bounds=curvatures,
+        response_acceleration_bounds=response,
+        response_status=(
+            "bounded_initial_tangent_acceleration"
+            if response is not None
+            else "unavailable"
+        ),
     )

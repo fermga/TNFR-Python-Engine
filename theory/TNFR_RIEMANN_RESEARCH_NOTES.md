@@ -46,9 +46,26 @@ fraction of the remaining TNFR development.
 | [pulse_coherence.py](../src/tnfr/riemann/pulse_coherence.py) | Finite pulse or classical analytic zeta evaluation | Phase/counting and rectified-phase diagnostics | Pulse, analytic evaluator and supplied comparison oracle must be distinguished |
 | [dirichlet_l.py](../src/tnfr/riemann/dirichlet_l.py) and twisted modules | Explicit Dirichlet characters and arithmetic data | Analogous finite/classical GL(1) comparisons | No GRH result or elliptic-curve GL(2) construction follows |
 
-The [prime-ladder atlas](NUCLEUS_A_PRIME_LADDER_ATLAS.md) retains reproduction
-entry points. Numerical tolerances and old reported counts in that atlas are
-historical evidence, not freshly revalidated universal guarantees.
+### Reproduction entry points
+
+The [example catalog](../examples/README.md) owns runnable usage. These finite
+comparisons exercise the constructions above under their declared inputs:
+
+| Example | Comparison |
+| --- | --- |
+| [Von Mangoldt trace](../examples/03_riemann_zeta/41_von_mangoldt_zeta_demo.py) | Truncated prime-ladder sum against the classical evaluator on its declared domain |
+| [Analytic continuation](../examples/03_riemann_zeta/42_riemann_zeros_as_resonances.py) | Selected known critical-line ordinates and poles of the supplied classical function |
+| [Prime-ladder Hamiltonian](../examples/03_riemann_zeta/43_prime_ladder_hamiltonian_demo.py) | Eigenvalues against the spectrum assigned to the diagonal |
+| [Weil explicit formula](../examples/03_riemann_zeta/44_weil_explicit_formula_demo.py) | Finite residuals under chosen test functions and cutoffs |
+| [Li–Keiper sums](../examples/03_riemann_zeta/45_li_keiper_demo.py) | Truncated sums from supplied zeros, with the input-dependence boundary below |
+| [Spectral rescaling](../examples/03_riemann_zeta/57_admissible_rescaling_demo.py) | Supplied smooth targets and the finite congruence residual |
+
+Record the environment, source, inputs, cutoffs and residuals for each run.
+Historical tolerances are not guarantees for a new configuration; no examples
+were rerun for this consolidation. These checks provide comparison baselines,
+not an exhaustion of possible nodal constructions or a novelty claim for
+classical identities. The old atlas remains recoverable through the
+[retirement record](research/archive/README.md#recovery-records).
 
 ## 3. Exact arithmetic identities and their domains
 
@@ -74,6 +91,18 @@ construction. With diagonal trace weights $\log p$, its finite exponential
 trace is precisely the finite sum above. This is a useful consistency identity;
 reading assigned entries back as eigenvalues is not independent evidence that
 the nodal law generated prime arithmetic.
+
+### An inserted spectral threshold is not an independent prediction
+
+The retired prime-path family was `H(sigma)=L+(sigma-1/2)D`, with symmetric
+positive-semidefinite graph Laplacian `L`, `L*1=0`, and positive diagonal
+`D=diag(log(p_i))`. Its lowest-eigenvalue sign changes exactly at the inserted
+`1/2` for every finite size: at that value the potential vanishes; above it
+`H` is positive definite; below it the Rayleigh quotient of `1` is negative.
+This works for any positive diagonal, with no prime-distribution theorem.
+The former asymptotic claim supplies no critical-line or generative-transition
+evidence. Eigenvector-variation readouts of that prototype are not primitive
+circular phase or the canonical tetrad.
 
 ### Finite zero sums and the Li criterion
 
@@ -131,6 +160,23 @@ Finite phase, RMS, peak and off-axis comparisons remain descriptive. They
 neither validate grammar U2 nor imply a uniform estimate at unobserved
 heights, criticality, a pressure-equilibrium axis or RH.
 
+### A finite residue-spectrum comparison
+
+The [residue-phase instrument](../benchmarks/residue_phase_vs_riemann.py)
+compares fifteen supplied primes `p=3 mod 4`, starting at 7. The directed
+quadratic-residue circulant is normal but not self-adjoint; its maximum
+imaginary spectral magnitude follows the classical `sqrt(p)/(p-1)` formula.
+The selected pairing decreases with prime size while the supplied zeta-zero
+ordinates increase. The historical Pearson value was approximately `-0.9068`;
+it is not a bound on other inputs and was not rerun for this consolidation.
+
+The maintained verdict `GAUSS_SCALE_MATCHED_DIRECT_ORDERING_DIFFERS` concerns
+that positional comparison. Complex eigenvalues do not identify primitive
+phase motion or zeta ordinates; the result neither excludes other
+representations nor derives an analytic Riemann obstruction. A symmetry
+restriction for the separate prime-ladder model cannot be transferred without
+matching its group action and complete law.
+
 ## 5. What the smooth rescaling actually proves
 
 Suppose $H U=U\,\mathrm{diag}(\lambda_i)$, $U^*U=I$ and both the retained
@@ -165,36 +211,22 @@ named structurally_derived do not certify derivation from nodal dynamics.
 
 No analytic decomposition $F=F_{\rm smooth}\oplus F_{\rm osc}$, identification
 of $S(T)$ with a finite Fourier-mask kernel, or REMESH-infinity operator is
-established by this construction.
+established by this construction. The [fixed-delay surrogate result](REMESH_INFINITY_DERIVATION.md)
+retains its own hypotheses and does not supply that missing identification.
 
 ## 6. Conditional symmetry results that remain useful
 
-For an operator $L$ and an explicitly specified group action $P_\sigma$,
+[Structural observability](TNFR_STRUCTURAL_OBSERVABILITY.md) owns the exact
+fixed-diffusion, Reynolds-projection and pointed-selector results, composition
+conditions and nonlinear counterexamples. A proposed arithmetic application
+must supply the same group action, full state, support, weights, capacity,
+selector and history assumed by that result. Finite pointed probes do not
+establish arbitrary-state or arbitrary-word equivariance.
 
-$$
-[L,P_\sigma]=0\quad\Longrightarrow\quad
-[f(L),P_\sigma]=0
-$$
-
-for polynomials and other defined functional calculi on that operator.
-Equivariant maps compose when their domains and actions agree; invariant
-initial states then remain invariant under an equivariant evolution.
-The input state, node selector, support, weights and history belong to those
-hypotheses. Uniform graph-level coefficients alone do not prove them.
-
-The finite pointed operator probes compare actions at corresponding selected
-nodes. They do not prove equivariance for one fixed selector on every state.
-A nonlinear equivariant map preserves the fixed set but need not preserve
-its orthogonal complement. General support-changing maps also need explicit
-compatible actions on their output spaces.
-
-A relabel-invariant scalar spectrum can still carry information about a
-graph or an unordered set of weights. Relabeling covariance is not blindness
-to arithmetic. No representation has been supplied that places analytic
-$S(T)$ in $\mathrm{Fix}(S_n)^\perp$, and no catalog-wide no-go theorem for its
-reconstruction follows. See
-[TNFR_STRUCTURAL_OBSERVABILITY.md](TNFR_STRUCTURAL_OBSERVABILITY.md) and
-[NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md](NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md).
+Relabel-invariant spectra can retain arithmetic information; no representation
+here places analytic `S(T)` in a finite symmetry complement. The shared method
+is useful for testing observation loss, but is not a universal arithmetic no-go
+or a claim that all admissible constructions have been exhausted.
 
 ## 7. Superseded claims and preserved historical record
 

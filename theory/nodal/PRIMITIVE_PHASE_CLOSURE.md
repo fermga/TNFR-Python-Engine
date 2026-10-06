@@ -161,7 +161,7 @@ The former two-product blend could increase an eligible `nu=0.3` by
 now removes that numerical defect, extending represented equal-capacity
 preservation beyond the unit input. Nonuniform arithmetic and out-of-rail
 clamps keep their separate effects. The
-[whole-step integration](../FORCED_SUPPORT_BALANCE.md#34-native-runtime-admission-uses-relaxation-not-the-supplied-sine-clock)
+[whole-step integration](FORCED_WINDING_AND_WRITERS.md#34-native-runtime-admission-uses-relaxation-not-the-supplied-sine-clock)
 records this extension and finite ordinary-runtime controls. Phase-capable public
 operators, custom integrators/selectors, generic callbacks, structural-memory
 REMESH and the optimizer/FFT free-advance model are separate execution paths.

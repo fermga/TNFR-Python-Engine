@@ -1,6 +1,6 @@
 # Nodal parameter foundations and constitutive scope
 
-Reviewed 2026-09-26. This reference owns the parameter ledger, units and
+Reviewed 2026-10-06. This reference owns the parameter ledger, units and
 cross-channel dependencies. Detailed proofs have one topical owner in the
 reading map below. The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 alone defines active research; these notes are not parallel task queues.
@@ -31,9 +31,38 @@ mathematical references can still be located. No proof is duplicated here.
 | A declared phase/form closure, finite predictions, inherited exchange scale and integration boundaries. | [Conditional cotangent exchange](TNFR_VARIATIONAL_PRINCIPLE.md#cotangent-phase-exchange) | 13.21-13.26; added premise, held capacity; [integration audit](TNFR_VARIATIONAL_PRINCIPLE.md#cotangent-integration-audit), unequal blocks and same-tetrad future witness |
 | A relational storage premise compatible with native pressure, its local exchange law and an independent spectral discriminator. | [Relational exchange admission](nodal/RELATIONAL_EXCHANGE_ADMISSION.md) | Conditional alternative; full mean/source balance, origin/scale admission and the arbitrary-storage P2 momentum obstruction |
 | When do reciprocal dynamics permit oscillation, recurrence or a frequency-selective response? | [Resonance foundations](nodal/RESONANCE_FOUNDATIONS.md) | Complete sine law; positive-loss obstruction, conservative pulse and almost-everywhere recurrence have different hypotheses |
-| Which internal coordinates, periods and stability properties survive grouping? | [Nonlinear replica state](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-unordered-state), [joint persistence](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-joint-persistence), [capacity asymmetry](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-capacity-asymmetry) | Exact finite-symmetry quotient with capacity-state correlations; geometric trapping survives unequal positive held capacities, while internal circulation needs its symmetry premises |
-| Can phase identify constituent pairs without a supplied partition? | [Phase-only pairing](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-phase-pairing) | Strict mutual nearest partners inside the protected tube; independent support and complete-law admission, with no claim of formation |
-| Which equilibria does the complete law permit without choosing a target winding? | [Fully acute critical geometries](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-acute-critical) | Exhaustive doubled-C5 classification with arbitrary positive held capacities: uniform form and consensus or uniform phase winding of either sign; represented-state admission is separate |
+| Which internal coordinates, periods and stability properties survive grouping? | [Nonlinear replica state](nodal/SINE_PAIR_STATE.md#sine-replica-unordered-state), [joint persistence](nodal/SINE_REPLICA_PULSE.md#sine-replica-joint-persistence), [capacity asymmetry](nodal/SINE_PAIR_STATE.md#sine-replica-capacity-asymmetry) | Exact finite-symmetry quotient with capacity-state correlations; geometric trapping survives unequal positive held capacities, while internal circulation needs its symmetry premises |
+| Can phase identify constituent pairs without a supplied partition? | [Phase-only pairing](nodal/SINE_PAIR_GROUPING.md#sine-phase-pairing) | Strict mutual nearest partners inside the protected tube; independent support and complete-law admission, with no claim of formation |
+| Which equilibria does the complete law permit without choosing a target winding? | [Fully acute critical geometries](nodal/SINE_PAIR_GROUPING.md#sine-replica-acute-critical) | Exhaustive doubled-C5 classification with arbitrary positive held capacities: uniform form and consensus or uniform phase winding of either sign; represented-state admission is separate |
+
+<a id="derived-information-ledger"></a>
+## Derived information and what it adds
+
+The purpose of retaining another quantity is to preserve information consumed
+by the declared dynamics. A function of the full state is not an additional
+independent primitive, although it can reveal information lost by a collective
+observation. More fitted coefficients do not by themselves improve a model.
+The following ledger connects existing owners without introducing another
+fundamental law or research queue.
+
+| Quantity or mechanism | Information retained and established use | Limit and owner |
+| --- | --- | --- |
+| First/third relative phase moments `Z1,Z3` | Distinguish the phase information consumed by supplied sine and cubic currents and their potentials | Instantaneous incident sums, not a complete future state. [Classification](nodal/SINE_CONSTITUTIVE_INFORMATION.md#first-phase-moment-sufficiency) |
+| Rate-weighted moments `M1,M3` | Retain which relative velocity belongs to which phase; derive moment motion, current derivatives and incident work | Generic evolution needs further correlations. The [regular star chart](nodal/SINE_PAIR_STATE.md#sine-star-moment-chart) instead recovers its existing four-dimensional relative state, with explicit singular obstructions. [Motion and full-star witness](nodal/SINE_CONSTITUTIVE_INFORMATION.md#phase-motion-information) |
+| Pair phase product `P`, internal form square `U` and association `W` | Together with mean form `X` and mean phasor `Z`, retain the full unordered pair even at cancellation | [Global pair state](nodal/SINE_PAIR_STATE.md#sine-global-pair-state) on the fixed doubled C5. Constrained derived coordinates preserve four continuous degrees of freedom per pair. Second-moment state information does not add a second-harmonic pressure law |
+| Phase-dependent stiffness | The full interaction Hessian connects local geometric protection with coupled form/phase response | Law- and state-dependent; neither the bare support Laplacian nor tetrad curvature replaces it. [Storage-family response](nodal/RESONANCE_FOUNDATIONS.md#storage-family-pattern-robustness) |
+| Observable dimension and retained hidden state | Exact row-space growth identifies information needed for a selected linear response; hidden initialization supplies a causal source | A linear observability dimension is not a nonlinear closure theorem. [Shared linear observation](../src/tnfr/mathematics/linear_observation.py), [bridge memory](nodal/RESONANCE_FOUNDATIONS.md#sine-bridge-causal-memory) |
+| Memory kernel and reactive response matrix | Derived elimination connects visible motion to its retained environment; the low-frequency matrix can encode a stationary hidden-section metric | A supplied projection and complete fine law remain necessary. Neither an independent primitive capacity nor local irreversible damping follows. [Memory owner](nodal/RESONANCE_FOUNDATIONS.md#sine-bridge-causal-memory) |
+| Contact phase moments and relative rates | Explain exchange between a collective pulse and internal deviations while all constituents keep moving | Mean amplitude or common rhythm alone does not close dynamics or establish acquisition. The [pair interaction contract](nodal/SINE_PAIR_INTERACTION.md#sine-moving-pattern-interface) separates present current, retained state and hidden-environment memory. [Collective feedback](nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-collective-pulse-transfer) |
+| Normalized contact counts and phase-offset moments | Specify when grouping can inherit an exact nodal description while retaining constituent structure | Exact prepared closure differs from spontaneous grouping and transverse stability. [Partition owner](nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-phase-offset-partition) |
+| Winding, sector margins and own-law storage budget | Separate a declared identity, its local maintenance and energetic accessibility | Existing geometry need not be reachable from a given source. [Formation and constitutive scope](nodal/SINE_CONSERVATIVE_PREPARATION.md#sine-constitutive-robustness) |
+
+For a proposed collective state, first test whether states with the same
+observation have the same observed derivative. If not, retain the missing
+association, derive memory under an admitted elimination, or state the closure
+obstruction. If they do, check finite evolution, domain boundaries and events
+before asserting exact closure. The tetrad remains a diagnostic observation;
+it neither replaces these tests nor selects the consumed constitutive premises.
 
 ## 1. Start from a typed law, not from its defaults
 
@@ -428,7 +457,7 @@ on a rate or a unique coefficient for other channels.
 **A dimensionless invariant of the selected two-channel family.** With joint
 storage `E_D+beta*V_phi`, form storage has units `X^2` and phase cost is
 dimensionless, hence `[beta]=X^2`. The
-[coefficient audit](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#coefficient-synergy-audit)
+[coefficient audit](nodal/RELATIONAL_RESPONSE_IDENTIFICATION.md#coefficient-synergy-audit)
 derives `chi=beta*(e/w)^2`, invariant under the declared form/time changes,
 including compensated engine weight normalization. This does not reduce the
 full four-channel pressure or all preparation/geometry data to one number.
@@ -441,7 +470,7 @@ nonconsensus phase geometry can change the boundary. Capacity separability,
 storage balance, clock covariance and complete synchronized replicas leave
 different chi values admissible.
 
-The same owner's [memory and pole identity](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#coefficient-memory-identification)
+The same owner's [memory and pole identity](nodal/RELATIONAL_RESPONSE_IDENTIFICATION.md#coefficient-memory-identification)
 connects chi to the hidden-phase memory kernel and two temporal poles of one
 resolved spatial mode. This can identify a parameter within an admitted model,
 not derive its universal value. Independent calibration and reserved evaluation
@@ -462,7 +491,7 @@ d nu_tau / d tau = nu_dot/alpha^2 - nu*alpha_dot/alpha^3.
 Thus a nonconstant clock change generally changes even the form of a supplied
 capacity law. The constant-unit result above is its special case. Phase laws,
 event times and memory arguments must transform as well. The existing
-[capacity-exposure result](FORCED_SUPPORT_BALANCE.md#23-capacity-exposure-does-not-determine-a-phase-clock)
+[capacity-exposure result](nodal/FORCED_SOURCE_AND_CLOCK.md#23-capacity-exposure-does-not-determine-a-phase-clock)
 and [time-varying diffusion theorem](TNFR_DIFFUSION_STABILITY_THEOREM.md)
 already delimit when a common activity clock is removable. Independent local
 activity parameters do not eliminate the need to specify which neighbor state
@@ -585,7 +614,7 @@ then separates clock/law ambiguity from lost state under one fixed law.
 
 A pulse is a property of a complete trajectory, not a fourth primitive
 coordinate added to the form/capacity/phase triad. The
-[finite-amplitude doubled-C5 pulse](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-internal-pulse)
+[finite-amplitude doubled-C5 pulse](nodal/SINE_REPLICA_PULSE.md#sine-replica-internal-pulse)
 is derived from the existing reciprocal sine rows with held common positive
 capacity, fixed support and zero loss. Its frequency depends on geometry,
 amplitude, capacity and the declared exchange/storage coefficients. Capacity
@@ -601,7 +630,7 @@ clock change transforms all rows and periods; neither a periodic read-out
 nor synchronization alone gives a globally monotone time coordinate.
 
 Existence and robustness are separate properties. The
-[full transverse calculation](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-pulse-splitting)
+[full transverse calculation](nodal/SINE_REPLICA_PULSE.md#sine-replica-pulse-splitting)
 retains internal and collective feedback and proves instability of the
 prepared waveform for sufficiently small nonzero amplitude, without a
 numerical amplitude radius. Changing common capacity or time units cannot
@@ -819,7 +848,7 @@ continuous closure and minimal realizations. Event closure additionally
 requires the existing event-intertwining check.
 
 Keeping internal state can instead give an exact nonlinear collective law.
-In the [unordered replica description](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-unordered-state),
+In the [unordered replica description](nodal/SINE_PAIR_STATE.md#sine-replica-unordered-state),
 `R=cos(delta)`, `U=u^2` and `Q=u*sin(delta)` retain internal phase dispersion,
 form contrast and their correlation. R enters the inherited phase-to-form
 coupling through the derived product `R_i*R_j`; its dynamical role follows

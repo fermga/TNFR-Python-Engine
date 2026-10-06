@@ -139,7 +139,6 @@ apply_glyph: Any
 apply_glyph_obj: Any
 apply_remesh_if_globally_stable: Any
 apply_topological_remesh: Any
-discover_operators: Any
 
 def get_glyph_factors(
     node: NodeProtocol, glyph: Glyph | str | None = ...

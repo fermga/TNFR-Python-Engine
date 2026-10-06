@@ -1,37 +1,14 @@
-"""Unified validation interface consolidating grammar, graph and spectral checks.
+"""Public adapters for distinct input, execution and observation checks.
 
-RECOMMENDED: Use TNFRValidator for unified validation pipeline
-==============================================================
+Scalar adapters reuse ``input_validation``; grammar exports reuse the operator
+owners. ``TNFRValidator`` orchestrates selected checks. ``ValidationConfig``
+configures the unified input validator; ``StructuralValidationConfig`` and
+``configure_validation`` describe the separate structural word policy.
+Neither policy substitutes for a complete model's mathematical admission.
 
-The TNFRValidator class provides a single entry point for all TNFR validation
-operations, consolidating input validation, graph validation, invariant checking,
-operator preconditions, and runtime validation into one coherent API.
-
-Example Usage::
-
-    from tnfr.validation import TNFRValidator
-
-    validator = TNFRValidator()
-
-    # Comprehensive validation in one call
-    result = validator.validate(
-        graph=G,
-        epi=0.5,
-        vf=1.0,
-        include_invariants=True,
-    )
-
-    if not result['passed']:
-        print(f"Validation failed: {result['errors']}")
-
-For detailed migration guide, see UNIFIED_VALIDATION_PIPELINE.md
-
-Legacy API
-==========
-
-This package also re-exports individual validation functions for backward
-compatibility, but these may be deprecated in future versions. New code should
-use TNFRValidator instead.
+Forecast and measurement adapters retain their own preparation, clock and
+evidence premises. Public usage and migration boundaries belong to
+``docs/API_CONTRACTS.md``; the theory catalog identifies proof owners.
 """
 
 from __future__ import annotations
@@ -41,12 +18,32 @@ from typing import Any
 from ..operators import grammar as _grammar
 from ..types import Glyph
 from .base import SubjectT, ValidationOutcome, Validator  # noqa: F401
-from .config import (  # noqa: F401
-    ValidationConfig,
-    configure_validation,
-    validation_config,
+
+# Public views of the shared adjacency policy. Keep this import after grammar
+# initialization because the glyph tables translate names through that module.
+from .compatibility import (
+    CANON_COMPAT,
+    CANON_FALLBACK,
+    GRADUATED_COMPATIBILITY,
+    CompatibilityLevel,
+    get_compatibility_level,
 )
+from .config import ValidationConfig as StructuralValidationConfig  # noqa: F401
+from .config import configure_validation, validation_config  # noqa: F401
 from .graph import GRAPH_VALIDATORS, run_validators  # noqa: F401
+
+# Value-returning adapters share admission with the configured input pipeline.
+from .input_validation import (
+    validate_dnfr_value,
+    validate_epi_value,
+    validate_glyph,
+    validate_glyph_factors,
+    validate_node_id,
+    validate_operator_parameters,
+    validate_theta_value,
+    validate_tnfr_graph,
+    validate_vf_value,
+)
 from .interface_baselines import (  # noqa: F401
     BASELINE_FORMULAS,
     compute_all_baselines,
@@ -187,7 +184,7 @@ from .temporal_interface import (  # noqa: F401
 )
 
 # Unified validation system exports
-from .unified_validation_system import (  # noqa: F401,F811
+from .unified_validation_system import (  # noqa: F401
     TNFRSecurityError,
     TNFRUnifiedValidationSystem,
     ValidationConfig,
@@ -202,50 +199,6 @@ from .unified_validation_system import (  # noqa: F401,F811
 )
 from .validator import TNFRValidationError, TNFRValidator  # noqa: F401
 from .window import validate_window  # noqa: F401
-
-# Legacy exports mapped to unified system where possible
-# validate_dnfr_value, validate_epi_value etc are deprecated
-
-
-# NOTE: Compatibility module deprecated - grammar emerges from TNFR structural dynamics
-# Legacy exports kept for backward compatibility but will be removed in future versions
-try:
-    from .compatibility import (
-        CANON_COMPAT,
-        CANON_FALLBACK,
-        GRADUATED_COMPATIBILITY,
-        CompatibilityLevel,
-        get_compatibility_level,
-    )
-
-    _COMPAT_AVAILABLE = True
-except ImportError:
-    # Compatibility module removed - provide stubs for backward compatibility
-    _COMPAT_AVAILABLE = False
-    CANON_COMPAT = {}
-    CANON_FALLBACK = {}
-
-    class CompatibilityLevel:
-        EXCELLENT = "excellent"
-        GOOD = "good"
-        CAUTION = "caution"
-        AVOID = "avoid"
-
-    GRADUATED_COMPATIBILITY = {}
-
-    def get_compatibility_level(prev: str, next_op: str) -> str:
-        """Deprecated: Use frequency transition validation instead."""
-        import warnings
-
-        warnings.warn(
-            "get_compatibility_level is deprecated. "
-            "Grammar rules now emerge naturally from TNFR structural dynamics. "
-            "Use validate_frequency_transition from tnfr.operators.grammar instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return "good"
-
 
 _GRAMMAR_EXPORTS = tuple(getattr(_grammar, "__all__", ()))
 
@@ -298,6 +251,7 @@ _RUNTIME_EXPORTS = (
     "TNFRValidationError",
     "SequenceSemanticValidator",
     "ValidationConfig",
+    "StructuralValidationConfig",
     "validation_config",
     "configure_validation",
     "DEFAULT_MIN_COMPLIANCE",

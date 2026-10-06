@@ -58,9 +58,12 @@ def flow_jets(box, order, flow):
     return tuple(tuple(row) for row in coefficients)
 
 
-def comparison_matrix(tube, flow):
-    """One-sided diagonal and absolute off-diagonal Jacobian upper bounds."""
+def interval_jacobian(tube, flow):
+    """Enclose every signed derivative of the admitted whole-tube field."""
+    tube = tuple(I.coerce(value) for value in _ordered(tube, "Jacobian tube"))
     size = len(tube)
+    if not 1 <= size <= MAX_COMPARISON_DIMENSION:
+        raise ValueError("Jacobian dimension outside the shared comparison domain")
     columns = []
     for column in range(size):
         variables = tuple(
@@ -68,11 +71,15 @@ def comparison_matrix(tube, flow):
         )
         rows = _jet_rows(flow(variables), size, 1)
         columns.append(tuple(row.coeffs[1] for row in rows))
+    return tuple(tuple(columns[j][i] for j in range(size)) for i in range(size))
+
+
+def comparison_matrix(tube, flow):
+    """One-sided diagonal and absolute off-diagonal Jacobian upper bounds."""
+    jacobian = interval_jacobian(tube, flow)
     return tuple(
-        tuple(
-            columns[j][i].hi if i == j else columns[j][i].abs_max for j in range(size)
-        )
-        for i in range(size)
+        tuple(value.hi if i == j else value.abs_max for j, value in enumerate(row))
+        for i, row in enumerate(jacobian)
     )
 
 
