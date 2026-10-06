@@ -1177,6 +1177,10 @@ resolved factors, retains actual neighbor order, and checks reciprocity of the
 materialized rows. It includes zero-weight support edges in U3 selection even
 though they carry no EPI conductance. Empty selected rows are recorded as
 blocked targets with no all-target balance, never as admitted identity updates.
+The required `UM_SYNC_VF` flag uses the runtime's Boolean admission: a supported
+false string disables synchronization and rejects this capacity-update model;
+an unknown string is invalid. A disabled runtime channel cannot be certified
+as an active capacity exchange.
 Full operator admission remains a separate obligation.
 
 ### A connected pressure graph with two compatible components

@@ -45,11 +45,11 @@ from ..config.physics_derivation import (
 from ..validation.base import ValidationOutcome
 
 # ============================================================================
-# Operator Sets (Derived from TNFR Physics)
+# Operator Sets (Shared Contract Predicates)
 # ============================================================================
 #
 # SINGLE SOURCE OF TRUTH.  These sets are DERIVED from the per-operator
-# nodal-equation predicates in ``tnfr.config.physics_derivation`` — they are not
+# contract predicates in ``tnfr.config.physics_derivation`` — they are not
 # hand-maintained frozensets. Every sequence-grammar consumer (grammar_core,
 # grammar_dynamics, grammar_patterns, and runtime preconditions) must import
 # from here. Canonical U6 consumes field snapshots and does not define another
@@ -77,13 +77,13 @@ DESTABILIZERS = _derive_destabilizers()
 # U3: Coupling/Resonance - Require phase verification
 COUPLING_RESONANCE = frozenset({"coupling", "resonance"})
 
-# U4a: Bifurcation triggers - May initiate phase transitions (OZ, ZHIR)
+# U4a: Trigger roles requiring handler coverage (OZ, ZHIR)
 BIFURCATION_TRIGGERS = _derive_triggers()
 
-# U4a: Bifurcation handlers - Manage reorganization when ∂²EPI/∂t² > τ (THOL, IL)
+# U4a: Declared handler coverage (THOL, IL), not measured threshold evidence
 BIFURCATION_HANDLERS = _derive_handlers()
 
-# U4b: Transformers - Execute structural bifurcations (ZHIR, THOL)
+# U4b: Transformer roles requiring preceding context (ZHIR, THOL)
 TRANSFORMERS = _derive_transformers()
 
 # U5: Multi-Scale Coherence - Recursive generators and scale stabilizers
@@ -174,6 +174,19 @@ GLYPH_TO_FUNCTION = {
 
 # Reverse mapping from canonical lowercase executable identifier to Glyph
 FUNCTION_TO_GLYPH = {v: k for k, v in GLYPH_TO_FUNCTION.items()}
+
+
+def _operator_name(operator: Any) -> Any:
+    """Read an operator instance's declared identifier without inventing one.
+
+    An explicit canonical_name remains authoritative. Ordinary name attributes
+    retain their case-insensitive compatibility; malformed or missing values
+    remain available for the caller's syntax rejection.
+    """
+    name = getattr(operator, "name", None)
+    return getattr(
+        operator, "canonical_name", name.lower() if isinstance(name, str) else name
+    )
 
 
 def glyph_function_name(

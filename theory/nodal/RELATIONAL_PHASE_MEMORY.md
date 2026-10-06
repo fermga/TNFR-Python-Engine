@@ -12,7 +12,7 @@ An isolated ring can recover the same internal winding geometry while
 retaining a different common phase relative to a separately declared
 reference. This result concerns the selected relational law on a supplied
 C5, not a new state variable or a physical interpretation of phase. It uses
-the [isolated-ring capture theorem](RELATIONAL_PATTERN_COMPOSITION.md#relational-pattern-detachment)
+the [isolated-ring capture theorem](RELATIONAL_EFFECTIVE_CONNECTIONS.md#relational-pattern-detachment)
 and keeps the offset rows that the earlier relative-state memory studies
 explicitly removed from their observations.
 
@@ -311,7 +311,7 @@ g_L&=\pi^{-1}\operatorname{Arg}(2C+e^{-i\delta})
 
 The immediate phase rates remain zero because `q=0`; the form response is
 the nodal phase-pressure channel. The already established
-[attachment observation](RELATIONAL_PATTERN_COMPOSITION.md#represented-admission-and-shared-implementation)
+[attachment observation](RELATIONAL_SUPPORT_EVENTS.md#represented-admission-and-shared-implementation)
 evaluates such candidate state/support data without executing an edge event.
 An actual attachment with nonzero cost still requires declared work or
 another admitted state/event budget. Its occurrence and timing are not
@@ -1090,7 +1090,7 @@ The last strict inequality follows already from
 `V_face-V_*>13/1000`. Section 16 preserves the strict acute winding-one
 sector, and the state-preserving cut changes none of its internal gaps.
 Both post-cut components therefore satisfy the
-[isolated-ring capture theorem](RELATIONAL_PATTERN_COMPOSITION.md#relational-pattern-detachment).
+[isolated-ring capture theorem](RELATIONAL_EFFECTIVE_CONNECTIONS.md#relational-pattern-detachment).
 Each remains regular, retains its winding and converges to a uniform form
 and uniform twist, with its own common phase offset.
 

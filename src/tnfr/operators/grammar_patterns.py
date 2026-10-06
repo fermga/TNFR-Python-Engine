@@ -30,6 +30,7 @@ from ..config.operator_names import (
 )
 from ..types import Glyph
 from ..validation.compatibility import CompatibilityLevel, get_compatibility_level
+from .grammar_context import _normalize_sequence_context
 from .grammar_types import (
     SequenceSyntaxError,
     SequenceValidationResult,
@@ -294,6 +295,7 @@ def validate_sequence(
     if kwargs:
         bad = ", ".join(sorted(kwargs.keys()))
         raise TypeError(f"unexpected keyword argument(s): {bad}")
+    context = _normalize_sequence_context(context)
     if compatibility_profile is None:
         compatibility_profile = (context or {}).get("compatibility_profile", "legacy")
     if type(compatibility_profile) is not str:

@@ -110,7 +110,12 @@ A_{ij} = \arg(\Psi_j) - \arg(\Psi_i) \quad\text{(wrapped to } [-\pi,\pi]\text{)}
 $$
 
 Let $\theta_i=\arg\Psi_i$, with the implementation's deterministic zero phase
-when $|\Psi_i|$ is numerically zero. For an integer $k_{ij}$,
+only when the represented $\Psi_i$ is exactly zero. Every represented nonzero
+field retains its argument, including arbitrarily small magnitudes; an
+amplitude threshold would break the nonzero-field covariance identity below.
+The forward edge is wrapped to $[-\pi,\pi)$ and an undirected reverse is stored
+as its negative. At a half-turn this gives $-\pi$ and $+\pi$, respectively:
+distinct representatives of the same circular difference. For an integer $k_{ij}$,
 
 $$
 A_{ij}=\theta_j-\theta_i-2\pi k_{ij}.

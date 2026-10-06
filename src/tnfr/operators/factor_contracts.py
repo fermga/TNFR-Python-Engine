@@ -16,6 +16,7 @@ from types import MappingProxyType
 from typing import Any
 
 from .._exact_time import finite_represented_real
+from ..config.parsing import parse_bool
 from ..types import Glyph
 
 __all__ = (
@@ -320,6 +321,56 @@ def resolve_operator_factors(
     return validate_glyph_factors(resolved, glyph=context, active_keys=active_keys)
 
 
+@dataclass(frozen=True, slots=True)
+class _CouplingFlags:
+    bidirectional: bool
+    sync_vf: bool
+    stabilize_dnfr: bool
+    functional_links: bool
+
+
+def _parse_runtime_flag(graph_data: Mapping[str, Any], key: str, default: bool) -> bool:
+    """Resolve a compatibility flag through the shared configuration parser."""
+    try:
+        return parse_bool(graph_data.get(key, default))
+    except ValueError as exc:
+        raise GlyphFactorValidationError(f"{key}: {exc}") from exc
+
+
+def _resolve_coupling_flags(graph_data: Mapping[str, Any]) -> _CouplingFlags:
+    """Admit UM branch controls before factor selection or structural proposals."""
+
+    return _CouplingFlags(
+        bidirectional=_parse_runtime_flag(graph_data, "UM_BIDIRECTIONAL", True),
+        sync_vf=_parse_runtime_flag(graph_data, "UM_SYNC_VF", True),
+        stabilize_dnfr=_parse_runtime_flag(graph_data, "UM_STABILIZE_DNFR", True),
+        functional_links=_parse_runtime_flag(graph_data, "UM_FUNCTIONAL_LINKS", True),
+    )
+
+
+def _resolve_dissonance_noise_mode(graph_data: Mapping[str, Any]) -> bool:
+    """Use one OZ noise branch for factor admission, preparation and execution."""
+    return _parse_runtime_flag(graph_data, "OZ_NOISE_MODE", False)
+
+
+def _resolve_transition_flags(graph_data: Mapping[str, Any]) -> tuple[bool, bool]:
+    """Preserve NAV's public strict-Boolean contract at every runtime entry."""
+    from ._argument_validation import strict_bool
+
+    return (
+        strict_bool(
+            graph_data.get("NAV_STRICT", False),
+            operator="transition",
+            label="NAV_STRICT",
+        ),
+        strict_bool(
+            graph_data.get("NAV_RANDOM", True),
+            operator="transition",
+            label="NAV_RANDOM",
+        ),
+    )
+
+
 def runtime_active_glyph_factor_keys(
     glyph: Glyph | str,
     graph_data: Mapping[str, Any],
@@ -335,18 +386,22 @@ def runtime_active_glyph_factor_keys(
     context = _normalize_glyph(glyph)
     active = list(GLYPH_FACTORS_BY_GLYPH[context])
 
-    if context is Glyph.OZ and bool(graph_data.get("OZ_NOISE_MODE", False)):
-        active.remove("OZ_dnfr_factor")
+    if context is Glyph.OZ:
+        if _resolve_dissonance_noise_mode(graph_data):
+            active.remove("OZ_dnfr_factor")
     elif context is Glyph.UM:
-        if not bool(graph_data.get("UM_SYNC_VF", True)):
+        flags = _resolve_coupling_flags(graph_data)
+        if not flags.sync_vf:
             active.remove("UM_vf_sync")
-        if not bool(graph_data.get("UM_STABILIZE_DNFR", True)):
+        if not flags.stabilize_dnfr:
             active.remove("UM_dnfr_reduction")
     elif context is Glyph.ZHIR:
         fixed_shift = isinstance(overrides, Mapping) and "ZHIR_theta_shift" in overrides
         active.remove("ZHIR_theta_shift_factor" if fixed_shift else "ZHIR_theta_shift")
-    elif context is Glyph.NAV and bool(graph_data.get("NAV_STRICT", False)):
-        active.remove("NAV_eta")
+    elif context is Glyph.NAV:
+        strict, _random = _resolve_transition_flags(graph_data)
+        if strict:
+            active.remove("NAV_eta")
     elif context is Glyph.REMESH:
         # The node-level glyph is an advisory; network REMESH validates alpha
         # at its own scale-aware entry point.

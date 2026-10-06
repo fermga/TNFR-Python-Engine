@@ -222,6 +222,13 @@ behavior.
 
 ### Atomic stage observations and finite composition
 
+Direct glyphs, public classes and atomic stages share the active-factor and
+[branch-control admission](../../theory/STRUCTURAL_OPERATORS.md#152-base-operator-workflow).
+Supported false strings for UM options and `OZ_NOISE_MODE` disable their
+branch; NAV options retain strict Boolean admission. Invalid controls reject
+before proposals or writes. These admission rules do not make a standalone
+public operator call transactional; the stage supplies that separate boundary.
+
 Every accepted two-phase ZHIR `NetworkStageResult` also contains one ordered,
 sealed `MutationStageDecisionObservation` per target, independent of the EPI
 certificate option. It freezes the complete trigger certificate, capacity gate,

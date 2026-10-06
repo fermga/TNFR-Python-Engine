@@ -9,9 +9,24 @@ Terminology (TNFR semantics):
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Mapping
 
+from ..config.parsing import parse_bool
 from .grammar_types import GrammarConfigurationError
+
+
+def _normalize_sequence_context(context: Mapping[str, Any] | None) -> dict[str, Any]:
+    """Copy word context and admit its flags through shared Boolean parsing."""
+    if context is None:
+        return {}
+    if not isinstance(context, Mapping):
+        raise TypeError("sequence context must be a mapping")
+    normalized = dict(context)
+    for name in ("initial_epi_nonzero", "diagnostic"):
+        if name in normalized:
+            normalized[name] = parse_bool(normalized[name])
+    return normalized
+
 
 # ============================================================================
 # Grammar Context

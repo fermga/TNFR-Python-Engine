@@ -54,7 +54,7 @@ does not. A causal-null claim instead specifies the donor intervention,
 receiver observation, hidden initial state and complete evolution. In the
 held-capacity relational law, zero receiver capacity freezes both receiver
 rows, but that node can still supply a fixed boundary to active neighbors.
-The [effective-link theorem](RELATIONAL_PATTERN_COMPOSITION.md#effective-link-admission)
+The [effective-link theorem](RELATIONAL_EFFECTIVE_CONNECTIONS.md#effective-link-admission)
 and [hidden-memory owner](RELATIONAL_MEDIATOR_DYNAMICS.md#9-a-nodal-intermediary-mediates-joint-formphase-interaction)
 retain these distinctions.
 
@@ -84,9 +84,9 @@ component-local, fixed-support law cannot select and execute a cross-component
 change using information it never consumes.
 
 Joint nodal reorganization can pay a positive attachment cost in the same
-declared action. The [actual UM reset witness](RELATIONAL_PATTERN_COMPOSITION.md#nodal-reorganization-and-contact)
+declared action. The [actual UM reset witness](RELATIONAL_SUPPORT_EVENTS.md#nodal-reorganization-and-contact)
 already proves this conditional possibility. Conversely,
-[symmetry, clock covariance, passivity and recovery](RELATIONAL_PATTERN_COMPOSITION.md#support-law-choice-and-clock)
+[symmetry, clock covariance, passivity and recovery](RELATIONAL_SUPPORT_EVENTS.md#support-law-choice-and-clock)
 do not select a unique event or its time. The question below is different:
 whether a continuously varying relation coordinate has a consistent zero limit.
 
@@ -116,7 +116,7 @@ but the phase metric changes from `pi` to `2*pi`. The unit-support relational
 phase rate therefore changes from `w*nu_1/(beta*pi)` to half that value.
 This compares the separate component field and the joined unit-support field,
 not a weighted relational execution.
-The [attachment owner](RELATIONAL_PATTERN_COMPOSITION.md#8-one-supplied-bridge-sufficient-interface-and-endpoint-only-obstruction)
+The [attachment owner](RELATIONAL_SUPPORT_EVENTS.md#8-one-supplied-bridge-sufficient-interface-and-endpoint-only-obstruction)
 already retains the necessary degree and resultant information.
 
 Thus making only transport conductance small does not regularize native
@@ -152,7 +152,7 @@ Then `H*g=-grad_theta(V_W)`. With held positive capacities `N`, fixed
 
 recover the existing relational model at unit weights. This extension weights
 phase storage and resultants too; it differs from the fixed-bare-phase
-[reinforcement calculation](RELATIONAL_PATTERN_COMPOSITION.md#simultaneous-nodal-loss-can-admit-continuous-reinforcement).
+[reinforcement calculation](RELATIONAL_EFFECTIVE_CONNECTIONS.md#simultaneous-nodal-loss-can-admit-continuous-reinforcement).
 Their common unit specialization does not select between their other premises.
 
 Let `W=a*W_0`, `a>0`, for any fixed admitted positive-strength geometry. Then
@@ -523,10 +523,10 @@ transition.
 
 For hybrid contact the corresponding object is a complete reset
 `(U,X)->(U_plus,X_plus)`. The
-[full-reset owner](RELATIONAL_PATTERN_COMPOSITION.md#nodal-reorganization-and-contact)
+[full-reset owner](RELATIONAL_SUPPORT_EVENTS.md#nodal-reorganization-and-contact)
 already separates nodal reorganization from support work in the same action.
 A support-only event can have `X_plus=X` while changing subsequent rates,
-as the [one-bridge interface](RELATIONAL_PATTERN_COMPOSITION.md#one-bridge-interface-admission)
+as the [one-bridge interface](RELATIONAL_SUPPORT_EVENTS.md#one-bridge-interface-admission)
 shows. Actual UM and RA-then-UM controls instead retain their changes to nodal
 state. Neither event contract selects its own invocation.
 
@@ -620,7 +620,7 @@ values and a Hessian, not those dynamical obligations.
 | Gradient row with relation storage | `Psi'(0)` and a mobility | Positive rate for `c(X*)<kappa` only with positive boundary mobility |
 | Smooth derived coordinate | The function `A` | No first-order onset at an interior zero; higher orders need checking |
 | Kinked derived coordinate (gate) | `A` and its threshold | Fails under the stated linear-drive/quadratic-loss scaling |
-| Hybrid reset | Candidate, time, reset and budget | [Existing event contracts](RELATIONAL_PATTERN_COMPOSITION.md#support-law-choice-and-clock) |
+| Hybrid reset | Candidate, time, reset and budget | [Existing event contracts](RELATIONAL_SUPPORT_EVENTS.md#support-law-choice-and-clock) |
 
 This audit derives no first contact. It reduces the missing information to a
 relation-storage slope, an allocation, a gate threshold or an event rule; the
@@ -632,7 +632,7 @@ numerical spectrum. They execute no weighted trajectory.
 ### Composite internal storage reduces to the elimination obstruction
 
 A composite NFR carries internal fine nodes, and the
-[sufficient interface card](RELATIONAL_PATTERN_COMPOSITION.md#8-one-supplied-bridge-sufficient-interface-and-endpoint-only-obstruction)
+[sufficient interface card](RELATIONAL_SUPPORT_EVENTS.md#8-one-supplied-bridge-sufficient-interface-and-endpoint-only-obstruction)
 retains their state behind each port. One might expect that large internal
 storage, such as a protected winding, could supply the negative slope the
 scalar node lacks. It does not, for a first contact at an uncoupled
@@ -667,7 +667,7 @@ vanishes; this does not make its whole stored cost constant during deformation.
 A winding is retained along continuous paths avoiding its branch boundary.
 Changing it can involve a phase reset on unchanged support or a path leaving
 that protected chamber, not necessarily deletion of an internal cycle.
-The [complete-reset accounting](RELATIONAL_PATTERN_COMPOSITION.md#nodal-reorganization-and-contact)
+The [complete-reset accounting](RELATIONAL_SUPPORT_EVENTS.md#nodal-reorganization-and-contact)
 retains both state and support effects. Nonequilibrium dynamics leaves the
 stationary-elimination premise, but need not change the hidden-state domain.
 
@@ -761,7 +761,7 @@ balance has vanishing nodal loss; its zero-cost case remains separate.
 | Stationary composite reduction | Nonnegative slope on the fixed hidden domain; moving constraints are outside this proof |
 | Nonequilibrium memory | Initial state and boundary-driven dynamics; hidden excess need not decay monotonically |
 | Declared forcing/Gamma | Signed source work and a support law; forcing alone does not determine a storage slope |
-| Hybrid reset | Candidate, time, reset and budget via the [event contracts](RELATIONAL_PATTERN_COMPOSITION.md#support-law-choice-and-clock) |
+| Hybrid reset | Candidate, time, reset and budget via the [event contracts](RELATIONAL_SUPPORT_EVENTS.md#support-law-choice-and-clock) |
 
 The distinct autonomous countermodels in section 6 prove nonselection by the
 compared premises, not impossibility of autonomous continuous formation. The

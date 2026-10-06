@@ -437,7 +437,7 @@ which retains its finite-capacity error and initialization obligations.
 
 The preceding frozen-boundary result does not require a new simulation to
 test whether autonomous neighbors can invalidate instantaneous minimization.
-Reuse the [reflection/uniqueness method](RELATIONAL_PATTERN_COMPOSITION.md#regular-seeded-reachability-audit)
+Reuse the [reflection/uniqueness method](RELATIONAL_NATIVE_FORMATION.md#regular-seeded-reachability-audit)
 on the smaller path `1--h--2`, with unit edges, equal endpoint capacities
 `nu>0` and any fixed finite hidden capacity `mu>0`. Use the complete sine
 comparison with held `e,w,beta>0` and no input or support event.

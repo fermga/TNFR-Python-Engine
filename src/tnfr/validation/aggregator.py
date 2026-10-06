@@ -1,7 +1,7 @@
-"""Enhanced structural validation aggregator (Phase 3).
+"""Shared word validation and structural field observations.
 
-Combines grammar validation (U1-U4 primary + optional U6 confinement
-telemetry) with canonical structural field thresholds (Φ_s, |∇φ|, K_φ,
+Combines syntax and U1-U5 word policies with separate optional U6 confinement
+telemetry and structural field thresholds (Φ_s, |∇φ|, K_φ,
 ξ_C). Produces a unified report object for downstream tooling (health
 checks, telemetry enrichment, CI guards).
 
@@ -407,7 +407,7 @@ def run_structural_validation(
     # Risk level derivation
     if status == "invalid":
         risk_level = "critical"
-        notes.append("Grammar invalid (U1-U4).")
+        notes.append("Word grammar invalid (syntax or U1-U5).")
     else:
         if thresholds_exceeded.get("xi_c_critical") or thresholds_exceeded.get(
             "delta_phi_s"

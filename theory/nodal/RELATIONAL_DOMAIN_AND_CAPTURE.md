@@ -535,7 +535,7 @@ Positive dissipation and nonzero resultant magnitude do not prevent this
 branch collision. Unwrapping the argument would change the prescribed
 pressure and is not a harmless chart continuation.
 
-The [two-ring zero-resultant construction](RELATIONAL_PATTERN_COMPOSITION.md#reflected-boundary-exit)
+The [two-ring zero-resultant construction](RELATIONAL_NATIVE_FORMATION.md#reflected-boundary-exit)
 separately proves finite-time access to zero from acute states with `E<7*beta`
 in the central reflected component. Its full-state vector field has no
 continuous extension at the endpoint. Neither counterexample determines the
@@ -563,7 +563,7 @@ erase theorem hypotheses or historical evidence:
 | Acute equilibrium classification, local recovery and explicit capture basins | Their acute or basin hypotheses remain required; they do not classify every nonacute regular equilibrium |
 | Ordinary cycle winding preservation | Holds while relevant edge gaps stay nonantipodal; full resultant regularity alone does not guarantee this |
 | Pure-cycle derived-winding obstruction | Still holds on every continuous path with nonzero resultants, even outside the positive-resultant chamber |
-| [Uniform-receiver storage deficit](RELATIONAL_PATTERN_COMPOSITION.md#induced-formation-storage-obstruction) | Its initial positive-resultant restriction remains essential; the full-regular two-port counterexample already prevents promoting it to a universal obstruction |
+| [Uniform-receiver storage deficit](RELATIONAL_NATIVE_FORMATION.md#induced-formation-storage-obstruction) | Its initial positive-resultant restriction remains essential; the full-regular two-port counterexample already prevents promoting it to a universal obstruction |
 | Retained crossing, formation and memory evidence | Keeps its declared preparation, phase domain, coefficients, clock, numerical budget and source identity; broader admission is not a new response evaluation |
 
 The full-regular source/receiver preparation is consequently a justified

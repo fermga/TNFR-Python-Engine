@@ -32,6 +32,7 @@ from ..types import Glyph
 from ..utils import angle_diff
 from ._epi_domain import require_real_scalar_epi
 from ._phase_gate import U3PhaseGateError, resolve_u3_phase_neighbors
+from .factor_contracts import _resolve_coupling_flags
 
 _EPI_SIMILARITY_EPSILON = 1e-9
 
@@ -315,6 +316,7 @@ def propose_coupling_target(
 ) -> CouplingTargetProposal:
     """Build one target-local UM proposal without mutating the snapshot."""
 
+    flags = _resolve_coupling_flags(snapshot.graph)
     theta_push = _unit_interval(factors["UM_theta_push"], "UM_theta_push")
 
     try:
@@ -336,7 +338,7 @@ def propose_coupling_target(
             },
         ) from exc
 
-    bidirectional = bool(snapshot.graph.get("UM_BIDIRECTIONAL", True))
+    bidirectional = flags.bidirectional
     inputs = (
         (selection.target_phase, *selection.phases)
         if bidirectional
@@ -367,7 +369,7 @@ def propose_coupling_target(
                 )
             )
 
-    write_vf = bool(snapshot.graph.get("UM_SYNC_VF", True))
+    write_vf = flags.sync_vf
     if write_vf:
         vf_sync = _unit_interval(factors["UM_vf_sync"], "UM_vf_sync")
         vf_before = _nonnegative_real(
@@ -389,7 +391,7 @@ def propose_coupling_target(
         vf_before = 0.0
         vf_after = 0.0
 
-    write_dnfr = bool(snapshot.graph.get("UM_STABILIZE_DNFR", True))
+    write_dnfr = flags.stabilize_dnfr
     if write_dnfr:
         dnfr_reduction = _unit_interval(
             factors["UM_dnfr_reduction"], "UM_dnfr_reduction"
@@ -401,7 +403,7 @@ def propose_coupling_target(
         dnfr_reduction = 0.0
         dnfr_before = 0.0
 
-    functional_links = bool(snapshot.graph.get("UM_FUNCTIONAL_LINKS", True))
+    functional_links = flags.functional_links
     threshold = float(_UM_COMPAT_CANONICAL)
     link_candidates: list[CouplingLinkCandidate] = []
     if functional_links:

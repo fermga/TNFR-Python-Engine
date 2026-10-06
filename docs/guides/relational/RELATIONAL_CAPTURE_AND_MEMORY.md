@@ -174,7 +174,7 @@ reconciliation residual are reported separately from that budget and from
 mathematical capture bounds. Equal bridge endpoints can give zero event cost
 while removal changes rates. The
 [contract](../../contracts/relational/RELATIONAL_CAPTURE_AND_MEMORY.md#relational-detachment-observation)
-and [proof](../../../theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md#relational-pattern-detachment)
+and [proof](../../../theory/nodal/RELATIONAL_EFFECTIVE_CONNECTIONS.md#relational-pattern-detachment)
 explain why a supplied late cut can preserve identity while an early cut need
 not. This observer changes no live edges and chooses no event time.
 
@@ -211,7 +211,7 @@ It returns whole-time domain, winding and storage/loss evidence under its
 declared fixed-support law. It does not project arbitrary `Network` states
 onto reflection symmetry. The [contract](../../contracts/RELATIONAL_DYNAMICS.md)
 defines admission and report fields; the
-[retained response](../../../theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md#regular-seeded-continuous-response)
+[retained response](../../../theory/nodal/RELATIONAL_NATIVE_FORMATION.md#regular-seeded-continuous-response)
 documents the certified short window and its formation limits. Inspect that
 evidence without replaying its frozen producer.
 
@@ -220,7 +220,7 @@ detached exact interval state and model. This static test can exclude the
 two-acute-twist target through a geometric transition barrier even while the
 weaker target-storage budget remains positive. It does not advance the state
 or infer a reflected state from a live graph. See the
-[collective bound](../../../theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md#reflected-collective-energy-barrier)
+[collective bound](../../../theory/nodal/RELATIONAL_NATIVE_FORMATION.md#reflected-collective-energy-barrier)
 for the admissible lift and the distinction between transition cost and final
 target cost.
 
@@ -248,7 +248,7 @@ form and phase perturbations, modulo two common offsets. Local recovery does
 not establish formation or global continuation. The
 [contract](../../contracts/relational/RELATIONAL_CAPTURE_AND_MEMORY.md#ideal-reflected-equilibria-and-full-network-stability)
 defines the families, exact evidence and report fields; the
-[classification](../../../theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md#reflected-regular-equilibria)
+[classification](../../../theory/nodal/RELATIONAL_NATIVE_FORMATION.md#reflected-regular-equilibria)
 owns the proof and its scope.
 
 ### Separate protected evolution from a boundary counterexample

@@ -234,6 +234,15 @@ class Dissonance(Operator):
     name: ClassVar[str] = DISSONANCE
     glyph: ClassVar[Glyph] = Glyph.OZ
 
+    def _validate_application_preconditions(
+        self, G: TNFRGraph, node: Any, **kw: Any
+    ) -> None:
+        """Admit the noise branch before grammar or monitor writes."""
+        from .factor_contracts import _resolve_dissonance_noise_mode
+
+        _resolve_dissonance_noise_mode(G.graph)
+        super()._validate_application_preconditions(G, node, **kw)
+
     def _execute(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
         """Apply OZ with optional network propagation.
 

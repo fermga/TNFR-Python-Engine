@@ -1,9 +1,13 @@
-# TNFR Variational Principle — Lagrangian Action Formulation
+<a id="tnfr-variational-principle-lagrangian-action-formulation"></a>
+
+# Variational diagnostics and conditional constitutive models
 
 **Status**: Exact restricted EPI balances, conditional forced-potential family and reciprocal closure constraints; decoupled product and fixed-P2 harmonic realizability obstruction; broader coupled tetrad/nodal bridge unresolved
-**Module**: `src/tnfr/physics/variational.py`
+**Implementation**: `physics/variational.py` owns field-action readouts; the
+pressure, diffusion, phase-response and constitutive owners linked below supply
+the separate dynamical calculations.
 **Tests**: `tests/physics/test_diffusion_energy_balance.py`, `tests/physics/test_variational.py`, `tests/physics/test_symplectic_substrate.py`, `tests/physics/test_metriplectic_product.py`, `tests/physics/test_symplectic_graph_realizability.py`, `tests/physics/test_constitutive_variational_scope.py`
-**Updated**: 2026-09-19
+**Updated**: 2026-10-07
 
 ---
 
@@ -13,7 +17,21 @@ The TNFR nodal equation
 
 $$\frac{\partial \mathrm{EPI}}{\partial t} = \nu_f \cdot \Delta\mathrm{NFR}(t)$$
 
-is the engine evolution law. This note specifies the implemented field-based energy and action readouts and the associated harmonic substrate model. A derivation of the full nodal law from the particular potential below is **not established**. The exact algebraic identities of the readouts must be distinguished from that unresolved dynamical correspondence.
+is the unforced nodal row; a complete model must also supply pressure and the
+other consumed evolution laws. This note distinguishes three responsibilities:
+
+| Question | Section and mathematical scope |
+| --- | --- |
+| What do the field-action diagnostics compute? | [Sections 2–12](#2-the-tnfr-lagrangian) define the readouts and the separate harmonic-coordinate model. Its brackets and flow are supplied premises. |
+| Which diffusion and harmonic bridges actually hold? | [Sections 3.4–3.8](#34-overdamped-graph-diffusion-and-the-missing-bridge) retain exact restricted balances, a decoupled product and graph-realizability obstructions. |
+| What does a proposed joint variational law have to satisfy? | [Section 13](#13-forced-potential-family-and-reciprocal-closure-constraints) derives conditional source, metric, work and reciprocity constraints; it does not uniquely select a constitutive law. |
+
+A derivation of the full nodal law from the diagnostic field potential is
+**not established**. The conditional pressure-compatible potentials in section
+13 are different objects. Neither a field identity nor an auxiliary harmonic
+motion proves that an engine trajectory obeys the corresponding action
+principle. The current native relational law and its competing storage
+premises are owned by [relational exchange admission](nodal/RELATIONAL_EXCHANGE_ADMISSION.md).
 
 ---
 
@@ -3244,13 +3262,14 @@ by the nodal equation. Proofs and controls remain in that single owner.
 
 | Example | Concept from this document |
 |---------|---------------------------|
-| [27_variational_principle_demo.py](../examples/02_physics_regimes/27_variational_principle_demo.py) | Lagrangian snapshots, conjugate pairs, Euler-Lagrange residual, action functional, symplectic preservation, grammar stationarity, critical points |
+| [27_variational_principle_demo.py](../examples/02_physics_regimes/27_variational_principle_demo.py) | Finite field-action readouts, auxiliary coordinate pairs, harmonic momentum residual and grammar-labelled heuristics; snapshot-only symplecticity is inconclusive |
 
 ### Key Source Modules
 
-- `src/tnfr/physics/variational.py` — Lagrangian, Hamiltonian, Euler-Lagrange, symplectic checks
-- `src/tnfr/physics/conservation.py` — Energy functional (Lyapunov candidate)
-- `src/tnfr/physics/classical_mechanics.py` — Classical limit correspondence
+- [variational.py](../src/tnfr/physics/variational.py) — field-action diagnostics and supplied harmonic-coordinate checks
+- [conservation.py](../src/tnfr/physics/conservation.py) — field-energy diagnostic (a Lyapunov candidate, not a general certificate)
+- [forced_support.py](../src/tnfr/physics/forced_support.py) and [phase_response.py](../src/tnfr/physics/phase_response.py) — source compatibility and phase derivatives consumed by section 13
+- [classical_mechanics.py](../src/tnfr/physics/classical_mechanics.py) — auxiliary mechanical readouts with their own scope
 
 ---
 

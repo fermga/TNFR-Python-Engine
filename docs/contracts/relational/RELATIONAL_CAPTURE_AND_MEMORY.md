@@ -227,7 +227,7 @@ consensus conclusion on its smaller class.
 
 `certify_relational_cycle_capture(graph, *, model, cycle, target_sector=1)`
 and `Network.relational_cycle_capture` apply the
-[isolated-ring theorem](../../../theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md#relational-pattern-detachment)
+[isolated-ring theorem](../../../theory/nodal/RELATIONAL_EFFECTIVE_CONNECTIONS.md#relational-pattern-detachment)
 through the shared capture owner. The graph must be exactly the supplied
 ordered unit C5. Native connected-field admission runs first. The sufficient
 capture conditions require positive held capacities and coefficients, strictly
@@ -295,7 +295,7 @@ declared native reference model. See the
 ### Storage obstruction for a uniform receiver
 
 [`certify_relational_seeded_formation_obstruction()`](../../../src/tnfr/physics/relational_capture.py)
-evaluates the [fixed source/receiver storage theorem](../../../theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md#induced-formation-storage-obstruction).
+evaluates the [fixed source/receiver storage theorem](../../../theory/nodal/RELATIONAL_NATIVE_FORMATION.md#induced-formation-storage-obstruction).
 The source is an exact unit-C5 winding-one twist; the receiver has uniform
 phase on its own supplied C5. Both have the same constant form, held unit
 capacity, `beta=1` and `e=w=1/2`. The two cases add either the position-zero
@@ -336,7 +336,7 @@ pass. This changes executable coverage, not the obstruction's hypotheses.
 Initial regularity and sufficient storage do not establish a regular future
 route, target reachability or eventual formation.
 
-The separate [geometric and initial-rate audit](../../../theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md#regular-seeded-reachability-audit)
+The separate [geometric and initial-rate audit](../../../theory/nodal/RELATIONAL_NATIVE_FORMATION.md#regular-seeded-reachability-audit)
 provides a regular common-sublevel path, an affordable internal cancellation
 crossing and an exact eight-coordinate reflection restriction. These do not
 alter this obstruction certificate's scope or admit the existing copied-ring
@@ -744,7 +744,7 @@ C5 rings with matching adjacent bridges, unit held capacities, exact joint
 reflection and no forcing or events. It requires the explicit regular model.
 The source and receiver remain independent; no live graph is inspected,
 projected onto symmetry or advanced. The
-[derivation](../../../theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md#regular-seeded-continuous-response)
+[derivation](../../../theory/nodal/RELATIONAL_NATIVE_FORMATION.md#regular-seeded-continuous-response)
 owns reconstruction, the complete law and the ideal initial-value interpretation.
 
 The private reflected-flow owner evaluates all six independent nodal
@@ -794,7 +794,7 @@ the lower side excludes subsequent two-acute-winding-`+1` entry under the
 same fixed-support unforced law. Its `obstructed` flag is a sufficient
 conditional theorem; `unavailable` does not establish reachability. It exposes
 energy and separator margins, domain evidence and exact JSON projection.
-The [collective energy proof](../../../theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md#reflected-collective-energy-barrier)
+The [collective energy proof](../../../theory/nodal/RELATIONAL_NATIVE_FORMATION.md#reflected-collective-energy-barrier)
 distinguishes this transition barrier from the smaller target minimum. The
 observer neither changes live state nor supplies convergence or future
 regularity. Applying it retrospectively does not rewrite a frozen verdict.
@@ -812,7 +812,7 @@ scale. Zero dissipation is outside its recovery contract.
 Coordinates enclose the named ideal point, not a box whose every state is an
 equilibrium. The opposite branch uses the unique cubic root in `(1/8,1/7)`
 and bounded cosine-based angle isolation. Source rates enclosing zero are a
-consistency check; the [analytic classification](../../../theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md#reflected-regular-equilibria)
+consistency check; the [analytic classification](../../../theory/nodal/RELATIONAL_NATIVE_FORMATION.md#reflected-regular-equilibria)
 establishes existence and completeness within the stated reflection lift.
 No graph is recognized, rounded or projected into an equilibrium.
 
@@ -856,7 +856,7 @@ rates, resultants and derivatives, storage/loss, the exact `7*beta` gap and
 the path-dependent full-state phase-rate limit. A positive gap proves the
 counterexample also lies below that barrier.
 
-The [local backward-flow argument](../../../theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md#reflected-boundary-exit)
+The [local backward-flow argument](../../../theory/nodal/RELATIONAL_NATIVE_FORMATION.md#reflected-boundary-exit)
 proves existence of nearby acute initial states reaching zero in finite time.
 It supplies no chosen initial sample, exit-time estimate or prediction for
 the frozen formation experiment. The smooth auxiliary reflected field is

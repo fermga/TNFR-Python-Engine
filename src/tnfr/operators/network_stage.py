@@ -109,7 +109,12 @@ from ._resonance_identity import (
     resonance_proposed_epi_kind,
     validate_resonance_runtime_factors,
 )
-from .factor_contracts import resolve_runtime_operator_factors
+from .factor_contracts import (
+    _resolve_coupling_flags,
+    _resolve_dissonance_noise_mode,
+    _resolve_transition_flags,
+    resolve_runtime_operator_factors,
+)
 
 TWO_PHASE_JACOBI = "two_phase_jacobi"
 OPERATOR_MAJOR_GAUSS_SEIDEL = "operator_major_gauss_seidel"
@@ -6052,7 +6057,7 @@ def execute_dissonance_stage(
         propagate = _resolve_dissonance_propagation(snapshot, execution_kwargs)
         configured_seed: int | None = None
         resolved_seed: int | None = None
-        if bool(snapshot.graph.get("OZ_NOISE_MODE", False)):
+        if _resolve_dissonance_noise_mode(snapshot.graph):
             sigma = _finite_scalar(
                 snapshot.graph.get("OZ_SIGMA", 0.1),
                 operator=operator.name,
@@ -6232,7 +6237,7 @@ def execute_coupling_stage(
             operator=operator.name,
         )
 
-        functional_links = bool(snapshot.graph.get("UM_FUNCTIONAL_LINKS", True))
+        functional_links = _resolve_coupling_flags(snapshot.graph).functional_links
         configured_seed = validate_graph_seed(snapshot)
         resolved_seed: int | None = None
         node_offsets: Mapping[Any, int] = {}
@@ -6617,7 +6622,7 @@ def execute_pointwise_stage(
         node_offsets: Mapping[Any, int] = {}
         if (
             operator.glyph is Glyph.NAV
-            and bool(snapshot.graph.get("NAV_RANDOM", True))
+            and _resolve_transition_flags(snapshot.graph)[1]
             and float(factors["NAV_jitter"]) > 0.0
         ):
             configured_seed = validate_graph_seed(snapshot)

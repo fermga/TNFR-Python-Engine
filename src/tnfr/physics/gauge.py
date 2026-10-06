@@ -264,7 +264,7 @@ def compute_gauge_connection(G: Any) -> dict[tuple, float]:
 
     Because A is derived from vertex phases, it has no independent edge
     degree of freedom and every cycle holonomy is analytically zero.  Nodes
-    where |Ψ| is numerically zero use phase zero as a deterministic convention;
+    where Ψ is exactly zero use phase zero as a deterministic convention;
     the phase and complex covariance law are undefined there, although the
     covariant-difference magnitude remains the endpoint-amplitude contrast.
 
@@ -277,7 +277,9 @@ def compute_gauge_connection(G: Any) -> dict[tuple, float]:
     dict[(i, j), float]
         Connection A_ij for each oriented edge.
         For undirected graphs, both (i,j) and (j,i) are included
-        with A_ji = −A_ij (antisymmetry).
+        with A_ji = −A_ij (antisymmetry). At the half-turn seam, the
+        forward value is −π and its stored reverse is +π; both represent
+        the same circular difference.
 
     Notes
     -----
@@ -291,8 +293,8 @@ def compute_gauge_connection(G: Any) -> dict[tuple, float]:
         psi_u = psi.get(u, complex(0, 0))
         psi_v = psi.get(v, complex(0, 0))
 
-        phase_u = float(np.angle(psi_u)) if abs(psi_u) > 1e-15 else 0.0
-        phase_v = float(np.angle(psi_v)) if abs(psi_v) > 1e-15 else 0.0
+        phase_u = float(np.angle(psi_u)) if psi_u != 0 else 0.0
+        phase_v = float(np.angle(psi_v)) if psi_v != 0 else 0.0
 
         a_uv = _wrap_angle(phase_v - phase_u)
         connection[(u, v)] = a_uv

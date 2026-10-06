@@ -12,6 +12,7 @@ Terminology (TNFR semantics):
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -22,7 +23,13 @@ else:
     TNFRGraph = Any
     from .definitions import Operator
 
-from ..config.operator_names import BIFURCATION_WINDOW, U2_DEBT_CAPACITY
+from .._exact_time import finite_represented_real
+from ..config.operator_names import (
+    BIFURCATION_WINDOW,
+    CANONICAL_OPERATOR_NAMES,
+    U2_DEBT_CAPACITY,
+)
+from ..config.parsing import parse_bool
 from ..constants.canonical import (
     GRAD_PHI_CANONICAL_THRESHOLD,
     K_PHI_CANONICAL_THRESHOLD,
@@ -44,7 +51,27 @@ from .grammar_types import (
     SCALE_STABILIZERS,
     STABILIZERS,
     TRANSFORMERS,
+    _operator_name,
 )
+
+
+@dataclass(frozen=True, slots=True)
+class GrammarCheckResult:
+    """One shared word check; advisory failures do not reject the word."""
+
+    rule: str
+    passed: bool
+    message: str
+    blocking: bool = True
+
+    def legacy_message(self) -> str:
+        """Preserve the existing human-readable validation message."""
+        label = (
+            "U6-EXP (temporal ordering, experimental)"
+            if self.rule == "U6-EXP"
+            else self.rule
+        )
+        return f"{label}: {self.message}"
 
 
 class GrammarValidator:
@@ -82,7 +109,7 @@ class GrammarValidator:
             Enable U6-EXP temporal ordering checks (default: False).
             Does NOT correspond to canonical U6 (Φ_s confinement).
         """
-        self.experimental_u6 = experimental_u6
+        self.experimental_u6 = parse_bool(experimental_u6)
 
     @staticmethod
     def validate_initiation(
@@ -122,11 +149,7 @@ class GrammarValidator:
         if not sequence:
             return False, "U1a violated: Empty sequence with EPI=0"
 
-        first_op = getattr(
-            sequence[0],
-            "canonical_name",
-            sequence[0].name.lower(),
-        )
+        first_op = _operator_name(sequence[0])
 
         if first_op not in GENERATORS:
             return (
@@ -148,11 +171,14 @@ class GrammarValidator:
         does not prove that the resulting trajectory is at a coherent
         attractor.
 
-        Closures stabilize via:
-        - SHA (Silence): Terminal closure - freezes evolution (νf → 0)
-        - NAV (Transition): Handoff closure - transfers to next regime
-        - REMESH (Recursivity): Recursive closure - distributes across scales
-        - OZ (Dissonance): Intentional closure - preserves activation/tension
+        Registered closure modes:
+        - SHA (Silence): attenuates capacity; it need not make it zero
+        - NAV (Transition): declared regime handoff
+        - REMESH (Recursivity): declared recursive endpoint
+        - OZ (Dissonance): permits intentional activation/tension at the endpoint
+
+        Their separate live contracts determine actual effects. Endpoint-role
+        membership does not guarantee future immobility or stabilization.
 
         Parameters
         ----------
@@ -167,11 +193,7 @@ class GrammarValidator:
         if not sequence:
             return False, "U1b violated: Empty sequence has no closure"
 
-        last_op = getattr(
-            sequence[-1],
-            "canonical_name",
-            sequence[-1].name.lower(),
-        )
+        last_op = _operator_name(sequence[-1])
 
         if last_op not in CLOSURES:
             return (
@@ -205,7 +227,7 @@ class GrammarValidator:
         tuple[bool, str]
             (is_valid, message)
         """
-        names = [getattr(op, "canonical_name", op.name.lower()) for op in sequence]
+        names = [_operator_name(op) for op in sequence]
         debt = 0
         for index, name in enumerate(names):
             debt = advance_debt(debt, name)
@@ -246,18 +268,12 @@ class GrammarValidator:
     ) -> tuple[bool, str]:
         """Validate U3: Resonant coupling.
 
-            Physical basis: AGENTS.md Invariant #2 states "no coupling is valid
-            without explicit phase verification (synchrony)".
+            The U3 contract requires an explicit wrapped phase comparison:
+                |wrap(φᵢ - φⱼ)| ≤ Δφ_max.
 
-            Resonance physics requires phase compatibility:
-                |wrap(φᵢ - φⱼ)| ≤ Δφ_max
-
-            Without phase verification:
-                Nodes with incompatible phases (antiphase) could attempt coupling
-                → Destructive interference → Violates resonance physics
-
-            With phase verification:
-                Only synchronous nodes couple → Constructive interference
+            This word reader records which operators require the live gate.
+            It receives no node phases and cannot certify compatibility,
+            synchronization or preservation of the gate during later motion.
 
             Parameters
             ----------
@@ -281,9 +297,9 @@ class GrammarValidator:
         """
         # Check if sequence contains coupling/resonance operators
         coupling_ops = [
-            getattr(op, "canonical_name", op.name.lower())
+            _operator_name(op)
             for op in sequence
-            if getattr(op, "canonical_name", op.name.lower()) in (COUPLING_RESONANCE)
+            if _operator_name(op) in (COUPLING_RESONANCE)
         ]
 
         if not coupling_ops:
@@ -308,14 +324,10 @@ class GrammarValidator:
     ) -> tuple[bool, str]:
         """Validate U4a: Bifurcation triggers need handlers.
 
-        Physical basis: AGENTS.md Contract OZ states dissonance may trigger
-        bifurcation if ∂²EPI/∂t² > τ. When bifurcation is triggered, handlers
-        are required to manage structural reorganization.
-
-        Bifurcation physics:
-            If ∂²EPI/∂t² > τ → multiple reorganization paths viable
-            → System enters bifurcation regime
-            → Requires declared handling coverage (THOL or IL)
+        This word policy requires a declared handler (THOL or IL) whenever
+        a trigger-role operator occurs. A name neither establishes an observed
+        threshold crossing nor proves a bifurcation or successful stabilization.
+        Temporal evidence and live operator admission remain separate.
 
         Parameters
         ----------
@@ -329,9 +341,9 @@ class GrammarValidator:
         """
         # Check if sequence contains bifurcation triggers
         trigger_ops = [
-            getattr(op, "canonical_name", op.name.lower())
+            _operator_name(op)
             for op in sequence
-            if getattr(op, "canonical_name", op.name.lower()) in (BIFURCATION_TRIGGERS)
+            if _operator_name(op) in (BIFURCATION_TRIGGERS)
         ]
 
         if not trigger_ops:
@@ -340,9 +352,9 @@ class GrammarValidator:
 
         # Check for handlers
         handler_ops = [
-            getattr(op, "canonical_name", op.name.lower())
+            _operator_name(op)
             for op in sequence
-            if getattr(op, "canonical_name", op.name.lower()) in (BIFURCATION_HANDLERS)
+            if _operator_name(op) in (BIFURCATION_HANDLERS)
         ]
 
         if not handler_ops:
@@ -351,7 +363,7 @@ class GrammarValidator:
                 (
                     "U4a violated: bifurcation triggers "
                     f"{trigger_ops} present without handler. "
-                    "If ∂²EPI/∂t² > τ, bifurcation may occur unmanaged. "
+                    "No temporal threshold or trajectory outcome was evaluated. "
                     f"Add: {sorted(BIFURCATION_HANDLERS)}"
                 ),
             )
@@ -376,7 +388,7 @@ class GrammarValidator:
         check does not assert a common energy or |ΔNFR| threshold.
 
         ZHIR (Mutation) requirements:
-            1. Prior IL: Stable base prevents transformation from chaos
+            1. Prior IL: Registered stable-base history
             2. Recent destabilizer: Declared perturbation context
 
         THOL (Self-organization) requirements:
@@ -406,7 +418,7 @@ class GrammarValidator:
         transformer_ops = []
         has_prior_il = False
         for i, op in enumerate(sequence):
-            op_name = getattr(op, "canonical_name", op.name.lower())
+            op_name = _operator_name(op)
             if op_name in TRANSFORMERS:
                 transformer_ops.append((i, op_name, has_prior_il))
             if op_name == "coherence":
@@ -430,11 +442,7 @@ class GrammarValidator:
             # IL or rescanning each sequence prefix.
 
             for j in range(window_start, idx):
-                op_name = getattr(
-                    sequence[j],
-                    "canonical_name",
-                    sequence[j].name.lower(),
-                )
+                op_name = _operator_name(sequence[j])
                 if op_name in DESTABILIZERS:
                     recent_destabilizers.append((j, op_name))
 
@@ -498,12 +506,7 @@ class GrammarValidator:
         REMESH delayed-state contract in ``docs/contracts/OPERATOR_EVENTS.md``.
         """
         # Check if sequence contains REMESH
-        has_remesh = any(
-            (
-                getattr(op, "canonical_name", op.name.lower()) == "recursivity"
-                for op in sequence
-            )
-        )
+        has_remesh = any((_operator_name(op) == "recursivity" for op in sequence))
 
         if not has_remesh:
             return True, "U2-REMESH: not applicable (no recursivity present)"
@@ -511,9 +514,7 @@ class GrammarValidator:
         # DESIGN NOTE (B4): Same presence-only limitation as U2 — ordering of
         # stabilizers relative to destabilizers is not verified here.  See B4.
         destabilizers_present = [
-            getattr(op, "canonical_name", op.name.lower())
-            for op in sequence
-            if getattr(op, "canonical_name", op.name.lower()) in DESTABILIZERS
+            _operator_name(op) for op in sequence if _operator_name(op) in DESTABILIZERS
         ]
 
         if not destabilizers_present:
@@ -521,9 +522,7 @@ class GrammarValidator:
 
         # Check for stabilizers
         stabilizers_present = [
-            getattr(op, "canonical_name", op.name.lower())
-            for op in sequence
-            if getattr(op, "canonical_name", op.name.lower()) in STABILIZERS
+            _operator_name(op) for op in sequence if _operator_name(op) in STABILIZERS
         ]
 
         if not stabilizers_present:
@@ -588,7 +587,7 @@ class GrammarValidator:
         deep_remesh_indices = []
 
         for i, op in enumerate(sequence):
-            op_name = getattr(op, "canonical_name", op.name.lower())
+            op_name = _operator_name(op)
             if op_name == "recursivity":
                 try:
                     depth = validate_recursivity_depth(getattr(op, "depth", 1))
@@ -613,9 +612,7 @@ class GrammarValidator:
             stabilizers_in_window = []
 
             for j in range(window_start, window_end):
-                op_name = getattr(
-                    sequence[j], "canonical_name", sequence[j].name.lower()
-                )
+                op_name = _operator_name(sequence[j])
                 if op_name in SCALE_STABILIZERS:
                     has_stabilizer = True
                     stabilizers_in_window.append((j, op_name))
@@ -662,9 +659,10 @@ class GrammarValidator:
         sequence : list[Operator]
             Ordered operators to inspect.
         vf : float, optional
-            Supplied capacity scale in the spacing formula (default: 1.0).
+            Finite positive represented capacity scale (default: 1.0).
         k_top : float, optional
-            Supplied spacing multiplier (default: 1.0); no topology is read.
+            Finite nonnegative represented multiplier (default: 1.0);
+            no topology is read. Zero retains the minimum two-position scale.
 
         Returns
         -------
@@ -679,19 +677,33 @@ class GrammarValidator:
         ``theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md`` for the separate assumptions
         needed to establish trajectory decay under a declared dynamics law.
         """
+        vf, _ = finite_represented_real(vf, "vf")
+        k_top, _ = finite_represented_real(k_top, "k_top")
+        if vf <= 0.0:
+            raise ValueError("vf must be strictly positive for temporal spacing")
+        if k_top < 0.0:
+            raise ValueError("k_top must be nonnegative for temporal spacing")
+
+        def spacing_scale(factor):
+            value, _ = finite_represented_real(
+                (k_top / vf) * factor * 3.0, "configured temporal spacing"
+            )
+            if k_top != 0.0 and value == 0.0:
+                raise ValueError("configured temporal spacing underflows to zero")
+            return value
+
         # Check for destabilizers that trigger relaxation requirement
         destabilizer_positions = []
         for i, op in enumerate(sequence):
-            op_name = getattr(op, "canonical_name", op.name.lower())
-            if op_name in {"dissonance", "mutation", "expansion"}:
+            op_name = _operator_name(op)
+            if op_name in DESTABILIZERS:
                 destabilizer_positions.append((i, op_name))
 
         if len(destabilizer_positions) < 2:
             return True, "U6-EXP: not applicable (fewer than 2 destabilizers)"
 
         # Supplied spacing scale in operator positions; no clock is measured.
-        k_op_baseline = 1.0
-        tau_relax = (k_top / vf) * k_op_baseline * (3.0)  # ln(20) ≈ 3.0
+        tau_relax = spacing_scale(1.0)  # Retained multiplier 3.0 ≈ ln(20).
 
         # Retained integer spacing policy.
         min_spacing = max(2, int(tau_relax))  # At least 2 operators
@@ -706,7 +718,7 @@ class GrammarValidator:
             if spacing <= min_spacing:
                 # The pair-specific scale is diagnostic, not the threshold.
                 k_op_prev = 1.5 if prev_op == "mutation" else 1.0
-                tau_est = (k_top / vf) * k_op_prev * 3.0
+                tau_est = spacing_scale(k_op_prev)
 
                 violations.append(
                     f"{curr_op} at position {curr_idx} follows {prev_op} "
@@ -782,75 +794,68 @@ class GrammarValidator:
         an error, at the cost of incomplete diagnostics. Runtime depends on the
         sequence and which constraint fails.
         """
-        messages = []
-        all_valid = True
+        checks = self.validate_checks(
+            sequence,
+            epi_initial,
+            vf=vf,
+            k_top=k_top,
+            stop_on_first_error=stop_on_first_error,
+        )
+        return (
+            all(check.passed or not check.blocking for check in checks),
+            [check.legacy_message() for check in checks],
+        )
 
-        # U1a: Initiation
-        valid_init, msg_init = self.validate_initiation(sequence, epi_initial)
-        messages.append(f"U1a: {msg_init}")
-        all_valid = all_valid and valid_init
-        if stop_on_first_error and not valid_init:
-            return False, messages
+    def validate_checks(
+        self,
+        sequence: list[Operator],
+        epi_initial: float = 0.0,
+        vf: float = 1.0,
+        k_top: float = 1.0,
+        stop_on_first_error: bool = False,
+    ) -> tuple[GrammarCheckResult, ...]:
+        """Return immutable outcomes without inferring validity from prose.
 
-        # U1b: Closure
-        valid_closure, msg_closure = self.validate_closure(sequence)
-        messages.append(f"U1b: {msg_closure}")
-        all_valid = all_valid and valid_closure
-        if stop_on_first_error and not valid_closure:
-            return False, messages
+        This is the shared execution behind ``validate`` and structured error
+        readers. Original operator instances retain their declared metadata.
+        Syntax rejection precedes all word checks; optional U6-EXP remains
+        advisory and has no live-state or trajectory evidence.
+        """
+        for index, operator in enumerate(sequence):
+            name = _operator_name(operator)
+            if not isinstance(name, str) or name not in CANONICAL_OPERATOR_NAMES:
+                return (
+                    GrammarCheckResult(
+                        "SYNTAX",
+                        False,
+                        f"Unknown operator at position {index}: {name!r}",
+                    ),
+                )
 
-        # U2: finite debt and stabilizer coverage (legacy method name retained)
-        valid_conv, msg_conv = self.validate_convergence(sequence)
-        messages.append(f"U2: {msg_conv}")
-        all_valid = all_valid and valid_conv
-        if stop_on_first_error and not valid_conv:
-            return False, messages
+        checks = []
+        # One order and one verdict source for the legacy and structured APIs.
+        validators = (
+            ("U1a", self.validate_initiation, (sequence, epi_initial)),
+            ("U1b", self.validate_closure, (sequence,)),
+            ("U2", self.validate_convergence, (sequence,)),
+            ("U3", self.validate_resonant_coupling, (sequence,)),
+            ("U4a", self.validate_bifurcation_triggers, (sequence,)),
+            ("U4b", self.validate_transformer_context, (sequence,)),
+            ("U2-REMESH", self.validate_remesh_amplification, (sequence,)),
+            ("U5", self.validate_multiscale_coherence, (sequence,)),
+        )
+        for rule, validate, args in validators:
+            passed, message = validate(*args)
+            checks.append(GrammarCheckResult(rule, passed, message))
+            if stop_on_first_error and not passed:
+                return tuple(checks)
 
-        # U3: Resonant coupling
-        valid_coupling, msg_coupling = self.validate_resonant_coupling(sequence)
-        messages.append(f"U3: {msg_coupling}")
-        all_valid = all_valid and valid_coupling
-        if stop_on_first_error and not valid_coupling:
-            return False, messages
-
-        # U4a: Bifurcation triggers
-        valid_triggers, msg_triggers = self.validate_bifurcation_triggers(sequence)
-        messages.append(f"U4a: {msg_triggers}")
-        all_valid = all_valid and valid_triggers
-        if stop_on_first_error and not valid_triggers:
-            return False, messages
-
-        # U4b: Transformer context
-        valid_context, msg_context = self.validate_transformer_context(sequence)
-        messages.append(f"U4b: {msg_context}")
-        all_valid = all_valid and valid_context
-        if stop_on_first_error and not valid_context:
-            return False, messages
-
-        # U2-REMESH: Recursive amplification control
-        valid_remesh, msg_remesh = self.validate_remesh_amplification(sequence)
-        messages.append(f"U2-REMESH: {msg_remesh}")
-        all_valid = all_valid and valid_remesh
-        if stop_on_first_error and not valid_remesh:
-            return False, messages
-
-        # U5: Multi-scale coherence
-        valid_multiscale, msg_multiscale = self.validate_multiscale_coherence(sequence)
-        messages.append(f"U5: {msg_multiscale}")
-        all_valid = all_valid and valid_multiscale
-        if stop_on_first_error and not valid_multiscale:
-            return False, messages
-
-        # U6-EXP: Temporal ordering (experimental).
-        # DISTINCT from canonical U6 = Φ_s Structural Potential Confinement
-        # (grammar_u6.py). all_valid is intentionally NOT updated here.
         if self.experimental_u6:
-            valid_temporal, msg_temporal = self.validate_temporal_ordering(
+            passed, message = self.validate_temporal_ordering(
                 sequence, vf=vf, k_top=k_top
             )
-            messages.append(f"U6-EXP (temporal ordering, experimental): {msg_temporal}")
-
-        return all_valid, messages
+            checks.append(GrammarCheckResult("U6-EXP", passed, message, blocking=False))
+        return tuple(checks)
 
     # --- U6 Telemetry Warning Aggregator (non-blocking) ---
     def telemetry_warnings(

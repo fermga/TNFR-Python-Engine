@@ -5,6 +5,7 @@ from __future__ import annotations
 import math
 from copy import deepcopy
 from fractions import Fraction
+from types import SimpleNamespace
 from typing import Any
 
 import networkx as nx
@@ -19,9 +20,10 @@ from tnfr.constants.aliases import (
     ALIAS_VF,
 )
 from tnfr.errors import TNFRValueError
-from tnfr.operators import apply_glyph
+from tnfr.operators import _op_UM, apply_glyph
 from tnfr.operators._coupling_stage_kernel import coupling_capacity_blend
 from tnfr.operators.definitions import Coupling
+from tnfr.operators.factor_contracts import GlyphFactorValidationError
 from tnfr.operators.metrics_network import coupling_metrics
 from tnfr.operators.network_stage import (
     STAGE_SCHEDULE_KEY,
@@ -88,6 +90,91 @@ def _edge_state(graph: nx.Graph) -> tuple[Any, ...]:
 
 def _structural_state(graph: nx.Graph) -> tuple[Any, ...]:
     return _node_state(graph), _edge_state(graph)
+
+
+def _apply_flag_probe(graph: nx.Graph, route: str) -> None:
+    if route == "glyph":
+        apply_glyph(graph, 0, "UM")
+    elif route == "public":
+        Coupling()(graph, 0)
+    else:
+        execute_coupling_stage(graph, Coupling(), (0,))
+
+
+@pytest.mark.parametrize("route", ["glyph", "public", "stage"])
+@pytest.mark.parametrize(
+    "key",
+    ["UM_BIDIRECTIONAL", "UM_SYNC_VF", "UM_STABILIZE_DNFR", "UM_FUNCTIONAL_LINKS"],
+)
+@pytest.mark.parametrize("disabled", [False, "false", "off", None, 0])
+def test_coupling_disabled_flags_preserve_the_selected_channel(route, key, disabled):
+    graph = _graph((0.0, 0.2, 0.4), edges=((0, 1),))
+    graph.graph[key] = disabled
+    before = deepcopy(graph)
+    _apply_flag_probe(graph, route)
+
+    if key == "UM_BIDIRECTIONAL":
+        assert get_attr(graph.nodes[1], ALIAS_THETA) == 0.2
+    elif key == "UM_SYNC_VF":
+        assert get_attr(graph.nodes[0], ALIAS_VF) == 1.0
+    elif key == "UM_STABILIZE_DNFR":
+        assert get_attr(graph.nodes[0], ALIAS_DNFR) == 1.0
+    else:
+        assert set(graph.edges) == {(0, 1)}
+
+    # The same finite preparation has a real response when that channel is on.
+    before.graph[key] = True
+    _apply_flag_probe(before, route)
+    assert _structural_state(before) != _structural_state(graph)
+
+
+@pytest.mark.parametrize("route", ["glyph", "public", "stage"])
+@pytest.mark.parametrize(
+    "key",
+    ["UM_BIDIRECTIONAL", "UM_SYNC_VF", "UM_STABILIZE_DNFR", "UM_FUNCTIONAL_LINKS"],
+)
+@pytest.mark.parametrize("invalid", ["unknown", ""])
+def test_coupling_invalid_flag_strings_leave_graph_unchanged(route, key, invalid):
+    graph = _graph()
+    graph.graph[key] = invalid
+    before = deepcopy(graph)
+
+    with pytest.raises(GlyphFactorValidationError, match=key):
+        _apply_flag_probe(graph, route)
+
+    assert dict(graph.nodes(data=True)) == dict(before.nodes(data=True))
+    assert _edge_state(graph) == _edge_state(before)
+    assert graph.graph == before.graph
+
+
+@pytest.mark.parametrize("disabled", [False, "false", "off"])
+def test_graphless_coupling_string_flag_preserves_neighbor_phase(disabled):
+    neighbor = SimpleNamespace(theta=0.4)
+    target = SimpleNamespace(
+        theta=0.0,
+        graph={"UM_BIDIRECTIONAL": disabled},
+        neighbors=lambda: [neighbor],
+    )
+
+    _op_UM(target, {"UM_theta_push": 0.5})
+
+    assert target.theta == pytest.approx(0.2)
+    assert neighbor.theta == 0.4
+
+
+def test_graphless_coupling_invalid_flag_rejects_before_phase_writes():
+    neighbor = SimpleNamespace(theta=0.4)
+    target = SimpleNamespace(
+        theta=0.0,
+        graph={"UM_BIDIRECTIONAL": "unknown"},
+        neighbors=lambda: [neighbor],
+    )
+
+    with pytest.raises(GlyphFactorValidationError, match="UM_BIDIRECTIONAL"):
+        _op_UM(target, {"UM_theta_push": 0.5})
+
+    assert target.theta == 0.0
+    assert neighbor.theta == 0.4
 
 
 def test_reverse_target_order_merges_shared_neighbor_identically() -> None:

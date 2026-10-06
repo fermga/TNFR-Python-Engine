@@ -806,8 +806,11 @@ def _op_OZ(node: NodeProtocol, gf: GlyphFactors) -> None:  # OZ — Dissonance
     >>> node.dnfr
     0.4
     """
+    from .factor_contracts import _resolve_dissonance_noise_mode
+
+    noise_mode = _resolve_dissonance_noise_mode(node.graph)
     dnfr = _finite_operator_scalar(getattr(node, "dnfr", 0.0), "OZ DeltaNFR state")
-    if bool(node.graph.get("OZ_NOISE_MODE", False)):
+    if noise_mode:
         sigma = _finite_operator_scalar(
             node.graph.get("OZ_SIGMA", 0.1), "OZ noise sigma"
         )
@@ -947,9 +950,12 @@ def compute_consensus_phase(phases: list[float]) -> float:
 def _op_um_protocol_fallback(node: NodeProtocol, gf: GlyphFactors) -> None:
     """Preserve the phase-only behavior of graphless NodeProtocol objects."""
 
+    from .factor_contracts import _resolve_coupling_flags
+
+    flags = _resolve_coupling_flags(node.graph)
     theta_push = get_factor(gf, "UM_theta_push", EN_MIX_FACTOR)
     selection, neighbors = _runtime_u3_neighbors(node, "UM")
-    bidirectional = bool(node.graph.get("UM_BIDIRECTIONAL", True))
+    bidirectional = flags.bidirectional
     inputs = (
         [selection.target_phase, *selection.phases]
         if bidirectional
@@ -996,11 +1002,12 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM - Coupling
         return
 
     from ._coupling_stage_kernel import propose_coupling_stage
+    from .factor_contracts import _resolve_coupling_flags
     from .network_stage import GraphTransactionSnapshot, _commit_coupling_structure
 
     transaction = GraphTransactionSnapshot(node.G)
     try:
-        functional_links = bool(node.graph.get("UM_FUNCTIONAL_LINKS", True))
+        functional_links = _resolve_coupling_flags(node.graph).functional_links
         # Direct and staged public entry points both validate the graph seed
         # before dispatch, even when links are disabled. Keep that shared
         # argument contract here for standalone calls of this private helper.
@@ -1433,11 +1440,11 @@ def _validated_epi_assignment_value(
 def _set_epi_with_boundary_check(
     node: NodeProtocol, new_epi: float, *, apply_clip: bool = True
 ) -> None:
-    """Canonical EPI assignment with structural boundary preservation.
+    """Assign finite signed EPI using the configured clipping policy.
 
-    This is the unified function all operators should use when modifying EPI
-    to ensure structural boundaries are respected. Provides single point of
-    enforcement for TNFR canonical invariant: EPI ∈ [EPI_MIN, EPI_MAX].
+    This helper applies the graph's declared EPI_MIN/EPI_MAX bounds when
+    clipping is requested. Those bounds are a numerical policy, not the
+    foundational domain of signed real EPI.
 
     Parameters
     ----------
@@ -1452,12 +1459,8 @@ def _set_epi_with_boundary_check(
 
     Notes
     -----
-    TNFR Principle: This function embodies the canonical invariant that EPI
-    must remain within structural boundaries. All operator EPI modifications
-    should flow through this function to maintain coherence.
-
-    The function uses the graph-level configuration for EPI_MIN, EPI_MAX,
-    and CLIP_MODE to ensure consistent boundary enforcement across all operators.
+    EPI_MIN, EPI_MAX and CLIP_MODE define the selected assignment policy.
+    Applying that policy does not by itself establish coherence or stability.
 
     Examples
     --------
@@ -1734,9 +1737,11 @@ def _op_NAV(node: NodeProtocol, gf: GlyphFactors) -> None:  # NAV — Transition
     >>> round(node.dnfr, 2)
     -0.5
     """
+    from .factor_contracts import _resolve_transition_flags
+
+    strict, random_mode = _resolve_transition_flags(node.graph)
     dnfr = _finite_operator_scalar(node.dnfr, "NAV DeltaNFR state")
     vf = _finite_operator_scalar(node.vf, "NAV nu_f state")
-    strict = bool(node.graph.get("NAV_STRICT", False))
     if strict:
         base = vf
     else:
@@ -1749,7 +1754,7 @@ def _op_NAV(node: NodeProtocol, gf: GlyphFactors) -> None:  # NAV — Transition
         )
     base = _finite_operator_scalar(base, "NAV deterministic proposal")
     j = get_factor(gf, "NAV_jitter", COUPLING_FINE)
-    if bool(node.graph.get("NAV_RANDOM", True)):
+    if random_mode:
         with _rollback_jitter_progress_on_error(node):
             jitter = _finite_operator_scalar(
                 random_jitter(node, j), "NAV jitter sample"

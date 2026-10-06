@@ -31,6 +31,15 @@ class Coupling(Operator):
     name: ClassVar[str] = COUPLING
     glyph: ClassVar[Glyph] = Glyph.UM
 
+    def _validate_application_preconditions(
+        self, G: TNFRGraph, node: Any, **kw: Any
+    ) -> None:
+        """Reject invalid branch controls before grammar or monitor writes."""
+        from .factor_contracts import _resolve_coupling_flags
+
+        _resolve_coupling_flags(G.graph)
+        super()._validate_application_preconditions(G, node, **kw)
+
     def _validate_hard_invariants(self, G: TNFRGraph, node: Any) -> None:
         """U3 phase gate (Invariant #2) — always enforced, cannot be disabled."""
         from .preconditions import validate_phase_gate_u3

@@ -227,7 +227,8 @@ def observe_coupling_support(G) -> CouplingSupportObservation:
     """Read the actual U3 capacity graph without changing nodes or caches.
 
     Scope is a nonempty simple undirected loop-free graph with enabled UM capacity
-    synchronization and one actual factor in (0,1). The production U3 resolver
+    synchronization and one actual factor in (0,1). The synchronization flag uses
+    the runtime Boolean parser. The production U3 resolver
     selects each row from current phases and graph limits. Materialized reciprocity
     is checked explicitly; common theoretical gates do not replace that check.
 
@@ -245,12 +246,16 @@ def observe_coupling_support(G) -> CouplingSupportObservation:
     nodes = _node_order(tuple(G.nodes))
     if any(node in G.neighbors(node) for node in nodes):
         raise ValueError("coupling-support observation requires loop-free support")
-    if not bool(G.graph.get("UM_SYNC_VF", True)):
+    from ..operators.factor_contracts import (
+        _parse_runtime_flag,
+        resolve_runtime_operator_factors,
+    )
+
+    if not _parse_runtime_flag(G.graph, "UM_SYNC_VF", True):
         raise ValueError(
             "coupling-support capacity analysis requires enabled UM_SYNC_VF"
         )
     from ..operators._phase_gate import resolve_u3_phase_neighbors
-    from ..operators.factor_contracts import resolve_runtime_operator_factors
 
     factors = resolve_runtime_operator_factors(
         G.graph.get("GLYPH_FACTORS"), Glyph.UM, G.graph

@@ -74,7 +74,7 @@ A classical orbit, a graph cycle or a discrete winding label alone does not
 establish those observations.
 
 The present [persistent collective organization](nodal/SINE_REPLICA_PULSE.md#sine-replica-joint-persistence)
-and [restoring effective relation](nodal/RELATIONAL_PATTERN_COMPOSITION.md#effective-link-admission)
+and [restoring effective relation](nodal/RELATIONAL_EFFECTIVE_CONNECTIONS.md#effective-link-admission)
 are reusable mathematical ingredients with different complete-law premises.
 Both retain supplied fine support. The
 [collective mean-closure restriction](nodal/SINE_PAIR_MOBILITY.md#collective-mean-closure-obstruction)
@@ -456,17 +456,17 @@ start additional law-selection or contact campaigns.
 For structural contact, distinguish three independent obligations:
 
 - **State and causal influence:** keep full internal and boundary information,
-  including relative origins. The [effective-link criterion](nodal/RELATIONAL_PATTERN_COMPOSITION.md#effective-link-admission)
+  including relative origins. The [effective-link criterion](nodal/RELATIONAL_EFFECTIVE_CONNECTIONS.md#effective-link-admission)
   requires mutual causal response and restoration of a stated joint geometry.
   Hidden-node mediation can provide this on supplied fine support. A frozen
   separator is a causal null even when two regions look aligned.
-- **Event and storage:** [event admission](nodal/RELATIONAL_PATTERN_COMPOSITION.md#support-event-premise-admission)
+- **Event and storage:** [event admission](nodal/RELATIONAL_SUPPORT_EVENTS.md#support-event-premise-admission)
   keeps continuous loss separate from support/reset work. Passive pure addition,
-  edge exchange and [nodal reorganization](nodal/RELATIONAL_PATTERN_COMPOSITION.md#nodal-reorganization-and-contact)
+  edge exchange and [nodal reorganization](nodal/RELATIONAL_SUPPORT_EVENTS.md#nodal-reorganization-and-contact)
   are different contracts. A supplied event can preserve a pattern without
   selecting why or when the event occurs.
 - **Complete-law selection:** [continuous relation comparisons](nodal/RELATION_FOUNDATIONS.md#the-origin-of-relation-storage-is-a-nonselection-classification)
-  and [support-law comparisons](nodal/RELATIONAL_PATTERN_COMPOSITION.md#support-law-choice-and-clock)
+  and [support-law comparisons](nodal/RELATIONAL_SUPPORT_EVENTS.md#support-law-choice-and-clock)
   retain multiple compatible choices. Neither synchrony, an eligible contact,
   storage passivity nor a successful prepared response uniquely chooses one.
 

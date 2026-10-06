@@ -375,8 +375,8 @@ The reference checker accepts `--dirs` followed by files or directories to
 bound the check. The staging script copies repository owners into
 `build/docs-source/`; MkDocs renders that generated source into `site/`.
 Edit the repository owners, never either generated tree. The documentation
-integrity check also validates the theory catalog, its generated navigation and
-the glossary cards/index; regenerate declared indexes with
+integrity check also validates the theory catalog, its generated navigation,
+operator contracts, grammar roles and glossary cards/index. Regenerate views with
 `python scripts/check_documentation.py --write-generated` after changing their
 source declarations, then rerun the read-only check.
 It executes the Python block in the README's Quick start section and compares

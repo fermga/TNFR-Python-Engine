@@ -539,7 +539,7 @@ also need not share the same energy function or constitute one mechanism.
 TNFR's positive form/phase storage is not an identified chemical binding
 energy. Adding a negative edge reward to make attraction occur would be a new
 constitutive premise, not a derivation from these experiments. The
-[connection-mechanism audit](nodal/RELATIONAL_PATTERN_COMPOSITION.md#connection-mechanisms-and-mediators)
+[connection-mechanism audit](nodal/RELATIONAL_EFFECTIVE_CONNECTIONS.md#connection-mechanisms-and-mediators)
 instead reuses native memory, support work and joint reset accounting to
 separate effective interaction, reinforcement and primitive support birth.
 Explaining known binding as a later consequence of a more primitive theory is
@@ -667,7 +667,7 @@ not sustained oscillators, a many-body threshold or primitive-phase identity.
 | Derived form phase | Regional contrasts observed from the fine diffusion generator; [existing controls](../tests/physics/test_coupled_directed_form_phase.py) | Exact conditional amplitude/phase reduction; the two observed phases close without amplitude information only on restricted invariant preparations. |
 | Supplied sine evolution | [`propose_u3_gated_phase_step`](../src/tnfr/dynamics/phase_evolution.py); [P2 locking](nodal/FORCED_PHASE_LOCKING.md#26-conditional-phase-locking-and-form-restoration-on-fixed-p2), [K3 reduction](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#joint-evolving-phaseform-reduction-on-fixed-k3) | Capacity-as-angular-rate, gain, admitted-neighbor averaging and U3 gate are supplied premises; not unrestricted Kuramoto. |
 | Native phase coordination | [Per-call circular-mean relaxation](nodal/FORCED_WINDING_AND_WRITERS.md#34-native-runtime-admission-uses-relaxation-not-the-supplied-sine-clock) | Different execution law; it has no supplied physical `dt` or free angular advance. |
-| Conditional joint form/phase exchange | [Native pulse scope](nodal/RELATIONAL_RESPONSE_IDENTIFICATION.md#relational-pulse-scope) and [precontact locking](nodal/RELATIONAL_PATTERN_COMPOSITION.md#precontact-rhythm-and-locking) | Geometry-dependent damped modes and a reversible periodic boundary are properties of the stated law. Matching rhythms does not derive an edge, and a modal graph-wave spectrum is not an observed nodal pulse. |
+| Conditional joint form/phase exchange | [Native pulse scope](nodal/RELATIONAL_RESPONSE_IDENTIFICATION.md#relational-pulse-scope) and [precontact locking](nodal/RELATIONAL_SUPPORT_EVENTS.md#precontact-rhythm-and-locking) | Geometry-dependent damped modes and a reversible periodic boundary are properties of the stated law. Matching rhythms does not derive an edge, and a modal graph-wave spectrum is not an observed nodal pulse. |
 | Phase contribution to EPI pressure | Arg of a neighbor resultant, through [configured pressure](NODAL_PARAMETER_FOUNDATIONS.md#21-the-implemented-pressure-is-a-specified-relational-map) | Not the sine phase row or an electrical current. The [existing Arg/current discriminator](nodal/PRESSURE_CONSTITUTIVE_SCOPE.md) must not be repeated as a new discovery. |
 | Named UM/RA events and cycle readouts | [Operator contracts](STRUCTURAL_OPERATORS.md) and [winding certificates](../src/tnfr/physics/winding_certificates.py) | U3 compatibility is admission; RA primarily blends EPI. A name or gate does not select an oscillator law. |
 
