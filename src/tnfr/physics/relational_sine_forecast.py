@@ -38,6 +38,8 @@ __all__ = (
     "forecast_sine_prior",
 )
 
+MAX_FORECAST_STEPS = 256
+
 
 @dataclass(frozen=True)
 class SinePriorAdmission:
@@ -373,9 +375,13 @@ def bound_sine_flow(
     if initial[-1].lo < 0:
         raise ValueError("initial hidden capacity must be nonnegative")
     at, end, step_size = map(_exact, (observation_time, end_time, time_step))
-    if not 0 <= at < end or step_size <= 0 or (end - at) / step_size > 256:
+    if (
+        not 0 <= at < end
+        or step_size <= 0
+        or (end - at) / step_size > MAX_FORECAST_STEPS
+    ):
         raise ValueError(
-            "require 0<=observation_time<end_time and at most 256 positive steps"
+            f"require 0<=observation_time<end_time and at most {MAX_FORECAST_STEPS} positive steps"
         )
     if type(order) is not int or not 1 <= order <= 16:
         raise ValueError("Taylor order must be an integer from 1 to 16")

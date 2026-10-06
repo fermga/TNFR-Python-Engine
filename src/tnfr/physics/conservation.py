@@ -31,7 +31,7 @@ observations of the supplied trajectory, not consequences of U1-U6 by label.
 
 References
 ----------
-- Nodal equation: ∂EPI/∂t = νf · ΔNFR(t) [TNFR.pdf §2.1]
+- Nodal identity and complete-law premises: theory/FUNDAMENTAL_THEORY.md
 - Grammar U1-U6: theory/UNIFIED_GRAMMAR_RULES.md
 - Structural fields: src/tnfr/physics/canonical.py
 - Extended fields: src/tnfr/physics/extended.py

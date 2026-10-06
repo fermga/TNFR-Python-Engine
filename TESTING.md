@@ -120,11 +120,23 @@ and partial validated horizons.
   validated Taylor/comparison owner has a 24-coordinate limit, with boundary
   refusal and independent 23-coordinate controls. Its sine layout uses
   `2*n+1` coordinates; dimension admission alone certifies no response.
+- **Metric uncertainty remains correlated.** Compare retained-ball propagation
+  with independent analytic rotating, contracting and nonlinear flows, including
+  boundary points outside coordinate axes. Check original-clock growth bounds,
+  both directions, every domain margin and partial coverage. Include tiny local
+  errors whose squares fall below the interval grid; normalized norm arithmetic
+  must not create an artificial square-root precision floor. A coordinate
+  projection is not the ball consumed by the next step, and a manufactured
+  solver control is not a formation experiment.
 - **Exact and represented geometry remain distinct.** A rounded `pi`, a
   small field residual or overlapping intervals cannot establish an exact
   antipodal state, equilibrium or symmetry. Test zero resultants, branch
   limits, unresolved denominators and strict equality boundaries explicitly.
   An admitted native proposal chord is not a continuous trajectory proof.
+  Exact `Fraction` input to a graph may pass through binary64 capture;
+  distinguish that source from an explicitly supplied rational preparation.
+  An unrecognized symbolic cancellation with a zero-containing interval
+  must remain unavailable, not become either equality or a counterexample.
 - **Preparation and endpoint sets retain their provenance.** A tighter
   correlated source bound cannot replace a forecast's larger Cartesian
   endpoint enclosure. Partial forecasts keep their validated time and
@@ -136,6 +148,12 @@ and partial validated horizons.
   controls retain the fast transient, memberwise references, original form
   remainder and preparation cost. Test zero horizon, tiny positive feedback,
   large growth and monotone exponential tails without silently clipping time.
+  For collective contact observations, independently vary internal deviations
+  at fixed means and verify the complete nodal response. Declared contact
+  lifts can change a collective energy split while full storage is unchanged;
+  test its signed remainder and exact local derivatives without treating them
+  as a finite-horizon prediction. Exact-family membership, finite-width
+  maintenance and acquisition into that neighborhood need separate controls.
 - **All-time and symmetry verdicts have different scope.** Fixed-budget
   consensus tests need an independent mixed-Lyapunov derivative from both
   full rows, zero-budget and failed-premise controls. Reflection excludes
@@ -179,6 +197,12 @@ they must not recreate a producer or count missing evidence as a passed response
 Synthetic intervals, step records and stubbed producers test consumer logic,
 not historical execution. Preserve original source archives, failures and
 inconclusive verdicts; corrections require separately identified evidence.
+Forecast readers recompute their consumed admission and Picard inclusion, but
+do not replay the full Taylor proof or authenticate record production. Test
+that boundary explicitly: partial coverage remains partial, and failure to
+certify a requested duration or margin is not an exclusion of actual identity.
+Retrospective channel integration from saved whole-time tubes must preserve
+the original verdict and receive its own analysis provenance.
 
 Local execution is serial by default. To use the main CI scheduling policy,
 run `python -m pytest -n 2 --dist loadfile`; this keeps the same `not slow`
@@ -208,12 +232,12 @@ editable installation above or explicitly set the shell's `PYTHONPATH` to
 
 ## Organization
 
-[tests/](tests/) contains top-level modules and subject directories. Search for
+[tests/](tests) contains top-level modules and subject directories. Search for
 the affected API rather than maintaining another inventory of individual tests.
-Core nodal behavior is in [core_physics/](tests/core_physics/), operators in
-[operators/](tests/operators/), specialized certificates in
-[physics/](tests/physics/) and public network usage in [sdk/](tests/sdk/).
-[CLI integration](tests/cli/) checks the same study recipe through Python and
+Core nodal behavior is in [core_physics/](tests/core_physics), operators in
+[operators/](tests/operators), specialized certificates in
+[physics/](tests/physics) and public network usage in [sdk/](tests/sdk).
+[CLI integration](tests/cli) checks the same study recipe through Python and
 the module entry point, including malformed input, diagnostic availability,
 output replacement and logging isolation. Catalog checks do not execute a study.
 [conftest.py](tests/conftest.py) and [utils.py](tests/utils.py) own shared helpers.
@@ -355,6 +379,9 @@ integrity check also validates the theory catalog, its generated navigation and
 the glossary cards/index; regenerate declared indexes with
 `python scripts/check_documentation.py --write-generated` after changing their
 source declarations, then rerun the read-only check.
+It executes the Python block in the README's Quick start section and compares
+its captured output with that section's declared output. Publication metadata
+uses the same strict JSON reader as the engine, including duplicate-key rejection.
 
 ## Security checks
 

@@ -6,13 +6,13 @@ DeltaNFR or dEPI values and therefore do not estimate structural coherence C(t).
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING, Sequence
 
 if TYPE_CHECKING:
     pass
 
-from ..compat.dataclass import dataclass
 from ..config.operator_names import (
     COHERENCE,
     COUPLING,

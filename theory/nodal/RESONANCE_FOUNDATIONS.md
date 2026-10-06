@@ -14,20 +14,29 @@ positive or zero; those are different constitutive premises.
 | Response through a retained intermediary | [Remote response](#mediated-resonance) | Its noncollocated proof and autonomous transient do not establish a periodic orbit |
 | Persistent motion versus dissipation | [Positive-loss obstruction and zero-loss P2 pulse](#permanent-pulse-admission) | Preparation, loss and the complete law determine which result applies |
 | Regional exchange without total loss | [Finite conservative memory](#finite-conservative-memory) | Eliminated state retains memory and initial-state forcing; it does not become exact irreversible damping |
+| Finite-horizon effective loss | [Common setup](#effective-loss-setup), [channel-covariance obstruction](#effective-loss-covariance-bound) | Equal form/phase observation and preparation impose a nonzero error floor for positive form-only loss; this does not exclude every approximate or asymmetric reduction |
+| Structural distinction between form and phase | [Bridge response and general initial-loss obstruction](#structural-channel-distinction) | Geometry changes the observed exchange and memory; it does not select instantaneous damping or make form reconstructible from instantaneous phase |
+| Pattern protection under admitted storage freedom | [Storage-family robustness](#storage-family-pattern-robustness) | The same critical geometry remains locally protected while its observed tangent response changes; neither the law nor formation is selected |
+| Distinguishing laws with a finite observation | [Finite bridge response](#finite-bridge-law-discrimination) | Opposite finite form preparations give disjoint response intervals with explicit preparation and reading errors; the structural clock is declared, and no physical law is selected without data |
+| Separating a constitutive change from clock uncertainty | [Finite two-channel comparison](#finite-bridge-clock-law-discrimination) | A common constant clock factor in an independently declared interval permits disjoint response-ratio intervals; finite-time errors still depend on that interval, and the signed phase denominator must be admitted |
+| Complete memory of the admitted bridge | [Exact shell reduction and causal kernel](#sine-bridge-causal-memory) | Hidden modes retain preparation and oscillatory exchange; the static and low-frequency coefficients describe reactive response, not a derived local loss law |
 | Nonlinear full-state return | [Invariant-volume recurrence](#nonlinear-recurrence) | Almost-everywhere return gives no selected-state guarantee, exact period or deadline |
 | Formation rather than prepared maintenance | [Conservative capture boundary](#conservative-formation-boundary) | A two-sided invariant family cannot be entered from outside; observation and finite-time organization remain separate questions |
+| Geometry and compatible phase rhythms | [Acquired-state handoff obstruction](SINE_REGIONAL_FORMATION.md#sine-conservative-handoff-obstruction), [invariant phase-offset families](SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-phase-offset-partition) | Regional storage alone does not control environmental rates. Matched external counts and phase moments with zero internal current preserve a prepared collective family; neither formation nor perturbation stability follows. Relative phase motion is not capacity or a proved resonance response |
+| Moving-pattern robustness and actual collective feedback | [Full-state retention window](SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-moving-pattern-window), [mean-contact balance](SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-collective-pulse-transfer) | Finite maintenance retains environmental errors. Away from the exact compatible family, contact deviations change the collective pulse; its signed remainder is not a positive reservoir, a resonance measurement or a formation certificate |
+| Reusing a spectral rhythm calculation | [Generator and observation audit](#spectral-rhythm-reuse) | Auxiliary graph waves and the actual joint nodal tangent have different modal frequencies; interference requires an excited and observable pair of modes |
 
 The [scale owner](../TNFR_SCALE_GEOMETRY_AND_BRIDGE.md)
 owns collective-state inheritance, the prepared doubled-C5 pulse and its
 conditional transverse instability, and relative-geometry protection.
 In particular, its
-[alternative-mobility result](../TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-mobility-relative-geometry)
+[alternative-mobility result](SINE_PAIR_MOBILITY.md#sine-mobility-relative-geometry)
 preserves the shared storage barrier without establishing the invariant
 measure needed to transfer the recurrence theorem below. A protected
 geometry need not preserve one waveform or prove autonomous formation.
 
 At phase consensus, the native Arg law shares the sine law's equilibrium
-derivative. The [full-state consensus result](RELATIONAL_EXCHANGE_ADMISSION.md#native-consensus-full-state-tangent)
+derivative. The [full-state consensus result](RELATIONAL_RESPONSE_IDENTIFICATION.md#native-consensus-full-state-tangent)
 also admits a nonuniform-form native source and bounds the associated complete
 linear comparison. It does not transfer that bound to the nonlinear native
 trajectory. The [foundation audit](../FUNDAMENTAL_THEORY.md#resonance-fractality-foundation-audit)
@@ -37,7 +46,7 @@ those premises remain explicit when interpreting a resonance result.
 This owner defines what a resonance claim must establish. The
 [parameter foundation](../NODAL_PARAMETER_FOUNDATIONS.md) owns the
 state and closure premises; the
-[pattern-memory owner](RELATIONAL_PATTERN_MEMORY.md#sine-relative-pattern-state)
+[pattern-memory owner](SINE_PATTERN_RECOVERY.md#sine-relative-pattern-state)
 owns the complete sine state, storage and recovery results.
 The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 remains the sole research queue.
@@ -72,9 +81,9 @@ collective means stay constant. These are different observations of
 one evolution. The larger description retains the internal states;
 removing interchangeable member labels does not erase constituents
 or continuous state coordinates. The
-[scale and symmetry proofs](../TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-inheritance)
+[scale and symmetry proofs](SINE_PAIR_STATE.md#sine-replica-inheritance)
 own these distinctions, including the
-[closed unordered state](../TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-unordered-state).
+[closed unordered state](SINE_PAIR_STATE.md#sine-replica-unordered-state).
 
 RA is a configured event with EPI mixing, circular phase adjustment
 and a separately triggered capacity update. Its
@@ -122,7 +131,7 @@ E(x,\theta)=\frac12x^\mathsf TLx+
 V(\theta)=\sum_{\{i,j\}}\bigl(1-\cos(\theta_j-\theta_i)\bigr).
 \]
 
-The [existing exact decomposition](RELATIONAL_PATTERN_MEMORY.md#sine-relative-pattern-state)
+The [existing exact decomposition](SINE_PATTERN_RECOVERY.md#sine-relative-pattern-state)
 uses `grad E=(q,-beta S)` and gives
 
 \[
@@ -149,12 +158,12 @@ It does not derive the sine kernel, its coefficient or the dissipation
 strength uniquely from `xdot=nu*p`. Nor does the structural storage
 become physical energy without an independent measurement bridge.
 
-The [exact nonlinear representations](SINE_PATTERN_DYNAMICS.md#sine-form-phase-memory-equivalence)
+The [exact nonlinear representations](SINE_FORM_PHASE_REDUCTION.md#sine-form-phase-memory-equivalence)
 retain this same balance when form is represented by phase velocity or by
 initial-state forcing and nonlinear memory. Their quotient equation reduces
 to the pencil below at equilibrium; the nonlinear equivalence itself neither
 requires an equilibrium nor discards the initial form. The
-[controlled phase comparison](SINE_PATTERN_DYNAMICS.md#sine-controlled-slow-phase)
+[controlled phase comparison](SINE_FORM_PHASE_REDUCTION.md#sine-controlled-slow-phase)
 supplies a finite-horizon approximation with that initial form retained as a
 transient and shifted initialization; it is distinct from the local resonance
 linearization below.
@@ -229,6 +238,41 @@ Otherwise use the whole pencil and actual observations.
 The [native collective-mode result](RELATIONAL_PATTERN_MEMORY.md)
 and the sine derivative have different coefficients and cannot be
 interchanged merely because both contain phase feedback.
+
+<a id="spectral-rhythm-reuse"></a>
+
+### Reusing spectral rhythms requires the actual joint generator
+
+At the conservative boundary `e=0`, phase consensus, unit held capacity
+and `w=beta=1`, the same rows in clock `tau=t/pi` give
+
+\[
+\xi'=-L_{\rm rw}\eta,\qquad \eta'=L_{\rm rw}\xi,
+\qquad \xi''=-L_{\rm rw}^{\,2}\xi.
+\]
+
+Thus a positive eigenvalue `lambda` of the normalized Laplacian has
+angular frequency `lambda` in `tau`, or `lambda/pi` in original structural
+time. This is a consensus **tangent** statement, not a general finite-amplitude
+wave equation. For other capacities, phase geometries or laws, use the full
+joint derivative and declared clock; the graph spectrum alone is insufficient.
+The [exact path-memory construction](#finite-conservative-memory) and
+[independent full-field controls](../../tests/physics/test_relational_sine_resonance.py)
+already retain this generator and its initialization.
+
+The archived
+[`emergent_rhythm.py` at `e6d5e731`](https://github.com/fermga/TNFR-Python-Engine/blob/e6d5e731/benchmarks/emergent_rhythm.py)
+instead supplies `xi''=-L_sym xi`, assigns frequencies `sqrt(lambda)`,
+and constructs its self-similar support in advance. Its reusable question
+is whether interference of excited modes appears in a specified readout.
+A quadratic detector can contain sum and difference frequencies, but that
+calculation selects neither an autonomous preparation nor a fundamental
+rhythm. A small pressure diagnostic does not establish full-state equilibrium;
+a prebuilt repeated graph does not establish dynamical fractality.
+The [auxiliary wave correspondence](../PHYSICAL_REGIME_CORRESPONDENCES.md#4-finite-spectral-and-wave-correspondence)
+retains the wave model's scope. Same-law claims instead use the pulse,
+recurrence and [scale-inheritance proofs](SINE_PAIR_STATE.md#sine-replica-inheritance)
+with their separate premises.
 
 <a id="collocated-resonance"></a>
 
@@ -354,6 +398,86 @@ prove a narrow peak, large gain, a particular maximum frequency,
 selective response at every remote node or a maintained autonomous
 pulse. The normalization of `f` fixes the numerical gain.
 
+<a id="same-type-port-reciprocity"></a>
+### Multiple ports: orientation readout is not linear Hall response
+
+Keep the exact critical background, fixed support and positive held capacities
+above. For this algebra also allow the conservative boundary `e=0`, excluding
+resolvent poles. Let the columns of a fixed real matrix `F_in` specify multiple
+**form-rate** inputs. Their conjugate storage-work outputs are
+`y=F_in^T L delta_x`; inputs of another type or arbitrary readouts are not
+covered. Set `G=B^(1/2) P_Q K^(-1/2) F_in` on the same quotient. With zero
+initial perturbation the scalar calculation extends to
+
+\[
+\mathcal H(s)=sG^{\mathsf T}
+ [s^2I+esB+abB^{1/2}CB^{1/2}]^{-1}G,
+\qquad \boxed{\mathcal H(s)^{\mathsf T}=\mathcal H(s)}.
+\]
+
+The pencil is symmetric under transpose, and so is its inverse wherever it
+exists. No commutation of B and C is required; complex symmetry is not
+Hermitian symmetry. Consequently the antisymmetric transfer between these
+matched same-type work ports is zero. Replacing a critical `theta_*` by
+`-theta_*` also leaves its cosine Hessian and entire tangent generator
+unchanged. With the same linear input/output maps, opposite winding therefore
+cannot supply a winding-odd linear response in this experiment.
+
+This reuses the [exact nonlinear phase representation](SINE_FORM_PHASE_REDUCTION.md#sine-form-phase-memory-equivalence):
+`B^-1 vartheta_ddot + e vartheta_dot + ab grad(Phi)=0`. Its mass and damping
+are symmetric; no skew velocity force is present. The constant same-law
+Poisson tensor pairs form and phase, which does not by itself produce a
+gyroscopic force between physical spatial coordinates. Around a static
+background, exact elimination of hidden linear coordinates also preserves
+the symmetric pencil through its Schur complement. Retain the transformed
+ports and hidden initial-state contribution; treating that free response as
+part of an input transfer can give a false asymmetry.
+
+**Port-type boundary.** Collocation alone is insufficient. The ordinary
+canonical oscillator `p_dot=-q+u_p, q_dot=p+u_q`, with storage
+`(p^2+q^2)/2` and conjugate output `(p,q)`, has
+
+\[
+\mathcal H_{\rm mixed}(s)=\frac1{s^2+1}
+\begin{pmatrix}s&-1\\1&s\end{pmatrix}.
+\]
+
+Its antisymmetric mixed entries distinguish phase-space channels, not spatial
+Hall transport. A TNFR comparison must identify the actual port types and
+their physical reversal operations before interpreting an off-diagonal sign.
+
+The [two-contact orientation control](SINE_PAIR_INTERACTION.md#sine-two-contact-orientation-response)
+is compatible with this restriction. Its seven-node preparation is not a full
+equilibrium: the probes immediately have nonzero form pressure. It measures
+an autonomous signed response, not a linear susceptibility about equilibrium.
+The full field also contains orientation-sensitive nonlinear information:
+
+\[
+D^2S_i(\theta_*)[v,v]
+=-\sum_{j\sim i}\sin(\theta_{*,j}-\theta_{*,i})(v_j-v_i)^2.
+\]
+
+This coefficient reverses under `theta_* -> -theta_*`, even though the first
+derivative does not. Moving internal states likewise give a time-dependent
+tangent. Neither finite nonlinear response nor response about a moving
+pattern is excluded by the static transfer theorem. Their input, retained
+motion, readout and finite error bounds require their own derivation. The
+[moving doubled-C5 pulse](SINE_REPLICA_PULSE.md#sine-moving-pulse-work-response)
+provides such a finite-time infinitesimal response: time ordering of its
+varying symmetric stiffnesses produces a nonzero matched form/work contrast.
+Its distributed probes, retained pulse phase and finite horizon are essential
+premises. This is compatible with the stationary theorem. A separate
+[full nonlinear kick bound](SINE_REPLICA_PULSE.md#sine-moving-pulse-finite-work-response)
+now supplies a sufficient finite amplitude radius; the
+[complete-history reversal](SINE_REPLICA_PULSE.md#sine-moving-pulse-parametric-representation)
+identity prevents interpreting that contrast as failure of microscopic
+reversibility. No magnetic identification follows.
+
+The [full-support regression controls](../../tests/physics/test_relational_sine_resonance.py)
+exercise noncommuting form/phase geometry, winding reversal and the mixed-port
+boundary using the shared tangent. The [physical comparison](../PHYSICAL_REGIME_CORRESPONDENCES.md#skyrmion-directional-response-admission)
+records why the present orientation signal is not yet an admitted Hall test.
+
 <a id="modal-resonance"></a>
 
 ## 5. Modal examples make the output distinction explicit
@@ -473,7 +597,7 @@ not an active-port member of this theorem.
 
 ## 6. Constitutive changes and clock changes are different
 
-The [coefficient audit](RELATIONAL_EXCHANGE_ADMISSION.md#coefficient-synergy-audit)
+The [coefficient audit](RELATIONAL_RESPONSE_IDENTIFICATION.md#coefficient-synergy-audit)
 already derives the dimensionless combination
 `chi=beta*(e/w)^2`. For the commuting mode above,
 
@@ -647,7 +771,7 @@ the principal edge gaps, so each ring has one common increment.
 Circular closure then leaves precisely winding `-1`, `0` or `+1`.
 Opposite ring windings and consensus members therefore satisfy the
 same argument without a different supplied law.
-The [complete local-stability classification](RELATIONAL_PATTERN_MEMORY.md#sine-eleven-node-equilibrium-stability)
+The [complete local-stability classification](../research/archive/receiver/SINE_RECEIVER_TRANSFER_AND_CAPTURE.md#sine-eleven-node-equilibrium-stability)
 shows that these nine zero-bridge acute geometries exhaust the locally
 attracting relative equilibria on this support under the positive-loss sine
 law. Which one a preparation reaches remains a separate basin question.
@@ -791,7 +915,7 @@ edge. The existing full nonlinear storage loss excludes nonstationary
 recurrent full-state motion under the stated unforced premises.
 
 The shared reader and its detached-report boundary are documented in
-the [mediated-response contract](../../docs/contracts/RELATIONAL_DYNAMICS.md#sine-mediated-response).
+the [mediated-response contract](../../docs/contracts/relational/SINE_RESPONSE_AND_MEMORY.md#sine-mediated-response).
 It retains the full target, capacities, declared ports and low-order
 derivatives; it does not evaluate a trajectory or locate the maximum
 or the sign reversal.
@@ -864,7 +988,7 @@ c'\sum_i\frac{m_i}{\nu_i}
 
 The final equality follows from `Mg=-grad V` and phase-origin
 invariance. This extends the existing
-[native recurrence proof](RELATIONAL_EXCHANGE_ADMISSION.md#relational-pulse-scope)
+[native recurrence proof](RELATIONAL_RESPONSE_IDENTIFICATION.md#relational-pulse-scope)
 to held zero capacities without substituting the sine phase law for
 the native one. It does not continue native trajectories through
 their undefined resultant or branch boundary.
@@ -901,7 +1025,7 @@ without separately controlling that model's regular-domain boundary.
 
 For the specific two-C5/live-intermediary support with **strictly positive**
 held capacities, the
-[finite critical-geometry classification](RELATIONAL_PATTERN_MEMORY.md#sine-eleven-node-asymptotic-equilibria)
+[finite critical-geometry classification](../research/archive/receiver/SINE_RECEIVER_TRANSFER_AND_CAPTURE.md#sine-eleven-node-asymptotic-equilibria)
 strengthens this result to convergence to one relative equilibrium.
 An explicit conserved-lift reconstruction also fixes its limiting common
 phase origin. That support-specific theorem does not select which
@@ -1049,7 +1173,7 @@ are frozen regardless of initial storage.
 
 ### Reuse the native result without replacing its clock
 
-The existing [native P2 reversible result](RELATIONAL_EXCHANGE_ADMISSION.md#relational-pulse-scope)
+The existing [native P2 reversible result](RELATIONAL_RESPONSE_IDENTIFICATION.md#relational-pulse-scope)
 already proves periodic exchange on `0<E<beta` inside its acute
 domain. Here `delta` denotes the centered acute gap. Its two relative
 rates at `e=0` are the sine rates
@@ -1078,7 +1202,7 @@ These results establish a sharp conditional distinction: finite
 closed sine systems with positive form dissipation approach their
 equilibrium set, whereas the admitted reversible P2 law has exact
 nonlinear periodic states prepared at nonzero storage. The
-[replica pulse proof](../TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-internal-pulse)
+[replica pulse proof](SINE_REPLICA_PULSE.md#sine-replica-internal-pulse)
 extends periodic-state existence to a supplied ten-node preparation
 with static collective means and moving internal constituents.
 
@@ -1090,9 +1214,9 @@ has been derived. An exactly prepared equilibrium remains an
 equilibrium by uniqueness. Periodic-state existence is therefore not
 spontaneous creation from an equilibrium or from an absent substrate.
 It also does not prove robustness: the
-[complete replica variation](../TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-pulse-variation)
+[complete replica variation](SINE_REPLICA_PULSE.md#sine-replica-pulse-variation)
 and its
-[small-amplitude splitting](../TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-pulse-splitting)
+[small-amplitude splitting](SINE_REPLICA_PULSE.md#sine-replica-pulse-splitting)
 establish transverse instability of sufficiently small nonzero members
 of that prepared family. Neither its exact orbit nor an instantaneous
 oscillator spectrum certifies stability under general fine perturbations.
@@ -1383,6 +1507,1247 @@ is a **tangent** statement at the specified critical targets; the
 nonlinear endpoint counterexample and nonlinear edge balance above
 have their separately stated scope.
 
+<a id="effective-loss-setup"></a>
+
+### Common coordinates for a controlled effective-loss comparison
+
+This setup fixes the comparison problem; it is not a derived damping law.
+Use the finite connected unit support and positive held capacities of Section 2,
+at phase consensus, with fine loss `e_0=0`, phase weight `w_0>0` and held
+storage scale `beta>0`. Phase perturbations are real tangent coordinates at
+that target, not global unwrapped replacements for circular phase.
+
+On the mean quotient of Section 3, consensus gives `C=B`. Put
+
+\[
+u=B^{1/2}\xi,\qquad v=\sqrt\beta B^{1/2}\eta,
+\qquad z=(u,v),\qquad \tau=\frac{w_0}{\pi}t.
+\]
+
+The constant means have been removed, not inverted. Their values must be
+retained separately if a later observation or contact uses absolute origins.
+Substitution in both tangent rows gives
+
+\[
+E_2=\tfrac12(\|u\|^2+\|v\|^2),\qquad
+z'=Jz,\qquad
+J=\frac1{\sqrt\beta}
+\begin{pmatrix}0&-B\\B&0\end{pmatrix},\qquad J^\mathsf T=-J.
+\]
+
+Primes denote `d/dtau`; the norm is the Euclidean norm in this energy chart.
+This symbolic change is valid for heterogeneous positive held capacities.
+It supplies neither a nonlinear error bound nor a rational representation of
+an arbitrary matrix square root.
+
+For an explicitly restricted first observation class, take an orthonormal
+column map `P` from `m` visible spatial coordinates into the `r=n-1`
+quotient coordinates, with `P^T P=I_m`. Apply the **same** map to both channels:
+
+\[
+\mathcal O=\operatorname{diag}(P^\mathsf T,P^\mathsf T),\qquad
+\mathcal E=\mathcal O^\mathsf T,\qquad
+z_0=\mathcal E y_0+h_0,\qquad
+\mathcal O h_0=0.
+\]
+
+Thus `O E=I` and `||z_0||^2=||y_0||^2+||h_0||^2`. The actual observation is
+
+\[
+y(\tau)=\mathcal O e^{J\tau}\mathcal E y_0
+       +\mathcal O e^{J\tau}h_0.
+\]
+
+Choosing `h_0=0` is a preparation premise. More generally, specify the allowed
+hidden states and their norm bound `H_0`; absence of observation never sets
+them to zero. A genuine hidden quotient requires `m<r`, hence at least three
+nodes for one visible form/phase pair. An invariant spatial subspace
+`(I-PP^T)BP=0` instead supplies a no-exchange control, not a reservoir.
+
+The candidate form-only-loss generator must use these same coordinates and
+this same clock. Write it as
+
+\[
+G=\begin{pmatrix}-\Gamma&-\Omega\\\Omega&0\end{pmatrix}.
+\]
+
+Require `Gamma=Gamma^T` positive semidefinite and nonzero, and `Omega=Omega^T`;
+the first single-pair target has scalar `Gamma>0,Omega>0`. This makes the
+Euclidean storage derivative `-y_form^T Gamma y_form`, with no phase loss row.
+
+If it represents the consensus sine law on a declared coarse support with
+the same `beta`, positive coarse spatial matrix `B_v` on its mean quotient
+and positive effective weights `e_v,w_v`, then
+
+\[
+\Gamma=\frac{\pi e_v}{w_0}B_v,\qquad
+\Omega=\frac{w_v}{w_0\sqrt\beta}B_v.
+\]
+
+These relations convert **both** target rows from the common structural
+clock. The model constructor normalizes its two weights together: a normally
+constructed conservative model has `w_0=1`; introducing positive EPI weight
+does not leave its normalized phase weight unchanged. Read the authoritative
+effective coefficients, not constructor inputs, and do not normalize again.
+An independently specified `G`, different storage scale or different coarse
+chart needs its own declaration and transformation. Neither matrix above
+has been derived by eliminating the fine state.
+
+A uniform error claim must specify the preparation family and, for example,
+bound the full response quantity
+
+\[
+\mathcal E_T=
+\sup_{\substack{0\leq\tau\leq T,\ \|y_0\|\leq1\\
+                 \mathcal O h_0=0,\ \|h_0\|\leq H_0}}
+\left\|\mathcal O e^{J\tau}(\mathcal E y_0+h_0)
+             -e^{G\tau}y_0\right\|.
+\]
+
+Here `T` is in clock `tau`; the unit ball fixes the tangent amplitude
+normalization, not a claim of finite-amplitude nonlinear validity. A smaller
+hidden family must be stated instead of silently changing this supremum.
+An amplitude envelope or one initial form excitation cannot establish this
+two-channel estimate. A proposed tolerance and any discarded initial layer
+need independent admission. The lower bounds below address this admitted
+class; they do not establish a successful effective law.
+
+#### Exact three-node coordinate control
+
+There is a small rational control without numerical square roots. Use the
+existing conservative P3 generator with `beta=nu=w_0=1`, ordered nodes
+`(left,h,right)`, and `tau=t/pi`. Define
+
+\[
+r=(\delta x_{\rm left}-\delta x_h,\delta x_{\rm right}-\delta x_h),
+\qquad
+s=(\delta\theta_{\rm left}-\delta\theta_h,
+   \delta\theta_{\rm right}-\delta\theta_h).
+\]
+
+These four edge contrasts remove precisely the two common origins and give
+`E_2=(||r||^2+||s||^2)/2`. Direct subtraction of the full nodal rows yields
+
+\[
+J_{\rm edge}=\begin{pmatrix}0&-B_{\rm edge}\\B_{\rm edge}&0\end{pmatrix},
+\qquad
+B_{\rm edge}=\begin{pmatrix}3/2&1/2\\1/2&3/2\end{pmatrix}.
+\]
+
+Taking `(r_left,s_left)` visible and `(r_right,s_right)` hidden, the exact
+coordinate-memory owner gives blocks `A=D=3R/2`, `B_h=C_h=R/2`, with
+`R=((0,-1),(1,0))`. Consequently `K(0)=-I/4`; a hidden preparation contributes
+`B_h h_0` already to the initial visible rate. These are retained edge
+coordinates, not newly created physical nodes. The shared
+[P3 controls](../../tests/physics/test_relational_sine_resonance.py)
+check the full-generator intertwining, storage and memory blocks exactly.
+
+For a general observation, the
+[coordinate-memory owner](../../src/tnfr/mathematics/linear_observation.py)
+requires an explicit coordinate chart before partitioning; its indices are
+not arbitrary measurement rows. Its all-state Krylov companion tests exact
+closure, not a preparation-dependent approximation. Replacing an ideal square
+root or pi by an admitted binary64 value certifies only that represented
+matrix. The P3 control avoids this replacement; it does not select an
+effective coefficient, prove the error estimate or alter engine dynamics.
+
+<a id="effective-loss-covariance-bound"></a>
+
+### Equal channel observations impose a finite-horizon loss error floor
+
+Retain the preceding state, clock, Euclidean norm and transpose preparation.
+Write `R_k=((0,-I_k),(I_k,0))` for the quarter rotation between form and phase.
+The conservative consensus generator satisfies `JR_r=R_rJ`. The equal-channel
+observation and preparation obey
+
+\[
+\mathcal O R_r=R_m\mathcal O,\qquad
+R_r\mathcal E=\mathcal E R_m.
+\]
+
+Therefore the complete visible propagator
+`T(tau)=O exp(J tau) E` commutes with `R_m` for every time. These are algebraic
+identities, not a near-consensus assertion about a nonlinear trajectory.
+For any proposed generator `G`, let `F(tau)=exp(G tau)` and use the spectral
+operator norm. Since `R_m` is orthogonal,
+
+\[
+\boxed{\|T(\tau)-F(\tau)\|_2
+       \geq\tfrac12\|[F(\tau),R_m]\|_2.}
+\]
+
+Indeed `[T,R_m]=0`, so the norm of `[F,R_m]` is at most twice the response
+error. For the form-only-loss target above,
+
+\[
+[G,R_m]=\begin{pmatrix}0&\Gamma\\\Gamma&0\end{pmatrix}.
+\]
+
+Nonzero loss thus prevents exact equality on any interval starting at zero:
+the propagator commutator has this nonzero first derivative there. A larger
+fine support or a different modal mixture respecting these same intertwiners
+cannot remove that obstruction. This is stronger than the earlier all-time
+finite-system argument within this narrower observation class.
+
+#### A rational bound for a declared single-pair target
+
+For `m=1`, fix `gamma>0,omega>0` and
+`G=((-gamma,-omega),(omega,0))` in the admitted clock. Its symmetric part is
+`diag(-gamma,0)`, so `||exp(G u)||_2<=1` for `u>=0`. With `M=gamma+omega`,
+`||G||_2<=M` and `||exp(G u)-I||_2<=M u`. Put `D=[G,R_1]`, so `||D||_2=gamma`.
+The exact commutator identity and its remainder give
+
+\[
+[e^{G\tau},R_1]=\int_0^\tau e^{G(\tau-s)}D e^{Gs}\,ds,
+\qquad
+\|[e^{G\tau},R_1]-\tau D\|_2\leq\gamma M\tau^2.
+\]
+
+To obtain the remainder, subtract `D` under the integral and split the
+difference as `(exp(G(tau-s))-I)D exp(Gs)+D(exp(Gs)-I)`. Contractivity bounds
+the integrand norm by `gamma M tau`. Consequently, for any horizon `T>=0`,
+
+\[
+s_* = \min\{T,1/(2M)\},\qquad
+\boxed{\mathcal E_T\geq
+       \frac{\gamma s_*(1-Ms_*)}{2}.}
+\]
+
+This positive lower bound for `gamma,T>0` uses an observation time **within**
+the requested horizon; it is not an assertion of the error at its endpoint.
+Zero loss or zero horizon gives zero and supplies no exclusion. The bound
+also applies when an independently bounded hidden family includes `h_0=0`,
+since enlarging a supremum cannot reduce it. It does not silently discard the
+nonzero hidden-state source. An approximation fails a declared uniform budget
+only when a justified lower bound is **strictly greater** than that budget.
+
+The [shared observation kernel](../../src/tnfr/mathematics/linear_observation.py)
+implements this rational bound as `bound_form_loss_observation_error`.
+It checks skewness, commutation, the output intertwiner and isometry exactly
+on the supplied matrices, then uses their transpose preparation. Its scope
+can include other supplied generators obeying those identities; it does not
+authenticate that they came from a TNFR graph or an exact energy chart.
+
+For an independently declared algebraic discriminator, fix the exact P3
+edge observation above, `h_0=0`, the unit visible ball, `gamma=omega=1`,
+`T=1/4` in clock `tau`, and error tolerance `1/32`. Before any response
+evaluation the formula gives `s_*=1/4` and lower bound `1/16>1/32`.
+Thus this comparison fails its tolerance. These target coefficients and
+budget are control inputs, not inferred effective constants or a physical
+calibration. No trajectory, fit or floating transcendental coefficient is
+needed for the verdict. The
+[independent controls](../../tests/test_form_loss_observation.py)
+also check underdamped, critical and overdamped target exponentials.
+
+#### Sharp pointwise boundary and retained hidden source
+
+For comparison with the conservative rational bound, set `a=gamma/2`,
+`q=a^2-omega^2`, and
+
+\[
+s_q(\tau)=
+\begin{cases}
+\sin(\sqrt{-q}\,\tau)/\sqrt{-q},&q<0,\\
+\tau,&q=0,\\
+\sinh(\sqrt q\,\tau)/\sqrt q,&q>0.
+\end{cases}
+\]
+
+Because `(G+aI)^2=qI`, its exponential gives the sharper boundary
+
+\[
+\|T(\tau)-e^{G\tau}\|_2
+ \geq a e^{-a\tau}|s_q(\tau)|.
+\]
+
+It is exactly the distance of `exp(G tau)` from the space of real `2 by 2`
+matrices commuting with `R_1`: remove its term
+`-a exp(-a tau) s_q(tau) diag(1,-1)` to attain the bound in that matrix space.
+Such a projection need not itself be realizable by a given fine TNFR system.
+Isolated zeros in the underdamped expression cannot establish agreement
+over an interval. The shared kernel uses the rational estimate and does not
+claim to evaluate or maximize this sharper transcendental expression.
+
+For the exact P3 preparation, direct diagonalization of its two spatial modes
+gives, including the hidden pair,
+
+\[
+y(\tau)=\cos(\tau/2)e^{3\tau R_1/2}y_0
+       +\sin(\tau/2)e^{3\tau R_1/2}R_1h_0.
+\]
+
+The homogeneous response attenuates both channels together before returning.
+It is not form-only damping. For an independent hidden ball of radius `H_0`,
+the fixed-time worst error equals
+`||T(tau)-exp(G tau)||_2+H_0*|sin(tau/2)|`: the hidden map is a scalar times an
+orthogonal map, so it can align with the worst homogeneous error. Ignoring
+that source can only understate this full-family discrepancy.
+
+#### What changing the observation or preparation does and does not show
+
+The following exact P3 controls retain the same fine generator and clock.
+They delimit the theorem rather than select a new law.
+
+- Observe `(r_left,(3*s_left+4*s_right)/5)` and use the observation's transpose
+  as preparation. The rows remain orthonormal, but no longer intertwine the
+  channel rotation. Here `T'(0)=13R_1/10` and
+  `T''(0)=diag(-5/2,-197/50)`, which breaks the covariance. Nevertheless any
+  orthogonal observation with transpose preparation has skew initial
+  derivative `O J O^T`. Merely changing the readout cannot give a nonzero
+  symmetric loss term at that initial instant.
+- Observe the original left pair but prepare hidden `(r_right,s_right)` as
+  `(0,r_left)`. The resulting lift still gives the requested initial visible
+  state, but supplies correlated hidden storage. It yields
+  `T'(0)=((-1/2,-3/2),(3/2,0))=G`. However
+  `T''(0)=((-5/2,0),(-3/2,-5/2))` differs from
+  `G^2=((-2,3/4),(-3/4,-9/4))`. Matching the initial damping derivative
+  through chosen preparation does not establish the complete reduced law.
+
+At a nonconsensus critical geometry, the positive-energy chart instead has
+cross-block `D=B^(1/2)C^(1/2)/sqrt(beta)` and its transpose. The canonical
+rotation still commutes when `B,C` commute, even if `B!=C`. Noncommuting
+Hessians can remove this particular symmetry; the energy generator remains
+skew and the transpose-preparation initial-derivative restriction remains.
+Neither nonconsensus nor asymmetric observation is by itself a loss mechanism.
+
+The result excludes exact form-only damping for the admitted symmetric
+reduction and bounds its finite-horizon approximation error. It does not
+exclude loose budgets, tiny loss, different justified preparations, a declared
+initial layer, nonlinear effective laws or separately admitted limits. An
+independent structural reason for any changed premise is still required.
+
+<a id="structural-channel-distinction"></a>
+
+### A structural channel distinction, with its constitutive boundary
+
+The complete sine law already distinguishes the coordinates: signed form has
+quadratic edge storage, while circular phase has periodic edge storage.
+Their second variations are `L` and `H=L_cos(theta_j*-theta_i*)`. This is a
+consequence of the **supplied storage and reciprocal law**, not a unique
+derivation from `xdot=nu*p`. The distinction must survive an actual declared
+observation before it explains a measured or reduced response.
+
+At consensus `H=L`. At a uniform acute winding on an isolated cycle,
+`H=cL` with the same positive cosine on every edge. Even heterogeneous held
+capacities then give `C=cB`, so these examples retain the energy-channel
+rotation. Nonconsensus alone is insufficient. Joining a winding component
+through an aligned bridge introduces edges with different phase stiffness:
+the bridge has cosine one and winding edges have cosine less than one.
+The existing bridge-tree criticality proof admits this without a new law.
+
+#### An admitted nodal tangent port without numerical matrix square roots
+
+Keep zero loss, positive held capacities, strictly acute exact critical
+phase, the full supplied unit support and clock `tau=w*t/pi`. Let `Z` be
+the oriented node-by-edge incidence matrix, `Q=diag(c_e)` with exact positive
+edge cosines, and `A=Z^T K Z`. Edge energy coordinates obey
+
+\[
+u=Z^\mathsf T\delta x,\quad
+v=\sqrt\beta\,Q^{1/2}Z^\mathsf T\delta\theta,\quad
+E_2=\tfrac12(\|u\|^2+\|v\|^2),\qquad
+J=\begin{pmatrix}0&-D\\D^\mathsf T&0\end{pmatrix},\quad
+D=\frac{A Q^{1/2}}{\sqrt\beta}.
+\]
+
+This is an exact energy embedding with constraints
+`u in im(Z^T)` and `v in Q^(1/2)im(Z^T)`; arbitrary independent edge states
+are generally not nodal states. These subspaces are invariant under `J`.
+Now select an **aligned bridge** `b`. Its unit edge vector `e_b` is a cut
+vector: opposite constant nodal offsets on the two components produce only
+that edge difference. Since `c_b=1`, it is admissible in both channel
+subspaces. Means can be centered independently without changing the port.
+Thus observation `(u_b,v_b)` and its transpose preparation are admissible nodal
+orthonormal tangent maps. The two retained raw contrasts are the form gap
+and `sqrt(beta)` times the phase gap; no desired loss coefficient selects them.
+
+For `T(tau)=O exp(J tau) O^T`, direct multiplication gives
+
+\[
+T'(0)=\frac{A_{bb}}{\sqrt\beta}
+\begin{pmatrix}0&-1\\1&0\end{pmatrix},\qquad
+T''(0)=-\frac1\beta
+\operatorname{diag}\left(\sum_e c_e A_{be}^2,\sum_e A_{be}^2\right).
+\]
+
+All square roots cancel from the second derivative. Therefore
+
+\[
+\boxed{T_{uu}''(0)-T_{vv}''(0)
+       =\frac1\beta\sum_e(1-c_e)A_{be}^2\geq0.}
+\]
+
+With positive capacities on simple support this is strictly positive exactly
+when a nonaligned target edge meets an endpoint of the selected bridge.
+Remote winding alone can leave this second-order difference zero; that does
+not prove equality of the complete responses at later orders. Reversing the
+bridge orientation reverses both observed coordinates and preserves the jets.
+
+For a fixed exact witness, take two C6 cycles at winding one, joined by an
+aligned bridge, unit capacities and `beta=w=1`. Declare both bridge nodes at
+turn zero and each cycle in turns `j/6`. Internal cosines are exactly `1/2`,
+the bridge cosine is one, and symbolic sine currents cancel. Each bridge
+endpoint has full degree three; hence `A_bb=2/3` and the four incident cycle
+edges have `|A_be|=1/3`. In clock `tau=t/pi`,
+
+\[
+T'(0)=\tfrac23R_1,\qquad
+T''(0)=\operatorname{diag}(-2/3,-8/9),\qquad
+T_{uu}''(0)-T_{vv}''(0)=2/9.
+\]
+
+The consensus control on the same support has both second derivatives
+`-8/9`. In the winding witness, the phase response has the larger initial
+curvature magnitude; this is not a universal preference for form loss.
+The [bridge reader](../../src/tnfr/physics/relational_sine_resonance.py)
+reuses complete source and exact-target admission, retains held capacities
+and bounds these jets on an actual declared bridge. Its
+[independent controls](../../tests/physics/test_sine_bridge_channels.py)
+differentiate the shared full nodal law. The report concerns the supplied
+critical target, not a claim that the captured source has reached it.
+
+Exact hidden elimination interprets these derivatives as retained exchange:
+the two zero-lag memory coefficients after removing the visible pair are
+`-sum(c_e A_be^2)/beta+omega^2` and
+`-sum(A_be^2)/beta+omega^2`, where `omega=A_bb/sqrt(beta)`.
+The complete kernel and initial hidden-state source still have to be retained.
+A second derivative is neither a Markov loss coefficient nor a kernel decay
+certificate. The field tetrad does not replace these state and law data.
+
+#### Geometry does not remove the initial conservative obstruction
+
+For **any** real skew energy generator `J`, orthonormal observation `O` and
+transpose preparation, `T'(0)=O J O^T` is skew. This remains true when the
+previous channel-rotation covariance fails. A form-only-loss target
+`G=((-gamma,-omega),(omega,0))`, with `gamma>0,omega>0`, has nonzero symmetric
+part and cannot agree on an interval starting at zero.
+
+There is a quantitative statement independent of that rotation. Let
+`N>=||J||_2`, `M=gamma+omega>=||G||_2`. Fine and target propagators are
+contractions. Their integral Taylor remainders give
+
+\[
+\|T(\tau)-e^{G\tau}\|_2
+\geq \gamma\tau-\tfrac12(N^2+M^2)\tau^2.
+\]
+
+Indeed the symmetric part of `T'(0)-G` has norm `gamma`, while the two
+second-order remainders have norms at most `N^2 tau^2/2` and `M^2 tau^2/2`.
+Evaluate at `s=min(T,gamma/(N^2+M^2))` for a strictly positive uniform
+lower bound when `T,gamma>0`. The shared
+`bound_orthogonal_form_loss_observation_error` admits the skew and isometry
+hypotheses and uses the exact maximum absolute row sum as `N`. It preserves
+the more specific covariance bound as a separate method rather than
+silently weakening that reader's contract.
+
+For the admitted acute sine tangent, `0<C<=B` and
+`||B||_2<=2*max(nu_i)` give `N=2*max(nu_i)/sqrt(beta)`. The latter follows
+also from the Gershgorin bound for the similar matrix `KL`. Thus increasing
+finite support while retaining bounded capacities, fixed positive `beta`,
+the same target coefficients, clock and positive comparison horizon
+does not remove this initial-time floor. A controlled discarded initial
+layer, different justified preparation, or a limit with unbounded rates
+would be a changed problem, not a consequence of the geometric distinction.
+
+There is also no disappearance of conservative modal structure. On the
+positive-energy quotient, the singular value decomposition `D=U Sigma V^T`
+transforms the two channels by different orthogonal maps to
+`J'=((0,-Sigma),(Sigma,0))`. Equivalently the original law commutes with
+`R_D=((0,-UV^T),(VU^T,0))`. This transformation can change the spatial readout;
+it does not erase the observed bridge distinction. It shows why that
+distinction is not irreversible loss. The two squared blocks `DD^T,D^TD`
+have identical spectra and traces despite their different directions.
+
+The supported structural result is therefore **unequal observed exchange
+and memory under a specified phase geometry**. Selection of a memoryless
+loss law remains open. Likewise, interpreting form as phase-motion
+information requires the retained velocity and mean described by the
+[form reconstruction result](SINE_FORM_PHASE_REDUCTION.md#form-reconstruction-scope);
+it does not derive EPI from the other instantaneous variables.
+
+<a id="storage-family-pattern-robustness"></a>
+
+### A protected geometry can survive a changed phase-storage law
+
+The existing
+[alternative-storage family](SINE_CONSTITUTIVE_INFORMATION.md#phase-storage-selection-boundary)
+retains form balance and the consensus tangent without selecting cosine
+storage uniquely. Its
+[first-moment distinction](SINE_CONSTITUTIVE_INFORMATION.md#first-phase-moment-sufficiency)
+separates the information consumed by its primitive source. The present
+question is different: which pattern and response properties survive this
+already admitted constitutive freedom?
+
+Keep exactly the preceding two C6 cycles, their supplied aligned bridge and
+unit capacities. Set `e=0,beta=w=1`, with no inputs or events, and retain
+`tau=t/pi`. For each independently specified finite `epsilon>=0`, use
+
+\[
+U_\epsilon(\delta)=1-\cos\delta+
+\epsilon\left(\frac23-\cos\delta+\frac{\cos^3\delta}{3}\right),\quad
+j_\epsilon(\delta)=U_\epsilon'(\delta)=\sin\delta+\epsilon\sin^3\delta.
+\]
+
+Writing `S_epsilon,i=sum_j j_epsilon(theta_j-theta_i)`, the complete rows in
+this normalized clock and their storage are
+
+\[
+x'=K S_\epsilon(\theta),\qquad \theta'=KLx,\qquad
+K=\operatorname{diag}(1/d_i),\qquad
+E_\epsilon=\tfrac12x^{\mathsf T}Lx+V_\epsilon(\theta),\quad
+V_\epsilon=\sum_e U_\epsilon(\delta_e),\qquad E_\epsilon'=0.
+\]
+
+These are different supplied complete laws with one common clock and support.
+The phase row is unchanged; pressure and phase storage change together.
+No coefficient is fitted to the bridge response.
+
+#### Criticality and nonlinear protection remain
+
+Give both cycles winding one with uniform oriented gap `pi/3`, align their
+bridge endpoints, and take constant form. The two cycle currents at each
+node cancel for every `epsilon`; the bridge current is zero. Thus the same
+geometry is an exact critical target throughout the family. Its storage is
+
+\[
+E_\epsilon^*=12U_\epsilon(\pi/3)=6+\tfrac52\epsilon.
+\]
+
+The phase stiffness is
+
+\[
+U_\epsilon''(\delta)=\cos\delta\,[1+3\epsilon\sin^2\delta],\qquad
+c_\epsilon=U_\epsilon''(\pi/3)=\tfrac12+\tfrac98\epsilon,\qquad
+U_\epsilon''(0)=1.
+\]
+
+Independently reversing either cycle's winding preserves cancellation,
+storage and curvature, by oddness of the current and evenness of the potential.
+The same proof therefore covers each pair of winding signs; `(1,1)` fixes
+the displayed example.
+
+Hence `H_epsilon=c_epsilon*L_cycles+L_bridge` is positive definite modulo
+common rotation. The form Hessian remains `L`, positive modulo constant
+form. This gives a strict local storage minimum on the relative-state
+quotient for every member, rather than an assertion that two equal
+consensus tangents have the same nonlinear stability.
+
+A common geometric neighborhood gives an explicit protection statement.
+Choose continuous phase perturbation lifts `zeta=theta-theta_*` and centered
+form `xi=x-x_*`. Fix their degree-weighted means; conservation of both
+means follows from `sum S_epsilon=0` and `sum Lx=0`. The phase mean refers
+to this local lift, not to a global real-valued observable on the torus.
+With node-by-edge incidence `Z`, set
+
+\[
+r=\pi/12,\qquad m=\cos(5\pi/12)>0,\qquad
+\|Z^{\mathsf T}\zeta\|_\infty\le r.
+\]
+
+Every lifted edge gap along the segment from the target lies strictly
+inside `(-pi/2,pi/2)` and has cosine at least `m`. Since `epsilon>=0`,
+the full phase Hessian on this neighborhood is at least `mL`. Criticality
+cancels the summed first-order phase term, although individual winding
+edges have nonzero first derivatives. Taylor's integral identity therefore
+gives the local bound
+
+\[
+\Delta E_\epsilon:=E_\epsilon-E_\epsilon^*
+\geq\tfrac12\|Z^{\mathsf T}\xi\|^2
+     +\tfrac m2\|Z^{\mathsf T}\zeta\|^2.
+\]
+
+If the initial phase is in the **strict** neighborhood and its own full
+excess storage satisfies
+
+\[
+\boxed{\Delta E_\epsilon(0)<\frac{m\pi^2}{288},}
+\]
+
+then conservation forbids a first boundary crossing: any boundary point
+has one phase-edge perturbation of magnitude `r` and excess storage at
+least `mr^2/2`. Throughout the solution,
+
+\[
+\|Z^{\mathsf T}\xi\|\le\sqrt{2\Delta E_\epsilon(0)},\qquad
+\|Z^{\mathsf T}\zeta\|\le
+\sqrt{2\Delta E_\epsilon(0)/m}<r.
+\]
+
+Connectedness and the retained means bound the nodal relative state. The
+smooth complete field has global continuation, and the trajectory stays in
+this neighborhood with both winding identities `(1,1)` preserved. For each
+fixed `epsilon` this is nonlinear Lyapunov protection modulo the two common
+origins. The numerical radius is a declared sufficient proof neighborhood,
+not a universal TNFR scale. The threshold uses each law's own excess
+storage; it is not a common initial-amplitude ball for unbounded `epsilon`.
+Outside this neighborhood `E_epsilon-E_epsilon*` need not be nonnegative.
+
+#### The same nodal bridge preparation has different responses
+
+Observe the raw bridge form and phase gaps, with the same orientation in
+every model. Let `p` be the nodal preparation vector equal to `-1/2` on the
+left cycle and `1/2` on the right. Then `Z^T p=e_bridge` after choosing that
+bridge orientation, so
+
+\[
+Lp=H_\epsilon p=z_{\rm bridge},\qquad
+p^{\mathsf T}Lp=p^{\mathsf T}H_\epsilon p=1.
+\]
+
+The two nodal preparation columns `(p,0)` and `(0,p)` are therefore the
+same energy-orthonormal transpose preparation for every `epsilon`. There
+is no hidden change of experiment from using a different internal energy
+chart. This agreement is tangent normalization: equal finite phase offsets
+can have different nonlinear storage beyond quadratic order.
+
+For `T_epsilon(tau)=O exp(J_epsilon*tau)P`, using those fixed nodal maps
+and the full tangent `J_epsilon=((0,-K H_epsilon),(KL,0))`, direct
+differentiation gives
+
+\[
+T_\epsilon'(0)=\tfrac23R_1,\qquad
+T_\epsilon''(0)=
+\operatorname{diag}(-2/3-\epsilon/2,-8/9),\qquad
+\boxed{T_{uu,\epsilon}''(0)-T_{vv,\epsilon}''(0)
+=\tfrac29-\tfrac\epsilon2.}
+\]
+
+The bridge has unit stiffness and the four incident cycle edges have
+stiffness `c_epsilon`; their incidence-mobility entries retain magnitudes
+`2/3` and `1/3`. Thus no angle fitting or trajectory is needed. At
+`epsilon=4/9`, `H_epsilon=L` and the complete tangent regains the same
+energy-channel rotation as consensus, despite its nonzero winding.
+The sign of the bridge distinction reverses across this parameter value.
+
+This is not a loss of pattern stability or a phase transition: both Hessians
+remain positive on the quotient. Nor does it restore an identical nonlinear
+law. For example, at that value
+`U_epsilon'''(pi/3)=-2*sqrt(3)/3`, whereas the consensus edge expansion has
+zero third derivative. Coincident Hessians do not remove higher-order
+geometric response.
+
+The protected critical identity is therefore robust within this supplied
+storage family, while the observed channel distinction is constitutively
+dependent. Protection assumes a nearby preparation; it neither forms the
+pattern from outside its sector nor gives attraction under zero loss.
+The previous cosine-specific capture, memory and rate bounds cannot be
+transferred unchanged. In particular, `H<=L` fails when `epsilon>4/9`.
+No physical constituent, preferred storage law or autonomous bridge event
+has been selected.
+
+The shared
+[`assess_bridge_storage_family`](../../src/tnfr/physics/relational_sine_resonance.py)
+rebuilds the full nodal tangent and energy for the declared alternative,
+retaining the fixed bridge observation and preparation. Its outward local
+threshold and geometric radius state a conditional bound; they do not certify
+that the reference comparison's captured state satisfies this preparation.
+[Admission controls](../../tests/physics/test_bridge_storage_family.py) and
+[independent dynamics controls](../../tests/physics/test_bridge_storage_family_dynamics.py)
+keep that distinction separate from the exact target and response identities.
+
+<a id="finite-bridge-law-discrimination"></a>
+
+### Finite bridge observations distinguish the declared storage laws
+
+The preceding jets distinguish the two complete laws mathematically. A
+finite observation also distinguishes them with an explicit nonzero
+error budget, retaining all twenty-four form and phase coordinates.
+Keep the two C6 cycles, aligned bridge, unit capacities, zero loss and
+absence of inputs/events. Compare `eta=0` and `eta=1/100` in
+`j_eta(delta)=sin(delta)+eta*sin(delta)^3`. Each law consumes its own
+reciprocal phase storage. The clock remains **declared** as `tau=t/pi`;
+this result does not cancel or identify an unknown physical clock scale.
+
+Let `theta_*` be the common exact phase pattern with winding one on both
+cycles and zero bridge phase gap. Either cycle may independently reverse
+orientation: odd current cancellation, the internal cosine and the argument
+below are unchanged. Its angles are specified as rational
+turns times `2*pi`, rather than treating rounded angles as exact. Let `p`
+equal `-1/2` on the left cycle and `+1/2` on the right. Prepare two nominal
+full states
+
+\[
+z_+(0)=(ap,\theta_*),\qquad z_-(0)=(-ap,\theta_*),\qquad a>0.
+\]
+
+The support and all other coordinates are identical. Observe the same
+oriented bridge form gap `u=x_right-x_left` after positive scaled time
+`h>0` in both preparations, and form the finite statistic
+
+\[
+\boxed{C_{a,h}=\frac{2a-u_+(h)+u_-(h)}{ah^2}.}
+\]
+
+Both `a` and `h` are declared before reading the response. No pressure
+is reconstructed from this statistic. The two observations concern
+forward evolutions of opposite preparations, not a physical negative-time
+experiment or a changed law.
+
+#### The finite-amplitude quadratic coefficient is exact
+
+Form reversal `R(x,theta)=(-x,theta)` reverses the complete flow and the
+form readout. Since `z_-(0)=Rz_+(0)`, it follows that
+`u_-(h)=-u_+(-h)`. The statistic is therefore the centered-time curvature
+of one mathematical solution. This identity needs no ring-swap symmetry
+or nonlinear reduction to an observed shell.
+
+At the common target the full current sum vanishes. Write `b` for the
+oriented bridge incidence column. Then `Lp=b`, and differentiating the
+complete field at the **finite** preparation gives
+
+\[
+u_+(0)=a,\quad u_+'(0)=0,\quad
+u_+''(0)=-a\,b^{\mathsf T}KH_\eta KLp
+ =-a\left(\frac23+\frac\eta2\right).
+\]
+
+Indeed `Kb` is `-1/3,+1/3` at the bridge ports and zero elsewhere. Its
+bridge contrast contributes `4/9` to the Hessian quadratic; the four
+incident cycle edges contribute `4c_eta/9`, with
+`c_eta=1/2+9eta/8`. This computation uses the full nodal field.
+The coefficient is exact for every finite `a`, because the initial phases
+are exactly the target and the phase row is linear in form. There is no
+additional limit-in-amplitude truncation. Amplitude-dependent higher
+time derivatives still enter the remainder below.
+
+#### A full-state nonlinear remainder
+
+The following bounds hold uniformly for `0<=eta<=1/100`. With
+`c=cos(delta)`,
+
+\[
+j_\eta'(\delta)=c(1+3\eta-3\eta c^2),\qquad |j_\eta'|\le1.
+\]
+
+For `0<=c<=1`, the right-hand polynomial is increasing because its
+derivative is at least `1-6eta>0`, and its maximum is one; oddness in `c`
+gives the absolute bound. The harmonic identity
+`j_eta=(1+3eta/4)sin(delta)-(eta/4)sin(3delta)` further gives
+
+\[
+|j_\eta''|\le J_2:=103/100,\qquad
+|j_\eta'''|\le J_3:=43/40.
+\]
+
+In the full maximum norm, the complete field has global Lipschitz bound
+two. Its equilibrium is `(0,theta_*)`, so both ideal trajectories, in
+both time directions through `|tau|<=h`, obey
+
+\[
+\|x\|_\infty,\ \|\theta-\theta_*\|_\infty
+ \le R_h:=\frac a2e^{2h}.
+\]
+
+Let `g(theta)=KS_eta(theta)` and `A=KL`. Then
+`||A||_infinity<=2`, `||Dg||<=2`, `||D^2g||<=4J_2` and
+`||D^3g||<=8J_3`, for the corresponding induced multilinear norms.
+Along the whole solution, `theta'=Ax`, `theta''=Ag` and
+`theta'''=A Dg theta'` have bounds `2R_h,4R_h,8R_h` respectively.
+Thus the identity
+
+\[
+x^{(4)}=D^3g[\theta',\theta',\theta']+
+ 3D^2g[\theta',\theta'']+Dg\theta'''
+\]
+
+and the two-coordinate bridge readout give
+
+\[
+|u^{(4)}|\le U_4:=128J_3R_h^3+192J_2R_h^2+32R_h.
+\]
+
+The symmetric Taylor formula cancels the odd powers and proves the finite
+prediction
+
+\[
+\left|C_{a,h}-\left(\frac23+\frac\eta2\right)\right|
+ \le \frac{U_4h^2}{12a}.
+\]
+
+No sampled trajectory, truncated linear shell or assumed future symmetry
+of perturbed sources enters this inequality.
+
+#### Independent preparation and observation errors
+
+Allow errors of size at most `rho` in **each** of the twenty-four initial
+form and lifted-phase coordinates of each preparation. These errors may
+break every preparation symmetry. The full-field Lipschitz bound compares
+each actual source with its ideal counterpart, giving bridge-readout error
+at most `2rho exp(2h)` per run. Let each observed bridge gap additionally
+have absolute reading error at most `sigma`. Then
+
+\[
+\boxed{\left|\widehat C_{a,h}-\left(\frac23+\frac\eta2\right)\right|
+ \le E:=\frac{U_4h^2}{12a}
+       +\frac{4\rho e^{2h}}{ah^2}
+       +\frac{2\sigma}{ah^2}.}
+\]
+
+Here `sigma` bounds a complete bridge-gap reading; an instrument returning
+two individual node readings must first combine their error bounds.
+Numerical phase representation error belongs in `rho`. Capacities, support,
+clock and the declared amplitude in the statistic remain fixed premises.
+
+For both ideal and perturbed trajectories the full-window phase-edge
+displacement from the target is at most `2(R_h+rho exp(2h))`. Requiring it
+to be less than `pi/12` places both complete flows inside the preceding
+protected local chamber, with all environmental and transverse errors
+retained. This is an additional verified domain statement, not a loss of
+hidden coordinates in the error calculation.
+
+#### One analytically admitted finite budget
+
+Choose, without evaluating a reserved trajectory,
+
+\[
+a=\frac1{10},\qquad h=\frac1{50},\qquad
+\rho=10^{-10},\qquad\sigma=10^{-8}.
+\]
+
+The elementary bound `exp(2h)<=1/(1-2h)=25/24` gives
+
+\[
+R_h\le\frac5{96},\quad U_4\le\frac{122899}{55296},\quad
+2(R_h+\rho e^{2h})\le\frac{166666667}{1600000000}<\frac\pi{12}.
+\]
+
+The separately retained error budgets are
+
+\[
+E_{\rm time}\le\frac{122899}{165888000},\qquad
+E_{\rm preparation}\le\frac1{96000},\qquad
+E_{\rm reading}\le\frac1{2000},
+\]
+
+so `E<=207571/165888000`, approximately `0.001251272`. The two response
+intervals have centers `2/3` and `403/600`; their strict separation is at
+least
+
+\[
+\boxed{\frac1{200}-2E\ge\frac{207149}{82944000}>0.00249745.}
+\]
+
+This closes finite-amplitude, finite-time discrimination at the declared
+uncertainty scale by an analytic prediction. It does not require selecting
+smaller amplitudes after inspecting a response. An observed value outside
+both intervals would contradict the admitted two-model comparison or its
+preparation/error premises; it would not justify selecting the nearer law.
+No actual physical measurement is supplied here. Without an independent
+measurement and clock bridge, the result selects neither law as physical,
+and adds no formation or indefinite-lifetime claim.
+
+The detached reader
+[`assess_bridge_finite_law_discrimination`](../../src/tnfr/physics/relational_bridge_discrimination.py)
+returns `BridgeFiniteLawDiscrimination`. It admits the common support,
+symbolic target turns and the declared finite budget, reuses both
+storage-family owners, and exposes the two full preparations and separate
+error terms. Its source comparison anchors the law and support; its
+captured state is not silently used as the target. This reader evaluates
+the analytic inequalities rather than forecasting a trajectory.
+
+<a id="finite-bridge-clock-law-discrimination"></a>
+
+### A finite two-channel observation separates law from bounded clock uncertainty
+
+The previous form-only coefficient cannot by itself distinguish a changed
+law from an unknown time scale. Reuse its support, full-state preparations,
+derivative bounds and error meanings, and add the existing phase-preparation
+column. Let `s` be the sampling clock and assume
+
+\[
+\tau=ks,\qquad 0<k_{\rm lo}\le k\le k_{\rm hi},
+\]
+
+where `k` is constant and common to all three experiments. This interval
+must be declared independently of their responses. Neither an unbounded
+unknown scale nor a preparation-dependent clock factor is covered.
+The argument does not require knowing the particular `k` within the interval.
+
+Alongside the opposite form preparations `(ap,theta_*)` and
+`(-ap,theta_*)`, prepare the full phase experiment
+
+\[
+z_P(0)=(0,\theta_*+ap).
+\]
+
+Use the signed bridge phase **relative to its target lift**, denoted `v`.
+If the target bridge phases differ by `2*pi*m`, subtract that declared
+integer turn. The admitted phase chamber makes this the same signed
+principal gap near zero, and `v(0)=a`. An unsigned phase difference or
+an undeclared choice of branch cannot replace this readout.
+
+At the same positive sampling time `s`, form
+
+\[
+\widehat C_F^{(s)}=
+ \frac{2a-\widehat u_+(s)+\widehat u_-(s)}{as^2},\qquad
+\widehat C_P^{(s)}=\frac{2(a-\widehat v(s))}{as^2},\qquad
+\widehat Q=\frac{\widehat C_F^{(s)}}{\widehat C_P^{(s)}}.
+\]
+
+Each column is normalized by its declared amplitude in its own model
+coordinate. These are three positive-time preparations and three readings;
+no derivative or zero-time response is measured. The phase denominator
+must be certified positive before taking the ratio.
+
+#### The exact finite phase coefficient and its remainder
+
+The phase experiment has zero initial form, so its initial state is fixed
+by form reversal. Reversibility makes `v(tau)` exactly even. Initially
+only the bridge contributes a nonzero net current: the unchanged cycle
+gaps still cancel. In the preceding incidence notation,
+
+\[
+v''(0)=-j_\eta(a)\,b^{\mathsf T}KLKb
+ =-\frac89j_\eta(a).
+\]
+
+Thus its finite-amplitude curvature center is
+
+\[
+P_\eta(a)=\frac89\frac{j_\eta(a)}a,
+\qquad F_\eta=\frac23+\frac\eta2
+\]
+
+for the phase and form channels respectively. The finite `sin(a)/a`
+factor remains in `P_eta`; replacing it by one would introduce an
+unaccounted amplitude approximation.
+
+Let `h=ks`, `h_lo=k_lo*s`, `h_hi=k_hi*s`, and choose an outward
+`G>=exp(2h_hi)`. Set `R=aG/2`. Differentiating the full phase row gives
+
+\[
+\theta^{(4)}=A\left(D^2g[\theta',\theta']+Dg\theta''\right),
+\qquad |v^{(4)}|\le M_P:=64J_2R^2+32R.
+\]
+
+The form-channel bound remains
+`M_F=128J_3R^3+192J_2R^2+32R`. Both use the complete twenty-four-state
+field throughout the common window, not a closed two-channel approximation.
+
+For each channel, normalized by the actual structural `h^2`, the error is
+bounded by
+
+\[
+E_c(h)=\frac{M_c}{12a}h^2+
+ \frac{4\rho G+2\sigma_c}{ah^2},\qquad c\in\{F,P\}.
+\]
+
+Here `sigma_F` bounds each of the two bridge-form readings and `sigma_P`
+the bridge-phase reading. The latter receives a factor two in the
+statistic; independent full-coordinate preparation errors give the stated
+`4rho G` bound in both channels. The actual preparations need not preserve
+the nominal reversal symmetries.
+
+Importantly, the same `h` appears in both error terms. As a function of
+`z=h^2`, `Az+B/z` is convex on the positive axis. A uniform bound is
+therefore
+
+\[
+\boxed{E_c^*=\max\{E_c(h_{\rm lo}),E_c(h_{\rm hi})\}.}
+\]
+
+Separately maximizing the time term at `h_hi` and the uncertainty term
+at `h_lo` is valid but unnecessarily loses their shared-time constraint.
+
+Algebraically, `C_c^(s)=k^2 C_c^(h)` for each finite observed statistic,
+so their common normalization factor cancels in the ratio. This does
+**not** make the finite response independent of the clock: the response
+and its remainders still depend on `h`, bounded above by the admitted
+interval. If `P_eta^-<=P_eta<=P_eta^+`, and both
+`F_eta-E_F^*>0` and `P_eta^--E_P^*>0`, interval division gives
+
+\[
+\boxed{\widehat Q\in
+ \left[\frac{F_\eta-E_F^*}{P_\eta^++E_P^*},
+       \frac{F_\eta+E_F^*}{P_\eta^--E_P^*}\right].}
+\]
+
+This admits the actual noisy denominator. Nonpositive or unadmitted
+denominators provide no law-discrimination verdict.
+
+#### The same finite budget tolerates ten-percent clock uncertainty
+
+Keep the preceding amplitude, sample duration and error sizes,
+
+\[
+a=\frac1{10},\quad s=\frac1{50},\quad
+\rho=10^{-10},\quad\sigma_F=\sigma_P=10^{-8},\quad
+k\in\left[\frac9{10},\frac{11}{10}\right].
+\]
+
+The new premise is the independently supplied clock interval. No reserved
+response is evaluated to select it or to change the earlier amplitude or
+precision budget. Now `h_lo=9/500`, `h_hi=11/500`. One may take the
+elementary rational bounds
+
+\[
+G=\frac{250}{239},\quad R=\frac{25}{478},\quad
+M_F\le\frac{30502250}{13651919},\quad
+M_P\le\frac{105900}{57121}.
+\]
+
+The full perturbed phase-edge displacement is at most
+`2(R+rho G)<=500000001/4780000000<pi/12`, preserving the common signed
+phase chart throughout all three experiments. The two complete endpoint
+error maxima are bounded by
+
+\[
+E_F^*\le\frac{2622585209}{1982258638800},\qquad
+E_P^*\le\frac{8084073}{6911641000}.
+\]
+
+Using only
+`a-a^3/6<=sin(a)<=a-a^3/6+a^5/120` to enclose the exact phase centers,
+both denominator lower bounds exceed `0.8862`. Conservatively rounded
+ratio predictions are
+
+| Declared law | Finite ratio interval, uniform in the clock factor |
+| --- | --- |
+| `eta=0` | `[0.74877366184, 0.75373642785]` |
+| `eta=1/100` | `[0.75432554878, 0.75930247738]` |
+
+The unrounded exact separation exceeds `1/2000`. A shared change of clock
+within the declared interval cannot make these admitted finite observations
+indistinguishable. This is a three-preparation analytic comparison with
+explicit noise and denominator bounds, not a new trajectory or a fit of
+clock or pressure to data. It still does not select either law as physical,
+cover arbitrary clock uncertainty, identify the complete current function,
+or establish formation from these already patterned preparations.
+
+The detached
+[`assess_bridge_clock_law_discrimination`](../../src/tnfr/physics/relational_bridge_discrimination.py)
+returns `BridgeClockLawDiscrimination`. It reuses the same full-support
+and symbolic-target admission, retains all three preparations and the
+signed target bridge turn, and evaluates separate endpoint error budgets
+before admitting the ratio. It does not estimate the clock from the
+response, reconstruct pressure, or execute a new trajectory.
+
+<a id="sine-bridge-causal-memory"></a>
+
+### Exact bridge memory and the boundary of local loss
+
+Return to the normalized-sine member `epsilon=0`, with the same two-C6
+winding-one target, aligned bridge, unit capacities, `e=0,beta=w=1` and
+`tau=t/pi`. This section concerns that member's exact linear tangent.
+Reflection of each cycle and interchange of the two cycles
+preserve both tangent Laplacians. No corresponding finite-amplitude nonlinear
+reduction is asserted.
+
+#### An eight-coordinate nodal reduction
+
+For either form or lifted phase perturbations, let `d_k` be the right-cycle
+mean minus the left-cycle mean over vertices at cycle distance `k=0,1,2,3`
+from the bridge endpoint. The shell sizes on each cycle are `1,2,2,1`.
+Define `r=(d_0,d_1-d_0,d_2-d_1,d_3-d_2)` for form and `s` by the same map
+for phase. Then the full nodal tangent induces exactly
+
+\[
+\binom{r'}{s'}=J_8\binom r s,\qquad
+J_8=\begin{pmatrix}0&-A_4Q_4\\A_4&0\end{pmatrix},\quad
+Q_4=\operatorname{diag}(1,1/2,1/2,1/2),
+\]
+
+\[
+A_4=\begin{pmatrix}
+2/3&-2/3&0&0\\
+-2/3&7/6&-1/2&0\\
+0&-1/2&1&-1/2\\
+0&0&-1/2&3/2
+\end{pmatrix}.
+\]
+
+This is an exact intertwining, not independent admission of arbitrary edge
+coordinates. A nodal section is obtained by cumulatively reconstructing
+`d_k` and setting the left and right shell values to `-d_k/2` and `d_k/2`.
+The represented sector is odd under cycle interchange and even under cycle
+reflection. Its edge-energy coordinates are the bridge vector and three
+orthonormal cut vectors, each with coefficients of magnitude `1/2` on the
+four edges of one shell. The other symmetry sectors have identically zero
+bridge observation and remain invariant under the tangent. Thus arbitrary
+fine initial perturbations have the same bridge response as their shell
+projection; the section does not reconstruct those discarded states or means.
+
+The represented sector has storage
+`E_8=(r^T r+s^T Q_4 s)/2`, with metric `diag(I_4,Q_4)`, and `E_8'=0`.
+Invisible fine modes can retain additional storage. With
+`v=Q_4^(1/2)s`, the eight-coordinate generator is skew and its bridge pair
+`y=(r_0,s_0)` is an orthonormal energy observation. Setting the other six
+coordinates to zero is precisely the preceding transpose preparation:
+opposite constant offsets on the two cycles. A general hidden preparation
+is retained below instead of silently setting it to zero.
+
+#### Exact kernel and hidden initial-state source
+
+Order the hidden coordinates as `h=(r_1,r_2,r_3,s_1,s_2,s_3)` and put
+
+\[
+F=\begin{pmatrix}7/6&-1/2&0\\-1/2&1&-1/2\\0&-1/2&3/2\end{pmatrix},
+\quad b=\begin{pmatrix}-2/3\\0\\0\end{pmatrix},\quad
+A_0=\tfrac23R_1,\quad R_1=\begin{pmatrix}0&-1\\1&0\end{pmatrix}.
+\]
+
+\[
+y'=A_0y+Bh,\quad h'=Cy+D_hh,\qquad
+B=\begin{pmatrix}0&-b^{\mathsf T}/2\\b^{\mathsf T}&0\end{pmatrix},\quad
+C=\begin{pmatrix}0&-b\\b&0\end{pmatrix},\quad
+D_h=\begin{pmatrix}0&-F/2\\F&0\end{pmatrix}.
+\]
+
+These are rational matrices in a declared nonidentity hidden metric
+`diag(I_3,I_3/2)`. Variation of constants gives the complete causal identity
+
+\[
+\boxed{y'(\tau)=A_0y(\tau)+B e^{D_h\tau}h_0
+       +\int_0^\tau \mathcal K(\tau-\sigma)y(\sigma)\,d\sigma,
+\qquad \mathcal K(\ell)=B e^{D_h\ell}C.}
+\]
+
+Every lag `ell` below uses the normalized clock `tau`. Let
+`C_F(ell)=cos(F*ell/sqrt(2))`, `S_F(ell)=sin(F*ell/sqrt(2))` and
+`c(ell)=e_1^T C_F(ell)e_1`, `s(ell)=e_1^T S_F(ell)e_1`, where
+`e_1=(1,0,0)`. Then
+
+\[
+\boxed{\mathcal K(\ell)=\frac49
+\begin{pmatrix}-c(\ell)/2&s(\ell)/\sqrt2\\-s(\ell)/\sqrt2&-c(\ell)\end{pmatrix}.}
+\]
+
+For independently declared `h_0=(r_h,s_h)`, the retained source is
+
+\[
+B e^{D_h\ell}h_0=
+\binom{-b^{\mathsf T}S_F(\ell)r_h/\sqrt2-b^{\mathsf T}C_F(\ell)s_h/2}
+      {b^{\mathsf T}C_F(\ell)r_h-b^{\mathsf T}S_F(\ell)s_h/\sqrt2}.
+\]
+
+In particular `K(0)=diag(-2/9,-4/9)` and
+`K'(0)=((0,7/27),(-7/27,0))`. The homogeneous response satisfies
+`T'(0)=A_0` and `T''(0)=A_0^2+K(0)`, recovering the bridge jets above.
+The two-channel kernel cannot be replaced by its diagonal at zero lag.
+Its off-diagonal entries and hidden source carry additional information.
+
+These eight coordinates are minimal for the all-state linear bridge response.
+Successive output derivative levels recover the first, second and third
+hidden shell pairs because both neighbor entries of the tridiagonal `F`
+and the bridge coupling are nonzero. The cumulative observation ranks are
+`2,4,6,8`; no other fine symmetry sector enters the bridge output.
+
+#### Actual hidden frequencies and nondecay
+
+The eigenvalues `lambda_j` of `F` are the three simple roots of
+
+\[
+P(\lambda)=12\lambda^3-44\lambda^2+47\lambda-13,
+\]
+
+one each in the rational intervals `(2/5,1/2)`, `(6/5,4/3)` and `(7/4,2)`.
+Sign changes prove existence in these disjoint intervals and the cubic degree
+exhausts the roots. The exact spectral weights are
+
+\[
+\mu_j=\frac{3(4\lambda_j^2-10\lambda_j+5)}{P'(\lambda_j)},\quad
+\mu_j>0,\quad \sum_j\mu_j=1,\qquad \omega_j=\lambda_j/\sqrt2,
+\]
+
+\[
+c(\ell)=\sum_j\mu_j\cos(\omega_j\ell),\qquad
+s(\ell)=\sum_j\mu_j\sin(\omega_j\ell).
+\]
+
+The weights follow by residues of
+`e_1^T(zI-F)^(-1)e_1=3(4z^2-10z+5)/P(z)`. Positivity follows independently
+from the symmetric spectral theorem: the nonzero off-diagonal entries of
+`F` prevent an eigenvector from vanishing at its first coordinate.
+The slowest hidden frequency satisfies `omega_1<1/(2*sqrt(2))<2/3`, and
+its weight exceeds `75/439>1/6`, by bounding the displayed residue on
+`(2/5,1/2)`. An appreciably weighted hidden mode is therefore slower than
+the visible instantaneous exchange; this is not an admitted fast reservoir.
+
+Distinct positive frequencies also give
+
+\[
+\lim_{T\to\infty}\frac1T\int_0^T c(\ell)^2\,d\ell
+=\lim_{T\to\infty}\frac1T\int_0^T s(\ell)^2\,d\ell
+=\tfrac12\sum_j\mu_j^2\geq\tfrac16.
+\]
+
+Consequently the kernel does not decay. Its ordinary integral over the
+positive half-line does not converge. The fixed geometry supplies no limit
+parameter making the hidden memory short; rescaling a common clock changes
+all frequencies together. These statements do not exclude an explicitly
+bounded loose approximation on a separately admitted finite window.
+
+#### Static response and the first frequency correction are conservative
+
+For `Re(z)>0`, let `Khat(z)=B(zI-D_h)^(-1)C`. Direct inversion gives
+
+\[
+F^{-1}=\frac1{13}
+\begin{pmatrix}15&9&3\\9&21&7\\3&7&11\end{pmatrix},\qquad
+\widehat{\mathcal K}(0)=-\frac{20}{39}R_1,\qquad
+A_0+\widehat{\mathcal K}(0)=\frac2{13}R_1.
+\]
+
+Here `Khat(0)` denotes the analytic zero-frequency continuation, equivalently
+the Abel limit with `exp(-epsilon*ell)` as `epsilon` tends to zero from above.
+It is not a convergent memory integral. This static Schur complement changes
+the reactive exchange and contributes no damping.
+
+The next frequency coefficient retains a positive rate matrix:
+
+\[
+zI-A_0-\widehat{\mathcal K}(z)
+=zM_{\rm eff}-\frac2{13}R_1+O(z^2),\qquad
+\boxed{M_{\rm eff}=\operatorname{diag}(309/169,449/169).}
+\]
+
+Indeed `M_eff=I+B D_h^(-2)C` and `e_1^T F^(-2)e_1=315/169`.
+The same matrix is the storage metric of the stationary hidden section
+`r_h=-F^(-1)b*r_0`, `s_h=-2F^(-1)b*s_0`. That section need not be dynamically
+invariant. The formal local equation `M_eff*y'=(2/13)R_1*y` preserves
+`y^T M_eff y/2`; the expansion therefore supplies a reactive frequency
+correction, not a time-domain approximation theorem or a selected loss law.
+
+The coefficient expansion has a quantitative bound on the **real Laplace
+axis**. Put `S=F/sqrt(2)`. The leading principal minors of `S^2-I/16` are
+`107/144,167/768,1543/36864`, so its smallest frequency exceeds `1/4`.
+In hidden energy coordinates `D_h` is skew and
+`||(zI-D_h)^(-1)||_2<=1/sqrt(z^2+omega_min^2)` for real `z>=0`.
+The resolvent identity
+`(zI-D_h)^(-1)=-D_h^(-1)-z*D_h^(-2)+z^2*D_h^(-2)*(zI-D_h)^(-1)`
+and energy coupling norm squared `4/9` therefore give
+
+\[
+\left\|zI-A_0-\widehat{\mathcal K}(z)
+       -\left(zM_{\rm eff}-\tfrac2{13}R_1\right)\right\|_2
+\leq \frac{256}{9}z^2\qquad(z\geq0).
+\]
+
+This bounds the coefficient pencil, not its inverse transfer, imaginary-axis
+response or a time-domain error. The formal collective frequency
+`26/sqrt(309*449)` is below the hidden frequencies; comparing them only with
+the direct rate `2/3` does not exclude a separately prepared slow sector.
+Its admissible preparation and approximation error remain separate questions.
+
+The [shared bridge-memory reader](../../src/tnfr/physics/relational_sine_bridge_memory.py)
+admits the source support, capacities, law and declared critical target,
+checks the nodal intertwining, and reuses the shared exact observation and
+coordinate-memory owners. It supplies matrices, not a trajectory, fitted
+coefficient or observed initial perturbation. The comparison's captured
+state is neither automatically the target nor the independent tangent
+initial state. [Nodal admission controls](../../tests/physics/test_sine_bridge_memory.py)
+and [kernel controls](../../tests/physics/test_sine_bridge_memory_kernel.py)
+check those distinct contracts.
+
+The bounded question closes with an exact memory and its preparation source.
+No fast/decaying-memory premise or controlled discarded initial layer has
+been supplied for positive local loss. The earlier initial-response error
+floor remains applicable, while arbitrary finite-window tolerances are not
+declared impossible. Memory can remain part of a collective model; deriving
+damping is one scoped route, not a prerequisite for every persistent pattern.
+
 ### Periodic, constant-frequency and universal are different requirements
 
 The P3 tangent's common period is a property of its two commensurate
@@ -1416,7 +2781,7 @@ coupled form/phase dynamics. Those are the appropriate obligations
 for a later scale question, not consequences silently added to the
 present conservative-memory result.
 
-The [conservative-path contract](../../docs/contracts/RELATIONAL_DYNAMICS.md#sine-conservative-path-memory)
+The [conservative-path contract](../../docs/contracts/relational/SINE_RESPONSE_AND_MEMORY.md#sine-conservative-path-memory)
 owns `assess_sine_path_memory` and its shared exact-matrix integration.
 That reader requires the common-positive-capacity P3 preparation for
 its combined report. The wider nonlinear edge-flux identity above
@@ -1455,7 +2820,7 @@ null sets.
 This theorem uses the displayed constant degree/capacity mobility in both
 rows. Conservation of the same storage under another reciprocal mobility
 does not establish conservation of this measure or the bounded mean slab.
-The [alternative-mobility audit](../TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-mobility-relative-geometry)
+The [alternative-mobility audit](SINE_PAIR_MOBILITY.md#sine-mobility-relative-geometry)
 owns those separate obligations.
 
 The two conserved quantities needed here are
@@ -1662,14 +3027,14 @@ separatrix remains a valid counterexample. The theorem neither
 creates initial activity nor selects microscopic `e=0`. It
 also supplies no attracting limit cycle: volume and storage remain
 conserved. The separate
-[acute identity barrier](RELATIONAL_PATTERN_MEMORY.md#sine-conservative-identity)
+[acute identity barrier](SINE_PATTERN_RECOVERY.md#sine-conservative-identity)
 provides invariant phase-identity neighborhoods that support this
 recurrence. It does not assign an exact periodic waveform to their
 members. Recurrence, geometric trapping and periodic-orbit stability
 retain distinct hypotheses.
 
 With a separate open acquisition mechanism, the same theorem also implies
-[repeated finite joint-matching episodes](../TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-joint-recurrent-episodes)
+[repeated finite joint-matching episodes](SINE_PAIR_GROUPING.md#sine-joint-recurrent-episodes)
 on the fixed doubled-C5 law. Strict nonmutual returns separate those episodes;
 the almost-everywhere conclusion concerns its full-dimensional preparation
 neighborhood, not a recurrence verdict for the exact crossing source.
@@ -1711,7 +3076,7 @@ eliminating constituents does not turn conservative exchange into exact
 irreversible loss.
 
 These conservative obstructions do not invalidate the separate
-[validated native-law transit](RELATIONAL_EXCHANGE_ADMISSION.md#relational-validated-transit)
+[validated native-law transit](RELATIONAL_FORMATION_CONTROLS.md#relational-validated-transit)
 from a winding-zero preparation into a maintained winding-one pattern.
 That result uses a different complete dissipative law and a forward capture
 region. Its retained continuous proof, frozen finite-executor verdict and
@@ -1781,8 +3146,8 @@ already owns the consumed sine rates and storage work. The
 and its [independent controls](../../tests/physics/test_relational_sine_resonance.py)
 connect the admitted mathematical results to detached reports.
 Their execution and numerical boundaries belong to the
-[resonance contract](../../docs/contracts/RELATIONAL_DYNAMICS.md#sine-resonance);
-the [regional guide](../../docs/guides/REGIONAL_AND_RELATIONAL.md#assess-sine-resonance)
+[resonance contract](../../docs/contracts/relational/SINE_RESPONSE_AND_MEMORY.md#sine-resonance);
+the [regional guide](../../docs/guides/relational/SINE_RESPONSE_AND_MEMORY.md#assess-sine-resonance)
 owns public usage.
 The [scale owner](../../src/tnfr/physics/relational_sine_scale.py)
 and its [independent fine-state controls](../../tests/physics/test_relational_sine_replica.py)

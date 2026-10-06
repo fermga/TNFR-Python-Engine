@@ -256,9 +256,12 @@ $$
 
 The input graph is not evolved. The returned `synthetic_probe_word` and
 `synthetic_step_applied` fields identify the intervention. If the probe is
-disabled, its zero drift is a sentinel for “not measured,” not evidence of
-stability. A resulting `signature_class="stable"` then reflects only the phase
-gates because the implementation treats the absent drift check as satisfied.
+disabled, its zero drift is a compatibility sentinel for “not measured,” not
+evidence of stability: `potential_drift_assessed=False` and
+`potential_drift_ok=None` preserve that unavailability. A resulting
+`signature_class="stable"` then reflects only the phase gates; it does not
+report a passed pressure-drift check. If a performed probe fails that check,
+the classifier returns `"unstable"` regardless of the other gates.
 
 | Diagnostic policy | Value | Status |
 |-------------------|-------|--------|
@@ -331,7 +334,7 @@ does not create an independent state coordinate or an evolution law.
 | Wave spectrum and nodal pulse | Auxiliary modal frequencies versus stored capacity/phase summaries | Measured oscillations, mode excitation or equality of those two clocks |
 
 The positive margin derivation is centralized in
-[the acute-cycle theorem](FORCED_SUPPORT_BALANCE.md#one-existing-margin-controls-availability-and-conditional-stiffness).
+[the acute-cycle theorem](nodal/FORCED_WINDING_AND_WRITERS.md#one-existing-margin-controls-availability-and-conditional-stiffness).
 It reuses `phase_radius_upper`, `cosine_lower_bound` and the existing spectral
 rate bounds; no new adjustable coefficient is introduced. The full configured
 pressure mixture is admissible there because its capacity/topology gradients

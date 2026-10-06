@@ -38,7 +38,6 @@ __all__ = [
     "_si",
     "_check_oz_to_zhir",
     "_check_thol_closure",
-    "_check_compatibility",
 ]
 
 
@@ -59,11 +58,10 @@ def coerce_glyph(val: Any) -> Glyph | Any:
 
 
 def glyph_fallback(cand_key: str, fallbacks: Mapping[str, Any]) -> Glyph | str:
-    """Determine fallback glyph for ``cand_key``.
+    """Apply an explicit fallback override, or retain the candidate.
 
-    Note: Compatibility table fallbacks have been deprecated.
-    Only explicit fallback overrides are now supported.
-    Grammar rules emerge naturally from TNFR structural dynamics.
+    This configured substitution does not establish word admission or satisfy
+    an operator's live preconditions.
     """
 
     coerce_glyph(cand_key)
@@ -71,7 +69,7 @@ def glyph_fallback(cand_key: str, fallbacks: Mapping[str, Any]) -> Glyph | str:
     if fb_override is not None:
         return coerce_glyph(fb_override)
 
-    # No automatic fallback - let frequency validation handle compatibility
+    # No configured substitution; admission remains a separate check.
     return coerce_glyph(cand_key)
 
 
@@ -226,31 +224,8 @@ def _check_thol_closure(
     return cand
 
 
-def _check_compatibility(ctx: "GrammarContext", n, cand: Glyph | str) -> Glyph | str:
-    """Verify canonical transition compatibility based on TNFR structural dynamics.
-
-    Note: Frequency-based validation (R5) has been removed as it was not a
-    fundamental physical constraint. Unified constraints now include U1-U5:
-    - U1: STRUCTURAL INITIATION & CLOSURE (valid start/end)
-    - U2: CONVERGENCE & BOUNDEDNESS (stabilizers required)
-    - U3: RESONANT COUPLING (phase compatibility)
-    - U4: BIFURCATION DYNAMICS (bifurcations need context)
-
-    [Legacy note: Previously referenced C1-C3. See docs/grammar/DEPRECATION-INDEX.md]
-
-    These are validated in grammar.py, not here. This function now simply
-    allows all transitions - validation happens at sequence level.
-    """
-    # All transitions allowed - validation at sequence level via U1-U5
-    return cand
-
-
 @lru_cache(maxsize=1)
 def _functional_translators():
     from ..operators import grammar as _grammar
 
     return _grammar.glyph_function_name, _grammar.function_name_to_glyph
-
-
-# NOTE: Compatibility tables deprecated - grammar rules now emerge naturally
-# from TNFR structural dynamics (frequency transitions only)

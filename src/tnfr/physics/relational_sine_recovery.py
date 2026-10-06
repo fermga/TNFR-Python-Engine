@@ -12,11 +12,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from fractions import Fraction as Q
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from .._exact_time import exact_or_represented_real
 from ..dynamics.relational import RelationalExchangeModel
 from ..mathematics._rational_interval import INTERVAL_METHOD, I, cos, pi_interval, sqrt
+from ._sine_admission import _admit_sine_source as _admit_sine_source
+from ._sine_admission import _sector_source_admission as _sector_source_admission
 from .phase_cycle_geometry import PhaseCycleGeometry, PhaseCycleState
 from .phase_cycle_geometry import _derive as _derive_phase_geometry
 from .phase_cycle_geometry import reconstruct_phase_cycle_state
@@ -27,6 +29,9 @@ from .relational_sine_comparison import (
 )
 from .relational_sine_pattern import SineRelativeForecast, SineRelativePattern
 from .structural_diffusion import _exact_real_laplacian_gap_lower_bound
+
+if TYPE_CHECKING:
+    from .relational_sine_composition import SinePreparedCompositionSource
 
 __all__ = (
     "SineCycleRecovery",
@@ -107,9 +112,11 @@ class SineCycleRecovery:
 
     @property
     def admitted(self):
+        """Return whether the reported cycle recovery conditions passed."""
         return self.status == "admitted"
 
     def to_dict(self):
+        """Project cycle recovery evidence without authenticating its source."""
         from ..sdk.relational_reports import _project
 
         pattern = (
@@ -191,9 +198,11 @@ class SinePatternRecovery:
 
     @property
     def admitted(self):
+        """Return whether the reported full-pattern recovery conditions passed."""
         return self.status == "admitted"
 
     def to_dict(self):
+        """Project pattern recovery evidence with exact rational values."""
         from ..sdk.relational_reports import _project
 
         pattern = (
@@ -218,7 +227,12 @@ class SineSectorCapture:
     Unavailability is not a proof of instability or absence of equilibrium.
     """
 
-    source: SineExchangeComparison | SineRelativePattern | SineRelativeForecast
+    source: (
+        SineExchangeComparison
+        | SineRelativePattern
+        | SineRelativeForecast
+        | SinePreparedCompositionSource
+    )
     reference_model: RelationalExchangeModel
     nodes: tuple[Any, ...]
     edges: tuple[tuple[Any, Any], ...]
@@ -268,21 +282,42 @@ class SineSectorCapture:
 
     @property
     def admitted(self):
+        """Return whether the reported sufficient sector capture conditions passed."""
         return self.status == "admitted"
 
     def to_dict(self):
+        """Validate export labels and project the retained capture evidence."""
         from ..sdk.relational_reports import _project
 
-        pattern = (
-            self.source.pattern
-            if isinstance(self.source, SineRelativeForecast)
-            else self.source
-        )
-        _validate_comparison_labels(pattern)
+        _validate_sine_sector_capture_labels(self)
         return {
             "schema": "tnfr.relational-sine-sector-capture.v1",
             "report": _project(self),
         }
+
+
+def _validate_sine_sector_capture_labels(report):
+    """Check exported node labels without re-admitting certificate evidence."""
+    from ..sdk.relational_reports import _validate_label, _validate_label_groups
+    from .relational_sine_composition import (
+        SinePreparedCompositionSource,
+        _validate_sine_prepared_composition_source_labels,
+    )
+
+    _validate_comparison_labels(report)
+    # Geometry edges and cycles contain integer indices, not node labels.
+    _validate_label_groups(report.geometry.nodes)
+    if isinstance(report.source, SinePreparedCompositionSource):
+        _validate_sine_prepared_composition_source_labels(report.source)
+        return
+    pattern = (
+        report.source.pattern
+        if isinstance(report.source, SineRelativeForecast)
+        else report.source
+    )
+    _validate_comparison_labels(pattern)
+    if isinstance(pattern, SineRelativePattern):
+        _validate_label(pattern.reference_node)
 
 
 def _full_cycle(pattern, cycle):
@@ -710,20 +745,6 @@ def certify_sine_pattern_recovery(
     )
 
 
-def _admit_sine_source(source):
-    """Compatibility adapter for the shared budget-neutral source owner."""
-    from ._sine_admission import _admit_sine_source as admit
-
-    return admit(source)
-
-
-def _sector_source_admission(source):
-    """Compatibility adapter retaining the sector geometry's work budget."""
-    from ._sine_admission import _sector_source_admission as admit
-
-    return admit(source)
-
-
 def certify_sine_sector_capture(source, *, edge_turn_offsets) -> SineSectorCapture:
     """Certify full acute-sector capture without an equilibrium target.
 
@@ -1043,6 +1064,7 @@ class SineCycleIdentityAssessment:
     )
 
     def to_dict(self):
+        """Project identity and family assessments without changing their scope."""
         from ..sdk.relational_reports import _project
 
         pattern = (

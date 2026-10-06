@@ -1,65 +1,20 @@
-"""
-benchmarks/operational_irreducibility.py
+"""Finite representation-irreducibility and arithmetic-primality controls.
 
-Camino 2 — operational irreducibility: when does a degeneracy FACTORISE?
+The supplied octahedral family M(t)=A_octa+t*A_match has a fivefold eigenspace
+at t=1 that splits into dimensions three and two under the declared S4 action.
+The standard five-dimensional S6 representation on K6 is irreducible. A
+four-dimensional irreducible S5 representation on K5 and a five-component
+prime-ladder permutation representation provide complementary controls.
+Thus arithmetic primality and irreducibility under a specified group action
+are different properties. No physical indivisibility interpretation is needed.
 
-This is the mirror image of composition_arithmetic.py (Camino 1). There we found a
-COMPOSITE integer (4 = 2x2) realised as the dimension of an IRREDUCIBLE coherent
-mode (the standard rep of S5 on K5): "arithmetically composite" did NOT imply
-"operationally divisible". Here we close the logical square from the other side:
-a PRIME integer (5) realised as an OPERATIONALLY COMPOSITE degeneracy that splits
-3 + 2 under a symmetry-preserving perturbation.
-
-OPERATIONAL IRREDUCIBILITY (the definition):
-  Fix a coherent system with symmetry group G (its operator commutes with rep(G)).
-  A degenerate level is OPERATIONALLY IRREDUCIBLE iff its eigenspace carries a
-  single irreducible representation of G. Equivalently (Schur's lemma): NO
-  G-equivariant perturbation can lift the degeneracy -- the level is rigid.
-  A level is OPERATIONALLY COMPOSITE iff its eigenspace is reducible: it then
-  splits into smaller irreducible blocks under a generic symmetry-preserving
-  perturbation. The measurement is exactly Camino 1's <chi,chi>:
-      <chi,chi> = 1  -> irreducible  (operationally prime, rigid)
-      <chi,chi> = k  -> reducible    (operationally composite, splittable)
-
-ENGINE (known theorems — the independent ground truth):
-  - L = D - A commutes with every automorphism; eigenspaces carry reps of Aut(G).
-  - Schur's lemma: a G-equivariant operator acts as a scalar on each irrep, so it
-    cannot split an irreducible eigenspace; it can only SHIFT it.
-  - Wigner-von Neumann non-crossing rule: two levels of the SAME irrep repel
-    (avoided crossing); two levels of DIFFERENT irreps may CROSS along a
-    symmetry-preserving 1-parameter family -> an accidental, reducible degeneracy
-    that splits immediately off the crossing point.
-
-CONSTRUCTION:
-  * Operationally COMPOSITE 5: the octahedron = Johnson graph J(4,2) on the 6
-    two-subsets of {0,1,2,3}. Under S4 the 6-space decomposes 1 (+) 2 (+) 3.
-    The S4-invariant family M(t) = A_octa + t*A_match sends the 3-dim (standard)
-    level to -t and the 2-dim (E) level to t-2; they CROSS at t=1, giving a
-    5-fold degeneracy that is reducible (<chi,chi>=2) and splits back into an
-    irreducible 3 and an irreducible 2 for t != 1.
-  * Operationally PRIME 5: K6 with Aut = S6. The Laplacian level lambda=6 has
-    multiplicity 5 = the standard irrep of S6 (irreducible, <chi,chi>=1). The full
-    S6-commutant is <I, J>, which acts as a scalar on the 5-space: NO
-    symmetry-preserving perturbation can split it.
-
-TNFR reading: the canonical discrete ΔNFR / phase-curvature operator is the
-emergent L_rw = I - D^-1 W (D - A shares its eigenspaces on the vertex-transitive
-graphs here, so the degeneracy structure is operator-invariant). "Factorising a
-degeneracy" is a structural act of the coupled system,
-and whether the cardinal 5 factors is decided by the system's symmetry, not by the
-integer. This is the same S_n machinery as bridge_primes_riemann.py: test (4)
-shows the n=5 prime ladder makes 5 operationally composite (1 + 4) under prime
-relabelling S5, with the prime content k*log p staying diagonal input.
-
-HONEST SCOPE:
-  This exhibits operational (representation-theoretic) irreducibility and shows it
-  is LOGICALLY INDEPENDENT of arithmetic primality (both directions falsified). It
-  does NOT redefine arithmetic primality, and it does NOT touch G4 = RH.
-
-Run:
-    python benchmarks/operational_irreducibility.py
-
-Status: RESEARCH (operational-irreducibility falsifier, Camino 2).
+The computations use combinatorial graph matrices, chosen perturbations and
+complete small permutation groups. On these regular controls D-A and L_rw
+share eigenspaces; arbitrary equivariant operators need not. As in
+bridge_primes_riemann.py, the prime-ladder comparison concerns a supplied bare
+graph action and separately supplied k*log(p) data. It does not place analytic
+zeta in a finite symmetry complement or constrain every TNFR state/selector.
+See theory/TNFR_STRUCTURAL_OBSERVABILITY.md#6-limits-beyond-linear-symmetry.
 """
 
 from __future__ import annotations
@@ -344,8 +299,8 @@ def test_prime_ladder_5_is_composite():
         "  <chi,chi> = 2 = trivial(1) + standard(4)  ->  5 = 1 + 4 "
         "(operationally composite)"
     )
-    print("  same S_n machinery as bridge_primes_riemann.py: the graph never")
-    print("  individuates the primes; the content k*log p stays diagonal input.")
+    print("  finite permutation control shared with bridge_primes_riemann.py:")
+    print("  the bare graph admits label permutations; k*log(p) is supplied data.")
     ok = all_reducible
     print(
         f"  VERDICT: {'PASS' if ok else 'FAIL'} -- the prime ladder factors "

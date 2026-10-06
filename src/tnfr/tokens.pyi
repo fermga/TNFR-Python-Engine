@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Iterable, Optional, Sequence, Union
+from typing import Iterable, Optional, Sequence, TypeAlias, Union
 
-from ._compat import TypeAlias
 from .types import Glyph, NodeId
 
 __all__: tuple[str, ...]

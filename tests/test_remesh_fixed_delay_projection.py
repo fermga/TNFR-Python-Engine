@@ -5,9 +5,6 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from tnfr.riemann.operator_catalog_discipline_signature import (
-    compute_operator_catalog_discipline_signature,
-)
 from tnfr.riemann.remesh_infinity_residue_split import (
     build_resonant_bin_mask,
     compute_residue_split_certificate,
@@ -72,10 +69,3 @@ def test_certificate_reports_gcd_period_and_exact_controls() -> None:
     assert certificate.ratio_in_range + certificate.ratio_in_kernel == pytest.approx(
         1.0
     )
-
-
-def test_registry_signature_states_its_completeness_boundary() -> None:
-    certificate = compute_operator_catalog_discipline_signature()
-
-    assert certificate.S_OC == 0.0
-    assert any("not completeness" in note for note in certificate.notes)

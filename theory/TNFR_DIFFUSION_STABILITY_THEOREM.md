@@ -1,39 +1,24 @@
 # Heterogeneous EPI diffusion stability theorem
 
-**Status**: Derived for fixed, connected, symmetric conductance with positive
-fixed structural frequencies or time-varying frequencies bounded above and
-away from zero, and for
-fixed-node-set symmetric switching families with a common metric. A directed
-fixed-capacity pressure-transient criterion is also exact. Affine EPI resets
-now have an exact finite-gain criterion in the same common metric and a
-conservative hybrid-word bound. Reception and Resonance are the first two
-catalog realizations connected to that theorem at local and all-target stage
-boundaries, with fixed-map repetition under explicit domains. Emission, Silence,
-Expansion, Contraction, Mutation and Transition additionally have a conditional
-internal frozen-proposal realization/gain certificate; Coherence has an
-immutable execution contract without such a gain. Coupling has an explicit
-simultaneous circular/topological merge, Dissonance has a snapshot-bound
-local/propagated pressure reduction, and Self-organization has a collision-safe
-snapshot-bound child-support and hierarchy merge. Recursivity has an immutable
-advisory-only glyph stage. The separate delayed REMESH operation now has an
-exact three-input recurrence, graph-state atomic execution and scoped one-step
-convex and fixed-history gain evidence. A distinct exact, uniform, unclipped
-fixed-delay companion recurrence has a stationary-history Lyapunov theorem;
-see
-[`REMESH_INFINITY_DERIVATION.md` section 2.4](REMESH_INFINITY_DERIVATION.md#24-exact-finite-companion-history-stability).
-For any fixed connected symmetric rational conductance and positive rational
-capacity, a separate sealed reference theorem now gives the exact exponential
-solution, pressure-refreshed Euler product and finite error bounds for one
-exact nonuniform eigenmode. It also proves conditional exact-real convergence
-under admissible partitions whose maximum step tends to zero. This pure theorem
-has no runtime provenance; the effective-P2 event/REMESH family remains its
-first executor-linked specialization.
-Event execution can bind supported flow
-and glyph certificates into an exact represented-map gain product for one fully
-eligible observed finite trace in one common metric; it does not identify a
-global executable binary64 map. Stability of clipped binary64 runtime
-history-updated repetition, unrestricted mixed words, nonlinear regimes and
-the full catalog remains open.
+**Scope**: Pure-EPI diffusion on fixed connected symmetric nonnegative
+conductance with positive capacity. The sections below distinguish fixed
+capacity, bounded time-varying capacity, finite switching families with a
+common metric, directed pressure-transient criteria and exact single-mode
+Euler references. Their hypotheses are separate; none describes an arbitrary
+full-pressure or operator trajectory.
+
+Ideal-real identities, certificates for exactly interpreted materialized
+coefficients, binary64 diagnostics and observed executor traces retain their
+own evidence boundaries. In particular, a common-metric decay bound does not
+certify unrestricted mixed words or clipped runtime repetition.
+
+Affine event gains and their catalog realizations belong to
+[the restricted gain and event theorems](STRUCTURAL_STABILITY_AND_DYNAMICS.md#14-restricted-affine-epi-gain-theorem)
+and [event execution contracts](../docs/contracts/OPERATOR_EVENTS.md).
+Delayed REMESH uses its separate
+[history recurrence theorem](REMESH_INFINITY_DERIVATION.md#24-exact-finite-companion-history-stability).
+Those results compose with diffusion only under their stated common-metric,
+state, time and provenance premises.
 
 ## Question and hypotheses
 

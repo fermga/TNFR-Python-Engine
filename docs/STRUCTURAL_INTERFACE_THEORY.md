@@ -411,7 +411,7 @@ the Euler increment coefficient. Interval overlap is not proof of one joint
 latent fit or physical validation. Example 159 demonstrates its software
 fixture separately from Euler.
 
-The [Volts model boundary](../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md#volts-model-boundary)
+The [Volts model boundary](../theory/research/archive/measurement/TRANSPORT_SOURCE_REVIEWS.md#volts-model-boundary)
 owns the earlier fixed-reference comparison and its limits. The separately
 declared driven [TCLab protocol](../theory/research/TCLAB_EXPLORATORY_PROTOCOL.md)
 owns its calibration/reserved comparisons and source evidence. Neither result

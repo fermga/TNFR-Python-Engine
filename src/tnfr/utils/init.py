@@ -14,7 +14,7 @@ import threading
 import warnings
 import weakref
 from collections import OrderedDict
-from dataclasses import field
+from dataclasses import dataclass, field
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -26,7 +26,6 @@ from typing import (
     Mapping,
 )
 
-from ..compat.dataclass import dataclass
 from ..errors import TNFRValueError
 
 if TYPE_CHECKING:

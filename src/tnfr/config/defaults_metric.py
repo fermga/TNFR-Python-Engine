@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict, field
+from dataclasses import asdict, dataclass, field
 from types import MappingProxyType
 from typing import Any
-
-from ..compat.dataclass import dataclass
 
 
 @dataclass(frozen=True, slots=True)

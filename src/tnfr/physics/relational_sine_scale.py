@@ -15,6 +15,9 @@ from typing import Any
 
 from .._exact_time import exact_or_represented_real
 from ..dynamics.relational import RelationalExchangeModel
+from ..mathematics._interval_taylor import MAX_ORDER, Jet
+from ..mathematics._interval_taylor import cos as jet_cos
+from ..mathematics._interval_taylor import sin as jet_sin
 from ..mathematics._phase_resultant_chamber import (
     certified_cosine_bounds,
     certified_sine_bounds,
@@ -28,6 +31,7 @@ from ..mathematics._rational_interval import (
     sin,
     sqrt,
 )
+from ..mathematics._validated_taylor import ValidatedTaylorStep, validated_taylor_step
 from ._sine_admission import _sine_model_coefficients
 from .phase_cycle_geometry import PhaseCycleState
 from .relational_observations import _ordered
@@ -36,6 +40,7 @@ from .relational_sine_comparison import (
     SineMobilityComparison,
     SineMobilityRelativeBalance,
     _comparison_neighbors,
+    _rebuild_sine_comparison,
     _sine_phase_rate_numerators,
     _sine_rates,
     _validate_comparison_labels,
@@ -62,7 +67,12 @@ __all__ = (
     "SinePairEmissionOutcome",
     "SineReplicaPulseAssessment",
     "SineReplicaPulseVariation",
+    "SineReplicaPulseWorkResponse",
+    "SineReplicaPulseFiniteWorkResponse",
+    "SineReplicaStiffnessTraceCurve",
     "SineReplicaPulseSplitting",
+    "SineGlobalPairState",
+    "SinePairCancellationObservation",
     "assess_sine_replica_scale",
     "assess_sine_replica_persistence",
     "assess_sine_mobility_geometry",
@@ -80,7 +90,13 @@ __all__ = (
     "assess_sine_pair_emission",
     "assess_sine_replica_pulse",
     "assess_sine_replica_pulse_variation",
+    "assess_sine_replica_pulse_work_response",
+    "assess_sine_replica_pulse_finite_work_response",
+    "assess_sine_replica_stiffness_trace_curve",
     "assess_sine_replica_pulse_splitting",
+    "derive_sine_global_pair_state",
+    "evaluate_sine_global_pair_state",
+    "observe_sine_pair_cancellation",
 )
 
 
@@ -2558,8 +2574,9 @@ class SinePairingWindowAssessment:
         """Add form to this unchanged phase-window observation.
 
         Use the same captured complete field, initial uncertainty box and
-        declared window. Form speed bounds provide a sufficient joint tube;
-        no dynamics, matching policy or existing phase-only verdict changes.
+        declared window, re-admitting those premises and rebuilding consumed
+        bounds. Form speed bounds provide a sufficient joint tube; no dynamics,
+        matching policy or input report is changed.
         """
         return _joint_pairing_projection(self)
 
@@ -2663,6 +2680,19 @@ class SineJointPairingProjection:
 
 def _joint_pairing_projection(phase_window):
     """Reuse one admitted full-field window to observe another state projection."""
+    if not isinstance(phase_window, SinePairingWindowAssessment):
+        raise TypeError("a SinePairingWindowAssessment is required")
+    original_window = phase_window
+    window = _ordered(phase_window.window, "window", limit=3)
+    if len(window) != 2:
+        raise ValueError("window must contain its start and end")
+    phase_window = _pairing_window_from_comparison(
+        _rebuild_sine_comparison(phase_window.comparison),
+        form_error_bounds=phase_window.form_error_bounds,
+        phase_error_bounds=phase_window.phase_error_bounds,
+        window_start=window[0],
+        window_end=window[1],
+    )
     comparison = phase_window.comparison
     nodes, x, theta = comparison.nodes, comparison.epi, comparison.phase
     beta = Q(comparison.reference_model.storage_scale)
@@ -2737,7 +2767,11 @@ def _joint_pairing_projection(phase_window):
         }
     support_status, support_reasons = _pairing_support_admission(comparison, pairs)
     return SineJointPairingProjection(
-        phase_window=phase_window,
+        # Compute only with normalized primitives and rebuilt bounds. Retaining
+        # an equivalent source association does not authenticate its provenance.
+        phase_window=(
+            original_window if phase_window == original_window else phase_window
+        ),
         initial_observation=initial,
         source_joint_distance_rate_bounds=rates,
         form_remainder_bounds=radii,
@@ -2789,13 +2823,27 @@ def assess_sine_pairing_window(
     pair synchronization or form preparation is silently substituted. An
     unavailable enclosure says nothing about failure of the actual grouping.
     """
+    comparison = bound_relational_sine_exchange(graph, reference_model=reference_model)
+    return _pairing_window_from_comparison(
+        comparison,
+        form_error_bounds=form_error_bounds,
+        phase_error_bounds=phase_error_bounds,
+        window_start=window_start,
+        window_end=window_end,
+    )
+
+
+def _pairing_window_from_comparison(
+    comparison, *, form_error_bounds, phase_error_bounds, window_start, window_end
+):
+    """Build all window evidence from one normalized complete comparison."""
     from .relational_sine_pattern import _error_radii
 
+    reference_model = comparison.reference_model
     start = exact_or_represented_real(window_start, "window_start")
     end = exact_or_represented_real(window_end, "window_end")
     if not 0 <= start < end:
         raise ValueError("require 0<=window_start<window_end")
-    comparison = bound_relational_sine_exchange(graph, reference_model=reference_model)
     if Q(reference_model.effective_weights[0]) != 0:
         raise ValueError("pairing window requires explicit zero form loss")
     size = len(comparison.nodes)
@@ -3453,6 +3501,11 @@ def assess_sine_mixed_pair_state(
     Rates use actual fine rows, never incomplete-block replica formulas.
     """
     comparison = bound_relational_sine_exchange(graph, reference_model=reference_model)
+    return _mixed_pair_state_from_comparison(comparison, pairs, phase_turns)
+
+
+def _mixed_pair_state_from_comparison(comparison, pairs, phase_turns):
+    """Rebuild pair symmetry, chart and rates from normalized fine primitives."""
     symmetry = _assess_sine_pair_support_symmetry(comparison, pairs)
     chart = _pair_chart_coordinates(comparison, symmetry.pair_indices, phase_turns)
     numerators = comparison.phase_rate_numerators()
@@ -3597,8 +3650,10 @@ class SinePairEmissionAssessment:
 
         ``outcome`` must be ``first_member``, ``second_member`` or
         ``whole_pair``. All nontarget nodes retain zero increment. This uses
-        the same captured sine invariant owner as general endpoint checks;
-        it neither executes AL nor promotes a zero change to reachability.
+        the same captured sine invariant owner as general endpoint checks.
+        Source, pair/lift and effective AL policy premises are re-admitted;
+        cached target indices, increments and symmetry verdicts are rebuilt.
+        It neither executes AL nor promotes a zero change to reachability.
         """
         if not isinstance(outcome, str) or outcome not in (
             "first_member",
@@ -3608,12 +3663,50 @@ class SinePairEmissionAssessment:
             raise ValueError(
                 "outcome must be first_member, second_member or whole_pair"
             )
-        selected = getattr(self, outcome)
-        increments = [Q(0)] * len(self.comparison.nodes)
-        indices = self.source_state.support_symmetry.pair_indices[self.pair_index]
+        if not isinstance(self.source_state, SineMixedPairStateAssessment):
+            raise TypeError("source_state must be a SineMixedPairStateAssessment")
+        if not isinstance(
+            self.source_state.support_symmetry, SinePairSupportSymmetryAssessment
+        ):
+            raise TypeError("source_state must retain its pair support declaration")
+        comparison = _rebuild_sine_comparison(self.comparison)
+        source = _mixed_pair_state_from_comparison(
+            comparison, self.pairs, self.source_state.phase_turns
+        )
+        clip = _ordered(self.clip_policy, "clip_policy", limit=5)
+        if len(clip) != 4:
+            raise ValueError(
+                "clip_policy must contain minimum, maximum, mode and steepness"
+            )
+        lower = exact_or_represented_real(clip[0], "clip_policy minimum")
+        upper = exact_or_represented_real(clip[1], "clip_policy maximum")
+        # This is the operator's effective policy, not the configurable
+        # integrator policy. AL always consumes the shared default steepness.
+        from ..operators import _operator_epi_clip_policy
+
+        steepness = exact_or_represented_real(clip[3], "clip_policy steepness")
+        attributes = dict(EPI_MIN=lower, EPI_MAX=upper, CLIP_MODE=clip[2])
+        effective_clip = _operator_epi_clip_policy(attributes)
+        if (
+            not isinstance(clip[2], str)
+            or clip[2] != effective_clip[2]
+            or steepness != Q(effective_clip[3])
+        ):
+            raise ValueError("clip_policy must match the effective AL boundary policy")
+        rebuilt = _pair_emission_from_source(
+            source, pair_index=self.pair_index, boost=self.boost, attributes=attributes
+        )
+        selected = getattr(rebuilt, outcome)
+        increments = [Q(0)] * len(comparison.nodes)
+        indices = source.support_symmetry.pair_indices[rebuilt.pair_index]
         for node, delta in zip(indices, selected.effective_form_increments):
             increments[node] = delta
-        return self.comparison.assess_form_increment(increments=tuple(increments))
+        report = comparison.assess_form_increment(increments=tuple(increments))
+        if comparison == self.comparison:
+            from dataclasses import replace
+
+            report = replace(report, comparison=self.comparison)
+        return report
 
     def to_dict(self):
         from ..sdk.relational_reports import _project
@@ -3641,19 +3734,26 @@ def assess_sine_pair_emission(
     attachment information. The source carries all phase lifts and fine
     coordinates; no hidden port is inferred from a graph label or phase order.
     """
-    from ..operators import _operator_epi_clip_policy
-    from ..operators.al_sha_stage_proposals import emission_epi_proposal
-    from ..operators.factor_contracts import validate_glyph_factor
-
-    admitted_boost = validate_glyph_factor("AL_boost", boost)
     attributes = dict(graph.graph)
-    clip = _operator_epi_clip_policy(attributes)
     source = assess_sine_mixed_pair_state(
         graph,
         reference_model=reference_model,
         pairs=pairs,
         phase_turns=phase_turns,
     )
+    return _pair_emission_from_source(
+        source, pair_index=pair_index, boost=boost, attributes=attributes
+    )
+
+
+def _pair_emission_from_source(source, *, pair_index, boost, attributes):
+    """Apply the shared AL proposal to a rebuilt mixed-pair source."""
+    from ..operators import _operator_epi_clip_policy
+    from ..operators.al_sha_stage_proposals import emission_epi_proposal
+    from ..operators.factor_contracts import validate_glyph_factor
+
+    admitted_boost = validate_glyph_factor("AL_boost", boost)
+    clip = _operator_epi_clip_policy(attributes)
     if type(pair_index) is not int or not 0 <= pair_index < len(source.pairs):
         raise ValueError("pair_index must be a nonboolean pair index")
     if not source.support_symmetry.pair_swap_symmetry[pair_index]:
@@ -4103,6 +4203,45 @@ class SineReplicaPulseVariation:
         }
 
 
+def _replica_variation_blocks(
+    *,
+    internal_cosine,
+    internal_sine,
+    double_internal_cosine,
+    laplacian,
+    mode_sines,
+    stiffness,
+    mobility,
+    coupling,
+):
+    """Share the admitted real Fourier blocks between interval and jet readers."""
+    if isinstance(internal_cosine, Jet):
+
+        def constant(value):
+            return Jet.constant(value, internal_cosine.order)
+
+    else:
+        constant = I.coerce
+    stiffness, mobility, coupling = map(constant, (stiffness, mobility, coupling))
+    zero = constant(0)
+    result = []
+    for eigenvalue, mode_sine in zip(laplacian, mode_sines):
+        cross = -coupling * internal_cosine * internal_sine * mode_sine
+        collective_phase = -stiffness * internal_cosine**2 * eigenvalue / 2
+        internal_phase = -stiffness * (
+            double_internal_cosine + internal_sine**2 * eigenvalue / 2
+        )
+        result.append(
+            (
+                (zero, collective_phase, zero, cross),
+                (mobility * eigenvalue / 2, zero, zero, zero),
+                (zero, cross, zero, internal_phase),
+                (zero, zero, mobility, zero),
+            )
+        )
+    return tuple(result)
+
+
 def assess_sine_replica_pulse_variation(
     *, reference_model, form_half_difference, phase_half_difference, capacity
 ) -> SineReplicaPulseVariation:
@@ -4140,22 +4279,16 @@ def assess_sine_replica_pulse_variation(
     b_nu = coefficients["phase_rates"][0]
 
     def assemble_blocks(stiffness, mobility, coupling):
-        result = []
-        for eigenvalue, mode_sine in zip(laplacian, sines):
-            cross = -coupling * internal_cosine * internal_sine * mode_sine
-            collective_phase = -stiffness * internal_cosine**2 * eigenvalue / 2
-            internal_phase = -stiffness * (
-                double_internal_cosine + internal_sine**2 * eigenvalue / 2
-            )
-            result.append(
-                (
-                    (I(0), collective_phase, I(0), cross),
-                    (mobility * eigenvalue / 2, I(0), I(0), I(0)),
-                    (I(0), cross, I(0), internal_phase),
-                    (I(0), I(0), mobility, I(0)),
-                )
-            )
-        return tuple(result)
+        return _replica_variation_blocks(
+            internal_cosine=internal_cosine,
+            internal_sine=internal_sine,
+            double_internal_cosine=double_internal_cosine,
+            laplacian=laplacian,
+            mode_sines=sines,
+            stiffness=stiffness,
+            mobility=mobility,
+            coupling=coupling,
+        )
 
     blocks = assemble_blocks(a_nu * pulse.twist_cosine_bounds, b_nu, a_nu * twist_sine)
     dimensionless_blocks = assemble_blocks(
@@ -4211,6 +4344,529 @@ def assess_sine_replica_pulse_variation(
         periodic_reference_certified=pulse.nonlinear_periodic_exchange_certified,
         equilibrium_reference=pulse.status == "equilibrium",
         half_return_swap_covariance_certified=pulse.nonlinear_periodic_exchange_certified,
+    )
+
+
+@dataclass(frozen=True)
+class SineReplicaPulseWorkResponse:
+    """Finite-time infinitesimal work response along a declared moving family.
+
+    The two distributed form impulses are fC=(cos(alpha*j),cos(alpha*j)) and
+    fI=(sin(alpha*j),-sin(alpha*j)), alpha=2*pi/5, in ordered fine pairs.
+    Their conjugate work outputs are fC^T L delta_x and fI^T L delta_x.
+    Both use the same declared moving background, with its unperturbed motion
+    subtracted. This is not a finite-amplitude kick or a frequency transfer.
+    """
+
+    reference: SineReplicaPulseVariation
+    scaled_duration: Q
+    taylor_order: int
+    initial_state_bounds: tuple[I, ...]
+    work_output_coefficients: tuple[I, I]
+    response_bounds: tuple[tuple[I, I], tuple[I, I]] | None
+    antisymmetric_response_bounds: I | None
+    response_sign: int | None
+    directional_response_certified: bool
+    step: ValidatedTaylorStep | None
+    failed_tube: tuple[I, ...] | None
+    status: str
+    unavailable_reasons: tuple[str, ...]
+    mode_index: int = 1
+    clock: str = "tau=t/pi"
+    arithmetic_method: str = INTERVAL_METHOD
+    state_order: tuple[str, ...] = (
+        "u",
+        "delta",
+        "collective_impulse_dX",
+        "collective_impulse_dTheta",
+        "collective_impulse_i_du",
+        "collective_impulse_i_ddelta",
+        "internal_impulse_dX",
+        "internal_impulse_dTheta",
+        "internal_impulse_i_du",
+        "internal_impulse_i_ddelta",
+    )
+    scope: tuple[str, ...] = (
+        "exact_prepared_doubled_C5_family_rebuilt_from_primitive_model_and_internal_state",
+        "symbolic_phase_means_two_pi_j_over_five_not_a_captured_graph_membership_claim",
+        "fixed_real_k1_fourier_copy_with_two_distributed_same_type_form_impulses",
+        "fine_port_norm_squared_five_and_work_output_coefficients_twenty_times_diag_lambda_over_two_one",
+        "full_fine_variation_reduction_reused_no_internal_motion_discarded",
+        "pulse_and_variational_columns_evolve_jointly_no_frozen_instantaneous_generator",
+        "strict_whole_time_Picard_tube_and_Taylor_remainder_under_declared_numerical_budget",
+        "response_sign_zero_means_interval_overlaps_zero_not_exact_reciprocity",
+        "original_model_time_t_equals_pi_tau_not_the_separate_Omega_t_normalization",
+        "response_is_derivative_at_zero_kick_with_unperturbed_motion_subtracted",
+        "no_finite_kick_error_monodromy_stability_hall_or_physical_identification",
+    )
+
+    def to_dict(self):
+        from ..sdk.relational_reports import _project
+
+        return {
+            "schema": "tnfr.relational-sine-replica-pulse-work-response.v1",
+            "report": _project(self),
+        }
+
+
+def assess_sine_replica_pulse_work_response(
+    *,
+    reference_model,
+    form_half_difference,
+    phase_half_difference,
+    capacity,
+    scaled_duration,
+    order=10,
+) -> SineReplicaPulseWorkResponse:
+    """Bound two matched work responses on one exact moving background.
+
+    The fixed k=1 real block retains a collective cosine form perturbation and
+    an internal sine form perturbation. Pulse motion plus both four-coordinate
+    variation columns are enclosed together by the shared validated kernel.
+    Duration uses tau=t/pi; w, beta and positive held capacity are retained.
+    Numerical failure returns unavailable evidence without changing the budget.
+    """
+    duration = exact_or_represented_real(scaled_duration, "scaled_duration")
+    if duration <= 0:
+        raise ValueError("scaled_duration must be strictly positive")
+    if type(order) is not int or not 1 <= order <= MAX_ORDER:
+        raise ValueError("Taylor order outside the shared jet domain")
+    reference = assess_sine_replica_pulse_variation(
+        reference_model=reference_model,
+        form_half_difference=form_half_difference,
+        phase_half_difference=phase_half_difference,
+        capacity=capacity,
+    )
+    pulse = reference.pulse
+    _, weight, beta = _sine_model_coefficients(pulse.model)
+    exchange = weight * pulse.capacity
+    mobility = exchange / beta
+    pi = pi_interval()
+    twist_cosine = pulse.twist_cosine_bounds
+    twist_sine = sin(2 * pi / 5)
+    eigenvalue = reference.laplacian_eigenvalue_bounds[1]
+    mode_sine = reference.oriented_mode_sine_bounds[1]
+    stiffness = exchange * twist_cosine
+    coupling = exchange * twist_sine
+    initial = tuple(
+        I(value)
+        for value in (
+            pulse.form_half_difference,
+            pulse.phase_half_difference,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+        )
+    )
+
+    def field(state):
+        u, delta = state[:2]
+        if isinstance(delta, Jet):
+            sine, cosine, double_cosine = (
+                jet_sin(delta),
+                jet_cos(delta),
+                jet_cos(2 * delta),
+            )
+        else:
+            sine, cosine, double_cosine = sin(delta), cos(delta), cos(2 * delta)
+        block = _replica_variation_blocks(
+            internal_cosine=cosine,
+            internal_sine=sine,
+            double_internal_cosine=double_cosine,
+            laplacian=(eigenvalue,),
+            mode_sines=(mode_sine,),
+            stiffness=stiffness,
+            mobility=mobility,
+            coupling=coupling,
+        )[0]
+        rates = [sine * cosine * -stiffness, u * mobility]
+        for start in (2, 6):
+            vector = state[start : start + 4]
+            rates.extend(
+                sum((value * coefficient for value, coefficient in zip(vector, row)), 0)
+                for row in block
+            )
+        return tuple(rates)
+
+    def domain(tube):
+        return (pi.lo / 2 - tube[1].abs_max,)
+
+    step, failed, reason = validated_taylor_step(
+        initial,
+        duration,
+        field,
+        domain,
+        order=order,
+        domain_failure="whole_time_pair_chart_not_certified",
+    )
+    outputs = (10 * eigenvalue, I(20))
+    response = contrast = response_sign = None
+    if step is not None:
+        response = tuple(
+            tuple(outputs[row] * step.endpoint[start + 2 * row] for start in (2, 6))
+            for row in range(2)
+        )
+        contrast = response[0][1] - response[1][0]
+        response_sign = 1 if contrast.lo > 0 else -1 if contrast.hi < 0 else 0
+    return SineReplicaPulseWorkResponse(
+        reference=reference,
+        scaled_duration=duration,
+        taylor_order=order,
+        initial_state_bounds=initial,
+        work_output_coefficients=outputs,
+        response_bounds=response,
+        antisymmetric_response_bounds=contrast,
+        response_sign=response_sign,
+        directional_response_certified=response_sign in (-1, 1),
+        step=step,
+        failed_tube=failed,
+        status="certified_finite_response" if step is not None else "unavailable",
+        unavailable_reasons=() if reason is None else (reason,),
+    )
+
+
+@dataclass(frozen=True)
+class SineReplicaPulseFiniteWorkResponse:
+    """Four complete nonlinear preparations under one fixed response protocol.
+
+    Unlike the tangent report, each preparation changes all ten fine forms by
+    a nonzero distributed impulse and evolves all twenty fine coordinates.
+    The symbolic irrational phases and probe masks are enclosed, never replaced
+    by rounded graph values. Interval boxes may conservatively include states
+    outside that correlated symbolic preparation.
+    """
+
+    tangent: SineReplicaPulseWorkResponse
+    probe_amplitude: Q
+    taylor_order: int
+    neighbors: tuple[tuple[int, ...], ...]
+    edges: tuple[tuple[int, int], ...]
+    base_state_bounds: tuple[I, ...]
+    port_form_directions: tuple[tuple[I, ...], tuple[I, ...]]
+    initial_boxes: tuple[tuple[I, ...], ...]
+    steps: tuple[ValidatedTaylorStep | None, ...]
+    failed_tubes: tuple[tuple[I, ...] | None, ...]
+    failure_reasons: tuple[str | None, ...]
+    response_bounds: tuple[tuple[I, I], tuple[I, I]] | None
+    antisymmetric_response_bounds: I | None
+    response_sign: int | None
+    numerical_directional_response_certified: bool
+    flow_third_derivative_upper_bound: Q
+    finite_probe_error_upper_bound: Q
+    analytic_tangent_lower_bound: Q
+    analytic_contrast_lower_bound: Q
+    analytic_directional_response_certified: bool
+    predicted_antisymmetric_response_bounds: I | None
+    fine_edge_margin_lower_bound: Q
+    status: str
+    unavailable_reasons: tuple[str, ...]
+    scaled_duration: Q = Q(1, 16)
+    form_half_difference: Q = Q(1, 32)
+    phase_half_difference: Q = Q(1, 32)
+    capacity: Q = Q(1)
+    mode_index: int = 1
+    clock: str = "tau=t/pi"
+    preparation_order: tuple[str, ...] = (
+        "collective_positive",
+        "collective_negative",
+        "internal_positive",
+        "internal_negative",
+    )
+    arithmetic_method: str = INTERVAL_METHOD
+    scope: tuple[str, ...] = (
+        "fixed_complete_doubled_C5_unit_capacity_zero_loss_w_beta_one_smooth_sine_protocol",
+        "ordered_fine_pairs_2j_2j_plus_one_all_four_edges_per_neighbor_pair",
+        "symbolic_phases_two_pi_j_over_five_plus_minus_one_over_32_and_symbolic_probe_masks",
+        "four_complete_twenty_coordinate_nonlinear_flows_no_Fourier_reduced_kick_evolution",
+        "same_type_collective_cosine_and_signed_internal_sine_form_impulses",
+        "conjugate_work_outputs_f_transpose_L_x_with_centered_difference_over_twice_epsilon",
+        "shared_original_time_sine_rows_multiplied_by_outward_pi_for_tau_clock",
+        "fixed_horizon_one_over_16_and_requested_order_no_retry_or_budget_change",
+        "analytic_finite_probe_error_uses_global_full_flow_third_variation_bound",
+        "analytic_prediction_and_independent_numerical_response_keep_separate_availability",
+        "response_sign_zero_means_interval_overlaps_zero_not_exact_reciprocity",
+        "no_graph_capture_measurement_noise_physical_clock_or_hall_identification",
+    )
+
+    def to_dict(self):
+        from ..sdk.relational_reports import _project
+
+        return {
+            "schema": "tnfr.relational-sine-replica-pulse-finite-work-response.v1",
+            "report": _project(self),
+        }
+
+
+def assess_sine_replica_pulse_finite_work_response(
+    *, probe_amplitude, order=10
+) -> SineReplicaPulseFiniteWorkResponse:
+    """Evaluate the fixed four-kick protocol and its prior analytic prediction.
+
+    The declared family is u=delta=1/32 on the complete doubled C5, with unit
+    capacity, w=beta=1, zero loss and tau horizon 1/16. Only a positive probe
+    amplitude at most 2**-20 and a shared Taylor order are admitted. These are
+    a conditional experiment's supplied parameters, not selected physical laws.
+    All four trials retain their evidence even if another trial is unavailable.
+    """
+    from .relational_sine_forecast import _sine_flow
+
+    epsilon = exact_or_represented_real(probe_amplitude, "probe_amplitude")
+    if not 0 < epsilon <= Q(1, 1 << 20):
+        raise ValueError("probe_amplitude must lie in (0, 2**-20]")
+    if type(order) is not int or not 1 <= order <= MAX_ORDER:
+        raise ValueError("Taylor order outside the shared jet domain")
+    model = RelationalExchangeModel(
+        1, epi_weight=0, phase_weight=1, phase_domain="regular"
+    )
+    half_difference, duration = Q(1, 32), Q(1, 16)
+    tangent = assess_sine_replica_pulse_work_response(
+        reference_model=model,
+        form_half_difference=half_difference,
+        phase_half_difference=half_difference,
+        capacity=1,
+        scaled_duration=duration,
+        order=order,
+    )
+    pi = pi_interval()
+    phases = tuple(2 * pi * Q(j, 5) for j in range(5))
+    signs = (1, -1)
+    base = tuple(I(sign * half_difference) for _ in range(5) for sign in signs) + tuple(
+        phase + sign * half_difference for phase in phases for sign in signs
+    )
+    ports = (
+        tuple(cos(phase) for phase in phases for _ in signs),
+        tuple(sign * sin(phase) for phase in phases for sign in signs),
+    )
+    edges = tuple(
+        sorted(
+            tuple(sorted((2 * j + member, 2 * ((j + 1) % 5) + neighbor)))
+            for j in range(5)
+            for member in range(2)
+            for neighbor in range(2)
+        )
+    )
+    neighbors = tuple(
+        tuple(
+            sorted(
+                right if left == i else left
+                for left, right in edges
+                if i in (left, right)
+            )
+        )
+        for i in range(10)
+    )
+    initial = tuple(
+        tuple(base[i] + sign * epsilon * port[i] for i in range(10)) + base[10:]
+        for port in ports
+        for sign in signs
+    )
+
+    def field(state):
+        held_capacity = (
+            Jet.constant(1, state[0].order) if isinstance(state[0], Jet) else I(1)
+        )
+        original_rates = _sine_flow(
+            tuple(state) + (held_capacity,),
+            neighbors=neighbors,
+            visible_capacity=(Q(1),) * 9,
+            model=model,
+        )
+        return tuple(rate * pi for rate in original_rates[:-1])
+
+    # The full sine law is smooth on real phase lifts. Acute identity is
+    # covered separately by the analytic margin; it is not a solver domain.
+    def domain(_tube):
+        return (Q(1),)
+
+    steps, failed_tubes, failure_reasons = [], [], []
+    for box in initial:
+        step, failed, reason = validated_taylor_step(
+            box, duration, field, domain, order=order
+        )
+        steps.append(step)
+        failed_tubes.append(failed)
+        failure_reasons.append(reason)
+
+    response = contrast = response_sign = None
+    if all(step is not None for step in steps):
+        entries = []
+        for port in ports:
+            row = []
+            for column in range(2):
+                positive = steps[2 * column].endpoint
+                negative = steps[2 * column + 1].endpoint
+                work = sum(
+                    (
+                        (port[i] - port[j])
+                        * (positive[i] - positive[j] - negative[i] + negative[j])
+                        for i, j in edges
+                    ),
+                    I(0),
+                )
+                # Preserve exact tiny amplitudes: dividing by I(2*epsilon)
+                # could manufacture a denominator containing zero.
+                row.append(work * (1 / (2 * epsilon)))
+            entries.append(tuple(row))
+        response = tuple(entries)
+        contrast = response[0][1] - response[1][0]
+        response_sign = 1 if contrast.lo > 0 else -1 if contrast.hi < 0 else 0
+
+    # Full-field derivative comparison: exp(2*h) <= E = 1/(1-2*h).
+    # Each centered work readout has l1 norm <=40; their difference adds
+    # two central-difference remainders, each divided by 3!.
+    growth = 1 / (1 - 2 * duration)
+    derivative_bound = 4 * growth * (growth - 1) * (2 * growth - 1)
+    error = Q(80, 6) * derivative_bound * epsilon**2
+    # Independent ordered-Volterra lower bound for the same fixed pulse and
+    # two ports. These are proved bounds, not fitted endpoint coefficients.
+    stiffness_norm = Q(3, 8)
+    leading = Q(33, 800000) * duration**5
+    tail = (
+        2
+        * stiffness_norm**3
+        * duration**6
+        / (720 * (1 - stiffness_norm * duration**2 / 56))
+    )
+    lower = 20 * (leading - tail)
+    predicted = (
+        tangent.antisymmetric_response_bounds + I(-error, error)
+        if tangent.antisymmetric_response_bounds is not None
+        else None
+    )
+    names = SineReplicaPulseFiniteWorkResponse.preparation_order
+    reasons = tuple(
+        f"{name}: {reason}"
+        for name, reason in zip(names, failure_reasons)
+        if reason is not None
+    )
+    return SineReplicaPulseFiniteWorkResponse(
+        tangent=tangent,
+        probe_amplitude=epsilon,
+        taylor_order=order,
+        neighbors=neighbors,
+        edges=edges,
+        base_state_bounds=base,
+        port_form_directions=ports,
+        initial_boxes=initial,
+        steps=tuple(steps),
+        failed_tubes=tuple(failed_tubes),
+        failure_reasons=tuple(failure_reasons),
+        response_bounds=response,
+        antisymmetric_response_bounds=contrast,
+        response_sign=response_sign,
+        numerical_directional_response_certified=response_sign in (-1, 1),
+        flow_third_derivative_upper_bound=derivative_bound,
+        finite_probe_error_upper_bound=error,
+        analytic_tangent_lower_bound=lower,
+        analytic_contrast_lower_bound=lower - error,
+        analytic_directional_response_certified=lower > error,
+        predicted_antisymmetric_response_bounds=predicted,
+        fine_edge_margin_lower_bound=Q(13, 60) - 2 * growth * epsilon,
+        status="certified_finite_response" if response is not None else "unavailable",
+        unavailable_reasons=reasons,
+    )
+
+
+@dataclass(frozen=True)
+class SineReplicaStiffnessTraceCurve:
+    """Necessary three-observation screen, not a physical-model admission.
+
+    Inputs enclose trace and determinant of a mass-normalized two-mode
+    stiffness, with the same independently declared constant kinetic mass,
+    clock and coordinate convention. Correlations can be conservatively
+    discarded by the input boxes. An unresolved residual never proves the
+    complete law, autonomous preparation or a physical correspondence.
+    """
+
+    trace_bounds: tuple[I, ...]
+    determinant_bounds: tuple[I, ...]
+    geometry_coefficient_bounds: I
+    trace_difference_product_bounds: I
+    divided_difference_numerator_bounds: I
+    template_residual_bounds: I
+    affine_obstruction_bounds: I
+    trace_separation_certified: bool
+    template_curve_status: str
+    affine_family_status: str
+    arithmetic_method: str = INTERVAL_METHOD
+    scope: tuple[str, ...] = (
+        "necessary_curve_of_declared_doubled_C5_k1_conservative_pulse_stiffness",
+        "trace_and_determinant_of_M_inverse_K_not_unweighted_K_if_mass_is_nonidentity",
+        "constant_positive_definite_mass_and_fixed_work_compatible_coordinates",
+        "constant_clock_scaling_preserves_curvature_coefficient",
+        "cross_multiplied_interval_predicate_no_division_by_small_trace_gaps",
+        "geometry_coefficient_is_not_a_universal_TNFR_or_physical_constant",
+        "affine_family_is_symmetric_J0_plus_rho_t_J1_with_fixed_matrices",
+        "not_excluded_is_not_exact_equality_sufficiency_or_physical_admission",
+        "no_phase_clock_fit_trajectory_dataset_score_or_runtime_mutation",
+    )
+
+    def to_dict(self):
+        from ..sdk.relational_reports import _project
+
+        return {
+            "schema": "tnfr.relational-sine-replica-stiffness-trace-curve.v1",
+            "report": _project(self),
+        }
+
+
+def assess_sine_replica_stiffness_trace_curve(
+    *, trace_bounds, determinant_bounds
+) -> SineReplicaStiffnessTraceCurve:
+    """Screen three declared invariant observations, retaining uncertainty.
+
+    Each ordered input contains three admitted real scalars or outward
+    intervals. Separated trace boxes and a residual excluding zero reject
+    this template. Strictly positive affine obstruction rejects a constant
+    symmetric affine one-control stiffness family. Other outcomes abstain
+    from claiming either model is established.
+    """
+    from .relational_sine_regional import _interval
+
+    rows = []
+    for values, label in (
+        (trace_bounds, "trace_bounds"),
+        (determinant_bounds, "determinant_bounds"),
+    ):
+        values = _ordered(values, label, limit=4)
+        if len(values) != 3:
+            raise ValueError(f"{label} requires exactly three observations")
+        rows.append(
+            tuple(_interval(value, f"{label}[{i}]") for i, value in enumerate(values))
+        )
+    traces, determinants = rows
+    t0, t1, t2 = traces
+    v0, v1, v2 = determinants
+    product = (t2 - t1) * (t1 - t0) * (t2 - t0)
+    numerator = (v2 - v1) * (t1 - t0) - (v1 - v0) * (t2 - t1)
+    coefficient = (1160 + 480 * sqrt(5)) / 1089
+    residual = numerator - coefficient * product
+    obstruction = (4 * numerator - product) * product
+    separated = product.lo > 0 or product.hi < 0
+    return SineReplicaStiffnessTraceCurve(
+        trace_bounds=traces,
+        determinant_bounds=determinants,
+        geometry_coefficient_bounds=coefficient,
+        trace_difference_product_bounds=product,
+        divided_difference_numerator_bounds=numerator,
+        template_residual_bounds=residual,
+        affine_obstruction_bounds=obstruction,
+        trace_separation_certified=separated,
+        template_curve_status=(
+            "unresolved_trace_separation"
+            if not separated
+            else "excluded" if residual.lo > 0 or residual.hi < 0 else "not_excluded"
+        ),
+        affine_family_status=(
+            "unresolved_trace_separation"
+            if not separated
+            else "excluded" if obstruction.lo > 0 else "not_excluded"
+        ),
     )
 
 
@@ -4352,4 +5008,439 @@ def assess_sine_replica_pulse_splitting(
         sufficiently_small_nonlinear_orbital_instability_certified=(
             classifications[0] == "hyperbolic"
         ),
+    )
+
+
+_GLOBAL_PAIR_BASE_EDGES = tuple((i, (i + 1) % 5) for i in range(5))
+
+
+def _pair_complex_product(left, right):
+    """Multiply exact Cartesian circular-state coefficients, never EPI."""
+    a, b = left
+    c, d = right
+    return a * c - b * d, a * d + b * c
+
+
+def _pair_complex_conjugate(value):
+    return value[0], -value[1]
+
+
+def _pair_complex_linear(*terms):
+    return tuple(
+        sum((factor * value[k] for factor, value in terms), Q(0)) for k in (0, 1)
+    )
+
+
+def _pair_complex_i(value):
+    return -value[1], value[0]
+
+
+def _global_pair_scalars(values, label, size):
+    raw = _ordered(values, label, limit=size + 1)
+    if len(raw) != size:
+        raise ValueError(f"{label} must contain exactly {size} values")
+    return tuple(
+        exact_or_represented_real(value, f"{label}[{i}]") for i, value in enumerate(raw)
+    )
+
+
+def _global_pair_complex_rows(values, label):
+    rows = _ordered(values, label, limit=6)
+    if len(rows) != 5:
+        raise ValueError(f"{label} must contain exactly five Cartesian pairs")
+    return tuple(
+        _global_pair_scalars(row, f"{label}[{i}]", 2) for i, row in enumerate(rows)
+    )
+
+
+def _global_pair_interfaces(form_means, resultants):
+    """Derived h/B interfaces for the fixed unit doubled-C5 law."""
+    return tuple(
+        (
+            form_means[a] - (form_means[(a - 1) % 5] + form_means[(a + 1) % 5]) / 2,
+            _pair_complex_linear(
+                (Q(1, 2), resultants[(a - 1) % 5]),
+                (Q(1, 2), resultants[(a + 1) % 5]),
+            ),
+        )
+        for a in range(5)
+    )
+
+
+@dataclass(frozen=True)
+class SinePairCancellationObservation:
+    """Conditional inversion of two exact interface derivatives at Z=0.
+
+    The same fixed doubled-C5 law as SineGlobalPairState is assumed. The
+    supplied derivatives use tau=t/pi: first and second tau derivatives are
+    pi and pi squared times the corresponding structural-t derivatives.
+    They are evidence supplied independently of the hidden P/U/W coordinates,
+    not estimated from samples or filled from a forward-state report.
+
+    An unavailable phase product means that these two derivatives do not
+    identify its value. It does not classify the full interface history.
+    """
+
+    form_means: tuple[Q, ...]
+    resultants: tuple[tuple[Q, Q], ...]
+    pair_index: int
+    resultant_first_tau_derivative: tuple[Q, Q]
+    resultant_second_tau_derivative: tuple[Q, Q]
+    form_contrast: Q
+    neighbor_resultant: tuple[Q, Q]
+    internal_form_squared: Q
+    form_phase_moment: tuple[Q, Q]
+    phase_product: tuple[Q, Q] | None
+    phase_product_reconstruction_order: int | None
+    unavailable_reason: str | None
+    law: str = "normalized_sine_reciprocal_exchange"
+    clock: str = "tau=t/pi"
+    scope: tuple[str, ...] = (
+        "fixed_doubled_C5_all_four_unit_cross_edges_no_internal_pair_edges",
+        "zero_form_loss_unit_exchange_beta_and_positive_held_unit_capacities",
+        "no_supplied_forcing_or_events",
+        "selected_resultant_exactly_zero_all_five_mean_phasors_in_unit_disk",
+        "exact_supplied_first_and_second_tau_derivatives_not_forward_predictions",
+        "h_and_B_derived_from_supplied_form_means_and_resultants",
+        "U_and_W_recovered_from_first_derivative_P_available_conditionally",
+        "exact_second_derivative_compatibility_without_tolerances",
+        "two_derivatives_do_not_classify_persistent_invisibility",
+        "no_neighbor_hidden_state_or_complete_trajectory_reconstruction",
+        "no_derivative_estimation_noise_admission_or_physical_identification",
+    )
+
+    def to_dict(self):
+        from ..sdk.relational_reports import _project
+
+        return {
+            "schema": "tnfr.sine-pair-cancellation-observation.v1",
+            "report": _project(self),
+        }
+
+
+def observe_sine_pair_cancellation(
+    *,
+    form_means,
+    resultants,
+    pair_index,
+    resultant_first_tau_derivative,
+    resultant_second_tau_derivative,
+) -> SinePairCancellationObservation:
+    """Recover a pair's hidden invariants conditionally from exact Z derivatives.
+
+    Supply all five X/Z means in base-cycle order and both selected-pair
+    derivatives in tau=t/pi. The selected resultant must vanish exactly. The
+    fixed complete law gives W=-i*Z', U=|Z'|**2 and, when Z' is nonzero,
+    P=Z'**2/U. Otherwise nonzero B yields P=(2*Z''-B)/conj(B). Any recovered
+    phase product must have unit norm and reproduce the supplied second
+    derivative, including the 2*i*h*Z' contribution for moving pairs.
+
+    When Z'=B=0, compatibility requires Z''=0; P remains unavailable.
+    Higher derivatives or persistent environmental evidence are separate
+    obligations. No forward report, hidden state or measured sample series
+    is accepted as a substitute for these declared derivative inputs.
+    """
+    from .phase_response import _admit_relative_phasors
+
+    x = _global_pair_scalars(form_means, "form_means", 5)
+    z = _global_pair_complex_rows(resultants, "resultants")
+    if type(pair_index) is not int or not 0 <= pair_index < 5:
+        raise ValueError("pair_index must be a nonboolean pair index in 0..4")
+    for a, value in enumerate(z):
+        if sum((part * part for part in value), Q(0)) > 1:
+            raise ValueError(f"pair {a} has a mean phasor outside the unit disk")
+    zero = (Q(0), Q(0))
+    if z[pair_index] != zero:
+        raise ValueError("the selected pair must have an exactly zero resultant")
+    first = _global_pair_scalars(
+        resultant_first_tau_derivative, "resultant_first_tau_derivative", 2
+    )
+    second = _global_pair_scalars(
+        resultant_second_tau_derivative, "resultant_second_tau_derivative", 2
+    )
+    h, neighbor = _global_pair_interfaces(x, z)[pair_index]
+    moment = (first[1], -first[0])
+    squared = sum((part * part for part in first), Q(0))
+    product, order, reason = None, None, None
+    if squared:
+        product = tuple(part / squared for part in _pair_complex_product(first, first))
+        order = 1
+    elif neighbor != zero:
+        numerator = _pair_complex_linear((2, second), (-1, neighbor))
+        norm = sum((part * part for part in neighbor), Q(0))
+        product = tuple(
+            part / norm for part in _pair_complex_product(numerator, neighbor)
+        )
+        order = 2
+    else:
+        if second != zero:
+            raise ValueError(
+                "zero first derivative and neighbor resultant require zero second derivative"
+            )
+        reason = "higher_order_or_persistent_environment_evidence_required"
+    if product is not None:
+        product = _admit_relative_phasors((product,), "phase_product")[0]
+        expected_second = _pair_complex_linear(
+            (2 * h, _pair_complex_i(first)),
+            (
+                Q(1, 2),
+                _pair_complex_product(product, _pair_complex_conjugate(neighbor)),
+            ),
+            (Q(1, 2), neighbor),
+        )
+        if second != expected_second:
+            raise ValueError(
+                "supplied second derivative is incompatible with the fixed pair law"
+            )
+    return SinePairCancellationObservation(
+        form_means=x,
+        resultants=z,
+        pair_index=pair_index,
+        resultant_first_tau_derivative=first,
+        resultant_second_tau_derivative=second,
+        form_contrast=h,
+        neighbor_resultant=neighbor,
+        internal_form_squared=squared,
+        form_phase_moment=moment,
+        phase_product=product,
+        phase_product_reconstruction_order=order,
+        unavailable_reason=reason,
+    )
+
+
+@dataclass(frozen=True)
+class SineGlobalPairState:
+    """Realizable global unordered-pair state on the fixed doubled C5.
+
+    Each Cartesian pair is an exact (real, imaginary) phase coefficient. Form
+    remains scalar and signed. Ordered base positions are 0..4 and fine pairs
+    are (0,1),...,(8,9); every base edge has all four unit fine cross-edges.
+    The complete law is conservative normalized sine exchange with unit held
+    capacity, exchange coefficient and beta. No input or event is supplied.
+
+    Rate numerators multiply derivatives by mathematical pi in the original
+    structural t clock. Current rows are (receiver, source); each current is
+    a contribution to the receiver's mean-form rate, not its weighted regional
+    total. Its derivative numerator multiplies by pi squared. Coordinates
+    describe swap orbits, including coincident and antipodal phases, without
+    removing continuous degrees of freedom or reconstructing an angle.
+    """
+
+    form_means: tuple[Q, ...]
+    resultants: tuple[tuple[Q, Q], ...]
+    phase_products: tuple[tuple[Q, Q], ...]
+    internal_form_squared: tuple[Q, ...]
+    form_phase_moments: tuple[tuple[Q, Q], ...]
+    pair_strata: tuple[str, ...]
+    form_mean_rate_pi_numerators: tuple[Q, ...]
+    resultant_rate_pi_numerators: tuple[tuple[Q, Q], ...]
+    phase_product_rate_pi_numerators: tuple[tuple[Q, Q], ...]
+    internal_form_squared_rate_pi_numerators: tuple[Q, ...]
+    form_phase_moment_rate_pi_numerators: tuple[tuple[Q, Q], ...]
+    directed_block_edges: tuple[tuple[int, int], ...]
+    block_current_pi_numerators: tuple[Q, ...]
+    block_current_rate_pi_squared_numerators: tuple[Q, ...]
+    form_storage: Q
+    phase_storage: Q
+    storage: Q
+    form_storage_rate_pi_numerator: Q
+    phase_storage_rate_pi_numerator: Q
+    full_storage_rate_pi_numerator: Q
+    pairs: tuple[tuple[int, int], ...] = tuple((2 * i, 2 * i + 1) for i in range(5))
+    base_edges: tuple[tuple[int, int], ...] = _GLOBAL_PAIR_BASE_EDGES
+    law: str = "normalized_sine_reciprocal_exchange"
+    clock: str = "structural_t"
+    scope: tuple[str, ...] = (
+        "fixed_doubled_C5_all_four_unit_cross_edges_no_internal_pair_edges",
+        "zero_form_loss_unit_exchange_beta_and_positive_held_unit_capacities",
+        "signed_scalar_form_and_exact_unit_circular_phasors_not_complex_EPI",
+        "X_mean_form_Z_mean_phasor_P_phase_product_U_internal_form_square_W_form_phase_correlation",
+        "exact_realizability_admission_without_tolerances_or_phasor_renormalization",
+        "global_swap_orbits_retain_coincident_and_antipodal_phase_information",
+        "polynomial_full_field_pushforward_without_resultant_or_internal_form_division",
+        "phase_product_retains_state_information_not_an_added_harmonic_current_law",
+        "directed_currents_are_block_mean_form_rates_weighted_cut_currents_are_eight_times_larger",
+        "first_rates_have_pi_numerators_current_derivatives_have_pi_squared_numerators",
+        "full_storage_and_its_rate_are_summed_from_all_declared_base_edges",
+        "no_removed_continuous_state_dimensions_formation_or_maintenance_certificate",
+        "no_graph_capture_runtime_law_installation_trajectory_or_physical_identification",
+    )
+
+    def to_dict(self):
+        from ..sdk.relational_reports import _project
+
+        return {"schema": "tnfr.sine-global-pair-state.v1", "report": _project(self)}
+
+
+def derive_sine_global_pair_state(forms, phasors) -> SineGlobalPairState:
+    """Project ten exact fine coordinates to their global unordered-pair state.
+
+    Inputs follow consecutive pairs around the fixed five-cycle. Phasors are
+    Cartesian unit-circle pairs, not radian angles or Python complex values.
+    Real inputs use shared exact/represented admission; represented Cartesian
+    coordinates must have exactly unit norm. No approximate normalization is
+    performed. The returned state retains the orbit, not the member labeling.
+    """
+    from .phase_response import _admit_relative_phasors
+
+    x = _global_pair_scalars(forms, "forms", 10)
+    raw = _ordered(phasors, "phasors", limit=11)
+    if len(raw) != 10:
+        raise ValueError("phasors must contain exactly ten Cartesian unit pairs")
+    z = _admit_relative_phasors(raw, "phasors")
+    means, resultants, products, squared, moments = [], [], [], [], []
+    for i in range(0, 10, 2):
+        u = (x[i] - x[i + 1]) / 2
+        means.append((x[i] + x[i + 1]) / 2)
+        resultants.append(_pair_complex_linear((Q(1, 2), z[i]), (Q(1, 2), z[i + 1])))
+        products.append(_pair_complex_product(z[i], z[i + 1]))
+        squared.append(u * u)
+        moments.append(_pair_complex_linear((u / 2, z[i]), (-u / 2, z[i + 1])))
+    return evaluate_sine_global_pair_state(
+        form_means=means,
+        resultants=resultants,
+        phase_products=products,
+        internal_form_squared=squared,
+        form_phase_moments=moments,
+    )
+
+
+def evaluate_sine_global_pair_state(
+    *, form_means, resultants, phase_products, internal_form_squared, form_phase_moments
+) -> SineGlobalPairState:
+    """Admit realizable global pairs and evaluate their exact complete-law rates.
+
+    For z_plus/minus on the circle and x_plus/minus real, the coordinates are
+    X=mean(x), Z=mean(z), P=z_plus*z_minus, U=u**2, W=u*(z_plus-z_minus)/2,
+    with u=half_difference(x). Five supplied coordinate collections must satisfy
+    |P|=1, P*conj(Z)=Z, |Z|<=1, U>=0 and W**2=U*(Z**2-P). The equivalent
+    norm identity for W is also checked. These exact conditions are sufficient
+    for a fine representative; its components need not themselves be rational.
+
+    No derivative, current or cached report verdict is accepted as an input.
+    The invariant state is sufficient only for the fixed law and support of
+    SineGlobalPairState, not for arbitrary attachments or capacity assignments.
+    """
+    from .phase_response import _admit_relative_phasors
+
+    x = _global_pair_scalars(form_means, "form_means", 5)
+    z = _global_pair_complex_rows(resultants, "resultants")
+    product = _admit_relative_phasors(
+        _global_pair_complex_rows(phase_products, "phase_products"), "phase_products"
+    )
+    u2 = _global_pair_scalars(internal_form_squared, "internal_form_squared", 5)
+    w = _global_pair_complex_rows(form_phase_moments, "form_phase_moments")
+    norms, differences, strata = [], [], []
+    for a in range(5):
+        norm = sum((part * part for part in z[a]), Q(0))
+        d2 = _pair_complex_linear(
+            (1, _pair_complex_product(z[a], z[a])), (-1, product[a])
+        )
+        if (
+            norm > 1
+            or _pair_complex_product(product[a], _pair_complex_conjugate(z[a])) != z[a]
+        ):
+            raise ValueError(f"pair {a} has unrealizable mean phasor and phase product")
+        if u2[a] < 0:
+            raise ValueError("internal_form_squared must be nonnegative")
+        if _pair_complex_product(w[a], w[a]) != tuple(u2[a] * part for part in d2):
+            raise ValueError(f"pair {a} violates the form-phase square constraint")
+        if sum((part * part for part in w[a]), Q(0)) != u2[a] * (1 - norm):
+            raise ValueError(f"pair {a} violates the form-phase norm constraint")
+        norms.append(norm)
+        differences.append(d2)
+        strata.append(
+            "coincident_phase"
+            if norm == 1
+            else "antipodal_phase" if norm == 0 else "split_phase"
+        )
+
+    mean_rates, resultant_rates, product_rates, squared_rates, moment_rates = (
+        [],
+        [],
+        [],
+        [],
+        [],
+    )
+    for a, (q, neighbor) in enumerate(_global_pair_interfaces(x, z)):
+        mean_rates.append(
+            _pair_complex_product(_pair_complex_conjugate(z[a]), neighbor)[1]
+        )
+        resultant_rates.append(
+            _pair_complex_i(_pair_complex_linear((q, z[a]), (1, w[a])))
+        )
+        product_rates.append(
+            _pair_complex_i(tuple(2 * q * part for part in product[a]))
+        )
+        squared_rates.append(
+            2 * _pair_complex_product(_pair_complex_conjugate(w[a]), neighbor)[1]
+        )
+        moment_rates.append(
+            _pair_complex_i(
+                _pair_complex_linear(
+                    (q, w[a]),
+                    (u2[a], z[a]),
+                    (
+                        Q(1, 2),
+                        _pair_complex_product(
+                            differences[a], _pair_complex_conjugate(neighbor)
+                        ),
+                    ),
+                    (-(1 - norms[a]) / 2, neighbor),
+                )
+            )
+        )
+    directed = tuple((a, b) for a in range(5) for b in ((a - 1) % 5, (a + 1) % 5))
+    currents, current_rates = [], []
+    for a, b in directed:
+        currents.append(
+            _pair_complex_product(_pair_complex_conjugate(z[a]), z[b])[1] / 2
+        )
+        current_rates.append(
+            (
+                _pair_complex_product(
+                    _pair_complex_conjugate(resultant_rates[a]), z[b]
+                )[1]
+                + _pair_complex_product(
+                    _pair_complex_conjugate(z[a]), resultant_rates[b]
+                )[1]
+            )
+            / 2
+        )
+    form_storage, phase_storage, form_work, phase_work = Q(0), Q(0), Q(0), Q(0)
+    for a, b in _GLOBAL_PAIR_BASE_EDGES:
+        form_storage += 2 * ((x[a] - x[b]) ** 2 + u2[a] + u2[b])
+        phase_storage += 4 * (
+            1 - _pair_complex_product(_pair_complex_conjugate(z[a]), z[b])[0]
+        )
+        form_work += 4 * (x[a] - x[b]) * (mean_rates[a] - mean_rates[b]) + 2 * (
+            squared_rates[a] + squared_rates[b]
+        )
+        phase_work -= 4 * (
+            _pair_complex_product(_pair_complex_conjugate(resultant_rates[a]), z[b])[0]
+            + _pair_complex_product(_pair_complex_conjugate(z[a]), resultant_rates[b])[
+                0
+            ]
+        )
+    return SineGlobalPairState(
+        form_means=x,
+        resultants=z,
+        phase_products=product,
+        internal_form_squared=u2,
+        form_phase_moments=w,
+        pair_strata=tuple(strata),
+        form_mean_rate_pi_numerators=tuple(mean_rates),
+        resultant_rate_pi_numerators=tuple(resultant_rates),
+        phase_product_rate_pi_numerators=tuple(product_rates),
+        internal_form_squared_rate_pi_numerators=tuple(squared_rates),
+        form_phase_moment_rate_pi_numerators=tuple(moment_rates),
+        directed_block_edges=directed,
+        block_current_pi_numerators=tuple(currents),
+        block_current_rate_pi_squared_numerators=tuple(current_rates),
+        form_storage=form_storage,
+        phase_storage=phase_storage,
+        storage=form_storage + phase_storage,
+        form_storage_rate_pi_numerator=form_work,
+        phase_storage_rate_pi_numerator=phase_work,
+        full_storage_rate_pi_numerator=form_work + phase_work,
     )

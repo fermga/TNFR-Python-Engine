@@ -221,9 +221,8 @@ from itertools import combinations, islice
 from operator import ge, le
 from statistics import StatisticsError, fmean
 from types import ModuleType
-from typing import Any, cast
+from typing import Any, TypeAlias, cast
 
-from .._compat import TypeAlias
 from .._remesh_contract import (
     DelayedRemeshConfiguration,
     materialize_delayed_remesh_configuration,

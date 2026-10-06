@@ -43,7 +43,7 @@ class Emission(Operator):
       ``dEPI/dt = nu_f * DeltaNFR``; execution timing and residuals retain that
       distinction
 
-    **Structural Irreversibility (TNFR.pdf §2.2.1):**
+    **Activation provenance:**
     The implementation retains activation lineage under the historical
     irreversibility contract. This metadata is not a proof of a physically
     irreversible flow, entropy production or emergence of time. Its UTC
@@ -147,7 +147,7 @@ class Emission(Operator):
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
         """Validate AL-specific preconditions with strict canonical checks.
 
-        Implements TNFR.pdf §2.2.1 precondition validation:
+        Applies the configured strict admission policy:
         1. EPI < latent threshold (node in nascent/latent state)
         2. νf >= basal threshold (sufficient structural frequency)
         3. Network connectivity check (warning for isolated nodes)

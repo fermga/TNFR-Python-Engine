@@ -1,8 +1,9 @@
-"""Tests for the pulse-phase / coherence attack-surface layer (re-founded).
+"""Finite arithmetic-phase and independent analytic-zeta diagnostic checks.
 
-The nodal pulse makes S(T) -- the RH-content oscillation the eliminated
-combinatorial (S_n-invariant) spectrum was blind to -- directly accessible;
-the critical line is the exact coherence axis.
+Finite Dirichlet-sum phases are compared at declared heights and tolerances.
+Separate mpmath-based checks cover numerical rectification, oracle availability
+and precision isolation. These checks do not identify the finite sum with
+analytic zeta or certify nodal dynamics, grammar U2 or RH.
 """
 
 from __future__ import annotations

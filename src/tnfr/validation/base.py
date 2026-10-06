@@ -6,9 +6,8 @@ validation subsystem. It must remain import-free to avoid circular dependencies.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Any, Generic, Mapping, Protocol, TypeVar, runtime_checkable
-
-from ..compat.dataclass import dataclass
 
 SubjectT = TypeVar("SubjectT")
 

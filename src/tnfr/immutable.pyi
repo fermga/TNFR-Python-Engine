@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Iterator, Mapping, Union
-
-from ._compat import TypeAlias
+from typing import Any, Callable, Iterator, Mapping, TypeAlias, Union
 
 FrozenPrimitive: TypeAlias = Union[int, float, complex, str, bool, bytes, None]
 FrozenCollectionItems: TypeAlias = tuple["FrozenSnapshot", ...]

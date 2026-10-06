@@ -161,7 +161,7 @@ neighborhood where all these entries stay positive. Thus a differentiable
 path in that neighborhood that preserves the full phase source can only
 rotate all phases together; its relative phase profile is fixed. This
 specialization reuses the general source-tangency result in
-[support balance, section 22](../FORCED_SUPPORT_BALANCE.md#22-source-tangency-without-a-telemetry-controller).
+[support balance, section 22](FORCED_SOURCE_AND_CLOCK.md#22-source-tangency-without-a-telemetry-controller).
 The exact coefficients contain `sqrt(3)`; symbolic controls do not pass
 rounded surds into the owner's exact rational Gram validator.
 

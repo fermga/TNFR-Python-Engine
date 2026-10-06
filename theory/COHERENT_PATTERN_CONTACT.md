@@ -1,9 +1,9 @@
 # Coherent pattern contact and formation boundaries
 
 This note owns the conditional two-ring contact result. It reuses the
-[supplied phase law](FORCED_SUPPORT_BALANCE.md#29-graph-independent-locking-and-phase-source-constraints),
-[cycle-period geometry](FORCED_SUPPORT_BALANCE.md#30-acute-phase-locks-are-circulation-states-with-integral-cycle-periods)
-and [isolated-ring relaxation](FORCED_SUPPORT_BALANCE.md#32-acute-cycle-relaxation-retains-phase-winding-while-form-relaxes).
+[supplied phase law](nodal/FORCED_PHASE_LOCKING.md#29-graph-independent-locking-and-phase-source-constraints),
+[cycle-period geometry](nodal/FORCED_PHASE_LOCKING.md#30-acute-phase-locks-are-circulation-states-with-integral-cycle-periods)
+and [isolated-ring relaxation](nodal/FORCED_WINDING_AND_WRITERS.md#32-acute-cycle-relaxation-retains-phase-winding-while-form-relaxes).
 The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 alone owns the next research task.
 
@@ -25,7 +25,7 @@ supplied averaged-sine law. They are not the derived form angles of the
 prepared identity during interaction. It does not derive the phase law,
 create support, establish spontaneous pattern formation or identify particles.
 
-The later [relational region interaction](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-region-interaction)
+The later [relational region interaction](nodal/RELATIONAL_RECOVERY_AND_INTERACTION.md#relational-region-interaction)
 reuses this geometry and regional accounting with a different, fully coupled
 phase/form law. This note's supplied sine evolution and numerical contact
 results must not be transferred to that model.

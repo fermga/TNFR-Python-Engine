@@ -1,60 +1,20 @@
-"""
-benchmarks/composition_arithmetic.py
+"""Finite graph-product identities and representation-dimension controls.
 
-Composition arithmetic — does the OPERATION (+ and ×) emerge from coupling
-coherent systems, instead of being injected by hand?
+For explicitly supplied graphs, the combinatorial Laplacian of the Cartesian
+product has pairwise-sum eigenvalues, while tensor-product adjacency has
+pairwise-product eigenvalues. These familiar identities concern different
+matrices; random-walk normalization does not generally preserve Cartesian
+additivity. Constructing a product is an input, not an executed TNFR Coupling
+law or a derivation of arithmetic operations from nodal dynamics.
 
-This is the forward edge of the emergent-number programme. Two earlier harnesses
-established:
-  - emergent_integers_symmetry.py  : geometry -> integers OUT (cardinals = irrep dims)
-  - inverse_spectrum_to_symmetry.py: partial spectrum -> group -> predict a hidden cardinal
-Both PRODUCE cardinals but never the arithmetic operation itself. The primality
-module (applications/primality-test/tnfr_primality) goes the other way: it CONSUMES divisibility
-(trial division n % i) to re-read primality as the equilibrium condition ΔNFR = 0.
-
-The open frontier is exactly: can the additive/multiplicative COMPOSITION of
-integers itself arise from composing systems, with no arithmetic put in by hand?
-
-ENGINE (known theorems — the independent ground truth):
-  - Cartesian product  G □ H : Laplacian eigenvalues = {λ_i + μ_j}   -> ADDITION
-  - Tensor   product   G × H : adjacency eigenvalues = {α_i · β_j}   -> MULTIPLICATION
-  - Aut(G) × Aut(H) acts on the product; product irreps are tensor products,
-    dim(ρ ⊗ σ) = dim ρ · dim σ                                       -> CARDINALS multiply
-
-TNFR reading: the canonical discrete ΔNFR / phase-curvature operator is the
-emergent random-walk Laplacian L_rw = I − D⁻¹W. The Cartesian/tensor product
-spectral additivity/multiplicativity used here is a theorem of the COMBINATORIAL
-graph Laplacian L = D − A specifically (the emergent L_rw lacks clean product
-additivity), so this layer reads the imposed connectivity's product structure.
-Coupling two coherent systems is a physical act, and the spectrum of the composite
-realises + and × with no arithmetic supplied externally. This connects to the
-B0★-α canonical graph-product programme (Q1 = G □ G, Q2 = G × G) in AGENTS.md.
-
-HONEST SCOPE:
-  This PRODUCES the additive and multiplicative composition of spectra, and the
-  multiplication of degeneracy cardinals. It does NOT make arithmetic primality
-  equal to representational irreducibility. We exhibit a COMPOSITE integer (4) that
-  is the dimension of an IRREDUCIBLE coherent mode (K5 / S5): "physically
-  indivisible" is NOT "arithmetically prime". And the SAME cardinal 4 is of
-  compositional origin (2 + 2 -> multiplicity 2·2) in a product system (K3 □ K3)
-  yet atomic in an indivisible one (K5). Whether a cardinal "factorises" is a
-  property of the SYSTEM's symmetry, not of the integer — in contrast with the
-  unique-factorisation theorem. The frontier is mapped, not erased.
-
-  LAPLACIAN CORRECTION (emergent-geometry audit): the product-spectrum
-  additivity {λ_i+μ_j} / multiplicativity {α_i·β_j} demonstrated here holds ONLY
-  for the imposed COMBINATORIAL Laplacian D - A. The canonical EMERGENT operator
-  L_rw = I - D^-1 W (and its self-adjoint twin L_sym) does NOT exhibit product
-  additivity (MEASURED: on K3 □ P3 and K3 □ K3, additive=False for both). So the
-  + / × emergence shown is a property of the imposed graph CONNECTIVITY, not of
-  the emergent nodal dynamics. The genuine emergent arithmetic in TNFR is in the
-  STRUCTURAL-FREQUENCY channel -- νf(p·q) = νf(p) + νf(q) (log-additivity,
-  νf = log p; the number-theory program) -- a DIFFERENT mechanism.
-
-Run:
-    python benchmarks/composition_arithmetic.py
-
-Status: RESEARCH (composition-arithmetic falsifier).
+The representation comparison retains a useful negative control: the
+four-dimensional standard representation of S5 on K5 is irreducible although
+four is composite. A product of two two-dimensional representations also has
+dimension four. Arithmetic primality and representation irreducibility are
+therefore different properties. Shared spectral/character helpers are imported
+by other finite controls; this module does not open a research campaign.
+See theory/TNFR_NUMBER_THEORY.md and
+theory/TNFR_STRUCTURAL_OBSERVABILITY.md#6-limits-beyond-linear-symmetry.
 """
 
 from __future__ import annotations
@@ -66,8 +26,8 @@ from networkx.algorithms.isomorphism import GraphMatcher
 
 # --------------------------------------------------------------------------- #
 # Spectra. L = D - A is the COMBINATORIAL graph Laplacian, whose product spectra
-# are additive/multiplicative (a combinatorial theorem); the canonical emergent
-# ΔNFR operator is L_rw = I - D^-1 W. A is the coupling matrix.
+# has additive Cartesian-product spectra; tensor-product adjacency has
+# multiplicative spectra. The declared pure-EPI model uses L_rw instead.
 # --------------------------------------------------------------------------- #
 def lap_spectrum(G, nodes=None):
     """Sorted eigenvalues of the combinatorial Laplacian L = D - A."""
@@ -163,7 +123,7 @@ def character_norm(P, mats, order):
 # --------------------------------------------------------------------------- #
 def test_addition():
     print("=" * 78)
-    print("ADDITION emerges from the Cartesian product (Laplacian spectrum)")
+    print("Pairwise spectral addition for a supplied Cartesian product")
     print("=" * 78)
     cases = [
         ("C4", nx.cycle_graph(4), "C5", nx.cycle_graph(5)),
@@ -178,7 +138,7 @@ def test_addition():
         print(f"      spec({nG}) = {np.round(sG, 3)}    spec({nH}) = {np.round(sH, 3)}")
     print(
         f"  VERDICT: {'PASS' if all_ok else 'FAIL'} "
-        "-- '+' is read off the composite, not supplied"
+        "-- the declared graph product satisfies the spectral sum identity"
     )
     return all_ok
 
@@ -186,7 +146,7 @@ def test_addition():
 def test_multiplication():
     print()
     print("=" * 78)
-    print("MULTIPLICATION emerges from the tensor product (adjacency spectrum)")
+    print("Pairwise spectral multiplication for supplied tensor-product adjacency")
     print("=" * 78)
     cases = [
         ("K3", nx.complete_graph(3), "K3", nx.complete_graph(3)),
@@ -201,7 +161,7 @@ def test_multiplication():
         print(f"      spec({nG}) = {np.round(sG, 3)}    spec({nH}) = {np.round(sH, 3)}")
     print(
         f"  VERDICT: {'PASS' if all_ok else 'FAIL'} "
-        "-- 'x' is read off the composite, not supplied"
+        "-- the declared tensor product satisfies the spectral product identity"
     )
     return all_ok
 
@@ -232,7 +192,7 @@ def test_cardinals_multiply():
     has_4 = any(abs(v - 6.0) < 1e-6 and m == 4 for v, m, _ in groups)
     print(
         f"  VERDICT: {'PASS' if has_4 else 'FAIL'} "
-        "-- 2 x 2 = 4 realised by coupling, no 'x' put in"
+        "-- the supplied Cartesian product contains the expected tensor eigenspace"
     )
     return has_4
 
@@ -240,7 +200,7 @@ def test_cardinals_multiply():
 def test_irreducibility_is_not_primality():
     print()
     print("=" * 78)
-    print("HONEST FRONTIER: irreducibility (physics) is NOT primality (arithmetic)")
+    print("Representation irreducibility and arithmetic primality differ")
     print("=" * 78)
     # K5: Aut = S5, Laplacian {0, 5,5,5,5}. The 4-fold mode is the standard irrep
     # of S5, which is IRREDUCIBLE — yet 4 = 2 x 2 arithmetically.
@@ -262,7 +222,9 @@ def test_irreducibility_is_not_primality():
         "  Meanwhile (test above) K3 [] K3 produced a 4-fold mode at lambda = 6 = 3+3"
     )
     print("  whose multiplicity is exactly 2*2 -- a 4 of COMPOSITIONAL origin.")
-    print("  So the cardinal 4 is atomic in K5 (simple group S5) and compositional")
+    print(
+        "  So the cardinal 4 is irreducible in K5 (symmetric group S5) and compositional"
+    )
     print("  in K3 [] K3 (product group): whether it 'factorises' depends on the")
     print("  SYSTEM's symmetry, not on the integer. Arithmetic unique factorisation")
     print("  is a strictly stronger structure than representational composition.")
@@ -283,20 +245,16 @@ def main():
     print("=" * 78)
     print("SUMMARY")
     print("=" * 78)
-    print(f"  '+' emerges (Cartesian product)         : {'PASS' if r1 else 'FAIL'}")
-    print(f"  'x' emerges (tensor product)            : {'PASS' if r2 else 'FAIL'}")
+    print(f"  Cartesian-product sum identity         : {'PASS' if r1 else 'FAIL'}")
+    print(f"  Tensor-product spectral identity            : {'PASS' if r2 else 'FAIL'}")
     print(f"  cardinals multiply (2 x 2 = 4)          : {'PASS' if r3 else 'FAIL'}")
     print(f"  irreducibility != primality (frontier)  : {'PASS' if r4 else 'FAIL'}")
     overall = all([r1, r2, r3, r4])
     print(f"\n  OVERALL: {'ALL PASS' if overall else 'SOME FAILED'}")
     print()
-    print("  Reading: the additive and multiplicative COMPOSITION of integers")
-    print("  emerges from coupling coherent systems (no arithmetic injected) -- '+'")
-    print("  from the Cartesian product, 'x' from the tensor product, and cardinals")
-    print("  multiply. But representational irreducibility does NOT reproduce")
-    print("  arithmetic primality: the same cardinal factorises or not depending on")
-    print("  the system's symmetry. Coupling PRODUCES (+, x) on spectra and cardinals;")
-    print("  the unique factorisation of integers remains a separate, stronger fact.")
+    print("  These are finite checks of graph-product spectral identities.")
+    print("  The graph constructions are inputs; no Coupling event is executed.")
+    print("  The representation control separates irreducibility from primality.")
 
 
 if __name__ == "__main__":

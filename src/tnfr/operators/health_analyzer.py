@@ -6,13 +6,13 @@ operational rubric scores and do not estimate canonical coherence C(t).
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from ..types import TNFRGraph
 
-from ..compat.dataclass import dataclass
 from ..config.operator_names import (
     BIFURCATION_WINDOW,
     COHERENCE,

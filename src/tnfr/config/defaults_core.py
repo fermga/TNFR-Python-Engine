@@ -13,11 +13,10 @@ correspondence audit).
 
 from __future__ import annotations
 
-from dataclasses import asdict, field
+from dataclasses import asdict, dataclass, field
 from types import MappingProxyType
 from typing import Any, Mapping
 
-from ..compat.dataclass import dataclass
 from ..constants.canonical import (
     CHANNEL_WEIGHT_PRIMARY,
     CHANNEL_WEIGHT_SECONDARY,

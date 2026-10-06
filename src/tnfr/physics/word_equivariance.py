@@ -84,12 +84,13 @@ def composition_closure_holds(word, G, sigma: dict, node, *, tol: float = 1e-6):
 
 
 def word_preserves_fix(word, G, *, tol: float = 1e-6):
-    r"""``(is_fixed, residual)`` — ``Fix(Γ)`` preservation of a Γ-symmetric word.
+    r"""Return ``(is_fixed, spread)`` for the supplied sequential node sweep.
 
-    Applies ``W`` as a Γ-equivariant sweep (each factor at **every** node) on the
-    orbit-constant seed, then checks the result is still orbit-constant
-    (``∈ Fix(Γ)``).  This is the corollary: an equivariant word cannot move a
-    symmetric state into ``Fix(Γ)^⊥``.
+    Each factor visits all nodes in insertion order, then the selected scalar
+    channels are checked for orbit constancy. Visiting every node does not prove
+    equivariance: the ordering must also respect the group action. The second
+    value is the largest whole-graph field spread, a proxy on vertex-transitive
+    fixtures that can remain nonzero on a fixed state with several orbits.
     """
     from ..dynamics import default_compute_delta_nfr
 
@@ -124,11 +125,11 @@ class WordEquivarianceResult:
 
 
 def canonical_words():
-    r"""Canonical grammar fragments + closed words (name, glyphs, classes).
+    r"""Selected audit fragments and closed words (name, glyphs, classes).
 
-    The fragments are the AGENTS.md building blocks (Bootstrap, Stabilize,
-    Propagate, Explore); the closed words add a U1b closure so the audit covers
-    both bare fragments and grammar-complete words.
+    These explicit probe inputs cover short compositions and a U1b closure.
+    They are not the public recipe inventory; use ``list_sequences()`` for that
+    catalog. Passing a probe does not establish live grammar admission.
     """
     from ..operators.definitions import (
         Coherence,
@@ -154,7 +155,7 @@ def canonical_words():
 
 
 def audit_word_equivariance(*, tol: float = 1e-6):
-    r"""Audit the canonical words for composition-closed equivariance.
+    r"""Compare selected words on the finite pointed equivariance fixtures.
 
     Returns one :class:`WordEquivarianceResult` per word, reporting the worst
     residual over the σ-invariant test cases (cycle rotation, star leaf swap).

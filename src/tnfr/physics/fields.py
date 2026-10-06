@@ -54,10 +54,9 @@ derive a physical interaction or an evolution law for the graph metric.
 
 References
 ----------
-- UNIFIED_GRAMMAR_RULES.md § U6: STRUCTURAL POTENTIAL CONFINEMENT
+- theory/UNIFIED_GRAMMAR_RULES.md § U6: Structural potential confinement policy
 - docs/STRUCTURAL_FIELDS_TETRAD.md: Field API, estimator provenance and validation scope
-- AGENTS.md § Structural Fields: Canonical tetrad documentation
-- TNFR.pdf § 2.1: Nodal equation foundation
+- theory/FUNDAMENTAL_THEORY.md: Nodal identity and complete-law premises
 """
 
 from __future__ import annotations

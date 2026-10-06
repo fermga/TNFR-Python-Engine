@@ -21,9 +21,11 @@ from outside.
 ## 2. The diffusion-sector result (DERIVED)
 
 Let `Γ = Aut(G, W)` act on `ℝᴺ` by the permutation representation `σ ↦ P_σ`. The
-canonical structural-diffusion operator `L_rw = I − D⁻¹W` (the EPI channel of the
-nodal equation, [structural_diffusion.py](../src/tnfr/physics/structural_diffusion.py))
-is **equivariant**:
+structural-diffusion operator has rows `L_rw = I − D⁻¹W` at positive outgoing
+strength and zero rows at zero strength, including isolates (the EPI channel of
+the nodal equation, [structural_diffusion.py](../src/tnfr/physics/structural_diffusion.py)).
+The automorphisms preserve weights and directed support when present, so this
+complete operator is **equivariant**:
 
 $$P_\sigma\, L_{rw} = L_{rw}\, P_\sigma \qquad \forall\,\sigma\in\Gamma .$$
 
@@ -39,6 +41,9 @@ block-diagonalises:
 
 $$\mathbb{R}^N = \mathrm{Fix}(\Gamma)\ \oplus\ \mathrm{Fix}(\Gamma)^\perp,\qquad
 [L_{rw}, Q_\Gamma] = 0 .$$
+
+More generally, it preserves the isotypic components of this finite
+permutation representation; the displayed fixed/complement split is coarser.
 
 **Consequence for the flow.** With an orbit-constant `νf` (so `D_νf` also
 commutes with `P_σ`), the overdamped nodal-equation flow
@@ -162,7 +167,7 @@ representation placing analytic `S(T)` in this finite complement is supplied.
 finite base-case sample do not establish its hypothesis on later inputs, or
 control error accumulation under arbitrary composition. The independent probes in
 [word_equivariance.py](../src/tnfr/physics/word_equivariance.py) report that the
-five canonical words (Bootstrap, Bootstrap+close, Stabilize, Propagate, Explore)
+five selected words (Bootstrap, Bootstrap+close, Stabilize, Propagate, Explore)
 have **exactly zero** residual on both test cases, every prefix stays within
 tolerance (`composition_closure_holds`), and a Γ-symmetric sweep keeps the seed
 orbit-constant (`word_preserves_fix`)
@@ -187,3 +192,43 @@ but not a complete joint-state observability theory, an autonomous symmetry
 selection mechanism, or a solution to an external open problem. Current
 cross-scale dynamic and geometric output obligations are maintained in
 [TNFR_SCALE_GEOMETRY_AND_BRIDGE.md](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md).
+
+## 6. Limits beyond linear symmetry
+
+The same action and complete state must be used at every step. In addition to
+support, this includes capacities, phases, form, histories, selectors and
+ordering. Bare-graph symmetry or uniform configuration gains cannot substitute
+for symmetry of those inputs. The following limits apply to any proposed
+coarse-state or observation argument:
+
+- **Nonlinear fixed sets and complements differ.** Equivariance preserves the
+  fixed set, but not generally its orthogonal complement. Under coordinate
+  exchange, `(x_1,x_2) -> (x_1^2,x_2^2)` is equivariant yet sends `(1,-1)` to
+  `(1,1)`. The linear two-sector decomposition cannot be transferred to an
+  arbitrary nonlinear operator or tensor construction.
+- **An invariant observation can retain information.** A matrix spectrum is
+  unchanged by simultaneous relabeling yet can distinguish graphs or unordered
+  frequency data. Swapping values while holding other data fixed is a different
+  intervention. Relabeling covariance is not arithmetic or analytic blindness.
+- **An equivariant field reader needs invariant input to produce an invariant
+  output.** Arbitrary phase/pressure states need not give orbit-constant tetrad
+  fields. Undefined curvature cannot be replaced with an invariant zero.
+- **One failed connection does not exhaust possible connections.** A selected
+  invariant edge construction can lose an observation without excluding every
+  other state-derived construction. Non-invariance under bare-graph symmetry
+  does not by itself mean that a connection was supplied externally.
+
+For a specified linear generator, `[L,P]=0` implies `[f(L),P]=0` for polynomials
+and functional calculi defined on that generator. Equivariant factors similarly
+give equivariant Kronecker products and compatible Kronecker sums under the
+product action. Induced line-graph actions must also preserve the selected edge
+weights and observations. These conditional identities do not place analytic
+`S(T)` in a finite symmetry complement or establish a catalog-wide obstruction.
+
+The [linear flow-morphism owner](TNFR_ARITHMETIC_OPERATORS.md#4-structural-morphisms-of-the-declared-linear-epi-flow-n08)
+proves the intertwining criterion; [CRT](TNFR_CRT_FRACTALITY.md) and
+[p-adic transport](TNFR_PADIC_DYNAMICS.md) retain their product/reduction laws.
+The [Riemann scope](TNFR_RIEMANN_RESEARCH_NOTES.md) owns the external-target
+limits. A finite `INDETERMINATE_DEGENERATE_CONSTRUCTION` verdict establishes
+only failure of the selected statistic on its stated fixture and tolerance,
+not impossibility for an entire family or all future constructions.

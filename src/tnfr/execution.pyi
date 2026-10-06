@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from collections import deque
 from collections.abc import Callable, Iterable, Sequence
-from typing import Any, Optional
+from typing import Any, Optional, TypeAlias
 
-from ._compat import TypeAlias
 from .tokens import TARGET, THOL, WAIT, OpTag, Token
 from .types import Glyph, NodeId, TNFRGraph
 

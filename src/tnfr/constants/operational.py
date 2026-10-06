@@ -68,13 +68,6 @@ PATTERN_COMPRESS_WEIGHT_CANONICAL = 0.93  # operational tuning (not TNFR physics
 PATTERN_LINEAR_WEIGHT_CANONICAL = 0.18  # operational tuning (not TNFR physics)
 
 # ============================================================================
-# ALGEBRAIC TOLERANCES (operators/algebra.py — operational precision)
-# ============================================================================
-ALGEBRA_EPI_TOLERANCE_CANONICAL = 0.04  # operational tuning (not TNFR physics)
-ALGEBRA_VF_TOLERANCE_CANONICAL = 0.1  # operational tuning (not TNFR physics)
-ALGEBRA_COMBINED_TOLERANCE_CANONICAL = 0.04  # operational tuning (not TNFR physics)
-
-# ============================================================================
 # PHYSICS NETWORK-STUDY CALIBRATION (physics/calibration.py — Watts–Strogatz
 # regression coefficients; empirical study fit, not nodal physics)
 # ============================================================================

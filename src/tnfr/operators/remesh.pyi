@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 from collections.abc import Hashable, Mapping, Sequence
-from typing import Any
+from typing import Any, TypeAlias
 
-from .._compat import TypeAlias
 from ._delayed_remesh_kernel import (
     DelayedRemeshNodeProposal as DelayedRemeshNodeProposal,
 )

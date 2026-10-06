@@ -31,7 +31,7 @@ References
 - src/tnfr/physics/structural_diffusion.py (emergent operator, structural_eigenmodes)
 - src/tnfr/physics/symplectic_substrate.py (substrate fields)
 - applications/factorization-lab/ (the spectral Paley factorizer this characterizes)
-- benchmarks/paley_bridge.py, benchmarks/primes_as_consequence.py (Reading B)
+- benchmarks/paley_bridge.py, benchmarks/arithmetic_pressure_audit.py (finite arithmetic controls)
 - examples/08_emergent_geometry/103_emergent_substrate_meets_riemann.py
 - examples/07_number_theory/116_nuf_emergent_prime_visibility.py
 - AGENTS.md "Transport Content of the Nodal Equation" (L_rw = emergent dNFR)

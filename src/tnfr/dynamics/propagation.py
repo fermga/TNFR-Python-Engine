@@ -1,21 +1,12 @@
-"""Network propagation dynamics for OZ-induced dissonance.
+"""Configured neighbor-pressure updates for Dissonance events.
 
-This module implements propagation of dissonance across network neighbors
-following TNFR resonance principles. When OZ (Dissonance) is applied to a node,
-structural dissonance propagates through the network based on phase compatibility,
-frequency matching, and coupling strength.
+Phase, capacity contrast and edge weights enter the selected propagation
+policy. Its coefficients and threshold alarms are supplied contracts, not
+laws selected by the nodal identity. A propagation record or a cascade label
+does not prove a trajectory bifurcation or spontaneous support formation.
 
-According to TNFR canonical theory:
-    "Nodal interference: Dissonance between nodes that disrupts coherence.
-    Can induce reorganization or collapse."
-
-OZ introduces topological asymmetry that propagates beyond the local node,
-potentially triggering bifurcation cascades in phase-compatible neighbors.
-
-References
-----------
-- TNFR.pdf §2.3.3: OZ introduces topological dissonance
-- Issue: [OZ] Implement dissonance propagation and neighborhood network effects
+See ``theory/STRUCTURAL_OPERATORS.md`` and ``docs/contracts/OPERATOR_EVENTS.md``
+for the live event, admission and observation boundaries.
 """
 
 from __future__ import annotations

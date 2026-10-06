@@ -1,69 +1,32 @@
 #!/usr/bin/env python3
-"""
-Example 119 — The Phase Sector: Directed Residue Operator Detects All Odd Primes
-================================================================================
+"""Example 119: finite spectra of supplied directed residue graphs.
 
-Example 117 (Reading B) found that the emergent diffusion spectrum reproduces
-the Paley rigidity — but ONLY for primes n ≡ 1 (mod 4), and it could not
-separate prime powers (49 = 7² was rigid). This example crosses that wall using
-the **phase sector**: the same canonical emergent operator applied to the
-*directed* residue graph, whose spectrum is COMPLEX.
+The graph uses the nonzero quadratic residues modulo each supplied integer n.
+For primes n == 1 (mod 4), it is symmetric; for primes n == 3 (mod 4), it is a
+Paley tournament. Those statements require the prime hypothesis, which is not
+available for arbitrary composite inputs. The shared structural diffusion
+operator supplies the random-walk Laplacian evaluated here.
 
-The structural reason for the mod-4 wall
-----------------------------------------
-For n ≡ 1 (mod 4), −1 is a quadratic residue, so the residue graph is
-SYMMETRIC: the canonical diffusion operator L_rw = I − D⁻¹W is self-adjoint and
-its spectrum is REAL — the support/scale sector. For n ≡ 3 (mod 4), −1 is NOT a
-residue, so the residue digraph is a **Paley tournament**: every pair has
-exactly one directed edge. The canonical operator on this DIRECTED graph is
-non-self-adjoint (a non-symmetric circulant, hence normal) and its spectrum is
-COMPLEX — the arithmetic content lives in the
-PHASE (the imaginary part), which the real spectrum of example 117 discards.
+Three finite comparisons are retained: the count of eigenvalues rounded to
+four decimals versus SymPy prime labels for odd n in [5,119]; selected prime
+powers versus their supplied factorizations; and the imaginary eigenvalue
+magnitude versus sqrt(n)/(n-1) on eight chosen Paley-tournament primes.
+A match in the finite scan is not a universal primality theorem, and the
+factorization labels are independently supplied comparison data.
 
-Doctrine compliance (the emergent operator, unchanged)
-------------------------------------------------------
-This uses the SAME canonical emergent operator —
-`tnfr.physics.structural_diffusion.structural_diffusion_operator` (the literal
-ΔNFR EPI channel) — directly on a `networkx.DiGraph`. Verified identical to a
-hand-built operator (max|Δ| = 0). Nothing ad-hoc: the complex spectrum is the
-canonical emergent geometry on a directed graph. Only arithmetic input: x² mod n.
+Complex eigenvalues are properties of this specified matrix. They do not
+identify primitive nodal phase or a physical phase observable. The arithmetic
+construction neither derives primes from nodal evolution nor establishes an
+analytic Riemann-phase obstruction. The prime-power cases provide controls
+against transferring the symmetric-graph criterion from example 117.
 
-Three measured results
-----------------------
-R1 UNIFIED PRIMALITY (both mod-4 classes). "The directed emergent operator has
-   exactly 3 distinct (complex) eigenvalues" ⟺ n is an odd prime — 58/58 correct
-   over odd n ∈ [5, 119], zero mismatches. This extends Reading B from the
-   n ≡ 1 (mod 4) primes (example 117) to ALL odd primes via the phase sector.
-
-R2 PRIME POWERS RESOLVED. The directed operator gives 4+ distinct eigenvalues
-   for 9 = 3², 25 = 5², 49 = 7², 121 = 11² — it SEPARATES primes from prime
-   powers, which the real symmetric operator of example 117 could NOT (there
-   49 was rigid, the honest caveat). The phase channel removes that caveat.
-
-R3 THE PHASE ENCODES √n (Gauss sum). For n ≡ 3 (mod 4) primes the imaginary
-   spectrum is the Paley-tournament eigenvalue structure (−1 ± i√n)/2 on the
-   adjacency — max|Im(λ)| of the diffusion operator scales as √n/(n−1), a
-   Gauss-sum fact carried in the PHASE.
-
-Honest scope
-------------
-This is a genuine, non-circular extension of Reading B to all odd primes (input
-is only x² mod n), and it removes the prime-power caveat — a real improvement
-over example 117. But it remains SPECTRAL and bounded by the same e–π / Fix(G)^⊥
-wall as the paused TNFR-Riemann program: it detects primality structurally, it
-does not factor, does not reach the continuous phase S(T) = (1/π)arg ζ(½+iT),
-and closes no open problem. The "3 distinct eigenvalues" rigidity is the
-strongly-regular / doubly-regular tournament signature (a known algebraic-graph
-fact), recovered here as the canonical emergent operator's spectrum.
-
-References
-----------
-- src/tnfr/physics/structural_diffusion.py (structural_diffusion_operator = ΔNFR channel)
-- examples/08_emergent_geometry/117_emergent_geometry_residue_graph.py (the real sector, n≡1 mod4)
-- examples/08_emergent_geometry/118_emergent_vs_classical_operator.py (emergent vs classical)
-- theory/TNFR_NUMBER_THEORY.md §9.6 (this example; §9.5 three-sector unification)
-- benchmarks/primes_as_consequence.py (Reading B, the e–π / Fix(G)^⊥ wall)
-- AGENTS.md "Regime Correspondences" (the complex field Ψ = K_φ + i·J_φ)
+Owners and related finite controls:
+- src/tnfr/physics/structural_diffusion.py
+- examples/08_emergent_geometry/117_emergent_geometry_residue_graph.py
+- examples/08_emergent_geometry/118_emergent_vs_classical_operator.py
+- theory/TNFR_NUMBER_THEORY.md
+- benchmarks/paley_bridge.py
+- benchmarks/directed_paley_bridge.py
 """
 
 import os
@@ -85,8 +48,8 @@ def _qr(n):
 def residue_digraph(n):
     """Directed residue graph: edge i->j iff (j-i) mod n is a quadratic residue.
 
-    For n ≡ 1 (mod 4) this is symmetric (−1 is a QR); for n ≡ 3 (mod 4) it is a
-    Paley tournament (one directed edge per pair). The ONLY arithmetic input is
+    For prime n ≡ 1 (mod 4) this is symmetric; for prime n ≡ 3 (mod 4) it is a
+    Paley tournament (one directed edge per pair). The graph construction uses
     x² mod n.
     """
     R = _qr(n)
@@ -110,14 +73,14 @@ def _n_distinct(ev, decimals=4):
 
 
 def experiment_1_unified_primality():
-    """R1: 3 distinct complex eigenvalues <=> odd prime (both mod-4 classes)."""
+    """R1: compare the rounded spectral count with prime labels on a finite range."""
     print("=" * 74)
-    print("EXPERIMENT 1: Unified Primality via the Complex (Phase) Spectrum")
+    print("EXPERIMENT 1: Finite Complex-Spectrum Count versus Prime Labels")
     print("=" * 74)
     print()
     print("The canonical emergent operator on the DIRECTED residue graph. For")
-    print("n=3 mod4 the spectrum is COMPLEX (Paley tournament). Rigidity test:")
-    print("'exactly 3 distinct eigenvalues' <=> odd prime.")
+    print("prime n=3 mod4 the spectrum is COMPLEX (Paley tournament). Compare:")
+    print("'3 eigenvalues rounded to 4 decimals' against supplied prime labels.")
     print()
     print(
         f"  {'n':>4} {'mod4':>5} {'prime':>6} {'n_distinct':>11} "
@@ -141,18 +104,20 @@ def experiment_1_unified_primality():
         f"  full sweep odd n in [5,119]: "
         f"'3 distinct == prime' correct = {correct}/58"
     )
-    print("  -> extends Reading B from n=1 mod4 (ex 117) to ALL odd primes.")
+    print(
+        "  -> finite agreement on the declared candidates; no converse theorem follows."
+    )
     print()
 
 
 def experiment_2_prime_powers():
-    """R2: the directed operator separates primes from prime powers."""
+    """R2: compare selected prime-power spectra with supplied factorization labels."""
     print("=" * 74)
-    print("EXPERIMENT 2: Prime Powers Resolved (the example-117 caveat removed)")
+    print("EXPERIMENT 2: Selected Prime-Power Controls")
     print("=" * 74)
     print()
     print("Example 117's real operator made 49=7^2 rigid (3 distinct), the")
-    print("honest caveat. The directed (phase) operator separates them:")
+    print("symmetric-graph counterexample. Compare these directed residue spectra:")
     print()
     print(f"  {'n':>5} {'factorization':>14} {'n_distinct':>11} {'verdict':>9}")
     for n in (7, 9, 11, 25, 13, 27, 49, 121):
@@ -162,14 +127,14 @@ def experiment_2_prime_powers():
         print(f"  {n:>5} {str(fac):>14} {d:>11} {verdict:>9}")
     print()
     print("  -> 9,25,49,121 (prime squares) give 4 distinct eigenvalues, NOT 3.")
-    print("     The phase channel distinguishes primes from prime powers.")
+    print("     This is a finite matrix comparison; factorint supplies the labels.")
     print()
 
 
 def experiment_3_phase_encodes_sqrt_n():
-    """R3: the imaginary spectrum carries the Paley-tournament Gauss sum √n."""
+    """R3: compare selected Paley-tournament spectra with their Gauss-sum formula."""
     print("=" * 74)
-    print("EXPERIMENT 3: The Phase Encodes sqrt(n) (Gauss Sum in the Imaginary)")
+    print("EXPERIMENT 3: Selected Imaginary Eigenvalues versus the Prime-Case Formula")
     print("=" * 74)
     print()
     print("For n=3 mod4 primes the residue digraph is a Paley tournament with")
@@ -184,33 +149,28 @@ def experiment_3_phase_encodes_sqrt_n():
         ref = np.sqrt(n) / (n - 1)
         print(f"  {n:>4} {mi:>10.4f} {ref:>14.4f} {mi / ref:>8.3f}")
     print()
-    print("  -> ratio ~ 1: the PHASE (imaginary spectrum) carries the Gauss-sum")
-    print("     sqrt(n). This is the arithmetic channel the real sector misses.")
+    print("  -> ratio ~ 1: these imaginary eigenvalues match the supplied prime-case")
+    print("     sqrt(n) formula; they do not identify a primitive nodal phase.")
     print()
 
 
 def main():
     print()
-    print("  TNFR Example 119: The Phase Sector - Directed Residue Operator")
-    print("  Detects all odd primes; resolves the prime-power caveat")
+    print("  TNFR Example 119: Finite Directed Residue Spectra")
+    print("  Selected prime labels, prime powers and prime-case spectral formulas")
     print("  ==============================================================")
     print()
     experiment_1_unified_primality()
     experiment_2_prime_powers()
     experiment_3_phase_encodes_sqrt_n()
     print("=" * 74)
-    print("WHAT THIS ESTABLISHES")
+    print("FINITE COMPARISON SCOPE")
     print("=" * 74)
-    print()
-    print("The SAME canonical emergent operator (structural_diffusion_operator,")
-    print("the dNFR channel), applied to the DIRECTED residue graph, has a")
-    print("COMPLEX spectrum whose PHASE detects ALL odd primes (58/58) and")
-    print("separates them from prime powers - removing the example-117 caveat.")
-    print("This is a genuine, non-circular extension of Reading B via the phase")
-    print("sector (input only x^2 mod n). It remains SPECTRAL and bounded by the")
-    print("same e-pi / Fix(G)^perp wall as the paused Riemann program: it detects")
-    print("primality, it does not factor, does not reach S(T)=arg zeta, closes")
-    print("no open problem. The emergent geometry on a DiGraph IS the phase.")
+    print("The supplied residue graphs and random-walk Laplacians give finite")
+    print("spectral comparisons against supplied prime and factorization labels.")
+    print("The prime-case Gauss-sum formula has its stated prime hypothesis.")
+    print("Neither a universal primality criterion nor a physical or analytic")
+    print("phase identification follows from these finite matrix observations.")
     print()
 
 

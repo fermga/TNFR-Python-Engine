@@ -139,7 +139,6 @@ try:
     integrated_evolution_symbolic = _symbolic.integrated_evolution_symbolic
     check_convergence_exponential = _symbolic.check_convergence_exponential
     compute_second_derivative_symbolic = _symbolic.compute_second_derivative_symbolic
-    evaluate_bifurcation_risk = _symbolic.evaluate_bifurcation_risk
     latex_export = _symbolic.latex_export
     pretty_print = _symbolic.pretty_print
     # Re-export the math module under 'math'
@@ -260,7 +259,6 @@ if _HAS_SYMBOLIC:
             "integrated_evolution_symbolic",
             "check_convergence_exponential",
             "compute_second_derivative_symbolic",
-            "evaluate_bifurcation_risk",
             "latex_export",
             "pretty_print",
             "math",  # Also export the entire math module

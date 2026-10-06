@@ -1,8 +1,9 @@
 r"""Tests for word-composition equivariance (R1, N06).
 
-Composition closure: a grammar word built from equivariant operators is itself
-equivariant (``W ρ(g) = ρ(g) W``), so it preserves the ``Fix(Γ)`` / ``Fix(Γ)^⊥``
-split. The inductive step is derived; the per-operator base case is measured.
+Composition closure: a word of equivariant maps is equivariant
+(``W ρ(g) = ρ(g) W``) and preserves ``Fix(Γ)``. A nonlinear equivariant map
+need not preserve its orthogonal complement. These finite probes check selected
+words and invariant seeds; they do not establish arbitrary-state equivariance.
 """
 
 from __future__ import annotations

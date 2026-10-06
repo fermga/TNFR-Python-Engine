@@ -55,7 +55,7 @@ receiver observation, hidden initial state and complete evolution. In the
 held-capacity relational law, zero receiver capacity freezes both receiver
 rows, but that node can still supply a fixed boundary to active neighbors.
 The [effective-link theorem](RELATIONAL_PATTERN_COMPOSITION.md#effective-link-admission)
-and [hidden-memory owner](RELATIONAL_PATTERN_MEMORY.md#9-a-nodal-intermediary-mediates-joint-formphase-interaction)
+and [hidden-memory owner](RELATIONAL_MEDIATOR_DYNAMICS.md#9-a-nodal-intermediary-mediates-joint-formphase-interaction)
 retain these distinctions.
 
 ## 2. What currently changes support
@@ -415,7 +415,7 @@ realizes the infimum. Thus eliminating equilibrium hidden coordinates alone
 cannot produce a negative support-gradient drive from this storage.
 Moving constraints, new `a`-dependent terms, nonequilibrium memory and
 nodal-loss-funded contact lie outside this statement. The
-[controlled hidden reduction](RELATIONAL_PATTERN_MEMORY.md#fast-mediator-reduction)
+[controlled hidden reduction](RELATIONAL_MEDIATOR_DYNAMICS.md#fast-mediator-reduction)
 already distinguishes static elimination from exact finite-capacity dynamics;
 no additional closure or evolution law follows from this monotonicity proof.
 
@@ -707,7 +707,7 @@ nonlinear source and moving boundary can generate hidden state. The existing
 [zero-hidden-state counterexample](RELATIONAL_PATTERN_MEMORY.md#5-zero-initial-hidden-state-is-not-an-invariant-preparation)
 already makes this distinction.
 
-For the [fast-mediator chart](RELATIONAL_PATTERN_MEMORY.md#fast-mediator-reduction),
+For the [fast-mediator chart](RELATIONAL_MEDIATOR_DYNAMICS.md#fast-mediator-reduction),
 `E_exc=S_full-S_eff=u^2+2*beta*cos(delta/2)*(1-cos v)>=0` on its stated domain.
 This is excess over the instantaneous frozen-boundary reconstruction, not
 necessarily over a full joint equilibrium. Along the full law,

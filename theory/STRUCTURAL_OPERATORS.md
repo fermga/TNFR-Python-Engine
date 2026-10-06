@@ -1389,7 +1389,7 @@ The runtime preconditions and U4b history determine whether the mutation is
 admissible; $|\Delta\text{NFR}|$ does not scale this phase step.
 
 Native occurrence additionally depends on selection. The
-[heterogeneous-capacity admission study](FORCED_SUPPORT_BALANCE.md#35-heterogeneous-capacity-opens-a-conditional-mutation-admission-gate)
+[heterogeneous-capacity admission study](nodal/FORCED_WINDING_AND_WRITERS.md#35-heterogeneous-capacity-opens-a-conditional-mutation-admission-gate)
 separates fresh diagnostic compatibility, declared histories, an executed
 default prefix and the direction of the resulting phase action.
 
@@ -1655,7 +1655,7 @@ action is derived as that affine map on a declared domain.
 
 ## 13. Postcondition Contracts
 
-Every operator has a postcondition contract anchored to the **direct effect on node state** (the nodal dynamics $\partial\text{EPI}/\partial t = \nu_f\cdot\Delta\text{NFR}$, anchored to TNFR.pdf §2.2.1). The canonical contract layer `src/tnfr/operators/operator_contracts.py` is the **single source of truth** — it records each operator's `primary_channel` (one nodal-equation channel: $\text{EPI}$ / $\nu_f$ / $\theta$ / $\Delta\text{NFR}$), `scale` (NODE for twelve operators, NETWORK for the U5 operator REMESH), and `postcondition`. The proactive audit (`audit_operator_contracts`), the reactive integrity monitor (`POSTCONDITIONS`, `src/tnfr/physics/integrity.py`), and the introspection metadata all derive from this spec. The monitor supports three modes: OFF (production), OBSERVE (log violations), ENFORCE (raise exceptions).
+Every operator has a postcondition contract anchored to the **direct effect on node state** (with declared continuous nodal flow $\partial\text{EPI}/\partial t = \nu_f\cdot\Delta\text{NFR}$ and separate hybrid jumps). The canonical contract layer `src/tnfr/operators/operator_contracts.py` is the **single source of truth** — it records each operator's `primary_channel` (one nodal-equation channel: $\text{EPI}$ / $\nu_f$ / $\theta$ / $\Delta\text{NFR}$), `scale` (NODE for twelve operators, NETWORK for the U5 operator REMESH), and `postcondition`. The proactive audit (`audit_operator_contracts`), the reactive integrity monitor (`POSTCONDITIONS`, `src/tnfr/physics/integrity.py`), and the introspection metadata all derive from this spec. The monitor supports three modes: OFF (production), OBSERVE (log violations), ENFORCE (raise exceptions).
 
 | # | Operator | Glyph | Channel | Postcondition |
 |---|----------|-------|---------|---------------|
@@ -1791,7 +1791,7 @@ channel, direction, scale and postcondition).
 | `src/tnfr/physics/runtime_remesh_schedule_block_margin.py` / `src/tnfr/physics/runtime_remesh_schedule_block_margin.pyi` | Exact normalized margin for one finite causal boundary block |
 | `src/tnfr/physics/runtime_remesh_schedule_relative_defect.py` / `src/tnfr/physics/runtime_remesh_schedule_relative_defect.pyi` | Finite causal verification of signed defects and the robust energy envelope |
 | `src/tnfr/operators/nodal_equation.py` | Nodal equation validation |
-| `src/tnfr/operators/canonical_patterns.py` | Canonical sequence definitions |
+| `src/tnfr/operators/canonical_patterns.py` | Named ordered recipes; application-domain tags are labels, not validated effects |
 | `src/tnfr/operators/introspection.py` | `OperatorMeta` metadata registry |
 | `src/tnfr/operators/operator_contracts.py` | **Canonical contract layer** (single source of truth: channel × scale × postcondition) |
 | `src/tnfr/operators/stage_contracts.py` | All-target schedule, footprint, merge, rollback and invariance contracts |
@@ -1810,6 +1810,13 @@ channel, direction, scale and postcondition).
 | `src/tnfr/constants/canonical.py` | Phase scale and configured gains, bounds and diagnostic policies |
 
 ### 15.2 Base Operator Workflow
+
+The fluent SDK's `list_canonical_sequences()` reads the recipe registry above;
+`apply_canonical_sequence()` runs the selected word through the shared operator
+path. Recipe names such as `therapeutic_protocol`, `phase_lock` and
+`resonance_peak_hold` identify supplied words. They do not establish healing,
+phase locking, peak detection, future stability or an autonomous selection law.
+Grammar admission and each operator's live preconditions still apply.
 
 The `Operator.__call__(G, node, **kw)` method implements the canonical execution pipeline:
 
@@ -2155,7 +2162,7 @@ of an event family with a transformed target does not establish closure after
 discarding that target. These are conditional descent criteria, not claims
 that the named engine operators already satisfy them.
 
-The [unordered-pair state](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-replica-unordered-state)
+The [unordered-pair state](nodal/SINE_PAIR_STATE.md#sine-replica-unordered-state)
 provides an existing exact continuous quotient under its sine-law premises.
 It retains internal coordinates; means alone generally fail. Whether an action
 at one constituent descends requires its own target and symmetry test. A
@@ -2163,7 +2170,7 @@ continuous fine flow cannot cause a finite jump in a continuous observation;
 an apparent jump in a selected partition instead requires an explicit change
 of observation or event law. Neither interpretation creates extra fine nodes.
 
-The [full-form formation obstruction](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#relational-full-consensus-formation-obstruction)
+The [full-form formation obstruction](nodal/RELATIONAL_FORMATION_CONTROLS.md#relational-full-consensus-formation-obstruction)
 adds a complementary native-law constraint. Its monotone quantity `W` bounds
 phase acquisition during smooth flow, and its reset corollary supplies a
 necessary jump budget when the same graph, capacity and law are retained.
@@ -2174,7 +2181,7 @@ Refreshing pressure can erase a pressure-only intervention; changing capacity
 or support requires new theorem admission. None of these endpoint checks
 selects an action or proves that it follows from the fine continuous dynamics.
 
-The [AL pair comparison](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-pair-emission-descent)
+The [AL pair comparison](nodal/SINE_PAIR_INTERACTION.md#sine-pair-emission-descent)
 now supplies an exact example: the same admitted scalar form map on both
 interchangeable members descends, whereas a fixed singleton target generally
 needs a retained port mark. Its two exceptional source cases are a synchronized
@@ -2182,7 +2189,7 @@ tip and two actual no-ops. Equal reset storage costs need not give equal
 collective outputs. This result uses actual AL form clipping, without claiming
 closure of its complete grammar, history and lifecycle runtime.
 
-The [regional-transfer identity](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#sine-autonomous-regional-transfer)
+The [regional-transfer identity](nodal/SINE_PAIR_INTERACTION.md#sine-autonomous-regional-transfer)
 adds a distinct realizability test: the closed normalized-sine law preserves
 degree/capacity-weighted form. Any actual positive AL-only increment changes
 that invariant, even when the event descends to a collective state. Autonomous

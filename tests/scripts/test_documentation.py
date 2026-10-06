@@ -151,6 +151,112 @@ def test_consistent_publication_metadata_passes_with_optimization(
     assert result.returncode == 0, result.stderr
 
 
+@pytest.mark.parametrize(
+    "insertion, expected",
+    (
+        ('"version": "contradictory",', "keys collide"),
+        ('"ver\\u0073ion": "contradictory",', "keys collide"),
+        ('"unused": NaN,', "must be finite"),
+        ('"unused": 1e-9999,', "underflows"),
+    ),
+)
+def test_publication_metadata_reuses_strict_json_admission(
+    publication_workspace,
+    insertion,
+    expected,
+):
+    path = publication_workspace / ".zenodo.json"
+    original = path.read_text(encoding="utf-8")
+    corrupted = original.replace("{", "{" + insertion, 1)
+    path.write_text(corrupted, encoding="utf-8")
+
+    result = _run_check(publication_workspace, "check_publication_metadata")
+
+    assert result.returncode != 0
+    assert expected in result.stderr
+    assert path.read_text(encoding="utf-8") == corrupted
+
+
+@pytest.fixture
+def quickstart_workspace(documented_workspace, monkeypatch):
+    workspace, checker = documented_workspace
+    path = workspace / "README.md"
+    path.write_bytes((CHECKER.parent.parent / "README.md").read_bytes())
+    monkeypatch.setattr(checker, "REPO_ROOT", workspace)
+    return path, checker
+
+
+def test_quickstart_executes_only_its_section_and_preserves_the_document(
+    quickstart_workspace,
+):
+    path, checker = quickstart_workspace
+    original = path.read_text(encoding="utf-8")
+    outside = '\n```python\nraise RuntimeError("outside Quick start")\n```\n'
+    contents = outside + original + outside
+    path.write_text(contents, encoding="utf-8")
+    checker._check_readme_quickstart()
+    assert path.read_text(encoding="utf-8") == contents
+
+
+def test_changed_real_quickstart_is_not_replaced_by_the_old_hardcoded_example(
+    quickstart_workspace,
+):
+    path, checker = quickstart_workspace
+    original = path.read_text(encoding="utf-8")
+    changed = original.replace("TNFR.create(20,", "TNFR.create(4,", 1)
+    assert changed != original
+    path.write_text(changed, encoding="utf-8")
+    with pytest.raises(RuntimeError, match="Quick start output has drifted"):
+        checker._check_readme_quickstart()
+
+
+def test_quickstart_compares_its_own_output_block_not_matching_text_elsewhere(
+    quickstart_workspace,
+):
+    path, checker = quickstart_workspace
+    original = path.read_text(encoding="utf-8")
+    changed = original.replace("C=1.000, Si=1.000", "C=0.000, Si=1.000", 1)
+    assert changed != original
+    # The old expected output remains elsewhere, outside the selected section.
+    unrelated = original.replace("## Quick start", "## Earlier example")
+    path.write_text(
+        changed + "\n## Unrelated retained text\n" + unrelated, encoding="utf-8"
+    )
+    with pytest.raises(RuntimeError, match="Quick start output has drifted"):
+        checker._check_readme_quickstart()
+
+
+@pytest.mark.parametrize(
+    "old, new, expected",
+    (
+        ("## Quick start", "## Removed example", "one Quick start section"),
+        (
+            "## Quick start",
+            "## Quick start\n\n## Quick start",
+            "one Quick start section",
+        ),
+        ("```python", "```illustration", "one python block"),
+        ("```python", "```python\npass\n```\n\n```python", "one python block"),
+        ("```text", "```illustration", "one text block"),
+        ("```text", "```text\nold\n```\n\n```text", "one text block"),
+        ("import TNFR", "import NONEXISTENT_AUDIT_API", "cannot import name"),
+    ),
+)
+def test_quickstart_missing_ambiguous_or_broken_code_fails_under_optimization(
+    quickstart_workspace,
+    old,
+    new,
+    expected,
+):
+    path, _ = quickstart_workspace
+    corrupted = path.read_text(encoding="utf-8").replace(old, new, 1)
+    path.write_text(corrupted, encoding="utf-8")
+    result = _run_check(path.parent, "_check_readme_quickstart")
+    assert result.returncode != 0
+    assert expected in result.stderr
+    assert path.read_text(encoding="utf-8") == corrupted
+
+
 def test_publication_links_accept_single_quoted_html_attributes(publication_workspace):
     path = publication_workspace / ".zenodo.json"
     metadata = json.loads(path.read_text(encoding="utf-8"))
@@ -575,6 +681,63 @@ def docs_catalog_workspace(documented_workspace, monkeypatch):
     monkeypatch.setattr(checker, "REPO_ROOT", workspace)
     _populate_catalog(workspace, checker, "docs")
     return workspace, checker
+
+
+@pytest.mark.parametrize(
+    "relative",
+    (
+        "theory/nodal/CLOSURE.md",
+        "docs/nodal/CLOSURE.md",
+        "theory/README.md",
+        "docs/README.md",
+    ),
+)
+def test_documentation_size_rejects_oversized_owners_under_optimization(
+    documented_workspace, monkeypatch, relative
+):
+    workspace, checker = documented_workspace
+    monkeypatch.setattr(checker, "REPO_ROOT", workspace)
+    for directory in ("theory", "docs"):
+        _populate_catalog(workspace, checker, directory)
+    owner = workspace / relative
+    owner.write_bytes(b"# Maintained owner\r\n" + b"Content.\r\n" * 3999)
+    checker.check_documentation_size()
+    with owner.open("ab") as document:
+        document.write(b"Final physical line without a terminator.")
+    before = owner.read_bytes()
+
+    result = _run_check(workspace, "check_documentation_size")
+
+    assert result.returncode != 0
+    assert relative in result.stderr
+    assert "4001 physical lines (limit 4000)" in result.stderr
+    assert "split by responsibility and preserve frozen evidence" in result.stderr
+    assert owner.read_bytes() == before
+
+
+def test_documentation_size_preserves_excluded_archive_and_evidence(
+    documented_workspace, monkeypatch
+):
+    workspace, checker = documented_workspace
+    monkeypatch.setattr(checker, "REPO_ROOT", workspace)
+    for directory in ("theory", "docs"):
+        _populate_catalog(workspace, checker, directory)
+    paths = (
+        workspace / "theory/research/archive/HISTORICAL.md",
+        workspace / "docs/assets/HISTORICAL.md",
+    )
+    frozen = b"Retained source-bound evidence.\n" * 5000
+    for path in paths:
+        path.write_bytes(frozen)
+
+    checker.check_documentation_size()
+
+    assert all(path.read_bytes() == frozen for path in paths)
+
+
+def test_current_documentation_owners_fit_the_size_limit(documented_workspace):
+    _, checker = documented_workspace
+    checker.check_documentation_size()
 
 
 def test_theory_catalog_covers_nested_owners_without_counting_quick_links_or_archive(

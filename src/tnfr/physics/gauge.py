@@ -32,7 +32,7 @@ Status: auxiliary algebraic model with legacy public names.
 
 References
 ----------
-- Nodal equation: ∂EPI/∂t = νf · ΔNFR(t)  [TNFR.pdf §2.1]
+- Nodal identity and complete-law premises: theory/FUNDAMENTAL_THEORY.md
 - Complex geometric field: src/tnfr/physics/unified.py
 - Conservation laws: src/tnfr/physics/conservation.py
 - Variational principle: src/tnfr/physics/variational.py

@@ -6,10 +6,12 @@ from __future__ import annotations
 import argparse
 import ast
 import importlib.util
+import io
 import json
 import re
 import sys
 from collections import Counter
+from contextlib import redirect_stdout
 from datetime import date
 from html.parser import HTMLParser
 from pathlib import Path
@@ -97,9 +99,11 @@ class _PublicationLinks(HTMLParser):
 
 def check_publication_metadata() -> None:
     """Keep distribution, citation and archive metadata on the reviewed version."""
+    from tnfr.utils.io import json_loads
+
     version = _project_version()
     citation = (REPO_ROOT / "CITATION.cff").read_text(encoding="utf-8")
-    archive = json.loads((REPO_ROOT / ".zenodo.json").read_text(encoding="utf-8"))
+    archive = json_loads((REPO_ROOT / ".zenodo.json").read_bytes())
     require(archive["version"] == version, "Zenodo version differs from project")
     for key, expected in (
         ("version", version),
@@ -188,6 +192,7 @@ DOCS_CATALOG_START = "<!-- BEGIN DOCS CATALOG -->"
 DOCS_CATALOG_END = "<!-- END DOCS CATALOG -->"
 DOCS_NAVIGATION_START = "# BEGIN GENERATED DOCS NAVIGATION"
 DOCS_NAVIGATION_END = "# END GENERATED DOCS NAVIGATION"
+MAX_DOCUMENTATION_OWNER_LINES = 4_000
 
 
 def _catalog_entries(
@@ -252,6 +257,24 @@ def _catalog_paths(directory: str) -> set[Path]:
         if path.resolve() != index.resolve()
         and not path.resolve().is_relative_to(excluded)
     }
+
+
+def check_documentation_size() -> None:
+    """Bound maintained owner size using the existing catalog scope."""
+    for directory in ("theory", "docs"):
+        owners = _catalog_paths(directory) | {
+            (REPO_ROOT / directory / "README.md").resolve()
+        }
+        for path in sorted(owners):
+            with path.open(encoding="utf-8") as document:
+                line_count = sum(1 for _ in document)
+            relative = path.relative_to(REPO_ROOT.resolve()).as_posix()
+            require(
+                line_count <= MAX_DOCUMENTATION_OWNER_LINES,
+                f"{relative} has {line_count} physical lines "
+                f"(limit {MAX_DOCUMENTATION_OWNER_LINES}); "
+                "split by responsibility and preserve frozen evidence",
+            )
 
 
 def _check_catalog(directory: str, entries: list[tuple[str, str, Path]]) -> None:
@@ -501,18 +524,40 @@ def check_contract_view() -> None:
     )
 
 
+def _check_readme_quickstart() -> None:
+    """Execute the checkout's actual SDK quick start and compare its own output."""
+    readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+    sections = re.findall(
+        r"^## Quick start[ \t]*\n(.*?)(?=^## |\Z)", readme, re.MULTILINE | re.DOTALL
+    )
+    require(len(sections) == 1, "README requires one Quick start section")
+    blocks = {}
+    for language in ("python", "text"):
+        matches = re.findall(
+            rf"^```{language}[ \t]*\n(.*?)^```[ \t]*$",
+            sections[0],
+            re.MULTILINE | re.DOTALL,
+        )
+        require(len(matches) == 1, f"README Quick start requires one {language} block")
+        blocks[language] = matches[0]
+
+    code = compile(blocks["python"], "README Quick start", "exec")
+    output = io.StringIO()
+    namespace = {"__name__": "__readme_quickstart__"}
+    with redirect_stdout(output):
+        exec(code, namespace)
+    require(
+        output.getvalue().strip() == blocks["text"].strip(),
+        "README Quick start output has drifted",
+    )
+
+
 def check_documented_examples() -> None:
     from tnfr.operators.definitions import Coherence, Emission, Silence
-    from tnfr.sdk import TNFR
     from tnfr.sdk.fluent import NetworkConfig, TNFRNetwork
     from tnfr.structural import create_nfr, run_sequence
 
-    net = TNFR.create(20).ring().evolve(5)
-    summary = net.results().summary()
-    tetrad = net.tetrad().summary()
-    readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
-    require(summary in readme, "README result output has drifted")
-    require(tetrad in readme, "README tetrad output has drifted")
+    _check_readme_quickstart()
 
     graph, node = create_nfr("documentation-seed", epi=0.1, vf=1.0, theta=0.0)
     run_sequence(graph, node, [Emission(), Coherence(), Silence()])
@@ -561,6 +606,7 @@ def main() -> int:
         check_versions_and_retired_claims,
         check_publication_metadata,
         check_contract_view,
+        check_documentation_size,
         check_theory_catalog,
         check_theory_navigation,
         check_docs_catalog,

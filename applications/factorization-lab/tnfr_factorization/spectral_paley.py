@@ -3117,7 +3117,9 @@ def _build_queue_dispatcher() -> Dispatcher | None:
 
 def _partition_config_from_env() -> PartitionPlannerConfig:
     target_size = _read_threshold_env("TNFR_PARTITION_TARGET_SIZE", default=256) or 256
-    overlap = _read_threshold_env("TNFR_PARTITION_OVERLAP", default=4) or 4
+    overlap = _read_threshold_env("TNFR_PARTITION_OVERLAP", default=4, allow_zero=True)
+    if overlap is None:
+        overlap = 4
     notes = os.getenv("TNFR_PARTITION_NOTES", "auto_env")
     return PartitionPlannerConfig(
         target_size=max(1, target_size),
@@ -3126,7 +3128,9 @@ def _partition_config_from_env() -> PartitionPlannerConfig:
     )
 
 
-def _read_threshold_env(name: str, default: int) -> int | None:
+def _read_threshold_env(
+    name: str, default: int, *, allow_zero: bool = False
+) -> int | None:
     raw = os.getenv(name)
     if raw is None:
         return default
@@ -3134,7 +3138,7 @@ def _read_threshold_env(name: str, default: int) -> int | None:
         value = int(raw)
     except ValueError:
         return default
-    return value if value > 0 else default
+    return value if value > 0 or (allow_zero and value == 0) else default
 
 
 try:  # Optional sympy acceleration

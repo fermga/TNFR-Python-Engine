@@ -1,72 +1,25 @@
 #!/usr/bin/env python3
-"""
-Example 155 — The Ontological Position of a Number
-===================================================
+"""Example 155: finite spectral arithmetic encodings and their information loss.
 
-Are numbers a PRIMITIVE INPUT to TNFR, or do they EMERGE from its structure and
-dynamics? (The Camino-11 question, ``benchmarks/primes_as_consequence.py``.)
-After the arithmetic triad was canonicalized to unit coefficients
-(``TNFR_NUMBER_THEORY.md`` §5), the only remaining "magic" in number theory is
-the integer itself: the arithmetic sector A *consumes* ``n`` (it computes Ω, τ, σ
-by trial division). This example maps the **ontological position** of a number as
-a ladder, each rung measured from canonical TNFR structure/dynamics:
+Five supplied constructions are compared: eigenspace dimensions on symmetric
+graphs; Cartesian-product combinatorial spectra; quadratic-residue spectral
+ranks versus primality labels on odd integers 5 through 47; restricted
+prime-power/type encodings using exponent blocks 1, 2 and 3; and scalar-rank
+collisions. Modular arithmetic, graph families and the rank-block table are
+inputs. SymPy primality and factorization provide comparison labels only.
 
-    Layer 0  Substrate    R continuum + pi (the one genuine structural scale)
-    Layer 1  Cardinal     n = an eigenspace dimension, possibly several irreps
-    Layer 2  Operations   +, x emerge from graph products (Cartesian/tensor)
-    Layer 3  Primality    spectral: directed residue operator -> 3 eigenvalues
-                          <=> odd prime (Sector B, x^2 mod n only)
-    Layer 3' Arithmetic   the factorization (Omega, tau -> the dNFR triad)
-                          EMERGES from the multiplicative spectral rank rho(n)
-    Layer 4  The wall     the prime IDENTITIES / continuous phase = the RH
-                          residue S(T) (Fix(S_n)^perp), provably S_n-unreachable
+An invariant eigenspace can contain several irreducible sectors. Its dimension
+alone does not determine a symmetry group. On the selected regular graphs,
+D-A and L_rw differ by the degree; that identity does not make arbitrary
+equivariant operators spectrally identical.
 
-Physics
--------
-- Layer 1: the emergent structural operator L_rw = I - D^{-1} W (like every
-  Aut(G)-equivariant operator) commutes with Aut(G), so its eigenvalue
-  eigenspaces are invariant representations. Their dimensions can sum several
-  irrep contributions; vertex transitivity does not guarantee irreducibility
-  or identical eigenspaces for every equivariant operator. On the regular
-  unit-conductance controls here, D - A = d*L_rw, so these particular operators
-  share eigenspaces. The truncated-cube counterexample in
-  inverse_spectrum_to_symmetry.py has a five-dimensional eigenspace combining
-  sectors of dimensions two and three. Graphs remain supplied inputs.
-- Layer 2: the COMBINATORIAL graph Laplacian's Cartesian product G [] H has
-  spectrum {lambda_i + mu_j} (ADDITION); the tensor product has adjacency
-  spectrum {alpha_i . beta_j} (MULTIPLICATION). Additivity is a theorem of the
-  combinatorial Laplacian (the graph's connectivity), so here it is the genuine
-  object -- distinct from the emergent dynamics operator L_rw of Layers 1/3 --
-  and the operations emerge from structure, not injected.
-- Layer 3/3': the quadratic-residue Cayley digraph of n (built from x^2 mod n,
-  never n % k) carries the canonical structural-diffusion operator
-  L_rw = I - D^{-1} W (the literal dNFR EPI channel). Its number of distinct
-  (complex) eigenvalues rho(n) realizes the PROVED §9.7 conductor-product law
-  A(m)=prod(e+ceil(e/2)+1) at small exponents -- rho(p)=3 (cyclotomy k=2),
-  rho(p^2)=4, rho(p^3)=6 -- and is multiplicative there. So primality (rho=3)
-  and the factorization TYPE (Omega, tau) are read off the spectrum -- the
-    arithmetic emerges (TNFR_NUMBER_THEORY.md §9.5-9.12).
-- Layer 4: rho gives the factorization TYPE, never the prime IDENTITIES (15 and
-  35 share rho=9); the unannotated scalar rank also aliases at high prime powers
-  (the §9.7 / ex 154 scalar wall) -- the same e-pi / Fix(S_n)^perp wall as the
-  paused TNFR-Riemann program.
-
-Experiments
------------
-1. Layer 1 -- cardinals emerge as Laplacian degeneracies
-2. Layer 2 -- addition emerges from the Cartesian-product spectrum
-3. Layer 3 -- spectral primality: rho(n) = 3 <=> odd prime (x^2 mod n only)
-4. Layer 3' -- the arithmetic emerges: rho multiplicative, rho(p^a) = f(a),
-   rho encodes the factorization type -> Omega, tau (the dNFR triad)
-5. Layer 4 -- the wall: rho gives the type, not the prime identities
-
-References
-----------
-- theory/TNFR_NUMBER_THEORY.md §9.5-9.7 (three sectors + phase + ontology)
-- benchmarks/primes_as_consequence.py (Camino 11)
-- benchmarks/emergent_integers_symmetry.py (cardinals from symmetry)
-- src/tnfr/mathematics/number_theory.py (residue_network_rank)
-- AGENTS.md §12 (Number theory program)
+Rank equality for 15 and 35 loses prime identities, and multiple exponent
+multisets can give rank 36 within the chosen block table. Those losses concern
+this observation map only. They neither identify an analytic zeta symmetry
+complement nor prove an RH obstruction. Finite encoding checks do not derive
+integers, their physical realization or autonomous arithmetic from the nodal
+identity. See theory/TNFR_NUMBER_THEORY.md sections 9.5-9.7 and
+theory/TNFR_STRUCTURAL_OBSERVABILITY.md#6-limits-beyond-linear-symmetry.
 """
 
 import os
@@ -74,14 +27,14 @@ import sys
 
 import networkx as nx
 import numpy as np
-import sympy  # ORACLE only: ground-truth factorization to VALIDATE emergence
+import sympy  # ORACLE only: comparison primality and factorization labels
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from tnfr.mathematics.number_theory import residue_network_rank
 
-# Universal rho(p^a) table -- MEASURED: the residue-graph spectral rank of a
-# prime power depends only on the exponent a (verified for many primes p).
+# Restricted exponent-block table for this supplied residue-rank encoding.
+# The example checks only the listed prime powers and exponent values.
 _RHO_PRIME_POWER = {1: 3, 2: 4, 3: 6}
 _RANK_BLOCKS = sorted(_RHO_PRIME_POWER.values())  # [3, 4, 6]
 _BLOCK_TO_EXP = {v: k for k, v in _RHO_PRIME_POWER.items()}
@@ -102,11 +55,11 @@ def _laplacian_degeneracies(G: nx.Graph) -> set[int]:
 
 
 def _exponent_multisets_from_rank(rank: int) -> list[list[int]]:
-    """All factorization exponent-multisets consistent with a spectral rank.
+    """Exponent multisets consistent with the selected rank-block table.
 
-    rho is multiplicative with rho(p^a) in {3, 4, 6}; factor ``rank`` into those
-    blocks. A unique result means the rank determines the factorization TYPE; two
-    or more results is a spectral COLLISION (the residual wall).
+    Factor ``rank`` into the blocks {3, 4, 6} assigned to exponents {1, 2, 3}.
+    A unique result is unique within this restricted dictionary only. Multiple
+    results expose information lost by the scalar rank.
     """
     out: set[tuple[int, ...]] = set()
 
@@ -125,10 +78,10 @@ def _exponent_multisets_from_rank(rank: int) -> list[list[int]]:
 def experiment_1_cardinals():
     """Layer 1: observe eigenspace dimensions on supplied symmetric graphs."""
     print("=" * 72)
-    print("EXPERIMENT 1: Layer 1 -- cardinals emerge from symmetry")
+    print("EXPERIMENT 1: eigenspace dimensions on supplied symmetric graphs")
     print("=" * 72)
     print()
-    print("The emergent operator L_rw = I - D^-1 W commutes with Aut(G); its")
+    print("The supplied L_rw = I - D^-1 W commutes with the graph action; its")
     print("eigenspaces are invariant and can combine several irreducible sectors.")
     print("Their measured dimensions alone do not determine the symmetry group.")
     print()
@@ -144,19 +97,19 @@ def experiment_1_cardinals():
         emerged = expect in degs
         all_ok &= emerged
         print(
-            f"  {name:13s}: degeneracies {sorted(degs)} -> {expect} emerges? "
+            f"  {name:13s}: degeneracies {sorted(degs)} -> selected multiplicity {expect} observed? "
             f"{'YES' if emerged else 'NO'}"
         )
-    assert all_ok, "cardinal emergence failed"
+    assert all_ok, "selected multiplicity comparison failed"
     print()
-    print("VALIDATED: 2 @ triangle, 3 @ tetrahedron, 5 @ icosahedron.")
+    print("OBSERVED: 2 @ triangle, 3 @ tetrahedron, 5 @ icosahedron.")
     print()
 
 
 def experiment_2_operations():
-    """Layer 2: addition emerges from the Cartesian-product spectrum."""
+    """Compare the supplied Cartesian-product combinatorial spectrum."""
     print("=" * 72)
-    print("EXPERIMENT 2: Layer 2 -- operations emerge from graph products")
+    print("EXPERIMENT 2: the supplied Cartesian-product spectral sum identity")
     print("=" * 72)
     print()
     A, B = nx.complete_graph(3), nx.path_graph(3)
@@ -176,21 +129,21 @@ def experiment_2_operations():
     emerges = sorted(set(prod)) == outer_sum
     print(f"  K3 Laplacian spectrum:   {sorted(set(la))}")
     print(f"  P3 Laplacian spectrum:   {sorted(set(lb))}")
-    print(f"  K3 [] P3 == outer-SUM?   {emerges}  (ADDITION emerges)")
-    assert emerges, "operation emergence failed"
+    print(f"  K3 [] P3 == outer-SUM?   {emerges}  (combinatorial spectral identity)")
+    assert emerges, "Cartesian-product spectral sum comparison failed"
     print()
-    print("VALIDATED: the Cartesian product realizes + on the spectra.")
+    print("OBSERVED: the supplied Cartesian product has the expected spectral sums.")
     print()
 
 
 def experiment_3_spectral_primality():
-    """Layer 3: rho(n) = 3 <=> odd prime, from x^2 mod n only (Sector B)."""
+    """Compare residue spectral rank with prime labels on odd n=5,...,47."""
     print("=" * 72)
-    print("EXPERIMENT 3: Layer 3 -- spectral primality (primes-OUT)")
+    print("EXPERIMENT 3: finite residue-rank classification")
     print("=" * 72)
     print()
     print("rho(n) = #distinct eigenvalues of the directed residue diffusion")
-    print("operator. Built from x^2 mod n -- it NEVER computes n % k.")
+    print("operator built from supplied modular squares; labels use SymPy.isprime.")
     print()
     mism = 0
     for n in range(5, 48, 2):
@@ -202,25 +155,25 @@ def experiment_3_spectral_primality():
         print(f"  n={n:3d}  rho={rho:2d}  {tag:5s}  {'OK' if ok else 'MISMATCH'}")
     assert mism == 0, "spectral primality failed"
     print()
-    print("VALIDATED: rho = 3 <=> odd prime, 0 mismatches. Primality is a")
-    print("consequence of self-adjoint/directed structure, not a primitive.")
+    print("OBSERVED: rho=3 matches the prime labels for odd n from 5 through 47.")
+    print("This finite encoding check does not derive arithmetic from nodal dynamics.")
     print()
 
 
 def experiment_4_arithmetic_emerges():
-    """Layer 3': the factorization (Omega, tau -> dNFR) emerges from rho."""
+    """Compare restricted rank products and exponent-type candidates."""
     print("=" * 72)
-    print("EXPERIMENT 4: Layer 3' -- the arithmetic emerges from the spectrum")
+    print("EXPERIMENT 4: restricted arithmetic encoding in residue ranks")
     print("=" * 72)
     print()
     # (a) rho(p^a) depends only on the exponent a
-    print("(a) rho(p^a) depends only on the exponent a:")
+    print("(a) selected prime-power ranks for a in {1,2,3}:")
     for a in (1, 2, 3):
         ranks = {residue_network_rank(p**a) for p in (3, 5, 7, 11)}
-        print(f"    a={a}: rho(p^{a}) = {ranks.pop()} for all primes p")
+        print(f"    a={a}: rho(p^{a}) = {ranks.pop()} for the listed p=3,5,7,11")
     print()
-    # (b) rho is multiplicative -> faithfully encodes the factorization
-    print("(b) rho is multiplicative: rho(n) == prod rho(p^a) over p^a || n:")
+    # (b) Check the selected rank products against factorization labels.
+    print("(b) selected values: rho(n) versus prod rho(p^a) over supplied factors:")
     ok_mult = True
     recovered_ok = True
     for n in (9, 15, 45, 63, 75, 105):
@@ -232,7 +185,7 @@ def experiment_4_arithmetic_emerges():
             rho_formula *= _RHO_PRIME_POWER[a]  # demo exponents are <= 3
         mult = rho_spectral == rho_formula
         ok_mult &= mult
-        # (c) invert rho -> factorization TYPE -> Omega, tau (emergent)
+        # (c) Enumerate exponent types inside the restricted block dictionary.
         cands = _exponent_multisets_from_rank(rho_spectral)
         unique = len(cands) == 1 and cands[0] == type_true
         recovered_ok &= unique
@@ -246,41 +199,39 @@ def experiment_4_arithmetic_emerges():
     assert ok_mult, "rho multiplicativity failed"
     assert recovered_ok, "type recovery failed for the demo range"
     print()
-    print("VALIDATED: rho(n) is the multiplicative spectral encoding of the")
-    print("factorization. Omega and tau (the factorization + divisor channels of")
-    print("the dNFR triad) EMERGE from rho -- read from x^2 mod n, not consumed.")
+    print("OBSERVED: the selected rank products and restricted type candidates")
+    print("match their arithmetic labels. Uniqueness uses the supplied block table;")
+    print("it is not a general factorization or physical emergence result.")
     print()
 
 
 def experiment_5_the_wall():
-    """Layer 4: rho gives the TYPE, never the prime identities (the wall)."""
+    """Show lost prime identities and type ambiguity for the scalar rank."""
     print("=" * 72)
-    print("EXPERIMENT 5: Layer 4 -- the wall (type emerges, identity does not)")
+    print("EXPERIMENT 5: information lost by the scalar-rank observation")
     print("=" * 72)
     print()
     # rho cannot separate two semiprimes with the same type
     r15, r35 = residue_network_rank(15), residue_network_rank(35)
     print(f"  rho(15=3x5) = {r15},  rho(35=5x7) = {r35}  -> identical")
-    print("  rho sees the TYPE (1,1) but never which primes -> identities are")
-    print("  beyond the rank.")
+    print("  This rank value cannot distinguish these two supplied prime pairs.")
     same_rank_diff_primes = r15 == r35
-    # rho collides across types in general (the residual wall)
+    # The restricted dictionary also has a cross-type collision.
     collide = _exponent_multisets_from_rank(36)
     print(f"  rho = 36 is consistent with types {collide} (a spectral COLLISION)")
     has_collision = len(collide) >= 2
-    assert same_rank_diff_primes and has_collision, "wall demonstration failed"
+    assert same_rank_diff_primes and has_collision, "rank-collision control failed"
     print()
-    print("VALIDATED: the spectral position fixes primality (Layer 3) and the")
-    print("factorization type (Layer 3'); the prime IDENTITIES and the")
-    print("continuous phase (arg zeta = S(T), Fix(S_n)^perp) remain the open")
-    print("RH-residue wall -- located precisely, not dissolved.")
+    print("OBSERVED: equal ranks lose prime identity and can also lose type.")
+    print("This concerns the selected scalar observation; no analytic zeta map")
+    print("or universal symmetry obstruction is established.")
     print()
 
 
 def main():
     print()
     print("#" * 72)
-    print("# THE ONTOLOGICAL POSITION OF A NUMBER (example 155)")
+    print("# FINITE SPECTRAL ENCODINGS AND INFORMATION LOSS (example 155)")
     print("#" * 72)
     print()
     experiment_1_cardinals()
@@ -289,15 +240,12 @@ def main():
     experiment_4_arithmetic_emerges()
     experiment_5_the_wall()
     print("=" * 72)
-    print("ALL EXPERIMENTS PASSED")
+    print("ALL DECLARED FINITE COMPARISONS PASSED")
     print("=" * 72)
     print()
-    print("The ladder: a number is positioned by the emergent ontology -- a")
-    print("cardinal (Layer 1), under emergent +,x (Layer 2), with primality")
-    print("(Layer 3) and factorization type (Layer 3') read from the residue")
-    print("spectrum. Sector A (number_theory.py) consumes the integer; the")
-    print("emergent position (Sectors B/cardinal) derives it from structure,")
-    print("up to the prime-identity / phase wall.")
+    print("These calculations compare supplied graph and arithmetic encodings.")
+    print("The rank-collision controls delimit what their observations retain.")
+    print("They select no physical model or autonomous mechanism for arithmetic.")
 
 
 if __name__ == "__main__":

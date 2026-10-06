@@ -7,11 +7,58 @@ import math
 from dataclasses import replace
 from pathlib import Path
 
+import networkx as nx
 import pytest
 
 import tnfr.factorization as factorization_module
 from tnfr.factorization import factorize
 from tnfr.sdk.utils import import_from_json
+
+
+def test_partition_environment_preserves_zero_overlap(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    factorization_module._bootstrap_factorization_lab()
+    from tnfr_factorization.partitioning import plan_paley_partitions
+    from tnfr_factorization.spectral_paley import _partition_config_from_env
+
+    monkeypatch.setenv("TNFR_PARTITION_TARGET_SIZE", "4")
+    monkeypatch.setenv("TNFR_PARTITION_OVERLAP", "0")
+    config = _partition_config_from_env()
+    assert config.boundary_overlap == 0
+    result = plan_paley_partitions(
+        nx.path_graph(9),
+        9,
+        phi_s=0.0,
+        phase_gradient=0.0,
+        phase_curvature=0.0,
+        coherence_length=1.0,
+        config=config,
+    )
+    assert [partition.node_indices for partition in result.partitions] == [
+        [0, 1, 2, 3],
+        [4, 5, 6, 7],
+        [8],
+    ]
+
+
+@pytest.mark.parametrize(
+    "overlap, expected", [(None, 4), ("-1", 4), ("invalid", 4), ("2", 2)]
+)
+def test_partition_environment_retains_existing_defaults(
+    monkeypatch: pytest.MonkeyPatch, overlap: str | None, expected: int
+) -> None:
+    factorization_module._bootstrap_factorization_lab()
+    from tnfr_factorization.spectral_paley import _partition_config_from_env
+
+    monkeypatch.setenv("TNFR_PARTITION_TARGET_SIZE", "0")
+    if overlap is None:
+        monkeypatch.delenv("TNFR_PARTITION_OVERLAP", raising=False)
+    else:
+        monkeypatch.setenv("TNFR_PARTITION_OVERLAP", overlap)
+    config = _partition_config_from_env()
+    assert config.target_size == 256
+    assert config.boundary_overlap == expected
 
 
 def test_factorize_returns_spectral_result(
@@ -141,7 +188,7 @@ def test_factorize_emits_compressed_partition_file_index_when_threshold_small(
     monkeypatch.setenv("TNFR_PARTITION_FILELIST_THRESHOLD", "1")
     partition_root = tmp_path / "partition_outputs"
     monkeypatch.setenv("TNFR_PARTITION_OUTPUT_DIR", str(partition_root))
-    factorization_module._DEFAULT_FACTORIZER = None
+    monkeypatch.setattr(factorization_module, "_DEFAULT_FACTORIZER", None)
 
     result = factorization_module.factorize(
         299, trace_certificates=True, certificate_dir=tmp_path

@@ -28,14 +28,13 @@ from collections.abc import (
 )
 from contextlib import contextmanager
 from contextvars import ContextVar
-from dataclasses import field
+from dataclasses import dataclass, field
 from functools import lru_cache, wraps
 from time import perf_counter
 from typing import Any, Generic, TypeVar, cast
 
 import networkx as nx
 
-from ..compat.dataclass import dataclass
 from ..errors import TNFRSecurityError, TNFRSecurityWarning, TNFRValueError
 from ..locking import get_lock
 from ..security.crypto import create_hmac_signer, create_hmac_validator

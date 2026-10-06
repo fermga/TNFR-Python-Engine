@@ -322,14 +322,14 @@ boundary and scalar/worker agreement without treating a candidate as a live
 operator-admission certificate.
 
 The corresponding reusable constraint is the
-[source-tangency identity](FORCED_SUPPORT_BALANCE.md#22-source-tangency-without-a-telemetry-controller):
+[source-tangency identity](nodal/FORCED_SOURCE_AND_CLOCK.md#22-source-tangency-without-a-telemetry-controller):
 it derives what phase/capacity evolution must satisfy to preserve zero
 pressure, without selecting that evolution through Si. The finite witnesses
 are reproducible with
 `artifacts/research/validate_source_tangency_2026_09_18.py`; their successful
 checks do not prove a general autonomous Si reduction or an emergent mechanism.
 
-The separate [capacity/phase result](FORCED_SUPPORT_BALANCE.md#23-capacity-exposure-does-not-determine-a-phase-clock)
+The separate [capacity/phase result](nodal/FORCED_SOURCE_AND_CLOCK.md#23-capacity-exposure-does-not-determine-a-phase-clock)
 applies this same distinction to the word frequency: accumulated capacity
 follows from the nodal equation, while identifying it with circular phase
 requires an additional relation. The configured oscillator and phase-relaxation
@@ -495,7 +495,7 @@ its regular open half-pi chart. But the source derivative
     R_ij = 1[j in N(i)] Re(exp(i theta_j)/S_i)
 
 depends on neighbor-to-resultant angles, not only neighbor-to-center angles.
-The previously proved [nonnegative irreducible criterion](FORCED_SUPPORT_BALANCE.md#24-rigidity-and-flexibility-of-a-held-phase-source)
+The previously proved [nonnegative irreducible criterion](nodal/FORCED_SOURCE_AND_CLOCK.md#24-rigidity-and-flexibility-of-a-held-phase-source)
 is an additional hypothesis not implied by strict U3.
 
 **Exact six-node witness.** Use a unit double-star: centers u,v joined by an
@@ -687,9 +687,9 @@ If conductance changes smoothly, add -e L_W' x; if any other source or
 coefficient changes, its derivative must also be retained. Actual edge
 birth/deletion and operator writes are hybrid events, not silently smooth
 terms. These identities reuse sections 9-10 and the
-[existing source-tangency derivation](FORCED_SUPPORT_BALANCE.md#22-source-tangency-without-a-telemetry-controller).
+[existing source-tangency derivation](nodal/FORCED_SOURCE_AND_CLOCK.md#22-source-tangency-without-a-telemetry-controller).
 They constrain proposed laws for nu, theta and support; they do not select
-those laws. The [same-initial-state completions](FORCED_SUPPORT_BALANCE.md#23-capacity-exposure-does-not-determine-a-phase-clock)
+those laws. The [same-initial-state completions](nodal/FORCED_SOURCE_AND_CLOCK.md#23-capacity-exposure-does-not-determine-a-phase-clock)
 already prove nonuniqueness of the EPI future without an additional phase
 relation. Differentiating the original identity adds no independent relation
 capable of removing that ambiguity.

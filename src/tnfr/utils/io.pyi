@@ -10,7 +10,6 @@ from _typeshed import Incomplete
 __all__ = [
     "JsonDumpsParams",
     "DEFAULT_PARAMS",
-    "clear_orjson_param_warnings",
     "json_dumps",
     "json_loads",
     "read_structured_file",
@@ -20,7 +19,6 @@ __all__ = [
     "YAMLError",
 ]
 
-def clear_orjson_param_warnings() -> None: ...
 @dataclass(frozen=True)
 class JsonDumpsParams:
     sort_keys: bool = ...

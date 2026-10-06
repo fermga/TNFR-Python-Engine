@@ -25,6 +25,611 @@ def _network():
     return Network(graph)
 
 
+def test_phase_moment_sdk_export_preserves_exact_information_obstruction(tmp_path):
+    from tnfr.physics.phase_response import assess_phase_moment_information
+
+    left = ((Fraction(1), Fraction(0)),) * 3 + ((Fraction(3, 5), Fraction(4, 5)),) * 3
+    right = ((Fraction(4, 5), Fraction(3, 5)),) * 5 + (
+        (Fraction(4, 5), Fraction(-3, 5)),
+    )
+    report = assess_phase_moment_information(left, right, epsilon=1)
+    direct = report.to_dict()
+    evidence = relational_report_to_dict(report)
+    assert direct["schema"] == "tnfr.phase-moment-information.v1"
+    assert evidence["schema"] == "tnfr.relational-report.v1"
+    assert evidence["report_type"] == "PhaseMomentInformationAssessment"
+    assert evidence["report"] == direct["report"]
+    body = evidence["report"]
+    assert body["degree"] == 6
+    assert body["first_resultants_equal"]
+    assert body["strictly_acute"] == [True, True]
+    assert body["sufficiency_obstruction"]
+    assert body["cubic_source_difference_pi_numerator"] == {
+        "numerator": -14,
+        "denominator": 125,
+    }
+    assert body["cubic_storage_difference"] == {
+        "numerator": -24,
+        "denominator": 125,
+    }
+    destination = tmp_path / "phase-information.json"
+    destination.write_text("previous content", encoding="utf-8")
+    export_to_json(evidence, destination)
+    assert json.loads(destination.read_text(encoding="utf-8")) == evidence
+    body["cubic_source_difference_pi_numerator"]["numerator"] = 999
+    assert report.cubic_source_difference_pi_numerator == Fraction(-14, 125)
+    assert direct["report"]["cubic_source_difference_pi_numerator"]["numerator"] == -14
+
+
+def test_bridge_channel_sdk_export_preserves_target_and_clock(tmp_path):
+    from tnfr.physics.relational_sine_comparison import bound_relational_sine_exchange
+    from tnfr.physics.relational_sine_resonance import assess_sine_bridge_channels
+
+    graph = _network().G
+    graph.graph["GAMMA"] = {"type": "none"}
+    model = RelationalExchangeModel(
+        4, epi_weight=0, phase_weight=2, phase_domain="regular"
+    )
+    source = bound_relational_sine_exchange(graph, reference_model=model)
+    report = assess_sine_bridge_channels(
+        source,
+        target_phase_turns=(Fraction(1, 7),) * 2,
+        bridge=(("port", 0), "right"),
+    )
+    evidence = relational_report_to_dict(report)
+    assert evidence["report_type"] == "SineBridgeChannelAssessment"
+    assert evidence["report"] == report.to_dict()["report"]
+    body = evidence["report"]
+    # The shared model normalizes the supplied (0, 2) mix to (0, 1).
+    assert body["clock_rate_pi_numerator"] == {"numerator": 1, "denominator": 1}
+    assert body["target_phase_turns"] == [{"numerator": 1, "denominator": 7}] * 2
+    assert body["source"]["phase"] == [{"numerator": 0, "denominator": 1}] * 2
+    assert not body["channel_difference_is_positive"]
+    path = tmp_path / "bridge-channels.json"
+    export_to_json(evidence, path)
+    assert json.loads(path.read_text(encoding="utf-8")) == evidence
+    body["target_phase_turns"][0]["numerator"] = 42
+    assert report.target_phase_turns == (Fraction(1, 7),) * 2
+
+
+def test_bridge_memory_sdk_exports_exact_hidden_source_and_static_scope(tmp_path):
+    from tnfr.physics.relational_sine_bridge_memory import assess_sine_bridge_memory
+    from tnfr.physics.relational_sine_comparison import bound_relational_sine_exchange
+
+    graph = nx.disjoint_union(nx.cycle_graph(6), nx.cycle_graph(6))
+    graph.add_edge(0, 6)
+    graph.graph["GAMMA"] = {"type": "none"}
+    for node in graph:
+        graph.nodes[node].update(EPI=0, theta=0, nu_f=1)
+    source = bound_relational_sine_exchange(
+        graph,
+        reference_model=RelationalExchangeModel(
+            1, epi_weight=0, phase_domain="regular"
+        ),
+    )
+    report = assess_sine_bridge_memory(
+        source,
+        left_cycle=tuple(range(6)),
+        right_cycle=tuple(range(6, 12)),
+        target_phase_turns=tuple(Fraction(i % 6, 6) for i in range(12)),
+    )
+    evidence = relational_report_to_dict(report)
+    assert evidence["report_type"] == "SineBridgeMemoryAssessment"
+    assert evidence["report"] == report.to_dict()["report"]
+    body = evidence["report"]
+    assert body["coordinate_memory"]["visible_indices"] == [0, 4]
+    assert len(body["hidden_initial_projection_rows"]) == 6
+    assert len(body["hidden_initial_projection_rows"][0]) == 24
+    assert body["static_visible_generator"][0][1] == {
+        "numerator": -2,
+        "denominator": 13,
+    }
+    assert body["low_frequency_rate_matrix"][1][1] == {
+        "numerator": 449,
+        "denominator": 169,
+    }
+    assert (
+        "static_generator_is_zero_frequency_resolvent_algebra_not_a_memory_integral"
+        in body["scope"]
+    )
+    destination = tmp_path / "bridge-memory.json"
+    export_to_json(evidence, destination)
+    assert json.loads(destination.read_text(encoding="utf-8")) == evidence
+    body["static_visible_generator"][0][1]["numerator"] = 99
+    assert report.static_visible_generator[0][1] == Fraction(-2, 13)
+
+
+def test_bridge_storage_family_export_retains_alternative_law_and_target(tmp_path):
+    from tnfr.physics.relational_sine_comparison import bound_relational_sine_exchange
+    from tnfr.physics.relational_sine_resonance import assess_bridge_storage_family
+
+    graph = nx.disjoint_union(nx.cycle_graph(6), nx.cycle_graph(6))
+    graph.add_edge(0, 6)
+    graph.graph["GAMMA"] = {"type": "none"}
+    for node in graph:
+        graph.nodes[node].update(EPI=0, theta=0, nu_f=1)
+    source = bound_relational_sine_exchange(
+        graph,
+        reference_model=RelationalExchangeModel(
+            1, epi_weight=0, phase_weight=1, phase_domain="regular"
+        ),
+    )
+    report = assess_bridge_storage_family(
+        source,
+        left_cycle=tuple(range(6)),
+        right_cycle=tuple(range(6, 12)),
+        target_phase_turns=tuple(Fraction(i % 6, 6) for i in range(12)),
+        epsilon=Fraction(4, 9),
+    )
+    evidence = relational_report_to_dict(report)
+    assert evidence["report_type"] == "BridgeStorageFamilyAssessment"
+    assert evidence["report"] == report.to_dict()["report"]
+    body = evidence["report"]
+    assert body["law"] == "normalized_sine_cubic_reciprocal_exchange"
+    assert body["epsilon"] == {"numerator": 4, "denominator": 9}
+    assert body["channel_difference"] == {"numerator": 0, "denominator": 1}
+    assert body["source"]["phase"] == [{"numerator": 0, "denominator": 1}] * 12
+    assert body["target_phase_turns"][1] == {"numerator": 1, "denominator": 6}
+    assert len(body["full_tangent_generator"]) == 24
+    assert body["local_phase_radius_turns"] == {"numerator": 1, "denominator": 24}
+    destination = tmp_path / "bridge-storage.json"
+    export_to_json(evidence, destination)
+    assert json.loads(destination.read_text(encoding="utf-8")) == evidence
+    body["epsilon"]["numerator"] = 999
+    assert report.epsilon == Fraction(4, 9)
+
+
+def _return_path_source():
+    from tnfr.physics.relational_sine_comparison import bound_relational_sine_exchange
+
+    graph = nx.disjoint_union(nx.cycle_graph(5), nx.cycle_graph(5))
+    graph.add_edges_from(((0, 10), (10, 5), (1, 6)))
+    graph.graph["GAMMA"] = {"type": "none"}
+    for node in graph:
+        graph.nodes[node].update(EPI=0, theta=0, nu_f=1)
+    return bound_relational_sine_exchange(
+        graph,
+        reference_model=RelationalExchangeModel(
+            1, epi_weight=0, phase_weight=1, phase_domain="regular"
+        ),
+    )
+
+
+def test_return_path_storage_export_retains_implicit_geometry_and_law(tmp_path):
+    from tnfr.physics.phase_cycle_geometry import assess_return_path_storage_geometry
+
+    report = assess_return_path_storage_geometry(
+        _return_path_source(),
+        left_cycle=tuple(range(5)),
+        right_cycle=tuple(range(5, 10)),
+        mediator=10,
+        epsilon=Fraction(1),
+        refinements=8,
+    )
+    evidence = relational_report_to_dict(report)
+    assert evidence["report_type"] == "ReturnPathStorageGeometryAssessment"
+    assert evidence["report"] == report.to_dict()["report"]
+    body = evidence["report"]
+    assert body["law"] == "normalized_sine_cubic_reciprocal_exchange"
+    assert body["epsilon"] == {"numerator": 1, "denominator": 1}
+    assert body["root_turn_bracket"]["refinements"] == 8
+    assert body["named_cycle_periods"] == [
+        {"numerator": value, "denominator": 1} for value in (1, -1, 0)
+    ]
+    assert len(body["nodal_turn_affine_coefficients"]) == 11
+    assert len(body["edge_turn_affine_coefficients"]) == 13
+    assert body["source"]["phase"] == [{"numerator": 0, "denominator": 1}] * 11
+    destination = tmp_path / "return-path-storage.json"
+    export_to_json(evidence, destination)
+    assert json.loads(destination.read_text(encoding="utf-8")) == evidence
+    body["root_turn_bracket"]["lower"]["numerator"] = 999
+    assert report.root_turn_bracket.lower < Fraction(1, 5)
+
+
+def test_geometry_inference_export_keeps_unbounded_and_response_availability(tmp_path):
+    from tnfr.physics.phase_cycle_geometry import assess_return_path_geometry_response
+
+    report = assess_return_path_geometry_response(
+        _return_path_source(),
+        left_cycle=tuple(range(5)),
+        right_cycle=tuple(range(5, 10)),
+        mediator=10,
+        special_turn_bounds=(Fraction(1, 12), Fraction(1, 5)),
+        form_direction=(0,) * 10 + (1,),
+        observation_origin="supplied_mathematical_interval",
+    )
+    evidence = relational_report_to_dict(report)
+    assert evidence["report_type"] == "ReturnPathGeometryResponseAssessment"
+    assert evidence["report"] == report.to_dict()["report"]
+    body = evidence["report"]
+    assert body["coefficient_status"] == "unbounded_above"
+    assert body["coefficient_lower"] == {"numerator": 0, "denominator": 1}
+    assert body["coefficient_upper"] is None
+    assert body["response_acceleration_bounds"] is None
+    assert body["response_status"] == "unavailable"
+    destination = tmp_path / "geometry-inference.json"
+    export_to_json(evidence, destination)
+    assert json.loads(destination.read_text(encoding="utf-8")) == evidence
+    body["coefficient_lower"]["numerator"] = 999
+    assert report.coefficient_lower == 0
+
+
+def test_conservative_entry_and_storage_balance_export_keep_distinct_clocks(tmp_path):
+    from tnfr.physics.relational_sine_entry import (
+        analyze_sine_conservative_source_geometry,
+        certify_sine_conservative_winding_entry,
+    )
+
+    source = replace(_return_path_source(), epi=(0, -24, 0, 0, 0, 0, 0, 0, 0, 0, 24))
+    certificate = certify_sine_conservative_winding_entry(
+        source,
+        cycle=(5, 6, 7, 8, 9),
+        scaled_window=(Fraction(1, 4), Fraction(1, 3)),
+        edge_turn_offsets=(1, 0, 0, 0, 0),
+    )
+    balance = source.regional_storage_balance(region=certificate.cycle)
+    geometry = analyze_sine_conservative_source_geometry(
+        source, receiver=certificate.cycle
+    )
+    for report in (certificate, balance, geometry):
+        evidence = relational_report_to_dict(report)
+        assert evidence["report_type"] == type(report).__name__
+        assert evidence["report"] == report.to_dict()["report"]
+        path = tmp_path / f"{type(report).__name__}.json"
+        export_to_json(evidence, path)
+        assert json.loads(path.read_text(encoding="utf-8")) == evidence
+    body = relational_report_to_dict(certificate)["report"]
+    assert body["clock"] == "tau=t/pi"
+    assert body["acquisition_certified"] and body["certified_winding"] == -1
+    assert not body["acute_acquisition_certified"]
+    assert geometry.relative_source_rank == 2
+    body["edge_turn_offsets"][0] = 0
+    assert certificate.edge_turn_offsets[0] == 1
+    ledger = relational_report_to_dict(balance)["report"]
+    assert ledger["clock"] == "structural_t"
+    assert ledger["regional_form_storage"] == {"numerator": 0, "denominator": 1}
+    assert ledger["complement_form_storage"] == {"numerator": 864, "denominator": 1}
+    assert ledger["boundary_form_storage"] == {"numerator": 576, "denominator": 1}
+
+
+def test_conservative_phase_transport_sdk_preserves_clock_and_exact_contrasts(tmp_path):
+    from tnfr.physics.relational_sine_entry import (
+        analyze_sine_conservative_phase_transport,
+    )
+
+    source = replace(_return_path_source(), epi=(0, -24, 0, 0, 0, 0, 0, 0, 0, 0, 24))
+    contrast = tuple(int(i == 9) - int(i == 7) for i in range(11))
+    report = analyze_sine_conservative_phase_transport(source, contrasts=(contrast,))
+    evidence = relational_report_to_dict(report)
+    assert evidence["report_type"] == "SineConservativePhaseTransport"
+    assert evidence["report"] == report.to_dict()["report"]
+    body = evidence["report"]
+    assert body["clock"] == "tau=t/pi"
+    assert body["contrast_initial_velocity"] == [{"numerator": 0, "denominator": 1}]
+    assert body["contrast_initial_jerk"] == [{"numerator": -80, "denominator": 3}]
+    assert body["contrast_acceleration_bounds"] == [{"numerator": 3, "denominator": 1}]
+    path = tmp_path / "conservative-phase-transport.json"
+    export_to_json(evidence, path)
+    assert json.loads(path.read_text(encoding="utf-8")) == evidence
+    body["contrasts"][0][7]["numerator"] = 0
+    assert report.contrasts[0][7] == -1
+
+
+@pytest.fixture(scope="module")
+def conservative_handoff_report():
+    from tnfr.physics.relational_sine_comparison import bound_relational_sine_exchange
+    from tnfr.physics.relational_sine_entry import assess_sine_conservative_handoff
+
+    graph = nx.cycle_graph(5)
+    graph.add_edges_from((i, i + 5) for i in range(5))
+    for i in graph:
+        graph.nodes[i].update(EPI=0 if i < 5 else -192 * (i - 7), theta=0, nu_f=1)
+    graph.graph["GAMMA"] = {"type": "none"}
+    source = bound_relational_sine_exchange(
+        graph,
+        reference_model=RelationalExchangeModel(
+            1, epi_weight=0, phase_weight=1, phase_domain="regular"
+        ),
+    )
+    return assess_sine_conservative_handoff(source, cycle=range(5))
+
+
+def test_conservative_handoff_export_keeps_entry_and_exit_distinct(
+    conservative_handoff_report, tmp_path
+):
+    report = conservative_handoff_report
+    evidence = relational_report_to_dict(report)
+    assert evidence["report_type"] == "SineConservativeHandoff"
+    assert evidence["report"] == report.to_dict()["report"]
+    body = evidence["report"]
+    assert body["entry_subbarrier_certified"]
+    assert body["forced_exit_certified"] and body["handoff_obstruction_certified"]
+    assert body["omega"] == {"numerator": 64, "denominator": 1}
+    assert body["scaled_exit_time"] == {"numerator": 5, "denominator": 192}
+    destination = tmp_path / "conservative-handoff.json"
+    export_to_json(evidence, destination)
+    assert json.loads(destination.read_text(encoding="utf-8")) == evidence
+    body["omega"]["numerator"] = 0
+    assert report.omega == 64
+
+
+@pytest.mark.parametrize("location", ("cycle", "source"))
+def test_conservative_handoff_export_admits_all_labels(
+    conservative_handoff_report, location
+):
+    opaque = object()
+    report = conservative_handoff_report
+    if location == "cycle":
+        report = replace(report, cycle=(opaque, *report.cycle[1:]))
+    else:
+        report = replace(
+            report,
+            source=replace(report.source, nodes=(opaque, *report.source.nodes[1:])),
+        )
+    with pytest.raises(TypeError, match="node labels"):
+        relational_report_to_dict(report)
+
+
+@pytest.fixture(scope="module")
+def phase_offset_reports():
+    from tnfr.physics.relational_sine_comparison import bound_relational_sine_exchange
+    from tnfr.physics.relational_sine_partition import (
+        assess_sine_phase_offset_partition,
+    )
+
+    graph = nx.cycle_graph(5)
+    graph.add_edges_from((i, i + 5) for i in range(5))
+    for node in graph:
+        graph.nodes[node].update(EPI=0, theta=0, nu_f=1)
+    graph.graph["GAMMA"] = {"type": "none"}
+    source = bound_relational_sine_exchange(
+        graph,
+        reference_model=RelationalExchangeModel(
+            1, epi_weight=0, phase_weight=1, phase_domain="regular"
+        ),
+    )
+    partition = assess_sine_phase_offset_partition(
+        source,
+        blocks=(tuple(range(5)), tuple(range(5, 10))),
+        phase_offset_turns=tuple(Fraction(i, 5) for i in range(5)) * 2,
+    )
+    return partition, partition.evaluate((1, 0), (0, Fraction(1, 8)))
+
+
+@pytest.mark.parametrize("index", (0, 1))
+def test_phase_offset_sdk_export_preserves_template_and_detached_state(
+    phase_offset_reports, index, tmp_path
+):
+    report = phase_offset_reports[index]
+    evidence = relational_report_to_dict(report)
+    assert evidence["report_type"] == type(report).__name__
+    assert evidence["report"] == report.to_dict()["report"]
+    body = evidence["report"]
+    assert body["clock"] == "tau=t/pi"
+    family = body if index == 0 else body["partition"]
+    assert family["invariance_certified"]
+    assert family["source"]["phase"] == [{"numerator": 0, "denominator": 1}] * 10
+    assert family["phase_offset_turns"][1] == {"numerator": 1, "denominator": 5}
+    if index == 1:
+        assert body["fine_form"][:5] == [{"numerator": 1, "denominator": 1}] * 5
+        assert body["block_phase_rates"] == [
+            {"numerator": 1, "denominator": 3},
+            {"numerator": -1, "denominator": 1},
+        ]
+    destination = tmp_path / "phase-offset-report.json"
+    export_to_json(evidence, destination)
+    assert json.loads(destination.read_text(encoding="utf-8")) == evidence
+    family["phase_offset_turns"][1]["numerator"] = 99
+    assert phase_offset_reports[0].phase_offset_turns[1] == Fraction(1, 5)
+
+
+@pytest.mark.parametrize("index", (0, 1))
+@pytest.mark.parametrize("location", ("source", "blocks"))
+def test_phase_offset_export_validates_nested_node_labels(
+    phase_offset_reports, index, location
+):
+    @dataclass(frozen=True)
+    class OpaqueLabel:
+        value: int
+
+    partition, state = phase_offset_reports
+    if location == "source":
+        partition = replace(
+            partition,
+            source=replace(partition.source, nodes=(OpaqueLabel(0), *range(1, 10))),
+        )
+    else:
+        partition = replace(
+            partition, blocks=((OpaqueLabel(0), *range(1, 5)), tuple(range(5, 10)))
+        )
+    report = partition if index == 0 else replace(state, partition=partition)
+    with pytest.raises(TypeError, match="node labels"):
+        relational_report_to_dict(report)
+
+
+@pytest.fixture(scope="module")
+def collective_pulse_report(phase_offset_reports):
+    from tnfr.physics.relational_sine_partition import observe_sine_collective_pulse
+
+    # Install declared exact primitives explicitly: graph capture alone would
+    # retain binary64 materializations of non-dyadic rational input.
+    form = (
+        tuple(Fraction(value, 400) for value in (139, 99, 119, 119, 119))
+        + (-Fraction(357, 400),) * 5
+    )
+    source = replace(phase_offset_reports[0].source, epi=form)
+    return observe_sine_collective_pulse(
+        source, cycle=tuple(range(5)), contact_turn_offsets=(0,) * 5
+    )
+
+
+def test_collective_pulse_sdk_exports_signed_split_and_conditional_jet(
+    collective_pulse_report, tmp_path
+):
+    report = collective_pulse_report
+    exported = relational_report_to_dict(report)
+    assert exported["report_type"] == "SineCollectivePulseBalance"
+    assert exported["report"] == report.to_dict()["report"]
+    body = exported["report"]
+    assert body["form_gap"] == {"numerator": 119, "denominator": 100}
+    assert body["flat_phase_jet_available"]
+    assert body["fourth_energy_derivative"] == {
+        "numerator": 14161,
+        "denominator": 337500,
+    }
+    assert body["contact_turn_offsets"] == [0] * 5
+    assert body["clock"] == "tau=t/pi"
+    path = tmp_path / "collective-pulse.json"
+    export_to_json(exported, path)
+    assert json.loads(path.read_text(encoding="utf-8")) == exported
+    body["source"]["epi"][0]["numerator"] = 999
+    assert report.source.epi[0] == Fraction(139, 400)
+
+
+@pytest.mark.parametrize("location", ("source", "cycle"))
+def test_collective_pulse_sdk_rejects_opaque_labels(collective_pulse_report, location):
+    @dataclass(frozen=True)
+    class OpaqueLabel:
+        value: int
+
+    report = collective_pulse_report
+    if location == "source":
+        report = replace(
+            report, source=replace(report.source, nodes=(OpaqueLabel(0), *range(1, 10)))
+        )
+    else:
+        report = replace(report, cycle=(OpaqueLabel(0), *range(1, 5)))
+    with pytest.raises(TypeError, match="node labels"):
+        relational_report_to_dict(report)
+
+
+@pytest.fixture(scope="module")
+def moving_pattern_windows(phase_offset_reports):
+    from tnfr.physics.relational_sine_partition import assess_sine_moving_pattern_window
+
+    partition = phase_offset_reports[0]
+    pulse = partition.evaluate(
+        (Fraction(1, 20), -Fraction(3, 20)), (-Fraction(2, 5),) * 2
+    )
+    stationary = partition.evaluate((0, 0), (-Fraction(2, 5),) * 2)
+    common = dict(
+        form_error_bounds=(Fraction(1, 1000),) * 10,
+        phase_error_bounds=(Fraction(1, 1000),) * 10,
+        receiver_phase_radius=Fraction(1, 10),
+        contact_phase_radius=Fraction(1, 10),
+        reference_contact_bound=Fraction(1, 4),
+    )
+    return {
+        "pulse": assess_sine_moving_pattern_window(pulse, scaled_horizon=5, **common),
+        "stationary": assess_sine_moving_pattern_window(
+            stationary, scaled_horizon=5, **common
+        ),
+        "unavailable": assess_sine_moving_pattern_window(
+            pulse, scaled_horizon=10**6, **common
+        ),
+    }
+
+
+@pytest.mark.parametrize("kind", ("pulse", "stationary", "unavailable"))
+def test_moving_pattern_window_sdk_preserves_distinct_retention_and_entry(
+    moving_pattern_windows, kind, tmp_path
+):
+    report = moving_pattern_windows[kind]
+    evidence = relational_report_to_dict(report)
+    assert evidence["report_type"] == "SineMovingPatternWindow"
+    assert evidence["report"] == report.to_dict()["report"]
+    body = evidence["report"]
+    assert body["clock"] == "tau=t/pi"
+    assert body["whole_window_retention_certified"] == (kind != "unavailable")
+    assert body["phase_flat_acquisition_status"] == (
+        "excluded" if kind == "stationary" else "not_excluded"
+    )
+    if kind == "unavailable":
+        assert body["receiver_storage_excess_upper_bound"] is None
+    else:
+        assert body["scaled_horizon"] == {"numerator": 5, "denominator": 1}
+    destination = tmp_path / f"moving-pattern-{kind}.json"
+    export_to_json(evidence, destination)
+    assert json.loads(destination.read_text(encoding="utf-8")) == evidence
+    body["form_error_bounds"][0]["numerator"] = 999
+    assert report.form_error_bounds[0] == Fraction(1, 1000)
+
+
+@pytest.mark.parametrize("location", ("source", "blocks"))
+def test_moving_pattern_window_export_admits_nested_labels(
+    moving_pattern_windows, location
+):
+    @dataclass(frozen=True)
+    class OpaqueLabel:
+        value: int
+
+    report = moving_pattern_windows["pulse"]
+    partition = report.reference.partition
+    if location == "source":
+        partition = replace(
+            partition,
+            source=replace(partition.source, nodes=(OpaqueLabel(0), *range(1, 10))),
+        )
+    else:
+        partition = replace(
+            partition, blocks=((OpaqueLabel(0), *range(1, 5)), tuple(range(5, 10)))
+        )
+    altered = replace(report, reference=replace(report.reference, partition=partition))
+    with pytest.raises(TypeError, match="node labels"):
+        relational_report_to_dict(altered)
+
+
+def test_regional_organization_sdk_retains_full_forecast_and_distinct_outcome(tmp_path):
+    from tnfr.physics.relational_sine_forecast import bound_sine_flow
+    from tnfr.physics.relational_sine_regional import (
+        assess_sine_regional_channels,
+        assess_sine_regional_organization,
+    )
+
+    forecast = bound_sine_flow(
+        (0,) * 10 + (1,),
+        neighbors=tuple(((i - 1) % 5, (i + 1) % 5) for i in range(5)),
+        visible_capacity=(1,) * 4,
+        model=RelationalExchangeModel(1, epi_weight=0, phase_domain="regular"),
+        observation_time=0,
+        end_time=Fraction(1, 16),
+        time_step=Fraction(1, 16),
+        order=2,
+    )
+    report = assess_sine_regional_organization(
+        forecast,
+        cycle_indices=(0, 1, 2, 3, 4),
+        minimum_duration=Fraction(1, 32),
+        acute_margin=Fraction(1, 16),
+    )
+    evidence = relational_report_to_dict(report)
+    assert evidence["report_type"] == "SineRegionalOrganization"
+    assert evidence["report"] == report.to_dict()["report"]
+    body = evidence["report"]
+    assert body["clock"] == "structural_t"
+    assert body["horizon_complete"]
+    assert body["outcome"] == "acute_winding_excluded_on_horizon"
+    assert len(body["forecast"]["initial_box"]) == 11
+    assert body["forecast"]["validated_end_time"] == {"numerator": 1, "denominator": 16}
+    path = tmp_path / "regional-organization.json"
+    export_to_json(evidence, path)
+    assert json.loads(path.read_text(encoding="utf-8")) == evidence
+    body["cycle_indices"][0] = 4
+    assert report.cycle_indices == (0, 1, 2, 3, 4)
+    channels = assess_sine_regional_channels(forecast, cycle_indices=(0, 1, 2, 3, 4))
+    projected = relational_report_to_dict(channels)
+    assert projected["report_type"] == "SineRegionalChannelHistory"
+    assert projected["report"] == channels.to_dict()["report"]
+    assert projected["report"]["acute_accessibility_barrier"] == {
+        "numerator": 7,
+        "denominator": 2,
+    }
+    assert projected["report"]["initial_phase_flat_certified"]
+    path = tmp_path / "regional-channels.json"
+    export_to_json(projected, path)
+    assert json.loads(path.read_text(encoding="utf-8")) == projected
+
+
 def test_pair_emission_sdk_delegates_explicit_action_and_lifts(monkeypatch):
     from tnfr.physics import relational_sine_scale as owner
 
@@ -1522,3 +2127,230 @@ def test_analytic_sine_delegation_retains_owner_node_label_rejection(
     source = replace(report.source, nodes=(object(), *report.source.nodes[1:]))
     with pytest.raises(TypeError, match="node labels"):
         relational_report_to_dict(replace(report, source=source))
+
+
+@pytest.fixture(scope="module")
+def sine_pattern_composition_reports():
+    """Two static P2 sources exercise composition export without a flow."""
+    from tnfr.physics.relational_sine_composition import assess_sine_pattern_composition
+    from tnfr.physics.relational_sine_pattern import bound_relational_sine_pattern
+
+    model = RelationalExchangeModel(1, phase_domain="regular")
+    sources = []
+    for labels, capacities in (
+        ((("left", 0), "left-1"), (1, 2)),
+        ((("right", 0), "right-1"), (3, 4)),
+    ):
+        graph = nx.path_graph(labels)
+        for node, capacity in zip(graph, capacities, strict=True):
+            graph.nodes[node].update(EPI=0, theta=0, nu_f=capacity)
+        graph.graph["GAMMA"] = {"type": "none"}
+        sources.append(
+            bound_relational_sine_pattern(
+                graph,
+                reference_node=labels[0],
+                reference_model=model,
+                form_error_bounds=(0, 0),
+                phase_error_bounds=(0, 0),
+            )
+        )
+    return {
+        kind: assess_sine_pattern_composition(
+            *sources,
+            bridge=("left-1", ("right", 0)),
+            observation_time=Fraction(5, 3),
+            edge_turn_offsets=(0, 0, 0),
+            form_origin_difference=Fraction(1, 3),
+            phase_origin_difference=phase,
+            work_allowance=0,
+        )
+        for kind, phase in (("available", Fraction(1, 7)), ("unavailable", None))
+    }
+
+
+@pytest.mark.parametrize("kind", ("available", "unavailable"))
+def test_sine_pattern_composition_sdk_export_retains_exact_frames_and_availability(
+    sine_pattern_composition_reports, kind, tmp_path
+):
+    report = sine_pattern_composition_reports[kind]
+    generic, direct = relational_report_to_dict(report), report.to_dict()
+    assert generic["schema"] == "tnfr.relational-report.v1"
+    assert generic["report_type"] == "SinePatternComposition"
+    assert direct["schema"] == "tnfr.relational-sine-pattern-composition.v1"
+    assert generic["report"] == direct["report"]
+    body = generic["report"]
+    assert body["status"] == kind
+    assert body["nodes"] == [["left", 0], "left-1", ["right", 0], "right-1"]
+    assert body["bridge"] == ["left-1", ["right", 0]]
+    assert body["observation_time"] == {"numerator": 5, "denominator": 3}
+    assert body["form_origin_difference"] == {"numerator": 1, "denominator": 3}
+    for field, ideal in (
+        ("bridge_form_storage_bounds", Fraction(1, 18)),
+        ("representative_weighted_form_mean_bounds", Fraction(11, 105)),
+    ):
+        encoded = body[field]
+        decoded = tuple(
+            Fraction(encoded[end]["numerator"], encoded[end]["denominator"])
+            for end in ("lo", "hi")
+        )
+        bounds = getattr(report, field)
+        assert decoded == (bounds.lo, bounds.hi)
+        assert decoded[0] <= ideal <= decoded[1]
+    if kind == "available":
+        assert body["phase_origin_difference"] == {"numerator": 1, "denominator": 7}
+        assert (
+            body["joined"]["nominal_form"][2:]
+            == [{"numerator": 1, "denominator": 3}] * 2
+        )
+        assert body["capture"]["status"] == "admitted"
+        assert body["capture"]["weighted_form_mean"] is None
+        assert body["budget_status"] == "exceeds_allowance"
+    else:
+        assert body["phase_origin_difference"] is None
+        assert body["joined"] is body["capture"] is None
+        assert body["bridge_storage_bounds"] is body["joined_storage_bounds"] is None
+        assert body["unavailable_reasons"] == ["phase_origin_difference_not_supplied"]
+        assert body["budget_status"] == "unresolved"
+    path = tmp_path / f"sine-composition-{kind}.json"
+    export_to_json(generic, path)
+    assert json.loads(path.read_text(encoding="utf-8")) == generic
+    body["left"]["nominal_form"][0]["numerator"] = 999
+    assert report.left.nominal_form[0] == Fraction(0)
+
+
+@pytest.mark.parametrize("location", ("nodes", "bridge", "left", "joined"))
+def test_sine_composition_export_rejects_opaque_labels(
+    sine_pattern_composition_reports, location
+):
+    @dataclass(frozen=True)
+    class OpaqueLabel:
+        value: int
+
+    report = sine_pattern_composition_reports["available"]
+    opaque = OpaqueLabel(7)
+    if location in ("nodes", "bridge"):
+        labels = getattr(report, location)
+        altered = replace(report, **{location: (opaque, *labels[1:])})
+    else:
+        nested = getattr(report, location)
+        altered = replace(
+            report,
+            **{location: replace(nested, nodes=(opaque, *nested.nodes[1:]))},
+        )
+    with pytest.raises(TypeError, match="node labels"):
+        relational_report_to_dict(altered)
+
+
+@pytest.mark.parametrize(
+    "path", (("nodes",), ("edges",), ("geometry", "nodes"), ("source", "nodes"))
+)
+def test_sine_composition_export_validates_nested_capture_labels(
+    sine_pattern_composition_reports, path
+):
+    @dataclass(frozen=True)
+    class OpaqueLabel:
+        value: int
+
+    report = sine_pattern_composition_reports["available"]
+    opaque = OpaqueLabel(7)
+    labels = ((opaque, "left-1"),) if path == ("edges",) else (opaque,)
+    capture = _replace_report_path(report.capture, path, labels)
+    altered = replace(report, capture=capture)
+    with pytest.raises(TypeError, match="node labels"):
+        relational_report_to_dict(altered)
+    with pytest.raises(TypeError, match="node labels"):
+        capture.to_dict()
+
+
+@pytest.fixture(scope="module")
+def prepared_composition_exports():
+    """Zero-time sources separate export/capture wiring from acquisition."""
+    from tnfr.physics.relational_sine_pattern import bound_relational_sine_pattern
+
+    model = RelationalExchangeModel(1, phase_domain="regular")
+    entries = []
+    for labels in ((0, 1), (2, 3)):
+        graph = nx.path_graph(labels)
+        for node in graph:
+            graph.nodes[node].update(EPI=0, theta=0, nu_f=1)
+        graph.graph["GAMMA"] = {"type": "none"}
+        source = bound_relational_sine_pattern(
+            graph,
+            reference_node=labels[0],
+            reference_model=model,
+            form_error_bounds=(0, 0),
+            phase_error_bounds=(0, 0),
+        )
+        entries.append(
+            source.certify_prepared_entry(scaled_time=0, edge_turn_offsets=(0,))
+        )
+    return tuple(
+        entries[0].compose_with(
+            entries[1],
+            bridge=(1, 2),
+            left_initial_time=Fraction(3, 7),
+            right_initial_time=Fraction(3, 7),
+            edge_turn_offsets=(0, 0, 0),
+            form_origin_difference=origin,
+            phase_origin_difference=0,
+            work_allowance=Fraction(1, 4),
+        )
+        for origin in (Fraction(1, 3), None)
+    )
+
+
+@pytest.mark.parametrize("index", (0, 1))
+def test_prepared_composition_exact_sdk_export(
+    prepared_composition_exports, index, tmp_path
+):
+    report = prepared_composition_exports[index]
+    generic = relational_report_to_dict(report)
+    assert generic["report_type"] == "SinePreparedComposition"
+    assert generic["report"] == report.to_dict()["report"]
+    body = generic["report"]
+    assert body["source"]["observation_time"] == {"numerator": 3, "denominator": 7}
+    assert body["source"]["left"]["status"] == "unavailable"
+    assert not report.acquisition_and_capture_certified
+    if index == 0:
+        assert body["status"] == "available"
+        assert body["capture"]["status"] == "admitted"
+        assert body["budget_status"] == "within_allowance"
+        assert body["source"]["form_origin_difference"] == {
+            "numerator": 1,
+            "denominator": 3,
+        }
+        assert body["capture"]["source"] == body["source"]
+    else:
+        assert body["status"] == "unavailable"
+        assert body["capture"] is None and body["joined_storage_bounds"] is None
+        assert body["budget_status"] == "unresolved"
+    path = tmp_path / "prepared-composition.json"
+    export_to_json(generic, path)
+    assert json.loads(path.read_text(encoding="utf-8")) == generic
+    body["source"]["left"]["source"]["nominal_form"][0]["numerator"] = 42
+    assert report.left.source.nominal_form[0] == 0
+
+
+@pytest.mark.parametrize(
+    "path",
+    (
+        ("source", "left", "source", "nodes"),
+        ("source", "right", "geometry", "nodes"),
+        ("source", "left", "capture", "nodes"),
+        ("capture", "source", "right", "source", "reference_node"),
+        ("capture", "geometry", "nodes"),
+    ),
+)
+def test_prepared_composition_nested_label_admission(
+    prepared_composition_exports, path
+):
+    @dataclass(frozen=True)
+    class OpaqueLabel:
+        value: int
+
+    value = OpaqueLabel(1)
+    if path[-1] != "reference_node":
+        value = (value,)
+    report = _replace_report_path(prepared_composition_exports[0], path, value)
+    with pytest.raises(TypeError, match="node labels"):
+        relational_report_to_dict(report)

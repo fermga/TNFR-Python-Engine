@@ -38,7 +38,7 @@ its lossless boundary.
 
 Put `kappa=2*pi/5`, `c=cos(kappa)=(sqrt(5)-1)/4>0` and `h=1+2c`.
 For form deviations `u` and local lifted phase deviations `v`, reuse the
-[proved equilibrium derivative](RELATIONAL_EXCHANGE_ADMISSION.md#quotient-linearization-and-the-restoring-mechanism):
+[proved equilibrium derivative](RELATIONAL_RECOVERY_AND_INTERACTION.md#quotient-linearization-and-the-restoring-mechanism):
 
 \[
 J=\begin{pmatrix}-eD^{-1}B&-wH^{-1}K\\
@@ -258,7 +258,7 @@ The arithmetic regional mean rate is `S_R/n`. Replacing each `a_i` by its
 regional mean discards the displayed covariance; it is exact only when that
 term vanishes at the state in question. This does not make its future value
 predictable from the regional mean or cut. Unlike the already implemented
-[weighted phase-cut balance](RELATIONAL_EXCHANGE_ADMISSION.md#relational-work-integration),
+[weighted phase-cut balance](RELATIONAL_RECOVERY_AND_INTERACTION.md#relational-work-integration),
 the arithmetic rate retains correlation between local form response and
 local phase mobility.
 
@@ -586,7 +586,7 @@ arithmetic used by its phase row. The shared detached
 the existing cut to expose `region.phase_response`, including its covariance
 and squared bound. The SDK delegates to that owner and the exact exporter
 retains the new fields; no report changes the law. The
-[API contract](../../docs/contracts/RELATIONAL_DYNAMICS.md#relational-pattern-observation)
+[API contract](../../docs/contracts/relational/RELATIONAL_EXECUTION.md#relational-pattern-observation)
 owns field names and availability. Independent
 [static controls](../../tests/test_relational_phase_response.py) check the
 analytic path case, heterogeneous capacity, exact gradients before floating
@@ -712,7 +712,7 @@ The sufficient interface above retains precisely the internal quantities
 that the control discards; no minimality theorem is claimed.
 
 The existing
-[interaction basin](RELATIONAL_EXCHANGE_ADMISSION.md#relational-region-interaction)
+[interaction basin](RELATIONAL_RECOVERY_AND_INTERACTION.md#relational-region-interaction)
 already admits this ideal preparation and eventual local recovery on this
 single-bridge support. Its proof is reused, not rederived. The separate
 two-adjacent-bridge capture API does not admit this graph.
@@ -979,7 +979,7 @@ independently known equal-phase bridge cost, exact budget boundaries including
 sub-binary64 rational margins, the retained zero-cost C5 discriminator, and
 the P4 atomic-exchange witness through the native field and shared transport
 reset. They do not implement an exchange selector or rerun a trajectory.
-The [API contract](../../docs/contracts/RELATIONAL_DYNAMICS.md#relational-attachment-observation)
+The [API contract](../../docs/contracts/relational/RELATIONAL_EXECUTION.md#relational-attachment-observation)
 owns represented-input and export details. The exact-real jump, passivity and
 continuous-intensity conclusions above are analytic results under their stated
 premises; a test of finite arithmetic is not their proof.
@@ -1050,7 +1050,7 @@ S_*=10\beta(1-c).
 
 Assume \(e,w,\beta>0\) and **strictly positive held capacities** at every
 node. Equal capacities are unnecessary. Apply the existing
-[local recovery theorem and explicit barrier](RELATIONAL_EXCHANGE_ADMISSION.md#an-explicit-local-domain-and-the-offset-limits)
+[local recovery theorem and explicit barrier](RELATIONAL_RECOVERY_AND_INTERACTION.md#an-explicit-local-domain-and-the-offset-limits)
 separately to the two graphs, with no change to its flow or storage premises.
 Choose consistent local phase lifts and put
 
@@ -1062,7 +1062,7 @@ r=\frac{\pi}{20\sqrt2},\qquad
 \]
 
 Both graphs have ten nodes and diameter five. The same pathwise Cauchy
-bound used in the [interaction proof](RELATIONAL_EXCHANGE_ADMISSION.md#relational-region-interaction)
+bound used in the [interaction proof](RELATIONAL_RECOVERY_AND_INTERACTION.md#relational-region-interaction)
 gives \(\lambda_2(B)\geq2/45\). In the radius-\(r\) ball, every
 reference edge gap changes by less than \(\sqrt2r=\pi/20\); hence all
 edges in either graph remain acute and the common Hessian lower bound is
@@ -1178,7 +1178,7 @@ those same components while preserving every internal edge. Port updates,
 field differences, support-reset accounting and signed supply assessment reuse
 the attachment owners. The observer admits either sign of event cost; it does
 not turn passivity into a graph mutation or a theorem verdict. See the
-[execution contract](../../docs/contracts/RELATIONAL_DYNAMICS.md#relational-relocation-observation)
+[execution contract](../../docs/contracts/relational/RELATIONAL_EXECUTION.md#relational-relocation-observation)
 and [static controls](../../tests/test_relational_attachment.py).
 
 The ideal phase preparation is not its binary64 materialization. Exact
@@ -1633,7 +1633,7 @@ reuse the transport reset and represented half-sine phase cost to separate
 form/phase changes into state and support contributions. Exact rational
 accounting of represented values is not an enclosure of ideal trigonometric
 error, authentication of an operator event, or admission of future flow.
-The [API contract](../../docs/contracts/RELATIONAL_DYNAMICS.md#relational-reset-observation)
+The [API contract](../../docs/contracts/relational/RELATIONAL_EXECUTION.md#relational-reset-observation)
 owns the wider snapshot domain and supplied-work assessment.
 
 [Actual UM/RA controls](../../tests/physics/test_coupling_attachment_budget.py),
@@ -1688,7 +1688,7 @@ functional-link policy is relabeled as emergent.
 
 The hypothesis that a connection is caused by synchronized rhythms first
 requires an identified rhythm of the **actual** nodal law. The
-[native pulse admission](RELATIONAL_EXCHANGE_ADMISSION.md#relational-pulse-scope)
+[native pulse admission](RELATIONAL_RESPONSE_IDENTIFICATION.md#relational-pulse-scope)
 reuses the existing phase/form modes and storage balance. A capacity is not
 an angular velocity; a maintained phase pattern need not be a periodic orbit.
 The auxiliary `Network.rhythm()` spectrum and arithmetic pulse studies have
@@ -1810,7 +1810,7 @@ This is an explicit geometry-dependent deformation, not a contradiction or
 evidence that one scalar phase per region closes the future response.
 
 For positive dissipation and sufficiently small offset, the existing
-[local recovery theorem](RELATIONAL_EXCHANGE_ADMISSION.md#relational-local-recovery)
+[local recovery theorem](RELATIONAL_RECOVERY_AND_INTERACTION.md#relational-local-recovery)
 also gives convergence to the common aligned-twist equilibrium modulo common
 offsets. This reuses its local theorem, not a new quantified basin or a
 global synchronization result. The bridge already belongs to the fine model;
@@ -1821,7 +1821,7 @@ must state that distinction. It does not derive the underlying graph's birth.
 
 This suggests a more precise ontological target than primitive edge creation:
 two coherent regions may acquire a joint geometric identity on supplied fine
-support. The existing [interaction theorem](RELATIONAL_EXCHANGE_ADMISSION.md#relational-region-interaction)
+support. The existing [interaction theorem](RELATIONAL_RECOVERY_AND_INTERACTION.md#relational-region-interaction)
 already establishes the relevant local distinction. Disconnected acute C5
 twists have four independent neutral offsets (form and phase per component)
 and sixteen stable tangent directions. The joined graph has only two global
@@ -1929,7 +1929,7 @@ with the mediator omitted from its partition. Reuse the elimination algebra
 or the general linear-realization owner instead. The older unnormalized Kron
 example has a different capacity law, as that document already specifies.
 
-The [joint mediator extension](RELATIONAL_PATTERN_MEMORY.md#mediated-pattern-interaction)
+The [joint mediator extension](RELATIONAL_MEDIATOR_DYNAMICS.md#mediated-pattern-interaction)
 now uses the existing nonlinear form/phase law on two C5 regions linked through
 one nodal intermediary. It derives a two-coordinate tangent memory, a
 capacity-dependent transient and a direct-versus-mediated onset discriminator;
@@ -1940,7 +1940,7 @@ support origin or replacing a finite capture study.
 <a id="mediated-restoring-geometry"></a>
 ### The same phase geometry induces a restoring relation through a mediator
 
-The [local recovery theorem](RELATIONAL_EXCHANGE_ADMISSION.md#relational-local-recovery)
+The [local recovery theorem](RELATIONAL_RECOVERY_AND_INTERACTION.md#relational-local-recovery)
 uses the Hessian of the existing phase storage, with edge weights
 `k_ij=cos(delta_ij)>0` at an acute equilibrium. These are derived curvatures,
 not new conductances or physical spring constants. Restrict its quadratic
@@ -1986,7 +1986,7 @@ Static minimization is **not dynamic elimination**. Endpoints and ring shapes
 are fixed only for this calculation; that constrained family need not be
 invariant under the actual flow. Neither `h=h_*` nor a direct endpoint law
 may replace the mediator's form and phase rows without another argument.
-The [derived memory](RELATIONAL_PATTERN_MEMORY.md#mediated-pattern-interaction)
+The [derived memory](RELATIONAL_MEDIATOR_DYNAMICS.md#mediated-pattern-interaction)
 retains those rows, their initial state and their capacity. In particular a
 zero-capacity mediator can stay away from this constrained minimum: geometric
 curvature does not by itself make an inactive node move.
@@ -2062,7 +2062,7 @@ That foundational contract precedes a proposed law for creating a relation;
 the effective-link results below retain their supplied fine support.
 
 UM can add a chord and create a new cycle sector; the existing
-[sector-birth control](../FORCED_SUPPORT_BALANCE.md#31-one-added-chord-extends-the-cycle-lattice-not-a-phase-generation-law)
+[sector-birth control](FORCED_PHASE_LOCKING.md#31-one-added-chord-extends-the-cycle-lattice-not-a-phase-generation-law)
 separates that event from simultaneous phase writes and its configured Si
 gate. Topological REMESH constructs MST/kNN support from supplied EPI distances
 and settings. The runtime's ordinary REMESH gate instead invokes delayed EPI
@@ -2116,7 +2116,7 @@ e\nu_i/d_i & w\nu_i\cos(\theta_{*,j}-\theta_{*,i})/H_i\\
 \]
 
 Nonadjacent off-diagonal blocks vanish. This follows directly from the
-[equilibrium Jacobian](RELATIONAL_EXCHANGE_ADMISSION.md#quotient-linearization-and-the-restoring-mechanism),
+[equilibrium Jacobian](RELATIONAL_RECOVERY_AND_INTERACTION.md#quotient-linearization-and-the-restoring-mechanism),
 not from a graph-wave equation. Suppose distinct nodes `a,b` have a unique
 shortest support path `a=v_0,...,v_ell=b`, with length `ell>=1`. Locality gives
 `(J^k)_{ba}=0` for `k<ell`. At order `ell`, a contributing walk cannot contain
@@ -2197,7 +2197,7 @@ same fixed boundary. Local uniqueness makes their solutions identical for
 their common existence interval. The argument is nonlinear and does not use
 a tangent approximation. A remaining active route invalidates this null.
 
-The [grounded recovery control](RELATIONAL_PATTERN_MEMORY.md#finite-mediated-response)
+The [grounded recovery control](RELATIONAL_MEDIATOR_DYNAMICS.md#finite-mediated-response)
 shows why this distinction matters: independent regions can each restore a
 geometry imposed by one frozen boundary without transmitting changes to one
 another. Neither similar shapes nor equal rhythms establishes causal linkage.
@@ -2224,7 +2224,7 @@ rank-one form and strict coefficient. For two vertices with no interior, use
 not a new pressure, conductance or instantaneous evolution law.
 
 Under the positive-capacity premises, the existing
-[local recovery theorem and sufficient basin](RELATIONAL_EXCHANGE_ADMISSION.md#relational-local-recovery)
+[local recovery theorem and sufficient basin](RELATIONAL_RECOVERY_AND_INTERACTION.md#relational-local-recovery)
 complete the restoring claim. In its notation, `||z(0)||<r` and
 `E_rel(0)<k_r*r^2` keep the joint state in an admitted acute neighborhood and
 give convergence to the reference geometry modulo common form/phase offsets.
@@ -2234,7 +2234,7 @@ restoring effective link for the stated pairs; no extra synchronization
 threshold, pulse variable or operator schedule is required.
 
 If hidden nodes are eliminated dynamically, the resulting effective law must
-retain the [derived memory and hidden initial state](RELATIONAL_PATTERN_MEMORY.md#mediated-pattern-interaction).
+retain the [derived memory and hidden initial state](RELATIONAL_MEDIATOR_DYNAMICS.md#mediated-pattern-interaction).
 The [pressure-state obstruction](JOINT_PARAMETER_RESPONSE.md#pressure-state-closure)
 also rules out replacing this environment in general by its instantaneous
 total pressure: equal pressure can conceal different future responses under
@@ -2251,7 +2251,7 @@ and neither this result nor capture explains the birth of primitive support.
 The same two unit C5 rings with path `0--10--5` provide a capture statement
 without another trajectory calculation. Fix unit capacities,
 `e=w=1/2`, `beta=1`, and the aligned winding-one reference of the
-[mediator owner](RELATIONAL_PATTERN_MEMORY.md#mediated-pattern-interaction).
+[mediator owner](RELATIONAL_MEDIATOR_DYNAMICS.md#mediated-pattern-interaction).
 Prepare uniform zero form, leave the first ring's phases at the reference,
 rotate the entire second ring by `delta`, and set the mediator phase to
 `delta/2`. Both internal windings are unchanged. The common phase offset is
@@ -2392,7 +2392,7 @@ same proved capture domain but produce different initial receiver responses.
 The claim concerns the **mediator's** pressure, not equality of every nodal
 pressure or every subsequent trajectory.
 
-The [existing two-coordinate memory result](RELATIONAL_PATTERN_MEMORY.md#mediated-pattern-interaction)
+The [existing two-coordinate memory result](RELATIONAL_MEDIATOR_DYNAMICS.md#mediated-pattern-interaction)
 already proves why both hidden mediator coordinates must be retained for the
 specified all-ring tangent observation. This example shows concretely why
 replacing them by the single mediator pressure loses information. The memory
@@ -2421,7 +2421,7 @@ another trajectory or an autonomous edge-deletion rule.
 ### Event and post-event state card
 
 Start with the two unit C5 rings and the two matching bridges at positions
-0 and 1 used by the [formation proof](RELATIONAL_EXCHANGE_ADMISSION.md#relational-validated-transit).
+0 and 1 used by the [formation proof](RELATIONAL_FORMATION_CONTROLS.md#relational-validated-transit).
 At a supplied time, delete both bridges and retain every nodal form, phase
 and capacity coordinate. The resulting support consists of two C5 components.
 Evaluate each component separately with its own newly computed degree,
@@ -2489,7 +2489,7 @@ invariant zero-loss set. To preserve this condition, the unchanged form row
 requires `B_R*N_R*g_R=0`, so `N_R*g_R=a*1`. The identity
 `sum(H_i*g_i)=0` then gives `a*sum(H_i/nu_i)=0`, hence `a=0` and `g_R=0`.
 Rest makes that target invariant. Compactness and LaSalle's principle give
-convergence. The [local law-class proof](RELATIONAL_EXCHANGE_ADMISSION.md#relational-sector-law-class)
+convergence. The [local law-class proof](RELATIONAL_DOMAIN_AND_CAPTURE.md#relational-sector-law-class)
 uses only connected support, positive capacities, a positive acute phase
 Hessian and the full-neighborhood strict loss bound for its Hurwitz step;
 those hypotheses hold on this C5. Its exponential-recovery and integrable
@@ -2500,7 +2500,7 @@ initial state that could recover.
 ### The joined sector certificate already admits both detached rings
 
 Let `E_total` be the full two-ring storage immediately before deletion.
-Suppose the existing [joined acute-sector conditions](RELATIONAL_EXCHANGE_ADMISSION.md#relational-acute-sector-capture)
+Suppose the existing [joined acute-sector conditions](RELATIONAL_DOMAIN_AND_CAPTURE.md#relational-acute-sector-capture)
 hold, including common winding `s=+1` or `-1` and
 
 \[
@@ -2564,7 +2564,7 @@ The ordinary ring winding is zero. On the pure C5, the five resultants are
 so the early cut itself has an admitted regular post-event state. It is
 not rejected merely because the domain was undefined.
 
-The [pure-cycle resultant invariant](RELATIONAL_EXCHANGE_ADMISSION.md#relational-cycle-resultant-obstruction)
+The [pure-cycle resultant invariant](RELATIONAL_DOMAIN_AND_CAPTURE.md#relational-cycle-resultant-obstruction)
 now distinguishes it from either maintained acute twist. Around the derived
 skip cycle `(0,2,4,1,3)`, its true wrapped gaps are
 
@@ -2584,8 +2584,8 @@ the supplied bridges.
 
 ### A sufficiently late detachment window follows from formed-state recovery
 
-The [reference formation result](RELATIONAL_EXCHANGE_ADMISSION.md#relational-validated-transit)
-and its [bounded phase-law comparisons](RELATIONAL_EXCHANGE_ADMISSION.md#relational-formation-law-robustness)
+The [reference formation result](RELATIONAL_FORMATION_CONTROLS.md#relational-validated-transit)
+and its [bounded phase-law comparisons](RELATIONAL_FORMATION_CONTROLS.md#relational-formation-law-robustness)
 converge to the same joined aligned twist. Its edge gaps are strictly acute,
 each ring storage tends to `beta*V_*`, and
 `V_*<V_face`. Consequently there is a finite time after which every
@@ -2630,7 +2630,7 @@ replays the frozen formation trajectory or chooses a cut time.
 <a id="induced-formation-storage-obstruction"></a>
 
 The retained-receiver result in
-[pattern memory](RELATIONAL_PATTERN_MEMORY.md#relational-retained-receiver-record)
+[pattern memory](RELATIONAL_PHASE_MEMORY.md#relational-retained-receiver-record)
 concerns interaction between two already formed winding-one patterns.
 Here the receiver initially lacks that phase geometry. The question is
 whether a state-preserving supplied connection can form the receiver while
@@ -2669,7 +2669,7 @@ z_{L,j}=2c+e^{i\delta_j}.
 At its uniform receiver partner it is `z_R,j=2+exp(-i*delta_j)`.
 Unoccupied source and receiver nodes have positive real resultants `2c`
 and `2`. Consequently, membership in the ideal
-[`positive_resultant` chamber](RELATIONAL_EXCHANGE_ADMISSION.md#relational-positive-resultant-execution)
+[`positive_resultant` chamber](RELATIONAL_DOMAIN_AND_CAPTURE.md#relational-positive-resultant-execution)
 selected by that engine option is equivalent for this family to
 
 \[
@@ -2748,7 +2748,7 @@ different admitted resource budget.
 
 The initial positive-real condition is a computational admission restriction,
 not a universal requirement of the already defined
-[full regular relational law](RELATIONAL_EXCHANGE_ADMISSION.md#relational-regular-domain-admission).
+[full regular relational law](RELATIONAL_DOMAIN_AND_CAPTURE.md#relational-regular-domain-admission).
 This distinction is essential for the two-port case. Consider the same
 equal-form preparation and two bridges, but choose
 
@@ -2770,7 +2770,7 @@ ports have positive real part `2-cos(kappa/2)`; all other resultants retain
 their earlier positive values. Hence this is a locally regular state of
 the same mathematical law, with a smooth local flow. Its represented
 preparation is admitted by the explicit
-[`phase_domain="regular"` option](RELATIONAL_EXCHANGE_ADMISSION.md#relational-full-regular-execution),
+[`phase_domain="regular"` option](RELATIONAL_DOMAIN_AND_CAPTURE.md#relational-full-regular-execution),
 while `positive_resultant` correctly rejects it. The wider option introduces
 no new constitutive law; it certifies the domain already used in the derivation.
 
@@ -2993,7 +2993,7 @@ resultants satisfy
 \]
 
 The interior resultants are again positive. This is the previously derived
-[added-support regular path](RELATIONAL_EXCHANGE_ADMISSION.md#relational-regular-winding-crossing),
+[added-support regular path](RELATIONAL_DOMAIN_AND_CAPTURE.md#relational-regular-winding-crossing),
 in the reflection coordinates. Its total storage is `2*V(u)`. Since
 
 \[
@@ -3604,7 +3604,7 @@ E/\beta=7+16(k-3/16)^2+7/16\ge119/16>7.
 
 For consensus and both twist families every cosine edge weight is positive
 on connected support. The phase Hessian consequently has inertia `(9,0,1)`.
-The [full-network stiffness theorem](RELATIONAL_EXCHANGE_ADMISSION.md#regular-equilibrium-stiffness)
+The [full-network stiffness theorem](RELATIONAL_RECOVERY_AND_INTERACTION.md#regular-equilibrium-stiffness)
 gives local exponential recovery in all 18 quotient coordinates; this includes
 perturbations outside reflection. Two common-offset modes are neutral in the
 full twenty-coordinate state.
@@ -3750,7 +3750,7 @@ evaluator's six-resultant admission. Its statement is local-flow existence,
 not a certified response from supplied initial data or permission to step
 across zero. [Controls](../../tests/physics/test_relational_reflected_boundary.py)
 check those formulas and independent full-state limiting paths.
-The [general domain theorem](RELATIONAL_EXCHANGE_ADMISSION.md#regular-domain-continuation-and-boundary-access)
+The [general domain theorem](RELATIONAL_DOMAIN_AND_CAPTURE.md#regular-domain-continuation-and-boundary-access)
 separately protects sufficiently small total storage and distinguishes
 zero-resultant collisions from nonzero negative-real branch collisions.
 
@@ -3808,7 +3808,7 @@ The links below preserve the original section and subsection targets.
 <a id="the-nonlinear-storage-representation-contains-the-existing-resonance-pencil"></a>
 <a id="a-phase-flat-preparation-distinguishes-the-full-law-from-phase-descent"></a>
 
-[Definitions, proof and controls](SINE_PATTERN_DYNAMICS.md#sine-form-phase-memory-equivalence) are maintained in the smooth-sine owner.
+[Definitions, proof and controls](SINE_FORM_PHASE_REDUCTION.md#sine-form-phase-memory-equivalence) are maintained in the smooth-sine owner.
 
 ## 29. A controlled fast-form and slow-phase comparison
 
@@ -3819,7 +3819,7 @@ The links below preserve the original section and subsection targets.
 <a id="means-uncertain-sources-and-phase-potential"></a>
 <a id="shared-certificate-and-bounded-numerical-controls"></a>
 
-[Definitions, proof and controls](SINE_PATTERN_DYNAMICS.md#sine-controlled-slow-phase) are maintained in the smooth-sine owner.
+[Definitions, proof and controls](SINE_FORM_PHASE_REDUCTION.md#sine-controlled-slow-phase) are maintained in the smooth-sine owner.
 
 ## 30. Full-state capture from controlled phase geometry
 
@@ -3829,7 +3829,7 @@ The links below preserve the original section and subsection targets.
 <a id="handoff-to-the-whole-sector-theorem"></a>
 <a id="fixed-analytic-controls-and-scope"></a>
 
-[Definitions, proof and controls](SINE_PATTERN_DYNAMICS.md#sine-slow-phase-capture-handoff) are maintained in the smooth-sine owner.
+[Definitions, proof and controls](SINE_FORM_PHASE_REDUCTION.md#sine-slow-phase-capture-handoff) are maintained in the smooth-sine owner.
 
 ## 31. A fixed original preparation budget forces consensus at small ratio
 

@@ -118,9 +118,8 @@ from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from itertools import islice
 from numbers import Integral, Real
-from typing import Any, MutableMapping, cast
+from typing import Any, MutableMapping, TypeAlias, cast
 
-from .._compat import TypeAlias
 from ..alias import collect_attr, collect_theta_attr, get_attr, set_attr
 from ..config.selector_thresholds import resolve_selector_thresholds
 from ..constants import get_param

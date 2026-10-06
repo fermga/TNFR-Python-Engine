@@ -1,4 +1,4 @@
-"""Declared modal and full-support resonance in the normalized-sine model.
+"""Declared resonance and static storage controls on full nodal support.
 
 The nonlinear phase/form exchange and work identity remain owned by the shared
 sine field. This reader differentiates that same law about an exact cycle
@@ -11,7 +11,9 @@ already admitted zero-loss boundary. The conservative P3 reader reuses exact
 coordinate memory after a declared clock change, retaining hidden initial
 state. A nonlinear family reader checks compact invariant slabs for the
 almost-everywhere recurrence theorem, without certifying a chosen moving
-state. None installs forcing, an oscillator, an event or a native law.
+state. A static bridge control additionally declares the supplied U_epsilon
+sine-plus-cubic storage to separate critical geometry from its response.
+None installs forcing, an oscillator, an event or a native law.
 """
 
 from __future__ import annotations
@@ -23,6 +25,11 @@ from typing import TYPE_CHECKING, Any
 
 from .._exact_time import exact_or_represented_real
 from ..dynamics.relational import RelationalExchangeModel
+from ..mathematics._exact_linear_algebra import (
+    exact_matrix_inverse,
+    exact_matrix_product,
+    exact_symmetric_semidefinite,
+)
 from ..mathematics._rational_interval import INTERVAL_METHOD, I, cos, pi_interval, sqrt
 from ._sine_admission import _sine_model_coefficients
 from .relational_observations import _ordered
@@ -38,6 +45,7 @@ if TYPE_CHECKING:
         LinearCoordinateMemory,
         LinearObservation,
     )
+    from .phase_cycle_geometry import CircularPhaseState, PhaseCycleState
     from .relational_sine_recovery import SineCycleRecovery, SinePatternRecovery
 
 __all__ = (
@@ -48,12 +56,18 @@ __all__ = (
     "SinePairPulseAssessment",
     "SinePathMemoryAssessment",
     "SineRecurrenceAssessment",
+    "SineBridgeChannelAssessment",
+    "BridgeStorageFamilyAssessment",
+    "SineC5LeafSaddle",
     "assess_sine_cycle_resonance",
     "certify_sine_recovery_resonance",
     "assess_sine_mediated_response",
     "assess_sine_pair_pulse",
     "assess_sine_path_memory",
     "assess_sine_recurrence",
+    "assess_sine_bridge_channels",
+    "assess_bridge_storage_family",
+    "assess_sine_c5_leaf_saddle",
 )
 
 
@@ -622,6 +636,759 @@ def _sine_target_tangent_action(model, neighbors, capacity, edge_cosines, x, the
     )
     rates = _sine_rates(model, tuple(map(len, neighbors)), gradient, capacity, currents)
     return tuple(rates["form_rates"]), tuple(rates["phase_rates"])
+
+
+@dataclass(frozen=True)
+class SineBridgeChannelAssessment:
+    """Energy-normalized bridge response at a declared conservative target.
+
+    The two outputs are the bridge form contrast and sqrt(beta) times its
+    phase perturbation. Their transpose preparation is admissible in the
+    nodal edge cut spaces because the aligned edge is a bridge. The
+    returned jets use tau=w*t/pi, zero hidden preparation and the full visible
+    unit ball. They are not jets at the captured source's observed state.
+    """
+
+    source: SineExchangeComparison
+    target_phase_turns: tuple[Q, ...]
+    target_geometry: PhaseCycleState
+    bridge: tuple[Any, Any]
+    bridge_edge_index: int
+    mobility: tuple[Q, ...]
+    storage_scale: Q
+    clock_rate_pi_numerator: Q
+    nodal_bridge_lift: tuple[Q, ...]
+    bridge_incidence_row: tuple[Q, ...]
+    edge_cosine_bounds: tuple[I, ...]
+    first_jet_bounds: tuple[tuple[I, I], tuple[I, I]]
+    second_jet_diagonal_bounds: tuple[I, I]
+    channel_difference_bounds: I
+    channel_difference_is_positive: bool
+    arithmetic_method: str = INTERVAL_METHOD
+    scope: tuple[str, ...] = (
+        "declared_acute_exact_critical_target_not_the_observed_source_state",
+        "conservative_sine_law_full_unit_support_positive_held_capacity",
+        "aligned_cut_edge_has_an_admissible_orthonormal_energy_preparation",
+        "same_bridge_form_and_phase_outputs_with_transpose_preparation",
+        "tau_equals_w_t_over_pi_and_both_output_channels_are_energy_normalized",
+        "weighted_common_origins_removed_in_the_displayed_nodal_lift",
+        "zero_hidden_preparation_for_homogeneous_jets_not_all_hidden_states",
+        "nonzero_hidden_state_retains_a_separate_observed_source",
+        "exact_positive_difference_iff_an_incident_nonbridge_target_gap_is_nonzero",
+        "interval_zero_lower_endpoint_does_not_override_exact_structural_positivity",
+        "no_matrix_square_root_numerical_approximation_is_treated_as_exact",
+        "initial_jet_is_skew_geometric_distinction_does_not_derive_loss",
+        "no_trajectory_support_birth_attraction_or_physical_identification",
+    )
+
+    def to_dict(self):
+        """Project the declared target and jets without authenticating the source."""
+        from ..sdk.relational_reports import _project
+
+        _validate_comparison_labels(self.source)
+        return {
+            "schema": "tnfr.relational-sine-bridge-channels.v1",
+            "report": _project(self),
+        }
+
+
+def assess_sine_bridge_channels(
+    source, *, target_phase_turns, bridge
+) -> SineBridgeChannelAssessment:
+    """Distinguish channels using an aligned bridge in an actual critical target.
+
+    With incidence E, mobility K, cosine weights c and A=E^T K E, the edge
+    energy chart has cross-block D=A diag(sqrt(c))/sqrt(beta). The nodal
+    cut-space constraints are retained: only an aligned cut edge admits the
+    declared pair of coordinate-unit preparations. For its index b, the
+    homogeneous visible response has T'(0)=A_bb R/sqrt(beta) and
+    T''(0)=diag(-sum(c_e*A_be^2),-sum(A_be^2))/beta. The positive difference
+    sum((1-c_e)*A_be^2)/beta is evaluated without matrix square roots.
+
+    The exact rational target proves acuteness and sine criticality through
+    existing geometry admission. A normalized source association is retained,
+    but cached rates, storage and verdicts never supply this calculation.
+    """
+    from ._sine_admission import _admit_sine_source
+    from .relational_sine_recovery import _target_admission
+
+    if not isinstance(source, SineExchangeComparison):
+        raise TypeError("bridge channels require a SineExchangeComparison")
+    admitted, _ = _admit_sine_source(source)
+    loss, exchange, beta = _sine_model_coefficients(admitted.reference_model)
+    if loss != 0 or exchange <= 0 or beta <= 0:
+        raise ValueError(
+            "bridge channels require zero loss and positive exchange/storage"
+        )
+    if any(value <= 0 for value in admitted.capacity):
+        raise ValueError("bridge channels require strictly positive held capacities")
+    target, _, _, _, _, fields = _target_admission(
+        admitted, cycle=None, winding=None, target_phase_turns=target_phase_turns
+    )
+    state = fields["target_geometry"]
+    geometry = state.geometry
+    turns = state.edge_turns
+    if any(abs(turn) >= Q(1, 4) for turn in turns):
+        raise ValueError("the declared critical target must be strictly acute")
+    selected = _ordered(bridge, "bridge", limit=3)
+    positions = {node: i for i, node in enumerate(admitted.nodes)}
+    try:
+        indices = tuple(sorted(positions[node] for node in selected))
+    except (KeyError, TypeError) as exc:
+        raise ValueError("bridge must contain two nodes from the source") from exc
+    if len(indices) != 2 or indices not in geometry.edges:
+        raise ValueError("bridge must be an edge of the full source support")
+    edge_index = geometry.edges.index(indices)
+    if edge_index not in geometry.bridge_edge_indices:
+        raise ValueError("the declared edge must be a cut edge of the full support")
+    if turns[edge_index] != 0:
+        raise ValueError("the declared bridge must have aligned target phases")
+    mobility = tuple(nu / d for nu, d in zip(admitted.capacity, admitted.degrees))
+    incidence = geometry.incidence
+    row = tuple(
+        sum(
+            (
+                incidence[i][edge_index] * mobility[i] * incidence[i][j]
+                for i in range(len(admitted.nodes))
+            ),
+            Q(0),
+        )
+        for j in range(len(geometry.edges))
+    )
+    pi = pi_interval()
+    cosines = tuple(I(1) if turn == 0 else cos((2 * turn) * pi) for turn in turns)
+    # The exact acute-turn premise bounds every cosine by [0, 1]. Keep
+    # unresolved strict positivity separate from its dyadic enclosure.
+    cosines = tuple(I(max(Q(0), value.lo), min(Q(1), value.hi)) for value in cosines)
+    squares = tuple(value**2 / beta for value in row)
+    phase_second = -sum(squares, Q(0))
+    form_lower = -sum((s * c.hi for s, c in zip(squares, cosines)), Q(0))
+    form_upper = -sum((s * c.lo for s, c in zip(squares, cosines)), Q(0))
+    difference = I(
+        sum((s * (1 - c.hi) for s, c in zip(squares, cosines)), Q(0)),
+        sum((s * (1 - c.lo) for s, c in zip(squares, cosines)), Q(0)),
+    )
+    # Divide exact rationals before interval materialization. In particular a
+    # positive sub-grid beta never becomes a zero interval denominator.
+    angular_rate = sqrt(I(row[edge_index] ** 2 / beta))
+    neighbors = [[] for _ in admitted.nodes]
+    for j, (left, right) in enumerate(geometry.edges):
+        if j != edge_index:
+            neighbors[left].append(right)
+            neighbors[right].append(left)
+    reached, pending = {indices[0]}, [indices[0]]
+    while pending:
+        for node in neighbors[pending.pop()]:
+            if node not in reached:
+                reached.add(node)
+                pending.append(node)
+    weights = tuple(1 / value for value in mobility)
+    total = sum(weights, Q(0))
+    left_mass = sum((weights[i] for i in reached), Q(0))
+    lift = tuple(
+        -(total - left_mass) / total if i in reached else left_mass / total
+        for i in range(len(admitted.nodes))
+    )
+    return SineBridgeChannelAssessment(
+        source=admitted,
+        target_phase_turns=target,
+        target_geometry=state,
+        bridge=tuple(admitted.nodes[i] for i in indices),
+        bridge_edge_index=edge_index,
+        mobility=mobility,
+        storage_scale=beta,
+        clock_rate_pi_numerator=exchange,
+        nodal_bridge_lift=lift,
+        bridge_incidence_row=row,
+        edge_cosine_bounds=cosines,
+        first_jet_bounds=((I(0), -angular_rate), (angular_rate, I(0))),
+        second_jet_diagonal_bounds=(I(form_lower, form_upper), I(phase_second)),
+        channel_difference_bounds=difference,
+        channel_difference_is_positive=any(
+            coefficient != 0 and turn != 0 for coefficient, turn in zip(row, turns)
+        ),
+    )
+
+
+def _admit_two_cycle_bridge(source, *, left_cycle, right_cycle, target_phase_turns):
+    """Rebuild the exact unit two-C6 support, target and primitive association."""
+    if not isinstance(source, SineExchangeComparison):
+        raise TypeError("two-cycle bridge readers require a SineExchangeComparison")
+    left = _ordered(left_cycle, "left_cycle", limit=7)
+    right = _ordered(right_cycle, "right_cycle", limit=7)
+    if len(left) != 6 or len(right) != 6:
+        raise ValueError("left_cycle and right_cycle must each contain six nodes")
+    channels = assess_sine_bridge_channels(
+        source, target_phase_turns=target_phase_turns, bridge=(left[0], right[0])
+    )
+    admitted = channels.source
+    positions = {node: i for i, node in enumerate(admitted.nodes)}
+    try:
+        cycles = tuple(
+            tuple(positions[node] for node in cycle) for cycle in (left, right)
+        )
+    except (KeyError, TypeError) as exc:
+        raise ValueError("cycle nodes must belong to the admitted source") from exc
+    if len(positions) != 12 or len(set(cycles[0] + cycles[1])) != 12:
+        raise ValueError("two disjoint six-node cycles must cover the full source")
+    expected = {
+        tuple(sorted((cycle[i], cycle[(i + 1) % 6])))
+        for cycle in cycles
+        for i in range(6)
+    }
+    bridge = tuple(sorted((cycles[0][0], cycles[1][0])))
+    expected.add(bridge)
+    geometry = channels.target_geometry.geometry
+    if set(geometry.edges) != expected:
+        raise ValueError("full support must be exactly the two cycles and their bridge")
+    if (
+        channels.storage_scale != 1
+        or channels.clock_rate_pi_numerator != 1
+        or any(value != 1 for value in admitted.capacity)
+    ):
+        raise ValueError(
+            "two-cycle bridge requires unit capacity, storage and exchange"
+        )
+    if any(
+        abs(turn) != Q(1, 6)
+        for edge, turn in zip(geometry.edges, channels.target_geometry.edge_turns)
+        if edge != bridge
+    ):
+        raise ValueError("every internal target edge must have absolute turn one sixth")
+    return channels, left, right, cycles
+
+
+def _conservative_full_tangent(edges, mobility, edge_curvatures):
+    """Assemble exact conservative nodal matrices from admitted edge curvatures."""
+    size = len(mobility)
+    if len(edges) != len(edge_curvatures):
+        raise ValueError("every admitted edge requires one phase curvature")
+    laplacian = [[Q(0) for _ in range(size)] for _ in range(size)]
+    hessian = [[Q(0) for _ in range(size)] for _ in range(size)]
+    for (i, j), curvature in zip(edges, edge_curvatures):
+        for matrix, coefficient in ((laplacian, Q(1)), (hessian, curvature)):
+            matrix[i][i] += coefficient
+            matrix[j][j] += coefficient
+            matrix[i][j] -= coefficient
+            matrix[j][i] -= coefficient
+    laplacian = tuple(tuple(row) for row in laplacian)
+    hessian = tuple(tuple(row) for row in hessian)
+    zero = (Q(0),) * size
+    full = tuple(
+        zero + tuple(-mobility[i] * value for value in row)
+        for i, row in enumerate(hessian)
+    ) + tuple(
+        tuple(mobility[i] * value for value in row) + zero
+        for i, row in enumerate(laplacian)
+    )
+    metric = tuple(row + zero for row in laplacian) + tuple(
+        zero + row for row in hessian
+    )
+    return laplacian, hessian, full, metric
+
+
+def _bridge_full_tangent(channels, internal_phase_curvature):
+    """Preserve the bridge adapter over the common exact nodal assembly."""
+    edges = channels.target_geometry.geometry.edges
+    curvatures = tuple(
+        Q(1) if index == channels.bridge_edge_index else internal_phase_curvature
+        for index in range(len(edges))
+    )
+    return _conservative_full_tangent(edges, channels.mobility, curvatures)
+
+
+@dataclass(frozen=True)
+class SineC5LeafSaddle:
+    """Exact hypothetical saddle and its full-support conservative tangent.
+
+    The source supplies admitted support and law, not an observed saddle.
+    Odd coordinates are positive at cycle positions 0, 1 and their leaves,
+    negative at their reflected partners, and zero at the two fixed nodes.
+    Direction intervals enclose one correlated algebraic eigenvector; arbitrary
+    independent values from those intervals need not be eigenvectors.
+    """
+
+    source: SineExchangeComparison
+    cycle: tuple[Any, ...]
+    cycle_indices: tuple[int, ...]
+    contacts: tuple[tuple[Any, Any], ...]
+    target_epi: tuple[Q, ...]
+    target_phase_turns: tuple[Q, ...]
+    target_geometry: CircularPhaseState
+    target_storage: Q
+    reflection_indices: tuple[int, ...]
+    odd_reconstruction: tuple[tuple[Q, ...], ...]
+    odd_restriction: tuple[tuple[Q, ...], ...]
+    edge_phase_curvatures: tuple[Q, ...]
+    form_laplacian: tuple[tuple[Q, ...], ...]
+    phase_hessian: tuple[tuple[Q, ...], ...]
+    full_tangent_generator: tuple[tuple[Q, ...], ...]
+    full_energy_metric: tuple[tuple[Q, ...], ...]
+    odd_phase_from_form: tuple[tuple[Q, ...], ...]
+    odd_negative_form_from_phase: tuple[tuple[Q, ...], ...]
+    odd_phase_acceleration: tuple[tuple[Q, ...], ...]
+    odd_phase_hessian: tuple[tuple[Q, ...], ...]
+    odd_leaf_schur_complement: tuple[tuple[Q, ...], ...]
+    odd_characteristic_coefficients: tuple[Q, ...]
+    positive_root_bracket: tuple[Q, Q]
+    positive_root_endpoint_values: tuple[Q, Q]
+    positive_root_count: int
+    growth_rate_bounds: I
+    unstable_phase_numerator_coefficients: tuple[tuple[Q, ...], ...]
+    unstable_phase_denominator_coefficients: tuple[Q, ...]
+    unstable_direction_bounds: tuple[I, ...]
+    unstable_cycle_gap_direction_bounds: tuple[I, ...]
+    odd_phase_hessian_inertia: tuple[int, int, int]
+    even_phase_hessian_inertia: tuple[int, int, int]
+    relative_phase_hessian_inertia: tuple[int, int, int]
+    relative_hyperbolic_pairs: int
+    relative_oscillatory_pairs: int
+    neutral_origin_modes: int
+    status: str = "certified"
+    clock: str = "tau=t/pi"
+    arithmetic_method: str = INTERVAL_METHOD
+    scope: tuple[str, ...] = (
+        "source_primitives_anchor_support_and_law_not_an_observed_saddle",
+        "fixed_complete_unit_C5_with_five_private_leaves_unit_capacity_e0_w1_beta1",
+        "declared_exact_turn_saddle_has_zero_form_and_aligned_private_contacts",
+        "full_nodal_matrices_and_signed_involution_are_rebuilt_before_reduction",
+        "odd_basis_uses_declared_cycle_positions_independently_of_source_node_order",
+        "exact_characteristic_polynomial_and_Descartes_sign_count_no_float_eigensolver",
+        "positive_root_bracket_has_exact_rational_endpoint_signs",
+        "direction_bounds_share_one_algebraic_root_not_independent_state_errors",
+        "hyperbolic_pair_is_a_local_tangent_result_not_global_sector_crossing",
+        "no_trajectory_formation_retention_preparation_selection_or_physical_identification",
+    )
+
+    def to_dict(self):
+        from ..sdk.relational_reports import _project, _validate_label_groups
+
+        _validate_comparison_labels(self.source)
+        _validate_label_groups(
+            self.cycle, *self.contacts, self.target_geometry.geometry.nodes
+        )
+        return {"schema": "tnfr.sine-c5-leaf-saddle.v1", "report": _project(self)}
+
+
+def assess_sine_c5_leaf_saddle(source, *, cycle) -> SineC5LeafSaddle:
+    """Derive the full saddle tangent and isolate its unique growing direction.
+
+    The declared receiver/leaf phases are (i-2)/6 exact turns. Four receiver
+    curvatures equal 1/2, the closing one -1/2, and contact curvatures one.
+    On the odd reflection sector, theta'=A*x and x'=-B*theta. The exact
+    phase acceleration matrix -A*B has one positive algebraic eigenvalue.
+    No supplied source state is projected to, or asserted to occupy, this target.
+    """
+    from ..mathematics.krylov import exact_rank
+    from .phase_cycle_geometry import (
+        _c5_sine_templates,
+        _derive,
+        reconstruct_circular_phase_state,
+    )
+    from .relational_sine_partition import _private_leaf_support
+    from .relational_sine_symmetry import assess_sine_involution_reduction
+
+    source, edges, indices, pairs, contacts = _private_leaf_support(source, cycle)
+    size = len(source.nodes)
+    target = [Q(0)] * size
+    permutation = list(range(size))
+    for position, (node, leaf) in enumerate(contacts):
+        target[node] = target[leaf] = Q(position - 2, 6)
+        permutation[node] = contacts[4 - position][0]
+        permutation[leaf] = contacts[4 - position][1]
+    target = tuple(target)
+    geometry = _derive(source.nodes, edges)
+
+    def principal(turn):
+        return (turn + Q(1, 2)) % 1 - Q(1, 2)
+
+    turns = tuple(principal(target[j] - target[i]) for i, j in geometry.edges)
+    cycle_turns = tuple(principal(target[j] - target[i]) for i, j in pairs)
+    if cycle_turns not in _c5_sine_templates()[0]:
+        raise ArithmeticError(
+            "the declared saddle must satisfy exact C5 branch closure"
+        )
+    state = reconstruct_circular_phase_state(geometry, edge_turns=turns)
+    if any(state.symbolic_sine_coefficients):
+        raise ArithmeticError("the declared target's nodal sine currents must cancel")
+    curvature_by_turn = {Q(0): Q(1), Q(1, 6): Q(1, 2), Q(1, 3): -Q(1, 2)}
+    curvatures = tuple(curvature_by_turn[abs(turn)] for turn in turns)
+    mobility = tuple(Q(1, degree) for degree in source.degrees)
+    laplacian, hessian, full, metric = _conservative_full_tangent(
+        geometry.edges, mobility, curvatures
+    )
+
+    odd = assess_sine_involution_reduction(
+        source, permutation_indices=tuple(permutation), sign=-1
+    )
+    even = assess_sine_involution_reduction(
+        source, permutation_indices=tuple(permutation), sign=1
+    )
+    if not odd.family_invariance_certified or not even.family_invariance_certified:
+        raise ArithmeticError(
+            "the admitted support must preserve both reflection sectors"
+        )
+    representatives = (indices[0], indices[1], contacts[0][1], contacts[1][1])
+    columns = tuple(
+        next(j for j, value in enumerate(odd.reconstruction_matrix[i]) if value)
+        for i in representatives
+    )
+    reconstruction = tuple(
+        tuple(
+            odd.reconstruction_matrix[i][column]
+            * odd.reconstruction_matrix[representative][column]
+            for representative, column in zip(representatives, columns)
+        )
+        for i in range(size)
+    )
+    restriction = tuple(
+        tuple(Q(i == representative) for i in range(size))
+        for representative in representatives
+    )
+    product = exact_matrix_product
+
+    def transpose(matrix):
+        return tuple(zip(*matrix))
+
+    kl = tuple(tuple(mobility[i] * x for x in row) for i, row in enumerate(laplacian))
+    kh = tuple(tuple(mobility[i] * x for x in row) for i, row in enumerate(hessian))
+    a = product(product(restriction, kl), reconstruction)
+    b = product(product(restriction, kh), reconstruction)
+    if product(kl, reconstruction) != product(reconstruction, a) or product(
+        kh, reconstruction
+    ) != product(reconstruction, b):
+        raise ArithmeticError(
+            "the full tangent must preserve the derived odd coordinates"
+        )
+    acceleration = tuple(tuple(-x for x in row) for row in product(a, b))
+    odd_hessian = product(product(transpose(reconstruction), hessian), reconstruction)
+    odd_form = product(product(transpose(reconstruction), laplacian), reconstruction)
+    leaf = tuple(tuple(row[2:]) for row in odd_hessian[2:])
+    cross = tuple(tuple(row[2:]) for row in odd_hessian[:2])
+    correction = product(product(cross, exact_matrix_inverse(leaf)), transpose(cross))
+    schur = tuple(
+        tuple(odd_hessian[i][j] - correction[i][j] for j in range(2)) for i in range(2)
+    )
+    even_hessian = product(
+        product(transpose(even.reconstruction_matrix), hessian),
+        even.reconstruction_matrix,
+    )
+    if (
+        not exact_symmetric_semidefinite(odd_form, strict=True)
+        or not exact_symmetric_semidefinite(leaf, strict=True)
+        or schur[0][0] * schur[1][1] - schur[0][1] ** 2 >= 0
+        or not exact_symmetric_semidefinite(even_hessian)
+        or exact_rank(even_hessian) != 5
+    ):
+        raise ArithmeticError(
+            "the exact Hessian congruence must have one negative direction"
+        )
+
+    # Newton's trace identities derive the quartic from the actual full-row
+    # reduction; a displayed polynomial is not accepted as cached evidence.
+    coefficients, traces = [Q(1)], []
+    power = tuple(tuple(Q(i == j) for j in range(4)) for i in range(4))
+    for order in range(1, 5):
+        power = product(power, acceleration)
+        traces.append(sum((power[i][i] for i in range(4)), Q(0)))
+        coefficients.append(
+            -sum(
+                (coefficients[order - j] * traces[j - 1] for j in range(1, order + 1)),
+                Q(0),
+            )
+            / order
+        )
+    coefficients = tuple(coefficients)
+    signs = tuple((x > 0) - (x < 0) for x in coefficients if x)
+    sign_changes = sum(x != y for x, y in zip(signs, signs[1:]))
+    bracket = (Q(19709, 250000), Q(78837, 1000000))
+
+    def polynomial(value):
+        total = Q(0)
+        for coefficient in coefficients:
+            total = total * value + coefficient
+        return total
+
+    endpoint_values = tuple(polynomial(value) for value in bracket)
+    if sign_changes != 1 or not endpoint_values[0] < 0 < endpoint_values[1]:
+        raise ArithmeticError(
+            "exact Descartes count and bracket must isolate one positive root"
+        )
+    # Ascending coefficients of D*v, with
+    # D=(6*lambda+8)*(18*lambda**2+43*lambda+5)>0 at the positive root.
+    # Verify the exact numerator identity modulo the derived quartic before
+    # enclosing its algebraic direction; interval residual overlap is not a proof.
+    numerators = tuple(
+        tuple(map(Q, row))
+        for row in (
+            (40, 374, 402, 108),
+            (8, 38, 24, 0),
+            (34, 297, 126, 0),
+            (5, -3, -18, 0),
+        )
+    )
+    for i in range(4):
+        residual = tuple(
+            sum(
+                (
+                    acceleration[i][j] * (numerators[j][k] if k < 4 else Q(0))
+                    for j in range(4)
+                ),
+                Q(0),
+            )
+            - (numerators[i][k - 1] if k else Q(0))
+            for k in range(5)
+        )
+        if residual != tuple(residual[-1] * x for x in reversed(coefficients)):
+            raise ArithmeticError(
+                "the correlated direction must solve the exact algebraic eigenproblem"
+            )
+    lam = I(*bracket)
+    growth = sqrt(lam)
+    second = (4 * lam + 1) / (18 * lam**2 + 43 * lam + 5)
+    phase_direction = (
+        I(1),
+        second,
+        (7 - second) / (6 * lam + 8),
+        (10 * second - 1) / (6 * lam + 8),
+    )
+    form_direction = tuple(
+        -sum(
+            (coefficient * value for coefficient, value in zip(row, phase_direction)),
+            I(0),
+        )
+        / growth
+        for row in b
+    )
+
+    def lift(values):
+        return tuple(
+            sum((coefficient * value for coefficient, value in zip(row, values)), I(0))
+            for row in reconstruction
+        )
+
+    full_phase = lift(phase_direction)
+    gap_directions = tuple(full_phase[j] - full_phase[i] for i, j in pairs)
+    return SineC5LeafSaddle(
+        source=source,
+        cycle=tuple(source.nodes[i] for i in indices),
+        cycle_indices=indices,
+        contacts=tuple((source.nodes[i], source.nodes[j]) for i, j in contacts),
+        target_epi=(Q(0),) * size,
+        target_phase_turns=target,
+        target_geometry=state,
+        target_storage=sum((1 - curvature for curvature in curvatures), Q(0)),
+        reflection_indices=tuple(permutation),
+        odd_reconstruction=reconstruction,
+        odd_restriction=restriction,
+        edge_phase_curvatures=curvatures,
+        form_laplacian=laplacian,
+        phase_hessian=hessian,
+        full_tangent_generator=full,
+        full_energy_metric=metric,
+        odd_phase_from_form=a,
+        odd_negative_form_from_phase=b,
+        odd_phase_acceleration=acceleration,
+        odd_phase_hessian=odd_hessian,
+        odd_leaf_schur_complement=schur,
+        odd_characteristic_coefficients=coefficients,
+        positive_root_bracket=bracket,
+        positive_root_endpoint_values=endpoint_values,
+        positive_root_count=sign_changes,
+        growth_rate_bounds=growth,
+        unstable_phase_numerator_coefficients=numerators,
+        unstable_phase_denominator_coefficients=numerators[0],
+        unstable_direction_bounds=lift(form_direction) + full_phase,
+        unstable_cycle_gap_direction_bounds=gap_directions,
+        odd_phase_hessian_inertia=(3, 1, 0),
+        even_phase_hessian_inertia=(5, 0, 1),
+        relative_phase_hessian_inertia=(8, 1, 0),
+        relative_hyperbolic_pairs=1,
+        relative_oscillatory_pairs=8,
+        neutral_origin_modes=2,
+    )
+
+
+@dataclass(frozen=True)
+class BridgeStorageFamilyAssessment:
+    """Static comparison under an explicitly supplied alternative phase storage.
+
+    The law is U(delta)=1-cos(delta)+epsilon*(2/3-cos(delta)+cos(delta)^3/3),
+    with zero loss, unit held capacity and beta=w=1. Its nodal rows in
+    tau=t/pi are x'=-K grad_theta sum(U), theta'=K L x. The reference sine
+    comparison supplies admitted primitives and support, not an observation
+    of this alternative law or a tangent perturbation.
+
+    Full matrices use source node order: form coordinates followed by phase
+    coordinates. Bridge outputs and their energy-transpose nodal preparation
+    are identical for every admitted epsilon. The local storage threshold is
+    a sufficient first-exit bound, conditional on preparation inside the
+    stated chamber; no captured source state is checked against that premise.
+    """
+
+    source: SineExchangeComparison
+    law: str
+    epsilon: Q
+    left_cycle: tuple[Any, ...]
+    right_cycle: tuple[Any, ...]
+    target_phase_turns: tuple[Q, ...]
+    target_geometry: PhaseCycleState
+    target_epi: tuple[Q, ...]
+    bridge: tuple[Any, Any]
+    mobility: tuple[Q, ...]
+    edge_phase_curvatures: tuple[Q, ...]
+    form_laplacian: tuple[tuple[Q, ...], ...]
+    phase_hessian: tuple[tuple[Q, ...], ...]
+    full_tangent_generator: tuple[tuple[Q, ...], ...]
+    full_energy_metric: tuple[tuple[Q, ...], ...]
+    bridge_observation_rows: tuple[tuple[Q, ...], ...]
+    nodal_bridge_preparation: tuple[tuple[Q, ...], ...]
+    first_jet: tuple[tuple[Q, ...], ...]
+    second_jet: tuple[tuple[Q, ...], ...]
+    channel_difference: Q
+    criticality_status: str
+    local_positivity_status: str
+    target_storage: Q
+    local_phase_radius_turns: Q
+    local_curvature_lower_bounds: I
+    local_excess_storage_threshold_bounds: I
+    arithmetic_method: str = INTERVAL_METHOD
+    scope: tuple[str, ...] = (
+        "supplied_sine_plus_cubic_storage_family_not_selected_by_the_nodal_identity",
+        "reference_sine_source_supplies_primitives_not_an_alternative_law_observation",
+        "exact_two_C6_unit_support_with_one_aligned_bridge_and_unit_capacities",
+        "zero_form_target_internal_abs_turn_one_sixth_and_zero_loss_beta_w_one",
+        "tau_equals_t_over_pi_with_fixed_support_capacity_and_no_forcing_or_events",
+        "critical_target_and_positive_relative_Hessian_do_not_imply_attraction",
+        "full_nodal_energy_and_tangent_are_recomputed_for_the_declared_storage",
+        "same_bridge_outputs_and_energy_transpose_preparation_for_every_epsilon",
+        "channel_difference_is_signed_not_a_universal_positive_sine_bound",
+        "local_phase_radius_bounds_every_edge_perturbation_from_the_declared_target",
+        "conditional_local_storage_barrier_not_global_capture_or_an_observed_state_test",
+        "strict_excess_below_threshold_lower_endpoint_is_a_sufficient_numeric_cutoff",
+        "common_form_and_phase_origins_remain_quotient_directions",
+        "no_trajectory_fit_default_change_runtime_law_or_physical_identification",
+    )
+
+    def to_dict(self):
+        """Project the declared alternative law and its exact static comparison."""
+        from ..sdk.relational_reports import _project, _validate_label_groups
+
+        _validate_comparison_labels(self.source)
+        _validate_label_groups(
+            self.left_cycle,
+            self.right_cycle,
+            self.bridge,
+            self.target_geometry.geometry.nodes,
+        )
+        return {"schema": "tnfr.bridge-storage-family.v1", "report": _project(self)}
+
+
+def assess_bridge_storage_family(
+    source, *, left_cycle, right_cycle, target_phase_turns, epsilon
+) -> BridgeStorageFamilyAssessment:
+    """Compare bridge jets and local storage under a supplied U_epsilon law.
+
+    Epsilon is any finite represented or exact nonnegative real; it is neither
+    fitted nor inferred from the source. Full support and target admission
+    match the conservative bridge-memory reader. U'' at the internal target
+    gaps is 1/2+9*epsilon/8, while the aligned bridge retains unit curvature.
+    Odd equal-gap cancellation proves criticality for the entire family.
+
+    The local chamber has edge perturbations strictly below pi/12. Within it,
+    U'' >= m=cos(5*pi/12)>0 and excess storage is bounded below by
+    (sum(form_edge^2)+m*sum(phase_edge^2))/2. For an initial state inside that
+    chamber, conserved own-law excess below m*pi^2/288 prevents a first exit.
+    The returned interval encloses that threshold; a strict comparison with
+    its lower endpoint is sufficient. No initial state is assessed here.
+    """
+    coefficient = exact_or_represented_real(epsilon, "epsilon")
+    if coefficient < 0:
+        raise ValueError("epsilon must be nonnegative")
+    channels, left, right, _ = _admit_two_cycle_bridge(
+        source,
+        left_cycle=left_cycle,
+        right_cycle=right_cycle,
+        target_phase_turns=target_phase_turns,
+    )
+    state = channels.target_geometry
+    geometry = state.geometry
+    size = len(channels.source.nodes)
+    internal = Q(1, 2) + Q(9, 8) * coefficient
+    curvatures = tuple(
+        Q(1) if index == channels.bridge_edge_index else internal
+        for index in range(len(geometry.edges))
+    )
+    # Every nonzero current is a common positive factor times the sine sign.
+    # Recheck nodal cancellation rather than importing a cached law verdict.
+    signs = tuple(Q((turn > 0) - (turn < 0)) for turn in state.edge_turns)
+    if any(
+        sum((entry * sign for entry, sign in zip(row, signs)), Q(0))
+        for row in geometry.incidence
+    ):
+        raise ArithmeticError("alternative-law target currents do not cancel")
+    laplacian, hessian, full, metric = _bridge_full_tangent(channels, internal)
+    zero = (Q(0),) * size
+    row = tuple(
+        Q(entries[channels.bridge_edge_index]) for entries in geometry.incidence
+    )
+    observation = (row + zero, zero + row)
+    lift = channels.nodal_bridge_lift
+    preparation = tuple((value, Q(0)) for value in lift) + tuple(
+        (Q(0), value) for value in lift
+    )
+    transpose = tuple(zip(*preparation))
+    product = exact_matrix_product
+    identity = ((Q(1), Q(0)), (Q(0), Q(1)))
+    if (
+        product(observation, preparation) != identity
+        or product(transpose, metric) != observation
+    ):
+        raise ArithmeticError("the declared bridge preparation is not energy-transpose")
+    weighted = product(metric, full)
+    if any(
+        weighted[i][j] != -weighted[j][i]
+        for i in range(2 * size)
+        for j in range(2 * size)
+    ):
+        raise ArithmeticError(
+            "the alternative-law nodal tangent does not conserve storage"
+        )
+    first = product(product(observation, full), preparation)
+    second = product(product(product(observation, full), full), preparation)
+    pi = pi_interval()
+    curvature_bound = cos(Q(5, 12) * pi)
+    return BridgeStorageFamilyAssessment(
+        source=channels.source,
+        law="normalized_sine_cubic_reciprocal_exchange",
+        epsilon=coefficient,
+        left_cycle=left,
+        right_cycle=right,
+        target_phase_turns=channels.target_phase_turns,
+        target_geometry=state,
+        target_epi=(Q(0),) * size,
+        bridge=channels.bridge,
+        mobility=channels.mobility,
+        edge_phase_curvatures=curvatures,
+        form_laplacian=laplacian,
+        phase_hessian=hessian,
+        full_tangent_generator=full,
+        full_energy_metric=metric,
+        bridge_observation_rows=observation,
+        nodal_bridge_preparation=preparation,
+        first_jet=first,
+        second_jet=second,
+        channel_difference=second[0][0] - second[1][1],
+        criticality_status="proved_by_equal_gap_odd_cancellation",
+        local_positivity_status="positive_edge_curvatures_on_connected_support",
+        target_storage=sum(
+            (Q(0) if turn == 0 else Q(1, 2) + Q(5, 24) * coefficient)
+            for turn in state.edge_turns
+        ),
+        local_phase_radius_turns=Q(1, 24),
+        local_curvature_lower_bounds=curvature_bound,
+        local_excess_storage_threshold_bounds=curvature_bound * pi**2 / 288,
+    )
 
 
 def assess_sine_mediated_response(

@@ -1,43 +1,43 @@
-# Smooth-sine pattern dynamics
+# Sine pattern geometry and dissipative capture
 
-**Scope:** conditional geometry, capture, preparation, memory, reduction and
-symmetry results for the complete smooth reciprocal normalized-sine law.
-The supplied support, coefficients, held capacities and retained initial state
-remain part of each theorem. Capacity, loss, uncertainty and phase-domain
-hypotheses are stated with their proofs; their conclusions do not transfer
-automatically to another complete law or a discrete execution path.
+These results use the complete smooth reciprocal normalized-sine law.
+Supplied support, coefficients, held capacities, initial state, clock and
+phase-domain assumptions remain part of each theorem. The native
+neighbor-argument law and its event analysis have a separate
+[composition owner](RELATIONAL_PATTERN_COMPOSITION.md). Shared variables and
+methods do not transfer conclusions between those complete laws.
 
-The native neighbor-argument model, its connection and event analysis, and
-its reflected-domain formation obstructions remain in
-[Composition, interaction and formation of coherent regions](RELATIONAL_PATTERN_COMPOSITION.md).
-[Pattern memory](RELATIONAL_PATTERN_MEMORY.md) retains the complementary
-model-specific interaction, observability, recovery and receiver results.
-The exact representations below preserve hidden initialization rather than
-turning an observation into a complete state.
+<a id="reading-map"></a>
 
-Sections 24–32 retain their published numbers so existing section citations
-remain valid. Sections 1–23 and compatibility links remain in the composition
-owner. Definitions, complete-law hypotheses and proofs live here; the
+## Chapters and scope
+
+| Chapter | Responsibility |
+| --- | --- |
+| [Exact and controlled form-phase reductions](SINE_FORM_PHASE_REDUCTION.md) | Equivalent state/memory representations, slow-time comparison and full-state capture handoff. |
+| [Conservative regional formation and its barriers](SINE_REGIONAL_FORMATION.md) | Finite winding entry, channel balance, source geometry, barriers and robust passage. |
+| [Collective phase families and live contact feedback](SINE_COLLECTIVE_PHASE_DYNAMICS.md) | Exact partitions, moving windows, contact/storage exchange and receiver rigidity. |
+| [Conservative source preparation and finite retention](SINE_CONSERVATIVE_PREPARATION.md) | Retention bounds, saddle/corridor construction and its operational and constitutive limitations. |
+
+<a id="combine-results-only-across-a-compatible-handoff"></a>
+
+A formation-to-retention claim must connect an identity-absent preparation
+to the full admitted retention set under the same law, including its live
+environment, conserved storage, clock and phase lifts. Local growth, available
+storage or a compatible invariant family alone does not supply that connection.
+Positive-loss capture and conservative finite retention keep distinct premises;
+exact hidden-state representations retain their independent initialization.
+None of these results derives support birth or physical identification.
+
+Section numbers remain stable. The
 [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-continues to own the research queue. No result below selects support birth,
-a preparation-occurrence law, a unique constitutive law or physical identity.
-
-## Reading map
-
-| Question | Sections | Retained boundary |
-| --- | --- | --- |
-| Which component geometries compose? | [24: bridge trees](#sine-bridge-tree-composition), [25: cycle periods and currents](#sine-cycle-sector-compatibility) | Equilibrium compatibility and stability do not imply entry from a preparation. |
-| When is a full state captured? | [26: whole-sector capture](#sine-target-free-sector-capture), [30: controlled-reference handoff](#sine-slow-phase-capture-handoff) | Form storage, every boundary face and the actual endpoint set remain explicit. |
-| Can supplied form acquire phase winding? | [27: prepared entry and uncertainty](#sine-prepared-sector-entry) | The initial form budget and memberwise conserved origins are retained. |
-| What is preserved by eliminating or approximating form? | [28: exact state and memory representations](#sine-form-phase-memory-equivalence), [29: finite slow-time comparison](#sine-controlled-slow-phase) | Exact equivalence, transient corrections and controlled approximation are distinct claims. |
-| What do budget and preparation geometry permit? | [31: fixed-budget consensus](#sine-budget-consensus), [32: equal-budget symmetry discriminator](#sine-equal-budget-preparation) | Necessary resources do not select organization; symmetry exclusions retain their branch and preparation premises. |
+alone assigns research work.
 
 ## 24. Equilibrium geometry of components joined by bridges
 
 <a id="sine-bridge-tree-composition"></a>
 
 The nine attracting geometries of the
-[eleven-node sine model](RELATIONAL_PATTERN_MEMORY.md#sine-eleven-node-equilibrium-stability)
+[eleven-node sine model](../research/archive/receiver/SINE_RECEIVER_TRANSFER_AND_CAPTURE.md#sine-eleven-node-equilibrium-stability)
 are an instance of a more general composition rule. This section concerns
 the **smooth reciprocal sine law**, not the native Arg law in the
 [reflected-domain analyses](RELATIONAL_PATTERN_COMPOSITION.md#regular-seeded-reachability-audit).
@@ -136,7 +136,7 @@ interaction or identify component degrees with full degrees.
 ### Full nodal stability follows under positive loss
 
 Write `r=n-1`, `j=sum_a q_a+b_-` and `z=sum_a z_a`. Reuse the
-[full reciprocal Jacobian argument](RELATIONAL_PATTERN_MEMORY.md#sine-eleven-node-equilibrium-stability),
+[full reciprocal Jacobian argument](../research/archive/receiver/SINE_RECEIVER_TRANSFER_AND_CAPTURE.md#sine-eleven-node-equilibrium-stability),
 which depends on connected support and the Hessian inertia rather than
 the number eleven. On the conserved weighted-mean leaf, put
 `B=K^(1/2)LK^(1/2)>0` and `C=K^(1/2)HK^(1/2)`, restricted to
@@ -181,7 +181,7 @@ nothing about convergence of each preparation or finite-time transients.
 
 For `m` disjoint unit C5 components, with any additional singleton
 intermediaries, suppose the joining edges form a tree on these components.
-The [exact C5 classification](RELATIONAL_PATTERN_MEMORY.md#sine-eleven-node-equilibrium-stability)
+The [exact C5 classification](../research/archive/receiver/SINE_RECEIVER_TRANSFER_AND_CAPTURE.md#sine-eleven-node-equilibrium-stability)
 supplies three positive-definite relative critical geometries on each
 cycle: consensus and the two uniform unit windings. Every other C5
 critical geometry is nondegenerate and has a negative direction.
@@ -240,7 +240,7 @@ sine sum is `S=-Df`. At a full equilibrium, the phase row and positive
 `K` force `Lx=0`, hence uniform form; the form row then forces `Df=0`.
 Conversely these two conditions make both rows vanish.
 
-The [circulation and reconstruction theorem](../FORCED_SUPPORT_BALANCE.md#30-acute-phase-locks-are-circulation-states-with-integral-cycle-periods)
+The [circulation and reconstruction theorem](FORCED_PHASE_LOCKING.md#30-acute-phase-locks-are-circulation-states-with-integral-cycle-periods)
 therefore supplies the exact necessary and sufficient equations
 
 \[
@@ -255,7 +255,7 @@ geometry, not its separately supplied common-capacity phase dynamics:
 here the full equilibrium is stationary and capacities may be unequal.
 Existence still requires a solution of these coupled equations. A zero
 mixed period need not give zero connecting circulation, as the
-[return-path equilibrium](RELATIONAL_PATTERN_MEMORY.md#return-path-equilibrium)
+[return-path equilibrium](RELATIONAL_RETURN_PATH_GEOMETRY.md#return-path-equilibrium)
 already demonstrates. Component winding labels omit these currents and
 the internal phase deformation needed to satisfy the full nodal balances.
 
@@ -422,7 +422,7 @@ E=\tfrac12x^{\mathsf T}Lx+\beta V(t),\qquad
 \]
 
 where `S=-D sin(2*pi*t)` and `V(t)=sum_e[1-cos(2*pi*t_e)]`.
-These are the [existing complete-law identities](RELATIONAL_PATTERN_MEMORY.md#sine-relative-pattern-state),
+These are the [existing complete-law identities](SINE_PATTERN_RECOVERY.md#sine-relative-pattern-state),
 not a new phase-only dynamics. In particular, all form coordinates remain
 in the initial storage and subsequent evolution.
 
@@ -787,7 +787,7 @@ Choose `tau=100`, so `T=102400/1023` in the declared original clock.
 An independent elementary gap bound suffices: shortest paths between
 the ten unordered C5 node pairs have equal edge load five in the
 path-counting inequality of the
-[whole-support recovery owner](RELATIONAL_PATTERN_MEMORY.md#sine-interacting-recovery).
+[whole-support recovery owner](SINE_PATTERN_RECOVERY.md#sine-interacting-recovery).
 Thus `lambda_2(L)>=5/5=1`, and `lambda>=1/2` because `K=I/2`.
 Here `F=sqrt(10)`, `||v||_M=sqrt(320)/pi` and outward rational
 evaluation of the displayed finite formulas gives
@@ -957,678 +957,6 @@ can evolve. Exact uniform form and phase remain the stationary control
 proved above. These two controls distinguish robust conversion of the
 supplied structured preparation from generic claims about small noise,
 autonomous preparation or the separately deferred receiver source class.
-
-## 28. Exact form, phase and memory representations
-
-<a id="sine-form-phase-memory-equivalence"></a>
-
-The completed composition, capture and prepared-entry results share more
-than their graph. They use the same reciprocal exchange, conserved means
-and phase potential. The following identities connect those results to
-the existing memory and resonance owners without introducing a new
-primitive coordinate, deleting the initial form information or assuming
-a slow phase approximation.
-
-Retain finite connected simple unit support with at least two nodes, positive
-held capacities, `e,w,beta>0`, the declared clock and no forcing or events. Use
-`A=KL`, `M=K^-1`, `W=1^T M1`, and the weighted centering projector
-`P_M=I-1*(1^T M)/W`. The means `mu_x` and `mu_theta` are those of the
-actual state; the latter belongs to a chosen continuous phase lift.
-Uncertain relative sources retain one conserved pair of means per member,
-with their absolute common origins unobserved. Neither mean is replaced
-by a nominal value in the identities below.
-
-### The sum coordinate retains the full joint state
-
-In Section 27's variables `tau=e*t`, `z=(b/e)P_Mx` and
-`eta=ab/e^2`, define the mixed coordinate `y=theta+z`. The exact rows become
-
-\[
-\boxed{\qquad
-\theta'=A(y-\theta),\qquad y'=\eta KS(\theta).
-\qquad}
-\]
-
-This change is invertible on consistent real lifts:
-`z=y-theta`, `x=mu_x*1+(e/b)z`, with `1^T Mz=0`. Thus it retains both
-consumed coordinates and the conserved form mean. A change of circular
-representative sends `(theta,y)` to `(theta+2*pi*m,y+2*pi*m)` for the
-**same** integer vector `m`; their real difference is unchanged.
-Equivalently, retain real `z` and circular `exp(i*y)`, from which
-`exp(i*theta)=exp(i*y)*exp(-i*z)` is reconstructed.
-
-Treating `theta` and `y` as two independently wrapped phase vectors loses
-information. On the unit P2 with unit capacities, `K=I`. The preparations
-`theta=0,z=0` and `theta=0,z=(2*pi,-2*pi)` give the same two separately
-wrapped phase vectors, but their scaled phase rates are respectively
-`0` and `A z=(4*pi,-4*pi)`. The real form contrast has been discarded by
-that wrapping, although it is consumed by the phase row.
-
-Nor does `y` alone close the dynamics. On the same P2, `y=0` can arise
-from `theta=z=0`, giving `y'=0`, or from
-`theta=(delta,-delta),z=(-delta,delta)`, giving
-`y'=eta*(-sin(2*delta),sin(2*delta))`. For `0<delta<pi/4` these rates
-differ even on the same conserved-mean leaf. A first-order law depending
-only on `y` therefore needs an additional approximation or restricted
-invariant family.
-
-The cancellation behind this coordinate is already used operationally in
-the [hidden-state inverse](RELATIONAL_PATTERN_MEMORY.md#sine-hidden-state-observability):
-`dot(x)+(e/b)*dot(theta)=aKS` removes the form-gradient contribution
-from paired rate observations. Its time derivative supplies the paired
-acceleration channel there. The present transformation and the entry
-estimate reorganize that same complete-law identity; they do not select
-a new pressure law from those observations.
-
-### Exact elimination gives second-order phase and retained memory
-
-In the original clock, differentiate the complete phase row and use the
-form row. With the actual ordered matrix products this gives
-
-\[
-\boxed{\ddot\theta+eA\dot\theta=abAKS(\theta),\qquad
-\dot\theta(0)=bAP_Mx(0).}
-\]
-
-The constraint `1^T M dot(theta)=0` must remain. An unconstrained
-second-order equation on all phase lifts would also permit a constant
-common phase velocity, which the original positive-capacity law does not
-supply. On the weighted-mean-zero space, `A` is invertible and the phase
-velocity reconstructs the full centered form as
-`P_Mx=b^(-1)A^(-1)dot(theta)`. The constant form mean must be retained
-separately if the original absolute form is needed. This is a
-same-information representation, not a removal of a state variable.
-
-Alternatively, variation of constants and integration give the exact
-nonlinear Volterra equation
-
-\[
-\boxed{\begin{aligned}
-\theta(t)={}&\theta(0)
-+\frac be\left(I-e^{-eAt}\right)P_Mx(0)\\
-&+\frac{ab}{e}\int_0^t
-\left(I-e^{-eA(t-s)}\right)KS(\theta(s))\,ds.
-\end{aligned}}
-\]
-
-The source term is the retained initial form, not an external input.
-The phase current in the integral uses the actual earlier phase state;
-this is not a fixed linear convolution in `theta`. Differentiating the
-identity with its supplied initial state recovers the second-order row,
-and reconstructing form recovers the original joint system. Global
-Lipschitz continuity of the full sine field supplies uniqueness. The
-projector could be omitted only from the first source term because
-`I-exp(-eAt)` annihilates the common form mode; displaying it makes the
-mean accounting explicit.
-
-No commutation of `K` with `L` is used. In particular `AK=KLK`, whereas
-`KA=K^2L` is generally different. The corresponding phase-velocity
-memory operator is
-
-\[
-\mathcal R_e(s)=A e^{-eAs}K
- =K^{1/2}B e^{-eBs}K^{1/2},\qquad
-B=K^{1/2}LK^{1/2}.
-\]
-
-It is symmetric positive semidefinite for each nonnegative lag, but its
-individual entries need not be nonnegative. Spectral integration gives
-
-\[
-\int_0^\infty\mathcal R_e(s)\,ds
-=\frac1e\left(K-\frac{\mathbf1\mathbf1^{\mathsf T}}W\right).
-\]
-
-Acting on a sine-current vector, whose ordinary sum is zero, this
-integrated operator gives `KS/e`. This explains the frozen-history gain
-behind a candidate slow phase law; it does **not** bound the error made
-by replacing the moving history by its current value. It also does not
-remove the initial source or justify exchanging an infinite-time limit
-with a constitutive limit.
-
-The [single-intermediary sine owner](RELATIONAL_PATTERN_MEMORY.md#causal-sine-environmental-pressure)
-already derives a nonlinear second-order representation and derivative-free
-Volterra memory, including the hidden initial state and moving visible
-boundary. The [general elimination owner](../DERIVED_EPI_MEMORY.md#3-exact-elimination-including-the-initial-hidden-state)
-owns the variation-of-constants principle and its source obligation.
-The identities here specialize that principle to eliminating the entire
-form coordinate of this complete nonlinear sine model. They neither turn
-the existing signed intermediary kernel into a positive-entry kernel nor
-transfer a pure-diffusion or conservative-memory conclusion between models.
-
-### The nonlinear storage representation contains the existing resonance pencil
-
-Remove the conserved origins, and put
-
-\[
-h=K^{-1/2}\mathbf1,\quad\mathcal Q=h^\perp,\quad
-\xi=K^{-1/2}P_Mx,\quad
-\vartheta=K^{-1/2}P_M\theta,\quad
-\Phi(\vartheta)=V(K^{1/2}\vartheta).
-\]
-
-The symmetric matrix `B` above is positive definite on `Q`; all inverse
-matrices in this paragraph act only there. Since
-`grad(Phi)=-K^(1/2)S`, the exact nonlinear transformed rows and their
-equivalent second-order equation are
-
-\[
-\dot\xi=-eB\xi-a\nabla\Phi(\vartheta),\qquad
-\dot\vartheta=bB\xi,\qquad
-B^{-1}\ddot\vartheta+e\dot\vartheta
-+ab\nabla\Phi(\vartheta)=0.
-\]
-
-Their storage and loss are still the original quantities:
-
-\[
-b^2E=\frac12\dot\vartheta^{\mathsf T}B^{-1}\dot\vartheta
-+ab\Phi(\vartheta),\qquad
-\frac{d}{dt}(b^2E)=-e\|\dot\vartheta\|^2.
-\]
-
-The velocity contribution is the original form storage in different
-coordinates. The derived quotient matrix `B^-1` depends on the graph and
-held capacities; this supplies no identification of capacity with inverse
-physical mass. Initial velocity, nonlinear phase history and the conserved
-origins remain part of the model.
-
-At a critical phase geometry with Hessian `H`, the Hessian of `Phi` is
-`C=K^(1/2)HK^(1/2)`. Linearizing the displayed equation gives precisely
-the [existing full-support resonance pencil](RESONANCE_FOUNDATIONS.md#resonance-tangent),
-`B^-1*ddot(vartheta)+e*dot(vartheta)+ab*C*vartheta=0` for perturbations.
-The matrices `B` and `C` need not commute, so scalar cycle discriminants
-still cannot classify a general attachment. Strict acute-sector convexity,
-equilibrium recovery and the full storage capture barrier use the same
-phase curvature; the nonnegative velocity/form term is why a phase-only
-storage check cannot replace the capture certificate.
-
-### A phase-flat preparation distinguishes the full law from phase descent
-
-Take equal initial phases and any nonconstant initial form on the retained
-connected graph. Then `S(0)=0`, `H(0)=L` and
-
-\[
-V(0)=\dot V(0)=0,\qquad
-\ddot V(0)=b^2(Ax(0))^{\mathsf T}L(Ax(0))>0,
-\qquad
-\dot E(0)=-e(Lx(0))^{\mathsf T}K(Lx(0))<0.
-\]
-
-For strict positivity, `Ax(0)` has zero weighted mean. If it were a
-constant vector, it would vanish; positivity of `K` and connectedness
-would then force `x(0)` constant, contrary to preparation. Thus phase
-potential initially increases while total storage decreases. The form
-reservoir and reciprocal phase row account for both signs under one law.
-
-In contrast, the candidate phase-gradient flow `dpsi/dsigma=KS(psi)`
-initialized at that same uniform `theta(0)` remains there by uniqueness.
-It would discard the prepared form information. Initializing a proposed
-comparison from `theta(0)+z(0)` retains that information, but the exact
-identities alone do not prove closeness to this comparison flow. Section 29
-derives the finite-horizon error bound while retaining the initial transient.
-A later capture handoff, support creation and physical identification remain
-separate obligations.
-
-The [full-law equivalence controls](../../tests/physics/test_relational_sine_exchange_equivalence.py)
-differentiate the shared field with interval jets, check the two opposite
-storage signs and the failure of a sum-coordinate-only closure, and retain
-noncommuting capacity/Laplacian products. Independent numerical quadrature
-checks the nonlinear memory identity along a complete trajectory; it is an
-equivalence check, not a reserved-response prediction or the analytic proof.
-
-## 29. A controlled fast-form and slow-phase comparison
-
-<a id="sine-controlled-slow-phase"></a>
-
-The exact representations in Section 28 permit a quantitative comparison
-with a first-order phase flow. This is an approximation theorem for the
-same complete sine law, with an explicit transient and error. It does not
-install that reference flow as a replacement pressure or remove the
-prepared form information.
-
-### Complete state, reference initialization and clocks
-
-Fix the finite connected unit support, positive held `K`, positive `beta`
-and positive complete-law coefficients `e,w`. Retain Section 27's
-`M=K^-1`, `A=KL`, `alpha=b/e`, `z=alpha*P_Mx`, `tau=e*t` and
-`eta=ab/e^2=beta*alpha^2`. For the actual initial state write `z_0=z(0)`
-and take a proved bound `Z>=||z_0||_M`. Define the slow time and reference
-on consistent phase lifts by
-
-\[
-\sigma=\eta\tau=\frac{ab}{e}t,\qquad
-\frac{d\psi}{d\sigma}=f(\psi),\qquad
-f(\theta)=KS(\theta),\qquad
-\psi(0)=\theta(0)+z_0.
-\]
-
-Both the complete and reference fields are globally Lipschitz, so their
-solutions exist uniquely for all finite times. The reference is initialized
-with the actual retained form contribution, not only the initial phase.
-As in Section 28, the mixed coordinate uses real `z_0` and consistent
-lifts; wrapping its two summands independently would discard information.
-
-Let `lambda>0` be a certified weighted quotient gap for `A`, and set
-
-\[
-F=\left(\sum_i\nu_i d_i\right)^{1/2},\qquad
-\ell=2\max_i\nu_i.
-\]
-
-The earlier forcing bound gives `||f(theta)||_M<=F` globally. Its derivative
-is `-KH(theta)`, where `H` is the cosine-weighted phase Hessian. The edge
-formula gives `-B<=K^(1/2)H(theta)K^(1/2)<=B` for
-`B=K^(1/2)LK^(1/2)`. The similar matrix `KL` has Gershgorin intervals
-`[0,2*nu_i]`, so the symmetric matrix `B` has norm at most `ell`.
-Integrating the derivative
-along a segment therefore proves the global Lipschitz estimate
-`||f(u)-f(v)||_M<=ell*||u-v||_M`. This bound needs no acute phase domain
-for either path or the segment between them.
-
-### Explicit composite, phase and form bounds
-
-For a supplied finite `sigma>=0`, put `tau=sigma/eta` and
-`D(tau)=exp(-A*tau)`. Define
-
-\[
-\boxed{\begin{aligned}
-R(\tau)&=\frac{\eta F}{\lambda}
-                  \left(1-e^{-\lambda\tau}\right),\\
-C(\sigma)&=
-\frac{\eta(\ell Z+F)}{\lambda+\eta\ell}
-           \left(e^{\ell\sigma}-e^{-\lambda\tau}\right).
-\end{aligned}}
-\]
-
-Then the exact complete solution and its reference satisfy
-
-\[
-\boxed{\begin{aligned}
-\|z(\tau)-D(\tau)z_0\|_M&\le R(\tau),\\
-\|\theta(\tau)+D(\tau)z_0-\psi(\sigma)\|_M&\le C(\sigma),\\
-\|\theta(\tau)-\psi(\sigma)\|_M
-&\le Ze^{-\lambda\tau}+C(\sigma).
-\end{aligned}}
-\]
-
-The middle quantity is the **composite correction**. It retains the fast
-initial form contribution instead of calling the corrected angle the
-actual phase. For `y=theta+z`, the same estimates also give
-`||y(tau)-psi(sigma)||_M<=C(sigma)+R(tau)`.
-
-The form estimate follows from the exact variation-of-constants identity
-
-\[
-z(\tau)=D(\tau)z_0+
-\eta\int_0^\tau D(\tau-s)f(\theta(s))\,ds.
-\]
-
-All integrand vectors have zero weighted mean. Thus the quotient semigroup
-bound `||D(s)||_M<=exp(-lambda*s)` applies to them and gives `R`.
-Section 28's exact phase memory, now in scaled time, gives
-
-\[
-\theta(\tau)+D(\tau)z_0
-=\theta(0)+z_0+
-\eta\int_0^\tau\left[I-D(\tau-s)\right]f(\theta(s))\,ds.
-\]
-
-Subtract the reference integral equation. If
-`q(tau)=theta(tau)+D(tau)z_0-psi(eta*tau)`, the forcing and Lipschitz
-bounds imply
-
-\[
-\|q(\tau)\|_M\le
-\eta\ell\int_0^\tau\|q(s)\|_M\,ds+
-\frac{\eta(\ell Z+F)}{\lambda}
-                \left(1-e^{-\lambda\tau}\right).
-\]
-
-Here the `ell*Z` term retains the initial transient inside
-`theta-psi=q-D(s)z_0`; the `F` term bounds the remaining memory integral.
-The scalar comparison function with zero initial value solves
-`c'=eta*ell*c+eta*(ell*Z+F)*exp(-lambda*tau)`. Its explicit solution is
-the displayed `C`, proving the composite bound by Gronwall's inequality.
-The uncorrected phase bound then follows by the triangle inequality.
-No phase linearization, commuting `K,L` assumption or sampled response
-enters this argument.
-
-Conversion back to the original form coordinate is also explicit:
-
-\[
-\left\|P_Mx(t)-e^{-eAt}P_Mx(0)\right\|_M
-\le\frac ae\frac F\lambda
-              \left(1-e^{-\lambda\tau}\right)
-=\sqrt{\beta\eta}\frac F\lambda
-              \left(1-e^{-\lambda\tau}\right).
-\]
-
-Thus the original form remainder after its homogeneous transient is
-`O(sqrt(eta))` at fixed support, `K` and `beta`. A small scaled `z`
-remainder alone would not establish this original-coordinate statement.
-The homogeneous form term remains until its own transient has decayed.
-
-### Uniform finite-time meaning and the retained storage budget
-
-Fix a finite slow-time horizon `Sigma`, the support, `K`, `beta` and a
-uniform bound `Z` on the scaled initial form. For `0<=sigma<=Sigma`,
-
-\[
-C(\sigma)\le
-\eta\frac{\ell Z+F}{\lambda}e^{\ell\Sigma}.
-\]
-
-This is a uniform `O(eta)` composite comparison including the initial
-instant. It is not uniform `O(eta)` proximity of the actual phase from
-that instant: exactly `theta(0)-psi(0)=-z_0`. For any fixed
-`sigma_0>0`, the uncorrected estimate on `[sigma_0,Sigma]` instead has
-the additional transient `Z*exp(-lambda*sigma_0/eta)`. More generally,
-the finite displayed inequalities decide whether a chosen transient
-is sufficiently small, without retuning the requested horizon.
-
-The original-clock comparison time is
-
-\[
-t=\frac{\sigma}{e\eta}
-  =\beta\pi^2\frac e{w^2}\sigma.
-\]
-
-As `eta` changes, the constitutive ratio changes; this is not just a common
-clock rescaling. Keeping a nonzero scaled preparation fixed also retains
-the original initial storage
-
-\[
-E(0)=\frac{\beta}{2\eta}z_0^{\mathsf T}Lz_0
-                       +\beta V(\theta(0)).
-\]
-
-Its form term grows as `1/eta`. For uncertain preparations the expression
-and its enclosing budget apply to every actual member, rather than to its
-nominal source alone.
-
-### Means, uncertain sources and phase potential
-
-Since `1^T M f=1^T S=0`, the reference conserves its weighted phase mean.
-Its initialization has the same weighted phase mean as the complete
-trajectory because `z_0` is centered. Common form shifts cancel from
-`z_0`; common phase shifts move the actual and reference solutions
-together. All comparison differences and the composite correction have
-zero weighted mean on the selected lift.
-
-For a `SineRelativePattern`, reuse Section 27's original residual set and
-its weighted initial norm bound. Each member is compared with **its own**
-reference initialized at that member's `theta(0)+z_0`. A uniform `Z`
-makes the displayed error uniform over the family but does not replace
-these references by a single nominal reference trajectory. Doing that
-would require a separate bound on the initialization differences.
-Unknown absolute origins and memberwise conserved means remain explicit.
-
-The potential satisfies the global bound
-`|V(u)-V(v)|<=F*||u-v||_M`, since
-`||grad(V)||_(M^-1)=||KS||_M<=F`. Hence
-
-\[
-|V(\theta(\tau))-V(\psi(\sigma))|
-\le F\left[Ze^{-\lambda\tau}+C(\sigma)\right].
-\]
-
-The reference itself obeys
-`dV(psi)/dsigma=-S(psi)^T K S(psi)<=0`. This does not make the actual
-phase potential monotone: Section 28's phase-flat, nonconstant-form
-preparation has strictly positive initial second phase-potential derivative
-while total storage decreases. Initializing the reference only at that
-uniform phase would leave it at consensus and discard the preparation
-mechanism; the shifted initialization and explicit transient resolve that
-mismatch in the comparison theorem.
-
-### Shared certificate and bounded numerical controls
-
-[`bound_sine_slow_phase`](../../src/tnfr/physics/relational_sine_reduction.py)
-accepts an admitted exact or relative source and a supplied rational slow
-time. It reuses the complete-law preparation admission, weighted norm and
-exact reversible gap owners, and returns outward analytic comparison
-bounds. The scaled and original times are enclosed directly from their
-mathematical-pi formulas; these are enclosures of the declared comparison
-instant, not a new class of independently uncertain times. The reader runs
-neither the full trajectory nor the reference phase solver. It does not
-issue an endpoint capture or final-basin verdict.
-
-The [reduction tests](../../tests/physics/test_relational_sine_reduction.py)
-freeze a small heterogeneous support with edges
-`(0,1),(1,2),(2,3),(0,2)`, capacities `(1,3/2,2,5/4)` and `beta=2`.
-The primary constructor weight ratio is `16:1`; the stored normalized
-coefficients remain authoritative, with exact ratio `w/e=1/16`.
-The declared preparation is
-`x=(beta*e/w)*(1/2,-3/4,5/4,-1)` and
-`theta=(1/8,-1/4,1/2,-3/8)`, with slow horizon `1/16`.
-A separately fixed `8:1` comparison retains the same scaled initial form
-and checks the feedback-parameter dependence. Independent SciPy integrations
-of the complete and reference rows cross-check the inequalities under the
-test's explicit numerical settings; they are not validated trajectory
-enclosures or a search over sources, ratios or horizons. The analytic
-certificate does not depend on their sampled responses.
-
-The error grows with the declared slow horizon and is not an infinite-time
-theorem. It proves neither a final basin match nor an exchange of the
-limits `eta->0` and `t->infinity`. Section 30 supplies a separate capture
-criterion that admits the actual full-state endpoint, including the form
-remainder and all sector margins. The result controls a mechanism within the supplied law
-and preparation; it does not select that law, support, source budget or
-physical interpretation.
-
-## 30. Full-state capture from controlled phase geometry
-
-<a id="sine-slow-phase-capture-handoff"></a>
-
-Section 29 bounds the difference from a reference flow but does not by
-itself locate that reference at the requested endpoint. A sufficient
-handoff needs both a justified reference neighborhood and the remaining
-original form storage. The following construction supplies these from the
-admitted preparation and an exactly verified stationary phase geometry.
-It requires neither a supplied response endpoint nor a reference solver.
-
-### A proved reference neighborhood from the preparation
-
-Retain all hypotheses and notation of Section 29. Supply exact rational
-node turns `q_i`, in the source node order, and put `phi_*=2*pi*q` on the
-selected real lift. Require every principal target edge angle
-`delta_*e` to lie strictly between `-pi/2` and `pi/2`, and require
-`S(phi_*)=0`. The shared target owner verifies these hypotheses using the
-[exact acute geometry and sine cancellation](../../src/tnfr/physics/relational_sine_recovery.py);
-a floating residual close to zero does not prove criticality. This
-implemented algebraic admission is sufficient, not a classification of
-all possible sine equilibria.
-
-For each actual preparation member, shift `phi_*` by a common constant so
-that its weighted mean equals that of `theta(0)`. Write the resulting lift
-as `phi_*^m`. Its phase geometry and potential `V_*` are unchanged.
-The reference `psi(0)=theta(0)+alpha*P_Mx(0)` has this same weighted mean.
-Choose a proved bound
-
-\[
-D_0\ge
-\left\|P_M\left(\theta(0)+\alpha P_Mx(0)-\phi_*\right)\right\|_M.
-\]
-
-Since `f(phi_*^m)=0`, the constant curve `phi_*^m` solves the reference
-equation. The global Lipschitz bound from Section 29 and Gronwall give
-
-\[
-\|\psi(\sigma)-\phi_*^m\|_M
-\le D_{\rm ref}(\sigma):=e^{\ell\sigma}D_0.
-\]
-
-This estimate assumes no contraction or acute evolution of the reference.
-The supplied stationary geometry is a proof reference; it is not inserted
-into the complete law or assigned to the evolving state.
-
-For a relative source, retain exactly Section 27's original residual
-family. If its componentwise form and phase error radii are
-`epsilon_xi,epsilon_thetai`, a uniform choice is
-
-\[
-\begin{aligned}
-D_0={}&
-\left\|P_M\left(\theta_{\rm nom}
-                +\alpha P_Mx_{\rm nom}-\phi_*\right)\right\|_M\\
-&+\left(\sum_i m_i\epsilon_{\theta i}^2\right)^{1/2}
-+\alpha\left(\sum_i m_i\epsilon_{x i}^2\right)^{1/2},
-\qquad m_i=M_{ii}.
-\end{aligned}
-\]
-
-This follows from the triangle inequality and the contractivity of the
-weighted orthogonal projection `P_M`. Every member keeps its own
-reference, mean-matched target and conserved means. Unknown common
-origins cancel before bounding the mismatch; no absolute phase or form
-origin is inferred. The estimate uses the selected consistent phase
-lifts, with the chart and quotient distinctions from Section 28.
-
-### The actual endpoint and its complete storage
-
-At the supplied slow time `sigma`, set `tau=sigma/eta` and define
-
-\[
-\begin{aligned}
-Q(\sigma)&=Ze^{-\lambda\tau}+C(\sigma),\\
-\rho(\sigma)&=D_{\rm ref}(\sigma)+Q(\sigma),\\
-X(\sigma)&=e^{-\lambda\tau}N_x+
-\frac ae\frac F\lambda\left(1-e^{-\lambda\tau}\right),
-\qquad N_x\ge\|P_Mx(0)\|_M.
-\end{aligned}
-\]
-
-Section 29 proves that the actual endpoint satisfies
-`||theta(t)-phi_*^m||_M<=rho` and `||P_Mx(t)||_M<=X`, where
-`t=sigma/(e*eta)`. The phase bound includes the initial transient;
-substituting only the composite error `C` would not prove this statement.
-The form bound is in the original coordinate, with its conversion factor
-retained.
-
-For an edge `ij`, write `k_i=K_ii` and
-`g_ij=sqrt(k_i+k_j)`. Weighted duality gives
-
-\[
-\left|(\theta_j-\theta_i)
-       -(\phi_{*j}^m-\phi_{*i}^m)\right|\le g_{ij}\rho,
-\qquad |x_j-x_i|\le g_{ij}X.
-\]
-
-Thus a sufficient strict acute margin on every edge is
-
-\[
-\boxed{\quad |\delta_{*ij}|+g_{ij}\rho<\frac\pi2
-\quad\text{for every retained edge}.\quad}
-\]
-
-Use the integer edge offsets that reduce the supplied target lift to its
-principal acute angles. They place every enclosed actual endpoint in the
-target's cycle-period sector, without inferring a future unwrapping from
-samples.
-
-A useful storage bound retains the correlations lost by independent edge
-intervals. Let `h=theta(t)-phi_*^m`. The phase Hessian satisfies `H<=L`
-globally, since every edge cosine is at most one. Taylor's integral
-formula and the exact criticality of the target therefore give
-
-\[
-V(\phi_*^m+h)
-=V_*+\int_0^1(1-s)h^{\mathsf T}H(\phi_*^m+sh)h\,ds
-\le V_*+\frac12h^{\mathsf T}Lh
-\le V_*+\frac\ell2\rho^2.
-\]
-
-The linear term vanishes because `grad V(phi_*^m)=0`. The segment need
-not remain acute for this upper bound. Likewise
-`x^T Lx<=ell*||P_Mx||_M^2`, so the complete storage obeys
-
-\[
-\boxed{\qquad
-E(t)\le E_{\rm handoff}:=
-\frac\ell2X^2+\beta\left(V_*+\frac\ell2\rho^2\right).
-\qquad}
-\]
-
-This uses the same cancellation principle as local recovery, now with a
-preparation-derived phase neighborhood. Bounding every cosine separately
-can lose that cancellation and fail to establish a margin that the
-correlated bound proves. The admitted endpoint set retains the norm and
-storage constraints together with the edge intervals and memberwise mean
-leaf; arbitrary corners of the independent outer intervals need not obey
-the correlated storage bound. Global existence of the complete law makes
-the set nonempty for every admitted preparation member.
-
-### Handoff to the whole-sector theorem
-
-Let `B_k` be the shared certified lower bound for the phase potential on
-**every** boundary face of the target sector, as in Section 26. If all
-strict edge margins above hold and
-
-\[
-\boxed{\qquad E_{\rm handoff}<\beta B_k,\qquad}
-\]
-
-then Section 26 applies to the actual full-state endpoint of every source
-member. Subsequent complete evolution stays in that sector and converges
-on its conserved-mean leaf to its unique acute equilibrium. The admitted
-target already supplies the stationary geometry in that sector, so
-uniqueness identifies the limiting phase geometry with it. The theorem
-does not assume that geometry was the initial winding or that the
-reference and actual paths shared their earlier sectors.
-
-[`certify_sine_slow_capture`](../../src/tnfr/physics/relational_sine_reduction.py)
-recomputes the preparation and slow comparison, admits the exact target,
-and passes producer-proved edge and correlated storage bounds to the
-shared sector-capture owner. The outer report retains the enclosed
-original endpoint time; its nested capture is neither a timestamped
-observation nor a sampled forecast. Outward rational arithmetic encloses
-the pi, trigonometric, norm and exponential quantities. Malformed inputs
-are rejected; insufficient strict margins return unavailable. An
-unavailable sufficient condition proves neither instability nor
-impossibility.
-
-### Fixed analytic controls and scope
-
-The [handoff tests](../../tests/physics/test_relational_sine_slow_capture.py)
-reuse Section 27's published C5 preparation unchanged:
-`nu_i=beta=1`, `e=1023/1024`, `w=1/1024`,
-`x_i(0)=4092*(i-2)` and `theta_i(0)=0` for `i=0,...,4`.
-The supplied target is `q_i=(i-2)/5` and the fixed slow time is `1/16`.
-Its initial form budget remains `160*1023^2`; neither that budget nor the
-ratio is retuned to obtain the handoff. The analytic bounds give
-
-\[
-\begin{aligned}
-D_0&<0.074249,&\rho&<0.084137,\\
-\frac\ell2X^2&<0.000002028,&
-E_{\rm handoff}&<3.461996083,\\
-B_k&>3.469266270,&
-\beta B_k-E_{\rm handoff}&>0.00727018.
-\end{aligned}
-\]
-
-All edge margins are positive. The same previously fixed independent
-radii `epsilon_x=1/16` and `epsilon_theta=1/65536` also pass, with total
-storage below `3.462017026` and margin above `0.00724924`. These are
-analytic endpoint certificates, with no integrated reference or complete
-trajectory used as their producer. Initial zero winding is separately
-known for these preparations, so their captured nonzero sector also
-establishes acquisition. The general API does not assume zero initial
-winding and therefore does not label every capture an acquisition.
-
-Here the declared original time is approximately `646182.7393` structural
-units, obtained from `t=beta*pi^2*e*sigma/w^2`. This fixed handoff is not
-an optimized entry time or a replacement for the earlier `tau=100` entry
-certificate. Controls with resolved phase but excessive remaining form
-storage, and with unresolved phase margins, remain unavailable under
-their respective sufficient conditions.
-
-The result connects one justified reference geometry to complete-state
-capture at a finite declared instant. It supplies neither autonomous
-support creation, selection of the preparation or target, a unique
-constitutive law, nor a physical identification. It also does not turn
-the finite comparison into a uniform infinite-time approximation.
 
 ## 31. A fixed original preparation budget forces consensus at small ratio
 
@@ -1851,8 +1179,8 @@ Section 31 supplies a necessary resource bound for winding acquisition.
 That scalar budget does not specify the organization reached by the full
 dynamics. The following fixed comparison separates the budget from the
 geometric information in the preparation. Its symmetry mechanism reuses
-the [sine orientation argument](RELATIONAL_PATTERN_MEMORY.md#mediator-orientation-scope)
-and the [reflection obstruction to receiver formation](RELATIONAL_PATTERN_MEMORY.md#sine-interacting-recovery);
+the [sine orientation argument](RELATIONAL_MEDIATOR_DYNAMICS.md#mediator-orientation-scope)
+and the [reflection obstruction to receiver formation](SINE_PATTERN_RECOVERY.md#sine-interacting-recovery);
 it is not a new symmetry law.
 
 ### A capacity-compatible automorphism restricts cycle periods
@@ -2006,3 +1334,623 @@ successful preparation is not evidence that the model autonomously
 selects that preparation or a handedness from a reflection-fixed state.
 The comparison supplies no preparation-occurrence law, support origin,
 new constitutive selector or physical identification.
+
+
+## 33. Retained relative origins permit a full-state composition handoff
+
+<a id="sine-relative-frame-composition"></a>
+
+This result connects the existing relative-state observation to Section 26's
+capture theorem under the **same complete positive-loss sine law**. It does
+not select that law. The [common-origin result](SINE_CONSTITUTIVE_INFORMATION.md#form-balance-common-origin)
+explains why eliminating one global origin differs from independently
+eliminating two origins before an interaction. Here the missing relative
+information is declared explicitly and kept in a reusable state handoff.
+
+### The admitted family and the exact offset map
+
+Let A and B have disjoint ordered node sets, connected simple unit supports,
+positive held capacities, identical admitted `e,w,beta>0` and one declared
+structural clock. At a declared common observation/event time, each relative
+source supplies nominal form and real phase lifts with per-node residuals:
+
+\[
+x_i=\bar x_i+C^x_A+\epsilon_i,\qquad
+\theta_i=\bar\theta_i+C^\theta_A+\eta_i\quad(i\in A),
+\]
+
+and similarly on B, with `|epsilon_i|<=r_i`, `|eta_i|<=s_i`.
+The common offsets can be unknown. These are admitted preparation/observation
+premises, not an assertion that separate measurements were synchronized.
+Declare exact relative **common-origin** differences
+
+\[
+\Delta_x=C^x_B-C^x_A,\qquad
+\Delta_\theta=C^\theta_B-C^\theta_A.
+\]
+
+They are not actual reference-node differences: the latter also contain the
+nominal reference difference and both reference residuals. A phase difference
+uses a supplied consistent real lift; no unwrap or favorable branch is inferred.
+Define the joint nominal rows by retaining A and adding `Delta_x,Delta_theta`
+to every B node, then concatenate the original residual radii. Every member
+of the two-source family is represented exactly by these rows plus **one**
+common form and phase origin. Conversely each member of that joint residual
+family splits into the two declared source families with those offsets.
+No Cartesian relative-coordinate box or independently chosen nominal member
+is substituted. This exact map relies on scalar known origin differences;
+uncertain origin differences require a separately justified correlated or
+outer-enclosure contract.
+
+Rebasing a source's nominal form by `s_A` or `s_B` requires
+`Delta_x -> Delta_x+s_A-s_B`, and likewise for phase. The joined family then
+changes by just the common rebase `s_A`. Holding the offset fixed while
+rebasing one component describes a different proposed contact.
+
+### A supplied bridge changes weights and adds storage
+
+Admit one unit bridge `a in A, b in B`, with no nodal reset and unchanged
+capacities. Put `d_i^+=d_i^-+1_{i=a,b}`, `K_i^+=nu_i/d_i^+` and
+`rho_i^+=d_i^+/nu_i`. The pressure and phase rows after the event must use
+these new degrees. Reusing either isolated mobility gives the wrong field at
+the bridge endpoints. For the weights and charges in a common frame,
+
+\[
+W^+=W_A+W_B+\frac1{\nu_a}+\frac1{\nu_b},\qquad
+Q^+=Q_A+Q_B+\frac{x_a}{\nu_a}+\frac{x_b}{\nu_b}.
+\]
+
+This is event reweighting, not a continuous flux or violation of a held-support
+invariant. Only the postevent weighted mean determines the eventual uniform
+form if full-state capture holds. An unknown common form origin leaves the
+absolute mean unknown; an interval for the representative with A's common
+origin zero must be labelled as such. Lifted phase means have the analogous
+frame dependence and are not additional circular observables.
+
+The exact storage jump for each member is
+
+\[
+\boxed{\Delta E=\frac12(x_b-x_a)^2+
+ \beta[1-\cos(\theta_b-\theta_a)]\ge0.}
+\]
+
+Internal edge costs are unchanged. The bridge form-gap interval is centered at
+`bar(x_b)+Delta_x-bar(x_a)` with radius `r_a+r_b`; the phase-gap interval has
+the corresponding phase center and radius `s_a+s_b`. Outward interval square
+and cosine give a conservative jump bound. Rebuilding all internal and bridge
+bounds gives a bound for the **whole** postevent storage. Bounds are
+per-member statements about one family; subtracting two independently rounded
+storage intervals is not needed to identify the event work.
+
+A nonnegative supplied event-work allowance can be compared against this jump.
+A certified within-allowance result does not establish capture or event
+occurrence. Conversely, a postevent capture theorem does not supply the work
+required to perform the event. Continuous storage dissipation is not an
+undeclared reserve from which this jump can be paid.
+
+### Missing relative information is a mathematical obstruction
+
+If `Delta_x` is unspecified, a common shift of B leaves all of its internal
+observations and isolated certificates unchanged while making the bridge form
+cost arbitrarily large. If `Delta_theta` is unspecified, a relative rotation
+can make the bridge antipodal. There is then no whole-family strict acute
+admission. These obstructions concern what the sources determine; they do not
+say that every particular contact fails. Missing offsets therefore remain
+explicitly unavailable and never default to alignment.
+
+Even known offsets and two isolated capture certificates are insufficient.
+Take two P2 components with unit capacities, `beta=1`, zero phase and forms
+`(-1,0)` and `(0,1)`. Each isolated energy is `1/2`, below its tree boundary
+barrier 1. Join the two zero-form endpoints. The bridge jump is zero but total
+postevent storage is 1, so the strict whole-tree energy criterion is
+unavailable. Its failure is not a proof that the joined trajectory cannot
+converge. It proves why isolated verdicts or bridge cost alone cannot replace
+Section 26's full-state premises.
+
+### Shared implementation and fixed controls
+
+[`assess_sine_pattern_composition`](../../src/tnfr/physics/relational_sine_composition.py)
+re-admits both `SineRelativePattern` sources and their authoritative model
+coefficients, then rebuilds their fields from exact primitive rows. It shifts
+only the right nominal coordinates, preserves every residual radius, joins
+one supplied edge and rebuilds all joint fields through the shared relative
+pattern owner. No graph-to-binary64 roundtrip changes an admitted rational
+state. The existing sector owner receives this entire joined source and
+explicit integer edge offsets; it checks every signed boundary face. Its
+absolute weighted means remain unavailable, even when the frame-relative
+representative means have finite bounds.
+
+The [composition controls](../../tests/physics/test_relational_sine_composition.py)
+fix two P2 sources with nominal zero form/phase, capacities `(1,2)` and `(3,4)`,
+`e=w=1/2,beta=1`, bridge the inner endpoints and declare
+`Delta_x=Delta_theta=1/4`. In the resulting P4 order,
+
+\[
+d^-=(1,1,1,1),\quad d^+=(1,2,2,1),\quad
+W^-=25/12,\quad W^+=35/12,
+\]
+\[
+Q^-_A=7/48,\quad Q^+_A=11/48,\quad
+M^-_A=7/100,\quad M^+_A=11/140.
+\]
+
+Here the subscript A denotes the representative with A's common form origin
+zero, not an absolute charge measurement. The jump is
+`1/32+1-cos(1/4)<1`, so the full tree is captured without supplying an
+equilibrium target. Missing-frame, large-phase-gap, full-energy and per-node
+uncertainty controls test separate obligations. The implementation neither
+installs a live bridge nor evolves a trajectory; it supplies the previously
+missing preparation-to-capture handoff under a declared event and law.
+
+A second fixed control joins two C5 sources with zero form, unit capacities,
+phases `5*j/4` for `j=0,...,4`, zero relative common origins and a bridge
+between their first nodes. A `-1` edge turn on each canonically oriented
+closing edge retains unit winding in both cycles. The same whole-set reader
+certifies capture against all 22 signed boundary faces of the joined support.
+This checks composition of nonzero winding patterns; their preparation and
+the occurrence of the bridge are still supplied premises.
+
+## 34. Analytic acquisition can hand off to maintained composition
+
+<a id="sine-prepared-composition"></a>
+
+Sections 27 and 33 can be connected without replacing an analytic endpoint
+by an independently supplied observation. Each component evolves on its own
+declared support up to one common event time; a supplied unit bridge then
+changes the support without resetting any nodal coordinate. The isolated
+entry theorem proves the finite prefix. Only a new full-support certificate
+proves maintenance after the event. This construction still assumes the
+preparations, complete sine law and bridge event.
+
+### Preserve the actual endpoint family and its clock
+
+For component `c` retain its original relative preparation, positive held
+capacities and the complete law of Section 27. Let `rho_ci=d_ci/nu_ci`,
+`W_c=sum_i rho_ci`, and let its nominal weighted means be `mbar_c^x` and
+`mbar_c^theta`. The memberwise conserved means, excluding the unknown common
+origins, are
+
+\[
+m_c^x=\bar m_c^x+\frac{\sum_i\rho_{ci}\epsilon_{ci}}{W_c},\qquad
+m_c^\theta=\bar m_c^\theta+\frac{\sum_i\rho_{ci}\eta_{ci}}{W_c}.
+\]
+
+Consequently the original residual radii imply intervals for these means;
+using only the nominal means would lose admitted states. Section 27 provides
+centered endpoint intervals `U_ci^x,U_ci^theta` and tighter internal edge
+intervals for the **actual endpoint set**. Every endpoint has the form
+
+\[
+x_{ci}(T)=C_c^x+m_c^x+u_{ci}^x(T),\qquad
+\theta_{ci}(T)=C_c^\theta+m_c^\theta+u_{ci}^\theta(T).
+\]
+
+The centered intervals use the original component degrees and weighted norm.
+The common mean residual and centered errors need not be independent;
+interval sums give safe outer bounds without asserting such independence.
+The internal edge intervals retain their separate, stronger proof. They do
+not describe every corner of the product of endpoint node intervals.
+
+With declared initial structural times `t_A,t_B` and scaled durations
+`tau_A,tau_B`, an instantaneous join requires
+
+\[
+T=t_A+\tau_A/e=t_B+\tau_B/e.
+\]
+
+Equality is checked from admitted original preparations, coefficients and
+scaled durations, not cached horizon fields. Different starting times may
+give the same endpoint time. Unequal endpoint times cannot be repaired by
+relabelling an observation or silently holding the earlier state fixed.
+Clock agreement is a preparation premise, not authenticated measurement data.
+
+### Bound the bridge without discarding the isolated constraints
+
+Declare exact right-minus-left common origins `Delta_x,Delta_theta` as in
+Section 33. For either coordinate `q`, the bridge from `a in A` to `b in B`
+has the interval bound
+
+\[
+q_b-q_a\in J_q:=\Delta_q+M_B^q-M_A^q+U_{Bb}^q-U_{Aa}^q,
+\]
+
+where `M_c^q` encloses the memberwise mean above. Retain every original
+internal endpoint edge bound and add this one bridge bound. The actual
+joint set is the product of the isolated flow images with the declared
+frame relation, not a fabricated `SineRelativePattern` endpoint. The smooth
+held-law flow supplies a nonempty image for every admitted preparation member.
+These bounds therefore satisfy the shared sector core's producer contract.
+
+The new degrees, mobility and exact event-work identity are those of Section
+33. In particular, endpoint error bounds use `d^-`, whereas subsequent joint
+dynamics uses `d^+`. The bridge work is bounded by
+`J_x^2/2 + beta*(1-cos(J_theta))`. A supplied allowance is an independent
+comparison; positive width of a work enclosure does not establish positive
+actual work.
+
+The post-event weighted mean also retains the old conserved inventory. In
+the representative with A's common origin zero, put
+`M_B^q <- M_B^q+Delta_q`. A valid bound is
+
+\[
+\boxed{
+M_+^q\subseteq
+\frac{(W_A+1/\nu_a)M_A^q+(W_B+1/\nu_b)M_B^q
+      +U_{Aa}^q/\nu_a+U_{Bb}^q/\nu_b}
+     {W_A+W_B+1/\nu_a+1/\nu_b}.}
+\]
+
+Here the inclusion means that every actual representative mean belongs to
+the interval on the right. Summing independent node-box corners would forget
+the conserved inventory. The absolute global origin remains unavailable;
+the lifted phase mean is not an additional circular observable.
+
+If the entire joined endpoint set is acute and its total storage upper bound
+lies strictly below every full-support boundary face, Section 26 applies at
+`T`. The complete post-event trajectory then remains in that sector and
+converges on its new conserved-mean leaf. When both isolated preparations
+also pass Section 27's zero-to-nonzero winding test, this proves a conditional
+**acquisition -> supplied join -> maintenance** chain. Neither isolated
+capture flags nor bridge work alone imply this conclusion.
+
+### Shared reader and frozen analytic control
+
+[`assess_sine_prepared_composition`](../../src/tnfr/physics/relational_sine_composition.py)
+rebuilds both entry reports from their original `SineRelativePattern` sources,
+scaled times and declared integer sectors. Zero residual radii are supported.
+The report retains the initial times and derived common endpoint time, the
+analytic source provenance, original edge bounds, mean intervals and the new
+joint capture. It reuses the static composition's support/work accounting and
+the shared sector core; it neither runs a solver nor installs a live edge.
+Missing relative origins remain unavailable. Invalid declarations and unequal
+derived endpoint times reject. A failed sufficient bound remains inconclusive.
+
+The [handoff controls](../../tests/physics/test_relational_sine_prepared_composition.py)
+freeze two relabelled C5 copies of Section 27's preparation:
+
+\[
+x_j(0)=4092(j-2),\quad\theta_j(0)=0,\quad\nu_j=1,
+\quad e=1023/1024,\quad w=1/1024,\quad\beta=1.
+\]
+
+Both begin at zero with `tau=100`, so `T=102400/1023`. Nodes are ordered
+`0,...,4` then `5,...,9`; the bridge joins ports `0,5`, and both relative
+common origins are zero. The canonical edge turns are
+`(0,-1,0,0,0,0,0,-1,0,0,0)`. No coefficients, preparation or horizon are fitted
+to the returned result.
+
+Outward rational bounds certify joint cycle periods `(1,1)` against all 22
+signed boundary faces, with total storage below `6.912`, boundary lower bound
+above `6.924` and a strict margin greater than `9/1000`. The bridge work
+enclosure contains zero and has upper bound below `1/20000`. An allowance is
+not inferred from those bounds. In fact the identical exact copies have equal
+port trajectories by symmetry and uniqueness; the general enclosure does not
+use that extra correlation, so its positive upper endpoint is conservative.
+
+The total post-event weight is 22. Its representative form mean has a small
+interval around zero, while its phase mean lies near `-8/(11*pi)` because
+the new weights include the two port phases. No nodal reset causes that
+reweighting. The controls also retain source uncertainty and reject cached
+endpoint substitutions or mismatched times. This joins two existing theorems
+under one explicit hybrid protocol; it does not derive when contacts occur
+or identify the resulting patterns with physical matter.
+
+## Section link directory
+
+These aliases route existing citations to their substantive owner.
+
+- <a id="smooth-sine-pattern-dynamics"></a>[Smooth-sine pattern dynamics](#smooth-sine-pattern-dynamics)
+
+- <a id="28-exact-form-phase-and-memory-representations"></a>[28. Exact form, phase and memory representations](SINE_FORM_PHASE_REDUCTION.md#28-exact-form-phase-and-memory-representations)
+
+- <a id="sine-form-phase-memory-equivalence"></a>[sine-form-phase-memory-equivalence](SINE_FORM_PHASE_REDUCTION.md#sine-form-phase-memory-equivalence)
+
+- <a id="the-sum-coordinate-retains-the-full-joint-state"></a>[The sum coordinate retains the full joint state](SINE_FORM_PHASE_REDUCTION.md#the-sum-coordinate-retains-the-full-joint-state)
+
+- <a id="exact-elimination-gives-second-order-phase-and-retained-memory"></a>[Exact elimination gives second-order phase and retained memory](SINE_FORM_PHASE_REDUCTION.md#exact-elimination-gives-second-order-phase-and-retained-memory)
+
+- <a id="form-reconstruction-scope"></a>[form-reconstruction-scope](SINE_FORM_PHASE_REDUCTION.md#form-reconstruction-scope)
+
+- <a id="what-an-emergent-form-hypothesis-must-distinguish"></a>[What an emergent-form hypothesis must distinguish](SINE_FORM_PHASE_REDUCTION.md#what-an-emergent-form-hypothesis-must-distinguish)
+
+- <a id="the-nonlinear-storage-representation-contains-the-existing-resonance-pencil"></a>[The nonlinear storage representation contains the existing resonance pencil](SINE_FORM_PHASE_REDUCTION.md#the-nonlinear-storage-representation-contains-the-existing-resonance-pencil)
+
+- <a id="a-phase-flat-preparation-distinguishes-the-full-law-from-phase-descent"></a>[A phase-flat preparation distinguishes the full law from phase descent](SINE_FORM_PHASE_REDUCTION.md#a-phase-flat-preparation-distinguishes-the-full-law-from-phase-descent)
+
+- <a id="29-a-controlled-fast-form-and-slow-phase-comparison"></a>[29. A controlled fast-form and slow-phase comparison](SINE_FORM_PHASE_REDUCTION.md#29-a-controlled-fast-form-and-slow-phase-comparison)
+
+- <a id="sine-controlled-slow-phase"></a>[sine-controlled-slow-phase](SINE_FORM_PHASE_REDUCTION.md#sine-controlled-slow-phase)
+
+- <a id="complete-state-reference-initialization-and-clocks"></a>[Complete state, reference initialization and clocks](SINE_FORM_PHASE_REDUCTION.md#complete-state-reference-initialization-and-clocks)
+
+- <a id="explicit-composite-phase-and-form-bounds"></a>[Explicit composite, phase and form bounds](SINE_FORM_PHASE_REDUCTION.md#explicit-composite-phase-and-form-bounds)
+
+- <a id="uniform-finite-time-meaning-and-the-retained-storage-budget"></a>[Uniform finite-time meaning and the retained storage budget](SINE_FORM_PHASE_REDUCTION.md#uniform-finite-time-meaning-and-the-retained-storage-budget)
+
+- <a id="means-uncertain-sources-and-phase-potential"></a>[Means, uncertain sources and phase potential](SINE_FORM_PHASE_REDUCTION.md#means-uncertain-sources-and-phase-potential)
+
+- <a id="shared-certificate-and-bounded-numerical-controls"></a>[Shared certificate and bounded numerical controls](SINE_FORM_PHASE_REDUCTION.md#shared-certificate-and-bounded-numerical-controls)
+
+- <a id="30-full-state-capture-from-controlled-phase-geometry"></a>[30. Full-state capture from controlled phase geometry](SINE_FORM_PHASE_REDUCTION.md#30-full-state-capture-from-controlled-phase-geometry)
+
+- <a id="sine-slow-phase-capture-handoff"></a>[sine-slow-phase-capture-handoff](SINE_FORM_PHASE_REDUCTION.md#sine-slow-phase-capture-handoff)
+
+- <a id="a-proved-reference-neighborhood-from-the-preparation"></a>[A proved reference neighborhood from the preparation](SINE_FORM_PHASE_REDUCTION.md#a-proved-reference-neighborhood-from-the-preparation)
+
+- <a id="the-actual-endpoint-and-its-complete-storage"></a>[The actual endpoint and its complete storage](SINE_FORM_PHASE_REDUCTION.md#the-actual-endpoint-and-its-complete-storage)
+
+- <a id="handoff-to-the-whole-sector-theorem"></a>[Handoff to the whole-sector theorem](SINE_FORM_PHASE_REDUCTION.md#handoff-to-the-whole-sector-theorem)
+
+- <a id="fixed-analytic-controls-and-scope"></a>[Fixed analytic controls and scope](SINE_FORM_PHASE_REDUCTION.md#fixed-analytic-controls-and-scope)
+
+- <a id="35-conservative-exchange-can-produce-finite-regional-winding"></a>[35. Conservative exchange can produce finite regional winding](SINE_REGIONAL_FORMATION.md#35-conservative-exchange-can-produce-finite-regional-winding)
+
+- <a id="conservative-regional-winding-entry"></a>[conservative-regional-winding-entry](SINE_REGIONAL_FORMATION.md#conservative-regional-winding-entry)
+
+- <a id="a-global-full-law-phase-enclosure"></a>[A global full-law phase enclosure](SINE_REGIONAL_FORMATION.md#a-global-full-law-phase-enclosure)
+
+- <a id="one-frozen-two-port-preparation"></a>[One frozen two-port preparation](SINE_REGIONAL_FORMATION.md#one-frozen-two-port-preparation)
+
+- <a id="sine-regional-storage-balance"></a>[sine-regional-storage-balance](SINE_REGIONAL_FORMATION.md#sine-regional-storage-balance)
+
+- <a id="regional-work-retains-the-cross-boundary-storage"></a>[Regional work retains the cross-boundary storage](SINE_REGIONAL_FORMATION.md#regional-work-retains-the-cross-boundary-storage)
+
+- <a id="conservative-regional-phase-transport"></a>[conservative-regional-phase-transport](SINE_REGIONAL_FORMATION.md#conservative-regional-phase-transport)
+
+- <a id="acute-winding-requires-internal-phase-redistribution"></a>[Acute winding requires internal phase redistribution](SINE_REGIONAL_FORMATION.md#acute-winding-requires-internal-phase-redistribution)
+
+- <a id="the-complete-rows-already-transmit-phase-motion-to-the-inner-path"></a>[The complete rows already transmit phase motion to the inner path](SINE_REGIONAL_FORMATION.md#the-complete-rows-already-transmit-phase-motion-to-the-inner-path)
+
+- <a id="conservative-regional-work-retention"></a>[conservative-regional-work-retention](SINE_REGIONAL_FORMATION.md#conservative-regional-work-retention)
+
+- <a id="a-finite-regional-work-budget-can-retain-an-admitted-acute-state"></a>[A finite regional work budget can retain an admitted acute state](SINE_REGIONAL_FORMATION.md#a-finite-regional-work-budget-can-retain-an-admitted-acute-state)
+
+- <a id="conservative-regional-organization-control"></a>[conservative-regional-organization-control](SINE_REGIONAL_FORMATION.md#conservative-regional-organization-control)
+
+- <a id="a-bounded-full-state-organization-control"></a>[A bounded full-state organization control](SINE_REGIONAL_FORMATION.md#a-bounded-full-state-organization-control)
+
+- <a id="controls-implementation-and-limits"></a>[Controls, implementation and limits](SINE_REGIONAL_FORMATION.md#controls-implementation-and-limits)
+
+- <a id="sine-regional-channel-accessibility"></a>[sine-regional-channel-accessibility](SINE_REGIONAL_FORMATION.md#sine-regional-channel-accessibility)
+
+- <a id="36-regional-channel-balance-and-phase-accessibility"></a>[36. Regional channel balance and phase accessibility](SINE_REGIONAL_FORMATION.md#36-regional-channel-balance-and-phase-accessibility)
+
+- <a id="separate-internal-conversion-from-boundary-input"></a>[Separate internal conversion from boundary input](SINE_REGIONAL_FORMATION.md#separate-internal-conversion-from-boundary-input)
+
+- <a id="equal-storage-does-not-determine-the-initial-phase-response"></a>[Equal storage does not determine the initial phase response](SINE_REGIONAL_FORMATION.md#equal-storage-does-not-determine-the-initial-phase-response)
+
+- <a id="a-running-phase-barrier-for-any-acute-unit-winding-entry"></a>[A running phase barrier for any acute unit-winding entry](SINE_REGIONAL_FORMATION.md#a-running-phase-barrier-for-any-acute-unit-winding-entry)
+
+- <a id="shared-implementation-and-evidence-boundary"></a>[Shared implementation and evidence boundary](SINE_REGIONAL_FORMATION.md#shared-implementation-and-evidence-boundary)
+
+- <a id="retrospective-channel-diagnosis-of-the-frozen-control"></a>[Retrospective channel diagnosis of the frozen control](SINE_REGIONAL_FORMATION.md#retrospective-channel-diagnosis-of-the-frozen-control)
+
+- <a id="37-distributed-source-geometry-can-produce-finite-acute-winding"></a>[37. Distributed source geometry can produce finite acute winding](SINE_REGIONAL_FORMATION.md#37-distributed-source-geometry-can-produce-finite-acute-winding)
+
+- <a id="sine-conservative-source-geometry"></a>[sine-conservative-source-geometry](SINE_REGIONAL_FORMATION.md#sine-conservative-source-geometry)
+
+- <a id="the-environmental-source-image-uses-full-degrees"></a>[The environmental source image uses full degrees](SINE_REGIONAL_FORMATION.md#the-environmental-source-image-uses-full-degrees)
+
+- <a id="a-source-image-plus-a-global-remainder-gives-actual-finite-passage"></a>[A source image plus a global remainder gives actual finite passage](SINE_REGIONAL_FORMATION.md#a-source-image-plus-a-global-remainder-gives-actual-finite-passage)
+
+- <a id="one-supplied-distributed-preparation"></a>[One supplied distributed preparation](SINE_REGIONAL_FORMATION.md#one-supplied-distributed-preparation)
+
+- <a id="the-same-storage-and-mean-do-not-select-the-acquired-winding"></a>[The same storage and mean do not select the acquired winding](SINE_REGIONAL_FORMATION.md#the-same-storage-and-mean-do-not-select-the-acquired-winding)
+
+- <a id="shared-admission-and-scope"></a>[Shared admission and scope](SINE_REGIONAL_FORMATION.md#shared-admission-and-scope)
+
+- <a id="38-low-regional-storage-does-not-close-the-retention-handoff"></a>[38. Low regional storage does not close the retention handoff](SINE_REGIONAL_FORMATION.md#38-low-regional-storage-does-not-close-the-retention-handoff)
+
+- <a id="sine-conservative-handoff-obstruction"></a>[sine-conservative-handoff-obstruction](SINE_REGIONAL_FORMATION.md#sine-conservative-handoff-obstruction)
+
+- <a id="admit-the-actual-full-support-velocity-ramp"></a>[Admit the actual full-support velocity ramp](SINE_REGIONAL_FORMATION.md#admit-the-actual-full-support-velocity-ramp)
+
+- <a id="acquired-entry-near-the-storage-minimum"></a>[Acquired entry near the storage minimum](SINE_REGIONAL_FORMATION.md#acquired-entry-near-the-storage-minimum)
+
+- <a id="strict-finite-exit-and-a-necessary-positive-work-transfer"></a>[Strict finite exit and a necessary positive work transfer](SINE_REGIONAL_FORMATION.md#strict-finite-exit-and-a-necessary-positive-work-transfer)
+
+- <a id="zero-instantaneous-work-does-not-remove-the-missing-information"></a>[Zero instantaneous work does not remove the missing information](SINE_REGIONAL_FORMATION.md#zero-instantaneous-work-does-not-remove-the-missing-information)
+
+- <a id="relative-rhythm-means-compatible-phase-rates-not-identical-phases"></a>[Relative rhythm means compatible phase rates, not identical phases](SINE_REGIONAL_FORMATION.md#relative-rhythm-means-compatible-phase-rates-not-identical-phases)
+
+- <a id="shared-admission-and-boundary-of-the-result"></a>[Shared admission and boundary of the result](SINE_REGIONAL_FORMATION.md#shared-admission-and-boundary-of-the-result)
+
+- <a id="39-compatible-internal-geometry-and-collective-phase-dynamics"></a>[39. Compatible internal geometry and collective phase dynamics](SINE_COLLECTIVE_PHASE_DYNAMICS.md#39-compatible-internal-geometry-and-collective-phase-dynamics)
+
+- <a id="sine-phase-offset-partition"></a>[sine-phase-offset-partition](SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-phase-offset-partition)
+
+- <a id="a-declared-partition-with-fixed-internal-phase-offsets"></a>[A declared partition with fixed internal phase offsets](SINE_COLLECTIVE_PHASE_DYNAMICS.md#a-declared-partition-with-fixed-internal-phase-offsets)
+
+- <a id="necessity-and-sufficiency-use-both-consumed-rows"></a>[Necessity and sufficiency use both consumed rows](SINE_COLLECTIVE_PHASE_DYNAMICS.md#necessity-and-sufficiency-use-both-consumed-rows)
+
+- <a id="reciprocity-inherited-storage-and-conserved-means"></a>[Reciprocity, inherited storage and conserved means](SINE_COLLECTIVE_PHASE_DYNAMICS.md#reciprocity-inherited-storage-and-conserved-means)
+
+- <a id="one-moving-realization-on-the-retained-private-leaf-support"></a>[One moving realization on the retained private-leaf support](SINE_COLLECTIVE_PHASE_DYNAMICS.md#one-moving-realization-on-the-retained-private-leaf-support)
+
+- <a id="exact-compatibility-is-not-finite-time-formation-into-the-family"></a>[Exact compatibility is not finite-time formation into the family](SINE_COLLECTIVE_PHASE_DYNAMICS.md#exact-compatibility-is-not-finite-time-formation-into-the-family)
+
+- <a id="shared-admission-distinguishes-proof-from-undecided-equality"></a>[Shared admission distinguishes proof from undecided equality](SINE_COLLECTIVE_PHASE_DYNAMICS.md#shared-admission-distinguishes-proof-from-undecided-equality)
+
+- <a id="40-a-finite-width-window-around-compatible-moving-geometry"></a>[40. A finite-width window around compatible moving geometry](SINE_COLLECTIVE_PHASE_DYNAMICS.md#40-a-finite-width-window-around-compatible-moving-geometry)
+
+- <a id="sine-moving-pattern-window"></a>[sine-moving-pattern-window](SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-moving-pattern-window)
+
+- <a id="reference-motion-error-chart-and-declared-duration"></a>[Reference motion, error chart and declared duration](SINE_COLLECTIVE_PHASE_DYNAMICS.md#reference-motion-error-chart-and-declared-duration)
+
+- <a id="the-moving-reference-relative-storage-identity"></a>[The moving-reference relative-storage identity](SINE_COLLECTIVE_PHASE_DYNAMICS.md#the-moving-reference-relative-storage-identity)
+
+- <a id="internal-identity-and-actual-work-remain-compatible"></a>[Internal identity and actual work remain compatible](SINE_COLLECTIVE_PHASE_DYNAMICS.md#internal-identity-and-actual-work-remain-compatible)
+
+- <a id="conserved-storage-and-backward-time-restrict-acquisition-claims"></a>[Conserved storage and backward time restrict acquisition claims](SINE_COLLECTIVE_PHASE_DYNAMICS.md#conserved-storage-and-backward-time-restrict-acquisition-claims)
+
+- <a id="41-actual-contact-motion-can-exchange-storage-with-internal-structure"></a>[41. Actual contact motion can exchange storage with internal structure](SINE_COLLECTIVE_PHASE_DYNAMICS.md#41-actual-contact-motion-can-exchange-storage-with-internal-structure)
+
+- <a id="sine-collective-pulse-transfer"></a>[sine-collective-pulse-transfer](SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-collective-pulse-transfer)
+
+- <a id="mean-contact-rows-from-the-complete-state"></a>[Mean-contact rows from the complete state](SINE_COLLECTIVE_PHASE_DYNAMICS.md#mean-contact-rows-from-the-complete-state)
+
+- <a id="the-storage-split-retains-its-phase-lift-dependence"></a>[The storage split retains its phase-lift dependence](SINE_COLLECTIVE_PHASE_DYNAMICS.md#the-storage-split-retains-its-phase-lift-dependence)
+
+- <a id="a-phase-flat-preparation-has-a-discriminating-fourth-derivative"></a>[A phase-flat preparation has a discriminating fourth derivative](SINE_COLLECTIVE_PHASE_DYNAMICS.md#a-phase-flat-preparation-has-a-discriminating-fourth-derivative)
+
+- <a id="one-phase-flat-preparation-above-the-necessary-phase-path-budget"></a>[One phase-flat preparation above the necessary phase-path budget](SINE_COLLECTIVE_PHASE_DYNAMICS.md#one-phase-flat-preparation-above-the-necessary-phase-path-budget)
+
+- <a id="retained-full-law-control-excludes-acute-winding-on-its-declared-horizon"></a>[Retained full-law control excludes acute winding on its declared horizon](SINE_COLLECTIVE_PHASE_DYNAMICS.md#retained-full-law-control-excludes-acute-winding-on-its-declared-horizon)
+
+- <a id="a-structural-alternative-separates-storage-release-from-acquisition"></a>[A structural alternative separates storage release from acquisition](SINE_COLLECTIVE_PHASE_DYNAMICS.md#a-structural-alternative-separates-storage-release-from-acquisition)
+
+- <a id="42-a-larger-cycle-sector-gives-a-global-conservative-barrier"></a>[42. A larger cycle sector gives a global conservative barrier](SINE_REGIONAL_FORMATION.md#42-a-larger-cycle-sector-gives-a-global-conservative-barrier)
+
+- <a id="sine-cycle-sector-barrier"></a>[sine-cycle-sector-barrier](SINE_REGIONAL_FORMATION.md#sine-cycle-sector-barrier)
+
+- <a id="the-boundary-minimum-is-exactly-72"></a>[The boundary minimum is exactly `7/2`](SINE_REGIONAL_FORMATION.md#the-boundary-minimum-is-exactly-72)
+
+- <a id="a-conserved-full-budget-separates-the-sector-in-both-directions"></a>[A conserved full budget separates the sector in both directions](SINE_REGIONAL_FORMATION.md#a-conserved-full-budget-separates-the-sector-in-both-directions)
+
+- <a id="negative-collective-feedback-can-still-lie-below-this-barrier"></a>[Negative collective feedback can still lie below this barrier](SINE_REGIONAL_FORMATION.md#negative-collective-feedback-can-still-lie-below-this-barrier)
+
+- <a id="compatible-conserved-quantities-still-do-not-determine-reachability"></a>[Compatible conserved quantities still do not determine reachability](SINE_REGIONAL_FORMATION.md#compatible-conserved-quantities-still-do-not-determine-reachability)
+
+- <a id="43-fast-contact-motion-can-exclude-finite-receiver-organization"></a>[43. Fast contact motion can exclude finite receiver organization](SINE_REGIONAL_FORMATION.md#43-fast-contact-motion-can-exclude-finite-receiver-organization)
+
+- <a id="sine-contact-averaging"></a>[sine-contact-averaging](SINE_REGIONAL_FORMATION.md#sine-contact-averaging)
+
+- <a id="the-full-rows-bound-the-accumulated-contact-currents"></a>[The full rows bound the accumulated contact currents](SINE_REGIONAL_FORMATION.md#the-full-rows-bound-the-accumulated-contact-currents)
+
+- <a id="an-exact-change-of-variables-retains-the-nonlinear-receiver"></a>[An exact change of variables retains the nonlinear receiver](SINE_REGIONAL_FORMATION.md#an-exact-change-of-variables-retains-the-nonlinear-receiver)
+
+- <a id="a-prospective-finite-exclusion-despite-a-large-total-budget"></a>[A prospective finite exclusion despite a large total budget](SINE_REGIONAL_FORMATION.md#a-prospective-finite-exclusion-despite-a-large-total-budget)
+
+- <a id="44-a-distributed-preparation-has-a-robust-full-state-passage"></a>[44. A distributed preparation has a robust full-state passage](SINE_REGIONAL_FORMATION.md#44-a-distributed-preparation-has-a-robust-full-state-passage)
+
+- <a id="robust-conservative-passage"></a>[robust-conservative-passage](SINE_REGIONAL_FORMATION.md#robust-conservative-passage)
+
+- <a id="direct-full-row-bounds-compose-into-an-independent-target-box"></a>[Direct full-row bounds compose into an independent target box](SINE_REGIONAL_FORMATION.md#direct-full-row-bounds-compose-into-an-independent-target-box)
+
+- <a id="an-exact-distributed-source-and-a-fixed-short-window"></a>[An exact distributed source and a fixed short window](SINE_REGIONAL_FORMATION.md#an-exact-distributed-source-and-a-fixed-short-window)
+
+- <a id="what-this-passage-establishes-and-what-it-does-not"></a>[What this passage establishes and what it does not](SINE_REGIONAL_FORMATION.md#what-this-passage-establishes-and-what-it-does-not)
+
+- <a id="45-complete-contact-feedback-distinguishes-cancellation-from-rigidity"></a>[45. Complete contact feedback distinguishes cancellation from rigidity](SINE_COLLECTIVE_PHASE_DYNAMICS.md#45-complete-contact-feedback-distinguishes-cancellation-from-rigidity)
+
+- <a id="sine-receiver-rigidity"></a>[sine-receiver-rigidity](SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-receiver-rigidity)
+
+- <a id="sine-relative-phase-feedback"></a>[sine-relative-phase-feedback](SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-relative-phase-feedback)
+
+- <a id="the-complete-centered-rows-and-their-derivatives"></a>[The complete centered rows and their derivatives](SINE_COLLECTIVE_PHASE_DYNAMICS.md#the-complete-centered-rows-and-their-derivatives)
+
+- <a id="vanishing-first-and-second-rates-do-not-imply-a-fixed-geometry"></a>[Vanishing first and second rates do not imply a fixed geometry](SINE_COLLECTIVE_PHASE_DYNAMICS.md#vanishing-first-and-second-rates-do-not-imply-a-fixed-geometry)
+
+- <a id="exact-rigidity-has-no-additional-moving-compensation-family"></a>[Exact rigidity has no additional moving compensation family](SINE_COLLECTIVE_PHASE_DYNAMICS.md#exact-rigidity-has-no-additional-moving-compensation-family)
+
+- <a id="a-retained-second-order-description-exposes-the-same-feedback"></a>[A retained second-order description exposes the same feedback](SINE_COLLECTIVE_PHASE_DYNAMICS.md#a-retained-second-order-description-exposes-the-same-feedback)
+
+- <a id="consequence-for-the-longer-retention-question"></a>[Consequence for the longer retention question](SINE_COLLECTIVE_PHASE_DYNAMICS.md#consequence-for-the-longer-retention-question)
+
+- <a id="46-a-conserved-budget-bounds-finite-relative-phase-travel"></a>[46. A conserved budget bounds finite relative-phase travel](SINE_CONSERVATIVE_PREPARATION.md#46-a-conserved-budget-bounds-finite-relative-phase-travel)
+
+- <a id="sine-energy-speed-retention"></a>[sine-energy-speed-retention](SINE_CONSERVATIVE_PREPARATION.md#sine-energy-speed-retention)
+
+- <a id="an-edge-speed-bound-from-the-actual-full-form-storage"></a>[An edge-speed bound from the actual full form storage](SINE_CONSERVATIVE_PREPARATION.md#an-edge-speed-bound-from-the-actual-full-form-storage)
+
+- <a id="first-exit-certificate-including-full-state-uncertainty"></a>[First-exit certificate, including full-state uncertainty](SINE_CONSERVATIVE_PREPARATION.md#first-exit-certificate-including-full-state-uncertainty)
+
+- <a id="an-explicit-target-with-uncertainty-in-all-twenty-coordinates"></a>[An explicit target with uncertainty in all twenty coordinates](SINE_CONSERVATIVE_PREPARATION.md#an-explicit-target-with-uncertainty-in-all-twenty-coordinates)
+
+- <a id="what-this-closes-and-what-it-leaves-open"></a>[What this closes, and what it leaves open](SINE_CONSERVATIVE_PREPARATION.md#what-this-closes-and-what-it-leaves-open)
+
+- <a id="a-directed-preparation-for-a-possible-reverse-time-check"></a>[A directed preparation for a possible reverse-time check](SINE_CONSERVATIVE_PREPARATION.md#a-directed-preparation-for-a-possible-reverse-time-check)
+
+- <a id="47-a-reversible-enclosure-can-certify-an-independent-formation-source"></a>[47. A reversible enclosure can certify an independent formation source](SINE_CONSERVATIVE_PREPARATION.md#47-a-reversible-enclosure-can-certify-an-independent-formation-source)
+
+- <a id="sine-reversible-preparation"></a>[sine-reversible-preparation](SINE_CONSERVATIVE_PREPARATION.md#sine-reversible-preparation)
+
+- <a id="complete-state-clock-and-global-error-bound"></a>[Complete state, clock and global error bound](SINE_CONSERVATIVE_PREPARATION.md#complete-state-clock-and-global-error-bound)
+
+- <a id="from-a-reverse-endpoint-to-a-forward-source-ball"></a>[From a reverse endpoint to a forward source ball](SINE_CONSERVATIVE_PREPARATION.md#from-a-reverse-endpoint-to-a-forward-source-ball)
+
+- <a id="numerical-admission-is-part-of-the-composition"></a>[Numerical admission is part of the composition](SINE_CONSERVATIVE_PREPARATION.md#numerical-admission-is-part-of-the-composition)
+
+- <a id="frozen-bounded-evaluation-and-its-scope"></a>[Frozen bounded evaluation and its scope](SINE_CONSERVATIVE_PREPARATION.md#frozen-bounded-evaluation-and-its-scope)
+
+- <a id="retained-response-the-directed-checkpoint-does-not-supply-a-zero-winding-source"></a>[Retained response: the directed checkpoint does not supply a zero-winding source](SINE_CONSERVATIVE_PREPARATION.md#retained-response-the-directed-checkpoint-does-not-supply-a-zero-winding-source)
+
+- <a id="48-an-exact-signreflection-reduction-retains-the-sector-saddle"></a>[48. An exact sign/reflection reduction retains the sector saddle](SINE_CONSERVATIVE_PREPARATION.md#48-an-exact-signreflection-reduction-retains-the-sector-saddle)
+
+- <a id="sine-involution-saddle-reduction"></a>[sine-involution-saddle-reduction](SINE_CONSERVATIVE_PREPARATION.md#sine-involution-saddle-reduction)
+
+- <a id="exact-invariant-family-and-reconstruction"></a>[Exact invariant family and reconstruction](SINE_CONSERVATIVE_PREPARATION.md#exact-invariant-family-and-reconstruction)
+
+- <a id="inherited-storage-and-oriented-winding"></a>[Inherited storage and oriented winding](SINE_CONSERVATIVE_PREPARATION.md#inherited-storage-and-oriented-winding)
+
+- <a id="the-full-saddles-unique-hyperbolic-pair-lies-in-this-family"></a>[The full saddle's unique hyperbolic pair lies in this family](SINE_CONSERVATIVE_PREPARATION.md#the-full-saddles-unique-hyperbolic-pair-lies-in-this-family)
+
+- <a id="a-finite-nonlinear-envelope-for-the-tangent-comparison"></a>[A finite nonlinear envelope for the tangent comparison](SINE_CONSERVATIVE_PREPARATION.md#a-finite-nonlinear-envelope-for-the-tangent-comparison)
+
+- <a id="a-nonlinear-local-sector-passage-with-an-explicit-error-budget"></a>[A nonlinear local sector passage with an explicit error budget](SINE_CONSERVATIVE_PREPARATION.md#a-nonlinear-local-sector-passage-with-an-explicit-error-budget)
+
+- <a id="what-the-reduction-does-not-remove"></a>[What the reduction does not remove](SINE_CONSERVATIVE_PREPARATION.md#what-the-reduction-does-not-remove)
+
+- <a id="49-a-directed-nonlinear-corridor-reaches-the-winding-seam"></a>[49. A directed nonlinear corridor reaches the winding seam](SINE_CONSERVATIVE_PREPARATION.md#49-a-directed-nonlinear-corridor-reaches-the-winding-seam)
+
+- <a id="sine-directed-saddle-corridor"></a>[sine-directed-saddle-corridor](SINE_CONSERVATIVE_PREPARATION.md#sine-directed-saddle-corridor)
+
+- <a id="the-principal-seam-has-a-lower-minimum-than-the-sector-saddle"></a>[The principal seam has a lower minimum than the sector saddle](SINE_CONSERVATIVE_PREPARATION.md#the-principal-seam-has-a-lower-minimum-than-the-sector-saddle)
+
+- <a id="exact-transverse-storage-and-a-directed-momentum"></a>[Exact transverse storage and a directed momentum](SINE_CONSERVATIVE_PREPARATION.md#exact-transverse-storage-and-a-directed-momentum)
+
+- <a id="a-uniform-force-bound-throughout-the-corridor"></a>[A uniform force bound throughout the corridor](SINE_CONSERVATIVE_PREPARATION.md#a-uniform-force-bound-throughout-the-corridor)
+
+- <a id="a-directional-exit-condition-keeps-the-lower-face-closed"></a>[A directional exit condition keeps the lower face closed](SINE_CONSERVATIVE_PREPARATION.md#a-directional-exit-condition-keeps-the-lower-face-closed)
+
+- <a id="why-this-exit-changes-winding-and-what-it-leaves-open"></a>[Why this exit changes winding, and what it leaves open](SINE_CONSERVATIVE_PREPARATION.md#why-this-exit-changes-winding-and-what-it-leaves-open)
+
+- <a id="50-conservative-formation-and-retention-on-the-same-full-state-orbit"></a>[50. Conservative formation and retention on the same full-state orbit](SINE_CONSERVATIVE_PREPARATION.md#50-conservative-formation-and-retention-on-the-same-full-state-orbit)
+
+- <a id="sine-conservative-formation-retention"></a>[sine-conservative-formation-retention](SINE_CONSERVATIVE_PREPARATION.md#sine-conservative-formation-retention)
+
+- <a id="one-exact-preparation-supplies-both-corridor-admissions"></a>[One exact preparation supplies both corridor admissions](SINE_CONSERVATIVE_PREPARATION.md#one-exact-preparation-supplies-both-corridor-admissions)
+
+- <a id="outer-and-inner-nonlinear-connections"></a>[Outer and inner nonlinear connections](SINE_CONSERVATIVE_PREPARATION.md#outer-and-inner-nonlinear-connections)
+
+- <a id="an-explicit-acute-band-supplies-a-unit-of-retained-evolution"></a>[An explicit acute band supplies a unit of retained evolution](SINE_CONSERVATIVE_PREPARATION.md#an-explicit-acute-band-supplies-a-unit-of-retained-evolution)
+
+- <a id="positive-widths-include-all-twenty-form-and-phase-coordinates"></a>[Positive widths include all twenty form and phase coordinates](SINE_CONSERVATIVE_PREPARATION.md#positive-widths-include-all-twenty-form-and-phase-coordinates)
+
+- <a id="51-rational-preparation-and-retained-metric-propagation"></a>[51. Rational preparation and retained-metric propagation](SINE_CONSERVATIVE_PREPARATION.md#51-rational-preparation-and-retained-metric-propagation)
+
+- <a id="sine-operational-saddle-preparation"></a>[sine-operational-saddle-preparation](SINE_CONSERVATIVE_PREPARATION.md#sine-operational-saddle-preparation)
+
+- <a id="a-rational-preparation-must-retain-the-same-finite-gates"></a>[A rational preparation must retain the same finite gates](SINE_CONSERVATIVE_PREPARATION.md#a-rational-preparation-must-retain-the-same-finite-gates)
+
+- <a id="why-independent-coordinate-boxes-lose-essential-cancellations"></a>[Why independent coordinate boxes lose essential cancellations](SINE_CONSERVATIVE_PREPARATION.md#why-independent-coordinate-boxes-lose-essential-cancellations)
+
+- <a id="an-exact-rational-metric-retains-all-relative-coordinates"></a>[An exact rational metric retains all relative coordinates](SINE_CONSERVATIVE_PREPARATION.md#an-exact-rational-metric-retains-all-relative-coordinates)
+
+- <a id="a-finite-neighborhood-nonlinear-bound"></a>[A finite-neighborhood nonlinear bound](SINE_CONSERVATIVE_PREPARATION.md#a-finite-neighborhood-nonlinear-bound)
+
+- <a id="conversion-to-primitive-coordinates-and-execution-boundary"></a>[Conversion to primitive coordinates and execution boundary](SINE_CONSERVATIVE_PREPARATION.md#conversion-to-primitive-coordinates-and-execution-boundary)
+
+- <a id="a-validated-step-retains-the-metric-radius"></a>[A validated step retains the metric radius](SINE_CONSERVATIVE_PREPARATION.md#a-validated-step-retains-the-metric-radius)
+
+- <a id="sine-execution-with-retained-full-state-uncertainty"></a>[Sine execution with retained full-state uncertainty](SINE_CONSERVATIVE_PREPARATION.md#sine-execution-with-retained-full-state-uncertainty)
+
+- <a id="certifying-growth-on-a-full-picard-tube-beyond-the-saddle-neighborhood"></a>[Certifying growth on a full Picard tube beyond the saddle neighborhood](SINE_CONSERVATIVE_PREPARATION.md#certifying-growth-on-a-full-picard-tube-beyond-the-saddle-neighborhood)
+
+- <a id="retained-finite-connection-and-its-preparation-boundary"></a>[Retained finite connection and its preparation boundary](SINE_CONSERVATIVE_PREPARATION.md#retained-finite-connection-and-its-preparation-boundary)
+
+- <a id="an-inverse-inclusion-test-separates-an-image-from-a-preparation"></a>[An inverse-inclusion test separates an image from a preparation](SINE_CONSERVATIVE_PREPARATION.md#an-inverse-inclusion-test-separates-an-image-from-a-preparation)
+
+- <a id="sine-constitutive-robustness"></a>[sine-constitutive-robustness](SINE_CONSERVATIVE_PREPARATION.md#sine-constitutive-robustness)
+
+- <a id="52-a-constitutive-change-preserves-equilibria-but-blocks-the-same-sources-formation"></a>[52. A constitutive change preserves equilibria but blocks the same source's formation](SINE_CONSERVATIVE_PREPARATION.md#52-a-constitutive-change-preserves-equilibria-but-blocks-the-same-sources-formation)
+
+- <a id="the-complete-changed-law-and-fixed-source"></a>[The complete changed law and fixed source](SINE_CONSERVATIVE_PREPARATION.md#the-complete-changed-law-and-fixed-source)
+
+- <a id="the-exact-changed-acquisition-barrier"></a>[The exact changed acquisition barrier](SINE_CONSERVATIVE_PREPARATION.md#the-exact-changed-acquisition-barrier)
+
+- <a id="applying-the-barrier-to-the-retained-source"></a>[Applying the barrier to the retained source](SINE_CONSERVATIVE_PREPARATION.md#applying-the-barrier-to-the-retained-source)
+
+- <a id="the-complete-critical-geometry-and-its-inertia-remain-unchanged"></a>[The complete critical geometry and its inertia remain unchanged](SINE_CONSERVATIVE_PREPARATION.md#the-complete-critical-geometry-and-its-inertia-remain-unchanged)
+
+- <a id="the-sufficient-error-transport-method-has-a-separate-role"></a>[The sufficient error-transport method has a separate role](SINE_CONSERVATIVE_PREPARATION.md#the-sufficient-error-transport-method-has-a-separate-role)

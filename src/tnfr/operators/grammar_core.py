@@ -69,8 +69,8 @@ class GrammarValidator:
         This check is labelled **U6-EXP** internally to distinguish it from
         canonical U6 = Φ_s Structural Potential Confinement (grammar_u6.py).
         When enabled, sequences are checked for temporal spacing violations
-        after destabilizers.  Violations log warnings but do not fail
-        validation (all_valid is NOT updated by this rule).
+        after destabilizers. Violations append diagnostic messages but do not
+        fail validation (all_valid is NOT updated by this rule).
     """
 
     def __init__(self, experimental_u6: bool = False):
@@ -466,36 +466,36 @@ class GrammarValidator:
     ) -> tuple[bool, str]:
         """Validate the finite-word U2-REMESH coverage sub-rule.
 
-            REMESH mixes present and delayed EPI snapshots. When a word also
-            contains a declared destabilizer, policy requires IL or THOL. This
-            presence check records coverage only: it neither evaluates the
-            runtime delayed recurrence nor proves amplification, boundedness,
-            convergence, or fragmentation.
+        REMESH mixes present and delayed EPI snapshots. When a word also
+        contains a declared destabilizer, policy requires IL or THOL. This
+        presence check records coverage only: it neither evaluates the
+        runtime delayed recurrence nor proves amplification, boundedness,
+        convergence, or fragmentation.
 
-            Specific combinations requiring stabilizers:
-                - REMESH + VAL: Recursive expansion needs coherence stabilization
-                            - REMESH + OZ: Recursive bifurcation needs self-organization
-                                handlers
-                - REMESH + ZHIR: Replicative mutation needs coherence consolidation
+        Specific combinations requiring stabilizers:
+            - REMESH + VAL: Recursive expansion needs coherence stabilization
+                        - REMESH + OZ: Recursive bifurcation needs self-organization
+                            handlers
+            - REMESH + ZHIR: Replicative mutation needs coherence consolidation
 
-            Parameters
-            ----------
-            sequence : list[Operator]
-                Sequence of operators to validate
+        Parameters
+        ----------
+        sequence : list[Operator]
+            Sequence of operators to validate
 
-            Returns
-            -------
-            tuple[bool, str]
-                (is_valid, message)
+        Returns
+        -------
+        tuple[bool, str]
+            (is_valid, message)
 
-            Notes
-            -----
-            This rule is distinct from the general U2 debt check. It records
-            the extra stabilizer obligation attached to a word containing both
-            REMESH and a destabilizer.
+        Notes
+        -----
+        This rule is distinct from the general U2 debt check. It records
+        the extra stabilizer obligation attached to a word containing both
+        REMESH and a destabilizer.
 
-            Physical derivation: See src/tnfr/operators/remesh.py module docstring,
-        section "Grammar implications" → U2 debt coverage.
+        Policy scope: see ``theory/UNIFIED_GRAMMAR_RULES.md`` and the
+        REMESH delayed-state contract in ``docs/contracts/OPERATOR_EVENTS.md``.
         """
         # Check if sequence contains REMESH
         has_remesh = any(
@@ -545,43 +545,41 @@ class GrammarValidator:
     def validate_multiscale_coherence(sequence: list[Operator]) -> tuple[bool, str]:
         """Validate U5: Multi-scale coherence preservation.
 
-            The sequence layer can inspect declared Recursivity depth and require
-            a nearby scale stabilizer. It has no parent/child field snapshots, so
-            it cannot evaluate ``C_parent >= alpha*sum(C_child)`` or infer
-            multiscale conservation, boundedness, or fragmentation. Those are
-            trajectory-level observations with an explicit hierarchy and alpha.
+        The sequence layer can inspect declared Recursivity depth and require
+        a nearby scale stabilizer. It has no parent/child field snapshots, so
+        it cannot evaluate ``C_parent >= alpha*sum(C_child)`` or infer
+        multiscale conservation, boundedness, or fragmentation. Those are
+        trajectory-level observations with an explicit hierarchy and alpha.
 
-            Parameters
-            ----------
-            sequence : list[Operator]
-                Sequence of operators to validate
+        Parameters
+        ----------
+        sequence : list[Operator]
+            Sequence of operators to validate
 
-            Returns
-            -------
-            tuple[bool, str]
-                (is_valid, message)
+        Returns
+        -------
+        tuple[bool, str]
+            (is_valid, message)
 
-            Notes
-            -----
-            U5 is INDEPENDENT of U2+U4b:
-            - U2/U4b: TEMPORAL dimension (operator sequences in time)
-            - U5: SPATIAL dimension (hierarchical nesting in structure)
+        Notes
+        -----
+        U5 is INDEPENDENT of U2+U4b:
+        - U2/U4b: TEMPORAL dimension (operator sequences in time)
+        - U5: SPATIAL dimension (hierarchical nesting in structure)
 
-            Sequence-policy example that passes U2+U4b but fails this U5 check:
-                [AL, REMESH(depth=3), SHA]
-                - U2: ✓ No declared destabilizer debt
-                - U4b: ✓ REMESH not a transformer (U4b doesn't apply)
-                - U5: ✗ Deep recursivity lacks declared scale-stabilizer coverage
+        Sequence-policy example that passes U2+U4b but fails this U5 check:
+            [AL, REMESH(depth=3), SHA]
+            - U2: ✓ No declared destabilizer debt
+            - U4b: ✓ REMESH not a transformer (U4b doesn't apply)
+            - U5: ✗ Deep recursivity lacks declared scale-stabilizer coverage
 
-            Scope analysis: see ``theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md``.
+        Scope analysis: see ``theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md``.
 
-            References
-            ----------
-            - TNFR.pdf § 2.1: Nodal equation ∂EPI/∂t = νf · ΔNFR(t)
-        - Problem statement: "The Pulse That Traverses Us.pdf"
-            - AGENTS.md: Invariant #3 (Multi-Scale Fractality)
-            - Contract IL: pressure-reduction role
-            - Contract THOL: autopoietic reorganization and hierarchy handling
+        References
+        ----------
+        - theory/FUNDAMENTAL_THEORY.md: Nodal identity and complete laws
+        - theory/UNIFIED_GRAMMAR_RULES.md: U5 declared hierarchy policy
+        - theory/STRUCTURAL_OPERATORS.md: IL and THOL event contracts
         """
         from .recursivity import validate_recursivity_depth
 
@@ -646,67 +644,40 @@ class GrammarValidator:
         vf: float = 1.0,
         k_top: float = 1.0,
     ) -> tuple[bool, str]:
-        """Validate U6-EXP: Temporal ordering (EXPERIMENTAL — NOT canonical U6).
+        """Evaluate the optional U6-EXP operator-spacing heuristic.
 
-        .. warning::
-            This rule is labelled **U6-EXP** (temporal ordering) to avoid
-            confusion with canonical U6 = Φ_s Structural Potential Confinement
-            implemented in grammar_u6.py.  Both share the number "U6" in
-            earlier drafts; the canonical definition wins.
+        For consecutive Dissonance, Mutation or Expansion positions, this
+        supplied policy flags gaps at or below ``max(2, int((k_top/vf)*3))``.
+        The message uses a factor of 1.5 after Mutation; that factor does not
+        change the admission threshold. Operator positions supply the spacing
+        coordinate: this method consumes no elapsed times, pressure evolution,
+        graph spectrum or measured recovery.
 
-        **Status:** RESEARCH PHASE - Not Canonical
-        **Canonicity:** MODERATE (40-55% confidence)
-
-        Model premise: after declared destabilizers, a spacing surrogate may
-        flag possible accumulation before a stabilizer has acted. It is an
-        experimental warning and does not establish a relaxation time,
-        boundedness, or fragmentation for the executed graph.
-
-        From post-bifurcation relaxation dynamics:
-            ΔNFR(t) = ΔNFR_0 · exp(-t/τ_damp) + ΔNFR_eq
-
-        Relaxation time:
-            τ_relax = τ_damp · ln(1/ε)
-            τ_damp = (k_top / νf) · k_op
-
-        Where:
-        - k_top: topological factor (spectral gap dependent)
-        - k_op: operator depth factor (OZ≈1.0, ZHIR≈1.5)
-        - ε: recovery threshold (default 0.05 for 95% recovery)
-
-        Sequence-based approximation: When physical time unavailable, require
-        minimum operator spacing between destabilizers (~3 operators for νf=1.0).
+        U6-EXP is distinct from canonical U6, whose structural-potential
+        observations belong to ``grammar_u6.py``. A spacing result proves no
+        relaxation time, bifurcation, boundedness or fragmentation.
 
         Parameters
         ----------
         sequence : list[Operator]
-            Sequence to validate
+            Ordered operators to inspect.
         vf : float, optional
-            Structural frequency (Hz_str) for time estimation (default: 1.0)
+            Supplied capacity scale in the spacing formula (default: 1.0).
         k_top : float, optional
-            Topological factor (default: 1.0, radial/star topology)
+            Supplied spacing multiplier (default: 1.0); no topology is read.
 
         Returns
         -------
         tuple[bool, str]
-            (is_valid, message)
-            Note: Violations generate warnings, not hard failures (experimental)
+            Whether the spacing policy passed, and its diagnostic message.
+            ``GrammarValidator.validate`` appends the message only when
+            ``experimental_u6=True``; it does not change the word verdict.
 
         Notes
         -----
-        **Limitations preventing canonical status:**
-        - Not formally derived from nodal equation (modeled, not proven)
-        - Parameters k_top, k_op not yet computed from first principles
-        - Empirical validation pending (correlation with C(t) fragmentation)
-        - Conflates logical ordering with temporal spacing
-
-        **Validation criteria for STRONG canonicity:**
-        - >80% of violations cause coherence loss exceeding δC threshold
-        - Derivation showing ∫νf·ΔNFR diverges without spacing
-        - Parameters endogenized (k_top from spectral analysis, etc.)
-
-        See docs/grammar/U6_TEMPORAL_ORDERING.md for complete derivation,
-        experiments, and elevation roadmap.
+        The numerical constants are policy choices. See
+        ``theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md`` for the separate assumptions
+        needed to establish trajectory decay under a declared dynamics law.
         """
         # Check for destabilizers that trigger relaxation requirement
         destabilizer_positions = []
@@ -718,14 +689,11 @@ class GrammarValidator:
         if len(destabilizer_positions) < 2:
             return True, "U6-EXP: not applicable (fewer than 2 destabilizers)"
 
-        # Estimate minimum operator spacing from τ_relax
-        # Assumption: each operator ≈ 1 structural time unit
-        # τ_relax ≈ (k_top / νf) · ln(1/ε) · k_op
-        # For k_op≈1.0 (OZ baseline), ε=0.05: ln(1/0.05)≈3.0
+        # Supplied spacing scale in operator positions; no clock is measured.
         k_op_baseline = 1.0
         tau_relax = (k_top / vf) * k_op_baseline * (3.0)  # ln(20) ≈ 3.0
 
-        # Convert to operator positions (coarse: 1 op ≈ 1 time unit)
+        # Retained integer spacing policy.
         min_spacing = max(2, int(tau_relax))  # At least 2 operators
 
         # Check spacing between consecutive destabilizers
@@ -736,23 +704,24 @@ class GrammarValidator:
             spacing = curr_idx - prev_idx
 
             if spacing <= min_spacing:
-                # Calculate estimated τ_relax for this pair
+                # The pair-specific scale is diagnostic, not the threshold.
                 k_op_prev = 1.5 if prev_op == "mutation" else 1.0
                 tau_est = (k_top / vf) * k_op_prev * 3.0
 
                 violations.append(
                     f"{curr_op} at position {curr_idx} follows {prev_op} "
                     f"at position {prev_idx} (spacing={spacing} operators). "
-                    f"Estimated τ_relax≈{tau_est:.2f} time units "
-                    f"(≈{int(tau_est)} operators). Risk: nonlinear ΔNFR "
-                    f"accumulation α(Δt)>1, bifurcation cascade, C(t) fragmentation"
+                    f"Configured pair scale={tau_est:.2f} operator positions "
+                    f"(integer estimate={int(tau_est)}); "
+                    f"required spacing is greater than {min_spacing}. "
+                    "No trajectory recovery or instability was evaluated"
                 )
 
         if violations:
             return (
                 False,
                 f"U6-EXP WARNING (experimental): {'; '.join(violations)}. "
-                f"See docs/grammar/U6_TEMPORAL_ORDERING.md",
+                "See theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md",
             )
 
         return (
@@ -792,9 +761,9 @@ class GrammarValidator:
         epi_initial : float, optional
             Initial EPI value (default: 0.0)
         vf : float, optional
-            Structural frequency for U6 timing (default: 1.0)
+            Capacity scale for the optional operator-spacing policy (default: 1.0).
         k_top : float, optional
-            Topological factor for U6 timing (default: 1.0)
+            Multiplier for the optional operator-spacing policy (default: 1.0).
         stop_on_first_error : bool, optional
             If True, return immediately on first constraint violation
             (early exit optimization). If False, collect all violations.

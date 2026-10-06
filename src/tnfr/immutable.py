@@ -14,9 +14,7 @@ from contextlib import contextmanager
 from dataclasses import asdict, is_dataclass
 from functools import lru_cache, partial, singledispatch, wraps
 from types import MappingProxyType
-from typing import Any, Callable, Iterable, Iterator, cast
-
-from ._compat import TypeAlias
+from typing import Any, Callable, Iterable, Iterator, TypeAlias, cast
 
 # Types considered immutable without further inspection
 IMMUTABLE_SIMPLE = frozenset({int, float, complex, str, bool, bytes, type(None)})

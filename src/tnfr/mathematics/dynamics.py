@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-from dataclasses import field
+from dataclasses import dataclass, field
 from typing import Any, NamedTuple, Sequence
 
-from ..compat.dataclass import dataclass
 from .backend import MathematicsBackend, ensure_array, ensure_numpy, get_backend
 from .spaces import HilbertSpace
 from .unified_numerical import TNFRValueError, np

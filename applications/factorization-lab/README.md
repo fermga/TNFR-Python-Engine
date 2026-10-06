@@ -6,9 +6,12 @@ factor candidates and diagnostic records. It establishes neither autonomous
 factor recovery from the nodal equation nor a complexity improvement or a
 cryptographic factorization capability.
 
-This README owns current usage and configuration. The mathematical scope is in
-[TNFR number theory](../../theory/TNFR_NUMBER_THEORY.md); the
-[applied analysis overview](../../theory/APPLIED_STRUCTURAL_ANALYSIS.md) links here.
+This README owns the application's usage, configuration and evaluation scope.
+[TNFR number theory](../../theory/TNFR_NUMBER_THEORY.md) owns arithmetic
+definitions. Separate prime-ladder and analytic-function constructions retain
+their declared domains and supplied clocks in the
+[Riemann memo](../../theory/TNFR_RIEMANN_RESEARCH_NOTES.md); they do not establish
+an autonomous factorization mechanism for this pipeline.
 
 ## Results and verification
 
@@ -70,6 +73,12 @@ There are three related interfaces; their arguments and result types differ:
 The engine wrapper discovers this application in a source checkout. A deployment
 without that directory needs an importable `tnfr_factorization` package.
 
+Implementation owners are the [engine wrapper](../../src/tnfr/factorization/__init__.py),
+[lab API](tnfr_factorization/api.py),
+[candidate and verification pipeline](tnfr_factorization/spectral_paley.py),
+[partition planner](tnfr_factorization/partitioning.py),
+[seed handling](seed_management.py) and [snapshot/replay](snapshot_system.py).
+
 **Node cap:** omitting the low-level constructor argument uses 4097. Passing
 `None` disables the cap. The high-level wrapper and CLI currently pass `None`
 when their argument is omitted.
@@ -109,7 +118,7 @@ partition stage. It does not make the complete pipeline arithmetic-free:
 | `TNFR_FACTOR_FALLBACK_MAX_DIVISOR` | Positive integer cap for the empty-candidate trial fallback. Missing, invalid or nonpositive values use `isqrt(n)`. It does not cap arithmetic telemetry factorization. |
 | `TNFR_DISABLE_OPTIMIZER` | Disable the optional sequence optimizer; it does not change candidate verification into a theorem. |
 | `TNFR_FAILURE_TELEMETRY` | Control failure diagnostics. For isolated low-level calls use the constructor's `failure_telemetry=False`. |
-| `TNFR_PARTITION_TARGET_SIZE`, `TNFR_PARTITION_OVERLAP` | Partition planner settings; defaults are 256 and 4. Planning may further adapt partition size. |
+| `TNFR_PARTITION_TARGET_SIZE`, `TNFR_PARTITION_OVERLAP` | Partition planner settings; defaults are 256 and 4. An explicit overlap of `0` creates disjoint chunks. Planning may further adapt partition size. |
 | `TNFR_PARTITION_OUTPUT_DIR` | Override partition-export destination. |
 
 The CLI exposes backend/dispatcher choices through `--fft-backend`,
@@ -155,6 +164,11 @@ convergence theorem. Optional optimizer/workflow records must be assessed on
 their actual captured execution. Lab thresholds are configured heuristic
 criteria, not universal TNFR constants or a proof of U5.
 
+Read active configuration and the actual recorded operator word. A schematic
+UM/RA/IL/THOL sequence is not a standalone grammar certificate. Pressure gain,
+coherence ratios, field deltas, periodicity confidence, coverage and endorsements
+are configured filters; they do not replace the independent factor check.
+
 ## Verification and historical evidence
 
 From the repository root, existing focused regression modules include:
@@ -170,6 +184,15 @@ factor certificate. Benchmarks apply only to recorded inputs, environment,
 backend and cache state. Arithmetic telemetry and fallback costs belong in any
 end-to-end comparison.
 
+Reserved evaluation must freeze thresholds before scoring, disclose arithmetic
+labels entering construction, compare declared baselines and report failures
+alongside successes. Retain input, source, configuration, candidate lists,
+independent arithmetic checks and fallback provenance. Optional artifacts do
+not automatically contain a seed or hash. These finite controls establish
+neither universal recovery nor a complexity improvement; this documentation
+consolidation makes no new benchmark claim. A physical interpretation would
+additionally require the [measurement protocol](../../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md).
+
 Run the actual verifier and configured-criteria controls directly:
 
 ```bash
@@ -182,13 +205,12 @@ finite curated sample by default; `TNFR_RUN_LONG_TESTS=1` opts into its larger
 generated input set. Criteria-range checks preserve a configured policy; they
 do not derive the thresholds or certify general false-positive resistance.
 
-The obsolete live `notebooks/spectral_history.ipynb` has been retired. Its
-[unaltered historical copy](notebooks/archive/spectral_history_legacy_2026_09_19.ipynb)
-retains saved code, outputs and metadata. It uses the removed `_fft_engine`
-attribute, a synthetic spectrum and a notebook-incompatible `__file__` path;
-it is not current executable guidance. Use the maintained tests above for
-regressions. The archive is 37,107 bytes, SHA-256
-`1b67bb2a7fdbd9b26fb9a96082f7519111a2287dab974e94436cf2f6dea6dfe5`.
+The obsolete spectral-history notebook is recoverable from its
+[immutable Git revision](https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/applications/factorization-lab/notebooks/archive/spectral_history_legacy_2026_09_19.ipynb).
+It uses the removed `_fft_engine`, a synthetic spectrum and a
+notebook-incompatible `__file__` path. The maintained tests above replace its
+regression role; no executable notebook copy is retained. Byte-level recovery
+is recorded in the [retirement manifest](../../theory/research/archive/DEEP_CLEANUP_2026-10-06.json).
 
 The root [LICENSE.md](../../LICENSE.md) is authoritative for this repository.
 

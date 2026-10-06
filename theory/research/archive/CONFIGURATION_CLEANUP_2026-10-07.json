@@ -1,0 +1,56 @@
+{
+  "schema": "tnfr.cleanup-recovery.v1",
+  "date": "2026-10-07",
+  "scope": "Resumption preparation: retire ineffective global policy fields; preserve the active complete laws and frozen evidence.",
+  "api_migration": "docs/API_CONTRACTS.md#removed-unsupported-helpers",
+  "retired_fields": [
+    {
+      "path": "src/tnfr/validation/config.py",
+      "class": "ValidationConfig",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "d30bef18ba982e4985c76757bc513913ae967a6b",
+      "git_blob_sha256": "959c5b7e717b895868987626024eeb90cd45e880bf101f96e9d7f8f733195f6c",
+      "reason": "These settings had no consumer in structural word validation; other classes with similarly named settings have separate live consumers and are retained.",
+      "fields": [
+        {
+          "name": "epi_range",
+          "declaration_utf8": "    epi_range: tuple[float, float] = (0.0, 1.0)\n",
+          "git_declaration_matches": true,
+          "working_declaration_sha256": "585f9fa1d51b61a3f7f6aa611bbe5bf9ecab7a8b5f80d01a38bb4daeb3199d16",
+          "git_declaration_sha256": "585f9fa1d51b61a3f7f6aa611bbe5bf9ecab7a8b5f80d01a38bb4daeb3199d16"
+        },
+        {
+          "name": "vf_range",
+          "declaration_utf8": "    vf_range: tuple[float, float] = (0.001, 1000.0)  # Hz_str\n",
+          "git_declaration_matches": true,
+          "working_declaration_sha256": "da828f36b37d22c97a53ff2c6d0e1abf14f3b754ed5334377798b71943239bd9",
+          "git_declaration_sha256": "da828f36b37d22c97a53ff2c6d0e1abf14f3b754ed5334377798b71943239bd9"
+        },
+        {
+          "name": "phase_coupling_threshold",
+          "declaration_utf8": "    phase_coupling_threshold: float = DELTA_PHI_MAX\n",
+          "git_declaration_matches": true,
+          "working_declaration_sha256": "81434cb55883727ab1a79fb025f0eeb140ee1e15bd8562a1fd3eeb88e82ff328",
+          "git_declaration_sha256": "81434cb55883727ab1a79fb025f0eeb140ee1e15bd8562a1fd3eeb88e82ff328"
+        },
+        {
+          "name": "cache_validation_results",
+          "declaration_utf8": "    cache_validation_results: bool = False\n",
+          "git_declaration_matches": false,
+          "working_declaration_sha256": "f21c2070bd657ea189608f4a8c719df0ee9b9d2134a2ce4e6df4b82caa11ae6b",
+          "git_declaration_sha256": "3f303455d9cc992131d54e47503ec41c2530bcd1cec36ac0559f46f75fe8606c"
+        },
+        {
+          "name": "max_validation_time_ms",
+          "declaration_utf8": "    max_validation_time_ms: float = 1000.0\n",
+          "git_declaration_matches": false,
+          "working_declaration_sha256": "be9872b6cf01a31b95b01dc2ca04ff5c67a00708c716a5a215099d8e78605922",
+          "git_declaration_sha256": "5b4762affb6b49df37e5fc5cf93bd04fe1727e8aa4394b13ec3c4d16caa61909"
+        }
+      ],
+      "recovery": "Recorded UTF-8 declarations normalize CRLF to LF, preserve indentation and end with one newline. The recorded Git blob recovers the committed class; current declarations are retained explicitly because two comments changed before retirement.",
+      "replacement": "src/tnfr/validation/config.py keeps only the five consumed flags/severity fields; scalar admission, live U3 policy and cached-validator configuration retain their independent owners."
+    }
+  ],
+  "preserved": "No whole file, conditional theorem, independent fine-node control, frozen protocol or evaluated response retired."
+}

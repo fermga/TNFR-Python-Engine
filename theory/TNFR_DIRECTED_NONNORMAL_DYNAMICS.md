@@ -30,6 +30,13 @@ Even for symmetric conductance, the raw random-walk matrix is generally only
 *similar* to a symmetric normalized Laplacian; Euclidean normality is a
 separate property.
 
+Sections 2–5 use normalized capacity time `s = nu_f t` for a fixed common
+positive capacity, so `dx/ds = -L_rw x`. The matrix readers implement this
+unit-capacity generator; their window and rate parameters refer to `s` unless
+an explicit clock conversion is supplied. At zero common capacity the
+unforced state and its pressure are static. Section 6 distinguishes a scalar
+clock change from heterogeneous-capacity dynamics.
+
 ## 2. Normality, spectrum, and metric
 
 A non-normal generator can have a nonpositive spectral abscissa while its
@@ -50,7 +57,7 @@ $\pi$, Jensen's inequality gives
 $$\|Pf\|_{2,\pi}\leq\|f\|_{2,\pi},\qquad
 \|f\|_{2,\pi}^2=\sum_i\pi_i f_i^2.$$
 
-Because $e^{-tL}=e^{-t}\sum_{k\geq0}t^kP^k/k!$, the diffusion semigroup is a
+Because $e^{-sL}=e^{-s}\sum_{k\geq0}s^kP^k/k!$, the diffusion semigroup is a
 contraction in $L^2(\pi)$. This exact weighted result does not make the raw
 Euclidean norm canonical for U2. The APIs expose both metrics.
 
@@ -58,7 +65,8 @@ Euclidean norm canonical for U2. The APIs expose both metrics.
 
 For fixed $L=L_{\mathrm{rw}}$,
 
-$$p=-Lx\quad\Longrightarrow\quad \dot p=-Lp.$$
+$$p=-Lx\quad\Longrightarrow\quad \frac{dp}{ds}=-Lp,
+\qquad \frac{dp}{dt}=-\nu_f Lp.$$
 
 When the graph has one consensus mode, $\operatorname{range}(L)$ is the
 non-consensus pressure space $\{p:\pi^Tp=0\}$. Let $V$ be an orthonormal basis
@@ -88,10 +96,10 @@ matrix result and uses no fitted threshold.
 
 The implementation distinguishes two finite-window quantities:
 
-$$\left\|\int_0^T\dot x\,dt\right\|
-=\|x(T)-x(0)\|,
+$$\left\|\int_0^S\frac{dx}{ds}\,ds\right\|
+=\|x(S)-x(0)\|,
 \qquad
-\int_0^T\|\dot x\|\,dt.$$
+\int_0^S\left\|\frac{dx}{ds}\right\|\,ds.$$
 
 The first allows cancellation; the second is total variation, and the triangle
 inequality gives `net <= total`. Neither a sampled finite window nor a stable
@@ -164,7 +172,7 @@ capacity ratios, and they do not cover changing node sets.
 | Directed circulants are normal | Exact algebraic property; numerically checked |
 | General non-normal stable generators may amplify in Euclidean norm | Exact possibility; finite witnesses measured |
 | Diffusion contracts in stationary $L^2(\pi)$ | Derived by Jensen |
-| $p=-Lx$ implies $\dot p=-Lp$ | Exact for fixed linear pure-EPI flow |
+| $p=-Lx$ implies $dp/ds=-Lp$ | Exact for the fixed unit-capacity generator; in original time, $dp/dt=-\nu_f Lp$ |
 | Sign of $\mu_2(-L_{\mathrm{sub}})$ classifies possible Euclidean pressure gain | Exact finite-dimensional theorem |
 | Spectral abscissa alone classifies transient pressure gain | False; counterexamples retained |
 | Every random-walk digraph contracts in restricted Euclidean pressure energy | False; weighted counterexample retained |

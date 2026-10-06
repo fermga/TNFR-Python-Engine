@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping
-from typing import Any, Mapping, TypeVar
+from collections.abc import Mapping
+from typing import Any, TypeVar
 
+from ..operators.grammar import GrammarContext
 from ..types import Glyph, NodeId
-from .grammar import GrammarContext
 
 __all__ = (
     "coerce_glyph",
@@ -15,7 +15,6 @@ __all__ = (
     "_si",
     "_check_oz_to_zhir",
     "_check_thol_closure",
-    "_check_compatibility",
 )
 
 _T = TypeVar("_T")
@@ -36,7 +35,4 @@ def _check_thol_closure(
     n: NodeId,
     cand: Glyph | str,
     st: dict[str, Any],
-) -> Glyph | str: ...
-def _check_compatibility(
-    ctx: GrammarContext, n: NodeId, cand: Glyph | str
 ) -> Glyph | str: ...

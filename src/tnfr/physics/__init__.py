@@ -1,164 +1,19 @@
-"""TNFR physics package — structural diagnostics and scoped models.
+"""Structural observations and explicitly scoped nodal models.
 
-This package exposes read-only telemetry, model-specific certificates and
-auxiliary dynamics tied to the TNFR nodal equation.  A curated public surface
-is re-exported here; module-specific public names remain available from their
-defining modules.  Shared numerical primitives are centralized in private
-helper modules instead of duplicating them across those implementations.
+``fields`` owns the diagnostic tetrad; ``metrics.common`` owns coherence
+reductions. These observations do not reconstruct the complete state or select
+an evolution law. Native operator execution, native relational dynamics and
+normalized-sine comparisons retain distinct laws and hypothesis sets.
 
-Canonical Structural Field Tetrad (Telemetry)
----------------------------------------------
-The four read-only fields below form the canonical diagnostic interface:
+Public re-exports below provide convenient access to shared owners; other
+reports are imported from their defining modules. Numerical helpers are shared
+rather than independently implemented by each report or interface.
 
-1) Structural Potential (Φ_s)
-   - Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)^α (α=2, inverse-square)
-   - U6 drift π/2 and per-node magnitude π/4 are selected monitoring policies,
-     not graph-independent bounds. Particular ζ sums do not derive them.
-
-2) Phase Gradient (|∇φ|)
-   - |∇φ|(i) = mean_{j∈N(i)} |wrap(φ_j − φ_i)| (circular differences)
-   - Exact wrapped-angle bound π; π/16 is a selected early-warning policy
-   - A measured synchronization onset near 0.29 is protocol/σ-dependent
-
-3) Phase Curvature (K_φ)
-   - K_φ(i) = wrap(φ_i − mean_circular_{j∈N(i)} φ_j)
-   - Bound π where defined; zero represented resultants are explicit failures
-   - 0.9π is a selected warning margin, not a derived transition
-
-4) Coherence Length (ξ_C)
-   - Fits uncentered products of static pressure coherence over metric distance
-   - Spectral fallback has separate provenance; neither is a phase correlation
-   - Finite-network diagnostic; divergence requires a finite-size limit
-
-Physics Foundation
-------------------
-Nodal equation (per node):  ∂EPI/∂t = ν_f · ΔNFR(t)
-Canonical glyphs are the exclusive semantic transformations at the operator
-layer. Declared domain solvers may advance EPI only through the shared nodal
-integrator from an explicit DeltaNFR with provenance and residual telemetry.
-Telemetry functions are read-only. nu_f uses structural units Hz_str.
-
-Modules
--------
-fields : Centralized structural field computations and research utilities
-    - compute_structural_potential, compute_phase_gradient,
-      compute_phase_curvature, estimate_coherence_length
-    - k_φ multiscale helpers; declared-cycle winding is exposed separately
-    - historical Q is a continuous bilinear snapshot, not phase winding
-interactions : Canonical operator sequences with telemetry guards
-      - em_like, weak_like, strong_like, gravity_like
-         (returning InteractionResult)
-life : Assumption-explicit autopoietic diagnostics
-    - detect_life_emergence, LifeTelemetry, declared threshold policies
-cell : Compartment and membrane-pressure diagnostics
-    - detect_cell_formation, CellTelemetry, measured membrane flux
-phase_transition : Operational structural-symmetry transition diagnostics
-    - Order parameter 𝒮, chirality χ, susceptibility, coherence length
-    - Critical exponent measured as an observable (audit 2026: NOT the
-      universal closed-form scale; the fitted exponent is protocol-dependent)
-    - No universal transition order or ξ_C divergence is asserted
-event_remesh_refinement : Finite three-mesh event/REMESH observations
-    - Exact persistent-node checkpoint errors, executed ZHIR gates and modal factors
-    - Excludes solver order, mesh convergence and mixed schedule/REMESH gain
-reversible_eigenmode_reference : Exact reversible single-eigenmode Euler theorem
-    - Derives the reversible metric, eigenvalue, modal factors and error bounds
-    - Certifies conditional exact-real convergence, not binary64 asymptotics
-runtime_eigenmode_reference : Executed reversible single-eigenmode binding
-    - Separates exact pressure, held-input and combined binary64 defects
-    - Propagates off-mode defects through complete Euler matrices
-    - Excludes runtime convergence, solver order and common causal provenance
-event_remesh_reference : Exact P2 event/REMESH reference family
-    - Rational continuous/Euler error enclosure and subdivision improvement
-    - Exact beta-scaled ideal REMESH error plus bounded runtime residual
-    - Excludes generic or binary64 asymptotic convergence
-remesh_history_stability : Exact finite uniform delayed-history theorem
-    - Stationary-weighted Jensen disagreement balance
-    - Temporal mixing for 0 < alpha < 1; pure-delay cycles at alpha = 1
-    - Excludes clipping, changing support/metric and runtime identification
-remesh_schedule_policy_stability : Uniform exact REMESH/schedule policy theorem
-    - Common schedule gain q gives prefix bound 1 and block gain q
-    - Repeated spatial-disagreement decay for q < 1 over L = max_delay + 1
-    - Conditional on exact maps; excludes binary64 runtime identification
-remesh_schedule_relative_defect_stability : Robust exact policy envelope
-    - Signed pre-schedule defect delta <= eta J gives q_eff = q(1 + eta)
-    - Reuses the common-q theorem; q_eff < 1 gives geometric disagreement decay
-    - Assumes a uniform defect bound; excludes runtime forward invariance
-binary64_remesh_relative_defect : Exact runtime-rounding boundary
-    - Replays one production pair and exposes its signed relative defect
-    - Certifies the alpha=1 bounded hard-clip REMESH-only class with eta=0
-    - Certifies the sharp alpha=1/2 antisymmetric P2 class with eta=135/124
-    - Excludes schedule families, repeated execution and future behavior
-binary64_p2_reception_stability : Global restricted P2 kernel composition
-    - Half-Reception sends every finite represented pair in its interval to consensus
-    - Composes q=0 with the alpha=1, eta=0 REMESH class
-    - Excludes complete EN stages, grammar and live graph execution
-runtime_p2_reception_stage : Finite executor binding for the P2 kernel
-    - Binds one sealed two-phase EN event and its endpoints to the q=0 kernel
-    - Verifies P2 neighbours, exact half mix, hard interval and metric ray
-    - Excludes REMESH graph binding and repeated/future runtime stability
-runtime_p2_reception_remesh_sequence : Finite causal P2 extinction binding
-    - Binds each executed EN stage and delayed REMESH to one causal graph trace
-    - Verifies active-history disagreement extinction after tau_global + 1 cycles
-    - Excludes unobserved repetition, future runtime and auxiliary-state stability
-runtime_p2_reception_remesh_policy : Transactional finite P2 policy invocation
-    - Revalidates current P2/REMESH preconditions before every finite invocation
-    - Encloses execution and post-certification in one graph transaction
-    - Excludes future, unobserved-repetition and auxiliary-state stability
-runtime_remesh_history_stability : Executed runtime/companion bridge
-    - Exact signed binary64 rounding and clipping residual decomposition
-    - Lifted one-step augmented-energy balances and sufficient lower bounds
-    - Excludes live history advance, repeated stability and schedule composition
-remesh_schedule_stability : Exact REMESH-head/schedule-head balance
-    - Separates raw, clipping and schedule disagreement-energy defects
-    - Retains the schedule-gain slack and a sufficient one-step lower bound
-    - Excludes executable provenance, repetition and future stability
-runtime_remesh_schedule_stability : Adjacent-cycle runtime/history binding
-    - Identifies the next represented schedule and recorded history append
-    - Telescopes exact finite augmented-energy balances in one metric
-    - Excludes shared execution provenance, global gain and repetition
-runtime_remesh_schedule_relative_defect : Finite robust-policy verification
-    - Checks signed relative defects, represented gains and vector envelopes
-    - Applies the complete-block q_eff endpoint bound to one causal block
-    - Excludes forward invariance, repetition and future binary64 stability
-runtime_remesh_schedule_block_margin : Causal finite-block margin observation
-    - Normalizes a contiguous block lower bound by its initial energy
-    - Binds the block to one graph-owned causal finite execution
-    - Excludes uniform class coercivity, repetition and future stability
-
-See Also
---------
-tnfr.operators.grammar : Unified Grammar (U1–U6) and validations
-tnfr.dynamics           : Nodal equation integration utilities
-docs/STRUCTURAL_FIELDS_TETRAD.md : Canonical tetrad documentation
-AGENTS.md               : Canonical invariants and field promotions
-ARCHITECTURE.md          : Package ownership and dependency boundaries
-
-References
-----------
-- UNIFIED_GRAMMAR_RULES.md (U6: Structural potential confinement)
-- docs/STRUCTURAL_FIELDS_TETRAD.md (Φ_s, |∇φ|, K_φ, ξ_C validation)
-- AGENTS.md (Structural Fields Tetrad: canonical status, thresholds)
-- TNFR.pdf (§2.1: Nodal equation foundation)
-
-Examples
---------
->>> from tnfr.physics.fields import compute_structural_potential
->>> import networkx as nx
->>> G = nx.karate_club_graph()
->>> for node in G.nodes():
-...     G.nodes[node]['delta_nfr'] = 0.5
->>> phi_s = compute_structural_potential(G)  # canonical α=2 (inverse-square)
->>> print(f"Potential at node 0: {phi_s[0]:.3f}")
-
->>> # Telemetry-based U6 safety (ΔΦ_s drift)
->>> phi_before = compute_structural_potential(G)
->>> # ... apply sequence ...
->>> phi_after = compute_structural_potential(G)
->>> drift = sum(
-...     abs(phi_after[n] - phi_before[n]) for n in G.nodes()
-... ) / G.number_of_nodes()
->>> assert drift < 1.571, "Selected U6 drift policy exceeded (π/2)"
-
+The maintained module/proof/test map is ``theory/README.md``. Consult
+``ARCHITECTURE.md`` for execution boundaries and
+``docs/STRUCTURAL_FIELDS_TETRAD.md`` for field definitions, availability and
+numerical policies. Package membership does not establish physical validation
+or promote an auxiliary construction to a fundamental law.
 """
 
 # Import prerequisites before runtime certificates: reordering this facade can

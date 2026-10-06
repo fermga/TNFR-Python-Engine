@@ -1412,7 +1412,7 @@ this local response description before another maintenance policy is proposed.
 
 The uniform-winding `C6` comparator under the default all-target bidirectional
 UM merge is now delivered in
-[the cycle/winding owner](COUPLING_WINDING_PERSISTENCE.md#8-one-shared-local-response-for-circular-means).
+[the cycle/winding owner](research/archive/c6/RESPONSE_AND_ROUNDING.md#8-one-shared-local-response-for-circular-means).
 The shared exact Gram/receiver response preserves the antipodal obstruction
 and gives C6 strict centered tangent contraction plus a separate exact
 phase-map invariant neighborhood. Its five finite default controls retain
@@ -1502,7 +1502,7 @@ errors that would be invisible to a Laplacian-only comparison.
 This supplies a return-class discriminator, not a longer live campaign
 or a stability conclusion; existential carry and reachability stay distinct.
 
-[Section 30](COUPLING_WINDING_PERSISTENCE.md#30-a-coupled-profile-disagreement-tube-and-finite-numerical-band-horizon)
+[Section 30](research/archive/c6/PRESSURE_EXCURSIONS.md#30-a-coupled-profile-disagreement-tube-and-finite-numerical-band-horizon)
 completes B2.d.32-B2.d.36
 through a canonical centered reference, a carried-step identity, exact
 spatial contraction, a uniform numerical-defect tube and a separate finite
@@ -1528,12 +1528,12 @@ cut unresolved.
 
 B2.d.37-B2.d.40 now connect those questions through the same canonical
 pressure, carried-state and forced-profile owners. The
-[self-consistent envelope](COUPLING_WINDING_PERSISTENCE.md#31-b37-closing-the-spatial-and-rounding-bounds-on-each-other)
+[self-consistent envelope](research/archive/c6/PRESSURE_EXCURSIONS.md#31-b37-closing-the-spatial-and-rounding-bounds-on-each-other)
 uses its own spatial restriction to close the rounding bound, giving
 an energy floor approximately `2.958228394578814e-31` and a uniform
 per-node product/assembly error bound `6.731922543446726e-32`.
 The
-[static seven-point certificate](COUPLING_WINDING_PERSISTENCE.md#32-b38-static-compensation-refutes-a-class-wide-linear-drift-argument)
+[static seven-point certificate](research/archive/c6/PRESSURE_EXCURSIONS.md#32-b38-static-compensation-refutes-a-class-wide-linear-drift-argument)
 admits seven states at exactly the retained endpoint's reconstructed mean
 and verifies a positive rational combination of their full pressure vectors
 equal to zero. This refutes a strictly signed fixed linear drift on that
@@ -1541,13 +1541,13 @@ enclosed class; its algebraic coefficients do not define an executable
 switching rule or prove any of those points reachable.
 
 The
-[finite passage theorem](COUPLING_WINDING_PERSISTENCE.md#33-b39-a-finite-first-passage-theorem-for-the-pressure-cut)
+[finite passage theorem](research/archive/c6/PRESSURE_EXCURSIONS.md#33-b39-a-finite-first-passage-theorem-for-the-pressure-cut)
 shows that strictly positive node-4 pressure cannot persist through all
 first `30255` transitions: the derived centered growth would leave the
 spatial envelope while the independent finite band guarantee still holds.
 Thus a nonpositive readout must occur at an index no greater than `30254`,
 starting from the B31 endpoint. The
-[decisive continuation](COUPLING_WINDING_PERSISTENCE.md#34-b40-the-realized-first-passage-and-a-finite-mean-budget-reversal)
+[decisive continuation](research/archive/c6/PRESSURE_EXCURSIONS.md#34-b40-the-realized-first-passage-and-a-finite-mean-budget-reversal)
 with its inherited carry reaches the first hit in 118 steps and 59 visible
 cell boundaries. Readouts `0..117` are positive; the endpoint has gradient
 index `-22` and pressure `-187043320717485/2^105`.
@@ -1562,13 +1562,13 @@ This closes the declared finite sign and deficit-crossing questions,
 without an exact vector return or an infinite compensation theorem.
 
 B2.d.41 adds the
-[complete-cell obstruction](COUPLING_WINDING_PERSISTENCE.md#35-b41-complete-carry-cells-cannot-provide-invariant-trapping):
+[complete-cell obstruction](research/archive/c6/PRESSURE_EXCURSIONS.md#35-b41-complete-carry-cells-cannot-provide-invariant-trapping):
 any nonempty finite family in B37's gradient class fails forward invariance
 when each visible tuple admits its entire legal carry fiber. The theorem
 constructs an outward hypothetical carry; it does not continue or establish
 escape of the retained state. B2.d.42's stronger claim for B38's particular
 seven displayed rows comes from their
-[exact temporal graph](COUPLING_WINDING_PERSISTENCE.md#36-b42-every-carry-leaves-the-seven-static-compensation-cells).
+[exact temporal graph](research/archive/c6/PRESSURE_EXCURSIONS.md#36-b42-every-carry-leaves-the-seven-static-compensation-cells).
 Only self-loops and the zero-based edge `5 -> 4` are feasible. Every legal
 incoming carry leaves that family or fails band admission within 77 steps.
 Whole-band exit, entry from B40 and a general recurrence theorem are not
@@ -1576,7 +1576,7 @@ implied. The static convex pressure balance therefore remains an algebraic
 certificate whose seven cells cannot themselves form a closed temporal class.
 
 B2.d.43's
-[finite live bridge](COUPLING_WINDING_PERSISTENCE.md#37-b43-a-finite-live-bridge-from-the-original-winding-preparation)
+[finite live bridge](research/archive/c6/PRESSURE_EXCURSIONS.md#37-b43-a-finite-live-bridge-from-the-original-winding-preparation)
 now executes the original null C6 preparation through 89 UM/IL pairs and
 terminal SHA, retaining 179 events and 356 pressure-refreshed carried flows.
 It reaches the same fixed phase source as B40 with its own actual EPI and
@@ -1603,11 +1603,11 @@ obstructions. This is parked research, not the current G3 gate. Detailed
 proofs and shared owners remain centralized in the winding
 note; none of these blocks advances the saved B40 endpoint.
 B2.d.44 now excludes the
-[local energy tube with independent mean bounds](COUPLING_WINDING_PERSISTENCE.md#38-b44-a-bounded-mean-interval-does-not-close-the-centered-energy-tube)
+[local energy tube with independent mean bounds](research/archive/c6/PRESSURE_EXCURSIONS.md#38-b44-a-bounded-mean-interval-does-not-close-the-centered-energy-tube)
 around B43's actual pre-SHA mean. Opposite canonical mean increments and
 exact carry-cell translations provide hypothetical outward points at both
 boundaries. B2.d.45 preserves the
-[coordinate arithmetic restriction as well](COUPLING_WINDING_PERSISTENCE.md#39-b45-the-coordinate-arithmetic-class-does-not-rescue-local-mean-confinement):
+[coordinate arithmetic restriction as well](research/archive/c6/RELATIONAL_REGIONS.md#39-b45-the-coordinate-arithmetic-class-does-not-rescue-local-mean-confinement):
 a derived affine carry lift keeps the requested mean and satisfies an analytic
 energy bound in a slightly smaller local window. Neither result advances the
 saved B43 state or proves escape of its actual trajectory. An admissible

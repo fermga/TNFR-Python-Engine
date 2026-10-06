@@ -1109,25 +1109,30 @@ parameters, it evaluates conditions in this order:
 | **COLLAPSING** | $\nu_f<0.01$, or $\lvert\Delta\mathrm{NFR}\rvert>10$, or a non-isolated node has coupling $<0.1$ |
 | **MUTATION** | $\lvert\Delta\mathrm{NFR}\rvert>5$ and $\nu_f>0.1$ |
 | **PROPAGATION** | coupling $>0.7$ and $\nu_f>0.1$ |
-| **STABILIZATION** | $\lvert\Delta\mathrm{NFR}\rvert<1$ and scalar EPI $>0.8$ |
+| **STABILIZATION** | $\lvert\Delta\mathrm{NFR}\rvert<1$ and local structural coherence $>0.8$ |
 | **ACTIVATION** | $\nu_f\geq0.1$ after the earlier checks |
 | **DORMANT** | all remaining states above the collapse-frequency cut |
 
-The stabilization test uses scalar EPI as a proxy; it does not call the
-canonical $C(t)$ kernel. `LifecycleState.COLLAPSED` exists in the enum but
+The stabilization test reads the shared local diagnostic
+`structural_coherence(DeltaNFR, dEPI_dt) = 1/(1 + |DeltaNFR| + |dEPI_dt|)`.
+It uses the stored pressure and rate, not EPI magnitude or a prediction
+reconstructed from the nodal product. The threshold is a configured classifier
+policy, not a persistence theorem. `LifecycleState.COLLAPSED` exists in the enum but
 `get_lifecycle_state` currently returns `COLLAPSING` for every collapse trigger
 and never returns `COLLAPSED`.
 
-For a node with neighbors, the current coupling approximation is
+For a node with neighbors, the coupling diagnostic uses the shared circular
+neighbor mean and shortest-arc phase difference:
 
 $$
-c_i=1-\frac{\min\left(|\theta_i-\operatorname{mean}_{j\in\mathcal N(i)}
-\theta_j|,\pi\right)}{\pi}.
+\bar\theta_i=\operatorname{atan2}\!\left(\sum_{j\in\mathcal N(i)}\sin\theta_j,
+\sum_{j\in\mathcal N(i)}\cos\theta_j\right),\qquad
+c_i=1-\frac{|\operatorname{wrap}(\theta_i-\bar\theta_i)|}{\pi}.
 $$
 
-This is an arithmetic neighbor-phase mean followed by a capped absolute
-difference, rather than a circular mean. Isolates receive $c_i=0$, but the
-network-decoupling collapse check is applied only when neighbors exist.
+The numerical mean convention does not establish a uniquely defined direction
+when the neighbor resultant vanishes. Isolates receive $c_i=0$, and the
+network-decoupling collapse check applies only when neighbors exist.
 
 ### 4.2 Collapse-reason check
 
@@ -1551,7 +1556,7 @@ catalog = net.audit_operators()               # dict; 13 controlled probes
 ## Cross-References
 
 - Structural-energy candidate and conservation diagnostics: [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) §8
-- Grammar U2 (convergence): [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)
+- Grammar U2 (stabilizer/debt policy): [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)
 - Hamiltonian/Lagrangian formulation: [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md)
 - Order parameter $\mathcal{S}$: [EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md](EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md) §3.2
 - Dissipative extensions: [DISSIPATIVE_AND_OPEN_SYSTEMS.md](DISSIPATIVE_AND_OPEN_SYSTEMS.md)

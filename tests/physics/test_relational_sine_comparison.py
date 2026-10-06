@@ -871,6 +871,146 @@ def test_exact_phase_row_needs_no_trigonometric_drift_or_graph(monkeypatch):
     assert comparison.phase_rate_numerators() == (Q(1, 2), Q(1, 2), Q(-3, 2))
 
 
+def test_phase_readers_rebuild_form_gradient_and_ignore_cached_rates(sample):
+    stale = replace(
+        sample,
+        form_gradient=(Q(999),) * 3,
+        phase_rates=(I(999),) * 3,
+        relative_resultant=((I(0), I(0)),) * 3,
+    )
+    # Independent P3 gradient: (3/2,-9/4,3/4), with w=1/2,
+    # degrees (1,2,1), capacities (1,2,3), and beta=1.
+    assert stale.phase_rate_numerators() == (Q(3, 4), Q(-9, 8), Q(9, 8))
+    actual = stale.resultant_kinematics()
+    expected = sample.resultant_kinematics()
+    assert actual.resultant_rate_bounds == expected.resultant_rate_bounds
+    assert actual.speed_upper_bounds == expected.speed_upper_bounds
+    assert actual.comparison == sample
+    assert actual.comparison is not stale
+
+
+def test_same_root_moments_and_current_do_not_determine_their_future_derivative():
+    model = RelationalExchangeModel(1, epi_weight=0, phase_domain="regular")
+    source = owner.bound_relational_sine_exchange(
+        _state(
+            nx.path_graph(4),
+            forms=(0, 0, 0, 0),
+            phases=(0,) * 4,
+            capacities=(1,) * 4,
+        ),
+        reference_model=model,
+    )
+    # Only the distance-two node's form changes. Root 1 and both neighbors
+    # retain their forms, phases, capacities and exact first/third moments.
+    changed = replace(source, epi=(Q(0), Q(0), Q(0), Q(1)))
+    initial = source.resultant_kinematics()
+    response = changed.resultant_kinematics()
+    assert response.comparison.relative_resultant[1] == (I(2), I(0))
+    assert response.comparison.pressure[1] == source.pressure[1] == I(0)
+    assert response.phase_rate_numerators[1] == 0
+    assert response.phase_rate_numerators[2] == Q(-1, 2)
+    assert initial.resultant_rate_bounds[1] == (I(0), I(0))
+    real, imaginary = response.resultant_rate_bounds[1]
+    assert real == I(0)
+    assert imaginary.contains(-1 / (2 * PI))
+    assert imaginary.hi < 0
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        {"epi": (True, 0, 0)},
+        {"phase": (0, float("nan"), 0)},
+        {"capacity": (True, 1, 1)},
+        {"degrees": (True, 2, 1)},
+        {"edges": ((0, 1), (0, 1))},
+        {"law": "an_unadmitted_pressure_law"},
+        {"model_boolean_field": "phase_weight"},
+        {"model_boolean_field": "storage_scale"},
+    ],
+)
+def test_detached_phase_and_mobility_readers_reject_invalid_primitives(change):
+    model = RelationalExchangeModel(1, epi_weight=0, phase_domain="regular")
+    source = owner.bound_relational_sine_exchange(_state(), reference_model=model)
+    mobility = source.with_current_squared_mobility(epsilon=1)
+    if "model_boolean_field" in change:
+        poisoned_model = replace(model)
+        object.__setattr__(poisoned_model, change["model_boolean_field"], True)
+        change = {"reference_model": poisoned_model}
+    changed = replace(source, **change)
+    for read in (
+        changed.phase_rate_numerators,
+        changed.resultant_kinematics,
+        lambda: changed.with_current_squared_mobility(epsilon=1),
+        lambda: replace(mobility, comparison=changed).relative_balance(
+            reference_node=0
+        ),
+    ):
+        with pytest.raises((TypeError, ValueError)):
+            read()
+
+
+def test_mobility_balance_rebuilds_primitive_changes_and_both_cached_rate_rows():
+    model = RelationalExchangeModel(1, epi_weight=0, phase_domain="regular")
+    source = owner.bound_relational_sine_exchange(_state(), reference_model=model)
+    mobility = source.with_current_squared_mobility(epsilon=1)
+    changed = replace(
+        source,
+        epi=(Q(0), Q(1), Q(0)),
+        phase=(Q(0),) * 3,
+        capacity=(Q(1),) * 3,
+        form_gradient=(Q(99),) * 3,
+        relative_resultant=((I(99), I(99)),) * 3,
+    )
+    rebuilt = changed.with_current_squared_mobility(epsilon=2)
+    assert rebuilt.form_rates == (I(0),) * 3
+    assert rebuilt.mobility_factors == (I(1),) * 3
+    poisoned = replace(
+        mobility,
+        comparison=changed,
+        epsilon=Q(2),
+        form_rates=(I(999),) * 3,
+        phase_rates=(I(999),) * 3,
+        mobility_factors=(I(999),) * 3,
+    )
+    result = poisoned.relative_balance(reference_node=0)
+    # At phase consensus the mobility is exactly one, independent of epsilon.
+    # Full phase rates are (-1,1,-1)/pi; the relative center rate is 2/pi.
+    assert result.relative_form_rates == (I(0), I(0))
+    assert result.relative_phase_rates[0].contains(2 / PI)
+    assert result.relative_phase_rates[0].lo > 0
+    assert result.relative_phase_rates[1].contains(0)
+    assert result.divergence_bounds == I(0)
+    assert result.mobility == rebuilt
+    assert result.mobility is not poisoned
+    assert result.mobility.comparison.form_gradient == (-1, 2, -1)
+
+
+@pytest.mark.parametrize("coefficient", [True, -1, float("inf")])
+def test_relative_balance_readmits_its_mobility_coefficient(coefficient):
+    source = owner.bound_relational_sine_exchange(
+        _state(),
+        reference_model=RelationalExchangeModel(
+            1, epi_weight=0, phase_domain="regular"
+        ),
+    ).with_current_squared_mobility(epsilon=1)
+    with pytest.raises((TypeError, ValueError)):
+        replace(source, epsilon=coefficient).relative_balance(reference_node=0)
+
+
+def test_relative_balance_rejects_a_changed_complete_mobility_law():
+    source = owner.bound_relational_sine_exchange(
+        _state(),
+        reference_model=RelationalExchangeModel(
+            1, epi_weight=0, phase_domain="regular"
+        ),
+    ).with_current_squared_mobility(epsilon=1)
+    with pytest.raises(ValueError, match="mobility law"):
+        replace(source, law="another_reciprocal_field").relative_balance(
+            reference_node=0
+        )
+
+
 def test_resultant_kinematics_export_preserves_ideal_provenance(sample):
     report = sample.resultant_kinematics()
     payload = report.to_dict()

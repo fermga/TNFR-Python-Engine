@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
-"""N06 word composition-closure benchmark (R1).
+"""Finite operator-word relabeling and sequential-sweep probes.
 
-Shows the composition-closure theorem: a grammar word built from Gamma-equivariant
-operators is itself Gamma-equivariant, so it preserves the Fix(Gamma) / Fix(Gamma)^perp
-split. The inductive step is DERIVED; the length-1 base case is the per-operator
-MEASURED equivariance (all 13, under cache isolation). Here the five canonical
-words (Bootstrap, Bootstrap+close, Stabilize, Propagate, Explore) are measured
-equivariant (residual = 0) on a vertex-transitive cycle (rotation) and a
-two-orbit star (leaf swap), every prefix stays within tolerance, and a
-Gamma-symmetric sweep keeps a symmetric seed orbit-constant.
+Exact equivariant maps compose on compatible invariant domains and preserve
+fixed inputs. These finite fixture measurements do not prove the all-state
+premises of that theorem. Nonlinear equivariance alone does not preserve the
+orthogonal complement of the fixed subspace.
 
-Honest scope: not new mathematics; closes no open problem. The residual open
-piece is the non-equivariant selector (pointed origin), a property of the
-selection policy, not of the operators. No complexity / crypto / Millennium claim.
+The selected audit words are compared under cycle rotation and star leaf swap;
+one word is also probed at every prefix. A separate insertion-order node sweep
+reports orbit constancy and whole-graph field spread. Visiting every node is
+not itself an equivariant scheduling rule. These fragments are finite probes,
+not the public recipe inventory or certificates of live grammar admission.
 """
 
 from __future__ import annotations
@@ -46,7 +44,7 @@ from tnfr.research import (  # noqa: E402
 
 
 def main() -> int:
-    print("N06 word composition closure: equivariant factors -> equivariant word")
+    print("Finite word relabeling residuals and sequential-sweep observations")
     print(f"  {'word':<18} {'glyphs':<24} {'residual':>10} {'equiv':>6}")
     all_equiv = True
     for r in audit_word_equivariance():
@@ -62,15 +60,17 @@ def main() -> int:
     fixed, spread = word_preserves_fix(word, cycle)
     print()
     print(
-        f"  closure witness (Bootstrap+close): full={full:.2e} "
+        f"  selected prefix probe (Bootstrap+close): full={full:.2e} "
         f"worst_prefix={worst_prefix:.2e} holds={holds}"
     )
     print(
-        f"  Fix(Gamma) preserved (symmetric sweep): fixed={fixed} "
-        f"spread={spread:.2e}"
+        f"  sequential-sweep orbit constancy: fixed={fixed} "
+        f"whole_graph_spread={spread:.2e}"
     )
 
-    audit = CircularityAudit()  # pure representation theory / relabeling
+    audit = (
+        CircularityAudit()
+    )  # Declared input audit; this is not a theorem certificate.
     _ = ExperimentManifest(
         claim_id="NT-P01b",
         git_sha="local",
@@ -82,22 +82,23 @@ def main() -> int:
         controls=(
             "cycle_rotation",
             "star_leaf_swap",
-            "prefix_induction",
-            "fix_preservation_sweep",
+            "selected_prefix_residuals",
+            "sequential_sweep_orbit_constancy",
         ),
         artifacts=(),
     )
     print()
-    print(f"  all canonical words equivariant : {all_equiv}")
+    print(f"  selected word probes within tolerance : {all_equiv}")
     print(
-        f"  composition closure             : {ClaimStatus.DERIVED.value} "
-        "(induction) on MEASURED base case"
+        f"  selected prefix verdict         : {ClaimStatus.MEASURED.value} "
+        f"(finite fixture): {holds}"
     )
     print(
-        f"  Fix(Gamma) preservation         : {ClaimStatus.DERIVED.value} "
-        "(corollary)"
+        f"  sequential-sweep observation    : {ClaimStatus.MEASURED.value} "
+        f"(selected seed): {fixed}"
     )
     print(f"  circularity                     : {audit.verdict.value}")
+    print("  No universal all-state or nonlinear-complement preservation is certified.")
     ok = all_equiv and holds and fixed
     return 0 if ok else 1
 

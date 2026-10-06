@@ -143,10 +143,6 @@ EXPORT_DEPENDENCIES: dict[str, dict[str, tuple[str, ...]]] = {
         "submodules": ("tnfr.math",),
         "third_party": ("sympy",),
     },
-    "evaluate_bifurcation_risk": {
-        "submodules": ("tnfr.math",),
-        "third_party": ("sympy",),
-    },
     "latex_export": {
         "submodules": ("tnfr.math",),
         "third_party": ("sympy",),
@@ -360,7 +356,6 @@ _assign_exports(
         "integrated_evolution_symbolic",
         "check_convergence_exponential",
         "compute_second_derivative_symbolic",
-        "evaluate_bifurcation_risk",
         "latex_export",
         "pretty_print",
     ),
@@ -398,7 +393,6 @@ __all__ = [
     "integrated_evolution_symbolic",
     "check_convergence_exponential",
     "compute_second_derivative_symbolic",
-    "evaluate_bifurcation_risk",
     "latex_export",
     "pretty_print",
     # SDK exports (lazily loaded)

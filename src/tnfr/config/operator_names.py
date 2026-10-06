@@ -184,11 +184,11 @@ def validate_physics_derivation() -> dict[str, Any]:
         extra = VALID_START_OPERATORS - expected_starts
         if missing:
             discrepancies.append(
-                f"VALID_START_OPERATORS missing physics-derived operators: {missing}"
+                f"VALID_START_OPERATORS missing contract-derived operators: {missing}"
             )
         if extra:
             discrepancies.append(
-                f"VALID_START_OPERATORS contains non-physics operators: {extra}"
+                f"VALID_START_OPERATORS contains operators outside the shared role set: {extra}"
             )
 
     end_valid = VALID_END_OPERATORS == expected_ends
@@ -197,11 +197,11 @@ def validate_physics_derivation() -> dict[str, Any]:
         extra = VALID_END_OPERATORS - expected_ends
         if missing:
             discrepancies.append(
-                f"VALID_END_OPERATORS missing physics-derived operators: {missing}"
+                f"VALID_END_OPERATORS missing contract-derived operators: {missing}"
             )
         if extra:
             discrepancies.append(
-                f"VALID_END_OPERATORS contains non-physics operators: {extra}"
+                f"VALID_END_OPERATORS contains operators outside the shared role set: {extra}"
             )
 
     return {

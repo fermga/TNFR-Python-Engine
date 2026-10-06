@@ -122,6 +122,20 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
         RelationalExchangeStep,
         RelationalUniformTangent,
     )
+    from ..physics.phase_cycle_geometry import (
+        ReturnPathGeometryResponseAssessment,
+        ReturnPathStorageGeometryAssessment,
+    )
+    from ..physics.phase_response import (
+        PhaseInformationResponse,
+        PhaseMomentInformationAssessment,
+        PhaseMomentMotion,
+        SineStarMomentClosure,
+    )
+    from ..physics.relational_bridge_discrimination import (
+        BridgeClockLawDiscrimination,
+        BridgeFiniteLawDiscrimination,
+    )
     from ..physics.relational_capture import (
         RelationalCaptureCertificate,
         RelationalConsensusCaptureCertificate,
@@ -155,17 +169,55 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
         RelationalResetObservation,
         RelationalSampleJetBudget,
     )
+    from ..physics.relational_phase_storage import SaddleStorageDiscriminator
+    from ..physics.relational_sine_bridge_memory import SineBridgeMemoryAssessment
     from ..physics.relational_sine_budget import SineBudgetConsensus
     from ..physics.relational_sine_comparison import (
         SineFormIncrementAssessment,
         SineMobilityComparison,
         SineMobilityRelativeBalance,
+        SineRegionalStorageBalance,
         SineRegionalTransfer,
     )
-    from ..physics.relational_sine_entry import SinePreparedEntry
+    from ..physics.relational_sine_composition import (
+        SinePatternComposition,
+        SinePreparedComposition,
+    )
+    from ..physics.relational_sine_corridor import (
+        SineSaddleCorridor,
+        SineSaddleFormation,
+        SineSaddlePreparation,
+        SineSaddleRetentionBand,
+    )
+    from ..physics.relational_sine_entry import (
+        SineConservativeHandoff,
+        SineConservativePhaseTransport,
+        SineConservativeSourceGeometry,
+        SineConservativeWindingEntry,
+        SinePreparedEntry,
+    )
+    from ..physics.relational_sine_metric_connection import SineMetricConnection
+    from ..physics.relational_sine_metric_forecast import SineSaddleMetricForecast
+    from ..physics.relational_sine_partition import (
+        SineCollectivePulseBalance,
+        SineContactAveraging,
+        SineMovingPatternWindow,
+        SinePhaseOffsetPartition,
+        SinePhaseOffsetState,
+    )
     from ..physics.relational_sine_recovery import SineCycleIdentityAssessment
     from ..physics.relational_sine_reduction import SineSlowCapture, SineSlowPhaseBound
+    from ..physics.relational_sine_regional import (
+        SineCycleBarrier,
+        SineCycleRetention,
+        SineRegionalChannelHistory,
+        SineRegionalOrganization,
+        SineReversiblePreparation,
+    )
     from ..physics.relational_sine_resonance import (
+        BridgeStorageFamilyAssessment,
+        SineBridgeChannelAssessment,
+        SineC5LeafSaddle,
         SineCycleResonance,
         SineMediatedResponse,
         SineModeGain,
@@ -177,10 +229,12 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
     from ..physics.relational_sine_scale import (
         JointPairObservation,
         PhasePairObservation,
+        SineGlobalPairState,
         SineJointPairingProjection,
         SineJointPairingWindowAssessment,
         SineMixedPairStateAssessment,
         SineMobilityGeometryAssessment,
+        SinePairCancellationObservation,
         SinePairEmissionAssessment,
         SinePairingMobilityAssessment,
         SinePairingTransitionAssessment,
@@ -190,22 +244,71 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
         SineReplicaEquilibriaAssessment,
         SineReplicaPersistenceAssessment,
         SineReplicaPulseAssessment,
+        SineReplicaPulseFiniteWorkResponse,
         SineReplicaPulseSplitting,
         SineReplicaPulseVariation,
+        SineReplicaPulseWorkResponse,
         SineReplicaScaleAssessment,
+        SineReplicaStiffnessTraceCurve,
         SineStatePairingAssessment,
     )
-    from ..physics.relational_sine_symmetry import SineCycleSymmetryAssessment
+    from ..physics.relational_sine_sensitivity import SineSaddleSensitivity
+    from ..physics.relational_sine_symmetry import (
+        SineCycleSymmetryAssessment,
+        SineInvolutionReduction,
+        SineInvolutionState,
+    )
     from ..physics.relational_transit import RelationalTransitCertificate
+    from ..research.sine_constitutive_robustness import SineConstitutiveRobustness
 
     if isinstance(
         report,
         (
+            PhaseInformationResponse,
+            PhaseMomentInformationAssessment,
+            PhaseMomentMotion,
+            SineStarMomentClosure,
+            ReturnPathStorageGeometryAssessment,
+            ReturnPathGeometryResponseAssessment,
+            SineConservativeHandoff,
+            SineConservativePhaseTransport,
+            SineConservativeSourceGeometry,
+            SineConservativeWindingEntry,
+            SineRegionalStorageBalance,
+            SineCycleBarrier,
+            SineCycleRetention,
+            SineReversiblePreparation,
+            SineRegionalOrganization,
+            SineRegionalChannelHistory,
             SineBudgetConsensus,
+            SineBridgeMemoryAssessment,
+            SinePatternComposition,
+            SinePreparedComposition,
             SinePreparedEntry,
+            SineCollectivePulseBalance,
+            SineContactAveraging,
+            SineMovingPatternWindow,
+            SinePhaseOffsetPartition,
+            SinePhaseOffsetState,
             SineSlowCapture,
             SineSlowPhaseBound,
             SineCycleSymmetryAssessment,
+            SineInvolutionReduction,
+            SineInvolutionState,
+            SineBridgeChannelAssessment,
+            SineC5LeafSaddle,
+            SineSaddleCorridor,
+            SineSaddleFormation,
+            SineSaddlePreparation,
+            SaddleStorageDiscriminator,
+            SineConstitutiveRobustness,
+            SineSaddleRetentionBand,
+            SineSaddleSensitivity,
+            SineSaddleMetricForecast,
+            SineMetricConnection,
+            BridgeStorageFamilyAssessment,
+            BridgeFiniteLawDiscrimination,
+            BridgeClockLawDiscrimination,
             SineCycleResonance,
             SineModeGain,
             SineRecoveryResonance,
@@ -220,6 +323,9 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
             SineRegionalTransfer,
             SineMobilityGeometryAssessment,
             SineReplicaScaleAssessment,
+            SineReplicaStiffnessTraceCurve,
+            SineGlobalPairState,
+            SinePairCancellationObservation,
             JointPairObservation,
             PhasePairObservation,
             SineJointPairingProjection,
@@ -235,8 +341,10 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
             SineReplicaEquilibriaAssessment,
             SineReplicaPersistenceAssessment,
             SineReplicaPulseAssessment,
+            SineReplicaPulseFiniteWorkResponse,
             SineReplicaPulseSplitting,
             SineReplicaPulseVariation,
+            SineReplicaPulseWorkResponse,
         ),
     ):
         return {

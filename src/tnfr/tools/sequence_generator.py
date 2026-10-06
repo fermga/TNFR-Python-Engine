@@ -33,12 +33,12 @@ Examples
 from __future__ import annotations
 
 import random
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     pass
 
-from ..compat.dataclass import dataclass
 from ..config.operator_names import (
     COHERENCE,
     CONTRACTION,

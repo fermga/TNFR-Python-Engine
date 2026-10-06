@@ -1,14 +1,8 @@
 """TNFR Canonical Grammar (single source of truth).
 
-Unified grammar validation with caching shared across TNFR modules.
+Shared grammar validation and public operator-language adapters.
 The nodal equation motivates the rules; operator contracts and calibrated
 policies supply premises not determined by that equation alone.
-
-PERFORMANCE OPTIMIZATIONS:
-- Cached validation results with cache invalidation
-- Fast-path validation for common patterns
-- Batch validation for operator sequences
-- Memory-efficient storage of validation state
 
 Terminology (TNFR semantics):
 - "node" here means resonant locus (coherence site); kept for
@@ -57,13 +51,11 @@ References
 ----------
 - UNIFIED_GRAMMAR_RULES.md: Canonical policies, hypotheses and mappings
 - AGENTS.md: Canonical invariants and formal contracts
-- TNFR.pdf: Nodal equation and bifurcation theory
+- theory/FUNDAMENTAL_THEORY.md: Nodal identity and complete-law premises
 """
 
 from __future__ import annotations
 
-import hashlib
-from functools import lru_cache
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -184,10 +176,7 @@ from .grammar_u6 import validate_structural_potential_confinement
 
 # Main validation entry point
 from .grammar_validate import validate_grammar
-from .registry import OPERATORS, discover_operators
-
-# Ensure registry populated for tests expecting direct name lookups
-discover_operators()
+from .registry import OPERATORS
 
 # Provide a name→class mapping including canonical aliases (auto-registered)
 OPERATOR_NAME_TO_CLASS = {n: cls for n, cls in OPERATORS.items()}
@@ -209,33 +198,6 @@ _BACKWARD_COMPAT_OPERATORS = (
     Transition,
     Recursivity,
 )
-
-
-def get_grammar_cache_stats() -> dict[str, dict[str, int]]:
-    """Return cache statistics for grammar-level cached functions.
-
-    Inspects imported callables for a ``cache_info`` attribute (from
-    ``functools.lru_cache``). Returns mapping ``{function_name: cache_info}``
-    where ``cache_info`` is converted to a plain dict.
-    Physics-neutral: read-only telemetry; does not modify caches.
-    """
-    stats: dict[str, dict[str, int]] = {}
-    import inspect
-
-    for name, obj in list(globals().items()):
-        if inspect.isfunction(obj) and hasattr(obj, "cache_info"):
-            try:  # pragma: no cover - defensive
-                info = obj.cache_info()
-                maxsize = info.maxsize if info.maxsize is not None else -1
-                stats[name] = {
-                    "hits": info.hits,
-                    "misses": info.misses,
-                    "maxsize": maxsize,
-                    "currsize": info.currsize,
-                }
-            except Exception:  # pragma: no cover
-                pass
-    return stats
 
 
 __all__ = [
@@ -299,138 +261,8 @@ __all__ = [
     "RECURSIVE_GENERATORS",
     "SCALE_STABILIZERS",
     # Registry & glyph compatibility exports
-    # Optimized validation
-    "validate_sequence_cached",
-    "clear_validation_cache",
-    "get_validation_cache_stats",
     "GLYPH_TO_FUNCTION",
     "FUNCTION_TO_GLYPH",
     "OPERATORS",
     "OPERATOR_NAME_TO_CLASS",
-    # Telemetry helpers
-    "get_grammar_cache_stats",
 ]
-
-# ============================================================================
-# OPTIMIZED VALIDATION WITH CACHING (Performance Enhancement)
-# ============================================================================
-
-# Validation cache for operator sequences
-_validation_cache: dict[str, tuple[bool, str]] = {}
-_cache_hits = 0
-_cache_misses = 0
-
-
-def _sequence_hash(sequence: list[Glyph], graph_state: str | None = None) -> str:
-    """Generate hash key for operator sequence caching."""
-    # Create deterministic hash from sequence and relevant graph state
-    sequence_str = "".join(str(op) for op in sequence)
-    if graph_state:
-        content = f"{sequence_str}:{graph_state}"
-    else:
-        content = sequence_str
-
-    return hashlib.md5(content.encode(), usedforsecurity=False).hexdigest()
-
-
-@lru_cache(maxsize=1000)
-def _validate_grammar_rules_cached(
-    sequence_tuple: tuple[Glyph, ...],
-) -> tuple[bool, str]:
-    """Cached grammar rule validation for operator sequences.
-
-    This optimized version caches validation results to avoid redundant
-    computation for repeated sequences following TNFR principles.
-    """
-    sequence = list(sequence_tuple)
-
-    # Delegate to existing validation logic
-    from .grammar_validate import validate_grammar
-
-    try:
-        is_valid = validate_grammar(sequence)
-        return is_valid, "Valid sequence" if is_valid else "Grammar violation detected"
-    except Exception as e:
-        return False, f"Validation error: {e}"
-
-
-def validate_sequence_cached(
-    sequence: list[Glyph], graph: TNFRGraph | None = None, use_cache: bool = True
-) -> tuple[bool, str]:
-    """Optimized sequence validation with intelligent caching.
-
-    PERFORMANCE ENHANCEMENT: Caches validation results to eliminate
-    redundant computation while maintaining TNFR theoretical consistency.
-
-    Parameters
-    ----------
-    sequence : list[Glyph]
-        Operator sequence to validate
-    graph : TNFRGraph, optional
-        Graph for context-aware validation
-    use_cache : bool, default=True
-        Enable validation caching
-
-    Returns
-    -------
-    tuple[bool, str]
-        (is_valid, error_message)
-
-    Notes
-    -----
-    Cache key includes sequence operators and relevant graph state
-    to ensure correctness while maximizing cache hit rate.
-    """
-    global _cache_hits, _cache_misses
-
-    if not use_cache:
-        # Direct validation without caching
-        return _validate_grammar_rules_cached(tuple(sequence))
-
-    # Generate cache key
-    graph_state = None
-    if graph is not None:
-        # Include relevant graph state in cache key
-        n_nodes = len(graph.nodes())
-        n_edges = len(graph.edges())
-        graph_state = f"n{n_nodes}_e{n_edges}"
-
-    cache_key = _sequence_hash(sequence, graph_state)
-
-    # Check cache
-    if cache_key in _validation_cache:
-        _cache_hits += 1
-        return _validation_cache[cache_key]
-
-    # Cache miss - perform validation
-    _cache_misses += 1
-    is_valid, message = _validate_grammar_rules_cached(tuple(sequence))
-
-    # Store in cache (with size limit)
-    if len(_validation_cache) < 10000:  # Prevent unbounded growth
-        _validation_cache[cache_key] = (is_valid, message)
-
-    return is_valid, message
-
-
-def clear_validation_cache() -> None:
-    """Clear validation cache to free memory."""
-    global _cache_hits, _cache_misses
-    _validation_cache.clear()
-    _validate_grammar_rules_cached.cache_clear()
-    _cache_hits = 0
-    _cache_misses = 0
-
-
-def get_validation_cache_stats() -> dict[str, Any]:
-    """Get validation cache performance statistics."""
-    total_requests = _cache_hits + _cache_misses
-    hit_rate = (_cache_hits / total_requests * 100.0) if total_requests > 0 else 0.0
-
-    return {
-        "cache_hits": _cache_hits,
-        "cache_misses": _cache_misses,
-        "hit_rate_percent": round(hit_rate, 2),
-        "cache_size": len(_validation_cache),
-        "lru_cache_info": _validate_grammar_rules_cached.cache_info()._asdict(),
-    }

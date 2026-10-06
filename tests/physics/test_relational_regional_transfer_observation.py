@@ -219,7 +219,9 @@ def test_regional_transfer_rebuilds_gradient_currents_and_rates_from_primitives(
     monkeypatch.setattr(owner, "_capture_sine_state", forbidden)
     monkeypatch.setattr(owner, "_stage", forbidden)
     report = changed.regional_transfer(region=(1, 0))
-    assert report.comparison is changed
+    assert report.comparison is not changed
+    assert report.comparison.epi == (Q(1, 4), -Q(1, 2), Q(3, 4))
+    assert report.comparison.form_rates != changed.form_rates
     assert report.form_weights == (Q(2), Q(1), Q(1, 3))
     assert report.regional_weighted_form == 0
     assert report.complement_weighted_form == Q(1, 4)
@@ -279,7 +281,7 @@ def test_form_accounting_readmits_authoritative_model(field, value):
         changed.assess_form_increment(increments=(1, -1, 0, 0))
 
 
-def test_supplied_signed_increment_uses_admitted_forms_without_evaluating_rates(
+def test_supplied_signed_increment_rebuilds_source_without_deriving_the_increment(
     monkeypatch,
 ):
     source = _capture()
@@ -292,12 +294,14 @@ def test_supplied_signed_increment_uses_admitted_forms_without_evaluating_rates(
     )
 
     def forbidden(*args, **kwargs):
-        pytest.fail("a supplied endpoint increment is not a rate evaluation")
+        pytest.fail("a supplied endpoint increment must not recapture the source")
 
-    monkeypatch.setattr(owner, "_sine_rates", forbidden)
-    monkeypatch.setattr(owner, "_sine_state_from_rows", forbidden)
+    monkeypatch.setattr(owner, "_capture_sine_state", forbidden)
+    monkeypatch.setattr(owner, "_stage", forbidden)
     balanced = changed.assess_form_increment(increments=iter((1, -2, 0, 0)))
-    assert balanced.comparison is changed
+    assert balanced.comparison is not changed
+    assert balanced.comparison.form_rates != changed.form_rates
+    assert balanced.increments == (Q(1), -Q(2), Q(0), Q(0))
     assert balanced.weighted_form_before == balanced.weighted_form_after == -2
     assert balanced.weighted_form_change == 0
     assert not balanced.closed_flow_endpoint_obstructed

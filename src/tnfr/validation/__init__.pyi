@@ -20,7 +20,21 @@ from ..operators.grammar import (
 )
 from .compatibility import CANON_COMPAT as CANON_COMPAT
 from .compatibility import CANON_FALLBACK as CANON_FALLBACK
+from .config import ValidationConfig as StructuralValidationConfig
+from .config import configure_validation as configure_validation
+from .config import validation_config as validation_config
 from .graph import GRAPH_VALIDATORS, run_validators
+from .input_validation import validate_dnfr_value as validate_dnfr_value
+from .input_validation import validate_epi_value as validate_epi_value
+from .input_validation import validate_glyph as validate_glyph
+from .input_validation import validate_glyph_factors as validate_glyph_factors
+from .input_validation import validate_node_id as validate_node_id
+from .input_validation import (
+    validate_operator_parameters as validate_operator_parameters,
+)
+from .input_validation import validate_theta_value as validate_theta_value
+from .input_validation import validate_tnfr_graph as validate_tnfr_graph
+from .input_validation import validate_vf_value as validate_vf_value
 from .nodal_prediction import (
     FrozenNodalCalibration,
     NodalCalibrationError,
@@ -67,6 +81,7 @@ from .temporal_interface import (
     calibrate_temporal_warning,
     evaluate_prospective_warning,
 )
+from .unified_validation_system import ValidationConfig as ValidationConfig
 from .window import validate_window
 
 SubjectT = TypeVar("SubjectT")
@@ -116,6 +131,19 @@ __all__ = (
     "maybe_force",
     "soft_grammar_filters",
     "NFRValidator",
+    "ValidationConfig",
+    "StructuralValidationConfig",
+    "configure_validation",
+    "validation_config",
+    "validate_dnfr_value",
+    "validate_epi_value",
+    "validate_glyph",
+    "validate_glyph_factors",
+    "validate_node_id",
+    "validate_operator_parameters",
+    "validate_theta_value",
+    "validate_tnfr_graph",
+    "validate_vf_value",
     "P2MeasurementBounds",
     "P2IntervalCalibration",
     "P2IntervalForecast",

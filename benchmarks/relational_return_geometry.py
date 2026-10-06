@@ -21,7 +21,6 @@ from tnfr.dynamics.relational import (
     evaluate_relational_exchange,
 )
 from tnfr.mathematics._rational_interval import (
-    INTERVAL_METHOD,
     I,
     cos,
     pi_interval,
@@ -30,6 +29,12 @@ from tnfr.mathematics._rational_interval import (
 from tnfr.physics.phase_cycle_geometry import (
     PhaseChordExtension,
     PhaseCycleState,
+)
+from tnfr.physics.phase_cycle_geometry import PhaseRootBracket as RootBracket
+from tnfr.physics.phase_cycle_geometry import (
+    _enclose_decreasing_phase_root,
+    _return_path_nodal_affine_coefficients,
+    _return_path_storage_residual,
     derive_phase_chord_extension,
     derive_phase_cycle_geometry,
     reconstruct_phase_cycle_state,
@@ -43,27 +48,6 @@ MEDIATED_EDGES = RING_EDGES + ((0, 10), (10, 5))
 RETURN_EDGE = (1, 6)
 NAMED_CYCLES = ((0, 1, 2, 3, 4), (5, 6, 7, 8, 9), (0, 10, 5, 6, 1))
 CONNECTING_EDGES = ((0, 10), (10, 5), (6, 1))
-
-
-@dataclass(frozen=True)
-class RootBracket:
-    """Strict certified signs enclosing the unique root in exact turns.
-
-    Existence and uniqueness use the separately proved monotonicity on
-    (1/12, 1/8). Bounds are exact rationals; residuals enclose their ideal
-    trigonometric values. A midpoint is not the exact equilibrium.
-    """
-
-    lower: Q
-    upper: Q
-    lower_residual: I
-    upper_residual: I
-    refinements: int
-    interval_method: str = INTERVAL_METHOD
-
-    @property
-    def midpoint(self):
-        return (self.lower + self.upper) / 2
 
 
 @dataclass(frozen=True)
@@ -94,8 +78,7 @@ class ReturnGeometryReport:
 
 def root_residual(turns: Q | I) -> I:
     """Enclose F(t)=cos(t/4)-sin(t)-sin(2t/3), with t=2*pi*turns."""
-    angle = 2 * pi_interval() * turns
-    return cos(angle / 4) - sin(angle) - sin(2 * angle / 3)
+    return _return_path_storage_residual(turns, Q(0))
 
 
 def enclose_opposite_root(*, refinements=40) -> RootBracket:
@@ -104,41 +87,16 @@ def enclose_opposite_root(*, refinements=40) -> RootBracket:
     The 1..64 refinement budget is numerical policy, not a model parameter.
     No rounded transcendental sign or residual tolerance selects an endpoint.
     """
-    if type(refinements) is not int or not 1 <= refinements <= 64:
-        raise ValueError("refinements must be an integer from 1 through 64")
-    lower, upper = Q(1, 12), Q(1, 8)
-    lower_value, upper_value = root_residual(lower), root_residual(upper)
-    if not lower_value.lo > 0 > upper_value.hi:
-        raise ArithmeticError("initial root signs are unresolved")
-    for _ in range(refinements):
-        midpoint = (lower + upper) / 2
-        value = root_residual(midpoint)
-        if value.lo > 0:
-            lower, lower_value = midpoint, value
-        elif value.hi < 0:
-            upper, upper_value = midpoint, value
-        else:
-            raise ArithmeticError("root refinement sign is unresolved")
-    return RootBracket(lower, upper, lower_value, upper_value, refinements)
+    return _enclose_decreasing_phase_root(
+        root_residual, lower=Q(1, 12), upper=Q(1, 8), refinements=refinements
+    )
 
 
 def opposite_nodal_turns(s: Q) -> tuple[Q, ...]:
     """Affine circular family; sine balance additionally requires F(2*pi*s)=0."""
     if not isinstance(s, Q) or not Q(1, 12) <= s <= Q(1, 8):
         raise ValueError("opposite parameter must be an exact turn in [1/12, 1/8]")
-    return (
-        Q(0),
-        s,
-        Q(1, 4) + 3 * s / 4,
-        Q(1, 2) + s / 2,
-        Q(3, 4) + s / 4,
-        4 * s / 3,
-        s / 3,
-        -Q(1, 4) + 7 * s / 12,
-        -Q(1, 2) + 5 * s / 6,
-        -Q(3, 4) + 13 * s / 12,
-        2 * s / 3,
-    )
+    return tuple(a + b * s for a, b in _return_path_nodal_affine_coefficients())
 
 
 def _gap(turns, left, right):

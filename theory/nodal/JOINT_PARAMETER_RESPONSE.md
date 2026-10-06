@@ -299,7 +299,7 @@ The same primitive dependencies must be carried into the tetrad. In the table,
 Consequently a smooth pressure derivative is not automatically a smooth
 whole-tetrad evolution, and pressure-invisible phase motion can still change
 local phase observations. The
-[source tangency identity](../FORCED_SUPPORT_BALANCE.md#22-source-tangency-without-a-telemetry-controller)
+[source tangency identity](FORCED_SOURCE_AND_CLOCK.md#22-source-tangency-without-a-telemetry-controller)
 and reciprocal variational requirements constrain a proposed completion;
 neither selects the missing velocities. The shared exact controls are in
 [test_joint_nodal_response.py](../../tests/physics/test_joint_nodal_response.py).
@@ -590,7 +590,7 @@ observer. Thus constant pressure does not imply constant full tetrad.
 
 Finite level membership is stronger than tangent cancellation at one point.
 The existing higher-order escape example in
-[source tangency](../FORCED_SUPPORT_BALANCE.md#22-source-tangency-without-a-telemetry-controller)
+[source tangency](FORCED_SOURCE_AND_CLOCK.md#22-source-tangency-without-a-telemetry-controller)
 and the phase-only double-star obstruction remain necessary boundaries.
 Even finite compatible families leave angular motion, uniform capacity,
 source evolution and support evolution unselected. They do not prove

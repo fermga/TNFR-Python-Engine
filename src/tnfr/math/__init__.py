@@ -1,29 +1,19 @@
-"""
-TNFR Mathematical Analysis Suite.
+"""Symbolic calculus for declared nodal rows and supplied pressure laws.
 
-This package provides symbolic and numerical mathematical tools for analyzing,
-verifying, and optimizing TNFR (Resonant Fractal Nature Theory) dynamics.
-
-Modules:
-    symbolic: Symbolic calculus for nodal equation derivations
-
-All tools align with TNFR physics and preserve canonical invariants.
-
-Cross-compatibility:
-    This module is also accessible through tnfr.mathematics for unified access
-    to both symbolic and numerical mathematical operations.
+These identities retain the assumptions stated by each helper. Sequence
+admission belongs to ``tnfr.operators.grammar`` and structural graph fields to
+``tnfr.physics.fields``; symbolic integration does not certify an executed
+trajectory. ``tnfr.mathematics`` re-exports these calculus helpers alongside
+its numerical tools.
 """
 
-__version__ = "0.1.0"
-
-# Re-export helper modules for discoverability
-from . import fields_symbolic, grammar_validators, optimizer, symbolic
+from .._version import __version__
+from . import symbolic
 
 # Import main symbolic functions for easy access
 from .symbolic import (
     check_convergence_exponential,
     compute_second_derivative_symbolic,
-    evaluate_bifurcation_risk,
     get_nodal_equation,
     integrated_evolution_symbolic,
     latex_export,
@@ -38,14 +28,10 @@ __all__: list[str] = [
     "integrated_evolution_symbolic",
     "check_convergence_exponential",
     "compute_second_derivative_symbolic",
-    "evaluate_bifurcation_risk",
     "latex_export",
     "pretty_print",
     # Submodules
     "symbolic",
-    "grammar_validators",
-    "fields_symbolic",
-    "optimizer",
     # Package metadata
     "__version__",
 ]

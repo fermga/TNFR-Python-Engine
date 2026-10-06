@@ -16,18 +16,11 @@ if TYPE_CHECKING:  # pragma: no cover
 
 OPERATORS: dict[str, type["Operator"]] = {}
 
-# Backward compatibility telemetry counters (deprecated but retained for tests)
-_cache_stats = {
-    "registrations": 0,
-    "soft_invalidations": 0,
-    "hard_invalidations": 0,
-}
-
 
 def _ensure_loaded() -> None:
     """Populate OPERATORS lazily to avoid circular imports.
 
-    Operator modules may import `registry` for the (now no-op) decorator.
+    The operator base class imports the registration metaclass from this module.
     Lazy loading avoids an eager dependency on the built-in definitions.
     """
     if OPERATORS:
@@ -79,7 +72,6 @@ def register_operator(
     _ensure_loaded()
     if cls.name not in OPERATORS:
         OPERATORS[cls.name] = cls
-        _cache_stats["registrations"] += 1
     return cls
 
 
@@ -92,46 +84,11 @@ def get_operator_class(name: str) -> type["Operator"]:
     return OPERATORS[name]
 
 
-def discover_operators() -> None:  # pragma: no cover
-    """No-op retained for backward compatibility."""
-    return
-
-
 __all__ = (
     "OPERATORS",
     "get_operator_class",
-    "discover_operators",  # backward compatibility
     "register_operator",  # backward compatibility
 )
-
-
-def structural_operator(cls):  # pragma: no cover
-    """Disabled decorator retained for import compatibility."""
-    return cls
-
-
-def invalidate_operator_cache(hard: bool = False):  # pragma: no cover
-    """Invalidate operator cache (legacy telemetry only).
-
-    Nothing is cleared; counters are updated for backward compatibility.
-    """
-    _ensure_loaded()
-    if hard:
-        _cache_stats["hard_invalidations"] += 1
-    else:
-        _cache_stats["soft_invalidations"] += 1
-    return {"count": len(OPERATORS), "cleared": 0}
-
-
-def get_operator_cache_stats():  # pragma: no cover
-    """Return cache stats including registration/invalidation counters."""
-    _ensure_loaded()
-    return {
-        "count": len(OPERATORS),
-        "registrations": _cache_stats["registrations"],
-        "soft_invalidations": _cache_stats["soft_invalidations"],
-        "hard_invalidations": _cache_stats["hard_invalidations"],
-    }
 
 
 class OperatorMetaAuto(type):  # pragma: no cover

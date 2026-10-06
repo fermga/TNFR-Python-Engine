@@ -12,10 +12,9 @@ from __future__ import annotations
 from collections.abc import Iterator, Mapping, MutableMapping
 from contextlib import contextmanager
 from contextvars import ContextVar
+from dataclasses import dataclass
 from numbers import Integral
 from typing import Any
-
-from .compat.dataclass import dataclass
 
 RUNTIME_STEP_NEXT_KEY = "_runtime_step_next"
 RUNTIME_STEP_UNSET = object()
