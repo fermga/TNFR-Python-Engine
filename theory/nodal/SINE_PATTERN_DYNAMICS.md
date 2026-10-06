@@ -40,7 +40,7 @@ The nine attracting geometries of the
 [eleven-node sine model](../research/archive/receiver/SINE_RECEIVER_TRANSFER_AND_CAPTURE.md#sine-eleven-node-equilibrium-stability)
 are an instance of a more general composition rule. This section concerns
 the **smooth reciprocal sine law**, not the native Arg law in the
-[reflected-domain analyses](RELATIONAL_PATTERN_COMPOSITION.md#regular-seeded-reachability-audit).
+[reflected-domain analyses](RELATIONAL_NATIVE_FORMATION.md#regular-seeded-reachability-audit).
 It combines component geometry under
 the existing complete dynamics without assuming independent component
 motion or installing a support law.

@@ -207,8 +207,9 @@ frozen producers for unrelated changes.
 | Development / checks | [Contributing], [Testing], [Workflows] |
 | Illustrations / instruments | [Examples], [benchmarks] |
 
-Catalogs generate website menus; the operator registry generates its contract
-table. Glossary checks validate declarations/references, not scientific truth.
+Catalogs generate website menus; operator contracts and grammar roles generate
+their checked tables. Glossary checks validate declarations/references, not
+scientific truth.
 Do not create duplicate catalogs, rule tables or glossaries.
 
 Maintained theory/docs owners have a 4,000-physical-line editorial limit checked

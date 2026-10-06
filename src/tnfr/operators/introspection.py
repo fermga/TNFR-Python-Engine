@@ -8,8 +8,8 @@ documentation generation).
 Design Constraints
 ------------------
 1. Read-only: No mutation of operator classes or graph state.
-2. Traceability: Grammar roles reference U1-U4 identifiers verbatim.
-3. Fidelity: Contracts reflect AGENTS.md canonical operator summaries.
+2. Traceability: Grammar roles reference U1-U5 identifiers verbatim.
+3. Fidelity: Shared fields derive from operator_contracts and grammar_canon.
 4. Backward compatibility: Optional; absence of this module should not
    break existing imports.
 
@@ -26,7 +26,7 @@ OperatorMeta.mnemonic      Glyph code (AL, EN, ...)
 OperatorMeta.category      High-level functional category
 OperatorMeta.grammar_roles list of grammar rule roles (U1a, U1b, U2, ...)
 OperatorMeta.contracts     Short, stable contract statements
-OperatorMeta.doc           Concise physics rationale (1-2 sentences)
+OperatorMeta.doc           Canonical purpose from operator_contracts
 
 Note: Grammar rule U6 (confinement) is telemetry-only and not included
 as an active role. The ``grammar_roles`` tuples are the canonical per-operator
@@ -58,163 +58,44 @@ class OperatorMeta:
     doc: str
 
 
-OPERATOR_METADATA: Mapping[str, OperatorMeta] = {
-    # Generators ---------------------------------------------------------
-    "AL": OperatorMeta(
-        name="Emission",
-        mnemonic="AL",
-        category="generator",
-        grammar_roles=("U1a",),
-        contracts=(
-            "Initialises νf",
-            "Positive ΔNFR",
-            "Irreversible activation",
-        ),
-        doc="Starts coherent emission; begins structural reorganization.",
-    ),
-    "EN": OperatorMeta(
-        name="Reception",
-        mnemonic="EN",
-        category="integrator",
-        grammar_roles=(),
-        contracts=(
-            "Integrates incoming resonance",
-            "Leaves immediate operator-local C(t) unchanged",
-        ),
-        doc=(
-            "Integrates neighbour resonance while leaving stored pressure and "
-            "change rate unchanged during the operator-local jump."
-        ),
-    ),
-    "IL": OperatorMeta(
-        name="Coherence",
-        mnemonic="IL",
-        category="stabilizer",
-        grammar_roles=("U2", "U4a"),
-        contracts=(
-            "Reduces |ΔNFR|",
-            "Monotonic C(t) unless test",
-            "Bifurcation handler",
-        ),
-        doc="Negative feedback preserving bounded evolution and coherence.",
-    ),
-    "OZ": OperatorMeta(
-        name="Dissonance",
-        mnemonic="OZ",
-        category="destabilizer",
-        grammar_roles=("U1b", "U2", "U4a"),
-        contracts=(
-            "Increases |ΔNFR|",
-            "May trigger bifurcation",
-            "Needs IL/THOL handler",
-        ),
-        doc="Controlled instability elevating structural pressure.",
-    ),
-    "UM": OperatorMeta(
-        name="Coupling",
-        mnemonic="UM",
-        category="coupling",
-        grammar_roles=("U3",),
-        contracts=("Phase compatibility", "Establishes link"),
-        doc="Phase-sync enabling resonance exchange.",
-    ),
-    "RA": OperatorMeta(
-        name="Resonance",
-        mnemonic="RA",
-        category="propagation",
-        grammar_roles=("U3",),
-        contracts=("Amplifies identity", "Phase compatibility"),
-        doc="Propagates coherent pattern maintaining identity.",
-    ),
-    "SHA": OperatorMeta(
-        name="Silence",
-        mnemonic="SHA",
-        category="closure",
-        grammar_roles=("U1b",),
-        contracts=("νf→0 temporary", "Preserves EPI"),
-        doc="Freezes evolution for observation window.",
-    ),
-    "VAL": OperatorMeta(
-        name="Expansion",
-        mnemonic="VAL",
-        category="destabilizer",
-        grammar_roles=("U2",),
-        contracts=("Raises dimensionality", "Needs stabilizer"),
-        doc="Adds degrees of freedom increasing complexity.",
-    ),
-    "NUL": OperatorMeta(
-        name="Contraction",
-        mnemonic="NUL",
-        category="simplifier",
-        grammar_roles=(),
-        contracts=("Reduces dimensionality", "Aids stabilization"),
-        doc="Simplifies complexity by removing degrees of freedom.",
-    ),
-    "THOL": OperatorMeta(
-        name="SelfOrganization",
-        mnemonic="THOL",
-        category="stabilizer",
-        grammar_roles=("U2", "U4a", "U4b"),
-        contracts=(
-            "Creates sub-EPIs",
-            "Preserves form",
-            "Bifurcation handler",
-        ),
-        doc="Autopoietic structuring creating fractal sub-forms.",
-    ),
-    "ZHIR": OperatorMeta(
-        name="Mutation",
-        mnemonic="ZHIR",
-        category="transformer",
-        grammar_roles=("U2", "U4a", "U4b"),
-        contracts=(
-            "Phase transform threshold",
-            "Requires prior IL",
-            "Recent destabilizer",
-        ),
-        doc="Threshold-driven phase change altering regime.",
-    ),
-    "NAV": OperatorMeta(
-        name="Transition",
-        mnemonic="NAV",
-        category="generator",
-        grammar_roles=("U1a", "U1b"),
-        contracts=("Activates latent EPI", "Closes sequences"),
-        doc="Regime shift navigating attractors.",
-    ),
-    "REMESH": OperatorMeta(
-        name="Recursivity",
-        mnemonic="REMESH",
-        category="generator",
-        grammar_roles=("U1a", "U1b", "U5"),
-        contracts=("Cross-scale echoing", "Supports fractality"),
-        doc="Echoes patterns across scales for memory/nesting.",
-    ),
+# These legacy presentation categories are distinct from canonical U-rule roles.
+# Preserve their labels and iteration order while deriving every shared field.
+_CATEGORIES = {
+    "AL": "generator",
+    "EN": "integrator",
+    "IL": "stabilizer",
+    "OZ": "destabilizer",
+    "UM": "coupling",
+    "RA": "propagation",
+    "SHA": "closure",
+    "VAL": "destabilizer",
+    "NUL": "simplifier",
+    "THOL": "stabilizer",
+    "ZHIR": "transformer",
+    "NAV": "generator",
+    "REMESH": "generator",
 }
 
 
-# ── Centralize contract text from the canonical spec (drift-proof) ───────────
-# The per-operator contract is owned by
-# :data:`tnfr.operators.operator_contracts.OPERATOR_CONTRACTS` (the single
-# source of truth, derived from the nodal-equation ground-truth effects +
-# TNFR.pdf §2.2.1). Rebuild each metadata entry's ``contracts`` from the spec
-# so the two can never diverge. This eliminates the historical AL drift
-# ("Positive ΔNFR" / "Initialises νf" — AL only raises EPI) by construction.
-def _centralize_contracts(
-    table: Mapping[str, OperatorMeta],
-) -> dict[str, OperatorMeta]:
-    from dataclasses import replace
-
+def _build_operator_metadata() -> dict[str, OperatorMeta]:
+    from .grammar_canon import u_rules_for_operator
     from .operator_contracts import contract_for
 
-    out: dict[str, OperatorMeta] = {}
-    for mnemonic, meta in table.items():
+    table = {}
+    for mnemonic, category in _CATEGORIES.items():
         spec = contract_for(mnemonic)
-        out[mnemonic] = replace(meta, contracts=(spec.postcondition,))
-    return out
+        table[mnemonic] = OperatorMeta(
+            name=spec.english_name,
+            mnemonic=spec.glyph,
+            category=category,
+            grammar_roles=u_rules_for_operator(spec.name),
+            contracts=(spec.postcondition,),
+            doc=spec.purpose,
+        )
+    return table
 
 
-OPERATOR_METADATA = _centralize_contracts(OPERATOR_METADATA)
+OPERATOR_METADATA: Mapping[str, OperatorMeta] = _build_operator_metadata()
 
 
 def get_operator_meta(identifier: str) -> OperatorMeta:

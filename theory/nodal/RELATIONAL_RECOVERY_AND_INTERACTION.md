@@ -133,7 +133,7 @@ its mean. For two joined rings, opposite uniform rotations have stiffness
 proves instability at an exact equilibrium; at a transient state it is only
 instantaneous phase curvature.
 
-The [reflected equilibrium classification](RELATIONAL_PATTERN_COMPOSITION.md#reflected-regular-equilibria)
+The [reflected equilibrium classification](RELATIONAL_NATIVE_FORMATION.md#reflected-regular-equilibria)
 uses this full-network result, with independent exact Hessian controls and
 the existing materialized uniform-tangent adapter. It does not infer ideal
 criticality or an irrational equilibrium from a small floating residual.

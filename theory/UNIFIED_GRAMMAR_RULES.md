@@ -31,20 +31,27 @@ that cannot be promoted from grammar acceptance.
 
 ## 1. Canonical operator roles
 
-Executable identifiers are the lowercase English tokens (`emission`,
-`reception`, ...). Title-case English names label the public classes and the
-table below; glyphs are internal symbols.
+Executable identifiers are lowercase English tokens (`emission`, `reception`,
+...). Title-case names label public classes; glyphs are internal symbols.
+The following view is generated from `grammar_canon.py` and the operator
+contracts. Update it with `python scripts/check_documentation.py --write-generated`;
+the documentation gate checks agreement with the runtime role registry.
+
+<!-- BEGIN GENERATED GRAMMAR ROLES -->
 
 | Role | Operators | Rule |
-|------|-----------|------|
-| Generators | Emission (AL), Transition (NAV), Recursivity (REMESH) | U1a |
-| Closures | Silence (SHA), Transition (NAV), Recursivity (REMESH), Dissonance (OZ) | U1b |
-| Stabilizers | Coherence (IL), Self-organization (THOL) | U2 |
-| Destabilizers | Dissonance (OZ), Mutation (ZHIR), Expansion (VAL) | U2 |
-| Coupling/resonance | Coupling (UM), Resonance (RA) | U3 |
-| Bifurcation triggers | Dissonance (OZ), Mutation (ZHIR) | U4a |
-| Bifurcation handlers | Coherence (IL), Self-organization (THOL) | U4a |
-| Transformers | Mutation (ZHIR), Self-organization (THOL) | U4b |
+| --- | --- | --- |
+| generator | `emission` (AL), `transition` (NAV), `recursivity` (REMESH) | U1a |
+| closure | `dissonance` (OZ), `silence` (SHA), `transition` (NAV), `recursivity` (REMESH) | U1b |
+| stabilizer | `coherence` (IL), `self_organization` (THOL) | U2 |
+| destabilizer | `dissonance` (OZ), `expansion` (VAL), `mutation` (ZHIR) | U2 |
+| coupling | `coupling` (UM), `resonance` (RA) | U3 |
+| trigger | `dissonance` (OZ), `mutation` (ZHIR) | U4a |
+| handler | `coherence` (IL), `self_organization` (THOL) | U4a |
+| transformer | `self_organization` (THOL), `mutation` (ZHIR) | U4b |
+| recursive | `recursivity` (REMESH) | U5 |
+
+<!-- END GENERATED GRAMMAR ROLES -->
 
 Transition is not a U2 destabilizer: its contract describes a controlled regime
 change. Contraction is not a runtime closure. Consumers must import the shared
@@ -78,6 +85,10 @@ allowance does not waive other sequence or operator requirements.
 Finite signed nonzero scalar EPI counts as existing form, including its
 uniform-real BEPI representation. Zero of either sign does not; malformed
 provided values must not be converted into initialization permission.
+Context flags use the shared Boolean parser: supported false strings do
+not grant initialization or a diagnostic waiver, and unknown Boolean
+strings reject. Unregistered operator identifiers are rejected, not treated
+as neutral steps.
 
 ### U1b: Closure
 
@@ -311,7 +322,9 @@ C3/RC4 to U4. U5 covers declared hierarchy and U6 covers potential telemetry.
 Historical proposed spacing rules do not override this registry.
 
 **Word admission.** `GrammarValidator` owns canonical operator-word checks;
-the cached validator delegates to it after static preflight. Public
+[validate_sequence_optimized](../src/tnfr/operators/grammar_memoization.py)
+memoizes only static preflight and delegates with the original operator
+instances, retaining their recursion-depth metadata. Public
 `validate_sequence` and `parse_sequence` share these checks. Their default
 `compatibility_profile="legacy"` also retains adjacency and extra THOL-terminal
 preferences. The explicit `"core"` profile omits only those preferences; it
@@ -323,6 +336,10 @@ diagnostics remain separate. The exact initialized diagnostic OZ/ZHIR probe
 is labeled as a waiver, not a canonical-word pass. String words carry default
 recursion depth only; actual operator metadata, histories and live
 preconditions still require execution-time checks.
+Word validation receives no observed graph and emits no field measurements;
+use the field readers with explicit state for telemetry. The obsolete
+`collect_unified_telemetry` argument to `validate_grammar` is removed; see the
+[API migration](../docs/API_CONTRACTS.md#removed-unsupported-helpers).
 
 **Rejection policy.** Graph setting `GRAMMAR_REJECTION_MODE="raise"` rejects a
 blocked live request without calculating or executing a replacement. Its

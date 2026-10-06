@@ -11,13 +11,19 @@ import pytest
 from tnfr.config import inject_defaults
 from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from tnfr.operators import _phase_gate
-from tnfr.operators.factor_contracts import canonical_glyph_factor_defaults
+from tnfr.operators._coupling_stage_kernel import propose_coupling_target
+from tnfr.operators.factor_contracts import (
+    GlyphFactorValidationError,
+    canonical_glyph_factor_defaults,
+    resolve_runtime_operator_factors,
+)
 from tnfr.physics.coupling_support import (
     derive_antipodal_region_phase_balance,
     derive_compatible_capacity_balance,
     observe_antipodal_region_phase_response,
     observe_coupling_support,
 )
+from tnfr.types import Glyph
 
 F = Fraction
 
@@ -417,6 +423,70 @@ def test_capture_requires_enabled_capacity_synchronization_and_an_open_factor():
         graph.graph["GLYPH_FACTORS"]["UM_vf_sync"] = factor
         with pytest.raises(ValueError):
             observe_coupling_support(graph)
+
+
+@pytest.mark.parametrize("disabled", [False, "false", "off", "0", None, 0])
+def test_disabled_sync_cannot_report_a_capacity_update(disabled):
+    graph = _prepare(capacities=(1, 2, 4))
+    graph.graph.update(UM_SYNC_VF=disabled, UM_FUNCTIONAL_LINKS=False)
+    before = deepcopy(graph)
+    factors = resolve_runtime_operator_factors(
+        graph.graph["GLYPH_FACTORS"], Glyph.UM, graph.graph
+    )
+    proposal = propose_coupling_target(
+        graph,
+        0,
+        factors,
+        resolved_seed=None,
+        node_offset=None,
+        rank={n: n for n in graph},
+    )
+    assert not proposal.write_vf
+
+    with pytest.raises(ValueError, match="UM_SYNC_VF"):
+        observe_coupling_support(graph)
+
+    assert dict(graph.nodes(data=True)) == dict(before.nodes(data=True))
+    assert list(graph.edges(data=True)) == list(before.edges(data=True))
+    assert graph.graph == before.graph
+
+
+@pytest.mark.parametrize("enabled", [True, "true", "on", "1"])
+def test_enabled_sync_observation_matches_the_runtime_capacity_proposal(enabled):
+    graph = _prepare(capacities=(1, 2, 4))
+    graph.graph.update(UM_SYNC_VF=enabled, UM_FUNCTIONAL_LINKS=False)
+    observation = observe_coupling_support(graph)
+    factors = resolve_runtime_operator_factors(
+        graph.graph["GLYPH_FACTORS"], Glyph.UM, graph.graph
+    )
+    proposal = propose_coupling_target(
+        graph,
+        0,
+        factors,
+        resolved_seed=None,
+        node_offset=None,
+        rank={n: n for n in graph},
+    )
+
+    assert proposal.write_vf
+    assert proposal.vf_after != 1.0
+    assert proposal.vf_after == pytest.approx(
+        float(observation.balance.capacity_after[0])
+    )
+
+
+@pytest.mark.parametrize("invalid", ["unknown", ""])
+def test_unknown_sync_strings_reject_with_the_runtime_admission_error(invalid):
+    graph = _prepare()
+    graph.graph["UM_SYNC_VF"] = invalid
+    before = deepcopy(graph)
+
+    with pytest.raises(GlyphFactorValidationError, match="UM_SYNC_VF"):
+        observe_coupling_support(graph)
+
+    assert dict(graph.nodes(data=True)) == dict(before.nodes(data=True))
+    assert list(graph.edges(data=True)) == list(before.edges(data=True))
+    assert graph.graph == before.graph
 
 
 @pytest.mark.parametrize("kind", (nx.DiGraph, nx.MultiGraph))

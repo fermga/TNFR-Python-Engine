@@ -49,6 +49,8 @@ its presence does not establish completion or success.
 The documentation workflow validates repository sources, stages them through
 [prepare_docs.py](../scripts/prepare_docs.py), builds with strict MkDocs settings
 and publishes that site on eligible pushes. PRs validate without publication.
+Changes to either operator contracts or grammar roles also trigger the gate,
+so registry edits cannot bypass checks of their generated documentation tables.
 Edit source owners, not generated site copies.
 
 ## Package publication

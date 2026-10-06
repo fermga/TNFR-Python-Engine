@@ -237,7 +237,7 @@ keeps local modal evidence distinct from a maintained nonlinear oscillation.
 At an admitted uniform-form state, multiplying `generator` by the concatenated
 `field.form_rate + field.phase_rate` evaluates the ideal law's local second
 time derivative, with the same materialization limits. In the
-[regular source/receiver audit](../../../theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md#regular-seeded-reachability-audit),
+[regular source/receiver audit](../../../theory/nodal/RELATIONAL_NATIVE_FORMATION.md#regular-seeded-reachability-audit),
 this distinguishes zero initial phase velocity from nonzero phase acceleration.
 Independent rational bounds certify that preparation's derivative signs; the
 matrix product alone does not bound a Taylor remainder or a future response.
@@ -533,7 +533,7 @@ the support-transport observer, never by the connected relational evaluator.
 This is a hypothetical support comparison, not an executed event, a selector,
 a recovery certificate or a closed coarse-state model. Exact arithmetic on
 captured binary64 values is not a bound on ideal trigonometric evaluation.
-The [interface derivation](../../../theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md#one-bridge-interface-admission)
+The [interface derivation](../../../theory/nodal/RELATIONAL_SUPPORT_EVENTS.md#one-bridge-interface-admission)
 owns the result; [SDK usage](../../guides/relational/RELATIONAL_EXECUTION.md#compare-a-supplied-connection)
 owns the call and report field names. The common relational exporter also
 accepts this report, validating labels in its nested component/joined fields,
@@ -572,7 +572,7 @@ All internal edges and the primitive state are retained. This preserves existing
 internal cycles and their instantaneous phase data; it does not establish their
 future winding, attraction or physical identity. The generic graph observer is
 distinct from the conditional two-C5 recovery argument in the
-[relocation theorem](../../../theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md#identity-preserving-bridge-relocation).
+[relocation theorem](../../../theory/nodal/RELATIONAL_SUPPORT_EVENTS.md#identity-preserving-bridge-relocation).
 
 The attachment and relocation reports share `assess_supply(supplied_work)` and
 `represented_zero_supply_passive`. `continuous_loss_change` is the new minus
@@ -638,5 +638,5 @@ or relabeling of nodes lies outside this same-node interface.
 `relational_report_to_dict` retains these fields and exact fractions through
 the existing detached exporter; unsupported opaque node labels reject. See
 the [joint reset guide](../../guides/relational/RELATIONAL_EXECUTION.md#compare-a-joint-state-and-support-reset),
-[theory](../../../theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md#nodal-reorganization-and-contact)
+[theory](../../../theory/nodal/RELATIONAL_SUPPORT_EVENTS.md#nodal-reorganization-and-contact)
 and [actual operator controls](../../../tests/physics/test_coupling_attachment_budget.py).

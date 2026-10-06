@@ -15,7 +15,7 @@ already proves that principal-argument pressure has no continuous extension
 through either an antipodal branch or a zero neighbor resultant. With
 `w*nu_i>0` the form row inherits that discontinuity. Changing only phase
 evolution, storage or locality cannot repair it while leaving that form row
-unchanged. The [reflected boundary](RELATIONAL_PATTERN_COMPOSITION.md#reflected-boundary-exit)
+unchanged. The [reflected boundary](RELATIONAL_NATIVE_FORMATION.md#reflected-boundary-exit)
 additionally has path-dependent phase-rate limits from positive resultants.
 A regular invertible chart change removes neither obstruction.
 

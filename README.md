@@ -123,8 +123,8 @@ measurement model.
   matching local responses need not produce the same future. Some proposed
   formations are excluded by symmetry or storage constraints.
 
-The [theory-to-execution map](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md#theory-to-execution) links each
-result to its assumptions, derivation, implementation and checks. Proofs show
+The [theory-to-execution map](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md#theory-to-execution) routes models and responsibilities
+to their mathematical owners, implementation and representative checks. Proofs show
 what follows from premises; tests check code; finite experiments establish
 evidence for their declared cases. Physical identification needs another step.
 

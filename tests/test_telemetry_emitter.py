@@ -202,24 +202,3 @@ def test_mirror_format_failure_precedes_either_file_append(tmp_path):
     assert not path.exists()
     assert not path.with_suffix(".log").exists()
     assert len(emitter._buffer) == 1
-
-
-def test_optional_grammar_snapshot_log_preserves_unavailable_balance(
-    monkeypatch, capsys
-):
-    from tnfr.operators.definitions import Emission, Silence
-    from tnfr.operators.grammar_validate import validate_grammar
-    from tnfr.physics import fields
-
-    monkeypatch.setattr(
-        fields,
-        "compute_unified_telemetry",
-        lambda graph: {
-            "complex_field": {"correlation": -0.25},
-            "tensor_invariants": {"conservation_quality": None},
-        },
-    )
-    assert validate_grammar([Emission(), Silence()], collect_unified_telemetry=True)
-    output = capsys.readouterr().out
-    assert "correlation: -0.250" in output
-    assert "Conservation quality: unavailable (single snapshot)" in output

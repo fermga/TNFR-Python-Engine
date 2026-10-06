@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from typing import Any, Iterable, Mapping
 
 from ..errors import TNFRValueError
+from .grammar_context import _normalize_sequence_context
 from .grammar_core import GrammarValidator
 from .grammar_types import BIFURCATION_HANDLERS, glyph_function_name
 
@@ -26,6 +27,7 @@ class ValidatedSequence:
         self, operators: Iterable[Any], *, context: Mapping[str, Any] | None = None
     ):
         sequence = list(operators)
+        context = _normalize_sequence_context(context)
         initialized = bool(context and context.get("initial_epi_nonzero", False))
         valid, messages = GrammarValidator().validate(
             sequence,

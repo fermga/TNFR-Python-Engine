@@ -145,7 +145,7 @@ port have derivative `nu*C_0` with respect to the two mediator coordinates,
 of rank two; any smooth factorization through one scalar has rank at most
 one. This is local minimality for the stated observation, not a claim about
 restricted one-dimensional preparations, lossy approximations or histories.
-The [finite nonlinear compensation witness](RELATIONAL_PATTERN_COMPOSITION.md#environmental-capture-domain)
+The [finite nonlinear compensation witness](RELATIONAL_EFFECTIVE_CONNECTIONS.md#environmental-capture-domain)
 exhibits the corresponding failure of pressure alone inside a recovery
 domain. The coordinate identities themselves also hold at `mu=0`, where
 the mediator's absolute state freezes but its endpoint-relative coordinates

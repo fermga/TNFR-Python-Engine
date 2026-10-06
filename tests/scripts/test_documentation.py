@@ -106,6 +106,95 @@ def _run_check(workspace, check, *, optimized=True):
     )
 
 
+def _write_grammar_view(workspace, checker):
+    path = workspace / "theory" / "UNIFIED_GRAMMAR_RULES.md"
+    path.parent.mkdir(exist_ok=True)
+    path.write_text(
+        "# Grammar\n\nPreserved introduction.\n\n"
+        + checker.GRAMMAR_START
+        + "\n\n"
+        + checker.render_grammar_roles_table()
+        + "\n\n"
+        + checker.GRAMMAR_END
+        + "\n\nPreserved conclusion.\n",
+        encoding="utf-8",
+    )
+    return path
+
+
+@pytest.fixture
+def grammar_workspace(documented_workspace, monkeypatch):
+    workspace, checker = documented_workspace
+    monkeypatch.setattr(checker, "REPO_ROOT", workspace)
+    return _write_grammar_view(workspace, checker), checker
+
+
+def test_grammar_view_tracks_role_owner_and_preserves_explanatory_prose(
+    grammar_workspace, monkeypatch
+):
+    from dataclasses import replace
+
+    from tnfr.operators.grammar_canon import OPERATOR_ROLES, GrammarRole
+
+    path, checker = grammar_workspace
+    original = path.read_text(encoding="utf-8")
+    checker.check_grammar_view()
+    contraction = OPERATOR_ROLES["contraction"]
+    monkeypatch.setitem(
+        OPERATOR_ROLES,
+        "contraction",
+        replace(contraction, roles=contraction.roles | {GrammarRole.CLOSURE}),
+    )
+    with pytest.raises(RuntimeError, match="grammar role view drifted"):
+        checker.check_grammar_view()
+    checker.update_grammar_view()
+    checker.check_grammar_view()
+    revised = path.read_text(encoding="utf-8")
+    closure = next(
+        line for line in revised.splitlines() if line.startswith("| closure |")
+    )
+    assert "`contraction` (NUL)" in closure
+    before_start, before_end = checker.grammar_region(original)
+    after_start, after_end = checker.grammar_region(revised)
+    assert original[:before_start] == revised[:after_start]
+    assert original[before_end:] == revised[after_end:]
+
+
+def test_grammar_view_rejects_changed_role_under_optimization(grammar_workspace):
+    path, checker = grammar_workspace
+    assert _run_check(path.parent.parent, "check_grammar_view").returncode == 0
+    document = path.read_text(encoding="utf-8")
+    path.write_text(
+        document.replace("`recursivity` (REMESH)", "`contraction` (NUL)", 1),
+        encoding="utf-8",
+    )
+    result = _run_check(path.parent.parent, "check_grammar_view")
+    assert result.returncode != 0
+    assert "grammar role view drifted" in result.stderr
+
+
+@pytest.mark.parametrize("check", ("check_grammar_view", "update_grammar_view"))
+@pytest.mark.parametrize("corruption", ("missing", "duplicate", "reversed"))
+def test_grammar_view_rejects_ambiguous_region_before_writing(
+    grammar_workspace, check, corruption
+):
+    path, checker = grammar_workspace
+    document = path.read_text(encoding="utf-8")
+    if corruption == "missing":
+        document = document.replace(checker.GRAMMAR_END, "")
+    elif corruption == "duplicate":
+        document += checker.GRAMMAR_START
+    else:
+        document = document.replace(checker.GRAMMAR_START, "PLACEHOLDER", 1)
+        document = document.replace(checker.GRAMMAR_END, checker.GRAMMAR_START, 1)
+        document = document.replace("PLACEHOLDER", checker.GRAMMAR_END, 1)
+    path.write_text(document, encoding="utf-8")
+    result = _run_check(path.parent.parent, check)
+    assert result.returncode != 0
+    assert "markers are reversed" in result.stderr or "exactly one" in result.stderr
+    assert path.read_text(encoding="utf-8") == document
+
+
 @pytest.fixture
 def publication_workspace(tmp_path):
     """Supply independent metadata, without reading the release under preparation."""
@@ -996,6 +1085,22 @@ def test_write_generated_updates_both_registry_contracts_and_catalog_navigation(
     theory_navigation_workspace, monkeypatch, capsys
 ):
     workspace, checker = theory_navigation_workspace
+    grammar_path = _write_grammar_view(workspace, checker)
+    grammar_path.write_text(
+        grammar_path.read_text(encoding="utf-8").replace(
+            "`recursivity` (REMESH)", "obsolete", 1
+        ),
+        encoding="utf-8",
+    )
+    index = workspace / "theory" / "README.md"
+    index.write_text(
+        index.read_text(encoding="utf-8").replace(
+            checker.THEORY_CATALOG_END,
+            "| [Grammar](UNIFIED_GRAMMAR_RULES.md) | Roles |\n"
+            + checker.THEORY_CATALOG_END,
+        ),
+        encoding="utf-8",
+    )
     _populate_catalog(workspace, checker, "docs")
     navigation = workspace / "mkdocs.yml"
     navigation.write_text(
@@ -1024,6 +1129,7 @@ def test_write_generated_updates_both_registry_contracts_and_catalog_navigation(
     monkeypatch.setattr(sys, "argv", [str(CHECKER), "--write-generated"])
     assert checker.main() == 0
     checker.check_contract_view()
+    checker.check_grammar_view()
     checker.check_theory_navigation()
     checker.check_docs_catalog()
     checker.check_docs_navigation()

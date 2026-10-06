@@ -30,7 +30,10 @@ from ._argument_validation import (
     validate_common_execution_arguments,
 )
 from .definitions_base import Operator
-from .factor_contracts import resolve_runtime_operator_factors
+from .factor_contracts import (
+    _resolve_transition_flags,
+    resolve_runtime_operator_factors,
+)
 
 if TYPE_CHECKING:  # pragma: no cover - import used only by static analyzers
     from .jitter import JitterProposal
@@ -198,13 +201,13 @@ class Transition(Operator):
         """Reject malformed state, flags, arguments, and sinks without mutation."""
 
         validate_common_execution_arguments(G.graph, kw, operator=self.name)
-        for key in (
-            "VALIDATE_PRECONDITIONS",
-            "NAV_STRICT",
-            "NAV_RANDOM",
-        ):
-            if key in G.graph:
-                strict_bool(G.graph[key], operator=self.name, label=key)
+        _resolve_transition_flags(G.graph)
+        if "VALIDATE_PRECONDITIONS" in G.graph:
+            strict_bool(
+                G.graph["VALIDATE_PRECONDITIONS"],
+                operator=self.name,
+                label="VALIDATE_PRECONDITIONS",
+            )
 
         epi, vf, _, _, latent = self._read_state(G, node)
         regime = self._regime_from_state(epi, vf, latent)
@@ -481,16 +484,7 @@ class Transition(Operator):
         factors = resolve_runtime_operator_factors(
             G.graph.get("GLYPH_FACTORS"), self.glyph, G.graph
         )
-        strict = strict_bool(
-            G.graph.get("NAV_STRICT", False),
-            operator=self.name,
-            label="NAV_STRICT",
-        )
-        random_mode = strict_bool(
-            G.graph.get("NAV_RANDOM", True),
-            operator=self.name,
-            label="NAV_RANDOM",
-        )
+        strict, random_mode = _resolve_transition_flags(G.graph)
         if strict:
             base = vf
         else:

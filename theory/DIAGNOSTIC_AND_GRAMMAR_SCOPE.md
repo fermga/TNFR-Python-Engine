@@ -585,88 +585,46 @@ an explicit hierarchy and coefficient. No new physical coefficient is derived.
 
 ## 12. Audit integration and remaining obligations
 
-The review corrected concrete implementation discrepancies:
+The [grammar owner](UNIFIED_GRAMMAR_RULES.md#8-composition-and-implementation)
+specifies shared word admission, profiles, live rejection and observation.
+Signed nonzero form, causal debt, prior Coherence, actual recursion metadata
+and live phase checks are separate inputs. A diagnostic waiver is not a normal
+word pass; missing phase/reference observations are unavailable rather than
+evidence of safety. Tests establish those implemented contracts, not their
+physical necessity.
 
-- Signed finite nonzero EPI now counts as existing form in static, cached
-  and incremental initiation checks. Invalid provided values do not silently
-  become permission. The legacy missing-live-value default is retained for
-  provisional selection; it is not evidence that a physical state was supplied.
-- Public name validation now delegates causal U2/U4 checks to the same owner
-  as operator validation. Previously it accepted both a three-unit debt prefix
-  and Mutation without prior IL. Parsing uses the same decision, removing a
-  second implementation that required stabilizers even without destabilizers.
-- The exact diagnostic OZ/ZHIR waiver is labeled separately and does not
-  supply live execution preconditions. Legacy pair-compatibility and THOL-end
-  restrictions remain additional API policies; core acceptance alone does not
-  imply those stricter APIs accept a word.
-- The grammar observer normalizes operator instances, reports isolated U3
-  assessment as unavailable, and separates phase rejection from unrelated debt
-  or history rejection. Its sequence preview keeps the current phase snapshot;
-  it does not execute a future word.
-- Unified U6 reporting reuses the canonical drift/domain validator. Missing
-  or mismatched reference fields are unavailable rather than zero drift.
-  A passing mean drift is no longer described as trajectory safety.
-
-There is still no complete derivation of the thirteen maps, their invocation
-law, role catalog or numerical policies from the scalar nodal identity alone.
+There is no complete derivation of the thirteen maps, their invocation law,
+role catalog or numerical policies from the scalar nodal identity alone.
 Nor is there a proof that six grammatical rules are minimal or sufficient for
-all admissible TNFR dynamics. These are explicit research obligations, not
-grounds to remove existing contracts without a replacement theorem.
+all admitted TNFR dynamics. These limitations do not justify discarding an
+existing contract without a replacement argument.
 
-For the main generative question, the audit closes the proposed strict-U3
-**rank** implication negatively while the witness's finite fixed-source set
-is locally rigid. Finite geometry must be distinguished from tangent freedom
-before using either to support autonomous NFR maintenance. A joint
-phase/capacity/support law would still need independent structural derivation;
-grammar admission or a telemetry score cannot silently supply it. The single
-[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md) retains that queue.
+The strict-U3 witness in §10 disproves the proposed rank implication while its
+finite fixed-source set is locally rigid. The U5 witness in §11 separates exact
+macro closure from coherence ordering. Both remain reusable counterexamples;
+neither selects a phase/capacity/support law or establishes NFR maintenance.
+The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+alone assigns current work.
 
 ## 13. Structural grammar refactor and the full nodal system
 
-The target is a grammar whose physical conclusions can be traced to nodal
-structure and evolution, not to unexplained preferences. This is not achieved
-by renaming a calibrated constant, differentiating an underdetermined identity,
-or removing a contract without proving a replacement. The implementation now
-separates these responsibilities:
+Physical conclusions require explicit structural and dynamical premises.
+Renaming a calibrated constant, differentiating an underdetermined identity
+or removing a contract cannot supply the missing law. The
+[grammar basis registry](../src/tnfr/operators/grammar_canon.py) records which
+parts are identities, conditional theorems, contracts or policies; these are
+provenance declarations, not proof-carrying permission to execute.
 
-- [Grammar basis registry](../src/tnfr/operators/grammar_canon.py): immutable,
-  compositional identity/theorem/contract/policy records state their hypotheses,
-  configured choices and mathematical owner. A rule can contain several kinds.
-  These are declarations of provenance, not proof-carrying admission tokens.
-  SDK role views share this owner instead of maintaining incomplete role lists.
-- [Word profiles](../src/tnfr/operators/grammar_patterns.py): `legacy` retains
-  the extra adjacency and THOL-terminal preferences; `core` excludes those
-  preferences while retaining the shared U1-U5 word contracts. The context
-  key `compatibility_profile` carries an explicit choice through the existing
-  word/event entry points. Neither profile derives the remaining calibrated
-  U2/U4 policies or waives live operator checks. Existing anti-pattern warnings
-  and the optional semantic validator remain separate policies; `core` is not
-  a global diagnostic-disable switch.
-- [Rejection mode](../src/tnfr/operators/grammar_dynamics.py): graph setting
-  `GRAMMAR_REJECTION_MODE="raise"` rejects blocked requests without computing
-  a priority-list substitution. The absent/default `fallback` mode preserves
-  compatibility. Validated words always reject blocked steps. This changes
-  grammar replacement, not independent selector policies, and derives no
-  preferred next operator. The existing `filter_candidates` remains a set
-  of policy-admissible candidates, not an autonomous selector.
-- [Structural evidence](../src/tnfr/operators/grammar_evidence.py): a typed,
-  intact finite executor result can supply the common-metric gain bound of
-  its own represented EPI composition. A bound at most one certifies
-  nonincrease for those represented maps; a bound below one certifies their
-  contraction. The comparison value one is the identity gain, not a fitted
-  safety threshold. A bound above one does not prove that the actual observed
-  trajectory expanded. Missing evidence is unavailable; a caller Boolean,
-  raw dictionary or research claim label cannot supply it.
-- [Observation](../src/tnfr/operators/grammar_observations.py): word policy,
-  current-snapshot U3, caller-declared contract/U6 flags and typed structural
-  execution evidence are distinct. The latter does not authenticate the
-  current graph or authorize its next step. A finite represented-map result
-  is not a global executable-map, future, full-channel or tetrad theorem.
+The [word and execution interface](UNIFIED_GRAMMAR_RULES.md#8-composition-and-implementation)
+owns profiles, rejection modes and read-only observations. Its finite typed
+execution evidence can bound the represented EPI composition in a common
+metric. Gain at most one proves nonincrease for those maps; strict inequality
+proves contraction. Gain above one does not prove that the actual observed
+trajectory expanded. Missing evidence remains unavailable.
 
-These changes make the boundaries executable. They do not assert that the
-complete grammar or operator invocation law has already emerged from the
-nodal equation. Existing strict phase checks, state-domain checks, history
-requirements and atomic execution remain in their shared owners.
+Such a result does not authenticate another graph, supply a next operator,
+or extend to a global binary64 runtime, future schedule, full-channel or tetrad
+theorem. The following equations identify the additional closure obligations.
 
 ### Differentiation exposes missing laws; it does not invent them
 
@@ -737,7 +695,7 @@ or promote a configured selector to emergent physics.
 
 ## 14. Constitutive closure audit from the nodal law
 
-This gate starts with coherent structural form and `x'=diag(nu)*p`, not with
+The constitutive question starts with structural form and `x'=diag(nu)*p`, not with
 the claim that each implemented formula is a necessary TNFR law. The
 [foundation audit](FUNDAMENTAL_THEORY.md#24-physical-concepts-mathematical-types-and-implementation)
 owns EPI types, coordinate changes, units and the original source's conflicting
@@ -903,8 +861,7 @@ The follow-through is centralized in
 constitutive-law inventory. It covers every foundational parameter family,
 derives coefficientwise form/time covariance and the conditional local
 diffusive generator, and records telemetry, metric, energy and memory units.
-The earlier scalar/vector coherence-fit distance discrepancy is resolved by
-one shared estimator; fit and spectral fallback still have distinct meanings.
-Configured gains and phase-period capacity claims are corrected in source
-comments without changing their numeric values. This strengthens the evidence
-boundary but does not close autonomous phase/capacity/support dynamics.
+The shared coherence-length estimator retains distinct fit and spectral
+fallback provenance. Configured gains and phase-period interpretations require
+their stated premises; a numeric value alone does not close autonomous
+phase/capacity/support dynamics.

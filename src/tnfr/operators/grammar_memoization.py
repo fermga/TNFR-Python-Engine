@@ -1,14 +1,10 @@
-"""TNFR Grammar Memoization - Optimize Sequence Validation
+"""Cached static preflight for canonical operator-word validation.
 
-Provides caching for sequence validation that preserves TNFR semantics:
-- Caches ONLY static/structural aspects of sequences (operator roles, basic rules)
-- NEVER caches dynamic/contextual evaluations (U4a/U4b, bifurcation windows)
-- Maintains canonical grammar fidelity while reducing redundant computations
-
-Physics-First Design:
-- Signature based on sequence structure + compatibility mode
-- Preserves all U1-U6 constraints exactly
-- No "frozen context" bugs - dynamic aspects still evaluated per-call
+The cache stores role, syntax, initiation and closure checks. Remaining U1--U5
+word checks delegate to GrammarValidator on every call, retaining original
+operator instances so metadata such as Recursivity depth remains current.
+This reader does not execute operators or certify live phase compatibility.
+Canonical U6 requires its separate reference-relative field observations.
 """
 
 from __future__ import annotations

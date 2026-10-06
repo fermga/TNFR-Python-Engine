@@ -1,7 +1,7 @@
-"""Grammar Error Factory (Phase 3).
+"""Structured projection of the shared canonical word validator.
 
 Provides structured, introspection-enriched grammar errors referencing
-canonical rules (U1-U4 primary, U6 confinement read-only) and TNFR
+syntax admission, canonical word rules U1-U5 and TNFR
 invariants. Reuses existing :class:`StructuralGrammarError` base from
 ``grammar_types`` to avoid duplication.
 
@@ -9,7 +9,7 @@ Why a Factory?
 --------------
 Existing validation returns (bool, message) pairs. Downstream tooling
 needs richer payloads tying violations to:
- - Rule identifier (U1a, U1b, U2, U3, U4a, U4b, U6)
+ - Rule identifier (SYNTAX, U1a, U1b, U2, U3, U4a, U4b, U2-REMESH, U5)
  - Related canonical invariants (AGENTS.md § Canonical Invariants)
  - Operator metadata (category, contracts, grammar roles)
  - Sequence context (window slice, involved operators)
@@ -43,13 +43,16 @@ canonical rule registry; a consistency test pins the agreement.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
+from types import SimpleNamespace
 from typing import Any, Sequence
 
+from .grammar_canon import GRAMMAR_COMPLIANCE_INVARIANT
 from .grammar_canon import GRAMMAR_RULES as _GRAMMAR_RULES
 from .grammar_canon import related_invariants as _related_invariants
 from .grammar_core import GrammarValidator
-from .grammar_types import StructuralGrammarError
+from .grammar_types import StructuralGrammarError, _operator_name, glyph_function_name
 
 __all__ = [
     "ExtendedGrammarError",
@@ -67,6 +70,8 @@ _RULE_INVARIANTS: dict[str, tuple[int, ...]] = {
     r.rule_id: _related_invariants(r.rule_id) for r in _GRAMMAR_RULES
 }
 _RULE_INVARIANTS["U6_CONFINEMENT"] = _related_invariants("U6")
+_RULE_INVARIANTS["U2-REMESH"] = _related_invariants("U2")
+_RULE_INVARIANTS["SYNTAX"] = (GRAMMAR_COMPLIANCE_INVARIANT,)
 
 
 @dataclass(slots=True)
@@ -134,13 +139,14 @@ def make_grammar_error(
     index: int | None = None,
 ) -> ExtendedGrammarError:
     """Create an ExtendedGrammarError with invariants + introspection."""
-    # Lazy import avoids a definitions <-> grammar_error_factory import cycle.
-    from .definitions import get_operator_meta
+    # Lazy imports avoid building contract/metadata views during facade imports.
+    from .introspection import get_operator_meta
+    from .operator_contracts import contract_for
 
     invariants = _RULE_INVARIANTS.get(rule, ())
     op_meta: dict[str, Any] | None = None
     try:
-        meta = get_operator_meta(candidate)
+        meta = get_operator_meta(contract_for(candidate).glyph)
     except KeyError:
         meta = None
     if meta is not None:
@@ -166,98 +172,59 @@ def collect_grammar_errors(
     sequence: Sequence[Any],
     epi_initial: float = 0.0,
 ) -> list[ExtendedGrammarError]:
-    """Run canonical validations and build structured error list.
+    """Project all blocking outcomes of ``GrammarValidator.validate_checks``.
 
-    Only U1-U4 are active fail conditions; U6 confinement would attach
-    separately when integrated with telemetry (read-only safety check).
+    Strings use shared name/glyph admission. Actual operator instances remain
+    intact, including declared Recursivity depth. Unknown identifiers produce
+    SYNTAX errors; this reader neither executes live U3 gates nor observes U6.
     """
-    validator = GrammarValidator()
+    from .operator_contracts import contract_for
+
+    normalized = []
+    for operator in sequence:
+        if isinstance(operator, str):
+            try:
+                name = contract_for(operator).name
+            except KeyError:
+                name = glyph_function_name(operator)
+            normalized.append(SimpleNamespace(canonical_name=name))
+        else:
+            normalized.append(operator)
+
+    checks = GrammarValidator().validate_checks(normalized, epi_initial)
+    names = [_operator_name(operator) for operator in normalized]
+    canonical = [name if isinstance(name, str) else repr(name) for name in names]
     errors: list[ExtendedGrammarError] = []
-
-    # Accept glyph strings by wrapping them in lightweight stubs
-    # expected by GrammarValidator (which accesses .name / .canonical_name).
-    GLYPH_TO_NAME = {
-        "AL": "emission",
-        "EN": "reception",
-        "IL": "coherence",
-        "OZ": "dissonance",
-        "UM": "coupling",
-        "RA": "resonance",
-        "SHA": "silence",
-        "VAL": "expansion",
-        "NUL": "contraction",
-        "THOL": "self_organization",
-        "ZHIR": "mutation",
-        "NAV": "transition",
-        "REMESH": "recursivity",
-    }
-
-    class _OpStub:  # local minimal stub
-        def __init__(self, glyph: str):
-            canonical = GLYPH_TO_NAME.get(glyph.upper(), glyph.lower())
-            self.canonical_name = canonical
-            self.name = canonical
-
-    normalized: list[Any] = [
-        (_OpStub(op) if isinstance(op, str) else op) for op in sequence
-    ]
-
-    # Canonical operator names for reporting
-    canonical = [
-        getattr(op, "canonical_name", getattr(op, "name", "?")) for op in normalized
-    ]
-
-    # U1a
-    ok, msg = validator.validate_initiation(list(normalized), epi_initial)
-    if not ok:
+    for check in checks:
+        if check.passed or not check.blocking:
+            continue
+        # Position extraction enriches a failed outcome; prose never decides
+        # whether the check passed. Sequence-wide messages retain index=None.
+        position = re.search(r"at position (\d+)", check.message)
+        index = int(position.group(1)) if position else None
+        if index is None and canonical:
+            if check.rule == "U1a":
+                index = 0
+            elif check.rule == "U1b":
+                index = len(canonical) - 1
+            elif check.rule == "U3":
+                index = next(
+                    (
+                        i
+                        for i, name in enumerate(canonical)
+                        if name in {"coupling", "resonance"}
+                    ),
+                    None,
+                )
+        if index is not None and not 0 <= index < len(canonical):
+            index = None
         errors.append(
             make_grammar_error(
-                rule="U1a",
-                candidate=canonical[0] if canonical else "sequence",
-                message=msg,
+                rule=check.rule,
+                candidate=canonical[index] if index is not None else "sequence",
+                message=check.message,
                 sequence=canonical,
-                index=0 if canonical else None,
-            )
-        )
-    # U1b
-    ok, msg = validator.validate_closure(list(normalized))
-    if not ok:
-        errors.append(
-            make_grammar_error(
-                rule="U1b",
-                candidate=canonical[-1] if canonical else "sequence",
-                message=msg,
-                sequence=canonical,
-                index=(len(canonical) - 1) if canonical else None,
-            )
-        )
-    # U2
-    ok, msg = validator.validate_convergence(list(normalized))
-    if not ok:
-        errors.append(
-            make_grammar_error(
-                rule="U2",
-                candidate="sequence",
-                message=msg,
-                sequence=canonical,
-            )
-        )
-    # U3
-    ok, msg = validator.validate_resonant_coupling(list(normalized))
-    if not ok:
-        # Find first coupling/resonance candidate if available
-        idx = next(
-            (i for i, c in enumerate(canonical) if c in {"coupling", "resonance"}),
-            None,
-        )
-        cand = canonical[idx] if idx is not None else "sequence"
-        errors.append(
-            make_grammar_error(
-                rule="U3",
-                candidate=cand,
-                message=msg,
-                sequence=canonical,
-                index=idx,
+                index=index,
             )
         )
     return errors

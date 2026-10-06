@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Route structured grammar errors and aggregate validation through the complete
+  shared validator, retaining operator parameters and registry metadata.
+  Unknown operators and unsupported deep recursivity can no longer appear valid
+  through a partial error collector. Trigger documentation checks when the
+  grammar role registry changes, including changes without Markdown edits.
+- Consolidate the theory catalog and concept cards around maintained owners.
+  Separate native composition, support events, mediated connections and
+  formation proofs into focused chapters while preserving published anchors.
+  Centralize repeated stability/event explanations on their existing contracts
+  and clarify the scope of auxiliary variational models. Preserve nonzero
+  auxiliary gauge-field phases below the former amplitude cutoff, restoring
+  the documented covariant-difference behavior with independent rotation and
+  exact-zero controls.
+- Share Boolean admission across grammar context, Coupling and Dissonance options, so
+  text such as `"false"` no longer enables an initialization exception or an
+  optional effect. Preserve Transition's strict Boolean controls across glyphs,
+  public classes and stages. Reject unregistered operators before validating a
+  word. Generate grammar role documentation and operator introspection from
+  their shared registries, and consolidate operator theory around maintained
+  execution contracts instead of retired APIs and untraceable probe figures.
+- Remove `validate_grammar`'s `collect_unified_telemetry` argument, which
+  measured an unrelated fixed demonstration graph. Field observations now
+  require an explicitly supplied graph through the existing diagnostic APIs.
+
 - Retain the full unordered pair state through phase cancellation in the
   conservative unit doubled-C5 sine model. Add exact realizability admission,
   inherited polynomial rates, current derivatives and storage observations

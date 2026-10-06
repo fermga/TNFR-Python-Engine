@@ -103,20 +103,20 @@ __all__ = [
 class GrammarRole(str, Enum):
     """The grammatical roles an operator can carry across U1-U6.
 
-    Each role corresponds to a per-operator nodal-equation predicate in
+    Each role corresponds to a per-operator contract predicate in
     :mod:`physics_derivation`; an operator may carry several roles.
     """
 
-    GENERATOR = "generator"  # U1a — can start (create/activate EPI)
-    CLOSURE = "closure"  # U1b — can end (stabilize / close cycle)
-    STABILIZER = "stabilizer"  # U2  — reduces |ΔNFR| (negative feedback)
+    GENERATOR = "generator"  # U1a — registered initiation role
+    CLOSURE = "closure"  # U1b — allowed word endpoint
+    STABILIZER = "stabilizer"  # U2 — discharges one outstanding debt unit
     # U2 debt: OZ perturbs pressure, ZHIR phase, and VAL capacity.
     DESTABILIZER = "destabilizer"
     COUPLING = "coupling"  # U3  — requires phase verification
-    TRIGGER = "trigger"  # U4a — may push ∂²EPI/∂t² past τ
-    HANDLER = "handler"  # U4a — absorbs a triggered bifurcation
-    TRANSFORMER = "transformer"  # U4b — executes a threshold-gated bifurcation
-    RECURSIVE = "recursive"  # U5  — echoes structure across scales
+    TRIGGER = "trigger"  # U4a — requires declared handler coverage
+    HANDLER = "handler"  # U4a — supplies that word-level coverage
+    TRANSFORMER = "transformer"  # U4b — requires preceding context
+    RECURSIVE = "recursive"  # U5 — declared depth needs scale coverage
 
 
 @dataclass(frozen=True)
@@ -132,7 +132,7 @@ class OperatorGrammar:
 
 
 def _derive_roles(op: str) -> frozenset[GrammarRole]:
-    """Materialise an operator's roles from the nodal-equation predicates."""
+    """Materialize an operator's roles from the shared contract predicates."""
     roles: set[GrammarRole] = set()
     if can_generate_epi_from_null(op) or can_activate_latent_epi(op):
         roles.add(GrammarRole.GENERATOR)

@@ -313,12 +313,10 @@ class TestGaugeConnection:
             assert abs(a_uv + a_vu) < 1e-12, f"A({u},{v}) + A({v},{u}) ≠ 0"
 
     def test_connection_range(self, ws_graph):
-        """Connection values lie in [−π, π)."""
+        """Oriented representatives lie in [−π, π], including stored reverses."""
         conn = compute_gauge_connection(ws_graph)
         for edge, val in conn.items():
-            assert (
-                -math.pi - 1e-9 <= val < math.pi + 1e-9
-            ), f"A{edge} = {val} outside [−π, π)"
+            assert -math.pi <= val <= math.pi, f"A{edge} = {val} outside [−π, π]"
 
     def test_connection_zero_for_uniform_psi(self):
         """If Ψ has the same phase everywhere, A_ij = 0."""
@@ -335,6 +333,15 @@ class TestGaugeConnection:
         for val in conn.values():
             assert abs(val) < 1e-6, f"Non-zero connection {val} for uniform Ψ"
 
+    def test_half_turn_preserves_oriented_antisymmetry(self, monkeypatch):
+        monkeypatch.setattr(
+            "tnfr.physics.gauge.compute_complex_geometric_field",
+            lambda graph: {0: 1.0 + 0j, 1: -1.0 + 0j},
+        )
+        connection = compute_gauge_connection(nx.path_graph(2))
+        assert connection[0, 1] == -math.pi
+        assert connection[1, 0] == math.pi
+
 
 # ===================================================================
 # 5. Covariant Derivative
@@ -344,27 +351,60 @@ class TestGaugeConnection:
 class TestCovariantDerivative:
     """Validate D_ij Ψ = Ψ(j) − e^{iA_ij}Ψ(i)."""
 
-    def test_magnitude_gauge_invariant(self, ws_graph, random_alpha):
-        """Test |D_ij Ψ| is gauge-invariant.
-
-        This is a fundamental test: under Ψ → e^{iα}Ψ,
-        D_ij Ψ → e^{iα(j)} D_ij Ψ, so |D_ij Ψ| is unchanged.
-        """
-        # Compute |D_ij Ψ| before transformation
-        mag_before = compute_covariant_derivative_magnitude(ws_graph)
-
-        # We can't easily transform the graph in-place (no EPI mutation),
-        # but we can verify by manual computation that the magnitude
-        # is invariant using the algebraic identity.
+    def test_magnitude_gauge_invariant(self, ws_graph, random_alpha, monkeypatch):
+        """Rebuild the connection after independent local field rotations."""
         psi = compute_complex_geometric_field(ws_graph)
-        conn = compute_gauge_connection(ws_graph)
+        before = compute_covariant_derivative(ws_graph)
+        rotations = {
+            node: complex(math.cos(alpha), math.sin(alpha))
+            for node, alpha in random_alpha.items()
+        }
+        rotated = {node: rotations[node] * value for node, value in psi.items()}
+        monkeypatch.setattr(
+            "tnfr.physics.gauge.compute_complex_geometric_field", lambda graph: rotated
+        )
+        after = compute_covariant_derivative(ws_graph)
+        for (u, v), value in before.items():
+            assert after[u, v] == pytest.approx(rotations[v] * value, abs=1e-12)
+            assert abs(after[u, v]) == pytest.approx(abs(abs(psi[v]) - abs(psi[u])))
 
-        for (u, v), d_uv in compute_covariant_derivative(ws_graph).items():
-            # After gauge transform: D'_ij Ψ = e^{iα(v)} D_ij Ψ
-            # Therefore |D'| = |D|
-            alpha_v = random_alpha.get(v, 0.0)
-            d_prime = d_uv * complex(math.cos(alpha_v), math.sin(alpha_v))
-            assert abs(abs(d_prime) - abs(d_uv)) < 1e-12
+    @pytest.mark.parametrize("exponent", [-60, -500, -1022])
+    @pytest.mark.parametrize("target_amplitude", [1.0, 2.0])
+    def test_small_nonzero_fields_retain_phase(
+        self, monkeypatch, exponent, target_amplitude
+    ):
+        """Compare scaled differences so absolute tolerances cannot hide lost phase."""
+        graph = nx.path_graph(2)
+        scale = math.ldexp(1.0, exponent)
+        field = {0: complex(scale, 0.0), 1: complex(0.0, target_amplitude * scale)}
+        monkeypatch.setattr(
+            "tnfr.physics.gauge.compute_complex_geometric_field", lambda graph: field
+        )
+        assert compute_gauge_connection(graph)[0, 1] == pytest.approx(math.pi / 2)
+        before = compute_covariant_derivative(graph)
+        expected = target_amplitude - 1.0
+        assert before[0, 1] / scale == pytest.approx(complex(0.0, expected), abs=1e-15)
+
+        # Local rotations by +pi/2 and -pi/2; reconstruct A rather than rotating D.
+        field = {0: complex(0.0, scale), 1: complex(target_amplitude * scale, 0.0)}
+        after = compute_covariant_derivative(graph)
+        assert after[0, 1] / scale == pytest.approx(complex(expected, 0.0), abs=1e-15)
+        assert after[0, 1] / scale == pytest.approx(
+            -1j * before[0, 1] / scale, abs=1e-15
+        )
+
+    @pytest.mark.parametrize("zero_node", [0, 1])
+    def test_exact_zero_keeps_deterministic_phase(self, monkeypatch, zero_node):
+        graph = nx.path_graph(2)
+        scale = math.ldexp(1.0, -60)
+        field = {zero_node: complex(-0.0, -0.0), 1 - zero_node: complex(0.0, scale)}
+        monkeypatch.setattr(
+            "tnfr.physics.gauge.compute_complex_geometric_field", lambda graph: field
+        )
+        expected_angle = math.pi / 2 if zero_node == 0 else -math.pi / 2
+        assert compute_gauge_connection(graph)[0, 1] == pytest.approx(expected_angle)
+        for magnitude in compute_covariant_derivative_magnitude(graph).values():
+            assert magnitude / scale == pytest.approx(1.0)
 
     def test_zero_for_parallel_transport(self):
         """If Ψ is parallel-transported (constant magnitude, phase follows

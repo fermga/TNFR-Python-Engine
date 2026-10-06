@@ -184,6 +184,8 @@ def check_publication_metadata() -> None:
 
 CONTRACT_START = "<!-- BEGIN GENERATED OPERATOR CONTRACTS -->"
 CONTRACT_END = "<!-- END GENERATED OPERATOR CONTRACTS -->"
+GRAMMAR_START = "<!-- BEGIN GENERATED GRAMMAR ROLES -->"
+GRAMMAR_END = "<!-- END GENERATED GRAMMAR ROLES -->"
 THEORY_CATALOG_START = "<!-- BEGIN THEORY CATALOG -->"
 THEORY_CATALOG_END = "<!-- END THEORY CATALOG -->"
 THEORY_NAVIGATION_START = "# BEGIN GENERATED THEORY NAVIGATION"
@@ -461,15 +463,16 @@ def update_glossary_index() -> None:
     _glossary_checker().update_concept_index(REPO_ROOT)
 
 
+def _markdown_cell(value: str) -> str:
+    return value.replace("\\", "\\\\").replace("|", "&#124;").replace("\n", " ")
+
+
 def render_contract_table() -> str:
     """Render registry metadata, not an independently maintained contract list."""
     from tnfr.operators.operator_contracts import iter_contracts
 
     contracts = tuple(iter_contracts())
     require(len(contracts) == 13, "review the documented operator catalog size")
-
-    def cell(value: str) -> str:
-        return value.replace("\\", "\\\\").replace("|", "&#124;").replace("\n", " ")
 
     rows = [
         "| Operator | Token | Glyph | Primary channel | Scale | Context | Registered postcondition |",
@@ -490,19 +493,76 @@ def render_contract_table() -> str:
             c.context.value,
             c.postcondition,
         )
-        rows.append("| " + " | ".join(cell(v) for v in values) + " |")
+        rows.append("| " + " | ".join(_markdown_cell(v) for v in values) + " |")
     return "\n".join(rows)
 
 
-def contract_region(document: str) -> tuple[int, int]:
+def _generated_region(
+    document: str, start_marker: str, end_marker: str, label: str
+) -> tuple[int, int]:
     require(
-        document.count(CONTRACT_START) == 1 and document.count(CONTRACT_END) == 1,
-        "operator table must have exactly one generated region",
+        document.count(start_marker) == 1 and document.count(end_marker) == 1,
+        f"{label} table must have exactly one generated region",
     )
-    start = document.index(CONTRACT_START) + len(CONTRACT_START)
-    end = document.index(CONTRACT_END)
-    require(start < end, "operator table markers are reversed")
+    start = document.index(start_marker) + len(start_marker)
+    end = document.index(end_marker)
+    require(start < end, f"{label} table markers are reversed")
     return start, end
+
+
+def contract_region(document: str) -> tuple[int, int]:
+    return _generated_region(document, CONTRACT_START, CONTRACT_END, "operator")
+
+
+def grammar_region(document: str) -> tuple[int, int]:
+    return _generated_region(document, GRAMMAR_START, GRAMMAR_END, "grammar")
+
+
+def render_grammar_roles_table() -> str:
+    """Project the shared role registry without introducing another role catalog."""
+    from tnfr.operators.grammar_canon import (
+        CANONICAL_ORDER,
+        OPERATOR_ROLES,
+        ROLE_TO_URULE,
+        GrammarRole,
+    )
+    from tnfr.operators.operator_contracts import contract_for
+
+    rows = ["| Role | Operators | Rule |", "| --- | --- | --- |"]
+    for role in GrammarRole:
+        members = []
+        for token in CANONICAL_ORDER:
+            if OPERATOR_ROLES[token].has(role):
+                contract = contract_for(token)
+                members.append(f"`{contract.name}` ({contract.glyph})")
+        values = (role.value, ", ".join(members), ROLE_TO_URULE[role])
+        rows.append("| " + " | ".join(_markdown_cell(v) for v in values) + " |")
+    return "\n".join(rows)
+
+
+def update_grammar_view() -> None:
+    path = REPO_ROOT / "theory/UNIFIED_GRAMMAR_RULES.md"
+    document = path.read_text(encoding="utf-8")
+    start, end = grammar_region(document)
+    path.write_text(
+        document[:start]
+        + "\n\n"
+        + render_grammar_roles_table()
+        + "\n\n"
+        + document[end:],
+        encoding="utf-8",
+    )
+
+
+def check_grammar_view() -> None:
+    document = (REPO_ROOT / "theory/UNIFIED_GRAMMAR_RULES.md").read_text(
+        encoding="utf-8"
+    )
+    start, end = grammar_region(document)
+    require(
+        document[start:end].strip() == render_grammar_roles_table(),
+        "grammar role view drifted; run scripts/check_documentation.py --write-generated",
+    )
 
 
 def update_contract_view() -> None:
@@ -593,12 +653,13 @@ def main() -> int:
     parser.add_argument(
         "--write-generated",
         action="store_true",
-        help="Refresh operator contracts, theory/docs navigation and the concept-card index",
+        help="Refresh operator contracts, grammar roles, theory/docs navigation and the concept-card index",
     )
     args = parser.parse_args()
     if args.write_generated:
         update_glossary_index()
         update_contract_view()
+        update_grammar_view()
         update_theory_navigation()
         update_docs_navigation()
     checks = (
@@ -606,6 +667,7 @@ def main() -> int:
         check_versions_and_retired_claims,
         check_publication_metadata,
         check_contract_view,
+        check_grammar_view,
         check_documentation_size,
         check_theory_catalog,
         check_theory_navigation,

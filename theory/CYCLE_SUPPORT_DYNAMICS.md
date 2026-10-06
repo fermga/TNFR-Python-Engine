@@ -46,7 +46,7 @@ apply. No confinement potential or additional physical coefficient is added.
 
 Here "support reset" means a capacity/phase reset on the fixed cycle, not
 an edge-set event. The latter has a separate
-[relational storage budget](nodal/RELATIONAL_PATTERN_COMPOSITION.md#support-event-premise-admission).
+[relational storage budget](nodal/RELATIONAL_SUPPORT_EVENTS.md#support-event-premise-admission).
 
 Use target-only Coupling with `UM_BIDIRECTIONAL=False` and
 `UM_FUNCTIONAL_LINKS=False`. Its immutable all-target stage, followed by

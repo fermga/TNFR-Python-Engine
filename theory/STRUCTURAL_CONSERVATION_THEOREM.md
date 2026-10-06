@@ -553,15 +553,13 @@ an invariant domain and a condition excluding nonstationary invariant motion
 at zero dissipation; nonincrease alone is insufficient. Section 8.4 records
 only an operational multiplier model.
 
-**Refinement (Grammar-Energy Landscape)**: The nominal multiplier indicator
-($\Pi < 1$) is neither a necessary nor a general sufficient theorem for energy
-descent.
-Experimental evidence ([example 38](../examples/02_physics_regimes/38_grammar_energy_landscape.py))
-shows sequences with $\Pi \approx 1.288$ (non-contractive) that still achieve
-net energy descent ($\Delta E = -9.59$). The nominal model is conservative in
-that fixture;
-the measured sequence descended more steeply than the nominal product
-suggested, because operators interacted nonlinearly on that graph state.
+**Grammar-energy comparison.** The nominal product $\Pi$ in §8.4 is a policy
+diagnostic, not a proved bound on this energy. Therefore $\Pi<1$ is not a
+general sufficient certificate of descent, and descent does not require that
+indicator. [Example 38](../examples/02_physics_regimes/38_grammar_energy_landscape.py)
+compares the two on a supplied finite protocol. Any numerical conclusion or
+causal explanation must retain the actual source, preparation, configuration,
+realized glyph trace and response; the indicator alone supplies neither.
 
 ### 8.3 Energy Dissipation Rate
 

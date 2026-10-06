@@ -46,6 +46,31 @@ coverage remain distinct from a formation or retention verdict.
 
 ## Contract model
 
+### Word and operator controls
+
+Word admission rejects unregistered operator identifiers before role checks;
+operator instances retain their metadata, including Recursivity depth. Grammar
+context flags use the shared Boolean parser: `"false"` does not grant initialized
+form or diagnostic permission, and unknown Boolean strings reject. Context is
+copied, leaving the caller's mapping unchanged. See the
+[grammar contract](../theory/UNIFIED_GRAMMAR_RULES.md#8-composition-and-implementation).
+
+`GrammarValidator.validate` and `collect_grammar_errors` consume the same
+immutable outcomes from `GrammarValidator.validate_checks`; diagnostic text
+does not decide whether a check passed. Strings use shared identifier normalization; supplied
+operator objects retain their metadata, so unknown identifiers report `SYNTAX`
+and Recursivity depth remains subject to U5. `run_structural_validation` uses
+these errors for its word status. Omitting the sequence skips word validation;
+live U3 admission and temporal U6 evidence remain separate obligations.
+
+Coupling's four `UM_*` branch flags and `OZ_NOISE_MODE` use the same Boolean
+parser before active-factor resolution and proposals. Transition's `NAV_STRICT`
+and `NAV_RANDOM` retain their stricter Boolean-only domain across public classes,
+direct glyphs and stages; strings are rejected. Disabling a branch removes only
+that branch's factor requirements. It does not waive live U3 or other operator
+preconditions. The [operator maps](../theory/STRUCTURAL_OPERATORS.md) and
+[event contracts](contracts/OPERATOR_EVENTS.md) specify the execution effects.
+
 ### Removed unsupported helpers
 
 These removals have explicit replacements or scope boundaries; no compatibility
@@ -55,6 +80,7 @@ retains the removed source identities.
 
 | Removed interface | Migration or retained contract |
 | --- | --- |
+| `validate_grammar(..., collect_unified_telemetry=...)` | Remove the argument; word validation has no observed graph. Use `diagnose_network(actual_graph)` or `physics.fields.compute_unified_telemetry(actual_graph)` with explicit state. The removed option reported fields of a fixed demonstration graph, not the validated word or its execution. |
 | `tnfr.operators.algebra.validate_identity_property`, `validate_idempotence`, `validate_commutativity_nul` | Use the actual [operator event contracts](contracts/OPERATOR_EVENTS.md) and compare the same admitted transformations. The retired routines compared different words or unsupported words; they did not prove the advertised algebra. Silence attenuates capacity and is not generally idempotent. |
 | `tnfr.dynamics.DynamicLimits`, `DynamicLimitsConfig`, `compute_dynamic_limits` and `tnfr.dynamics.dynamic_limits` | No replacement emergent-limit law. The unused score-based proposal mixed configured coefficients and a fabricated missing-Si baseline. Declare application bounds explicitly through the model's existing configuration and admission. |
 | `tnfr.compat` and `tnfr._compat` | Import `dataclass` from `dataclasses` and `TypeAlias` from `typing` on supported Python versions. NumPy is required; optional dependencies use their actual libraries and the engine's existing dependency admission. Unused fake-library stubs are removed. |
@@ -346,6 +372,9 @@ This table is generated from the registry, including its declared measurement
 context. Refresh it with `python scripts/check_documentation.py --write-generated`;
 the normal documentation gate checks exact agreement. It specifies metadata and
 contracts, not a proof that every execution path satisfies a global theorem.
+The separate [grammar role table](../theory/UNIFIED_GRAMMAR_RULES.md#1-canonical-operator-roles)
+is generated from the grammar registry; a role does not replace the operator's
+live preconditions or measured postcondition.
 
 <!-- BEGIN GENERATED OPERATOR CONTRACTS -->
 
