@@ -48,7 +48,14 @@ from dataclasses import replace
 from fractions import Fraction
 from typing import Any, Sequence
 
+import networkx as nx  # noqa: F401 - retain the existing module attribute
+
 from .._exact_time import finite_represented_real
+from ..constants.canonical import (
+    K_PHI_CANONICAL_THRESHOLD,
+    PI,
+    U6_STRUCTURAL_POTENTIAL_LIMIT,
+)
 from ..mathematics._exact_weighted import exact_weighted_sum_ratio
 from ..mathematics._neighbor_differences import mean_neighbor_difference
 from ..mathematics.unified_numerical import np
@@ -56,17 +63,6 @@ from ..metrics.common import (
     finite_mean_absolute,
     finite_pearson_correlation,
     finite_population_std,
-)
-
-try:
-    import networkx as nx
-except ImportError:  # pragma: no cover
-    nx = None
-
-from ..constants.canonical import (
-    K_PHI_CANONICAL_THRESHOLD,
-    PI,
-    U6_STRUCTURAL_POTENTIAL_LIMIT,
 )
 from ._helpers import finite_real_scalar
 from .canonical import compute_phase_curvature, compute_structural_potential

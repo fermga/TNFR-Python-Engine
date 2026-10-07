@@ -137,6 +137,28 @@ def _amplitude_damping_exact(
     return evolved
 
 
+def test_requested_contractivity_rejection_retains_observed_gap(
+    hilbert_qubit: HilbertSpace,
+) -> None:
+    generator = build_lindblad_delta_nfr(
+        collapse_operators=[np.array([[0.0, 1.0], [0.0, 0.0]])]
+    )
+    engine = ContractiveDynamicsEngine(generator, hilbert_qubit)
+    initial = np.eye(2, dtype=np.complex128) / 2
+    expected = _amplitude_damping_exact(initial, gamma=1.0, time=1.0)
+    expected_gap = -(1.0 - math.exp(-1.0)) / math.sqrt(2.0)
+
+    # Nonunital damping can increase this centered Frobenius monitor while
+    # preserving density positivity and trace; rejection is explicitly opt-in.
+    observed = ensure_numpy(engine.step(initial, dt=1.0))
+    np.testing.assert_allclose(observed, expected, atol=1e-12)
+    assert engine.last_contractivity_gap == pytest.approx(expected_gap)
+
+    with pytest.raises(ValueError, match="Contractivity violated"):
+        engine.step(initial, dt=1.0, raise_on_violation=True)
+    assert engine.last_contractivity_gap == pytest.approx(expected_gap)
+
+
 def test_contractive_engine_matches_qubit_ground_truth(
     hilbert_qubit: HilbertSpace,
 ) -> None:

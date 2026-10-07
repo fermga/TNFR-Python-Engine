@@ -27,6 +27,9 @@ from math import gcd
 
 import numpy as np
 
+from ._integer_admission import _integer_argument
+from .number_theory import _integer_is_prime
+
 __all__ = [
     "FiniteField",
     "presentation_isomorphism",
@@ -71,6 +74,8 @@ class FiniteField:
 
     Elements are integers ``0 … q−1`` encoding degree-``<f`` polynomials over
     ``F_p`` in base ``p``.  Arithmetic is exact; the trace lands in ``F_p``.
+    Integer/index inputs, including NumPy integers, are normalized before
+    arithmetic. Boolean, noninteger and out-of-range element inputs reject.
     """
 
     def __init__(
@@ -80,24 +85,28 @@ class FiniteField:
         *,
         modulus: list[int] | tuple[int, ...] | None = None,
     ) -> None:
-        if p < 2:
+        p = _integer_argument(p, "p")
+        f = _integer_argument(f, "extension degree f")
+        if not _integer_is_prime(p):
             raise ValueError("p must be a prime >= 2")
         if f < 1:
             raise ValueError("extension degree f must be >= 1")
-        self.p = int(p)
-        self.f = int(f)
+        if f > 3:
+            raise NotImplementedError("extension degree f > 3 unsupported")
+        self.p = p
+        self.f = f
         self.q = p**f
         if modulus is None:
             self.modulus = _find_irreducible(p, f)
         else:
-            coefficients = [int(value) % p for value in modulus]
+            coefficients = [
+                _integer_argument(value, "modulus coefficient") % p for value in modulus
+            ]
             if len(coefficients) != f + 1 or coefficients[-1] != 1:
                 raise ValueError("modulus must be monic of declared degree")
             if f == 1:
                 if coefficients != [0, 1]:
                     raise ValueError("prime fields use the canonical x modulus")
-            elif f > 3:
-                raise NotImplementedError("extension degree f > 3 unsupported")
             elif any(_poly_eval(coefficients, value, p) == 0 for value in range(p)):
                 raise ValueError("modulus must be irreducible over F_p")
             self.modulus = coefficients
@@ -119,11 +128,21 @@ class FiniteField:
     def one(self) -> int:
         return 1
 
+    def _element_argument(self, value: int, label: str) -> int:
+        value = _integer_argument(value, label)
+        if not 0 <= value < self.q:
+            raise ValueError(f"{label} must lie in 0 .. q-1")
+        return value
+
     def add(self, a: int, b: int) -> int:
+        a = self._element_argument(a, "a")
+        b = self._element_argument(b, "b")
         da, db = self._to_list(a), self._to_list(b)
         return self._to_int([(x + y) % self.p for x, y in zip(da, db)])
 
     def mul(self, a: int, b: int) -> int:
+        a = self._element_argument(a, "a")
+        b = self._element_argument(b, "b")
         if self.f == 1:
             return (a * b) % self.p
         da, db = self._to_list(a), self._to_list(b)
@@ -141,6 +160,11 @@ class FiniteField:
         return self._to_int(prod[:f])
 
     def power(self, a: int, n: int) -> int:
+        """Raise an admitted field element to a nonnegative integer power."""
+        a = self._element_argument(a, "a")
+        n = _integer_argument(n, "exponent n")
+        if n < 0:
+            raise ValueError("exponent n must be nonnegative")
         r = 1 if self.f == 1 else self._to_int([1] + [0] * (self.f - 1))
         base = a
         while n > 0:
@@ -152,6 +176,7 @@ class FiniteField:
 
     def trace(self, a: int) -> int:
         r"""``Tr_{F_q/F_p}(a) = a + a^p + ⋯ + a^{p^{f−1}} ∈ F_p`` (returned as int)."""
+        a = self._element_argument(a, "a")
         s = 0
         cur = a
         for _ in range(self.f):
@@ -165,6 +190,7 @@ class FiniteField:
 
     def kth_power_set(self, k: int) -> set[int]:
         r"""The non-zero ``k``-th powers ``{a^k : a ∈ F_q^*}``."""
+        k = _integer_argument(k, "power k")
         if k < 1:
             raise ValueError("power k must be >= 1")
         return {self.power(a, k) for a in range(1, self.q)} - {0}
@@ -211,6 +237,36 @@ def additive_character(field: FiniteField, a: int, x: int) -> complex:
     return cmath.exp(2j * math.pi * t / field.p)
 
 
+# Local character reuse is valid for the built-in arithmetic. Keep custom
+# arithmetic and iteration on their original per-pair dispatch path.
+_PERIOD_FIELD_METHODS = {
+    name: getattr(FiniteField, name)
+    for name in (
+        "_element_argument",
+        "_to_list",
+        "_to_int",
+        "add",
+        "mul",
+        "power",
+        "trace",
+        "elements",
+        "kth_power_set",
+    )
+}
+_BUILTIN_ADDITIVE_CHARACTER = additive_character
+
+
+def _can_reuse_characters(field: FiniteField) -> bool:
+    return (
+        type(field) is FiniteField
+        and additive_character is _BUILTIN_ADDITIVE_CHARACTER
+        and all(
+            getattr(getattr(field, name), "__func__", None) is original
+            for name, original in _PERIOD_FIELD_METHODS.items()
+        )
+    )
+
+
 def gauss_period(field: FiniteField, k: int, a: int) -> complex:
     r"""Unnormalised Gauss period ``Σ_{s∈S} ψ_a(s)`` (``S`` = non-zero k-th powers)."""
     S = field.kth_power_set(k)
@@ -218,10 +274,20 @@ def gauss_period(field: FiniteField, k: int, a: int) -> complex:
 
 
 def normalized_periods(field: FiniteField, k: int) -> list[complex]:
-    r"""The Cayley eigenvalues ``η_a = (1/|S|) Σ_{s∈S} ψ_a(s)`` for all ``a``."""
+    r"""The Cayley eigenvalues ``η_a = (1/|S|) Σ_{s∈S} ψ_a(s)`` for all ``a``.
+
+    Built-in fields reuse the character of each product within this call,
+    retaining summation order. No table survives a call or a change of field
+    presentation; customized arithmetic retains per-pair evaluation.
+    """
     S = field.kth_power_set(k)
     d = len(S)
     inv = 1.0 / d
+    if d > 1 and _can_reuse_characters(field):
+        characters = [additive_character(field, 1, x) for x in field.elements()]
+        return [
+            inv * sum(characters[field.mul(a, s)] for s in S) for a in field.elements()
+        ]
     out: list[complex] = []
     for a in field.elements():
         out.append(inv * sum(additive_character(field, a, s) for s in S))

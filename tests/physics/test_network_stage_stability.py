@@ -329,6 +329,57 @@ def test_shared_kind_kernel_preserves_operator_specific_unlabeled_policy() -> No
     assert resonance_proposed_epi_kind("seed", neighbors, 0.1) == "RA"
 
 
+class _ThreeRepetitions:
+    def __index__(self):
+        return 3
+
+
+@pytest.mark.parametrize("operator", ["EN", "RA"])
+@pytest.mark.parametrize("repetitions", [3, np.int64(3), _ThreeRepetitions()])
+def test_exact_repeated_maps_match_independent_path_impulse_updates(
+    operator, repetitions
+) -> None:
+    graph = _graph(epi=(0.2, 0.4, 0.8), phase=(0.0, 0.0, 0.0))
+    result = certify_all_target_neighbor_stage(
+        graph,
+        operator,
+        fixed_support_declared=True,
+        fixed_phase_neighbor_sets_declared=True,
+        repetitions=repetitions,
+    )
+
+    # Evolve each coordinate impulse directly through three Jacobi row updates;
+    # this oracle uses neither a matrix product nor binary exponentiation.
+    columns = []
+    for impulse in range(3):
+        left, center, right = (Fraction(i == impulse) for i in range(3))
+        for _ in range(3):
+            left, center, right = (
+                (3 * left + center) / 4,
+                (left + 6 * center + right) / 8,
+                (center + 3 * right) / 4,
+            )
+        columns.append((left, center, right))
+    expected = tuple(zip(*columns, strict=True))
+    assert type(result.repetitions_requested) is int
+    assert result.repetitions_requested == 3
+    assert result.ideal_real_fixed_map_repetition_certified
+    assert result.represented_fixed_map_repetition_certified
+    assert result.exact_ideal_real_repeated_map == expected
+    assert result.exact_represented_repeated_map == expected
+
+
+@pytest.mark.parametrize("size", [0, 1])
+def test_too_small_support_is_rejected_before_matrix_power(size) -> None:
+    graph = _graph(
+        topology=nx.path_graph(size),
+        epi=(0.2,) * size,
+        phase=(0.0,) * size,
+    )
+    with pytest.raises(ValueError, match="at least two nodes"):
+        certify_reception_all_target_stage(graph, fixed_support_declared=True)
+
+
 @pytest.mark.parametrize("repetitions", [True, 0, -1, 1.5])
 def test_repetition_count_is_strictly_positive_integer(repetitions) -> None:
     graph = _graph()

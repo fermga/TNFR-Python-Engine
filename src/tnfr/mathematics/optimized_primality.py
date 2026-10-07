@@ -12,12 +12,16 @@ from __future__ import annotations
 import logging
 import math
 import time
+from copy import deepcopy
 from dataclasses import dataclass
 from typing import Any
 
+from .._exact_time import finite_represented_real
 from ..backends.optimized_numpy import OptimizedNumPyBackend as OptimizedNumpyBackend
+from ..config.parsing import parse_bool
 from ..metrics.coherence import compute_coherence
 from ..physics.fields import compute_structural_potential
+from ._integer_admission import _integer_argument
 from .arithmetic_pressure import big_omega, divisor_sum, num_divisors
 from .unified_numerical import np
 
@@ -50,9 +54,16 @@ THETA_CANONICAL = 0.6
 PRIME_THRESHOLD_HP = 0.5
 
 
+def _positive_threshold(value: Any) -> float:
+    threshold, _ = finite_represented_real(value, "threshold")
+    if threshold <= 0:
+        raise ValueError("threshold must be strictly positive")
+    return threshold
+
+
 @dataclass
 class PrimalityResult:
-    """Enhanced result structure for optimized primality testing."""
+    """Detached pressure-cut report; a custom cut need not equal primality."""
 
     n: int
     is_prime: bool
@@ -135,6 +146,7 @@ class OptimizedTNFRPrimality:
         min_prime_factor = np.arange(limit + 1, dtype=np.int32)
 
         for p in primes:
+            p = int(p)
             if p * p <= limit:
                 for i in range(p * p, limit + 1, p):
                     if min_prime_factor[i] == i:  # First time we see this number
@@ -177,7 +189,7 @@ class OptimizedTNFRPrimality:
         min_pf = self.sieve_data["min_prime_factor"]
 
         while temp > 1:
-            p = min_pf[temp]
+            p = int(min_pf[temp])
             exp = 0
             while temp % p == 0:
                 exp += 1
@@ -206,7 +218,7 @@ class OptimizedTNFRPrimality:
         min_pf = self.sieve_data["min_prime_factor"]
 
         while temp > 1:
-            p = min_pf[temp]
+            p = int(min_pf[temp])
             exp = 0
             p_power = 1
 
@@ -239,7 +251,7 @@ class OptimizedTNFRPrimality:
         temp = n
         min_pf = self.sieve_data["min_prime_factor"]
         while temp > 1:
-            p = min_pf[temp]
+            p = int(min_pf[temp])
             count += 1
             temp //= p
 
@@ -262,6 +274,7 @@ class OptimizedTNFRPrimality:
 
         ΔNFR(n) = ζ·(Ω(n)−1) + η·(τ(n)−2) + θ·(σ(n)/n − (1+1/n))
         """
+        n = _integer_argument(n, "n")
         if n < 2:
             return float("inf")
 
@@ -302,31 +315,34 @@ class OptimizedTNFRPrimality:
 
         Args:
             n: Integer to test for primality
-            threshold: Configured pressure cut (default: 0.5)
+            threshold: Finite positive represented pressure cut (default: 0.5).
+                Every path applies abs(delta_nfr) < threshold. The default
+                separates the prime zero set from composites for the configured
+                weights; a larger custom cut can also accept composites.
             include_metrics: Whether to compute structural field metrics
 
         Returns:
-            PrimalityResult with comprehensive information
+            Detached PrimalityResult; later calls cannot change this observation.
         """
+        n = _integer_argument(n, "n")
+        threshold = _positive_threshold(threshold)
+        include_metrics = parse_bool(include_metrics)
         start_time = time.perf_counter()
 
         # Check result cache
         cache_key = (n, threshold, include_metrics)
         if cache_key in self.result_cache:
-            result = self.result_cache[cache_key]
+            result = deepcopy(self.result_cache[cache_key])
             result.cache_hit = True
             return result
 
-        # Fast path for small numbers using sieve
+        # The sieve selects arithmetic, not a different decision policy.
+        delta_nfr = self.compute_delta_nfr(n)
         if n <= self.sieve_data["limit"] and n >= 2:
-            is_prime_sieve = self.sieve_data["is_prime"][n]
-            delta_nfr = self.compute_delta_nfr(n)
             method = "sieve_lookup"
         else:
-            # TNFR computation for large numbers
-            delta_nfr = self.compute_delta_nfr(n)
-            is_prime_sieve = abs(delta_nfr) < threshold
             method = "tnfr_computation"
+        passes_cut = abs(delta_nfr) < threshold
 
         # Compute structural metrics if requested
         structural_metrics = None
@@ -340,7 +356,7 @@ class OptimizedTNFRPrimality:
 
         result = PrimalityResult(
             n=n,
-            is_prime=bool(is_prime_sieve),
+            is_prime=bool(passes_cut),
             delta_nfr=float(delta_nfr),
             computation_time_ms=elapsed_ms,
             method=method,
@@ -350,7 +366,7 @@ class OptimizedTNFRPrimality:
         )
 
         # Cache result
-        self.result_cache[cache_key] = result
+        self.result_cache[cache_key] = deepcopy(result)
 
         return result
 
@@ -406,16 +422,20 @@ class OptimizedTNFRPrimality:
 
         Args:
             numbers: list of integers to test
-            threshold: ΔNFR threshold for primality
+            threshold: Finite positive pressure cut, as in is_prime_optimized.
             include_metrics: Whether to compute structural metrics
 
         Returns:
             list of PrimalityResult objects
         """
+        threshold = _positive_threshold(threshold)
+        include_metrics = parse_bool(include_metrics)
         results = []
 
-        # Sort numbers for better cache locality
-        sorted_numbers = sorted(set(numbers))
+        # Admit before equality/deduplication can hide Boolean or float inputs.
+        sorted_numbers = sorted({_integer_argument(n, "n") for n in numbers})
+        if not sorted_numbers:
+            return results
 
         start_time = time.perf_counter()
 
@@ -470,6 +490,10 @@ def tnfr_is_prime_optimized(
 ) -> tuple[bool, float]:
     """
     Optimized TNFR primality test (backward compatible interface).
+
+    The finite positive threshold is the same strict pressure cut used by
+    :meth:`OptimizedTNFRPrimality.is_prime_optimized`; custom cuts may accept
+    composites even though the default separates the prime zero set.
 
     Returns:
         tuple of (is_prime, delta_nfr)

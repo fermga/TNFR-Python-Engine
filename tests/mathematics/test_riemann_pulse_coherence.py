@@ -147,7 +147,9 @@ def test_empty_comparison_cannot_pass():
     assert "[PARTIAL]" in certificate.summary()
 
 
-def test_zeta_import_and_fixed_precision_leave_caller_context_unchanged():
+def test_zeta_import_and_fixed_precision_leave_caller_context_unchanged(
+    source_tree_environment,
+):
     # A fresh interpreter catches import-time precision mutation and the former
     # invalid mp.mp attribute access independently of pytest's import order.
     script = textwrap.dedent(
@@ -164,7 +166,10 @@ def test_zeta_import_and_fixed_precision_leave_caller_context_unchanged():
         """
     )
     result = subprocess.run(
-        [sys.executable, "-c", script], capture_output=True, text=True
+        [sys.executable, "-c", script],
+        env=source_tree_environment,
+        capture_output=True,
+        text=True,
     )
     assert result.returncode == 0, result.stderr
 

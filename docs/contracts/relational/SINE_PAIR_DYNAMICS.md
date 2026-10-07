@@ -42,7 +42,7 @@ connects the current and retained-state workflows.
 <a id="sine-global-pair-state"></a>
 ### Global unordered pair state, including phase cancellation
 
-The [scale owner](../../../src/tnfr/physics/relational_sine_scale.py) exposes
+The [pair owner](../../../src/tnfr/physics/relational_sine_pair.py) exposes
 `SineGlobalPairState` through two exact evaluators:
 
 - `derive_sine_global_pair_state(forms, phasors)` consumes ten signed forms
@@ -50,6 +50,11 @@ The [scale owner](../../../src/tnfr/physics/relational_sine_scale.py) exposes
 - `evaluate_sine_global_pair_state(*, form_means, resultants, phase_products,
   internal_form_squared, form_phase_moments)` consumes five entries in each
   primitive vector, in base-cycle order `0,...,4`.
+
+The pair-state, cancellation and finite receiver APIs are defined in
+`tnfr.physics.relational_sine_pair`. Their established imports from
+`tnfr.physics.relational_sine_scale` remain aliases to the same objects;
+signatures, report fields and JSON schemas are unchanged.
 
 The support is fixed: consecutive pairs `(0,1),...,(8,9)`, all four unit
 cross edges between adjacent pairs around C5, and no within-pair edges.
@@ -99,7 +104,7 @@ and [full-node controls](../../../tests/physics/test_sine_global_pair_state.py).
 
 `observe_sine_pair_cancellation(*, form_means, resultants, pair_index,
 resultant_first_tau_derivative, resultant_second_tau_derivative)` in the
-[scale owner](../../../src/tnfr/physics/relational_sine_scale.py) returns
+[pair owner](../../../src/tnfr/physics/relational_sine_pair.py) returns
 `SinePairCancellationObservation`. It retains the fixed support and complete
 unit-coefficient conservative law of the global pair state above. Its clock
 is explicitly **`tau=t/pi`**; input derivatives are `pi*d_t Z` and
@@ -140,6 +145,453 @@ identification follows. Direct schema
 exact fractions and the unavailable `None` value. See the
 [example](../../guides/relational/SINE_PAIR_DYNAMICS.md#sine-pair-cancellation-observability)
 and [fine-row tests](../../../tests/physics/test_sine_pair_cancellation_observation.py).
+
+<a id="sine-pair-finite-exchange"></a>
+### Finite directed exchange near an invisible pair family
+
+`assess_sine_pair_finite_exchange(*, phase_rotation, horizon_tau)` in the
+[pair owner](../../../src/tnfr/physics/relational_sine_pair.py) returns
+`SinePairFiniteExchange`. It evaluates the
+[analytic finite-exchange theorem](../../../theory/nodal/SINE_PAIR_INTERACTION.md#sine-pair-finite-exchange)
+on the fixed conservative unit doubled C5. The law, held capacities and support
+are those of the global pair state above; there are no inputs or events.
+
+Supply an exact Cartesian unit phasor `phase_rotation=(a,b)` and a strictly
+positive finite real `horizon_tau`. Shared admission retains represented-real
+values as fractions and rejects Boolean scalars, malformed/unordered phasors,
+nonfinite values and a norm different from exactly one. No phase normalization
+or horizon adjustment is performed. The clock is `tau=t/pi`; the original-clock
+endpoint is `T=pi*horizon_tau`.
+
+All ten initial forms are zero. In `orientation_order`, selected pair 0 has
+phasors `(1,-1)` or `(i,-i)`. Both members of each surrounding pair share its
+phasor. The comparison uses surrounding pairs `(q,1,-1,-1)`, whereas its
+symmetry control uses `(q,q,-q,-q)`, with `q=a+i*b`. These are separately
+prepared autonomous networks. The report retains their full initial phasors
+and fresh `SineGlobalPairState` assessments, including component storage and
+internal rates. The control is an exact stationary family; its selected-edge
+integrated currents and their difference are zero for every admitted horizon.
+
+`directed_block_edge=(0,1)` uses `(receiver, source)` order. The observable is
+the difference, real-antipodal minus imaginary-antipodal, of
+`integral_0^T I_(1->0)(t) dt`, where
+`I_(1->0)=Im(conj(Z_0)*Z_1)/(2*pi)`. It is a contribution to mean form;
+the corresponding weighted-cut integral is eight times larger. The report
+does not substitute the net change in pair 0, which also consumes the other
+neighbor's current, or interpret form exchange as energy transfer.
+
+The report retains the exact rational
+`integrated_current_difference_leading_term` and
+`integrated_current_difference_remainder_upper_bound`. Its
+`integrated_current_difference_bounds` encloses their difference and sum
+using the shared outward rational interval method. The bounds hold for the
+evolving complete nonlinear law, including environmental backreaction.
+Strictly negative/positive reported intervals yield `certified_negative` or
+`certified_positive`; otherwise `status="unavailable"` retains the unresolved
+interval and its reason. A zero leading coefficient or an interval containing
+zero does not certify equality of the two responses. The evaluator neither
+searches for a shorter horizon nor retries with a different rotation.
+
+This is an analytic finite-time certificate, not an executed trajectory,
+an inverse observation, a new propagator or a noisy-data inference. The direct
+schema `tnfr.sine-pair-finite-exchange.v1` and generic SDK projection retain
+exact inputs, source states, bounds and unavailable values; export does not
+authenticate an edited report. See the
+[usage example](../../guides/relational/SINE_PAIR_DYNAMICS.md#sine-pair-finite-exchange)
+and [independent fine-law controls](../../../tests/physics/test_sine_pair_finite_exchange.py).
+
+<a id="sine-pair-receiver-readout"></a>
+### One receiver endpoint with preparation and readout uncertainty
+
+`assess_sine_pair_receiver_readout(*, phase_rotation, horizon_tau,
+form_error_bound, phase_error_bound, readout_error_bound)` in the
+[pair owner](../../../src/tnfr/physics/relational_sine_pair.py) returns
+`SinePairReceiverReadout`. It reuses the finite-exchange preparation family
+above, with the same complete conservative sine law and all ten fine nodes.
+Its new observation is the **absolute mean form of pair 1**, fine nodes
+`(2,3)`, at `T=pi*horizon_tau`. Both incoming connections and the complete
+environment evolve. No phase derivative, hidden-state reading, baseline
+sample or selected-edge integral is an observation input.
+
+The phase rotation is an exactly unit Cartesian phasor. The horizon must
+satisfy `0<horizon_tau<1/2`. This upper restriction belongs to the rational
+uncertainty majorant, not a physical lifetime or loss of existence of the
+fine flow. All three error bounds are required finite nonnegative scalars;
+zero is admitted, Boolean/nonfinite/negative values reject. Shared exact and
+represented-real admission occurs before arithmetic, with no normalization,
+float materialization of exact fractions, missing-budget default or adaptive
+horizon selection.
+
+`form_error_bound` bounds each fine node's initial deviation from its zero
+nominal form. `phase_error_bound` bounds each initial circular phase distance
+from its nominal phase, in radians. The budgets cover the hidden pair,
+receiver and environment independently. The proof chooses initial lifts
+within that circular bound and follows the actual periodic field; no arbitrary
+unwrapping is inferred from data. The form budget also bounds the common
+form origin. An additional unbounded offset is outside the contract.
+Support, capacities, law coefficients and clock are held exact. The final
+scalar mean-form reading has additive error at most `readout_error_bound`.
+
+For each orientation, `nominal_readout_centers` combines the common linear
+term and its own cubic coefficient. `nominal_readout_bounds` includes the
+complete-law remainder. The two nonnegative amplification coefficients
+propagate separate form/phase preparation errors into
+`propagated_preparation_error_upper_bound`; adding final reading error gives
+`readout_uncertainty_radius`. `expanded_readout_bounds` encloses the complete
+recorded reading in `orientation_order=("real_antipodal","imaginary_antipodal")`.
+These are outward intervals; all primitive budgets, coefficients, nominal
+phasors and freshly derived full pair states are retained as exact fractions.
+
+`readout_gap_lower_bound` is the larger of the two ordered differences of
+one interval's lower endpoint and the other's upper endpoint. Strictly
+positive gap yields `status="certified_disjoint"`. Overlap or a shared
+endpoint yields `status="unavailable"`, retaining the intervals and reason
+`receiver_readout_intervals_overlap_or_touch`. An unresolved sufficient bound
+does not prove that the actual responses coincide. Membership in an enclosing
+interval alone does not prove existence of a compatible complete trajectory,
+identify an arbitrary hidden state or authenticate an observed sample.
+
+The separate symmetry controls have exact nominal receiver center zero.
+Their `symmetry_control_readout_bounds` retain preparation and readout errors:
+perturbed controls need not remain stationary or give an exact zero reading.
+Every admitted trajectory conserves its own complete storage; perturbed
+preparations need not share the nominal storage value or exact antipodality.
+
+This is a forward analytic discrimination certificate for two declared
+preparation families. It contains no measured sample, fitted pressure or
+executed numerical trajectory. Direct schema
+`tnfr.sine-pair-receiver-readout.v1`, generic SDK projection and the shared
+atomic writer retain its uncertainty and unavailable evidence. Export does
+not revalidate an edited report. The
+[theorem](../../../theory/nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-readout),
+[usage](../../guides/relational/SINE_PAIR_DYNAMICS.md#sine-pair-receiver-readout)
+and [independent controls](../../../tests/physics/test_sine_pair_receiver_readout.py)
+own the proof, execution example and tests.
+
+<a id="sine-pair-receiver-constitutive-confounding"></a>
+### Joint law and orientation ambiguity of the receiver endpoint
+
+`assess_sine_pair_receiver_confounding(*, phase_rotation, horizon_tau,
+epsilon_upper)` in the
+[pair owner](../../../src/tnfr/physics/relational_sine_pair.py) returns
+`SinePairReceiverConfounding`. It retains the doubled-C5 nominal preparations
+and the sole observation `Y=(x_2+x_3)/2` at `t=pi*horizon_tau`. Orientation A
+now evolves under the supplied family
+`j_epsilon(delta)=sin(delta)+epsilon*sin(delta)^3`, with constant
+`0<=epsilon<=epsilon_upper`; orientation B evolves under `epsilon=0`.
+Both complete models retain the same phase row, support, held unit capacities,
+zero loss and exact structural clock. Each conserves its own declared storage.
+This is a comparison of possible law/state pairs, not an executor or a fitted
+correction to the observed pressure.
+
+The exactly unit Cartesian `phase_rotation` uses shared scalar admission.
+`horizon_tau` and `epsilon_upper` must be finite and strictly positive;
+Boolean, nonfinite and nonpositive inputs reject. Exact fractions remain
+exact. There is no normalization, numerical trajectory, root search, adaptive
+coefficient range or fitted observation. The finite Taylor bound has no
+`horizon_tau<1/2` restriction: that restriction belongs to the separate
+preparation-error majorant of the preceding report.
+
+The report reconstructs the nominal primitive preparations and evaluates
+`Y_A^epsilon-Y_B^0` at the two declared coefficient endpoints. Its intervals
+include the separate nonlinear remainders from both complete laws and round
+outward. `coefficient_endpoints=(0,epsilon_upper)` orders the evidence in
+`endpoint_difference_bounds`; `endpoint_difference_signs` uses `1`, `-1`
+or `0` for positive, negative or unresolved enclosures. Strictly opposite
+endpoint signs yield
+`status="certified_collision_exists"`: continuous dependence on epsilon
+then proves that at least one coefficient strictly between zero and the upper
+endpoint gives exactly equal actual receiver readings. The certificate does
+not supply a root value, uniqueness or an observed collision. An interval
+containing zero, a shared endpoint or unresolved signs yield `"unavailable"`;
+these outcomes neither prove nor exclude a collision.
+`collision_parameter_open_interval` is the exact pair `(0,epsilon_upper)`
+only when certified, and otherwise `None`; both endpoints are excluded.
+
+The preparations and readings here are exact. Their equal-output witness is
+also admissible when a containing preparation/readout error family permits
+zero error. That fact does not transfer the earlier fixed-law separation
+certificate to an unknown law. The stationary cancellation controls and the
+consensus linearization remain shared by this whole constitutive family;
+neither resolves the ambiguity. Different laws may have different storage
+values even for the same preparation, and no conservation of the reference
+sine storage is imposed on the cubic law.
+
+The cubic alternative consumes phase information beyond the first circular
+moment. An independently justified
+[first-moment sufficiency premise](../../../theory/nodal/SINE_CONSTITUTIVE_INFORMATION.md#first-phase-moment-sufficiency)
+excludes it. The collision does not contradict that conditional sine-selection
+theorem or disprove the sine law; this one endpoint and the shared controls
+cannot independently establish the missing selection premise.
+
+Direct schema `tnfr.sine-pair-receiver-confounding.v1` and the generic SDK
+projection retain the inputs, bounds and unavailable evidence. Export does
+not authenticate an edited report. The
+[proof](../../../theory/nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-constitutive-confounding),
+[usage](../../guides/relational/SINE_PAIR_DYNAMICS.md#sine-pair-receiver-constitutive-confounding)
+and [independent controls](../../../tests/physics/test_sine_pair_receiver_confounding.py)
+own the result and its checks. No physical constitutive range, measurement
+bridge, formation claim or universal law selection is established.
+
+<a id="sine-pair-receiver-two-time"></a>
+### Two receiver readings with one constant coefficient
+
+`assess_sine_pair_receiver_two_time(*, phase_rotation, horizons_tau,
+epsilon_upper, form_error_bound, phase_error_bound, readout_error_bound)`
+in the [pair owner](../../../src/tnfr/physics/relational_sine_pair.py) returns
+`SinePairReceiverTwoTime`. It compares the preceding A-epsilon and B-zero
+families at two times using the same receiver `Y=(x_2+x_3)/2`. Each branch
+has one initial state throughout; A has one constant coefficient in the
+closed interval `[0,epsilon_upper]`. The full doubled-C5 support, unit
+capacities, phase row, own-law storage, exact clock and zero inputs, loss and
+events retain the preceding contract's meaning.
+
+The exact unit Cartesian rotation `q=a+ib` must satisfy `a>1/2` and `b>0`.
+The ordered pair `horizons_tau` must satisfy `0<h0<h1`; `epsilon_upper` is
+positive and all three error bounds are nonnegative. Shared scalar admission
+rejects Boolean and nonfinite inputs before arithmetic and preserves exact
+fractions. The sufficient preparation bound requires
+`4*(1+3*epsilon_upper)*h1**2<1`; violation rejects the domain, without asserting
+a physical instability. Every initial fine-node form and phase may vary
+independently within its budget, including the absolute form origin and
+environment. Phase errors mean initial continuous-lift offsets in radians;
+no phase-mean reconstruction is performed. Each scalar reading of each
+branch has the declared readout error. No independence of errors over time
+is assumed.
+
+The report rebuilds the nominal primitive preparations, cubic contrast and
+full-law Taylor remainder. A coupled form/phase comparison propagates each
+branch's initial uncertainty. Convex coefficient chords bound these errors
+and yield affine inequalities `N-A*epsilon <= recorded_A-recorded_B <=
+U-B*epsilon` at each time. Strictly positive slopes give the necessary
+coefficient interval `[N/A,U/B]`. `necessary_coefficient_bounds` retains both
+outward dyadic intervals in time order, **without clipping** to the separately
+reported coefficient domain. Matching at both times requires membership in
+both intervals with the same coefficient. Interval membership alone proves
+neither a realizable collision nor an estimate of the coefficient.
+
+Strictly disjoint outward intervals give `status="certified_disjoint"`.
+`coefficient_gap_lower_bound` is the maximum of the two directed endpoint
+gaps; a positive value certifies separation. Overlap or touching yields
+`status="unavailable"` and
+`unavailable_reason="necessary_coefficient_intervals_overlap_or_touch"`.
+Nonpositive affine slopes yield `"coefficient_interval_slope_not_positive"`,
+with coefficient bounds and gap unavailable (`None`). These sufficient
+bounds need not resolve every distinguishable family.
+
+On certification, `joint_readout_weights` gives exact signed weights in time
+order, with absolute values summing to one. They eliminate the common
+coefficient between the two affine bounds. The outward
+`joint_readout_gap_lower_bound` bounds their weighted A-minus-B record
+difference in form units, including all declared errors. An extremely small
+positive exact readout margin may round down to zero; coefficient-interval
+separation still determines status. Weights and margin are `None` when the
+coefficient test is unavailable. No response, fitted parameter, numerical
+trajectory or time-varying coefficient is consumed.
+
+Direct schema `tnfr.sine-pair-receiver-two-time.v1` and generic SDK projection
+retain primitives, coefficient endpoints, error bounds, affine evidence and
+unavailable fields. Export does not authenticate a report. The
+[frozen protocol and proof](../../../theory/nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-two-time),
+[usage](../../guides/relational/SINE_PAIR_DYNAMICS.md#sine-pair-receiver-two-time)
+and [independent controls](../../../tests/physics/test_sine_pair_receiver_two_time.py)
+own this conditional separation. It resolves the named two-family ambiguity;
+general state recovery, physical law selection and sensor/clock calibration
+remain outside its scope.
+
+<a id="sine-pair-receiver-two-law"></a>
+### Two receiver readings with an unknown coefficient in either hypothesis
+
+`assess_sine_pair_receiver_two_law(*, phase_rotation, horizons_tau,
+epsilon_upper, form_error_bound, phase_error_bound, readout_error_bound)`
+in the [pair owner](../../../src/tnfr/physics/relational_sine_pair.py) returns
+`SinePairReceiverTwoLaw`. Both nominal orientations now evolve under the
+complete cubic-sine family. A and B may use different coefficients, each
+in `[0,epsilon_upper]`; each branch retains one coefficient and one initial
+state throughout both readings. The complete support, phase row, capacities,
+clock and error semantics are those of the preceding two-time contract.
+Neither branch imposes the reference sine law or its storage on the other.
+`phase_exchange_beta=1` records the held coefficient of the phase row;
+`coefficient_endpoints` bounds the unknown cubic-current coefficient of
+either hypothesis.
+
+Primitive admission retains the exact unit Cartesian rotation `a+ib` with
+`a>1/2,b>0`, two strictly increasing positive horizons, a positive coefficient
+upper bound, and three nonnegative error bounds. Boolean and nonfinite
+inputs reject before arithmetic; fractions remain exact. The sufficient
+preparation domain is `4*(1+3*epsilon_upper)*h1**2<1`. Initial phase errors
+are bounded lift offsets in radians. All ten form and phase coordinates,
+including the environment and absolute form origin, may be perturbed.
+Readout errors may be correlated across times and hypotheses.
+
+The fixed `readout_weights=(-h1,h0)/(h0+h1)` have absolute values summing
+to one. Applied to the two receiver values, they cancel each nominal law's
+linear Taylor term separately. `cubic_time_factor=h0*h1*(h1-h0)` multiplies
+the remaining cubic coefficient. `nominal_cubic_coefficients` stores each
+orientation's quadratic polynomial in its own law coefficient, in ascending
+power order. `nominal_cubic_coefficient_ranges` gives its exact extrema on
+the declared interval; positivity of the polynomial coefficients makes these
+the endpoint values in the admitted rotation domain.
+
+`nominal_initial_rate_bounds` bounds the maximum fine-node form rate at
+initialization for each orientation over its whole coefficient family.
+The full-law continuation bound then supplies `form_growth_bounds_by_time`,
+`form_rate_bounds_by_time` and `remainder_upper_bounds_by_time`, with time
+outermost and orientation innermost. These retain the evolving environment;
+they do not hold the initial pressure fixed. The cubic remainder applies to
+nominal zero-form trajectories. Separate `preparation_error_bounds_by_time`
+propagate every admitted nonzero initial error under its own law.
+
+`joint_error_radii` combines the complete-law remainder, preparation error
+and scalar readout error using the absolute weights, separately for A and B.
+`joint_difference_bounds` is an outward dyadic enclosure of every admitted
+weighted record difference `Z_A-Z_B` over the entire two-coefficient square.
+A strictly positive lower endpoint gives `status="certified_disjoint"`.
+Otherwise the report returns `status="unavailable"` with
+`unavailable_reason="joint_readout_difference_not_strictly_positive"`.
+A zero endpoint cannot certify; an interval containing zero does not prove
+a realizable collision. This is a sufficient test of positive separation,
+not a complete classifier of all admitted inputs.
+
+The report rebuilds all consumed quantities from primitives; it consumes
+neither a measured record nor another report's verdict. The weights do not
+cancel an arbitrary unknown constant form origin, which remains bounded by
+the preparation budget. Coefficients varying between readings, unknown
+clocks and continuous model defects require separate bounds. Certification
+distinguishes these orientation families without identifying either
+coefficient or selecting a unique physical law.
+
+Direct schema `tnfr.sine-pair-receiver-two-law.v1` and the generic SDK retain
+exact rational evidence and unavailable verdicts. Export is not authentication.
+The [frozen protocol and proof](../../../theory/nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-two-law),
+[usage](../../guides/relational/SINE_PAIR_DYNAMICS.md#sine-pair-receiver-two-law)
+and [independent controls](../../../tests/physics/test_sine_pair_receiver_two_law.py)
+own the result. Earlier single-reading and fixed-reference certificates keep
+their original inputs, remainder bounds and verdicts.
+
+<a id="sine-pair-receiver-defect"></a>
+### Continuous defects in both complete evolution rows
+
+`assess_sine_pair_receiver_defect` in the
+[pair owner](../../../src/tnfr/physics/relational_sine_pair.py) takes the same
+primitive arguments as `assess_sine_pair_receiver_two_law` plus mandatory
+`form_rate_defect_bound` and `phase_rate_defect_bound`. It returns
+`SinePairReceiverDefect`. The added primitives are finite nonnegative bounds
+on the absolute additive residual in every fine-node form or phase row,
+respectively, almost everywhere over the entire observation window. Their
+units are form per unit `tau` and radians per unit `tau`. Boolean, nonfinite,
+non-real and negative inputs reject through shared original-scalar admission;
+exact fractions remain exact. The reference rotation, horizon and preparation
+admission domains remain unchanged.
+
+Each hypothesis retains one initial state, one constant coefficient in the
+declared family and one residual history across both readings. Histories may
+differ between hypotheses and may be arbitrarily correlated across time and
+nodes. The theorem concerns absolutely continuous paths satisfying the full
+rows almost everywhere. It needs no derivatives of the residuals and installs
+no runtime input, pressure law, event or controller.
+
+`reference_certificate` is a fresh two-law report rebuilt internally from
+the supplied primitives; this assessor accepts no report argument. Its
+conservative-model statements apply to the reference comparison. Residuals
+in the expanded family generally change total form and own-law storage;
+the [proof](../../../theory/nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-defect)
+owns their explicit balances. Perturbed controls need not be stationary.
+
+For `L=1+3*epsilon_upper`, the separate response factors are
+`h/(1-4*L*h**2)` and `L*h**2/(1-4*L*h**2)`.
+`form_defect_response_factors_by_time` and
+`phase_defect_response_factors_by_time` retain these in reference time order.
+`defect_error_bounds_by_time` combines them with their respective residual
+budgets. The result is additional form uncertainty, separate from the
+reference preparation, Taylor remainder and readout budgets.
+
+`joint_defect_radius` is the absolute-weighted defect error for **each**
+branch; `joint_error_radii` adds it to the two reference radii in orientation
+order. `joint_difference_bounds` combines those expanded errors with the
+exact reference cubic ranges before outward materialization. It does not
+reuse a cached verdict or inflate already-rounded endpoints. Zero residual
+budgets reproduce the reference interval and verdict exactly.
+
+Status is `"certified_disjoint"` only if the expanded interval's lower
+endpoint is strictly positive. Otherwise it is `"unavailable"`, with
+`unavailable_reason="joint_readout_difference_not_strictly_positive"`.
+Touching zero or losing a positive margin to outward rounding cannot certify.
+Unavailable evidence does not prove a realizable collision. Arbitrary
+time-dependent residuals are not canceled by the fixed nominal time weights.
+
+Direct schema `tnfr.sine-pair-receiver-defect.v1` and generic SDK projection
+retain exact inputs, nested reference evidence and the new verdict. Export
+does not authenticate a source or verify that an actual residual history
+satisfies its declared budget. Physical use needs independent whole-window
+defect bounds and a justified state, sensor and clock mapping. The
+[frozen protocol](../../../theory/nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-defect),
+[usage](../../guides/relational/SINE_PAIR_DYNAMICS.md#sine-pair-receiver-defect)
+and [independent controls](../../../tests/physics/test_sine_pair_receiver_defect.py)
+retain this conditional scope.
+
+<a id="sine-pair-persistent-response"></a>
+### Internal allocation, finite response and persistent geometric identity
+
+`assess_sine_pair_persistent_response(delta_bounds=..., horizon_tau=...,
+form_error_bound=..., phase_error_bound=..., readout_error_bound=...,
+radius=...)` in the [pair owner](../../../src/tnfr/physics/relational_sine_pair.py)
+assesses the [declared comparison](../../../theory/nodal/SINE_PAIR_INTERACTION.md#sine-pair-persistent-response).
+It is a detached analytic family certificate, not a captured graph, a numerical
+trajectory or an executor. `relational_sine_scale` retains a compatibility
+re-export of the same implementation.
+
+The fixed model is the ten-node, degree-four, complete doubled C5 with unit
+held capacities, unit exchange/storage scales, zero form loss and clock
+`tau=t/pi`. Mathematical target phases are `a*2*pi/5`. In preparation order
+`phase_split` then `form_split`, pair 0 has either phase offsets `(+delta,-delta)` or
+form offsets `(+u,-u)`, with `u^2=2*cos(2*pi/5)*(1-cos(delta))`.
+All other nominal coordinates retain the target. Both nominal centers have
+the same collective means and storage for the same delta. The independently
+perturbed full-state boxes need not be energy matched. Neither symbolic pi
+nor the square root is replaced by a captured binary64 source coordinate.
+
+Shared represented-real admission precedes arithmetic. `delta_bounds` contains
+exactly two scalars satisfying `0<lower<=upper<=1` in radians. The horizon is
+strictly positive and satisfies `2*horizon_tau**2<1`, the domain of this
+rational comparison bound. Radius is strictly positive; all three error
+budgets are nonnegative. Boolean and nonfinite physical values reject.
+These restrictions describe this assessor, not a stability limit of the law.
+Positive form and phase widths give full-dimensional open box interiors;
+zero widths remain valid lower-dimensional conditional preparations.
+
+The scalar reading is the absolute mean form of nodes 2 and 3 at the declared
+horizon. Analytic remainder bounds include the evolving nominal environment.
+The nominal synchronized-pair reduction is used only to derive those bounds;
+the preparation-error comparison and storage barrier retain all twenty fine
+coordinates. Arbitrarily correlated initial errors and independently bounded
+additive readout errors are covered.
+
+`SinePairPersistentResponse` retains `nominal_readout_bounds`,
+`recorded_readout_bounds` and `recorded_difference_bounds` separately from
+`initial_radius_margin_bounds` and `storage_barrier_margin_bounds`.
+`persistence_certified_by_preparation` describes the two geometric admissions;
+`response_separation_certified` describes only the recorded contrast.
+`full_dimensional_preparation` is true exactly when both initial widths are
+positive. The symbolic target, support, complete law and clock remain explicit.
+`status="certified_persistent_response"` requires both preparations to pass
+strict initial-radius and conserved-storage barrier tests inside the acute
+target chart, together with a strictly positive outward A-minus-B recorded
+contrast. Failure of a sufficient inequality yields `status="unavailable"`
+with its reason; it establishes neither a realizable response collision nor
+loss of identity. A response certificate alone cannot substitute for the
+geometric admission. The frozen protocol's stronger numerical stopping margin
+is checked against the resulting bound, rather than hidden in this API status.
+
+Persistence concerns the specified winding/acute geometry for all time under
+the unchanged unforced law. It does not promise five internally active pairs,
+formation, a selected microscopic law, physical energy units or a particle
+identity. No result from the preceding defect or cubic-law certificates is
+transferred to this conservative family. The [usage](../../guides/relational/SINE_PAIR_DYNAMICS.md#sine-pair-persistent-response)
+and [independent controls](../../../tests/physics/test_sine_pair_persistent_response.py)
+retain these boundaries. SDK export preserves exact premises and availability;
+the direct schema is `tnfr.sine-pair-persistent-response.v1`. Serialization
+does not authenticate an actual preparation or observation.
 
 <a id="sine-replica-scale"></a>
 ### Inherited sine dynamics with both internal nodes retained
@@ -1101,7 +1553,8 @@ exporter.
 ### Exact prepared internal pulse
 
 `assess_sine_replica_pulse(reference_model=..., form_half_difference=...,
-phase_half_difference=..., capacity=...)` in the same scale owner assesses
+phase_half_difference=..., capacity=...)` in the
+[`replica pulse owner`](../../../src/tnfr/physics/relational_sine_replica_pulse.py) assesses
 an exact mathematical preparation, rather than capturing a graph. The support
 is the complete double-replica C5, with uniform mean form, exact mean phase
 turns `i/5`, identical signed internal coordinates `u,delta` in every pair,
@@ -1109,6 +1562,11 @@ and one common strictly positive held capacity. Common form and phase origins
 are immaterial. The input phase half-difference is in radians and must have
 certified magnitude less than `pi/2`. Shared exact/represented real admission
 rejects Booleans and nonfinite values; rational inputs retain their exact value.
+
+This owner also supplies the variation, splitting, stiffness-curve and
+work-response reports below. The established `relational_sine_scale` imports
+remain aliases to the same classes and functions; SDK export schemas are
+unchanged.
 
 The reference model must declare `phase_domain="regular"` and zero EPI loss,
 as required by the shared sine comparison interface. Its coefficients and storage

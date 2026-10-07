@@ -10,11 +10,17 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, ClassVar, Sequence
 
+from .._spectral_expectation import finite_spectral_real
 from ..constants.canonical import (
     MATH_SPECTRAL_EXPECTATION_FLOOR_DEFAULT,
     MATH_TOLERANCE_CANONICAL,
 )
 from ..errors import TNFRValueError
+from ._complex_arrays import (
+    backend_complex_array,
+    nonnegative_tolerance,
+    normalized_complex_vector,
+)
 from .backend import MathematicsBackend, ensure_array, ensure_numpy, get_backend
 from .unified_numerical import np
 
@@ -53,28 +59,12 @@ def _as_complex_vector(
     *,
     backend: MathematicsBackend,
 ) -> Any:
-    arr = ensure_array(vector, dtype=np.complex128, backend=backend)
+    arr = backend_complex_array(vector, backend=backend, label="Spectral state")
     if getattr(arr, "ndim", len(getattr(arr, "shape", ()))) != 1:
         raise TNFRValueError(
             "Vector input must be one-dimensional.",
             context={"ndim": getattr(arr, "ndim", len(getattr(arr, "shape", ())))},
             suggestion="Provide a 1D vector.",
-        )
-    return arr
-
-
-def _as_complex_matrix(
-    matrix: Sequence[Sequence[complex]] | np.ndarray | Any,
-    *,
-    backend: MathematicsBackend,
-) -> Any:
-    arr = ensure_array(matrix, dtype=np.complex128, backend=backend)
-    shape = getattr(arr, "shape", None)
-    if shape is None or len(shape) != 2 or shape[0] != shape[1]:
-        raise TNFRValueError(
-            "Operator matrix must be square.",
-            context={"shape": shape},
-            suggestion="Provide a square matrix.",
         )
     return arr
 
@@ -106,18 +96,21 @@ class SpectralExpectationOperator:
     the spectral decomposition remains differentiable provided the supplied
     operator is non-defective.  NumPy callers receive ``numpy.ndarray`` outputs
     and all tolerance checks match the historical semantics.
+
+    Construction owns a copy of the supplied matrix. ``matrix``, ``eigenvalues``
+    and ``spectrum()`` return detached arrays; construct a new operator to change
+    the law instead of assigning to those read-only properties.
     """
 
     metric_kind: ClassVar[str] = "spectral_operator_expectation"
     canonical_coherence_certified: ClassVar[bool] = False
     canonical_history_key: ClassVar[None] = None
 
-    matrix: ComplexMatrix
-    eigenvalues: ComplexVector
     c_min: float
     backend: MathematicsBackend = field(init=False, repr=False)
     _matrix_backend: Any = field(init=False, repr=False)
-    _eigenvalues_backend: Any = field(init=False, repr=False)
+    _matrix_numpy: ComplexMatrix = field(init=False, repr=False)
+    _eigenvalues_numpy: ComplexVector = field(init=False, repr=False)
 
     def __init__(
         self,
@@ -135,25 +128,40 @@ class SpectralExpectationOperator:
                 context={"c_min": c_min, "expectation_floor": expectation_floor},
                 suggestion="Use expectation_floor in new spectral code.",
             )
+        atol = nonnegative_tolerance(atol)
         resolved_backend = backend or get_backend()
-        operand = ensure_array(operator, dtype=np.complex128, backend=resolved_backend)
+        operand = backend_complex_array(
+            operator, backend=resolved_backend, label="Spectral operator", owned=True
+        )
         if getattr(operand, "ndim", len(getattr(operand, "shape", ()))) == 1:
-            eigvals_backend = _as_complex_vector(operand, backend=resolved_backend)
+            eigenvalues_numpy = np.array(
+                ensure_numpy(operand, backend=resolved_backend), copy=True
+            )
             if ensure_hermitian:
-                imag = ensure_numpy(eigvals_backend.imag, backend=resolved_backend)
+                imag = eigenvalues_numpy.imag
                 if not np.allclose(imag, 0.0, atol=atol):
                     raise TNFRValueError(
                         "Hermitian operators require real eigenvalues.",
                         context={"max_imag": float(np.max(np.abs(imag))), "atol": atol},
                         suggestion="Ensure eigenvalues are real.",
                     )
-            matrix_backend = _make_diagonal(eigvals_backend, backend=resolved_backend)
-            eigenvalues_backend = eigvals_backend
+            matrix_backend = _make_diagonal(operand, backend=resolved_backend)
+            matrix_numpy = np.array(
+                ensure_numpy(matrix_backend, backend=resolved_backend), copy=True
+            )
         else:
-            matrix_backend = _as_complex_matrix(operand, backend=resolved_backend)
-            if ensure_hermitian and not self._check_hermitian(
-                matrix_backend, atol=atol, backend=resolved_backend
-            ):
+            shape = getattr(operand, "shape", None)
+            if shape is None or len(shape) != 2 or shape[0] != shape[1]:
+                raise TNFRValueError(
+                    "Operator matrix must be square.",
+                    context={"shape": shape},
+                    suggestion="Provide a square matrix.",
+                )
+            matrix_backend = operand
+            matrix_numpy = np.array(
+                ensure_numpy(matrix_backend, backend=resolved_backend), copy=True
+            )
+            if ensure_hermitian and not self._check_hermitian(matrix_numpy, atol=atol):
                 raise TNFRValueError(
                     "Spectral expectation operator must be Hermitian.",
                     context={"is_hermitian": False},
@@ -163,20 +171,34 @@ class SpectralExpectationOperator:
                 eigenvalues_backend, _ = resolved_backend.eigh(matrix_backend)
             else:
                 eigenvalues_backend, _ = resolved_backend.eig(matrix_backend)
+            eigenvalues_numpy = np.array(
+                ensure_numpy(eigenvalues_backend, backend=resolved_backend), copy=True
+            )
 
         self.backend = resolved_backend
         self._matrix_backend = matrix_backend
-        self._eigenvalues_backend = eigenvalues_backend
-        self.matrix = ensure_numpy(matrix_backend, backend=resolved_backend)
-        self.eigenvalues = ensure_numpy(eigenvalues_backend, backend=resolved_backend)
-        derived_c_min = float(np.min(self.eigenvalues.real))
+        self._matrix_numpy = matrix_numpy
+        self._eigenvalues_numpy = eigenvalues_numpy
+        derived_c_min = float(np.min(self._eigenvalues_numpy.real))
         requested_floor = (
             expectation_floor if expectation_floor is not _C_MIN_UNSET else c_min
         )
         if requested_floor is _C_MIN_UNSET:
             self.c_min = derived_c_min
         else:
-            self.c_min = float(requested_floor)
+            self.c_min = finite_spectral_real(
+                requested_floor, label="Spectral expectation floor"
+            )
+
+    @property
+    def matrix(self) -> ComplexMatrix:
+        """Return a detached copy of the owned operator matrix."""
+        return self._matrix_numpy.copy()
+
+    @property
+    def eigenvalues(self) -> ComplexVector:
+        """Return a detached copy of the spectrum of the owned matrix."""
+        return self._eigenvalues_numpy.copy()
 
     @property
     def expectation_floor(self) -> float:
@@ -192,37 +214,43 @@ class SpectralExpectationOperator:
         matrix: Any,
         *,
         atol: float = 1e-9,
-        backend: MathematicsBackend,
+        backend: MathematicsBackend | None = None,
     ) -> bool:
-        matrix_np = ensure_numpy(matrix, backend=backend)
+        atol = nonnegative_tolerance(atol)
+        matrix_np = (
+            np.asarray(matrix)
+            if backend is None
+            else ensure_numpy(matrix, backend=backend)
+        )
         return bool(np.allclose(matrix_np, matrix_np.conj().T, atol=atol))
 
     def is_hermitian(self, *, atol: float = 1e-9) -> bool:
         """Return ``True`` when the operator matches its adjoint."""
 
-        return self._check_hermitian(
-            self._matrix_backend, atol=atol, backend=self.backend
-        )
+        return self._check_hermitian(self._matrix_numpy, atol=atol)
 
     def is_positive_semidefinite(self, *, atol: float = 1e-9) -> bool:
-        """Check that all eigenvalues are non-negative within ``atol``."""
+        """Check Hermiticity and non-negative eigenvalues within ``atol``."""
 
-        return bool(np.all(self.eigenvalues.real >= -atol))
+        atol = nonnegative_tolerance(atol)
+        return self.is_hermitian(atol=atol) and bool(
+            np.all(self._eigenvalues_numpy.real >= -atol)
+        )
 
     def spectrum(self) -> ComplexVector:
         """Return the complex eigenvalue spectrum."""
 
-        return np.asarray(self.eigenvalues, dtype=np.complex128)
+        return np.array(self._eigenvalues_numpy, dtype=np.complex128, copy=True)
 
     def spectral_radius(self) -> float:
         """Return the largest magnitude eigenvalue (spectral radius)."""
 
-        return float(np.max(np.abs(self.eigenvalues)))
+        return float(np.max(np.abs(self._eigenvalues_numpy)))
 
     def spectral_bandwidth(self) -> float:
         """Return the real bandwidth ``max(λ) - min(λ)``."""
 
-        eigvals = self.eigenvalues.real
+        eigvals = self._eigenvalues_numpy.real
         return float(np.max(eigvals) - np.min(eigvals))
 
     def expectation(
@@ -232,33 +260,30 @@ class SpectralExpectationOperator:
         normalise: bool = True,
         atol: float = 1e-9,
     ) -> float:
+        atol = nonnegative_tolerance(atol)
         vector_backend = _as_complex_vector(state, backend=self.backend)
-        if vector_backend.shape != (self.matrix.shape[0],):
+        if vector_backend.shape != (self._matrix_numpy.shape[0],):
             raise TNFRValueError(
                 "State vector dimension mismatch with operator.",
                 context={
-                    "operator_shape": self.matrix.shape,
+                    "operator_shape": self._matrix_numpy.shape,
                     "vector_shape": vector_backend.shape,
                 },
                 suggestion="Ensure vector dimension matches operator dimension.",
             )
         working = vector_backend
         if normalise:
-            norm_value = ensure_numpy(self.backend.norm(working), backend=self.backend)
-            norm = float(norm_value)
-            if np.isclose(norm, 0.0):
-                raise TNFRValueError(
-                    "Cannot normalise a null state vector.",
-                    context={"norm": norm},
-                    suggestion="Provide a non-zero state vector.",
-                )
-            working = working / norm
+            working = normalized_complex_vector(
+                working, backend=self.backend, atol=1e-8, label="state vector"
+            )
         column = working[..., None]
         bra = self.backend.conjugate_transpose(column)
         evolved = self.backend.matmul(self._matrix_backend, column)
         expectation_backend = self.backend.matmul(bra, evolved)
         expectation = ensure_numpy(expectation_backend, backend=self.backend)
         expectation_scalar = complex(np.asarray(expectation).reshape(()))
+        if not np.isfinite(expectation_scalar):
+            raise TNFRValueError("Spectral expectation must be finite")
         if abs(expectation_scalar.imag) > atol:
             raise TNFRValueError(
                 "Expectation value carries an imaginary component beyond tolerance.",
@@ -315,12 +340,12 @@ class FrequencyOperator(SpectralExpectationOperator):
     def spectrum(self) -> np.ndarray:
         """Return the real-valued structural frequency spectrum."""
 
-        return np.asarray(self.eigenvalues.real, dtype=float)
+        return np.array(self._eigenvalues_numpy.real, dtype=float, copy=True)
 
     def is_positive_semidefinite(self, *, atol: float = 1e-9) -> bool:
         """Frequency spectra must be non-negative to preserve νf semantics."""
 
-        return bool(np.all(self.spectrum() >= -atol))
+        return super().is_positive_semidefinite(atol=atol)
 
     def project_frequency(
         self,

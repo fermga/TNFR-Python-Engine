@@ -1,7 +1,7 @@
 """Tests for TNFR factory pattern compliance and consistency.
 
 This module validates that all factory functions follow the documented
-patterns in docs/FACTORY_PATTERNS.md, including naming conventions,
+patterns in docs/API_CONTRACTS.md, including naming conventions,
 input validation, structural verification, and type safety.
 """
 
@@ -42,10 +42,10 @@ class TestFactoryInputValidation:
 
     def test_coherence_operator_rejects_invalid_dimension(self) -> None:
         """Factory should reject non-positive dimensions."""
-        with pytest.raises(ValueError, match="strictly positive"):
+        with pytest.raises(ValueError, match="positive integer"):
             make_coherence_operator(dim=0)
 
-        with pytest.raises(ValueError, match="strictly positive"):
+        with pytest.raises(ValueError, match="positive integer"):
             make_coherence_operator(dim=-5)
 
     def test_coherence_operator_rejects_invalid_c_min(self) -> None:

@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+from .._spectral_expectation import finite_spectral_real, positive_spectral_dimension
 from ..constants.canonical import MATH_SPECTRAL_EXPECTATION_FLOOR_DEFAULT
 from ..errors import TNFRValueError
-from .backend import ensure_array, ensure_numpy, get_backend
+from ._complex_arrays import backend_complex_array
+from .backend import ensure_numpy, get_backend
 from .operators import CoherenceOperator, FrequencyOperator, SpectralExpectationOperator
 from .unified_numerical import np
 
@@ -15,22 +17,6 @@ __all__ = [
 ]
 
 _ATOL = 1e-9
-
-
-def _validate_dimension(dim: int) -> int:
-    if int(dim) != dim:
-        raise TNFRValueError(
-            "Operator dimension must be an integer.",
-            context={"dimension": dim},
-            suggestion="Provide an integer dimension.",
-        )
-    if dim <= 0:
-        raise TNFRValueError(
-            "Operator dimension must be strictly positive.",
-            context={"dimension": dim},
-            suggestion="Provide a positive integer dimension.",
-        )
-    return int(dim)
 
 
 def make_spectral_expectation_operator(
@@ -68,23 +54,18 @@ def make_spectral_expectation_operator(
         violates Hermiticity/PSD constraints.
     """
 
-    dimension = _validate_dimension(dim)
-    if not np.isfinite(expectation_floor):
-        raise TNFRValueError(
-            "Spectral expectation floor must be finite.",
-            context={"expectation_floor": expectation_floor},
-            suggestion="Provide a finite expectation_floor.",
-        )
+    dimension = positive_spectral_dimension(dim, label="Operator dimension")
+    expectation_floor = finite_spectral_real(
+        expectation_floor, label="Spectral expectation floor"
+    )
 
     backend = get_backend()
 
     if spectrum is None:
-        eigenvalues_backend = ensure_array(
-            np.full(dimension, float(expectation_floor), dtype=float), backend=backend
-        )
+        eigenvalues_backend = np.full(dimension, expectation_floor, dtype=float)
     else:
-        eigenvalues_backend = ensure_array(
-            spectrum, dtype=np.complex128, backend=backend
+        eigenvalues_backend = backend_complex_array(
+            spectrum, backend=backend, label="Spectral expectation spectrum"
         )
         eigenvalues_np = ensure_numpy(eigenvalues_backend, backend=backend)
         if eigenvalues_np.ndim != 1:
@@ -111,21 +92,13 @@ def make_spectral_expectation_operator(
                 },
                 suggestion="Ensure spectrum is real-valued.",
             )
-        eigenvalues_backend = ensure_array(
-            eigenvalues_np.real.astype(float, copy=False), backend=backend
-        )
+        eigenvalues_backend = eigenvalues_backend.real
 
     operator = SpectralExpectationOperator(
         eigenvalues_backend,
         expectation_floor=expectation_floor,
         backend=backend,
     )
-    if not operator.is_hermitian(atol=_ATOL):
-        raise TNFRValueError(
-            "Spectral expectation operator must be Hermitian.",
-            context={"is_hermitian": False},
-            suggestion="Ensure the operator is Hermitian.",
-        )
     if not operator.is_positive_semidefinite(atol=_ATOL):
         raise TNFRValueError(
             "Spectral expectation operator must be positive semidefinite.",
@@ -196,19 +169,14 @@ def make_frequency_operator(matrix: np.ndarray) -> FrequencyOperator:
     """
 
     backend = get_backend()
-    array_backend = ensure_array(matrix, dtype=np.complex128, backend=backend)
-    array_np = ensure_numpy(array_backend, backend=backend)
-    if array_np.ndim != 2 or array_np.shape[0] != array_np.shape[1]:
+    array_backend = backend_complex_array(
+        matrix, backend=backend, label="Frequency operator matrix"
+    )
+    if array_backend.ndim != 2 or array_backend.shape[0] != array_backend.shape[1]:
         raise TNFRValueError(
             "Frequency operator matrix must be square.",
-            context={"shape": array_np.shape},
+            context={"shape": array_backend.shape},
             suggestion="Provide a square matrix.",
-        )
-    if not np.allclose(array_np, array_np.conj().T, atol=_ATOL):
-        raise TNFRValueError(
-            "Frequency operator must be Hermitian within tolerance.",
-            context={"atol": _ATOL},
-            suggestion="Ensure the matrix is Hermitian.",
         )
 
     operator = FrequencyOperator(array_backend, backend=backend)

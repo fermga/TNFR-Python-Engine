@@ -58,6 +58,17 @@ import math
 from dataclasses import dataclass
 from typing import Any
 
+import networkx as nx
+
+# Import precision mode configuration
+from ..config import get_precision_mode
+
+# Retain the existing module-level alias export.
+from ..constants.aliases import ALIAS_DNFR as ALIAS_DNFR  # noqa: F401
+from ..constants.aliases import ALIAS_THETA
+
+# Import TNFR cache system
+from ..mathematics.unified_cache import CacheLevel, cache_tnfr_computation
 from ..mathematics.unified_numerical import np
 from ._edge_semantics import (
     has_explicit_edge_lengths,
@@ -75,26 +86,6 @@ from .phase_curvature import (
     _require_defined_curvature,
 )
 
-try:
-    import networkx as nx
-except ImportError:
-    nx = None
-
-# Import precision mode configuration
-from ..config import get_precision_mode
-
-# Import TNFR cache system
-from ..mathematics.unified_cache import CacheLevel, cache_tnfr_computation
-
-_CACHE_AVAILABLE = True
-
-# Import TNFR aliases
-try:
-    from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA
-except ImportError:
-    ALIAS_THETA = ["phase", "theta"]
-    ALIAS_DNFR = ["delta_nfr", "dnfr"]
-
 # Import vectorized operations
 try:
     from .vectorized_ops import (
@@ -106,79 +97,6 @@ try:
     _VECTORIZATION_AVAILABLE = True
 except ImportError:
     _VECTORIZATION_AVAILABLE = False
-
-# Import GPU-aware mathematics backend
-try:
-    from ..mathematics.backend import get_backend
-
-    _GPU_BACKENDS_AVAILABLE = True
-except ImportError:
-    _GPU_BACKENDS_AVAILABLE = False
-
-
-def _use_gpu_acceleration(n_nodes: int) -> bool:
-    """Determine if GPU acceleration should be used based on problem size.
-
-    Args:
-        n_nodes: Number of nodes in the graph
-
-    Returns:
-        True if GPU acceleration is beneficial and available
-    """
-    if not _GPU_BACKENDS_AVAILABLE or n_nodes < 200:
-        return False
-
-    try:
-        backend = get_backend()
-        return backend.supports_autodiff
-    except Exception:
-        return False
-
-
-def _gpu_distance_matrix(positions: np.ndarray, alpha: float = 2.0) -> np.ndarray:
-    """Compute distance matrix on GPU for large graphs.
-
-    Args:
-        positions: Node positions array (N, d)
-        alpha: Distance exponent
-
-    Returns:
-        Distance matrix with 1/d^alpha entries
-    """
-    if not _GPU_BACKENDS_AVAILABLE:
-        raise RuntimeError("GPU backends not available")
-
-    backend = get_backend()
-
-    # Convert to backend tensors
-    pos_tensor = backend.as_array(positions)
-
-    # Compute pairwise distances: ||x_i - x_j||^2
-    # Using broadcasting: (N,1,d) - (1,N,d) -> (N,N,d)
-    pos_i = pos_tensor[:, None, :]  # (N, 1, d)
-    pos_j = pos_tensor[None, :, :]  # (1, N, d)
-    diff = pos_i - pos_j  # (N, N, d)
-
-    # Squared distances
-    dist_sq = backend.einsum("ijd,ijd->ij", diff, diff)
-
-    # Add small epsilon to avoid division by zero
-    epsilon = 1e-12
-    dist_sq = dist_sq + epsilon
-
-    # Compute 1/d^alpha
-    if alpha == 2.0:
-        inv_dist = 1.0 / dist_sq
-    else:
-        dist = backend.einsum("ij->ij", dist_sq**0.5)  # sqrt for distance
-        inv_dist = 1.0 / (dist**alpha)
-
-    # set diagonal to zero (self-distances)
-    n = positions.shape[0]
-    eye = backend.as_array(np.eye(n))
-    inv_dist = inv_dist * (1 - eye)
-
-    return backend.to_numpy(inv_dist)
 
 
 def _get_precision_dtype() -> type:
@@ -290,8 +208,6 @@ def compute_structural_potential(
     validation precedes every cache lookup. Returned maps are detached from
     the cache and may be modified by the caller.
     """
-    if nx is None:
-        raise RuntimeError("networkx required for structural potential computation")
     nodes = tuple(G.nodes())
     validate_structural_graph(G, nodes)
     alpha = finite_real_scalar(alpha, "potential alpha")
@@ -313,7 +229,7 @@ def compute_structural_potential(
 
 
 @cache_tnfr_computation(
-    level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
+    level=CacheLevel.DERIVED_METRICS,
     dependencies={"graph_topology", "node_dnfr", "precision_mode"},
 )
 def _structural_potential_cached(
@@ -551,7 +467,7 @@ def _phase_readout_bundle(G):
 
 
 @cache_tnfr_computation(
-    level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
+    level=CacheLevel.DERIVED_METRICS,
     dependencies={"graph_topology", "node_phase", "precision_mode"},
 )
 def _phase_readout_cached(G, nodes, neighbors, phases, precision_mode):
@@ -588,13 +504,6 @@ def compute_phase_curvature(G: Any) -> dict[Any, float]:
     return curvature
 
 
-def _compute_phase_gradient_and_curvature(G):
-    """Strict numeric adapter; the independent gradient does not call this."""
-    observation, gradient, curvature = _phase_readout_bundle(G)
-    _require_defined_curvature(observation)
-    return gradient, curvature
-
-
 def _estimate_coherence_length_autocorr(G: Any) -> float:
     """Fit static uncentered coherence products using the shared distance contract."""
     from ._coherence_fit import coherence_sources
@@ -611,7 +520,7 @@ def _estimate_coherence_length_autocorr(G: Any) -> float:
 
 
 @cache_tnfr_computation(
-    level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
+    level=CacheLevel.DERIVED_METRICS,
     dependencies={"graph_topology", "node_dnfr", "precision_mode"},
 )
 def _coherence_fit_cached(G, nodes, sources, pressure_values, vectorized):

@@ -654,7 +654,7 @@ The inputs below are exact Cartesian phase phasors, not rounded radian angles.
 
 ```python
 from fractions import Fraction
-from tnfr.physics.relational_sine_scale import (
+from tnfr.physics.relational_sine_pair import (
     derive_sine_global_pair_state,
     evaluate_sine_global_pair_state,
 )
@@ -719,7 +719,7 @@ its own observation. The illustrative evidence below is declared in
 `tau=t/pi`, not estimated from sampled or laboratory data.
 
 ```python
-from tnfr.physics.relational_sine_scale import observe_sine_pair_cancellation
+from tnfr.physics.relational_sine_pair import observe_sine_pair_cancellation
 from tnfr.sdk import relational_report_to_dict
 
 inputs = dict(
@@ -759,6 +759,324 @@ requires higher-order neighborhood evidence or a separately justified
 persistence argument; it does not prove the pair will remain invisible.
 See the [admission contract](../../contracts/relational/SINE_PAIR_DYNAMICS.md#sine-pair-cancellation-observability)
 and [conditional reconstruction theorem](../../../theory/nodal/SINE_PAIR_STATE.md#sine-pair-cancellation-observability).
+
+<a id="sine-pair-finite-exchange"></a>
+### Certify a finite exchange difference near cancellation
+
+The same ten-node conservative model admits a stationary family in which
+the environment hides a selected pair's antipodal orientation. Rotating one
+neighbor away from that family can reveal the orientation through actual
+directed form exchange. Declare the preparation and horizon before evaluating
+the analytic certificate:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_pair import assess_sine_pair_finite_exchange
+from tnfr.sdk import relational_report_to_dict
+
+exchange = assess_sine_pair_finite_exchange(
+    phase_rotation=(Q(399, 401), Q(40, 401)),
+    horizon_tau=Q(1, 20),
+)
+assert exchange.status == "certified_negative"
+assert exchange.integrated_current_difference_bounds.hi < 0
+assert exchange.control_integrated_current_difference == 0
+assert exchange.comparison_initial_states[0].storage == Q(6424, 401)
+assert exchange.comparison_initial_states[1].storage == Q(6424, 401)
+payload = relational_report_to_dict(exchange)
+assert payload["report_type"] == "SinePairFiniteExchange"
+
+# The same fixed error bound need not distinguish a longer requested response.
+unresolved = assess_sine_pair_finite_exchange(
+    phase_rotation=(Q(399, 401), Q(40, 401)),
+    horizon_tau=Q(1),
+)
+assert unresolved.status == "unavailable"
+assert unresolved.unavailable_reason is not None
+```
+
+The sign concerns the real-antipodal preparation minus the imaginary-antipodal
+preparation, integrating the current from pair 1 into pair 0 until `T=pi/20`.
+Both comparisons use the same perturbed environment and the same complete law.
+The control instead changes all surrounding phases together so their
+cancellation persists. A contribution through one connection can be partly
+compensated by the other connection; this sign is not the net form-change sign.
+
+The assessment evaluates a proved nonlinear remainder with exact rational
+inputs and outward interval endpoints. It performs no numerical propagation,
+parameter search or graph mutation. An unavailable bound is retained without
+changing the requested preparation or duration. The
+[contract](../../contracts/relational/SINE_PAIR_DYNAMICS.md#sine-pair-finite-exchange)
+owns admission and normalization; the
+[theorem](../../../theory/nodal/SINE_PAIR_INTERACTION.md#sine-pair-finite-exchange)
+owns the full-law proof and its limits.
+
+<a id="sine-pair-receiver-readout"></a>
+### Distinguish two orientations with one receiver reading
+
+Use the same supplied law and nominal preparations to predict the absolute
+mean form of neighboring pair 1 at one elapsed time. Declare errors on all
+initial forms, all initial circular phases and the final scalar reading:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_pair import assess_sine_pair_receiver_readout
+from tnfr.sdk import relational_report_to_dict
+
+inputs = dict(
+    phase_rotation=(Q(399, 401), Q(40, 401)),
+    horizon_tau=Q(1, 20),
+    form_error_bound=Q(1, 10**8),
+    phase_error_bound=Q(1, 10**8),
+    readout_error_bound=Q(1, 10**8),
+)
+readout = assess_sine_pair_receiver_readout(**inputs)
+assert readout.receiver_nodes == (2, 3)
+assert readout.status == "certified_disjoint"
+real_orientation, imaginary_orientation = readout.expanded_readout_bounds
+assert imaginary_orientation.hi < real_orientation.lo
+assert readout.readout_gap_lower_bound > 0
+assert all(0 in bound for bound in readout.symmetry_control_readout_bounds)
+payload = relational_report_to_dict(readout)
+assert payload["report_type"] == "SinePairReceiverReadout"
+
+# A larger declared reading error can leave the two predictions unresolved.
+unresolved = assess_sine_pair_receiver_readout(
+    **{**inputs, "readout_error_bound": Q(1, 10**6)}
+)
+assert unresolved.status == "unavailable"
+assert unresolved.unavailable_reason is not None
+```
+
+The two intervals predict recorded values of `(x_2(T)+x_3(T))/2` at `T=pi/20`.
+They include both of the receiver's connections, nominal nonlinear error,
+the uncertain environment and the final reading error. The budgets above
+are in the model's form units and radians; they do not specify laboratory
+precision. The form preparation budget fixes the absolute origin within its
+stated error, and the clock is exact. No baseline reading is silently subtracted.
+
+Disjoint predictions guarantee distinction between these two admitted
+preparation families if a reading is generated under the stated assumptions.
+This example supplies no measured reading. An interval containing a value
+does not by itself establish that any admitted initial state generates it.
+The controls have zero nominal response, but their allowed errors can produce
+nonzero responses. Their intervals correctly retain that uncertainty.
+
+See the [contract](../../contracts/relational/SINE_PAIR_DYNAMICS.md#sine-pair-receiver-readout)
+for exact admission and the bound's horizon domain, and the
+[proof](../../../theory/nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-readout)
+for the error propagation and declared certificate.
+
+<a id="sine-pair-receiver-constitutive-confounding"></a>
+### Check whether an unknown law can imitate an orientation
+
+The preceding receiver certificate assumes the sine law is independently
+fixed. To test that premise, compare orientation A under the conservative
+family `sin(delta)+epsilon*sin(delta)^3` with orientation B under sine.
+Keep the same nominal preparation and horizon and declare a coefficient
+range before assessment:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_pair import assess_sine_pair_receiver_confounding
+from tnfr.sdk import relational_report_to_dict
+
+confounding = assess_sine_pair_receiver_confounding(
+    phase_rotation=(Q(399, 401), Q(40, 401)),
+    horizon_tau=Q(1, 20),
+    epsilon_upper=Q(1, 10),
+)
+assert confounding.status == "certified_collision_exists"
+at_zero, at_upper = confounding.endpoint_difference_bounds
+assert at_zero.lo > 0
+assert at_upper.hi < 0
+payload = relational_report_to_dict(confounding)
+assert payload["report_type"] == "SinePairReceiverConfounding"
+```
+
+The strict opposite signs certify a genuine equal-reading case at some
+intermediate coefficient by continuity of the complete flow. The calculation
+does not estimate that coefficient or solve a trajectory. The selected range
+is a mathematical comparison family, not a measured ten-percent error budget
+for an apparatus.
+
+This demonstrates the limit of one scalar reading with unknown law: a hidden
+orientation and a constitutive change can compensate. The earlier sine-only
+certificate remains valid. The stationary controls and the common consensus
+tangent cannot select between these laws. Interpreting the reading without
+fixing the law requires additional independently discriminating evidence.
+See the [contract](../../contracts/relational/SINE_PAIR_DYNAMICS.md#sine-pair-receiver-constitutive-confounding)
+and [proof](../../../theory/nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-constitutive-confounding).
+
+<a id="sine-pair-receiver-two-time"></a>
+### Resolve the named ambiguity with a second receiver reading
+
+Keep one constant coefficient throughout the A-family evolution and add an
+earlier reading of the same receiver. This exact analytic certificate includes
+errors on every initial form and phase and on each scalar readout:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_pair import assess_sine_pair_receiver_two_time
+from tnfr.sdk import relational_report_to_dict
+
+two_time = assess_sine_pair_receiver_two_time(
+    phase_rotation=(Q(399, 401), Q(40, 401)),
+    horizons_tau=(Q(1, 40), Q(1, 20)),
+    epsilon_upper=Q(1, 10),
+    form_error_bound=Q(1, 10**11),
+    phase_error_bound=Q(1, 10**11),
+    readout_error_bound=Q(1, 10**11),
+)
+assert two_time.status == "certified_disjoint"
+early, late = two_time.necessary_coefficient_bounds
+assert early.hi < late.lo
+assert two_time.coefficient_gap_lower_bound > Q(7, 10000)
+assert two_time.joint_readout_gap_lower_bound > Q(5, 10**9)
+payload = relational_report_to_dict(two_time)
+assert payload["report_type"] == "SinePairReceiverTwoTime"
+```
+
+A coefficient capable of matching the early reading must lie in its necessary
+interval; the late reading requires a disjoint interval. No single admitted
+coefficient can match both. The exact weighted readout contrast also has a
+positive margin after all declared errors. The earlier one-time collision
+remains valid: its coefficient cannot imitate both readings simultaneously.
+
+These are predictions for two specified preparation/law families, without an
+observed record or reconstructed hidden state. The time `1/20` retains its
+earlier evaluated evidence; the additional `1/40` reading and error budgets
+were fixed before evaluating this joint certificate. See the
+[contract](../../contracts/relational/SINE_PAIR_DYNAMICS.md#sine-pair-receiver-two-time)
+for unavailable cases and the
+[proof](../../../theory/nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-two-time)
+for the complete law and frozen protocol.
+
+<a id="sine-pair-receiver-two-law"></a>
+### Distinguish orientations when both law coefficients are unknown
+
+Allow each hypothesis its own constant coefficient in the cubic-sine family.
+The following certificate retains both receiver times, all-node preparation
+errors and scalar readout errors. It assesses the full coefficient square,
+without estimating a coefficient from a response:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_pair import assess_sine_pair_receiver_two_law
+from tnfr.sdk import relational_report_to_dict
+
+two_law = assess_sine_pair_receiver_two_law(
+    phase_rotation=(Q(399, 401), Q(40, 401)),
+    horizons_tau=(Q(1, 40), Q(1, 20)),
+    epsilon_upper=Q(1, 10),
+    form_error_bound=Q(1, 10**11),
+    phase_error_bound=Q(1, 10**11),
+    readout_error_bound=Q(1, 10**11),
+)
+assert two_law.readout_weights == (Q(-2, 3), Q(1, 3))
+assert two_law.status == "certified_disjoint"
+assert two_law.joint_difference_bounds.lo > Q(1, 10**7)
+payload = relational_report_to_dict(two_law)
+assert payload["report_type"] == "SinePairReceiverTwoLaw"
+```
+
+The same fixed combination `Z=-2*Y(1/40)/3+Y(1/20)/3` separates every
+admitted A-family record from every B-family record. Its weights cancel
+the nominal linear term under either coefficient; complete-law and error
+bounds cover the remaining difference. Each hypothesis must use its one
+coefficient throughout both readings. No equality of coefficients between
+hypotheses is assumed.
+
+The certificate uses a sharper remainder derived from the nominal initial
+rates. It leaves the earlier certificates unchanged. This is conditional
+orientation discrimination, without a measured record, coefficient recovery
+or physical law identification. See the
+[contract](../../contracts/relational/SINE_PAIR_DYNAMICS.md#sine-pair-receiver-two-law)
+for admission and unavailable cases, and the
+[proof](../../../theory/nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-two-law)
+for the frozen comparison and full-state bounds.
+
+<a id="sine-pair-receiver-defect"></a>
+### Allow bounded continuous departures from the complete law
+
+Declare a whole-window residual bound for each evolution row, separately
+from preparation and readout errors. The same two-reading certificate can
+then include all admitted residual histories:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_pair import assess_sine_pair_receiver_defect
+from tnfr.sdk import relational_report_to_dict
+
+defect = assess_sine_pair_receiver_defect(
+    phase_rotation=(Q(399, 401), Q(40, 401)),
+    horizons_tau=(Q(1, 40), Q(1, 20)),
+    epsilon_upper=Q(1, 10),
+    form_error_bound=Q(1, 10**11),
+    phase_error_bound=Q(1, 10**11),
+    readout_error_bound=Q(1, 10**11),
+    form_rate_defect_bound=Q(1, 10**6),
+    phase_rate_defect_bound=Q(1, 10**6),
+)
+assert defect.status == "certified_disjoint"
+assert defect.joint_difference_bounds.lo > Q(1, 20000000)
+assert defect.joint_defect_radius > 0
+payload = relational_report_to_dict(defect)
+assert payload["report_type"] == "SinePairReceiverDefect"
+```
+
+The added bounds apply to every node over the entire interval in structural
+`tau` units. Each hypothesis may have a different residual history, but its
+one history governs both readings. The calculation propagates these errors
+through both coupled rows; it does not differentiate residuals or integrate
+a numerical trajectory.
+
+The nested `reference_certificate` describes the conservative model used for
+comparison. Actual admitted residuals can change form and storage and move
+the nominal stationary controls. Their budgets are declared premises here;
+using the certificate for an apparatus requires independent justification.
+See the [contract](../../contracts/relational/SINE_PAIR_DYNAMICS.md#sine-pair-receiver-defect)
+and [proof](../../../theory/nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-defect).
+
+<a id="sine-pair-persistent-response"></a>
+### Compare internal storage allocation while retaining geometric identity
+
+This analytic comparison keeps the same winding-one doubled C5, complete sine
+law and pair mean coordinates. One nominal preparation stores its excess in
+internal phase separation; the other stores the same amount in internal form
+contrast. Declare the preparation widths and reading before evaluating:
+
+```python
+from fractions import Fraction
+from tnfr.physics.relational_sine_pair import assess_sine_pair_persistent_response
+from tnfr.sdk import relational_report_to_dict
+
+persistent = assess_sine_pair_persistent_response(
+    delta_bounds=(Fraction(3, 100), Fraction(1, 25)),
+    horizon_tau=Fraction(1, 2),
+    form_error_bound=Fraction(1, 10**6),
+    phase_error_bound=Fraction(1, 10**6),
+    readout_error_bound=Fraction(1, 10**6),
+    radius=Fraction(1, 8),
+)
+assert persistent.status == "certified_persistent_response"
+assert all(persistent.persistence_certified_by_preparation)
+assert persistent.recorded_difference_bounds.lo > Fraction(1, 100000)
+persistent_evidence = relational_report_to_dict(persistent)
+```
+
+The claim combines a finite neighboring mean-form response with protection
+of the complete pattern's geometric identity. Exact energy matching applies
+to nominal centers with the same delta; independent initial errors may change
+their energies. The fixed contact geometry is identical in both preparations.
+
+This reader evaluates proved bounds and does not run a trajectory. Inspect
+both response and geometric evidence when changing a primitive input:
+`unavailable` identifies an unproved sufficient condition, not a measured
+failure. The [contract](../../contracts/relational/SINE_PAIR_DYNAMICS.md#sine-pair-persistent-response)
+defines admission and the [proof](../../../theory/nodal/SINE_PAIR_INTERACTION.md#sine-pair-persistent-response)
+retains the frozen stopping rule. Formation and physical identification remain
+separate questions.
 
 ### Retain pair identity through autonomous exchange
 
@@ -869,7 +1187,7 @@ it does not test whether a rounded graph belongs to it:
 ```python
 from fractions import Fraction
 from tnfr.dynamics.relational import RelationalExchangeModel
-from tnfr.physics.relational_sine_scale import assess_sine_replica_pulse_variation
+from tnfr.physics.relational_sine_replica_pulse import assess_sine_replica_pulse_variation
 from tnfr.sdk import relational_report_to_dict
 
 model = RelationalExchangeModel(
@@ -917,7 +1235,7 @@ The separate small-amplitude theorem resolves an instability of this family:
 
 ```python
 from tnfr.dynamics.relational import RelationalExchangeModel
-from tnfr.physics.relational_sine_scale import assess_sine_replica_pulse_splitting
+from tnfr.physics.relational_sine_replica_pulse import assess_sine_replica_pulse_splitting
 from tnfr.sdk import relational_report_to_dict
 
 model = RelationalExchangeModel(1, epi_weight=0, phase_domain="regular")
@@ -949,7 +1267,7 @@ nodes, with their conjugate work outputs:
 ```python
 from fractions import Fraction
 from tnfr.dynamics.relational import RelationalExchangeModel
-from tnfr.physics.relational_sine_scale import assess_sine_replica_pulse_work_response
+from tnfr.physics.relational_sine_replica_pulse import assess_sine_replica_pulse_work_response
 from tnfr.sdk import relational_report_to_dict
 
 response = assess_sine_replica_pulse_work_response(
@@ -983,7 +1301,7 @@ and horizon and admits a sufficient positive amplitude interval:
 
 ```python
 from fractions import Fraction
-from tnfr.physics.relational_sine_scale import assess_sine_replica_pulse_finite_work_response
+from tnfr.physics.relational_sine_replica_pulse import assess_sine_replica_pulse_finite_work_response
 from tnfr.sdk import relational_report_to_dict
 
 finite = assess_sine_replica_pulse_finite_work_response(
@@ -1016,7 +1334,7 @@ observations can exclude a candidate even when its clock scale is unknown.
 For example the simple family `J(rho)=rho*I` gives:
 
 ```python
-from tnfr.physics.relational_sine_scale import assess_sine_replica_stiffness_trace_curve
+from tnfr.physics.relational_sine_replica_pulse import assess_sine_replica_stiffness_trace_curve
 from tnfr.sdk import relational_report_to_dict
 
 screen = assess_sine_replica_stiffness_trace_curve(

@@ -918,6 +918,10 @@ The existing [regional response owner](../../src/tnfr/physics/regional_response.
 now shares one validated domain, centering and input basis between the response
 criterion and this geometry. It reuses the [exact Krylov rank](../../src/tnfr/mathematics/krylov.py)
 and [matrix inverse](../../src/tnfr/physics/_exact_linear_algebra.py) implementations.
+The weighted image projector factors through two
+[shared exact matrix products](../../src/tnfr/mathematics/_exact_linear_algebra.py),
+retaining a full-sized zero matrix at rank zero. Coordinate order, exact
+reconstruction, idempotence and H-self-adjointness checks remain in the observer.
 No new elimination algorithm, physical parameter or evolution path is added.
 
 ### Exact classification of the retained child cohort

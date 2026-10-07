@@ -19,42 +19,27 @@ from typing import Any
 
 # Import TNFR Cache Infrastructure
 from .unified_cache import CacheLevel, cache_tnfr_computation
-from .unified_numerical import np
+from .unified_numerical import np  # noqa: F401 - retain the module attribute
 
-_CACHE_AVAILABLE = True
-
-# Import Unified Backend
-try:
-    HAS_BACKEND = True
-except ImportError:
-    HAS_BACKEND = False
+# Retain availability attributes for the supported dependency-complete package.
+HAS_BACKEND = True
+HAS_MPMATH = True
 
 # We use mpmath for high precision (FFT-based arithmetic for large numbers)
-try:
-    from mpmath import mp as _mp
+from mpmath import mp as _mp
 
-    # Retain the declared 25-digit arithmetic without changing caller precision.
-    # Bind every function to this context rather than mpmath's shared singleton.
-    mp = _mp.clone()
-    mp.dps = 25
-    mp_fabs = mp.fabs
-    mp_gamma = mp.gamma
-    mp_log = mp.log
-    mp_pi = mp.pi
-    mp_power = mp.power
-    mp_sin = mp.sin
-    mp_zeta = mp.zeta
-    mp_zetazero = mp.zetazero
-
-    HAS_MPMATH = True
-except ImportError:
-    HAS_MPMATH = False
-
-
-def _ensure_complex(s: Any) -> Any:
-    if HAS_MPMATH:
-        return mp.mpc(s)
-    return complex(s)
+# Retain the declared 25-digit arithmetic without changing caller precision.
+# Bind every function to this context rather than mpmath's shared singleton.
+mp = _mp.clone()
+mp.dps = 25
+mp_fabs = mp.fabs
+mp_gamma = mp.gamma
+mp_log = mp.log
+mp_pi = mp.pi
+mp_power = mp.power
+mp_sin = mp.sin
+mp_zeta = mp.zeta
+mp_zetazero = mp.zetazero
 
 
 @cache_tnfr_computation(level=CacheLevel.DERIVED_METRICS, dependencies=set())
@@ -62,9 +47,7 @@ def zeta_zero(n: int) -> complex:
     """
     Return the n-th non-trivial zero of the Riemann Zeta function.
     """
-    if HAS_MPMATH:
-        return mp_zetazero(n)
-    raise ImportError("mpmath required for zeta zeros.")
+    return mp_zetazero(n)
 
 
 @cache_tnfr_computation(level=CacheLevel.DERIVED_METRICS, dependencies=set())
@@ -77,16 +60,7 @@ def zeta_function(s: complex | float | Any) -> Any:
     - Uses TNFR Cache for structural field memoization.
     - Compatible with Unified Backend for future vectorization.
     """
-    if HAS_MPMATH:
-        return mp_zeta(s)
-
-    # Fallback to scipy if available, else raise
-    try:
-        from scipy.special import zeta as scipy_zeta
-
-        return scipy_zeta(s)
-    except ImportError:
-        raise ImportError("mpmath or scipy required for zeta function.")
+    return mp_zeta(s)
 
 
 @cache_tnfr_computation(level=CacheLevel.DERIVED_METRICS, dependencies=set())
@@ -95,18 +69,13 @@ def chi_factor(s: complex | float | Any) -> Any:
     Compute the Riemann xi factor χ(s).
     χ(s) = 2^s * π^(s-1) * sin(πs/2) * Γ(1-s)
     """
-    if HAS_MPMATH:
-        s_mp = mp.mpc(s)
-        return (
-            mp_power(2, s_mp)
-            * mp_power(mp_pi, s_mp - 1)
-            * mp_sin(mp_pi * s_mp / 2)
-            * mp_gamma(1 - s_mp)
-        )
-
-    # Standard float implementation
-    s_c = complex(s)
-    return (2**s_c) * (np.pi ** (s_c - 1)) * np.sin(np.pi * s_c / 2) * np.math.gamma(1 - s_c)  # type: ignore
+    s_mp = mp.mpc(s)
+    return (
+        mp_power(2, s_mp)
+        * mp_power(mp_pi, s_mp - 1)
+        * mp_sin(mp_pi * s_mp / 2)
+        * mp_gamma(1 - s_mp)
+    )
 
 
 @cache_tnfr_computation(level=CacheLevel.DERIVED_METRICS, dependencies=set())
@@ -116,9 +85,7 @@ def structural_potential(s: complex | float | Any) -> float:
     """
     z = zeta_function(s)
     mag = abs(z)
-    if HAS_MPMATH:
-        return float(mp_log(mag + 1e-20))
-    return float(np.log(mag + 1e-20))
+    return float(mp_log(mag + 1e-20))
 
 
 @cache_tnfr_computation(level=CacheLevel.DERIVED_METRICS, dependencies=set())
@@ -129,7 +96,4 @@ def structural_pressure(s: complex | float | Any) -> float:
     """
     chi = chi_factor(s)
     mag = abs(chi)
-    if HAS_MPMATH:
-        return float(mp_fabs(mp_log(mag)))
-    return float(abs(np.log(mag)))
-    return float(abs(np.log(mag)))
+    return float(mp_fabs(mp_log(mag)))

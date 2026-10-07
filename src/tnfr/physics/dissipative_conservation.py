@@ -35,13 +35,10 @@ import warnings
 from dataclasses import dataclass, field
 from typing import Any, Sequence
 
+from .._exact_time import finite_represented_real
+from ..mathematics._complex_arrays import finite_complex_norm, numpy_complex_array
+from ..mathematics.backend import ensure_numpy
 from ..mathematics.unified_numerical import np
-
-try:
-    from ..mathematics.backend import ensure_numpy
-except ImportError:  # pragma: no cover - optional mathematics layer
-    ensure_numpy = None  # type: ignore[assignment]
-
 
 _WEAK_CHANGE_RATE_THRESHOLD = 0.001
 _MODERATE_CHANGE_RATE_THRESHOLD = 0.05
@@ -197,28 +194,44 @@ class DissipativeTimeSeries:
 
 
 def _as_complex(matrix: Any) -> np.ndarray:
-    """Coerce one array-like value to a finite complex128 array."""
+    """Admit original components before materializing a complex128 array."""
 
     try:
-        result = np.asarray(matrix, dtype=np.complex128)
-    except (TypeError, ValueError) as exc:
-        raise ValueError("Expected a numeric matrix.") from exc
-    if not np.all(np.isfinite(result.real)) or not np.all(np.isfinite(result.imag)):
-        raise ValueError("Matrices must contain only finite values.")
-    return result
+        return numpy_complex_array(matrix, label="matrix")
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError(
+            "Matrices must contain finite representable real or complex scalars."
+        ) from exc
+
+
+def _validate_finite_real(value: Any, *, name: str) -> float:
+    try:
+        return finite_represented_real(value, name)[0]
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError(f"{name} must be a finite representable real scalar.") from exc
 
 
 def _validate_nonnegative_finite(value: float, *, name: str) -> float:
-    number = float(value)
-    if not math.isfinite(number) or number < 0.0:
+    number = _validate_finite_real(value, name=name)
+    if number < 0.0:
         raise ValueError(f"{name} must be a finite non-negative value.")
     return number
 
 
-def _validate_density_matrix(
+def _finite_frobenius_norm(matrix: np.ndarray, *, name: str) -> float:
+    """Keep ordinary rounding and recover avoidable squared-scale range loss."""
+
+    with np.errstate(over="ignore", under="ignore", invalid="ignore"):
+        result = float(np.linalg.norm(matrix, ord="fro"))
+    if math.isfinite(result) and (result != 0.0 or not np.any(matrix)):
+        return result
+    return finite_complex_norm(matrix, label=name)
+
+
+def _validated_density_spectrum(
     density: Any, *, atol: float = _DEFAULT_ATOL
-) -> np.ndarray:
-    """Return a Hermitian density matrix after strict physical validation."""
+) -> tuple[np.ndarray, np.ndarray]:
+    """Return a locally owned Hermitian density and its admitted spectrum."""
 
     atol = _validate_nonnegative_finite(atol, name="atol")
     rho = _as_complex(density)
@@ -239,21 +252,40 @@ def _validate_density_matrix(
         raise ValueError("density spectrum must be finite.")
     if float(np.min(eigenvalues)) < -atol:
         raise ValueError("density must be positive semidefinite within tolerance.")
-    return rho
+    return rho, eigenvalues
 
 
-def _validate_collapse_operators(
+def _validate_density_matrix(
+    density: Any, *, atol: float = _DEFAULT_ATOL
+) -> np.ndarray:
+    """Return a Hermitian density matrix after strict physical validation."""
+
+    return _validated_density_spectrum(density, atol=atol)[0]
+
+
+def _plain_collapse_arrays(collapse_operators: Any) -> bool:
+    """Identify inputs without user-defined sequence or component conversion."""
+
+    return type(collapse_operators) in (list, tuple) and all(
+        type(operator) is np.ndarray and operator.dtype.kind in "iufc"
+        for operator in collapse_operators
+    )
+
+
+def _validated_collapse_data(
     collapse_operators: Sequence[Any],
     *,
     expected_dim: int | None = None,
-) -> list[np.ndarray]:
-    """Validate finite, square collapse operators with a common dimension."""
+    retain_norms: bool = True,
+) -> tuple[list[np.ndarray], list[float]]:
+    """Validate collapse operators and retain their squared spectral norms."""
 
     try:
         raw_operators = list(collapse_operators)
     except TypeError as exc:
         raise ValueError("collapse_operators must be a finite sequence.") from exc
     validated: list[np.ndarray] = []
+    norms_sq: list[float] = []
     dimension = expected_dim
     for index, operator in enumerate(raw_operators):
         array = _as_complex(operator)
@@ -276,14 +308,45 @@ def _validate_collapse_operators(
                 f"collapse operator[{index}] is too large for finite products."
             )
         validated.append(array)
-    return validated
+        squared_norm = spectral_norm**2
+        if spectral_norm != 0.0 and squared_norm == 0.0:
+            raise ValueError(f"collapse operator[{index}] squared norm underflows.")
+        norms_sq.append(squared_norm)
+    if retain_norms and not _plain_collapse_arrays(collapse_operators):
+        # A later array/component conversion can mutate an earlier matrix.
+        # Preserve the historical post-admission observation for generic inputs.
+        with np.errstate(over="ignore", under="ignore", invalid="ignore"):
+            norms_sq = [
+                _validate_finite_real(
+                    float(np.linalg.norm(array, ord=2) ** 2),
+                    name="collapse operator squared norm",
+                )
+                for array in validated
+            ]
+        if any(
+            value == 0.0 and np.any(array) for array, value in zip(validated, norms_sq)
+        ):
+            raise ValueError("collapse operator squared norm underflows.")
+    return validated, norms_sq
+
+
+def _validate_collapse_operators(
+    collapse_operators: Sequence[Any],
+    *,
+    expected_dim: int | None = None,
+) -> list[np.ndarray]:
+    """Validate finite, square collapse operators with a common dimension."""
+
+    return _validated_collapse_data(
+        collapse_operators, expected_dim=expected_dim, retain_norms=False
+    )[0]
 
 
 def _collapse_operator_norms_sq(collapse_operators: Sequence[Any]) -> float:
     """Return ``sum_k ||L_k||_2^2`` using spectral operator norms."""
 
-    operators = _validate_collapse_operators(collapse_operators)
-    return sum(float(np.linalg.norm(operator, ord=2) ** 2) for operator in operators)
+    _, norms_sq = _validated_collapse_data(collapse_operators)
+    return sum(norms_sq)
 
 
 def capture_dissipative_snapshot(
@@ -293,15 +356,18 @@ def capture_dissipative_snapshot(
 ) -> DissipativeSnapshot:
     """Validate a density operator and capture trace, purity and entropy."""
 
-    rho = _validate_density_matrix(density, atol=atol)
-    eigenvalues = np.linalg.eigvalsh(rho)
+    rho, eigenvalues = _validated_density_spectrum(density, atol=atol)
     probabilities = np.clip(eigenvalues.real, 0.0, None)
     positive = probabilities[probabilities > 0.0]
     entropy = max(0.0, -float(np.sum(positive * np.log(positive))))
+    with np.errstate(over="ignore", invalid="ignore"):
+        purity = _validate_finite_real(
+            float(np.trace(rho @ rho).real), name="density purity"
+        )
     return DissipativeSnapshot(
         density=rho,
         trace=float(np.trace(rho).real),
-        purity=float(np.trace(rho @ rho).real),
+        purity=purity,
         von_neumann_entropy=entropy,
         eigenvalues=eigenvalues,
     )
@@ -317,12 +383,41 @@ def compute_dissipator_action(
     operators = _validate_collapse_operators(
         collapse_operators, expected_dim=int(rho.shape[0])
     )
+    return _dissipator_action(rho, operators)
+
+
+def _dissipator_action(rho: np.ndarray, operators: Sequence[np.ndarray]) -> np.ndarray:
+    """Evaluate the algebra on inputs admitted in the current invocation."""
+
     result = np.zeros_like(rho)
-    for operator in operators:
-        adjoint_product = operator.conj().T @ operator
-        result += operator @ rho @ operator.conj().T
-        result -= 0.5 * (adjoint_product @ rho + rho @ adjoint_product)
+    with np.errstate(over="ignore", invalid="ignore"):
+        for operator in operators:
+            adjoint_product = operator.conj().T @ operator
+            result += operator @ rho @ operator.conj().T
+            result -= 0.5 * (adjoint_product @ rho + rho @ adjoint_product)
+    return _as_complex(result)
+
+
+def _validated_purity(purity: Any) -> float:
+    purity_value = _validate_nonnegative_finite(purity, name="purity")
+    if purity_value > 1.0 + _DEFAULT_ATOL:
+        raise ValueError("purity must be finite and lie in [0, 1].")
+    return min(1.0, purity_value)
+
+
+def _dissipator_norm_bound(norms_sq: float, purity: float) -> float:
+    result = _validate_finite_real(
+        2.0 * norms_sq * math.sqrt(purity), name="dissipation bound"
+    )
+    if norms_sq != 0.0 and purity != 0.0 and result == 0.0:
+        raise ValueError("dissipation bound is nonzero but underflows.")
     return result
+
+
+def _purity_rate(rho: np.ndarray, dissipator: np.ndarray) -> float:
+    with np.errstate(over="ignore", invalid="ignore"):
+        result = float(2.0 * np.trace(rho @ dissipator).real)
+    return _validate_finite_real(result, name="instantaneous purity rate")
 
 
 def compute_dissipation_bound(
@@ -336,16 +431,9 @@ def compute_dissipation_bound(
     because a state is pure.
     """
 
-    purity_value = float(purity)
-    if (
-        not math.isfinite(purity_value)
-        or purity_value < 0.0
-        or purity_value > 1.0 + _DEFAULT_ATOL
-    ):
-        raise ValueError("purity must be finite and lie in [0, 1].")
-    purity_value = min(1.0, max(0.0, purity_value))
-    return (
-        2.0 * _collapse_operator_norms_sq(collapse_operators) * math.sqrt(purity_value)
+    purity_value = _validated_purity(purity)
+    return _dissipator_norm_bound(
+        _collapse_operator_norms_sq(collapse_operators), purity_value
     )
 
 
@@ -357,7 +445,7 @@ def compute_instantaneous_purity_rate(
 
     rho = _validate_density_matrix(density)
     dissipator = compute_dissipator_action(rho, collapse_operators)
-    return float(2.0 * np.trace(rho @ dissipator).real)
+    return _purity_rate(rho, dissipator)
 
 
 def compute_purity_decay_bound(
@@ -372,10 +460,12 @@ def compute_purity_decay_bound(
     """
 
     snapshot = capture_dissipative_snapshot(density)
-    operators = _validate_collapse_operators(
+    _, norms_sq = _validated_collapse_data(
         collapse_operators, expected_dim=int(snapshot.density.shape[0])
     )
-    return 4.0 * _collapse_operator_norms_sq(operators) * snapshot.purity
+    return _validate_finite_real(
+        4.0 * sum(norms_sq) * snapshot.purity, name="purity-change bound"
+    )
 
 
 def is_unital_dissipator(
@@ -386,15 +476,50 @@ def is_unital_dissipator(
     r"""Test ``D[I] = sum_k (L_k L_k^dagger - L_k^dagger L_k) = 0``."""
 
     tolerance_value = _validate_nonnegative_finite(tolerance, name="tolerance")
-    operators = _validate_collapse_operators(collapse_operators)
+    operators, norms_sq = _validated_collapse_data(collapse_operators)
+    return _is_unital(operators, norms_sq, tolerance_value)
+
+
+def _is_unital(
+    operators: Sequence[np.ndarray], norms_sq: Sequence[float], tolerance: float
+) -> bool:
+    """Evaluate the residual using the same admitted spectral operator norms."""
+
     if not operators:
         return True
     residual = np.zeros_like(operators[0])
     scale = 1.0
-    for operator in operators:
-        residual += operator @ operator.conj().T - operator.conj().T @ operator
-        scale += float(np.linalg.norm(operator, ord=2) ** 2)
-    return bool(np.linalg.norm(residual, ord="fro") <= tolerance_value * scale)
+    with np.errstate(over="ignore", invalid="ignore"):
+        for operator, norm_sq in zip(operators, norms_sq):
+            residual += operator @ operator.conj().T - operator.conj().T @ operator
+            scale += norm_sq
+    threshold = _validate_finite_real(tolerance * scale, name="unitality threshold")
+    return _finite_frobenius_norm(residual, name="unitality residual") <= threshold
+
+
+_BUILTIN_BALANCE_FUNCTIONS = (
+    capture_dissipative_snapshot,
+    compute_dissipator_action,
+    compute_dissipation_bound,
+    is_unital_dissipator,
+)
+
+
+def _balance_functions_are_builtin() -> bool:
+    """Custom public hooks retain their historical dispatch and mutation order."""
+
+    return all(
+        current is original
+        for current, original in zip(
+            (
+                capture_dissipative_snapshot,
+                compute_dissipator_action,
+                compute_dissipation_bound,
+                is_unital_dissipator,
+            ),
+            _BUILTIN_BALANCE_FUNCTIONS,
+        )
+    )
 
 
 def _trace_distance(left: np.ndarray, right: np.ndarray) -> float:
@@ -422,6 +547,7 @@ def verify_dissipative_balance(
     time_step = _validate_nonnegative_finite(dt, name="dt")
     if time_step == 0.0:
         raise ValueError("dt must be positive.")
+    builtin_snapshots = _balance_functions_are_builtin()
     before_checked = capture_dissipative_snapshot(before.density)
     after_checked = capture_dissipative_snapshot(after.density)
     rho_before = before_checked.density
@@ -429,17 +555,29 @@ def verify_dissipative_balance(
     if rho_before.shape != rho_after.shape:
         raise ValueError("before and after density operators must have the same shape.")
 
-    purity_rate = (after_checked.purity - before_checked.purity) / time_step
-    entropy_rate = (
-        after_checked.von_neumann_entropy - before_checked.von_neumann_entropy
-    ) / time_step
-    state_change_rate = (
-        float(np.linalg.norm(rho_after - rho_before, ord="fro")) / time_step
+    from .conservation import _observed_secant
+
+    purity_rate = _observed_secant(
+        before_checked.purity, after_checked.purity, time_step, "purity rate"
     )
-    norm_loss_rate = (
-        float(np.linalg.norm(rho_before, ord="fro"))
-        - float(np.linalg.norm(rho_after, ord="fro"))
-    ) / time_step
+    entropy_rate = _observed_secant(
+        before_checked.von_neumann_entropy,
+        after_checked.von_neumann_entropy,
+        time_step,
+        "entropy rate",
+    )
+    state_change_rate = _observed_secant(
+        0.0,
+        _finite_frobenius_norm(rho_after - rho_before, name="state change"),
+        time_step,
+        "state-change rate",
+    )
+    norm_loss_rate = _observed_secant(
+        _finite_frobenius_norm(rho_after, name="density after"),
+        _finite_frobenius_norm(rho_before, name="density before"),
+        time_step,
+        "Frobenius norm-loss rate",
+    )
 
     if collapse_operators is None:
         bound = float("nan")
@@ -448,15 +586,44 @@ def verify_dissipative_balance(
         instantaneous_purity_rate = float("nan")
         unital = None
     else:
-        operators = _validate_collapse_operators(
-            collapse_operators, expected_dim=int(rho_before.shape[0])
+        reuse_algebra = (
+            builtin_snapshots
+            and _balance_functions_are_builtin()
+            and _plain_collapse_arrays(collapse_operators)
         )
-        action = compute_dissipator_action(rho_before, operators)
-        action_norm = float(np.linalg.norm(action, ord="fro"))
-        bound = compute_dissipation_bound(operators, before_checked.purity)
-        bound_satisfied = action_norm <= bound + _DEFAULT_ATOL * max(1.0, bound)
-        instantaneous_purity_rate = float(2.0 * np.trace(rho_before @ action).real)
-        unital = is_unital_dissipator(operators)
+        if reuse_algebra:
+            # Reuse only within this invocation, on detached local inputs.
+            # Caller-owned arrays and snapshot fields remain live on later calls.
+            operators, norms_sq = _validated_collapse_data(
+                [operator.copy() for operator in collapse_operators],
+                expected_dim=int(rho_before.shape[0]),
+            )
+            action = _dissipator_action(rho_before, operators)
+        else:
+            operators = _validate_collapse_operators(
+                collapse_operators, expected_dim=int(rho_before.shape[0])
+            )
+            action = compute_dissipator_action(rho_before, operators)
+        action_norm = _finite_frobenius_norm(action, name="dissipator action")
+        bound = (
+            _dissipator_norm_bound(
+                sum(norms_sq), _validated_purity(before_checked.purity)
+            )
+            if reuse_algebra
+            else compute_dissipation_bound(operators, before_checked.purity)
+        )
+        bound = _validate_nonnegative_finite(bound, name="dissipation bound")
+        bound_threshold = _validate_finite_real(
+            bound + _DEFAULT_ATOL * max(1.0, bound),
+            name="dissipation-bound threshold",
+        )
+        bound_satisfied = action_norm <= bound_threshold
+        instantaneous_purity_rate = _purity_rate(rho_before, action)
+        unital = (
+            _is_unital(operators, norms_sq, _DEFAULT_ATOL)
+            if reuse_algebra
+            else is_unital_dissipator(operators)
+        )
 
     if steady_state is None:
         contractivity_gap = float("nan")
@@ -510,6 +677,20 @@ def _validate_generator(generator: Any, dim: int) -> np.ndarray:
     return matrix
 
 
+def _generator_scale(generator: np.ndarray) -> float:
+    with np.errstate(over="ignore", invalid="ignore"):
+        scale = _validate_finite_real(
+            float(np.linalg.norm(generator, ord=2)), name="generator spectral norm"
+        )
+    return max(1.0, scale)
+
+
+def _generator_residual(left: np.ndarray, right: np.ndarray) -> float:
+    with np.errstate(over="ignore", invalid="ignore"):
+        residual = left @ right
+    return finite_complex_norm(residual, label="generator residual")
+
+
 def _validate_stationary_state(
     generator: np.ndarray,
     density: Any,
@@ -523,9 +704,10 @@ def _validate_stationary_state(
     if generator.shape != (dimension * dimension, dimension * dimension):
         raise ValueError("steady state must match the generator dimension.")
     vector = stationary.reshape(dimension * dimension, order="F")
-    residual = float(np.linalg.norm(generator @ vector))
-    scale = max(1.0, float(np.linalg.norm(generator, ord=2)))
-    if residual > atol * scale:
+    scale = _generator_scale(generator)
+    residual = _generator_residual(generator, vector)
+    threshold = _validate_finite_real(atol * scale, name="stationarity threshold")
+    if residual > threshold:
         raise ValueError("steady state is not stationary for the supplied generator.")
     return stationary
 
@@ -540,8 +722,8 @@ def _steady_state_from_generator(generator: Any, dim: int) -> np.ndarray:
 
     matrix = _validate_generator(generator, dim)
     trace_row = np.eye(dim, dtype=np.complex128).reshape(dim * dim, order="F")
-    trace_residual = float(np.linalg.norm(trace_row.conj().T @ matrix))
-    generator_scale = max(1.0, float(np.linalg.norm(matrix, ord=2)))
+    generator_scale = _generator_scale(matrix)
+    trace_residual = _generator_residual(trace_row.conj().T, matrix)
     if trace_residual > 100.0 * _DEFAULT_ATOL * generator_scale:
         raise ValueError("generator is not trace preserving within tolerance.")
     augmented = np.vstack([matrix, trace_row[np.newaxis, :]])
@@ -554,7 +736,7 @@ def _steady_state_from_generator(generator: Any, dim: int) -> np.ndarray:
     if abs(trace_value) <= _DEFAULT_ATOL:
         raise ValueError("generator did not yield a trace-one stationary candidate.")
     rho = rho / trace_value
-    residual = float(np.linalg.norm(matrix @ rho.reshape(dim * dim, order="F")))
+    residual = _generator_residual(matrix, rho.reshape(dim * dim, order="F"))
     if residual > 100.0 * _DEFAULT_ATOL * generator_scale:
         raise ValueError("generator has no numerically resolved stationary state.")
     try:
@@ -622,18 +804,14 @@ class DissipativeConservationTracker:
         return stationary
 
     def record(self, density: Any, t: float = 0.0) -> DissipativeSnapshot:
-        timestamp = float(t)
-        if not math.isfinite(timestamp):
-            raise ValueError("t must be finite.")
+        timestamp = _validate_finite_real(t, name="t")
         if self._snapshots and timestamp <= self._snapshots[-1][0]:
             raise ValueError("snapshot times must be strictly increasing.")
         snapshot = capture_dissipative_snapshot(density, atol=100.0 * _DEFAULT_ATOL)
         expected = int(self._engine.hilbert_space.dimension)
         if snapshot.density.shape != (expected, expected):
             raise ValueError("density must match the engine Hilbert-space dimension.")
-        self._snapshots.append((timestamp, snapshot))
-
-        if len(self._snapshots) == 1:
+        if not self._snapshots:
             trace_drift = abs(snapshot.trace - 1.0)
             purity_rate = 0.0
             entropy_rate = 0.0
@@ -644,7 +822,7 @@ class DissipativeConservationTracker:
             )
             contractivity_gap = float("nan")
         else:
-            previous_time, previous = self._snapshots[-2]
+            previous_time, previous = self._snapshots[-1]
             balance = verify_dissipative_balance(
                 previous,
                 snapshot,
@@ -658,6 +836,9 @@ class DissipativeConservationTracker:
             bound = balance.dissipation_bound
             contractivity_gap = balance.contractivity_gap
 
+        # Arithmetic admission can fail even after a valid density and time.
+        # Commit the observation and its series only after diagnostics succeed.
+        self._snapshots.append((timestamp, snapshot))
         series = self._series
         series.times.append(timestamp)
         series.purity.append(snapshot.purity)
@@ -678,8 +859,6 @@ class DissipativeConservationTracker:
     ) -> DissipativeTimeSeries:
         """Reset the tracker, evolve ``steps`` times, and record the trajectory."""
 
-        if ensure_numpy is None:
-            raise ImportError("Mathematics backend required for evolve_and_track")
         if (
             isinstance(steps, bool)
             or not isinstance(steps, (int, np.integer))
@@ -758,12 +937,10 @@ def predict_amplitude_damping_purity(
     decay_rate = _validate_nonnegative_finite(gamma, name="gamma")
     elapsed = _validate_nonnegative_finite(time, name="time")
     if np.ndim(initial_density) == 0:
-        initial_purity = float(initial_density)
-        if (
-            not math.isfinite(initial_purity)
-            or initial_purity < 0.0
-            or initial_purity > 1.0
-        ):
+        initial_purity = _validate_nonnegative_finite(
+            initial_density, name="initial_purity"
+        )
+        if initial_purity > 1.0:
             raise ValueError("legacy initial purity must lie in [0, 1].")
         warnings.warn(
             "Scalar input cannot determine amplitude-damping purity; pass the "
@@ -820,8 +997,8 @@ def analyze_dissipation_rates(generator: Any, dim: int) -> dict[str, Any]:
     """Analyze a finite Liouville-generator spectrum with explicit scope."""
 
     matrix = _validate_generator(generator, dim)
-    eigenvalues = np.linalg.eigvals(matrix)
-    tolerance = _DEFAULT_ATOL * max(1.0, float(np.linalg.norm(matrix, ord=2)))
+    tolerance = _DEFAULT_ATOL * _generator_scale(matrix)
+    eigenvalues = _as_complex(np.linalg.eigvals(matrix))
     steady_mask = np.abs(eigenvalues) <= tolerance
     stable_decay_mask = (~steady_mask) & (eigenvalues.real < -tolerance)
     neutral_mask = (~steady_mask) & (np.abs(eigenvalues.real) <= tolerance)
@@ -833,7 +1010,7 @@ def analyze_dissipation_rates(generator: Any, dim: int) -> dict[str, Any]:
     )
     relaxation_time = 1.0 / spectral_gap if spectral_gap > 0.0 else float("inf")
     identity_vector = np.eye(dim, dtype=np.complex128).reshape(dim * dim, order="F")
-    trace_residual = float(np.linalg.norm(identity_vector.conj().T @ matrix))
+    trace_residual = _generator_residual(identity_vector.conj().T, matrix)
     max_real_part = float(np.max(eigenvalues.real))
     return {
         "eigenvalues": eigenvalues,

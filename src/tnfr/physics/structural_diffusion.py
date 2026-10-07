@@ -315,12 +315,6 @@ def _ordered_nodes(G: Any) -> list:
     return list(G.nodes())
 
 
-def _weighted_adjacency(G: Any, nodes: list | None = None) -> tuple[list, Any]:
-    """One nonnegative adjacency convention, including parallel edges/loops."""
-    conductance = read_conductance(G, nodes)
-    return conductance.nodes, conductance.dense()
-
-
 def _nodal_frequencies(G: Any, nodes: list | None = None) -> Any:
     """Read the actual capacity vector; zero capacity freezes a node."""
     if nodes is None:
@@ -3755,8 +3749,13 @@ def verify_structural_random_walk(
     is_metric = symmetric and nonneg and triangle
     max_r = float(np.max(r)) if n else 0.0
 
+    # Reuse this call's admitted component geometry. The comparison still uses
+    # separately materialized resistance, while commute cancels scales first.
     # The volume belongs to the pair's component, never to unreachable nodes.
-    _, c = commute_time(G)
+    c = _commute_from_resistance(
+        scaled_resistance,
+        _resistance_scale_ratios(volumes, scales),
+    )
     commute_ok = bool(
         np.allclose(
             c,

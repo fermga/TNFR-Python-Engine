@@ -70,6 +70,38 @@ def test_disconnected_resistance_and_commute_use_each_component():
     assert verify_structural_random_walk(graph).is_valid_random_walk
 
 
+@pytest.mark.parametrize("scale", [1.0, 1e-150, 1e150])
+def test_walk_certificate_reuses_component_decompositions(scale, monkeypatch):
+    graph = nx.Graph()
+    graph.add_nodes_from(range(5))
+    graph.add_weighted_edges_from(
+        [(0, 1, 2.0 * scale), (1, 1, 6.0 * scale), (2, 3, 4.0 * scale)]
+    )
+    original_pinv = np.linalg.pinv
+    decompositions = []
+
+    def counted_pinv(matrix, **kwargs):
+        decompositions.append(matrix.shape)
+        return original_pinv(matrix, **kwargs)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(np.linalg, "pinv", counted_pinv)
+        certificate = verify_structural_random_walk(graph)
+
+    assert decompositions == [(2, 2), (2, 2), (1, 1)]
+    assert certificate.is_valid_random_walk
+    assert certificate.commute_equals_2m_resistance
+    assert np.isinf(certificate.max_resistance)
+    _, commute = commute_time(graph)
+    # The loop makes H(0, 1) + H(1, 0) = 1 + 4 in the first component;
+    # the second component is one step each way, independent of conductance.
+    assert commute[0, 1] == pytest.approx(5.0)
+    assert commute[2, 3] == pytest.approx(2.0)
+    assert np.isinf(commute[0, 2])
+    assert np.isinf(commute[0, 4])
+    np.testing.assert_array_equal(np.diag(commute), 0.0)
+
+
 @pytest.mark.parametrize("size", [0, 1, 3])
 def test_edgeless_walk_has_normalized_stationarity_and_infinite_cross_transport(size):
     graph = nx.empty_graph(size)

@@ -2011,7 +2011,7 @@ a second-harmonic pressure channel or select a fundamental interaction law.
 
 ### 29.5. Implementation and numerical scope
 
-The shared [scale owner](../../src/tnfr/physics/relational_sine_scale.py) provides
+The shared [pair owner](../../src/tnfr/physics/relational_sine_pair.py) provides
 `derive_sine_global_pair_state` from ten exact unit phasors and signed forms,
 and `evaluate_sine_global_pair_state` from the five invariant tuples after
 full realizability admission. Both use the same inherited field. Outputs
@@ -2171,3 +2171,16 @@ it does not certify either from a finite zero record. See its
 [contract](../../docs/contracts/relational/SINE_PAIR_DYNAMICS.md#sine-pair-cancellation-observability),
 [usage](../../docs/guides/relational/SINE_PAIR_DYNAMICS.md#sine-pair-cancellation-observability)
 and [independent fine-row controls](../../tests/physics/test_sine_pair_cancellation_observation.py).
+The [finite exchange result](SINE_PAIR_INTERACTION.md#sine-pair-finite-exchange)
+perturbs the stationary invisible family above and compares two retained
+orientations under the same complete law. It supplies an exact stationary
+control and an analytic finite bound on actual directed form transfer;
+the phase-derivative distinction alone is not used as the finite claim.
+The [receiver readout](SINE_PAIR_INTERACTION.md#sine-pair-receiver-readout)
+instead bounds one neighboring mean-form endpoint with declared positive
+preparation and readout errors. It discriminates two specified orientation
+families without reconstructing arbitrary hidden state or consuming phase
+derivatives as observations.
+The [joint law/orientation obstruction](SINE_PAIR_INTERACTION.md#sine-pair-receiver-constitutive-confounding)
+retains that fixed-law result while testing a different premise: an unknown
+constitutive coefficient can compensate orientation in this one endpoint.

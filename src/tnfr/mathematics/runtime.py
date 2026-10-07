@@ -2,14 +2,19 @@
 
 from __future__ import annotations
 
-import math
-from numbers import Real
 from typing import Any, Sequence
 
+from .._spectral_expectation import finite_spectral_real
 from ..config import get_flags
 from ..errors import TNFRValueError
 from ..utils import get_logger
-from .backend import ensure_array, ensure_numpy, get_backend
+from ._complex_arrays import (
+    backend_complex_array,
+    finite_complex_norm,
+    nonnegative_tolerance,
+    normalized_complex_vector,
+)
+from .backend import get_backend
 from .operators import CoherenceOperator, FrequencyOperator, SpectralExpectationOperator
 from .spaces import HilbertSpace
 from .unified_numerical import np
@@ -35,7 +40,9 @@ def _as_vector(
     backend=None,
 ) -> Any:
     resolved_backend = backend or get_backend()
-    vector = ensure_array(state, dtype=np.complex128, backend=resolved_backend)
+    vector = backend_complex_array(
+        state, backend=resolved_backend, label="State vector"
+    )
     if (
         getattr(vector, "ndim", len(getattr(vector, "shape", ()))) != 1
         or vector.shape[0] != dimension
@@ -53,8 +60,8 @@ def _resolve_operator_backend(operator: CoherenceOperator) -> tuple[Any, Any]:
     backend = getattr(operator, "backend", None) or get_backend()
     matrix_backend = getattr(operator, "_matrix_backend", None)
     if matrix_backend is None:
-        matrix_backend = ensure_array(
-            operator.matrix, dtype=np.complex128, backend=backend
+        matrix_backend = backend_complex_array(
+            operator.matrix, backend=backend, label="Spectral operator matrix"
         )
     return backend, matrix_backend
 
@@ -72,13 +79,17 @@ def normalized(
     atol: float = 1e-9,
     label: str = "state",
 ) -> tuple[bool, float]:
-    """Return normalization status and norm for ``state``."""
+    """Return unit-norm status and a finite standard Euclidean observation.
 
+    ``hilbert_space`` supplies the vector dimension; this observation uses the
+    standard complex coordinate norm, independent of its materialization dtype.
+    """
+
+    tolerance = nonnegative_tolerance(atol)
     backend = get_backend()
     vector = _as_vector(state, dimension=hilbert_space.dimension, backend=backend)
-    norm_backend = backend.norm(vector)
-    norm = float(np.asarray(ensure_numpy(norm_backend, backend=backend)))
-    passed = bool(np.isclose(norm, 1.0, atol=atol))
+    norm = finite_complex_norm(vector, backend=backend)
+    passed = bool(np.isclose(norm, 1.0, atol=tolerance))
     _maybe_log("normalized", {"label": label, "norm": norm, "passed": passed})
     return passed, float(norm)
 
@@ -110,15 +121,12 @@ def meets_spectral_expectation_threshold(
 ) -> tuple[bool, float]:
     """Compare an auxiliary spectral expectation with a finite real floor."""
 
-    if isinstance(threshold, bool) or not isinstance(threshold, Real):
-        raise TNFRValueError("Spectral expectation threshold must be a real scalar.")
-    floor = float(threshold)
-    if not math.isfinite(floor):
-        raise TNFRValueError("Spectral expectation threshold must be finite.")
+    tolerance = nonnegative_tolerance(atol)
+    floor = finite_spectral_real(threshold, label="Spectral expectation threshold")
     value = spectral_operator_expectation(
-        state, operator, normalise=normalise, atol=atol
+        state, operator, normalise=normalise, atol=tolerance
     )
-    passed = bool(value + atol >= floor)
+    passed = bool(value + tolerance >= floor)
     _maybe_log(
         "spectral_operator_expectation",
         {
@@ -190,10 +198,11 @@ def frequency_positive(
 ) -> dict[str, float | bool]:
     """Return summary ensuring structural frequency remains non-negative."""
 
+    tolerance = nonnegative_tolerance(atol)
     spectrum = operator.spectrum()
-    spectrum_psd = bool(operator.is_positive_semidefinite(atol=atol))
-    value = frequency_expectation(state, operator, normalise=normalise, atol=atol)
-    projection_ok = bool(value + atol >= 0.0)
+    spectrum_psd = bool(operator.is_positive_semidefinite(atol=tolerance))
+    value = frequency_expectation(state, operator, normalise=normalise, atol=tolerance)
+    projection_ok = bool(value + tolerance >= 0.0)
     passed = bool(spectrum_psd and (projection_ok or not enforce))
     summary = {
         "passed": passed,
@@ -216,28 +225,28 @@ def stable_unitary(
     atol: float = 1e-9,
     label: str = "state",
 ) -> tuple[bool, float]:
-    """Return whether a one-step unitary preserves the Hilbert norm."""
+    """Observe whether one unitary step ends with unit Euclidean norm.
 
+    Native backend arithmetic retains the differentiable state and operator;
+    the returned Boolean and float are detached observations. With
+    ``normalise=False``, the input is left at its supplied amplitude.
+    ``hilbert_space`` supplies the dimension of the standard coordinate norm.
+    """
+
+    tolerance = nonnegative_tolerance(atol)
     backend, matrix_backend = _resolve_operator_backend(operator)
     vector = _as_vector(state, dimension=hilbert_space.dimension, backend=backend)
     if normalise:
-        norm_backend = backend.norm(vector)
-        norm = float(np.asarray(ensure_numpy(norm_backend, backend=backend)))
-        if np.isclose(norm, 0.0, atol=atol):
-            raise TNFRValueError(
-                "Cannot normalise a null state vector.",
-                context={"norm": norm, "atol": atol},
-                suggestion="Ensure the state vector is non-zero.",
-            )
-        vector = vector / norm
+        vector = normalized_complex_vector(
+            vector, backend=backend, atol=tolerance, label="state vector"
+        )
     generator = -1j * matrix_backend
     unitary = backend.matrix_exp(generator)
     evolved_backend = backend.matmul(unitary, vector[..., None]).reshape(
         (hilbert_space.dimension,)
     )
-    evolved = np.asarray(ensure_numpy(evolved_backend, backend=backend))
-    norm_after = hilbert_space.norm(evolved)
-    passed = bool(np.isclose(norm_after, 1.0, atol=atol))
+    norm_after = finite_complex_norm(evolved_backend, backend=backend)
+    passed = bool(np.isclose(norm_after, 1.0, atol=tolerance))
     _maybe_log(
         "stable_unitary", {"label": label, "norm_after": norm_after, "passed": passed}
     )

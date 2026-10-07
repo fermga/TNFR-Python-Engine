@@ -38,6 +38,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Sequence
 
+import networkx as nx  # noqa: F401 - retain the existing module attribute
+
 from .._exact_time import finite_represented_real
 from ..mathematics.unified_numerical import np
 from ..metrics.common import (
@@ -46,12 +48,6 @@ from ..metrics.common import (
     finite_pearson_correlation,
     finite_population_std,
 )
-
-try:
-    import networkx as nx
-except ImportError:  # pragma: no cover
-    nx = None
-
 from .canonical import (
     CoherenceLengthEstimate,
     estimate_coherence_length_with_provenance,

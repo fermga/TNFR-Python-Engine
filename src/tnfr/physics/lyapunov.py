@@ -56,15 +56,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Sequence
 
-try:
-    import numpy as np
-except ImportError:  # pragma: no cover
-    np = None  # type: ignore[assignment]
-
-try:
-    import networkx as nx
-except ImportError:  # pragma: no cover
-    nx = None  # type: ignore[assignment]
+import networkx as nx
+import numpy as np
 
 # ---------------------------------------------------------------------------
 #  Energy class taxonomy
@@ -711,9 +704,6 @@ def analyze_spectral_gap(G: Any) -> SpectralGapAnalysis:
     -------
     SpectralGapAnalysis
     """
-    if np is None:
-        raise ImportError("numpy is required for spectral gap analysis")
-
     n = G.number_of_nodes()
     if n < 2:
         return SpectralGapAnalysis(

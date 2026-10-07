@@ -2,10 +2,18 @@
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from typing import Callable, Sequence
 
+from .._exact_time import finite_represented_real
+from .._spectral_expectation import positive_spectral_dimension
 from ..errors import TNFRValueError
+from ._complex_arrays import (
+    finite_complex_norm,
+    nonnegative_tolerance,
+    numpy_complex_array,
+)
 from .epi import BEPIElement, _EPIValidators
 from .unified_numerical import np, trapezoid
 
@@ -16,21 +24,28 @@ class HilbertSpace:
 
     The space models the discrete spectral component of the TNFR paradigm.  The
     canonical orthonormal basis corresponds to the standard coordinate vectors
-    and the inner product is sesquilinear, implemented through
-    :func:`numpy.vdot`.  Projection returns expansion coefficients for any
-    supplied orthonormal basis.
+    and the inner product is sesquilinear, accumulated in complex128 through
+    :func:`numpy.vdot`. Projection returns expansion coefficients for any
+    supplied orthonormal family, including a partial family. The storage dtype
+    must be floating or complex; real storage accepts only zero-imaginary
+    coordinates. Materialization must preserve finite, nonzero channels.
     """
 
     dimension: int
     dtype: np.dtype = np.complex128
 
     def __post_init__(self) -> None:
-        if self.dimension <= 0:
-            raise TNFRValueError(
-                "Hilbert spaces require a positive dimension.",
-                context={"dimension": self.dimension},
-                suggestion="Provide a positive integer for dimension.",
-            )
+        dimension = positive_spectral_dimension(
+            self.dimension, label="Hilbert space dimension"
+        )
+        try:
+            dtype = np.dtype(self.dtype)
+        except (TypeError, ValueError) as exc:
+            raise TNFRValueError("Hilbert dtype must be floating or complex.") from exc
+        if dtype.kind not in "fc":
+            raise TNFRValueError("Hilbert dtype must be floating or complex.")
+        object.__setattr__(self, "dimension", dimension)
+        object.__setattr__(self, "dtype", dtype)
 
     @property
     def basis(self) -> np.ndarray:
@@ -39,7 +54,7 @@ class HilbertSpace:
         return np.eye(self.dimension, dtype=self.dtype)
 
     def _as_vector(self, value: Sequence[complex] | np.ndarray) -> np.ndarray:
-        vector = np.asarray(value, dtype=self.dtype)
+        vector = numpy_complex_array(value, label="Hilbert vector")
         if vector.shape != (self.dimension,):
             raise TNFRValueError(
                 f"Vector must have shape ({self.dimension},), got {vector.shape!r}.",
@@ -49,32 +64,58 @@ class HilbertSpace:
                 },
                 suggestion="Ensure the vector shape matches the Hilbert space dimension.",
             )
-        return vector
+        return self._materialize(vector)
+
+    def _materialize(self, values: np.ndarray) -> np.ndarray:
+        """Cast admitted coordinates without losing an entire nonzero channel."""
+        if self.dtype.kind == "f":
+            if np.any(values.imag != 0):
+                raise TNFRValueError(
+                    "Real Hilbert dtype cannot discard nonzero imaginary coordinates."
+                )
+            source = values.real
+        else:
+            source = values
+        with np.errstate(over="ignore", under="ignore", invalid="ignore"):
+            materialized = np.asarray(source, dtype=self.dtype)
+        if not np.all(np.isfinite(materialized)):
+            raise TNFRValueError("Hilbert dtype cannot represent finite coordinates.")
+        if np.any((values.real != 0) & (materialized.real == 0)) or np.any(
+            (values.imag != 0) & (materialized.imag == 0)
+        ):
+            raise TNFRValueError("Hilbert dtype loses nonzero coordinate channels.")
+        return materialized
 
     def inner_product(
         self,
         vector_a: Sequence[complex] | np.ndarray,
         vector_b: Sequence[complex] | np.ndarray,
     ) -> complex:
-        """Compute the sesquilinear inner product ``⟨a, b⟩``."""
+        """Compute a finite complex128 sesquilinear product ``⟨a, b⟩``.
 
-        vec_a = self._as_vector(vector_a)
-        vec_b = self._as_vector(vector_b)
-        return np.vdot(vec_a, vec_b)
+        This floating evaluation can round; unresolved overflow is rejected.
+        """
+
+        vec_a = np.asarray(self._as_vector(vector_a), dtype=np.complex128)
+        vec_b = np.asarray(self._as_vector(vector_b), dtype=np.complex128)
+        with np.errstate(over="ignore", under="ignore", invalid="ignore"):
+            value = np.vdot(vec_a, vec_b)
+        if not np.isfinite(value):
+            raise TNFRValueError("Hilbert inner product is not finite.")
+        return complex(value)
 
     def norm(self, vector: Sequence[complex] | np.ndarray) -> float:
         """Return the Hilbert norm induced by the inner product."""
 
-        value = self.inner_product(vector, vector)
-        magnitude = max(value.real, 0.0)
-        return float(np.sqrt(magnitude))
+        return finite_complex_norm(self._as_vector(vector), label="Hilbert vector")
 
     def is_normalized(
         self, vector: Sequence[complex] | np.ndarray, *, atol: float = 1e-9
     ) -> bool:
         """Check whether a vector has unit norm within a tolerance."""
 
-        return np.isclose(self.norm(vector), 1.0, atol=atol)
+        tolerance = nonnegative_tolerance(atol)
+        return bool(np.isclose(self.norm(vector), 1.0, atol=tolerance))
 
     def _validate_basis(
         self, basis: Sequence[Sequence[complex] | np.ndarray]
@@ -88,10 +129,11 @@ class HilbertSpace:
             )
 
         basis_vectors = [self._as_vector(vector) for vector in basis_list]
-        matrix = np.vstack(basis_vectors)
-        gram = matrix @ matrix.conj().T
-        identity = np.eye(matrix.shape[0], dtype=self.dtype)
-        if not np.allclose(gram, identity, atol=1e-10):
+        matrix = np.asarray(np.vstack(basis_vectors), dtype=np.complex128)
+        with np.errstate(over="ignore", under="ignore", invalid="ignore"):
+            gram = matrix @ matrix.conj().T
+        identity = np.eye(matrix.shape[0], dtype=np.complex128)
+        if not np.all(np.isfinite(gram)) or not np.allclose(gram, identity, atol=1e-10):
             raise TNFRValueError(
                 "Provided basis is not orthonormal within tolerance.",
                 context={"tolerance": 1e-10},
@@ -104,15 +146,22 @@ class HilbertSpace:
         vector: Sequence[complex] | np.ndarray,
         basis: Sequence[Sequence[complex] | np.ndarray] | None = None,
     ) -> np.ndarray:
-        """Return coefficients ``⟨b_k|ψ⟩`` for the chosen orthonormal basis."""
+        """Return finite coefficients ``⟨b_k|ψ⟩`` in the configured dtype.
+
+        A supplied partial orthonormal family returns only its coefficients.
+        Products accumulate in complex128 before checked materialization.
+        """
 
         vec = self._as_vector(vector)
         if basis is None:
             return vec.astype(self.dtype, copy=True)
 
         basis_matrix = self._validate_basis(basis)
-        coefficients = basis_matrix.conj() @ vec
-        return coefficients.astype(self.dtype, copy=False)
+        with np.errstate(over="ignore", under="ignore", invalid="ignore"):
+            coefficients = basis_matrix.conj() @ np.asarray(vec, dtype=np.complex128)
+        if not np.all(np.isfinite(coefficients)):
+            raise TNFRValueError("Hilbert projection coefficients are not finite.")
+        return self._materialize(coefficients)
 
 
 class BanachSpaceEPI(_EPIValidators):
@@ -138,7 +187,15 @@ class BanachSpaceEPI(_EPIValidators):
     ) -> BEPIElement:
         """Create a :class:`~tnfr.mathematics.epi.BEPIElement` with validated data."""
 
-        self.validate_domain(f_continuous, a_discrete, x_grid)
+        validator = self.validate_domain
+        if (
+            type(self) is not BanachSpaceEPI
+            or getattr(validator, "__func__", None)
+            is not _EPIValidators.validate_domain.__func__
+        ):
+            # Preserve user-defined admission hooks. The standard factory
+            # delegates its single shared validation to BEPIElement.
+            validator(f_continuous, a_discrete, x_grid)
         return BEPIElement(f_continuous, a_discrete, x_grid)
 
     def zero_element(
@@ -157,7 +214,7 @@ class BanachSpaceEPI(_EPIValidators):
                 suggestion="Provide a continuous_size of at least 2.",
             )
         grid = (
-            np.asarray(x_grid, dtype=float)
+            x_grid
             if x_grid is not None
             else np.linspace(0.0, 1.0, continuous_size, dtype=float)
         )
@@ -206,7 +263,7 @@ class BanachSpaceEPI(_EPIValidators):
             )
 
         grid = (
-            np.asarray(x_grid, dtype=float)
+            x_grid
             if x_grid is not None
             else np.linspace(0.0, 1.0, continuous_size, dtype=float)
         )
@@ -282,20 +339,41 @@ class BanachSpaceEPI(_EPIValidators):
                 suggestion="Provide a valid x_grid.",
             )
 
-        derivative = np.gradient(
-            f_array,
-            grid,
-            edge_order=2 if f_array.size > 2 else 1,
+        # Cancel a common large amplitude before squaring. Scaling real and
+        # imaginary channels separately avoids complex division overflow.
+        scale = max(
+            1.0,
+            float(np.max(np.abs(f_array.real), initial=0.0)),
+            float(np.max(np.abs(f_array.imag), initial=0.0)),
         )
-        numerator = trapezoid(np.abs(derivative) ** 2, grid)
-        denominator = 1.0 + trapezoid(np.abs(f_array) ** 2, grid)
-        if denominator <= 0:
-            raise TNFRValueError(
-                "Denominator of derivative regularity must be positive.",
-                context={"denominator": denominator},
-                suggestion="Check the input function for validity.",
+        scaled = f_array.real / scale + 1j * (f_array.imag / scale)
+        with np.errstate(
+            over="ignore", under="ignore", invalid="ignore", divide="ignore"
+        ):
+            derivative = np.gradient(
+                scaled,
+                grid,
+                edge_order=2 if f_array.size > 2 else 1,
             )
-        return float(np.real_if_close(numerator / denominator))
+            numerator = float(trapezoid(np.abs(derivative) ** 2, grid))
+            denominator = (1.0 / scale) ** 2 + float(
+                trapezoid(np.abs(scaled) ** 2, grid)
+            )
+        if (
+            not math.isfinite(numerator)
+            or not math.isfinite(denominator)
+            or denominator <= 0
+        ):
+            raise TNFRValueError(
+                "Derivative regularity requires finite energy arithmetic "
+                "and a positive denominator."
+            )
+        value = numerator / denominator
+        if not math.isfinite(value):
+            raise TNFRValueError("Derivative regularity must be finite.")
+        if value == 0 and np.any(f_array != f_array[0]):
+            raise TNFRValueError("Nonzero derivative regularity is not representable.")
+        return value
 
     def composite_epi_regularity(
         self,
@@ -316,8 +394,16 @@ class BanachSpaceEPI(_EPIValidators):
         structural coherence ``C(t)``.
         """
 
-        weights = np.asarray([alpha, beta, gamma], dtype=float)
-        if not np.all(np.isfinite(weights)) or np.any(weights <= 0):
+        try:
+            alpha, beta, gamma = (
+                finite_represented_real(value, name)[0]
+                for name, value in (("alpha", alpha), ("beta", beta), ("gamma", gamma))
+            )
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise TNFRValueError(
+                "alpha, beta and gamma must be finite and strictly positive."
+            ) from exc
+        if min(alpha, beta, gamma) <= 0:
             raise TNFRValueError(
                 "alpha, beta and gamma must be finite and strictly positive.",
                 context={"alpha": alpha, "beta": beta, "gamma": gamma},
@@ -333,10 +419,17 @@ class BanachSpaceEPI(_EPIValidators):
             )
 
         sup_norm = float(np.max(np.abs(f_array))) if f_array.size else 0.0
-        l2_norm = float(np.linalg.norm(a_array))
+        l2_norm = finite_complex_norm(a_array, label="Discrete EPI component")
         derivative_term = self.derivative_regularity(f_array, grid)
-        value = alpha * sup_norm + beta * l2_norm + gamma * derivative_term
-        return float(np.real_if_close(value))
+        try:
+            value = math.fsum(
+                (alpha * sup_norm, beta * l2_norm, gamma * derivative_term)
+            )
+        except OverflowError as exc:
+            raise TNFRValueError("Composite EPI regularity must be finite.") from exc
+        if not math.isfinite(value):
+            raise TNFRValueError("Composite EPI regularity must be finite.")
+        return value
 
     def compute_coherence_functional(
         self,

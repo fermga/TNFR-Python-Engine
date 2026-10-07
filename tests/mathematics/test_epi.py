@@ -2,11 +2,55 @@
 
 from __future__ import annotations
 
+from fractions import Fraction
+
 import pytest
 
 np = pytest.importorskip("numpy")
 
 from tnfr.mathematics import BanachSpaceEPI, BEPIElement, HilbertSpace
+from tnfr.types import ensure_bepi, require_finite_real_scalar_epi, serialize_bepi_json
+
+
+@pytest.mark.parametrize(
+    "component",
+    [True, np.bool_(False), "1", Fraction(1, 10**400), Fraction(10**400), np.inf],
+)
+@pytest.mark.parametrize("channel", ["continuous", "discrete"])
+def test_bepi_admits_components_before_complex_materialization(component, channel):
+    continuous = (component, 1) if channel == "continuous" else (1, 1)
+    discrete = (component,) if channel == "discrete" else (1,)
+
+    with pytest.raises(ValueError):
+        BEPIElement(continuous, discrete, (0, 1))
+
+
+@pytest.mark.parametrize("component", [True, Fraction(1, 10**400), Fraction(10**400)])
+def test_scalar_bepi_adapter_cannot_discard_invalid_primitive(component):
+    with pytest.raises(ValueError):
+        ensure_bepi(component)
+
+
+@pytest.mark.parametrize("channel", ["real", "imag"])
+def test_serialized_bepi_admits_both_components_before_complex_conversion(channel):
+    component = {"real": 1, "imag": 0}
+    component[channel] = Fraction(1, 10**400)
+    storage = {"continuous": (component, component), "discrete": (), "grid": (0, 1)}
+
+    with pytest.raises(ValueError):
+        ensure_bepi(storage)
+
+
+def test_bepi_preserves_complex_nonuniform_storage_and_signed_subnormal():
+    element = BEPIElement((1 + 2j, -3j), (Fraction(-3, 2),), (0, 1))
+    restored = ensure_bepi(serialize_bepi_json(element))
+    np.testing.assert_array_equal(restored.f_continuous, [1 + 2j, -3j])
+    np.testing.assert_array_equal(restored.a_discrete, [-1.5])
+    assert restored.real_scalar_embedding() is None
+
+    smallest = float.fromhex("0x0.0000000000001p-1022")
+    scalar = ensure_bepi(Fraction.from_float(-smallest))
+    assert require_finite_real_scalar_epi(scalar) == -smallest
 
 
 @pytest.fixture()

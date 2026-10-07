@@ -5,6 +5,15 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, NamedTuple, Sequence
 
+from .._exact_time import finite_represented_real
+from ..config.parsing import parse_bool
+from ._complex_arrays import (
+    backend_complex_array,
+    finite_complex_norm,
+    nonnegative_tolerance,
+    normalized_complex_vector,
+)
+from ._integer_admission import _integer_argument
 from .backend import MathematicsBackend, ensure_array, ensure_numpy, get_backend
 from .spaces import HilbertSpace
 from .unified_numerical import TNFRValueError, np
@@ -36,12 +45,80 @@ def _has_backend_matrix_exp(backend: MathematicsBackend) -> bool:
     return True
 
 
+def _resolve_use_scipy(backend: MathematicsBackend, requested: bool | None) -> bool:
+    """Select an exponential route without caching mutable backend capabilities."""
+    if requested is not None:
+        requested = parse_bool(requested)
+        if requested and _scipy_expm is None:
+            raise RuntimeError("SciPy expm requested but SciPy is not available.")
+        return bool(requested and _scipy_expm is not None)
+    if _has_backend_matrix_exp(backend):
+        return False
+    if _scipy_expm is not None:
+        return True
+    raise RuntimeError(
+        "Backend lacks matrix_exp and SciPy is unavailable for fallback."
+    )
+
+
+def _evolution_time(value: Any, *, backend: MathematicsBackend) -> Any:
+    """Admit signed real time while retaining native scalar gradient paths.
+
+    Symbolic JAX times have only a scalar real-dtype check; they do not provide
+    a concrete finiteness certificate until evaluated outside the trace.
+    """
+    torch = getattr(backend, "_torch", None)
+    jax = getattr(backend, "_jax", None)
+    is_torch = torch is not None and isinstance(value, torch.Tensor)
+    is_jax = jax is not None and isinstance(value, (jax.Array, jax.core.Tracer))
+    if is_torch or is_jax or isinstance(value, np.ndarray):
+        if value.shape != ():
+            raise TNFRValueError("dt must be a finite representable real scalar")
+        if is_torch:
+            if value.is_complex() or value.dtype == torch.bool:
+                raise TNFRValueError("dt must be a finite representable real scalar")
+            observed = (
+                value.to(dtype=torch.float64)
+                if value.dtype == torch.bfloat16
+                else value
+            )
+        else:
+            if np.dtype(value.dtype).kind not in "iuf":
+                raise TNFRValueError("dt must be a finite representable real scalar")
+            if is_jax and isinstance(value, jax.core.Tracer):
+                return value
+            observed = value
+        observed = np.asarray(ensure_numpy(observed, backend=backend))[()]
+        try:
+            admitted = finite_represented_real(observed, "dt")[0]
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise TNFRValueError(
+                "dt must be a finite representable real scalar"
+            ) from exc
+        return value if is_torch or is_jax else admitted
+    try:
+        return finite_represented_real(value, "dt")[0]
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise TNFRValueError("dt must be a finite representable real scalar") from exc
+
+
+def _evolution_steps(value: int) -> int:
+    """Admit a nonnegative integer trajectory length."""
+    try:
+        steps = _integer_argument(value, "steps")
+    except TypeError as exc:
+        raise TNFRValueError("steps must be a non-negative integer") from exc
+    if steps < 0:
+        raise TNFRValueError("steps must be a non-negative integer")
+    return steps
+
+
 def _as_matrix(
     matrix: Sequence[Sequence[complex]] | np.ndarray | Any,
     *,
     backend: MathematicsBackend,
 ) -> Any:
-    arr = ensure_array(matrix, dtype=np.complex128, backend=backend)
+    arr = backend_complex_array(matrix, backend=backend, label="Generator", owned=True)
     shape = getattr(arr, "shape", None)
     if shape is None or len(shape) != 2 or shape[0] != shape[1]:
         raise TNFRValueError(
@@ -82,7 +159,7 @@ def _trace(matrix: Any, *, backend: MathematicsBackend) -> TraceValue:
         traced_numpy = complex(
             np.asarray(ensure_numpy(traced_backend, backend=backend))
         )
-    except (ValueError, TypeError, Exception):
+    except Exception:
         # Fallback for backends where conversion fails (e.g. JAX tracing)
         traced_numpy = None
     return TraceValue(traced_backend, traced_numpy)
@@ -100,7 +177,6 @@ class MathematicalDynamicsEngine:
     when the backend lacks a ``matrix_exp`` implementation.
     """
 
-    generator: np.ndarray
     hilbert_space: HilbertSpace
     atol: float = 1e-9
     _use_scipy: bool = False
@@ -117,6 +193,7 @@ class MathematicalDynamicsEngine:
         use_scipy: bool | None = None,
         backend: MathematicsBackend | None = None,
     ) -> None:
+        atol = nonnegative_tolerance(atol)
         resolved_backend = backend or get_backend()
         matrix = _as_matrix(generator, backend=resolved_backend)
         matrix_np = ensure_numpy(matrix, backend=resolved_backend)
@@ -137,32 +214,28 @@ class MathematicalDynamicsEngine:
             )
         self.backend = resolved_backend
         self._generator_backend = matrix
-        self._numpy_generator = matrix_np
-        self.generator = matrix_np
+        self._numpy_generator = np.array(matrix_np, copy=True)
         self.hilbert_space = hilbert_space
         self.atol = float(atol)
-        if use_scipy is None:
-            has_matrix_exp = _has_backend_matrix_exp(self.backend)
-            if has_matrix_exp:
-                self._use_scipy = False
-            elif _scipy_expm is not None:
-                self._use_scipy = True
-            else:
-                raise RuntimeError(
-                    "Backend lacks matrix_exp and SciPy is unavailable for fallback."
-                )
-        else:
-            if use_scipy and _scipy_expm is None:
-                raise RuntimeError("SciPy expm requested but SciPy is not available.")
-            self._use_scipy = bool(use_scipy and _scipy_expm is not None)
+        self._use_scipy = _resolve_use_scipy(self.backend, use_scipy)
+
+    @property
+    def generator(self) -> np.ndarray:
+        """Return a detached copy of the owned, admitted generator."""
+        return self._numpy_generator.copy()
 
     def _unitary_backend(self, dt: float) -> Any:
+        argument = backend_complex_array(
+            -1j * (dt * self._generator_backend),
+            backend=self.backend,
+            label="Unitary exponential argument",
+        )
         if self._use_scipy and _scipy_expm is not None:
             return ensure_array(
-                _scipy_expm(-1j * dt * self._numpy_generator),
+                _scipy_expm(ensure_numpy(argument, backend=self.backend)),
                 backend=self.backend,
             )
-        return self.backend.matrix_exp(-1j * dt * self._generator_backend)
+        return self.backend.matrix_exp(argument)
 
     def step(
         self,
@@ -171,9 +244,22 @@ class MathematicalDynamicsEngine:
         dt: float = 1.0,
         normalize: bool = True,
     ) -> Any:
-        """Evolve ``state`` by ``dt`` using the unitary ``exp(-i·Δ·dt)``."""
+        """Evolve by signed real ``dt`` using the unitary ``exp(-i·Δ·dt)``."""
 
-        vector = ensure_array(state, dtype=np.complex128, backend=self.backend)
+        evolved, _ = self._step_with_propagator(state, dt=dt, normalize=normalize)
+        return evolved
+
+    def _step_with_propagator(
+        self,
+        state: Any,
+        *,
+        dt: Any,
+        normalize: bool,
+        propagator: Any = None,
+    ) -> tuple[Any, Any]:
+        """Apply the usual step checks, optionally reusing a local propagator."""
+        dt = _evolution_time(dt, backend=self.backend)
+        vector = backend_complex_array(state, backend=self.backend, label="State")
         if vector.shape != (self.hilbert_space.dimension,):
             raise TNFRValueError(
                 "State vector dimension mismatch.",
@@ -183,21 +269,17 @@ class MathematicalDynamicsEngine:
                 },
                 suggestion="Ensure state vector matches Hilbert space dimension.",
             )
-        unitary = self._unitary_backend(dt)
-        evolved = self.backend.matmul(unitary, vector)
+        if propagator is None:
+            propagator = self._unitary_backend(dt)
+        evolved = self.backend.matmul(propagator, vector)
         if normalize:
-            norm_backend = self.backend.norm(evolved)
-            norm_numpy = float(
-                np.asarray(ensure_numpy(norm_backend, backend=self.backend))
+            evolved = normalized_complex_vector(
+                evolved, backend=self.backend, atol=self.atol, label="state vector"
             )
-            if np.isclose(norm_numpy, 0.0, atol=self.atol):
-                raise TNFRValueError(
-                    "Cannot normalise a null state vector.",
-                    context={"norm": norm_numpy, "atol": self.atol},
-                    suggestion="Provide a non-zero state vector.",
-                )
-            evolved = evolved / norm_backend
-        return evolved
+        return (
+            backend_complex_array(evolved, backend=self.backend, label="Evolved state"),
+            propagator,
+        )
 
     def evolve(
         self,
@@ -207,15 +289,15 @@ class MathematicalDynamicsEngine:
         dt: float = 1.0,
         normalize: bool = True,
     ) -> Any:
-        """Return trajectory of length ``steps + 1`` starting from ``state``."""
+        """Return ``steps + 1`` states, sharing the fixed propagator within this call.
 
-        if steps < 0:
-            raise TNFRValueError(
-                "steps must be non-negative.",
-                context={"steps": steps},
-                suggestion="Provide a non-negative integer for steps.",
-            )
-        current = ensure_array(state, dtype=np.complex128, backend=self.backend)
+        Subclasses and replaced public steps retain their per-step dispatch.
+        No propagator is retained between calls or evaluated for zero steps.
+        """
+
+        steps = _evolution_steps(steps)
+        dt = _evolution_time(dt, backend=self.backend)
+        current = backend_complex_array(state, backend=self.backend, label="State")
         if current.shape != (self.hilbert_space.dimension,):
             raise TNFRValueError(
                 "State dimension mismatch.",
@@ -226,15 +308,29 @@ class MathematicalDynamicsEngine:
                 suggestion="Ensure state vector matches Hilbert space dimension.",
             )
         trajectory: list[Any] = [current]
+        reuse = (
+            type(self) is MathematicalDynamicsEngine
+            and getattr(self.step, "__func__", None) is _ORIGINAL_UNITARY_STEP
+        )
+        propagator = None
         for _ in range(steps):
-            current = self.step(current, dt=dt, normalize=normalize)
+            if reuse:
+                current, propagator = self._step_with_propagator(
+                    current, dt=dt, normalize=normalize, propagator=propagator
+                )
+            else:
+                current = self.step(current, dt=dt, normalize=normalize)
             trajectory.append(current)
         return self.backend.stack(trajectory, axis=0)
 
 
 @dataclass(slots=True)
 class ContractiveDynamicsEngine:
-    """Contractive semigroup evolution driven by Lindblad ΔNFR generators.
+    """Density evolution with an optional spectral non-expansion check.
+
+    Non-positive real generator eigenvalues alone do not establish a GKSL law
+    or contraction in every norm. Forward dissipative guarantees require the
+    corresponding generator hypotheses and nonnegative time.
 
     Backend-native tensors are accepted for all density operators.  When the
     chosen backend supports automatic differentiation we keep gradients intact
@@ -243,7 +339,6 @@ class ContractiveDynamicsEngine:
     primarily for generators missing backend support.
     """
 
-    generator: np.ndarray
     hilbert_space: HilbertSpace
     atol: float = 1e-9
     _use_scipy: bool = False
@@ -263,6 +358,8 @@ class ContractiveDynamicsEngine:
         use_scipy: bool | None = None,
         backend: MathematicsBackend | None = None,
     ) -> None:
+        atol = nonnegative_tolerance(atol)
+        ensure_contractive = parse_bool(ensure_contractive)
         resolved_backend = backend or get_backend()
         matrix = _as_matrix(generator, backend=resolved_backend)
         matrix_np = ensure_numpy(matrix, backend=resolved_backend)
@@ -278,24 +375,10 @@ class ContractiveDynamicsEngine:
             )
         self.backend = resolved_backend
         self._generator_backend = matrix
-        self._numpy_generator = matrix_np.astype(np.complex128, copy=False)
-        self.generator = self._numpy_generator
+        self._numpy_generator = np.array(matrix_np, dtype=np.complex128, copy=True)
         self.hilbert_space = hilbert_space
         self.atol = float(atol)
-        if use_scipy is None:
-            has_matrix_exp = _has_backend_matrix_exp(self.backend)
-            if has_matrix_exp:
-                self._use_scipy = False
-            elif _scipy_expm is not None:
-                self._use_scipy = True
-            else:
-                raise RuntimeError(
-                    "Backend lacks matrix_exp and SciPy is unavailable for fallback."
-                )
-        else:
-            if use_scipy and _scipy_expm is None:
-                raise RuntimeError("SciPy expm requested but SciPy is not available.")
-            self._use_scipy = bool(use_scipy and _scipy_expm is not None)
+        self._use_scipy = _resolve_use_scipy(self.backend, use_scipy)
 
         self._identity_backend = ensure_array(
             np.eye(hilbert_space.dimension, dtype=np.complex128),
@@ -304,7 +387,14 @@ class ContractiveDynamicsEngine:
         self._last_contractivity_gap = float("nan")
         if ensure_contractive:
             eigenvalues_backend, _ = self.backend.eig(self._generator_backend)
-            eigenvalues = ensure_numpy(eigenvalues_backend, backend=self.backend)
+            eigenvalues = ensure_numpy(
+                backend_complex_array(
+                    eigenvalues_backend,
+                    backend=self.backend,
+                    label="Generator spectrum",
+                ),
+                backend=self.backend,
+            )
             if np.max(eigenvalues.real) > self.atol:
                 raise TNFRValueError(
                     "ΔNFR generator is not contractive: positive real eigenvalues detected.",
@@ -312,13 +402,23 @@ class ContractiveDynamicsEngine:
                     suggestion="Ensure generator is dissipative.",
                 )
 
+    @property
+    def generator(self) -> np.ndarray:
+        """Return a detached copy of the owned, admitted generator."""
+        return self._numpy_generator.copy()
+
     def _propagator_backend(self, dt: float) -> Any:
+        argument = backend_complex_array(
+            dt * self._generator_backend,
+            backend=self.backend,
+            label="Semigroup exponential argument",
+        )
         if self._use_scipy and _scipy_expm is not None:
             return ensure_array(
-                _scipy_expm(dt * self._numpy_generator),
+                _scipy_expm(ensure_numpy(argument, backend=self.backend)),
                 backend=self.backend,
             )
-        return self.backend.matrix_exp(dt * self._generator_backend)
+        return self.backend.matrix_exp(argument)
 
     def frobenius_norm(
         self,
@@ -328,7 +428,7 @@ class ContractiveDynamicsEngine:
     ) -> float:
         """Return the Frobenius norm associated with the Hilbert space."""
 
-        matrix = ensure_array(density, dtype=np.complex128, backend=self.backend)
+        matrix = backend_complex_array(density, backend=self.backend, label="Density")
         if matrix.shape != (self.hilbert_space.dimension, self.hilbert_space.dimension):
             raise TNFRValueError(
                 "Density operator dimension mismatch.",
@@ -345,8 +445,7 @@ class ContractiveDynamicsEngine:
             trace_value = _trace(matrix, backend=self.backend)
             trace_backend = trace_value.backend / self.hilbert_space.dimension
             matrix = matrix - trace_backend * self._identity_backend
-        norm_backend = self.backend.norm(matrix, ord="fro")
-        return float(np.asarray(ensure_numpy(norm_backend, backend=self.backend)))
+        return finite_complex_norm(matrix, backend=self.backend, label="Density")
 
     @property
     def last_contractivity_gap(self) -> float:
@@ -364,9 +463,36 @@ class ContractiveDynamicsEngine:
         raise_on_violation: bool = False,
         symmetrize: bool = True,
     ) -> Any:
-        """Advance ``density`` by ``dt`` enforcing trace and contractivity control."""
+        """Advance by signed real ``dt`` with trace and contractivity monitoring.
 
-        matrix = ensure_array(density, dtype=np.complex128, backend=self.backend)
+        Forward-semigroup guarantees require nonnegative time and the relevant
+        generator hypotheses; admitting negative time does not extend them.
+        """
+
+        evolved, _ = self._step_with_propagator(
+            density,
+            dt=dt,
+            normalize_trace=normalize_trace,
+            enforce_contractivity=enforce_contractivity,
+            raise_on_violation=raise_on_violation,
+            symmetrize=symmetrize,
+        )
+        return evolved
+
+    def _step_with_propagator(
+        self,
+        density: Any,
+        *,
+        dt: Any,
+        normalize_trace: bool,
+        enforce_contractivity: bool,
+        raise_on_violation: bool,
+        symmetrize: bool,
+        propagator: Any = None,
+    ) -> tuple[Any, Any]:
+        """Apply the usual checks and monitors with an optional local propagator."""
+        dt = _evolution_time(dt, backend=self.backend)
+        matrix = backend_complex_array(density, backend=self.backend, label="Density")
         dim = self.hilbert_space.dimension
         if matrix.shape != (dim, dim):
             raise TNFRValueError(
@@ -383,16 +509,14 @@ class ContractiveDynamicsEngine:
             trace_value = _trace(matrix, backend=self.backend)
             trace_backend = trace_value.backend / dim
             centered = matrix - trace_backend * self._identity_backend
-            initial_norm_backend = self.backend.norm(centered, ord="fro")
-            try:
-                initial_norm = float(
-                    np.asarray(ensure_numpy(initial_norm_backend, backend=self.backend))
+            if trace_value.numpy is not None:
+                initial_norm = finite_complex_norm(
+                    centered, backend=self.backend, label="Centered density"
                 )
-            except (ValueError, TypeError, Exception):
-                initial_norm = None
 
         vector = _vectorize_density(matrix, backend=self.backend)
-        propagator = self._propagator_backend(dt)
+        if propagator is None:
+            propagator = self._propagator_backend(dt)
         evolved_vec = self.backend.matmul(propagator, vector)
         evolved = _devectorize_density(evolved_vec, dim, backend=self.backend)
 
@@ -402,6 +526,8 @@ class ContractiveDynamicsEngine:
         if normalize_trace:
             trace_value = _trace(evolved, backend=self.backend)
             if trace_value.numpy is not None:
+                if not np.isfinite(trace_value.numpy):
+                    raise TNFRValueError("Trace must be finite before normalization.")
                 if np.isclose(trace_value.numpy, 0.0, atol=self.atol):
                     raise TNFRValueError(
                         "Trace collapsed below tolerance during evolution.",
@@ -418,10 +544,11 @@ class ContractiveDynamicsEngine:
             trace_value = _trace(evolved, backend=self.backend)
             trace_backend = trace_value.backend / dim
             centered = evolved - trace_backend * self._identity_backend
-            evolved_norm_backend = self.backend.norm(centered, ord="fro")
-            try:
-                evolved_norm = float(
-                    np.asarray(ensure_numpy(evolved_norm_backend, backend=self.backend))
+            if trace_value.numpy is None:
+                self._last_contractivity_gap = float("nan")
+            else:
+                evolved_norm = finite_complex_norm(
+                    centered, backend=self.backend, label="Centered evolved density"
                 )
                 self._last_contractivity_gap = initial_norm - evolved_norm
                 if raise_on_violation and self._last_contractivity_gap < -5 * self.atol:
@@ -435,12 +562,15 @@ class ContractiveDynamicsEngine:
                         },
                         suggestion="Ensure generator is contractive.",
                     )
-            except (ValueError, TypeError, Exception):
-                self._last_contractivity_gap = float("nan")
         else:
             self._last_contractivity_gap = float("nan")
 
-        return evolved
+        return (
+            backend_complex_array(
+                evolved, backend=self.backend, label="Evolved density"
+            ),
+            propagator,
+        )
 
     def evolve(
         self,
@@ -453,16 +583,17 @@ class ContractiveDynamicsEngine:
         raise_on_violation: bool = False,
         symmetrize: bool = True,
     ) -> Any:
-        """Return trajectory of density operators for the contractive semigroup."""
+        """Return a density trajectory with one fixed propagator per built-in call.
 
-        if steps < 0:
-            raise TNFRValueError(
-                "steps must be non-negative.",
-                context={"steps": steps},
-                suggestion="Provide a non-negative number of steps.",
-            )
+        Each step retains its trace and contractivity controls. Subclasses and
+        replaced public steps keep per-step dispatch; zero steps computes no
+        propagator, and subsequent calls always build a fresh one.
+        """
 
-        current = ensure_array(density, dtype=np.complex128, backend=self.backend)
+        steps = _evolution_steps(steps)
+        dt = _evolution_time(dt, backend=self.backend)
+
+        current = backend_complex_array(density, backend=self.backend, label="Density")
         dim = self.hilbert_space.dimension
         if current.shape != (dim, dim):
             raise TNFRValueError(
@@ -472,14 +603,35 @@ class ContractiveDynamicsEngine:
             )
 
         trajectory: list[Any] = [current]
+        reuse = (
+            type(self) is ContractiveDynamicsEngine
+            and getattr(self.step, "__func__", None) is _ORIGINAL_DENSITY_STEP
+        )
+        propagator = None
         for _ in range(steps):
-            current = self.step(
-                current,
-                dt=dt,
-                normalize_trace=normalize_trace,
-                enforce_contractivity=enforce_contractivity,
-                raise_on_violation=raise_on_violation,
-                symmetrize=symmetrize,
-            )
+            if reuse:
+                current, propagator = self._step_with_propagator(
+                    current,
+                    dt=dt,
+                    normalize_trace=normalize_trace,
+                    enforce_contractivity=enforce_contractivity,
+                    raise_on_violation=raise_on_violation,
+                    symmetrize=symmetrize,
+                    propagator=propagator,
+                )
+            else:
+                current = self.step(
+                    current,
+                    dt=dt,
+                    normalize_trace=normalize_trace,
+                    enforce_contractivity=enforce_contractivity,
+                    raise_on_violation=raise_on_violation,
+                    symmetrize=symmetrize,
+                )
             trajectory.append(current)
         return self.backend.stack(trajectory, axis=0)
+
+
+# Keep class-level replacements of the public step on the dispatch path too.
+_ORIGINAL_UNITARY_STEP = MathematicalDynamicsEngine.step
+_ORIGINAL_DENSITY_STEP = ContractiveDynamicsEngine.step

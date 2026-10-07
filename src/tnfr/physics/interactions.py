@@ -53,12 +53,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Iterable
 
-from ..mathematics.unified_numerical import np
-
-try:
-    import networkx as nx  # type: ignore
-except Exception:  # pragma: no cover
-    nx = None  # type: ignore
+import networkx as nx  # noqa: F401 - retain the existing module attribute
 
 from ..constants.canonical import (
     GRAD_PHI_CANONICAL_THRESHOLD,
@@ -66,6 +61,7 @@ from ..constants.canonical import (
     PHYSICS_HOTSPOT_FRACTION_CANONICAL,
     U6_STRUCTURAL_POTENTIAL_LIMIT,
 )
+from ..mathematics.unified_numerical import np
 from ..operators.definitions import (
     Coherence,
     Coupling,

@@ -263,17 +263,37 @@ The three pressure channels weigh equally: the factorization excess $\Omega - 1$
 
 ### 5.5 Detection Thresholds
 
-Primality is detected by the **exact** criterion $\Delta\mathrm{NFR}(n) = 0$ (§4.1); the only threshold is the floating-point zero tolerance.
+The theorem detects primality by the **exact** criterion
+$\Delta\mathrm{NFR}(n) = 0$ (§4.1). A numerical zero tolerance approximates
+that criterion; a configured pressure cut is a separate decision policy.
 
 | Threshold | Value | Purpose |
 |-----------|-------|---------|
 | Primality tolerance | $10^{-10}$ | Floating-point zero detection of $\Delta\mathrm{NFR} = 0$ |
 
-Any wider "significance band" is an operational convenience, not a structural constant — only $\pi$ is a genuine structural scale (§5.1).
+Any wider "significance band" is an operational decision policy, not a
+derived structural constant. The phase-wrap convention discussed in §5.1
+does not select arithmetic coefficients or detection thresholds.
+
+The repository's `OptimizedTNFRPrimality` adapter retains the historical
+weights $(1,0.8,0.6)$ and applies the strict configured cut
+$|\Delta\mathrm{NFR}|<\texttt{threshold}$ in both its sieve and trial-division
+paths. The finite positive default $0.5$ is below the composite lower bound
+$1+0.8=1.8$, so it separates the prime zero set in this model. Larger custom
+cuts need not do so: $n=4$ has pressure $2.1$ and passes a cut of $3$ regardless
+of sieve coverage. The retained `is_prime` report field records this configured
+decision; changing the cut does not change the exact theorem. Each returned
+report, including its optional metrics, is detached from the reusable cache.
 
 ### 5.6 Derivation Status
 
-The 9 dynamical arithmetic parameters (3 pressure + 3 EPI + 3 frequency) are positive operational weights applied to arithmetic functions (canonical units; the prime ⟺ ΔNFR = 0 criterion is coefficient-independent, §4.2). The arithmetic network uses the same tetrad implementation and selected warning policies as other TNFR graphs; these policies are not graph-independent bounds. An earlier φ/γ/e "arithmetic recalibration" was removed; no domain-specific threshold tuning remains.
+The 9 arithmetic parameters (3 pressure + 3 EPI + 3 frequency) are positive
+operational weights applied to arithmetic functions (canonical units; the
+prime ⟺ ΔNFR = 0 criterion is coefficient-independent, §4.2). The arithmetic
+network uses the same tetrad implementation and selected warning policies as
+other TNFR graphs; these policies are not graph-independent bounds. The
+earlier φ/γ/e "arithmetic recalibration" was removed. The adapter's configurable
+pressure cut remains the separate policy described in §5.5.
 
 ---
 
@@ -929,6 +949,20 @@ Structural triad: $\mathrm{EPI}(30) \approx 7.48$, $\nu_f(30) \approx 2.15$, $C_
 | **Arithmetic pulse model** | `src/tnfr/riemann/nodal_pulse.py` | Finite spectral sums with assigned logarithmic frequencies; separate from native nodal dynamics or a derived NFR pulse |
 | **Prime-ladder Hamiltonian** | `src/tnfr/riemann/prime_ladder_hamiltonian.py` | Canonical $\nu_f$ prime-ladder (P14) |
 | **Canonical constants (repo)** | `src/tnfr/constants/canonical.py` | Repository-wide canonical constant definitions |
+
+The primitive-root, Dirichlet-character, Gauss-sum and `AdelicOperator`
+helpers in `number_theory.py` accept integer/index values, including NumPy
+integers. Booleans, floating-point values and text raise `TypeError` before
+conversion; callers must supply the intended integer rather than rely on
+truncation. `get_primitive_root` returns `None` for integer nonprimes. The
+character, Gauss-sum and operator constructors require a prime modulus and
+raise `TNFRValueError` for integer nonprimes.
+
+SymPy is optional for these helpers. Their shared primality predicate uses
+SymPy when available and exact integer trial division otherwise, with an
+integer square-root bound. The arithmetic network uses the same predicate.
+Character and Gauss-sum values remain numerical complex arrays; the fallback
+does not change their formulas or make their numerical outputs exact.
 
 ### 12.2 Executable Demonstrations
 

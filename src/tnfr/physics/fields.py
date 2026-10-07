@@ -67,16 +67,12 @@ from collections.abc import Callable
 from numbers import Real
 from typing import Any
 
-from ..mathematics.unified_numerical import compute_circular_mean, np
-from ._helpers import get_phase
-
-try:
-    import networkx as nx
-except ImportError:
-    nx = None
+import networkx as nx
 
 # Import config defaults for field constants
 from ..config import defaults_core as defaults
+from ..mathematics.unified_numerical import compute_circular_mean, np
+from ._helpers import get_phase
 
 # ---------------------------------------------------------------------------
 # Universality classification tolerance
@@ -104,6 +100,10 @@ from .canonical import (
 # Backward-compatible alias (used by pattern_discovery and parallel modules)
 compute_structural_potential_field = compute_structural_potential
 
+# Retain the existing module-level alias export.
+from ..constants.aliases import ALIAS_DNFR as ALIAS_DNFR  # noqa: F401
+from ..constants.aliases import ALIAS_THETA
+
 # Extended canonical fields (J_φ, J_ΔNFR) - Promoted Nov 12, 2025
 from .extended import (
     compute_dnfr_flux,
@@ -116,15 +116,6 @@ from .telemetry import compute_structural_telemetry
 
 # Unified field functions are defined in this module below
 
-# Import TNFR cache system for research functions
-_CACHE_AVAILABLE = True
-
-# Import TNFR aliases
-try:
-    from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA
-except ImportError:
-    ALIAS_THETA = ["phase", "theta"]
-    ALIAS_DNFR = ["delta_nfr", "dnfr"]
 
 # Import self-optimizing engine for mathematical analysis
 try:
@@ -221,9 +212,6 @@ def path_integrated_gradient(G: Any, source: Any, target: Any) -> float:
     - If multiple shortest paths exist, NetworkX resolves ties using graph
       traversal order. The sum has one term per edge, excluding the target.
     """
-    if nx is None:
-        raise RuntimeError("networkx required for path operations")
-
     try:
         path = nx.shortest_path(G, source, target)
     except (nx.NetworkXNoPath, nx.NodeNotFound):
@@ -366,8 +354,6 @@ def classify_nodal_topology(G: Any, *, alpha: float = 2.0) -> dict[str, Any]:
         ``n_nodes``.
     """
     exponent = _validate_nodal_topology_alpha(alpha)
-    if nx is None:
-        raise RuntimeError("networkx is required for nodal-topology classification")
     nodes = list(G.nodes())
     n = len(nodes)
     if n == 0:

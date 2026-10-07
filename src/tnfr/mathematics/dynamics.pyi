@@ -12,11 +12,10 @@ __all__ = ["MathematicalDynamicsEngine", "ContractiveDynamicsEngine"]
 
 class TraceValue(NamedTuple):
     backend: Any
-    numpy: complex
+    numpy: complex | None
 
 @dataclass
 class MathematicalDynamicsEngine:
-    generator: np.ndarray
     hilbert_space: HilbertSpace
     atol: float = ...
     backend: MathematicsBackend = field(init=False, repr=False)
@@ -29,6 +28,8 @@ class MathematicalDynamicsEngine:
         use_scipy: bool | None = None,
         backend: MathematicsBackend | None = None,
     ) -> None: ...
+    @property
+    def generator(self) -> np.ndarray: ...
     def step(
         self,
         state: Sequence[complex] | np.ndarray | Any,
@@ -47,7 +48,6 @@ class MathematicalDynamicsEngine:
 
 @dataclass
 class ContractiveDynamicsEngine:
-    generator: np.ndarray
     hilbert_space: HilbertSpace
     atol: float = ...
     backend: MathematicsBackend = field(init=False, repr=False)
@@ -61,6 +61,8 @@ class ContractiveDynamicsEngine:
         use_scipy: bool | None = None,
         backend: MathematicsBackend | None = None,
     ) -> None: ...
+    @property
+    def generator(self) -> np.ndarray: ...
     def frobenius_norm(
         self,
         density: Sequence[Sequence[complex]] | np.ndarray | Any,

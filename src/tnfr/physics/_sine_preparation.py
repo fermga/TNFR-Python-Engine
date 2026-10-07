@@ -113,7 +113,14 @@ def _sine_domain(geometry, reference_model, capacity) -> _SineDomain:
 
 @dataclass(frozen=True)
 class _SinePreparation:
-    admitted: SineExchangeComparison | SineRelativePattern
+    """Shared prepared rows; report consumers retain their admitted source.
+
+    ``admitted`` is None only for an internal producer using freshly admitted
+    exact rows and domain directly. It is never absent on the report-consuming
+    ``_sine_preparation`` path, and it supplies no arithmetic premises.
+    """
+
+    admitted: SineExchangeComparison | SineRelativePattern | None
     geometry: PhaseCycleGeometry
     uncertain: bool
     form: tuple[Q, ...]
@@ -173,6 +180,40 @@ def _sine_preparation(source) -> _SinePreparation:
         form, phase = admitted.epi, admitted.phase
         form_errors = phase_errors = (Q(0),) * len(admitted.nodes)
     domain = _sine_domain(geometry, admitted.reference_model, admitted.capacity)
+    return _sine_preparation_from_rows(
+        domain,
+        form=form,
+        phase=phase,
+        form_errors=form_errors,
+        phase_errors=phase_errors,
+        admitted=admitted,
+        uncertain=uncertain,
+    )
+
+
+def _sine_preparation_from_rows(
+    domain: _SineDomain,
+    *,
+    form: tuple[Q, ...],
+    phase: tuple[Q, ...],
+    form_errors: tuple[Q, ...],
+    phase_errors: tuple[Q, ...],
+    admitted: SineExchangeComparison | SineRelativePattern | None = None,
+    uncertain: bool = True,
+) -> _SinePreparation:
+    """Compute preparation data from one freshly admitted domain and rows.
+
+    Private callers own prior scalar, row-size and error-sign admission and
+    must pass normalized exact rows in the domain's node order. ``domain``
+    comes from a fresh ``_sine_domain`` call; a cached domain or incoming
+    report cannot substitute for its model/support/capacity admission.
+
+    The report adapter above preserves its normalized source association and
+    exact-versus-relative metadata. A fixed internal producer may omit that
+    association after directly admitting its primitive rows, sharing one
+    domain within an invocation without building discarded observation fields.
+    The association and ``uncertain`` metadata do not alter the arithmetic.
+    """
     geometry, model = domain.geometry, domain.model
     e, w, beta = domain.e, domain.w, domain.beta
     weights, mobility = domain.weights, domain.mobility

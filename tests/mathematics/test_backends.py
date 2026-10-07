@@ -7,8 +7,11 @@ from typing import cast
 import numpy as np
 import pytest
 
+import tnfr.mathematics.backend as backend_registry
+from tnfr.errors import TNFRValueError
 from tnfr.mathematics import CoherenceOperator, HilbertSpace
 from tnfr.mathematics.backend import (
+    BackendUnavailableError,
     MathematicsBackend,
     ensure_array,
     ensure_numpy,
@@ -20,6 +23,155 @@ from tnfr.mathematics.dynamics import (
 )
 
 _BACKEND_NAMES = ("numpy", "jax", "torch")
+
+
+def test_numpy_matrix_exponential_retains_nilpotent_part():
+    # A^2=0, so exp(A)=I+A; a diagonalization formula loses its Jordan part.
+    matrix = np.array([[0.0, 1.0], [0.0, 0.0]])
+    np.testing.assert_allclose(
+        get_backend("numpy").matrix_exp(matrix), np.eye(2) + matrix, atol=1e-15
+    )
+
+
+def test_numpy_matrix_exponential_requires_scipy_instead_of_false_diagonalization():
+    backend = backend_registry._NumpyBackend(np, None)
+    matrix = np.array([[0.0, 1.0], [0.0, 0.0]])
+    before = matrix.copy()
+
+    with pytest.raises(BackendUnavailableError, match="SciPy.*matrix exponential"):
+        backend.matrix_exp(matrix)
+
+    np.testing.assert_array_equal(matrix, before)
+    np.testing.assert_array_equal(backend.matmul(matrix, np.eye(2)), matrix)
+
+
+@pytest.fixture
+def isolated_backend_registry(monkeypatch):
+    """Keep registration tests independent of cached optional adapters."""
+    monkeypatch.setattr(backend_registry, "_BACKEND_FACTORIES", {})
+    monkeypatch.setattr(backend_registry, "_BACKEND_ALIASES", {})
+    monkeypatch.setattr(backend_registry, "_BACKEND_CACHE", {})
+    return backend_registry
+
+
+def _registry_state(registry):
+    return tuple(
+        dict(getattr(registry, name))
+        for name in ("_BACKEND_FACTORIES", "_BACKEND_ALIASES", "_BACKEND_CACHE")
+    )
+
+
+def test_backend_override_refreshes_cached_instance_and_preserves_aliases(
+    isolated_backend_registry,
+):
+    registry = isolated_backend_registry
+    old = backend_registry._NumpyBackend(np, None)
+    replacement = backend_registry._NumpyBackend(np, None)
+    unrelated = backend_registry._NumpyBackend(np, None)
+    registry.register_backend("sample", lambda: old, aliases=("short",))
+    registry.register_backend("other", lambda: unrelated)
+    assert registry.get_backend("short") is old
+    assert registry.get_backend("other") is unrelated
+
+    registry.register_backend("sample", lambda: replacement, override=True)
+
+    assert registry.get_backend("sample") is replacement
+    assert registry.get_backend("short") is replacement
+    assert registry.get_backend("other") is unrelated
+
+
+@pytest.mark.parametrize("override", [False, True])
+@pytest.mark.parametrize("collision", ["canonical_as_alias", "alias_as_canonical"])
+def test_backend_names_and_aliases_cannot_shadow_each_other(
+    isolated_backend_registry, override, collision
+):
+    registry = isolated_backend_registry
+    original = backend_registry._NumpyBackend(np, None)
+    registry.register_backend("numpy", lambda: original, aliases=("np",))
+    assert registry.get_backend("np") is original
+    before = _registry_state(registry)
+
+    with pytest.raises(TNFRValueError):
+        if collision == "canonical_as_alias":
+            registry.register_backend(
+                "new", lambda: original, aliases=(" NumPy ",), override=override
+            )
+        else:
+            registry.register_backend(" NP ", lambda: original, override=override)
+
+    assert _registry_state(registry) == before
+    assert registry.get_backend("numpy") is original
+
+
+@pytest.mark.parametrize("failure", ["existing_alias", "duplicate_alias", "iterator"])
+def test_failed_backend_registration_leaves_all_state_unchanged(
+    isolated_backend_registry, failure
+):
+    registry = isolated_backend_registry
+    original = backend_registry._NumpyBackend(np, None)
+    registry.register_backend("original", lambda: original, aliases=("used",))
+    assert registry.get_backend("used") is original
+    before = _registry_state(registry)
+
+    def aliases():
+        yield "new_alias"
+        if failure == "iterator":
+            raise RuntimeError("alias source failed")
+        yield "used" if failure == "existing_alias" else " NEW_ALIAS "
+
+    expected_error = RuntimeError if failure == "iterator" else TNFRValueError
+    with pytest.raises(expected_error):
+        registry.register_backend("new", lambda: original, aliases=aliases())
+
+    assert _registry_state(registry) == before
+    with pytest.raises(LookupError):
+        registry.get_backend("new_alias")
+
+
+def test_backend_alias_override_rebinds_without_reconstructing_other_backends(
+    isolated_backend_registry,
+):
+    registry = isolated_backend_registry
+    first = backend_registry._NumpyBackend(np, None)
+    second = backend_registry._NumpyBackend(np, None)
+    registry.register_backend("first", lambda: first, aliases=("shared", "retained"))
+    assert registry.get_backend("shared") is first
+
+    registry.register_backend(
+        "second", lambda: second, aliases=("shared",), override=True
+    )
+
+    assert registry.get_backend("shared") is second
+    assert registry.get_backend("retained") is first
+    assert registry.get_backend("first") is first
+
+
+@pytest.mark.parametrize("bad", ["", " \t ", "auto", " AuTo "])
+@pytest.mark.parametrize("identifier", ["canonical", "alias"])
+@pytest.mark.parametrize("override", [False, True])
+def test_unreachable_backend_identifiers_are_rejected_without_mutation(
+    isolated_backend_registry, bad, identifier, override
+):
+    registry = isolated_backend_registry
+    original = backend_registry._NumpyBackend(np, None)
+    replacement = backend_registry._NumpyBackend(np, None)
+    registry.register_backend("original", lambda: original, aliases=("retained",))
+    assert registry.get_backend("original") is original
+    before = _registry_state(registry)
+
+    with pytest.raises(TNFRValueError, match="nonempty.*auto"):
+        if identifier == "canonical":
+            registry.register_backend(bad, lambda: replacement, override=override)
+        else:
+            registry.register_backend(
+                "original" if override else "new",
+                lambda: replacement,
+                aliases=("new_alias", bad),
+                override=override,
+            )
+
+    assert _registry_state(registry) == before
+    assert registry.get_backend("retained") is original
 
 
 def _require_backend(name: str) -> MathematicsBackend:

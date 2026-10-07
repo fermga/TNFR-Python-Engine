@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
+from fractions import Fraction
 from typing import (
     TYPE_CHECKING,
     Callable,
@@ -20,13 +21,15 @@ from typing import (
     runtime_checkable,
 )
 
+from .._exact_time import finite_represented_real
+from ..config.parsing import parse_bool
 from ..errors import TNFRValueError
+from ._complex_arrays import nonnegative_tolerance
 from .epi import (
     COMPOSITE_EPI_REGULARITY_KIND,
     COMPOSITE_EPI_REGULARITY_PROVENANCE,
     BEPIElement,
 )
-from .unified_numerical import np
 
 if TYPE_CHECKING:
     from .spaces import BanachSpaceEPI
@@ -85,8 +88,8 @@ def build_isometry_factory(
     """
 
     raise NotImplementedError(
-        "Phase 2 will provide the canonical TNFR isometry factory; "
-        "current stage only documents the expected contract."
+        "The isometry factory is not implemented; "
+        "this API documents the expected metric-preservation contract."
     )
 
 
@@ -104,8 +107,8 @@ def validate_norm_preservation(
     """
 
     raise NotImplementedError(
-        "Norm preservation checks will be introduced in Phase 2; implementers "
-        "should ensure transform(metric(state)) == metric(state) within atol."
+        "Norm preservation checks are not implemented; implementers "
+        "should ensure metric(transform(state)) == metric(state) within atol."
     )
 
 
@@ -151,13 +154,24 @@ class CompositeEPIRegularityTrendReport:
         return self.regularity_values
 
 
+def _represented_regularity(value: object, label: str) -> float:
+    try:
+        return finite_represented_real(value, label)[0]
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise TNFRValueError(
+            f"{label} must be a finite representable real scalar."
+        ) from exc
+
+
 def _as_regularity_values(
     regularity_series: Sequence[float | BEPIElement],
     *,
     space: "BanachSpaceEPI | None",
     regularity_kwargs: Mapping[str, float],
 ) -> tuple[float, ...]:
-    if not regularity_series:
+    if isinstance(regularity_series, (str, bytes, bytearray, Mapping)):
+        raise TypeError("regularity_series must be a sequence of regularity entries.")
+    if len(regularity_series) == 0:
         raise TNFRValueError(
             "regularity_series must contain at least one entry.",
             context={"series_length": 0},
@@ -170,7 +184,7 @@ def _as_regularity_values(
 
         working_space = space if space is not None else BanachSpaceEPI()
         values = []
-        for element in regularity_series:
+        for index, element in enumerate(regularity_series):
             if not isinstance(element, BEPIElement):
                 raise TypeError(
                     "All entries must be BEPIElement instances when the series "
@@ -182,24 +196,17 @@ def _as_regularity_values(
                 x_grid=element.x_grid,
                 **regularity_kwargs,
             )
-            values.append(float(value))
+            values.append(_represented_regularity(value, f"regularity_series[{index}]"))
         return tuple(values)
 
     values = []
-    for value in regularity_series:
+    for index, value in enumerate(regularity_series):
         if isinstance(value, BEPIElement):
             raise TypeError(
                 "All entries must be numeric when the series is treated as "
                 "regularity values."
             )
-        numeric = float(value)
-        if not np.isfinite(numeric):
-            raise TNFRValueError(
-                "Regularity values must be finite numbers.",
-                context={"value": numeric},
-                suggestion="Check for NaN or Inf values in the regularity series.",
-            )
-        values.append(numeric)
+        values.append(_represented_regularity(value, f"regularity_series[{index}]"))
     return tuple(values)
 
 
@@ -220,20 +227,18 @@ def assess_composite_epi_regularity_trend(
     unbounded, and an increase can be caused by additional derivative energy.
     Consequently this trend is descriptive and does not enforce, estimate, or
     certify canonical structural coherence ``C(t)``.
+
+    Values and nonnegative tolerances must admit finite binary64 scalars without
+    losing nonzero inputs. Comparisons use their exact represented values;
+    any reported drop must also fit a finite binary64 scalar. The plateau flag
+    follows the shared Boolean parser, including explicit true/false strings.
     """
 
-    if not np.isfinite(tolerated_drop) or tolerated_drop < 0:
-        raise TNFRValueError(
-            "tolerated_drop must be finite and non-negative.",
-            context={"tolerated_drop": tolerated_drop},
-            suggestion="Provide a finite, non-negative tolerated_drop.",
-        )
-    if not np.isfinite(atol) or atol < 0:
-        raise TNFRValueError(
-            "atol must be finite and non-negative.",
-            context={"atol": atol},
-            suggestion="Provide a finite, non-negative atol.",
-        )
+    allow_plateaus = parse_bool(allow_plateaus)
+    tolerated_drop = nonnegative_tolerance(tolerated_drop, "tolerated_drop")
+    atol = nonnegative_tolerance(atol, "atol")
+    exact_atol = Fraction.from_float(atol)
+    drop_limit = Fraction.from_float(tolerated_drop) + exact_atol
 
     if regularity_kwargs is None:
         regularity_kwargs = {}
@@ -248,15 +253,15 @@ def assess_composite_epi_regularity_trend(
     for index in range(1, len(values)):
         previous_value = values[index - 1]
         current_value = values[index]
-        drop = previous_value - current_value
+        drop = Fraction.from_float(previous_value) - Fraction.from_float(current_value)
 
-        if current_value + tolerated_drop + atol < previous_value:
+        if drop > drop_limit:
             violation = RegularityTrendViolation(
                 index=index,
                 previous_value=previous_value,
                 current_value=current_value,
                 tolerated_drop=tolerated_drop,
-                drop=drop,
+                drop=_represented_regularity(drop, "regularity drop"),
                 kind="drop",
             )
             violations.append(violation)
@@ -270,13 +275,13 @@ def assess_composite_epi_regularity_trend(
             )
             continue
 
-        if not allow_plateaus and current_value <= previous_value + atol:
+        if not allow_plateaus and -drop <= exact_atol:
             violation = RegularityTrendViolation(
                 index=index,
                 previous_value=previous_value,
                 current_value=current_value,
                 tolerated_drop=tolerated_drop,
-                drop=max(0.0, drop),
+                drop=_represented_regularity(max(Fraction(0), drop), "regularity drop"),
                 kind="plateau",
             )
             violations.append(violation)

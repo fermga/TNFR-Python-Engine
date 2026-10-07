@@ -6,16 +6,13 @@ to replace slow Python loops in canonical.py.
 
 from typing import Any
 
+import networkx as nx
+
 from ..mathematics._neighbor_differences import edge_mean_differences
 from ..mathematics.unified_numerical import compute_phase_difference, np
 from ._edge_semantics import structural_distance_rows, validate_structural_graph
 from ._helpers import finite_real_scalar
 from ._potential_kernel import potential_row_sum
-
-try:
-    import networkx as nx
-except ImportError:
-    nx = None
 
 
 def compute_phi_s_exact_vectorized(

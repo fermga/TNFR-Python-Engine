@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 
 from tnfr.mathematics._rational_interval import I
-from tnfr.physics import relational_sine_scale as scale
+from tnfr.physics import relational_sine_replica_pulse as pulse
 from tnfr.sdk import relational_report_to_dict
 
 EPSILON = Q(1, 2**20)
@@ -16,7 +16,7 @@ EPSILON = Q(1, 2**20)
 @pytest.fixture(scope="module")
 def witness():
     captured = {}
-    original = scale.validated_taylor_step
+    original = pulse.validated_taylor_step
 
     def capture(initial, duration, field, domain, **kwargs):
         if len(initial) == 20:
@@ -24,8 +24,8 @@ def witness():
         return original(initial, duration, field, domain, **kwargs)
 
     with pytest.MonkeyPatch.context() as patch:
-        patch.setattr(scale, "validated_taylor_step", capture)
-        report = scale.assess_sine_replica_pulse_finite_work_response(
+        patch.setattr(pulse, "validated_taylor_step", capture)
+        report = pulse.assess_sine_replica_pulse_finite_work_response(
             probe_amplitude=EPSILON, order=10
         )
     return report, captured["field"]
@@ -178,8 +178,8 @@ def test_partial_numerical_failure_keeps_analytic_prediction_and_all_trials(
             return None, initial, "instrumented_unavailable"
         return report.steps[index], None, None
 
-    monkeypatch.setattr(scale, "validated_taylor_step", partial)
-    failed = scale.assess_sine_replica_pulse_finite_work_response(
+    monkeypatch.setattr(pulse, "validated_taylor_step", partial)
+    failed = pulse.assess_sine_replica_pulse_finite_work_response(
         probe_amplitude=EPSILON
     )
     assert len(trials) == 4
@@ -201,9 +201,9 @@ def test_invalid_amplitudes_reject_before_any_solver(epsilon, monkeypatch):
     def forbidden(*args, **kwargs):
         pytest.fail("invalid amplitude reached propagation")
 
-    monkeypatch.setattr(scale, "validated_taylor_step", forbidden)
+    monkeypatch.setattr(pulse, "validated_taylor_step", forbidden)
     with pytest.raises((ValueError, TypeError)):
-        scale.assess_sine_replica_pulse_finite_work_response(probe_amplitude=epsilon)
+        pulse.assess_sine_replica_pulse_finite_work_response(probe_amplitude=epsilon)
 
 
 def test_sdk_retains_finite_preparation_and_both_evidence_types(witness):

@@ -3,8 +3,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from fractions import Fraction
 from typing import TYPE_CHECKING, Callable, Mapping, Sequence
 
+from .._exact_time import finite_represented_real
+from ._complex_admission import finite_represented_complex
+from ._complex_arrays import nonnegative_tolerance, numpy_complex_array
 from .unified_numerical import TNFRValueError, np
 
 if TYPE_CHECKING:
@@ -36,13 +40,35 @@ class _EPIValidators:
     def _as_array(
         values: Sequence[complex] | np.ndarray, *, dtype: np.dtype
     ) -> np.ndarray:
-        array = np.asarray(values, dtype=dtype)
-        if array.ndim != 1:
+        if isinstance(values, np.ndarray) and values.ndim != 1:
             raise TNFRValueError(
                 "Inputs must be one-dimensional arrays.",
-                context={"ndim": array.ndim},
+                context={"ndim": values.ndim},
                 suggestion="Provide a 1D array.",
             )
+        try:
+            if (
+                type(values) is np.ndarray
+                and values.size >= 8
+                and values.dtype.kind in "iufc"
+                and np.dtype(dtype) == np.dtype(np.complex128)
+            ):
+                array = np.array(numpy_complex_array(values, label="Inputs"), copy=True)
+                # Match scalar admission's canonical zeros while retaining
+                # owned, writable storage independent of the caller's array.
+                array.real[array.real == 0] = 0.0
+                array.imag[array.imag == 0] = 0.0
+            else:
+                admitted = [
+                    finite_represented_complex(value, f"component[{index}]")
+                    for index, value in enumerate(values)
+                ]
+                array = np.asarray(admitted, dtype=dtype)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise TNFRValueError(
+                "Inputs must contain finite representable real or complex scalars.",
+                suggestion="Provide a 1D sequence of finite numeric components.",
+            ) from exc
         if not np.all(np.isfinite(array)):
             raise TNFRValueError(
                 "Inputs must not contain NaNs or infinities.",
@@ -55,7 +81,25 @@ class _EPIValidators:
     def _validate_grid(
         cls, grid: Sequence[float] | np.ndarray, expected_size: int
     ) -> np.ndarray:
-        array = np.asarray(grid, dtype=float)
+        try:
+            if type(grid) is np.ndarray and grid.size >= 8 and grid.dtype.kind in "iuf":
+                with np.errstate(over="ignore", under="ignore", invalid="ignore"):
+                    array = np.array(grid, dtype=float, copy=True)
+                if not np.all(np.isfinite(array)) or np.any((grid != 0) & (array == 0)):
+                    raise ValueError(
+                        "Grid components must remain finite and represented"
+                    )
+                array[array == 0] = 0.0
+            else:
+                raw = np.asarray(grid, dtype=object)
+                array = np.asarray(
+                    [finite_represented_real(value, "x_grid")[0] for value in raw.flat],
+                    dtype=float,
+                ).reshape(raw.shape)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise TNFRValueError(
+                "x_grid must contain finite representable real scalars"
+            ) from exc
         if array.ndim != 1:
             raise TNFRValueError(
                 "x_grid must be one-dimensional.",
@@ -81,10 +125,11 @@ class _EPIValidators:
                 suggestion="Check grid data for validity.",
             )
 
-        spacings = np.diff(array)
-        if np.any(spacings <= 0):
+        with np.errstate(over="ignore", invalid="ignore"):
+            spacings = np.diff(array)
+        if not np.all(np.isfinite(spacings)) or np.any(spacings <= 0):
             raise TNFRValueError(
-                "x_grid must be strictly increasing.",
+                "x_grid must be strictly increasing with finite spacings.",
                 context={"monotonic": False},
                 suggestion="Ensure grid points are sorted and unique.",
             )
@@ -199,7 +244,7 @@ class BEPIElement(_EPIValidators):
     def _apply_transform(
         transform: Callable[[np.ndarray], np.ndarray], values: np.ndarray
     ) -> np.ndarray:
-        result = np.asarray(transform(values), dtype=np.complex128)
+        result = _EPIValidators._as_array(transform(values), dtype=np.complex128)
         if result.shape != values.shape:
             raise TNFRValueError(
                 "Transforms must preserve the element shape.",
@@ -469,20 +514,16 @@ def evaluate_composite_epi_regularity_transform(
     lower-bound contract, but a larger ``R`` can mean greater amplitude or
     derivative energy.  The verdict therefore makes no claim about canonical
     structural coherence ``C(t)``.
+
+    Scalar policies and both observed regularities must be finite nonnegative
+    represented reals. The inequality uses those exact represented values;
+    reported requirements, deficits and finite-denominator ratios must also
+    be representable. A zero baseline with positive output retains the legacy
+    infinite-ratio convention; it is not used to decide the inequality.
     """
 
-    if not np.isfinite(kappa) or kappa < 0:
-        raise TNFRValueError(
-            "kappa must be finite and non-negative.",
-            context={"kappa": kappa},
-            suggestion="Provide a finite, non-negative kappa.",
-        )
-    if not np.isfinite(tolerance) or tolerance < 0:
-        raise TNFRValueError(
-            "tolerance must be finite and non-negative.",
-            context={"tolerance": tolerance},
-            suggestion="Provide a finite, non-negative tolerance.",
-        )
+    kappa = nonnegative_tolerance(kappa, "kappa")
+    tolerance = nonnegative_tolerance(tolerance, "tolerance")
 
     if regularity_kwargs is None:
         regularity_kwargs = {}
@@ -490,30 +531,41 @@ def evaluate_composite_epi_regularity_transform(
     from .spaces import BanachSpaceEPI  # Local import avoids circular dependency.
 
     working_space = space if space is not None else BanachSpaceEPI()
-    regularity_before = working_space.composite_epi_regularity(
-        element.f_continuous,
-        element.a_discrete,
-        x_grid=element.x_grid,
-        **regularity_kwargs,
+    regularity_before = nonnegative_tolerance(
+        working_space.composite_epi_regularity(
+            element.f_continuous,
+            element.a_discrete,
+            x_grid=element.x_grid,
+            **regularity_kwargs,
+        ),
+        "regularity_before",
     )
 
     transformed = transform(element)
     if not isinstance(transformed, BEPIElement):
         raise TypeError("transform must return a BEPIElement instance.")
 
-    regularity_after = working_space.composite_epi_regularity(
-        transformed.f_continuous,
-        transformed.a_discrete,
-        x_grid=transformed.x_grid,
-        **regularity_kwargs,
+    regularity_after = nonnegative_tolerance(
+        working_space.composite_epi_regularity(
+            transformed.f_continuous,
+            transformed.a_discrete,
+            x_grid=transformed.x_grid,
+            **regularity_kwargs,
+        ),
+        "regularity_after",
     )
 
-    required = kappa * regularity_before
-    satisfied = regularity_after + tolerance >= required
-    deficit = max(0.0, required - regularity_after)
+    exact_before = Fraction.from_float(regularity_before)
+    exact_after = Fraction.from_float(regularity_after)
+    exact_required = Fraction.from_float(kappa) * exact_before
+    satisfied = exact_after + Fraction.from_float(tolerance) >= exact_required
+    required = nonnegative_tolerance(exact_required, "required regularity")
+    deficit = nonnegative_tolerance(
+        max(Fraction(0), exact_required - exact_after), "regularity deficit"
+    )
 
     if regularity_before > 0:
-        ratio = regularity_after / regularity_before
+        ratio = nonnegative_tolerance(exact_after / exact_before, "regularity ratio")
     elif regularity_after > tolerance:
         ratio = float("inf")
     else:

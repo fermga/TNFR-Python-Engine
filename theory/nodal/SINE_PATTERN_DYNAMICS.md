@@ -1635,6 +1635,396 @@ endpoint substitutions or mismatched times. This joins two existing theorems
 under one explicit hybrid protocol; it does not derive when contacts occur
 or identify the resulting patterns with physical matter.
 
+<a id="sine-formation-response"></a>
+## Prepared acquisition with an inherited receiver response
+
+### Prospective claim and frozen protocol
+
+This gate asks whether two explicitly prepared, initially phase-flat sources
+can acquire the same maintained winding geometry and retain distinguishable
+**actual receiver form** at acquisition, on their uninterrupted full-law
+trajectories. Prepared sector acquisition is already established above; the
+new obligation is its joint admission with a receiver signature of the
+initial internal allocation. The positive-loss law here is a supplied
+constitutive premise. The conservative pair-response coefficients and its
+backward-invariant trapped family are not used.
+
+Freeze the following before evaluating the response:
+
+- Nodes are `0,...,9`, with pairs `(2*a,2*a+1)`, `a=0,...,4`. Adjacent
+  pairs on C5 have all four unit cross edges, no internal edges, and degree
+  four. All capacities and beta are one, with fixed effective coefficients
+  `e=1023/1024`, `w=1/1024`. No inputs, events or resets occur.
+- In the original structural clock,
+  `x_dot=-e*L*x/4+(w/pi)*S(theta)/4` and
+  `theta_dot=(w/pi)*L*x/4`, where
+  `S_i=sum_j sin(theta_j-theta_i)`. Declare `tau=e*t`,
+  `gamma=w/(pi*e)`, `z=gamma*(x-mean(x))`, and `eta=gamma**2`.
+  Thus `z'=-L*z/4+eta*S(theta)/4`, `theta'=L*z/4`.
+- Every nominal initial phase is zero. Nominal pair mean forms are
+  `4039*(a-2)`. Preparation A adds `(+96,-96)` in pair 0; B adds the
+  same internal form increment in pair 3. The nominal initial collective
+  means and full storage agree. Each node independently admits initial
+  form and phase errors of magnitude at most `1/10000000000`, including
+  their common origins. Perturbed members need not be energy matched.
+- At the fixed scaled time `T=100`, or original time `102400/1023`, read
+  `Y=(x_2+x_3)/2` with independent additive error at most
+  `1/10000000000` per branch. Predict recorded `Y_A-Y_B>1/100000000`.
+  This is a complete form response; a sine-current sign alone cannot pass.
+- The target has zero centered form and phases `(a-2)*2*pi/5`, duplicated
+  in each pair, modulo each member's conserved phase mean. Require the
+  whole reached family to lie within full relative Euclidean radius `1/8`
+  and strictly below its acute winding-one forward storage barrier.
+  Initial winding must be zero throughout both source boxes. The endpoint
+  family is the actual flow image; it is never reset to the target.
+- Use exact rational primitives and the shared outward dyadic128/Machin
+  interval arithmetic. The fixed analytic budget uses `M=4*I`,
+  `lambda=2/3`, `Lambda=2`, `F=sqrt(40)`, the shared negative-exponential
+  enclosure, and exact rational Poisson inversion. Retain the full
+  transient, nonlinear-history remainder and conserved form-mean error.
+  No trajectory search, solver, seed or precision sweep is included.
+- Close with both whole-family formation/retention and the strict recorded
+  response margin, or with the precise failed obligation. Do not retune
+  the source, law, clock, horizon, observation, errors or numerical budget
+  after evaluation. Store the outward certificate endpoints separately
+  from this preparation declaration.
+
+The integer form profile deliberately supplies organized information.
+This is prepared acquisition and a finite inherited response, not spontaneous
+selection of the preparation, support, loss mechanism or physical constituent.
+
+### Complete-law semigroup and independently prepared source equality
+
+Let \(L\) denote the fine combinatorial Laplacian, \(A=L/4\),
+\(M=4I\), and \(f(\theta)=S(\theta)/4\). Both form and continuously
+lifted phase means are conserved. Remove their common modes only in
+the proof: \(z=\gamma(x-\bar x\mathbf1)\), and
+\(\widehat\theta=\theta-\bar\theta\mathbf1\). The complete scaled rows are
+\[
+z'=-Az+\eta f(\widehat\theta),\qquad
+\widehat\theta'=Az,\qquad \eta=\gamma^2 .
+\]
+The actual receiver form still includes \(\bar x\); it is not replaced
+by this centered coordinate. The prescribed initial phase-error lifts
+fix the conserved phase mean, and the current is unchanged by its removal.
+
+The pair-constant and pair-antisymmetric subspaces are orthogonal and
+invariant for \(L\). On the former, \(L=2L_{C5}\); on the latter,
+\(L=4I\). Its nonzero eigenvalues are \(5-\sqrt5\), \(4\), and
+\(5+\sqrt5\). Thus the positive gap of \(A\) exceeds \(2/3\), since
+\(\sqrt5<7/3\). On the mean-free space \(A\) is self-adjoint in the
+\(M\) inner product and
+\[
+\|e^{-As}\|_M\le e^{-\lambda s},\qquad
+\|I-e^{-As}\|_M\le1,\qquad \lambda=2/3 .
+\]
+These are fixed-support operator inequalities, rather than fitted
+relaxation rates. Odd edge currents make \(f\) mean free. The degree-four
+rows give \(\|f(\theta)\|_M\le F=\sqrt{40}\).
+Its derivative is a cosine-weighted Laplacian divided by four, whose
+operator norm is at most \(\Lambda=2\), globally in phase.
+Consequently \(\|f(\theta)-f(\psi)\|_M\le\Lambda\|\theta-\psi\|_M\).
+
+The nominal sources have zero form mean. Their pair-constant profile
+contributes \(40\cdot4039^2\) to the form storage; either selected
+antisymmetric increment contributes \(4\cdot96^2\), with no cross term.
+Their exact nominal initial storage is therefore
+\[
+H_A(0)=H_B(0)=40\cdot4039^2+4\cdot96^2=652577704 .
+\]
+Every nominal phase is zero, so no phase potential is hidden in this
+budget. The equality concerns the two supplied source centers, not all
+independently perturbed preparations.
+
+For either nominal source define \(v=\gamma x^{\rm nom}(0)\). Put
+\[
+\ell_0=4039\gamma,\qquad d_0=96\gamma .
+\]
+The pair means of \(v\) are \((a-2)\ell_0\); its selected pair also has
+the internal entries \(+d_0,-d_0\). In both cases,
+\[
+V^2:=\|v\|_M^2=80\ell_0^2+8d_0^2 .
+\]
+This phase profile is predicted from the integer form preparation and
+the independently supplied law. It is not a measured endpoint.
+
+### A Poisson prediction for actual endpoint form
+
+Let \(P=I-\mathbf1\mathbf1^T/10\), and define the exact rational matrix
+\[
+G=\left(L+\frac{\mathbf1\mathbf1^T}{10}\right)^{-1}
+        -\frac{\mathbf1\mathbf1^T}{10}.
+\]
+Connectivity gives \(LG=GL=P\) and \(G\mathbf1=0\).
+The mean-free vector
+\[
+q(v)=G S(v)
+\]
+therefore satisfies \(Aq(v)=f(v)\) and
+\(\|q(v)\|_M\le F/\lambda\). Edge-current antisymmetry supplies its
+zero-mean premise; an interval rectangle around the currents need not
+have zero sum at every arbitrary corner.
+
+Write the actual initial centered errors as
+\(\epsilon_v=\gamma P\xi_x\) and
+\(\epsilon_\theta=P\xi_\theta\). Then
+\[
+z(0)=v+\epsilon_v,\qquad
+\widehat\theta(0)=\epsilon_\theta,\qquad
+\|\epsilon_v\|_M\le E_v:=\sqrt{40}\gamma\rho_x,\qquad
+\|\epsilon_\theta\|_M\le E_\theta:=\sqrt{40}\rho_\theta .
+\]
+Orthogonal centering cannot increase these norms.
+Variation of constants and the exact sum row
+\((z+\widehat\theta)'=\eta f(\widehat\theta)\) give
+\[
+\|\widehat\theta(s)-v\|_M
+\le V e^{-\lambda s}+E_v+E_\theta
+       +\eta F\bigl(s+\min(s,1/\lambda)\bigr).
+\]
+In deriving this bound, the homogeneous initial-form perturbation
+enters through \((I-e^{-As})\epsilon_v\), whose norm is at most \(E_v\).
+It is not counted twice as an independently varying endpoint error.
+
+Subtract the constant Poisson response inside the full Duhamel formula:
+\[
+\begin{aligned}
+z(T)={}&\eta q(v)
+ +e^{-AT}\bigl(v+\epsilon_v-\eta q(v)\bigr)\\
+ &+\eta\int_0^T e^{-A(T-s)}
+            [f(\widehat\theta(s))-f(v)]\,ds .
+\end{aligned}
+\]
+This retains the form-loss operator and the entire nonlinear phase
+history. It is not a stationary replacement of the actual dynamics.
+For a certified upper bound \(\rho\ge e^{-\lambda T}\), define
+\[
+\boxed{
+R_z=\rho(V+E_v+\eta F/\lambda)
+ +\eta\Lambda\left[
+ VT\rho+\frac{E_v+E_\theta}{\lambda}
+       +\frac{\eta F(T+1/\lambda)}{\lambda}
+ \right].}
+\]
+Then \(\|z(T)-\eta q(v)\|_M\le R_z\).
+Indeed the decaying nominal term in the history bound contributes
+exactly \(VT e^{-\lambda T}\); the constant initial errors contribute
+at most \((E_v+E_\theta)/\lambda\), and the remaining term is bounded
+by \(\eta F(T+1/\lambda)/\lambda\).
+The shared negative-exponential enclosure supplies \(\rho\);
+no decay rate is inferred from an evaluated response.
+
+The simultaneous phase bound used for geometric admission is
+\[
+R_\theta=\rho V+E_v+E_\theta+\eta F(T+1/\lambda),\qquad
+\|\widehat\theta(T)-v\|_M\le R_\theta .
+\]
+All these estimates are global through the transit, including nonacute
+and antipodal phase configurations. The complete field is globally
+Lipschitz on real form and lifted-phase coordinates, so its finite
+endpoint exists uniquely.
+
+### Receiver form, loss compensation and the allocation signal
+
+Let \(l=(e_2+e_3)/2\) be the mean-receiver row. On the mean-free space
+its \(M\)-dual norm is
+\[
+\|l-\mathbf1/10\|_{M^{-1}}=\frac1{\sqrt{10}} .
+\]
+The actual receiver and its independently predicted center are
+\[
+Y(T)=\bar x+\gamma^{-1}l^Tz(T),\qquad
+Y^{\rm qs}(v)=\gamma\,l^Tq(v).
+\]
+Here \(\eta/\gamma=\gamma\) in the frozen unit-beta law.
+Since \(|\bar x|\le\rho_x\), every recorded scalar differs from this
+center by at most
+\[
+\boxed{
+B_Y=\rho_x+\frac{R_z}{\gamma\sqrt{10}}+\rho_y ,
+}
+\]
+where \(\rho_y\) denotes its declared readout-error radius. The two
+independent conserved form-mean errors cannot be canceled between
+branches. The Poisson center includes form diffusion; the sign of the
+sine-current term alone would not bound \(Y(T)\).
+
+There is also a direct exact check of the allocation signal.
+Let \(p_0=1-\cos d_0\). Taking pair means of \(Lq=S(v)\) gives the
+five-cycle Poisson equation. Its mean-free inverse has receiver row
+\[
+(0,\ 2/5,\ 0,\ -1/5,\ -1/5).
+\]
+The coarse Poisson forcing difference between the two placements is
+\[
+p_0(-\sin\ell_0-\sin4\ell_0,\;
+       \sin\ell_0,\ \sin\ell_0,\ 0,\
+       \sin4\ell_0-\sin\ell_0).
+\]
+Consequently
+\[
+\boxed{
+Y_A^{\rm qs}-Y_B^{\rm qs}
+=\frac{\gamma(1-\cos d_0)}5
+       [3\sin\ell_0-\sin4\ell_0].}
+\]
+The nonuniform closing gap of the rationally prepared profile is
+retained. In particular \(\ell_0\) is not replaced by \(2\pi/5\).
+The displayed center difference is positive when
+\(\pi/4<\ell_0<\pi/2\) and \(0<d_0<\pi\), as here. The finite recorded
+claim still requires subtracting both complete error bounds \(B_Y\);
+the sign of this center is not the stopping rule.
+
+Although the source centers have equal storage, their predicted
+phase-potential increments are respectively
+\(4p_0(\cos\ell_0+\cos4\ell_0)\) and \(8p_0\cos\ell_0\).
+Neither these endpoint values nor the two accumulated losses are
+assumed equal.
+
+### The reached full family enters a forward-invariant winding chart
+
+Set \(\alpha=2\pi/5\), \(c=\cos\alpha\) and
+\(\theta_*=(a-2)\alpha\) in both members of pair \(a\).
+The target storage is \(H_*=20(1-c)\).
+For each nominal profile, define its phase potential
+\(U(v)=\sum_{\{i,j\}}[1-\cos(v_j-v_i)]\), and put
+\[
+\begin{aligned}
+R_x&=\frac{\eta\|q(v)\|_M+R_z}{2\gamma},&
+E&=R_\theta/2,\\
+d_*&=\|v-\theta_*\|_2,&
+N&=R_x^2+(d_*+E)^2 .
+\end{aligned}
+\]
+Because \(M=4I\), these imply
+\(\|Px(T)\|_2\le R_x\) and
+\(\|\widehat\theta(T)-v\|_2\le E\). Both nominal profiles have
+\(d_*^2=20(\ell_0-\alpha)^2+2d_0^2\), but their Poisson norms and
+potential bounds are retained separately.
+Thus the actual endpoint's full relative squared distance to the
+target is at most \(N\).
+
+The fine Laplacian and the absolute phase-Hessian norm are bounded
+by eight, while \(\nabla U(v)=-S(v)\). Taylor's inequality therefore gives
+the complete endpoint excess-storage upper bound
+\[
+\boxed{
+G_H=U(v)-H_*+\|S(v)\|_2 E+4E^2+4R_x^2,\qquad
+H(T)-H_*\le G_H .}
+\]
+The last term bounds the actual form storage; it is not discarded
+because the predicted phase pattern is acute.
+Each actual preparation retains its own mean and storage history.
+
+For the declared radius, put
+\[
+\mu=\frac\pi2-\alpha-\sqrt2r,\qquad
+\kappa=\frac{5-\sqrt5}{2}\cos(\alpha+\sqrt2r).
+\]
+If \(\mu>0\), the same full-state target Hessian argument used in the
+[joint persistence theorem](SINE_REPLICA_PULSE.md#sine-replica-joint-persistence)
+gives \(H-H_*\ge\kappa Z_f^2\) throughout the closed relative radius
+ball. Here \(\kappa\) is geometric; the law during transit and retention
+is the positive-loss law declared for this gate.
+In the original clock its exact balance is
+\[
+\boxed{\dot H=-\frac e4\|Lx\|_2^2\le0 .}
+\]
+The form and phase exchange terms cancel in this balance. Loss is
+neither fitted from the response nor omitted from the endpoint readout.
+
+For either reached family the strict conditions
+\[
+\boxed{r^2-N>0,\qquad \kappa r^2-G_H>0,\qquad \mu>0}
+\]
+exclude any subsequent first radius exit. All target-compatible fine
+edge gaps remain acute, so all target cycle periods are retained,
+including winding one around the base C5. This is forward retention
+of the actual reached state, without a reset, law switch or fresh
+preparation at \(T\).
+The conservative backward-invariance obstruction does not apply:
+storage increases in reverse time for this different supplied law.
+
+Initially all fine phases lie in one lifted interval of width
+\(2\rho_\theta<\pi/2\). Every principal edge increment is therefore
+its ordinary lifted difference, and every cycle sum telescopes to
+zero. Both complete source boxes start at zero winding. Their
+positive widths admit open neighborhoods in all twenty fine form
+and phase coordinates; endpoint membership and retention refer to
+their actual flow images, not independently chosen target corners.
+
+### Evaluated certificate and the joint stopping rule
+
+The declared analytic evaluation uses scaled time \(T=100\), or original
+time \(102400/1023\). Both source centers have initial storage
+\(652577704\). The shared interval calculation gives the following
+strict outward lower endpoints. Each numerator in the table is divided
+by \(2^{128}\); these are evaluated bounds, separate from the frozen
+preparation above.
+
+| Obligation | Certified lower-endpoint numerator |
+| --- | ---: |
+| Initial zero-winding margin, \(\pi/2-2\rho_\theta\) | 534514291964426900545652493888260470163 |
+| Acute target-radius margin, \(\mu\) | 46748866114495546899709594196780814092 |
+| Actual endpoint radius margin, A | 4708693058859986293445299107047880637 |
+| Actual endpoint radius margin, B | 4708693058875486025435602082713862883 |
+| Actual endpoint storage-barrier margin, A | 630219352267490091696073985417643471 |
+| Actual endpoint storage-barrier margin, B | 630541569722428563034335359212869245 |
+| Recorded receiver difference, A minus B | 23314612080077889112572910327611 |
+
+The complete recorded-difference enclosure is
+\[
+\boxed{
+Y_A^{\rm rec}-Y_B^{\rm rec}\in
+\frac{[23314612080077889112572910327611,
+        48558337973699762375085869740872]}{2^{128}} .}
+\]
+Its lower endpoint exceeds \(10^{-8}\), the prospective response
+threshold. For scale, it is approximately \(6.85\times10^{-8}\);
+the exact rational comparison supplies the verdict. The weighted
+scaled-form remainder is at most approximately
+\(1.806\times10^{-11}\), and each recorded receiver error is less
+than \(1.855\times10^{-8}\). These decimal summaries do not replace
+the retained interval evidence.
+
+Thus every admitted source member begins with zero cycle periods,
+reaches the target's full acute winding chart at the declared time,
+and remains in that chart under its uninterrupted supplied law.
+Every admitted A record exceeds every admitted B record by the
+declared finite margin at that same acquisition time. This combines
+formation, forward geometric retention and a form response inherited
+from the initial internal allocation; no independent endpoint
+preparation is used to combine those conclusions.
+
+### Shared assessor and the boundary of the result
+
+The primitive-only
+[`assess_sine_formation_response`](../../src/tnfr/physics/relational_sine_formation_response.py)
+returns `SineFormationResponse`. It rebuilds the fixed support,
+complete reference law, source preparations, exact Poisson identities
+and all consumed bounds before issuing a verdict. Its report retains
+both source-specific norms and storage bounds, the actual receiver
+enclosures, and the strict initial, geometric and response margins.
+The reusable status tests strict positive separation; the frozen gate
+also requires the stronger \(10^{-8}\) threshold checked above.
+The [contract](../../docs/contracts/relational/SINE_PATTERNS.md#sine-formation-response),
+[usage guide](../../docs/guides/relational/SINE_PATTERNS.md#sine-formation-response)
+and [independent controls](../../tests/physics/test_sine_formation_response.py)
+retain the execution and admission boundaries. This is an analytic
+certificate; no numerical trajectory or physical measurement was
+observed in evaluating it.
+
+The positive-loss law, integer form preparation and support remain
+supplied premises. Equal nominal storage does not make all perturbed
+members energy matched, nor does it imply equal accumulated loss.
+The result does not derive how an unstructured source selects this
+preparation, support or loss law. Forward retention concerns the
+target's geometry and cycle periods. The two reached families have a
+distinguishable finite signature at the declared readout; their
+internal activity, signature and mutual separation need not persist
+indefinitely. No autonomous constituent selection, universal law
+selection or physical identification follows.
+
 ## Section link directory
 
 These aliases route existing citations to their substantive owner.

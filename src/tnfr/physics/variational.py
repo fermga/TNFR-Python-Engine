@@ -55,10 +55,7 @@ from ..mathematics.unified_numerical import np
 # ---------------------------------------------------------------------------
 _THRESHOLD_PROXIMITY_FRACTION = 0.1
 
-try:
-    import networkx as nx
-except ImportError:  # pragma: no cover
-    nx = None
+import networkx as nx  # noqa: F401 - retain the existing module attribute
 
 from .canonical import (
     compute_phase_curvature,

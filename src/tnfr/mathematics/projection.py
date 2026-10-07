@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from ..errors import TNFRValueError
+from ._complex_arrays import normalized_complex_vector
 from .unified_numerical import np
 
 if TYPE_CHECKING:  # pragma: no cover - typing hook when numpy.typing is available
@@ -44,7 +45,7 @@ class StateProjector(Protocol):
 
 @dataclass(slots=True)
 class BasicStateProjector:
-    """Canonical projector building deterministic TNFR state vectors.
+    """Default auxiliary projector building finite complex state vectors.
 
     The projector maps the structural scalars of a node—its EPI magnitude,
     structural frequency ``νf`` and phase ``θ``—onto the canonical Hilbert
@@ -87,13 +88,7 @@ class BasicStateProjector:
             stochastic = noise_scale * (real_noise + 1j * imag_noise)
             base_vector = base_vector + stochastic
 
-        norm = np.linalg.norm(base_vector)
-        if np.isclose(norm, 0.0, atol=self.atol):
-            raise TNFRValueError(
-                "Cannot normalise a null state vector.",
-                context={"norm": norm, "atol": self.atol},
-                suggestion="Ensure the state vector is non-zero.",
-            )
-
-        normalised = base_vector / norm
+        normalised = normalized_complex_vector(
+            base_vector, atol=self.atol, label="projected state vector"
+        )
         return np.asarray(normalised, dtype=self.dtype)

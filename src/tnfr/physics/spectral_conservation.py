@@ -5,21 +5,29 @@ via the Graph Fourier Transform (GFT). The transformation is algebraically
 exact for a fixed orthonormal basis; whether a supplied trajectory satisfies a
 conservation law remains an observed residual question.
 
-MAIN RESULT (Spectral Continuity Theorem):
-==========================================
+Observations require nonempty support, complete finite real consumed maps and
+a complete finite real orthonormal chart. Time intervals are finite and strictly
+positive; policy tolerances are finite and nonnegative. Nonfinite result
+arithmetic and detected nonzero product/rate loss reject before classification.
+This sufficient numerical domain does not promise recovery of an aggregate
+whose intermediate squared components cannot be represented. The legacy
+sector-ratio infinity for a negligible denominator remains an explicit sentinel.
+
+FIXED-BASIS BALANCE IDENTITY:
+============================
 Given the discrete structural continuity equation:
 
     Δρ(i)/Δt + div J(i) = S_grammar(i)
 
 Apply the GFT (projection onto Laplacian eigenvectors ψ_k):
 
-    dρ̂_k/dt + λ_k · Ĵ_k = Ŝ_k
+    Δρ̂_k/Δt + Ĵ_k = Ŝ_k
 
 where:
     ρ̂_k = ⟨ψ_k | ρ⟩     (charge density in mode k)
     Ĵ_k = ⟨ψ_k | div J⟩  (current divergence in mode k)
     Ŝ_k = ⟨ψ_k | S⟩      (source term in mode k)
-    λ_k                    (Laplacian eigenvalue = mode frequency)
+    λ_k                    (Laplacian spatial eigenvalue)
 
 INTERPRETATION:
 ===============
@@ -61,12 +69,26 @@ References
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any, Sequence
 
-from ..mathematics.spectral import get_laplacian_spectrum, gft
+from ..mathematics import spectral as _spectral_math
+from ..mathematics._complex_arrays import nonnegative_tolerance
+from ..mathematics._neighbor_differences import mean_neighbor_difference
+from ..mathematics.spectral import _gft_many, get_laplacian_spectrum, gft
 from ..mathematics.unified_numerical import np
-from .conservation import ConservationSnapshot, capture_conservation_snapshot
+from ..metrics.common import finite_pearson_correlation, finite_population_std
+from ._helpers import finite_real_scalar, finite_real_series
+from .conservation import (
+    ConservationSnapshot,
+    _observed_secant,
+    _positive_interval,
+    _rms,
+    capture_conservation_snapshot,
+)
+
+_CANONICAL_GFT = gft
 
 # ---------------------------------------------------------------------------
 # Data structures
@@ -79,7 +101,7 @@ class SpectralConservationBalance:
 
     Verifies the mode-by-mode continuity equation:
 
-        Δρ̂_k/Δt + λ_k · Ĵ_k ≈ 0
+        Δρ̂_k/Δt + Ĵ_k ≈ 0
 
     for each Laplacian eigenmode k.
 
@@ -96,9 +118,9 @@ class SpectralConservationBalance:
     div_spectrum_mean : np.ndarray
         Mean current divergence spectrum (Ĵ_k_before + Ĵ_k_after)/2.
     mode_residuals : np.ndarray
-        Per-mode unsigned residual |Δρ̂_k/Δt + λ_k · Ĵ_k|.  Shape (N,).
+        Per-mode unsigned residual |Δρ̂_k/Δt + Ĵ_k|.  Shape (N,).
     mode_sources : np.ndarray
-        Per-mode signed source Ŝ_k = Δρ̂_k/Δt + λ_k · Ĵ_k.  Shape (N,).
+        Per-mode signed source Ŝ_k = Δρ̂_k/Δt + Ĵ_k.  Shape (N,).
     parseval_before : float
         Spectral energy Σ|ρ̂_k|² at t_0.
     parseval_after : float
@@ -109,9 +131,9 @@ class SpectralConservationBalance:
         λ_1 — first non-trivial eigenvalue.
     n_conserved_modes : int
         Number of modes with residual below tolerance.
-    conservation_quality_by_band : dict[str, float]
+    conservation_quality_by_band : dict[str, float | None]
         Mean conservation quality per frequency band ('low', 'mid', 'high').
-        Quality = 1 / (1 + mean_residual) ∈ [0, 1].
+        Quality = 1 / (1 + mean_residual) ∈ [0, 1]. Empty bands are None.
     overall_spectral_quality : float
         Global spectral conservation quality ∈ [0, 1].
     """
@@ -128,7 +150,7 @@ class SpectralConservationBalance:
     parseval_drift: float
     spectral_gap: float
     n_conserved_modes: int
-    conservation_quality_by_band: dict[str, float]
+    conservation_quality_by_band: dict[str, float | None]
     overall_spectral_quality: float
 
 
@@ -152,7 +174,7 @@ class SpectralWardIdentity:
     affected_band : str
         Dominant affected frequency band: 'low', 'mid', or 'high'.
     spectral_character : str
-        'conservative' (total energy preserved),
+        'conservative' (absolute total energy change below the 1e-12 policy),
         'dissipative' (energy decreasing),
         'injective' (energy increasing).
     """
@@ -189,7 +211,8 @@ class SpectralLyapunovResult:
     stable_fraction : float
         Fraction of modes with dE_k/dt ≤ stability_threshold.
     is_spectrally_stable : bool
-        True if total_derivative ≤ 0 (Lyapunov condition in spectral domain).
+        True if the total finite difference is at most stability_threshold.
+        This numerical tolerance flag is not a future stability theorem.
     """
 
     mode_energies_before: Any  # np.ndarray
@@ -247,32 +270,155 @@ class SpectralSectorDecomposition:
 _STRUCTURAL_ENERGY_FIELDS: list[str] = ["phi_s", "grad_phi", "k_phi", "j_phi", "j_dnfr"]
 
 
+def _observation_nodes(graph: Any) -> tuple[Any, ...]:
+    nodes = tuple(graph.nodes())
+    if not nodes:
+        raise ValueError("spectral observations require nonempty node support")
+    return nodes
+
+
+def _observation_spectrum(
+    graph: Any, nodes: Sequence[Any], *, consume_eigenvalues: bool = False
+) -> tuple[np.ndarray, np.ndarray]:
+    """Admit the complete real orthonormal chart required by these observations."""
+    eigenvalues, eigenvectors = get_laplacian_spectrum(graph)
+    raw = (
+        eigenvectors
+        if type(eigenvectors) is np.ndarray
+        else np.asarray(eigenvectors, dtype=object)
+    )
+    if raw.shape != (len(nodes), len(nodes)):
+        raise ValueError("spectral observations require a complete square eigenbasis")
+    order = "F" if raw.flags.f_contiguous else "C"
+    basis = finite_real_series(
+        raw.reshape(-1, order=order), "spectral eigenbasis"
+    ).reshape(raw.shape, order=order)
+    with np.errstate(over="ignore", invalid="ignore"):
+        gram = basis.T @ basis
+    if not np.allclose(gram, np.eye(len(nodes)), rtol=1e-10, atol=1e-12):
+        raise ValueError("spectral observations require a real orthonormal eigenbasis")
+    if consume_eigenvalues:
+        eigenvalues = finite_real_series(
+            eigenvalues, "spectral eigenvalues", nonnegative=True, nonempty=True
+        )
+        if eigenvalues.shape != (len(nodes),):
+            raise ValueError("spectral eigenvalues must match the complete eigenbasis")
+    return eigenvalues, basis
+
+
 def _snapshot_to_vectors(
     snapshot: ConservationSnapshot,
     nodes: Sequence[Any],
+    fields: Sequence[str],
 ) -> dict[str, np.ndarray]:
-    """Extract ordered arrays from a conservation snapshot."""
+    """Extract consumed complete maps in the supplied Laplacian node order."""
+    if not isinstance(snapshot, ConservationSnapshot):
+        raise TypeError("expected a ConservationSnapshot")
+    support = set(nodes)
+    for field in fields:
+        values = getattr(snapshot, field)
+        if not isinstance(values, Mapping) or set(values) != support:
+            raise ValueError(f"snapshot {field} must match the graph node support")
     return {
-        "rho": np.array([snapshot.charge_density[n] for n in nodes]),
-        "div": np.array([snapshot.divergence[n] for n in nodes]),
-        "phi_s": np.array([snapshot.phi_s[n] for n in nodes]),
-        "k_phi": np.array([snapshot.k_phi[n] for n in nodes]),
-        "j_phi": np.array([snapshot.j_phi[n] for n in nodes]),
-        "j_dnfr": np.array([snapshot.j_dnfr[n] for n in nodes]),
-        "grad_phi": np.array([snapshot.grad_phi[n] for n in nodes]),
+        field: finite_real_series(
+            [getattr(snapshot, field)[node] for node in nodes],
+            f"snapshot {field}",
+            nonempty=True,
+        )
+        for field in fields
     }
 
 
-def _gft_fields(
-    eigvecs: np.ndarray,
-    fields: dict[str, np.ndarray],
-) -> dict[str, np.ndarray]:
-    """Project multiple spatial signals onto the Laplacian eigenbasis via GFT.
+def _finite_product(left: np.ndarray, right: np.ndarray, name: str) -> np.ndarray:
+    with np.errstate(over="ignore", under="ignore", invalid="ignore"):
+        result = left * right
+    result = finite_real_series(result, name)
+    if np.any((left != 0.0) & (right != 0.0) & (result == 0.0)):
+        raise ValueError(f"{name} is nonzero but underflows to represented zero")
+    return result
 
-    Uses the canonical ``gft()`` from ``mathematics.spectral`` which supports
-    GPU acceleration for large matrices.
+
+def _finite_sum(values: np.ndarray, name: str) -> float:
+    with np.errstate(over="ignore", invalid="ignore"):
+        return finite_real_scalar(np.sum(values), name)
+
+
+def _finite_ratio(numerator: float, denominator: float, name: str) -> float:
+    result = finite_real_scalar(numerator / denominator, name)
+    if numerator != 0.0 and result == 0.0:
+        raise ValueError(f"{name} is nonzero but underflows to represented zero")
+    return result
+
+
+def _modal_secants(before: np.ndarray, after: np.ndarray, dt: float) -> np.ndarray:
+    with np.errstate(over="ignore", under="ignore", invalid="ignore"):
+        result = (after - before) / dt
+    exceptional = ~np.isfinite(result) | ((result == 0.0) & (after != before))
+    for index in np.flatnonzero(exceptional):
+        result[index] = _observed_secant(before[index], after[index], dt, "modal rate")
+    return result
+
+
+def _mean_divergence(before: np.ndarray, after: np.ndarray) -> np.ndarray:
+    with np.errstate(over="ignore", under="ignore", invalid="ignore"):
+        result = 0.5 * (before + after)
+    exceptional = ~np.isfinite(result) | ((result == 0.0) & (before != -after))
+    for index in np.flatnonzero(exceptional):
+        result[index] = mean_neighbor_difference(0.0, (before[index], after[index]))
+        if result[index] == 0.0 and before[index] != -after[index]:
+            raise ValueError(
+                "mean divergence is nonzero but underflows to represented zero"
+            )
+    return result
+
+
+def _can_reuse_basis(eigvecs: np.ndarray) -> bool:
+    """Reuse only the ordinary CPU route with no accelerator callbacks.
+
+    Above the GFT's 100-node backend threshold, preserve sequential local
+    transform calls and consumption: adapters may replace hooks or reuse
+    output storage between calls. No basis is retained across observations.
     """
-    return {name: gft(signal, eigvecs) for name, signal in fields.items()}
+    return (
+        gft is _CANONICAL_GFT
+        and _spectral_math.gft is _CANONICAL_GFT
+        and type(eigvecs) is np.ndarray
+        and eigvecs.ndim == 2
+        and eigvecs.dtype.kind in "iufc"
+        and eigvecs.shape[0] <= 100
+    )
+
+
+def _ordinary_signals(signals: Sequence[np.ndarray]) -> bool:
+    """Exclude signal conversions or arithmetic with user callbacks."""
+    return all(
+        type(signal) is np.ndarray and signal.dtype.kind in "iufc" for signal in signals
+    )
+
+
+def _project_vectors(
+    signals: tuple[np.ndarray, ...], eigvecs: np.ndarray
+) -> tuple[np.ndarray, ...]:
+    """Reuse one local basis validation unless the public transform was replaced."""
+    if _can_reuse_basis(eigvecs) and _ordinary_signals(signals):
+        return _gft_many(signals, eigvecs)
+    return tuple(gft(signal, eigvecs) for signal in signals)
+
+
+def _observed_coefficients(coefficients: np.ndarray, eigvecs: np.ndarray) -> np.ndarray:
+    result = finite_real_series(coefficients, "spectral coefficients", nonempty=True)
+    if result.shape != (eigvecs.shape[1],):
+        raise ValueError("spectral coefficients must match the complete eigenbasis")
+    return result
+
+
+def _observed_projections(
+    signals: tuple[np.ndarray, ...], eigvecs: np.ndarray
+) -> tuple[np.ndarray, ...]:
+    return tuple(
+        _observed_coefficients(coefficients, eigvecs)
+        for coefficients in _project_vectors(signals, eigvecs)
+    )
 
 
 def _compute_spectral_field_energies(
@@ -297,17 +443,39 @@ def _compute_spectral_field_energies(
     energy_after = np.zeros(n)
     per_field: dict[str, tuple[float, float]] = {}
 
+    spectra = None
+    if _can_reuse_basis(eigvecs):
+        signals = tuple(
+            signal
+            for field in fields
+            for signal in (vecs_before[field], vecs_after[field])
+        )
+        if _ordinary_signals(signals):
+            spectra = iter(_gft_many(signals, eigvecs))
+
     for field in fields:
-        hat_0 = gft(vecs_before[field], eigvecs)
-        hat_1 = gft(vecs_after[field], eigvecs)
-        e0_sq = hat_0**2
-        e1_sq = hat_1**2
+        if spectra is None:
+            # Preserve callback order and effects between fields for overrides.
+            hat_0 = gft(vecs_before[field], eigvecs)
+            hat_1 = gft(vecs_after[field], eigvecs)
+        else:
+            hat_0, hat_1 = next(spectra), next(spectra)
+        # Consume a callback's pair only after both transforms, as before.
+        hat_0 = _observed_coefficients(hat_0, eigvecs)
+        hat_1 = _observed_coefficients(hat_1, eigvecs)
+        e0_sq = _finite_product(hat_0, hat_0, f"{field} squared spectrum before")
+        e1_sq = _finite_product(hat_1, hat_1, f"{field} squared spectrum after")
         energy_before += e0_sq
         energy_after += e1_sq
-        per_field[field] = (float(np.sum(e0_sq)), float(np.sum(e1_sq)))
+        per_field[field] = (
+            _finite_sum(e0_sq, f"{field} energy before"),
+            _finite_sum(e1_sq, f"{field} energy after"),
+        )
 
-    energy_before *= 0.5
-    energy_after *= 0.5
+    energy_before = _finite_product(
+        energy_before, np.full(n, 0.5), "modal energy before"
+    )
+    energy_after = _finite_product(energy_after, np.full(n, 0.5), "modal energy after")
     return energy_before, energy_after, per_field
 
 
@@ -324,22 +492,22 @@ def _classify_band(k: int, n: int) -> str:
         return "high"
 
 
-def _band_quality(residuals: np.ndarray, n: int) -> dict[str, float]:
+def _band_quality(residuals: np.ndarray, n: int) -> dict[str, float | None]:
     """Compute conservation quality per frequency band.
 
-    Quality = 1/(1 + mean_residual) ∈ [0, 1].
+    Quality = 1/(1 + mean_residual) ∈ [0, 1]; empty bands are unavailable.
     """
     bands: dict[str, list] = {"low": [], "mid": [], "high": []}
     for k in range(n):
         bands[_classify_band(k, n)].append(float(residuals[k]))
 
-    result: dict[str, float] = {}
+    result: dict[str, float | None] = {}
     for name, vals in bands.items():
         if vals:
-            mean_r = sum(vals) / len(vals)
+            mean_r = mean_neighbor_difference(0.0, vals)
             result[name] = 1.0 / (1.0 + mean_r)
         else:
-            result[name] = 1.0
+            result[name] = None
     return result
 
 
@@ -359,18 +527,17 @@ def verify_spectral_conservation_balance(
 
     For each Laplacian eigenmode k, computes:
 
-        Ŝ_k = Δρ̂_k/Δt + λ_k · Ĵ_k
+        Ŝ_k = Δρ̂_k/Δt + Ĵ_k
 
-    where Ŝ_k is the spectral source term (should be ≈ 0 under grammar
-    compliance).  This is the GFT of the spatial continuity equation
-    ∂ρ/∂t + div(J) = S_grammar.
+    Here Ĵ_k already transforms the observed divergence, so no additional
+    eigenvalue factor is applied. This is the GFT of the two-snapshot spatial
+    residual using the mean divergence. Its vanishing requires a matching
+    complete law and observations; grammar compliance alone does not imply it.
 
-    Physics
-    -------
-    Low-frequency modes (global coherence) exhibit near-exact conservation.
-    High-frequency modes (local fluctuations) show larger residuals due to
-    rapid equilibration.  The spectral gap λ_1 determines the rate at which
-    global modes relax.
+    The supplied graph's iteration order defines the basis rows and the
+    corresponding snapshot vectors. Each consumed snapshot map must have
+    exactly that node support. Band quality is descriptive; no band ordering
+    or relaxation rate follows without additional dynamics.
 
     Parameters
     ----------
@@ -383,39 +550,55 @@ def verify_spectral_conservation_balance(
     dt : float
         Time step Δt > 0.
     tolerance : float
-        Residual threshold for classifying a mode as "conserved".
+        Finite nonnegative residual tolerance; equality is included.
 
     Returns
     -------
     SpectralConservationBalance
     """
-    nodes = sorted(before.charge_density.keys())
+    dt = _positive_interval(dt)
+    tolerance = nonnegative_tolerance(tolerance, "tolerance")
+    nodes = _observation_nodes(G)
     n = len(nodes)
 
-    eigvals, eigvecs = get_laplacian_spectrum(G)
+    eigvals, eigvecs = _observation_spectrum(G, nodes, consume_eigenvalues=True)
 
-    vecs_before = _snapshot_to_vectors(before, nodes)
-    vecs_after = _snapshot_to_vectors(after, nodes)
+    vecs_before = _snapshot_to_vectors(before, nodes, ("charge_density", "divergence"))
+    vecs_after = _snapshot_to_vectors(after, nodes, ("charge_density", "divergence"))
 
     # GFT: project into eigenbasis
-    rho_hat_0 = gft(vecs_before["rho"], eigvecs)
-    rho_hat_1 = gft(vecs_after["rho"], eigvecs)
-    div_hat_0 = gft(vecs_before["div"], eigvecs)
-    div_hat_1 = gft(vecs_after["div"], eigvecs)
+    rho_hat_0, rho_hat_1, div_hat_0, div_hat_1 = _observed_projections(
+        (
+            vecs_before["charge_density"],
+            vecs_after["charge_density"],
+            vecs_before["divergence"],
+            vecs_after["divergence"],
+        ),
+        eigvecs,
+    )
 
     # Mean divergence spectrum (trapezoidal-like average)
-    div_hat_mean = 0.5 * (div_hat_0 + div_hat_1)
+    div_hat_mean = _mean_divergence(div_hat_0, div_hat_1)
 
     # Mode-by-mode continuity residual
-    drho_dt = (rho_hat_1 - rho_hat_0) / dt
-    mode_sources = drho_dt + eigvals * div_hat_mean
+    drho_dt = _modal_secants(rho_hat_0, rho_hat_1, dt)
+    with np.errstate(over="ignore", invalid="ignore"):
+        mode_sources = finite_real_series(drho_dt + div_hat_mean, "modal source")
     mode_residuals = np.abs(mode_sources)
 
     # Parseval identity: ‖ρ‖² = Σ|ρ̂_k|²
-    parseval_0 = float(np.sum(rho_hat_0**2))
-    parseval_1 = float(np.sum(rho_hat_1**2))
+    parseval_0 = _finite_sum(
+        _finite_product(rho_hat_0, rho_hat_0, "squared charge before"),
+        "charge energy before",
+    )
+    parseval_1 = _finite_sum(
+        _finite_product(rho_hat_1, rho_hat_1, "squared charge after"),
+        "charge energy after",
+    )
     denom = max(parseval_0, 1e-15)
-    parseval_drift = abs(parseval_1 - parseval_0) / denom
+    parseval_drift = _finite_ratio(
+        abs(parseval_1 - parseval_0), denom, "Parseval drift"
+    )
 
     # Spectral gap
     spectral_gap = float(eigvals[1]) if n > 1 else 0.0
@@ -427,7 +610,7 @@ def verify_spectral_conservation_balance(
     band_quality = _band_quality(mode_residuals, n)
 
     # Overall quality: 1/(1 + RMS residual)
-    rms = float(np.sqrt(np.mean(mode_residuals**2))) if n > 0 else 0.0
+    rms = _rms(mode_residuals)
     overall_quality = 1.0 / (1.0 + rms)
 
     return SpectralConservationBalance(
@@ -466,13 +649,9 @@ def compute_spectral_ward_identity(
     conservation.py by revealing *which frequency scales* the operator
     affects.
 
-    Physics
-    -------
-    - Stabilizers (IL, THOL): Should primarily affect high-frequency modes
-      (local smoothing), preserving low-frequency global structure.
-    - Destabilizers (OZ, VAL): Inject energy into mid/high-frequency modes.
-    - Generators (AL, NAV): Affect all bands (new structure creation).
-    - Coupling (UM, RA): Redistribute energy across modes via phase sync.
+    Operator names label the supplied observation. They do not determine its
+    spectral direction or band. The energy-change classification uses the
+    existing absolute 1e-12 tolerance; it does not prove exact conservation.
 
     Parameters
     ----------
@@ -489,31 +668,35 @@ def compute_spectral_ward_identity(
     -------
     SpectralWardIdentity
     """
-    nodes = sorted(before.charge_density.keys())
+    nodes = _observation_nodes(G)
     n = len(nodes)
 
-    _, eigvecs = get_laplacian_spectrum(G)
+    _, eigvecs = _observation_spectrum(G, nodes)
 
-    vecs_before = _snapshot_to_vectors(before, nodes)
-    vecs_after = _snapshot_to_vectors(after, nodes)
+    vecs_before = _snapshot_to_vectors(before, nodes, ("charge_density",))
+    vecs_after = _snapshot_to_vectors(after, nodes, ("charge_density",))
 
-    rho_hat_0 = gft(vecs_before["rho"], eigvecs)
-    rho_hat_1 = gft(vecs_after["rho"], eigvecs)
+    rho_hat_0, rho_hat_1 = _observed_projections(
+        (vecs_before["charge_density"], vecs_after["charge_density"]), eigvecs
+    )
 
-    delta_rho = rho_hat_1 - rho_hat_0
+    with np.errstate(over="ignore", invalid="ignore"):
+        delta_rho = finite_real_series(rho_hat_1 - rho_hat_0, "modal charge change")
 
     # Per-mode energy change: Δ(|ρ̂_k|²) = |ρ̂_k_after|² - |ρ̂_k_before|²
-    energy_before = rho_hat_0**2
-    energy_after = rho_hat_1**2
+    energy_before = _finite_product(rho_hat_0, rho_hat_0, "squared charge before")
+    energy_after = _finite_product(rho_hat_1, rho_hat_1, "squared charge after")
     mode_energy_change = energy_after - energy_before
 
-    total_change = float(np.sum(mode_energy_change))
+    total_change = _finite_sum(mode_energy_change, "total spectral energy change")
 
     # Determine which band is most affected (by absolute energy change)
     band_energy: dict[str, float] = {"low": 0.0, "mid": 0.0, "high": 0.0}
     for k in range(n):
         band = _classify_band(k, n)
         band_energy[band] += abs(float(mode_energy_change[k]))
+    for band, value in band_energy.items():
+        finite_real_scalar(value, f"{band} band energy change")
 
     affected_band = max(band_energy, key=band_energy.get)  # type: ignore[arg-type]
 
@@ -564,21 +747,26 @@ def compute_spectral_lyapunov(
         Two successive states.
     G : TNFRGraph
     dt : float
-        Time step.
+        Finite strictly positive time step in the declared diagnostic clock.
     stability_threshold : float
-        Modes with dE_k/dt > threshold are classified as unstable.
+        Finite nonnegative tolerance. Modes with dE_k/dt > this threshold
+        are classified as unstable; equality is included in the stable set.
 
     Returns
     -------
     SpectralLyapunovResult
     """
-    nodes = sorted(before.charge_density.keys())
+    dt = _positive_interval(dt)
+    stability_threshold = nonnegative_tolerance(
+        stability_threshold, "stability_threshold"
+    )
+    nodes = _observation_nodes(G)
     n = len(nodes)
 
-    _, eigvecs = get_laplacian_spectrum(G)
+    _, eigvecs = _observation_spectrum(G, nodes)
 
-    vecs_before = _snapshot_to_vectors(before, nodes)
-    vecs_after = _snapshot_to_vectors(after, nodes)
+    vecs_before = _snapshot_to_vectors(before, nodes, _STRUCTURAL_ENERGY_FIELDS)
+    vecs_after = _snapshot_to_vectors(after, nodes, _STRUCTURAL_ENERGY_FIELDS)
 
     # Per-mode structural snapshot energy via the shared helper.
     energy_before, energy_after, _ = _compute_spectral_field_energies(
@@ -588,8 +776,8 @@ def compute_spectral_lyapunov(
         _STRUCTURAL_ENERGY_FIELDS,
     )
 
-    derivatives = (energy_after - energy_before) / dt
-    total_derivative = float(np.sum(derivatives))
+    derivatives = _modal_secants(energy_before, energy_after, dt)
+    total_derivative = _finite_sum(derivatives, "total energy derivative")
 
     n_unstable = int(np.sum(derivatives > stability_threshold))
     stable_frac = 1.0 - n_unstable / max(n, 1)
@@ -637,33 +825,40 @@ def decompose_spectral_sectors(
     if snapshot is None:
         snapshot = capture_conservation_snapshot(G)
 
-    nodes = sorted(snapshot.charge_density.keys())
+    nodes = _observation_nodes(G)
     n = len(nodes)
 
-    _, eigvecs = get_laplacian_spectrum(G)
+    _, eigvecs = _observation_spectrum(G, nodes)
 
-    vecs = _snapshot_to_vectors(snapshot, nodes)
-    phi_s_hat = gft(vecs["phi_s"], eigvecs)
-    k_phi_hat = gft(vecs["k_phi"], eigvecs)
+    vecs = _snapshot_to_vectors(snapshot, nodes, ("phi_s", "k_phi"))
+    phi_s_hat, k_phi_hat = _observed_projections(
+        (vecs["phi_s"], vecs["k_phi"]), eigvecs
+    )
 
-    pot_energy = float(np.sum(phi_s_hat**2))
-    geo_energy = float(np.sum(k_phi_hat**2))
+    pot_energy = _finite_sum(
+        _finite_product(phi_s_hat, phi_s_hat, "squared potential spectrum"),
+        "potential sector energy",
+    )
+    geo_energy = _finite_sum(
+        _finite_product(k_phi_hat, k_phi_hat, "squared curvature spectrum"),
+        "geometric sector energy",
+    )
 
     # Pearson correlation between spectra
     if n > 1:
-        std_phi = float(np.std(phi_s_hat))
-        std_kphi = float(np.std(k_phi_hat))
+        std_phi = finite_population_std(phi_s_hat)
+        std_kphi = finite_population_std(k_phi_hat)
         if std_phi > 1e-15 and std_kphi > 1e-15:
-            corr = float(np.corrcoef(phi_s_hat, k_phi_hat)[0, 1])
+            corr = finite_pearson_correlation(phi_s_hat, k_phi_hat)
         else:
             corr = 0.0
     else:
         corr = 0.0
 
-    coupling = np.abs(phi_s_hat * k_phi_hat)
+    coupling = np.abs(_finite_product(phi_s_hat, k_phi_hat, "sector coupling"))
 
     if geo_energy > 1e-15:
-        ratio = pot_energy / geo_energy
+        ratio = _finite_ratio(pot_energy, geo_energy, "sector ratio")
     else:
         ratio = float("inf") if pot_energy > 1e-15 else 1.0
 
@@ -713,12 +908,12 @@ def compute_spectral_energy_conservation(
         'j_phi_drift', 'j_dnfr_drift', 'total_energy_before',
         'total_energy_after', 'total_drift'.
     """
-    nodes = sorted(before.charge_density.keys())
+    nodes = _observation_nodes(G)
 
-    _, eigvecs = get_laplacian_spectrum(G)
+    _, eigvecs = _observation_spectrum(G, nodes)
 
-    vecs_before = _snapshot_to_vectors(before, nodes)
-    vecs_after = _snapshot_to_vectors(after, nodes)
+    vecs_before = _snapshot_to_vectors(before, nodes, _STRUCTURAL_ENERGY_FIELDS)
+    vecs_after = _snapshot_to_vectors(after, nodes, _STRUCTURAL_ENERGY_FIELDS)
 
     # Unified energy computation for all five canonical fields
     _, _, per_field = _compute_spectral_field_energies(
@@ -735,14 +930,16 @@ def compute_spectral_energy_conservation(
     for field in _STRUCTURAL_ENERGY_FIELDS:
         e0, e1 = per_field[field]
         denom = max(e0, 1e-15)
-        result[f"{field}_drift"] = abs(e1 - e0) / denom
+        result[f"{field}_drift"] = _finite_ratio(abs(e1 - e0), denom, f"{field} drift")
         total_e0 += e0
         total_e1 += e1
 
-    result["total_energy_before"] = total_e0
-    result["total_energy_after"] = total_e1
+    result["total_energy_before"] = finite_real_scalar(total_e0, "total energy before")
+    result["total_energy_after"] = finite_real_scalar(total_e1, "total energy after")
     denom = max(total_e0, 1e-15)
-    result["total_drift"] = abs(total_e1 - total_e0) / denom
+    result["total_drift"] = _finite_ratio(
+        abs(total_e1 - total_e0), denom, "total energy drift"
+    )
 
     return result
 
@@ -760,19 +957,21 @@ def classify_spectral_modes(
     r"""Classify spectral modes by their conservation behavior.
 
     Each mode k is classified as:
-    - 'conserved': |λ_k · Ĵ_k| < threshold (low transport rate)
-    - 'dissipative': λ_k · Ĵ_k > 0 and above threshold
-    - 'accumulative': λ_k · Ĵ_k < 0 and above threshold
+    - 'conserved': |Ĵ_k| <= threshold (low modal divergence)
+    - 'dissipative': Ĵ_k > 0 and above threshold
+    - 'accumulative': Ĵ_k < 0 and above threshold
 
-    This mirrors the spatial conservation analysis but in the frequency
-    domain, where the classification is mode-wise rather than node-wise.
+    Ĵ_k is the GFT of the already-computed divergence. These legacy labels
+    describe that observation in the selected eigenbasis; they do not prove
+    conservation or dissipation under an unspecified evolution law.
 
     Parameters
     ----------
     G : TNFRGraph
     snapshot : ConservationSnapshot, optional
     threshold : float, optional
-        Classification threshold.  Defaults to median |λ_k · Ĵ_k|.
+        Finite nonnegative classification tolerance, including equality.
+        Defaults to median |Ĵ_k|; exact zero is conserved at a zero threshold.
 
     Returns
     -------
@@ -781,29 +980,37 @@ def classify_spectral_modes(
         'n_conserved': int
         'n_dissipative': int
         'n_accumulative': int
-        'mode_transport_rates': np.ndarray (λ_k · Ĵ_k signed)
+        'mode_transport_rates': np.ndarray (Ĵ_k signed; legacy key retained)
     """
+    if threshold is not None:
+        threshold = nonnegative_tolerance(threshold, "threshold")
     if snapshot is None:
         snapshot = capture_conservation_snapshot(G)
 
-    nodes = sorted(snapshot.charge_density.keys())
+    nodes = _observation_nodes(G)
     n = len(nodes)
 
-    eigvals, eigvecs = get_laplacian_spectrum(G)
+    _, eigvecs = _observation_spectrum(G, nodes)
 
-    vecs = _snapshot_to_vectors(snapshot, nodes)
-    div_hat = gft(vecs["div"], eigvecs)
+    vecs = _snapshot_to_vectors(snapshot, nodes, ("divergence",))
+    div_hat = _observed_coefficients(gft(vecs["divergence"], eigvecs), eigvecs)
 
-    transport_rates = eigvals * div_hat
+    transport_rates = div_hat
 
     if threshold is None:
-        threshold = float(np.median(np.abs(transport_rates))) if n > 0 else 0.0
+        magnitudes = np.sort(np.abs(transport_rates))
+        middle = n // 2
+        threshold = (
+            float(magnitudes[middle])
+            if n % 2
+            else mean_neighbor_difference(0.0, magnitudes[middle - 1 : middle + 1])
+        )
 
     labels = []
     n_cons = n_diss = n_acc = 0
     for k in range(n):
         rate = float(transport_rates[k])
-        if abs(rate) < threshold:
+        if abs(rate) <= threshold:
             labels.append("conserved")
             n_cons += 1
         elif rate > 0:

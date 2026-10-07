@@ -44,6 +44,7 @@ from fractions import Fraction
 import numpy as np
 
 from ..physics.spectral_projectors import derived_tolerance
+from ._exact_linear_algebra import exact_matrix_product
 
 __all__ = [
     "projective_scale_map",
@@ -139,11 +140,11 @@ def padic_laplacian(p: int, e: int, connection: set[int]) -> Matrix:
 # Exact matrix helpers
 # --------------------------------------------------------------------------- #
 def _matmul(A: Matrix, B: Matrix) -> Matrix:
-    n, k, m = len(A), len(B), len(B[0])
-    return [
-        [sum((A[i][t] * B[t][j] for t in range(k)), Fraction(0)) for j in range(m)]
-        for i in range(n)
-    ]
+    """Reuse the exact sparse product while retaining mutable list rows."""
+    product = exact_matrix_product(
+        tuple(tuple(row) for row in A), tuple(tuple(row) for row in B)
+    )
+    return [list(row) for row in product]
 
 
 def _sub(A: Matrix, B: Matrix) -> Matrix:
@@ -209,10 +210,6 @@ def lift_reduction_residual(p: int, e: int) -> Fraction:
 # --------------------------------------------------------------------------- #
 # Spectral scaling telemetry
 # --------------------------------------------------------------------------- #
-def _eig_mags(L: Matrix) -> list[float]:
-    return sorted(abs(z) for z in np.linalg.eigvals(_to_float(L)))
-
-
 def surviving_spectrum_containment(p: int, e: int, base: frozenset[int]) -> float:
     r"""Max distance from each ``|λ| ∈ spec(L_e)`` to the nearest fine eigenvalue.
 
