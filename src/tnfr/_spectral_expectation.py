@@ -7,9 +7,10 @@ by the operator spectrum. They are not canonical structural coherence C(t).
 from __future__ import annotations
 
 import math
-from numbers import Integral, Real
+from numbers import Integral
 from typing import Any
 
+from ._exact_time import finite_represented_real
 from .errors import TNFRValueError
 
 SPECTRAL_EXPECTATION_METRIC_KIND = "spectral_operator_expectation"
@@ -17,17 +18,14 @@ SPECTRAL_EXPECTATION_RANGE = "unbounded_real"
 
 
 def finite_spectral_real(value: Any, *, label: str) -> float:
-    """Return a finite non-boolean real used by spectral telemetry."""
+    """Admit a finite represented real used by spectral telemetry."""
 
-    if isinstance(value, bool) or not isinstance(value, Real):
-        raise TNFRValueError(f"{label} must be a finite real scalar")
     try:
-        result = float(value)
+        return finite_represented_real(value, label)[0]
     except (OverflowError, TypeError, ValueError) as exc:
-        raise TNFRValueError(f"{label} must be a finite real scalar") from exc
-    if not math.isfinite(result):
-        raise TNFRValueError(f"{label} must be finite")
-    return result
+        raise TNFRValueError(
+            f"{label} must be a finite representable real scalar"
+        ) from exc
 
 
 def positive_spectral_dimension(value: Any, *, label: str) -> int:

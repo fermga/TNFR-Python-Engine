@@ -8,15 +8,22 @@ import numpy.typing as npt
 
 from .backend import MathematicsBackend
 
-__all__ = ["SpectralExpectationOperator", "CoherenceOperator", "FrequencyOperator"]
+__all__ = [
+    "SpectralExpectationOperator",
+    "CoherenceOperator",
+    "FrequencyOperator",
+    "DEFAULT_SPECTRAL_EXPECTATION_FLOOR",
+    "DEFAULT_C_MIN",
+]
+
+DEFAULT_SPECTRAL_EXPECTATION_FLOOR: float
+DEFAULT_C_MIN: float
 
 ComplexMatrix = npt.NDArray[np.complexfloating[np.float64, np.float64]]
 ComplexVector = npt.NDArray[np.complexfloating[np.float64, np.float64]]
 
 @dataclass
 class SpectralExpectationOperator:
-    matrix: ComplexMatrix
-    eigenvalues: ComplexVector
     c_min: float
     metric_kind: str
     canonical_coherence_certified: bool
@@ -32,6 +39,10 @@ class SpectralExpectationOperator:
         atol: float = 1e-09,
         backend: MathematicsBackend | None = None,
     ) -> None: ...
+    @property
+    def matrix(self) -> ComplexMatrix: ...
+    @property
+    def eigenvalues(self) -> ComplexVector: ...
     @property
     def expectation_floor(self) -> float: ...
     def is_hermitian(self, *, atol: float = 1e-09) -> bool: ...

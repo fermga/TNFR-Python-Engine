@@ -274,6 +274,16 @@ For examples with `run_protocol` and `build_report`, reuse the real report throu
 a module fixture for numerical and scope checks. The shared
 [example helper](tests/example_protocol_helpers.py) checks `main` separately with
 a sentinel protocol and synthetic report, without rerunning a scientific producer.
+
+Reusable independent oracles belong in test support modules rather than in
+another collected test suite. The [pair oracle helper](tests/physics/_sine_pair_oracles.py)
+shares fine support, exact jets and high-precision reductions without importing
+production certificates or pytest fixtures. Each consuming suite retains its
+own complete-law assumptions, preparation budgets and module-scoped reports.
+When optimizing a shared certificate kernel, compare complete exact projections
+on representative available and unavailable cases as well as these independent
+controls; timing differences alone cannot establish unchanged evidence.
+
 [Runtime facade tests](tests/physics/test_runtime_facade_imports.py) own the two
 cold import orders for the P2/REMESH example families; those checks still use
 fresh processes and resolve the actual public APIs.
@@ -353,6 +363,14 @@ Pass affected files for a focused edit where supported. Black and isort use
 88 columns; pydocstyle uses NumPy conventions. CI's advisory checks are listed
 in [the workflow guide](.github/WORKFLOWS.md). `make format` modifies files;
 it is not a read-only validation step.
+
+The lazy `physics` namespace has one maintained export map and a generated
+typing facade. After changing that map, run
+`python scripts/generate_physics_stub.py --write`; validate it with
+`python scripts/generate_physics_stub.py --check`. The generator reads the
+source AST without importing TNFR, and the
+[facade tests](tests/physics/test_physics_facade_imports.py) check typed exports,
+runtime object identity and cold import boundaries.
 
 Optional pre-commit setup requires installing `pre-commit` separately before
 `pre-commit install`. [.pre-commit-config.yaml](.pre-commit-config.yaml)

@@ -57,7 +57,10 @@ def get_nodal_equation() -> Eq:
 
 
 def solve_nodal_equation_constant_params(
-    nu_f_val: float, delta_nfr_val: float, EPI_0: float, t0: float = 0
+    nu_f_val: float | sp.Expr,
+    delta_nfr_val: float | sp.Expr,
+    EPI_0: float | sp.Expr,
+    t0: float | sp.Expr = 0,
 ) -> sp.Expr:
     """
     Solve nodal equation analytically for constant νf and ΔNFR.
@@ -73,21 +76,22 @@ def solve_nodal_equation_constant_params(
     Returns:
         Symbolic expression for EPI(t)
 
-    This is the linear solution under the stated held-parameter premise.
-    Inputs are symbolic substitutions, not execution-admission certificates.
+    All arguments are held scalar expressions independent of ``t``. Each is
+    sympified before arithmetic; supplied symbols are retained without
+    placeholder substitution or solver-generated integration constants.
+    The increment stays factored to avoid losing the initial form when
+    expanding approximate coefficients around a large time origin. Approximate
+    inputs retain their SymPy precision; this is not an exact-arithmetic or
+    execution-admission certificate.
     """
-    eq = get_nodal_equation()
-    # Substitute constant values
-    eq_with_vals = eq.subs([(nu_f, nu_f_val), (DELTA_NFR, delta_nfr_val)])
-
-    # Solve ODE
-    solution = sp.dsolve(eq_with_vals, EPI(t))
-
-    # Apply initial condition
-    C1 = symbols("C1")
-    solution_with_ic = solution.subs(C1, EPI_0 - nu_f_val * delta_nfr_val * t0)
-
-    return solution_with_ic.rhs
+    capacity = sp.sympify(nu_f_val)
+    pressure = sp.sympify(delta_nfr_val)
+    initial_form = sp.sympify(EPI_0)
+    initial_time = sp.sympify(t0)
+    rate = capacity * pressure
+    if rate.is_zero is True:
+        return initial_form
+    return initial_form + sp.Mul(rate, t - initial_time, evaluate=False)
 
 
 # ============================================================================

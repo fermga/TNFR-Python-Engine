@@ -180,13 +180,21 @@ def exact_matrix_product(
     rows = len(left)
     inner = len(right)
     columns = len(right[0])
-    return tuple(
-        tuple(
-            sum(
-                (left[i][k] * right[k][j] for k in range(inner)),
-                Fraction(0),
-            )
-            for j in range(columns)
-        )
-        for i in range(rows)
+    if rows == 0 or columns == 0:
+        return tuple(() for _ in range(rows))
+
+    # Keep full output rows while avoiding Fraction arithmetic for exact zeros.
+    # Indexed columns retain the caller-admitted width without zip truncation.
+    right_nonzero = tuple(
+        tuple((j, row[j]) for j in range(columns) if row[j]) for row in right
     )
+    result = []
+    for row in left:
+        output = [Fraction(0)] * columns
+        for k in range(inner):
+            factor = row[k]
+            if factor:
+                for column, value in right_nonzero[k]:
+                    output[column] += factor * value
+        result.append(tuple(output))
+    return tuple(result)

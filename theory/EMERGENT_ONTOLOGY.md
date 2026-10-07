@@ -83,6 +83,20 @@ information, even when their collective means coincide. This supports studying
 sufficient interaction state and inherited dynamics before physical naming;
 it does not derive an atom or a unique constitutive law.
 
+Within the specified complete laws, equal nominal collective means and storage
+can hide response-relevant internal information. The
+[conservative persistence result](nodal/SINE_PAIR_INTERACTION.md#sine-pair-persistent-response)
+establishes different finite responses while initially admitted patterns retain
+their geometry. The [positive-loss acquisition result](nodal/SINE_PATTERN_DYNAMICS.md#sine-formation-response)
+also connects initially zero-winding phases to a retained winding sector, with
+an inherited response on the same trajectories. Both cover full coordinate
+uncertainty; independently perturbed states need not remain energy matched.
+Their different complete laws keep separate coefficients and certificates.
+Support, preparation and constitutive law remain supplied, and the structured
+source information and storage remain preparation costs. Geometric retention
+with a finite response signature does not establish autonomous preparation,
+distinct persistent constituents or physical identification.
+
 A collective observation/measurement map is eventually needed to test that
 hypothesis, but it may act on a pattern and its interaction with a measurement
 system rather than on one primitive coordinate. Its latent-state assumptions

@@ -9,7 +9,7 @@ import pytest
 
 from tnfr.dynamics.relational import RelationalExchangeModel
 from tnfr.mathematics._validated_taylor import flow_jets
-from tnfr.physics import relational_sine_scale as scale
+from tnfr.physics import relational_sine_replica_pulse as pulse
 from tnfr.sdk import export_to_json, relational_report_to_dict
 
 MODEL = RelationalExchangeModel(1, epi_weight=0, phase_domain="regular")
@@ -41,15 +41,15 @@ def _contains(bound, value):
 def witness():
     """One frozen endpoint plus its shared field, reused by all controls."""
     captured = {}
-    original = scale.validated_taylor_step
+    original = pulse.validated_taylor_step
 
     def capture(initial, duration, field, domain, **kwargs):
         captured.update(field=field, initial=initial, domain=domain)
         return original(initial, duration, field, domain, **kwargs)
 
     with pytest.MonkeyPatch.context() as patch:
-        patch.setattr(scale, "validated_taylor_step", capture)
-        report = scale.assess_sine_replica_pulse_work_response(**ARGS)
+        patch.setattr(pulse, "validated_taylor_step", capture)
+        report = pulse.assess_sine_replica_pulse_work_response(**ARGS)
     return report, captured
 
 
@@ -199,7 +199,7 @@ def test_freezing_the_same_generator_restores_matched_port_reciprocity():
 )
 def test_static_motion_reversal_and_member_swap_controls(witness, u, delta):
     original, _ = witness
-    report = scale.assess_sine_replica_pulse_work_response(
+    report = pulse.assess_sine_replica_pulse_work_response(
         **{**ARGS, "form_half_difference": u, "phase_half_difference": delta}
     )
     assert report.status == "certified_finite_response"
@@ -236,11 +236,11 @@ def test_declared_weight_capacity_and_beta_remain_in_the_actual_scaled_field(
         captured.update(initial=initial, field=field)
         return None, initial, "instrumented_no_evaluation"
 
-    monkeypatch.setattr(scale, "validated_taylor_step", capture)
+    monkeypatch.setattr(pulse, "validated_taylor_step", capture)
     model = replace(MODEL)
     object.__setattr__(model, "phase_weight", Q(3, 2))
     object.__setattr__(model, "storage_scale", Q(5, 4))
-    report = scale.assess_sine_replica_pulse_work_response(
+    report = pulse.assess_sine_replica_pulse_work_response(
         **{**ARGS, "reference_model": model, "capacity": Q(2, 3)}
     )
     rates = captured["field"](captured["initial"])
@@ -261,7 +261,7 @@ def test_declared_weight_capacity_and_beta_remain_in_the_actual_scaled_field(
 def test_actual_chart_exit_returns_unavailable_without_retrying_the_budget():
     # Conserved u^2+c*sin(delta)^2=1 keeps u>=sqrt(1-c), so this
     # rotating preparation reaches delta=pi/2 before the declared horizon.
-    report = scale.assess_sine_replica_pulse_work_response(
+    report = pulse.assess_sine_replica_pulse_work_response(
         **{
             **ARGS,
             "form_half_difference": 1,
@@ -304,16 +304,16 @@ def test_invalid_primitives_reject_before_numerical_evaluation(monkeypatch, chan
     def forbidden(*args, **kwargs):
         pytest.fail("invalid primitive reached numerical propagation")
 
-    monkeypatch.setattr(scale, "validated_taylor_step", forbidden)
+    monkeypatch.setattr(pulse, "validated_taylor_step", forbidden)
     with pytest.raises((TypeError, ValueError)):
-        scale.assess_sine_replica_pulse_work_response(**{**ARGS, **changes})
+        pulse.assess_sine_replica_pulse_work_response(**{**ARGS, **changes})
 
 
 def test_boolean_model_forgery_cannot_use_python_numeric_equality():
     model = replace(MODEL)
     object.__setattr__(model, "phase_weight", True)
     with pytest.raises((TypeError, ValueError)):
-        scale.assess_sine_replica_pulse_work_response(
+        pulse.assess_sine_replica_pulse_work_response(
             **{**ARGS, "reference_model": model}
         )
 

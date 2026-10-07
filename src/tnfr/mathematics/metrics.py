@@ -7,10 +7,14 @@ structural coherence ``C(t)``.
 from __future__ import annotations
 
 import math
-from numbers import Real
 from typing import Sequence
 
 from ..constants.canonical import MATH_PRECISION_ENHANCEMENT_CANONICAL
+from ._complex_arrays import (
+    nonnegative_tolerance,
+    normalized_complex_vector,
+    numpy_complex_array,
+)
 from .operators import CoherenceOperator, SpectralExpectationOperator
 from .unified_numerical import TNFRValueError, np
 
@@ -24,35 +28,14 @@ def _as_spectral_vector(
 ) -> np.ndarray:
     """Return one finite complex vector of the operator dimension."""
 
-    try:
-        vector = np.asarray(state, dtype=np.complex128)
-    except (TypeError, ValueError, OverflowError) as exc:
-        raise TNFRValueError("Spectral state must be a finite complex vector.") from exc
+    vector = numpy_complex_array(state, label="Spectral state")
     if vector.ndim != 1 or vector.shape[0] != dimension:
         raise TNFRValueError(
             "State vector dimension mismatch.",
             context={"expected_dimension": dimension, "received_shape": vector.shape},
             suggestion="Ensure state vector matches operator dimension.",
         )
-    if not bool(np.all(np.isfinite(vector))):
-        raise TNFRValueError("Spectral state must contain only finite values.")
     return vector
-
-
-def _normalise_vector(
-    vector: np.ndarray,
-    *,
-    atol: float,
-    label: str,
-) -> np.ndarray:
-    norm = float(np.linalg.norm(vector))
-    if not math.isfinite(norm) or np.isclose(norm, 0.0, atol=atol):
-        raise TNFRValueError(
-            f"Cannot normalise null spectral state {label}.",
-            context={"norm": norm, "atol": atol},
-            suggestion="Provide a non-zero finite state vector.",
-        )
-    return vector / norm
 
 
 def spectral_weighted_angle(
@@ -75,11 +58,7 @@ def spectral_weighted_angle(
     This is an auxiliary spectral geometry and is never structural ``C(t)``.
     """
 
-    if isinstance(atol, (bool, np.bool_)) or not isinstance(atol, Real):
-        raise TNFRValueError("atol must be a finite nonnegative real scalar.")
-    tolerance = float(atol)
-    if not math.isfinite(tolerance) or tolerance < 0.0:
-        raise TNFRValueError("atol must be a finite nonnegative real scalar.")
+    tolerance = nonnegative_tolerance(atol)
     if not operator.is_positive_semidefinite(atol=tolerance):
         raise TNFRValueError(
             "Spectral weighted angle requires a positive-semidefinite operator.",
@@ -87,14 +66,19 @@ def spectral_weighted_angle(
             suggestion="Use a positive-semidefinite Hermitian operator.",
         )
 
-    dimension = operator.matrix.shape[0]
+    matrix = operator.matrix
+    dimension = matrix.shape[0]
     vector1 = _as_spectral_vector(psi1, dimension=dimension)
     vector2 = _as_spectral_vector(psi2, dimension=dimension)
     if normalise:
-        vector1 = _normalise_vector(vector1, atol=tolerance, label="psi1")
-        vector2 = _normalise_vector(vector2, atol=tolerance, label="psi2")
+        vector1 = normalized_complex_vector(
+            vector1, atol=tolerance, label="spectral state psi1"
+        )
+        vector2 = normalized_complex_vector(
+            vector2, atol=tolerance, label="spectral state psi2"
+        )
 
-    weighted_vector2 = operator.matrix @ vector2
+    weighted_vector2 = matrix @ vector2
     cross = np.vdot(vector1, weighted_vector2)
     if not bool(np.isfinite(cross)):
         raise TNFRValueError("Weighted spectral overlap must be finite.")
@@ -109,10 +93,27 @@ def spectral_weighted_angle(
                 context={"expectation_value": value, "atol": tolerance},
             )
 
-    denominator = expect1 * expect2
-    if not math.isfinite(denominator) or denominator <= 0.0:
-        raise TNFRValueError("Spectral expectations produced an invalid product.")
-    ratio = float((np.abs(cross) ** 2) / denominator)
+    # Exact identity of the admitted represented vectors proves a common ray.
+    # Avoid magnifying independent dot-product roundoff through acos near one.
+    if np.array_equal(vector1, vector2):
+        return 0.0
+
+    # Combine binary exponents separately: the dimensionless ratio may be
+    # representable even when either unscaled squared quantity is not.
+    overlap_mantissa, overlap_exponent = math.frexp(
+        math.hypot(float(cross.real), float(cross.imag))
+    )
+    first_mantissa, first_exponent = math.frexp(expect1)
+    second_mantissa, second_exponent = math.frexp(expect2)
+    try:
+        ratio = math.ldexp(
+            overlap_mantissa**2 / (first_mantissa * second_mantissa),
+            2 * overlap_exponent - first_exponent - second_exponent,
+        )
+    except OverflowError as exc:
+        raise TNFRValueError(
+            "Weighted overlap violates the positive-semidefinite angle bound."
+        ) from exc
     eps = max(
         np.finfo(float).eps * MATH_PRECISION_ENHANCEMENT_CANONICAL,
         tolerance,

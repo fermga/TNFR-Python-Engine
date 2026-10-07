@@ -239,7 +239,7 @@ or identifies a material particle. The pulse is sustained by conservative
 exchange already present in the chosen nodal law, and the distinction
 between labeled and unordered periods follows from its exact symmetry.
 
-The [existing scale owner](../../src/tnfr/physics/relational_sine_scale.py)
+The [replica pulse owner](../../src/tnfr/physics/relational_sine_replica_pulse.py)
 exposes `assess_sine_replica_pulse` for this declared exact family, with
 the common signed internal preparation and capacity supplied explicitly.
 It retains symbolic target turns and marks captured-graph membership as
@@ -599,7 +599,7 @@ The [following small-amplitude calculation](#sine-replica-pulse-splitting)
 resolves the leading transverse signs with a separately proved
 existential amplitude range.
 
-The [existing scale owner](../../src/tnfr/physics/relational_sine_scale.py)
+The [replica pulse owner](../../src/tnfr/physics/relational_sine_replica_pulse.py)
 exposes `assess_sine_replica_pulse_variation` with the exact family
 premises reused from the pulse assessment. It reports the three real
 instantaneous block types, their multiplicities, the dimensionless
@@ -744,7 +744,8 @@ orbital stability under arbitrary disturbances.
   reciprocal same-type response. A turning point `u_0=0` alone does not
   establish a stationary reference or zero finite contrast.
 
-The shared scale owner exposes `assess_sine_replica_pulse_work_response`.
+The [replica pulse owner](../../src/tnfr/physics/relational_sine_replica_pulse.py)
+exposes `assess_sine_replica_pulse_work_response`.
 It rebuilds the pulse and uses the common variational block in the joint
 ten-dimensional pulse/two-column field. The shared validated Taylor kernel
 encloses its finite response, tube and remainder in `tau=t/pi`; unavailable
@@ -1324,7 +1325,7 @@ and no finite-amplitude continuation of either mode class. It does
 not justify changing the constitutive law to preserve a preferred
 pulse, or identify this prepared organization with physical matter.
 
-The [existing scale owner](../../src/tnfr/physics/relational_sine_scale.py)
+The [replica pulse owner](../../src/tnfr/physics/relational_sine_replica_pulse.py)
 exposes `assess_sine_replica_pulse_splitting`. It retains the exact
 coefficients as `a+b*sqrt(5)`, encloses their signs and the leading
 return-logarithm slopes, and reuses the same declared model, capacity
@@ -1659,7 +1660,7 @@ or identification of a material constituent.
 
 ### 12.6. Captured-source admission and evidence
 
-The existing [scale owner](../../src/tnfr/physics/relational_sine_scale.py)
+The existing [replica pulse owner](../../src/tnfr/physics/relational_sine_replica_pulse.py)
 exposes `assess_sine_replica_persistence` and
 `SineReplicaPersistenceAssessment`. It checks the complete ordered
 doubled-cycle support, common positive capacity and conservative model

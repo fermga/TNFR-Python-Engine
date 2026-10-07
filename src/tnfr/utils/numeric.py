@@ -87,15 +87,24 @@ def angle_diff_array(
 
     Only entries selected by ``where`` are evaluated. Output and mask domains
     are checked before writing, and unselected output entries are preserved.
+    Selected raw elements use the shared phase reader's admission before
+    binary64 conversion; an invalid selected element leaves ``out`` unchanged.
+    Narrow output types must preserve nonzero results; conversion loss also
+    rejects before any selected output entry is written.
     """
     from ..mathematics.unified_numerical import compute_phase_difference
 
     if np is None:
         raise TypeError("angle_diff_array requires a NumPy module")
 
-    minuend, subtrahend = np.broadcast_arrays(
-        np.asarray(a, dtype=float), np.asarray(b, dtype=float)
+    # Preserve raw elements until the shared reader admits the selected pairs.
+    # Typed arrays keep their fast path; object conversion prevents a mixed
+    # Python sequence from coercing Boolean, text or complex phase values.
+    operands = (
+        value if isinstance(value, np.ndarray) else np.asarray(value, dtype=object)
+        for value in (a, b)
     )
+    minuend, subtrahend = np.broadcast_arrays(*operands)
     if out is None:
         out = np.empty_like(minuend, dtype=float)
         if where is not None:
@@ -122,7 +131,16 @@ def angle_diff_array(
                 suggestion="Ensure mask array has correct shape.",
             )
         selected = compute_phase_difference(minuend[mask], subtrahend[mask])
-        out[mask] = selected
     else:
-        np.copyto(out, compute_phase_difference(minuend, subtrahend))
+        mask = None
+        selected = compute_phase_difference(minuend, subtrahend)
+    selected = np.asarray(selected, dtype=float)
+    with np.errstate(under="ignore"):
+        represented = np.asarray(selected, dtype=out.dtype)
+    if np.any((selected != 0.0) & (represented == 0.0)):
+        raise TNFRValueError("Phase differences underflow in the output dtype")
+    if mask is None:
+        np.copyto(out, represented)
+    else:
+        out[mask] = represented
     return out

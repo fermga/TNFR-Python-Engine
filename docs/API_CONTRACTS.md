@@ -95,6 +95,23 @@ retains the removed source identities.
 | `tnfr.utils.clear_orjson_param_warnings` (also in `tnfr.utils.io`) and `tnfr.config.presets.legacy_preset_guidance` | Remove these no-op calls. Shared JSON admission/encoding and `get_preset()` retain their existing behavior; unknown presets still raise `KeyError`. |
 | Global `tnfr.validation.config.ValidationConfig` fields `epi_range`, `vf_range`, `phase_coupling_threshold`, `cache_validation_results`, `max_validation_time_ms` | Removed unconsumed settings. Scalar domains, live U3 admission and the separate cached-validator configuration retain their own owners. Construction rejects the removed keywords; `configure_validation()` rejects them without committing other supplied settings. |
 
+### Supplied-law symbolic calculus
+
+`tnfr.math.symbolic.solve_nodal_equation_constant_params` constructs
+`EPI_0 + nu_f_val * delta_nfr_val * (t - t0)` for supplied scalar expressions
+held independent of its clock `t`. Each argument enters SymPy before
+arithmetic; supplied symbols are preserved without placeholder substitution
+or an integration-constant naming convention. The increment remains factored
+to preserve the initial form when approximate coefficients and the time
+origin have widely different scales. Approximate inputs retain their SymPy
+precision; later expansion or numerical evaluation can still round values.
+Zero capacity or pressure yields the initial form. These conditional symbolic
+calculations do not admit a runtime state or supply a complete evolution law.
+The same helper remains exported by `tnfr.math`, `tnfr.mathematics` and `tnfr`.
+The numerical `tnfr.mathematics` facade derives its symbolic exports from
+`tnfr.math` and omits them only when SymPy itself is missing. Unexpected
+symbolic import failures propagate rather than appearing as unavailable helpers.
+
 The retained `check_convergence_exponential(growth_rate, time_horizon)` uses
 the specified unit-amplitude, unit-capacity exponential pressure law. Its
 Boolean describes infinite-horizon integral convergence, which requires a
@@ -321,6 +338,15 @@ their positive cuts describe a diagnostic neighborhood, not exact equilibrium.
 Sense-index normalization shares these reads on Python and NumPy paths,
 including cache refresh. This changes invalid-input handling, not the Si law
 or its status as a configured diagnostic used by existing controllers.
+
+Shared physics scalar and series readers also use represented-real admission:
+nonzero values lost in binary64 conversion reject before a diagnostic can
+interpret them as zero. Their `ValueError` policy and signed-zero convention
+remain intact. Series return owned, writable float64 arrays; ordinary numeric
+arrays and plain lists/tuples of binary16/32/64 floating scalars use equivalent
+vector checks. Other source types retain scalar admission before conversion,
+and invalid elements retain their indexed errors. Model-specific sign and shape
+constraints still apply.
 
 ### Continuous integration paths
 
@@ -584,6 +610,266 @@ postcondition, grammar classification, tests, and an update to the canonical
 synthesis; adding a class or registry entry alone does not establish
 canonicity.
 
+## Mathematics backend selection
+
+[`get_backend`](../src/tnfr/mathematics/backend.py) resolves an explicit name,
+then `TNFR_MATH_BACKEND`, then
+`tnfr.backend_config.get_config().math_backend`. The service default is `auto`.
+Automatic selection tries GPU-capable adapters in JAX, PyTorch, NumPy order,
+then repeats that order for any available adapter, including CPU adapters.
+An explicit `numpy` request selects NumPy. A registered but unavailable named
+adapter falls back to NumPy; unknown names raise `LookupError`.
+
+`MathematicsBackend` includes `is_gpu_available()`, `get_device_name()` and
+`get_backend_info()` alongside its array operations. Its
+[typing declarations](../src/tnfr/mathematics/backend.pyi) retain that interface
+and the canonical `core.exceptions.BackendUnavailableError` identity.
+Backend selection supplies a numerical implementation, not an evolution law;
+reproducibility records must identify the adapter actually used.
+The NumPy adapter delegates general matrix exponentials to the required SciPy
+dependency. If SciPy is unavailable, that operation raises
+`BackendUnavailableError`; a possibly defective eigenvector decomposition is
+not substituted for the exponential. Other NumPy array operations remain
+available.
+
+`register_backend` validates a complete registration before changing factories,
+aliases or instantiated adapters. Canonical names and aliases cannot shadow
+one another, including with `override=True`; empty names and the reserved
+selection name `auto` reject. A canonical override replaces its
+factory and invalidates its instantiated adapter; unmentioned aliases remain.
+An alias override may retarget an existing alias. A rejected proposal leaves
+the registry and instance cache unchanged.
+
+## Mathematical numerical boundaries
+
+`BEPIElement` admits original finite real/imaginary components before array
+conversion, using the shared represented-real boundary for each channel.
+Boolean/text coercion and nonzero materialization loss reject, including in
+`ensure_bepi` scalar/serialized routes. Complex and nonuniform BEPI remain
+valid auxiliary elements; the shared signed-scalar reader still governs
+whether an element can enter the nodal form row.
+The sampling grid likewise admits original represented-real entries before
+conversion: Boolean/text coordinates, complex coordinates and nonzero
+materialization loss reject.
+The stored BEPI arrays are owned, writable copies. Numeric-array fast paths
+retain the same primitive admission and zero normalization; mutable arrays
+are re-admitted by consuming calculations. The standard Banach-space element
+factory delegates construction admission to `BEPIElement`, while customized
+validation hooks retain their dispatch.
+
+`HilbertSpace` represents finite coordinate vectors with a positive integer
+dimension. Its floating or complex storage dtype cannot discard a nonzero
+real/imaginary channel: real storage rejects nonzero imaginary coordinates,
+and narrowing that overflows or erases a nonzero channel rejects. Norms use
+the shared range-safe Euclidean observer. Inner products, Gram checks and
+projections accumulate in complex128 and reject nonfinite outputs; ordinary
+floating rounding remains, including possible underflow in products. A
+supplied partial orthonormal family returns only its projection coefficients.
+
+Composite EPI regularity trends admit finite represented-real observations,
+including those computed from BEPI, and nonnegative represented tolerances.
+Their threshold comparisons use the exact represented values, so an
+overflowed or rounded comparison cannot turn a violation into a pass. A
+reported drop must itself be representable. The plateau policy uses shared
+Boolean parsing. These trends remain auxiliary regularity diagnostics, not
+canonical `C(t)` measurements or stability certificates. The generic isometry
+factory and norm-preservation checker remain explicitly unimplemented.
+
+`BanachSpaceEPI.derivative_regularity` cancels a common large amplitude before
+evaluating its sampled derivative-energy quotient. Its quadrature arithmetic
+and result must be finite, with a positive denominator; a nonconstant field's
+positive quotient lost to zero rejects. Exact constant fields retain zero.
+Composite regularity uses a range-safe discrete norm and admits its strictly positive weights
+before conversion; an unrepresentable composite value rejects.
+`evaluate_composite_epi_regularity_transform` and its historical
+`evaluate_coherence_transform` alias admit nonnegative finite policies and
+both observed regularities, including results from a custom space. The
+lower-bound comparison uses their exact represented values; the reported
+requirement, deficit and ratio with a positive baseline must be representable.
+A zero baseline followed by a value above the supplied tolerance retains
+the explicit infinite-ratio convention. That ratio does not decide the
+inequality or identify the auxiliary functional with canonical coherence.
+
+Spectral state and operator readers admit original complex components before
+materialization. Concrete backend tensors are checked through observations
+while native calculations retain their automatic-differentiation path. A JAX
+symbolic trace has no observable concrete finiteness verdict; its numeric
+dtype/shape admission does not certify future values. Spectral expectations,
+weighted angles and normalized mathematical evolution scale the vector before
+taking its norm, so a representable normalized result is not erased by
+overflow in the unscaled squared norm.
+The mathematical runtime uses that same admission and normalization in
+`stable_unitary`. Its `normalized` and `stable_unitary` reports observe the
+standard Euclidean norm without squaring the unscaled amplitudes; an
+unrepresentable norm rejects instead of returning infinity. Their tolerances
+must be finite nonnegative represented reals. `stable_unitary` reports whether
+the final norm is one within tolerance; with `normalise=False`, a preserved
+non-unit input norm therefore does not pass this unit-norm check.
+`MathematicalDynamicsEngine` and `ContractiveDynamicsEngine` likewise own their
+admitted generators and return detached `generator` observations. Reconstruct
+the engine to change that law; editing the original input or returned array
+does not change its evolution.
+Both engines admit signed finite represented-real time increments, including
+when `evolve` requests zero steps; step counts are nonnegative integers.
+Concrete native real scalar clocks retain their gradient path after admission.
+Symbolic JAX clocks receive only scalar-shape and real-dtype checks, with no
+concrete finiteness certificate. Exponential arguments and evolved concrete
+states must be finite; a nonfinite observed density trace rejects before
+normalization. Signed time permits reverse auxiliary evolution; it
+does not extend a forward dissipative-semigroup theorem to negative time.
+For the built-in engines, one `evolve` invocation reuses the exponential of
+its fixed generator and time increment. State admission, normalization and
+monitoring still run at each step. The propagator is local to the invocation:
+zero steps compute none, and subsequent calls build it anew, including native
+gradient graphs. Subclasses and replaced public `step` methods retain their
+per-step dispatch.
+
+The public mathematical phase readers apply the same raw-value admission to
+scalar, list and NumPy inputs. `normalize_phase` returns the represented
+half-open interval `[0, 2*pi)`; a modulo result rounded to its upper endpoint
+is canonicalized to zero. `compute_phase_difference` retains its signed
+`atan2(sin(delta), cos(delta))` convention and rejects unrepresentable
+subtractions. These numerical readers do not replace live U3 admission.
+The circular mean uses this same represented phase boundary.
+`angle_diff_array` checks selected results in the requested output dtype
+before writing: narrowing that erases a nonzero difference rejects and leaves
+the output unchanged, including its unselected entries.
+
+`BasicStateProjector` reuses the shared spectral-state normalization, scaling
+finite amplitudes before evaluating their norm. Its null threshold must be a
+finite nonnegative represented real, matching the other normalization consumers.
+A representable large-amplitude vector therefore remains normalized instead
+of collapsing to zero after norm overflow. Nonfinite intermediate amplitudes
+reject; finite inputs alone do not promise representable output arithmetic.
+
+`ContractiveDynamicsEngine.step(..., raise_on_violation=True)` propagates an
+explicit monitored-norm violation and retains the measured gap. Failure to
+observe that gap remains distinct from a measured violation. This auxiliary
+monitor does not establish contraction in every norm: valid amplitude damping
+can increase distance from the maximally mixed state.
+Its public Frobenius observer and concrete centered monitoring norms use the
+shared range-safe norm. Nonfinite or unrepresentable concrete observations
+raise instead of becoming an unavailable gap that bypasses the monitor.
+A live JAX trace still has no concrete norm observation and retains an
+unavailable gap; native propagation retains its gradient path.
+
+`get_laplacian_spectrum` rebuilds the consumed operator before cache lookup.
+Cached diagonalizations use immutable matrix bytes in the current node order,
+including the selected combinatorial weight channel; returned arrays are
+detached. Changing edge weights or node iteration order cannot reuse a
+different matrix's eigenbasis. `heat_diffusion` uses shared nonnegative
+represented-time admission before evaluating the supplied spectral semigroup.
+The eigensolver follows exact symmetry of the admitted real operator matrix,
+not the graph container's directed flag. Reciprocal directed support can have
+a symmetric operator and therefore an orthonormal eigenbasis; an asymmetric
+operator retains the general right-basis solver, including for partial requests.
+For nonnegative reversible graph operators, component support determines the
+stationary subspace (constant vectors for combinatorial/random-walk charts,
+square-root-strength vectors for the symmetric chart). Identified stationary
+modes retain exact represented zero rates at long horizons. A small eigenvalue
+alone is never clipped: unresolved mixing with slow modes rejects the chart.
+Very weak bridges between otherwise strongly connected components can reach
+this numerical resolution limit even with strictly positive finite weights.
+This floating subspace check is not a validated spectral enclosure. Signed
+combinatorial and asymmetric operators retain their generic numerical spectrum;
+arbitrary supplied spectra receive no stationary-mode correction. Nonfinite
+heat-result arithmetic rejects explicitly.
+
+Multi-field spectral diagnostics with at most 100 nodes can reuse an
+invocation-local basis validation across individual GFTs. Larger diagnostics
+retain their sequential backend dispatch and field reductions. No basis-validity
+cache survives the call; generic inputs and replaced transform hooks retain
+their individual dispatch. The public `spectral_filter` still revalidates its
+basis after the supplied filter callback.
+`physics.spectral_conservation` aligns consumed snapshot maps with the graph's
+node iteration order and requires matching nonempty support. Its real Parseval
+diagnostics additionally require a full finite real orthonormal basis; the
+general GFT's invertible right-basis domain alone is insufficient. Consumed
+snapshot values use shared real admission before array conversion, including
+Boolean, nonfinite and nonzero-materialization-loss rejection. Time intervals
+must be finite and strictly positive; supplied policy thresholds must be finite
+and nonnegative. Invalid observations, charts or unrepresentable report arithmetic
+reject before classification. The explicit `sector_ratio` infinity convention
+for a geometric denominator below its existing floor remains separate from
+arithmetic failure.
+
+The two-snapshot modal source is the GFT of `delta_rho / dt + mean_divergence`;
+stored divergence is not multiplied by Laplacian eigenvalues again. The
+`mode_transport_rates` classification field contains the signed divergence
+spectrum itself, with the non-strict threshold boundary including zero at a
+zero threshold. Band scores describe the supplied observations; neither their
+ordering nor a future stability guarantee follows from an operator label.
+In `conservation_quality_by_band`, a band without observed modes has value
+`None`; consumers must handle that absence instead of interpreting it as the
+former perfect score of `1.0`.
+These are scoped observations under the
+[spectral balance contract](../theory/STRUCTURAL_CONSERVATION_THEOREM.md#92-spectral-decomposition).
+
+Liouvillian spectral readers require finite original real/imaginary components
+and finite nonnegative represented tolerances. Invalid spectra reject before
+selection or metadata mutation. Numeric-array admission returns owned complex
+storage with canonical positive zeros; invalid arrays retain the scalar reader's
+first failing component and exception. The compatibility `validate_contractivity`
+flag checks only eigenvalue real parts against its tolerance; it does not
+certify a Lindblad representation or contraction in an arbitrary norm. Stored
+spectra retain no independently authenticated generator or clock provenance.
+The slow-mode reader selects the first eigenvalue with the least negative real
+part strictly below `-tolerance`. Its decay timescale alone does not establish
+whole-state convergence, measured recovery or U6 admission.
+`build_lindblad_delta_nfr` uses the shared original-component reader for its
+Hamiltonian and collapse matrices, admitting each supplied matrix once. Its
+trace-preservation check is `vec(I)* L = 0`, with `*` denoting the adjoint;
+it does not require `L vec(I) = 0` (unitality). Amplitude damping is an example
+that preserves trace while changing the identity.
+Both generator factories admit finite real scaling factors and a representable
+product, plus positive integer dimensions. They reject nonfinite constructed
+matrices. These are supplied auxiliary matrix multipliers; a signed multiplier
+does not redefine the nonnegative nodal-capacity domain. Forward GKSL
+interpretation requires a nonnegative overall generator factor and its other
+[model hypotheses](../theory/DISSIPATIVE_AND_OPEN_SYSTEMS.md#1-gksl-generator).
+
+The auxiliary dissipative diagnostics require representable snapshot purity,
+computed actions, bounds, rates and comparison thresholds as well as finite
+primitive inputs.
+They reject nonfinite results before issuing bound or unitality verdicts;
+nonzero collapse-norm squares lost to underflow also reject. Frobenius norms
+use the shared scaled fallback when direct squaring exceeds the numeric range,
+and observed balance rates use the shared signed secant reader. These checks
+preserve the [diagnostic availability conventions](../theory/DISSIPATIVE_AND_OPEN_SYSTEMS.md#6-validation-and-reproducibility):
+absent collapse or reference data retain explicit NaNs and unevaluated flags.
+The trace-distance ratio remains infinite when the initial distance is at or below
+its configured floor but the final distance is not; that observation fails
+the contraction check and is distinct from arithmetic overflow.
+Generator spectral scales, eigenspectra and residuals must also be finite
+before stationarity, trace-preservation or mode classifications.
+`DissipativeConservationTracker.record` commits its snapshot history and
+diagnostic series only after snapshot admission and all diagnostics succeed.
+
+The optimized arithmetic sieve uses Python integers for divisor sums before
+evaluating the supplied floating pressure formula. `FiniteField` admits an
+integer prime characteristic, supported positive integer extension degree and
+integer modulus coefficients; a composite-characteristic ring is not admitted
+as a field. These are premises of the
+[arithmetic models](../theory/TNFR_NUMBER_THEORY.md), not physical identifications.
+`cayley_diffusion_action` preserves support-derived exact stationary Fourier
+modes, including disconnected supports. Unrepresentable positive clock
+products or nonfinite Fourier intermediates reject explicitly; the calculation
+remains a floating evaluation of a supplied fixed circulant law.
+
+Finite-field arithmetic normalizes integer/index elements to Python integers
+before operations and requires `0 <= element < q`; powers require nonnegative
+integer exponents, and power-set orders are positive integers.
+For built-in field arithmetic, normalized periods can reuse character values
+within one invocation while preserving the original summation order. Later
+calls read the current presentation anew; customized arithmetic and character
+hooks retain their direct dispatch.
+`OptimizedTNFRPrimality` applies the same strict `abs(delta_nfr) < threshold`
+policy with and without sieve coverage. The cut must be finite, positive and
+representable; the default `0.5` separates the prime zero set for its configured
+weights. Larger cuts may admit composites and do not alter the exact theorem.
+Returned reports and nested metrics are detached from the cache; subsequent
+calls do not change previous `cache_hit` observations.
+
 ## Auxiliary spectral-expectation contract
 
 `SpectralExpectationOperator` evaluates the Hermitian quadratic form
@@ -597,6 +883,33 @@ structural coherence `C(t)`, never inherits a `[0,1]` bound, and never enters
 `C_steps`. Payload metadata `range="unbounded_real"` and `bounded=False`
 describe the family of supplied observables; they do not negate the conditional
 spectral bound for a fixed Hermitian operator and normalized state.
+
+`is_positive_semidefinite` requires Hermiticity as well as nonnegative
+eigenvalues within its tolerance. `spectral_weighted_angle` uses that shared
+gate; positive eigenvalues of a non-Hermitian matrix cannot admit a Hermitian
+angle geometry.
+The weighted-angle ratio combines binary exponents separately rather than
+squaring overlaps and multiplying expectations at their original scale.
+This retains finite scale-invariant angles when those intermediate products
+would overflow or underflow. Consumed overlaps and positive expectations must
+still be representable; this does not repair precision lost in dot products
+or remove the configured absolute null threshold.
+Operator factories reuse the constructor's Hermiticity and PSD gates and
+admit original components before backend conversion. The spectral factory's
+real projection within its imaginary-part tolerance retains the native
+gradient path. Factory dimensions use the same positive-integer admission
+as their SDK/CLI consumers; Boolean and floating dimensions reject.
+Explicit comparison floors and thresholds use the shared represented-real
+boundary, including rejection of nonzero values lost to materialization.
+A comparison floor may be negative independently of the supplied PSD spectrum.
+Construction owns a detached matrix and its matching spectrum. The public
+`matrix` and `eigenvalues` properties, and `spectrum()`, return detached arrays;
+editing these observations or the original input cannot change the operator
+or its PSD verdict. Direct property assignment is no longer supported: create
+a new operator to change the observable and recompute its spectrum together.
+Construction reuses its admitted matrix snapshot for Hermiticity checks,
+avoiding redundant backend transfers; native spectral arithmetic retains its
+gradient path.
 
 `NodeNX`, `create_math_nfr`, the dynamics runtime and the CLI expose the
 canonical names `spectral_operator`, `spectral_expectation_threshold` and

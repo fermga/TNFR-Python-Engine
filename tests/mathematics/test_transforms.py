@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+from fractions import Fraction
 from typing import Callable
 
 import pytest
 
 np = pytest.importorskip("numpy")
 
+from tnfr.errors import TNFRValueError
 from tnfr.mathematics import (
     COMPOSITE_EPI_REGULARITY_KIND,
     COMPOSITE_EPI_REGULARITY_PROVENANCE,
@@ -38,9 +40,7 @@ def test_contracts_pending_implementation(callable_obj: Callable[..., object]) -
     with pytest.raises(NotImplementedError) as excinfo:
         callable_obj(**call_args)
 
-    message = str(excinfo.value).lower()
-    for fragment in ("phase", "2"):
-        assert fragment in message
+    assert "not implemented" in str(excinfo.value).lower()
 
 
 def test_regularity_trend_accepts_unbounded_increasing_values() -> None:
@@ -141,3 +141,109 @@ def test_historical_coherence_names_are_regularity_aliases() -> None:
     assert evaluation.coherence_before == evaluation.regularity_before
     assert evaluation.coherence_after == evaluation.regularity_after
     assert evaluation.metric_kind == COMPOSITE_EPI_REGULARITY_KIND
+
+
+@pytest.mark.parametrize(
+    "values", [np.array([0.0]), np.array([0.0, 1.0, 2.0]), (Fraction(1, 4), 1.0)]
+)
+def test_regularity_trend_accepts_numeric_sequences_without_truth_testing(values):
+    report = transforms.assess_composite_epi_regularity_trend(values)
+    assert report.is_monotonic
+    assert report.regularity_values == tuple(float(value) for value in values)
+
+
+@pytest.mark.parametrize("values", [[], (), np.array([])])
+def test_regularity_trend_rejects_empty_sequences(values):
+    with pytest.raises(TNFRValueError, match="at least one entry"):
+        transforms.assess_composite_epi_regularity_trend(values)
+
+
+@pytest.mark.parametrize("values", ["12", b"12", bytearray(b"12"), {0: 9.0, 1: 1.0}])
+def test_regularity_trend_rejects_non_numeric_sequence_containers(values):
+    with pytest.raises(TypeError, match="sequence of regularity entries"):
+        transforms.assess_composite_epi_regularity_trend(values)
+
+
+@pytest.mark.parametrize(
+    "value",
+    [True, np.bool_(False), "1.0", 1 + 0j, np.inf, np.nan, Fraction(1, 10**400)],
+)
+def test_regularity_trend_admits_values_before_materializing_them(value):
+    with pytest.raises(TNFRValueError, match="finite representable real scalar"):
+        transforms.assess_composite_epi_regularity_trend([value])
+
+
+def test_regularity_trend_rejects_nested_numeric_arrays():
+    with pytest.raises(TNFRValueError, match="finite representable real scalar"):
+        transforms.assess_composite_epi_regularity_trend(np.array([[1.0], [2.0]]))
+
+
+@pytest.mark.parametrize("name", ["atol", "tolerated_drop"])
+@pytest.mark.parametrize(
+    "value", [True, "0", -1.0, np.inf, np.nan, Fraction(1, 10**400)]
+)
+def test_regularity_trend_uses_shared_tolerance_admission(name, value):
+    with pytest.raises(TNFRValueError, match=name):
+        transforms.assess_composite_epi_regularity_trend([1.0, 2.0], **{name: value})
+
+
+def test_regularity_trend_reports_normalized_tolerances():
+    report = transforms.assess_composite_epi_regularity_trend(
+        [1.0, 0.75], tolerated_drop=Fraction(1, 4), atol=np.float64(0)
+    )
+    assert report.is_monotonic
+    assert report.tolerated_drop == 0.25
+    assert type(report.tolerated_drop) is float
+    assert type(report.atol) is float
+
+
+@pytest.mark.parametrize("flag", [False, "false", "off", "0"])
+def test_regularity_trend_parses_disabled_plateaus(flag):
+    report = transforms.ensure_coherence_monotonicity([1.0, 1.0], allow_plateaus=flag)
+    assert report.allow_plateaus is False
+    assert not report.is_monotonic
+    assert report.violations[0].kind == "plateau"
+
+
+def test_regularity_trend_rejects_ambiguous_boolean_text():
+    with pytest.raises(ValueError, match="true/false"):
+        transforms.assess_composite_epi_regularity_trend([1.0], allow_plateaus="maybe")
+
+
+def test_regularity_trend_rejects_nonfinite_computed_bepi_value():
+    element = BEPIElement([0.0, 0.0], [1e308] * 4, [0.0, 1.0])
+    with np.errstate(over="ignore", invalid="ignore"):
+        with pytest.raises(TNFRValueError, match="finite"):
+            transforms.assess_composite_epi_regularity_trend([element])
+
+
+def test_regularity_drop_threshold_is_not_rounded_into_acceptance():
+    report = transforms.assess_composite_epi_regularity_trend(
+        [1.0, np.nextafter(1.0, 0.0)], tolerated_drop=2**-54, atol=0.0
+    )
+    assert not report.is_monotonic
+    assert report.violations[0].kind == "drop"
+    assert report.violations[0].drop == 2**-53
+
+
+def test_regularity_growth_threshold_is_not_rounded_into_a_plateau():
+    report = transforms.assess_composite_epi_regularity_trend(
+        [1.0, np.nextafter(1.0, np.inf)], allow_plateaus=False, atol=3 * 2**-54
+    )
+    assert report.is_monotonic
+
+
+def test_regularity_trend_handles_large_finite_comparison_arithmetic():
+    increasing = transforms.assess_composite_epi_regularity_trend(
+        [-1e308, 1e308], allow_plateaus=False
+    )
+    tolerated = transforms.assess_composite_epi_regularity_trend(
+        [1e308, -1e308], tolerated_drop=1e308, atol=1e308
+    )
+    assert increasing.is_monotonic
+    assert tolerated.is_monotonic
+
+
+def test_regularity_trend_rejects_an_unrepresentable_reported_drop():
+    with pytest.raises(TNFRValueError, match="regularity drop"):
+        transforms.assess_composite_epi_regularity_trend([1e308, -1e308])

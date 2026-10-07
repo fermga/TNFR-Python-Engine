@@ -15,6 +15,8 @@ import math
 from fractions import Fraction
 from typing import Any
 
+import networkx as nx  # noqa: F401 - retain the existing module attribute
+
 from ..mathematics._neighbor_differences import mean_neighbor_difference
 from ..mathematics.unified_numerical import compute_phase_difference, np
 from ..metrics.common import finite_population_std
@@ -24,11 +26,6 @@ from ._helpers import get_dnfr as _get_dnfr
 from ._helpers import get_phase as _get_phase
 from ._helpers import neighborhood_arrays
 from ._helpers import wrap_angle as _wrap_angle
-
-try:
-    import networkx as nx
-except ImportError:
-    nx = None
 
 # Import canonical fields for interdependence
 try:
@@ -42,16 +39,11 @@ except ImportError:
     pass
 
 
+# Retain the existing module-level alias export.
+from ..constants.aliases import ALIAS_THETA as ALIAS_THETA  # noqa: F401
+
 # Import TNFR cache system
 from ..mathematics.unified_cache import CacheLevel, cache_tnfr_computation
-
-_CACHE_AVAILABLE = True
-
-# Import TNFR aliases
-try:
-    from ..constants.aliases import ALIAS_THETA
-except ImportError:
-    ALIAS_THETA = ["phase", "theta"]
 
 
 def compute_phase_current(G: Any) -> dict[Any, float]:
@@ -92,7 +84,7 @@ def compute_phase_current(G: Any) -> dict[Any, float]:
 
 
 @cache_tnfr_computation(
-    level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
+    level=CacheLevel.DERIVED_METRICS,
     dependencies={"graph_topology", "node_phase"},
 )
 def _phase_current_cached(G, node_order, neighbor_order, phase_values):
@@ -178,7 +170,7 @@ def compute_dnfr_flux(G: Any) -> dict[Any, float]:
 
 
 @cache_tnfr_computation(
-    level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
+    level=CacheLevel.DERIVED_METRICS,
     dependencies={"graph_topology", "node_dnfr"},
 )
 def _dnfr_flux_cached(G, node_order, neighbor_order, pressure_values):

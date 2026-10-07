@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from fractions import Fraction
+
 import networkx as nx
 import numpy as np
 import pytest
@@ -241,7 +243,18 @@ def test_spectrum_rejects_invalid_partial_mode_counts(invalid_k: object) -> None
         get_laplacian_spectrum(_irregular_weighted_graph(), k=invalid_k)
 
 
-@pytest.mark.parametrize("invalid_time", (-0.1, float("inf"), float("nan"), True))
+@pytest.mark.parametrize(
+    "invalid_time",
+    (
+        -0.1,
+        float("inf"),
+        float("nan"),
+        True,
+        "1",
+        Fraction(1, 10**400),
+        Fraction(-1, 10**400),
+    ),
+)
 def test_heat_diffusion_rejects_nonphysical_time(invalid_time: object) -> None:
     graph = _irregular_weighted_graph()
     eigenvalues, basis = get_laplacian_spectrum(graph)
@@ -323,3 +336,147 @@ def test_public_spectrum_arrays_cannot_poison_cached_eigensystem() -> None:
     assert repeated_vectors is not eigenvectors
     np.testing.assert_allclose(repeated_values, expected_values)
     np.testing.assert_allclose(repeated_vectors, expected_vectors)
+
+
+def test_spectrum_cache_reads_the_selected_edge_weight() -> None:
+    graph = nx.path_graph(3)
+    nx.set_edge_attributes(graph, 1.0, "cost")
+    before, _ = get_laplacian_spectrum(graph, operator="combinatorial", weight="cost")
+    graph.edges[0, 1]["cost"] = 4.0
+    after, modes = get_laplacian_spectrum(
+        graph, operator="combinatorial", weight="cost"
+    )
+    laplacian = nx.laplacian_matrix(graph, weight="cost").toarray()
+    assert not np.allclose(before, after)
+    np.testing.assert_allclose(after, np.linalg.eigvalsh(laplacian), atol=2e-14)
+    np.testing.assert_allclose(laplacian @ modes, modes * after, atol=2e-14)
+
+
+@pytest.mark.parametrize("operator", ["symmetric", "random_walk", "combinatorial"])
+def test_spectrum_cache_retains_current_node_order(operator: str) -> None:
+    graph = nx.path_graph(3)
+    before, _ = get_laplacian_spectrum(graph, operator=operator)
+    graph.remove_node(0)
+    graph.add_edge(0, 1)
+    assert list(graph) == [1, 2, 0]
+    after, modes = get_laplacian_spectrum(graph, operator=operator)
+    adjacency = nx.to_numpy_array(graph)
+    degree = adjacency.sum(axis=1)
+    if operator == "combinatorial":
+        laplacian = np.diag(degree) - adjacency
+    elif operator == "random_walk":
+        laplacian = np.eye(3) - adjacency / degree[:, None]
+    else:
+        root = np.sqrt(degree)
+        laplacian = np.eye(3) - adjacency / root[:, None] / root[None, :]
+    np.testing.assert_allclose(after, before, atol=2e-14)
+    np.testing.assert_allclose(laplacian @ modes, modes * after, atol=2e-14)
+
+
+def test_spectrum_cache_reuses_diagonalization_after_rebuilding_operator(monkeypatch):
+    from tnfr.mathematics import spectral
+    from tnfr.utils.cache import invalidate_function_cache
+
+    invalidate_function_cache(spectral._get_laplacian_spectrum_cached)
+    original = scipy.linalg.eigh
+    calls = []
+
+    def observe(matrix, *args, **kwargs):
+        calls.append(matrix.copy())
+        return original(matrix, *args, **kwargs)
+
+    monkeypatch.setattr(scipy.linalg, "eigh", observe)
+    graph = nx.path_graph(3)
+    get_laplacian_spectrum(graph, operator="combinatorial")
+    get_laplacian_spectrum(graph, operator="combinatorial")
+    assert len(calls) == 1
+
+
+def test_combinatorial_weights_are_readmitted_before_cache_lookup():
+    graph = nx.path_graph(3)
+    nx.set_edge_attributes(graph, 1.0, "cost")
+    get_laplacian_spectrum(graph, operator="combinatorial", weight="cost")
+    graph.edges[0, 1]["cost"] = True
+    with pytest.raises(TypeError, match="Laplacian edge weight"):
+        get_laplacian_spectrum(graph, operator="combinatorial", weight="cost")
+
+
+@pytest.mark.parametrize(
+    "setting,operator", [("false", "combinatorial"), ("true", "symmetric")]
+)
+def test_normalized_alias_uses_shared_boolean_parsing(setting, operator):
+    graph = nx.path_graph(3)
+    expected, _ = get_laplacian_spectrum(graph, operator=operator)
+    actual, _ = get_laplacian_spectrum(graph, normalized=setting)
+    np.testing.assert_array_equal(actual, expected)
+    with pytest.raises(ValueError, match="true/false"):
+        get_laplacian_spectrum(graph, normalized="ambiguous")
+
+
+@pytest.mark.parametrize("operator", ["symmetric", "random_walk", "combinatorial"])
+@pytest.mark.parametrize("partial", [False, True])
+def test_stationary_graph_modes_survive_long_heat_horizons(operator, partial):
+    graph = nx.path_graph(3)
+    initial = np.sqrt([1.0, 2.0, 1.0]) if operator == "symmetric" else np.ones(3)
+    values, modes = get_laplacian_spectrum(
+        graph, operator=operator, k=2 if partial else None
+    )
+
+    np.testing.assert_allclose(
+        heat_diffusion(initial, modes, values, 1e20), initial, atol=2e-14
+    )
+
+
+@pytest.mark.parametrize("operator", ["symmetric", "random_walk", "combinatorial"])
+def test_disconnected_stationary_modes_ignore_zero_weight_connections(operator):
+    graph = nx.Graph()
+    graph.add_weighted_edges_from([(0, 1, 2.0), (1, 2, 0.0), (2, 3, 3.0)])
+    graph.add_node(4)
+    initial = np.array([2.0, 2.0, -3.0, -3.0, 4.0])
+    values, modes = get_laplacian_spectrum(graph, operator=operator)
+
+    assert np.count_nonzero(values == 0) == 3
+    np.testing.assert_allclose(
+        heat_diffusion(initial, modes, values, 1e20), initial, atol=2e-14
+    )
+
+
+def test_stationary_correction_preserves_genuinely_slow_nonzero_modes():
+    graph = nx.Graph()
+    graph.add_edge(0, 1, weight=1e-20)
+    values, modes = get_laplacian_spectrum(graph, operator="combinatorial")
+    contrast = np.array([1.0, -1.0])
+
+    assert values[0] == 0.0
+    assert values[1] > 0.0
+    np.testing.assert_allclose(
+        heat_diffusion(contrast, modes, values, 5e19),
+        np.exp(-1.0) * contrast,
+        atol=2e-14,
+    )
+    # Arbitrary supplied small rates have no graph-derived zero identification.
+    np.testing.assert_allclose(
+        heat_diffusion(np.ones(1), np.eye(1), np.array([1e-20]), 1e20),
+        [np.exp(-1.0)],
+    )
+
+
+def test_heat_diffusion_rejects_nonfinite_result_arithmetic():
+    with pytest.raises(TNFRValueError, match="arithmetic must remain finite"):
+        heat_diffusion(np.ones(1), np.eye(1), np.array([-1.0]), 1e308)
+
+
+def test_unresolved_stationary_mixing_rejects_instead_of_clipping(monkeypatch):
+    from tnfr.mathematics import spectral
+
+    graph = nx.Graph()
+    graph.add_edge(0, 1, weight=1e-20)
+    # In a near-zero cluster an absolute-residual eigensolver may return
+    # unresolved coordinate directions. Neither is the known constant mode.
+    monkeypatch.setattr(
+        spectral,
+        "_get_laplacian_spectrum_cached",
+        lambda *args: (np.array([0.0, 2e-20]), np.eye(2)),
+    )
+    with pytest.raises(TNFRValueError, match="cannot resolve the stationary subspace"):
+        get_laplacian_spectrum(graph, operator="combinatorial")

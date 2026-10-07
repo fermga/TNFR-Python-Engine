@@ -749,6 +749,37 @@ On a weighted graph, this basis may differ from the unweighted operator used
 to construct the stored divergence; the projection remains a basis expansion,
 not a diagonalization of that divergence rule.
 
+For two snapshots expanded in one fixed orthonormal basis `U`,
+`verify_spectral_conservation_balance` applies that same observation to the
+finite-difference balance:
+
+$$\widehat{S}=U^*\left[
+\frac{\rho_1-\rho_0}{\Delta t}
++\frac{\operatorname{div}J_0+\operatorname{div}J_1}{2}\right],
+\qquad \Delta t>0.$$
+
+Each field is ordered by the graph node sequence used to build `U`, and its
+node support must match that graph. The divergence term receives no additional
+eigenvalue multiplier. `classify_spectral_modes` likewise exposes the signed
+divergence coefficients through its compatibility key `mode_transport_rates`;
+its labels are a threshold policy on one snapshot, not a temporal balance or
+equilibrium certificate. An eigenbasis sign choice can change coefficient
+signs without changing the underlying nodal field.
+
+The numerical readers admit a finite positive interval, finite nonnegative
+policy thresholds, finite real consumed observations and nonempty matching
+support before classification. Their Parseval energy calculations require a
+full real orthonormal chart, checked at the observation boundary. An invertible
+nonorthogonal right basis can reconstruct a signal but does not identify its
+Euclidean squared norm with the unweighted sum of coefficient squares. Solver
+selection therefore follows symmetry of the actual admitted operator, including
+reciprocal directed graphs; genuinely asymmetric charts retain their separate
+general-transform domain. Invalid inputs or unrepresentable report arithmetic
+cannot establish conservation or stability. The inclusive zero-threshold label
+for zero modal divergence is still a static observation, not a temporal theorem.
+An empty spectral band has no measured mean residual; its quality is unavailable
+(`None`), rather than a perfect conservation score.
+
 ### 9.3 Residual resolution by scale
 
 The eigenvalue spectrum supplies a basis in which to report spatial variation:

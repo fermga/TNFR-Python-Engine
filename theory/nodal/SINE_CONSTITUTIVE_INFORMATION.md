@@ -1159,6 +1159,12 @@ agreement with a sine interval cannot prove universal first-moment
 sufficiency. Independent physical preparation, observation and clock
 identification remain the missing admission.
 
+The [finite receiver collision](SINE_PAIR_INTERACTION.md#sine-pair-receiver-constitutive-confounding)
+uses this same complete kernel family for a separate inverse question.
+One exact endpoint can coincide for different law coefficients and internal
+orientations; this does not contradict selection of sine when first-moment
+sufficiency is independently required.
+
 <a id="phase-motion-information"></a>
 
 #### Phase information must retain its pairing with motion

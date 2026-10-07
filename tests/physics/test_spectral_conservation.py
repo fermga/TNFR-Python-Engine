@@ -1,7 +1,7 @@
 """Tests for TNFR Spectral Conservation — Conservation Laws in Spectral Space.
 
 Validates the spectral continuity theorem:
-    dρ̂_k/dt + λ_k · Ĵ_k = Ŝ_k  (mode-by-mode conservation)
+    dρ̂_k/dt + Ĵ_k = Ŝ_k  (projected spatial balance)
 
 derived via GFT of the structural continuity equation
     ∂ρ/∂t + div(J) = S_grammar.
@@ -127,6 +127,30 @@ def two_snapshots(ws_graph):
     return snap_before, snap_after, ws_graph
 
 
+def _assert_band_quality_from_spatial_residual(result, before, after, graph):
+    """Independently project the observed residual, then reduce each band."""
+    nodes = tuple(graph)
+    spatial = np.array(
+        [
+            after.charge_density[node]
+            - before.charge_density[node]
+            + 0.5 * (before.divergence[node] + after.divergence[node])
+            for node in nodes
+        ]
+    )
+    projected = result.eigenvectors.T @ spatial  # All these fixtures use dt=1.
+    np.testing.assert_allclose(result.mode_sources, projected, rtol=1e-12, atol=1e-12)
+    assert len(nodes) > 3
+    bands = np.split(
+        np.abs(projected), [math.ceil(len(nodes) / 3), math.ceil(2 * len(nodes) / 3)]
+    )
+    expected = {
+        name: 1.0 / (1.0 + math.fsum(values) / len(values))
+        for name, values in zip(("low", "mid", "high"), bands, strict=True)
+    }
+    assert result.conservation_quality_by_band == pytest.approx(expected)
+
+
 # ===========================================================================
 # Test: SpectralConservationBalance
 # ===========================================================================
@@ -203,10 +227,9 @@ class TestSpectralConservationBalance:
     def test_identical_snapshots_zero_temporal_change(self, ws_graph):
         """Identical snapshots → zero temporal change, zero Parseval drift.
 
-        Note: mode_residuals = |drho_dt + λ_k · div_hat| are NOT zero
-        because the static source term Ŝ_k = λ_k · div_hat is non-zero
-        in a typical TNFR network. This is physically correct — the
-        continuity equation reads 0 + div(J) = S_grammar at equilibrium.
+        Note: mode_residuals = |drho_dt + div_hat| need not be zero
+        because the observed divergence can remain nonzero. Identical
+        snapshots alone do not establish equilibrium or conservation.
         """
         snap = capture_conservation_snapshot(ws_graph)
         result = verify_spectral_conservation_balance(snap, snap, ws_graph)
@@ -215,14 +238,46 @@ class TestSpectralConservationBalance:
         # Parseval drift is zero
         assert result.parseval_drift < 1e-12
 
-    def test_low_modes_better_conserved_than_high(self, two_snapshots):
-        """Low-frequency modes should generally conserve better."""
+    def test_band_quality_reduces_the_projected_observed_residual(self, two_snapshots):
+        """The quality policy averages each band; it does not order the bands."""
         before, after, G = two_snapshots
         result = verify_spectral_conservation_balance(before, after, G)
-        q = result.conservation_quality_by_band
-        # Low modes should be at least as well-conserved as high modes
-        # (statistical tendency, not strict for all networks)
-        assert q["low"] >= q["high"] * 0.5  # soft threshold
+        _assert_band_quality_from_spatial_residual(result, before, after, G)
+
+    def test_supplied_low_mode_change_has_lower_quality_than_high_band(self):
+        """A fixed-basis low-mode residual refutes universal band ordering."""
+        graph = nx.path_graph(6)
+        # The normalized Laplacian's unit null mode is sqrt(degree)/sqrt(10).
+        # Supply a change in that mode and zero divergence, without a claim
+        # that these observations follow a particular evolution or grammar.
+        low_mode = np.sqrt(np.array([1.0, 2.0, 2.0, 2.0, 2.0, 1.0]) / 10.0)
+
+        def snapshot(charge):
+            values = dict(zip(graph, charge, strict=True))
+            zero = dict.fromkeys(graph, 0.0)
+            return ConservationSnapshot(
+                charge_density=values,
+                phi_s=values.copy(),
+                k_phi=zero.copy(),
+                j_phi=zero.copy(),
+                j_dnfr=zero.copy(),
+                grad_phi=zero.copy(),
+                divergence=zero.copy(),
+            )
+
+        before, after = snapshot(np.zeros(6)), snapshot(low_mode)
+        result = verify_spectral_conservation_balance(before, after, graph)
+        np.testing.assert_allclose(
+            result.mode_residuals, [1, 0, 0, 0, 0, 0], atol=1e-12
+        )
+        assert result.conservation_quality_by_band == pytest.approx(
+            {"low": 2 / 3, "mid": 1.0, "high": 1.0}
+        )
+        assert (
+            result.conservation_quality_by_band["low"]
+            < result.conservation_quality_by_band["high"]
+        )
+        _assert_band_quality_from_spatial_residual(result, before, after, graph)
 
 
 # ===========================================================================
@@ -636,14 +691,11 @@ def _tiny_perturb_graph(G: nx.Graph, scale: float = 1e-4, seed: int = 123) -> nx
 
 
 class TestNearStaticSpectralContinuity:
-    """Gap #1: Near-static evolution produces negligible spectral drift.
+    """Finite spectral observations for the selected perturbation fixtures.
 
-    Physics: Spectral quality measures equilibrium proximity (source term
-    magnitude), not perturbation sensitivity.  For near-static evolution,
-    the correct observables are:
-    - Parseval drift → near zero (energy bookkeeping identity)
-    - Δρ̂_k → scales with perturbation magnitude
-    - Low-band quality ≥ high-band quality (physics: low modes conserve best)
+    These samples retain small energy drift and increasing charge-spectrum
+    changes at the tested scales. Band quality reduces the observed residual;
+    neither equilibrium nor an ordering between bands follows from that score.
     """
 
     def test_tiny_perturbation_negligible_parseval_drift(self):
@@ -675,31 +727,27 @@ class TestNearStaticSpectralContinuity:
             norms[0] < norms[1] < norms[2]
         ), f"Δρ̂ norm not monotone with scale: {norms}"
 
-    def test_low_band_quality_geq_high_band(self):
-        """Low-frequency modes conserve better than high-frequency modes."""
+    def test_perturbed_fixture_band_quality_matches_spatial_projection(self):
+        """Check the declared residual reduction for this retained fixture."""
         G = _make_tnfr_graph(30, "watts_strogatz", seed=42)
         G2 = _perturb_graph(G, seed=202)
         before = capture_conservation_snapshot(G)
         after = capture_conservation_snapshot(G2)
         result = verify_spectral_conservation_balance(before, after, G)
-        bands = result.conservation_quality_by_band
-        assert (
-            bands["low"] >= bands["high"]
-        ), f"Low band quality {bands['low']:.4f} < high band {bands['high']:.4f}"
+        _assert_band_quality_from_spatial_residual(result, before, after, G)
 
     @pytest.mark.parametrize("topo", ["watts_strogatz", "barabasi_albert", "grid"])
-    def test_low_band_best_cross_topology(self, topo):
-        """Low-frequency band conserves best across all topologies."""
+    def test_band_quality_matches_spatial_projection_across_fixture_topologies(
+        self, topo
+    ):
+        """Each topology retains its own projected residual and band averages."""
         n = 25 if topo == "grid" else 30
         G = _make_tnfr_graph(n, topo, seed=42)
         G2 = _perturb_graph(G, seed=203)
         before = capture_conservation_snapshot(G)
         after = capture_conservation_snapshot(G2)
         result = verify_spectral_conservation_balance(before, after, G)
-        bands = result.conservation_quality_by_band
-        assert (
-            bands["low"] >= bands["high"]
-        ), f"{topo}: low={bands['low']:.4f} < high={bands['high']:.4f}"
+        _assert_band_quality_from_spatial_residual(result, before, after, G)
 
 
 class TestParsevalDriftBounded:
@@ -931,11 +979,10 @@ class TestOperatorSpectralSignatures:
 
 
 class TestMultiStepSpectralTracking:
-    """Gap #5: Spectral conservation quality across a multi-step sequence.
+    """Finite spectral diagnostics across selected perturbation sequences.
 
-    Physics: A grammar-compliant operator sequence should maintain or
-    improve spectral quality over successive steps.  Quality degradation
-    signals structural fragmentation.
+    Positive quality records the finite residual reduction; neither grammar
+    compliance, monotone improvement nor fragmentation follows from its value.
     """
 
     def test_multi_step_quality_does_not_collapse(self):
@@ -949,20 +996,17 @@ class TestMultiStepSpectralTracking:
             result = verify_spectral_conservation_balance(before, after, G)
             qualities.append(result.overall_spectral_quality)
 
-        # Quality must remain strictly positive (system not degenerate)
+        # These finite fixture residuals give a representable positive score.
         for i, q in enumerate(qualities):
             assert q > 0.0, f"Step {i}: spectral quality collapsed to {q:.4f}"
-        # Low-band quality should stay above high-band across steps
+        # Independently check each fixed-seed fixture's band reduction.
         for step_seed in range(100, 105):
             G_tmp = _make_tnfr_graph(30, "watts_strogatz", seed=42)
             before = capture_conservation_snapshot(G_tmp)
             G_tmp = _perturb_graph(G_tmp, seed=step_seed)
             after = capture_conservation_snapshot(G_tmp)
             result = verify_spectral_conservation_balance(before, after, G_tmp)
-            bands = result.conservation_quality_by_band
-            assert (
-                bands["low"] >= bands["high"]
-            ), f"Step {step_seed}: low={bands['low']:.4f} < high={bands['high']:.4f}"
+            _assert_band_quality_from_spatial_residual(result, before, after, G_tmp)
 
     def test_parseval_drift_bounded_across_steps(self):
         """Parseval drift stays bounded across multiple perturbation steps."""

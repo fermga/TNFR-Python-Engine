@@ -157,6 +157,48 @@ def test_two_parent_inputs_span_every_shape_direction():
     _assert_geometry(result)
 
 
+@pytest.mark.parametrize("group_count", [1, 2, 3, 6])
+@pytest.mark.parametrize("region", [tuple(range(6)), (5, 0, 4, 1, 3, 2)])
+def test_dense_group_inputs_have_exact_weighted_mean_contrast_projection(
+    group_count, region
+):
+    count = len(region)
+    size = count + group_count + 1
+    groups = tuple(i // (count // group_count) for i in range(count))
+    metric = tuple(F(i + 1, i + 2) for i in range(size))
+    # Independent polynomial group inputs span all group constants; weighted
+    # centering removes their common constant. Extra columns are redundant.
+    transition = tuple(
+        tuple(
+            (
+                F((groups[i] + 1) ** (j - count + 1), j - count + 2)
+                if i < count and j >= count
+                else F(i == j)
+            )
+            for j in range(size)
+        )
+        for i in range(size)
+    )
+    result = _observe(transition, metric=metric, region=region)
+    group_mass = tuple(
+        sum((metric[i] for i in range(count) if groups[i] == group), F(0))
+        for group in range(group_count)
+    )
+    mass = sum(metric[:count], F(0))
+    expected = tuple(
+        tuple(
+            (metric[j] / group_mass[groups[j]] if groups[i] == groups[j] else F(0))
+            - metric[j] / mass
+            for j in region
+        )
+        for i in region
+    )
+    assert result.rank == group_count - 1
+    assert result.image_projection == expected
+    assert all(type(value) is F for row in result.image_projection for value in row)
+    _assert_geometry(result)
+
+
 def test_regional_mean_input_is_retained_separately_from_parent_coordinates():
     transition = ((2, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1))
     result = _observe(transition)

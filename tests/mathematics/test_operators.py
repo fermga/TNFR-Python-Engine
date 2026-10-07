@@ -97,6 +97,17 @@ def test_coherence_operator_non_hermitian_rejected() -> None:
         CoherenceOperator(matrix)
 
 
+@pytest.mark.parametrize(
+    "operator_type", [SpectralExpectationOperator, FrequencyOperator]
+)
+def test_positive_spectrum_does_not_certify_nonhermitian_operator(operator_type):
+    operator = operator_type([[1.0, 1.0], [0.0, 1.0]], ensure_hermitian=False)
+
+    np.testing.assert_allclose(operator.eigenvalues, [1.0, 1.0])
+    assert not operator.is_hermitian()
+    assert not operator.is_positive_semidefinite()
+
+
 def test_frequency_operator_properties(structural_rng: np.random.Generator) -> None:
     operator = FrequencyOperator([0.5, 1.5, 3.0])
 

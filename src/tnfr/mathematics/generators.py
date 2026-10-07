@@ -6,12 +6,35 @@ from typing import Final, Sequence
 
 from numpy.random import Generator
 
-from .backend import ensure_array, ensure_numpy, get_backend
+from .._exact_time import finite_represented_real
+from .._spectral_expectation import positive_spectral_dimension
+from ..config.parsing import parse_bool
+from ._complex_arrays import (
+    backend_complex_array,
+    nonnegative_tolerance,
+    numpy_complex_array,
+)
+from .backend import ensure_numpy, get_backend
 from .unified_numerical import TNFRValueError, np
 
 __all__ = ["build_delta_nfr", "build_lindblad_delta_nfr"]
 
 _TOPOLOGIES: Final[set[str]] = {"laplacian", "adjacency"}
+
+
+def _generator_scale(nu_f: float, scale: float) -> float:
+    """Admit signed real factors and their represented product."""
+    try:
+        frequency = finite_represented_real(nu_f, "nu_f")[0]
+        amplitude = finite_represented_real(scale, "scale")[0]
+        product = finite_represented_real(frequency * amplitude, "nu_f * scale")[0]
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise TNFRValueError(
+            "Generator scaling must be finite representable real"
+        ) from exc
+    if frequency != 0 and amplitude != 0 and product == 0:
+        raise TNFRValueError("Nonzero generator scaling product underflows to zero")
+    return product
 
 
 def _ring_adjacency(dim: int) -> np.ndarray:
@@ -52,7 +75,7 @@ def _as_square_matrix(
 ) -> np.ndarray:
     """Return ``matrix`` as a square :class:`numpy.ndarray` with validation."""
 
-    array = np.asarray(matrix, dtype=np.complex128)
+    array = numpy_complex_array(matrix, label=label)
     if array.ndim != 2 or array.shape[0] != array.shape[1]:
         raise TNFRValueError(
             f"{label} must be a square matrix.",
@@ -86,20 +109,18 @@ def build_delta_nfr(
         Requested canonical topology. Supported values are ``"laplacian"``
         and ``"adjacency"``.
     nu_f:
-        Structural frequency scaling applied to the resulting operator.
+        Finite represented real auxiliary frequency multiplier. Signed values
+        here do not define an admitted nodal capacity.
     scale:
-        Additional scaling applied uniformly to the operator amplitude.
+        Additional finite represented real amplitude factor. Signed factors
+        are admitted; their product must also be representable.
     rng:
         Optional NumPy :class:`~numpy.random.Generator` used to inject
         reproducible Hermitian noise.
     """
 
-    if dim <= 0:
-        raise TNFRValueError(
-            "ΔNFR generators require a positive dimensionality.",
-            context={"dim": dim},
-            suggestion="Provide a positive integer for dimension.",
-        )
+    dim = positive_spectral_dimension(dim, label="Generator dimension")
+    scaling = _generator_scale(nu_f, scale)
 
     if topology not in _TOPOLOGIES:
         allowed = ", ".join(sorted(_TOPOLOGIES))
@@ -121,11 +142,16 @@ def build_delta_nfr(
         noise = _hermitian_noise(dim, rng)
         matrix = matrix + (1.0 / np.sqrt(dim)) * noise
 
-    matrix *= nu_f * scale
-    hermitian = 0.5 * (matrix + matrix.conj().T)
+    with np.errstate(over="ignore", invalid="ignore"):
+        matrix *= scaling
+    # Every summand is Hermitian and the admitted scale is real; averaging
+    # equal adjoint entries again would only risk avoidable overflow.
     backend = get_backend()
     return np.asarray(
-        ensure_numpy(ensure_array(hermitian, backend=backend), backend=backend),
+        ensure_numpy(
+            backend_complex_array(matrix, backend=backend, label="Generated operator"),
+            backend=backend,
+        ),
         dtype=np.complex128,
     )
 
@@ -154,38 +180,55 @@ def build_lindblad_delta_nfr(
     ----------
     hamiltonian:
         Optional coherent component.  When ``None`` a null Hamiltonian is
-        assumed.
+        assumed. Matrix entries must be finite real or complex scalars with
+        representable components; Boolean and textual entries are rejected.
     collapse_operators:
         Iterable with the dissipative operators driving the contractive
         semigroup.  Each entry must be square with the same dimension as the
-        Hamiltonian.  When ``None`` the generator reduces to the coherent part.
+        Hamiltonian and obey the same scalar admission. When ``None`` the
+        generator reduces to the coherent part.
     dim:
         Explicit Hilbert-space dimension.  Only required if neither
         ``hamiltonian`` nor ``collapse_operators`` are provided.  When supplied,
         it must match the dimension inferred from the Hamiltonian and collapse
         operators.
     nu_f, scale:
-        Structural frequency scaling applied uniformly to the final generator.
+        Finite represented real factors applied uniformly to the generator.
+        Their product must be representable. Signed factors are admitted;
+        a forward GKSL semigroup requires a nonnegative product.
+        These auxiliary multipliers do not admit negative nodal capacities.
     ensure_trace_preserving:
         When ``True`` (default) the resulting superoperator is validated to
-        leave the identity invariant.
+        annihilate the left identity row, preserving trace within tolerance.
+        This does not require unitality: the identity may evolve.
     ensure_contractive:
         When ``True`` (default) the spectrum is required to have non-positive
-        real parts within ``atol``.
+        real parts within ``atol``. This spectral check alone does not certify
+        complete positivity or contraction in every norm.
     atol:
-        Absolute tolerance used for Hermiticity, trace and spectral checks.
+        Finite nonnegative represented tolerance for Hermiticity, trace and
+        spectral checks.
     """
 
-    operators = list(collapse_operators or [])
+    scaling = _generator_scale(nu_f, scale)
+    atol = nonnegative_tolerance(atol)
+    ensure_trace_preserving = parse_bool(ensure_trace_preserving)
+    ensure_contractive = parse_bool(ensure_contractive)
+    if dim is not None:
+        dim = positive_spectral_dimension(dim, label="Generator dimension")
+    operators = [] if collapse_operators is None else list(collapse_operators)
 
+    hermitian = None
+    dissipators = []
     inferred_dim: int | None = dim
     if hamiltonian is not None:
         hermitian = _as_square_matrix(hamiltonian, label="hamiltonian")
         inferred_dim = hermitian.shape[0]
     elif operators:
-        inferred_dim = _as_square_matrix(
-            operators[0], label="collapse operator[0]"
-        ).shape[0]
+        dissipators.append(
+            _as_square_matrix(operators[0], label="collapse operator[0]")
+        )
+        inferred_dim = dissipators[0].shape[0]
 
     if inferred_dim is None:
         raise TNFRValueError(
@@ -210,12 +253,9 @@ def build_lindblad_delta_nfr(
             suggestion="Ensure explicit dimension matches operators.",
         )
 
-    if hamiltonian is None:
+    if hermitian is None:
         hermitian = np.zeros((dimension, dimension), dtype=np.complex128)
     else:
-        hermitian = _as_square_matrix(
-            hamiltonian, expected_dim=dimension, label="hamiltonian"
-        )
         if not np.allclose(hermitian, hermitian.conj().T, atol=atol):
             raise TNFRValueError(
                 "Hamiltonian component must be Hermitian within tolerance.",
@@ -223,12 +263,13 @@ def build_lindblad_delta_nfr(
                 suggestion="Ensure Hamiltonian is Hermitian.",
             )
 
-    dissipators = [
+    first_unread = len(dissipators)
+    dissipators.extend(
         _as_square_matrix(
             operator, expected_dim=dimension, label=f"collapse operator[{index}]"
         )
-        for index, operator in enumerate(operators)
-    ]
+        for index, operator in enumerate(operators[first_unread:], start=first_unread)
+    )
 
     identity = np.eye(dimension, dtype=np.complex128)
     liouvillian = -1j * (np.kron(identity, hermitian) - np.kron(hermitian.T, identity))
@@ -239,7 +280,9 @@ def build_lindblad_delta_nfr(
         liouvillian -= 0.5 * np.kron(identity, adjoint_product)
         liouvillian -= 0.5 * np.kron(adjoint_product.T, identity)
 
-    liouvillian *= nu_f * scale
+    with np.errstate(over="ignore", invalid="ignore"):
+        liouvillian *= scaling
+    liouvillian = numpy_complex_array(liouvillian, label="Generated Lindblad operator")
 
     if ensure_trace_preserving:
         identity_vec = identity.reshape(dimension * dimension, order="F")
@@ -252,11 +295,16 @@ def build_lindblad_delta_nfr(
             )
 
     backend = get_backend()
-    liouvillian_backend = ensure_array(liouvillian, backend=backend)
+    liouvillian_backend = backend_complex_array(
+        liouvillian, backend=backend, label="Generated Lindblad operator"
+    )
 
     if ensure_contractive:
         eigenvalues_backend, _ = backend.eig(liouvillian_backend)
-        eigenvalues = ensure_numpy(eigenvalues_backend, backend=backend)
+        eigenvalues = numpy_complex_array(
+            ensure_numpy(eigenvalues_backend, backend=backend),
+            label="Generator spectrum",
+        )
         if np.max(eigenvalues.real) > atol:
             raise TNFRValueError(
                 "Lindblad generator is not contractive: spectrum has positive real components.",

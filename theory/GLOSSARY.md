@@ -179,7 +179,7 @@ The cards are the only editable concept catalog. Generate their index with
 - **Dependencies:** epi, capacity, phase, support
 - **Owner:** [Substrate and scale](FUNDAMENTAL_THEORY.md#29-assumed-substrate-and-emergence-between-scales).
 - **Evidence:** [Formation and identity obligations](EMERGENT_ONTOLOGY.md#11-nfr-formation-definition-birth-and-collective-dynamics); [retained pair state](nodal/SINE_PAIR_STATE.md#sine-global-pair-state).
-- **Implementation:** [SDK observation](../src/tnfr/sdk/simple.py), [collective-state reader](../src/tnfr/physics/relational_sine_scale.py).
+- **Implementation:** [SDK observation](../src/tnfr/sdk/simple.py), [collective-state reader](../src/tnfr/physics/relational_sine_pair.py).
 - **Tests:** [Observation scope](../tests/sdk/test_nfr_observation_scope.py), [realizable pair state](../tests/physics/test_sine_global_pair_state.py).
 - **Limits:** A node, nested child or named region is not proved autopoiesis or matter. Identity can persist while internal state changes; nesting alone proves neither predictive closure nor formation.
 
@@ -368,7 +368,7 @@ The cards are the only editable concept catalog. Generate their index with
 - **Dependencies:** sine-law, phase, capacity, support, clock
 - **Owner:** [Permanent-pulse admission](nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission).
 - **Evidence:** [P2 libration and dissipative obstruction](nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission), [exact internal pulse and observation-dependent period](nodal/SINE_REPLICA_PULSE.md#sine-replica-internal-pulse).
-- **Implementation:** [P2 pulse](../src/tnfr/physics/relational_sine_resonance.py), [replica pulse](../src/tnfr/physics/relational_sine_scale.py).
+- **Implementation:** [P2 pulse](../src/tnfr/physics/relational_sine_resonance.py), [replica pulse](../src/tnfr/physics/relational_sine_replica_pulse.py).
 - **Tests:** [P2 controls](../tests/physics/test_relational_sine_resonance.py), [replica field/period](../tests/physics/test_relational_sine_replica.py).
 - **Limits:** Exact continuous periods do not certify Euler orbits. Replica labeled/unordered periods differ by two; means stay fixed while constituents move. Sufficiently small nonzero replica pulses are transversely unstable. Conservation selects neither zero loss nor amplitude and cannot create motion from equilibrium.
 
@@ -402,7 +402,7 @@ The cards are the only editable concept catalog. Generate their index with
 - **Dependencies:** autonomous-pulse, storage-work
 - **Owner:** [Complete variation and symmetry-correct return](nodal/SINE_REPLICA_PULSE.md#sine-replica-pulse-variation).
 - **Evidence:** [Exact small-amplitude splitting and analytic remainder](nodal/SINE_REPLICA_PULSE.md#sine-replica-pulse-splitting).
-- **Implementation:** [Detached variation and asymptotic splitting assessments](../src/tnfr/physics/relational_sine_scale.py).
+- **Implementation:** [Detached variation and asymptotic splitting assessments](../src/tnfr/physics/relational_sine_replica_pulse.py).
 - **Tests:** [Full fine Jacobian, harmonic solvability and return-scope controls](../tests/physics/test_relational_sine_replica.py).
 - **Limits:** Existence of a small-amplitude instability interval supplies no numeric threshold or chosen-amplitude verdict. Neutral shear is distinct from exponential growth; leaving a waveform need not destroy geometric identity.
 
@@ -470,7 +470,7 @@ The cards are the only editable concept catalog. Generate their index with
 - **Dependencies:** nodal-equation, relational-law, sine-law
 - **Owner:** [Composition and closure](nodal/RELATIONAL_PATTERN_COMPOSITION.md), [global pair state](nodal/SINE_PAIR_STATE.md#sine-global-pair-state).
 - **Evidence:** [Instantaneous interface versus future state](nodal/SINE_PAIR_INTERACTION.md#sine-moving-pattern-interface); [exact pair realizability/closure](nodal/SINE_PAIR_STATE.md#sine-global-pair-state).
-- **Implementation:** [Linear realization](../src/tnfr/mathematics/linear_observation.py), [retained pair state](../src/tnfr/physics/relational_sine_scale.py).
+- **Implementation:** [Linear realization](../src/tnfr/mathematics/linear_observation.py), [retained pair state](../src/tnfr/physics/relational_sine_pair.py).
 - **Tests:** [Linear closure](../tests/test_linear_observation.py), [global pair rows and realizability](../tests/physics/test_sine_global_pair_state.py).
 - **Limits:** Instantaneous interaction sufficiency, future closure and recovery from observations differ. On doubled C5, (X,Z) supplies currents but realized (X,Z,P,U,W) retains predictive internal information through cancellation. These are derived coordinates, not new constitutive parameters; tangent or snapshot agreement alone proves no nonlinear closure.
 

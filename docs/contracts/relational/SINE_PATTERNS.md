@@ -4,6 +4,75 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-formation-response"></a>
+### Prepared acquisition and actual receiver form
+
+`assess_sine_formation_response(*, scaled_time, form_error_bound,
+phase_error_bound, readout_error_bound, radius)` in
+[`relational_sine_formation_response.py`](../../../src/tnfr/physics/relational_sine_formation_response.py)
+assesses the two exact integer preparations and positive-loss doubled-C5 law
+declared by the [mathematical owner](../../../theory/nodal/SINE_PATTERN_DYNAMICS.md#sine-formation-response).
+It is a detached analytic calculation. It accepts no observed graph, cached
+endpoint, unknown form origin, fitted coefficient or event schedule.
+
+All five inputs use shared exact/represented-real admission before arithmetic.
+Time and the three error radii must be nonnegative; the geometric radius must
+be positive. Booleans, nonfinite values and nonzero values lost during scalar
+materialization reject. The shared exponential budget requires
+`(2/3)*scaled_time <= 4096`. An admitted input whose sufficient inequalities
+fail produces unavailable evidence, not a claim that its trajectory fails.
+
+The complete law has fixed effective `e=1023/1024`, `w=1/1024`, unit held
+capacity and beta. Its clock is `tau=e*t`, distinct from the conservative
+pair certificates. Nominal forms have pair means `4039*(a-2)` and an
+antisymmetric `(+96,-96)` increment at pair 0 or pair 3; nominal phases are
+zero. Every fine form and phase has its own independent initial error.
+The source declaration bounds common origins too. Shared preparation
+machinery rebuilds the consumed weighted norms and coefficients from these
+primitive rows after one fresh domain admission for both sources. This avoids
+constructing temporary observation reports or evaluating discarded rates.
+Each call still admits every public budget, and the absolute receiver retains
+its form-mean uncertainty. Report-consuming preparation readers separately
+retain their original source re-admission boundary; the fixed-source path
+does not trust an external report's derived fields.
+
+The actual endpoint `Y=(x_2+x_3)/2` is enclosed using a mean-free Poisson
+predictor plus a full-law Duhamel remainder. This keeps the exponentially
+decaying initial state, nonlinear phase history, initial coordinate errors,
+conserved form mean and independent additive readout error. The Poisson
+expression is an approximation with an explicit remainder; it is not an
+installed reduced law or a substitution of instantaneous phase current for
+the total form response. Exact matrix identities validate the fixed support's
+inverse on its mean-free subspace.
+
+Formation admission separately requires initially zero winding, endpoint
+distance strictly inside the declared radius, an acute target neighborhood
+and full endpoint storage strictly below its forward first-exit barrier.
+These bounds concern the actual reached family, with no reset. Positive loss
+then retains its winding-one geometric identity for all subsequent time.
+The nominal initial storage agrees between branches; uncertain members and
+their endpoint storage need not agree. Geometric retention does not promise
+an indefinitely nonzero receiver contrast or internally active pairs.
+
+`initial_zero_winding_certified`, `acute_radius_certified`,
+`endpoint_radius_certified_by_preparation` and
+`storage_barrier_certified_by_preparation` retain those separate obligations;
+`formation_certified_by_preparation` combines them for each source.
+`recorded_readout_bounds` encloses both absolute records and
+`recorded_difference_bounds` their A-minus-B contrast.
+`status="certified_formation_response"` requires both formation admissions
+and a strictly positive lower contrast bound. Otherwise it is `"unavailable"`
+with named reasons, even if one component succeeds. None of these fields
+authenticates an external source or observed record.
+
+The direct `SineFormationResponse` export and generic SDK envelope retain
+primitive budgets, separate margins and availability, through the shared
+exact projection and atomic JSON writer. Its direct schema is
+`tnfr.sine-formation-response.v1`. The frozen research protocol has
+the additional fixed response threshold stated by its owner. A mathematical
+error budget is not a calibrated apparatus tolerance; the report neither
+selects the preparation or loss mechanism nor identifies a physical object.
+
 ### Relative sine patterns and moving references
 
 `bound_relational_sine_pattern(graph, *, reference_node, reference_model,

@@ -34,6 +34,70 @@ def test_zero_rate_has_constant_pressure_and_unbounded_linear_form():
     assert "linear form growth" in explanation
 
 
+@pytest.mark.parametrize(
+    "capacity, pressure, initial_form, initial_time",
+    [
+        (sp.Rational(2, 3), sp.Rational(-7, 5), sp.Rational(11, 13), sp.Rational(3, 2)),
+        (0, sp.Rational(7, 5), sp.Rational(-11, 13), sp.Rational(3, 2)),
+        (sp.Rational(2, 3), 0, sp.Rational(11, 13), 0),
+    ],
+)
+def test_constant_solution_satisfies_the_row_and_initial_condition(
+    capacity, pressure, initial_form, initial_time
+):
+    solution = symbolic.solve_nodal_equation_constant_params(
+        capacity, pressure, initial_form, initial_time
+    )
+    assert sp.simplify(sp.diff(solution, symbolic.t) - capacity * pressure) == 0
+    assert sp.simplify(solution.subs(symbolic.t, initial_time) - initial_form) == 0
+
+
+def test_constant_real_pressure_preserves_a_symbol_named_like_an_integration_constant():
+    pressure = sp.re(sp.Symbol("C1"))
+    solution = symbolic.solve_nodal_equation_constant_params(2, pressure, 3, 4)
+    assert sp.simplify(sp.diff(solution, symbolic.t) - 2 * pressure) == 0
+    assert sp.simplify(solution.subs(symbolic.t, 4) - 3) == 0
+
+
+def test_constant_capacity_preserves_symbols_also_used_by_the_nodal_equation():
+    capacity = symbolic.DELTA_NFR**2
+    solution = symbolic.solve_nodal_equation_constant_params(capacity, 2, 3, 4)
+    assert sp.simplify(sp.diff(solution, symbolic.t) - 2 * capacity) == 0
+    assert sp.simplify(solution.subs(symbolic.t, 4) - 3) == 0
+
+
+@pytest.mark.parametrize(
+    "capacity, pressure, initial_form, initial_time",
+    [
+        (1e308, 2.0, 1.0, 0.0),
+        (1e-200, 1e-200, 0.0, 1.0),
+        (1e308, 2.0, 1.0, 1.0),
+        (1.0, 1.0, 1.0, 1e20),
+    ],
+    ids=[
+        "binary64-product-overflow",
+        "binary64-product-underflow",
+        "large-rate-initial-form-retention",
+        "large-origin-initial-form-retention",
+    ],
+)
+def test_constant_solution_retains_float_rate_and_initial_condition(
+    capacity, pressure, initial_form, initial_time
+):
+    solution = symbolic.solve_nodal_equation_constant_params(
+        capacity, pressure, initial_form, initial_time
+    )
+    rate = sp.diff(solution, symbolic.t)
+    assert rate.is_finite is True
+    assert rate.is_positive is True
+    # Compare exact represented inputs to the retained symbolic coefficient.
+    # Float substitutions remain approximations, not exact decimal promises.
+    exact_rate = sp.Rational(capacity) * sp.Rational(pressure)
+    relative_error = abs(sp.Rational(rate) / exact_rate - 1)
+    assert relative_error < sp.Rational(1, 10**14)
+    assert sp.simplify(solution.subs(symbolic.t, initial_time) - initial_form) == 0
+
+
 @pytest.mark.parametrize("rate", [-1e-250, 1e-250])
 def test_small_nonzero_rate_does_not_lose_the_finite_integral(rate):
     converges, _, value = symbolic.check_convergence_exponential(rate, 1)

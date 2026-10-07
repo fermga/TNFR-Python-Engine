@@ -46,6 +46,7 @@ from ..constants.canonical import (
 )
 from ..errors import TNFRValueError
 from ..utils import angle_diff
+from ._integer_admission import _integer_argument
 from .unified_numerical import np
 
 logger = logging.getLogger(__name__)
@@ -59,8 +60,6 @@ logger = logging.getLogger(__name__)
 
 # Centralized TNFR cache infrastructure (robust, shared across repo)
 from .unified_cache import CacheLevel, cache_tnfr_computation
-
-_CACHE_OK = True
 
 # Import centralized TNFR physics functions for maximum reuse and cache efficiency
 try:
@@ -85,6 +84,20 @@ try:
 except ImportError:
     HAS_SYMPY = False
     logger.warning(" sympy not available. Using basic implementations.")
+
+
+def _integer_is_prime(n: int) -> bool:
+    """Test an admitted integer using SymPy or exact trial division."""
+    if HAS_SYMPY:
+        return bool(isprime(n))
+    if n < 2:
+        return False
+    if n == 2:
+        return True
+    if n % 2 == 0:
+        return False
+    return all(n % divisor for divisor in range(3, math.isqrt(n) + 1, 2))
+
 
 # ============================================================================
 # ARITHMETIC TNFR NETWORK CLASS
@@ -479,19 +492,7 @@ class ArithmeticTNFRNetwork:
 
     def _is_prime(self, n: int) -> bool:
         """Check if number is prime."""
-        if HAS_SYMPY:
-            return isprime(n)
-        else:
-            if n < 2:
-                return False
-            if n == 2:
-                return True
-            if n % 2 == 0:
-                return False
-            for i in range(3, int(math.sqrt(n)) + 1, 2):
-                if n % i == 0:
-                    return False
-            return True
+        return _integer_is_prime(_integer_argument(n, "n"))
 
     def _get_prime_factors(self, n: int) -> dict[int, int]:
         """Get prime factorization {p: exponent} using Sieve if available."""
@@ -819,10 +820,10 @@ class ArithmeticTNFRNetwork:
     # STRUCTURAL FIELD TELEMETRY (Φ_s, |∇φ|, K_φ, ξ_C)
     # ========================================================================
 
-    # Cached helpers (use centralized repo cache infra when available)
+    # Cached helpers use the centralized repository cache infrastructure.
     @staticmethod
     @cache_tnfr_computation(
-        level=CacheLevel.DERIVED_METRICS if _CACHE_OK else None,
+        level=CacheLevel.DERIVED_METRICS,
         dependencies={"delta_nfr", "graph_structure"},
     )
     def _cached_phi_s_helper(
@@ -862,7 +863,7 @@ class ArithmeticTNFRNetwork:
 
     @staticmethod
     @cache_tnfr_computation(
-        level=CacheLevel.DERIVED_METRICS if _CACHE_OK else None,
+        level=CacheLevel.DERIVED_METRICS,
         dependencies={"delta_nfr", "graph_structure"},
     )
     def _cached_xi_c_helper(
@@ -938,7 +939,7 @@ class ArithmeticTNFRNetwork:
         return self._graph_undirected_cache
 
     @cache_tnfr_computation(
-        level=CacheLevel.DERIVED_METRICS if _CACHE_OK else None,
+        level=CacheLevel.DERIVED_METRICS,
         dependencies={"graph_structure", "nu_f"},
     )
     def _cached_compute_phase_helper(
@@ -1937,11 +1938,16 @@ if __name__ == "__main__":
 
 
 def get_primitive_root(p: int) -> int | None:
-    """Find the smallest primitive root modulo p."""
-    p = int(p)  # Ensure native int for pow()
+    """Find the smallest primitive root for prime ``p``, else return ``None``.
+
+    Genuine integer payloads, including NumPy integers, are admitted before
+    modular arithmetic. Logical, floating-point and textual values are rejected.
+    SymPy is optional; exact trial division supplies its primality fallback.
+    """
+    p = _integer_argument(p, "p")
     if p == 2:
         return 1
-    if not isprime(p):
+    if not _integer_is_prime(p):
         return None
     for g in range(2, p):
         is_primitive = True
@@ -1960,8 +1966,11 @@ def compute_dirichlet_characters(p: int) -> np.ndarray:
     Returns a matrix where row k is the k-th character evaluated on 1..p-1.
 
     Used for constructing the local Hilbert space H_p.
+
+    The modulus must be a genuine integer prime; SymPy is optional.
     """
-    if not isprime(p):
+    p = _integer_argument(p, "p")
+    if not _integer_is_prime(p):
         raise TNFRValueError(
             f"Modulus {p} must be prime for local field construction.",
             context={"modulus": p},
@@ -2002,7 +2011,10 @@ def compute_gauss_sums(p: int) -> np.ndarray:
     Returns:
         Array of eigenvalues (normalized Gauss sums).
         By Hasse-Davenport, |lambda| should be 1.0 for non-trivial chars.
+
+    The modulus follows the integer-prime admission of the character table.
     """
+    p = _integer_argument(p, "p")
     chi_matrix = compute_dirichlet_characters(p)
 
     # Additive exponential term: exp(2pi i a / p)
@@ -2024,8 +2036,8 @@ class AdelicOperator:
     """
 
     def __init__(self, p: int):
-        self.p = p
-        self.eigenvalues = compute_gauss_sums(p)
+        self.p = _integer_argument(p, "p")
+        self.eigenvalues = compute_gauss_sums(self.p)
 
     def apply(self, wavefunction: np.ndarray) -> np.ndarray:
         """Apply U_p to a wavefunction in the character basis."""

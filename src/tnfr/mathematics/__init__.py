@@ -3,15 +3,15 @@
 Backend selection
 -----------------
 Use :func:`get_backend` to retrieve a numerical backend compatible with TNFR's
-structural operators.  The selection order is ``name`` → ``TNFR_MATH_BACKEND``
-→ :func:`tnfr.config.get_flags`.  NumPy remains the canonical default so
-existing code continues to operate even when optional dependencies are absent.
+structural operators. The selection order is ``name`` → ``TNFR_MATH_BACKEND``
+→ ``tnfr.backend_config.get_config().math_backend``. The configuration defaults
+to ``auto``: GPU-capable adapters are preferred, then any available adapter,
+in JAX → PyTorch → NumPy order. Request ``numpy`` explicitly for that backend.
 
 Symbolic Analysis
 -----------------
-This module also includes symbolic mathematical tools from the tnfr.math module
-for analyzing TNFR dynamics, including nodal equation derivations and
-convergence analysis.
+When SymPy is installed, this module re-exports the supplied-law symbolic
+identities and integration helpers owned by ``tnfr.math.symbolic``.
 """
 
 from .backend import (
@@ -125,27 +125,24 @@ from .unified_numerical import (
     safe_divide,
 )
 
-"""Symbolic analysis exports
-We import from tnfr.math.symbolic and bind the names so lint won't flag them as unused.
-"""
+# Keep numerical imports available when the optional symbolic dependency is absent.
 try:
-    from .. import math as _math
-    from ..math import symbolic as _symbolic
-
-    get_nodal_equation = _symbolic.get_nodal_equation
-    solve_nodal_equation_constant_params = (
-        _symbolic.solve_nodal_equation_constant_params
+    from .. import math
+    from ..math import (
+        check_convergence_exponential,
+        compute_second_derivative_symbolic,
+        get_nodal_equation,
+        integrated_evolution_symbolic,
+        latex_export,
+        pretty_print,
+        solve_nodal_equation_constant_params,
     )
-    integrated_evolution_symbolic = _symbolic.integrated_evolution_symbolic
-    check_convergence_exponential = _symbolic.check_convergence_exponential
-    compute_second_derivative_symbolic = _symbolic.compute_second_derivative_symbolic
-    latex_export = _symbolic.latex_export
-    pretty_print = _symbolic.pretty_print
-    # Re-export the math module under 'math'
-    math = _math
-    _HAS_SYMBOLIC = True
-except Exception:
+except ModuleNotFoundError as exc:
+    if exc.name != "sympy":
+        raise
     _HAS_SYMBOLIC = False
+else:
+    _HAS_SYMBOLIC = True
 
 __all__ = [
     # Backend operations
@@ -250,17 +247,9 @@ __all__ = [
     "quadratic_residue_annotated_rank",
 ]
 
-# Add symbolic analysis functions if available
+# Reuse the symbolic facade's existing export order without its module metadata.
 if _HAS_SYMBOLIC:
     __all__.extend(
-        [
-            "get_nodal_equation",
-            "solve_nodal_equation_constant_params",
-            "integrated_evolution_symbolic",
-            "check_convergence_exponential",
-            "compute_second_derivative_symbolic",
-            "latex_export",
-            "pretty_print",
-            "math",  # Also export the entire math module
-        ]
+        name for name in math.__all__ if name not in {"symbolic", "__version__"}
     )
+    __all__.append("math")

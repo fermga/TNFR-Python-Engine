@@ -24,7 +24,6 @@ __all__ = ("Jet", "MAX_ORDER", "sin", "cos", "sinc", "atan_ratio", "arg")
 
 MAX_ORDER = 16
 _ZERO = I(0)
-_ONE = I(1)
 _SINC_TERMS = 32
 _ATAN_RATIO_TERMS = 128
 

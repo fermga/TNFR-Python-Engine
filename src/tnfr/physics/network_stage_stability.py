@@ -52,6 +52,9 @@ from typing import Any
 
 from ..alias import set_attr, set_attr_generic, set_attr_str
 from ..constants.aliases import ALIAS_EPI, ALIAS_EPI_KIND, ALIAS_THETA, ALIAS_VF
+from ..mathematics._exact_linear_algebra import (
+    exact_square_matrix_power as _exact_matrix_power,
+)
 from ..mathematics.unified_numerical import np
 from ..operators._resonance_identity import resonance_identity_failures
 from ..operators.operator_contracts import contract_for
@@ -159,45 +162,6 @@ def _operator_glyph(value: Any) -> Glyph:
             "all-target neighbour-stage certification supports EN and RA only"
         )
     return glyph
-
-
-def _exact_matrix_power(
-    matrix: tuple[tuple[Fraction, ...], ...], exponent: int
-) -> tuple[tuple[Fraction, ...], ...]:
-    dimension = len(matrix)
-    identity = tuple(
-        tuple(Fraction(int(row == column)) for column in range(dimension))
-        for row in range(dimension)
-    )
-
-    def multiply(
-        left: tuple[tuple[Fraction, ...], ...],
-        right: tuple[tuple[Fraction, ...], ...],
-    ) -> tuple[tuple[Fraction, ...], ...]:
-        return tuple(
-            tuple(
-                sum(
-                    (
-                        left[row][inner] * right[inner][column]
-                        for inner in range(dimension)
-                    ),
-                    Fraction(0),
-                )
-                for column in range(dimension)
-            )
-            for row in range(dimension)
-        )
-
-    result = identity
-    factor = matrix
-    power = exponent
-    while power:
-        if power & 1:
-            result = multiply(result, factor)
-        power >>= 1
-        if power:
-            factor = multiply(factor, factor)
-    return result
 
 
 def _fraction_upper_float(value: Fraction) -> float:

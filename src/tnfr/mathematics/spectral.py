@@ -22,28 +22,107 @@ Key Features:
 from __future__ import annotations
 
 from numbers import Integral
-from typing import Any, Callable, Literal
+from typing import Any, Callable, Literal, Sequence
 
+import networkx as nx
 import scipy.linalg
 import scipy.sparse.linalg
 
+from .._exact_time import finite_represented_real, nonnegative_represented_time
+from ..config.parsing import parse_bool
 from ..errors import TNFRValueError
+from .backend import get_backend
+from .unified_cache import CacheLevel, cache_tnfr_computation
 from .unified_numerical import np
 
-try:
-    import networkx as nx
-except ImportError:
-    nx = None
+# Compatibility attribute: the backend adapter is part of every supported install.
+HAS_GPU_BACKENDS = True
 
-# Import GPU-aware mathematics backend
-try:
-    from .backend import get_backend
 
-    HAS_GPU_BACKENDS = True
-except ImportError:
-    HAS_GPU_BACKENDS = False
+def _stationary_basis(
+    G: Any, operator: str, laplacian: np.ndarray
+) -> np.ndarray | None:
+    """Supply component null modes for a nonnegative reversible graph law.
 
-from .unified_cache import CacheLevel, cache_tnfr_computation
+    These modes follow from support and row strengths, not an eigenvalue
+    tolerance. Signed combinatorial weights and asymmetric walks retain the
+    generic numerical eigensystem without this reversible-law correction.
+    """
+    size = len(laplacian)
+    if operator == "combinatorial":
+        support = -laplacian.copy()
+        np.fill_diagonal(support, 0.0)
+        if np.any(support < 0.0) or not np.array_equal(support, support.T):
+            return None
+        _, labels = scipy.sparse.csgraph.connected_components(
+            scipy.sparse.csr_matrix(support != 0.0)
+        )
+        roots = np.ones(size)
+    else:
+        from ..physics._conductance import read_conductance
+
+        conductance = read_conductance(G)
+        adjacency = conductance.dense()
+        if not np.array_equal(adjacency, adjacency.T):
+            return None
+        _, labels = scipy.sparse.csgraph.connected_components(
+            scipy.sparse.csr_matrix(adjacency != 0.0)
+        )
+        roots = np.ones(size)
+        if operator == "symmetric":
+            _, scale, total = conductance.normalization()
+            # Square roots before ratios retain very unequal positive strengths.
+            for label in np.unique(labels):
+                selected = labels == label
+                largest = np.max(scale[selected], initial=0.0)
+                if largest > 0.0:
+                    roots[selected] = (
+                        np.sqrt(scale[selected])
+                        / np.sqrt(largest)
+                        * np.sqrt(total[selected])
+                    )
+
+    basis = np.zeros((size, len(np.unique(labels))))
+    for column, label in enumerate(np.unique(labels)):
+        selected = labels == label
+        values = roots[selected]
+        basis[selected, column] = values / np.linalg.norm(values)
+    return basis
+
+
+def _retain_stationary_modes(
+    eigenvalues: np.ndarray, eigenvectors: np.ndarray, stationary: np.ndarray | None
+) -> tuple[np.ndarray, np.ndarray]:
+    """Set only identified support-derived null modes to exact represented zero.
+
+    A small eigenvalue alone is insufficient: its vector must lie in the known
+    stationary subspace. If numerical mixing prevents resolving the expected
+    null multiplicity, refuse the chart rather than freezing a genuine slow
+    mode. This is a floating identification check, not an enclosure certificate.
+    """
+    values = np.array(eigenvalues, copy=True)
+    vectors = np.array(eigenvectors, copy=True)
+    if stationary is None or not len(values):
+        return values, vectors
+    # Component supports are disjoint. Project each block without a dense
+    # N-by-components-by-k product on graphs containing many isolated nodes.
+    residual = vectors.copy()
+    for column in stationary.T:
+        selected = np.flatnonzero(column)
+        weights = column[selected]
+        residual[selected] -= np.outer(weights, weights @ vectors[selected])
+    identified = np.linalg.norm(residual, axis=0) <= (
+        1e-8 * np.linalg.norm(vectors, axis=0)
+    )
+    expected = min(stationary.shape[1], len(values))
+    if np.count_nonzero(identified) != expected:
+        raise TNFRValueError(
+            "The numerical eigensystem cannot resolve the stationary subspace",
+            suggestion="Use a better resolved graph scale or a higher precision solver.",
+        )
+    values[identified] = 0.0
+    order = np.lexsort((np.imag(values), np.real(values)))
+    return values[order], vectors[:, order]
 
 
 def _build_structural_laplacian(
@@ -69,7 +148,19 @@ def _build_structural_laplacian(
             _, lap = structural_diffusion_operator(G)
         return np.asarray(lap, dtype=float)
     if operator == "combinatorial":
-        return nx.laplacian_matrix(G, weight=weight).toarray().astype(float)
+        admitted = G.copy()
+        if weight is not None:
+            for _, _, data in admitted.edges(data=True):
+                data[weight] = finite_represented_real(
+                    data.get(weight, 1.0), "Laplacian edge weight"
+                )[0]
+        with np.errstate(over="ignore", invalid="ignore"):
+            matrix = (
+                nx.laplacian_matrix(admitted, weight=weight).toarray().astype(float)
+            )
+        if not np.all(np.isfinite(matrix)):
+            raise TNFRValueError("Laplacian arithmetic must remain finite")
+        return matrix
     raise TNFRValueError(
         f"Unknown Laplacian operator: {operator!r}",
         context={"operator": operator},
@@ -80,17 +171,25 @@ def _build_structural_laplacian(
     )
 
 
-@cache_tnfr_computation(
-    level=CacheLevel.GRAPH_STRUCTURE, dependencies={"graph_topology"}
-)
-def _get_laplacian_spectrum_cached(
+def get_laplacian_spectrum(
     G: Any,
     weight: str | None = "weight",
     k: int | None = None,
     operator: Literal["symmetric", "random_walk", "combinatorial"] = "symmetric",
     normalized: bool | None = None,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Compute and cache the structural Laplacian spectrum of the graph.
+    """Return detached arrays from the graph's current Laplacian eigensystem.
+
+    Rebuild the consumed operator before lookup. The cache retains immutable
+    matrix bytes in the current node order, including the selected weight
+    channel; graph identity or an unordered topology cannot substitute for it.
+    Nonnegative reversible graphs retain component-derived stationary modes
+    at exact represented zero. Identification uses the known null subspace,
+    not a small-eigenvalue cutoff; unresolved mixing with slow modes rejects.
+    Signed combinatorial and asymmetric operators keep a generic floating
+    eigensystem. None of these numerical charts is an enclosure certificate.
+    Hermitian solver selection follows exact symmetry of the admitted operator,
+    including reciprocal directed graphs and symmetric random-walk matrices.
 
     TNFR's canonical structural operator is the random-walk Laplacian
     ``L_rw = I - D^{-1} W`` (:mod:`tnfr.physics.structural_diffusion`): the EPI
@@ -113,8 +212,8 @@ def _get_laplacian_spectrum_cached(
         k: Number of eigenvalues/vectors to compute (for sparse/large graphs).
            If None, computes full spectrum.
         operator: Which structural operator to diagonalise -- ``"symmetric"``
-           (default, canonical L_sym), ``"random_walk"`` (canonical L_rw;
-           non-symmetric) or ``"combinatorial"`` (generic ``D - A``).
+            (default, canonical L_sym), ``"random_walk"`` (canonical L_rw;
+            possibly non-symmetric) or ``"combinatorial"`` (generic ``D - A``).
         normalized: Backward-compatible convenience alias. ``True`` selects the
            canonical ``"symmetric"`` operator, ``False`` selects
            ``"combinatorial"``; ``None`` (default) defers to ``operator``.
@@ -125,8 +224,6 @@ def _get_laplacian_spectrum_cached(
         eigenvectors: Array of shape (N, N) or (N, k), with eigenvectors in
             columns.
     """
-    if nx is None:
-        raise ImportError("NetworkX is required for spectral analysis.")
     if k is not None and (isinstance(k, bool) or not isinstance(k, Integral) or k <= 0):
         raise TNFRValueError(
             "k must be a positive integer or None",
@@ -137,20 +234,36 @@ def _get_laplacian_spectrum_cached(
     if k is not None:
         k = int(k)
     if normalized is not None:
-        operator = "symmetric" if normalized else "combinatorial"
+        operator = "symmetric" if parse_bool(normalized) else "combinatorial"
 
     # Build the canonical structural Laplacian (dense) for the chosen operator.
     L_dense = _build_structural_laplacian(G, operator, weight)
     N = L_dense.shape[0]
-    # L_rw is non-symmetric, and any directed graph yields a non-symmetric
-    # matrix -> use the general (non-Hermitian) eigensolver in those cases.
-    use_general_eig = bool(nx.is_directed(G)) or operator == "random_walk"
+    # Container direction and operator names do not establish matrix symmetry.
+    # A loose tolerance could erase genuine represented directional differences.
+    use_general_eig = not np.array_equal(L_dense, L_dense.T)
+
+    eigenvalues, eigenvectors = _get_laplacian_spectrum_cached(
+        np.asarray(L_dense, dtype=np.float64).tobytes(), N, k, use_general_eig
+    )
+    return _retain_stationary_modes(
+        eigenvalues, eigenvectors, _stationary_basis(G, operator, L_dense)
+    )
+
+
+@cache_tnfr_computation(level=CacheLevel.GRAPH_STRUCTURE, dependencies=set())
+def _get_laplacian_spectrum_cached(
+    matrix_bytes: bytes, size: int, k: int | None, use_general_eig: bool
+) -> tuple[np.ndarray, np.ndarray]:
+    """Diagonalize one immutable, already admitted binary64 matrix snapshot."""
+    L_dense = np.frombuffer(matrix_bytes, dtype=np.float64).reshape(size, size).copy()
+    N = size
 
     if k is None or k >= N:
         # Full diagonalization with GPU backend support
 
         # Use GPU backend if available and beneficial
-        if HAS_GPU_BACKENDS and N > 100:  # GPU beneficial for larger matrices
+        if N > 100:  # GPU beneficial for larger matrices
             try:
                 backend = get_backend()
                 if backend.supports_autodiff and hasattr(backend, "eigh"):
@@ -200,10 +313,10 @@ def _get_laplacian_spectrum_cached(
                 evals, evecs = scipy.linalg.eigh(L_dense)
     else:
         if use_general_eig:
-            # ``eigsh`` assumes a real-symmetric/Hermitian matrix.  L_rw and
-            # directed Laplacians do not satisfy that contract.  Compute the
-            # general spectrum, then retain the modes nearest zero.  This is a
-            # dense fallback, not a fast partial transform.
+            # ``eigsh`` assumes a real-symmetric/Hermitian matrix. For an
+            # asymmetric admitted operator, compute the general spectrum and
+            # retain the modes nearest zero. This is a dense fallback, not a
+            # fast partial transform.
             all_evals, all_evecs = scipy.linalg.eig(L_dense)
             nearest = np.argsort(np.abs(all_evals))[:k]
             order = nearest[
@@ -221,33 +334,10 @@ def _get_laplacian_spectrum_cached(
     return evals, evecs
 
 
-def get_laplacian_spectrum(
-    G: Any,
-    weight: str | None = "weight",
-    k: int | None = None,
-    operator: Literal["symmetric", "random_walk", "combinatorial"] = "symmetric",
-    normalized: bool | None = None,
-) -> tuple[np.ndarray, np.ndarray]:
-    """Return detached arrays from the cached Laplacian eigensystem."""
-
-    eigenvalues, eigenvectors = _get_laplacian_spectrum_cached(
-        G,
-        weight=weight,
-        k=k,
-        operator=operator,
-        normalized=normalized,
-    )
-    return np.array(eigenvalues, copy=True), np.array(eigenvectors, copy=True)
-
-
-# Retain the complete public documentation on the ownership-safe facade.
-get_laplacian_spectrum.__doc__ = _get_laplacian_spectrum_cached.__doc__
-
-
-def _validate_transform_shapes(
+def _validate_transform_dimensions(
     signal: np.ndarray, U: np.ndarray, *, inverse: bool
-) -> tuple[np.ndarray, np.ndarray, bool]:
-    """Validate a spectral transform and identify an orthonormal basis."""
+) -> tuple[np.ndarray, np.ndarray]:
+    """Admit the shapes in the same order for individual and grouped transforms."""
     signal = np.asarray(signal)
     U = np.asarray(U)
     if signal.ndim != 1 or U.ndim != 2:
@@ -270,6 +360,12 @@ def _validate_transform_shapes(
                 "matching its rows."
             ),
         )
+    return signal, U
+
+
+def _validate_transform_basis(U: np.ndarray) -> bool:
+    """Identify an orthonormal basis or admit a full invertible right basis."""
+
     gram = U.conj().T @ U
     identity = np.eye(U.shape[1], dtype=gram.dtype)
     orthonormal = bool(np.allclose(gram, identity, rtol=1e-10, atol=1e-12))
@@ -288,7 +384,16 @@ def _validate_transform_shapes(
             context={"basis_shape": U.shape},
             suggestion="Use a complete diagonalizable Laplacian basis.",
         )
-    return signal, U, orthonormal
+    return orthonormal
+
+
+def _validate_transform_shapes(
+    signal: np.ndarray, U: np.ndarray, *, inverse: bool
+) -> tuple[np.ndarray, np.ndarray, bool]:
+    """Validate a spectral transform and identify an orthonormal basis."""
+
+    signal, U = _validate_transform_dimensions(signal, U, inverse=inverse)
+    return signal, U, _validate_transform_basis(U)
 
 
 def gft(signal: np.ndarray, U: np.ndarray) -> np.ndarray:
@@ -305,15 +410,30 @@ def gft(signal: np.ndarray, U: np.ndarray) -> np.ndarray:
         Spectral coefficients (hat_signal) of shape (N,).
     """
     signal, U, orthonormal = _validate_transform_shapes(signal, U, inverse=False)
+    return _project_gft(signal, U, orthonormal)
+
+
+def _project_gft(
+    signal: np.ndarray,
+    U: np.ndarray,
+    orthonormal: bool,
+    *,
+    copy_backend_basis: bool = False,
+) -> np.ndarray:
+    """Apply the existing per-vector transform to a currently admitted basis."""
 
     # GPU projection is valid only for an orthonormal basis.  A general right
     # eigenbasis requires a linear solve (equivalently, the biorthogonal left
     # eigenvectors), which stays on the CPU path here.
-    if orthonormal and HAS_GPU_BACKENDS and U.shape[0] > 100:
+    if orthonormal and U.shape[0] > 100:
         try:
             backend = get_backend()
             if backend.supports_autodiff:
-                U_tensor = backend.as_array(U)
+                # The grouped helper owns an immutable basis. Accelerator
+                # adapters receive separate writable storage, including those
+                # that otherwise share NumPy buffers (such as Torch).
+                basis_input = U.copy(order="K") if copy_backend_basis else U
+                U_tensor = backend.as_array(basis_input)
                 signal_tensor = backend.as_array(signal)
                 result_tensor = backend.matmul(
                     backend.conjugate_transpose(U_tensor), signal_tensor
@@ -325,6 +445,49 @@ def gft(signal: np.ndarray, U: np.ndarray) -> np.ndarray:
     if orthonormal:
         return U.conj().T @ signal
     return scipy.linalg.solve(U, signal, assume_a="gen")
+
+
+_BUILTIN_GFT = gft
+
+
+def _gft_many(signals: Sequence[np.ndarray], U: np.ndarray) -> tuple[np.ndarray, ...]:
+    """Transform ordinary vectors with one invocation-local basis validation.
+
+    The basis is copied and retained only for this call. Projection arithmetic,
+    signal validation and backend dispatch stay sequential. Custom conversions,
+    array subclasses and replaced public transforms retain the individual GFT
+    path so their callbacks keep observing the live supplied basis.
+    """
+
+    if (
+        gft is not _BUILTIN_GFT
+        or type(signals) not in (list, tuple)
+        or type(U) is not np.ndarray
+        or U.dtype.kind not in "iufc"
+        or any(
+            type(signal) is not np.ndarray or signal.dtype.kind not in "iufc"
+            for signal in signals
+        )
+    ):
+        return tuple(gft(signal, U) for signal in signals)
+    if not signals:
+        return ()
+
+    basis = np.array(U, copy=True, order="K")
+    basis.flags.writeable = False
+    first, basis, orthonormal = _validate_transform_shapes(
+        signals[0], basis, inverse=False
+    )
+    results = [_project_gft(first, basis, orthonormal, copy_backend_basis=True)]
+    for index, signal in enumerate(signals[1:], start=1):
+        if gft is not _BUILTIN_GFT:
+            results.extend(gft(item, U) for item in signals[index:])
+            break
+        signal, _ = _validate_transform_dimensions(signal, basis, inverse=False)
+        results.append(
+            _project_gft(signal, basis, orthonormal, copy_backend_basis=True)
+        )
+    return tuple(results)
 
 
 def igft(hat_signal: np.ndarray, U: np.ndarray) -> np.ndarray:
@@ -341,7 +504,7 @@ def igft(hat_signal: np.ndarray, U: np.ndarray) -> np.ndarray:
 
     # Reconstruction is U @ coefficients for both orthonormal and full
     # biorthogonal decompositions.
-    if HAS_GPU_BACKENDS and U.shape[0] > 100:
+    if U.shape[0] > 100:
         try:
             backend = get_backend()
             if backend.supports_autodiff:
@@ -411,6 +574,9 @@ def heat_diffusion(
     corresponding projected/truncated semigroup; at ``t = 0`` it returns the
     projection ``UUᴴf(0)``.  Partial non-orthonormal bases are rejected by
     :func:`gft` because they do not define that inverse.
+    Supplied eigenvalues are used as given: only the graph-aware spectrum
+    producer can identify structural stationary modes. Nonfinite result
+    arithmetic rejects rather than returning an invalid heat observation.
 
     Args:
         signal: Initial state f(0).
@@ -421,27 +587,18 @@ def heat_diffusion(
     Returns:
         Diffused signal f(t).
     """
-    if isinstance(t, (bool, np.bool_)):
-        raise TNFRValueError(
-            "Heat-diffusion time must be finite and nonnegative",
-            context={"time": t},
-            suggestion="Use a finite scalar time greater than or equal to zero.",
-        )
     try:
-        time = float(t)
+        time, _ = nonnegative_represented_time(t, "Heat-diffusion time")
     except (TypeError, ValueError, OverflowError) as exc:
         raise TNFRValueError(
             "Heat-diffusion time must be finite and nonnegative",
             context={"time": t},
             suggestion="Use a finite scalar time greater than or equal to zero.",
         ) from exc
-    if not np.isfinite(time) or time < 0.0:
-        raise TNFRValueError(
-            "Heat-diffusion time must be finite and nonnegative",
-            context={"time": t},
-            suggestion="Use a finite scalar time greater than or equal to zero.",
-        )
-    result = spectral_filter(signal, U, evals, lambda lam: np.exp(-lam * time))
+    with np.errstate(over="ignore", invalid="ignore"):
+        result = spectral_filter(signal, U, evals, lambda lam: np.exp(-lam * time))
+    if not np.all(np.isfinite(result)):
+        raise TNFRValueError("Heat-diffusion arithmetic must remain finite")
     return np.real_if_close(result)
 
 

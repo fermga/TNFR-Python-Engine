@@ -16,6 +16,7 @@ from dataclasses import dataclass
 from numbers import Integral, Real
 from typing import Any, Iterable, Sequence
 
+from .._exact_time import finite_represented_real
 from ..constants.canonical import (
     FRAGMENTATION_THRESHOLD,
     GRAD_PHI_CANONICAL_THRESHOLD,
@@ -164,6 +165,56 @@ def _finite_real(value: Any, *, label: str) -> float:
     return resolved
 
 
+def _finite_phase(value: Any, *, label: str) -> float:
+    """Admit a represented phase while retaining the signed atan2 zero branch."""
+    try:
+        resolved = finite_represented_real(value, label)[0]
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise TNFRValueError(
+            f"{label} must be a finite real representable as binary64: {exc}"
+        ) from exc
+    return math.copysign(0.0, value) if resolved == 0.0 else resolved
+
+
+def _phase_array(value: Any, *, label: str) -> Any:
+    """Admit raw array elements before materializing binary64 phase values."""
+    if isinstance(value, (str, bytes, bytearray)):
+        raise TNFRValueError(f"{label} must contain only finite real values")
+    # Typed real arrays already exclude Boolean, text and complex elements.
+    # Keep this common numerical path vectorized; wider floats still need
+    # the shared represented-real boundary's range and nonzero-loss checks.
+    if isinstance(value, np.ndarray) and value.dtype.kind in "iuf":
+        with np.errstate(over="ignore", under="ignore", invalid="ignore"):
+            represented = np.asarray(value, dtype=float)
+        if not np.all(np.isfinite(represented)):
+            raise TNFRValueError(f"{label} must contain only finite real values")
+        if (
+            value.dtype.kind == "f"
+            and value.dtype.itemsize > np.dtype(float).itemsize
+            and np.any((value != 0) & (represented == 0.0))
+        ):
+            raise TNFRValueError(f"{label} contains nonzero values that underflow")
+        return represented
+
+    # Object materialization preserves invalid elements in mixed Python
+    # sequences instead of first coercing Boolean or text entries to numbers.
+    try:
+        raw = np.asarray(value, dtype=object)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise TNFRValueError(f"{label} must contain only finite real values") from exc
+    return np.fromiter(
+        (_finite_phase(item, label=label) for item in raw.flat),
+        dtype=float,
+        count=raw.size,
+    ).reshape(raw.shape)
+
+
+def _normalize_phase_scalar(value: Any) -> float:
+    wrapped = _finite_phase(value, label="phase") % CONSTANTS.MAX_PHASE
+    # A tiny negative phase can round upward to the excluded endpoint.
+    return 0.0 if wrapped == CONSTANTS.MAX_PHASE else wrapped
+
+
 class TNFRNumericalUtilities:
     """Small numerical utilities with reproducible instance-local randomness.
 
@@ -187,7 +238,8 @@ class TNFRNumericalUtilities:
     def normalize_phase(self, phase: ArrayLike) -> ArrayLike:
         """Normalize finite phase values to the half-open [0, 2π) range.
 
-        Modulo normalization preserves circular phase equivalence.
+        Inputs follow represented-real admission before modulo normalization.
+        If binary64 modulo rounds to the excluded upper endpoint, return zero.
 
         Parameters
         ----------
@@ -200,14 +252,13 @@ class TNFRNumericalUtilities:
             Normalized phase values in the half-open [0, 2π) range
         """
         if NUMPY_AVAILABLE and isinstance(phase, np.ndarray):
-            values = np.asarray(phase, dtype=float)
-            if not np.all(np.isfinite(values)):
-                raise TNFRValueError("phase must contain only finite real values")
-            return values % CONSTANTS.MAX_PHASE
-        if hasattr(phase, "__iter__"):
-            values = [_finite_real(item, label="phase") for item in phase]
-            return [item % CONSTANTS.MAX_PHASE for item in values]
-        return _finite_real(phase, label="phase") % CONSTANTS.MAX_PHASE
+            wrapped = _phase_array(phase, label="phase") % CONSTANTS.MAX_PHASE
+            return np.where(wrapped == CONSTANTS.MAX_PHASE, 0.0, wrapped)
+        if hasattr(phase, "__iter__") and not isinstance(
+            phase, (str, bytes, bytearray)
+        ):
+            return [_normalize_phase_scalar(item) for item in phase]
+        return _normalize_phase_scalar(phase)
 
     def compute_phase_difference(
         self, phase1: ArrayLike, phase2: ArrayLike
@@ -216,6 +267,8 @@ class TNFRNumericalUtilities:
 
         TNFR PHYSICS: Phase differences determine coupling compatibility
         per grammar rule U3 (RESONANT COUPLING).
+        Raw elements follow represented-real admission in both numerical paths.
+        Signed zero inputs retain the signed atan2 branch.
         Finite phases whose subtraction overflows binary64 are rejected;
         this reader does not invent a direction from a nonfinite difference.
         The signed endpoint convention differs from a half-open modulo chart.
@@ -223,16 +276,18 @@ class TNFRNumericalUtilities:
         represented multiples of 2*pi, particularly for large coordinates.
         """
         if NUMPY_AVAILABLE:
-            first = np.asarray(phase1, dtype=float)
-            second = np.asarray(phase2, dtype=float)
-            if not np.all(np.isfinite(first)) or not np.all(np.isfinite(second)):
-                raise TNFRValueError("phases must contain only finite real values")
+            first = _phase_array(phase1, label="phase1")
+            second = _phase_array(phase2, label="phase2")
             with np.errstate(over="ignore", invalid="ignore"):
                 diff = first - second
             if not np.all(np.isfinite(diff)):
                 raise TNFRValueError("phase differences must be finite binary64 values")
             return np.arctan2(np.sin(diff), np.cos(diff))
 
+        if isinstance(phase1, (str, bytes, bytearray)) or isinstance(
+            phase2, (str, bytes, bytearray)
+        ):
+            raise TNFRValueError("phases must contain only finite real values")
         first_iterable = hasattr(phase1, "__iter__")
         second_iterable = hasattr(phase2, "__iter__")
         if first_iterable != second_iterable:
@@ -240,8 +295,8 @@ class TNFRNumericalUtilities:
                 "phase inputs must both be scalars or equally sized iterables"
             )
         if first_iterable:
-            first = [_finite_real(item, label="phase1") for item in phase1]
-            second = [_finite_real(item, label="phase2") for item in phase2]
+            first = [_finite_phase(item, label="phase1") for item in phase1]
+            second = [_finite_phase(item, label="phase2") for item in phase2]
             if len(first) != len(second):
                 raise TNFRValueError("phase iterables must have equal length")
             differences = [a - b for a, b in zip(first, second)]
@@ -250,7 +305,7 @@ class TNFRNumericalUtilities:
             return [
                 math.atan2(math.sin(value), math.cos(value)) for value in differences
             ]
-        diff = _finite_real(phase1, label="phase1") - _finite_real(
+        diff = _finite_phase(phase1, label="phase1") - _finite_phase(
             phase2, label="phase2"
         )
         if not math.isfinite(diff):
@@ -382,20 +437,21 @@ class TNFRNumericalUtilities:
         ]
 
     def compute_circular_mean(self, angles: ArrayLike) -> float:
-        """Compute the circular mean of a nonempty, nondegenerate sample."""
+        """Compute the mean of admitted represented phases with a nonzero resultant."""
         if NUMPY_AVAILABLE:
-            original = np.asarray(angles, dtype=object)
-            if original.size == 0:
+            values = _phase_array(angles, label="angle")
+            if values.size == 0:
                 raise TNFRValueError("circular mean requires at least one angle")
-            values = np.array(
-                [_finite_real(value, label="angle") for value in original.flat],
-                dtype=float,
-            )
             mean_sin = float(np.mean(np.sin(values)))
             mean_cos = float(np.mean(np.cos(values)))
         else:
-            source = angles if hasattr(angles, "__iter__") else [angles]
-            values = [_finite_real(angle, label="angle") for angle in source]
+            source = (
+                angles
+                if hasattr(angles, "__iter__")
+                and not isinstance(angles, (str, bytes, bytearray))
+                else [angles]
+            )
+            values = [_finite_phase(angle, label="angle") for angle in source]
             if not values:
                 raise TNFRValueError("circular mean requires at least one angle")
             mean_sin = math.fsum(math.sin(angle) for angle in values) / len(values)

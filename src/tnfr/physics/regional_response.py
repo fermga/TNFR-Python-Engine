@@ -10,6 +10,7 @@ from collections.abc import Mapping, Set
 from dataclasses import dataclass
 from fractions import Fraction as F
 
+from ..mathematics._exact_linear_algebra import exact_matrix_product
 from ..mathematics.krylov import exact_rank
 from ._cycle_algebra import Matrix, Vector, dot, ordered_vector
 from ._exact_linear_algebra import exact_matrix_inverse, exact_square_matrix_product
@@ -319,21 +320,17 @@ def observe_regional_input_geometry(transition, metric_weights, region_indices):
             raise RuntimeError(
                 "independent image columns do not reconstruct the input map"
             )
-    # At rank zero all sums are empty, giving the exact zero projection.
-    projection = tuple(
-        tuple(
-            sum(
-                (
-                    image_basis[a][i] * inverse[a][b] * image_basis[b][j] * weights[j]
-                    for a in range(rank)
-                    for b in range(rank)
-                ),
-                F(0),
-            )
-            for j in range(count)
+    if rank:
+        weighted_basis = tuple(
+            tuple(value * weight for value, weight in zip(row, weights, strict=True))
+            for row in image_basis
         )
-        for i in range(count)
-    )
+        projection = exact_matrix_product(
+            exact_matrix_product(tuple(zip(*image_basis, strict=True)), inverse),
+            weighted_basis,
+        )
+    else:
+        projection = ((F(0),) * count,) * count
     mass = sum(weights, F(0))
     local_center = tuple(
         tuple(F(i == j) - weights[j] / mass for j in range(count)) for i in range(count)

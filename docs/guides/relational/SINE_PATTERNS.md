@@ -4,6 +4,49 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-formation-response"></a>
+### Check formation and its inherited receiver signature together
+
+The fixed doubled-C5 comparison starts with zero nominal phases and a declared
+integer form profile. Two preparations allocate the same nominal internal
+storage to different pairs. This example checks acquisition and subsequent
+geometric retention, together with a finite absolute receiver reading under
+the same supplied positive-loss law:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_formation_response import (
+    assess_sine_formation_response,
+)
+
+report = assess_sine_formation_response(
+    scaled_time=100,
+    form_error_bound=Q(1, 10**10),
+    phase_error_bound=Q(1, 10**10),
+    readout_error_bound=Q(1, 10**10),
+    radius=Q(1, 8),
+)
+assert report.initial_zero_winding_certified
+assert all(report.formation_certified_by_preparation)
+assert report.recorded_difference_bounds.lo > Q(1, 10**8)
+assert report.status == "certified_formation_response"
+evidence = report.to_dict()
+```
+
+The time is `tau=e*t` with `e=1023/1024`; it is neither operator cycles nor
+laboratory seconds. The initial error boxes include every fine coordinate
+and the form origin. The response is the actual mean form of receiver pair 1
+at that time, including readout uncertainty. It is not an integral of just one
+pressure channel. No trajectory is numerically executed or reset after entry.
+
+Inspect the separate radius, acute-geometry, storage and response margins when
+changing a budget. `unavailable` means these sufficient estimates do not
+certify the requested joint claim. Geometric identity is retained after entry;
+the finite receiver contrast need not persist indefinitely. The preparation,
+support and loss remain supplied. See the
+[contract](../../contracts/relational/SINE_PATTERNS.md#sine-formation-response)
+and [frozen protocol and proof](../../../theory/nodal/SINE_PATTERN_DYNAMICS.md#sine-formation-response).
+
 ### Describe a whole pattern relative to a moving node
 
 For a complete supplied sine-law state, remove unknown common origins while

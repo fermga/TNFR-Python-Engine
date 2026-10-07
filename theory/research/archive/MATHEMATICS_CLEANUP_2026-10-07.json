@@ -1,0 +1,72 @@
+{
+  "schema": "tnfr.cleanup-recovery.v1",
+  "date": "2026-10-07",
+  "scope": "Retire audited mathematical helpers and unreachable dependency/cache branches; consolidate integer primality and restore the backend typing contract.",
+  "recovery_revision": "5967dc3574d1eea91633a26099fd9833c33d8582",
+  "verification": "The four implementation files and backend stub were clean at task start. Recovery identities refer to immutable committed bytes; neither temporary copies nor current working-tree hashes substitute for those blobs. Repository-wide consumer searches preceded private helper/constant removal.",
+  "sources": [
+    {
+      "path": "src/tnfr/mathematics/zeta.py",
+      "git_blob": "ea877e9a4dbeb7d91c3e5db0fbf5703497250ea1",
+      "git_blob_sha256": "6e1dc6afea1d7675264c9806231da32d4bcef90a4c6ff59d24348382e27eeda3",
+      "source_unmodified_at_task_start": true,
+      "retired_private_functions": [
+        "_ensure_complex"
+      ],
+      "retired_internal_flags": [
+        "_CACHE_AVAILABLE"
+      ],
+      "retired_constructs": [
+        "vacuous HAS_BACKEND try/except",
+        "mandatory-mpmath import and numerical fallback branches",
+        "unreachable duplicate structural_pressure return"
+      ],
+      "replacement": "Use the required mpmath dependency and existing cloned 25-digit context directly; preserve public functions, formulas, availability attributes and np module attribute."
+    },
+    {
+      "path": "src/tnfr/mathematics/padic_tower.py",
+      "git_blob": "e6dd87dc5cd1b245cddaae19e6a0f6ae9d1fe348",
+      "git_blob_sha256": "aba9bd476ca12b3edb7fd30463b4d7366f4d176e62ee173dca48577e72827289",
+      "source_unmodified_at_task_start": true,
+      "retired_private_functions": [
+        "_eig_mags"
+      ],
+      "replacement": "Retain the live eigenspectrum calculations and their existing exact/numerical scopes."
+    },
+    {
+      "path": "src/tnfr/mathematics/_interval_taylor.py",
+      "git_blob": "d2a2662d3139eb0556eb521c2605abfadbc5848d",
+      "git_blob_sha256": "79ef3f7677f1eb615b16b0f0306bd84c4bcdea365e25df449abbebf1510ebab4",
+      "source_unmodified_at_task_start": true,
+      "retired_internal_flags": [
+        "_ONE"
+      ],
+      "replacement": "Remove the unconsumed interval constant; formal jets and validated-flow kernels remain unchanged."
+    },
+    {
+      "path": "src/tnfr/mathematics/number_theory.py",
+      "git_blob": "ba57ed15397270067a200ce5cc88c7f50a9f362a",
+      "git_blob_sha256": "3c2d95c48e67e8788f0a2b94e0776f511a01222a96d9b6a67e9c4429d38f1732",
+      "source_unmodified_at_task_start": true,
+      "retired_internal_flags": [
+        "_CACHE_OK"
+      ],
+      "retired_constructs": [
+        "three conditional cache levels whose condition was always true",
+        "duplicate network-local primality implementation"
+      ],
+      "replacement": "Keep DERIVED_METRICS cache levels and delegate network/character primality to one integer predicate, using SymPy when available or exact trial division otherwise. Public character helpers admit integer/index values before conversion."
+    },
+    {
+      "path": "src/tnfr/mathematics/backend.pyi",
+      "git_blob": "4c111ffce1c0544ce711c5ede860604f7f20d516",
+      "git_blob_sha256": "69ad335183a81a00491b4d88cce03555137ca4adc91f882bd4e6ab348da9054d",
+      "source_unmodified_at_task_start": true,
+      "retired_constructs": [
+        "independent BackendUnavailableError(RuntimeError) declaration"
+      ],
+      "replacement": "Re-export the canonical exception and match the runtime-checkable protocol, inspection methods and concrete dataclass constructors."
+    }
+  ],
+  "preserved": "Public symbolic routes, cache facades, validated arithmetic, scalar fallback tests, prior uncommitted physics work and every frozen protocol/source archive/evaluated response remain retained. No research producer was rerun or frozen source fingerprint rewritten."
+}

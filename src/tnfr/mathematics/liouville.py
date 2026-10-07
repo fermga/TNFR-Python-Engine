@@ -1,8 +1,8 @@
 """Liouvillian spectrum computation and analysis for TNFR dynamics.
 
-This module provides utilities to compute, store, and retrieve Liouvillian
-eigenvalue spectra from TNFR graphs. The spectrum is critical for U6 temporal
-ordering analysis, particularly for extracting the slow relaxation mode.
+This module computes, stores, and retrieves supplied Liouvillian eigenvalue
+spectra. A selected decay rate is auxiliary telemetry in the generator's clock;
+it does not independently establish a U6 ordering or physical relaxation time.
 
 Key Functions
 -------------
@@ -21,11 +21,11 @@ For Lindblad form:
 
     L[ρ] = -i[H, ρ] + Σ_k (L_k ρ L_k† - 1/2{L_k†L_k, ρ})
 
-Eigenvalue spectrum properties:
-- All eigenvalues have Re(λ) ≤ 0 (contractivity)
-- λ = 0 corresponds to steady state
-- Smallest |Re(λ)| > 0 is the slow relaxation mode
-- τ_relax = 1/|Re(λ_slow)| is the relaxation timescale
+For an admitted finite-dimensional GKSL generator:
+- All eigenvalues have Re(λ) ≤ 0 (spectral non-expansion)
+- A zero eigenvalue admits stationary modes; a zero real part alone does not
+- Smallest |Re(λ)| among negative real parts selects the slow decay mode
+- τ_relax = 1/|Re(λ_slow)| is the selected mode's exponential decay timescale
 
 See Also
 --------
@@ -37,6 +37,10 @@ from __future__ import annotations
 
 from typing import Any, Sequence
 
+from .._exact_time import finite_represented_real
+from ..config.parsing import parse_bool
+from ._complex_admission import finite_represented_complex
+from ._complex_arrays import numpy_complex_array
 from .backend import ensure_array, ensure_numpy, get_backend
 from .unified_numerical import TNFRValueError, np
 
@@ -46,6 +50,42 @@ __all__ = [
     "get_liouvillian_spectrum",
     "get_slow_relaxation_mode",
 ]
+
+
+def _nonnegative_tolerance(value: Any, label: str) -> float:
+    resolved, _ = finite_represented_real(value, label)
+    if resolved < 0:
+        raise TNFRValueError(f"{label} must be nonnegative")
+    return resolved
+
+
+def _finite_complex_array(values: Any, label: str) -> np.ndarray:
+    """Validate original channels before materializing a detached complex array."""
+    if type(values) is np.ndarray and values.dtype.kind in "iufc":
+        try:
+            admitted_array = numpy_complex_array(values, label=label)
+        except TNFRValueError:
+            # Preserve the scalar reader's exception class and first bad index.
+            pass
+        else:
+            array = np.array(admitted_array, dtype=np.complex128, copy=True, order="C")
+            # The scalar reader canonicalizes both represented zero channels.
+            array.real[array.real == 0] = 0.0
+            array.imag[array.imag == 0] = 0.0
+            return array
+    original = np.asarray(values, dtype=object)
+    admitted = [
+        finite_represented_complex(value, f"{label}[{index}]")
+        for index, value in enumerate(original.flat)
+    ]
+    return np.array(admitted, dtype=np.complex128).reshape(original.shape)
+
+
+def _spectrum_array(values: Any) -> np.ndarray:
+    spectrum = _finite_complex_array(values, "eigenvalues")
+    if spectrum.ndim != 1:
+        raise TNFRValueError("eigenvalues must be a one-dimensional spectrum")
+    return spectrum
 
 
 def compute_liouvillian_spectrum(
@@ -69,7 +109,7 @@ def compute_liouvillian_spectrum(
         Verify all eigenvalues have Re(λ) ≤ atol (contractivity requirement).
         Raises ValueError if violated.
     atol : float, default=1e-9
-        Absolute tolerance for contractivity validation.
+        Finite nonnegative represented tolerance for the spectral sign check.
 
     Returns
     -------
@@ -106,26 +146,35 @@ def compute_liouvillian_spectrum(
     - For large systems (dim > 10), consider sparse solvers
     - Eigenvalue ordering is by real part to facilitate slow-mode extraction
 
+    The validation flag checks eigenvalue real parts only. It does not prove
+    a Lindblad representation or contraction in an arbitrary norm. Rates and
+    timescales retain the supplied generator's clock.
+
     **Physical Interpretation**:
 
     - λ = 0: Steady-state eigenvalue (always present for trace-preserving L)
     - Re(λ) < 0: Decay modes with rate |Re(λ)|
-    - λ_slow = min{|Re(λ)| : Re(λ) < 0}: Slowest relaxation mode
-    - τ_relax = 1/|Re(λ_slow)|: Characteristic relaxation timescale
+    - λ_slow: Eigenvalue with negative real part closest to zero, subject to
+      the selector's strict tolerance cutoff
+    - τ_relax = 1/|Re(λ_slow)|: Selected mode's exponential decay timescale
 
     See Also
     --------
     get_slow_relaxation_mode : Extract slowest decay eigenvalue
     build_lindblad_delta_nfr : Construct Liouvillian from Hamiltonian and collapse ops
     """
+    atol = _nonnegative_tolerance(atol, "atol")
+    sort = parse_bool(sort)
+    validate_contractivity = parse_bool(validate_contractivity)
+    matrix = _finite_complex_array(liouvillian, "liouvillian")
+    if matrix.ndim != 2 or not matrix.shape[0] or matrix.shape[0] != matrix.shape[1]:
+        raise TNFRValueError("liouvillian must be a nonempty square matrix")
     backend = get_backend()
-    liouv_array = ensure_array(
-        np.asarray(liouvillian, dtype=np.complex128), backend=backend
-    )
+    liouv_array = ensure_array(matrix, backend=backend)
 
     # Compute eigenvalues using backend-specific solver
     eigenvalues_backend, _ = backend.eig(liouv_array)
-    eigenvalues = ensure_numpy(eigenvalues_backend, backend=backend)
+    eigenvalues = _spectrum_array(ensure_numpy(eigenvalues_backend, backend=backend))
 
     if validate_contractivity:
         max_real = np.max(eigenvalues.real)
@@ -172,10 +221,11 @@ def store_liouvillian_spectrum(
 
     Notes
     -----
-    Eigenvalues are converted to a plain Python list for JSON serialization
-    compatibility. Complex numbers are preserved.
+    Original real/imaginary components are admitted before metadata is changed.
+    Values are stored as a detached list of Python complex scalars; a separate
+    complex encoding is required for JSON serialization.
     """
-    G.graph[key] = [complex(z) for z in eigenvalues]
+    G.graph[key] = _spectrum_array(eigenvalues).tolist()
 
 
 def get_liouvillian_spectrum(
@@ -213,7 +263,7 @@ def get_liouvillian_spectrum(
     cached = G.graph.get(key, default)
     if cached is None:
         return default
-    return np.asarray(cached, dtype=np.complex128)
+    return _spectrum_array(cached)
 
 
 def get_slow_relaxation_mode(
@@ -231,7 +281,8 @@ def get_slow_relaxation_mode(
     eigenvalues : array_like
         Complex eigenvalues from Liouvillian spectrum.
     tolerance : float, default=1e-12
-        Threshold for excluding near-zero eigenvalues (steady state).
+        Finite nonnegative represented threshold for excluding near-zero real
+        parts. A near-zero real part alone does not establish a steady state.
 
     Returns
     -------
@@ -249,34 +300,26 @@ def get_slow_relaxation_mode(
     -----
     **Selection Criteria**:
 
-    - Excludes eigenvalues with |Re(λ)| < tolerance (steady states)
-    - Selects eigenvalue with min(|Re(λ)|) among remaining
+    - Retains eigenvalues with Re(λ) < -tolerance
+    - Selects the least negative real part, preserving the first supplied tie
     - Returns None if no valid eigenvalues found
 
-    **Physical Significance**:
+    **Scope**:
 
-    The slow relaxation mode determines the longest timescale for the
-    system to approach steady state after perturbation. It's critical
-    for U6 temporal ordering validation.
+    The reciprocal decay rate uses the supplied generator's clock. A selected
+    eigenvalue does not prove convergence of every initial state: peripheral
+    modes, observability and defective-mode prefactors need separate analysis.
+    It supplies neither a physical clock bridge nor a U6 ordering certificate.
 
     See Also
     --------
     compute_liouvillian_spectrum : Compute full spectrum
     """
-    eigs = np.asarray(eigenvalues, dtype=np.complex128)
+    tolerance = _nonnegative_tolerance(tolerance, "tolerance")
+    eigs = _spectrum_array(eigenvalues)
 
-    # Filter eigenvalues: exclude near-zero (steady state)
-    valid_mask = np.abs(eigs.real) > tolerance
-    valid_eigs = eigs[valid_mask]
-
-    if len(valid_eigs) == 0:
-        return None
-
-    # Find eigenvalue with smallest magnitude negative real part
-    # (closest to zero while still being a decay mode)
-    real_parts = valid_eigs.real
-    negative_mask = real_parts < 0
-    negative_eigs = valid_eigs[negative_mask]
+    # Finite real parts and a nonnegative tolerance admit one combined filter.
+    negative_eigs = eigs[eigs.real < -tolerance]
 
     if len(negative_eigs) == 0:
         return None

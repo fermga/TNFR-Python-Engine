@@ -15,14 +15,8 @@ from numbers import Real
 from typing import Any, Iterable
 
 from .._exact_time import finite_represented_real
+from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA
 from ..mathematics.unified_numerical import compute_phase_difference, kahan_sum_nd, np
-
-# Import TNFR aliases
-try:
-    from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA
-except ImportError:
-    ALIAS_THETA = ["phase", "theta"]
-    ALIAS_DNFR = ["delta_nfr", "dnfr"]
 
 # ---------------------------------------------------------------------------
 # Numeric validation
@@ -30,22 +24,21 @@ except ImportError:
 
 
 def finite_real_scalar(value: Any, name: str) -> float:
-    """Return one finite real scalar while rejecting logical values.
+    """Admit one represented real, preserving the existing signed-zero branch.
 
     Python and NumPy booleans are integer-like, so an unchecked ``float``
     conversion silently turns state labels into physical zero/one values.  All
     physics readers that require a scalar state channel should use this helper
-    before applying channel-specific sign constraints.
+    before applying channel-specific sign constraints. The shared represented
+    boundary rejects nonzero inputs lost during binary64 materialization.
     """
     if isinstance(value, (bool, np.bool_)) or not isinstance(value, Real):
         raise ValueError(f"{name} must be a finite real scalar, not boolean")
     try:
-        result = float(value)
+        result = finite_represented_real(value, name)[0]
     except (TypeError, ValueError, OverflowError) as exc:
-        raise ValueError(f"{name} must be a finite real scalar") from exc
-    if not math.isfinite(result):
-        raise ValueError(f"{name} must be a finite real scalar")
-    return result
+        raise ValueError(f"{name} must be a finite real scalar: {exc}") from exc
+    return math.copysign(0.0, value) if result == 0.0 else result
 
 
 def finite_real_series(
@@ -60,19 +53,45 @@ def finite_real_series(
     Validation precedes float coercion so logical and textual samples cannot
     silently become physical zero/one values or parsed numbers. A detached
     float64 array is returned after every element has passed the scalar
-    contract.
+    contract, including rejection of nonzero materialization loss. Ordinary
+    numeric arrays and plain sequences of binary16/32/64 floats use equivalent
+    vector checks; invalid inputs retain indexed scalar errors. Signed zeros
+    are preserved.
     """
 
     if isinstance(values, (str, bytes, bytearray)):
         raise ValueError(f"{name} must be a numeric one-dimensional series")
     try:
-        raw = np.asarray(values, dtype=object)
+        if type(values) is np.ndarray and values.dtype.kind in "iuf":
+            raw = values
+        elif (
+            type(values) in (list, tuple)
+            and len(values) >= 8
+            and all(
+                type(value) in (float, np.float16, np.float32, np.float64)
+                for value in values
+            )
+        ):
+            # These exact scalar types convert losslessly to binary64. This
+            # narrow path cannot erase a Boolean, exact-rational underflow or
+            # custom conversion before the shared admission checks below.
+            raw = np.asarray(values, dtype=float)
+        else:
+            raw = np.asarray(values, dtype=object)
     except (TypeError, ValueError) as exc:
         raise ValueError(f"{name} must be a numeric one-dimensional series") from exc
     if raw.ndim != 1:
         raise ValueError(f"{name} must be a one-dimensional series")
     if nonempty and raw.size == 0:
         raise ValueError(f"{name} must not be empty")
+
+    if raw.dtype.kind in "iuf" and raw.size >= 8:
+        with np.errstate(over="ignore", under="ignore", invalid="ignore"):
+            result = np.array(raw, dtype=float, copy=True)
+        if np.all(np.isfinite(result)) and not np.any((raw != 0) & (result == 0)):
+            if nonnegative and np.any(result < 0.0):
+                raise ValueError(f"{name} must contain nonnegative magnitudes")
+            return result
 
     normalized: list[float] = []
     for index, value in enumerate(raw):

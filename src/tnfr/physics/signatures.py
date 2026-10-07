@@ -13,11 +13,7 @@ import math
 from copy import deepcopy
 from typing import Any
 
-try:
-    import networkx as nx
-except ImportError:
-    nx = None
-
+import networkx as nx
 
 from ..constants.canonical import (
     AU_CURVATURE_PERMISSIVE_THRESHOLD,
@@ -118,9 +114,6 @@ def compute_element_signature(
     ``synthetic_probe_word``. It does not establish asymptotic stability,
     chemical identity, or behavior under a different word.
     """
-    if nx is None:
-        raise RuntimeError("NetworkX is required for signature computation")
-
     # Compute base tetrad metrics. The canonical estimate_coherence_length
     # computes per-node coherence C = 1/(1+|ΔNFR|) internally from ΔNFR (the
     # structural_coherence kernel), so no coherence pre-seeding is required.

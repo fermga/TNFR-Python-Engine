@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 from tnfr.mathematics import CoherenceOperator
+from tnfr.mathematics.backend import get_backend
 from tnfr.mathematics.metrics import dcoh, spectral_weighted_angle
 
 
@@ -122,6 +123,17 @@ def test_spectral_angle_rejects_indefinite_operator(
         spectral_weighted_angle(psi1, psi2, indefinite)
 
 
+def test_spectral_angle_rejects_nonhermitian_positive_spectrum(
+    orthonormal_basis: tuple[np.ndarray, np.ndarray],
+) -> None:
+    psi1, psi2 = orthonormal_basis
+    operator = CoherenceOperator([[1.0, 1.0], [0.0, 1.0]], ensure_hermitian=False)
+
+    for left, right in ((psi1, psi2), (psi2, psi1)):
+        with pytest.raises(ValueError, match="positive-semidefinite operator"):
+            spectral_weighted_angle(left, right, operator)
+
+
 def test_spectral_angle_is_projective_and_dcoh_is_compatibility_alias(
     hermitian_operator: CoherenceOperator,
     orthonormal_basis: tuple[np.ndarray, np.ndarray],
@@ -150,3 +162,39 @@ def test_dcoh_respects_tolerance_thresholds(
 
     result = dcoh(psi1, psi2, near_null_operator, atol=1e-13)
     assert result == pytest.approx(np.pi / 2, abs=1e-12)
+
+
+@pytest.mark.parametrize("scale", [1e-300, 1e-200, 1.0, 1e200, 1e300])
+@pytest.mark.parametrize("normalise", [False, True])
+def test_weighted_angle_is_invariant_under_positive_operator_scaling(scale, normalise):
+    operator = CoherenceOperator([scale, 4 * scale], backend=get_backend("numpy"))
+    # A**(1/2) maps (1,0) and (1,1) to (1,0) and (1,2), up to
+    # a common factor. The angle is therefore atan(2), at every scale.
+    actual = spectral_weighted_angle(
+        [1, 0], [1, 1], operator, normalise=normalise, atol=0
+    )
+    assert actual == pytest.approx(np.arctan(2), abs=2e-15)
+
+
+@pytest.mark.parametrize("magnitude", [1e-100, 1.0, 1e100])
+@pytest.mark.parametrize("phase", [1.0, 1j])
+def test_unnormalized_weighted_angle_retains_ray_scaling_and_phase(magnitude, phase):
+    operator = CoherenceOperator([1.0, 1.0], backend=get_backend("numpy"))
+    actual = spectral_weighted_angle(
+        [magnitude, 0],
+        [phase * magnitude, phase * magnitude],
+        operator,
+        normalise=False,
+        atol=0,
+    )
+    assert actual == pytest.approx(np.pi / 4, abs=2e-15)
+
+
+def test_weighted_angle_ratio_handles_opposite_expectation_scales():
+    operator = CoherenceOperator([1e-300, 1e300], backend=get_backend("numpy"))
+    # The weighted images are (1e-150,1e-150) and (1e150,0).
+    # A ratio calculation must retain their geometric mean across 600 orders.
+    actual = spectral_weighted_angle(
+        [1, 1e-300], [1e300, 0], operator, normalise=False, atol=0
+    )
+    assert actual == pytest.approx(np.pi / 4, abs=2e-15)

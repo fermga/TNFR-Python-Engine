@@ -45,15 +45,11 @@ from dataclasses import dataclass
 from numbers import Integral, Real
 from typing import Any, Mapping
 
-from ..mathematics.unified_numerical import np
-from ..rng import validate_seed
-
-try:
-    import networkx as nx
-except ImportError:  # pragma: no cover
-    nx = None
+import networkx as nx  # noqa: F401 - retain the existing module attribute
 
 from ..constants.canonical import PI as PI_CONST
+from ..mathematics.unified_numerical import np
+from ..rng import validate_seed
 from .canonical import (
     compute_phase_curvature,
     compute_phase_gradient,
@@ -419,8 +415,6 @@ def compute_gauge_curvature(
     Read-only.  Four-cycle enumeration is skipped above 200 nodes to retain the
     historical cost bound; triangles are always checked.
     """
-    if nx is None:
-        raise RuntimeError("networkx required for cycle detection")
     if isinstance(max_cycle_length, bool) or not isinstance(max_cycle_length, Integral):
         raise TypeError("max_cycle_length must be an integer of at least 3")
     max_cycle_length = int(max_cycle_length)

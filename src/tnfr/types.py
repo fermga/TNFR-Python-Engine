@@ -294,12 +294,18 @@ def _decode_serialized_bepi_component(values: Any) -> Any:
     for entry in entries:
         if isinstance(entry, Mapping):
             try:
-                entry = complex(entry["real"], entry["imag"])
+                real = finite_represented_real(entry["real"], "EPI.real")[0]
+                imaginary = finite_represented_real(entry["imag"], "EPI.imag")[0]
             except KeyError as exc:
                 raise TNFRValueError(
                     "Serialized complex EPI entries require 'real' and 'imag'.",
                     context={"received_keys": list(entry.keys())},
                 ) from exc
+            except (TypeError, ValueError, OverflowError) as exc:
+                raise TNFRValueError(
+                    "Serialized complex EPI entries require finite representable components."
+                ) from exc
+            entry = complex(real, imaginary)
             changed = True
         decoded.append(entry)
     return tuple(decoded) if changed else values
@@ -313,8 +319,7 @@ def ensure_bepi(value: Any) -> "BEPIElement":
     if isinstance(value, _BEPIElement):
         return value
     if _is_scalar(value):
-        scalar = complex(value)
-        return _BEPIElement((scalar, scalar), (scalar, scalar), (0.0, 1.0))
+        return _BEPIElement((value, value), (value, value), (0.0, 1.0))
     if isinstance(value, Mapping):
         try:
             continuous = value["continuous"]

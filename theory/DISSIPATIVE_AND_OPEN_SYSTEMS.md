@@ -42,6 +42,14 @@ within their validation and arithmetic tolerances; an approximate output
 needs its own residual checks. Spectral non-expansion of an arbitrary matrix is weaker than the GKSL
 conditions and does not independently prove complete positivity.
 
+The factory also admits signed real auxiliary scaling factors, and the
+matrix-exponential engines admit signed real time increments. Applying the
+forward GKSL conclusion to these APIs requires `nu_f * scale >= 0` and
+`dt >= 0`, in addition to the generator premises above. Negative factors or
+time increments retain an algebraic exponential interpretation without that
+forward-channel guarantee. These supplied matrix factors do not redefine
+TNFR's nonnegative nodal capacity.
+
 ### Unitality
 
 The dissipative part is unital precisely when
@@ -235,6 +243,34 @@ Public calculations reject density matrices that are non-square,
 non-Hermitian, non-finite, non-positive, or not trace one. Collapse operators
 must be finite square matrices of the same dimension. Time steps, rates, and
 times must be finite and non-negative where their definitions require it.
+Original scalar and real/imaginary matrix components are admitted before
+binary64 conversion. Boolean/text coercion and nonzero materialization loss
+reject, including in numerical tolerances. This represented-input boundary
+does not replace the density, collapse-operator or generator hypotheses.
+
+Finite inputs alone do not guarantee representable diagnostic arithmetic.
+Snapshot purity, the public action, norm bounds, purity rates, observed balance
+secants and unitality comparison reject nonfinite computed values before
+classification.
+Generator spectral scales, eigenspectra and residuals obey the same requirement
+before stationarity, trace-preservation or mode verdicts.
+Nonzero collapse-norm squares lost to underflow also reject. Range-safe
+Frobenius evaluation can avoid overflow from squaring finite components, but
+does not certify an unrepresentable result. Missing collapse/reference data
+still produce explicit NaNs and unevaluated flags. The separate infinite
+trace-distance ratio denotes an initial distance at or below the configured floor
+and a final distance above it; it is a failed contraction observation, not an
+accepted overflow.
+
+Snapshot capture reuses the spectrum computed during density admission.
+For ordinary NumPy collapse arrays, built-in balance calculations reuse the
+admitted densities and operator spectral norms within that invocation. Public
+calls still re-admit mutable snapshot arrays and recompute consumed diagnostics; cached report
+fields are not premises. Generic conversions and replaced public diagnostic
+helpers retain their live dispatch. The action bounds keep their Frobenius and
+spectral norms, and contraction ratios keep trace distance.
+The tracker appends a record to its snapshot history and diagnostic series
+only after all admission and diagnostic calculations succeed.
 
 The executable demonstration compares exact amplitude damping and dephasing
 channels, including the non-monotone purity of amplitude damping and the

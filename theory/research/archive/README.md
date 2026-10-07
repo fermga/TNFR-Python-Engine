@@ -39,6 +39,9 @@ proofs and frozen evidence require preservation before any retirement.
 | [Second deep cleanup](DEEP_CLEANUP_SECOND_2026-10-06.json) | Consolidated equivariance scope and retired engine no-ops; source identities, uncommitted recovery edits and retained owners |
 | [Third deep cleanup](DEEP_CLEANUP_THIRD_2026-10-06.json) | Retired duplicate math/grammar/catalog helpers and unsupported arithmetic inferences; verified source recovery, retained owners and corrected observation/clock scope |
 | [Validation configuration cleanup](CONFIGURATION_CLEANUP_2026-10-07.json) | Five unconsumed global-policy fields retired; exact declarations, committed source identity and current admission owners |
+| [Physics helper cleanup](PHYSICS_CLEANUP_2026-10-07.json) | Five unconsumed private helpers and duplicate alias/cache fallbacks retired; immutable source identities and retained implementation owners |
+| [Second physics cleanup](PHYSICS_SECOND_CLEANUP_2026-10-07.json) | Mandatory-dependency import fallbacks and unreachable guards retired; each removed source segment verified against its immutable recovery blob |
+| [Mathematics cleanup](MATHEMATICS_CLEANUP_2026-10-07.json) | Unconsumed helpers/constants, obsolete dependency/cache branches and a duplicate exception declaration retired; immutable source identities and shared replacement owners |
 | [Benchmark retirement](BENCHMARK_CLEANUP_2026-09-27.json) | Unsupported or unused instruments; source bytes verified against their recorded revision, with checkout/Git newline differences retained |
 | [Foundation reassessment](RETIRED_SCOPE_2026-09-20.json) | Retired external-model mappings, duplicate probes and obsolete historical text copies; retained owners and original source identities |
 | [First documentation capture](DOCUMENTATION_CLEANUP_MANIFEST_2026-09-19.json) | Original working-tree capture hashes; these can differ from normalized committed blobs |

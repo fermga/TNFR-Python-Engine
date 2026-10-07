@@ -10,12 +10,15 @@ mechanisms in order of precedence:
 
 1. Explicit ``name`` argument.
 2. ``TNFR_MATH_BACKEND`` environment variable.
-3. ``tnfr.config.get_flags().math_backend``.
+3. ``tnfr.backend_config.get_config().math_backend``.
 
-If none of these provide a value we auto-select the first available backend in
-the GPU-preferential order (JAX → PyTorch → NumPy).  Optional backends are
-registered lazily so downstream environments without JAX or PyTorch remain
-functional while still benefiting from acceleration when present.
+The service configuration defaults to ``auto``. Automatic selection first
+tries GPU-capable adapters in JAX → PyTorch → NumPy order, then repeats that
+order for any available adapter, including CPU implementations. Request
+``numpy`` explicitly to select it independently of installed optional adapters.
+Factories initialize optional libraries only when a backend is requested.
+A registered but unavailable named backend falls back to NumPy; an unknown
+name raises ``LookupError``.
 """
 
 from __future__ import annotations
@@ -119,12 +122,12 @@ class _NumpyBackend:
         return self._np.linalg.eigh(matrix)
 
     def matrix_exp(self, matrix: Any) -> Any:
-        if self._scipy_linalg is not None:
-            return self._scipy_linalg.expm(matrix)
-        eigvals, eigvecs = self._np.linalg.eig(matrix)
-        inv = self._np.linalg.inv(eigvecs)
-        exp_vals = self._np.exp(eigvals)
-        return eigvecs @ self._np.diag(exp_vals) @ inv
+        """Evaluate general matrix exponentials through the required SciPy library."""
+        if self._scipy_linalg is None:
+            raise BackendUnavailableError(
+                "SciPy is required for the NumPy matrix exponential"
+            )
+        return self._scipy_linalg.expm(matrix)
 
     def norm(
         self, value: Any, *, ord: Any | None = None, axis: Any | None = None
@@ -324,7 +327,10 @@ class _TorchBackend:
         if np_mod is None:
             raise BackendUnavailableError("NumPy is required to export Torch tensors")
         if hasattr(value, "detach"):
-            return value.detach().cpu().numpy()
+            # Lazy conjugate/negative views cannot be exposed directly through
+            # NumPy. Resolve their flags only on the detached observation;
+            # native computations retain the original view and gradient graph.
+            return value.detach().cpu().resolve_conj().resolve_neg().numpy()
         return np_mod.asarray(value)
 
     def is_gpu_available(self) -> bool:
@@ -394,6 +400,20 @@ _AUTO_BACKEND_SENTINEL = "auto"
 _AUTO_BACKEND_PRIORITY = ("jax", "torch", "numpy")
 
 
+def _registration_name(name: str) -> str:
+    """Normalize a name that explicit backend lookup can reach."""
+    if not isinstance(name, str):
+        raise TNFRValueError(
+            "Backend identifiers must be nonempty strings other than 'auto'"
+        )
+    key = _normalise_name(name)
+    if not key or key == _AUTO_BACKEND_SENTINEL:
+        raise TNFRValueError(
+            "Backend identifiers must be nonempty strings other than 'auto'"
+        )
+    return key
+
+
 def ensure_array(
     value: Any,
     *,
@@ -425,27 +445,42 @@ def register_backend(
     Parameters
     ----------
     name:
-        Canonical backend identifier.
+        Nonempty canonical backend identifier, excluding the reserved ``auto``.
     factory:
         Callable that returns a :class:`MathematicsBackend` instance.
     aliases:
         Optional alternative identifiers that will resolve to ``name``.
+        These have the same nonempty, non-reserved domain as canonical names.
     override:
-        When ``True`` replaces existing registrations.
+        When ``True`` replaces an existing canonical factory or alias binding.
+        Canonical names and aliases cannot shadow one another, even when
+        overriding. Unmentioned aliases remain bound to their canonical name.
+
+    Registration is validated before changing the registry. Replacing a
+    canonical factory invalidates its cached instance, so its aliases also
+    resolve to the replacement on their next lookup.
     """
 
-    key = _normalise_name(name)
+    key = _registration_name(name)
+    if key in _BACKEND_ALIASES:
+        raise TNFRValueError(f"Backend name '{name}' is already an alias")
     if not override and key in _BACKEND_FACTORIES:
         raise TNFRValueError(
             f"Backend '{name}' already registered",
             context={"name": name, "existing": list(_BACKEND_FACTORIES.keys())},
             suggestion="Use override=True to replace the existing backend registration.",
         )
-    _BACKEND_FACTORIES[key] = factory
-    if aliases:
+    proposed_aliases: dict[str, str] = {}
+    if aliases is not None:
         for alias in aliases:
-            alias_key = _normalise_name(alias)
-            if not override and alias_key in _BACKEND_ALIASES:
+            alias_key = _registration_name(alias)
+            if alias_key == key or alias_key in _BACKEND_FACTORIES:
+                raise TNFRValueError(
+                    f"Backend alias '{alias}' is already a canonical name"
+                )
+            if not override and (
+                alias_key in _BACKEND_ALIASES or alias_key in proposed_aliases
+            ):
                 raise TNFRValueError(
                     f"Backend alias '{alias}' already registered",
                     context={
@@ -454,7 +489,11 @@ def register_backend(
                     },
                     suggestion="Use override=True or choose a different alias.",
                 )
-            _BACKEND_ALIASES[alias_key] = key
+            proposed_aliases[alias_key] = key
+
+    _BACKEND_FACTORIES[key] = factory
+    _BACKEND_ALIASES.update(proposed_aliases)
+    _BACKEND_CACHE.pop(key, None)
 
 
 def _resolve_backend_name(name: str | None) -> str:
@@ -569,9 +608,7 @@ def _make_numpy_backend() -> MathematicsBackend:
         raise BackendUnavailableError("NumPy is not installed")
     scipy_linalg = cached_import("scipy.linalg")
     if scipy_linalg is None:
-        logger.debug(
-            "SciPy not available; falling back to eigen decomposition for expm"
-        )
+        logger.debug("SciPy not available; NumPy matrix exponential is unavailable")
     backend = _NumpyBackend(np_module, scipy_linalg)  # type: ignore[call-arg]
     return cast(MathematicsBackend, backend)
 

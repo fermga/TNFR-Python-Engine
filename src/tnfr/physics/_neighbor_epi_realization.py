@@ -132,10 +132,21 @@ def optional_flow_duration(value: Any) -> float | None:
         ) from exc
     if source_is_negative:
         raise ValueError("recovery_flow_duration must be nonnegative")
-    duration = finite_real_scalar(value, "recovery_flow_duration")
-    if source_is_nonzero and duration == 0.0:
-        raise ValueError("recovery_flow_duration is below nonzero floating-point range")
-    return duration
+    try:
+        return finite_real_scalar(value, "recovery_flow_duration")
+    except ValueError as exc:
+        # Classify an already rejected input only to retain the contextual
+        # duration error. This observation cannot admit or return that value.
+        lost_to_zero = False
+        try:
+            lost_to_zero = source_is_nonzero and float(value) == 0.0
+        except (TypeError, ValueError, OverflowError, ZeroDivisionError):
+            pass
+        if lost_to_zero:
+            raise ValueError(
+                "recovery_flow_duration is below nonzero floating-point range"
+            ) from exc
+        raise
 
 
 def require_explicit_epi(G: Any, nodes: tuple[Any, ...], *, operator: str) -> None:

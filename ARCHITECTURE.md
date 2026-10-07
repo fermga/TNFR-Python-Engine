@@ -18,6 +18,11 @@ boundary, not a measured speedup. Other state/configuration dependencies remain
 part of each consumer's key or explicit invalidation contract. Graph views use
 fresh computations; concurrent mutation during a read is unsupported.
 
+The structural random-walk verifier reuses one resistance geometry within a
+call for resistance and commute-time projections. The comparison still uses
+the separate component-volume multiplication of materialized resistance.
+There is no persistent geometry cache; a later call re-admits the graph.
+
 LRU storage and callback handling have one implementation in
 [`utils/unified_cache.py`](src/tnfr/utils/unified_cache.py). The compatibility
 `InstrumentedLRUCache` and `ManagedLRUCache` names remain aliases in `utils.cache`;
@@ -60,6 +65,23 @@ graph invalidation and persistence retain their separate responsibilities.
 
 These are implementation responsibilities. The [documentation ownership map](docs/README.md)
 identifies the single maintained guide for each responsibility.
+
+The `tnfr.physics` public namespace resolves its exports on first access.
+One ordered owner map supplies `__all__`, discovery through `dir()` and lazy
+dispatch; resolved names are the actual owner objects, not proxies. Importing
+one field or observer therefore does not eagerly load unrelated research and
+runtime certificates. Direct module imports retain their own dependencies.
+The [facade controls](tests/physics/test_physics_facade_imports.py) check cold
+imports, public object identity and discovery independently of timing.
+The generated [typing facade](src/tnfr/physics/__init__.pyi) re-exports those
+same owners for static analyzers. Its
+[generator](scripts/generate_physics_stub.py) reads the runtime map without
+importing the package; the [testing guide](TESTING.md#code-quality-and-documentation-checks)
+owns regeneration and drift checks.
+
+Physics imports NumPy and NetworkX as core dependencies declared in
+`pyproject.toml`. Optional SciPy and acceleration paths retain their own
+availability checks and fallback behavior.
 
 ## Nodal execution flow
 
@@ -203,7 +225,8 @@ lost in that conversion.
 | [`physics/source_relative_form.py`](src/tnfr/physics/source_relative_form.py) | Composes the form observer with an independently supplied held rate source; `Network.source_relative_form` is the adapter. |
 | [`physics/relational_observations.py`](src/tnfr/physics/relational_observations.py) | Native field, region and hypothetical support-change reports; separately, graph-independent coefficient/rate/sample-jet bounds. Sample adapters share stencils and outward error propagation. |
 | [`mathematics/linear_observation.py`](src/tnfr/mathematics/linear_observation.py) | Exact row-space realization and visible/hidden memory for a supplied rational generator; scoped lower bounds distinguish conservative observation from a supplied form-loss model. `physics/epi_memory.py` retains its own diffusion admission. |
-| [`mathematics/_exact_linear_algebra.py`](src/tnfr/mathematics/_exact_linear_algebra.py) | Shared exact products, inverses and rank algebra; compatibility physics imports delegate here. |
+| [`mathematics/_exact_linear_algebra.py`](src/tnfr/mathematics/_exact_linear_algebra.py) | Shared exact products, powers, inverses and semidefinite tests; compatibility physics imports, fixed-map network-stage powers and p-adic tower products delegate here. The tower adapter retains its mutable list rows. Products skip exact zero factors while retaining full rational output shapes and the consumers' product-call accounting. |
+| [`mathematics/krylov.py`](src/tnfr/mathematics/krylov.py) | Exact rational rank, Krylov reachability and Hankel moment calculations under their declared input/output premises. |
 | [`mathematics/_phase_resultant_chamber.py`](src/tnfr/mathematics/_phase_resultant_chamber.py) | Rational trigonometric/resultant bounds, principal-argument charts and supplied-rate kinematics. Reused geometry does not transfer a law. |
 | [`mathematics/_validated_taylor.py`](src/tnfr/mathematics/_validated_taylor.py) | Strict Picard tubes, Taylor remainders and initial-box propagation; the comparison kernel owns the shared 1–24-coordinate work limit. Each flow adapter retains its layout and other admission budgets. |
 | [`mathematics/_validated_metric.py`](src/tnfr/mathematics/_validated_metric.py) | Reuses Picard/Taylor machinery while retaining an SPD-metric radius between steps. The caller proves its whole-tube logarithmic bound; local truncation/rounding errors enter the same norm. Coordinate projections do not replace the retained uncertainty. |
@@ -239,10 +262,33 @@ The sine layer shares four boundaries:
    work and resultant kinematics. Mobility and regional/mediated readers reuse
    these primitives while retaining their own complete-law identifiers.
 3. `_sine_preparation.py` supplies weighted preparation and uncertainty bounds.
+   Its report reader re-admits original source primitives before the shared
+   row calculation. Fixed-source consumers can use that calculation after
+   admitting their law, support, capacities and exact rows, without constructing
+   an observation report whose derived rates they do not consume.
    Forecasts share validated Taylor/metric kernels and retain environmental
    coordinates, hidden initialization and original error associations.
 4. `sdk/relational_reports.py` delegates reports and projects exact JSON values;
    it neither installs a solver nor authenticates an evaluated response.
+
+`relational_sine_pair.py` owns exact global pair state, cancellation
+observations and finite exchange/receiver certificates. It depends directly on
+shared scalar, phasor and rational-interval admission. The larger
+`relational_sine_scale.py` retains replica geometry, grouping and emission.
+`relational_sine_replica_pulse.py` owns prepared internal pulses, their
+variations, splitting and work-response assessments, including the validated
+Taylor solver dependency. The scale module re-exports the established pair
+and pulse APIs for compatibility. Their defining classes/functions live in
+the corresponding owners; old imports resolve to those same objects,
+including SDK dispatch and older pickle class lookups. These boundaries
+change neither the complete laws nor the report schemas.
+
+`relational_sine_formation_response.py` combines the shared preparation kernel
+with exact Poisson and interval bounds for its fixed positive-loss sources.
+One fresh domain admission serves both source rows in a call; all public
+budgets are admitted anew. It keeps its own complete-law and clock premises,
+independent of the conservative pair certificates. No prepared-state or
+verdict cache substitutes for source admission.
 
 Downstream calculations re-admit the producer's primitive source and rebuild
 consumed gradients, rates, work and bounds. Forecast readers also check the
@@ -321,7 +367,14 @@ or second transport law is introduced.
   classifications.
 - `tnfr.errors` provides contextual public exceptions.
 - `tnfr.mathematics` owns numerical backends and domain-neutral mathematical
-  structures.
+  structures. Its private `_complex_arrays` reader shares original-component
+  admission and range-safe normalization across spectral consumers.
+  `_integer_admission` owns exact integer/index admission for arithmetic
+  modules; primality dispatch and optional SymPy selection remain with
+  `number_theory`.
+- `tnfr.math.symbolic` owns supplied-law symbolic calculus when SymPy is
+  installed. Its public helpers are re-exported by `tnfr.mathematics` and
+  `tnfr`; those import paths share the same implementations.
 
 ### Structural dynamics
 
