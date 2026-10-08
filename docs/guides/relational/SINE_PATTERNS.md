@@ -205,7 +205,7 @@ mandatory inputs:
 | --- | --- |
 | `initial_form_bounds` | Eighteen finite endpoint pairs for the pre-event signed form coordinates |
 | `initial_phase_bounds` | Eighteen finite endpoint pairs for the pre-event continuous phase lifts, in radians |
-| `phase_increment` | Supplied amplitude in `(0,1]`, applied at node four and with opposite sign at node five |
+| `phase_increment` | Supplied amplitude in `[0,1]`, applied at node four and with opposite sign at node five; zero means no phase event |
 | `probe_duration` | One positive fast-time step, at most one |
 | `order` | Fixed ordinary integer Taylor order from one through sixteen |
 
@@ -228,6 +228,14 @@ strict Picard tube, Taylor coefficients and remainder. The
 [direct source-box proof](../../../theory/nodal/SINE_TWO_PORT_INFERENCE.md#a-separate-full-state-response-certificate)
 explains why coefficients on the initial box and derivatives on the whole
 tube enclose the complete evolution.
+
+For a continuation without an event, pass `phase_increment=0` and convert
+all thirty-six preceding `step.endpoint` intervals to primitive `(lo, hi)`
+pairs, retaining their form/phase ordering. Both rows keep evolving; zero
+amplitude neither freezes the state nor resets it to the original source.
+An intermediate observation can therefore split a flow into declared
+segments without inserting another kick. Retain each segment's duration,
+absolute starting time and complete endpoint handoff.
 
 Keep `baseline_readout_bounds` and `endpoint_readout_bounds` with the
 raw response. Use `true_increment_bounds` for the same-state change:

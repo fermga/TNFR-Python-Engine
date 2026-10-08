@@ -23,23 +23,22 @@ composite's interactions under justified complete nodal laws? The route is
 collective properties from their physical identification. A sufficient
 representation does not independently justify the law that evolves it.
 
-The [finite-curvature information theorem](#current-g3-gate) is closed.
-It preserves the [clock/scale theorem](#sine-clock-inference-admission) and
-[reserved two-input result](#reserved-two-pulse-inference-admission) under
-their original premises. A separately frozen four-reading software
-evaluation is the next **inactive** boundary; no response campaign is
-active. Physical
-constituent emergence and independent law selection remain open; no empirical
-response has passed complete physical admission. Completed evidence is
-reusable, not work to repeat.
+The [finite-curvature information theorem](#sine-finite-curvature-inference-admission)
+is closed. Its [reserved four-reading software evaluation](#current-g3-gate)
+is now the single active gate, with a prospective source/archive freeze
+required before the first response. Earlier clock, inference and response
+results retain their original premises and evidence. Physical constituent
+emergence and independent law selection remain open; no empirical response
+has passed complete physical admission. Completed evidence is reusable,
+not work to repeat.
 
 <a id="2-one-status-board-and-dependency-chain"></a>
 ## Queue status
 
 | Status | Scope and owner |
 | --- | --- |
-| Latest closed theoretical gate | [Finite-curvature information](#current-g3-gate): full source/error bounds, necessary clock/gain refinement and scoped local minimality of the added reading |
-| Inactive resumption boundary | [Reserved four-reading software evaluation](#current-g3-gate), with separately frozen source, clock/sensor, correlated observations, numerical budgets and first-outcome retention |
+| Active bounded gate | [Reserved four-reading software evaluation](#current-g3-gate): complete sequential response, public-only inverse, clock/gain coverage and marginal resolution under fixed budgets |
+| Closed prerequisite | [Finite-curvature information](#sine-finite-curvature-inference-admission): full source/error bounds, necessary clock/gain refinement and scoped local minimality of the added reading |
 | Closed prerequisite | [Clock/scale identifiability](#sine-clock-inference-admission): necessary geometry and scale bounds, exact common-rate/clock equivalence and a gain/clock curvature counterexample |
 | Closed prerequisite | [Reserved two-input software inference](#reserved-two-pulse-inference-admission), whose known-clock assumptions and frozen evidence remain unchanged |
 | Closed prerequisite | [Two-input geometry/gain theorem](#sine-two-pulse-inference-admission), with necessary outer marginals and full trajectory/error history |
@@ -47,44 +46,58 @@ reusable, not work to repeat.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="reserved-curvature-inference-admission"></a>
+## Active reserved gate: four-reading clock and gain resolution
+
+The [prospective protocol](../nodal/SINE_FINITE_CURVATURE_INFERENCE.md#sine-curvature-reserved-protocol)
+fixes three full sources, one held clock/gain/offset per case and the four
+readings at `0,H/2,H,2H`, with events still at `0,H`. Here `H=2^-24`,
+source radii are `2^-48`, the per-reading error bound is `2^-90`, and the
+public priors are gain `[1,2]` and clock `[1/2,2]`. The first two cases
+share the complete source and product `G*rho=3/2`; the reserved comparison
+requires separated finite recorded-curvature intervals, without assuming
+their exact endpoint responses coincide.
+
+Three order-four full-state segments retain both continuous rows, all
+thirty-six endpoint coordinates and the passive half-time reading. Their
+phase jumps are `1/4,0,1/2`: zero is continuation, not a reset or an extra
+intervention. The inverse receives only ten declared public primitives,
+never hidden state, true sensor/clock parameters or producer certificates.
+Freeze the prospective committed source, proof, protocol, evaluator and
+separated worker under `curvature-inference-v1` before generating a response.
+
+Require complete horizons, strict inclusion and source/observation admission,
+truth coverage, and actual-angle, effective-gain, gain and clock widths below
+`1/1024`, `1/2048`, `1/16` and `1/80`. Fixed false priors, a rank-abstention
+control and the complete phase-blind alternative have their own declared
+criteria. False clock/gain priors must retain an available coarse child but
+be excluded by the curvature refinement. Preserve the first outcome,
+including unavailability or export failure; no retuning or earlier-producer
+rerun is authorized. Optional acute flags do not certify maintenance.
+
+No response has yet been evaluated under this protocol. Its conditional
+software inference does not select the supplied law or establish a physical
+clock, sensor or constituent. No next campaign is active; its admission
+boundary will be recorded when this bounded gate closes.
+
 <a id="sine-finite-curvature-inference-admission"></a>
 <a id="active-theoretical-gate-finite-curvature-from-one-additional-reading"></a>
 ## Closed theoretical gate: finite curvature from one additional reading
 
 The [finite-curvature theorem](../nodal/SINE_FINITE_CURVATURE_INFERENCE.md#sine-finite-curvature-inference)
-adds a reading at `H/2` to the unchanged observations at `0,H,2H`, with
-phase events still at `0,H`. Original-source and third-derivative bounds
-connect the finite difference to necessary clock/gain constraints while
-retaining the complete state and the associated four-reading errors.
-Positive divisions and one conservative projection refine the coarse
-clock report; available marginals need not all become narrower or be
-jointly realizable. Proof, implementation and relevant controls agree.
+connects one extra half-time reading to necessary clock/gain constraints
+using complete initial-source and third-derivative bounds. Its
+[conditioning corollary](../nodal/SINE_FINITE_CURVATURE_INFERENCE.md#sine-curvature-conditioning)
+supplies conditional exact-arithmetic budgets; executable coefficient,
+quotient and response admission remain separate checks. Available marginals
+need not all become narrower or be jointly realizable.
 
-Under its declared [conditioning budget](../nodal/SINE_FINITE_CURVATURE_INFERENCE.md#sine-curvature-conditioning),
-compatible observations admit exact-arithmetic clock width below `1/80`
-and sensor-gain width below `1/16`. Numerical coefficient and quotient
-admission remain separate checks; these are conditional feasibility
-bounds, not evaluated responses or a physical sensor specification.
-
-The [local information theorem](../nodal/SINE_FINITE_CURVATURE_INFERENCE.md#sine-curvature-local-information)
+The [local information result](../nodal/SINE_FINITE_CURVATURE_INFERENCE.md#sine-curvature-local-information)
 proves exact three-reading collisions and four-reading local injectivity
-on the ideal three-parameter subfamily with fixed receiver geometry,
-zero source residuals and noiseless readings. One added scalar reading
-is minimal within that declared design and subfamily. This does not
-establish global identification when receiver state and full residuals
-are free, or remove exact common-law-rate/clock equivalence. Source,
-support, law and observation premises remain supplied.
-
-**Inactive resumption boundary:** separately admit and freeze a prospective
-four-reading software evaluation of clock/gain resolution. Retain the
-complete original source and both uninterrupted windows, the one held
-clock/gain/offset, and the shared readings entering increments and
-curvature. Freeze hidden/public information separation, source and
-observation errors, numerical budgets and resolution/coverage criteria
-before evaluating a response. Preserve the first outcome, including any
-failure or unavailability, without retuning or rerunning earlier producers.
-No such assessment is active, and no physical-identification campaign is
-admitted. Earlier frozen evidence and theorem prefixes remain unchanged.
+only on the ideal three-parameter subfamily with fixed receiver geometry,
+zero source residuals and noiseless readings. One added scalar is minimal
+within that design and subfamily. It does not establish global identification
+with free nuisance state or remove exact common-law-rate/clock equivalence.
 
 ## Deferred work and reopening conditions
 

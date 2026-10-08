@@ -71,6 +71,11 @@ docs/assets/sine_formed_classes/two-pulse-inference-v1.json -text whitespace=bla
 docs/assets/sine_formed_classes/two-pulse-inference-v1.protocol.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 docs/assets/sine_formed_classes/two-pulse-inference-v1.manifest.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 docs/assets/sine_formed_classes/two-pulse-inference-v1.source.zip binary
+docs/assets/sine_formed_classes/curvature-inference-v1.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+docs/assets/sine_formed_classes/curvature-inference-v1.protocol.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+docs/assets/sine_formed_classes/curvature-inference-v1.manifest.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+docs/assets/sine_formed_classes/curvature-inference-v1.attempt.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+docs/assets/sine_formed_classes/curvature-inference-v1.source.zip binary
 theory/research/archive/EXECUTION_PLAN_PRE_FOUR_FOUNDATIONS_2026-09-26.txt -text -whitespace
 theory/research/archive/PORTFOLIO_PRE_FOUR_FOUNDATIONS_2026-09-26.txt -text -whitespace
 theory/research/archive/ROADMAP_PRE_FIVE_STAGE_2026-09-17.txt -text -whitespace

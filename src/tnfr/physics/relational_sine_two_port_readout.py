@@ -1,8 +1,9 @@
 """Independent full-law finite readout from a supplied two-port source box.
 
 All eighteen forms and eighteen continuous phase lifts evolve after the
-supplied phase dipole. Shared Picard/Taylor certificates enclose the complete
-flow; no inverse-response approximation or equilibrium target is consumed.
+supplied phase dipole, or without an event when its amplitude is zero.
+Shared Picard/Taylor certificates enclose the complete flow; no
+inverse-response approximation or equilibrium target is consumed.
 """
 
 from __future__ import annotations
@@ -71,7 +72,8 @@ class SineTwoPortReadout:
 
     Source boxes are primitive enclosures, not an acquired-source assertion.
     Phase entries are continuous lifts in radians. The complete smooth sine
-    law is evolved in fast time tau=e*t; the phase kick changes only phase.
+    law is evolved in fast time tau=e*t; a positive kick changes only phase,
+    while zero amplitude means no event and preserves the full source box.
     The readout is q-transpose-x with q=e4-e5, with its pre-event baseline
     retained separately. The true increment removes the initial coordinate
     symbolically before interval evaluation. No sensor gain or noise is used.
@@ -105,6 +107,7 @@ class SineTwoPortReadout:
         "fixed_two_port_C9_support_and_full_thirty_six_coordinate_source_box",
         "complete_shared_sine_rates_with_both_rows_transformed_to_fast_clock",
         "supplied_phase_dipole_then_unforced_continuous_flow",
+        "zero_phase_increment_means_no_event_and_preserves_all_source_coordinates",
         "one_fixed_Picard_Taylor_step_without_retry_or_adaptive_budget",
         "direct_source_box_coefficients_and_whole_tube_derivative_remainder",
         "readout_increment_cancels_the_same_initial_form_coordinate_symbolically",
@@ -135,8 +138,9 @@ def bound_sine_two_port_readout(
     """Generate a finite full-flow readout from eighteen primitive bound pairs.
 
     All endpoints undergo shared exact/represented-real admission before
-    interval arithmetic. Increment and duration lie in (0,1]; order is an
-    ordinary integer in 1..16. A failed fixed step returns unavailable with
+    interval arithmetic. Increment lies in [0,1], with zero denoting no
+    phase event; duration lies in (0,1]. Order is an ordinary integer in
+    1..16. A failed fixed step returns unavailable with
     its last tube. No trajectory target, inverse enclosure or cached report
     can substitute for the supplied complete source box.
     """
@@ -154,8 +158,10 @@ def bound_sine_two_port_readout(
     form, phase = channels
     amplitude = exact_or_represented_real(phase_increment, "phase_increment")
     horizon = exact_or_represented_real(probe_duration, "probe_duration")
-    if not 0 < amplitude <= 1 or not 0 < horizon <= 1:
-        raise ValueError("phase_increment and probe_duration must lie in (0,1]")
+    if not 0 <= amplitude <= 1:
+        raise ValueError("phase_increment must lie in [0,1]")
+    if not 0 < horizon <= 1:
+        raise ValueError("probe_duration must lie in (0,1]")
     if type(order) is not int or not 1 <= order <= MAX_ORDER:
         raise ValueError("order must be an ordinary integer in 1..16")
     geometry = _derive(_NODES, _EDGES)

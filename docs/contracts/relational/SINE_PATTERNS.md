@@ -242,17 +242,22 @@ endpoints, in node order `0..17`. Forms remain signed; phases are continuous
 radian lifts. Shared exact/represented-real admission precedes outward
 interval arithmetic. Boolean, nonfinite, nonzero-underflow, malformed and
 reversed primitive bounds reject; existing interval objects do not bypass
-that boundary. Both amplitude and fast duration lie in `(0,1]`; `order`
-is an ordinary non-Boolean integer from one through sixteen.
+that boundary. The amplitude lies in `[0,1]` and fast duration in `(0,1]`;
+`order` is an ordinary non-Boolean integer from one through sixteen.
 
 The support is the two unit C9 rings with contacts `(0,9)` and `(1,10)`.
 The held capacities are all one. The complete smooth sine law has
 `beta=1`, `e=1023/1024`, `w=1/1024` and `gamma=1/(1023*pi)`.
 Both shared rate rows are transformed to `tau=e*t`. The supplied event
 adds `phase_increment*(e_4-e_5)` to phase and leaves every form unchanged.
+Zero amplitude means no event: every source coordinate remains unchanged
+before the same complete flow starts. It does not freeze either rate row.
 All thirty-six original state coordinates, including their common means,
 then evolve for `probe_duration`. A primitive source box is an admitted
 conditional preparation, not evidence of its acquisition or physical origin.
+For successive segments, re-admit all thirty-six previous endpoint bounds
+as primitive source pairs. A zero-amplitude segment continues that full
+state without a reset or an additional phase jump.
 
 The producer uses
 [`validated_box_taylor_step`](../../../src/tnfr/mathematics/_validated_taylor.py),

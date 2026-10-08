@@ -436,3 +436,186 @@ maintenance or a unique fundamental law. Any finite response campaign must
 first freeze its complete preparation, clock/sensor model, all four reading
 times, error budgets and stopping rules in the
 [sole execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).
+
+
+<a id="sine-curvature-reserved-protocol"></a>
+## Prospective four-reading software protocol
+
+This section admits a new reserved software evaluation after the conditional
+proof above. Its preparation, response generator, public inverse packets and
+stopping rules are fixed before any selected response is evaluated. It does
+not reinterpret an earlier known-clock record as a new observation. The
+[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns this single active gate. The frozen machine-readable protocol and source
+archive, under the stem `curvature-inference-v1`, retain the exact constants
+and the prospective committed source revision.
+
+### F1-F2: hidden source and declared observation
+
+Use the complete support, full thirty-six-coordinate law and weighted source
+chart of (1)-(3). The public prior and supplied input are fixed as
+\[
+\begin{gathered}
+b\in[11/8,3/2],\quad c\in[2/3,1],\quad
+G\in[1,2],\quad\rho\in[1/2,2],\\
+X=Y=2^{-48},\quad H=2^{-24},\quad
+(a_1,a_2)=(1/4,3/4),\quad\delta=2^{-90}.
+\end{gathered}\tag{26}
+\]
+Angles are in radians, \(H\) uses the declared observation clock and
+\(\tau=\rho s\) applies to both continuous rows. Gain converts the signed
+form readout to recorded units; \(\delta\) and numerical reading radii use
+those recorded units. There is no independent laboratory calibration.
+
+The generator receives these three exact cases, indexed by \(k=0,1,2\).
+The final column selects the full source residual recipe; it is not a new
+coordinate of the model.
+
+| Case \(k\) | \(b\) | \(c\) | \(G\) | \(\rho\) | Recipe \(r\) |
+| --- | --- | --- | --- | --- | --- |
+| 0 | \(45/32\) | \(3/4\) | \(3/2\) | \(1\) | 0 |
+| 1 | \(45/32\) | \(3/4\) | \(6/5\) | \(5/4\) | 0 |
+| 2 | \(47/32\) | \(11/12\) | \(7/4\) | \(7/8\) | 2 |
+
+For node indices \(i=0,\ldots,17\), set
+\[
+\widetilde u_i=\frac{(i+2)(r+2)}{2^{62}},\qquad
+\widetilde v_i=\frac{(5i+3r)\bmod23+1}{2^{62}},
+\quad
+u=\widetilde u-\langle\widetilde u\rangle_M\mathbf1,
+\quad v=\widetilde v-\langle\widetilde v\rangle_M\mathbf1.
+\tag{27}
+\]
+Set \(m_x=(r+2)/11\) and
+\(m_\theta=-(r+2)/13\), with the nominal phases centered by the same full
+weighted mean. Retain every coordinate and the realized exact arrays.
+Weighted centering preserves the residual norm bound, and
+\(40\cdot76^2/2^{124}<2^{-96}\) admits both squared norms. The recipe
+has nonzero residuals at every node. Its original actual long-arc mean is
+\[
+B_{\rm initial}=b-5/2^{65},\tag{28}
+\]
+because \(v_1-v_0=5/2^{62}\). The retained initial interval source also
+supplies an outer interval for that same initial statistic; it is not an
+endpoint mean or an exact recovery of every residual.
+
+Cases 0 and 1 have the same complete source and the same
+\(J=G\rho=3/2\). Their gains and clocks differ. Equality of this leading
+response scale does not assert equal exact endpoint responses, and these
+nonzero-residual cases are not the ideal local-collision family in (22)-(25).
+
+The sensor has one held offset \(O_k=(2k+3)/11\) per case. Its four
+realized errors are fixed before response generation:
+\[
+(\eta_0,\eta_{1/2},\eta_1,\eta_2)
+ =2^{-91}(k-1,\ 1-k,\ (-1)^k,\ k-1).
+\tag{29}
+\]
+Each has magnitude at most \(\delta\). There is exactly one recorded
+reading at each of \(0,H/2,H,2H\), under the same gain, offset and clock.
+Reuse those four primitive intervals in all differences and controls.
+The numerical half-width of each retained reading must be at most
+\(\delta\), separately from the per-reading error allowance.
+
+### F3: complete uninterrupted response and information separation
+
+Use the [full-state readout producer](../../src/tnfr/physics/relational_sine_two_port_readout.py)
+and shared [direct source-box Taylor kernel](../../src/tnfr/mathematics/_validated_taylor.py).
+For each case, the three consecutive structural durations and phase jumps
+are
+\[
+(\rho H/2,\rho H/2,\rho H),\qquad(1/4,0,1/2)q.
+\tag{30}
+\]
+The zero entry means continuous continuation with no event at the passive
+half-time observation. The first event occurs at observed time zero and
+the final event at \(H\). Both are phase-only jumps. Carry each complete
+thirty-six-coordinate endpoint interval into the next segment before
+applying its declared jump; do not reset, recenter, narrow or reprepare the
+intermediate state. Source common means remain part of the same trajectory.
+
+Each segment uses order four, the fixed sixteen-attempt strict Picard
+inclusion budget, shared outward dyadic-128 interval arithmetic and the
+shared elementary-function enclosures. Retain its initial box, complete
+tube, all source Taylor coefficients, fifth-order remainder, full endpoint,
+strict inclusion margin and achieved horizon. Local segment time may start
+at zero; the record separately retains its global observation and structural
+time association. No smaller-step search, precision escalation, endpoint
+selection or budget retry is admitted. A positive smooth-law domain flag
+establishes neither acute geometry nor maintenance after either pulse.
+
+Construct the sensor readings from the original baseline and the three
+complete endpoints. The identical middle readings enter every applicable
+increment and the contrast \(C=r_H-2r_{H/2}+r_0\). Offset cancellation and
+error correlation must be retained algebraically before interval projection.
+The original source boxes, hidden parameters, sensor error realizations and
+response certificates stay on the generator/evidence side.
+
+The inverse receives only these ten public keywords:
+`bulk_angle_bounds`, `receiver_short_angle_bounds`, `form_radius`,
+`phase_radius`, `phase_increments`, `probe_duration`,
+`recorded_reading_bounds`, `readout_error_bound`, `readout_gain_bounds`
+and `clock_rate_bounds`. In particular, its duration is observed \(H\),
+not a hidden structural segment duration. No true \(b,c,G,\rho\), common
+mean, offset, realized error, state, response certificate or cached verdict
+may enter the inverse. Retain the exact allowlisted packets and their hashes
+and invoke the inverse through the separated worker. This is auditable
+software information exclusion, not cryptographic secrecy or provenance
+authentication.
+
+### F4: fixed stopping criteria and controls
+
+The reserved evaluation passes only if every declared case satisfies all
+source, clock, sensor, full-horizon and information-separation checks and
+these inference criteria:
+
+- The primary four-reading inverse is available as `bounded_candidate`,
+  with its coarse child, finite-curvature bound and positive divisions
+  admitted. Its necessary marginals cover the exact nominal \(b\),
+  original actual \(B_{\rm initial}\), effective gain \(J\), gain \(G\)
+  and clock \(\rho\). The actual-angle marginal also contains the
+  retained initial-box enclosure of \(B_{\rm initial}\).
+- Strict widths are below `1/1024` for the actual original angle,
+  `1/2048` for \(J\), `1/16` for \(G\) and `1/80` for \(\rho\).
+  These are marginal resolution checks, not point recovery or joint
+  realizability of every retained tuple.
+- Cases 0 and 1 have strictly disjoint retained recorded-curvature
+  intervals. The comparison uses their actual four-reading records,
+  not separately supplied derivative values or fitted curvature.
+- Reusing the same readings with false clock prior `[25/32,13/16]` or
+  false gain prior `[31/16,2]` leaves the coarse child available but makes
+  the curvature refinement `incompatible`. This checks the contribution
+  of the additional reading; coarse outer compatibility is not a proof
+  of an alternative full trajectory.
+- The false angle prior `[11/8,353/256]` returns `incompatible`. The
+  equal cumulative amplitudes `(1/4,1/4)` return `unavailable` through
+  the leading-rank limitation. The latter is an altered-declaration
+  method control, not an evaluated equal-pulse physical alternative.
+- The complete phase-blind alternative
+  \(x_\tau=-Ax,\ \theta_\tau=\gamma Ax\), with the same source,
+  phase events and held sensor/clock priors, is excluded by each retained
+  full-window recorded increment. Its necessary band is
+  \([-B_{\rm heat},B_{\rm heat}]\), where
+  \(B_{\rm heat}=2G_+\rho_+HX+2\delta\). Compare complete interval
+  differences with this band; do not silently drop numerical widths.
+
+All three segment margins must be strictly positive and all three declared
+horizons complete. The optional whole-window acute flag is retained without
+requiring it to pass or interpreting its failure as a proved sector exit.
+Neither work allowance nor future identity/recovery is a stopping criterion
+for this inference protocol.
+
+Freeze the prospective proof, machine-readable protocol, committed runtime
+source, evaluator and isolated inverse worker before the first response.
+Retain their archive inventory and hashes together with the complete source,
+observations, reports and every stopping result. Preserve the first outcome,
+including solver unavailability, failed criteria or export failure. Any
+necessary correction requires a separately identified record and may not
+rewrite the original prediction or silently replace its first outcome.
+Do not rerun an earlier frozen producer or reinterpret an old sensor budget.
+
+Success would establish finite software clock/gain resolution under the
+supplied normalized-sine law and held observation model. It would not select
+that law, establish a laboratory clock or sensor, eliminate the exact common
+all-row-rate/clock equivalence, or identify physical constituents. Any next
+research gate requires separate admission in the execution plan.

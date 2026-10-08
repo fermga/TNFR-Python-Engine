@@ -194,6 +194,18 @@ inverse. Preserve a false optional `whole_window_acute_certified` flag
 without treating it as a failed inference criterion or a proved trajectory
 event.
 
+The [prospective four-reading protocol](theory/nodal/SINE_FINITE_CURVATURE_INFERENCE.md#sine-curvature-reserved-protocol)
+adds a passive half-time observation and one held unknown clock per case.
+Select the same shared Taylor/readout suites for the zero-jump continuation;
+check all three complete endpoint handoffs and distinguish observed from
+structural segment times. After its first reserved evaluation, audit the
+retained four-reading record and public ten-key packets without replaying
+its producer or inverse. Rebuild finite-curvature, source, coverage, width
+and fixed-control criteria from primitives, including available coarse
+children under false clock/gain priors. One half-time reading and its error
+must be reused consistently; a separate fitted curvature is not evidence.
+Preserve first failure, numerical abstention and optional acute flags.
+
 ### Boundaries that need explicit regression coverage
 
 - **Chained evidence is rebuilt from its premises.** Change primitive inputs

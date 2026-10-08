@@ -149,6 +149,81 @@ def test_synthetic_numerical_crosscheck_lies_inside_validated_full_state(readout
     assert any(value.width > 0 for value in readout.step.local_remainder_bounds)
 
 
+def test_zero_event_continuation_carries_the_complete_evolving_endpoint(readout):
+    duration = Q(1, 32)
+    carried = tuple((value.lo, value.hi) for value in readout.step.endpoint)
+    continuation = owner.bound_sine_two_port_readout(
+        initial_form_bounds=carried[:18],
+        initial_phase_bounds=carried[18:],
+        phase_increment=Q(0),
+        probe_duration=duration,
+        order=4,
+    )
+    assert continuation.admitted
+    assert continuation.phase_increment == 0
+    assert continuation.post_event_initial_box == readout.step.endpoint
+    assert continuation.step.initial_box == readout.step.endpoint
+    assert continuation.initial_form_bounds == readout.step.endpoint[:18]
+    assert continuation.initial_phase_bounds == readout.step.endpoint[18:]
+    assert continuation.baseline_readout_bounds == readout.endpoint_readout_bounds
+
+    # Integrate the independent complete law continuously across the observation
+    # time. The second segment has no kick and carries the hidden phase row.
+    graph, degrees, laplacian = _independent_geometry()
+    initial = np.array(
+        [float(value.midpoint) for value in readout.post_event_initial_box]
+    )
+    t_middle = float(readout.probe_duration)
+    t_end = float(readout.probe_duration + duration)
+    response = solve_ivp(
+        _numeric_flow(graph, degrees, laplacian),
+        (0, t_end),
+        initial,
+        t_eval=(t_middle, t_end),
+        method="DOP853",
+        rtol=1e-12,
+        atol=1e-14,
+    )
+    assert response.success
+    middle, endpoint = response.y.T
+    for bounds, expected in zip(continuation.step.endpoint, endpoint):
+        assert float(bounds.lo) <= expected <= float(bounds.hi)
+    for bounds, expected in zip(continuation.step.initial_box, middle):
+        assert float(bounds.lo) <= expected <= float(bounds.hi)
+    increment = endpoint[4] - endpoint[5] - middle[4] + middle[5]
+    assert (
+        float(continuation.true_increment_bounds.lo)
+        <= increment
+        <= float(continuation.true_increment_bounds.hi)
+    )
+    assert np.linalg.norm(endpoint[:18] - middle[:18]) > 1e-5
+    assert np.linalg.norm(endpoint[18:] - middle[18:]) > 1e-8
+    assert continuation.step.picard_interior_margin > 0
+
+
+@pytest.mark.parametrize("zero", (0, Q(0), 0.0, -0.0))
+def test_zero_amplitude_is_admitted_without_coercing_boolean_scalars(monkeypatch, zero):
+    arguments = _arguments()
+    arguments["phase_increment"] = zero
+
+    def stopped(box, duration, flow, domain, *, order):
+        expected = tuple(
+            I(lo, hi)
+            for row in (
+                arguments["initial_form_bounds"],
+                arguments["initial_phase_bounds"],
+            )
+            for lo, hi in row
+        )
+        assert box == expected
+        return None, box, "controlled_stop_after_source_admission"
+
+    monkeypatch.setattr(owner, "validated_box_taylor_step", stopped)
+    result = owner.bound_sine_two_port_readout(**arguments)
+    assert result.phase_increment == Q(0)
+    assert result.unavailable_reasons == ("controlled_stop_after_source_admission",)
+
+
 def test_direct_increment_is_not_independent_endpoint_minus_source_boxes():
     arguments = _arguments()
     radius = Q(1, 2**16)
@@ -219,11 +294,14 @@ def test_serialization_retains_all_derivatives_and_exact_baseline(readout):
 @pytest.mark.parametrize(
     "field,value",
     (
-        ("phase_increment", 0),
+        ("phase_increment", -1),
+        ("phase_increment", Q(-1, 10**400)),
         ("phase_increment", Q(1001, 1000)),
         ("probe_duration", 0),
         ("probe_duration", Q(1001, 1000)),
         ("phase_increment", True),
+        ("phase_increment", False),
+        ("phase_increment", np.bool_(False)),
         ("probe_duration", np.bool_(True)),
         ("phase_increment", float("nan")),
         ("probe_duration", float("inf")),
