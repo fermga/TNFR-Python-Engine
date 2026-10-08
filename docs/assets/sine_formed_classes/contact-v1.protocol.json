@@ -1,0 +1,203 @@
+{
+  "schema": "tnfr.sine-formed-class-contact-protocol.v1",
+  "evaluation_kind": "conditional_analytic_interval_certificate_no_trajectory",
+  "inputs": {
+    "formation_time": {
+      "numerator": 100,
+      "denominator": 1
+    },
+    "relaxation_duration": {
+      "numerator": 10000000000000,
+      "denominator": 1
+    },
+    "phase_origin_difference": {
+      "numerator": 1,
+      "denominator": 1000
+    },
+    "contact_duration": {
+      "numerator": 1,
+      "denominator": 100
+    },
+    "form_error_bound": {
+      "numerator": 1,
+      "denominator": 10000000000
+    },
+    "phase_error_bound": {
+      "numerator": 1,
+      "denominator": 10000000000
+    },
+    "endpoint_radius": {
+      "numerator": 1,
+      "denominator": 100000000000000000000000000000000
+    },
+    "readout_error_bound": {
+      "numerator": 1,
+      "denominator": 1000000000000000000000000000000
+    },
+    "radius": {
+      "numerator": 1,
+      "denominator": 12
+    },
+    "work_allowance": {
+      "numerator": 1,
+      "denominator": 1000000
+    },
+    "decay_power": 512
+  },
+  "complete_model": "Normalized-sine law with e=1023/1024, w=1/1024, beta=1, held capacities one. tau=e*t; both rows transform. No forcing or phase probes.",
+  "preparation": "Original C9 nominal forms k*(2046/9)*(355/113)^2*(j-4), initially phase-flat; donor k=1 or2 and fixed receiver k=1. Each original form/phase residual is bounded by1e-10 with separate exact zero sums. Receiver common phase origin1/1000 is declared from initial preparation; donor origin0. Form origins0. Original16-dimensional relative families retained in each component.",
+  "support": {
+    "nodes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        8
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        4,
+        13
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        9,
+        10
+      ],
+      [
+        9,
+        17
+      ],
+      [
+        10,
+        11
+      ],
+      [
+        11,
+        12
+      ],
+      [
+        12,
+        13
+      ],
+      [
+        13,
+        14
+      ],
+      [
+        14,
+        15
+      ],
+      [
+        15,
+        16
+      ],
+      [
+        16,
+        17
+      ]
+    ],
+    "bridge": [
+      4,
+      13
+    ],
+    "weights": "unit",
+    "capacity": "held one at every node"
+  },
+  "schedule": "Acquire at tau=100, continue both isolated actual flows unprobed for D=10^13, attach one unit bridge at tau_c=100+D with no state reset, then hold support. No further events.",
+  "observation": "Actual receiver form at global node13 at tau_c+1/100; donor2-minus-donor1 contrast. Independent additive readout error<=1e-30 in each record.",
+  "prediction": {
+    "recorded_class_two_minus_one_lower_threshold": {
+      "numerator": 1,
+      "denominator": 10000000000000000000000000
+    },
+    "both_windings_retained_all_future": true,
+    "recovery_modulo_common_origins": true,
+    "contact_work_allowance": {
+      "numerator": 1,
+      "denominator": 1000000
+    }
+  },
+  "controls": [
+    "Aligned central zero-origin exact nominal contact null retained unchanged",
+    "Disconnected receiver evolution independent of donor; no shared-noise claim",
+    "Equal initial port currents under the common offset do not replace the finite response proof"
+  ],
+  "method": {
+    "name": "unprobed_lyapunov_handoff_correlated_contact_response_v1",
+    "isolated_gap": "1/5",
+    "isolated_rate_upper": "2",
+    "exact_decay": "2^-512 only if512<=kappa*D<=4096",
+    "joined_gap_lower": "2/81",
+    "joined_cosine_lower": "1/20",
+    "response": "fourth-order common-semigroup comparison plus geometric tail, full nonlinear remainder and actual-family error",
+    "interval_method": "rational_outward_dyadic128_machin_trigonometry_v1",
+    "generic_forecast": "not used;37-coordinate joined layout remains outside24-coordinate cap"
+  },
+  "stopping_rule": "Pass only with fresh formation, both actual unprobed handoffs, joined full-state identity, declared event-work allowance and recorded contrast lower bound>1e-25. Preserve any unavailable or negative result without source, horizon, offset, threshold or precision retuning.",
+  "source_base_commit": "0dd9149c90e7200ac5e34048f29343a087bcc281",
+  "source_overlay_archive": "contact-v1.source.zip",
+  "frozen_theory_owner": "theory/nodal/SINE_FORMED_CLASS_CONTACT.md",
+  "runtime": {
+    "python": "3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows",
+    "backend": "Python exact Fraction plus fixed outward dyadic128; exact squared decay bounds below interval grid",
+    "packages": {
+      "numpy": "2.3.3",
+      "networkx": "3.5",
+      "scipy": "1.16.3",
+      "mpmath": "1.3.0"
+    },
+    "seed": null,
+    "seed_scope": "No random input or trajectory samples; pressure supplied analytically by complete law, no held-pressure approximation."
+  },
+  "scope": "Conditional formed-pattern contact and finite receiver discrimination under supplied preparation, law, relative origins and support event. No autonomous binding, practical-time/readout claim, independent law selection or physical identification."
+}

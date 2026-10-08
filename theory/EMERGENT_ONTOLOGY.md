@@ -123,6 +123,15 @@ shows that the nominal formed C9 classes can remain invisible to the same
 receiver under an aligned supplied bridge. Interface symmetry and retained
 internal information are therefore part of an interaction claim.
 
+A [declared nonzero relative origin](nodal/SINE_FORMED_CLASS_CONTACT.md#sine-formed-class-contact)
+admits a different result: the two actually formed donors produce separated
+finite responses in one receiver class while both cycle identities remain
+retained under the complete joined law. Original source uncertainty, changed
+port degrees and contact work are included. This connects acquired internal
+organization to its effect on another organization, conditional on the supplied
+preparation, law and contact. Its conservative structural dwell and very small
+readout error establish no laboratory feasibility or physical identification.
+
 A collective observation/measurement map is eventually needed to test that
 hypothesis, but it may act on a pattern and its interaction with a measurement
 system rather than on one primitive coordinate. Its latent-state assumptions

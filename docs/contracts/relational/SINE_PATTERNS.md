@@ -4,6 +4,68 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-formed-class-contact"></a>
+### Receiver discrimination after contact of actually formed classes
+
+`assess_sine_formed_class_contact(*, formation_time, relaxation_duration,
+phase_origin_difference, contact_duration, form_error_bound, phase_error_bound,
+endpoint_radius, readout_error_bound, radius, work_allowance, decay_power)` in
+[`relational_sine_formed_class_contact.py`](../../../src/tnfr/physics/relational_sine_formed_class_contact.py)
+returns `SineFormedClassContact`. Its [proof and protocol](../../../theory/nodal/SINE_FORMED_CLASS_CONTACT.md#sine-formed-class-contact)
+use the original unprobed C9 source families. The receiver has winding one;
+donor cases are winding one and two. The same receiver common phase origin
+relative to the donor is supplied from initial preparation, not imposed as
+a state rotation at contact. Original form/phase errors keep their separate
+exact zero sums within each component; uncertain port values are not forced
+to match between the two experiments.
+
+All eleven primitives are required. Scalar inputs use shared original
+exact/represented-real admission before arithmetic. They are nonnegative,
+with `0 < radius <= 1/12`, positive `endpoint_radius`, phase origin at most
+one, and `contact_duration <= 1/4`. `decay_power` is an ordinary non-Boolean
+integer from zero through 4096. The formation assessment retains its own
+time cap. The additional slow-rate budget requires
+`lyapunov_decay_rate*relaxation_duration <= 4096`, whenever that rate exists.
+Boolean/nonfinite scalars, unsupported domains and arithmetic bounds reject.
+
+The reader freshly rebuilds `SineFormedClassPair` from primitives and uses
+the shared report-free Lyapunov kernels. It consumes no phase-probe result.
+After the admitted formation checkpoint, the actual family relaxes without
+interventions for the supplied duration. If the slow decay exponent is at
+least `decay_power`, the exact bound `2**(-decay_power)` applies. The returned
+norm squares remain rational even below the interval grid; no rounded square
+root or vanishing materialized value replaces them. Both form and target-phase
+norms of both classes must fit `endpoint_radius` before contact bounds become
+available. Failed formation or an insufficient relaxation budget leaves those
+actual-state bounds unavailable.
+
+At `contact_time=formation_time+relaxation_duration`, one supplied unit edge
+joins donor node 4 to receiver node 13. No coordinate is reset. The changed
+degrees, memberwise weighted means, full-support radius/storage barrier and
+event work are recomputed for eighteen nodes. `identity_certified` covers both
+whole joined families and implies future winding retention and convergence
+modulo common origins under the unchanged joined law. `work_within_allowance`
+compares the contact work bound to an independently supplied allowance.
+Continuous loss does not supply that allowance or select the event.
+
+The readout is actual receiver form at node 13 after `contact_duration`.
+`recorded_contrast_bounds` encloses donor-two minus donor-one readings with
+independent observation errors. The ideal fourth-order term, correlated
+semigroup tail, nonlinear remainder and actual preparation error remain
+separate. Ideal targets are comparison states, never substituted for reached
+states. The disconnected control has donor-independent receiver dynamics;
+equality of connected initial currents alone decides no later contrast.
+
+`response_certified` requires strictly positive recorded contrast. Joint
+`status="certified_formed_class_contact"` also requires the fresh formation,
+both handoffs, full joined identity and supplied work allowance. Otherwise
+`status="unavailable"` retains named reasons; insufficient bounds do not prove
+instability or response equality. The frozen protocol has its own larger
+threshold. The direct schema is `tnfr.sine-formed-class-contact.v1`; shared SDK
+projection and atomic export retain exact quantities and unavailable fields.
+This analytic path does not enlarge the generic forecast's coordinate cap or
+claim a practical preparation time, sensor accuracy or physical identity.
+
 <a id="sine-formed-class-contact-admission"></a>
 ### Reusing formed classes in a supplied contact experiment
 
@@ -20,19 +82,21 @@ An explicit common relative phase offset is a different preparation. With
 nonzero sine, its instantaneous port current is nonzero and identical for
 both nominal classes;
 this alone supplies neither a finite class discriminator nor identity
-retention. Contact work and occurrence remain supplied premises. No formed
-class contact-response assessor or live support event is introduced here.
+retention. Contact work and occurrence remain supplied premises. The separate
+[contact assessment](#sine-formed-class-contact) supplies a finite comparison
+and actual-family handoff under its additional declared premises; it executes
+no live support event.
 The [execution plan](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-owns the prospective task and its freeze boundary.
+owns task status and the freeze boundary.
 
 Existing consumers have distinct reuse boundaries:
 
 | Consumer | What can be reused and what must be established |
 | --- | --- |
 | [Formed-class pair](#sine-formed-class-pair) | The actual image of the original sixteen-dimensional relative source families, including their two exact zero-sum residual constraints. Target geometries and nominal states cannot replace those reached families; any endpoint enclosure needs a proof from the original source and must retain every correlation its consumer uses. |
-| [Prepared composition](#sine-prepared-composition) | Primitive reassessment, synchronous contact, declared relative origins, full-support storage and event accounting. Its inputs are `SinePreparedEntry` reports from `SineRelativePattern`, not `SineFormedClassPair`. A new handoff must retain the original source correlations and derive its endpoint bounds before calling a compatible consumer. |
+| [Prepared composition](#sine-prepared-composition) | Primitive reassessment, synchronous contact, declared relative origins, full-support storage and event accounting. Its inputs are `SinePreparedEntry` reports from `SineRelativePattern`, not `SineFormedClassPair`. The separate contact assessment derives its unprobed handoff from original primitives and retains the source correlations; it does not cast a pair report into a prepared-entry report. |
 | [Probe response](#sine-formed-class-response) and [repeated maintenance](#sine-formed-class-maintenance) | Their analytic methods retain value, but their coefficients, contrast, return neighborhoods and dwell concern an isolated C9 with supplied phase jumps. They do not certify a joined eighteen-node system. |
-| [Validated sine forecast](SINE_COMPARISON_AND_INFERENCE.md#joint-prior-admission-and-sine-forecasts) | The current layout has `2*n+1` coordinates and a shared limit of 24. Two C9 components require 37 and are outside this implementation domain. A full-support analytic bound or separately justified solver extension is needed; increasing the cap or discarding coordinates alone supplies no certificate. |
+| [Validated sine forecast](SINE_COMPARISON_AND_INFERENCE.md#joint-prior-admission-and-sine-forecasts) | The current layout has `2*n+1` coordinates and a shared limit of 24. Two C9 components require 37 and are outside this implementation domain. The contact assessment uses a full-support analytic bound; the generic cap remains unchanged. Increasing it or discarding coordinates alone supplies no certificate. |
 
 For the joined graph, recompute endpoint degrees (two to three), mobility,
 memberwise weighted means, internal and bridge storage, and every consumed

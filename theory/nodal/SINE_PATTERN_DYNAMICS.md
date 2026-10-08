@@ -2940,6 +2940,11 @@ An admitted bridge remains supplied support. A finite response or
 postcontact trapping theorem would not by itself derive a binding
 force, support formation or autonomous composite selection.
 
+The separate [finite contact certificate](SINE_FORMED_CLASS_CONTACT.md#sine-formed-class-contact)
+meets these obligations for one declared nonzero relative origin and its
+actual prepared families. The aligned central-contact obstruction remains
+valid under its original zero-origin premise.
+
 The [contact contract](../../docs/contracts/relational/SINE_PATTERNS.md#sine-formed-class-contact-admission)
 retains these admission boundaries.
 [Static complete-row controls](../../tests/physics/test_sine_c9_central_contact.py)

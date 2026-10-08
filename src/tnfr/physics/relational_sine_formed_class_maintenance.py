@@ -12,6 +12,11 @@ from fractions import Fraction as Q
 
 from .._exact_time import exact_or_represented_real
 from ..mathematics._rational_interval import INTERVAL_METHOD, I
+from ._sine_lyapunov import (
+    _sine_lyapunov_coefficients,
+    _sine_lyapunov_initial_upper,
+    _sine_lyapunov_return_squared,
+)
 from .relational_sine_formed_classes import (
     SineFormedClassResponse,
     assess_sine_formed_class_response,
@@ -158,26 +163,33 @@ def assess_sine_formed_class_maintenance(
 
     reference = assess_sine_formed_class_response(**values)
     eta = reference.formation_certificate.eta_bounds
-    gap, rate, epsilon = Q(1, 5), Q(2), Q(1, 20)
+    gap, rate = Q(1, 5), Q(2)
     coercivities = reference.coercivity_lower_bounds_by_class
     cosine = (
         min(coercivities) / gap
         if all(value is not None and value > 0 for value in coercivities)
         else None
     )
-    mu = eta.lo * cosine * gap**2 if cosine is not None else None
-    upper_stiffness = eta.hi * rate**2
-    lower_position = mu / 2 + gap**2 / 16 if mu is not None else None
-    upper_position = upper_stiffness / 2 + epsilon * rate / 2 + epsilon**2
-    lyapunov_rate = (
-        min(4 * (gap - epsilon) / 3, epsilon * mu / upper_position)
-        if mu is not None and mu > 0
-        else None
+    mu, upper_stiffness, lower_position, upper_position, lyapunov_rate = (
+        _sine_lyapunov_coefficients(
+            eta_lower=eta.lo,
+            eta_upper=eta.hi,
+            cosine_lower=cosine,
+            gap_lower=gap,
+            rate_upper=rate,
+        )
     )
     forms = reference.warmup_form_norm_upper_bounds
     phases = reference.warmup_target_phase_radius_upper_bounds
     initial_values = tuple(
-        Q(3, 4) * eta.hi * rate * x**2 + upper_position * theta**2 / gap
+        _sine_lyapunov_initial_upper(
+            eta_upper=eta.hi,
+            rate_upper=rate,
+            gap_lower=gap,
+            position_upper=upper_position,
+            form_norm_upper=x,
+            phase_norm_upper=theta,
+        )
         for x, theta in zip(forms, reference.post_probe_phase_radius_upper_bounds)
     )
     thresholds = decay = returned = form_squares = phase_squares = None
@@ -193,9 +205,18 @@ def assess_sine_formed_class_maintenance(
             min(eta.lo * gap * x**2 / 16, lower_position * theta**2 / (4 * rate))
             for x, theta in zip(forms, phases)
         )
-        returned = tuple(value * decay.hi for value in initial_values)
-        form_squares = tuple(4 * value / (eta.lo * gap) for value in returned)
-        phase_squares = tuple(rate * value / lower_position for value in returned)
+        returned_rows = tuple(
+            _sine_lyapunov_return_squared(
+                initial_upper=value,
+                decay_upper=decay.hi,
+                eta_lower=eta.lo,
+                gap_lower=gap,
+                rate_upper=rate,
+                position_lower=lower_position,
+            )
+            for value in initial_values
+        )
+        returned, form_squares, phase_squares = tuple(zip(*returned_rows))
         energy_margins = tuple(I(q - value) for q, value in zip(thresholds, returned))
         form_margins = tuple(
             I(x**2 / 4 - value) for x, value in zip(forms, form_squares)

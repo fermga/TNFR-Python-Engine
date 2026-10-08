@@ -4,6 +4,72 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-formed-class-contact"></a>
+### Compare actual receiver responses after a supplied contact
+
+This reader rebuilds the original C9 formation families and their subsequent
+uninterrupted recovery. It compares the same winding-one receiver joined to
+donor winding one or two by one central unit bridge. The receiver's common
+phase origin is declared from initial preparation; no phase jump or reset
+occurs before or at contact.
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_formed_class_contact import (
+    assess_sine_formed_class_contact,
+)
+from tnfr.sdk import relational_report_to_dict
+
+contact = assess_sine_formed_class_contact(
+    formation_time=100,
+    relaxation_duration=10**13,
+    phase_origin_difference=Q(1, 1000),
+    contact_duration=Q(1, 100),
+    form_error_bound=Q(1, 10**10),
+    phase_error_bound=Q(1, 10**10),
+    endpoint_radius=Q(1, 10**32),
+    readout_error_bound=Q(1, 10**30),
+    radius=Q(1, 12),
+    work_allowance=Q(1, 10**6),
+    decay_power=512,
+)
+assert contact.status == "certified_formed_class_contact"
+assert all(contact.handoff_certified_by_class)
+assert contact.identity_certified and contact.work_within_allowance
+assert contact.recorded_contrast_bounds.lo > Q(1, 10**25)
+evidence = relational_report_to_dict(contact)
+```
+
+All times use `tau=e*t`, with `e=1023/1024`. Contact occurs at
+`tau=100+10**13`; the readout is actual form at receiver node `13`, one
+hundredth of a scaled unit later. The recorded contrast is donor winding two
+minus donor winding one. `decay_power=512` selects an exact rational decay
+bound admitted by the derived exponent; it does not count events.
+The initial form/phase errors retain their separate exact zero-sum constraints
+on each component. The small endpoint allowance is proved from those actual
+source families, not installed as a replacement state.
+
+Inspect `bridge_work_bounds` and `joined_form_mean_bounds` /
+`joined_phase_mean_bounds` separately. The support event changes degrees and
+conserved weighted means and adds supplied storage work; continuous loss
+does not pay for that event. `identity_certified` checks the complete joined
+state, retaining both windings under all later uninterrupted flow and recovery
+on the new mean leaf. No later forcing or event is included.
+
+The generic status needs a strictly positive recorded contrast; the example
+also checks the larger frozen threshold. `unavailable` means a sufficient
+obligation did not certify. Without an admitted source handoff, actual
+response, work and retention bounds remain `None`. The shared forecast is
+not used for the eighteen-node graph, and no incoming report is trusted in
+place of original primitives.
+
+The long structural relaxation, small readout error, initial organization,
+constitutive law and bridge occurrence are supplied premises. This is a
+conditional interaction certificate, not a practical timing claim, sensor
+model, autonomous support-selection law or physical identification.
+See the [contract](../../contracts/relational/SINE_PATTERNS.md#sine-formed-class-contact)
+and [frozen protocol, proof and evidence](../../../theory/nodal/SINE_FORMED_CLASS_CONTACT.md#sine-formed-class-contact).
+
 <a id="sine-formed-class-maintenance"></a>
 ### Certify a uniform return between repeated supplied probes
 

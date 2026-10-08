@@ -21,15 +21,16 @@ composite's interactions under justified complete nodal laws? The route is
 -> independent observation**. A sufficient representation does not independently
 justify the law that evolves it.
 
-**Active analytical gate:** consolidate and admit a
-[formed-C9 contact interface](#current-g3-gate), then freeze a bounded test
-of class-dependent receiver response if the interface passes admission.
+**Latest closed gate:** the
+[formed-C9 contact protocol](#current-g3-gate) certifies a class-dependent
+actual receiver response and retention of both joined identities.
 The [repeated-probe result](#repeated-probe-maintenance-admission),
 [formation prerequisite](#inequivalent-formed-classes-admission) and
 [one-probe result](#common-probe-admission) remain valid closed certificates.
-No new contact response, offset, horizon or numerical budget has been frozen
-or evaluated. Completed controls are reusable evidence, not work to repeat;
-no parallel producer, solver or data campaign is active. Physical constituent
+The unchanged declared protocol passed its first reserved evaluation, with
+the proof and producing source preserved beforehand. No next campaign is
+automatically active. Completed controls are reusable evidence, not work to
+repeat; no producer, solver or data campaign is active. Physical constituent
 emergence and independent law selection remain open; no empirical response
 has passed complete physical admission.
 
@@ -38,8 +39,8 @@ has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Active bounded analytical gate | [Formed-C9 contact admission and prospective receiver discrimination](#current-g3-gate); consolidation and interface/symmetry audit precede any response freeze |
-| Latest closed gate | [Quantitative repeated-probe maintenance](#repeated-probe-maintenance-admission); strict uniform return, per-cycle discrimination and supplied-work accounting |
+| Latest closed gate | [Formed-C9 contact and actual receiver discrimination](#current-g3-gate); actual source handoff, finite class-dependent response, supplied contact work and all-time joined identity retention |
+| Closed gate | [Quantitative repeated-probe maintenance](#repeated-probe-maintenance-admission); strict uniform return, per-cycle discrimination and supplied-work accounting |
 | Closed prerequisite | [Formation, common-probe discrimination and recovery](#common-probe-admission) under one complete law and support |
 | Closed prerequisite | [Two formed attracting classes](#inequivalent-formed-classes-admission), with matched conserved means and distinct preparation costs under one budget |
 | Deferred | [Named dependencies and reopening conditions](#deferred-work-and-reopening-conditions); no parallel solver, uniqueness or data campaign |
@@ -47,19 +48,20 @@ has passed complete physical admission.
 
 <a id="current-g3-gate"></a>
 <a id="formed-class-contact-admission"></a>
-## Active gate: admit contact before predicting a class-dependent response
+## Closed gate: actual formed-class contact with joint identity retention
 
-Hold one formed C9 recipient fixed and compare attachment to a winding-one
-or winding-two formed donor through the same supplied unit bridge. The
-question is whether the donor's retained organization causes a distinguishable
-finite recipient-form response while both identities survive the actual
-joined dynamics. The complete positive-loss constitutive law, held capacities
-and clock remain the same; the one declared support event changes the graph.
-Use the actual images of the original uninterrupted formation preparations,
-before any prescribed phase-probe jump, with their full admitted uncertainty.
-No subsequent forcing or repeated probe is part of this proposed comparison.
+The [frozen protocol and evaluated certificate](../nodal/SINE_FORMED_CLASS_CONTACT.md#sine-formed-class-contact)
+hold one formed C9 recipient fixed and compare attachment to a winding-one
+or winding-two formed donor through the same supplied unit bridge. Both
+complete source families give separated actual receiver-port form responses
+and retain their joined winding identities for all subsequent uninterrupted
+flow, with recovery on their actual postevent conserved-mean leaves.
+The complete positive-loss law, held capacities and clock remain unchanged;
+the one declared support event changes the graph. Actual images of the
+original unprobed formation families retain their full admitted uncertainty,
+without a reset or subsequent forcing.
 
-### Consolidation and interface admission
+### Retained admission and exact null control
 
 Preserve the closed formation, response and maintenance protocols, reports
 and source archives. Reuse the
@@ -70,12 +72,12 @@ The [contact admission owner](../nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-clas
 records the symmetry control before any receiver prediction.
 
 The dedicated formed-class report is not an input accepted by the existing
-prepared-composition reader. Admit a handoff from original primitives that
-preserves the zero-sum source correlations and actual endpoint family.
-The shared sine forecast's current coordinate limit also excludes the joined
-eighteen-node graph. Admit analytic full-support bounds or separately justified
-solver work before freezing evaluation; do not automatically raise that limit
-or replace the family by a graph snapshot or unrelated Cartesian box.
+prepared-composition reader. The new handoff rebuilds original primitives and
+uses uninterrupted nonlinear recovery while preserving the zero-sum source
+correlations and actual endpoint family. Analytic full-support bounds supply
+the admitted method for the joined eighteen-node graph. The shared sine
+forecast's coordinate limit remains unchanged; no unsupported forecast call,
+graph snapshot or unrelated Cartesian box replaces that family.
 
 For central ports and zero relative origins, those uninterrupted nominal
 reflected sources have identically zero port form and phase. Their joined
@@ -86,30 +88,40 @@ uniform nonzero class contrast at any horizon. Retain that null as an
 obstruction to this interface, not a reason to scan later times. It does not
 apply to arbitrary states after the earlier prescribed phase probe.
 
-An informative interface needs an explicit additional premise, such as a
-common declared relative phase offset `phi` with `sin(phi) != 0` for nonzero
-central nominal current; an offset of pi is still a current null. The premise
-must be shared between donor comparisons, with matched nominal port data and
-the same admitted uncertainty budgets, retained relative form/phase origins
-and explicit work accounting. Actual uncertain ports need not coincide;
-do not add cross-class equality constraints absent from the source families.
-No offset, alternative port or contact budget is selected by this plan update.
-Stop at a precise missing premise or an exclusion if the intended interface
-cannot be admitted.
+The [frozen positive-contact protocol](../nodal/SINE_FORMED_CLASS_CONTACT.md#sine-formed-class-contact)
+supplies one common receiver-minus-donor phase origin with `sin(phi) != 0`.
+It is declared from initial preparation, not installed by a later phase jump
+or reset. Both donor comparisons have matched nominal port data and the same
+admitted uncertainty budgets. Actual uncertain ports need not coincide;
+no cross-class equality constraint is added to the original source families.
 
-### Prospective response only after the interface passes
+### Evaluated response and resumption boundary
 
-| Obligation | Required admission |
-| --- | --- |
-| F1: state and comparison | Retain the actual uninterrupted formation-image families, fixed recipient preparation and observation, both donor classes, relative origins and all original uncertainty. Preserve only justified comparison correlations rather than replacing reached states by independent target boxes or conditioning uncertain ports to equality |
-| F2: complete joined law | Declare the common unit bridge, ports, attachment time, interface offsets and supplied work allowance. Recompute endpoint degrees, mobility, weighted means and full storage on the joined support; isolated-component coefficients and separate means cannot substitute |
-| F3: causal and identity controls | Audit symmetries, matched nominal port information and equal uncertainty budgets; retain the disconnected causal-null control. Prove both whole-family geometric identities under the actual post-attachment law, and distinguish transmitted donor-class influence from a different imposed interface |
-| F4: bounded prediction and stopping | Only after interface and full-support method admission, freeze one contact protocol, receiver readout, finite horizon, separation/error criteria and numerical budget before reserved evaluation. Close with joint causal discrimination and identity retention, explicitly insufficient bounds or a proved obstruction; no contact/horizon sweep or transfer of unrelated probe coefficients |
+Retain the original phase-flat source families and acquisition at scaled time
+`100`, then continue their actual unprobed flow for the declared relaxation
+`10^13`. One central unit bridge joins donor node `4` to receiver node `13`
+at `tau_c = 100 + 10^13`, with relative phase origin `1/1000` supplied from
+preparation. Read actual receiver-port form at `tau_c + 1/100`; the contrast
+is donor winding two minus donor winding one.
+The owner fixes source errors `10^-10`, component endpoint norm allowances
+`10^-32`, independent readout errors `10^-30`, radius `1/12`, bridge-work
+allowance `10^-6` and recorded-contrast threshold `10^-25`. Its exact decay
+envelope is `2^-512`; `512` is a decay exponent, not an intervention count.
+These choices followed sufficient analytic bounds before response evaluation.
+The [saved report](../../docs/assets/sine_formed_classes/contact-v1.json)
+passes the complete joint rule without retuning: fresh formation and both
+uninterrupted handoffs, supplied-work admission, whole-joined identity and
+recorded contrast above the declared threshold. The exact result, proof,
+controls and source provenance belong to the linked owner and evidence.
 
 The attachment and its work remain supplied; it is not autonomous support
-birth or a native operator selected by the flow. This gate adds no physical
-identity or unique-law claim. The present work is consolidation and analytical
-admission only: no contact-response producer or data campaign is active.
+birth or a native operator selected by the flow. The long structural dwell and
+small readout-error premise have no laboratory-clock or sensor justification
+here. This gate adds no physical identity, binding-force or unique-law claim.
+No next contact, dwell optimization, trajectory, parameter search or data
+campaign is activated. Reopening requires a new bounded F1-F4 obligation;
+the [deferred dependencies](#deferred-work-and-reopening-conditions) remain
+unresolved rather than implied by this conditional result.
 
 <a id="inequivalent-formed-classes-admission"></a>
 ## Closed admission: two formed attracting classes under one complete law
@@ -194,8 +206,8 @@ those interventions, so this is not finite-budget autonomous maintenance.
 The conservative structural dwell makes no practical-speed or laboratory-time
 claim. Source organization, support, complete law and probe selection remain
 supplied; physical identification and independent constitutive restriction
-remain open. The active contact admission above owns its separate F1-F4
-obligations; no dwell optimization, repeated-probe modification or data
+remain open. The closed contact gate above owns its separate F1-F4
+result; no dwell optimization, repeated-probe modification or data
 campaign is active.
 
 <a id="formation-response-admission"></a>
