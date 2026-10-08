@@ -182,6 +182,11 @@ and partial validated horizons.
   noncommuting operators and dyadic gain boundaries independently. Keep the
   previous partial artifact unchanged; a new method is separate evidence,
   not permission to enlarge the old allowance or replace its verdict.
+  A two-port equilibrium admission must reconstruct every fine edge and
+  cycle period, distinguish balanced circulation from nonzero nodal rates,
+  and retain the matched-class zero-current control. Enclosed root existence
+  and strict acute margins, not small residuals, justify the equilibrium;
+  local recovery does not establish capture of a supplied initial family.
 - **All-time and symmetry verdicts have different scope.** Fixed-budget
   consensus tests need an independent mixed-Lyapunov derivative from both
   full rows, zero-budget and failed-premise controls. Reflection excludes
@@ -234,6 +239,10 @@ The separate ordered-heat form certificate preserves that earlier report body
 as its baseline and applies the same primitive inputs and channel allowances.
 Its audit checks both new strict margins without relabeling the original
 `phase_only` result or its false joint stopping rule.
+The two-port compatibility bundle has a different static criterion: primary
+and matched-control equilibrium admission, full cycle/current consistency,
+strict acute and Hessian bounds, and nonzero versus zero interface current.
+It certifies neither a source trajectory nor capture after an attachment.
 
 ```sh
 python -m pytest tests/physics/test_sine_formed_evidence.py -q

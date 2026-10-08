@@ -21,7 +21,13 @@ composite's interactions under justified complete nodal laws? The route is
 -> independent observation**. A sufficient representation does not independently
 justify the law that evolves it.
 
-**Latest closed gate:** [all-time form tracking with the unchanged surrogate](#current-g3-gate)
+**Latest closed gate:** [two-port compatibility of the formed C9 classes](#current-g3-gate)
+admits a unique acute geometry in the declared unequal-class sector, with
+deformed internal twists, opposed stationary contact currents and local
+attraction. The matched-class control has zero contact current. Neither result
+proves acquisition from the earlier source families or autonomous contact selection.
+
+**Earlier closed gate:** [all-time form tracking with the unchanged surrogate](#sine-port-form-tracking-admission)
 certifies both original channel allowances through a separate ordered heat
 comparison. The complete model, preparation, contact support and resolution
 thresholds are unchanged; the earlier partial certificate remains preserved.
@@ -59,7 +65,8 @@ response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Latest closed gate | [All-time form tracking](#current-g3-gate); both unchanged channel allowances certified by a separate ordered heat comparison, preserving the previous partial result |
+| Latest closed gate | [Two-port C9 compatibility](#current-g3-gate); unique acute equilibrium in the declared sector, forced internal deformation, balanced interface circulation and local attraction, with the matched-class zero-current control |
+| Closed gate | [All-time form tracking](#sine-port-form-tracking-admission); both unchanged channel allowances certified by a separate ordered heat comparison, preserving the previous partial result |
 | Closed gate: qualified partial | [All-time reduced/full tracking](#sine-port-relaxation-admission); valid uniform envelopes and phase resolution, with the unchanged form and joint resolution criteria not certified by that method |
 | Closed gate | [Degree-aware reduced port composition](#reduced-port-network-composition-admission); generic unit-contact assembly, exact storage balance and uniform full-law error with one frozen actual-family three-component control |
 | Closed gate | [Reduced formed-class port description and receiver transfer](#reduced-formed-class-port-admission); twenty-coordinate surrogate, full-law error fraction, actual receiver discrimination and joined identity retention |
@@ -71,6 +78,52 @@ response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge); source-specific obstructions remain in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="sine-two-port-compatibility-admission"></a>
+## Closed gate: compatibility through two distinct component ports
+
+The [protocol, proof and retained result](../nodal/SINE_TWO_PORT_COMPATIBILITY.md#sine-two-port-compatibility)
+admit a locally attracting acute geometry for the already specified C9 winding
+classes `(2,1)` joined at two distinct ports. The supplied unit contacts are
+`D0--R0` and `D1--R1`, with both rings
+oriented by increasing local index. Their four-edge interface cycle
+`D0,R0,R1,D1,D0` has period zero. Class labels alone do not specify the new
+circulating currents or the internal deformations required by nodal balance.
+
+The general [cycle-sector criterion](../nodal/SINE_PATTERN_DYNAMICS.md#sine-cycle-sector-compatibility)
+already supplies uniqueness within an admitted acute sector and local recovery
+once an equilibrium exists. The [native return-path example](../nodal/RELATIONAL_RETURN_PATH_GEOMETRY.md#return-path-equilibrium)
+already demonstrates deformation and circulation under its different complete
+law and support. Reuse those methods without transferring their numerical
+geometry, preparation verdicts or coefficients. The new obligation is concrete
+compatibility of these C9 classes and this interface. Neither the bridge-tree
+rule nor the central-port reduced surrogate covers it unchanged.
+
+| Stage | Required admission |
+| --- | --- |
+| F1: joint geometry | Retain all eighteen nodes and both rows, the two internal ring periods and the oriented interface period. Remove only one global form mean and phase origin; do not recenter the components independently or supply a favorable relative phase as an extra answer. |
+| F2: complete law | Keep the existing positive-loss sine law, held unit capacities, structural clock and full joined degrees. Support is fixed and supplied; no source, event selector, reset, new pressure or forcing law is introduced. |
+| F3: existence and recovery | Derive a certified acute equilibrium enclosure from the full circulation and period equations, reconstruct the nodal phases and verify every current balance. Prove uniqueness only in the declared acute sector and local attraction only on the conserved-mean leaf. Retain a matched `(1,1)` zero-interface-current control and the obstruction to joining undeformed mismatched twists. |
+| F4: prospective distinction | Freeze the analytic enclosure method, finite arithmetic budget and complete producing source before any reserved assessment. Certify nonzero interface circulation and internal deformation for `(2,1,0)`, with strict acute margins, or retain an exact obstruction or explicitly insufficient bounds. Do not infer exact balance from a small numerical residual. |
+
+The [frozen protocol](../../docs/assets/sine_formed_classes/two-port-compatibility-v1.protocol.json)
+fixes primary classes `(2,1)`, matched control `(1,1)`, thirty-two outer
+refinements and sixty-four inner refinements of the nested monotone turn
+equations. The complete proof and producing source were archived before
+the first evaluation. The [saved bundle](../../docs/assets/sine_formed_classes/two-port-compatibility-v1.json)
+admits both geometries and passes all unchanged stopping conditions, including
+positive unequal-class contact current, exact zero matched current and the
+undeformed-mismatch exclusion. No refinement budget, source or target changed
+after evaluation. Exact bounds and provenance belong to the result owner.
+
+**Resumption boundary:** this gate ends at joint-geometry admission and local
+recovery. It does not certify a path from the previous isolated preparations,
+global attraction, formation of an initially unorganized receiver, contact
+work or occurrence, or physical binding. Those claims need their own source,
+event and basin premises. A future source-to-basin handoff requires a separate
+bounded F1-F4 declaration; local attraction and an available work budget alone
+cannot replace it. No trajectory, parameter sweep, receiver-recruitment or
+physical-data campaign is active.
+
 <a id="sine-port-form-tracking-admission"></a>
 ## Closed gate: all-time form tracking with the unchanged surrogate
 
@@ -114,7 +167,9 @@ establish a physical sensor specification, the resolution of every smaller
 interaction signal, or practical acquisition time. Any further task needs a
 new bounded F1-F4 obligation tied to the [deferred dependencies](#deferred-work-and-reopening-conditions),
 such as independently justified preparation/support or an observation/law
-restriction. No graph, horizon, precision, solver or data campaign is active.
+restriction. The separately admitted [two-port compatibility gate](#sine-two-port-compatibility-admission)
+changes the interface question; it does not rerun or enlarge this tracking
+certificate. No horizon, precision, solver or data campaign follows from it.
 
 <a id="sine-port-relaxation-admission"></a>
 ## Closed gate: all-time tracking with phase-only resolution
@@ -186,7 +241,8 @@ speedup. It does not select support, hierarchy, preparation or a fundamental
 physical law, or turn supplied contact work into autonomous formation.
 Insufficient bounds remain unavailable; independent balance or closure
 obstructions retain their own scope. No new graph, receiver, horizon,
-precision, solver or data campaign is active. Further work requires a new
+precision, solver or data campaign follows automatically from this result.
+Further work requires a new
 bounded F1-F4 obligation tied to the
 [deferred dependencies](#deferred-work-and-reopening-conditions).
 

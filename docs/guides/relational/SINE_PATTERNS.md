@@ -4,6 +4,75 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-two-port-compatibility"></a>
+### Inspect compatibility at two distinct ports
+
+`assess_sine_two_port_compatibility` admits an implicit acute equilibrium on
+two C9 rings joined at local nodes zero and one. Its three required arguments
+are `classes`, `outer_refinements` and `inner_refinements`; the
+[API contract](../../contracts/relational/SINE_PATTERNS.md#sine-two-port-compatibility)
+owns their domains and the fixed complete law. This is a different interface
+from the central-port reduction, whose trajectory bounds cannot be reused
+unchanged. Read the retained primary and matched control from the repository
+root without rerunning either assessment:
+
+```python
+from fractions import Fraction as Q
+from pathlib import Path
+from tnfr.utils.io import json_loads
+
+saved = json_loads(
+    Path("docs/assets/sine_formed_classes/two-port-compatibility-v1.json").read_text(
+        encoding="utf-8"
+    )
+)
+assert saved["schema"] == "tnfr.sine-two-port-compatibility.v1"
+primary = saved["report"]
+matched = saved["matched_control"]["report"]
+
+for label, record in (("unequal classes", primary), ("matched classes", matched)):
+    print(label, record["classes"], record["status"])
+    print("acute", record["acute_geometry_certified"])
+    print("local attraction", record["local_attraction_certified"])
+    print("undeformed pair compatible", record["uniform_pair_compatible"])
+    print(record["unavailable_reasons"])
+
+def first_contact_current(record):
+    index = record["geometry"]["edges"].index([0, 9])
+    interval = record["edge_current_bounds"][index]
+    return tuple(Q(interval[key]["numerator"], interval[key]["denominator"])
+                 for key in ("lo", "hi"))
+
+primary_current = first_contact_current(primary)
+matched_current = first_contact_current(matched)
+assert primary_current[0] > 0
+assert matched_current == (Q(0), Q(0))
+assert saved["frozen_stopping_rule_passed"]
+```
+
+Both [saved certificates](../../assets/sine_formed_classes/two-port-compatibility-v1.json)
+have status `certified_compatible`. The unequal-class first contact current
+is approximately `0.11461`; the matched current is exactly zero. The unequal
+twists deform to satisfy the joint balance; independently rotating their
+undeformed copies cannot make both contacts compatible. These are static
+geometric distinctions, not an evaluated formation trajectory.
+
+Inspect `bridge_turn_bounds`, `edge_current_bounds` and the correlated affine
+turn coefficients together. The intervals enclose one implicit geometry;
+their midpoint and arbitrary independent endpoint choices are not exact
+equilibria. `full_nodal_residuals_consistent` checks interval consistency,
+while exact stationarity rests on the proved root equations and complete
+nodal factorization. Matched classes use exact uniform twists, so absent
+root brackets are expected rather than missing evidence.
+
+The [theory owner](../../../theory/nodal/SINE_TWO_PORT_COMPATIBILITY.md#sine-two-port-compatibility)
+separates this compatibility question from earlier source formation. Local
+attraction does not show that the previous isolated preparations reach the
+new basin, or that a contact occurs or pays its storage cost. Stationary sine
+circulation has zero nodal velocities; it is not sustained nodal motion or
+a physical current. The [retained-evidence audit](../../../TESTING.md#current-checks-and-retained-evidence)
+checks the frozen bundle separately from this read-only inspection.
+
 <a id="sine-port-form-tracking"></a>
 ### Inspect the sharper form bound and its preserved baseline
 

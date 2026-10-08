@@ -4,6 +4,81 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-two-port-compatibility"></a>
+### Joint equilibrium through two distinct component ports
+
+`assess_sine_two_port_compatibility(*, classes, outer_refinements,
+inner_refinements)` in
+[`relational_sine_two_port_compatibility.py`](../../../src/tnfr/physics/relational_sine_two_port_compatibility.py)
+returns `SineTwoPortCompatibility`. All three primitives are required.
+`classes` supplies exactly two ordinary non-Boolean integers in `{1,2}`, in
+donor/receiver order; all four ordered pairs are admitted. Both refinement
+budgets are ordinary non-Boolean integers in `[1,64]`. The budgets control
+finite enclosure work, not physical evolution time or a new law parameter.
+
+The support is fixed: donor nodes `0..8`, receiver nodes `9..17`, both
+increasing-index C9 cycles, and unit contacts `0--9` and `1--10`. Both rows
+use the actual joined degrees. The `bridge_*` fields name these contact
+edges; neither is a graph cut edge on the joined support.
+The complete positive-loss sine law retains
+`e=1023/1024`, `w=1/1024`, `beta=nu_i=1` and `tau=e*t`. The phase geometry
+has the supplied ring periods and zero period on the oriented interface
+cycle `D0,R0,R1,D1,D0`. Uniform form is fixed at zero; a single global
+degree-weighted phase gauge fixes its displayed lifts. Independently recentered
+components or a supplied favorable relative origin do not replace the joint
+balance equations.
+
+The [theory owner](../../../theory/nodal/SINE_TWO_PORT_COMPATIBILITY.md#sine-two-port-compatibility)
+derives the enclosure, reusing the existing circulation/sector uniqueness
+and full-law local recovery arguments. Root existence and strict acute
+admission must be proved; a small residual at a represented midpoint is not
+an exact equilibrium. Unresolved strict signs yield an unavailable numerical
+certificate, without promoting that midpoint or selecting a new budget.
+
+`canonical_root_turn_bracket` always describes the `(2,1)` construction;
+the reversed class order uses exact component exchange. Matched classes use
+analytic uniform twists and have no root brackets. The short, bulk, bridge
+and nodal turn enclosures are correlated images of that construction.
+`nodal_turn_affine_coefficients` and `edge_turn_affine_coefficients` retain
+rows `(constant, donor-short coefficient, receiver-short coefficient)`, with
+`edge_integer_offsets` preserving the closing-edge branches. Their shared
+variables are constrained by the root equations. Independent corners of these
+intervals are not a family of equilibria or an admitted preparation.
+
+The exact sine-symbol factorization reconstructs every nodal balance.
+`balance_equation_bounds` and `nodal_current_residual_bounds` separately check
+numerical consistency; `full_nodal_residuals_consistent` does not assert that
+a midpoint is critical. `phase_hessian_gap_lower_bound` combines strict edge
+cosines with an independently checked full-support Laplacian bound.
+`implicit_equilibrium_certified`, `acute_geometry_certified` and
+`local_attraction_certified` retain their separate meanings; `status` is
+`certified_compatible` only when the complete numerical admission succeeds,
+otherwise `unavailable` with explicit reasons. An unresolved root leaves
+target numerical fields `None`; a later consistency or margin failure can
+retain diagnostic enclosures. Neither failure refutes the analytic existence
+theorem.
+
+`uniform_pair_compatible` and `uniform_pair_excluded` concern the undeformed
+isolated twists. `uniform_pair_nodal_current_bounds` displays the reference
+with its first contact aligned. Exclusion for every relative rotation uses
+the theory's two simultaneous contact-balance conditions, not that one
+displayed residual alone.
+
+This detached assessor admits a joint equilibrium and local attraction on
+its conserved-mean leaf. The original isolated class-formation certificates
+are not inputs or a proof that their contact trajectories reach this basin.
+Neither the bridge-tree decomposition nor the central-port reduced model
+applies unchanged to this two-port support. Balanced stationary sine currents
+can be nonzero while every nodal rate vanishes; they do not establish ongoing
+nodal motion, dissipated power or a physical current.
+
+The direct schema is `tnfr.sine-two-port-compatibility.v1`; shared SDK
+projection and atomic export preserve exact enclosures and availability.
+No trajectory, support event, work payment, autonomous preparation or physical
+binding is supplied by this assessment.
+The [usage guide](../../guides/relational/SINE_PATTERNS.md#sine-two-port-compatibility)
+reads the saved primary and matched-control certificates.
+
 <a id="sine-port-form-tracking"></a>
 ### Ordered heat comparison for uniform form tracking
 

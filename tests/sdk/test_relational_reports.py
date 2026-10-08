@@ -2389,6 +2389,12 @@ def test_prepared_composition_nested_label_admission(
             "assess_sine_port_form_tracking",
             None,
         ),
+        (
+            "relational_sine_two_port_compatibility",
+            "SineTwoPortCompatibility",
+            "assess_sine_two_port_compatibility",
+            None,
+        ),
     ],
 )
 def test_reduced_port_sdk_wiring_does_not_evaluate_research(

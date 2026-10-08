@@ -25,6 +25,7 @@ ARCHIVED = (
     "port-composition-v1",
     "port-relaxation-v1",
     "port-form-tracking-v1",
+    "two-port-compatibility-v1",
 )
 MANIFESTS = ("evidence.manifest.json",) + tuple(
     f"{stem}.manifest.json" for stem in ARCHIVED
@@ -42,6 +43,7 @@ def no_evidence_producers():
         relational_sine_port_form_tracking,
         relational_sine_port_relaxation,
         relational_sine_reduced_class_ports,
+        relational_sine_two_port_compatibility,
     )
 
     def forbidden(*args, **kwargs):
@@ -57,6 +59,7 @@ def no_evidence_producers():
             relational_sine_port_form_tracking,
             relational_sine_port_relaxation,
             relational_sine_reduced_class_ports,
+            relational_sine_two_port_compatibility,
         ):
             for name in vars(module):
                 if (
@@ -69,6 +72,7 @@ def no_evidence_producers():
                             "evaluate_sine_port_composition",
                             "assess_sine_port_relaxation",
                             "assess_sine_port_form_tracking",
+                            "assess_sine_two_port_compatibility",
                         )
                     )
                     or name == "_unprobed_handoff"
@@ -105,7 +109,7 @@ def test_all_retained_artifact_sizes_and_hashes(retained):
         for manifest in manifests.values()
         for item in manifest["artifacts"]
     ]
-    assert len(names) == len(set(names)) == 20 and set(names) == expected
+    assert len(names) == len(set(names)) == 23 and set(names) == expected
     for manifest in manifests.values():
         for item in manifest["artifacts"]:
             data = content[item["file"]]
@@ -574,6 +578,189 @@ def test_form_tracking_retains_prior_result_and_independent_heat_gains(retained)
             "joint_resolution_passed": True,
         }
     )
+    assert (
+        saved["frozen_stopping_rule_passed"]
+        is manifest["frozen_stopping_rule_passed"]
+        is True
+    )
+
+
+def test_two_port_record_preserves_correlated_equilibria_and_null_control(retained):
+    from tnfr.mathematics._exact_linear_algebra import exact_symmetric_semidefinite
+    from tnfr.mathematics._rational_interval import I, pi_interval, sin
+
+    manifests, content = retained
+    manifest = manifests["two-port-compatibility-v1.manifest.json"]
+    protocol = json_loads(content["two-port-compatibility-v1.protocol.json"])
+    saved = json_loads(content["two-port-compatibility-v1.json"])
+    primary, control = saved["report"], saved["matched_control"]["report"]
+    expected_edges = sorted(
+        {
+            tuple(sorted((offset + j, offset + (j + 1) % 9)))
+            for offset in (0, 9)
+            for j in range(9)
+        }
+        | {(0, 9), (1, 10)}
+    )
+    pi = pi_interval()
+
+    def interval(value):
+        return I(_exact(value["lo"]), _exact(value["hi"]))
+
+    def h(k, turn):
+        return sin(2 * pi * ((k - turn) / 8)) - sin(2 * pi * turn)
+
+    for inputs, report in (
+        (protocol["inputs"], primary),
+        (protocol["matched_control_inputs"], control),
+    ):
+        for name, value in inputs.items():
+            assert report[name] == value
+        geometry = report["geometry"]
+        assert geometry["nodes"] == list(range(18))
+        edges = list(map(tuple, geometry["edges"]))
+        assert edges == expected_edges and geometry["cycle_rank"] == 3
+        degrees = [sum(i in edge for edge in edges) for i in range(18)]
+        assert report["degrees"] == degrees
+        assert tuple(map(_exact, report["invariant_weights"])) == tuple(degrees)
+        assert _exact(report["weighted_coordinate_mass"]) == sum(degrees) == 40
+        assert all(_exact(value) == 0 for value in report["target_epi"])
+        assert all(_exact(value) == 1 for value in report["capacity"])
+        assert _exact(report["weighted_form_mean"]) == 0
+        assert _exact(report["weighted_phase_mean"]) == 0
+        nodal = tuple(
+            tuple(map(_exact, row)) for row in report["nodal_turn_affine_coefficients"]
+        )
+        edge_affine = tuple(
+            tuple(map(_exact, row)) for row in report["edge_turn_affine_coefficients"]
+        )
+        for column in range(3):
+            assert sum(degree * row[column] for degree, row in zip(degrees, nodal)) == 0
+        for index, (left, right) in enumerate(edges):
+            offset = report["edge_integer_offsets"][index]
+            assert edge_affine[index] == tuple(
+                nodal[right][column]
+                - nodal[left][column]
+                - (offset if column == 0 else 0)
+                for column in range(3)
+            )
+        assert report["named_cycles"] == [
+            list(range(9)),
+            list(range(9, 18)),
+            [0, 9, 10, 1],
+        ]
+        assert report["named_cycle_periods"] == [*report["classes"], 0]
+        for cycle, winding in zip(
+            report["named_cycles"], report["named_cycle_periods"]
+        ):
+            total = [Q(0)] * 3
+            for left, right in zip(cycle, cycle[1:] + cycle[:1]):
+                index = edges.index(tuple(sorted((left, right))))
+                sign = 1 if left < right else -1
+                total = [a + sign * b for a, b in zip(total, edge_affine[index])]
+            assert total == [winding, 0, 0]
+        # Rebuild both the fine incidence identity and the full-support gap.
+        symbols = tuple(
+            tuple(map(_exact, row)) for row in report["edge_sine_symbol_coefficients"]
+        )
+        equations = tuple(
+            tuple(map(_exact, row))
+            for row in report["balance_equation_sine_coefficients"]
+        )
+        for node in range(18):
+            row = tuple(
+                sum(
+                    (int(node == left) - int(node == right)) * value[column]
+                    for (left, right), value in zip(edges, symbols)
+                )
+                for column in range(5)
+            )
+            assert row == tuple(
+                map(_exact, report["nodal_sine_symbol_coefficients"][node])
+            )
+            factors = tuple(map(_exact, report["nodal_balance_multipliers"][node]))
+            assert row == tuple(
+                sum(
+                    factor * equation[column]
+                    for factor, equation in zip(factors, equations)
+                )
+                for column in range(5)
+            )
+        laplacian = tuple(
+            tuple(
+                Q(degrees[i] if i == j else -int(tuple(sorted((i, j))) in edges))
+                for j in range(18)
+            )
+            for i in range(18)
+        )
+        assert laplacian == tuple(
+            tuple(map(_exact, row)) for row in report["laplacian"]
+        )
+        gap = _exact(report["laplacian_gap_lower_bound"])
+        assert gap == Q(2, 81)
+        shifted = tuple(
+            tuple(laplacian[i][j] - gap * (int(i == j) - Q(1, 18)) for j in range(18))
+            for i in range(18)
+        )
+        assert exact_symmetric_semidefinite(shifted)
+        cosine_lower = min(
+            _exact(value["lo"]) for value in report["edge_cosine_bounds"]
+        )
+        assert _exact(report["minimum_cosine_lower_bound"]) == cosine_lower > 0
+        assert _exact(report["phase_hessian_gap_lower_bound"]) == cosine_lower * gap > 0
+        assert interval(report["acute_margin_turns_bounds"]).lo > 0
+        assert all(
+            interval(value).contains(0)
+            for name in (
+                "nodal_current_residual_bounds",
+                "target_form_rate_bounds",
+                "target_phase_rate_bounds",
+            )
+            for value in report[name]
+        )
+        assert (
+            report["status"] == "certified_compatible"
+            and report["unavailable_reasons"] == []
+        )
+        assert all(
+            report[name] is True
+            for name in (
+                "implicit_equilibrium_certified",
+                "full_nodal_residuals_consistent",
+                "acute_geometry_certified",
+                "local_attraction_certified",
+            )
+        )
+
+    # Re-admit saved strict root evidence without calling a root solver.
+    outer = primary["canonical_root_turn_bracket"]
+    assert outer["refinements"] == protocol["inputs"]["outer_refinements"] == 32
+    lower, upper = _exact(outer["lower"]), _exact(outer["upper"])
+    assert upper - lower == Q(1, 9 * 2**32)
+    assert (
+        interval(outer["lower_residual"]).lo > 0 > interval(outer["upper_residual"]).hi
+    )
+    for index, endpoint in enumerate((lower, upper)):
+        inner = primary["inner_root_brackets_at_outer_endpoints"][index]
+        c_low, c_high = _exact(inner["lower"]), _exact(inner["upper"])
+        assert inner["refinements"] == protocol["inputs"]["inner_refinements"] == 64
+        assert c_high - c_low == Q(1, 9 * 2**64)
+        assert (h(1, c_low) + h(2, endpoint)).lo > 0
+        assert (h(1, c_high) + h(2, endpoint)).hi < 0
+        value = h(2, endpoint) - sin(pi * (endpoint - I(c_low, c_high)))
+        assert value.lo > 0 if index == 0 else value.hi < 0
+    current = interval(primary["edge_current_bounds"][expected_edges.index((0, 9))])
+    assert current.lo > 0
+    assert primary["uniform_pair_excluded"] is True
+    assert primary["uniform_pair_compatible"] is False
+    assert control["canonical_root_turn_bracket"] is None
+    assert control["uniform_pair_compatible"] is True
+    assert control["uniform_pair_excluded"] is False
+    for edge in ((0, 9), (1, 10)):
+        current = interval(control["edge_current_bounds"][expected_edges.index(edge)])
+        assert current.lo == current.hi == 0
+    assert saved["frozen_stopping_rule"] == manifest["frozen_stopping_rule"]
+    assert all(value is True for value in saved["frozen_stopping_rule"].values())
     assert (
         saved["frozen_stopping_rule_passed"]
         is manifest["frozen_stopping_rule_passed"]
