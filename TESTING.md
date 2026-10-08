@@ -180,6 +180,20 @@ the averaging law is an implementation control, not a reserved response
 or a calibration of the sensor kernel. Point-sample exposure equivalence
 alone must not be reused as equality of interval averages.
 
+For the [response-free resolution budget](theory/nodal/SINE_APERTURE_RESOLUTION.md),
+select [`test_sine_aperture_budget.py`](tests/physics/test_sine_aperture_budget.py)
+with the aperture inverse and SDK suites. Independently reconstruct moment
+row norms, separate sensor/enclosure/clock/reconstruction errors, strict
+source and quotient guards, and conditional width targets. Exercise exact
+boundary equality, large and subgrid rational inputs, and failed sufficient
+budgets without inventing unavailable width certificates. Rebuild the
+noise-overlap threshold from the two complete-history remainder bounds;
+check that only additive sensor error admits that existential witness.
+Numerical halfwidth alone must not trigger it, and an inadmissible whole-ball
+sufficient guard must not erase the valid zero-residual witness. Guard
+these controls against producer, inverse and frozen-worker execution.
+No selected readings or reserved responses are required for this theorem.
+
 When changing the independent full-state response generator, select the
 [direct source-box Taylor suite](tests/mathematics/test_validated_box_taylor.py)
 and [two-port readout suite](tests/physics/test_sine_two_port_readout.py).
@@ -211,6 +225,7 @@ python -m pytest tests/physics/test_sine_clock_inference.py tests/physics/test_s
 python -m pytest tests/physics/test_sine_curvature_inference.py tests/physics/test_sine_clock_inference.py tests/physics/test_sine_two_pulse_inference.py -q
 python -m pytest tests/physics/test_sine_clock_drift_inference.py tests/physics/test_sine_curvature_inference.py tests/physics/test_sine_clock_inference.py tests/sdk/test_relational_reports.py -q
 python -m pytest tests/physics/test_sine_aperture_inference.py tests/physics/test_sine_clock_drift_inference.py tests/physics/test_sine_curvature_inference.py tests/sdk/test_relational_reports.py -q
+python -m pytest tests/physics/test_sine_aperture_budget.py tests/physics/test_sine_aperture_inference.py tests/sdk/test_relational_reports.py -q
 python -m pytest tests/physics/test_sine_aperture_readout.py tests/mathematics/test_validated_box_taylor.py tests/physics/test_sine_two_port_readout.py tests/sdk/test_relational_reports.py -q
 python -m pytest tests/physics/test_sine_formed_evidence.py tests/physics/test_sine_curvature_evidence.py tests/physics/test_sine_clock_drift_evidence.py tests/physics/test_sine_aperture_evidence.py -q
 ```

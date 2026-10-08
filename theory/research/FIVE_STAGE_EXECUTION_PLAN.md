@@ -23,12 +23,14 @@ composite's interactions under justified complete nodal laws? The route is
 collective properties from their physical identification. A sufficient
 representation does not independently justify the law that evolves it.
 
-The [reserved finite-aperture software gate](#current-g3-gate) is closed.
-Its first retained assessment passed the fixed full-history, average-transfer
-and necessary-inference criteria. The sole **inactive** next boundary is
-a finite-noise/horizon resolution audit for this same averaged observable.
-No further response campaign is active; earlier evidence keeps its original
-premises. Software resolution is distinct from physical measurement admission.
+The [finite-noise/horizon theoretical gate](#current-g3-gate) is closed.
+It separates sufficient resolution budgets from a proved bounded-noise
+ambiguity for the same four boxcars and complete observation model.
+The [reserved finite-aperture result](#reserved-aperture-inference-admission)
+remains unchanged. The sole next admission is an inactive P2 feasibility
+audit of one explicitly selected terrestrial coupled-phase realization.
+No response or physical-data campaign is active; declared mathematical
+budgets do not establish attainable preparation or measurement precision.
 Physical constituent emergence and independent law selection remain open;
 no empirical response has passed complete physical admission.
 
@@ -37,10 +39,10 @@ no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Latest closed reserved gate | [Finite-aperture software evaluation](#current-g3-gate): first frozen full-history averages, public-only inverse and declared transfer/alternative controls |
-| Inactive resumption boundary | [Finite-noise/horizon resolution audit](#current-g3-gate): retain the averaged observable and derive informative error/window budgets or a scoped obstruction |
+| Latest closed theoretical gate | [Finite-noise/horizon resolution](#current-g3-gate): sufficient error/window budgets and a separate complete-history noise-overlap obstruction |
+| Latest closed reserved gate | [Finite-aperture software evaluation](#reserved-aperture-inference-admission): first frozen full-history averages, public-only inverse and declared transfer/alternative controls |
 | Latest closed admission gate | [Validated integral-observation producer](#sine-aperture-readout-admission): explicit affine clock, complete carried state and certified averages or an honest partial prefix |
-| Latest closed theoretical gate | [Finite-aperture observation](#sine-aperture-inference-admission): exact moments and finite-error necessary inference at fixed positive aperture fractions |
+| Closed prerequisite | [Finite-aperture observation](#sine-aperture-inference-admission): exact moments and finite-error necessary inference at fixed positive aperture fractions |
 | Closed prerequisite | [Reserved nonconstant-clock evaluation](#reserved-clock-drift-inference-admission): full-state signed transfer, mean-rate/gain coverage and exact sampled-profile ambiguity under frozen budgets |
 | Closed prerequisite | [Bounded clock drift](#sine-clock-drift-inference-admission): exact sampled-exposure equivalence and finite-error inference of the first-window mean rate under held sensor and structural laws |
 | Closed prerequisite | [Reserved four-reading software evaluation](#reserved-curvature-inference-admission): complete sequential response, public-only inverse and separate clock/gain resolution under fixed budgets |
@@ -52,6 +54,32 @@ no empirical response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="sine-aperture-resolution-admission"></a>
+<a id="active-theoretical-gate-finite-noise-and-horizon-resolution"></a>
+## Closed theoretical gate: finite-noise and horizon resolution
+
+The [resolution theorem](../nodal/SINE_APERTURE_RESOLUTION.md#sine-aperture-resolution)
+and [response-free budget assessment](../../src/tnfr/physics/relational_sine_aperture_budget.py)
+give conditional width guarantees on a positive interval of horizons,
+with distinct source, sensor, enclosure and clock-drift allowances.
+The theorem separates obstructions of this sufficient method from an
+explicit pair of complete histories that can yield the same four-average
+record under bounded sensor error. Shorter acquisition does not uniformly
+remove that ambiguity. Neither result establishes a sharp information
+threshold, achievable laboratory uncertainty or a physical time unit.
+All earlier frozen owners and evidence remain unchanged.
+
+**Next admission, inactive:** select one terrestrial coupled-phase
+realization using fresh primary sources, then audit its complete state
+and law, or an independently justified bounded reduction, before applying
+the observation budgets. Require preparation, input, measurement/kernel,
+clock and unit maps with independently supported uncertainty. The
+[existing oscillator obstruction](PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#rossler-phase-information-admission)
+remains in force; the new theorem does not admit that source or its data.
+This bounded [P2 audit](#supporting-measurement-bridge) may close with a
+precise missing premise. It admits no response acquisition, fitting or
+physical campaign, and assumes no source or sensor precision is attainable.
+
 <a id="reserved-aperture-inference-admission"></a>
 <a id="active-reserved-gate-finite-aperture-software-inference"></a>
 ## Closed reserved gate: finite-aperture software inference
@@ -71,15 +99,6 @@ the producer, inverse or archived workers. This establishes conditional
 software resolution for a supplied averaging law. It does not calibrate
 a physical sensor, reconstruct an instantaneous clock profile or identify
 fundamental constituents. All frozen evidence retains its original scope.
-
-**Inactive resumption boundary:** admit a theoretical finite-noise/horizon
-resolution audit for this same averaged observable. Retain the held
-instrument law and explicit source/clock uncertainty; derive informative
-error/window regimes or a scoped obstruction without assuming arbitrarily
-small sensor error or horizon. Distinguish a failed sufficient budget from
-exact nonidentifiability. Empirical attainability and an independent
-measurement/unit bridge remain separate obligations; no new response or
-physical-data campaign is active.
 
 <a id="sine-aperture-readout-admission"></a>
 <a id="active-admission-gate-validated-finite-aperture-observations"></a>

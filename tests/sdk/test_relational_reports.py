@@ -2468,6 +2468,12 @@ def test_prepared_composition_nested_label_admission(
             None,
         ),
         (
+            "relational_sine_aperture_budget",
+            "SineApertureBudget",
+            "assess_sine_aperture_budget",
+            None,
+        ),
+        (
             "relational_sine_aperture_readout",
             "SineApertureReadout",
             "bound_sine_aperture_readout",

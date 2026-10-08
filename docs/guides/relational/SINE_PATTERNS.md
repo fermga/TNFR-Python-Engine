@@ -4,6 +4,59 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-aperture-budget"></a>
+### Check a finite-noise and horizon budget before selecting readings
+
+Use `assess_sine_aperture_budget` from
+[`relational_sine_aperture_budget`](../../../src/tnfr/physics/relational_sine_aperture_budget.py)
+to assess declared uncertainty and duration for the fixed four-boxcar model.
+The [contract](../../contracts/relational/SINE_PATTERNS.md#sine-aperture-budget)
+fixes the source chart, phase inputs, gain/rate priors and resolution targets.
+The function accepts six scalar budgets, with no readings or hidden source.
+It invokes neither the forward producer nor an inverse.
+
+This exact-rational example checks one horizon in the theorem's uniform
+positive regime. Its error allowances are assumptions, not independently
+calibrated sensor precision:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_aperture_budget import assess_sine_aperture_budget
+
+budget = assess_sine_aperture_budget(
+    probe_duration=Q(1, 2**24),
+    form_radius=Q(1, 2**48),
+    phase_radius=Q(1, 2**48),
+    readout_error_bound=Q(1, 2**80),
+    averaged_reading_halfwidth_bound=Q(1, 2**80),
+    clock_rate_derivative_bound=Q(1, 2**22),
+)
+assert budget.sufficient_resolution_certified
+assert budget.actual_angle_width_upper_bound < Q(1, 1024)
+assert budget.mean_clock_width_upper_bound < Q(1, 64)
+assert not budget.noise_overlap_witness_admitted
+print(budget.status)  # certified_sufficient_budget
+```
+
+Keep `averaged_reading_halfwidth_bound` separate from the per-average
+sensor error. It bounds the entire recorded interval halfwidth, which may
+include propagated source uncertainty as well as numerical enclosure error.
+Inspect `sufficient_bound_eligible`, `ineligibility_reasons` and
+`unmet_resolution_targets` before interpreting absent or overly broad
+widths. A passing budget gives conditional ideal arithmetic bounds;
+actual data admission and outward numerical inverse availability still
+need their own checks. A failed budget does not prove nonidentifiability.
+
+The independent `noise_overlap_witness_admitted` flag has a stronger but
+narrower meaning: the declared sensor-error budget admits a common record
+from two complete histories with different gain and mean rate. It says
+neither that a particular future record is ambiguous nor that increasing
+numerical precision removes physical noise. The
+[horizon analysis and ambiguity proof](../../../theory/nodal/SINE_APERTURE_RESOLUTION.md#sine-aperture-resolution-horizons)
+separate these claims. No automatic horizon optimization or response search
+is performed. Laboratory units, source preparation and actual uncertainty
+remain independent admission obligations.
+
 <a id="sine-aperture-validated-producer"></a>
 ### Generate certified averages with an explicit forward clock
 

@@ -4,6 +4,75 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-aperture-budget"></a>
+### Resolution budgets without an observed response
+
+`assess_sine_aperture_budget(*, probe_duration, form_radius, phase_radius,
+readout_error_bound, averaged_reading_halfwidth_bound,
+clock_rate_derivative_bound)` in
+[`relational_sine_aperture_budget.py`](../../../src/tnfr/physics/relational_sine_aperture_budget.py)
+returns `SineApertureBudget`. All six primitive arguments are mandatory.
+The [resolution theorem](../../../theory/nodal/SINE_APERTURE_RESOLUTION.md#sine-aperture-resolution)
+retains the complete source and law of the [aperture inverse](#sine-aperture-inference).
+It fixes the original angle rectangle, cumulative phase inputs `(1/4,3/4)`,
+gain prior `[1,2]`, global clock-rate prior `[1/2,2]` and four normalized
+boxcars. These are model premises, not quantities estimated by the report.
+
+Require `0<H=probe_duration<=1/4` and nonnegative finite source radii
+`X=form_radius`, `Y=phase_radius`, per-average sensor error
+`delta=readout_error_bound`, average-band halfwidth bound
+`t=averaged_reading_halfwidth_bound` and clock derivative bound
+`Lambda=clock_rate_derivative_bound`. The positive `C1` rate obeys its
+global prior and `abs(rho')<=Lambda` throughout `[0,2*H]`; gain and offset
+are held. Source norms use the existing degree metric, phases are radians,
+`H` uses observation time, `delta,t` use recorded units and `Lambda` uses
+structural time per observation time squared. Shared exact/represented
+admission preserves rational inputs and rejects Booleans, nonfinite values
+and nonzero materialization loss before arithmetic.
+
+The input `t` bounds each supplied recorded-average enclosure's complete
+halfwidth. It can contain propagated source uncertainty and numerical
+enclosure error; it is not automatically a pure solver-error estimate.
+The four additive sensor errors retain their separate bound `delta`.
+The report exposes their separate virtual radii, clock-transfer and
+reconstruction radii, as well as the combined error allowance. It consumes
+no observed readings, forward trajectory, inverse result or cached verdict,
+and does not search for a favorable horizon.
+
+`sufficient_bound_eligible` requires strict source-chart, transformed-radius
+and curvature-quotient guards. The corresponding width `_upper_bound`
+fields are `None` if those guards fail; diagnostic candidates and
+`ineligibility_reasons` remain available. Eligibility supplies conditional
+ideal exact-arithmetic widths for data from an admitted state. It does not
+prove compatible observations, joint realizability or availability of a
+later outward numerical inverse.
+
+`sufficient_resolution_certified` additionally requires the actual initial
+long-arc mean width below `1/1024`, effective-gain width below `1/2048`,
+sensor-gain width below `1/16` and first-window mean-rate width below `1/64`.
+`status` is `certified_sufficient_budget` or `not_certified`;
+`unmet_resolution_targets` distinguishes failed targets from failed guards.
+A failed sufficient certificate is not an information impossibility.
+
+The separate `noise_overlap_witness_admitted` flag compares **sensor error
+alone** with `noise_overlap_sensor_error_threshold`. Its
+[complete-history witness](../../../theory/nodal/SINE_APERTURE_RESOLUTION.md#sine-aperture-resolution-noise-ambiguity)
+uses the same ideal source and held offset with `(G,rho)=(3/2,1)` and
+`(1,3/2)`. At or above the sufficient overlap threshold, some common
+four-average record can arise from either history using bounded additive errors.
+Uniformly valid gain and mean-rate marginals for that record must cover
+their separation `1/2`. This is an existential bounded-error obstruction,
+not a claim about every record or stochastic sensor behavior. Zero source
+residuals belong to every nonnegative supplied source ball, so this flag
+can hold even when the sufficient whole-ball chart guard fails. Numerical
+halfwidth `t` never substitutes for physical sensor error in this witness.
+
+Export uses `tnfr.sine-aperture-budget.v1` with shared SDK projection and
+atomic writing. The [workflow](../../guides/relational/SINE_PATTERNS.md#sine-aperture-budget)
+checks a declared budget without evaluating a response. Neither result
+establishes achievable laboratory uncertainty, a physical unit conversion
+or independent selection of the complete nodal law.
+
 <a id="sine-aperture-validated-producer"></a>
 ### Validated boxcar observations under an explicit affine clock
 

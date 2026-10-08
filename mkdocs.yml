@@ -121,6 +121,7 @@ nav:
           - "Finite curvature from one additional reading": theory/nodal/SINE_FINITE_CURVATURE_INFERENCE.md
           - "Clock drift, sampled exposure and robust mean-rate inference": theory/nodal/SINE_CLOCK_DRIFT_INFERENCE.md
           - "Finite-aperture observations and mean-clock inference": theory/nodal/SINE_APERTURE_INFERENCE.md
+          - "Finite-noise and horizon resolution for the four boxcar observations": theory/nodal/SINE_APERTURE_RESOLUTION.md
           - "Exact and controlled form-phase reductions": theory/nodal/SINE_FORM_PHASE_REDUCTION.md
           - "Conservative regional formation and its barriers": theory/nodal/SINE_REGIONAL_FORMATION.md
           - "Collective phase families and live contact feedback": theory/nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md
