@@ -2357,10 +2357,32 @@ def test_prepared_composition_nested_label_admission(
 
 
 @pytest.mark.parametrize(
-    "class_name", ("SineReducedClassPortState", "SineReducedClassPorts")
+    "owner_name,class_name,assessor,evaluator",
+    [
+        (
+            "relational_sine_reduced_class_ports",
+            class_name,
+            "assess_sine_reduced_class_ports",
+            "evaluate_sine_reduced_class_ports",
+        )
+        for class_name in ("SineReducedClassPortState", "SineReducedClassPorts")
+    ]
+    + [
+        (
+            "relational_sine_port_composition",
+            class_name,
+            "assess_sine_port_composition",
+            "evaluate_sine_port_composition",
+        )
+        for class_name in ("SinePortCompositionState", "SinePortComposition")
+    ],
 )
-def test_reduced_port_sdk_wiring_does_not_evaluate_research(monkeypatch, class_name):
-    from tnfr.physics import relational_sine_reduced_class_ports as owner
+def test_reduced_port_sdk_wiring_does_not_evaluate_research(
+    monkeypatch, owner_name, class_name, assessor, evaluator
+):
+    from importlib import import_module
+
+    owner = import_module(f"tnfr.physics.{owner_name}")
 
     report_type = getattr(owner, class_name)
     report = object.__new__(report_type)
@@ -2370,8 +2392,8 @@ def test_reduced_port_sdk_wiring_does_not_evaluate_research(monkeypatch, class_n
     def forbidden(**kwargs):
         pytest.fail("SDK projection must not evaluate a research model")
 
-    monkeypatch.setattr(owner, "assess_sine_reduced_class_ports", forbidden)
-    monkeypatch.setattr(owner, "evaluate_sine_reduced_class_ports", forbidden)
+    monkeypatch.setattr(owner, assessor, forbidden)
+    monkeypatch.setattr(owner, evaluator, forbidden)
     assert relational_report_to_dict(report) == {
         "schema": "tnfr.relational-report.v1",
         "report_type": class_name,

@@ -18,7 +18,12 @@ from tnfr.research.relational_acquisition import _exact, _verify_archive
 from tnfr.utils.io import json_loads
 
 DIRECTORY = Path(__file__).parents[2] / "docs/assets/sine_formed_classes"
-ARCHIVED = ("maintenance-v1", "contact-v1", "reduced-ports-v1")
+ARCHIVED = (
+    "maintenance-v1",
+    "contact-v1",
+    "reduced-ports-v1",
+    "port-composition-v1",
+)
 MANIFESTS = ("evidence.manifest.json",) + tuple(
     f"{stem}.manifest.json" for stem in ARCHIVED
 )
@@ -31,6 +36,7 @@ def no_evidence_producers():
         relational_sine_formed_class_contact,
         relational_sine_formed_class_maintenance,
         relational_sine_formed_classes,
+        relational_sine_port_composition,
         relational_sine_reduced_class_ports,
     )
 
@@ -43,6 +49,7 @@ def no_evidence_producers():
             relational_sine_formed_class_contact,
             relational_sine_formed_class_maintenance,
             relational_sine_formed_classes,
+            relational_sine_port_composition,
             relational_sine_reduced_class_ports,
         ):
             for name in vars(module):
@@ -52,6 +59,8 @@ def no_evidence_producers():
                             "assess_sine_formed",
                             "assess_sine_reduced",
                             "evaluate_sine_reduced",
+                            "assess_sine_port_composition",
+                            "evaluate_sine_port_composition",
                         )
                     )
                     or name == "_unprobed_handoff"
@@ -76,7 +85,7 @@ def retained():
     )
 
 
-def test_all_eleven_retained_artifact_sizes_and_hashes(retained):
+def test_all_retained_artifact_sizes_and_hashes(retained):
     manifests, content = retained
     expected = {"pair-v1.json", "response-v1.json"} | {
         stem + suffix
@@ -88,7 +97,7 @@ def test_all_eleven_retained_artifact_sizes_and_hashes(retained):
         for manifest in manifests.values()
         for item in manifest["artifacts"]
     ]
-    assert len(names) == len(set(names)) == 11 and set(names) == expected
+    assert len(names) == len(set(names)) == 14 and set(names) == expected
     for manifest in manifests.values():
         for item in manifest["artifacts"]:
             data = content[item["file"]]
@@ -245,3 +254,107 @@ def test_reduced_stopping_rule_follows_saved_exact_fields(retained):
         and report["unavailable_reasons"] == []
     )
     assert manifest["frozen_stopping_rule_passed"] is True
+
+
+def test_composition_stopping_rule_follows_saved_exact_fields(retained):
+    manifests, content = retained
+    manifest = manifests["port-composition-v1.manifest.json"]
+    protocol = json_loads(content["port-composition-v1.protocol.json"])
+    saved = json_loads(content["port-composition-v1.json"])
+    report = saved["report"]
+    for name, value in protocol["inputs"].items():
+        if name in ("classes", "contacts"):
+            assert report[name] == value
+        elif name == "phase_origins":
+            assert tuple(map(_exact, report[name])) == tuple(map(_exact, value))
+        else:
+            assert _exact(report[name]) == _exact(value)
+    geometry = report["geometry"]
+    assert geometry["component_count"] == 3
+    assert geometry["contact_degrees"] == [1, 2, 1]
+    assert geometry["contact_diameter"] == 2 and geometry["connected"] is True
+    assert tuple(map(_exact, geometry["layer_masses"])) == (
+        3,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        3,
+        4,
+        4,
+        4,
+        4,
+    )
+    handoff = report["unprobed_handoff"]
+    assert handoff["formation_certificate"]["status"] == "certified_two_formed_classes"
+    assert handoff["handoff_certified_by_class"] == [True, True]
+    power = report["decay_power"]
+    assert power <= _exact(handoff["decay_exponent"]) <= 4096
+    assert _exact(handoff["exact_decay_upper_bound"]) == Q(1, 2**power)
+    eps = _exact(report["endpoint_radius"])
+    for name in (
+        "endpoint_form_norm_squared_upper_bounds",
+        "endpoint_phase_norm_squared_upper_bounds",
+    ):
+        assert all(0 <= _exact(value) <= eps**2 for value in handoff[name])
+    h = _exact(report["contact_duration"])
+    prep = _exact(report["preparation_error_upper_bound"])
+    defect = _exact(report["ideal_surrogate_discrepancy_upper_bound"])
+    total = _exact(report["total_approximation_error_upper_bound"])
+    allowance = _exact(report["approximation_allowance"])
+    assert prep == eps / (1 - 3 * h) and defect > 0
+    assert total == prep + defect < allowance == 2 * eps
+    margin = report["approximation_margin_bounds"]
+    assert 0 < _exact(margin["lo"]) <= allowance - total <= _exact(margin["hi"])
+    phi = _exact(report["phase_origins"][1])
+    radius = _exact(report["radius"])
+    assert _exact(report["joined_gap_lower_bound"]) == Q(2, 135)
+    assert (
+        _exact(report["joined_radius_squared_upper_bound"]) == 6 * eps**2 + 6 * phi**2
+    )
+    assert (
+        _exact(report["joined_excess_storage_upper_bound"])
+        == 18 * eps**2 + (phi + 2 * eps) ** 2
+    )
+    assert (
+        _exact(report["contact_work_upper_bound"]) == 4 * eps**2 + (phi + 2 * eps) ** 2
+    )
+    assert _exact(report["contact_work_upper_bound"]) <= _exact(
+        report["work_allowance"]
+    )
+    assert _exact(report["joined_excess_storage_upper_bound"]) < _exact(
+        report["joined_barrier_lower_bound"]
+    )
+    assert _exact(report["joined_radius_squared_upper_bound"]) < radius**2
+    for name in ("joined_radius_margin_bounds", "joined_storage_margin_bounds"):
+        assert _exact(report[name]["lo"]) > 0
+    control = saved["algebraic_control"]
+    assert _exact(control["middle_form_rate"]) == -1
+    assert _exact(control["naive_middle_form_rate"]) == -Q(4, 3)
+    assert _exact(control["weighted_form_charge_rate"]) == 0
+    assert _exact(control["naive_weighted_form_charge_rate"]) == -Q(4, 3)
+    assert _exact(control["form_storage"]) == 2
+    assert (
+        _exact(control["storage_rate"]) == -_exact(control["dissipation"]) == -Q(17, 3)
+    )
+    assert all(
+        report[name] is True
+        for name in (
+            "approximation_certified",
+            "identity_certified",
+            "work_within_allowance",
+        )
+    )
+    assert report["status"] == "certified_sine_port_composition"
+    assert report["unavailable_reasons"] == []
+    assert (
+        control["passed"]
+        is saved["frozen_stopping_rule_passed"]
+        is manifest["frozen_stopping_rule_passed"]
+        is True
+    )

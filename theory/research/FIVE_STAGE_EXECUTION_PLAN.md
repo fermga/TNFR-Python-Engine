@@ -22,7 +22,12 @@ composite's interactions under justified complete nodal laws? The route is
 justify the law that evolves it.
 
 **Latest closed gate:** the
-[reduced port description of the formed C9 classes](#current-g3-gate)
+[degree-aware network composition of reduced C9 components](#current-g3-gate)
+derives exact surrogate balances and a uniform full-law approximation bound.
+Its frozen three-component control passes actual source handoff, joined
+identity, supplied work and whole-window accuracy without retuning.
+The earlier
+[reduced port description of the formed C9 classes](#reduced-formed-class-port-admission)
 transfers to a different receiver class under the same complete law with
 certified finite error and actual joined identity retention.
 The [formed-C9 contact result](#formed-class-contact-admission) remains a
@@ -30,10 +35,11 @@ closed certificate of actual receiver discrimination and joined identity.
 The [repeated-probe result](#repeated-probe-maintenance-admission),
 [formation prerequisite](#inequivalent-formed-classes-admission) and
 [one-probe result](#common-probe-admission) remain valid closed certificates.
-Both contact and reduced-transfer protocols passed their unchanged first
-reserved evaluations, with proof and producing source preserved beforehand.
-Completed controls are reusable evidence, not work to repeat. No next campaign
-is automatically active. Physical constituent emergence and independent law
+The contact, reduced-transfer and network-composition protocols passed their
+unchanged first reserved evaluations, with proof and producing source
+preserved beforehand. Completed controls are reusable evidence, not work to
+repeat. No further campaign is automatically active. Physical constituent
+emergence and independent law
 selection remain open; no empirical response has passed complete physical
 admission.
 
@@ -42,7 +48,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Latest closed gate | [Reduced formed-class port description and receiver transfer](#current-g3-gate); twenty-coordinate surrogate, full-law error fraction, actual receiver discrimination and joined identity retention |
+| Latest closed gate | [Degree-aware reduced port composition](#current-g3-gate); generic unit-contact assembly, exact storage balance and uniform full-law error with one frozen actual-family three-component control |
+| Closed gate | [Reduced formed-class port description and receiver transfer](#reduced-formed-class-port-admission); twenty-coordinate surrogate, full-law error fraction, actual receiver discrimination and joined identity retention |
 | Closed gate | [Formed-C9 contact and actual receiver discrimination](#formed-class-contact-admission); actual source handoff, finite class-dependent response, supplied contact work and all-time joined identity retention |
 | Closed gate | [Quantitative repeated-probe maintenance](#repeated-probe-maintenance-admission); strict uniform return, per-cycle discrimination and supplied-work accounting |
 | Closed prerequisite | [Formation, common-probe discrimination and recovery](#common-probe-admission) under one complete law and support |
@@ -51,6 +58,45 @@ admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge); source-specific obstructions remain in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="reduced-port-network-composition-admission"></a>
+## Closed gate: degree-aware network composition of reduced ports
+
+The [protocol, derivation and retained result](../nodal/SINE_REDUCED_PORT_COMPOSITION.md#sine-reduced-port-composition)
+establish a reusable assembly of ten-coordinate C9 descriptions under simple
+undirected **unit** central contacts. The complete positive-loss sine law,
+held unit capacities and structural clock remain unchanged. Both rows use
+the actual central degree, and each bridge retains its nonlinear sine
+current. Exact surrogate storage and charge balances retain the contact
+terms and moving component means. The unchanged one-contact denominator
+fails an independent rational rate and weighted-charge control.
+
+The whole-window approximation bound includes original hidden-state errors
+and nonlinear generation of discarded odd modes. Actual joined identity,
+recovery, reweighted conserved means and support-event work are rebuilt
+under the full law; they are not inherited from surrogate stability or the
+[bridge-tree equilibrium theorem](../nodal/SINE_PATTERN_DYNAMICS.md#sine-bridge-tree-composition).
+
+The [saved control](../../docs/assets/sine_formed_classes/port-composition-v1.json)
+passes its unchanged first evaluation on the path of formed classes
+`(1,2,1)`, using thirty retained coordinates in place of fifty-four.
+Its original source families continue without reset through formation,
+relaxation and simultaneous contact. Every fine form and lifted phase
+coordinate stays within the declared absolute approximation allowance
+throughout the finite window; source handoff, full joined identity and
+supplied work also pass. The owner retains the exact protocol, bounds,
+algebraic controls and archived producing source.
+
+**Resumption boundary:** this result certifies context-dependent assembly
+and its admitted finite approximation domain. It is not an exact nonlinear
+quotient, a class-response contrast, a sensor specification or a runtime
+speedup. It does not select support, hierarchy, preparation or a fundamental
+physical law, or turn supplied contact work into autonomous formation.
+Insufficient bounds remain unavailable; independent balance or closure
+obstructions retain their own scope. No new graph, receiver, horizon,
+precision, solver or data campaign is active. Further work requires a new
+bounded F1-F4 obligation tied to the
+[deferred dependencies](#deferred-work-and-reopening-conditions).
+
 <a id="reduced-formed-class-port-admission"></a>
 ## Closed gate: reduced component state with controlled receiver transfer
 

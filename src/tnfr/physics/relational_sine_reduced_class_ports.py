@@ -21,6 +21,7 @@ from ._sine_formed_contact import (
     _unprobed_handoff,
     _UnprobedHandoff,
 )
+from ._sine_port_geometry import _central_port_geometry, _component_interior_matrix
 from .relational_observations import _ordered
 
 __all__ = (
@@ -45,25 +46,11 @@ def _reduced_port_matrices() -> (
     orbit. Mobility uses the actual degree three at either joined port. No
     class or sine value is hidden in these rational matrices.
     """
-    internal = [[Q(0) for _ in range(5)] for _ in range(5)]
-    internal[0][0], internal[0][1] = Q(2), Q(-2)
-    for row in range(1, 4):
-        internal[row][row - 1 : row + 2] = [Q(-1), Q(2), Q(-1)]
-    internal[4][3], internal[4][4] = Q(-1), Q(1)
-    donor = [[Q(0) for _ in range(10)] for _ in range(10)]
-    receiver = [[Q(0) for _ in range(10)] for _ in range(10)]
-    for i in range(5):
-        for j in range(5):
-            donor[i][j] = internal[i][j] / _DEGREES[i]
-            receiver[5 + i][5 + j] = internal[i][j] / _DEGREES[i]
-    joined = [[donor[i][j] + receiver[i][j] for j in range(10)] for i in range(10)]
-    for i, j in ((0, 5), (5, 0)):
-        joined[i][i] += Q(1, 3)
-        joined[i][j] -= Q(1, 3)
+    geometry = _central_port_geometry(2, ((0, 1),))
     return (
-        tuple(map(tuple, joined)),
-        tuple(map(tuple, donor)),
-        tuple(map(tuple, receiver)),
+        geometry.normalized_form_matrix,
+        _component_interior_matrix(geometry, 0),
+        _component_interior_matrix(geometry, 1),
     )
 
 

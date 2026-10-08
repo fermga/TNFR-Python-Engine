@@ -4,6 +4,70 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-reduced-port-composition"></a>
+### Assemble reduced components with their actual contact degrees
+
+Use `evaluate_sine_port_composition` for a network of unit central contacts.
+Each component contributes five forms and five real phase deviations, ordered
+as in the [two-component workflow](#sine-reduced-class-ports). A second contact
+changes the central degree in both rows; it cannot reuse the old denominator
+three unchanged. This instantaneous control needs no formation assessment:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_port_composition import (
+    evaluate_sine_port_composition,
+)
+
+forms = [Q(0)] * 15
+forms[5] = Q(1)  # Central layer of the middle component.
+rows = evaluate_sine_port_composition(
+    classes=(1, 2, 1),
+    contacts=((0, 1), (1, 2)),
+    phase_origins=(Q(0),) * 3,
+    forms=forms,
+    phase_deviations=(Q(0),) * 15,
+)
+assert rows.geometry.contact_degrees == (1, 2, 1)
+assert rows.form_rate_bounds[5].lo <= -1 <= rows.form_rate_bounds[5].hi
+assert rows.form_rate_bounds[5].lo > -Q(4, 3)
+assert rows.form_storage == 2
+assert rows.storage_rate == -Q(17, 3)
+assert rows.network_form_charge_rate == rows.network_phase_charge_rate == 0
+```
+
+The bridge sine remains nonlinear. Internal phase exchange is the inherited
+class tangent, and the exact reduced storage includes both internal and bridge
+terms. Origins are already supplied separately; phase deviations must exclude
+them. These rows admit disconnected contacts but do not establish a full-law
+trajectory, formation or global recovery.
+
+The separate `assess_sine_port_composition` takes original source, support,
+time and budget primitives. It rebuilds the actual unprobed formation family,
+then bounds all fine coordinates against the lifted surrogate over the whole
+contact window. Inspect `unprobed_handoff`,
+`total_approximation_error_upper_bound`, `approximation_margin_bounds`,
+`identity_certified`, `work_within_allowance` and `unavailable_reasons` together.
+An instantaneous storage identity cannot replace these actual-family checks.
+The absolute approximation allowance is not a readout error or an observed
+class contrast; connected joined identity and all-time recovery use the full
+sine law separately. Consult the
+[primitive API contract](../../contracts/relational/SINE_PATTERNS.md#sine-reduced-port-composition)
+and [protocol/result owner](../../../theory/nodal/SINE_REDUCED_PORT_COMPOSITION.md#sine-reduced-port-composition)
+before a new assessment. Neither reader executes contact in a live graph or
+establishes autonomous hierarchy selection or a physical measurement bridge.
+
+The [saved three-component certificate](../../assets/sine_formed_classes/port-composition-v1.json)
+can be inspected without running another assessment. Its report has
+`status="certified_sine_port_composition"`; the outer `algebraic_control`
+records the exact normalization/storage control, and
+`frozen_stopping_rule_passed` records the joint frozen rule. The full-state
+allowance is a different stopping rule from the fractional receiver-gap
+criterion in the two-component result below. The
+[retained-evidence audit](../../../TESTING.md#current-checks-and-retained-evidence)
+checks their byte/source consistency and respective exact stopping criteria;
+reading a passing JSON alone does not verify provenance.
+
 <a id="sine-reduced-class-ports"></a>
 ### Evaluate reduced port rows and inspect their retained certificate
 

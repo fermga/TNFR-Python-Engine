@@ -162,6 +162,13 @@ and partial validated horizons.
   against the final outward full-response lower bound, retaining preparation
   and readout errors. Prove actual joined identity from the full law, not from
   the surrogate's stability or coordinate count.
+  For network assembly, derive central mobility from every live contact
+  degree and check exact charge/storage identities against the fine graph.
+  Include a multiply connected port that rejects unchanged one-contact
+  normalization, cycles with consistent component origins, and disconnected
+  states whose instantaneous rows do not establish global capture. A uniform
+  whole-state approximation bound must retain original preparation errors
+  and generated odd modes; it is not a receiver-contrast or sensor budget.
 - **All-time and symmetry verdicts have different scope.** Fixed-budget
   consensus tests need an independent mixed-Lyapunov derivative from both
   full rows, zero-budget and failed-premise controls. Reflection excludes
@@ -202,7 +209,11 @@ A new reserved prediction needs its own declared inputs and prospective protocol
 
 The [formed C9 bundle audit](tests/physics/test_sine_formed_evidence.py) checks
 the committed artifact hashes, archived source inventories, protocol associations
-and saved reduced-port stopping rule without calling an assessor or producer:
+and both reduced-model stopping rules without calling an assessor or producer:
+the two-component error fraction uses its final outward receiver-gap lower
+endpoint, while network composition uses an absolute whole-window full-state
+allowance plus the exact degree/charge/storage control. Neither rule substitutes
+for its saved actual-family identity and supplied-work obligations.
 
 ```sh
 python -m pytest tests/physics/test_sine_formed_evidence.py -q

@@ -4,6 +4,93 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-reduced-port-composition"></a>
+### Degree-aware assembly of reduced component ports
+
+[`relational_sine_port_composition.py`](../../../src/tnfr/physics/relational_sine_port_composition.py)
+extends the single-contact description to finite simple undirected **unit**
+central-contact networks. The [theorem and protocol](../../../theory/nodal/SINE_REDUCED_PORT_COMPOSITION.md#sine-reduced-port-composition)
+own its exact surrogate balance, full-space defect and actual-family identity
+proof. These detached readers install no graph, event, forcing or solver.
+
+`evaluate_sine_port_composition(*, classes, contacts, phase_origins, forms,
+phase_deviations)` returns `SinePortCompositionState`. Admit one through sixteen
+components, with ordinary non-Boolean integer classes in `{1,2}`. The cap is
+an implementation budget, not a theorem about possible component counts.
+Contacts contain two distinct ordinary component indices; reversal is
+canonicalized, but duplicate, self, weighted or out-of-range contacts reject.
+All sequences admit single-pass iterables with bounded length. Each form and
+phase-deviation row has exactly five signed real entries per component, in
+component-major layer order `(4), (3,5), (2,6), (1,7), (0,8)`.
+
+There is one finite real `phase_origins[i]` per component. The reconstructed
+phase is `Theta_i + phase_origins[i]*1 + T*y_i`, where
+`Theta_i[j]=2*pi*classes[i]*(j-4)/9`. Deviations exclude both the reference
+twist and origin and are not wrapped. Edge gaps derive from these component
+origins and port deviations; independently prescribed edge offsets are not
+admitted. Origins define fixed coordinates, not separately conserved component
+means after contact. Physical scalars use shared exact/represented-real
+admission before arithmetic; Boolean and nonfinite values reject.
+
+The geometry retains actual central degree `2+contact_degree` and layer
+masses `(2+contact_degree,4,4,4,4)`. Both rows use this mobility in
+`tau=e*t`, with `e=1023/1024`. Internal phase currents use each class tangent;
+all bridge currents retain the exact nonlinear sine. The report exposes
+matrices, rates, internal/bridge storage, component charges and their exchange.
+`storage_rate=-dissipation` and the two zero `network_*_charge_rate` values
+are algebraic identities. `storage_rate_from_rows_bounds` separately encloses
+the derivative evaluated from interval rows. Port supply uses internal
+gradient-conjugate efforts; bare port form/phase values are not declared
+physical power. Disconnected networks and an isolated component admit rows.
+
+`assess_sine_port_composition(*, classes, contacts, phase_origins,
+formation_time, relaxation_duration, contact_duration, form_error_bound,
+phase_error_bound, endpoint_radius, radius, decay_power, work_allowance,
+approximation_allowance)` returns `SinePortComposition`. All thirteen
+primitives are required; no report is an input. Times and budgets are
+nonnegative, `endpoint_radius>0`, `0<radius<=1/12`, and
+`contact_duration<=1/4`. `decay_power` is an ordinary integer in `[0,4096]`.
+The shared formation and relaxation exponential work caps remain applicable.
+Zero duration and zero allowances are valid inputs, without a promised
+certificate. Phase origins remain arbitrary admitted signed reals.
+
+`unprobed_handoff` freshly rebuilds the two-class source library, retaining
+the original independent component errors, their separate zero-sum channel
+constraints and source-storage ceilings. Both class handoffs are required
+even when the selected network uses only one class. The nominal surrogate
+starts at zero form/deviation; its comparison with actual formation images
+includes their uncertainty and does not reset those images.
+`ideal_surrogate_discrepancy_upper_bound` includes nonlinearly generated odd
+modes. `preparation_error_upper_bound` separately includes all initial even
+and odd errors. Their sum bounds every fine form and lifted phase coordinate
+throughout the whole contact window; `approximation_certified` requires the
+outward `approximation_margin_bounds.lo>0`. This absolute mathematical error
+allowance is neither a sensor budget nor a class-response contrast.
+
+Only connected networks with at least two components have the supplied
+global identity theorem. It recomputes the full graph gap, actual sine
+storage, quotient radius and reweighted conserved means. `identity_certified`
+requires strict outward radius and storage margins and supplies subsequent
+uninterrupted recovery; surrogate storage is not its proof. Contact work is
+separate from continuous dissipation: `work_within_allowance` uses the exact
+non-strict upper-bound comparison, so a rounded zero work margin does not
+by itself reject an admitted equality. Without both source handoffs, actual
+approximation, work, means and initial joined-family bounds remain `None`.
+A disconnected assessment can still expose these observations after handoff,
+but its global identity flag is false and its gap/barrier are `None`; its
+total weighted means are not claimed to become one common recovered state.
+
+`status="certified_sine_port_composition"` requires fresh formation and
+handoff, connected multi-component identity, work admission and strict
+whole-window accuracy. Otherwise `unavailable_reasons` names insufficient
+obligations; it does not prove the reduction impossible. Direct schemas are
+`tnfr.sine-port-composition-state.v1` and `tnfr.sine-port-composition.v1`;
+shared SDK projection and atomic export retain exact and unavailable fields.
+The [usage guide](../../guides/relational/SINE_PATTERNS.md#sine-reduced-port-composition)
+distinguishes instantaneous assembly from inspecting an actual-family
+certificate. No exact nonlinear quotient, runtime speedup, autonomous support
+selection, laboratory clock or physical identification follows.
+
 <a id="sine-reduced-class-ports"></a>
 ### Reduced component ports and controlled receiver transfer
 
