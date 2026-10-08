@@ -187,6 +187,14 @@ and partial validated horizons.
   and retain the matched-class zero-current control. Enclosed root existence
   and strict acute margins, not small residuals, justify the equilibrium;
   local recovery does not establish capture of a supplied initial family.
+  For a storage handoff obstruction, reconstruct the complete boundary
+  witness and its integer periods independently of the equilibrium root.
+  Check the source lower bound across relative origins, the nonnegative
+  full-form contribution and the radian phase-error allowance. Exercise the
+  exact strict-margin boundary and reject Boolean or nonfinite radii. A
+  lower-storage boundary witness excludes the scalar certificate, not capture
+  by the full dynamics; current-source checks must leave frozen equilibrium
+  evidence untouched.
 - **All-time and symmetry verdicts have different scope.** Fixed-budget
   consensus tests need an independent mixed-Lyapunov derivative from both
   full rows, zero-budget and failed-premise controls. Reflection excludes
@@ -243,6 +251,13 @@ The two-port compatibility bundle has a different static criterion: primary
 and matched-control equilibrium admission, full cycle/current consistency,
 strict acute and Hessian bounds, and nonzero versus zero interface current.
 It certifies neither a source trajectory nor capture after an attachment.
+The separate two-port handoff obstruction is an exact analytic result with
+current-source boundary-witness controls in
+[the handoff suite](tests/physics/test_sine_two_port_handoff_obstruction.py),
+not another frozen experiment. Select it together with
+[the compatibility suite](tests/physics/test_sine_two_port_compatibility.py)
+when changing their shared owner. Its failed scalar admission does not
+revise the compatibility bundle or assert a failed trajectory.
 
 ```sh
 python -m pytest tests/physics/test_sine_formed_evidence.py -q

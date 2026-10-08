@@ -1,9 +1,11 @@
-"""Implicit acute equilibria of two C9 classes with two retained contacts.
+"""Two-contact C9 equilibria and a direct storage-handoff obstruction.
 
 Strict scalar root brackets and an exact incidence factorization establish
 criticality. Interval nodal coordinates enclose that one correlated target;
 neither their midpoint nor every point in their product is an equilibrium.
-No source preparation, contact event or trajectory is assessed here.
+The separate exact-rational handoff report excludes an initial-storage
+certificate for a specified family near undeformed twists. Neither report
+evaluates a contact event or trajectory, or establishes source formation.
 """
 
 from __future__ import annotations
@@ -11,6 +13,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from fractions import Fraction as Q
 
+from .._exact_time import exact_or_represented_real
 from ..dynamics.relational import RelationalExchangeModel
 from ..mathematics._exact_linear_algebra import (
     exact_matrix_product,
@@ -21,12 +24,18 @@ from ._sine_admission import _sine_model_coefficients
 from .phase_cycle_geometry import (
     PhaseCycleGeometry,
     PhaseRootBracket,
+    _cycle_row,
     _derive,
     _enclose_decreasing_phase_root,
 )
 from .relational_observations import _ordered
 
-__all__ = ("SineTwoPortCompatibility", "assess_sine_two_port_compatibility")
+__all__ = (
+    "SineTwoPortCompatibility",
+    "assess_sine_two_port_compatibility",
+    "SineTwoPortHandoffObstruction",
+    "assess_sine_two_port_handoff_obstruction",
+)
 
 _NODES = tuple(range(18))
 _EDGES = tuple(
@@ -479,4 +488,173 @@ def assess_sine_two_port_compatibility(
         local_attraction_certified=attraction,
         status="certified_compatible" if attraction else "unavailable",
         unavailable_reasons=tuple(reasons),
+    )
+
+
+@dataclass(frozen=True)
+class SineTwoPortHandoffObstruction:
+    """One exact obstruction to a direct all-face storage capture certificate.
+
+    The source family consists of undeformed winding-(2,1) C9 twists with
+    arbitrary relative phase origins, nodewise phase errors in radians at
+    most ``phase_error_radius``, and arbitrary finite signed forms. Its
+    members need not be acute. For acute members covered by the positive
+    margin, one boundary witness lies in the same named period cell and
+    has less storage. Consequently no common lower bound on all sector
+    faces can exceed those members' initial storage.
+
+    The zero-mean, zero-form witness represents every conserved-mean leaf
+    after common phase and uniform form shifts. It is neither a critical
+    target nor an evaluated trajectory. Failure of this sufficient bound
+    makes the obstruction unavailable; neither outcome decides capture.
+    """
+
+    phase_error_radius: Q
+    reference_model: RelationalExchangeModel
+    geometry: PhaseCycleGeometry
+    degrees: tuple[int, ...]
+    invariant_weights: tuple[Q, ...]
+    weighted_coordinate_mass: Q
+    witness_uncentered_nodal_turns: tuple[Q, ...]
+    witness_uncentered_weighted_phase_mean_turns: Q
+    witness_nodal_turns: tuple[Q, ...]
+    witness_edge_integer_offsets: tuple[int, ...]
+    witness_edge_turns: tuple[Q, ...]
+    named_cycles: tuple[tuple[int, ...], ...]
+    named_cycle_periods: tuple[int, ...]
+    fundamental_cycle_periods: tuple[int, ...]
+    witness_boundary_edge_indices: tuple[int, ...]
+    ideal_storage_gap_lower_bound: Q
+    phase_storage_lipschitz: Q
+    phase_storage_error_allowance: Q
+    storage_gap_lower_bound: Q
+    max_certifying_phase_error_radius: Q
+    handoff_obstruction_certified: bool
+    status: str
+    unavailable_reasons: tuple[str, ...]
+    classes: tuple[int, int] = (2, 1)
+    capacity: tuple[Q, ...] = (Q(1),) * 18
+    witness_epi: tuple[Q, ...] = (Q(0),) * 18
+    witness_weighted_form_mean: Q = Q(0)
+    witness_weighted_phase_mean_turns: Q = Q(0)
+    law: str = "normalized_sine_reciprocal_exchange"
+    clock: str = "tau=e*t"
+    arithmetic_method: str = "exact_rational_witness_and_analytic_storage_gap"
+    scope: tuple[str, ...] = (
+        "fixed_two_unit_C9_cycles_with_contacts_D0_R0_and_D1_R1",
+        "same_positive_loss_complete_sine_law_and_held_unit_capacities",
+        "undeformed_winding_two_one_twists_with_arbitrary_relative_phase_origins",
+        "source_errors_are_nodewise_real_phase_lift_errors_in_radians",
+        "arbitrary_finite_signed_source_forms_have_nonnegative_form_storage",
+        "source_family_includes_nonacute_members_no_live_state_admission",
+        "positive_margin_preserves_ring_classes_and_covers_every_acute_family_member",
+        "one_feasible_boundary_witness_bounds_any_common_all_face_lower_bound",
+        "common_phase_and_uniform_form_shifts_match_each_source_conserved_mean_leaf",
+        "zero_mean_witness_is_a_representative_not_a_phase_or_form_reset",
+        "strict_positive_declared_lower_bound_required_otherwise_unavailable",
+        "no_root_trigonometric_evaluation_trajectory_or_frozen_producer_call",
+        "no_failed_convergence_instability_formation_or_physical_identification_claim",
+    )
+
+    def to_dict(self):
+        from ..sdk.relational_reports import _project
+
+        return {
+            "schema": "tnfr.sine-two-port-handoff-obstruction.v1",
+            "report": _project(self),
+        }
+
+
+def assess_sine_two_port_handoff_obstruction(*, phase_error_radius):
+    """Assess an analytic obstruction to direct initial-storage handoff.
+
+    The complete winding-(2,1) source family and boundary witness are fixed
+    by the theorem in ``SINE_TWO_PORT_COMPATIBILITY.md``. Only the nonnegative
+    nodewise phase error radius in radians is supplied. Shared admission
+    preserves exact rationals and otherwise uses the represented-real
+    contract. No source observation, cached report, root solve, or trajectory
+    enters the calculation.
+
+    Every ideal family member has storage greater than the explicit witness
+    by at least the strict rational bound 17/13824. The sine potential is
+    40-Lipschitz in the nodewise maximum phase norm on this 20-edge graph.
+    A positive 17/13824-40*radius therefore excludes a strict initial-storage
+    all-face certificate for every acute member. Nonpositive declared margins
+    return unavailable, without asserting that a source is acute or captured.
+    """
+    radius = exact_or_represented_real(phase_error_radius, "phase_error_radius")
+    if radius < 0:
+        raise ValueError("phase_error_radius must be nonnegative")
+    model = RelationalExchangeModel(
+        1, epi_weight=Q(1023, 1024), phase_weight=Q(1, 1024), phase_domain="regular"
+    )
+    _sine_model_coefficients(model, positive_loss=True)
+    geometry = _derive(_NODES, _EDGES)
+    degrees = tuple(sum(i in edge for edge in geometry.edges) for i in _NODES)
+    mass = Q(sum(degrees))
+    # A single donor edge is exactly a quarter turn. All other donor
+    # principal edges are 7/32; receiver edges remain 1/9. The two contacts
+    # are +/-31/576. These rational lifts retain all three cycle periods.
+    raw = (
+        Q(0),
+        Q(7, 32),
+        *(Q(63 * j + 9, 288) for j in range(2, 9)),
+        *(Q(31, 576) + Q(j, 9) for j in range(9)),
+    )
+    mean = sum((degree * value for degree, value in zip(degrees, raw)), Q(0)) / mass
+    nodes = tuple(value - mean for value in raw)
+    offsets = tuple(
+        2 if edge == (0, 8) else int(edge == (9, 17)) for edge in geometry.edges
+    )
+    turns = tuple(
+        nodes[j] - nodes[i] - offset for (i, j), offset in zip(geometry.edges, offsets)
+    )
+    cycles = (tuple(range(9)), tuple(range(9, 18)), (0, 9, 10, 1))
+    indices = {edge: i for i, edge in enumerate(geometry.edges)}
+
+    def period(row):
+        value = sum((sign * turn for sign, turn in zip(row, turns)), Q(0))
+        if value.denominator != 1:
+            raise ArithmeticError("boundary witness must have integral cycle periods")
+        return value.numerator
+
+    named_periods = tuple(period(_cycle_row(cycle, indices)) for cycle in cycles)
+    fundamental_periods = tuple(map(period, geometry.cycle_rows))
+    boundary = tuple(i for i, value in enumerate(turns) if abs(value) == Q(1, 4))
+    if (
+        named_periods != (2, 1, 0)
+        or boundary != (indices[(1, 2)],)
+        or any(abs(value) > Q(1, 4) for value in turns)
+        or sum((degree * value for degree, value in zip(degrees, nodes)), Q(0)) != 0
+    ):
+        raise ArithmeticError("the fixed boundary witness geometry is inconsistent")
+    ideal_gap = Q(17, 13824)
+    lipschitz = Q(2 * len(geometry.edges))
+    allowance = lipschitz * radius
+    gap = ideal_gap - allowance
+    certified = gap > 0
+    return SineTwoPortHandoffObstruction(
+        phase_error_radius=radius,
+        reference_model=model,
+        geometry=geometry,
+        degrees=degrees,
+        invariant_weights=tuple(map(Q, degrees)),
+        weighted_coordinate_mass=mass,
+        witness_uncentered_nodal_turns=raw,
+        witness_uncentered_weighted_phase_mean_turns=mean,
+        witness_nodal_turns=nodes,
+        witness_edge_integer_offsets=offsets,
+        witness_edge_turns=turns,
+        named_cycles=cycles,
+        named_cycle_periods=named_periods,
+        fundamental_cycle_periods=fundamental_periods,
+        witness_boundary_edge_indices=boundary,
+        ideal_storage_gap_lower_bound=ideal_gap,
+        phase_storage_lipschitz=lipschitz,
+        phase_storage_error_allowance=allowance,
+        storage_gap_lower_bound=gap,
+        max_certifying_phase_error_radius=ideal_gap / lipschitz,
+        handoff_obstruction_certified=certified,
+        status="certified_handoff_obstruction" if certified else "unavailable",
+        unavailable_reasons=() if certified else ("strict_storage_gap_not_certified",),
     )

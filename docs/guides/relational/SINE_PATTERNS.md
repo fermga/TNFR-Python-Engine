@@ -4,6 +4,50 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-two-port-handoff-obstruction"></a>
+### Check the limit of a scalar storage handoff
+
+The two-port `(2,1)` equilibrium is locally attracting, but that fact does
+not place an undeformed pair in its basin. The
+[handoff obstruction](../../../theory/nodal/SINE_TWO_PORT_COMPATIBILITY.md#sine-two-port-handoff-obstruction)
+identifies a specific limit of the target-free sector-capture theorem:
+even an exact lower bound over all acute boundary faces cannot certify
+these sources directly from total storage. This applies to every relative
+component origin and includes a stated phase-error neighborhood.
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_two_port_compatibility import (
+    assess_sine_two_port_handoff_obstruction,
+)
+from tnfr.sdk import relational_report_to_dict
+
+handoff = assess_sine_two_port_handoff_obstruction(
+    phase_error_radius=Q(1, 65536),
+)
+assert handoff.storage_gap_lower_bound == Q(17, 13824) - 40 * Q(1, 65536)
+assert handoff.storage_gap_lower_bound > 0
+assert handoff.handoff_obstruction_certified
+assert handoff.status == "certified_handoff_obstruction"
+payload = relational_report_to_dict(handoff)
+```
+
+The radius is a per-node phase-lift error in radians around the isolated
+uniform twists; the complete law and both unit contacts remain fixed. Form
+coordinates are arbitrary finite signed values, and their nonnegative
+storage cannot restore the failed scalar inequality. The assessor constructs
+an exact lower-storage boundary witness. It does not integrate a trajectory,
+solve for the equilibrium again or change the earlier frozen evidence.
+
+Read `storage_gap_lower_bound` as a margin excluding this proof method.
+It is not a prediction that a trajectory reaches the boundary or loses its
+identity. A zero or negative conservative margin gives `unavailable`, not
+proof of capture. Actual acquisition needs additional control of the
+direction and evolution of the full state. Earlier central-port contact
+certificates do not apply unchanged to this different support. The
+[contract](../../contracts/relational/SINE_PATTERNS.md#sine-two-port-handoff-obstruction)
+specifies admission, the strict rational threshold and the scope of each flag.
+
 <a id="sine-two-port-compatibility"></a>
 ### Inspect compatibility at two distinct ports
 

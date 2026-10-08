@@ -4,6 +4,72 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-two-port-handoff-obstruction"></a>
+### A boundary witness excludes direct scalar-storage handoff
+
+`assess_sine_two_port_handoff_obstruction(*, phase_error_radius)` in
+[`relational_sine_two_port_compatibility.py`](../../../src/tnfr/physics/relational_sine_two_port_compatibility.py)
+returns `SineTwoPortHandoffObstruction`. The required radius is a finite
+nonnegative real in radians. Exact rationals are preserved without binary64
+materialization; other admitted real scalars use the shared represented-real
+contract, rejecting nonfinite conversion or loss of a nonzero value.
+Boolean, nonfinite and negative values reject. It bounds each node's
+continuous phase-lift error around an undeformed isolated uniform twist.
+It is not a turn radius, a target-equilibrium tolerance or a flow duration.
+
+The fixed support and complete positive-loss law are those of the
+[two-port compatibility assessment](#sine-two-port-compatibility), with
+ordered classes `(2,1)` and sector `(2,1,0)`. This source class allows every
+relative component origin and arbitrary finite signed form coordinates.
+Their full form storage is nonnegative. No symmetry constraint, independent
+recentering after contact, original formation certificate or particular
+trajectory is an input to this assessment.
+The report is conditional evidence for that family, not admission of an
+observed live state.
+
+The [proof](../../../theory/nodal/SINE_TWO_PORT_COMPATIBILITY.md#sine-two-port-handoff-obstruction)
+constructs a realizable state on the acute-sector boundary whose storage is
+below every source's total storage whenever its strict gap passes. The
+explicit path to this witness is a geometric proof device, not a solution
+of the evolution rows. Its full edge reconstruction and integer periods
+preserve the correlations required by the sector. It follows that **no**
+valid lower bound on every boundary face can put these sources below the
+boundary, as required by the
+[target-free capture theorem](../../../theory/nodal/SINE_PATTERN_DYNAMICS.md#sine-target-free-sector-capture).
+For an initially nonacute source that theorem also lacks its initial-domain
+premise. Neither exclusion implies dynamical escape or failed capture.
+The displayed zero-form, zero-mean witness represents any source conserved
+mean leaf after a uniform form shift and common phase shift, both of which
+preserve its storage and edge geometry. These proof representatives are
+not state resets.
+
+`ideal_storage_gap_lower_bound=17/13824` is the conservative rational
+consequence of the proved ideal gap `17*pi/41472` and `pi>3`.
+`phase_storage_lipschitz=40` retains all twenty edges, each with phase-gap
+error at most twice the nodal radius. Thus `phase_storage_error_allowance`
+is forty times the radius and `storage_gap_lower_bound` is the ideal lower
+bound minus that allowance. No omitted form coordinate can reduce the
+source's lower storage bound. The strict conservative threshold is
+`max_certifying_phase_error_radius=17/552960`.
+
+`handoff_obstruction_certified` is true and `status` is
+`certified_handoff_obstruction` only when `storage_gap_lower_bound>0`.
+Otherwise the report is `unavailable` with
+`strict_storage_gap_not_certified`; equality at the conservative threshold
+is unavailable rather than an obstruction verdict. This does not erase the
+stronger analytic inequality or establish capture for larger errors.
+The report rebuilds its fixed support, degrees and boundary witness directly;
+it neither consumes a cached equilibrium verdict nor reruns the nested root
+enclosure or any frozen producer.
+
+The direct schema is `tnfr.sine-two-port-handoff-obstruction.v1`; shared SDK
+projection and atomic export preserve exact rational evidence. This exact
+method obstruction is separate from the retained static compatibility
+experiment. Actual source-to-basin evolution, attachment work and autonomous
+contact occurrence remain separate obligations. The
+[usage example](../../guides/relational/SINE_PATTERNS.md#sine-two-port-handoff-obstruction)
+assesses a declared radius without performing a simulation.
+
 <a id="sine-two-port-compatibility"></a>
 ### Joint equilibrium through two distinct component ports
 

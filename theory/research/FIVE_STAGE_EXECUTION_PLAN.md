@@ -21,7 +21,14 @@ composite's interactions under justified complete nodal laws? The route is
 -> independent observation**. A sufficient representation does not independently
 justify the law that evolves it.
 
-**Latest closed gate:** [two-port compatibility of the formed C9 classes](#current-g3-gate)
+**Latest closed gate:** [the two-port storage handoff obstruction](#current-g3-gate)
+proves that no lower bound on every acute-sector boundary face can certify
+capture directly from the undeformed `(2,1)` pair, uniformly over relative
+origins and a stated neighborhood of phase errors. An explicit boundary
+state has lower storage. This excludes that proof method, not dynamical
+capture; directional evolution and basin entry remain unresolved.
+
+**Earlier closed gate:** [two-port compatibility of the formed C9 classes](#sine-two-port-compatibility-admission)
 admits a unique acute geometry in the declared unequal-class sector, with
 deformed internal twists, opposed stationary contact currents and local
 attraction. The matched-class control has zero contact current. Neither result
@@ -65,7 +72,8 @@ response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Latest closed gate | [Two-port C9 compatibility](#current-g3-gate); unique acute equilibrium in the declared sector, forced internal deformation, balanced interface circulation and local attraction, with the matched-class zero-current control |
+| Latest closed gate | [Two-port storage handoff obstruction](#current-g3-gate); an exact lower-storage boundary witness excludes direct full-sector storage certification for undeformed `(2,1)` pairs and admitted phase-error neighborhoods, without deciding dynamical capture |
+| Closed gate | [Two-port C9 compatibility](#sine-two-port-compatibility-admission); unique acute equilibrium in the declared sector, forced internal deformation, balanced interface circulation and local attraction, with the matched-class zero-current control |
 | Closed gate | [All-time form tracking](#sine-port-form-tracking-admission); both unchanged channel allowances certified by a separate ordered heat comparison, preserving the previous partial result |
 | Closed gate: qualified partial | [All-time reduced/full tracking](#sine-port-relaxation-admission); valid uniform envelopes and phase resolution, with the unchanged form and joint resolution criteria not certified by that method |
 | Closed gate | [Degree-aware reduced port composition](#reduced-port-network-composition-admission); generic unit-contact assembly, exact storage balance and uniform full-law error with one frozen actual-family three-component control |
@@ -78,6 +86,41 @@ response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge); source-specific obstructions remain in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="sine-two-port-handoff-admission"></a>
+## Closed gate: the scalar storage test cannot establish this handoff
+
+The [exact handoff obstruction](../nodal/SINE_TWO_PORT_COMPATIBILITY.md#sine-two-port-handoff-obstruction)
+tests whether the existing
+[target-free sector-capture theorem](../nodal/SINE_PATTERN_DYNAMICS.md#sine-target-free-sector-capture)
+can connect the undeformed C9 classes to their newly admitted joint geometry.
+The fixed support, complete law and sector `(2,1,0)` are unchanged. This
+gate is an analytic method obstruction; no trajectory, reserved numerical
+response or parameter search is evaluated.
+
+The source class permits arbitrary relative component origins, arbitrary
+finite signed forms and per-node phase-lift errors bounded by `eta` radians
+around the isolated uniform `(2,1)` twists. The nonnegative form storage
+cannot improve a scalar total-storage admission. The proof constructs a
+same-sector boundary state whose phase storage lies strictly below every
+such source when `17*pi/41472 - 40*eta > 0`. The shared assessor reports the
+conservative rational gap `17/13824 - 40*eta`; for `eta=1/65536` this is
+strictly positive. Therefore even an exact minimum over every acute face
+cannot make the theorem's initial-storage inequality pass for that family.
+Improving the old numerical boundary lower bound cannot repair this gap.
+
+This result does not construct a source trajectory or prove that a trajectory
+reaches the displayed boundary. Initial nonacute states separately fail the
+sector theorem's initial-domain premise. The earlier central-port contact
+certificate supplies no automatic handoff on this changed two-port support;
+the static compatibility certificate and its frozen evidence remain valid.
+
+**Resumption boundary:** actual capture requires directional or transient
+control reaching an admitted invariant region, with complete source, clock,
+support-event work and postevent conserved means. Local attraction, an
+available work budget or the lower-storage boundary witness cannot decide
+that trajectory. No such transit campaign or physical-data evaluation is
+active.
+
 <a id="sine-two-port-compatibility-admission"></a>
 ## Closed gate: compatibility through two distinct component ports
 

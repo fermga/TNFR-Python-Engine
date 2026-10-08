@@ -412,3 +412,199 @@ winding identities on the new fixed support. It does not establish a source
 family that reaches it, a contact event or its work budget, global attraction,
 stationary energy transport or a physical binding mechanism. Those distinctions
 are unchanged by the successful static certificate.
+
+## An origin-independent obstruction to a storage-only handoff
+
+<a id="sine-two-port-handoff-obstruction"></a>
+
+This separate analytic result asks whether the already proved
+[target-free sector capture theorem](SINE_PATTERN_DYNAMICS.md#sine-target-free-sector-capture)
+can admit the undeformed class pair directly on the two-port support. It
+does not revise the archived compatibility protocol or reevaluate its
+producer. Under F4 the result is an exact obstruction to a specified proof
+mechanism; no new trajectory, root solve or numerical campaign is involved.
+
+Retain the fixed support, complete rows (1), positive loss, capacities and
+clock above. Supply the two isolated uniform twists of winding two and one,
+allowing any independent component phase origins. Form may be any admitted
+finite signed vector. The relevant capture theorem would require the
+complete initial state to be strictly acute and its total storage to be
+strictly below a common lower bound on phase storage on every nonempty
+signed boundary face of the same acute period cell. There are forty such
+signed face candidates on the twenty-edge support.
+
+The conclusion below excludes that scalar full-boundary storage criterion
+for every relative origin. It also excludes the criterion for a specified
+neighborhood of the undeformed phase family. It does not exclude convergence
+under (1), a differently shaped invariant region, or a later same-law entry
+into a capture sublevel after dissipation.
+
+### Minimize over every component origin before constructing a witness
+
+Write
+\[
+q=4\pi/9,\qquad c=2\pi/9,\qquad \delta=(q-c)/2=\pi/9,
+\qquad f(s)=1-\cos s.
+\]
+The donor ring has all nine principal increments equal to \(q\), and
+the receiver has all nine equal to \(c\). If the first contact gap is
+\(r\), the second is \(r+c-q=r-c\), modulo full turns. Therefore
+\[
+\begin{aligned}
+U_{\rm nom}(r)
+ &=9f(q)+9f(c)+2-\cos r-\cos(r-c)\\
+ &=9f(q)+9f(c)+2-2\cos\delta\cos(r-\delta)\\
+ &\ge U_{\min}:=9f(q)+9f(c)+2f(\delta). \tag{14}
+\end{aligned}
+\]
+This is an exact minimization over all relative origins, including those
+whose contacts are not acute. Equality is attained by opposite contact gaps
+\(\delta,-\delta\). Thus the comparison uses the most favorable origin
+for total storage; it does not select an origin after a trajectory response.
+
+### One feasible boundary state lies below that minimum
+
+For \(0\le s\le s_b:=\pi/144\), assign donor edge `(1,2)` the gap
+\(q+8s\), every other donor ring edge the gap \(q-s\), every receiver
+ring edge the gap \(c\), and the two contacts the gaps
+\(\delta-s/2,-\delta+s/2\). These are correlated gaps of an actual
+nodal state. Explicit real lifts are
+\[
+\begin{aligned}
+&\theta_0(s)=0,\qquad \theta_1(s)=q-s,\\
+&\theta_j(s)=jq+(9-j)s &&(2\le j\le8),\\
+&\theta_{9+j}(s)=\delta-s/2+jc &&(0\le j\le8).
+\end{aligned} \tag{15}
+\]
+The closing donor and receiver lift differences require the same additions
+\(4\pi\) and \(2\pi\) to recover their principal ring gaps. The
+ring sums are exactly \(4\pi\) and \(2\pi\). The interface cycle
+`(0,9,10,1)` has sum
+\(2(\delta-s/2)+c-(q-s)=0\). Consequently the periods remain
+\((2,1,0)\) throughout this path. These are the same integer basis cycles
+used in the compatibility proof. Subtracting
+\(\sum_i d_i\theta_i(s)/40\) gives the zero weighted phase gauge
+without changing any edge gap. A common shift then places the witness on
+any source's conserved phase-mean leaf. Choose its uniform form equal to
+the source's conserved weighted form mean; its form storage is zero.
+Thus the comparison does not rely on moving to a different conserved-mean
+leaf. The zero-mean representative has witness form zero.
+
+Every gap is strictly acute for \(s<s_b\). At \(s_b\), only edge
+`(1,2)` reaches the positive acute face. Its gap is \(\pi/2\); the
+other eight donor gaps are \(7\pi/16\), the receiver gaps are
+\(2\pi/9\), and the contact gaps are \(\pm31\pi/288\). Hence this
+is a feasible point on one of the actual full-cell boundary faces, with
+phase storage
+\[
+U_b=1+8f(7\pi/16)+9f(2\pi/9)+2f(31\pi/288). \tag{16}
+\]
+The construction is an auxiliary geometric path, not a proposed solution
+of (1) or evidence that the dynamics visits that boundary.
+
+Let \(D(s)=U(\theta(s))-U_{\min}\). Then \(D(0)=0\), and
+\[
+D'(s)=8\sin(q+8s)-8\sin(q-s)-\sin(\delta-s/2). \tag{17}
+\]
+Throughout the displayed interval,
+\(\sin(q+8s)\le1\),
+\(\sin(q-s)\ge\cos(\pi/16)\), and
+\(\sin(\delta-s/2)\ge\sin(31\pi/288)\).
+The elementary inequalities \(1-\cos z\le z^2/2\),
+\(\pi^2<10\), and
+\(\sin z\ge2z/\pi\) for \(0\le z\le\pi/2\) give
+\[
+\begin{aligned}
+D'(s)
+&\le8[1-\cos(\pi/16)]-\sin(31\pi/288)\\
+&<\frac5{32}-\frac{31}{144}=-\frac{17}{288}.
+\end{aligned} \tag{18}
+\]
+Integrating this strict inequality and using \(\pi>3\) proves
+\[
+U_{\min}-U_b>
+\frac{17\pi}{41472}>
+\frac{17}{13824}>0. \tag{19}
+\]
+No approximate energy comparison or unproved minimizer is needed.
+
+If \(B\) is any valid common lower bound on phase storage on every
+nonempty acute boundary face, the exhibited face forces \(B\le U_b\).
+For any nominal origin and any form state,
+\[
+H(x,\theta_{\rm nom})
+ =\tfrac12x^TLx+U_{\rm nom}(r)
+ \ge U_{\min}>U_b\ge B. \tag{20}
+\]
+Thus no improvement to the lower-bound solver can make
+\(H(x,\theta_{\rm nom})<B\) true. This statement concerns a common
+bound on the full boundary; it does not assert that every individual face
+has low storage. If the initial contacts are not strictly acute, the
+capture theorem already fails its initial-domain premise. If they are
+acute, their four-edge cycle has period zero and (20) excludes its required
+storage inequality in the correct \((2,1,0)\) cell.
+
+### The obstruction includes an explicit phase-error family
+
+Allow each node's continuous phase lift to differ from its nominal twist
+by at most \(\eta\ge0\) radians, after retaining the independent
+component origins. The errors may be correlated or independent; no
+restriction on the admitted form vector is needed. The global inequality
+\(|f(v)-f(u)|\le|v-u|\) gives, on all twenty edges,
+\[
+|U(\theta)-U(\theta_{\rm nom})|
+ \le\sum_{\{i,j\}\in E}|e_j-e_i|
+ \le40\eta.
+\]
+Consequently every state in this full phase family satisfies
+\[
+H(x,\theta)-U_b>
+M(\eta):=\frac{17}{13824}-40\eta. \tag{21}
+\]
+Whenever \(M(\eta)>0\), the internal phase errors are also too small
+to change the two acute ring periods: \(2\eta<\pi/18\), the smaller
+nominal ring margin. An actual state with acute contacts therefore lies in
+the same \((2,1,0)\) cell and fails its full-boundary storage criterion.
+A state with nonacute contacts fails the criterion's domain instead.
+Large form differences cannot repair this obstruction because the form
+storage is nonnegative.
+
+Choose the explicit rational phase-error budget
+\[
+\eta=1/65536,\qquad M(\eta)=137/221184>0. \tag{22}
+\]
+It defines the admitted family without using the implicit equilibrium
+coordinates. The assessor's sufficient rule requires a strictly positive
+displayed margin. It abstains when that margin is zero or negative; such
+abstention does not claim that the sharper strict analytic inequality has
+failed. In particular, the threshold \(\eta=17/552960\) is not promoted
+to a positive certificate by rounding or by silently changing the rule.
+
+The shared
+[`assess_sine_two_port_handoff_obstruction`](../../src/tnfr/physics/relational_sine_two_port_compatibility.py)
+returns `SineTwoPortHandoffObstruction` from the mandatory primitive
+`phase_error_radius`. It admits a nonnegative exact or represented real,
+reconstructs the actual support, rational witness lifts, weighted gauge,
+integer periods and boundary edge, and computes (21) by exact rational
+arithmetic. The report retains both positive and nonpositive margins; its
+certificate never substitutes a cached verdict, rounded storage difference
+or source trajectory for those premises. This family theorem does not
+admit an observed node array or authenticate a supplied endpoint report.
+
+The [previous uninterrupted formation-and-dwell proof](SINE_FORMED_CLASS_CONTACT.md#the-actual-formation-images-reach-the-contact-tolerance)
+already supplies \(10^{-32}\) Euclidean phase-error bounds per component
+under its own preparation, isolated support and declared dwell. Each
+coordinate then satisfies the larger bound in (22), so these endpoint
+families inherit the obstruction if inspected on the present two-port
+support without resetting their state. The comparison holds for every
+relative origin, including the former preparation's supplied origin. This
+implication uses the proved endpoint error, not a transfer of the old
+single-port capture verdict or its event-work allowance. It installs no new
+support, changes no prior preparation and makes no two-port event passive.
+
+The static compatible equilibrium and its local attraction remain valid.
+The new result identifies a limitation of the proposed direct handoff: total
+storage versus every acute face cannot certify these undeformed source
+families. A convergence proof for them needs additional dynamical or
+geometric information beyond this scalar criterion. The result supplies no
+nonconvergence theorem, autonomous contact selector or physical identification.
