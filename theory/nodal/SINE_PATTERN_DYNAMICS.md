@@ -2748,6 +2748,206 @@ preparation, support, positive loss, probe and measurement map remain
 supplied premises, so no autonomous constituent selection or physical
 identification follows.
 
+<a id="sine-formed-class-contact-admission"></a>
+## Central contact admission for the formed C9 classes
+
+This result audits an interface before proposing a finite interaction
+experiment. It uses the actual nominal preparations in
+[the two-class formation result](#sine-formed-class-pair), continued
+without the subsequent supplied phase probes. It proves an exact
+obstruction for one contact, with no new numerical response evaluation.
+The [relative-origin handoff](#sine-relative-frame-composition) and
+[prepared composition result](#sine-prepared-composition) retain the
+separate full-family admission obligations.
+
+### Complete law, source histories and the supplied contact
+
+Take two disjoint copies of the unit cycle C9, each with local node
+order \(j=0,\ldots,8\), and retain capacities and beta one,
+\(e=1023/1024\), \(w=1/1024\). In the original clock and on any
+fixed admitted support, the complete rows are
+\[
+\dot x=-eKLx+\frac{w}{\pi}KS(\theta),\qquad
+\dot\theta=\frac{w}{\pi}KLx,\qquad
+K=\operatorname{diag}(1/d_i),
+\]
+where \(L\) and \(d_i\) belong to that support and
+\(S_i(\theta)=\sum_{j\sim i}\sin(\theta_j-\theta_i)\).
+Thus in \(\tau=et\), with \(\gamma=1/(1023\pi)\),
+\[
+x'=-KLx+\gamma KS(\theta),\qquad
+\theta'=\gamma KLx. \tag{C1}
+\]
+Both rows use the same declared clock. On an isolated C9, \(K=I/2\).
+
+Choose a donor class \(k\in\{1,2\}\) and a fixed receiver class
+\(\ell\in\{1,2\}\). Their nominal initial conditions are respectively
+\[
+x_j(0)=km(j-4),\quad \theta_j(0)=0,\qquad
+x_j(0)=\ell m(j-4),\quad \theta_j(0)=0,\qquad
+m=\frac{2046}{9}\left(\frac{355}{113}\right)^2. \tag{C2}
+\]
+Use these real initial phase lifts and their continuous evolutions.
+Both form origins and both phase origins are zero in one shared frame.
+Continue the two actual isolated solutions to one declared common
+contact time \(\tau_c\). For \(\tau_c\ge100\), the preceding formation
+certificate already places these nominal members in their respective
+formed classes. The obstruction itself holds at every \(\tau_c\ge0\).
+
+At that time supply one unit bridge between the two local nodes \(4\),
+without changing any nodal value, capacity or coefficient. Hold the
+joined support afterward, with no forcing, additional event or probe.
+The two port degrees become three; all other degrees remain two.
+Equation (C1) therefore uses \(K_{44}^{+}=1/3\) at each port after
+contact. This is an explicitly supplied support event, not an
+autonomous contact-selection law.
+
+### Reflection and continuous lifts give an exact invisible interface
+
+Let \(R\) act within a cycle by \(j\mapsto8-j\). It preserves its
+edges and fixes node \(4\). Reflection commutes with the isolated
+Laplacian, while
+\[
+S(-R\theta)=-R S(\theta).
+\]
+Consequently the transformation
+\((x,\theta)\mapsto(-Rx,-R\theta)\) is an exact symmetry of
+the complete isolated law. Each initial state in (C2) is fixed by
+this transformation. The lifted vector field is globally Lipschitz:
+its form dependence is linear and all sine derivatives are bounded.
+Global existence and uniqueness therefore imply, at every time,
+\[
+x_j=-x_{8-j},\qquad
+\theta_j=-\theta_{8-j},\qquad
+x_4=\theta_4=0. \tag{C3}
+\]
+The phase conclusion is an equality of the continued real lifts.
+A circular fixed-point argument alone would also allow phase pi;
+it would not justify replacing (C3) by the selected zero lift.
+No wrapping, resetting or favorable branch choice is made during
+formation.
+
+Concatenate the two isolated solutions and continue them past
+\(\tau_c\). This candidate solves the joined complete law exactly.
+Indeed, its bridge has zero form difference and zero phase difference.
+At either port the internal contributions also vanish separately:
+\[
+(L_{\mathrm{cycle}}x)_4=2x_4-x_3-x_5=0,\qquad
+S_{\mathrm{cycle},4}
+ =\sin(\theta_3-\theta_4)+\sin(\theta_5-\theta_4)=0. \tag{C4}
+\]
+Adding the bridge contributes zero to each expression. Multiplying
+these zero sums by the correct new mobility \(1/3\) leaves both
+port rows zero. Every nonport row and its mobility are unchanged.
+Thus the candidate satisfies every joined row and the actual
+postevent initial state. Uniqueness of the joined lifted law proves
+that it is the actual joined solution for all later times.
+
+In particular, zero instantaneous bridge current has here been
+extended to an all-time statement by an invariant-state and uniqueness
+proof. Zero current at one arbitrary contact state would not suffice.
+The result concerns nonstationary prepared trajectories, not only
+the two limiting critical geometries.
+
+The nominal support-event storage jump is exactly
+\[
+\Delta H=\frac12(x_{4,\mathrm R}-x_{4,\mathrm D})^2+
+ 1-\cos(\theta_{4,\mathrm R}-\theta_{4,\mathrm D})=0. \tag{C5}
+\]
+The postevent weights still change. Their total is \(38\), and their
+form charge is
+\[
+Q_x^+=2\sum_{\mathrm D\cup\mathrm R}x_i+
+x_{4,\mathrm D}+x_{4,\mathrm R}=0,
+\]
+with the analogous identity for the lifted phase charge. These
+equalities use the nominal reflection property. They do not transfer
+unchanged to arbitrary uncertain source members.
+
+### Consequence for a uniform class-response claim
+
+Fix the receiver preparation, contact time and interface convention,
+and compare donor \(k=1\) with donor \(k=2\). In both cases the
+receiver's entire nominal state history after contact is exactly its
+disconnected isolated history. Hence every common observation
+depending only on that receiver history is identical between the
+two donor cases, at any horizon.
+
+Both admitted initial uncertainty families in the formation result
+include their zero-residual nominal members. The corresponding sets
+of possible receiver records therefore overlap. This remains true
+with bounded readout errors that admit zero: select the nominal
+members and the same zero readout error. No strictly positive uniform
+donor-class contrast or disjoint receiver-record certificate can
+hold over these whole source families for this zero-origin central
+contact. The obstruction also applies to an observation of the
+receiver's complete history; it is not caused by selecting one
+unfortunate scalar readout.
+
+This does not assert that every uncertain member has zero bridge
+current. General allowed errors can break the reflection. Their
+responses cannot remove a nominal counterexample to a uniform claim.
+Nor does the argument cover the later
+[common phase probe](#sine-formed-class-response) or
+[repeated supplied probes](SINE_FORMED_CLASS_MAINTENANCE.md#sine-formed-class-maintenance):
+the declared jump \(e_0-\mathbf1/9\) generally breaks (C3).
+This contact is a separate continuation of the original uninterrupted
+preparation flow, not a revision of either frozen probe protocol.
+
+### What a different interface would have to establish
+
+A declared relative common phase origin \(\varphi\) is additional
+preparation information. For example, prepare the donor with phase
+origin zero and the receiver with phase origin \(\varphi\), using
+the same \(\varphi\) in both donor comparisons. Isolated phase-shift
+symmetry then gives port phases zero and \(\varphi\), respectively,
+while both port forms remain zero. It does not permit a silent
+rotation of just one already prepared component at contact; such a
+rotation would be a distinct supplied state event.
+
+At contact, the correctly normalized additional form rates are
+\[
+x'_{4,\mathrm D}=\frac{\gamma}{3}\sin\varphi,\qquad
+x'_{4,\mathrm R}=-\frac{\gamma}{3}\sin\varphi, \tag{C6}
+\]
+and both initial port phase rates are zero. These rates are independent
+of donor \(k\). An offset with \(\sin\varphi\ne0\) breaks the preceding
+zero-current condition, but neither proves nor excludes a later
+class-dependent response through internal feedback. A merely nonzero
+circular offset is insufficient: at \(\varphi=\pi\), the product
+trajectory again solves the joined law with zero bridge current,
+although the nominal bridge adds storage \(2\). Event work and
+transmitted current are different observations.
+
+Before any positive interaction evaluation, a new protocol must retain:
+
+1. The actual two source histories, a common clock, and the declared
+   relative form and lifted phase origins, including their uncertainty.
+2. The full joined rows with their changed degrees and weighted means,
+   the exact support-event storage jump, and any independently supplied
+   event-work allowance.
+3. A whole-family postcontact identity-retention argument on the joined
+   support, and recovery if claimed. Isolated capture radii, spectral
+   gaps and maintenance return constants cannot be reused without
+   proving the new hypotheses.
+4. A prospective receiver comparison with the same interface premise
+   for both donor classes, its disconnected control, and fixed
+   observation, horizon and error budgets. Equal initial interface
+   rates cannot substitute for this finite response proof.
+
+No offset, response horizon or numerical budget is selected here.
+An admitted bridge remains supplied support. A finite response or
+postcontact trapping theorem would not by itself derive a binding
+force, support formation or autonomous composite selection.
+
+The [contact contract](../../docs/contracts/relational/SINE_PATTERNS.md#sine-formed-class-contact-admission)
+retains these admission boundaries.
+[Static complete-row controls](../../tests/physics/test_sine_c9_central_contact.py)
+exercise the shared evaluator, reflection, changed endpoint degrees
+and source-class comparisons with exact inputs and outward enclosures.
+They do not propagate trajectories; the all-time conclusion follows
+from (C3)--(C4) and uniqueness.
+
 ## Section link directory
 
 These aliases route existing citations to their substantive owner.

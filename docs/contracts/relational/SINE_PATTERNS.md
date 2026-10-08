@@ -4,6 +4,42 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-formed-class-contact-admission"></a>
+### Reusing formed classes in a supplied contact experiment
+
+The [contact-admission proof](../../../theory/nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-contact-admission)
+concerns the complete normalized-sine law and actual unprobed nominal C9
+preparations. With aligned origins and central ports, their symmetry makes
+the joined receiver evolution independent of the donor class. Since the
+original uncertain families contain those nominal members, a strictly
+positive whole-family receiver contrast is excluded for that protocol.
+This is an exact obstruction, not an unavailable numerical bound. General
+perturbed members need not have the same symmetry or zero contact currents.
+
+An explicit common relative phase offset is a different preparation. With
+nonzero sine, its instantaneous port current is nonzero and identical for
+both nominal classes;
+this alone supplies neither a finite class discriminator nor identity
+retention. Contact work and occurrence remain supplied premises. No formed
+class contact-response assessor or live support event is introduced here.
+The [execution plan](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns the prospective task and its freeze boundary.
+
+Existing consumers have distinct reuse boundaries:
+
+| Consumer | What can be reused and what must be established |
+| --- | --- |
+| [Formed-class pair](#sine-formed-class-pair) | The actual image of the original sixteen-dimensional relative source families, including their two exact zero-sum residual constraints. Target geometries and nominal states cannot replace those reached families; any endpoint enclosure needs a proof from the original source and must retain every correlation its consumer uses. |
+| [Prepared composition](#sine-prepared-composition) | Primitive reassessment, synchronous contact, declared relative origins, full-support storage and event accounting. Its inputs are `SinePreparedEntry` reports from `SineRelativePattern`, not `SineFormedClassPair`. A new handoff must retain the original source correlations and derive its endpoint bounds before calling a compatible consumer. |
+| [Probe response](#sine-formed-class-response) and [repeated maintenance](#sine-formed-class-maintenance) | Their analytic methods retain value, but their coefficients, contrast, return neighborhoods and dwell concern an isolated C9 with supplied phase jumps. They do not certify a joined eighteen-node system. |
+| [Validated sine forecast](SINE_COMPARISON_AND_INFERENCE.md#joint-prior-admission-and-sine-forecasts) | The current layout has `2*n+1` coordinates and a shared limit of 24. Two C9 components require 37 and are outside this implementation domain. A full-support analytic bound or separately justified solver extension is needed; increasing the cap or discarding coordinates alone supplies no certificate. |
+
+For the joined graph, recompute endpoint degrees (two to three), mobility,
+memberwise weighted means, internal and bridge storage, and every consumed
+capture margin. Retain all fine coordinates, both original winding identities
+and the declared structural clock. A detached composition assessment installs
+no edge, and a passing storage test alone certifies no transmitted response.
+
 <a id="sine-formed-class-maintenance"></a>
 ### Quantitative return under repeated supplied probes
 

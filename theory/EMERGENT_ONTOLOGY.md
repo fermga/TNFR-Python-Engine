@@ -117,6 +117,12 @@ for indefinite repetition; exact target convergence applies when probes
 stop. These results derive neither the organized source preparation,
 autonomous probe selection nor a physical constituent identity.
 
+Distinct internal geometries need not be distinguishable through every
+contact. The [central-contact obstruction](nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-contact-admission)
+shows that the nominal formed C9 classes can remain invisible to the same
+receiver under an aligned supplied bridge. Interface symmetry and retained
+internal information are therefore part of an interaction claim.
+
 A collective observation/measurement map is eventually needed to test that
 hypothesis, but it may act on a pattern and its interaction with a measurement
 system rather than on one primitive coordinate. Its latent-state assumptions

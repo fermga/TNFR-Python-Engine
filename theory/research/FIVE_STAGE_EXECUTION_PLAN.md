@@ -21,13 +21,15 @@ composite's interactions under justified complete nodal laws? The route is
 -> independent observation**. A sufficient representation does not independently
 justify the law that evolves it.
 
-**The quantitative repeated-probe gate is closed:** the two formed classes
-have [uniform return, geometric retention and distinguishable responses](#current-g3-gate)
-under the frozen externally supplied schedule. The
+**Active analytical gate:** consolidate and admit a
+[formed-C9 contact interface](#current-g3-gate), then freeze a bounded test
+of class-dependent receiver response if the interface passes admission.
+The [repeated-probe result](#repeated-probe-maintenance-admission),
 [formation prerequisite](#inequivalent-formed-classes-admission) and
-[one-probe response/recovery result](#common-probe-admission) remain separate
-valid certificates. Completed controls are reusable evidence, not work to
-repeat; no new probe, solver or data campaign is active. Physical constituent
+[one-probe result](#common-probe-admission) remain valid closed certificates.
+No new contact response, offset, horizon or numerical budget has been frozen
+or evaluated. Completed controls are reusable evidence, not work to repeat;
+no parallel producer, solver or data campaign is active. Physical constituent
 emergence and independent law selection remain open; no empirical response
 has passed complete physical admission.
 
@@ -36,11 +38,78 @@ has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Latest closed gate | [Quantitative repeated-probe maintenance](#current-g3-gate); strict uniform return, per-cycle discrimination and supplied-work accounting |
+| Active bounded analytical gate | [Formed-C9 contact admission and prospective receiver discrimination](#current-g3-gate); consolidation and interface/symmetry audit precede any response freeze |
+| Latest closed gate | [Quantitative repeated-probe maintenance](#repeated-probe-maintenance-admission); strict uniform return, per-cycle discrimination and supplied-work accounting |
 | Closed prerequisite | [Formation, common-probe discrimination and recovery](#common-probe-admission) under one complete law and support |
 | Closed prerequisite | [Two formed attracting classes](#inequivalent-formed-classes-admission), with matched conserved means and distinct preparation costs under one budget |
 | Deferred | [Named dependencies and reopening conditions](#deferred-work-and-reopening-conditions); no parallel solver, uniqueness or data campaign |
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge); source-specific obstructions remain in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
+
+<a id="current-g3-gate"></a>
+<a id="formed-class-contact-admission"></a>
+## Active gate: admit contact before predicting a class-dependent response
+
+Hold one formed C9 recipient fixed and compare attachment to a winding-one
+or winding-two formed donor through the same supplied unit bridge. The
+question is whether the donor's retained organization causes a distinguishable
+finite recipient-form response while both identities survive the actual
+joined dynamics. The complete positive-loss constitutive law, held capacities
+and clock remain the same; the one declared support event changes the graph.
+Use the actual images of the original uninterrupted formation preparations,
+before any prescribed phase-probe jump, with their full admitted uncertainty.
+No subsequent forcing or repeated probe is part of this proposed comparison.
+
+### Consolidation and interface admission
+
+Preserve the closed formation, response and maintenance protocols, reports
+and source archives. Reuse the
+[actual prepared-composition handoff](../nodal/SINE_PATTERN_DYNAMICS.md#sine-prepared-composition)
+and its shared owners after matching their complete-law and state premises;
+static bridge stability or an isolated capture flag is not the new claim.
+The [contact admission owner](../nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-contact-admission)
+records the symmetry control before any receiver prediction.
+
+The dedicated formed-class report is not an input accepted by the existing
+prepared-composition reader. Admit a handoff from original primitives that
+preserves the zero-sum source correlations and actual endpoint family.
+The shared sine forecast's current coordinate limit also excludes the joined
+eighteen-node graph. Admit analytic full-support bounds or separately justified
+solver work before freezing evaluation; do not automatically raise that limit
+or replace the family by a graph snapshot or unrelated Cartesian box.
+
+For central ports and zero relative origins, those uninterrupted nominal
+reflected sources have identically zero port form and phase. Their joined
+nominal flow therefore has zero bridge current, even after endpoint degrees
+change. Since every admitted source family includes its nominal member,
+holding the receiver fixed while changing donor class cannot certify a
+uniform nonzero class contrast at any horizon. Retain that null as an
+obstruction to this interface, not a reason to scan later times. It does not
+apply to arbitrary states after the earlier prescribed phase probe.
+
+An informative interface needs an explicit additional premise, such as a
+common declared relative phase offset `phi` with `sin(phi) != 0` for nonzero
+central nominal current; an offset of pi is still a current null. The premise
+must be shared between donor comparisons, with matched nominal port data and
+the same admitted uncertainty budgets, retained relative form/phase origins
+and explicit work accounting. Actual uncertain ports need not coincide;
+do not add cross-class equality constraints absent from the source families.
+No offset, alternative port or contact budget is selected by this plan update.
+Stop at a precise missing premise or an exclusion if the intended interface
+cannot be admitted.
+
+### Prospective response only after the interface passes
+
+| Obligation | Required admission |
+| --- | --- |
+| F1: state and comparison | Retain the actual uninterrupted formation-image families, fixed recipient preparation and observation, both donor classes, relative origins and all original uncertainty. Preserve only justified comparison correlations rather than replacing reached states by independent target boxes or conditioning uncertain ports to equality |
+| F2: complete joined law | Declare the common unit bridge, ports, attachment time, interface offsets and supplied work allowance. Recompute endpoint degrees, mobility, weighted means and full storage on the joined support; isolated-component coefficients and separate means cannot substitute |
+| F3: causal and identity controls | Audit symmetries, matched nominal port information and equal uncertainty budgets; retain the disconnected causal-null control. Prove both whole-family geometric identities under the actual post-attachment law, and distinguish transmitted donor-class influence from a different imposed interface |
+| F4: bounded prediction and stopping | Only after interface and full-support method admission, freeze one contact protocol, receiver readout, finite horizon, separation/error criteria and numerical budget before reserved evaluation. Close with joint causal discrimination and identity retention, explicitly insufficient bounds or a proved obstruction; no contact/horizon sweep or transfer of unrelated probe coefficients |
+
+The attachment and its work remain supplied; it is not autonomous support
+birth or a native operator selected by the flow. This gate adds no physical
+identity or unique-law claim. The present work is consolidation and analytical
+admission only: no contact-response producer or data campaign is active.
 
 <a id="inequivalent-formed-classes-admission"></a>
 ## Closed admission: two formed attracting classes under one complete law
@@ -98,7 +167,6 @@ an independent law restriction and the origin of the preparation remain open.
 The separate repeated-probe certificate below owns its quantitative extension.
 No horizon search, class substitution or data campaign is active.
 
-<a id="current-g3-gate"></a>
 <a id="repeated-probe-maintenance-admission"></a>
 ## Closed gate: quantitative response and identity under repeated probes
 
@@ -126,8 +194,9 @@ those interventions, so this is not finite-budget autonomous maintenance.
 The conservative structural dwell makes no practical-speed or laboratory-time
 claim. Source organization, support, complete law and probe selection remain
 supplied; physical identification and independent constitutive restriction
-remain open. A further task needs its own named dependency and F1-F4 protocol;
-no dwell optimization, probe modification or data campaign is active.
+remain open. The active contact admission above owns its separate F1-F4
+obligations; no dwell optimization, repeated-probe modification or data
+campaign is active.
 
 <a id="formation-response-admission"></a>
 ## Closed admission: prepared acquisition and actual receiver response
