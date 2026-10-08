@@ -190,6 +190,7 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
         SineSaddlePreparation,
         SineSaddleRetentionBand,
     )
+    from ..physics.relational_sine_curvature_inference import SineCurvatureInference
     from ..physics.relational_sine_entry import (
         SineConservativeHandoff,
         SineConservativePhaseTransport,
@@ -388,6 +389,7 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
             SineTwoPortTransit,
             SineTwoPulseInference,
             SineClockInference,
+            SineCurvatureInference,
             SineFormedClassMaintenance,
             SineFormedClassPair,
             SineFormedClassResponse,

@@ -23,62 +23,68 @@ composite's interactions under justified complete nodal laws? The route is
 collective properties from their physical identification. A sufficient
 representation does not independently justify the law that evolves it.
 
-The [clock/scale identifiability theorem](#current-g3-gate) is closed.
-Its necessary geometry and scale bounds preserve the earlier
-[reserved two-input result](#reserved-two-pulse-inference-admission) and
-its known-clock premises. The next finite-curvature information admission
-is **inactive**; no response campaign is active. Physical constituent emergence and independent
-law selection remain open; no empirical response has passed complete physical
-admission. Completed evidence is reusable, not work to repeat.
+The [finite-curvature information theorem](#current-g3-gate) is closed.
+It preserves the [clock/scale theorem](#sine-clock-inference-admission) and
+[reserved two-input result](#reserved-two-pulse-inference-admission) under
+their original premises. A separately frozen four-reading software
+evaluation is the next **inactive** boundary; no response campaign is
+active. Physical
+constituent emergence and independent law selection remain open; no empirical
+response has passed complete physical admission. Completed evidence is
+reusable, not work to repeat.
 
 <a id="2-one-status-board-and-dependency-chain"></a>
 ## Queue status
 
 | Status | Scope and owner |
 | --- | --- |
-| Latest closed theoretical gate | [Complete-law clock/scale identifiability](#current-g3-gate): necessary geometry and scale bounds, exact common-rate/clock equivalence and a gain/clock curvature counterexample |
-| Inactive resumption boundary | [Finite-curvature information admission](#current-g3-gate), requiring a declared observation design and source/noise error bounds before another reserved response |
+| Latest closed theoretical gate | [Finite-curvature information](#current-g3-gate): full source/error bounds, necessary clock/gain refinement and scoped local minimality of the added reading |
+| Inactive resumption boundary | [Reserved four-reading software evaluation](#current-g3-gate), with separately frozen source, clock/sensor, correlated observations, numerical budgets and first-outcome retention |
+| Closed prerequisite | [Clock/scale identifiability](#sine-clock-inference-admission): necessary geometry and scale bounds, exact common-rate/clock equivalence and a gain/clock curvature counterexample |
 | Closed prerequisite | [Reserved two-input software inference](#reserved-two-pulse-inference-admission), whose known-clock assumptions and frozen evidence remain unchanged |
 | Closed prerequisite | [Two-input geometry/gain theorem](#sine-two-pulse-inference-admission), with necessary outer marginals and full trajectory/error history |
 | Deferred | [Named dependencies and reopening conditions](#deferred-work-and-reopening-conditions); no parallel solver, uniqueness or data campaign |
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
-<a id="sine-clock-inference-admission"></a>
-<a id="active-theoretical-gate-inference-under-a-bounded-observation-clock"></a>
-## Closed theoretical gate: inference under a bounded observation clock
+<a id="sine-finite-curvature-inference-admission"></a>
+<a id="active-theoretical-gate-finite-curvature-from-one-additional-reading"></a>
+## Closed theoretical gate: finite curvature from one additional reading
 
-The [clock-inference theorem](../nodal/SINE_CLOCK_INFERENCE.md#sine-clock-inference)
-retains one positive constant conversion `tau=rho*s`, the complete fixed
-law, full source, two events and three held-sensor readings. Monotonicity
-of the full-flow remainder supplies necessary geometry and effective-gain
-`J=G*rho` bounds through the shared inverse. Separate gain and clock
-marginals project that product onto their declared priors; their Cartesian
-product need not be jointly compatible or realizable. The auxiliary
-maximum-duration envelope is not a replacement trajectory or source reset.
+The [finite-curvature theorem](../nodal/SINE_FINITE_CURVATURE_INFERENCE.md#sine-finite-curvature-inference)
+adds a reading at `H/2` to the unchanged observations at `0,H,2H`, with
+phase events still at `0,H`. Original-source and third-derivative bounds
+connect the finite difference to necessary clock/gain constraints while
+retaining the complete state and the associated four-reading errors.
+Positive divisions and one conservative projection refine the coarse
+clock report; available marginals need not all become narrower or be
+jointly realizable. Proof, implementation and relevant controls agree.
 
-The [conditioning corollary](../nodal/SINE_CLOCK_INFERENCE.md#sine-clock-conditioning)
-gives an informative geometry/effective-scale regime despite a broad clock
-prior. A distinct [exact equivalence](../nodal/SINE_CLOCK_INFERENCE.md#sine-clock-common-rate-equivalence)
-shows why a free common multiplier of every evolution row and clock
-conversion cannot be separated through the same observed-time history.
-The [curvature witness](../nodal/SINE_CLOCK_INFERENCE.md#sine-clock-gain-curvature-witness)
-shows that equal leading gain/clock products need not preserve the complete
-response. Its ideal-source derivative ratio does not provide uniform clock
-recovery from uncertain sources and noisy finite readings. Proof, domain,
-scale-reduction and observation controls agree; no new reserved response
-or independently calibrated physical clock is supplied.
+Under its declared [conditioning budget](../nodal/SINE_FINITE_CURVATURE_INFERENCE.md#sine-curvature-conditioning),
+compatible observations admit exact-arithmetic clock width below `1/80`
+and sensor-gain width below `1/16`. Numerical coefficient and quotient
+admission remain separate checks; these are conditional feasibility
+bounds, not evaluated responses or a physical sensor specification.
 
-**Inactive resumption boundary:** derive a finite-curvature information
-theorem with the full source uncertainty and an explicit observation design.
-The existing three readings supply two offset-free increments; they cannot
-simply be treated as exact derivatives for the unknown geometry, gain and
-clock. Determine the minimum additional information needed, for example
-an extra reading within the first uninterrupted window, and justify a
-finite error/separation bound or prove an obstruction. Preserve the
-complete event history and correlated reading errors. This theoretical
-admission must precede another reserved response; no new design, source
-or campaign is currently active. Earlier frozen evidence remains unchanged.
+The [local information theorem](../nodal/SINE_FINITE_CURVATURE_INFERENCE.md#sine-curvature-local-information)
+proves exact three-reading collisions and four-reading local injectivity
+on the ideal three-parameter subfamily with fixed receiver geometry,
+zero source residuals and noiseless readings. One added scalar reading
+is minimal within that declared design and subfamily. This does not
+establish global identification when receiver state and full residuals
+are free, or remove exact common-law-rate/clock equivalence. Source,
+support, law and observation premises remain supplied.
+
+**Inactive resumption boundary:** separately admit and freeze a prospective
+four-reading software evaluation of clock/gain resolution. Retain the
+complete original source and both uninterrupted windows, the one held
+clock/gain/offset, and the shared readings entering increments and
+curvature. Freeze hidden/public information separation, source and
+observation errors, numerical budgets and resolution/coverage criteria
+before evaluating a response. Preserve the first outcome, including any
+failure or unavailability, without retuning or rerunning earlier producers.
+No such assessment is active, and no physical-identification campaign is
+admitted. Earlier frozen evidence and theorem prefixes remain unchanged.
 
 ## Deferred work and reopening conditions
 
@@ -319,6 +325,16 @@ implementations and tests.
   The doubled-C5 comparison supplies a finite receiver signature, not distinct
   asymptotic response classes. Positive-loss acquisition does not remove the
   conservative obstruction to entering a two-sided invariant family.
+
+<a id="sine-clock-inference-admission"></a>
+<a id="active-theoretical-gate-inference-under-a-bounded-observation-clock"></a>
+<a id="closed-theoretical-gate-inference-under-a-bounded-observation-clock"></a>
+
+- [Clock/scale inference theorem](../nodal/SINE_CLOCK_INFERENCE.md#sine-clock-inference).
+  A uniform full-flow envelope gives necessary geometry and effective-gain
+  bounds plus separate clock/gain marginals. Its conditioning regime,
+  exact common-rate/clock equivalence and ideal curvature witness retain
+  distinct premises; no reserved unknown-clock response was evaluated.
 
 <a id="reserved-two-pulse-inference-admission"></a>
 <a id="active-gate-reserved-geometry-and-gain-inference-from-two-inputs"></a>

@@ -4,6 +4,78 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-curvature-inference"></a>
+### Finite-curvature constraints from four associated readings
+
+`infer_sine_geometry_gain_clock_curvature(*, bulk_angle_bounds,
+receiver_short_angle_bounds, form_radius, phase_radius, phase_increments,
+probe_duration, recorded_reading_bounds, readout_error_bound,
+readout_gain_bounds, clock_rate_bounds)` in
+[`relational_sine_curvature_inference.py`](../../../src/tnfr/physics/relational_sine_curvature_inference.py)
+returns `SineCurvatureInference`. All ten primitive arguments are mandatory.
+The [finite-curvature owner](../../../theory/nodal/SINE_FINITE_CURVATURE_INFERENCE.md)
+retains the [clock-inference model and domains](#sine-clock-inference),
+but requires **four** ordered reading pairs at observation times
+`0,H/2,H,2*H`, where `H=probe_duration`. Admit every pair before selecting
+any subset, including the additional half-window reading. Invalid,
+nonfinite, Boolean, reversed or unordered values cannot be hidden in a
+reading omitted from the older three-reading calculation.
+
+The two phase events remain at `0,H`; the extra reading installs no event
+and resets no coordinate. One source, positive constant clock conversion,
+held sensor gain and offset govern the full trajectory. All source,
+capacity, law, angle and unit premises remain unchanged, including
+`H>0` and `rho_plus*H<=1/2`. Original source acuteness remains required;
+whole-window acuteness is separate optional evidence in the clock report.
+
+The report constructs a fresh `clock_envelope` from reading columns
+`(0,2,3)`. It computes exact reading midpoints and radii before the
+curvature difference `C=c_H-2*c_half+c_0`. The shared four-reading error
+map retains `curvature_reading_coefficients=(1,-2,1,0)` and the embedded
+inverse coefficients. Its curvature observation radius is the sum of
+the corresponding absolute coefficients times each numerical radius plus
+the per-reading sensor-error allowance. Curvature is not an independently
+measured channel; separate interval projections may conservatively lose
+cross-constraint correlations. No error is divided by an unknown clock.
+
+`sensor_corrected_curvature_bounds` retains the recorded finite difference
+with its reading uncertainty. Full-state bounds on initial curvature and
+the third derivative then account for original form/phase residuals and
+continuous motion during the first window. The midpoint difference is not
+an exact derivative. Inspect `initial_curvature_error_candidate`,
+`third_derivative_bound_candidate` and `normalized_curvature_error_candidate`
+as algebraic diagnostics; `normalized_curvature_error_upper_bound` requires
+the finite-curvature certificate. The complete continuous sine law supplies
+these bounds, not a fitted curvature or a reset to the nominal source.
+
+Positive effective-gain and curvature-coefficient bounds admit the
+necessary `clock_rate_constraint_bounds`. One projection intersects that
+constraint with the coarse clock bounds and projects the same `J=G*rho`
+relation back to sensor gain. `nominal_bulk_angle_outer_bounds`,
+`actual_long_arc_mean_outer_bounds`, `effective_gain_outer_bounds`,
+`readout_gain_outer_bounds` and `clock_rate_outer_bounds` remain necessary
+marginals. The actual angle concerns the original source and retains the
+original phase-radius expansion. There is no iteration, joint realization
+claim or promise that every available interval becomes narrower.
+
+`base_inverse_enclosure_available`, `finite_curvature_bound_certified`,
+`curvature_coefficient_positive` and `curvature_refinement_available`
+separate the coarse inverse from the new bound and its divisions.
+Unsupported source, rank or arithmetic admission yields `unavailable`,
+retaining the coarse child while refined outer fields remain unavailable.
+A strictly empty necessary intersection yields `incompatible`;
+`bounded_candidate` exposes the admitted outer marginals. Inspect the
+status and reason fields rather than treating a diagnostic candidate as
+certified evidence.
+
+The theorem's local information comparison fixes receiver geometry and
+zero source residuals with noiseless readings. It does not establish
+global identification for the full uncertain family, or remove the exact
+clock/common-law-rate equivalence. This detached calculation runs no
+trajectory, calibration or reserved assessment. Export uses
+`tnfr.sine-curvature-inference.v1`, shared SDK projection and atomic writing.
+See the [workflow](../../guides/relational/SINE_PATTERNS.md#sine-curvature-inference).
+
 <a id="sine-clock-inference"></a>
 ### Geometry and gain with a bounded observation-clock conversion
 

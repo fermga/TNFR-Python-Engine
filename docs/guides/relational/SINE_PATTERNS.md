@@ -4,6 +4,69 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-curvature-inference"></a>
+### Use an additional first-window reading for finite curvature
+
+Use `infer_sine_geometry_gain_clock_curvature` from
+[`relational_sine_curvature_inference`](../../../src/tnfr/physics/relational_sine_curvature_inference.py)
+for four readings at `0,H/2,H,2*H` from one uninterrupted trajectory.
+The [contract](../../contracts/relational/SINE_PATTERNS.md#sine-curvature-inference)
+uses the same ten primitive inputs as the clock adapter, but requires
+four reading pairs. The phase events stay at `0,H`, and gain, offset and
+clock conversion remain held. All thirty-six source coordinates and their
+declared uncertainty keep evolving through both windows.
+
+The half-window reading is a new observation premise. Interpolating it
+from the earlier three readings supplies no new measured information.
+The initial and `H` readings contribute to both the older inverse and
+the finite difference `C=r_H-2*r_half+r_0`; their errors therefore remain
+associated. Supply primitive recorded intervals and their per-reading
+error bound, not a separately estimated curvature with invented
+independent noise. Sensor errors and numerical interval widths stay in
+recorded units.
+
+Inspect `clock_envelope` for the coarse three-reading result and
+`curvature_refinement_available` before using the refined clock/gain
+bounds. Initial-source and third-derivative errors are part of the new
+finite bound. An available candidate need not improve resolution, and
+its separate marginals do not assert a realizable parameter combination.
+If the refinement is unavailable, the nested coarse report keeps its
+own limited conclusion; unavailable parent outputs are not zeros.
+
+Shortening `H` reduces the smooth-flow remainder but amplifies normalized
+reading uncertainty as `H**-2`; the original-source error also remains.
+The [conditioning budget](../../../theory/nodal/SINE_FINITE_CURVATURE_INFERENCE.md#sine-curvature-conditioning)
+gives a conditional informative regime. Its arithmetic widths are not a
+sensor calibration or a reserved-response result.
+
+This synthetic equal-input control exercises admission and abstention;
+the four zero reading placeholders are not a generated response:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_curvature_inference import infer_sine_geometry_gain_clock_curvature
+
+control = infer_sine_geometry_gain_clock_curvature(
+    bulk_angle_bounds=(Q(11, 8), Q(3, 2)),
+    receiver_short_angle_bounds=(Q(2, 3), Q(1)),
+    form_radius=Q(1, 2**40),
+    phase_radius=Q(1, 2**40),
+    phase_increments=(Q(1, 4), Q(1, 4)),
+    probe_duration=Q(1, 2**22),
+    recorded_reading_bounds=((Q(0), Q(0)),) * 4,
+    readout_error_bound=Q(0),
+    readout_gain_bounds=(Q(1), Q(2)),
+    clock_rate_bounds=(Q(1, 2), Q(2)),
+)
+print(control.status, control.clock_envelope.rank_deficient)  # unavailable True
+```
+
+The [information theorem](../../../theory/nodal/SINE_FINITE_CURVATURE_INFERENCE.md)
+distinguishes a local noiseless source subfamily from the full uncertain
+problem. Four readings do not guarantee global state reconstruction,
+independent calibration or removal of exact law/clock equivalence. Earlier
+frozen records remain unchanged; this guide starts no reserved campaign.
+
 <a id="sine-clock-inference"></a>
 ### Retain a bounded unknown conversion between observation and structural time
 

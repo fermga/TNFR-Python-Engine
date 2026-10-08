@@ -2449,6 +2449,12 @@ def test_prepared_composition_nested_label_admission(
             "infer_sine_geometry_gain_clock",
             None,
         ),
+        (
+            "relational_sine_curvature_inference",
+            "SineCurvatureInference",
+            "infer_sine_geometry_gain_clock_curvature",
+            None,
+        ),
     ],
 )
 def test_reduced_port_sdk_wiring_does_not_evaluate_research(

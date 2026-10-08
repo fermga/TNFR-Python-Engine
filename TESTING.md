@@ -141,6 +141,19 @@ all-row-rate/clock equivalence distinct from an ideal-source curvature
 control disproving exact gain/clock equivalence. Neither synthetic control
 is a reserved response or uniform noisy clock-identification theorem.
 
+For four-reading finite-curvature inference, also select
+[`test_sine_curvature_inference.py`](tests/physics/test_sine_curvature_inference.py)
+with the clock and joint-inverse suites. Independently check the raw
+finite-difference coefficients, original-source and third-derivative
+errors, positive divisions, necessary clock/gain projection and unchanged
+actual-angle meaning. All four reading pairs require admission, including
+a malformed half-window value absent from the coarse child. Preserve one
+middle-reading history and exact offset cancellation; curvature is not a
+new independent sensor error. Test unavailable refinement with a retained
+coarse report, strict exclusions, touching constraints and informative as
+well as nonimproving outer bounds. Exact local information results for an
+ideal fixed-source subfamily do not imply noisy global identification.
+
 When changing the independent full-state response generator, select the
 [direct source-box Taylor suite](tests/mathematics/test_validated_box_taylor.py)
 and [two-port readout suite](tests/physics/test_sine_two_port_readout.py).
@@ -156,6 +169,7 @@ their existing comparison and retained-metric consumer suites.
 ```sh
 python -m pytest tests/mathematics/test_validated_box_taylor.py tests/physics/test_sine_two_port_readout.py tests/physics/test_sine_two_port_inference.py tests/physics/test_sine_two_pulse_inference.py -q
 python -m pytest tests/physics/test_sine_clock_inference.py tests/physics/test_sine_two_pulse_inference.py tests/sdk/test_relational_reports.py -q
+python -m pytest tests/physics/test_sine_curvature_inference.py tests/physics/test_sine_clock_inference.py tests/physics/test_sine_two_pulse_inference.py -q
 python -m pytest tests/physics/test_sine_formed_evidence.py -q
 ```
 
