@@ -23,12 +23,12 @@ composite's interactions under justified complete nodal laws? The route is
 collective properties from their physical identification. A sufficient
 representation does not independently justify the law that evolves it.
 
-The [validated integral-observation admission](#current-g3-gate) is closed.
-The forward producer retains the complete nodal, clock and integral history
-and certifies completed averages under its fixed numerical budget.
-The sole **inactive** next boundary is a separately frozen finite-aperture
-software evaluation. No reserved response campaign is active, and earlier
-evidence keeps its original premises.
+The [reserved finite-aperture software gate](#current-g3-gate) is closed.
+Its first retained assessment passed the fixed full-history, average-transfer
+and necessary-inference criteria. The sole **inactive** next boundary is
+a finite-noise/horizon resolution audit for this same averaged observable.
+No further response campaign is active; earlier evidence keeps its original
+premises. Software resolution is distinct from physical measurement admission.
 Physical constituent emergence and independent law selection remain open;
 no empirical response has passed complete physical admission.
 
@@ -37,10 +37,11 @@ no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Latest closed admission gate | [Validated integral-observation producer](#current-g3-gate): explicit affine clock, complete carried state and certified averages or an honest partial prefix |
-| Inactive resumption boundary | [Reserved finite-aperture software evaluation](#current-g3-gate): freeze preparation, clock, sensor, public inverse packet and numerical/resolution criteria before the response |
+| Latest closed reserved gate | [Finite-aperture software evaluation](#current-g3-gate): first frozen full-history averages, public-only inverse and declared transfer/alternative controls |
+| Inactive resumption boundary | [Finite-noise/horizon resolution audit](#current-g3-gate): retain the averaged observable and derive informative error/window budgets or a scoped obstruction |
+| Latest closed admission gate | [Validated integral-observation producer](#sine-aperture-readout-admission): explicit affine clock, complete carried state and certified averages or an honest partial prefix |
 | Latest closed theoretical gate | [Finite-aperture observation](#sine-aperture-inference-admission): exact moments and finite-error necessary inference at fixed positive aperture fractions |
-| Latest closed reserved gate | [Reserved nonconstant-clock evaluation](#reserved-clock-drift-inference-admission): full-state signed transfer, mean-rate/gain coverage and exact sampled-profile ambiguity under frozen budgets |
+| Closed prerequisite | [Reserved nonconstant-clock evaluation](#reserved-clock-drift-inference-admission): full-state signed transfer, mean-rate/gain coverage and exact sampled-profile ambiguity under frozen budgets |
 | Closed prerequisite | [Bounded clock drift](#sine-clock-drift-inference-admission): exact sampled-exposure equivalence and finite-error inference of the first-window mean rate under held sensor and structural laws |
 | Closed prerequisite | [Reserved four-reading software evaluation](#reserved-curvature-inference-admission): complete sequential response, public-only inverse and separate clock/gain resolution under fixed budgets |
 | Closed prerequisite | [Finite-curvature information](#sine-finite-curvature-inference-admission): full source/error bounds, necessary clock/gain refinement and scoped local minimality of the added reading |
@@ -51,6 +52,35 @@ no empirical response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="reserved-aperture-inference-admission"></a>
+<a id="active-reserved-gate-finite-aperture-software-inference"></a>
+## Closed reserved gate: finite-aperture software inference
+
+The [retained result](../nodal/SINE_APERTURE_INFERENCE.md#sine-aperture-result)
+passed all 139 fixed conditions in its first assessment. Three histories
+completed the twelve reserved 38-coordinate steps, retaining the same full
+nodal source, cumulative integrals and held sensor through the declared
+events. The public-only inverse covered the original geometry, gain,
+effective gain and first-window mean rate within the frozen width budgets.
+Signed average transfers, composed curvature separation and the declared
+controls passed; exact bounds and receipts belong to the result owner.
+
+The [read-only audit](../../tests/physics/test_sine_aperture_evidence.py)
+rebuilds retained arithmetic and every stopping predicate without replaying
+the producer, inverse or archived workers. This establishes conditional
+software resolution for a supplied averaging law. It does not calibrate
+a physical sensor, reconstruct an instantaneous clock profile or identify
+fundamental constituents. All frozen evidence retains its original scope.
+
+**Inactive resumption boundary:** admit a theoretical finite-noise/horizon
+resolution audit for this same averaged observable. Retain the held
+instrument law and explicit source/clock uncertainty; derive informative
+error/window regimes or a scoped obstruction without assuming arbitrarily
+small sensor error or horizon. Distinguish a failed sufficient budget from
+exact nonidentifiability. Empirical attainability and an independent
+measurement/unit bridge remain separate obligations; no new response or
+physical-data campaign is active.
+
 <a id="sine-aperture-readout-admission"></a>
 <a id="active-admission-gate-validated-finite-aperture-observations"></a>
 ## Closed admission gate: validated finite-aperture observations
@@ -68,15 +98,6 @@ uncertainty, numerical enclosure width and sensor error are not interchangeable.
 Proof, implementation and independent controls agree. This admits the
 forward observation method, without a reserved response, kernel calibration
 or physical identification. Earlier frozen records remain unchanged.
-
-**Inactive resumption boundary:** separately freeze and evaluate the
-finite-aperture software protocol. Retain complete source preparation,
-an explicit forward clock, four certified raw averages, one held sensor
-with declared realized errors and a public inverse primitive allowlist.
-Freeze observation, numerical and resolution budgets before any reserved
-response. Endpoint samples cannot substitute for averaged data; a partial
-producer result cannot stand in for the complete horizon. Preserve the
-first outcome and all frozen evidence. No such evaluation is active.
 
 <a id="sine-aperture-inference-admission"></a>
 <a id="active-theoretical-gate-finite-aperture-observation"></a>

@@ -78,6 +78,11 @@ Export uses `tnfr.sine-aperture-readout.v1` with shared SDK projection and
 atomic writing. The [workflow](../../guides/relational/SINE_PATTERNS.md#sine-aperture-validated-producer)
 illustrates an independent stationary control.
 
+The [retained finite-aperture evaluation](../../../theory/nodal/SINE_APERTURE_INFERENCE.md#sine-aperture-result)
+keeps its separately frozen preparation, sensor and first outcome. Its
+[read-only audit](../../../tests/physics/test_sine_aperture_evidence.py)
+reconstructs consumed arithmetic without invoking this producer or the inverse.
+
 <a id="sine-aperture-inference"></a>
 ### Necessary inference from four finite-aperture averages
 

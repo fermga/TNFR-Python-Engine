@@ -63,6 +63,30 @@ The [proof](../../../theory/nodal/SINE_APERTURE_INFERENCE.md#sine-aperture-valid
 separates the affine-clock and integration premises from physical
 calibration and from the later frozen-evaluation boundary.
 
+The [reserved software result](../../../theory/nodal/SINE_APERTURE_INFERENCE.md#sine-aperture-result)
+has a separate frozen source, protocol, first-attempt record and response.
+Read its stored outcome directly; do not rerun its producer or inverse to
+inspect it:
+
+```python
+from pathlib import Path
+from tnfr.utils.io import json_loads
+
+saved = json_loads(
+    Path("docs/assets/sine_formed_classes/aperture-inference-v1.json").read_bytes()
+)
+assert saved["schema"] == "tnfr.sine-aperture-inference-experiment.v1"
+print(saved["report"]["status"])  # certified_reserved_aperture_inference
+print(len(saved["frozen_stopping_rule"]))  # 139
+```
+
+This snippet reads the retained declaration. The
+[dedicated audit](../../../tests/physics/test_sine_aperture_evidence.py)
+independently rebuilds the full-history, observation and necessary-inference
+arithmetic instead of treating success flags as premises. The result remains
+conditional software evidence, with no physical sensor calibration or
+instantaneous clock reconstruction.
+
 <a id="sine-aperture-inference"></a>
 ### Infer from interval averages with a declared sensor kernel
 

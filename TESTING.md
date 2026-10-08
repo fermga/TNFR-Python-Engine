@@ -212,7 +212,7 @@ python -m pytest tests/physics/test_sine_curvature_inference.py tests/physics/te
 python -m pytest tests/physics/test_sine_clock_drift_inference.py tests/physics/test_sine_curvature_inference.py tests/physics/test_sine_clock_inference.py tests/sdk/test_relational_reports.py -q
 python -m pytest tests/physics/test_sine_aperture_inference.py tests/physics/test_sine_clock_drift_inference.py tests/physics/test_sine_curvature_inference.py tests/sdk/test_relational_reports.py -q
 python -m pytest tests/physics/test_sine_aperture_readout.py tests/mathematics/test_validated_box_taylor.py tests/physics/test_sine_two_port_readout.py tests/sdk/test_relational_reports.py -q
-python -m pytest tests/physics/test_sine_formed_evidence.py tests/physics/test_sine_curvature_evidence.py tests/physics/test_sine_clock_drift_evidence.py -q
+python -m pytest tests/physics/test_sine_formed_evidence.py tests/physics/test_sine_curvature_evidence.py tests/physics/test_sine_clock_drift_evidence.py tests/physics/test_sine_aperture_evidence.py -q
 ```
 
 The [reserved inference protocol](theory/nodal/SINE_TWO_PORT_INFERENCE.md#sine-two-port-inference-protocol)
@@ -260,6 +260,21 @@ a duplicate response. Reconstruct its derivative/rate admission and zero
 integral correction without executing an archived helper, producer or inverse.
 Saved derivative enclosures remain a premise, and hash/attempt receipts do
 not independently authenticate chronology or physical acquisition.
+
+The [retained finite-aperture result](theory/nodal/SINE_APERTURE_INFERENCE.md#sine-aperture-result)
+is checked by [`test_sine_aperture_evidence.py`](tests/physics/test_sine_aperture_evidence.py).
+Rebuild all twelve 38-coordinate step certificates, affine-clock provenance,
+full endpoint carry, passive cumulative integral and exact observed-width
+normalization. Reconstruct the raw averages, held sensor/errors, eleven-key
+public packets, moment/error transfer, nested inverse and every frozen stop.
+Check the signed-average/curvature budgets independently of the saved verdict.
+Only the 36 nodal coordinates share the exact first-window exposure equality;
+the rate and cumulative integral need not match the reference. No point-sample
+companion association transfers automatically to these averages. Namespace
+imports of shared audit helpers must not import their autouse fixtures into
+another module. Keep producer/inverse/worker guards and frozen-byte checks;
+stored derivative enclosures remain premises, with independently assembled
+first-rate consistency and whole-tube inclusion checks.
 
 ### Boundaries that need explicit regression coverage
 
