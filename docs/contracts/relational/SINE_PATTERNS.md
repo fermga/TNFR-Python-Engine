@@ -4,6 +4,84 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-two-pulse-inference"></a>
+### Joint geometry and held-gain constraints from successive inputs
+
+`infer_sine_two_pulse_geometry_gain(*, bulk_angle_bounds,
+receiver_short_angle_bounds, form_radius, phase_radius, phase_increments,
+probe_duration, recorded_reading_bounds, readout_error_bound,
+readout_gain_bounds)` in
+[`relational_sine_two_pulse_inference.py`](../../../src/tnfr/physics/relational_sine_two_pulse_inference.py)
+returns `SineTwoPulseInference`. Every keyword is required. The complete
+source family, two-port support, held capacities, sine law and fast clock
+are those of the [single-response inverse](#sine-two-port-inference),
+without a critical-state or acquisition premise. The
+[two-pulse theorem](../../../theory/nodal/SINE_TWO_PULSE_INFERENCE.md)
+owns the retained-history bound and the joint inverse construction.
+
+`phase_increments=(a1,a2)` gives cumulative nominal phase amplitudes:
+the actual jumps are `a1*q` at zero and `(a2-a1)*q` at `h`, with
+`q=e_4-e_5` and `h=probe_duration`. Neither jump changes form.
+The second window begins with the complete first endpoint; no coordinate,
+common mean or residual is reset. Admit `0<a1<=a2<=1` and `0<h<=1/2`.
+The three ordered primitive `recorded_reading_bounds` pairs refer to
+times `0,h,2*h`. The phase-only events leave the corresponding instantaneous
+form readings unchanged. A single positive gain in `readout_gain_bounds`
+and one held arbitrary offset apply to all three readings. Each individual
+reading has additive error bounded by the nonnegative `readout_error_bound`.
+Input interval widths and sensor-error allowances are distinct.
+
+The nominal priors lie in `b=[11/8,3/2]`, `c=[2/3,1]` radians.
+Radii are nonnegative full degree-norm source bounds. Every scalar and
+endpoint uses shared exact/represented-real admission before outward
+arithmetic. Reject Boolean or nonfinite physical scalars, lost nonzero
+represented values, unordered containers, malformed or reversed pairs,
+nonpositive gain, out-of-domain priors, and invalid event/time declarations.
+There is no caller-supplied cached report or verdict.
+
+The report rebuilds source geometry and its acute guard. Its full-window
+bounds cover mean-removed form and phase displacement from the original
+nominal lifts after removing the held common phase. They include both
+inputs and the intermediate state.
+The finite remainder includes continuous form relaxation and phase motion
+under the complete law. Whole-window acuteness is separate optional evidence;
+the inverse concerns the original pre-probe angle. An event schedule alone
+does not establish maintenance or post-probe recovery.
+
+Exact primitive reading midpoints are differenced before interval coefficient
+arithmetic, so a large held offset cancels without subtracting rounded
+floating readings. Halfwidths and sensor errors propagate through the
+same three-reading incidence map. In particular, the middle reading's error
+radius is multiplied by `abs(w1-w2)` in each inverse row, retaining its single
+error realization. Coordinate projections can still discard correlations between
+the two inferred coordinates; the output is a necessary outer constraint.
+
+The leading matrix acts on `(G*cos(b), G*sin(b))`. Its determinant uses
+the factored sine of the amplitude separation. Equal amplitudes or an
+unresolved determinant yield `unavailable`, not a conclusion that the full
+nonlinear response has no information. Failed source or numerical chart
+admission also yields `unavailable`. Strictly empty necessary intersections
+yield `incompatible`; touching boundaries are retained. Nonempty nominal
+angle and gain projections yield `bounded_candidate`, without asserting
+that their Cartesian product, or any complete state, realizes the readings.
+The actual initial long-arc mean expands the nominal angle interval by
+`phase_radius/8` on either side, without clipping to the nominal prior.
+
+The output fields are `nominal_bulk_angle_outer_bounds`,
+`actual_long_arc_mean_outer_bounds` and `readout_gain_outer_bounds`.
+`raw_transformed_bounds` precedes prior intersection;
+`transformed_coordinate_bounds` retains the resulting coordinate box.
+Separate `transformed_observation_error_radii` and
+`transformed_flow_error_radii` expose the two error budgets. Inspect
+`unavailable_reasons` and `incompatibility_reasons` with the status.
+
+The report installs no events and integrates no trajectory. A broad positive
+gain prior remains a premise; model-based gain inference is distinct from
+independent sensor calibration. Law, clock, input and observation assumptions
+are supplied. Export uses `tnfr.sine-two-pulse-inference.v1`, shared exact
+SDK projection and atomic writing. See the
+[workflow](../../guides/relational/SINE_PATTERNS.md#sine-two-pulse-inference).
+
 <a id="sine-two-port-readout"></a>
 ### Independent complete-flow readout from a primitive source box
 

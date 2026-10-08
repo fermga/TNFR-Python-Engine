@@ -4,6 +4,48 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-two-pulse-inference"></a>
+### Constrain geometry and gain using one uninterrupted trajectory
+
+Use `infer_sine_two_pulse_geometry_gain` from
+[`relational_sine_two_pulse_inference`](../../../src/tnfr/physics/relational_sine_two_pulse_inference.py)
+when three readings share one held sensor gain and offset, and two declared
+phase inputs act on the same complete state. The
+[contract](../../contracts/relational/SINE_PATTERNS.md#sine-two-pulse-inference)
+fixes the source family, graph, complete law and structural clock. This
+calculation supplies outer angle and gain constraints; it does not acquire
+a source or generate the readings.
+
+1. Admit the original angle priors and full-state residual radii. Supply a
+   positive gain interval independently; a broad interval is allowed.
+2. Declare `phase_increments=(a1,a2)` and the equal window duration `h`.
+   Apply `a1*q` first and only `(a2-a1)*q` at `h`. Carry the full form and
+   phase state into the second interval.
+3. Retain readings at `0,h,2*h` in three ordered bound pairs. Declare the
+   error of each reading separately from its numerical interval width.
+   Supply exact fractions where a large offset accompanies a small signal.
+4. Interpret `bounded_candidate` as necessary compatibility. An
+   `incompatible` result excludes the combined premises; an `unavailable`
+   result needs its source, rank or arithmetic limitation resolved before
+   any inference claim.
+
+The two measured increments share the middle reading. The implementation
+retains that correlation when propagating noise and interval widths through
+the inverse. It also cancels the common offset before multiplying by
+uncertain coefficients. Averaging away the intermediate state or treating
+the second input as a fresh source would change the model.
+
+Separated amplitudes provide a nonsingular leading geometry/gain map.
+The [theorem](../../../theory/nodal/SINE_TWO_PULSE_INFERENCE.md) also retains
+the full finite-flow error and gives a conditional resolution budget.
+Equal amplitudes disable this inverse; they do not prove the two-time full
+response uninformative. Joint marginal bounds leave the receiver geometry
+and nodal residuals unresolved, and establish no physical sensor calibration.
+
+The [execution plan](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns admission of a future reserved assessment. Earlier single-pulse records
+cannot supply the second reading of this different event schedule.
+
 <a id="sine-two-port-readout"></a>
 ### Generate a complete-flow local readout under a declared protocol
 

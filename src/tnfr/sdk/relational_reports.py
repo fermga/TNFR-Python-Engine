@@ -298,6 +298,7 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
     from ..physics.relational_sine_two_port_probe import SineTwoPortProbe
     from ..physics.relational_sine_two_port_readout import SineTwoPortReadout
     from ..physics.relational_sine_two_port_transit import SineTwoPortTransit
+    from ..physics.relational_sine_two_pulse_inference import SineTwoPulseInference
     from ..physics.relational_transit import RelationalTransitCertificate
     from ..research.sine_constitutive_robustness import SineConstitutiveRobustness
 
@@ -384,6 +385,7 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
             SineTwoPortProbe,
             SineTwoPortReadout,
             SineTwoPortTransit,
+            SineTwoPulseInference,
             SineFormedClassMaintenance,
             SineFormedClassPair,
             SineFormedClassResponse,

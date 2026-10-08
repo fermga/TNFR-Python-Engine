@@ -21,7 +21,15 @@ composite's interactions under justified complete nodal laws? The route is
 -> independent observation**. A sufficient representation does not independently
 justify the law that evolves it.
 
-**Latest closed gate:** [reserved software geometry inference](#current-g3-gate)
+**Latest closed theoretical gate:** [geometry and gain from two successive inputs](#current-g3-gate)
+derives necessary outer bounds for an original source angle and one held
+positive observation gain from three scalar readings. The two inputs act
+on one uninterrupted trajectory, retaining all form and phase evolution
+and the shared middle-reading error. A rational conditioning example gives
+an informative regime under the declared law and clock. No new reserved
+response or physical calibration is supplied by this theorem.
+
+**Earlier closed gate:** [reserved software geometry inference](#sine-two-port-reserved-inference-admission)
 passed all forty-three conditions on its first frozen evaluation. Three
 complete-law responses gave public-only inverse packets whose angle
 intervals contain the hidden pre-probe geometry and meet the fixed
@@ -30,7 +38,7 @@ prior and declared phase-blind alternative are excluded. The record tests
 the finite inference chain and its information boundary within the supplied
 model; it does not supply physical calibration or external observation.
 
-**Latest closed theoretical gate:** [local-geometry inference](#sine-two-port-inverse-admission)
+**Earlier closed theoretical gate:** [local-geometry inference](#sine-two-port-inverse-admission)
 gives a necessary outer bound on the donor's mean long-arc angle from one
 supplied calibrated local response. Its complete transient state family
 retains variable geometry, all nodal residuals, unknown receiver state and
@@ -124,8 +132,9 @@ response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Latest closed gate | [Reserved software geometry inference](#current-g3-gate); all forty-three first-assessment conditions pass across three full-law responses, including public-only input, true-angle containment, resolution and declared controls |
-| Latest closed theoretical gate | [Conditional local-geometry inference](#sine-two-port-inverse-admission); necessary outer angle enclosure on a realizable noncritical family, with full-flow, source, gain and reading errors; the theorem alone supplies neither observation nor calibration |
+| Latest closed theoretical gate | [Two-input geometry/gain inference](#current-g3-gate); necessary outer marginals from three readings of one uninterrupted full-state trajectory, with common gain, shared observation error, rank and conditioning admission; no new reserved campaign |
+| Closed gate | [Reserved software geometry inference](#sine-two-port-reserved-inference-admission); all forty-three first-assessment conditions pass across three full-law responses, including public-only input, true-angle containment, resolution and declared controls |
+| Closed theoretical gate | [Conditional local-geometry inference](#sine-two-port-inverse-admission); necessary outer angle enclosure on a realizable noncritical family, with full-flow, source, gain and reading errors; the theorem alone supplies neither observation nor calibration |
 | Closed gate | [Interior donor phase dipole](#sine-two-port-dipole-admission); all thirteen first-assessment conditions pass, including original-family warmup, finite geometric contrast, phase-blind control exclusion, supplied work and both identities |
 | Closed gate | [Supplied two-port probe](#sine-two-port-probe-admission); finite transmission, source handoff, supplied work and recovery pass in the retained export-recovery assessment; the original export failure remains preserved |
 | Closed gate | [Same-family two-port capture](#sine-two-port-capture-admission); all fixed reference steps and full-state handoff pass, establishing subsequent convergence for the unchanged complete preparation family on supplied support |
@@ -144,6 +153,53 @@ response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge); source-specific obstructions remain in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="sine-two-pulse-inference-admission"></a>
+## Closed theoretical gate: geometry and held gain from two phase inputs
+
+The [two-input theorem](../nodal/SINE_TWO_PULSE_INFERENCE.md#sine-two-pulse-inference)
+extends the conditional inverse to a broadly bounded held positive gain.
+It retains the same realizable, generally noncritical two-port source
+family and known complete law and clock. The first event supplies `a1*q`;
+after one elapsed interval, the second supplies `(a2-a1)*q`. Three scalar
+readings observe the original, middle and final form difference. The
+middle state is the actual evolved state, with no source or equilibrium reset.
+
+A uniform full-law bound retains the form and phase history across both
+windows. Distinct cumulative amplitudes give independent leading angle/gain
+directions; their determinant and inverse conditioning are compared with
+the complete-flow and reading errors. Exact midpoint differences cancel
+the common offset, and the three-reading error map retains their shared
+middle observation before conservative coordinate projection. The
+[rational conditioning example](../nodal/SINE_TWO_PULSE_INFERENCE.md#sine-two-pulse-conditioning)
+proves a nonempty informative regime without selecting or evaluating a
+reserved response. Implementation controls check the algebra, admission,
+rank, offset invariance, error map and outer bounds.
+
+**Claim boundary:** the result encloses necessary angle and gain marginals,
+not every jointly realizable pair, the complete state or a unique law.
+The actual angle is the original pre-probe long-arc mean. The receiver and
+full nodal residuals remain nuisance state. Equal cumulative amplitudes or
+an unresolved leading determinant make this inversion method unavailable;
+they do not prove that
+the full nonlinear response is uninformative. The original source retains
+its acute admission, but whole-window acuteness is optional. No event-work,
+maintenance, recovery or independently calibrated physical measurement
+claim follows. Unknown clock or law scales would need additional premises
+to distinguish them from gain.
+
+**Resumption boundary:** separately admit a reserved two-input software
+experiment with a complete thirty-six-coordinate source and both events
+on the same trajectory. Carry the first validated endpoint into the second
+window and use one held sensor with three readings, rather than preparing
+an independent second source or duplicating the middle reading. Freeze
+hidden/public information separation, source and gain priors, law, clock,
+inputs, observation errors, full-flow budget and geometry/gain resolution
+criteria before evaluating the response. The posterior audit must check
+the original actual angle, held gain and complete source-to-final history.
+This next gate is inactive; no new response campaign or frozen prediction
+has been admitted. Earlier protocols, source archives and responses remain
+unchanged.
+
 <a id="sine-two-port-reserved-inference-admission"></a>
 ## Closed gate: reserved software inference from complete-law responses
 
@@ -178,24 +234,11 @@ affine observation model remain supplied. The information boundary is
 reviewable in its code path, not cryptographic blindness or provenance
 authentication. All frozen predictions and responses remain unchanged.
 
-**Resumption boundary:** audit whether two predeclared phase inputs and
-scalar readings can jointly constrain geometry and a broadly bounded held
-gain under the known law and clock. Prefer one uninterrupted source
-trajectory with both events, retaining its full residual state and memory
-between readings. A candidate schedule applies `a1*q`, then
-`(a2-a1)*q` after one interval, with readings before, between and after
-the two intervals. Its second response retains the first interval's form
-and phase evolution, and the two increments share the middle reading's
-error. No amplitudes or horizon are selected yet. Any alternative shared
-preparation needs explicit justification. Establish rank, conditioning and
-complete-flow error bounds
-before admitting a new response campaign. Two proportional leading
-coefficients do not provide independent information, and the second pulse
-cannot silently reuse or reset the original state. This bounded theoretical
-gate is inactive. Joint parameter inference would remain conditional on
-the model, not independently supplied physical calibration. If clock-scale
-uncertainty is later admitted, gain and clock contribute a combined amplitude;
-this route does not separately identify both without additional information.
+The subsequent [two-input theoretical gate](#sine-two-pulse-inference-admission)
+derives necessary joint constraints under a broadly bounded held gain,
+retaining one source history and the shared middle observation. It does
+not turn this earlier calibrated experiment into a two-input response or
+change its declared preparation, numerical budget or frozen evidence.
 
 <a id="sine-two-port-inverse-admission"></a>
 ## Closed theoretical gate: local geometry from a partial response

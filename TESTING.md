@@ -114,6 +114,18 @@ from the actual arc mean under phase residuals. An enclosing interval cannot
 serve as an existence or non-identifiability witness. Retained dipole and
 capture evidence can be audited without rerunning their frozen producers.
 
+For successive-input geometry/gain inference, also select
+[`test_sine_two_pulse_inference.py`](tests/physics/test_sine_two_pulse_inference.py).
+Check the complete carried state, the factored leading determinant,
+degenerate and unresolved rank, and all three reading-error coefficients.
+A shared middle reading must retain its incidence coefficients; for this
+inverse's opposite-sign rows the marginal sensor bounds coincide with the
+conservative separate-increment bounds. Test exact large-offset cancellation and
+distinguish interval width from sensor error. Synthetic leading responses
+exercise the inverse but are not reserved complete-flow observations;
+necessary marginal intervals prove neither joint realizability nor exact
+full-state identifiability.
+
 When changing the independent full-state response generator, select the
 [direct source-box Taylor suite](tests/mathematics/test_validated_box_taylor.py)
 and [two-port readout suite](tests/physics/test_sine_two_port_readout.py).
