@@ -24,6 +24,7 @@ ARCHIVED = (
     "reduced-ports-v1",
     "port-composition-v1",
     "port-relaxation-v1",
+    "port-form-tracking-v1",
 )
 MANIFESTS = ("evidence.manifest.json",) + tuple(
     f"{stem}.manifest.json" for stem in ARCHIVED
@@ -38,6 +39,7 @@ def no_evidence_producers():
         relational_sine_formed_class_maintenance,
         relational_sine_formed_classes,
         relational_sine_port_composition,
+        relational_sine_port_form_tracking,
         relational_sine_port_relaxation,
         relational_sine_reduced_class_ports,
     )
@@ -52,6 +54,7 @@ def no_evidence_producers():
             relational_sine_formed_class_maintenance,
             relational_sine_formed_classes,
             relational_sine_port_composition,
+            relational_sine_port_form_tracking,
             relational_sine_port_relaxation,
             relational_sine_reduced_class_ports,
         ):
@@ -65,6 +68,7 @@ def no_evidence_producers():
                             "assess_sine_port_composition",
                             "evaluate_sine_port_composition",
                             "assess_sine_port_relaxation",
+                            "assess_sine_port_form_tracking",
                         )
                     )
                     or name == "_unprobed_handoff"
@@ -101,7 +105,7 @@ def test_all_retained_artifact_sizes_and_hashes(retained):
         for manifest in manifests.values()
         for item in manifest["artifacts"]
     ]
-    assert len(names) == len(set(names)) == 17 and set(names) == expected
+    assert len(names) == len(set(names)) == 20 and set(names) == expected
     for manifest in manifests.values():
         for item in manifest["artifacts"]:
             data = content[item["file"]]
@@ -471,4 +475,107 @@ def test_relaxation_preserves_independent_channel_outcomes(retained):
         saved["frozen_stopping_rule_passed"]
         is manifest["frozen_stopping_rule_passed"]
         is False
+    )
+
+
+def test_form_tracking_retains_prior_result_and_independent_heat_gains(retained):
+    manifests, content = retained
+    manifest = manifests["port-form-tracking-v1.manifest.json"]
+    protocol = json_loads(content["port-form-tracking-v1.protocol.json"])
+    previous_protocol = json_loads(content["port-relaxation-v1.protocol.json"])
+    saved = json_loads(content["port-form-tracking-v1.json"])
+    previous = json_loads(content["port-relaxation-v1.json"])
+    report = saved["report"]
+    baseline = report["baseline_certificate"]
+    # The separate proof method consumes the same primitives, including both
+    # declared resolution policies. It never revises the first partial result.
+    assert protocol["inputs"] == previous_protocol["inputs"]
+    assert baseline == previous["report"]
+    assert previous["frozen_stopping_rule_passed"] is False
+    assert baseline["status"] == "phase_only"
+    gamma = _exact(baseline["gamma_bounds"]["hi"])
+    b2 = _exact(baseline["edge_disagreement_norm_squared_upper_bound"])
+    assert _exact(report["bridge_hessian_variation_upper_bound"]) == b2
+    bridge = b2 * _exact(baseline["even_bounds"]["phase_norm_upper_bound"])
+    assert _exact(report["even_bridge_forcing_upper_bound"]) == bridge
+    form_norms = []
+    for sector in ("odd", "even"):
+        box = report[f"{sector}_heat_bounds"]
+        old = baseline[f"{sector}_bounds"]
+        gap = _exact(old["gap_lower_bound"])
+        initial = _exact(old["initial_norm_upper_bound"])
+        forcing = _exact(old["forcing_upper_bound"])
+        if sector == "even":
+            forcing += bridge
+        assert _exact(box["gap_lower_bound"]) == gap
+        assert _exact(box["initial_norm_upper_bound"]) == initial
+        assert _exact(box["forcing_upper_bound"]) == forcing
+        lower = _exact(box["spectral_lower_bound"])
+        upper = _exact(box["spectral_upper_bound"])
+        assert lower == gap / 6 and upper == 2
+        ratio = upper / lower
+        assert _exact(box["spectral_ratio_upper_bound"]) == ratio
+        bands = box["dyadic_band_count"]
+        assert type(bands) is int and bands >= 0
+        assert ratio <= 2**bands
+        assert bands == 0 or 2 ** (bands - 1) < ratio
+        heat = _exact(box["heat_integral_upper_bound"])
+        gain = _exact(box["derivative_filter_gain_upper_bound"])
+        assert heat == 1 + Q(21, 80) * bands and gain == 1 + heat
+        loop = gamma**2 * upper * gain / gap
+        assert _exact(box["loop_gain_upper_bound"]) == loop
+        assert _exact(box["loop_margin"]) == 1 - loop > 0
+        initial_exchange = gamma * upper * (1 + gamma) * initial / gap
+        forced = gamma * gain * forcing / gap
+        assert _exact(box["initial_form_contribution_upper_bound"]) == initial
+        assert _exact(box["initial_joint_contribution_upper_bound"]) == initial_exchange
+        assert _exact(box["forced_contribution_upper_bound"]) == forced
+        norm = _exact(box["form_norm_upper_bound"])
+        assert (1 - loop) * norm == initial + initial_exchange + forced
+        assert norm >= initial and box["certified"] is True
+        form_norms.append(norm)
+    assert report["form_mean_error_floor"] == baseline["form_mean_error_floor"]
+    assert report["phase_mean_error_floor"] == baseline["phase_mean_error_floor"]
+    assert (
+        report["all_time_phase_error_upper_bound"]
+        == baseline["all_time_phase_error_upper_bound"]
+    )
+    assert (
+        report["phase_resolution_margin_bounds"]
+        == baseline["phase_resolution_margin_bounds"]
+    )
+    form = _exact(report["all_time_form_error_upper_bound"])
+    floor = _exact(report["form_mean_error_floor"])
+    # Check outward restoration independently of the producer's sqrt routine.
+    assert form >= floor
+    assert 2 * (form - floor) ** 2 >= sum(value**2 for value in form_norms)
+    allowance = baseline["form_allowance_bounds"]
+    margin = report["form_resolution_margin_bounds"]
+    assert 0 < _exact(margin["lo"]) <= _exact(allowance["lo"]) - form
+    assert _exact(allowance["hi"]) - form <= _exact(margin["hi"])
+    assert report["status"] == "full"
+    assert report["unavailable_reasons"] == report["resolution_limitations"] == []
+    assert all(
+        report[name] is True
+        for name in (
+            "all_time_envelopes_certified",
+            "form_resolution_certified",
+            "phase_resolution_certified",
+            "joint_resolution_certified",
+        )
+    )
+    assert (
+        saved["frozen_stopping_rule"]
+        == manifest["frozen_stopping_rule"]
+        == {
+            "envelopes_admitted": True,
+            "phase_resolution_passed": True,
+            "form_resolution_passed": True,
+            "joint_resolution_passed": True,
+        }
+    )
+    assert (
+        saved["frozen_stopping_rule_passed"]
+        is manifest["frozen_stopping_rule_passed"]
+        is True
     )

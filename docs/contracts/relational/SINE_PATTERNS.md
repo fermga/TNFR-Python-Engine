@@ -4,6 +4,57 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-port-form-tracking"></a>
+### Ordered heat comparison for uniform form tracking
+
+`assess_sine_port_form_tracking` in
+[`relational_sine_port_form_tracking.py`](../../../src/tnfr/physics/relational_sine_port_form_tracking.py)
+returns `SinePortFormTracking`. It requires the same fourteen keyword
+primitives and applies every domain, source, support, gap and work admission
+of [`assess_sine_port_relaxation`](#sine-port-relaxation). It accepts no prior
+report. `baseline_certificate` is freshly rebuilt from those primitives,
+including its original phase/form envelopes, separate verdicts and limitations.
+This is a new comparison method for the unchanged full and reduced trajectories.
+The [proof and protocol](../../../theory/nodal/SINE_PORT_FORM_TRACKING.md#sine-port-form-tracking)
+own the ordered convolution and finite-prefix gain argument.
+
+The fixed reference phase Hessian is a proof device: the surrogate's nonlinear
+bridge remains unchanged. `bridge_hessian_variation_upper_bound` and
+`even_bridge_forcing_upper_bound` retain its time-dependent deviation from that
+reference. Odd port values vanish, so this additional bridge term belongs only
+to the even comparison. Both `odd_heat_bounds` and `even_heat_bounds` expose
+the admitted spectral bounds, exact dyadic band count, heat-integral and filter
+gains, initial-state contributions, forcing contribution and loop margin.
+Each loop margin must be strictly positive. The argument retains operator
+order, initial phase-to-form exchange and bounded time-varying forcing; it
+assumes neither commuting operators nor a derivative of that forcing.
+
+`all_time_form_error_upper_bound` combines the two centered parity estimates
+and restores the original `form_mean_error_floor` once.
+`all_time_phase_error_upper_bound`, its margin and its verdict retain the fresh
+baseline values unchanged. Both `*_mean_error_floor` fields remain upper
+uncertainty budgets for possible constant offsets, not measured lower errors.
+The same origin-span phase and form allowances apply, with strictly positive
+outward lower margins required for resolution. No allowance is enlarged.
+
+Missing baseline envelopes or a failed new loop margin leave the new form
+bound unavailable and add `heat_form_envelopes_not_certified` to
+`unavailable_reasons`. The phase evidence can still remain available.
+`all_time_envelopes_certified` requires the new comparison prerequisites;
+`resolution_limitations` separately records either failed channel test.
+With every theorem and supplied-work prerequisite admitted, `status` is
+`full`, `phase_only`, `form_only` or `envelopes_only`; otherwise it is
+`unavailable`. Mathematical channel flags do not override a failed work policy.
+`joint_resolution_certified` is the conjunction of the two channel flags.
+
+The direct schema is `tnfr.sine-port-form-tracking.v1`. Shared SDK projection
+and atomic export retain exact bounds, optional fields and the fresh nested
+baseline. The earlier frozen `phase_only` assessment and its false joint
+stopping criterion remain unchanged. A separately passing new method is not
+a correction to that historical verdict, a measured trajectory error or
+physical validation. The [usage guide](../../guides/relational/SINE_PATTERNS.md#sine-port-form-tracking)
+reads both certificates without invoking their assessors.
+
 <a id="sine-port-relaxation"></a>
 ### Uniform full and reduced tracking through recovery
 

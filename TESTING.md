@@ -176,6 +176,12 @@ and partial validated horizons.
   resolution margins, including a valid envelope that resolves only one
   channel. Failure of a sufficient resolution bound is not trajectory error
   evidence, and a phase pass must not hide a failed natural form scale.
+  A sharper form comparison must preserve operator order in its heat
+  convolution, include the initial phase-to-form contribution and nonlinear
+  bridge variation, and strictly admit both parity feedback gains. Exercise
+  noncommuting operators and dyadic gain boundaries independently. Keep the
+  previous partial artifact unchanged; a new method is separate evidence,
+  not permission to enlarge the old allowance or replace its verdict.
 - **All-time and symmetry verdicts have different scope.** Fixed-budget
   consensus tests need an independent mixed-Lyapunov derivative from both
   full rows, zero-budget and failed-premise controls. Reflection excludes
@@ -224,6 +230,10 @@ for its saved actual-family identity and supplied-work obligations.
 The all-time relaxation audit separately retains the phase and form resolution
 decisions, including any qualified partial outcome; it must not reinterpret
 a failed sufficient form margin as an observed tracking failure.
+The separate ordered-heat form certificate preserves that earlier report body
+as its baseline and applies the same primitive inputs and channel allowances.
+Its audit checks both new strict margins without relabeling the original
+`phase_only` result or its false joint stopping rule.
 
 ```sh
 python -m pytest tests/physics/test_sine_formed_evidence.py -q

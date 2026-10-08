@@ -4,6 +4,67 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-port-form-tracking"></a>
+### Inspect the sharper form bound and its preserved baseline
+
+`assess_sine_port_form_tracking` uses the same fourteen primitive arguments as
+the [all-time relaxation assessment](#sine-port-relaxation). It rebuilds those
+premises and applies a separately justified ordered heat comparison, retaining
+the same surrogate, nonlinear bridge and channel allowances. The
+[API contract](../../contracts/relational/SINE_PATTERNS.md#sine-port-form-tracking)
+owns admission and field availability. To inspect the saved experiment from
+the repository root without repeating its assessment:
+
+```python
+from fractions import Fraction as Q
+from pathlib import Path
+from tnfr.utils.io import json_loads
+
+saved = json_loads(
+    Path("docs/assets/sine_formed_classes/port-form-tracking-v1.json").read_text(
+        encoding="utf-8"
+    )
+)
+assert saved["schema"] == "tnfr.sine-port-form-tracking.v1"
+record = saved["report"]
+baseline = record["baseline_certificate"]
+
+def rational(value):
+    return Q(value["numerator"], value["denominator"])
+
+print("baseline", baseline["status"], "new method", record["status"])
+new_form_bound = rational(record["all_time_form_error_upper_bound"])
+old_form_bound = rational(baseline["all_time_form_error_upper_bound"])
+assert new_form_bound < old_form_bound
+assert record["all_time_phase_error_upper_bound"] == baseline[
+    "all_time_phase_error_upper_bound"
+]
+print("phase", record["phase_resolution_certified"])
+print("form", record["form_resolution_certified"])
+print("joint", record["joint_resolution_certified"])
+```
+
+The [retained new assessment](../../assets/sine_formed_classes/port-form-tracking-v1.json)
+has status `full`. Its form upper bound is approximately `5.66e-8`, below the
+unchanged allowance of approximately `1.56e-7`; its original phase bound remains
+approximately `2.65e-4`, below `5e-4`. These are uniform error guarantees, not
+measured errors. The nested baseline remains `phase_only` and equals the
+earlier frozen report body, whose joint stopping criterion remains false.
+
+Inspect `odd_heat_bounds`, `even_heat_bounds` and the explicit bridge-variation
+fields for the new method's contributions and strict feedback margins.
+Unavailable bounds remain `None`; a valid envelope and each channel's
+resolution flag are separate questions. Overall admission also retains the
+supplied-work policy. The `*_mean_error_floor` fields remain upper budgets for
+possible constant offsets, not unavoidable positive errors.
+
+The [result owner](../../../theory/nodal/SINE_PORT_FORM_TRACKING.md#sine-port-form-tracking)
+retains the proof and complete frozen evidence. The
+[read-only evidence audit](../../../TESTING.md#current-checks-and-retained-evidence)
+checks provenance and the unchanged stopping rules separately from this JSON
+inspection. This result does not establish practical acquisition time, a
+sensor specification or physical identification of the formed components.
+
 <a id="sine-port-relaxation"></a>
 ### Inspect uniform tracking and separate channel resolution
 

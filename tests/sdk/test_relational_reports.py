@@ -2382,7 +2382,13 @@ def test_prepared_composition_nested_label_admission(
             "SinePortRelaxation",
             "assess_sine_port_relaxation",
             None,
-        )
+        ),
+        (
+            "relational_sine_port_form_tracking",
+            "SinePortFormTracking",
+            "assess_sine_port_form_tracking",
+            None,
+        ),
     ],
 )
 def test_reduced_port_sdk_wiring_does_not_evaluate_research(
