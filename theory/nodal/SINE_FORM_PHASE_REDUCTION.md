@@ -504,6 +504,24 @@ remainder and all sector margins. The result controls a mechanism within the sup
 and preparation; it does not select that law, support, source budget or
 physical interpretation.
 
+### A conditional comparison using acute geometry and dissipation
+
+The [two-port transit proof](SINE_TWO_PORT_TRANSIT.md#sine-two-port-transit)
+derives a different finite-horizon estimate for its unit-capacity, beta-one
+model. On a common acute chart, the slow phase field is dissipative in the
+degree metric. Integrating the complete law's storage loss bounds the
+squared scaled-form norm over time, yielding a comparison error that grows
+with the square root of the slow horizon. A strict first-exit argument
+must establish that both the actual and mixed phases stay in that chart.
+The nominal reference also retains its explicit initialization mismatch
+against every actual source member.
+
+That conditional argument supplies a finite deformation result with the
+original form coordinate retained. It does not replace the global,
+possibly nonacute comparison above or establish eventual capture. Its
+model-specific coefficients and prepared phase origins do not transfer
+without admission of the new complete model.
+
 ## 30. Full-state capture from controlled phase geometry
 
 <a id="sine-slow-phase-capture-handoff"></a>

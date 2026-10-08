@@ -195,6 +195,15 @@ and partial validated horizons.
   lower-storage boundary witness excludes the scalar certificate, not capture
   by the full dynamics; current-source checks must leave frozen equilibrium
   evidence untouched.
+  A finite two-port transit certificate must retain both initial form and
+  phase errors, actual degrees and conserved means, every consumed clock
+  factor and the full-state reconstruction. Verify its reference derivative
+  independently on all eighteen nodes. Its acute-chart comparison needs a
+  closed first-exit argument, not an assumed reference domain. Test actual
+  endpoint changes against each member's own initial short gaps, with the
+  initial error counted as well as the endpoint error. Whole-window acuteness
+  and finite directional change do not establish eventual capture. Keep
+  nonsymmetric error families and explicit unavailable margins in coverage.
 - **All-time and symmetry verdicts have different scope.** Fixed-budget
   consensus tests need an independent mixed-Lyapunov derivative from both
   full rows, zero-budget and failed-premise controls. Reflection excludes

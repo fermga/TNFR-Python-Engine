@@ -4,6 +4,94 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-two-port-transit"></a>
+### Finite directional deformation under the complete two-port law
+
+`assess_sine_two_port_transit(*, form_error_radius, phase_error_radius)` in
+[`relational_sine_two_port_transit.py`](../../../src/tnfr/physics/relational_sine_two_port_transit.py)
+returns `SineTwoPortTransit`. Both required radii are finite nonnegative
+reals. Shared admission preserves exact rationals and applies represented-real
+conversion to other admitted scalars, rejecting Boolean, nonfinite or
+negative values and nonzero values lost during conversion. The form radius
+uses the model's signed form units; the phase radius is in radians, not turns.
+
+The fixed support has two increasing-index C9 rings, classes `(2,1)` and
+unit contacts `D0--R0`, `D1--R1`. Both rows use actual joined degrees, held
+unit capacities, `beta=1`, `e=1023/1024`, `w=1/1024` and `tau=e*t`.
+The declared slow clock is `sigma=gamma**2*tau`, with `gamma=1/(1023*pi)`.
+The complete window is `0<=sigma<=1/4`; no larger horizon is certified.
+Its endpoint is original structural time `t=261888*pi**2`, without a
+laboratory-unit interpretation.
+
+Nominal form is zero. The nominal phase lifts are
+`theta_Dj=(j-1/2)*4*pi/9` and `theta_Rj=(j-1/2)*2*pi/9`, giving undeformed
+internal twists and opposite contact gaps `+pi/9`, `-pi/9`. Each of the
+eighteen form and phase coordinates may vary independently within its
+radius, with no imposed reflection or zero-sum constraints. Each member
+retains its actual conserved means. This is a conditional theorem about
+that complete family, not admission of an observed array or a target chosen
+from the implicit equilibrium. The midpoint alignment is a supplied source
+premise; it does not reorient an earlier experiment after its response.
+Subtract the single full degree-weighted mean from the displayed nominal
+lifts to obtain the report's nominal phase gauge. This common shift leaves
+every edge gap unchanged and does not recenter the components separately.
+
+The [proof](../../../theory/nodal/SINE_TWO_PORT_TRANSIT.md#sine-two-port-directional-transit)
+uses a gradient reference, the full storage loss and a mixed-coordinate
+comparison whose error grows with the square root of the slow horizon.
+It includes the initial form, fast transient and phase uncertainty, then
+reconstructs both full rows. The reference's common phase origin matches
+each member's conserved mean; the report bounds those source means without
+requiring them to be zero. The storage floor uses the isolated ring
+minima, not a solved joint equilibrium. A first-exit argument admits the
+reference, mixed and actual phases in one acute chart throughout the
+window. Neither the reference nor the detached assessor installs a flow,
+contact event, forcing or reset.
+In particular, the nominal full phase velocity is initially zero because
+the nominal form is zero; the nonzero initial reference velocity cannot
+replace it. The comparison retains this fast transient.
+
+`initial_excess_storage_upper_bound` is the sufficient bound
+`10/81 + 40*phase_error_radius + 40*form_error_radius**2`; admission requires
+this sufficient upper bound to be strictly below `1/8`, with equality
+unavailable. `energy_budget_margin` and `energy_budget_admitted`
+retain that premise separately. `joint_error_candidate`,
+`scaled_form_norm_candidate`, `phase_error_candidate` and
+`acute_margin_candidate` are intermediate proof bounds, not certified
+trajectory observations. In particular, a positive acute candidate alone
+does not bypass the complete bootstrap.
+
+Only successful complete admission makes `error_certified` and
+`whole_window_acute_certified` true and supplies
+`phase_error_upper_bound` and `relative_form_norm_upper_bound`.
+The phase and mixed-coordinate errors use the nominal reference shifted
+to each member's conserved phase mean. The form norm bounds the centered
+form `P_M*x`; `initial_form_mean_bounds` separately retains its common mode.
+The reference's common phase shift cancels from every gap change.
+The preserved integer periods on that window are `(2,1,0)`.
+`short_arc_change_lower_bound` then bounds both the donor's decrease and
+the receiver's increase, each relative to that member's own initial short
+gap. `direction_margin` subtracts the fixed `1/32` radian threshold;
+strict positivity is required for `direction_certified`.
+
+The joint status is `certified_directional_transit` when the direction
+passes, `transit_bound_only` when the full comparison is admitted without
+the required direction, and `unavailable` when the comparison premises
+fail. Conditional output bounds are `None` when the comparison is not
+certified. Unavailable
+or failed sufficient margins do not demonstrate a reverse motion or a
+failed trajectory. The direct schema is `tnfr.sine-two-port-transit.v1`,
+with shared SDK exact projection and atomic export.
+
+This finite directional result does not establish basin entry, final
+convergence or all-future acute retention. The earlier
+[scalar-storage obstruction](#sine-two-port-handoff-obstruction) remains
+valid, as do the frozen compatibility reports. The new theorem executes
+no numerical trajectory or frozen producer. Contact work, support birth
+and physical identification remain separate questions. The
+[usage example](../../guides/relational/SINE_PATTERNS.md#sine-two-port-transit)
+assesses the full declared uncertainty family.
+
 <a id="sine-two-port-handoff-obstruction"></a>
 ### A boundary witness excludes direct scalar-storage handoff
 

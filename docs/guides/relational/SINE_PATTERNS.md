@@ -4,6 +4,61 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-two-port-transit"></a>
+### Certify a finite deformation from the undeformed pair
+
+The [directional transit theorem](../../../theory/nodal/SINE_TWO_PORT_TRANSIT.md#sine-two-port-directional-transit)
+starts from two undeformed uniform twists with nominal form zero and
+midpoint-aligned contact gaps `+pi/9`, `-pi/9`. It proves motion under the
+complete law while retaining independent errors in all eighteen form and
+phase coordinates. The source does not use the solved equilibrium.
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_two_port_transit import (
+    assess_sine_two_port_transit,
+)
+from tnfr.sdk import relational_report_to_dict
+
+transit = assess_sine_two_port_transit(
+    form_error_radius=Q(1, 65536),
+    phase_error_radius=Q(1, 65536),
+)
+assert transit.energy_budget_admitted
+assert transit.error_certified
+assert transit.whole_window_acute_certified
+assert transit.short_arc_change_lower_bound > Q(1, 32)
+assert transit.direction_certified
+assert transit.status == "certified_directional_transit"
+payload = relational_report_to_dict(transit)
+```
+
+The fixed endpoint is slow time `sigma=1/4`, with
+`sigma=gamma**2*tau`, `tau=e*t`, and `gamma=1/(1023*pi)`.
+This is original structural time `t=261888*pi**2`, not a laboratory clock.
+At that endpoint, every admitted donor short gap has contracted by more
+than `1/32` radian and every receiver short gap has expanded by more than
+`1/32` radian, each compared with its own initial gap. All edges remain
+acute throughout this finite window, preserving periods `(2,1,0)`.
+The phase-error radius is in radians; the form radius uses the declared
+structural form coordinate.
+
+The assessor evaluates analytic bounds, not a numerical trajectory.
+Its gradient reference supplies a comparison while the retained mixed
+coordinate reconstructs the actual full-state law. Inspect the energy,
+bootstrap and direction flags separately: candidate estimates cannot
+substitute for certified bounds, and a failed sufficient margin is not
+an observed failure of motion. The
+[API contract](../../contracts/relational/SINE_PATTERNS.md#sine-two-port-transit)
+specifies those distinctions.
+
+Midpoint alignment is a supplied preparation. In the earlier centered-ring
+convention it corresponds to receiver origin `-7*pi/9`, so this is not the
+old `1/1000`-origin contact experiment. The finite motion is compatible with
+the earlier scalar-storage obstruction: neither that obstruction nor the
+new directional certificate decides eventual capture. No contact event,
+passive work budget or physical binding is established.
+
 <a id="sine-two-port-handoff-obstruction"></a>
 ### Check the limit of a scalar storage handoff
 

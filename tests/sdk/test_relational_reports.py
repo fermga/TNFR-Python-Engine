@@ -2401,6 +2401,12 @@ def test_prepared_composition_nested_label_admission(
             "assess_sine_two_port_handoff_obstruction",
             None,
         ),
+        (
+            "relational_sine_two_port_transit",
+            "SineTwoPortTransit",
+            "assess_sine_two_port_transit",
+            None,
+        ),
     ],
 )
 def test_reduced_port_sdk_wiring_does_not_evaluate_research(

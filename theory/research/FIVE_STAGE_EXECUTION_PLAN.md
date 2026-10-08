@@ -21,12 +21,20 @@ composite's interactions under justified complete nodal laws? The route is
 -> independent observation**. A sufficient representation does not independently
 justify the law that evolves it.
 
-**Latest closed gate:** [the two-port storage handoff obstruction](#current-g3-gate)
+**Latest closed gate:** [finite directional transit on the two-port support](#current-g3-gate)
+certifies that a declared neighborhood of the undeformed `(2,1)` pair
+contracts the donor short arc and expands the receiver short arc under the
+full law. Both changes exceed `1/32` radian at the fixed slow endpoint
+`sigma=1/4`, with acute geometry throughout the window. This is finite
+evolution from an independently specified preparation, not final capture.
+
+**Earlier closed gate:** [the two-port storage handoff obstruction](#sine-two-port-handoff-admission)
 proves that no lower bound on every acute-sector boundary face can certify
 capture directly from the undeformed `(2,1)` pair, uniformly over relative
 origins and a stated neighborhood of phase errors. An explicit boundary
 state has lower storage. This excludes that proof method, not dynamical
-capture; directional evolution and basin entry remain unresolved.
+capture. The subsequent directional certificate does not supply basin entry
+or invalidate this obstruction.
 
 **Earlier closed gate:** [two-port compatibility of the formed C9 classes](#sine-two-port-compatibility-admission)
 admits a unique acute geometry in the declared unequal-class sector, with
@@ -72,7 +80,8 @@ response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Latest closed gate | [Two-port storage handoff obstruction](#current-g3-gate); an exact lower-storage boundary witness excludes direct full-sector storage certification for undeformed `(2,1)` pairs and admitted phase-error neighborhoods, without deciding dynamical capture |
+| Latest closed gate | [Finite two-port directional transit](#current-g3-gate); whole-window acute geometry and strict donor contraction/receiver expansion for the complete prepared family, with final capture unresolved |
+| Closed gate | [Two-port storage handoff obstruction](#sine-two-port-handoff-admission); an exact lower-storage boundary witness excludes direct full-sector storage certification for undeformed `(2,1)` pairs and admitted phase-error neighborhoods, without deciding dynamical capture |
 | Closed gate | [Two-port C9 compatibility](#sine-two-port-compatibility-admission); unique acute equilibrium in the declared sector, forced internal deformation, balanced interface circulation and local attraction, with the matched-class zero-current control |
 | Closed gate | [All-time form tracking](#sine-port-form-tracking-admission); both unchanged channel allowances certified by a separate ordered heat comparison, preserving the previous partial result |
 | Closed gate: qualified partial | [All-time reduced/full tracking](#sine-port-relaxation-admission); valid uniform envelopes and phase resolution, with the unchanged form and joint resolution criteria not certified by that method |
@@ -86,6 +95,44 @@ response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge); source-specific obstructions remain in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="sine-two-port-transit-admission"></a>
+## Closed gate: full-law deformation from an undeformed pair
+
+The [directional transit theorem](../nodal/SINE_TWO_PORT_TRANSIT.md#sine-two-port-directional-transit)
+retains the same fixed two-port support, positive-loss sine law and held
+unit capacities. It supplies a finite full-state consequence beyond static
+compatibility and beyond the failed initial-storage capture criterion.
+The result is analytic: no numerical trajectory, reserved response or new
+frozen-evidence campaign is used.
+
+The nominal preparation consists of undeformed uniform winding classes
+`(2,1)`, zero form and midpoint-aligned contacts with gaps `+pi/9` and
+`-pi/9`. Every form and continuous phase coordinate may independently
+deviate by `1/65536`; no reflection or zero-sum constraint is imposed on
+these errors. This alignment is a supplied preparation within the earlier
+all-origins source family. In the earlier centered ring convention it
+corresponds to receiver origin `-7*pi/9`, not the former `1/1000` origin.
+No state is reset and no equilibrium coordinate is used to choose the source.
+
+The proof compares the complete flow to a phase-gradient reference using
+acute-chart dissipation and full storage loss. Its mixed-coordinate error
+grows with the square root of the slow horizon rather than a global
+exponential bound; reconstruction retains the initial form and both full
+rows. A separate first-exit argument closes the chart premise. At slow
+time `sigma=1/4`, every actual donor short gap is smaller than its own
+initial gap by more than `1/32` radian, and every receiver short gap is
+larger by more than the same amount. The whole interval remains acute,
+so its three cycle periods are preserved. The reference is a proof device,
+not an installed substitute dynamics.
+
+**Resumption boundary:** this finite direction does not prove entry into
+the joint equilibrium's basin, eventual convergence or indefinite identity
+retention. A longer transit and capture claim needs its own complete-state
+admission. Contact support, source alignment and structural clock remain
+supplied; no edge event, work payment, autonomous selection or physical
+binding is derived. The earlier scalar-storage obstruction and frozen
+compatibility evidence remain unchanged. No further campaign is active.
+
 <a id="sine-two-port-handoff-admission"></a>
 ## Closed gate: the scalar storage test cannot establish this handoff
 
@@ -114,12 +161,13 @@ sector theorem's initial-domain premise. The earlier central-port contact
 certificate supplies no automatic handoff on this changed two-port support;
 the static compatibility certificate and its frozen evidence remain valid.
 
-**Resumption boundary:** actual capture requires directional or transient
-control reaching an admitted invariant region, with complete source, clock,
-support-event work and postevent conserved means. Local attraction, an
-available work budget or the lower-storage boundary witness cannot decide
-that trajectory. No such transit campaign or physical-data evaluation is
-active.
+**Resumption boundary:** the separate
+[finite directional transit](#sine-two-port-transit-admission) establishes
+motion on a declared window while preserving this obstruction. Actual
+capture still requires entry into an admitted invariant region, with
+complete source, clock, support-event work and postevent conserved means.
+Local attraction, an available work budget or the lower-storage boundary
+witness cannot decide that trajectory. No physical-data evaluation is active.
 
 <a id="sine-two-port-compatibility-admission"></a>
 ## Closed gate: compatibility through two distinct component ports
