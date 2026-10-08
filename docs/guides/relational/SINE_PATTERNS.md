@@ -4,6 +4,37 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-two-port-inference"></a>
+### Interpret a calibrated local response as a geometry constraint
+
+Use `infer_sine_two_port_geometry` from
+[`relational_sine_two_port_inference`](../../../src/tnfr/physics/relational_sine_two_port_inference.py)
+only after independently admitting the full-state family, complete sine law,
+supplied phase pulse, elapsed structural clock and observation calibration
+described by its [contract](../../contracts/relational/SINE_PATTERNS.md#sine-two-port-inference).
+Supply a prior range for the donor bulk angle and receiver short angle,
+full-state error radii, the recorded increment and its per-reading error,
+positive gain bounds, and a fixed refinement budget. Exact fractions retain
+their values; rounded observations describe their represented values.
+
+This calculation constrains a genuinely variable, generally nonstationary
+geometry. It does not infer the compatible equilibrium by repeating the
+assumptions that already determine it. Its observation is one local increment
+on the joined graph, not the earlier joined-minus-unjoined contrast; do not
+substitute the saved dipole contrast for that input.
+
+Read the nominal-angle enclosure and the actual pre-probe long-arc mean enclosure
+separately. Initial phase uncertainty makes them different. A nonempty outer
+interval is a necessary constraint, not proof of an underlying state that
+produces the reading. An empty result challenges the joint premises; it
+does not identify an individual failed calibration or law. No trajectory,
+equilibrium search or old frozen producer runs when constructing the report.
+
+The [theorem](../../../theory/nodal/SINE_TWO_PORT_INFERENCE.md) supplies the
+finite response and remote-current error proof. A reserved inference test
+still needs its own preparation, calibration and frozen protocol under the
+[execution plan](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).
+
 <a id="sine-two-port-dipole"></a>
 ### Inspect a common interior phase probe and its finite warmup
 

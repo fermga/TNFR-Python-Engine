@@ -104,6 +104,16 @@ and partial validated horizons.
 | Resonance, pulse and recurrence | Retain the selected port/readout, full tangent pencil and actual coefficient domain. Distinguish gain peaks from complex poles, exact periodicity from orbital stability, and family recurrence from a chosen-state verdict. Independent quadrature or static variation controls do not prove a nonlinear infinite-time response. |
 | SDK, CLI and evidence projection | Check delegation, one-source capture, immutable observations, unavailable values, supported node labels and exact fraction export. Direct report schemas and the generic SDK envelope are separate contracts. Malformed reports and source changes must not authenticate themselves through serialization. |
 
+For local-response geometry inference, select the inverse owner and SDK
+projection through the theory-to-execution map. Use independent full-node
+edge sums and graph-distance cancellations to check the noncritical affine
+family and its remote-current remainder. Synthetic observation bands test
+monotone exclusion, calibration/noise propagation and unresolved arithmetic;
+they are not reserved responses. Keep the nominal-family parameter separate
+from the actual arc mean under phase residuals. An enclosing interval cannot
+serve as an existence or non-identifiability witness. Retained dipole and
+capture evidence can be audited without rerunning their frozen producers.
+
 ### Boundaries that need explicit regression coverage
 
 - **Chained evidence is rebuilt from its premises.** Change primitive inputs

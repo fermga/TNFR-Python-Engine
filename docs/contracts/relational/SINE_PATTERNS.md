@@ -4,6 +4,84 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-two-port-inference"></a>
+### Conditional geometry inference from one calibrated local increment
+
+`infer_sine_two_port_geometry` in
+[`relational_sine_two_port_inference.py`](../../../src/tnfr/physics/relational_sine_two_port_inference.py)
+returns `SineTwoPortInference`. The
+[theorem owner](../../../theory/nodal/SINE_TWO_PORT_INFERENCE.md)
+defines a complete affine family on the same eighteen-node two-port graph:
+donor bulk angle `b`, donor short angle `4*pi-8*b`, receiver short angle
+`c`, receiver bulk angle `(2*pi-c)/8`, and opposed contact gaps. The
+family does not impose criticality. Its continuous unknown geometry is
+therefore not the unique equilibrium already selected by the compatibility
+theorem. Supplied initial form and phase norm errors retain every node.
+
+All keyword inputs are mandatory: `bulk_angle_bounds`,
+`receiver_short_angle_bounds`, `form_radius`, `phase_radius`,
+`phase_increment`, `probe_duration`, `recorded_increment_bounds`,
+`readout_error_bound`, `readout_gain_bounds` and `refinements`.
+Bounds contain two primitive real scalars; scalar admission uses the shared
+exact/represented-real boundary before interval arithmetic. Booleans,
+nonfinite values, malformed or reversed bounds and unsupported domains
+reject. The prior lies within `11/8 <= b <= 3/2` and `2/3 <= c <= 1`
+in radians; the retained source errors must preserve the strict acute
+pre-probe chart. This is a declared preparation domain, not a fitted range.
+Radii and readout errors are nonnegative; amplitude and duration lie in
+`(0,1]`, gain endpoints are positive, and `refinements` is an ordinary
+integer from one through sixty-four. Strict source acuity is a sufficient
+admission test; failure leaves the report unavailable rather than asserting
+that every source state is invalid.
+The complete law fixes `gamma=1/(1023*pi)`, held unit capacities
+and fast clock `tau=(1023/1024)*t`. Input amplitude is in radians;
+elapsed time is in that fast clock. These declarations do not establish
+laboratory calibration or infer the law from the supplied response.
+
+The event is `theta_plus=theta_minus+a*(e_4-e_5)`, with form unchanged.
+The observation uses two scalar readings of the same local form difference,
+with one constant positive gain selected from `readout_gain_bounds`.
+The bound `readout_error_bound` applies to each scalar reading in recorded
+units. The inverse retains both errors and the gain interval, then the
+complete-flow remainder. A constant shared observation offset cancels;
+an unbounded offset drift does not. The input amplitude, elapsed clock,
+law and gain calibration must be admitted independently of the response.
+
+The new remainder includes the nonstationary nominal port currents. Their
+first three readout moments vanish by graph locality, yielding a fourth-order
+time bound for their background contribution. Form relaxation, phase-source
+errors, finite pulse transport and nonlinear phase motion are also retained.
+The old equilibrium-dipole remainder cannot be reused without this addition.
+
+The inverse returns a necessary outer enclosure on the declared monotone
+branch. A retained candidate does not prove that any complete state jointly
+realizes the observation; a wide enclosure is not a constructed ambiguity.
+An excluded band contradicts the joint family, law, calibration and error
+premises, without selecting which premise failed. The nominal family
+coordinate and the actual pre-probe mean donor long-arc angle differ under residual
+phase uncertainty; the latter requires the proved additional `phase_radius/8`
+allowance. No equilibrium root, frozen response or incoming cached verdict
+is consumed. The report installs no event and executes no trajectory.
+Acquisition, post-event maintenance, full-state reconstruction and physical
+identification are outside this inverse contract.
+
+Status `bounded_candidate` returns `nominal_bulk_angle_outer_bounds` and
+`actual_long_arc_mean_outer_bounds`; `incompatible` certifies strict
+exclusion under the combined premises. Status `unavailable` retains
+`unavailable_reasons` when source acuity or positive interval division is
+unresolved, including an exact positive scale too small for the interval
+grid. `finite_remainder_upper_bound` requires source admission.
+`whole_window_acute_certified` is optional evidence, not an inverse gate.
+`boundary_refinement_counts` and `refinement_precision_limited` retain
+numerical work and unresolved signs; unresolved comparisons cannot exclude
+candidates. The direct schema is `tnfr.sine-two-port-inference.v1`, with
+shared exact SDK projection and atomic export.
+
+See the [usage guide](../../guides/relational/SINE_PATTERNS.md#sine-two-port-inference)
+and the [single execution queue](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+for the distinction between this conditional theorem and a reserved
+inference assessment.
+
 <a id="sine-two-port-dipole"></a>
 ### Interior phase dipole after a finite complete-law warmup
 
