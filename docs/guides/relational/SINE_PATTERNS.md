@@ -4,6 +4,91 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-reduced-class-ports"></a>
+### Evaluate reduced port rows and inspect their retained certificate
+
+Use `evaluate_sine_reduced_class_ports` to inspect the instantaneous field of
+the twenty-coordinate surrogate. Each state row contains five donor values
+followed by five receiver values, ordered by the reflection layers
+`(4), (3,5), (2,6), (1,7), (0,8)`. The form row and phase-deviation row together
+contain twenty coordinates; they are not two scalar component states.
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_reduced_class_ports import (
+    evaluate_sine_reduced_class_ports,
+)
+from tnfr.sdk import relational_report_to_dict
+
+rows = evaluate_sine_reduced_class_ports(
+    donor_class=1,
+    receiver_class=2,
+    forms=(Q(0),) * 10,
+    phase_deviations=(Q(0),) * 10,
+    phase_origin_difference=Q(1, 1000),
+)
+assert rows.bridge_phase_difference == Q(1, 1000)
+assert rows.form_rate_bounds[0].lo > 0
+assert rows.form_rate_bounds[5].hi < 0
+row_payload = relational_report_to_dict(rows)
+```
+
+Zero phase deviations mean each component is at its own reference twist and
+declared common origin. The receiver origin is already supplied by
+`phase_origin_difference`; do not add it to the receiver deviation entries
+again. The [coordinate contract](../../contracts/relational/SINE_PATTERNS.md#sine-reduced-class-ports)
+gives the explicit lift. These supplied coordinates evaluate reduced rows;
+they do not prove formation, approximate an arbitrary fine state or install
+a bridge in a live graph.
+
+The separate `assess_sine_reduced_class_ports` reader rebuilds the original
+source families and their error bounds from twelve primitive inputs. Its
+retained result can be inspected without calling that reader again. Run the
+following from the repository root:
+
+```python
+from fractions import Fraction as Q
+from pathlib import Path
+from tnfr.utils.io import json_loads
+
+saved = json_loads(
+    Path("docs/assets/sine_formed_classes/reduced-ports-v1.json").read_text(
+        encoding="utf-8"
+    )
+)
+assert saved["schema"] == "tnfr.sine-reduced-class-ports.v1"
+record = saved["report"]
+
+def rational(value):
+    return Q(value["numerator"], value["denominator"])
+
+assert record["status"] == "certified_reduced_class_ports"
+assert all(record["unprobed_handoff"]["handoff_certified_by_class"])
+assert record["identity_certified"] and record["work_within_allowance"]
+gap_lower = rational(record["recorded_contrast_bounds"]["lo"])
+error_ratio = rational(record["error_ratio_upper_bound"])
+assert gap_lower > 0
+assert error_ratio < rational(record["error_fraction"])
+assert rational(record["error_fraction_margin_bounds"]["lo"]) > 0
+```
+
+`recorded_contrast_bounds` concerns actual receiver-port form for donor class
+two minus donor class one. The error ratio uses that interval's final lower
+endpoint and includes reduced evaluation, model discrepancy, preparation and
+readout errors. The reduced model's accuracy is finite-window evidence;
+whole-family identity and recovery are separate full-law obligations.
+
+Reading the JSON inspects retained assertions; it does not verify its archive
+or authenticate chronology. Use the
+[retained-evidence audit](../../../TESTING.md#current-checks-and-retained-evidence)
+for byte/source consistency, and the
+[result owner](../../../theory/nodal/SINE_REDUCED_CLASS_PORTS.md#sine-reduced-class-ports)
+for the frozen protocol and scope. A new assessment takes original primitives,
+not `rows`, `record` or a cached passing flag. An unavailable assessment keeps
+missing actual-family fields as `None`; a successful instantaneous evaluation
+does not supply those missing premises. No solver, measured speedup, practical
+clock or physical identification is established by this workflow.
+
 <a id="sine-formed-class-contact"></a>
 ### Compare actual receiver responses after a supplied contact
 

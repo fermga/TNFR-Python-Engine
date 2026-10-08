@@ -23,7 +23,13 @@ receiver orbits. Single-pass iterables are consumed once with bounded length.
 The orbit order is `(4), (3,5), (2,6), (1,7), (0,8)`; multiplicities are
 `(1,2,2,2,2)`, and live node degrees are `(3,2,2,2,2)` in each component.
 Phase coordinates are real deviations from the selected winding target,
-not substituted absolute circular phases. This instantaneous reader admits
+not substituted absolute circular phases. Writing `T` for the layer lift,
+`Theta_j[i] = 2*pi*j*(i-4)/9`, and splitting the phase row into `y_D, y_R`,
+the reconstructed phases are `theta_D = Theta_k + T*y_D` and
+`theta_R = Theta_l + phi*1 + T*y_R`, where `phi=phase_origin_difference`.
+The receiver deviations therefore exclude the declared common origin;
+adding `phi` to them again would count it twice. At the ports the consumed
+difference is exactly `phi + y_R[0] - y_D[0]`. This instantaneous reader admits
 any finite signed phase-origin difference; it has no preparation or horizon
 certificate. All scalar coordinates use shared exact/represented-real
 admission before interval construction, retaining exact fractions and
@@ -95,7 +101,9 @@ threshold. Direct schemas are `tnfr.sine-reduced-class-port-state.v1` and
 `tnfr.sine-reduced-class-ports.v1`; shared SDK projection and atomic export
 retain exact and unavailable fields. This is a conditional finite-horizon
 reduction, not a measured speedup, autonomous interaction selector, laboratory
-realization or physical identification.
+realization or physical identification. The
+[usage guide](../../guides/relational/SINE_PATTERNS.md#sine-reduced-class-ports)
+separates instantaneous row evaluation from inspecting the saved certificate.
 
 <a id="sine-formed-class-contact"></a>
 ### Receiver discrimination after contact of actually formed classes

@@ -24,6 +24,8 @@ These aliases route existing citations to their substantive owner.
 
 - <a id="regional-and-relational-sdk-workflows"></a>[Regional and relational SDK workflows](#regional-and-relational-sdk-workflows)
 
+- <a id="sine-reduced-class-ports"></a>[Evaluate reduced port rows and inspect their retained certificate](relational/SINE_PATTERNS.md#sine-reduced-class-ports)
+
 - <a id="observe-regional-form-and-its-nodal-response"></a>[Observe regional form and its nodal response](relational/OBSERVATION_AND_INFORMATION.md#observe-regional-form-and-its-nodal-response)
 
 - <a id="retain-orientation-relative-to-a-held-source"></a>[Retain orientation relative to a held source](relational/OBSERVATION_AND_INFORMATION.md#retain-orientation-relative-to-a-held-source)

@@ -207,6 +207,11 @@ the same fine interaction, without counting it again as an independent force
 exerted by a second copy of the pattern. The
 [collective interaction owner](nodal/DERIVED_FORM_PHASE.md#collective-interaction-closure-and-relational-state)
 already shows why relations between patterns can carry necessary state.
+The [reduced formed-class ports](nodal/SINE_REDUCED_CLASS_PORTS.md#sine-reduced-class-ports)
+give a controlled approximation example: a smaller component state transfers
+to a different receiver with explicit finite error for discarded modes and
+initial uncertainty. This supplies neither an exact nonlinear quotient nor
+physical identification; the full-law identity proof remains separate.
 
 A larger NFR would organize the internal nodes or patterns without erasing
 their existence or motion. The [conservative sine replica calculation](nodal/SINE_PAIR_STATE.md#sine-replica-inheritance)

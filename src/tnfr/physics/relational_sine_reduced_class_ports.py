@@ -146,8 +146,12 @@ class SineReducedClassPortState:
     """Detached instantaneous rows of the declared twenty-coordinate surrogate.
 
     Coordinates are donor orbits followed by receiver orbits. Phase coordinates
-    are real displacements from the chosen winding target, not absolute circular
-    phases. Arbitrary admitted coordinates define surrogate rows; an error bound
+    are real displacements after subtracting both the chosen winding target
+    and that component's separately supplied common origin. The donor origin
+    is zero and the receiver origin is phase_origin_difference; thus the bridge
+    phase is phase_origin_difference + phase_deviations[5] - phase_deviations[0].
+    These are not absolute circular phases. Arbitrary admitted coordinates
+    define surrogate rows; an error bound
     against full nonlinear dynamics requires the separate preparation and horizon
     hypotheses of the assessment API.
     """
@@ -199,6 +203,9 @@ def evaluate_sine_reduced_class_ports(
     Classes are ordinary integers one or two. The two ordered state rows contain
     exactly ten finite signed reals each, with donor coordinates first. Every
     primitive is admitted before interval construction. No report is an input.
+    phase_deviations subtract the winding target and the component origin
+    (zero for the donor, phase_origin_difference for the receiver). The bridge
+    uses phase_origin_difference + phase_deviations[5] - phase_deviations[0].
     """
     donor_class = _class_index(donor_class, "donor_class")
     receiver_class = _class_index(receiver_class, "receiver_class")

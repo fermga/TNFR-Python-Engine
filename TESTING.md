@@ -200,6 +200,19 @@ invocation, freezing and artifact lifecycle. Reuse the appropriate saved evidenc
 or shared fixture; do not regenerate completed responses for unrelated changes.
 A new reserved prediction needs its own declared inputs and prospective protocol.
 
+The [formed C9 bundle audit](tests/physics/test_sine_formed_evidence.py) checks
+the committed artifact hashes, archived source inventories, protocol associations
+and saved reduced-port stopping rule without calling an assessor or producer:
+
+```sh
+python -m pytest tests/physics/test_sine_formed_evidence.py -q
+```
+
+Missing committed artifacts fail this check. Historical source need not match
+the current implementation; current-source regression remains separate. The
+original pair/probe records still lack an evaluation-time source snapshot.
+Content consistency neither authenticates chronology nor proves the mathematics.
+
 Optional retained-record audits skip explicitly when local evidence is absent;
 they must not recreate a producer or count missing evidence as a passed response.
 Synthetic intervals, step records and stubbed producers test consumer logic,

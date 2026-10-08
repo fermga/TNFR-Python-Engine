@@ -231,6 +231,22 @@ class TestStaticKernel:
         assert shifted.form_rate_bounds == first.form_rate_bounds
         assert shifted.phase_rate_bounds == first.phase_rate_bounds
 
+    def test_receiver_origin_and_deviation_changes_preserve_the_same_phases(self):
+        x = tuple(Q(i, 13) for i in range(10))
+        y = tuple(Q(i * i - 2 * i, 17) for i in range(10))
+        phi, shift = Q(1, 7), Q(19, 3)
+        first = _evaluate(forms=x, phase_deviations=y, phase_origin_difference=phi)
+        represented = _evaluate(
+            forms=x,
+            phase_deviations=y[:5] + tuple(value - shift for value in y[5:]),
+            phase_origin_difference=phi + shift,
+        )
+        assert represented.phase_origin_difference != first.phase_origin_difference
+        assert represented.phase_deviations != first.phase_deviations
+        assert represented.bridge_phase_difference == first.bridge_phase_difference
+        assert represented.form_rate_bounds == first.form_rate_bounds
+        assert represented.phase_rate_bounds == first.phase_rate_bounds
+
     @pytest.mark.parametrize("field", ["donor_class", "receiver_class"])
     @pytest.mark.parametrize("bad", [True, 0, 3, Q(1), 1.0, "1"])
     def test_class_labels_are_original_ordinary_integers(self, field, bad):
