@@ -107,9 +107,15 @@ then distinguishes their actual form responses while both post-probe families
 recover their own geometry, retaining the original preparation uncertainty
 and accounting separately for the intervention's storage work. This gives a
 conditional example of acquired organization with a distinguishable interaction
-response. It derives neither the organized source preparation, autonomous
-probe selection nor a physical constituent identity, and it does not certify
-indefinite repetition of the intervention.
+response. The separate
+[quantitative return certificate](nodal/SINE_FORMED_CLASS_MAINTENANCE.md#sine-formed-class-maintenance)
+extends that discrimination and geometric retention to every repetition of
+one fixed supplied probe schedule. It proves invariant neighborhoods with a
+finite common dwell, not a unique periodic orbit or a practical operating
+speed. Positive work per probe requires unbounded cumulative external work
+for indefinite repetition; exact target convergence applies when probes
+stop. These results derive neither the organized source preparation,
+autonomous probe selection nor a physical constituent identity.
 
 A collective observation/measurement map is eventually needed to test that
 hypothesis, but it may act on a pattern and its interaction with a measurement

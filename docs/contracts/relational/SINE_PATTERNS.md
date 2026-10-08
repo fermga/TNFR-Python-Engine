@@ -4,6 +4,70 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-formed-class-maintenance"></a>
+### Quantitative return under repeated supplied probes
+
+`assess_sine_formed_class_maintenance(*, formation_time, probe_time,
+probe_duration, phase_increment, form_error_bound, phase_error_bound,
+readout_error_bound, radius, common_dwell)` in
+[`relational_sine_formed_class_maintenance.py`](../../../src/tnfr/physics/relational_sine_formed_class_maintenance.py)
+returns `SineFormedClassMaintenance`. It freshly rebuilds the
+[formed-class response assessment](#sine-formed-class-response) from its eight
+primitive inputs; it accepts no incoming report, cached verdict or state reset.
+The [mathematical owner](../../../theory/nodal/SINE_FORMED_CLASS_MAINTENANCE.md#sine-formed-class-maintenance)
+owns the fixed hybrid experiment and uniform return proof.
+
+All nine arguments are required and use shared original exact/represented-real
+admission. The first eight retain the response reader's domain. The additional
+`common_dwell` must be strictly greater than `probe_duration`, so every readout
+precedes the next jump. When the exponential return bound is evaluated, its
+work cap is `lyapunov_decay_rate*common_dwell <= 4096`; the initial fast
+semigroup rate does not impose this cap. The clock remains `tau=e*t`, with
+`original_common_dwell=common_dwell/e`. Structural times have no supplied
+laboratory-unit interpretation.
+
+The freshly rebuilt `reference_certificate` defines each pre-probe set `K_k`
+by Euclidean form and target-phase norm radii, on the same zero-mean leaf.
+The actual first pre-probe families belong to these sets. Each supplied jump
+has the original phase increment and preserves form and both means. The
+complete unforced law then evolves for `common_dwell`. A strict nonlinear
+Lyapunov estimate bounds every member of `J(K_k)`, not sampled trajectories.
+The returned form and phase-error norms must both be strictly less than
+half their respective pre-probe radii. This establishes an invariant return
+neighborhood, not an exact periodic orbit or a unique driven attractor.
+
+The response and signed event-work intervals in `reference_certificate`
+then apply to every cycle. The class contrast retains its common
+heat-response factor. Readout errors are bounded separately at every reading;
+they are observations, not state feedback or accumulating state disturbances.
+Original preparation uncertainty and intervening nonlinear state evolution
+remain in the uniform set inclusion. Additional perturbations, event-amplitude
+errors, timing errors and adaptive probes are outside this contract.
+
+For `N` events, cumulative work is enclosed by `N` times the per-event work
+interval for each class, without assuming independent events. Continuous
+storage loss is accounted for separately. A positive uniform work lower bound
+therefore requires unbounded cumulative supplied work as the event count grows.
+The initial source-storage ceiling is not a reservoir for this later work.
+Finite-time recovery means return to an admitted pre-probe neighborhood;
+asymptotic target convergence applies when interventions stop.
+
+Missing positive common acute geometry or failed post-jump trapping leaves
+the return bounds unavailable (`None`), rather than supplying a decay estimate.
+`return_certified_by_class` requires strict positive outward form and phase
+half-radius margins. Joint `status="certified_repeated_probe_maintenance"`
+also requires the fresh formation/response/recovery prerequisite; otherwise
+`status="unavailable"` retains named reasons. The nested generic response
+criterion is strict positive contrast; the frozen experiment separately
+requires its larger stated threshold. An insufficient bound does not prove
+instability or impossible maintenance.
+
+The direct schema is `tnfr.sine-formed-class-maintenance.v1`. Shared SDK
+projection and atomic export preserve the nested prerequisite, exact budgets,
+return bounds and availability. No cycle-count simulation, minimum-dwell
+optimization, practical-speed guarantee, finite-total-work maintenance or
+autonomous probe-selection claim follows.
+
 <a id="sine-formed-class-response"></a>
 ### A common supplied probe of two actually formed classes
 

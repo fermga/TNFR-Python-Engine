@@ -4,6 +4,64 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-formed-class-maintenance"></a>
+### Certify a uniform return between repeated supplied probes
+
+This reader rebuilds the original formation and first-probe evidence, then
+checks a nonlinear return bound for every member of both pre-probe sets.
+It certifies all repetitions by set inclusion rather than running a finite
+sequence of trajectories.
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_formed_class_maintenance import (
+    assess_sine_formed_class_maintenance,
+)
+from tnfr.sdk import relational_report_to_dict
+
+maintenance = assess_sine_formed_class_maintenance(
+    formation_time=100,
+    probe_time=200,
+    probe_duration=1,
+    phase_increment=Q(1, 100),
+    form_error_bound=Q(1, 10**10),
+    phase_error_bound=Q(1, 10**10),
+    readout_error_bound=Q(1, 10**10),
+    radius=Q(1, 12),
+    common_dwell=10**12,
+)
+assert maintenance.status == "certified_repeated_probe_maintenance"
+assert all(maintenance.return_certified_by_class)
+reference = maintenance.reference_certificate
+assert reference.recorded_contrast_bounds.lo > Q(1, 10**7)
+assert all(bound.lo > 0 for bound in reference.probe_work_bounds_by_class)
+evidence = relational_report_to_dict(maintenance)
+```
+
+The jumps occur at `tau=200+n*10**12`, with each node-zero form readout one
+scaled unit later. The large dwell is a conservative mathematical bound in
+`tau=e*t`; it is not a physical operating time or a minimum-dwell estimate.
+Inspect both `form_return_margin_bounds` and `phase_return_margin_bounds`:
+their strictly positive lower endpoints certify return inside half the
+original pre-probe radii. The original full-coordinate preparation uncertainty
+remains represented in the admitted sets, and both conserved means remain zero.
+There is no reset, adaptive waiting rule or additional state disturbance.
+
+The nested reference's correlated contrast and signed work intervals apply
+to every cycle. Readout error is bounded separately for each observation
+and does not feed back into state. After `N` events, multiply each per-event
+work interval by `N` to enclose cumulative supplied work. Its positive lower
+bound in this example makes indefinite operation require unbounded total
+external work; the initial preparation budget is a separate resource.
+
+This proves invariant neighborhoods and repeatable discrimination, not an
+exact periodic orbit or a unique driven attractor. Return to a neighborhood
+occurs within the admitted dwell; asymptotic target convergence applies when
+the interventions stop. `unavailable` means a sufficient prerequisite or
+return bound failed to certify, not that repeated operation is impossible.
+See the [contract](../../contracts/relational/SINE_PATTERNS.md#sine-formed-class-maintenance)
+and [frozen protocol, proof and evidence](../../../theory/nodal/SINE_FORMED_CLASS_MAINTENANCE.md#sine-formed-class-maintenance).
+
 <a id="sine-formed-class-response"></a>
 ### Compare a common probe and recovery of the formed classes
 

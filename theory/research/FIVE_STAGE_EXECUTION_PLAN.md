@@ -21,26 +21,24 @@ composite's interactions under justified complete nodal laws? The route is
 -> independent observation**. A sufficient representation does not independently
 justify the law that evolves it.
 
-**The formation, distinct-response and recovery gate is closed:** one
-[common supplied probe](#current-g3-gate) distinguishes the two formed classes
-under the frozen protocol, while both actual post-jump families recover their
-own attracting geometry. The [pair-admission prerequisite](#inequivalent-formed-classes-admission)
-remains a separate valid certificate. The single next queued admission is
-[uniform maintenance under repeated probes](#repeated-probe-maintenance-admission);
-its dwell and prospective evaluation are not yet admitted. Completed controls
-are reusable evidence, not work to repeat; no new probe or data campaign is
-active. Physical constituent emergence and independent law selection remain
-open; no empirical
-response has passed complete physical admission.
+**The quantitative repeated-probe gate is closed:** the two formed classes
+have [uniform return, geometric retention and distinguishable responses](#current-g3-gate)
+under the frozen externally supplied schedule. The
+[formation prerequisite](#inequivalent-formed-classes-admission) and
+[one-probe response/recovery result](#common-probe-admission) remain separate
+valid certificates. Completed controls are reusable evidence, not work to
+repeat; no new probe, solver or data campaign is active. Physical constituent
+emergence and independent law selection remain open; no empirical response
+has passed complete physical admission.
 
 <a id="2-one-status-board-and-dependency-chain"></a>
 ## Queue status
 
 | Status | Scope and owner |
 | --- | --- |
-| Latest closed gate | [Formation, common-probe discrimination and recovery](#current-g3-gate) under one complete law and support |
+| Latest closed gate | [Quantitative repeated-probe maintenance](#current-g3-gate); strict uniform return, per-cycle discrimination and supplied-work accounting |
+| Closed prerequisite | [Formation, common-probe discrimination and recovery](#common-probe-admission) under one complete law and support |
 | Closed prerequisite | [Two formed attracting classes](#inequivalent-formed-classes-admission), with matched conserved means and distinct preparation costs under one budget |
-| Next queued admission, not active | [Uniform repeated-probe maintenance](#repeated-probe-maintenance-admission); derive a sufficient return-map bound before fixing a common dwell and evaluating a new protocol |
 | Deferred | [Named dependencies and reopening conditions](#deferred-work-and-reopening-conditions); no parallel solver, uniqueness or data campaign |
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge); source-specific obstructions remain in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
@@ -72,7 +70,6 @@ certificate contains no probe; the following gate owns that new intervention.
 The earlier doubled-C5 response coefficients do not transfer to this different
 support.
 
-<a id="current-g3-gate"></a>
 <a id="common-probe-admission"></a>
 ## Closed gate: formed classes, common-probe response and recovery
 
@@ -98,40 +95,39 @@ declared probe, not autonomous event selection, a native semantic operator or
 a guarantee for indefinite repeated interventions. The result supplies a
 conditional formation-to-interaction example; physical constituent identity,
 an independent law restriction and the origin of the preparation remain open.
-Any further gate needs its own named dependency and prospective F1-F4 protocol.
-No horizon search, class substitution, repeated-probe or data campaign is active.
+The separate repeated-probe certificate below owns its quantitative extension.
+No horizon search, class substitution or data campaign is active.
 
+<a id="current-g3-gate"></a>
 <a id="repeated-probe-maintenance-admission"></a>
-## Queued admission: uniform response and identity under repeated probes
+## Closed gate: quantitative response and identity under repeated probes
 
-Obtain an explicit certified common dwell, return inclusion and per-cycle
-response/work bounds for the same two formed C9 classes under repetitions of
-the existing supplied probe. The unresolved evidence is a quantitative
-uniform certificate, rather than qualitative existence of sufficiently long
-relaxation. A long finite pulse train does not establish that certificate.
-The original formation and one-probe certificates remain unchanged.
+The [frozen protocol and evaluated certificate](../nodal/SINE_FORMED_CLASS_MAINTENANCE.md#sine-formed-class-maintenance)
+meet the uniform stopping rule without changing the declared dwell or budgets.
+The same original C9 source families retain their complete law, support,
+capacities, conserved means and fine-coordinate uncertainty. Their actual
+first pre-probe states enter neighborhoods whose images under each jump and
+the common dwell return strictly inside half the original radii. Induction
+gives winding retention and the declared recorded contrast in every cycle,
+with no reset, new state-error box or finite-run substitute.
 
-| Obligation | Required admission |
-| --- | --- |
-| F1: complete state and preparation | Retain the same support, capacities, conserved means and whole source-error families. Connect their actual first post-jump states to class-specific pre/post-probe sets with nonempty relative interior; retain every fine coordinate and uncertainty, without resetting to targets |
-| F2: flow, jump and clock | Keep the complete positive-loss law, mean-preserving phase jump and existing readout/error premises. Derive a sufficient finite dwell common to both classes and longer than the readout offset; account for cumulative supplied jump work and intervening continuous loss separately |
-| F3: uniform maintenance and discrimination | Prove that flow followed by the next jump returns each admitted post-probe set into itself: `J o Phi_D(K_k^+)` is contained in `K_k^+`. Before each jump, the flow must return to its admitted pre-probe neighborhood, with whole-window identity bounds. Retain shared response correlations and prove one strictly positive recorded class contrast per cycle, including accumulated state deviations |
-| F4: prospective decision and stopping | First derive the analytic sufficient bounds, then declare the sets, dwell, uniform contrast margin and numerical budget before evaluating the reserved certificate. Close with an invariant return-map certificate, an explicitly insufficient bound or a proved obstruction; no dwell sweep or finite-run substitute |
+The [contract](../../docs/contracts/relational/SINE_PATTERNS.md#sine-formed-class-maintenance)
+keeps the fresh formation/one-probe prerequisite, uniform return margins,
+per-cycle correlated response and cumulative supplied work distinct.
+The original formation and one-probe evidence remains unchanged. This is a
+quantitative invariant-neighborhood certificate, not an exact periodic orbit,
+global contraction or a unique driven attractor.
 
-The [existing recovery theorem](../nodal/SINE_PATTERN_RECOVERY.md#sine-cycle-recovery)
-supplies qualitative convergence and local exponential recovery under its
-premises. It does not provide a numerical uniform dwell for these sets or
-justify another jump by itself. Recovery between probes means return to the
-admitted pre-probe neighborhood, not attainment of exact equilibrium in finite
-time; asymptotic convergence to the target applies if interventions stop.
-A failed sufficient inequality is unavailable evidence; only an independent
-exclusion proves impossibility. If a strictly positive uniform per-probe work
-lower bound is established, indefinitely repeated operation requires unbounded
-cumulative supplied work. It is not finite-budget autonomous maintenance.
-The intervention remains supplied, without autonomous probe selection or a
-physical identification. This queued admission has no frozen dwell, evaluated
-response or active numerical campaign. No practical-speed or resource-efficiency
-claim follows without an independently justified maximum dwell or work allowance.
+**Resumption boundary:** recovery between probes means return to an admitted
+neighborhood; asymptotic target convergence applies when interventions stop.
+The positive work lower bound requires unbounded cumulative external work
+for indefinite repetition. The preparation budget is not a reservoir for
+those interventions, so this is not finite-budget autonomous maintenance.
+The conservative structural dwell makes no practical-speed or laboratory-time
+claim. Source organization, support, complete law and probe selection remain
+supplied; physical identification and independent constitutive restriction
+remain open. A further task needs its own named dependency and F1-F4 protocol;
+no dwell optimization, probe modification or data campaign is active.
 
 <a id="formation-response-admission"></a>
 ## Closed admission: prepared acquisition and actual receiver response
