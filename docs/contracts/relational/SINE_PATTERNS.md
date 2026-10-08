@@ -4,6 +4,83 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-clock-drift-inference"></a>
+### Mean clock rate with bounded drift and sampled exposure
+
+`infer_sine_geometry_gain_clock_drift(*, bulk_angle_bounds,
+receiver_short_angle_bounds, form_radius, phase_radius, phase_increments,
+probe_duration, recorded_reading_bounds, readout_error_bound,
+readout_gain_bounds, clock_rate_bounds, clock_rate_derivative_bound)` in
+[`relational_sine_clock_drift_inference.py`](../../../src/tnfr/physics/relational_sine_clock_drift_inference.py)
+returns `SineClockDriftInference`. All eleven primitive arguments are
+mandatory. The [clock-drift theorem](../../../theory/nodal/SINE_CLOCK_DRIFT_INFERENCE.md#sine-clock-drift-inference)
+retains the [four-reading source, input and observation domains](#sine-curvature-inference),
+including `H=probe_duration>0`, `rho_plus*H<=1/2`, all original coordinate
+uncertainty and the four ordered reading pairs at `0,H/2,H,2*H`.
+
+The clock premise is now a positive `C1` function `rho(s)` on `[0,2*H]`,
+with global pointwise bounds `clock_rate_bounds=(rho_minus,rho_plus)` and
+`abs(rho'(s))<=L=clock_rate_derivative_bound`. The derivative bound is a
+finite nonnegative exact/represented scalar; shared admission rejects
+Booleans, nonfinite values and nonzero materialization loss. Its units are
+structural time divided by observation time squared. Both continuous
+state rows multiply by the same `rho(s)`. Gain and offset remain held,
+events stay at `0,H`, and the intermediate observation is passive.
+No capacity, support, input or structural-law coefficient is changed.
+
+The target is the **first-window mean rate** `rho_bar=tau(H)/H`, where
+`tau(s)=integral_0^s rho(v) dv`. The effective gain is `J=G*rho_bar`.
+The API consumes no clock profile and does not verify a supplied function
+or empirical drift bound. Equal exposures on `[0,H/2]`, `[H/2,H]` and
+`[H,2*H]` give identical full sampled states under this autonomous law
+and fixed events. Even perfect observations cannot recover an arbitrary
+instantaneous profile from those samples.
+
+The finite transfer uses `g=1/3069`, the centered-form bound
+`Q0=X+14*g*rho_plus*H`, and readout-speed bound `U=2*Q0+7*g`. The four structural exposure
+error bounds relative to the constant-rate reference are
+`(0,min(L*H**2/8,(rho_plus-rho_minus)*H/4),0,
+min(L*H**2,(rho_plus-rho_minus)*H))`. Multiplying by `G_plus*U` bounds
+the associated recorded-reading differences. Widen only those primitive
+reading pairs, leaving the original sensor-error bound unchanged, then
+construct one fresh `reference_envelope` through the curvature owner.
+The source and the first-window endpoint match exactly; no state is reset.
+
+`exposure_discrepancy_bounds` retains the four clock-exposure allowances;
+`recorded_discrepancy_candidates` and `comparison_reading_bounds` retain
+the exact transfer calculation. `whole_window_form_norm_candidate` and
+`structural_readout_speed_candidate` are algebraic bounds. Their certified
+`_upper_bound` counterparts and `recorded_discrepancy_upper_bounds` require
+original source admission; otherwise they are `None`. Check
+`clock_drift_transfer_certified` separately from the inherited curvature
+and inverse availability flags.
+
+These transferred bands concern auxiliary reference observations. They
+are not new measurements, additional independent sensor errors or an
+observed constant-clock trajectory. The reference keeps all four reading
+associations and the inherited finite-difference error map; interval
+projection may conservatively lose further correlations. `L=0` or a
+singleton global rate prior gives zero transfer and reduces exactly to
+the held-clock calculation.
+
+`first_window_mean_clock_rate_outer_bounds`,
+`effective_gain_outer_bounds`, `readout_gain_outer_bounds`,
+`nominal_bulk_angle_outer_bounds` and `actual_long_arc_mean_outer_bounds`
+are necessary marginals. The actual angle remains the original-source
+long-arc mean with the original phase-radius allowance. There is no
+instantaneous-rate output, profile recovery or assertion that every
+retained parameter tuple is jointly realizable.
+
+Malformed inputs raise. The inherited status distinguishes an available
+`bounded_candidate`, a strict necessary exclusion `incompatible` and
+unsupported source, rank or arithmetic evidence `unavailable`. Inspect the
+parent availability flags and retained reference scope before using its
+bounds; an unavailable result is not a clock-instability theorem. This
+detached inverse evaluates no trajectory or reserved response. Export uses
+`tnfr.sine-clock-drift-inference.v1` and the shared SDK projection and atomic
+writer. The [workflow](../../guides/relational/SINE_PATTERNS.md#sine-clock-drift-inference)
+illustrates input admission without a new campaign.
+
 <a id="sine-curvature-inference"></a>
 ### Finite-curvature constraints from four associated readings
 

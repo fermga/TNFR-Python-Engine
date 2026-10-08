@@ -4,6 +4,70 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-clock-drift-inference"></a>
+### Bound a mean clock rate when the clock can drift
+
+Use `infer_sine_geometry_gain_clock_drift` from
+[`relational_sine_clock_drift_inference`](../../../src/tnfr/physics/relational_sine_clock_drift_inference.py)
+for the same four recorded intervals at `0,H/2,H,2*H` when the positive
+clock rate may vary. The [contract](../../contracts/relational/SINE_PATTERNS.md#sine-clock-drift-inference)
+adds mandatory `clock_rate_derivative_bound=L` to the ten curvature inputs.
+Supply an independently justified global rate prior and derivative bound;
+the function accepts no profile and does not measure either premise.
+Sensor gain and offset, calibrated inputs and the structural law stay fixed.
+
+Read `first_window_mean_clock_rate_outer_bounds` as a bound on
+`tau(H)/H`, and `effective_gain_outer_bounds` as a bound on `G*tau(H)/H`.
+Neither describes a pointwise clock rate. Clocks with the same accumulated
+time on each sample/event interval can give exactly identical full sampled
+states, even while their rates at the sample times differ.
+
+The method widens the half-time and final reading bands to enclose a
+constant-mean reference record. `reference_envelope` contains the fresh
+curvature calculation for those auxiliary bands. The original and `H`
+readings stay associated with the same source and first endpoint; all four
+sensor errors retain their original allowance. Clock-transfer error is
+separate from numerical reading width and sensor noise. Nonempty marginal
+bounds do not prove a compatible full trajectory or joint parameter tuple.
+
+This synthetic equal-input control checks abstention only; the four zero
+placeholders are not measured or generated response data:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_clock_drift_inference import infer_sine_geometry_gain_clock_drift
+
+control = infer_sine_geometry_gain_clock_drift(
+    bulk_angle_bounds=(Q(11, 8), Q(3, 2)),
+    receiver_short_angle_bounds=(Q(2, 3), Q(1)),
+    form_radius=Q(1, 2**40),
+    phase_radius=Q(1, 2**40),
+    phase_increments=(Q(1, 4), Q(1, 4)),
+    probe_duration=Q(1, 2**22),
+    recorded_reading_bounds=((Q(0), Q(0)),) * 4,
+    readout_error_bound=Q(0),
+    readout_gain_bounds=(Q(1), Q(2)),
+    clock_rate_bounds=(Q(1, 2), Q(2)),
+    clock_rate_derivative_bound=Q(1, 1024),
+)
+print(control.status)  # unavailable
+```
+
+The [positive-drift conditioning bound](../../../theory/nodal/SINE_CLOCK_DRIFT_INFERENCE.md#sine-clock-drift-conditioning)
+shows that a nonzero derivative allowance can retain informative mean-rate
+and gain bounds. Shortening the window alone does not remove the normalized
+drift allowance, while sensor-noise normalization still grows as `H**-2`.
+Those conditional budgets are not a measured clock or sensor specification.
+
+Zero drift or a singleton rate prior recovers the held-clock calculation;
+this does not mean a positive bound proves actual drift. Larger transfer
+bounds may leave weak or unavailable inference, without disproving
+identifiability by another observation design. The
+[theorem](../../../theory/nodal/SINE_CLOCK_DRIFT_INFERENCE.md#sine-clock-drift-inference)
+separates mean-rate inference from the exact profile ambiguity. Existing
+frozen records are unchanged, and this example starts no reserved or
+physical-calibration campaign.
+
 <a id="sine-curvature-inference"></a>
 ### Use an additional first-window reading for finite curvature
 

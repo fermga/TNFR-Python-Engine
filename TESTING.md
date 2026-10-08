@@ -154,6 +154,18 @@ coarse report, strict exclusions, touching constraints and informative as
 well as nonimproving outer bounds. Exact local information results for an
 ideal fixed-source subfamily do not imply noisy global identification.
 
+For clock drift, select
+[`test_sine_clock_drift_inference.py`](tests/physics/test_sine_clock_drift_inference.py)
+with the curvature and clock suites. Check exact equal-exposure ambiguity,
+positive global rate and derivative-bound admission, endpoint matching,
+individual reading-transfer bounds and the unchanged sensor-error allowance.
+Include zero drift and singleton-prior reduction, all four primitive pairs,
+necessary mean-rate/gain projections and unavailable reference arithmetic.
+Use an independent varying-clock full-state control for finite transfer;
+this is an implementation check, not a reserved response or proof of
+instantaneous-profile recovery. Do not treat the widened reference readings
+as physical observations or a new independently sampled noise channel.
+
 When changing the independent full-state response generator, select the
 [direct source-box Taylor suite](tests/mathematics/test_validated_box_taylor.py)
 and [two-port readout suite](tests/physics/test_sine_two_port_readout.py).
@@ -170,6 +182,7 @@ their existing comparison and retained-metric consumer suites.
 python -m pytest tests/mathematics/test_validated_box_taylor.py tests/physics/test_sine_two_port_readout.py tests/physics/test_sine_two_port_inference.py tests/physics/test_sine_two_pulse_inference.py -q
 python -m pytest tests/physics/test_sine_clock_inference.py tests/physics/test_sine_two_pulse_inference.py tests/sdk/test_relational_reports.py -q
 python -m pytest tests/physics/test_sine_curvature_inference.py tests/physics/test_sine_clock_inference.py tests/physics/test_sine_two_pulse_inference.py -q
+python -m pytest tests/physics/test_sine_clock_drift_inference.py tests/physics/test_sine_curvature_inference.py tests/physics/test_sine_clock_inference.py tests/sdk/test_relational_reports.py -q
 python -m pytest tests/physics/test_sine_formed_evidence.py tests/physics/test_sine_curvature_evidence.py -q
 ```
 
