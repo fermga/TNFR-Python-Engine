@@ -2354,3 +2354,26 @@ def test_prepared_composition_nested_label_admission(
     report = _replace_report_path(prepared_composition_exports[0], path, value)
     with pytest.raises(TypeError, match="node labels"):
         relational_report_to_dict(report)
+
+
+@pytest.mark.parametrize(
+    "class_name", ("SineReducedClassPortState", "SineReducedClassPorts")
+)
+def test_reduced_port_sdk_wiring_does_not_evaluate_research(monkeypatch, class_name):
+    from tnfr.physics import relational_sine_reduced_class_ports as owner
+
+    report_type = getattr(owner, class_name)
+    report = object.__new__(report_type)
+    body = {"unavailable": None, "retained_coordinates": 20}
+    monkeypatch.setattr(report_type, "to_dict", lambda self: {"report": body})
+
+    def forbidden(**kwargs):
+        pytest.fail("SDK projection must not evaluate a research model")
+
+    monkeypatch.setattr(owner, "assess_sine_reduced_class_ports", forbidden)
+    monkeypatch.setattr(owner, "evaluate_sine_reduced_class_ports", forbidden)
+    assert relational_report_to_dict(report) == {
+        "schema": "tnfr.relational-report.v1",
+        "report_type": class_name,
+        "report": body,
+    }

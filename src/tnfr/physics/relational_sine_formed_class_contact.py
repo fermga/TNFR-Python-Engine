@@ -12,16 +12,8 @@ from fractions import Fraction as Q
 
 from .._exact_time import exact_or_represented_real
 from ..mathematics._rational_interval import INTERVAL_METHOD, I, cos, pi_interval, sin
-from ._sine_lyapunov import (
-    _sine_lyapunov_coefficients,
-    _sine_lyapunov_initial_upper,
-    _sine_lyapunov_return_squared,
-)
-from .relational_sine_formed_classes import (
-    SineFormedClassPair,
-    assess_sine_formed_class_pair,
-)
-from .reversible_eigenmode_reference import _MAX_RATIONAL_EXPONENT
+from ._sine_formed_contact import _joined_contact_bounds, _unprobed_handoff
+from .relational_sine_formed_classes import SineFormedClassPair
 
 __all__ = ("SineFormedClassContact", "assess_sine_formed_class_contact")
 
@@ -159,66 +151,25 @@ def assess_sine_formed_class_contact(
         )
     if type(decay_power) is not int or not 0 <= decay_power <= 4096:
         raise ValueError("decay_power must be an integer between zero and4096")
-    fresh = assess_sine_formed_class_pair(
-        scaled_time=v["formation_time"],
+    handoff = _unprobed_handoff(
+        formation_time=v["formation_time"],
+        relaxation_duration=v["relaxation_duration"],
         form_error_bound=v["form_error_bound"],
         phase_error_bound=v["phase_error_bound"],
         radius=v["radius"],
+        endpoint_radius=v["endpoint_radius"],
+        decay_power=decay_power,
     )
+    fresh = handoff.formation_certificate
     gamma, eta = fresh.gamma_bounds, fresh.eta_bounds
-    _, _, lower, upper, rate = _sine_lyapunov_coefficients(
-        eta_lower=eta.lo,
-        eta_upper=eta.hi,
-        cosine_lower=(
-            (fresh.coercivity_lower_bound / Q(1, 5))
-            if fresh.coercivity_lower_bound is not None
-            else None
-        ),
-        gap_lower=Q(1, 5),
-        rate_upper=Q(2),
-    )
-    initial = tuple(
-        _sine_lyapunov_initial_upper(
-            eta_upper=eta.hi,
-            rate_upper=Q(2),
-            gap_lower=Q(1, 5),
-            position_upper=upper,
-            form_norm_upper=x,
-            phase_norm_upper=distance.hi + phase,
-        )
-        for x, distance, phase in zip(
-            fresh.endpoint_form_norm_upper_bounds,
-            fresh.proxy_target_distance_bounds,
-            fresh.endpoint_phase_error_norm_upper_bounds,
-        )
-    )
-    exponent = rate * v["relaxation_duration"] if rate is not None else None
-    if exponent is not None and exponent > _MAX_RATIONAL_EXPONENT:
-        raise ValueError("lyapunov_decay_rate*relaxation_duration must not exceed4096")
-    decay = xs = ys = None
-    flags = (False, False)
+    rate = handoff.lyapunov_decay_rate
+    exponent = handoff.decay_exponent
+    decay = handoff.exact_decay_upper_bound
+    initial = handoff.initial_lyapunov_upper_bounds
+    xs = handoff.endpoint_form_norm_squared_upper_bounds
+    ys = handoff.endpoint_phase_norm_squared_upper_bounds
+    flags = handoff.handoff_certified_by_class
     eps = v["endpoint_radius"]
-    if (
-        fresh.status == "certified_two_formed_classes"
-        and all(fresh.formation_certified_by_class)
-        and exponent is not None
-        and exponent >= decay_power
-    ):
-        # exp(-z) <= 2**(-N) for z>=N>=0; retain exact tiny squared bounds.
-        decay = Q(1, 2**decay_power)
-        returned = tuple(
-            _sine_lyapunov_return_squared(
-                initial_upper=value,
-                decay_upper=decay,
-                eta_lower=eta.lo,
-                gap_lower=Q(1, 5),
-                rate_upper=Q(2),
-                position_lower=lower,
-            )
-            for value in initial
-        )
-        xs, ys = tuple(row[1] for row in returned), tuple(row[2] for row in returned)
-        flags = tuple(x <= eps**2 and y <= eps**2 for x, y in zip(xs, ys))
 
     phi, h = v["phase_origin_difference"], v["contact_duration"]
     pi = pi_interval()
@@ -240,22 +191,23 @@ def assess_sine_formed_class_contact(
         null_error = prep + 2 * v["readout_error_bound"]
         disconnected = I(-null_error, null_error)
         response = contrast.lo > 0
-        z2 = 4 * eps**2 + Q(9, 2) * phi**2
-        energy = 10 * eps**2 + (phi + 2 * eps) ** 2 / 2
-        radius_margin = I(v["radius"] ** 2 - z2)
-        storage_margin = I(barrier - energy)
-        identity = radius_margin.lo > 0 and storage_margin.lo > 0
-        work_upper = 2 * eps**2 + (phi + 2 * eps) ** 2 / 2
-        work_lower = (
-            max(Q(0), (1 - cos(I(phi - 2 * eps))).lo)
-            if 0 < phi - 2 * eps and phi + 2 * eps < pi.lo
-            else Q(0)
+        joined = _joined_contact_bounds(
+            endpoint_radius=eps,
+            phase_origin_difference=phi,
+            radius=v["radius"],
+            work_allowance=v["work_allowance"],
         )
-        work = I(work_lower, work_upper)
-        work_margin = I(v["work_allowance"] - work_upper)
-        allowed = work_upper <= v["work_allowance"]
-        mean_x = I(-eps / 19, eps / 19)
-        mean_phase = phi / 2 + mean_x
+        z2 = joined.joined_radius_squared_upper_bound
+        energy = joined.joined_excess_storage_upper_bound
+        radius_margin = joined.joined_radius_margin_bounds
+        storage_margin = joined.joined_storage_margin_bounds
+        work = joined.bridge_work_bounds
+        work_margin = joined.work_margin_bounds
+        mean_x = joined.joined_form_mean_bounds
+        mean_phase = joined.joined_phase_mean_bounds
+        identity = joined.identity_certified
+        allowed = joined.work_within_allowance
+
     reasons = tuple(
         reason
         for condition, reason in (

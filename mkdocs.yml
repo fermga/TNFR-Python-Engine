@@ -106,6 +106,7 @@ nav:
           - "Smooth-sine pattern dynamics": theory/nodal/SINE_PATTERN_DYNAMICS.md
           - "Repeated probes of formed sine classes": theory/nodal/SINE_FORMED_CLASS_MAINTENANCE.md
           - "Contact of actually formed sine classes": theory/nodal/SINE_FORMED_CLASS_CONTACT.md
+          - "Reduced ports of formed sine classes": theory/nodal/SINE_REDUCED_CLASS_PORTS.md
           - "Exact and controlled form-phase reductions": theory/nodal/SINE_FORM_PHASE_REDUCTION.md
           - "Conservative regional formation and its barriers": theory/nodal/SINE_REGIONAL_FORMATION.md
           - "Collective phase families and live contact feedback": theory/nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md

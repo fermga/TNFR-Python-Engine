@@ -4,6 +4,99 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-reduced-class-ports"></a>
+### Reduced component ports and controlled receiver transfer
+
+[`relational_sine_reduced_class_ports.py`](../../../src/tnfr/physics/relational_sine_reduced_class_ports.py)
+separates evaluation of a twenty-coordinate surrogate from its conditional
+comparison with the original nonlinear C9 families. Both public readers admit
+original primitives and rebuild coefficients; neither consumes a prior report,
+installs an event, propagates a trajectory or changes the complete fine law.
+The [protocol and proof](../../../theory/nodal/SINE_REDUCED_CLASS_PORTS.md#sine-reduced-class-ports)
+own the projection, port convention and approximation bounds.
+
+`evaluate_sine_reduced_class_ports(*, donor_class, receiver_class, forms,
+phase_deviations, phase_origin_difference)` returns `SineReducedClassPortState`.
+Classes are ordinary non-Boolean integers in `{1, 2}`. Each ordered state row
+contains exactly ten signed real values: five donor orbits followed by five
+receiver orbits. Single-pass iterables are consumed once with bounded length.
+The orbit order is `(4), (3,5), (2,6), (1,7), (0,8)`; multiplicities are
+`(1,2,2,2,2)`, and live node degrees are `(3,2,2,2,2)` in each component.
+Phase coordinates are real deviations from the selected winding target,
+not substituted absolute circular phases. This instantaneous reader admits
+any finite signed phase-origin difference; it has no preparation or horizon
+certificate. All scalar coordinates use shared exact/represented-real
+admission before interval construction, retaining exact fractions and
+rejecting Boolean or nonfinite physical values.
+
+The report exposes exact rational normalized matrices, class-cosine bounds,
+the actual bridge phase difference and sine enclosure, and both reduced rate
+rows in `tau=e*t`, with `e=1023/1024`. Internal phase exchange is the class's
+linear tangent; the bridge keeps its exact nonlinear sine current and the
+degree-three port mobility. These are ten coordinates per component instead
+of eighteen. The original nonlinear interior can generate discarded odd
+modes, so this is not an exact nonlinear invariant quotient. Arbitrary
+admitted surrogate coordinates alone certify no corresponding fine trajectory.
+
+`assess_sine_reduced_class_ports(*, formation_time, relaxation_duration,
+phase_origin_difference, contact_duration, form_error_bound, phase_error_bound,
+endpoint_radius, readout_error_bound, radius, work_allowance, decay_power,
+error_fraction)` returns `SineReducedClassPorts`. All twelve arguments are
+required. This assessment fixes receiver winding two and compares donor
+windings one and two, using the same class coefficients as the instantaneous
+reader. It retains the [actual contact](#sine-formed-class-contact) scalar
+domains, formation/relaxation work caps and original source families, and
+requires `0 < error_fraction < 1`. In particular, radius is in `(0,1/12]`,
+endpoint radius is positive, phase origin is in `[0,1]`, contact duration is
+in `[0,1/4]`, and `decay_power` is an ordinary integer from zero through 4096.
+Zero phase origin or duration is valid but cannot certify positive response.
+
+`unprobed_handoff` freshly rebuilds both formation families and their exact
+tiny squared-norm recovery bounds. Their original even and odd preparation
+errors and separate zero-sum constraints remain present. Receiver two retains
+its original class-two source cost under the common per-component ceiling;
+this is not an equal-cost experiment. Once both handoffs pass,
+`joined_contact_bounds` recomputes full-law identity, weighted means and
+supplied bridge work for the actual eighteen-node families. Surrogate
+stability does not replace these obligations. No target reset or prior phase
+probe is used.
+
+`receiver_derivative_bounds_by_donor` encloses orders one through four derived
+from the reduced matrices, including the changed receiver cosine. The
+correlated donor contrast is evaluated through those matrices, rather than
+importing the earlier contact's coefficient or verdict.
+`ideal_leading_contrast_bounds` encloses the exact fourth-order expression;
+`reduced_ideal_contrast_bounds` also includes its finite reduced-flow errors.
+The report keeps the semigroup tail, reduced nonlinear remainder, pairwise
+surrogate/full discrepancy, actual preparation and readout errors separate.
+`total_error_upper_bound` adds all five once. It bounds error about the exact
+leading expression enclosed by interval arithmetic, not about an arbitrary
+chosen midpoint without its additional rounding error.
+
+`recorded_contrast_bounds` encloses actual donor-two minus donor-one records
+at receiver node 13. `response_certified` requires its lower endpoint to be
+strictly positive. Only then are `error_ratio_upper_bound` and
+`error_fraction_margin_bounds` available: the denominator is the final outward
+recorded lower endpoint, and `approximation_certified` requires the outward
+margin's lower endpoint to be strictly positive. Thus the denominator is a
+certified full-law separation, not the formal leading amplitude. Independent
+preparation and readout errors also remain in the disconnected control band.
+Without both actual source handoffs, actual response, joined bounds, total
+error, ratio and fraction margin remain `None`; ideal surrogate quantities
+retain their explicitly hypothetical scope.
+
+`status="certified_reduced_class_ports"` requires fresh formation, both
+handoffs, actual joined identity, admitted work, positive recorded response
+and the strict fractional-error bound. Otherwise `unavailable_reasons`
+identifies insufficient obligations; failed bounds prove neither an exact
+closure obstruction nor instability. The generic response rule is positivity;
+the frozen research protocol additionally requires its larger contrast
+threshold. Direct schemas are `tnfr.sine-reduced-class-port-state.v1` and
+`tnfr.sine-reduced-class-ports.v1`; shared SDK projection and atomic export
+retain exact and unavailable fields. This is a conditional finite-horizon
+reduction, not a measured speedup, autonomous interaction selector, laboratory
+realization or physical identification.
+
 <a id="sine-formed-class-contact"></a>
 ### Receiver discrimination after contact of actually formed classes
 
@@ -28,8 +121,9 @@ time cap. The additional slow-rate budget requires
 `lyapunov_decay_rate*relaxation_duration <= 4096`, whenever that rate exists.
 Boolean/nonfinite scalars, unsupported domains and arithmetic bounds reject.
 
-The reader freshly rebuilds `SineFormedClassPair` from primitives and uses
-the shared report-free Lyapunov kernels. It consumes no phase-probe result.
+The reader freshly rebuilds `SineFormedClassPair` through the shared
+actual-family handoff and report-free Lyapunov kernels. It consumes no
+phase-probe result.
 After the admitted formation checkpoint, the actual family relaxes without
 interventions for the supplied duration. If the slow decay exponent is at
 least `decay_power`, the exact bound `2**(-decay_power)` applies. The returned

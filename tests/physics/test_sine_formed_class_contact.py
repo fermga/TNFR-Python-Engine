@@ -15,6 +15,7 @@ import mpmath
 import pytest
 
 from tnfr.mathematics._exact_linear_algebra import exact_symmetric_semidefinite
+from tnfr.physics import _sine_formed_contact as shared_contact
 from tnfr.physics import relational_sine_formed_class_contact as owner
 from tnfr.sdk import export_to_json, relational_report_to_dict
 from tnfr.utils.io import json_loads
@@ -452,7 +453,7 @@ def test_raw_scalar_admission_precedes_formation(monkeypatch, field, bad):
     def forbidden(**kwargs):
         pytest.fail("invalid primitive reached formation")
 
-    monkeypatch.setattr(owner, "assess_sine_formed_class_pair", forbidden)
+    monkeypatch.setattr(shared_contact, "assess_sine_formed_class_pair", forbidden)
     with pytest.raises((TypeError, ValueError, OverflowError)):
         _assess(**{field: bad})
 
@@ -462,7 +463,7 @@ def test_decay_power_is_an_original_nonboolean_bounded_integer(monkeypatch, bad)
     def forbidden(**kwargs):
         pytest.fail("invalid decay policy reached formation")
 
-    monkeypatch.setattr(owner, "assess_sine_formed_class_pair", forbidden)
+    monkeypatch.setattr(shared_contact, "assess_sine_formed_class_pair", forbidden)
     with pytest.raises(ValueError):
         _assess(decay_power=bad)
 
@@ -489,7 +490,7 @@ def test_physical_domain_rejects_before_formation(monkeypatch, changes):
     def forbidden(**kwargs):
         pytest.fail("invalid domain reached formation")
 
-    monkeypatch.setattr(owner, "assess_sine_formed_class_pair", forbidden)
+    monkeypatch.setattr(shared_contact, "assess_sine_formed_class_pair", forbidden)
     with pytest.raises(ValueError):
         _assess(**changes)
 
@@ -504,14 +505,14 @@ def test_slow_relaxation_work_cap_is_distinct_from_fast_formation_clock(frozen):
 
 def test_fresh_original_formation_primitives_and_no_report_input(monkeypatch):
     calls = []
-    original = owner.assess_sine_formed_class_pair
+    original = shared_contact.assess_sine_formed_class_pair
 
     def assess(**kwargs):
         report = original(**kwargs)
         calls.append((kwargs, report))
         return report
 
-    monkeypatch.setattr(owner, "assess_sine_formed_class_pair", assess)
+    monkeypatch.setattr(shared_contact, "assess_sine_formed_class_pair", assess)
     first = _assess(form_error_bound=0)
     tiny = Q(1, 2**300)
     second = _assess(form_error_bound=tiny)

@@ -154,6 +154,14 @@ and partial validated horizons.
   test its signed remainder and exact local derivatives without treating them
   as a finite-horizon prediction. Exact-family membership, finite-width
   maintenance and acquisition into that neighborhood need separate controls.
+  For reduced component ports, independently verify projection/lift identities,
+  orbit multiplicities, the nonlinear bridge and its changed degree weights.
+  Include odd initial errors and nonlinearly generated discarded modes; linear
+  parity invariance is not an exact nonlinear quotient. Transfer the unchanged
+  component law to the held-out receiver and compare total prediction error
+  against the final outward full-response lower bound, retaining preparation
+  and readout errors. Prove actual joined identity from the full law, not from
+  the surrogate's stability or coordinate count.
 - **All-time and symmetry verdicts have different scope.** Fixed-budget
   consensus tests need an independent mixed-Lyapunov derivative from both
   full rows, zero-budget and failed-premise controls. Reflection excludes

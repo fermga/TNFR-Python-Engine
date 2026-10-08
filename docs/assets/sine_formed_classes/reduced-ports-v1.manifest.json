@@ -1,0 +1,42 @@
+{
+  "schema": "tnfr.sine-reduced-class-ports-evidence.v1",
+  "artifacts": [
+    {
+      "file": "reduced-ports-v1.protocol.json",
+      "bytes": 8378,
+      "sha256": "ab7a1668d9eb855a09c0aee41e53b2d8409cef1abe8d4a24c91f1d1ca83be9a0"
+    },
+    {
+      "file": "reduced-ports-v1.source.zip",
+      "bytes": 30363,
+      "sha256": "ad30f08aa7987347c473ab996600b68107f54e112a1ff9eedc1d2401d6c7e86e"
+    },
+    {
+      "file": "reduced-ports-v1.json",
+      "bytes": 69850,
+      "sha256": "932f65c8c6f3d2b9e80c4ab490c8960671bce3f42d2171780d99f20dbd21aa24"
+    }
+  ],
+  "source_base_commit": "8a46511a2baa08cd431c5aeff4524b2281d3a48b",
+  "runtime_overlays": [
+    "src/tnfr/physics/_sine_formed_contact.py",
+    "src/tnfr/physics/relational_sine_formed_class_contact.py",
+    "src/tnfr/physics/relational_sine_reduced_class_ports.py",
+    "src/tnfr/sdk/relational_reports.py"
+  ],
+  "source_reconstruction": "Checkout the base Git commit, then overlay the archived src/ files. The archive also retains the exact pre-evaluation proof, protocol and evaluator. Unchanged dependencies remain recoverable from Git.",
+  "evaluation": "One reserved evaluation of the unchanged frozen analytic transfer protocol after archiving its proof, inputs, evaluator and exact runtime overlays. Current-source regression tests are separate and preserve the saved response.",
+  "result_owner": "../../../theory/nodal/SINE_REDUCED_CLASS_PORTS.md#sine-reduced-class-ports",
+  "status": "certified_reduced_class_ports",
+  "frozen_stopping_rule_passed": true,
+  "contrast_threshold": {
+    "numerator": 1,
+    "denominator": 10000000000000000000000000
+  },
+  "error_fraction": {
+    "numerator": 1,
+    "denominator": 4
+  },
+  "scope": "Conditional transfer of a twenty-coordinate reduced component composition to receiver class two with an exact nonlinear bridge, full-law approximation error and actual whole-family identity retention. Supplied law, preparation, clock, work and support; no exact nonlinear quotient, autonomous contact selection, physical acquisition or minimality claim.",
+  "provenance_limitations": "Hashes establish content consistency and source recoverability, not independent authentication of chronology or physical acquisition."
+}

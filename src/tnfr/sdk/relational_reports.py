@@ -226,6 +226,10 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
         SinePhaseOffsetState,
     )
     from ..physics.relational_sine_recovery import SineCycleIdentityAssessment
+    from ..physics.relational_sine_reduced_class_ports import (
+        SineReducedClassPorts,
+        SineReducedClassPortState,
+    )
     from ..physics.relational_sine_reduction import SineSlowCapture, SineSlowPhaseBound
     from ..physics.relational_sine_regional import (
         SineCycleBarrier,
@@ -350,6 +354,8 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
             SinePairPersistentResponse,
             SineFormationResponse,
             SineFormedClassContact,
+            SineReducedClassPorts,
+            SineReducedClassPortState,
             SineFormedClassMaintenance,
             SineFormedClassPair,
             SineFormedClassResponse,
