@@ -114,6 +114,31 @@ from the actual arc mean under phase residuals. An enclosing interval cannot
 serve as an existence or non-identifiability witness. Retained dipole and
 capture evidence can be audited without rerunning their frozen producers.
 
+When changing the independent full-state response generator, select the
+[direct source-box Taylor suite](tests/mathematics/test_validated_box_taylor.py)
+and [two-port readout suite](tests/physics/test_sine_two_port_readout.py).
+The former checks independent linear, coupled oscillator and nonlinear
+solutions, uncertain-baseline cancellation, thirty-six and sixty-four
+coordinates, domain failures and the fixed Picard budget. The latter
+rebuilds both fast-clock sine rows and the actual support, retains all state
+coordinates and tests complete-flow enclosures on unrelated synthetic
+preparations. Its numerical cross-check is not a validated response or a
+reserved experiment. Changes to the common Picard or jet owners also need
+their existing comparison and retained-metric consumer suites.
+
+```sh
+python -m pytest tests/mathematics/test_validated_box_taylor.py tests/physics/test_sine_two_port_readout.py tests/physics/test_sine_two_port_inference.py -q
+```
+
+The [reserved inference protocol](theory/nodal/SINE_TWO_PORT_INFERENCE.md#sine-two-port-inference-protocol)
+separates the full response producer from the inverse. Verify the actual
+inverse keyword allowlist: no hidden state, true angle, exact sensor gain,
+realized error or producer remainder may enter. Retain the two scalar
+readings and baseline correlation, independent calibration readings,
+numerical interval width and per-reading error as distinct evidence.
+Run retained-record audits after a first evaluation; tests must not
+regenerate that reserved response or silently retune a failed budget.
+
 ### Boundaries that need explicit regression coverage
 
 - **Chained evidence is rebuilt from its premises.** Change primitive inputs
@@ -127,9 +152,13 @@ capture evidence can be audited without rerunning their frozen producers.
 - **Shared admission does not mean shared theorem domains.** Specialized
   sine-cycle recovery retains its larger support domain (including the
   51-node control); general phase geometry has separate work caps. The
-  validated Taylor/comparison owner has a 24-coordinate limit, with boundary
-  refusal and independent 23-coordinate controls. Its sine layout uses
-  `2*n+1` coordinates; dimension admission alone certifies no response.
+  validated comparison and retained-metric Taylor owners keep their
+  24-coordinate limit, with boundary refusal and independent controls.
+  Hidden-capacity sine forecasts use `2*n+1` coordinates. The separate
+  direct source-box Taylor path admits at most 64 coordinates, without
+  changing that comparison cap or introducing a Jacobian propagation.
+  Test both policies and the full 36-coordinate two-port source; dimension
+  admission alone certifies no response.
 - **Metric uncertainty remains correlated.** Compare retained-ball propagation
   with independent analytic rotating, contracting and nonlinear flows, including
   boundary points outside coordinate axes. Check original-clock growth bounds,

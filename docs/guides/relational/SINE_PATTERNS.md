@@ -4,6 +4,59 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-two-port-readout"></a>
+### Generate a complete-flow local readout under a declared protocol
+
+Use `bound_sine_two_port_readout` from
+[`relational_sine_two_port_readout`](../../../src/tnfr/physics/relational_sine_two_port_readout.py)
+to enclose an independently prepared full-state response. Its
+[contract](../../contracts/relational/SINE_PATTERNS.md#sine-two-port-readout)
+fixes the eighteen-node support, complete sine law, held capacities,
+fast clock `tau=(1023/1024)*t` and local phase dipole. It takes these five
+mandatory inputs:
+
+| Input | Meaning |
+| --- | --- |
+| `initial_form_bounds` | Eighteen finite endpoint pairs for the pre-event signed form coordinates |
+| `initial_phase_bounds` | Eighteen finite endpoint pairs for the pre-event continuous phase lifts, in radians |
+| `phase_increment` | Supplied amplitude in `(0,1]`, applied at node four and with opposite sign at node five |
+| `probe_duration` | One positive fast-time step, at most one |
+| `order` | Fixed ordinary integer Taylor order from one through sixteen |
+
+Declare source, event, observation and numerical budget before a reserved
+calculation. Exact fractions preserve their mathematical values; the shared
+interval backend adds outward numerical enclosures. Supply all coordinates,
+including common means and residuals, rather than replacing a prepared
+state with an equilibrium. This guide does not execute the
+[reserved inference protocol](../../../theory/nodal/SINE_TWO_PORT_INFERENCE.md#sine-two-port-inference-protocol).
+Its source and producing code must be archived before the first response.
+
+Check `.admitted` before using the returned `true_increment_bounds`.
+An unavailable result retains `failed_tube` and its reasons; do not turn
+its last tube or a midpoint into a successful endpoint. A successful
+`step` retains all thirty-six endpoint coordinates, the full initial box,
+strict Picard tube, Taylor coefficients and remainder. The
+[direct source-box proof](../../../theory/nodal/SINE_TWO_PORT_INFERENCE.md#a-separate-full-state-response-certificate)
+explains why coefficients on the initial box and derivatives on the whole
+tube enclose the complete evolution.
+
+Keep `baseline_readout_bounds` and `endpoint_readout_bounds` with the
+raw response. Use `true_increment_bounds` for the same-state change:
+it cancels the common initial coordinate symbolically before arithmetic.
+The producer contains no sensor gain, offset or noise. Apply a separately
+declared held observation model, retain both recorded readings and their
+error allowances, and pass only the permitted observed increment and
+public calibration to the [inverse](#sine-two-port-inference).
+The source coordinates and forward diagnostics belong to the response
+audit, not to that inverse request. A common offset cancels only under
+its held-offset premise.
+
+The report proves a finite conditional flow enclosure. Global smoothness
+does not supply acute-chart retention, recovery or a measurement bridge.
+`to_dict()` and the shared SDK export retain exact rational endpoints under
+schema `tnfr.sine-two-port-readout.v1`; saved reports remain separate from
+source admission and provenance authentication.
+
 <a id="sine-two-port-inference"></a>
 ### Interpret a calibrated local response as a geometry constraint
 
@@ -31,9 +84,28 @@ does not identify an individual failed calibration or law. No trajectory,
 equilibrium search or old frozen producer runs when constructing the report.
 
 The [theorem](../../../theory/nodal/SINE_TWO_PORT_INFERENCE.md) supplies the
-finite response and remote-current error proof. A reserved inference test
-still needs its own preparation, calibration and frozen protocol under the
-[execution plan](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).
+finite response and remote-current error proof. The separately frozen
+[three-case assessment](../../../theory/nodal/SINE_TWO_PORT_INFERENCE.md#sine-two-port-inference-result)
+tests this inverse using complete-flow responses and a held sensor calibrated
+from separate known references. Its first evaluation passes all forty-three
+conditions. The inverse worker receives only its recorded JSON public packet;
+hidden geometry, source coordinates and realized reading errors remain in
+the posterior audit. This is a software information boundary, not physical
+calibration or cryptographic blindness.
+
+Inspect the [saved record](../../assets/sine_formed_classes/two-port-inference-v1.json)
+without rerunning the producer. Each `cases` entry retains `response`,
+`readings`, `public_packet`, `inverse_outputs`, `source_audit` and
+`stopping_rule`. The three inverse outputs are `primary`, `broad_gain` and
+`false_prior`; the complete phase-blind comparison has its own recorded
+bound. Keep exact fractional endpoints when subtracting readings: a large
+common offset and a tiny increment can lose the signal in rounded displays.
+The [protocol](../../assets/sine_formed_classes/two-port-inference-v1.protocol.json),
+[source archive](../../assets/sine_formed_classes/two-port-inference-v1.source.zip)
+and [manifest](../../assets/sine_formed_classes/two-port-inference-v1.manifest.json)
+preserve source, budgets and verdicts. The
+[execution plan](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns subsequent admission.
 
 <a id="sine-two-port-dipole"></a>
 ### Inspect a common interior phase probe and its finite warmup

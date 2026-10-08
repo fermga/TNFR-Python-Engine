@@ -2431,6 +2431,12 @@ def test_prepared_composition_nested_label_admission(
             "infer_sine_two_port_geometry",
             None,
         ),
+        (
+            "relational_sine_two_port_readout",
+            "SineTwoPortReadout",
+            "bound_sine_two_port_readout",
+            None,
+        ),
     ],
 )
 def test_reduced_port_sdk_wiring_does_not_evaluate_research(

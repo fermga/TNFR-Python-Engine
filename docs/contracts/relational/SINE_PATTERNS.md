@@ -4,6 +4,72 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-two-port-readout"></a>
+### Independent complete-flow readout from a primitive source box
+
+`bound_sine_two_port_readout(*, initial_form_bounds, initial_phase_bounds,
+phase_increment, probe_duration, order)` in
+[`relational_sine_two_port_readout.py`](../../../src/tnfr/physics/relational_sine_two_port_readout.py)
+returns `SineTwoPortReadout`. All five keyword inputs are required. Each
+state channel supplies exactly eighteen ordered pairs of finite real
+endpoints, in node order `0..17`. Forms remain signed; phases are continuous
+radian lifts. Shared exact/represented-real admission precedes outward
+interval arithmetic. Boolean, nonfinite, nonzero-underflow, malformed and
+reversed primitive bounds reject; existing interval objects do not bypass
+that boundary. Both amplitude and fast duration lie in `(0,1]`; `order`
+is an ordinary non-Boolean integer from one through sixteen.
+
+The support is the two unit C9 rings with contacts `(0,9)` and `(1,10)`.
+The held capacities are all one. The complete smooth sine law has
+`beta=1`, `e=1023/1024`, `w=1/1024` and `gamma=1/(1023*pi)`.
+Both shared rate rows are transformed to `tau=e*t`. The supplied event
+adds `phase_increment*(e_4-e_5)` to phase and leaves every form unchanged.
+All thirty-six original state coordinates, including their common means,
+then evolve for `probe_duration`. A primitive source box is an admitted
+conditional preparation, not evidence of its acquisition or physical origin.
+
+The producer uses
+[`validated_box_taylor_step`](../../../src/tnfr/mathematics/_validated_taylor.py),
+with one declared step and order. Strict Picard inclusion has its fixed
+sixteen-iteration budget. Every lower Taylor coefficient is evaluated on
+the full initial box, and the order-plus-one remainder on the admitted
+whole-time tube. The
+[source-box Taylor argument](../../../theory/nodal/SINE_TWO_PORT_INFERENCE.md#a-separate-full-state-response-certificate)
+distinguishes these two sets. No center substitution, comparison-radius
+propagation, adaptive split, changed precision or retry is performed.
+The direct-box kernel's sixty-four-coordinate work cap is separate from
+the unchanged twenty-four-coordinate comparison-flow cap.
+
+The smooth-domain callback applies globally to this complete sine field.
+Its positive domain bound does not certify an acute chart, winding identity,
+maintenance or native Arg-flow continuation. A failed tube or Taylor
+calculation returns status `unavailable`, `failed_tube` and
+`unavailable_reasons`; `step`, `true_increment_bounds` and
+`endpoint_readout_bounds` are then `None`. Status `admitted`, also exposed
+by `.admitted`, requires the complete requested step. Invalid declarations
+raise before flow evaluation.
+
+`baseline_readout_bounds` retains the pre-event local form difference
+`x_4-x_5`. The admitted `step` retains its `initial_box`, `tube`, `series`,
+`local_remainder_bounds`, `increment`, `endpoint`, positive Picard margin,
+domain bounds, elapsed time and order. `true_increment_bounds` projects
+`step.increment` with `q=e_4-e_5`. That increment removes the common
+order-zero coordinate symbolically; subtracting independently enclosed
+endpoint and initial readings would discard this correlation.
+`endpoint_readout_bounds` remains a separate raw endpoint observation.
+Only coordinate endpoints may be intersected with the Picard tube; that
+intersection does not shrink the direct increment.
+
+No inverse error formula, equilibrium root, acquired-source report or cached
+forward verdict is consumed. Gain, offset and sensor-error realizations are
+absent from this API. A separate observation model must apply them to the
+retained raw readings and correlated increment before any
+[inverse request](#sine-two-port-inference). Export uses
+`tnfr.sine-two-port-readout.v1`, shared exact SDK projection and atomic
+writing. See the [workflow](../../guides/relational/SINE_PATTERNS.md#sine-two-port-readout)
+and the separately frozen
+[reserved protocol](../../../theory/nodal/SINE_TWO_PORT_INFERENCE.md#sine-two-port-inference-protocol).
+
 <a id="sine-two-port-inference"></a>
 ### Conditional geometry inference from one calibrated local increment
 
@@ -60,8 +126,8 @@ An excluded band contradicts the joint family, law, calibration and error
 premises, without selecting which premise failed. The nominal family
 coordinate and the actual pre-probe mean donor long-arc angle differ under residual
 phase uncertainty; the latter requires the proved additional `phase_radius/8`
-allowance. No equilibrium root, frozen response or incoming cached verdict
-is consumed. The report installs no event and executes no trajectory.
+allowance. The API reads no equilibrium root, frozen evidence file or incoming
+cached verdict. The report installs no event and executes no trajectory.
 Acquisition, post-event maintenance, full-state reconstruction and physical
 identification are outside this inverse contract.
 
@@ -79,8 +145,13 @@ shared exact SDK projection and atomic export.
 
 See the [usage guide](../../guides/relational/SINE_PATTERNS.md#sine-two-port-inference)
 and the [single execution queue](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-for the distinction between this conditional theorem and a reserved
-inference assessment.
+for the distinction between this conditional theorem and the separately
+[retained inference assessment](../../../theory/nodal/SINE_TWO_PORT_INFERENCE.md#sine-two-port-inference-result).
+That first three-case evaluation passes its forty-three frozen conditions
+using full-law response enclosures and independently supplied software
+calibration references. Its public-packet boundary and posterior truth
+checks establish only the declared computational result. They do not admit
+an arbitrary source or replace an independent physical measurement bridge.
 
 <a id="sine-two-port-dipole"></a>
 ### Interior phase dipole after a finite complete-law warmup

@@ -18,6 +18,31 @@ from ._comparison_flow import (
 from ._interval_taylor import MAX_ORDER, Jet
 from ._rational_interval import I
 
+MAX_BOX_TAYLOR_DIMENSION = 64
+
+
+@dataclass(frozen=True)
+class ValidatedBoxTaylorStep:
+    """One direct source-box Taylor certificate, without radius propagation.
+
+    Every coefficient encloses derivatives for every initial point. The
+    increment omits the common order-zero coordinate symbolically, retaining
+    initial/endpoint correlation that interval subtraction would discard.
+    """
+
+    time: Q
+    duration: Q
+    order: int
+    initial_box: tuple[I, ...]
+    tube: tuple[I, ...]
+    series: tuple[tuple[I, ...], ...]
+    local_remainder_bounds: tuple[I, ...]
+    increment: tuple[I, ...]
+    endpoint: tuple[I, ...]
+    picard_interior_margin: Q
+    domain_lower_bounds: tuple[Q, ...]
+    method: str = "direct_source_box_Picard_Taylor_dyadic128_v1"
+
 
 @dataclass(frozen=True)
 class ValidatedTaylorStep:
@@ -186,6 +211,89 @@ def validated_taylor_step(
     return (
         ValidatedTaylorStep(
             time, duration, tube, endpoint, margin, bounds, propagated, remainder
+        ),
+        None,
+        None,
+    )
+
+
+def validated_box_taylor_step(
+    box,
+    duration,
+    flow,
+    domain,
+    *,
+    order,
+    time=Q(0),
+    domain_failure="whole_tube_domain_not_admitted",
+):
+    """Enclose one complete step by direct interval source-box coefficients.
+
+    This bounded alternative shares Picard inclusion and formal solution jets
+    with ``validated_taylor_step``. It evaluates every coefficient on the
+    initial box, rather than a center followed by a comparison flow. No
+    initial uncertainty is dropped and no interval Jacobian is required.
+    All order+1 derivatives are evaluated on the strict whole-time tube.
+
+    Dimension 1..64 and the shared order limit are explicit work policies;
+    they do not change comparison-flow admission. Numerical failures return
+    the last tube and a reason, without retries or changing the declared step.
+    The increment excludes the order-zero term before interval arithmetic.
+    Only coordinate endpoints may be intersected with the Picard tube.
+    """
+    for value, label in ((duration, "duration"), (time, "time")):
+        if type(value) is not int and not isinstance(value, Q):
+            raise TypeError(f"{label} must be an exact rational")
+    duration, time = Q(duration), Q(time)
+    if duration <= 0 or time < 0:
+        raise ValueError("require positive duration and nonnegative time")
+    if type(order) is not int or not 1 <= order <= MAX_ORDER:
+        raise ValueError("Taylor order outside the shared jet domain")
+    box = tuple(I.coerce(value) for value in _ordered(box, "state"))
+    if not 1 <= len(box) <= MAX_BOX_TAYLOR_DIMENSION:
+        raise ValueError(
+            f"source-box Taylor dimension must lie between 1 and {MAX_BOX_TAYLOR_DIMENSION}"
+        )
+    admission, failed, reason = picard_tube(
+        box, duration, flow, domain, domain_failure=domain_failure
+    )
+    if admission is None:
+        return None, failed, reason
+    tube, margin, bounds = admission
+    try:
+        series = flow_jets(box, order, flow)
+        remainder = tuple(
+            row[-1] * duration ** (order + 1)
+            for row in flow_jets(tube, order + 1, flow)
+        )
+        increment = []
+        for row, error in zip(series, remainder):
+            value = row[-1]
+            for coefficient in reversed(row[1:-1]):
+                value = value * duration + coefficient
+            increment.append(value * duration + error)
+        increment = tuple(increment)
+        endpoint = tuple(value + change for value, change in zip(box, increment))
+        if any(max(x.lo, b.lo) > min(x.hi, b.hi) for x, b in zip(endpoint, tube)):
+            raise ArithmeticError("disjoint endpoint and whole-time enclosures")
+        endpoint = tuple(
+            I(max(x.lo, b.lo), min(x.hi, b.hi)) for x, b in zip(endpoint, tube)
+        )
+    except (ValueError, ZeroDivisionError, ArithmeticError) as exc:
+        return None, tube, f"Taylor_source_box_unavailable: {exc}"
+    return (
+        ValidatedBoxTaylorStep(
+            time=time,
+            duration=duration,
+            order=order,
+            initial_box=box,
+            tube=tube,
+            series=series,
+            local_remainder_bounds=remainder,
+            increment=increment,
+            endpoint=endpoint,
+            picard_interior_margin=margin,
+            domain_lower_bounds=bounds,
         ),
         None,
         None,
