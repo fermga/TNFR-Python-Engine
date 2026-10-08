@@ -204,6 +204,15 @@ and partial validated horizons.
   initial error counted as well as the endpoint error. Whole-window acuteness
   and finite directional change do not establish eventual capture. Keep
   nonsymmetric error families and explicit unavailable margins in coverage.
+  A longer capture gate must distinguish a validated nominal gradient
+  reference from the full uncertain form-phase family. Check the folded
+  metric and full reconstruction, whole-time tube admission, exact completed
+  horizon and retained numerical radius. Every reference target, rate and
+  chart prerequisite must be rebuilt from primitives. The analytic final
+  interval continues the same full flow and needs its own original-form
+  bound; a small phase distance alone is insufficient. Keep incomplete
+  prefixes and failed capture margins unavailable, and preserve the first
+  fixed-budget response even when its sufficient criteria fail.
 - **All-time and symmetry verdicts have different scope.** Fixed-budget
   consensus tests need an independent mixed-Lyapunov derivative from both
   full rows, zero-budget and failed-premise controls. Reflection excludes
@@ -267,6 +276,12 @@ not another frozen experiment. Select it together with
 [the compatibility suite](tests/physics/test_sine_two_port_compatibility.py)
 when changing their shared owner. Its failed scalar admission does not
 revise the compatibility bundle or assert a failed trajectory.
+The two-port capture bundle retains all 4,096 successful nominal-reference
+steps separately from its analytic complete-state handoff. Its audit must
+preserve the original thirty-six-coordinate preparation, clocks, root
+prerequisites, strict tube margins, endpoint radius and final storage margin.
+Read the saved first response and archived source; do not rerun its producer
+to inspect the result or substitute the folded reference for the full family.
 
 ```sh
 python -m pytest tests/physics/test_sine_formed_evidence.py -q

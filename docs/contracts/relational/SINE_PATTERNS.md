@@ -4,6 +4,114 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-two-port-capture"></a>
+### Validated reference transit and complete-state capture
+
+`assess_sine_two_port_capture(*, form_error_radius, phase_error_radius,
+reference_duration, time_step, order, max_steps)` in
+[`relational_sine_two_port_capture.py`](../../../src/tnfr/physics/relational_sine_two_port_capture.py)
+returns `SineTwoPortCapture`. All six primitives are required; no earlier
+capture flag or endpoint report substitutes for them. Shared admission
+preserves exact rationals and otherwise applies represented-real conversion;
+Boolean, nonfinite, negative-radius and nonzero-underflow inputs reject.
+The radii use the signed form coordinate and phase radians.
+`reference_duration` and `time_step` use the slow clock. The public reference
+duration is positive and at most `1024`, and `0<time_step<=1/4`;
+Taylor order is an ordinary non-Boolean integer in
+`[1,16]`, and the step budget an ordinary non-Boolean integer in `[1,4096]`.
+The ceiling of duration divided by step must fit that budget; the final
+step is truncated to the exact requested endpoint when necessary. Unsupported
+domains raise, while failed proof margins or Taylor inclusion return
+unavailable evidence without an adaptive retry. The public handoff time is
+`reference_duration+1`; the reserved protocol below selects one fixed set
+of these primitives.
+
+The [capture owner](../../../theory/nodal/SINE_TWO_PORT_CAPTURE.md#sine-two-port-capture)
+defines a fixed-budget test for the same prepared family as the
+[finite transit](#sine-two-port-transit): undeformed midpoint-aligned C9
+classes `(2,1)`, nominal zero form and independent nodewise form and phase
+errors `1/65536`. The eighteen-node support, complete positive-loss law,
+capacities, actual degrees and structural clocks are unchanged. All
+thirty-six source errors and their actual conserved means remain present.
+The joint equilibrium supplies a capture target, not a replacement source.
+
+Only the nominal gradient reference is folded to eight coordinates. The
+folding retains an exact reconstruction and the inherited full-network
+metric; its symmetry does not restrict actual preparation errors. The
+shared retained-metric Picard/Taylor kernel must admit every whole-time
+tube and its acute metric-growth premise. A stored endpoint without the
+complete validated prefix cannot certify the reference's passage.
+
+The declared reference horizon is slow time `1024`, with fixed step `1/4`,
+Taylor order eight and at most 4,096 steps. The target enclosure is freshly
+rebuilt with thirty-two outer and sixty-four inner refinements. The strict
+whole-reference acute-margin requirement is `1/2048` radians, and the
+endpoint distance allowance in the full degree metric is `1/2048` radians.
+These are distinct from the original
+full-source uncertainty and from the complete-flow comparison error.
+
+The reference is then continued analytically for one more slow unit, while
+the actual full flow continues without reset. At slow time `1025`, the
+handoff needs both its refined original-form bound and its phase bound,
+with complete excess storage strictly below `1/648000` and every local
+chart premise proved. The invariance principle gives subsequent convergence
+only if that entire chain passes. A small reference phase distance does
+not establish actual capture or remove the retained form coordinate.
+
+The [execution plan](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#sine-two-port-capture-admission)
+owns the gate's status. Before the first assessment, preserve its protocol,
+proof and complete producing source; keep the frozen horizon, precision,
+step, order, root and preparation budgets unchanged afterward. An incomplete
+reference, unresolved sign or failed sufficient handoff remains unavailable
+evidence, not a trajectory failure or permission to retune the protocol.
+Earlier compatibility, obstruction and finite-transit results retain their
+original scope and evidence.
+
+The [retained first assessment](../../../theory/nodal/SINE_TWO_PORT_CAPTURE.md#sine-two-port-capture-result)
+passed all ten frozen conditions at the declared inputs, including every
+reference step and the complete-state capture handoff. Its certified later
+convergence concerns the entire original uncertainty family on each member's
+conserved-mean leaf, not only the numerical reference.
+
+`preparation_admitted`, `target_admitted`, `reference_validated`,
+`reference_endpoint_certified`, `full_comparison_certified` and
+`capture_certified` expose the separate stages. The joint status is
+`certified_capture` only when the complete chain passes; otherwise it is
+`unavailable`. A validated shorter prefix remains distinguishable from the
+requested complete reference. `validated_reference_duration`, `failed_tube`
+and `unavailable_reasons` retain that stopping evidence.
+
+Each compact `reference_steps` entry retains its center and metric radius
+at both endpoints, the whole tube, Picard inclusion margin, local metric
+error and all twenty edge-domain margins. Those domain margins are the
+excess over `1/2048`; `reference_minimum_acute_margin` instead reports the
+absolute acute margin in radians. The metric radius is carried forward,
+not replaced by a coordinate-box radius. These records project the shared
+step certificate; they do not independently authenticate its execution.
+
+`reference_target_distance_upper_bound` includes the retained numerical
+radius and fresh target-enclosure uncertainty. When the complete comparison
+passes, `endpoint_phase_distance_upper_bound`,
+`endpoint_relative_form_norm_upper_bound` and
+`endpoint_excess_storage_upper_bound` describe the actual handoff at
+`full_slow_horizon=reference_duration+1`. The phase comparison uses each
+member's conserved phase mean and the form norm is for its centered `P_M*x`.
+`capture_storage_margin` subtracts that excess bound from `1/648000`;
+strict positivity and the local phase chart are required. Candidate bounds
+are not certified errors, and unavailable conditional fields remain `None`.
+
+The direct schema is
+`tnfr.sine-two-port-capture.v1`, with the shared SDK exact projection and
+atomic export. A current-source assessment and an archived first response
+have distinct provenance; projection alone does not authenticate either.
+
+This assessment installs no contact event, forcing or state reset. A
+successful capture certificate would concern the supplied source and fixed
+support; it would not derive contact occurrence, passive attachment work,
+laboratory time or physical binding. The
+[inspection guide](../../guides/relational/SINE_PATTERNS.md#sine-two-port-capture)
+keeps prospective setup and the subsequent retained response separate.
+
 <a id="sine-two-port-transit"></a>
 ### Finite directional deformation under the complete two-port law
 

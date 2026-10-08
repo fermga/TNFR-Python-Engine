@@ -4,6 +4,87 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-two-port-capture"></a>
+### Inspect the complete same-family capture chain
+
+The [retained capture result](../../../theory/nodal/SINE_TWO_PORT_CAPTURE.md#sine-two-port-capture-result)
+certifies that the same midpoint-aligned preparation family enters a local
+trapping region and converges to the joint equilibrium. All original form
+and phase errors remain admitted. The first preserved assessment passed
+every numerical and full-state handoff premise of the
+[theorem](../../../theory/nodal/SINE_TWO_PORT_CAPTURE.md#sine-two-port-capture).
+The [declared protocol](../../assets/sine_formed_classes/two-port-capture-v1.protocol.json)
+fixes the six primitives consumed by `assess_sine_two_port_capture` and
+schema `tnfr.sine-two-port-capture.v1` for its report. Neither a protocol
+alone nor a successful static target report would establish this result.
+
+Read selected fields from the saved response at the repository root:
+
+```python
+from fractions import Fraction as Q
+from pathlib import Path
+from tnfr.utils.io import json_loads
+
+saved = json_loads(
+    Path("docs/assets/sine_formed_classes/two-port-capture-v1.json").read_text(
+        encoding="utf-8"
+    )
+)
+assert saved["schema"] == "tnfr.sine-two-port-capture.v1"
+capture = saved["report"]
+
+def exact(name):
+    value = capture[name]
+    return Q(value["numerator"], value["denominator"])
+
+assert capture["status"] == "certified_capture"
+assert len(capture["reference_steps"]) == 4096
+assert exact("validated_reference_duration") == exact("reference_duration") == 1024
+assert exact("full_slow_horizon") == 1025
+assert exact("reference_minimum_acute_margin") > Q(1, 2048)
+assert exact("reference_target_distance_upper_bound") <= Q(1, 2048)
+assert exact("endpoint_excess_storage_upper_bound") < Q(1, 648000)
+assert exact("capture_storage_margin") > 0
+assert capture["capture_certified"]
+assert saved["frozen_stopping_rule_passed"]
+print(capture["status"], capture["unavailable_reasons"])
+```
+
+These are read-only checks of the retained record, not a new assessment.
+The [saved response](../../assets/sine_formed_classes/two-port-capture-v1.json)
+includes every compact reference-step certificate. The
+[source archive](../../assets/sine_formed_classes/two-port-capture-v1.source.zip)
+and [manifest](../../assets/sine_formed_classes/two-port-capture-v1.manifest.json)
+retain its producing implementation and content hashes; the
+[evidence audit](../../../TESTING.md#current-checks-and-retained-evidence)
+checks those associations without rerunning the producer.
+
+The nominal gradient reference is validated through slow time `1024` using
+an eight-coordinate reconstruction, the shared retained-metric Taylor
+kernel, step `1/4`, order eight and at most 4,096 steps. This smaller
+reference does not impose symmetry on the actual eighteen-node form-phase
+family. The strict reference margin `1/2048` radians and endpoint-distance
+allowance `1/2048` radians in the full degree metric are checked separately
+from the actual full-flow error.
+
+One additional slow unit is handled analytically, continuing the same
+reference and full trajectories to `1025`. Capture then requires the
+original form coordinate, the actual phase error and the complete excess
+storage to pass their common local barrier. Inspect the entire chain:
+a small reference endpoint alone is insufficient, and a partial validated
+prefix does not represent the requested horizon.
+
+The protocol, producing source and proof were preserved before the first
+evaluation. Inspect its saved result without rerunning the frozen producer.
+The successful chain admits the full original preparation family; it does
+not impose the reference's reflection symmetry on actual errors. A separate
+current-source assessment with an unavailable result must preserve its
+failed premise and budget rather than replace the retained first response.
+The
+[contract](../../contracts/relational/SINE_PATTERNS.md#sine-two-port-capture)
+separates this conditional capture from contact occurrence, event work and
+physical identification.
+
 <a id="sine-two-port-transit"></a>
 ### Certify a finite deformation from the undeformed pair
 

@@ -26,6 +26,7 @@ ARCHIVED = (
     "port-relaxation-v1",
     "port-form-tracking-v1",
     "two-port-compatibility-v1",
+    "two-port-capture-v1",
 )
 MANIFESTS = ("evidence.manifest.json",) + tuple(
     f"{stem}.manifest.json" for stem in ARCHIVED
@@ -43,6 +44,7 @@ def no_evidence_producers():
         relational_sine_port_form_tracking,
         relational_sine_port_relaxation,
         relational_sine_reduced_class_ports,
+        relational_sine_two_port_capture,
         relational_sine_two_port_compatibility,
     )
 
@@ -59,6 +61,7 @@ def no_evidence_producers():
             relational_sine_port_form_tracking,
             relational_sine_port_relaxation,
             relational_sine_reduced_class_ports,
+            relational_sine_two_port_capture,
             relational_sine_two_port_compatibility,
         ):
             for name in vars(module):
@@ -73,6 +76,8 @@ def no_evidence_producers():
                             "assess_sine_port_relaxation",
                             "assess_sine_port_form_tracking",
                             "assess_sine_two_port_compatibility",
+                            "assess_sine_two_port_capture",
+                            "assess_sine_two_port_transit",
                         )
                     )
                     or name == "_unprobed_handoff"
@@ -109,7 +114,7 @@ def test_all_retained_artifact_sizes_and_hashes(retained):
         for manifest in manifests.values()
         for item in manifest["artifacts"]
     ]
-    assert len(names) == len(set(names)) == 23 and set(names) == expected
+    assert len(names) == len(set(names)) == 26 and set(names) == expected
     for manifest in manifests.values():
         for item in manifest["artifacts"]:
             data = content[item["file"]]
@@ -765,4 +770,292 @@ def test_two_port_record_preserves_correlated_equilibria_and_null_control(retain
         saved["frozen_stopping_rule_passed"]
         is manifest["frozen_stopping_rule_passed"]
         is True
+    )
+
+
+def test_capture_record_retains_source_target_and_radian_metric(retained):
+    from tnfr._exact_time import exact_or_represented_real
+
+    _, content = retained
+    protocol = json_loads(content["two-port-capture-v1.protocol.json"])
+    report = json_loads(content["two-port-capture-v1.json"])["report"]
+    source, folded = report["preparation"], report["folded_reference"]
+    target = report["target"]
+    for name in ("form_error_radius", "phase_error_radius"):
+        assert _exact(source[name]) == _exact(protocol["inputs"][name]) == Q(1, 65536)
+    for name in ("reference_duration", "time_step"):
+        assert _exact(report[name]) == _exact(protocol["inputs"][name])
+    for name in ("order", "max_steps"):
+        assert type(report[name]) is int and report[name] == protocol["inputs"][name]
+    assert (
+        source["geometry"]["nodes"] == protocol["support"]["nodes"] == list(range(18))
+    )
+    edges = source["geometry"]["edges"]
+    assert edges == protocol["support"]["edges"]
+    degrees = tuple(sum(i in edge for edge in edges) for i in range(18))
+    assert source["degrees"] == list(degrees)
+    assert sum(degrees) == protocol["support"]["degree_mass"] == 40
+    nominal = tuple(
+        Q(2 * i, 9) - Q(229, 360) if i < 9 else Q(1, 18) + Q(i - 9, 9) - Q(229, 360)
+        for i in range(18)
+    )
+    assert tuple(map(_exact, source["nominal_phase_turns"])) == nominal
+    assert sum(d * t for d, t in zip(degrees, nominal)) == 0
+    offsets = tuple(
+        2 if edge == [0, 8] else 1 if edge == [9, 17] else 0 for edge in edges
+    )
+    assert tuple(source["edge_integer_offsets"]) == offsets
+    edge_turns = tuple(
+        nominal[right] - nominal[left] - offset
+        for (left, right), offset in zip(edges, offsets)
+    )
+    assert tuple(map(_exact, source["nominal_edge_turns"])) == edge_turns
+    cycles = [list(range(9)), list(range(9, 18)), [0, 9, 10, 1]]
+    assert source["named_cycles"] == protocol["support"]["cycles"] == cycles
+    for cycle, period in zip(cycles, (2, 1, 0)):
+        assert (
+            sum(
+                (1 if left < right else -1)
+                * edge_turns[edges.index(sorted((left, right)))]
+                for left, right in zip(cycle, cycle[1:] + cycle[:1])
+            )
+            == period
+        )
+    assert all(_exact(value) == 0 for value in source["nominal_epi"])
+    assert all(_exact(value) == 1 for value in source["capacity"])
+    for name, value in (
+        ("storage_scale", Q(1)),
+        ("epi_weight", Q(1023, 1024)),
+        ("phase_weight", Q(1, 1024)),
+    ):
+        assert exact_or_represented_real(source["reference_model"][name], name) == value
+    assert source["reference_model"]["phase_domain"] == "regular"
+    assert source["named_cycle_periods"] == protocol["support"]["periods"] == [2, 1, 0]
+    permutation = tuple(9 * (i // 9) + (1 - i % 9) % 9 for i in range(18))
+    representatives = protocol["reference"]["representatives"]
+    assert folded["permutation"] == list(permutation)
+    assert folded["representatives"] == representatives == [0, 2, 3, 4, 9, 11, 12, 13]
+    reconstruction = tuple(
+        tuple(Q(int(i == r) - int(i == permutation[r])) for r in representatives)
+        for i in range(18)
+    )
+    assert (
+        tuple(tuple(map(_exact, row)) for row in folded["reconstruction_matrix"])
+        == reconstruction
+    )
+    metric = tuple(tuple(map(_exact, row)) for row in folded["metric"])
+    for i in range(8):
+        for j in range(8):
+            assert metric[i][j] == sum(
+                degree * row[i] * row[j] for degree, row in zip(degrees, reconstruction)
+            )
+    # The existing record's strict-root and complete-nodal audit above checks
+    # these target primitives independently. Equality here checks fresh-source
+    # consistency, not root existence or provenance authentication by equality.
+    assert target == json_loads(content["two-port-compatibility-v1.json"])["report"]
+    assert report["root_outer_refinements"] == 32
+    assert report["root_inner_refinements"] == 64
+
+
+def test_capture_retained_reference_chain_and_full_edge_margins(retained):
+    from tnfr.mathematics._rational_interval import pi_interval
+
+    _, content = retained
+    report = json_loads(content["two-port-capture-v1.json"])["report"]
+    source, folded = report["preparation"], report["folded_reference"]
+    reconstruction = tuple(
+        tuple(map(_exact, row)) for row in folded["reconstruction_matrix"]
+    )
+    weights = tuple(_exact(folded["metric"][i][i]) for i in range(8))
+    edge_turns = tuple(map(_exact, source["nominal_edge_turns"]))
+    center, radius, elapsed = (Q(0),) * 8, Q(0), Q(0)
+    margin = None
+    pi = pi_interval()
+    step_size = _exact(report["time_step"])
+    horizon = _exact(report["reference_duration"])
+    threshold = _exact(report["reference_margin_threshold"])
+    assert threshold == Q(1, 2048)
+    steps = report["reference_steps"]
+    assert len(steps) <= report["max_steps"]
+    for step in steps:
+        assert _exact(step["time"]) == elapsed
+        delta = _exact(step["duration"])
+        assert delta == min(step_size, horizon - elapsed) > 0
+        assert tuple(map(_exact, step["initial_center"])) == center
+        assert _exact(step["initial_radius"]) == radius
+        tube = tuple(
+            (_exact(value["lo"]), _exact(value["hi"])) for value in step["tube"]
+        )
+        assert len(tube) == len(center) == 8
+        for value, (lower, upper), weight in zip(center, tube, weights):
+            assert lower <= value <= upper
+            assert weight * (value - lower) ** 2 >= radius**2
+            assert weight * (upper - value) ** 2 >= radius**2
+        assert _exact(step["picard_interior_margin"]) > 0
+        bounds = tuple(map(_exact, step["domain_lower_bounds"]))
+        assert len(bounds) == 20 and min(bounds) > 0
+        for bound, (left, right), turn in zip(
+            bounds, source["geometry"]["edges"], edge_turns
+        ):
+            coefficients = tuple(
+                b - a for a, b in zip(reconstruction[left], reconstruction[right])
+            )
+            lower = min(2 * pi.lo * turn, 2 * pi.hi * turn)
+            upper = max(2 * pi.lo * turn, 2 * pi.hi * turn)
+            for coefficient, (lo, hi) in zip(coefficients, tube):
+                lower += min(coefficient * lo, coefficient * hi)
+                upper += max(coefficient * lo, coefficient * hi)
+            # Rebuild a valid margin directly from primitive affine edge gaps.
+            # This checks compact evidence; it is not a replay of Taylor jets.
+            assert bound <= pi.lo / 2 - max(abs(lower), abs(upper)) - threshold
+        observed = min(bounds) + threshold
+        margin = observed if margin is None else min(margin, observed)
+        local = _exact(step["local_metric_error_upper_bound"])
+        assert local >= 0
+        expected_radius = radius + local
+        scale = 1 << 128
+        rounded = Q(
+            -((-expected_radius.numerator * scale) // expected_radius.denominator),
+            scale,
+        )
+        radius = _exact(step["endpoint_radius"])
+        assert radius == rounded >= expected_radius
+        center = tuple(map(_exact, step["endpoint_center"]))
+        assert len(center) == 8
+        elapsed += delta
+    assert _exact(report["validated_reference_duration"]) == elapsed
+    assert tuple(map(_exact, report["reference_endpoint_center"])) == center
+    assert _exact(report["reference_endpoint_radius"]) == radius
+    assert (
+        None
+        if report["reference_minimum_acute_margin"] is None
+        else _exact(report["reference_minimum_acute_margin"])
+    ) == margin
+    assert report["reference_validated"] is (elapsed == horizon)
+    if elapsed < horizon:
+        assert report["status"] == "unavailable"
+        assert report["unavailable_reasons"]
+        assert report["capture_certified"] is False
+
+
+def test_capture_stopping_rule_rebuilt_from_exact_handoff_evidence(retained):
+    from tnfr.mathematics._rational_interval import pi_interval
+
+    manifests, content = retained
+    saved = json_loads(content["two-port-capture-v1.json"])
+    report = saved["report"]
+    manifest = manifests["two-port-capture-v1.manifest.json"]
+    source = report["preparation"]
+    rx, rt = (
+        _exact(source[name]) for name in ("form_error_radius", "phase_error_radius")
+    )
+    energy0 = Q(10, 81) + 40 * rt + 40 * rx**2
+    assert _exact(report["initial_excess_storage_upper_bound"]) == energy0 < Q(1, 8)
+    z0 = 7 * rx / 3069
+    joint = 7 * rt + z0 + Q(24, 100000)
+    z = (z0 + Q(1, 100000) * (Q(5, 12) + 2 * joint)) / (1 - Q(1, 50000))
+    error = joint + z
+    assert _exact(report["joint_error_candidate"]) == joint
+    assert _exact(report["scaled_form_norm_candidate"]) == z
+    assert _exact(report["phase_error_candidate"]) == error < Q(1, 2048)
+    assert _exact(report["comparison_margin"]) == Q(1, 2048) - error > 0
+    assert _exact(report["full_slow_horizon"]) == 1025
+    assert _exact(report["full_horizon_pi_squared_coefficient"]) == 1025 * 1023 * 1024
+    pi = pi_interval()
+    target_margin = _exact(report["target_acute_margin_lower_bound"])
+    assert (
+        Q(1, 8)
+        < target_margin
+        <= 2 * pi.lo * _exact(report["target"]["acute_margin_turns_bounds"]["lo"])
+    )
+    assert report["preparation_admitted"] is (energy0 < Q(1, 8) and error < Q(1, 2048))
+    assert report["target_admitted"] is True
+    assert report["full_comparison_certified"] is (
+        report["preparation_admitted"]
+        and report["target_admitted"]
+        and report["reference_validated"]
+        and report["reference_endpoint_certified"]
+    )
+    assert _exact(report["analytic_tail_slow_duration"]) == 1
+    assert _exact(report["fast_tail_decay_upper_bound"]) == Q(1, 2**512)
+    assert _exact(report["capture_barrier_lower_bound"]) == Q(1, 648000)
+    if report["reference_validated"]:
+        center = tuple(map(_exact, report["reference_endpoint_center"]))
+        radius = _exact(report["reference_endpoint_radius"])
+        distance = _exact(report["reference_target_distance_upper_bound"])
+        pi = pi_interval()
+        square = Q(0)
+        for index, value in enumerate(center):
+            node = report["folded_reference"]["representatives"][index]
+            target = report["target"]["target_phase_bounds"][node]
+            turn = _exact(source["nominal_phase_turns"][node])
+            lower = (
+                value - _exact(target["hi"]) + min(2 * pi.lo * turn, 2 * pi.hi * turn)
+            )
+            upper = (
+                value - _exact(target["lo"]) + max(2 * pi.lo * turn, 2 * pi.hi * turn)
+            )
+            weight = _exact(report["folded_reference"]["metric"][index][index])
+            square += weight * max(abs(lower), abs(upper)) ** 2
+        assert distance >= radius and (distance - radius) ** 2 >= square
+        assert report["reference_endpoint_certified"] is (distance <= Q(1, 2048))
+    else:
+        assert report["reference_target_distance_upper_bound"] is None
+        assert report["reference_endpoint_certified"] is False
+    if report["full_comparison_certified"]:
+        phase = distance + error
+        form = 3216 * (z / 2**512 + Q(1, 100000) * (Q(1, 1024) + 2 * error))
+        energy = phase**2 + form**2
+        assert (
+            _exact(report["endpoint_phase_distance_upper_bound"]) == phase < Q(1, 1024)
+        )
+        assert (
+            _exact(report["endpoint_relative_form_norm_upper_bound"])
+            == form
+            < Q(1, 8192)
+        )
+        assert (
+            _exact(report["endpoint_excess_storage_upper_bound"])
+            == energy
+            < Q(65, 67108864)
+        )
+        assert _exact(report["capture_storage_margin"]) == Q(1, 648000) - energy > 0
+        assert energy < Q(1, 12) ** 2
+        assert report["capture_certified"] is True
+    else:
+        assert all(
+            report[name] is None
+            for name in (
+                "endpoint_phase_distance_upper_bound",
+                "endpoint_relative_form_norm_upper_bound",
+                "endpoint_excess_storage_upper_bound",
+                "capture_storage_margin",
+            )
+        )
+        assert report["capture_certified"] is False
+    stopping = {
+        "complete_preparation_admitted": energy0 < Q(1, 8) and error < Q(1, 2048),
+        "fresh_implicit_target_admitted": report["target_admitted"],
+        "all_frozen_reference_steps_validated": len(report["reference_steps"]) == 4096
+        and _exact(report["validated_reference_duration"]) == 1024,
+        "strict_reference_tube_margins": report["reference_minimum_acute_margin"]
+        is not None
+        and _exact(report["reference_minimum_acute_margin"]) > Q(1, 2048),
+        "reference_endpoint_target_distance": report["reference_endpoint_certified"],
+        "full_family_comparison": report["full_comparison_certified"],
+        "original_form_handoff": report["endpoint_relative_form_norm_upper_bound"]
+        is not None
+        and _exact(report["endpoint_relative_form_norm_upper_bound"]) < Q(1, 8192),
+        "phase_handoff": report["endpoint_phase_distance_upper_bound"] is not None
+        and _exact(report["endpoint_phase_distance_upper_bound"]) < Q(1, 1024),
+        "strict_capture_storage_margin": report["capture_storage_margin"] is not None
+        and _exact(report["capture_storage_margin"]) > 0,
+        "full_law_convergence": report["capture_certified"]
+        and not report["unavailable_reasons"],
+    }
+    assert saved["frozen_stopping_rule"] == manifest["frozen_stopping_rule"] == stopping
+    assert (
+        saved["frozen_stopping_rule_passed"]
+        is manifest["frozen_stopping_rule_passed"]
+        is all(stopping.values())
     )
