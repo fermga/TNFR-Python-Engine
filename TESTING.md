@@ -68,6 +68,20 @@ individual module/test links; proofs own model-specific hypotheses, constants
 and frozen preparations. This guide groups the obligations needed to choose
 coverage, rather than repeating each research result.
 
+For a physical-source admission, test deductions from the declared source
+law separately from manufacturer specifications and measured responses.
+The [digital-PLL audit](theory/research/DPLL_PHYSICAL_ADMISSION.md) uses
+[`test_dpll_physical_admission.py`](tests/research/test_dpll_physical_admission.py)
+to derive the detector from exact XOR overlap, construct distinct delayed
+histories with identical current state, and check the scoped current-state
+and phase-map obstructions. These algebraic controls neither establish
+experimental reachability of their supplied history family nor calibrate
+an instrument. They require no response download, fitting or frozen replay.
+
+```sh
+python -m pytest tests/research/test_dpll_physical_admission.py -q
+```
+
 Shared admission changes can cross the routine/research selection boundary.
 The default gate includes native relational execution through `tests/test_*.py`
 and the listed conservation-diagnostic tests. It does **not** select

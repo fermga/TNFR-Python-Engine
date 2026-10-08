@@ -15,22 +15,27 @@ P1-P5 below governs physical evaluation; it is not another active queue.
 <a id="current-checkpoint"></a>
 ## Current checkpoint and resumption
 
-**Primary question:** how does retained internal organization determine a
-composite's interactions under justified complete nodal laws? The route is
-**information -> interaction -> complete law -> collective organization
--> independent observation**. The
+**Primary question:** can organized TNFR patterns generate observable
+collective properties that explain phenomena of fundamental physics?
+The next bounded question concerns how acquired internal organization
+determines interaction between patterns under one complete nodal law.
+The route is **justified nodal dynamics -> collective organization
+-> inherited interaction properties -> independent physical observation**. The
 [ontology](../EMERGENT_ONTOLOGY.md#generative-bound-organization) distinguishes
 collective properties from their physical identification. A sufficient
 representation does not independently justify the law that evolves it.
 
-The [finite-noise/horizon theoretical gate](#current-g3-gate) is closed.
-It separates sufficient resolution budgets from a proved bounded-noise
-ambiguity for the same four boxcars and complete observation model.
+The sole next primary admission is
+[class-mediated collective response](#current-g3-gate), not yet executed:
+derive how an acquired mediator's internal organization changes interaction
+between other patterns under one complete nodal law. The
+[digital-PLL review](#terrestrial-coupled-phase-admission) is a closed
+auxiliary result, with no admitted physical bridge. The
+[finite-noise/horizon theorem](#sine-aperture-resolution-admission) is closed.
 The [reserved finite-aperture result](#reserved-aperture-inference-admission)
-remains unchanged. The sole next admission is an inactive P2 feasibility
-audit of one explicitly selected terrestrial coupled-phase realization.
-No response or physical-data campaign is active; declared mathematical
-budgets do not establish attainable preparation or measurement precision.
+remains unchanged. No response acquisition, fitting or physical-data
+evaluation is active; declared mathematical budgets do not establish
+attainable preparation or measurement precision.
 Physical constituent emergence and independent law selection remain open;
 no empirical response has passed complete physical admission.
 
@@ -39,7 +44,9 @@ no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Latest closed theoretical gate | [Finite-noise/horizon resolution](#current-g3-gate): sufficient error/window budgets and a separate complete-history noise-overlap obstruction |
+| Next primary admission, not yet executed | [Class-mediated collective response](#current-g3-gate): inherited finite interaction signature from changing only an acquired mediator's internal class |
+| Closed auxiliary admission | [Terrestrial coupled-phase feasibility](#terrestrial-coupled-phase-admission): selected digital-PLL bridge not admitted; neither a prerequisite for generative pattern research nor a physical identification |
+| Latest closed theoretical gate | [Finite-noise/horizon resolution](#sine-aperture-resolution-admission): sufficient error/window budgets and a separate complete-history noise-overlap obstruction |
 | Latest closed reserved gate | [Finite-aperture software evaluation](#reserved-aperture-inference-admission): first frozen full-history averages, public-only inverse and declared transfer/alternative controls |
 | Latest closed admission gate | [Validated integral-observation producer](#sine-aperture-readout-admission): explicit affine clock, complete carried state and certified averages or an honest partial prefix |
 | Closed prerequisite | [Finite-aperture observation](#sine-aperture-inference-admission): exact moments and finite-error necessary inference at fixed positive aperture fractions |
@@ -54,6 +61,54 @@ no empirical response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="generative-class-mediated-response"></a>
+## Next primary admission: class-mediated collective response
+
+Derive an effective interaction characteristic from acquired internal
+organization. Reuse the three-C9 path of
+[degree-aware composition](../nodal/SINE_REDUCED_PORT_COMPOSITION.md#sine-reduced-port-composition),
+holding its actual fine support, central contacts, capacities, complete
+law, clock, donor and receiver classes fixed. Vary only the acquired
+mediator class between one and two. The shared component method retains
+the actual port degrees `(3,4,3)`; its earlier frozen composition
+certificate did not establish this finite class-dependent contrast.
+
+The observable is a receiver response induced by a declared donor probe,
+with a paired unprobed baseline to separate it from prepared static
+currents. Carry the actual formed families and complete histories without
+resetting them to target equilibria. Retain source pairing and uncertainty,
+preparation costs, contact and probe work, all three identities and the
+full nonlinear or controlled-reduction error. A repeated pole-ratio
+identity or a fitted inverse is not this interaction result.
+
+Admit a finite separated receiver response or a scoped symmetry/error
+obstruction. Freeze one preparation, probe, readout, horizon and numerical
+budget before evaluating a reserved response; none is evaluated here.
+The intended conclusion is a collective interaction property inherited
+from nodal organization. Physical mass, charge, spin and constituent
+identification remain further hypotheses. The original composition
+protocol and all other frozen evidence stay unchanged.
+
+<a id="terrestrial-coupled-phase-admission"></a>
+## Closed auxiliary admission: terrestrial coupled-phase feasibility
+
+The [selected digital-PLL review](DPLL_PHYSICAL_ADMISSION.md#dpll-physical-admission)
+closes with `physical_status=not_admitted`, `evaluation=not_tested` for
+the published realization-to-fixed-sine bridge. Its explicit delayed-history
+argument excludes regular current-state identification on the stated
+initial-history family. Experimental reachability of that family is not
+asserted; alternative history-dependent or approximate maps still need
+their own proof. Complete preparation, measurement and clock error evidence
+also remains missing. Component specifications do not supply those bounds.
+
+The [source receipt](../../docs/assets/dpll_physical_admission/method-sources-v1.json)
+retains primary-methods provenance without acquiring experimental arrays.
+This source-specific decision neither refutes the physical experiment nor
+excludes other realizations. The
+[existing oscillator obstruction](PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#rossler-phase-information-admission)
+and all frozen software evidence remain unchanged. No measured-response
+fit, reserved evaluation or physical identification follows from this audit.
+
 <a id="sine-aperture-resolution-admission"></a>
 <a id="active-theoretical-gate-finite-noise-and-horizon-resolution"></a>
 ## Closed theoretical gate: finite-noise and horizon resolution
@@ -68,17 +123,6 @@ record under bounded sensor error. Shorter acquisition does not uniformly
 remove that ambiguity. Neither result establishes a sharp information
 threshold, achievable laboratory uncertainty or a physical time unit.
 All earlier frozen owners and evidence remain unchanged.
-
-**Next admission, inactive:** select one terrestrial coupled-phase
-realization using fresh primary sources, then audit its complete state
-and law, or an independently justified bounded reduction, before applying
-the observation budgets. Require preparation, input, measurement/kernel,
-clock and unit maps with independently supported uncertainty. The
-[existing oscillator obstruction](PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#rossler-phase-information-admission)
-remains in force; the new theorem does not admit that source or its data.
-This bounded [P2 audit](#supporting-measurement-bridge) may close with a
-precise missing premise. It admits no response acquisition, fitting or
-physical campaign, and assumes no source or sensor precision is attainable.
 
 <a id="reserved-aperture-inference-admission"></a>
 <a id="active-reserved-gate-finite-aperture-software-inference"></a>

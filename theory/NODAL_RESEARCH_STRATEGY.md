@@ -14,6 +14,11 @@ physical observations. The [ontology](EMERGENT_ONTOLOGY.md#generative-bound-orga
 keeps this generative hypothesis separate from the conditional mathematics.
 EPI need not be a sensor reading: a collective observation map is allowed,
 but its preparation, clock and physical interpretation need independent support.
+The primary progression derives organization and its interaction properties
+from the nodal dynamics; it requires no prior identification of a primitive
+coordinate with a laboratory sensor. Direct-realization audits are auxiliary.
+Independent physical observation becomes the next obligation when a derived
+collective property has a specific falsifiable comparison.
 
 An identity can persist while its constituents move. A larger NFR can retain
 smaller constituents and their causal influence; a supplied graph or partition

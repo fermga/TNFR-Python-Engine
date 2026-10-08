@@ -190,6 +190,7 @@ nav:
           - "Research strategy": theory/NODAL_RESEARCH_STRATEGY.md
           - "Passive transport protocol": theory/research/PASSIVE_TRANSPORT_PROTOCOL.md
           - "Regional phase/amplitude protocol": theory/research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md
+          - "Physical admission of the delayed digital-PLL realization": theory/research/DPLL_PHYSICAL_ADMISSION.md
           - "TCLab comparison boundary": theory/research/TCLAB_EXPLORATORY_PROTOCOL.md
           - "Parked C6 evidence boundary": theory/C6_RESEARCH_MECHANISM_AUDIT.md
 # END GENERATED THEORY NAVIGATION

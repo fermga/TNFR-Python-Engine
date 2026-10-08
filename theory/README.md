@@ -193,6 +193,7 @@ Historical R identifiers remain searchable here; their proofs own the claims.
 | [Research strategy](NODAL_RESEARCH_STRATEGY.md) | Scientific rationale, premise review and reuse boundaries; scheduling belongs to the execution plan |
 | [Passive transport protocol](research/PASSIVE_TRANSPORT_PROTOCOL.md) | Independent measurement and clock mapping, calibration/evaluation separation |
 | [Regional phase/amplitude protocol](research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md) | Collective observation map, uncertainty and data-source admission |
+| [Physical admission of the delayed digital-PLL realization](research/DPLL_PHYSICAL_ADMISSION.md) | Source-specific complete-law and measurement audit, with a scoped delayed-history mapping obstruction; the published realization is not admitted to the fixed sine inference |
 | [TCLab comparison boundary](research/TCLAB_EXPLORATORY_PROTOCOL.md) | Short scope and archive route for the evaluated thermal comparison; no admitted physical validation |
 | [Parked C6 evidence boundary](C6_RESEARCH_MECHANISM_AUDIT.md) | Archive route and scope of the retained C6 certification evidence |
 
@@ -313,6 +314,7 @@ provide access to retained evidence without reopening their campaigns.
 | --- | --- | --- |
 | [Fields and diagnostic provenance](../docs/STRUCTURAL_FIELDS_TETRAD.md) | [fields](../src/tnfr/physics/fields.py); [SDK study](../src/tnfr/sdk/study.py) | [field readout consistency](../tests/physics/test_field_readout_consistency.py); [SDK study](../tests/sdk/test_study.py) |
 | [Operator events and relation admission](../docs/contracts/OPERATOR_EVENTS.md) | [operator contracts](../src/tnfr/operators/operator_contracts.py); [network stage](../src/tnfr/operators/network_stage.py); [neighbor differences](../src/tnfr/mathematics/_neighbor_differences.py); [dnfr](../src/tnfr/dynamics/dnfr.py); [edge semantics](../src/tnfr/physics/_edge_semantics.py) | [operator event runtime](../tests/operators/test_operator_event_runtime.py); [stable neighbor pressure](../tests/core_physics/test_stable_neighbor_pressure.py) |
+| [Delayed digital-PLL physical admission](research/DPLL_PHYSICAL_ADMISSION.md) | [primary-methods source receipt](../docs/assets/dpll_physical_admission/method-sources-v1.json); no physical execution or fixed-sine adapter admitted | [exact detector, history and phase-map controls](../tests/research/test_dpll_physical_admission.py) |
 | [Arithmetic applications](TNFR_NUMBER_THEORY.md) | See the linked owner. | See the linked owner. |
 
 ## Historical aliases and maintenance

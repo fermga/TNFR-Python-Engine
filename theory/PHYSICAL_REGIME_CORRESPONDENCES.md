@@ -759,6 +759,14 @@ no absence theorem for physical realizations or quantitative tests has been
 proved. The atlas permits either exact reduction or a controlled approximation
 with a declared error budget.
 
+The auxiliary [digital-PLL admission](research/DPLL_PHYSICAL_ADMISSION.md#dpll-physical-admission)
+examines one published terrestrial realization with explicit filtering and
+delay. It is not admitted to the fixed sine inference: the current-state
+history obstruction has a stated preparation/mapping scope, and a different
+observation or controlled reduction still needs its own error evidence.
+This comparison neither excludes all oscillator realizations nor makes a
+direct circuit realization a prerequisite for generative pattern research.
+
 The [same-mode pole identity](nodal/RELATIONAL_RESPONSE_IDENTIFICATION.md#coefficient-memory-identification)
 can identify chi when both rates are observable and excited; a single decay or
 unresolved modal mixture need not suffice. The
