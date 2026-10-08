@@ -118,6 +118,9 @@ For successive-input geometry/gain inference, also select
 [`test_sine_two_pulse_inference.py`](tests/physics/test_sine_two_pulse_inference.py).
 Check the complete carried state, the factored leading determinant,
 degenerate and unresolved rank, and all three reading-error coefficients.
+Positive factors can certify rank even when their determinant product rounds
+across zero; test factor-cancelled inversion and unresolved individual factors
+separately, including horizons below the product's resolution floor.
 A shared middle reading must retain its incidence coefficients; for this
 inverse's opposite-sign rows the marginal sensor bounds coincide with the
 conservative separate-increment bounds. Test exact large-offset cancellation and

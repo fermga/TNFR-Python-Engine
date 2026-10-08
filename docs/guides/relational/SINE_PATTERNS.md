@@ -38,9 +38,13 @@ the second input as a fresh source would change the model.
 Separated amplitudes provide a nonsingular leading geometry/gain map.
 The [theorem](../../../theory/nodal/SINE_TWO_PULSE_INFERENCE.md) also retains
 the full finite-flow error and gives a conditional resolution budget.
-Equal amplitudes disable this inverse; they do not prove the two-time full
-response uninformative. Joint marginal bounds leave the receiver geometry
-and nodal residuals unresolved, and establish no physical sensor calibration.
+Use `rank_certified` with the admitted scale and separation factors; a zero
+lower endpoint in the displayed determinant product alone need not mean
+unresolved rank. Equal amplitudes disable this inverse; they do not prove
+the two-time full response uninformative. Final marginal projections can
+discard correlations between angle and gain; their Cartesian product need
+not be jointly realizable. The receiver geometry and nodal residuals remain
+unresolved, and no physical sensor calibration follows.
 
 The [execution plan](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 owns admission of a future reserved assessment. Earlier single-pulse records
@@ -69,9 +73,11 @@ Declare source, event, observation and numerical budget before a reserved
 calculation. Exact fractions preserve their mathematical values; the shared
 interval backend adds outward numerical enclosures. Supply all coordinates,
 including common means and residuals, rather than replacing a prepared
-state with an equilibrium. This guide does not execute the
-[reserved inference protocol](../../../theory/nodal/SINE_TWO_PORT_INFERENCE.md#sine-two-port-inference-protocol).
-Its source and producing code must be archived before the first response.
+state with an equilibrium. For a new reserved assessment, archive its source
+and producing code before its first response. The existing
+[inference assessment](../../../theory/nodal/SINE_TWO_PORT_INFERENCE.md#sine-two-port-inference-result)
+is already frozen and evaluated; inspect its retained record without rerunning
+the producer.
 
 Check `.admitted` before using the returned `true_increment_bounds`.
 An unavailable result retains `failed_tube` and its reasons; do not turn

@@ -218,9 +218,23 @@ It has rank two when \(a_1<a_2\). Equal cumulative amplitudes
 give a zero second jump and a rank-deficient leading matrix. This is
 an obstruction to the present inversion method, not a theorem that the
 full nonlinear two-time response contains no additional information.
-An unresolved interval determinant is numerical unavailability, not an
-exact rank-one proof. A nonzero determinant alone also gives no useful
-resolution guarantee: conditioning must be compared with the full errors.
+An unresolved positive factor is numerical unavailability, not an exact
+rank-one proof. Certify positivity of both scales and
+\(d=\sin(\alpha_2-\alpha_1)\) separately. Their positive product can
+have an outward lower endpoint of zero on a fixed absolute grid; that
+diagnostic interval does not invalidate the factor-based rank proof.
+Cancel the redundant scale factors before numerical inversion:
+\[
+C^{-1}=\begin{pmatrix}
+(\sin\alpha_2/K_1)/d&-(\sin\alpha_1/K_2)/d\\
+-(\cos\alpha_2/K_1)/d&(\cos\alpha_1/K_2)/d
+\end{pmatrix}. \tag{13a}
+\]
+Evaluate the two divisions successively rather than materializing the
+products \(K_jd\). This also avoids losing a resolvable denominator
+through product rounding. The output retains the full determinant interval
+as a diagnostic. A nonzero determinant alone gives no useful resolution
+guarantee: conditioning must be compared with the full errors.
 
 Form exact recorded midpoint differences
 \[

@@ -57,10 +57,14 @@ error realization. Coordinate projections can still discard correlations between
 the two inferred coordinates; the output is a necessary outer constraint.
 
 The leading matrix acts on `(G*cos(b), G*sin(b))`. Its determinant uses
-the factored sine of the amplitude separation. Equal amplitudes or an
-unresolved determinant yield `unavailable`, not a conclusion that the full
-nonlinear response has no information. Failed source or numerical chart
-admission also yields `unavailable`. Strictly empty necessary intersections
+the factored sine of the amplitude separation. Rank admission checks both
+positive response scales and the positive sine factor separately. The inverse
+cancels redundant scale factors and divides successively, avoiding needless
+rounding of small products. `rank_certified` may therefore be true when the
+diagnostic `determinant_bounds` has a zero lower endpoint. Equal amplitudes or
+unresolved positivity of an individual factor yield `unavailable`, not a
+conclusion that the full nonlinear response has no information. Failed source
+or numerical chart admission also yields `unavailable`. Strictly empty necessary intersections
 yield `incompatible`; touching boundaries are retained. Nonempty nominal
 angle and gain projections yield `bounded_candidate`, without asserting
 that their Cartesian product, or any complete state, realizes the readings.

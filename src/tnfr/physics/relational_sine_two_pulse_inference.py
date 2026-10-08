@@ -59,6 +59,8 @@ class SineTwoPulseInference:
     Form/phase radii and the actual eight-long-arc mean refer to the original
     source. Every marginal encloses necessary compatibility only; their
     Cartesian product need not be jointly realizable by any full trajectory.
+    Rank admission uses strictly positive determinant factors; the rounded
+    determinant product remains diagnostic and may include zero.
     """
 
     bulk_angle_bounds: tuple[Q, Q]
@@ -172,7 +174,7 @@ def infer_sine_two_pulse_geometry_gain(
     window has duration 0<h<=1/2 in fast time. Three ordered reading pairs
     and positive gain endpoints undergo shared exact/represented admission.
 
-    Equal amplitudes, unresolved positive interval determinants, source chart
+    Equal amplitudes, unresolved positive determinant factors, source chart
     failure or unresolved argument arithmetic return ``unavailable``. Strict
     exclusion by a necessary constraint yields ``incompatible``. A retained
     ``bounded_candidate`` supplies marginal outer bounds, not joint existence.
@@ -252,7 +254,7 @@ def infer_sine_two_pulse_geometry_gain(
     deficient = a1 == a2
     factor = I(0) if deficient else sin(I((a2 - a1) / 2))
     determinant = scales[0] * scales[1] * factor
-    rank_ok = determinant.lo > 0
+    rank_ok = factor.lo > 0 and all(scale.lo > 0 for scale in scales)
     midpoints = tuple((lo + hi) / 2 for lo, hi in readings)
     radii = tuple((hi - lo) / 2 for lo, hi in readings)
     differences = (midpoints[1] - midpoints[0], midpoints[2] - midpoints[1])
@@ -271,7 +273,7 @@ def infer_sine_two_pulse_geometry_gain(
         )
     elif not rank_ok:
         unavailable.append(
-            "positive_response_determinant_is_unresolved_at_interval_precision"
+            "positive_response_determinant_factors_are_unresolved_at_interval_precision"
         )
     inverse = row_norms = reading_coefficients = None
     centers = observation_radii = flow_radii = None
@@ -279,9 +281,12 @@ def infer_sine_two_pulse_geometry_gain(
     angle = actual = gain_outer = None
     status = "unavailable"
     if rank_ok:
+        # Cancel the opposite row's scale before interval arithmetic. Divide
+        # by each positive factor separately: their product can round to zero
+        # even when both individual denominators are separated from zero.
         inverse = (
-            (matrix[1][1] / determinant, -matrix[0][1] / determinant),
-            (-matrix[1][0] / determinant, matrix[0][0] / determinant),
+            (sin(I(a2 / 2)) / scales[0] / factor, -sin(I(a1 / 2)) / scales[1] / factor),
+            (-cos(I(a2 / 2)) / scales[0] / factor, cos(I(a1 / 2)) / scales[1] / factor),
         )
         row_norms = tuple(left.abs_max + right.abs_max for left, right in inverse)
         reading_coefficients = tuple(

@@ -366,6 +366,70 @@ def test_positive_but_unresolved_determinants_remain_unavailable(amplitudes):
     assert result.status == "unavailable" and not result.incompatibility_reasons
 
 
+@pytest.mark.parametrize("duration_power", (70, 114))
+def test_positive_factors_certify_rank_when_determinant_product_rounds_to_zero(
+    duration_power,
+):
+    arguments = _arguments()
+    horizon = Q(1, 2**duration_power)
+    ratio = horizon / arguments["probe_duration"]
+    baseline = Q(5, 9)
+    arguments.update(
+        probe_duration=horizon,
+        readout_error_bound=arguments["readout_error_bound"] * ratio,
+        recorded_reading_bounds=tuple(
+            (baseline + ratio * (lo - baseline), baseline + ratio * (hi - baseline))
+            for lo, hi in arguments["recorded_reading_bounds"]
+        ),
+    )
+    result = owner.infer_sine_two_pulse_geometry_gain(**arguments)
+    assert result.determinant_bounds.lo == 0
+    assert result.determinant_angle_factor_bounds.lo > 0
+    assert all(scale.lo > 0 for scale in result.response_scale_bounds)
+    if duration_power == 114:
+        assert (
+            result.response_scale_bounds[0] * result.determinant_angle_factor_bounds
+        ).contains(0)
+    assert result.rank_certified and not result.rank_deficient
+    assert result.status == "bounded_candidate"
+    assert result.nominal_bulk_angle_outer_bounds.contains(Q(91, 64))
+    assert result.readout_gain_outer_bounds.contains(Q(7, 5))
+    with mp.workdps(100):
+        matrix = _mp_matrix(result.phase_increments, horizon)
+        inverse = matrix**-1
+        assert mp.det(matrix) > 0
+        _contains(result.determinant_bounds, mp.det(matrix))
+        for i, j in itertools.product(range(2), repeat=2):
+            _contains(result.inverse_matrix_bounds[i][j], inverse[i, j])
+
+
+def test_factor_admission_can_exclude_zero_readings_with_unresolved_product():
+    arguments = _arguments()
+    arguments.update(
+        probe_duration=Q(1, 2**60),
+        readout_error_bound=Q(0),
+        recorded_reading_bounds=((Q(0), Q(0)),) * 3,
+    )
+    result = owner.infer_sine_two_pulse_geometry_gain(**arguments)
+    assert result.determinant_bounds.lo == 0
+    assert result.determinant_angle_factor_bounds.lo > 0
+    assert all(scale.lo > 0 for scale in result.response_scale_bounds)
+    assert result.rank_certified and result.source_admitted
+    assert result.status == "incompatible"
+    assert result.incompatibility_reasons and not result.unavailable_reasons
+
+
+def test_unresolved_individual_response_scale_still_returns_unavailable():
+    arguments = _arguments()
+    arguments["probe_duration"] = Q(1, 2**200)
+    result = owner.infer_sine_two_pulse_geometry_gain(**arguments)
+    assert result.determinant_angle_factor_bounds.lo > 0
+    assert any(scale.lo <= 0 for scale in result.response_scale_bounds)
+    assert result.status == "unavailable" and not result.rank_certified
+    assert result.inverse_matrix_bounds is None
+    assert not result.incompatibility_reasons
+
+
 def test_positive_subgrid_gain_prior_cannot_become_false_incompatibility():
     arguments = _arguments()
     arguments.update(
