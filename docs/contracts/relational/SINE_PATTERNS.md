@@ -4,6 +4,80 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-aperture-validated-producer"></a>
+### Validated boxcar observations under an explicit affine clock
+
+`bound_sine_aperture_readout(*, initial_form_bounds, initial_phase_bounds,
+phase_increments, probe_duration, initial_clock_rate, clock_slope, order)` in
+[`relational_sine_aperture_readout.py`](../../../src/tnfr/physics/relational_sine_aperture_readout.py)
+returns `SineApertureReadout`. All seven primitive arguments are mandatory.
+The [producer proof](../../../theory/nodal/SINE_APERTURE_INFERENCE.md#sine-aperture-validated-producer)
+retains the fixed two-port support and complete sine law of the
+[full-state readout](#sine-two-port-readout), with an explicit observation
+clock and passive integral. It does not consume an inverse, target root,
+cached source verdict, sensor gain, offset or noise realization.
+
+`initial_form_bounds` and `initial_phase_bounds` each supply eighteen
+primitive endpoint pairs in the existing node order. Form is signed and
+phase entries are continuous lifts in radians. The complete smooth law
+admits general source boxes; producing their averages does not establish
+the separately restricted inference source family or an acute sector.
+Shared exact/represented scalar and interval admission precedes arithmetic.
+Malformed pairs, Booleans, nonfinite values and materialization loss reject.
+
+`phase_increments=(a1,a2)` gives cumulative amplitudes with
+`0<=a1<=a2<=1`. The first phase-only jump occurs at zero; the second,
+of size `a2-a1`, occurs at `H=probe_duration>0`. Zero jump size is passive.
+The known affine clock is `rho(s)=r0+k*s`, with
+`r0=initial_clock_rate` and `k=clock_slope`. Require `r0>0`,
+`r0+2*k*H>0` and `max(r0,r0+2*k*H)*H<=1/2`.
+There is no separate upper bound on `H`. `order` is an ordinary integer
+from 1 through 16. Rate is in structural time per observation time;
+slope is in structural time per observation time squared.
+
+The shared source-box Picard/Taylor kernel advances four fixed steps over
+`[0,H/3]`, `[H/3,2H/3]`, `[2H/3,H]` and `[H,2H]`. Its 38 coordinates are
+all eighteen forms, all eighteen phases, the clock rate and a cumulative
+passive integral `z`. Both nodal rows multiply by `rho`; the additional
+rows are `rho'=k` and `z'=q.T*x`, with `q=e4-e5`. The integral is in
+observation time, so its row has no extra clock-rate factor. It starts at
+zero once. All 38 coordinates and their uncertainty carry to the next
+step; only the declared phase entries jump. Neither nodal state nor
+instrument state is reset.
+
+Each average is `step.increment[37]` divided by its exact aperture width.
+The increment excludes the common initial coordinate symbolically; it
+is not obtained by subtracting two unrelated integral endpoint boxes.
+The step retains the full initial box, strict Picard tube, Taylor
+coefficients, remainder and endpoint. The constant domain margin records
+the globally smooth extended field, not positive rates throughout its
+interval tube. `clock_positivity_certified` instead follows from the exact
+affine endpoints; a broad tube may include zero without negating that
+primitive clock premise.
+
+`steps` and `averaged_readout_bounds` retain the successfully completed
+prefix. `window_initial_boxes` retains every attempted window source,
+including the first failed attempt when present. `completed_window_count`,
+`completed_observed_time` and `completed_endpoint_box` state how far that
+certificate extends. The complete 38-coordinate `final_state_bounds` is
+available only after all four windows pass. A failed fixed step returns
+`unavailable` with its `failed_window_index`, `failed_tube` and reasons.
+It supplies no uncertified average or retry with a different budget.
+A completed prefix is not a complete four-reading observation.
+`clock_rate_bounds` and
+`cumulative_structural_exposures` retain the exact affine-clock evidence.
+
+These are true model-average bounds before any sensor transformation.
+Their widths contain both the supplied source uncertainty and numerical
+enclosure error; a width is not automatically a solver-error estimate or
+an additive sensor-error allowance.
+Applying held gain/offset and additive errors requires a separately
+declared observation record. The producer does not itself supply physical
+acquisition, calibration, identity retention or a reserved evaluation.
+Export uses `tnfr.sine-aperture-readout.v1` with shared SDK projection and
+atomic writing. The [workflow](../../guides/relational/SINE_PATTERNS.md#sine-aperture-validated-producer)
+illustrates an independent stationary control.
+
 <a id="sine-aperture-inference"></a>
 ### Necessary inference from four finite-aperture averages
 

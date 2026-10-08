@@ -404,3 +404,154 @@ support selection and future maintenance remain separate. The
 [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 owns subsequent admission. No frozen response is averaged, replayed or
 reclassified by this theoretical extension.
+
+<a id="sine-aperture-validated-producer"></a>
+## Validated forward averages with an explicit affine clock
+
+The inverse above accepts primitive average bounds; it does not generate
+them. A separate forward construction supplies such bounds from complete
+initial form and phase boxes. It reuses the
+[source-box Picard/Taylor kernel](../../src/tnfr/mathematics/_validated_taylor.py)
+and the [complete structural field](../../src/tnfr/physics/relational_sine_two_port_readout.py),
+without consuming an inverse report, target angle or inferred parameter.
+Endpoint exposure equivalence alone is insufficient for this task: the
+observation-time average also depends on the interior response.
+
+### Sufficient state, clock and instrument law
+
+Keep the eighteen-node support, unit capacity, structural rows (1), dipole
+and four windows (2). Supply eighteen primitive intervals for each of
+\(x(0^-)\) and the continuous phase lift \(\theta(0^-)\).
+This forward domain does not require an acute chart or the inverse's
+nominal source family. Those are separate admission obligations when
+associating a produced response with an inference problem.
+
+Specify the forward clock completely:
+\[
+\rho(s)=r_0+\kappa s,\qquad
+\tau(s)=r_0s+\tfrac12\kappa s^2,\qquad 0\le s\le2H.
+\tag{21}
+\]
+Require \(H>0\),
+\(r_{\min}=\min(r_0,r_0+2\kappa H)>0\), and the work-policy
+bound \(r_{\max}H\le1/2\), where
+\(r_{\max}=\max(r_0,r_0+2\kappa H)\).
+These exact endpoint inequalities prove positivity on the whole horizon
+because the clock is affine. They also give total structural exposure
+\(\tau(2H)\le1\). There is no separate bound on \(H\) alone.
+The constant-clock case is \(\kappa=0\); negative slopes are admitted
+when the final rate remains positive. Arbitrary positive \(C^1\) clocks
+from the inverse's larger class do not thereby supply the higher derivatives
+needed by a Taylor producer.
+
+Let \(F(x,\theta)\) denote all thirty-six structural rows (1).
+Adjoin the selected rate \(r\) and a passive cumulative integral \(z\):
+\[
+\frac{d}{ds}(x,\theta,r,z)
+=\bigl(rF(x,\theta),\ \kappa,\ q^Tx\bigr),
+\qquad r(0)=r_0,\quad z(0)=0.
+\tag{22}
+\]
+Both nodal rows multiply by \(r\). The integral row does **not**:
+\(z(s)=\int_0^s q^Tx(u)\,du\) integrates in observation time.
+Multiplying it by \(r\) would instead integrate against structural
+exposure and change the sensor law. Its units are \([z]=[x][s]\).
+The two auxiliary coordinates specify a supplied clock and an instrument;
+they are not additional nodal constituents or a derived controller.
+The accumulator does not feed back into any evolution row. The supplied
+rate converts both structural rows to observation time.
+
+The phase events remain \(a_1q\) at zero and \((a_2-a_1)q\)
+at \(H\). The forward API admits \(0\le a_1\le a_2\le1\),
+so zero and equal inputs provide passive controls. The inverse retains its
+own stricter positive-input and rank obligations. Each event changes only
+phase; form, clock rate and cumulative integral remain continuous. There
+is no reset of \(z\) between apertures.
+
+The extended field is smooth on all of \(\mathbb R^{38}\).
+The selected exact affine clock is positive by (21), even if an enclosing
+numerical clock interval includes an extraneous nonpositive value.
+The Picard domain certifies smooth evaluation of the extended field;
+it does not assert that every point of the artificial tube is a positive
+clock, an acute phase state or a retained winding identity. These distinct
+claims must not be conflated.
+
+### Four certified increments and their normalization
+
+Use exactly four steps with observation-time starts
+\((0,H/3,2H/3,H)\) and durations \((H/3,H/3,H/3,H)\).
+The chosen ordinary integer order \(n\in[1,16]\) is held for all
+steps. Dimension thirty-eight is within the shared source-box policy of
+sixty-four; the comparison solver's separate dimension limit is unchanged.
+Each step must establish strict Picard inclusion and enclose all required
+Taylor derivatives on its whole-time tube. There is no adaptive subdivision,
+order change or retry of a failed step.
+
+For step \(i\), let \(B_i\) be its complete post-event initial
+box, \(T_i\) its admitted tube and \(\Delta_i=|W_i|\) its exact
+positive duration. If \(c_{j,k}(B_i)\) encloses the normalized
+\(k\)-th solution derivative of coordinate \(j\), the shared
+kernel constructs an increment enclosure
+\[
+D_{i,j}=\sum_{k=1}^n c_{j,k}(B_i)\Delta_i^k
+       +c_{j,n+1}(T_i)\Delta_i^{n+1}.
+\tag{23}
+\]
+The order-zero coordinate is omitted algebraically. For every trajectory
+starting in \(B_i\), Taylor's theorem and the tube certificate give
+\(w_j(s_i+\Delta_i)-w_j(s_i)\in D_{i,j}\).
+The endpoint may be tightened to \((B_i+D_i)\cap T_i\), but
+subtracting independent endpoint and initial intervals is not a substitute
+for the correlated increment (23).
+
+The raw normalized average therefore belongs to
+\[
+\mu_i=\frac{z(s_i+\Delta_i)-z(s_i)}{\Delta_i}
+     \in D_{i,z}/\Delta_i.
+\tag{24}
+\]
+Divide both interval endpoints by the exact positive rational \(\Delta_i\)
+before outward materialization. An interval representation of a very small
+positive duration may contain zero; that numerical enclosure must not erase
+the independently admitted divisor. This normalization preserves an enclosure,
+but neither guarantees a small width nor removes the finite precision floor.
+
+Carry the entire thirty-eight-coordinate endpoint box into the next step,
+then apply its declared phase jump. In particular, carry the evolved phase,
+the rate and the cumulative integral instead of reinstalling their initial
+values. Induction over the four steps proves that (24) encloses the four
+averages of the **same complete hybrid trajectory** for every admitted
+initial point. Interval widening can discard correlations but cannot justify
+choosing a different source or clock history for each window.
+The retained clock primitives and window boundaries determine exact values
+\(\rho(s_i)\), \(\rho(s_i+\Delta_i)\) and
+\(\tau(s_i+\Delta_i)-\tau(s_i)\); the report also retains
+cumulative structural exposures. This clock provenance does not change
+the observation-time denominator in (24).
+
+### Availability, evidence and sensor separation
+
+The [forward producer](../../src/tnfr/physics/relational_sine_aperture_readout.py)
+retains the primitive preparation, fixed support, phase jumps, clock law,
+all step certificates and the completed observation horizon. A failed step
+stops the sequence. Its last tube and reason remain available, but it yields
+no certified average, and later windows are not executed. A completed prefix
+is not a four-average response. The
+[API contract](../../docs/contracts/relational/SINE_PATTERNS.md#sine-aperture-validated-producer)
+owns the report's availability fields and the
+[independent controls](../../tests/physics/test_sine_aperture_readout.py)
+test the accumulator, clock transformation, event history and failure cases.
+
+The output encloses the raw average \(\mu_i\) for every admitted
+source point. Its interval width includes supplied source uncertainty
+and numerical enclosure error; it is not automatically a numerical-error
+estimate or sensor tolerance. A separately declared held
+sensor would give \(\mathcal A_i=G\mu_i+O+\eta_i\), with its
+own calibration, error allowance and primitive interval projection.
+The producer selects none of these quantities and calls no inverse.
+Forward enclosures and fresh synthetic controls establish conditional
+software behavior. A reserved evaluation still requires a separately
+frozen preparation, explicit clock, sensor realization, observation horizon,
+numerical budget and acceptance criteria before its response is evaluated.
+No source formation, kernel calibration or physical identification follows
+from this forward admission.

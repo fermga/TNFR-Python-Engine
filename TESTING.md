@@ -192,12 +192,26 @@ preparations. Its numerical cross-check is not a validated response or a
 reserved experiment. Changes to the common Picard or jet owners also need
 their existing comparison and retained-metric consumer suites.
 
+For the [validated finite-aperture producer](theory/nodal/SINE_APERTURE_INFERENCE.md#sine-aperture-validated-producer),
+also select [`test_sine_aperture_readout.py`](tests/physics/test_sine_aperture_readout.py).
+Check affine endpoint-rate positivity separately from the smooth extended
+field, both nodal clock-scaled rows, the observation-time integral row
+and complete 38-coordinate carry. Verify all four exact aperture widths,
+phase-only events and cumulative integral increments without resets or
+unrelated endpoint subtraction. Independent stationary, exact-integral
+and coupled numerical controls must not substitute the inverse's response
+approximation for the forward law. Exercise a later-window failure and
+retain its successful prefix, failed tube and absent complete result.
+These controls admit an implementation; they do not execute a reserved
+response or calibrate an averaging sensor.
+
 ```sh
 python -m pytest tests/mathematics/test_validated_box_taylor.py tests/physics/test_sine_two_port_readout.py tests/physics/test_sine_two_port_inference.py tests/physics/test_sine_two_pulse_inference.py -q
 python -m pytest tests/physics/test_sine_clock_inference.py tests/physics/test_sine_two_pulse_inference.py tests/sdk/test_relational_reports.py -q
 python -m pytest tests/physics/test_sine_curvature_inference.py tests/physics/test_sine_clock_inference.py tests/physics/test_sine_two_pulse_inference.py -q
 python -m pytest tests/physics/test_sine_clock_drift_inference.py tests/physics/test_sine_curvature_inference.py tests/physics/test_sine_clock_inference.py tests/sdk/test_relational_reports.py -q
 python -m pytest tests/physics/test_sine_aperture_inference.py tests/physics/test_sine_clock_drift_inference.py tests/physics/test_sine_curvature_inference.py tests/sdk/test_relational_reports.py -q
+python -m pytest tests/physics/test_sine_aperture_readout.py tests/mathematics/test_validated_box_taylor.py tests/physics/test_sine_two_port_readout.py tests/sdk/test_relational_reports.py -q
 python -m pytest tests/physics/test_sine_formed_evidence.py tests/physics/test_sine_curvature_evidence.py tests/physics/test_sine_clock_drift_evidence.py -q
 ```
 

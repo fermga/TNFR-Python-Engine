@@ -4,6 +4,65 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-aperture-validated-producer"></a>
+### Generate certified averages with an explicit forward clock
+
+Use `bound_sine_aperture_readout` from
+[`relational_sine_aperture_readout`](../../../src/tnfr/physics/relational_sine_aperture_readout.py)
+to enclose true model averages over the fixed four boxcars. The
+[contract](../../contracts/relational/SINE_PATTERNS.md#sine-aperture-validated-producer)
+requires the full primitive source, cumulative phase inputs, horizon,
+explicit affine rate `rho(s)=initial_clock_rate+clock_slope*s` and Taylor
+order. Both endpoint rates must be positive, and their maximum times `H`
+must not exceed `1/2`. The broader inverse's `C1` clock prior is not an
+executable forward profile.
+
+All nodal coordinates, the evolving rate and a passive cumulative
+integral are carried across the four windows. Its row integrates `q.T*x`
+in observation time, and the supplied phase event at `H` is applied to the
+complete carried state. There is no accumulator reset. Certified step
+increments give each average directly; endpoint-value substitution and
+unrelated endpoint subtraction do not implement this observation law.
+
+This fresh stationary control has a uniform form and phase, no phase
+events and a constant positive clock. Its exact local average is zero:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_aperture_readout import bound_sine_aperture_readout
+
+control = bound_sine_aperture_readout(
+    initial_form_bounds=((Q(2), Q(2)),) * 18,
+    initial_phase_bounds=((Q(0), Q(0)),) * 18,
+    phase_increments=(Q(0), Q(0)),
+    probe_duration=Q(1, 1024),
+    initial_clock_rate=Q(1),
+    clock_slope=Q(0),
+    order=1,
+)
+assert control.completed_window_count == 4
+assert control.final_state_bounds is not None
+assert all(value.lo <= 0 <= value.hi for value in control.averaged_readout_bounds)
+```
+
+Inspect `completed_window_count` and `completed_observed_time` before using
+the output. `steps` retains the successful prefix; `window_initial_boxes`
+also retains the first failed attempt's source when present. If a later
+window is unavailable, retain the prefix and failed-window evidence;
+do not present it as a complete four-average record or retry a frozen
+scientific budget silently.
+
+The output contains model averages without a sensor gain, offset or noise.
+Its widths include source uncertainty and numerical enclosure error; do
+not relabel the whole width as solver error or sensor noise.
+A separately declared software evaluation must apply those observation
+quantities and pass only its public primitive average bands and priors to
+the inverse. This control uses no reserved preparation, and it does not
+show that its stationary source belongs to the inverse's geometric chart.
+The [proof](../../../theory/nodal/SINE_APERTURE_INFERENCE.md#sine-aperture-validated-producer)
+separates the affine-clock and integration premises from physical
+calibration and from the later frozen-evaluation boundary.
+
 <a id="sine-aperture-inference"></a>
 ### Infer from interval averages with a declared sensor kernel
 
