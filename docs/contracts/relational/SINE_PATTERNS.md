@@ -4,6 +4,75 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-clock-inference"></a>
+### Geometry and gain with a bounded observation-clock conversion
+
+`infer_sine_geometry_gain_clock(*, bulk_angle_bounds,
+receiver_short_angle_bounds, form_radius, phase_radius, phase_increments,
+probe_duration, recorded_reading_bounds, readout_error_bound,
+readout_gain_bounds, clock_rate_bounds)` in
+[`relational_sine_clock_inference.py`](../../../src/tnfr/physics/relational_sine_clock_inference.py)
+returns `SineClockInference`. All ten arguments are mandatory primitives.
+The [clock-inference owner](../../../theory/nodal/SINE_CLOCK_INFERENCE.md)
+extends the [two-input source and observation contract](#sine-two-pulse-inference)
+while keeping the same complete law, fixed gamma, support, capacities,
+source-angle meanings and three-reading error association.
+
+Here `probe_duration=H` uses observation time `s`, with one held positive
+conversion `tau=rho*s`. `clock_rate_bounds=(rho_minus,rho_plus)` is an
+independently supplied positive ordered interval. Require `H>0` and
+`rho_plus*H<=1/2`; both observed-time evolution rows multiply by `rho`.
+The events occur at `s=0,H`, with jumps `a1*q` and `(a2-a1)*q`, and
+readings at `0,H,2*H`. One clock rate, gain and offset apply throughout
+the uninterrupted trajectory. No state-dependent clock, clock drift,
+different second-window rate or unknown law coefficient is admitted.
+
+Every scalar and pair retains shared exact/represented-real admission.
+Reject Boolean or nonfinite values, lost nonzero represented values,
+unordered or malformed pairs, nonpositive rates/gains, and unsupported
+durations. The original source guard and all other source, event and
+readout domains are inherited. Angles remain radians; `rho` converts
+observation-time units to structural-time units and does not calibrate
+either against laboratory time.
+
+The adapter reuses the joint inverse at `h_star=rho_plus*H` and auxiliary
+gain `L=G*rho/rho_plus`, whose prior is
+`[G_minus*rho_minus/rho_plus,G_plus]`. Monotonicity of the full-flow
+remainder divided by clock rate makes this an outer constraint for every
+admitted clock. The nested `constraint_envelope` is an **auxiliary necessary
+inequality**: its gain fields refer to `L`, and its upper duration is not
+the actual unknown trajectory duration. It provides no source reset or
+known-clock trajectory certificate. Recorded readings, their numerical
+widths and sensor-error allowances remain in recorded units; none is
+divided by an unknown clock rate.
+
+The parent exposes the original nominal and actual-angle bounds,
+`effective_gain_outer_bounds` for `J=G*rho`, `readout_gain_outer_bounds`
+for `G`, and `clock_rate_outer_bounds` for `rho`. The latter two project
+the same product relation onto their original priors. Their Cartesian
+product need not be jointly compatible or realizable, and the separate
+marginals do not imply point identification. Exact products and positive
+quotients precede outward interval materialization.
+
+`structural_probe_duration_bounds`, `auxiliary_gain_prior_bounds` and
+`effective_gain_prior_bounds` retain the conversion. The diagnostic
+`finite_remainder_over_clock_candidate` bounds the response remainder
+divided by `rho`; its `_upper_bound` counterpart is available only when
+`finite_response_certified` passes. Source, finite-response, rank and
+optional whole-window acute flags keep their separate meanings.
+`bounded_candidate` supplies necessary outer marginals, `incompatible`
+excludes the joint premises, and `unavailable` records a failed source,
+rank or arithmetic admission. Inspect the corresponding reason fields.
+
+The exact clock/common-rate equivalence and the gain/clock curvature
+counterexample belong to the theorem. An extra multiplier of every law
+row is not an input to this fixed-law API. Equal leading `G*rho` does
+not assert equality of full responses, and an ideal-source derivative
+control is not uniform recovery from noisy finite observations.
+No trajectory, calibration or reserved assessment runs. Export uses
+`tnfr.sine-clock-inference.v1`, shared SDK projection and atomic writing.
+See the [workflow](../../guides/relational/SINE_PATTERNS.md#sine-clock-inference).
+
 <a id="sine-two-pulse-inference"></a>
 ### Joint geometry and held-gain constraints from successive inputs
 

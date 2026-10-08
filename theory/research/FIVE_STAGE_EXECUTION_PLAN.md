@@ -23,10 +23,11 @@ composite's interactions under justified complete nodal laws? The route is
 collective properties from their physical identification. A sufficient
 representation does not independently justify the law that evolves it.
 
-The [reserved two-input geometry/gain evaluation](#current-g3-gate)
-is closed: its first fixed assessment passed the complete stopping rule.
-The next clock/scale identifiability admission is **inactive**; no research
-campaign is active. Physical constituent emergence and independent
+The [clock/scale identifiability theorem](#current-g3-gate) is closed.
+Its necessary geometry and scale bounds preserve the earlier
+[reserved two-input result](#reserved-two-pulse-inference-admission) and
+its known-clock premises. The next finite-curvature information admission
+is **inactive**; no response campaign is active. Physical constituent emergence and independent
 law selection remain open; no empirical response has passed complete physical
 admission. Completed evidence is reusable, not work to repeat.
 
@@ -35,45 +36,49 @@ admission. Completed evidence is reusable, not work to repeat.
 
 | Status | Scope and owner |
 | --- | --- |
-| Latest closed gate | [Reserved two-input software inference](#current-g3-gate): the first fixed assessment passes its complete trajectory, observation and inverse stopping rule |
-| Inactive resumption boundary | [Complete-law clock/scale identifiability](#current-g3-gate), requiring theoretical bounds or an obstruction before any new response |
+| Latest closed theoretical gate | [Complete-law clock/scale identifiability](#current-g3-gate): necessary geometry and scale bounds, exact common-rate/clock equivalence and a gain/clock curvature counterexample |
+| Inactive resumption boundary | [Finite-curvature information admission](#current-g3-gate), requiring a declared observation design and source/noise error bounds before another reserved response |
+| Closed prerequisite | [Reserved two-input software inference](#reserved-two-pulse-inference-admission), whose known-clock assumptions and frozen evidence remain unchanged |
 | Closed prerequisite | [Two-input geometry/gain theorem](#sine-two-pulse-inference-admission), with necessary outer marginals and full trajectory/error history |
 | Deferred | [Named dependencies and reopening conditions](#deferred-work-and-reopening-conditions); no parallel solver, uniqueness or data campaign |
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
-<a id="reserved-two-pulse-inference-admission"></a>
-<a id="active-gate-reserved-geometry-and-gain-inference-from-two-inputs"></a>
-## Closed gate: reserved geometry and gain inference from two inputs
+<a id="sine-clock-inference-admission"></a>
+<a id="active-theoretical-gate-inference-under-a-bounded-observation-clock"></a>
+## Closed theoretical gate: inference under a bounded observation clock
 
-The [retained result](../nodal/SINE_TWO_PULSE_INFERENCE.md#sine-two-pulse-inference-result)
-passes all sixty-six conditions on the first fixed evaluation of three
-hidden sources. Both complete thirty-six-coordinate flow windows, their
-endpoint/event handoff and the single held sensor history pass together.
-Public-only inverse packets give original angle and gain marginals that
-cover their hidden values and meet both declared resolution thresholds.
-False angle/gain priors are excluded, equal cumulative amplitudes expose
-the method's rank limitation, and both increments exclude the declared
-same-source phase-blind alternative. The result owner retains the exact
-protocol, first responses, numerical evidence and scope.
+The [clock-inference theorem](../nodal/SINE_CLOCK_INFERENCE.md#sine-clock-inference)
+retains one positive constant conversion `tau=rho*s`, the complete fixed
+law, full source, two events and three held-sensor readings. Monotonicity
+of the full-flow remainder supplies necessary geometry and effective-gain
+`J=G*rho` bounds through the shared inverse. Separate gain and clock
+marginals project that product onto their declared priors; their Cartesian
+product need not be jointly compatible or realizable. The auxiliary
+maximum-duration envelope is not a replacement trajectory or source reset.
 
-**Claim boundary:** these are necessary marginal constraints under a
-supplied complete law, support, preparation, known clock, exact inputs and
-held observation model. They do not certify every marginal pair as
-realizable, full-state reconstruction, physical calibration or a unique
-law. Whole-window acuteness is not certified and was not a stopping
-condition; post-input identity, recovery and maintenance do not follow.
-All earlier frozen evidence remains unchanged.
+The [conditioning corollary](../nodal/SINE_CLOCK_INFERENCE.md#sine-clock-conditioning)
+gives an informative geometry/effective-scale regime despite a broad clock
+prior. A distinct [exact equivalence](../nodal/SINE_CLOCK_INFERENCE.md#sine-clock-common-rate-equivalence)
+shows why a free common multiplier of every evolution row and clock
+conversion cannot be separated through the same observed-time history.
+The [curvature witness](../nodal/SINE_CLOCK_INFERENCE.md#sine-clock-gain-curvature-witness)
+shows that equal leading gain/clock products need not preserve the complete
+response. Its ideal-source derivative ratio does not provide uniform clock
+recovery from uncertain sources and noisy finite readings. Proof, domain,
+scale-reduction and observation controls agree; no new reserved response
+or independently calibrated physical clock is supplied.
 
-**Inactive resumption boundary:** audit clock/scale identifiability under
-the complete law and retained event history. First declare the specific
-unknown scale and its positive prior. Distinguish exact full-law equivalence
-when both clock conversion and a common rate multiplier of every evolution
-row are free, from leading-order gain/clock confounding that finite-flow
-memory may distinguish. Derive necessary bounds on identifiable combinations
-or a rigorous obstruction before admitting another reserved response.
-Matching leading coefficients is not an exact trajectory collision. No
-new theoretical owner, frozen prediction or response campaign is active.
+**Inactive resumption boundary:** derive a finite-curvature information
+theorem with the full source uncertainty and an explicit observation design.
+The existing three readings supply two offset-free increments; they cannot
+simply be treated as exact derivatives for the unknown geometry, gain and
+clock. Determine the minimum additional information needed, for example
+an extra reading within the first uninterrupted window, and justify a
+finite error/separation bound or prove an obstruction. Preserve the
+complete event history and correlated reading errors. This theoretical
+admission must precede another reserved response; no new design, source
+or campaign is currently active. Earlier frozen evidence remains unchanged.
 
 ## Deferred work and reopening conditions
 
@@ -314,6 +319,16 @@ implementations and tests.
   The doubled-C5 comparison supplies a finite receiver signature, not distinct
   asymptotic response classes. Positive-loss acquisition does not remove the
   conservative obstruction to entering a two-sided invariant family.
+
+<a id="reserved-two-pulse-inference-admission"></a>
+<a id="active-gate-reserved-geometry-and-gain-inference-from-two-inputs"></a>
+<a id="closed-gate-reserved-geometry-and-gain-inference-from-two-inputs"></a>
+
+- [Reserved two-input geometry/gain result](../nodal/SINE_TWO_PULSE_INFERENCE.md#sine-two-pulse-inference-result).
+  The first fixed assessment passes all sixty-six conditions, retaining
+  both complete flow windows, one sensor history and public-only inference.
+  Known law and clock are premises; the optional whole-window acute
+  certificate is absent, so no post-input maintenance claim follows.
 
 <a id="sine-two-pulse-inference-admission"></a>
 <a id="closed-theoretical-gate-geometry-and-held-gain-from-two-phase-inputs"></a>

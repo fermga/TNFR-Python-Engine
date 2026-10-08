@@ -172,6 +172,7 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
     from ..physics.relational_phase_storage import SaddleStorageDiscriminator
     from ..physics.relational_sine_bridge_memory import SineBridgeMemoryAssessment
     from ..physics.relational_sine_budget import SineBudgetConsensus
+    from ..physics.relational_sine_clock_inference import SineClockInference
     from ..physics.relational_sine_comparison import (
         SineFormIncrementAssessment,
         SineMobilityComparison,
@@ -386,6 +387,7 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
             SineTwoPortReadout,
             SineTwoPortTransit,
             SineTwoPulseInference,
+            SineClockInference,
             SineFormedClassMaintenance,
             SineFormedClassPair,
             SineFormedClassResponse,

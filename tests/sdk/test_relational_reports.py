@@ -2443,6 +2443,12 @@ def test_prepared_composition_nested_label_admission(
             "infer_sine_two_pulse_geometry_gain",
             None,
         ),
+        (
+            "relational_sine_clock_inference",
+            "SineClockInference",
+            "infer_sine_geometry_gain_clock",
+            None,
+        ),
     ],
 )
 def test_reduced_port_sdk_wiring_does_not_evaluate_research(

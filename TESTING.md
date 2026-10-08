@@ -129,6 +129,18 @@ exercise the inverse but are not reserved complete-flow observations;
 necessary marginal intervals prove neither joint realizability nor exact
 full-state identifiability.
 
+For the bounded observation-clock adapter, also select
+[`test_sine_clock_inference.py`](tests/physics/test_sine_clock_inference.py)
+and the shared joint-inverse suite. Check constant-rate reduction,
+observation-time versus structural-time duration, maximum-duration error
+admission, effective gain `J=G*rho`, exact positive-prior projections and
+the shared three-reading error map. Include rational scale extremes and
+rejection at invalid clock/horizon domains. The nested auxiliary envelope
+must not be treated as an actual maximum-clock trajectory. Keep the exact
+all-row-rate/clock equivalence distinct from an ideal-source curvature
+control disproving exact gain/clock equivalence. Neither synthetic control
+is a reserved response or uniform noisy clock-identification theorem.
+
 When changing the independent full-state response generator, select the
 [direct source-box Taylor suite](tests/mathematics/test_validated_box_taylor.py)
 and [two-port readout suite](tests/physics/test_sine_two_port_readout.py).
@@ -143,6 +155,7 @@ their existing comparison and retained-metric consumer suites.
 
 ```sh
 python -m pytest tests/mathematics/test_validated_box_taylor.py tests/physics/test_sine_two_port_readout.py tests/physics/test_sine_two_port_inference.py tests/physics/test_sine_two_pulse_inference.py -q
+python -m pytest tests/physics/test_sine_clock_inference.py tests/physics/test_sine_two_pulse_inference.py tests/sdk/test_relational_reports.py -q
 python -m pytest tests/physics/test_sine_formed_evidence.py -q
 ```
 

@@ -4,6 +4,62 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-clock-inference"></a>
+### Retain a bounded unknown conversion between observation and structural time
+
+Use `infer_sine_geometry_gain_clock` from
+[`relational_sine_clock_inference`](../../../src/tnfr/physics/relational_sine_clock_inference.py)
+when the complete sine law is known but one constant conversion
+`tau=rho*s` is only bounded. The
+[contract](../../contracts/relational/SINE_PATTERNS.md#sine-clock-inference)
+requires all nine joint-inverse inputs plus `clock_rate_bounds`.
+Supply `probe_duration=H` in observation time, with `rho_plus*H<=1/2`.
+Keep the original full source, both events, one held sensor and the same
+clock rate through both windows. Readings occur at `s=0,H,2*H`.
+
+Inspect `effective_gain_outer_bounds` as a bound on `J=G*rho`, then read
+the separate `readout_gain_outer_bounds` and `clock_rate_outer_bounds`.
+They project one necessary relation; arbitrary combinations of their
+endpoints need not be compatible. Neither sensor gain nor elapsed
+structural time is independently calibrated by this report. Geometry
+still refers to the original source and its actual pre-probe arc mean.
+
+The nested `constraint_envelope` uses maximum structural duration and
+auxiliary gain `L=G*rho/rho_plus` only to bound the necessary inequalities.
+Its gain is not the parent sensor gain, and its duration is not a new
+observed trajectory. Retain sensor errors in recorded units without
+dividing them by a chosen clock value.
+
+This synthetic arithmetic control demonstrates rank abstention. Its zero
+reading placeholders are not a generated response or a reserved experiment:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_clock_inference import infer_sine_geometry_gain_clock
+
+control = infer_sine_geometry_gain_clock(
+    bulk_angle_bounds=(Q(11, 8), Q(3, 2)),
+    receiver_short_angle_bounds=(Q(2, 3), Q(1)),
+    form_radius=Q(1, 2**40),
+    phase_radius=Q(1, 2**40),
+    phase_increments=(Q(1, 4), Q(1, 4)),
+    probe_duration=Q(1, 2**22),
+    recorded_reading_bounds=((Q(0), Q(0)),) * 3,
+    readout_error_bound=Q(0),
+    readout_gain_bounds=(Q(1), Q(2)),
+    clock_rate_bounds=(Q(1, 2), Q(2)),
+)
+print(control.status, control.rank_deficient)  # unavailable True
+```
+
+Equal cumulative amplitudes disable this inverse, without proving that
+the full nonlinear response is uninformative. The
+[theorem](../../../theory/nodal/SINE_CLOCK_INFERENCE.md) also separates exact
+clock/common-law-rate equivalence from merely leading gain/clock agreement.
+Its curvature control does not supply finite-noise clock recovery. Earlier
+known-clock records keep their original premises; this API does not turn
+them into a newly reserved unknown-clock experiment.
+
 <a id="sine-two-pulse-inference"></a>
 ### Constrain geometry and gain using one uninterrupted trajectory
 
