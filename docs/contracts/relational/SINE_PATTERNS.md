@@ -85,6 +85,9 @@ independent sensor calibration. Law, clock, input and observation assumptions
 are supplied. Export uses `tnfr.sine-two-pulse-inference.v1`, shared exact
 SDK projection and atomic writing. See the
 [workflow](../../guides/relational/SINE_PATTERNS.md#sine-two-pulse-inference).
+The separate [reserved software result](../../../theory/nodal/SINE_TWO_PULSE_INFERENCE.md#sine-two-pulse-inference-result)
+retains its complete source-to-reading evidence; this generic inverse API
+does not itself establish that preparation or generate those observations.
 
 <a id="sine-two-port-readout"></a>
 ### Independent complete-flow readout from a primitive source box

@@ -142,7 +142,8 @@ reserved experiment. Changes to the common Picard or jet owners also need
 their existing comparison and retained-metric consumer suites.
 
 ```sh
-python -m pytest tests/mathematics/test_validated_box_taylor.py tests/physics/test_sine_two_port_readout.py tests/physics/test_sine_two_port_inference.py -q
+python -m pytest tests/mathematics/test_validated_box_taylor.py tests/physics/test_sine_two_port_readout.py tests/physics/test_sine_two_port_inference.py tests/physics/test_sine_two_pulse_inference.py -q
+python -m pytest tests/physics/test_sine_formed_evidence.py -q
 ```
 
 The [reserved inference protocol](theory/nodal/SINE_TWO_PORT_INFERENCE.md#sine-two-port-inference-protocol)
@@ -153,6 +154,18 @@ readings and baseline correlation, independent calibration readings,
 numerical interval width and per-reading error as distinct evidence.
 Run retained-record audits after a first evaluation; tests must not
 regenerate that reserved response or silently retune a failed budget.
+
+The [reserved two-input protocol](theory/nodal/SINE_TWO_PULSE_INFERENCE.md#sine-two-pulse-inference-protocol)
+uses one held but uncalibrated gain per trajectory and three readings.
+The [retained-record suite](tests/physics/test_sine_formed_evidence.py)
+checks both complete thirty-six-coordinate Taylor certificates, exact
+endpoint/event carry, the one middle reading, public-only inverse packets,
+original angle/gain coverage, marginal widths and the fixed controls.
+Rebuild consumed arithmetic from saved primitives; cached success flags
+are not the evidence. These audits execute neither frozen producer nor
+inverse. Preserve a false optional `whole_window_acute_certified` flag
+without treating it as a failed inference criterion or a proved trajectory
+event.
 
 ### Boundaries that need explicit regression coverage
 

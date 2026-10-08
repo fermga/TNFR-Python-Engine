@@ -23,10 +23,10 @@ composite's interactions under justified complete nodal laws? The route is
 collective properties from their physical identification. A sufficient
 representation does not independently justify the law that evolves it.
 
-The latest closed result is the
-[two-input geometry/gain theorem](#current-g3-gate). Admission of its reserved
-software evaluation is the next boundary, currently **inactive**.
-No research campaign is active. Physical constituent emergence and independent
+The [reserved two-input geometry/gain evaluation](#current-g3-gate)
+is closed: its first fixed assessment passed the complete stopping rule.
+The next clock/scale identifiability admission is **inactive**; no research
+campaign is active. Physical constituent emergence and independent
 law selection remain open; no empirical response has passed complete physical
 admission. Completed evidence is reusable, not work to repeat.
 
@@ -35,58 +35,45 @@ admission. Completed evidence is reusable, not work to repeat.
 
 | Status | Scope and owner |
 | --- | --- |
-| Latest closed theoretical gate | [Two-input geometry/gain inference](#current-g3-gate), with necessary outer marginals and full trajectory/error history |
-| Inactive resumption boundary | The [same gate's reserved-evaluation admission](#current-g3-gate), requiring one complete source trajectory and one held sensor; no response evaluated or prediction frozen for this next gate |
+| Latest closed gate | [Reserved two-input software inference](#current-g3-gate): the first fixed assessment passes its complete trajectory, observation and inverse stopping rule |
+| Inactive resumption boundary | [Complete-law clock/scale identifiability](#current-g3-gate), requiring theoretical bounds or an obstruction before any new response |
+| Closed prerequisite | [Two-input geometry/gain theorem](#sine-two-pulse-inference-admission), with necessary outer marginals and full trajectory/error history |
 | Deferred | [Named dependencies and reopening conditions](#deferred-work-and-reopening-conditions); no parallel solver, uniqueness or data campaign |
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
-<a id="sine-two-pulse-inference-admission"></a>
-## Closed theoretical gate: geometry and held gain from two phase inputs
+<a id="reserved-two-pulse-inference-admission"></a>
+<a id="active-gate-reserved-geometry-and-gain-inference-from-two-inputs"></a>
+## Closed gate: reserved geometry and gain inference from two inputs
 
-The [two-input theorem](../nodal/SINE_TWO_PULSE_INFERENCE.md#sine-two-pulse-inference)
-extends the conditional inverse to a broadly bounded held positive gain.
-It retains the same realizable, generally noncritical two-port source
-family and known complete law and clock. The first event supplies `a1*q`;
-after one elapsed interval, the second supplies `(a2-a1)*q`. Three scalar
-readings observe the original, middle and final form difference. The
-middle state is the actual evolved state, with no source or equilibrium reset.
+The [retained result](../nodal/SINE_TWO_PULSE_INFERENCE.md#sine-two-pulse-inference-result)
+passes all sixty-six conditions on the first fixed evaluation of three
+hidden sources. Both complete thirty-six-coordinate flow windows, their
+endpoint/event handoff and the single held sensor history pass together.
+Public-only inverse packets give original angle and gain marginals that
+cover their hidden values and meet both declared resolution thresholds.
+False angle/gain priors are excluded, equal cumulative amplitudes expose
+the method's rank limitation, and both increments exclude the declared
+same-source phase-blind alternative. The result owner retains the exact
+protocol, first responses, numerical evidence and scope.
 
-A uniform full-law bound retains the form and phase history across both
-windows. Distinct cumulative amplitudes give independent leading angle/gain
-directions; their determinant and inverse conditioning are compared with
-the complete-flow and reading errors. Exact midpoint differences cancel
-the common offset, and the three-reading error map retains their shared
-middle observation before conservative coordinate projection. The
-[rational conditioning example](../nodal/SINE_TWO_PULSE_INFERENCE.md#sine-two-pulse-conditioning)
-proves a nonempty informative regime without selecting or evaluating a
-reserved response. Implementation controls check the algebra, admission,
-rank, offset invariance, error map and outer bounds.
+**Claim boundary:** these are necessary marginal constraints under a
+supplied complete law, support, preparation, known clock, exact inputs and
+held observation model. They do not certify every marginal pair as
+realizable, full-state reconstruction, physical calibration or a unique
+law. Whole-window acuteness is not certified and was not a stopping
+condition; post-input identity, recovery and maintenance do not follow.
+All earlier frozen evidence remains unchanged.
 
-**Claim boundary:** the result encloses necessary angle and gain marginals,
-not every jointly realizable pair, the complete state or a unique law.
-The actual angle is the original pre-probe long-arc mean. The receiver and
-full nodal residuals remain nuisance state. Equal cumulative amplitudes or
-unresolved positive determinant factors make this inversion method
-unavailable; they do not prove that the full nonlinear response is
-uninformative. The original source retains its acute admission, but
-whole-window acuteness is optional. No event-work,
-maintenance, recovery or independently calibrated physical measurement
-claim follows. Unknown clock or law scales would need additional premises
-to distinguish them from gain.
-
-**Resumption boundary:** separately admit a reserved two-input software
-experiment with a complete thirty-six-coordinate source and both events
-on the same trajectory. Carry the first validated endpoint into the second
-window and use one held sensor with three readings, rather than preparing
-an independent second source or duplicating the middle reading. Freeze
-hidden/public information separation, source and gain priors, law, clock,
-inputs, observation errors, full-flow budget and geometry/gain resolution
-criteria before evaluating the response. The posterior audit must check
-the original actual angle, held gain and complete source-to-final history.
-This next gate is inactive; no new response campaign or frozen prediction
-has been admitted. Earlier protocols, source archives and responses remain
-unchanged.
+**Inactive resumption boundary:** audit clock/scale identifiability under
+the complete law and retained event history. First declare the specific
+unknown scale and its positive prior. Distinguish exact full-law equivalence
+when both clock conversion and a common rate multiplier of every evolution
+row are free, from leading-order gain/clock confounding that finite-flow
+memory may distinguish. Derive necessary bounds on identifiable combinations
+or a rigorous obstruction before admitting another reserved response.
+Matching leading coefficients is not an exact trajectory collision. No
+new theoretical owner, frozen prediction or response campaign is active.
 
 ## Deferred work and reopening conditions
 
@@ -327,6 +314,16 @@ implementations and tests.
   The doubled-C5 comparison supplies a finite receiver signature, not distinct
   asymptotic response classes. Positive-loss acquisition does not remove the
   conservative obstruction to entering a two-sided invariant family.
+
+<a id="sine-two-pulse-inference-admission"></a>
+<a id="closed-theoretical-gate-geometry-and-held-gain-from-two-phase-inputs"></a>
+
+- [Two-input geometry/gain theorem](../nodal/SINE_TWO_PULSE_INFERENCE.md#sine-two-pulse-inference).
+  Necessary outer marginals retain one uninterrupted trajectory and the
+  shared middle-reading error. The rational conditioning example supplies
+  a feasible regime, not a reserved response. Unresolved positive rank
+  factors make the method unavailable without proving full nonlinear
+  nonidentifiability; unknown law or clock scales need separate admission.
 
 - <a id="persistent-pattern-interaction-admission"></a><a id="closed-admission-interaction-and-geometric-identity-under-one-complete-law"></a>[Conservative persistence and finite response](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-persistent-response).
 - <a id="receiver-defect-admission"></a><a id="closed-admission-bounded-departures-in-both-evolution-rows"></a>[Receiver separation with complete-row defects](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-defect).

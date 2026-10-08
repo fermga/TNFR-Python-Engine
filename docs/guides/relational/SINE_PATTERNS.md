@@ -46,9 +46,30 @@ discard correlations between angle and gain; their Cartesian product need
 not be jointly realizable. The receiver geometry and nodal residuals remain
 unresolved, and no physical sensor calibration follows.
 
-The [execution plan](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-owns admission of a future reserved assessment. Earlier single-pulse records
-cannot supply the second reading of this different event schedule.
+The [reserved two-input result](../../../theory/nodal/SINE_TWO_PULSE_INFERENCE.md#sine-two-pulse-inference-result)
+uses two complete flow windows and one shared sensor history per source.
+Inspect the saved record without rerunning its producer or inverse:
+
+```python
+from pathlib import Path
+from tnfr.utils.io import json_loads
+
+path = Path("docs/assets/sine_formed_classes/two-pulse-inference-v1.json")
+saved = json_loads(path.read_text(encoding="utf-8"))
+print(saved["report"]["status"])
+for case in saved["cases"]:
+    inferred = case["inverse_outputs"]["primary"]["report"]
+    print(case["id"], inferred["status"], inferred["whole_window_acute_certified"])
+```
+
+This displays retained outputs; the
+[evidence audit](../../../tests/physics/test_sine_formed_evidence.py)
+checks their primitive state, event, observation and numerical associations.
+An absent optional whole-window acute certificate does not invalidate the
+global inverse, and provides no maintenance or recovery claim. The
+[execution plan](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+alone admits any subsequent assessment. Earlier single-pulse records cannot
+supply the middle or final reading of a different event schedule.
 
 <a id="sine-two-port-readout"></a>
 ### Generate a complete-flow local readout under a declared protocol
@@ -75,9 +96,10 @@ interval backend adds outward numerical enclosures. Supply all coordinates,
 including common means and residuals, rather than replacing a prepared
 state with an equilibrium. For a new reserved assessment, archive its source
 and producing code before its first response. The existing
-[inference assessment](../../../theory/nodal/SINE_TWO_PORT_INFERENCE.md#sine-two-port-inference-result)
-is already frozen and evaluated; inspect its retained record without rerunning
-the producer.
+[calibrated single-input](../../../theory/nodal/SINE_TWO_PORT_INFERENCE.md#sine-two-port-inference-result)
+and [successive-input](../../../theory/nodal/SINE_TWO_PULSE_INFERENCE.md#sine-two-pulse-inference-result)
+assessments are already frozen and evaluated; inspect their retained records
+without rerunning the producer.
 
 Check `.admitted` before using the returned `true_increment_bounds`.
 An unavailable result retains `failed_tube` and its reasons; do not turn
@@ -92,12 +114,16 @@ Keep `baseline_readout_bounds` and `endpoint_readout_bounds` with the
 raw response. Use `true_increment_bounds` for the same-state change:
 it cancels the common initial coordinate symbolically before arithmetic.
 The producer contains no sensor gain, offset or noise. Apply a separately
-declared held observation model, retain both recorded readings and their
-error allowances, and pass only the permitted observed increment and
-public calibration to the [inverse](#sine-two-port-inference).
-The source coordinates and forward diagnostics belong to the response
-audit, not to that inverse request. A common offset cancels only under
-its held-offset premise.
+declared held observation model. The [calibrated single-input inverse](#sine-two-port-inference)
+uses one recorded increment, its two reading errors and public calibration.
+The [successive-input inverse](#sine-two-pulse-inference) uses three recorded
+intervals and a broad held-gain prior. For that route, carry the entire
+first endpoint into a second producer call with jump `a2-a1`, retain both
+global window origins and construct the middle reading only once. The
+three readings share one gain and offset; the second call is not a new
+preparation. Source coordinates and forward diagnostics belong to the
+response audit, not either inverse request. A common offset cancels only
+under its held-offset premise.
 
 The report proves a finite conditional flow enclosure. Global smoothness
 does not supply acute-chart retention, recovery or a measurement bridge.

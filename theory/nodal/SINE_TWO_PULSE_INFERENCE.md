@@ -413,3 +413,243 @@ information exclusion and frozen numerical/error/resolution budgets before
 evaluating its response. This conditional theorem starts no such campaign
 and changes none of the earlier calibrated theorem, prospective protocol,
 source archives or retained responses.
+
+
+<a id="sine-two-pulse-inference-protocol"></a>
+## Prospective reserved software evaluation
+
+This separately admitted protocol applies the preceding conditional theorem;
+it supplies no physical observation or independent sensor calibration. The
+preceding theorem and conditioning example remain unchanged. The source,
+observation and stopping conditions below are fixed before any of these
+reserved responses are evaluated. There is no evaluated result in this
+prospective section.
+
+### Full source family and hidden cases
+
+Use the same eighteen-node support, degree metric, continuous phase lifts,
+complete law and fast structural clock as (1)--(6). The public inputs are
+\[
+[b_-,b_+]=[11/8,3/2],\quad [c_-,c_+]=[2/3,1],\quad
+X=Y=2^{-40},\quad [G_-,G_+]=[1,2],
+\]
+\[
+(a_1,a_2)=(1/4,3/4),\quad h=2^{-21},\quad\delta=2^{-60}. \tag{23}
+\]
+The gain interval is a supplied prior, not the output of a calibration
+experiment. Law, clock and both input amplitudes are held exactly as declared.
+
+The three deterministic cases use the following primitives, withheld from
+the inverse worker:
+
+| Case index \(k\) | Donor \(b\) | Receiver \(c\) | Held gain \(G\) |
+| --- | --- | --- | --- |
+| 0 | \(89/64\) | \(17/24\) | \(9/8\) |
+| 1 | \(91/64\) | \(19/24\) | \(11/8\) |
+| 2 | \(95/64\) | \(23/24\) | \(15/8\) |
+
+For node \(i=0,\ldots,17\), define exact raw residuals
+\[
+\widetilde u_i=\frac{(i+2)(k+2)}{2^{54}},\qquad
+\widetilde v_i=\frac{((5i+3k)\bmod23)+1}{2^{54}},
+\qquad u=P_M\widetilde u,\quad v=P_M\widetilde v. \tag{24}
+\]
+Use common means \(m_x=(k+2)/11\), \(m_\theta=-(k+2)/13\)
+and the full source (2). The nominal eighteen-phase vector is reconstructed
+from the affine source family, including its single full degree-weighted
+centering. No equilibrium, ideal target or acquired-source flag is substituted.
+
+Every centered form and phase residual is nonzero in each case. Their exact
+weighted sums vanish; their squared degree norms are at most \(2^{-80}\).
+These preparation checks use only rational primitives, not an evaluated
+response. For example, the centered raw coordinate ranges give the
+conservative squared bounds \(40\cdot76^2/2^{108}\) for form and
+\(40\cdot23^2/2^{108}\) for phase, both strictly below \(2^{-80}\).
+The hidden nominal and actual source angles are distinct:
+\[
+B_{\mathrm{initial}}=b-\frac{v_1-v_0}{8}
+=b-\frac5{2^{57}}. \tag{25}
+\]
+The recorded source arrays and their checks must retain this difference.
+
+### Two full flows and one sensor history
+
+At global time zero supply the phase jump \(q/4\), evolve the full law
+for \(h\), supply the second jump \(q/2\), and evolve for another
+\(h\). Form is continuous across both events. Use the existing
+[full-state readout producer](../../src/tnfr/physics/relational_sine_two_port_readout.py)
+with two successive order-four calls. The second call's initial form and
+phase boxes must be exactly the respective eighteen-coordinate slices of
+the first call's complete validated endpoint. Its phase increment is
+\(a_2-a_1=1/2\), not \(a_2\).
+
+Each call uses one fixed source-box Picard/Taylor step: the shared
+[smooth-flow kernel](../../src/tnfr/mathematics/_validated_taylor.py), its
+sixteen-iteration Picard budget, dyadic-128 outward arithmetic, source-box
+coefficients through order four, and a fifth-order whole-tube remainder.
+Require strict Picard inclusion and the complete duration in both calls.
+The autonomous solver's local time starts at zero in each call; the retained
+protocol records their global starts as \(0\) and \(h\). This is a local
+clock origin for the same law, not a restart of the physical state.
+
+The first enclosure contains every trajectory from its source box. At the
+second event, adding the fixed phase vector to that endpoint box therefore
+contains every actual post-event state. The second validated step encloses
+their continuations. Cartesian wrapping may discard correlation and widen
+bounds; it does not justify shrinking the carried state or resetting any
+coordinate. Retain all thirty-six initial, tube and endpoint rows of both
+calls, together with their derivative and inclusion evidence. The global
+smooth-law domain does not certify whole-window acuteness or identity.
+
+Within case \(k\), one gain from the table and offset \(O=(2k+3)/11\)
+remain held for all three scalar readings. Their fixed additive errors are
+\[
+(\eta_0,\eta_1,\eta_2)
+=2^{-61}\bigl(k-1,\ 1-k,\ (-1)^k\bigr). \tag{26}
+\]
+Each lies within the public per-reading bound \(\delta\). Gains and
+offsets may differ between cases; neither may change within a case.
+The three true-readout enclosures are the first call's baseline, its
+endpoint readout, and the second call's endpoint readout. Applying the
+held affine sensor and each fixed error yields three recorded intervals.
+The middle reading is constructed once and shared by both increments;
+it equals the second call's pre-event form baseline before sensor errors.
+Do not draw or synthesize a separate second middle reading.
+
+Require each recorded interval half-width to be at most \(\delta\).
+This numerical interval width is additional to the declared additive
+sensor-error bound. It encloses one software-generated scalar reading;
+it does not represent a second independent observation or sensor noise.
+
+### Public inverse packet and declared controls
+
+A fresh inverse worker receives only the nine primitive inputs accepted by
+`infer_sine_two_pulse_geometry_gain`: `bulk_angle_bounds`,
+`receiver_short_angle_bounds`, `form_radius`, `phase_radius`,
+`phase_increments`, `probe_duration`, `recorded_reading_bounds`,
+`readout_error_bound` and `readout_gain_bounds`. Only the three recorded
+intervals come from the producing path. The inverse receives no hidden
+\(b,c,G,O\), nodal state, error realization, producer report, endpoint
+box, actual angle or prior verdict. Retain the exact public JSON packets,
+worker code and allowlist check. This checks information exclusion in the
+declared software path; it is not cryptographic blindness or independent
+execution authentication.
+
+For each unchanged triple of recorded intervals, also evaluate:
+
+- A false donor prior \([11/8,353/256]\), retaining the other primary
+  inputs; require `incompatible`.
+- A false gain prior \([31/16,2]\), retaining the other primary inputs;
+  require `incompatible`.
+- Equal cumulative amplitudes \((1/4,1/4)\), retaining the other primary
+  inputs; require `unavailable` with the rank-deficiency reason. This is an
+  inversion-method control on the same packet, not a generated equal-input
+  trajectory or a proof that the full nonlinear law has no information.
+
+Finally compare both observed increments with the complete phase-blind
+alternative \(x'=-Ax,\ \theta'=\gamma Ax\), supplied with the same
+original source and phase events. Its form evolution ignores those events,
+and heat contraction preserves \(\|P_Mx\|_M\le X\) at all times.
+Since \(\|q\|_{M^{-1}}=1\) and \(\|A\|_M\le2\), each elapsed
+window, including the second, satisfies
+\[
+|r_j-r_{j-1}|\le 2G_+hX+2\delta,\qquad j=1,2. \tag{27}
+\]
+Require each retained recorded-increment enclosure to be disjoint from this
+symmetric interval. This is a bound from the same original source, with no
+new heat trajectory or reset, and excludes only the declared alternative.
+
+### Joint stopping rule and retention
+
+For every case require admitted source priors and full residual norms;
+both complete thirty-six-coordinate horizons and strict Picard margins;
+exact first-endpoint/second-source association and both declared events;
+one held sensor with one middle reading; each recorded half-width within
+budget; and the public-only input boundary. The primary inverse must be
+available, rank certified and `bounded_candidate`; its nominal angle,
+original actual angle and gain marginals must contain the respective
+hidden primitives. Require both the actual-angle and gain widths to be
+strictly below \(1/1024\). All three inverse controls and both
+phase-blind increment exclusions must pass as declared. Optional
+whole-window acuteness is not part of this stopping rule.
+
+The source base is immutable revision
+`d86753763fcdd65eddf52c87dd3c5c74348129ce`. Before the first response, retain
+this prospective proof, the exact protocol, source inventory, producing
+and inverse-worker code, numerical budgets and stopping predicates under
+`docs/assets/sine_formed_classes/two-pulse-inference-v1`. The source archive
+records the base and any actual overlays; unrecorded working-tree changes
+cannot supply the evaluated code. Keep the original prior protocols,
+archives and responses unchanged.
+
+Retain the first attempt, including any unavailable response or export
+failure. Do not change the cases, priors, errors, horizon, arithmetic or
+thresholds to obtain a passing record. Save all hidden primitive arrays,
+both complete forward reports, the three readings, exact public packets,
+all inverse reports and per-condition outcomes, followed by a manifest.
+The saved result tests this finite software inference chain under its
+supplied premises. It does not identify a physical sensor, derive the
+preparation or support, prove joint realization of every retained angle/gain
+pair, account for event work, or certify subsequent maintenance.
+
+
+<a id="sine-two-pulse-inference-result"></a>
+## Retained first evaluation and claim boundary
+
+The [saved response](../../docs/assets/sine_formed_classes/two-pulse-inference-v1.json)
+has status `certified_reserved_joint_inference`. All sixty-six fixed
+conditions passed in the first reserved attempt across the three cases.
+Both complete-flow windows, their full-state handoff and phase-only events,
+the one-middle-reading association and public-only inverse requests passed
+without a retry, changed budget, source reset or earlier producer rerun.
+
+The primary marginals contain every declared nominal angle, its actual
+original value \(B_{\mathrm{initial}}=b-5/2^{57}\), and the respective
+held gain \(9/8,11/8,15/8\). The following decimal endpoints are rounded
+outward for display; widths are approximations to the saved exact rational
+differences, rather than differences of those rounded display endpoints.
+
+| Case | Original actual-angle enclosure (radians) | Angle width | Gain enclosure | Gain width |
+| --- | --- | --- | --- | --- |
+| 1 | `[1.390535815643, 1.390714000311]` | `1.781846672682e-4` | `[1.124785196410, 1.125213380441]` | `4.281840298225e-4` |
+| 2 | `[1.421806401222, 1.421943436179]` | `1.370349557123e-4` | `[1.374785991809, 1.375212314611]` | `4.263228007694e-4` |
+| 3 | `[1.484331260848, 1.484418628125]` | `8.736727612697e-5` | `[1.874788260847, 1.875209614522]` | `4.213536743246e-4` |
+
+Every exact actual-angle and gain width is strictly below \(1/1024\).
+The largest recorded-reading half-width is below \(3.09\times10^{-38}\),
+well inside the separate \(2^{-60}\) numerical budget. Both false-prior
+requests are `incompatible` in every case; each equal-amplitude request
+abstains as `unavailable` for the declared leading-rank limitation. Both
+recorded increments exclude the phase-blind interval (27), whose exact
+radius here is \(2^{-58}=4\delta\). None of these controls substitutes
+a second preparation or an independently generated middle reading.
+
+The optional `whole_window_acute_certified` flag is false in all three
+primary reports. The global full-law response bounds still support the
+inverse, which refers to the original pre-probe geometric statistic.
+The absent acute certificate is not a failed stopping condition and supplies
+no post-input identity, recovery or maintenance claim.
+
+The [protocol](../../docs/assets/sine_formed_classes/two-pulse-inference-v1.protocol.json),
+[source archive](../../docs/assets/sine_formed_classes/two-pulse-inference-v1.source.zip)
+and [manifest](../../docs/assets/sine_formed_classes/two-pulse-inference-v1.manifest.json)
+retain the complete source recipe, producing code, first responses and
+fixed verdicts. The archived prospective proof has 26,821 bytes and SHA-256
+`2cae8b0d9257edf9ce7b78b9ca6d3feb0c11c331341ae517636a22da3ec5b285`;
+its content is preserved above, independently of routine checkout newline
+conversion. The source archive SHA-256 is
+`5abff67d487287ad3d4949d970f5c6a448bd4e62dec8a212e817008ede031e38`.
+The [retained evidence audit](../../tests/physics/test_sine_formed_evidence.py)
+checks the saved primitives and numerical evidence without regenerating
+these reserved responses or calling the inverse again.
+
+This is finite evidence that the declared software observation chain
+constrains original geometry and a held gain simultaneously, conditional on
+the known complete law, clock, exact inputs, source family and observation
+model. It is neither independent physical calibration nor exact joint
+identifiability: retained marginal pairs need not all be realizable, and
+receiver geometry and fine state remain unresolved. The result does not
+justify an unknown clock or law scale, autonomous support or preparation,
+event funding or physical constituent identification. Any continuation
+requires a separate admission in the
+[sole execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).

@@ -33,6 +33,7 @@ ARCHIVED = (
     "two-port-probe-v1",
     "two-port-dipole-v1",
     "two-port-inference-v1",
+    "two-pulse-inference-v1",
 )
 MANIFESTS = ("evidence.manifest.json",) + tuple(
     f"{stem}.manifest.json" for stem in ARCHIVED
@@ -57,6 +58,7 @@ def no_evidence_producers():
         relational_sine_two_port_inference,
         relational_sine_two_port_probe,
         relational_sine_two_port_readout,
+        relational_sine_two_pulse_inference,
     )
 
     def forbidden(*args, **kwargs):
@@ -78,6 +80,7 @@ def no_evidence_producers():
             relational_sine_two_port_inference,
             relational_sine_two_port_probe,
             relational_sine_two_port_readout,
+            relational_sine_two_pulse_inference,
         ):
             for name in vars(module):
                 if (
@@ -97,6 +100,7 @@ def no_evidence_producers():
                             "assess_sine_two_port_dipole",
                             "bound_sine_two_port_readout",
                             "infer_sine_two_port_geometry",
+                            "infer_sine_two_pulse_geometry_gain",
                             "validated_box_taylor_step",
                             "validated_metric_taylor_step",
                         )
@@ -152,7 +156,7 @@ def test_all_retained_artifact_sizes_and_hashes(retained):
         for manifest in manifests.values()
         for item in manifest["artifacts"]
     ]
-    assert len(names) == len(set(names)) == 37 and set(names) == expected
+    assert len(names) == len(set(names)) == 40 and set(names) == expected
     for manifest in manifests.values():
         for item in manifest["artifacts"]:
             data = content[item["file"]]
@@ -204,9 +208,19 @@ def test_archived_inventory_protocol_and_base_revision_are_consistent(retained, 
     assert re.fullmatch(r"[0-9a-f]{40}", base)
     assert source["source_base_commit"] == protocol["source_base_commit"] == base
     assert source["runtime_overlays"] == outer["runtime_overlays"]
-    assert set(source["runtime_overlays"]) == {
-        name for name in paths if name.startswith("src/")
-    }
+    runtime_paths = {name for name in paths if name.startswith("src/")}
+    if stem == "two-pulse-inference-v1":
+        # These are snapshots of the declared base, not uncommitted overlays.
+        # Their hashes associate bytes; they do not authenticate Git history.
+        assert source["runtime_overlays"] == []
+        assert runtime_paths == {
+            "src/tnfr/physics/relational_sine_two_pulse_inference.py",
+            "src/tnfr/physics/relational_sine_two_port_readout.py",
+            "src/tnfr/mathematics/_validated_taylor.py",
+            "src/tnfr/mathematics/_rational_interval.py",
+        }
+    else:
+        assert set(source["runtime_overlays"]) == runtime_paths
     assert protocol["source_overlay_archive"] == archive_path.name
     assert json_loads(content[f"{stem}.json"])["report"]["status"] == outer["status"]
 
@@ -1771,8 +1785,6 @@ def test_inference_calibration_is_rebuilt_only_from_separate_reference_readings(
 
 
 def _inference_source(protocol, case, index):
-    from tnfr.mathematics._rational_interval import I, pi_interval
-
     edges = tuple(
         sorted(
             {tuple(sorted((o + j, o + (j + 1) % 9))) for o in (0, 9) for j in range(9)}
@@ -1799,6 +1811,16 @@ def _inference_source(protocol, case, index):
         assert all(centered)
         assert sum(d * value for d, value in zip(degrees, centered)) == 0
         assert sum(d * value**2 for d, value in zip(degrees, centered)) < Q(1, 2**80)
+    result = _materialized_inference_source(degrees, case)
+    assert result[-2] == b - Q(7, 2**55)
+    return result
+
+
+def _materialized_inference_source(degrees, case):
+    """Rebuild full affine coordinates from admitted retained source scalars."""
+    from tnfr.mathematics._rational_interval import I, pi_interval
+
+    b, c = case["bulk_angle"], case["receiver_short_angle"]
     pi = pi_interval()
     short, bulk = 4 * pi - 8 * b, (2 * pi - c) / 8
     delta = (short - c) / 2
@@ -1820,7 +1842,6 @@ def _inference_source(protocol, case, index):
         for d, value, base in zip(degrees, phase, nominal)
     )
     actual = b - (case["phase_residual"][1] - case["phase_residual"][0]) / 8
-    assert actual == b - Q(7, 2**55)
     actual_box = (4 * pi - (phase[1] - phase[0])) / 8
     assert actual_box.contains(actual)
     return degrees, form, phase, x2, y2, actual, actual_box
@@ -1878,19 +1899,24 @@ def test_inference_complete_sources_are_rebuilt_without_reset(
 def test_inference_retained_taylor_arithmetic_and_independent_picard_inclusion(
     inference_evidence, index
 ):
-    from tnfr.mathematics._rational_interval import I, pi_interval, sin
-
     protocol, saved, _, _ = inference_evidence
     response = saved["cases"][index]["response"]["report"]
-    step = response["step"]
     h = protocol["public_inputs_without_observation_or_gain"]["probe_duration"]
     assert h == Q(1, 2**16)
-    assert step["time"] == 0 and step["duration"] == h
-    assert response["order"] == step["order"] == protocol["numerics"]["order"] == 4
     assert (
         protocol["numerics"]["steps"] == 1
         and protocol["numerics"]["picard_iteration_cap"] == 16
     )
+    _assert_retained_full_box_taylor(response, protocol, h)
+
+
+def _assert_retained_full_box_taylor(response, protocol, h):
+    """Check stored arithmetic and tube inclusion without derivative replay."""
+    from tnfr.mathematics._rational_interval import I, pi_interval, sin
+
+    step = response["step"]
+    assert step["time"] == 0 and step["duration"] == h
+    assert response["order"] == step["order"] == protocol["numerics"]["order"] == 4
     assert protocol["numerics"]["interval_bits"] == 128
     initial = tuple(map(_inference_interval, step["initial_box"]))
     tube = tuple(map(_inference_interval, step["tube"]))
@@ -2143,4 +2169,538 @@ def test_inference_readings_public_packets_and_all_stops_are_rebuilt(
         saved["report"]["status"]
         == manifest["status"]
         == "certified_reserved_inference"
+    )
+
+
+@pytest.fixture(scope="module")
+def two_pulse_evidence(retained):
+    manifests, content = retained
+    raw = json_loads(content["two-pulse-inference-v1.json"])
+    return (
+        _inference_decode(json_loads(content["two-pulse-inference-v1.protocol.json"])),
+        _inference_decode(raw),
+        raw,
+        manifests["two-pulse-inference-v1.manifest.json"],
+    )
+
+
+def test_two_pulse_archive_preserves_prospective_owner_and_public_only_worker():
+    with zipfile.ZipFile(DIRECTORY / "two-pulse-inference-v1.source.zip") as archive:
+        proof_path = "theory/nodal/SINE_TWO_PULSE_INFERENCE.md"
+        prospective = archive.read(proof_path)
+        current = (Path(__file__).parents[2] / proof_path).read_bytes()
+        suffix = _documentation_suffix(current, prospective)
+        assert suffix is not None
+        assert b"sine-two-pulse-inference-protocol" in prospective
+        assert b"sine-two-pulse-inference-result" not in prospective
+        assert b"sine-two-pulse-inference-result" in suffix
+        helper_path = "build/two-pulse-inference-freeze/experiment_support.py"
+        helper_tree = ast.parse(archive.read(helper_path))
+        declarations = {
+            node.targets[0].id: node.value
+            for node in helper_tree.body
+            if isinstance(node, ast.Assign) and isinstance(node.targets[0], ast.Name)
+        }
+        assert set(ast.literal_eval(declarations["PUBLIC_KEYS"])) == {
+            "bulk_angle_bounds",
+            "receiver_short_angle_bounds",
+            "form_radius",
+            "phase_radius",
+            "phase_increments",
+            "probe_duration",
+            "recorded_reading_bounds",
+            "readout_error_bound",
+            "readout_gain_bounds",
+        }
+        tree = ast.parse(
+            archive.read("build/two-pulse-inference-freeze/invert_public_packet.py")
+        )
+        calls = [
+            node
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "infer_sine_two_pulse_geometry_gain"
+        ]
+        assert len(calls) == 1
+        call = calls[0]
+        assert (
+            not call.args and len(call.keywords) == 1 and call.keywords[0].arg is None
+        )
+        kwargs = call.keywords[0].value
+        assert isinstance(kwargs, ast.Dict) and kwargs.keys == [None, None]
+        assert [node.id for node in kwargs.values] == ["inputs", "changes"]
+        variants = next(
+            node.value
+            for node in tree.body
+            if isinstance(node, ast.Assign)
+            and isinstance(node.targets[0], ast.Name)
+            and node.targets[0].id == "variants"
+        )
+        expected = {
+            "primary": None,
+            "false_angle": ("bulk_angle_bounds", "false_bulk_angle_bounds"),
+            "false_gain": ("readout_gain_bounds", "false_gain_bounds"),
+            "equal_inputs": ("phase_increments", "equal_phase_increments"),
+        }
+        assert {key.value for key in variants.keys} == set(expected)
+        for key, mapping in zip(variants.keys, variants.values):
+            if expected[key.value] is None:
+                assert mapping.keys == mapping.values == []
+            else:
+                input_key, control_key = expected[key.value]
+                assert len(mapping.keys) == 1 and mapping.keys[0].value == input_key
+                value = mapping.values[0]
+                assert isinstance(value, ast.Subscript)
+                assert value.value.id == "controls" and value.slice.value == control_key
+        imports = [
+            node.module for node in ast.walk(tree) if isinstance(node, ast.ImportFrom)
+        ]
+        assert "tnfr.physics.relational_sine_two_pulse_inference" in imports
+        assert not any(
+            name and any(word in name for word in ("readout", "capture", "dipole"))
+            for name in imports
+        )
+
+
+def _two_pulse_source(protocol, case, index):
+    edges = tuple(
+        sorted(
+            {tuple(sorted((o + j, o + (j + 1) % 9))) for o in (0, 9) for j in range(9)}
+            | {(0, 9), (1, 10)}
+        )
+    )
+    degrees = tuple(sum(i in edge for edge in edges) for i in range(18))
+    assert protocol["support"]["edges"] == edges
+    assert protocol["support"]["degrees"] == degrees
+    assert protocol["support"]["nodes"] == tuple(range(18))
+    expected = (
+        (Q(89, 64), Q(17, 24), Q(9, 8)),
+        (Q(91, 64), Q(19, 24), Q(11, 8)),
+        (Q(95, 64), Q(23, 24), Q(15, 8)),
+    )
+    assert (
+        case["bulk_angle"],
+        case["receiver_short_angle"],
+        case["hidden_gain"],
+    ) == expected[index]
+    assert case["common_form"] == Q(index + 2, 11)
+    assert case["common_phase"] == -Q(index + 2, 13)
+    assert case["hidden_offset"] == Q(2 * index + 3, 11)
+    raw_x = tuple(Q((i + 2) * (index + 2), 2**54) for i in range(18))
+    raw_phase = tuple(Q((5 * i + 3 * index) % 23 + 1, 2**54) for i in range(18))
+    for raw, label in ((raw_x, "form"), (raw_phase, "phase")):
+        assert case[f"raw_{label}_residual"] == raw
+        mean = sum(d * value for d, value in zip(degrees, raw)) / 40
+        centered = tuple(value - mean for value in raw)
+        assert case[f"{label}_residual"] == centered and all(centered)
+        assert sum(d * value for d, value in zip(degrees, centered)) == 0
+        assert sum(d * value**2 for d, value in zip(degrees, centered)) < Q(1, 2**80)
+    result = _materialized_inference_source(degrees, case)
+    assert result[-2] == case["bulk_angle"] - Q(5, 2**57)
+    return result
+
+
+@pytest.mark.parametrize("index", range(3))
+def test_two_pulse_full_state_history_and_both_retained_taylor_steps(
+    two_pulse_evidence, index
+):
+    protocol, saved, _, _ = two_pulse_evidence
+    case, entry = protocol["hidden_cases"][index], saved["cases"][index]
+    public = protocol["public_inputs_without_observation"]
+    degrees, form, phase, x2, y2, actual, actual_box = _two_pulse_source(
+        protocol, case, index
+    )
+    h, (a1, a2) = public["probe_duration"], public["phase_increments"]
+    assert h == Q(1, 2**21) and (a1, a2) == (Q(1, 4), Q(3, 4))
+    assert (
+        entry["absolute_window_starts"]
+        == protocol["numerics"]["window_starts"]
+        == (0, h)
+    )
+    assert (
+        entry["absolute_reading_times"]
+        == protocol["numerics"]["reading_times"]
+        == (0, h, 2 * h)
+    )
+    assert entry["actual_phase_jumps"] == (a1, a2 - a1)
+    assert protocol["numerics"]["windows"] == 2
+    assert protocol["numerics"]["steps_per_window"] == 1
+    assert protocol["numerics"]["picard_iteration_cap"] == 16
+    audit = entry["source_audit"]
+    assert audit["full_form_norm_squared_upper"] == x2 < public["form_radius"] ** 2
+    assert audit["full_phase_norm_squared_upper"] == y2 < public["phase_radius"] ** 2
+    assert audit["actual_pre_probe_arc_mean"] == actual
+    assert _inference_interval(entry["actual_arc_mean_source_box"]) == actual_box
+    assert audit["admitted"]
+    assert len(entry["responses"]) == 2
+    first, second = (value["report"] for value in entry["responses"])
+    q = tuple(Q(int(i == 4) - int(i == 5)) for i in range(18))
+    prior = form + phase
+    for response, jump in ((first, a1), (second, a2 - a1)):
+        assert response["degrees"] == degrees and response["dipole"] == q
+        initial = tuple(
+            map(
+                _inference_interval,
+                response["initial_form_bounds"] + response["initial_phase_bounds"],
+            )
+        )
+        assert initial == prior
+        post = prior[:18] + tuple(
+            value + jump * coefficient for value, coefficient in zip(prior[18:], q)
+        )
+        assert (
+            tuple(map(_inference_interval, response["post_event_initial_box"])) == post
+        )
+        assert response["phase_increment"] == jump
+        assert (
+            response["capacity"]
+            == protocol["complete_model"]["capacity"]
+            == (Q(1),) * 18
+        )
+        model = response["reference_model"]
+        assert (
+            model["epi_weight"] == protocol["complete_model"]["loss"] == Q(1023, 1024)
+        )
+        assert (
+            model["phase_weight"]
+            == protocol["complete_model"]["exchange"]
+            == Q(1, 1024)
+        )
+        assert model["storage_scale"] == protocol["complete_model"]["beta"] == 1
+        assert (
+            response["law"]
+            == protocol["complete_model"]["law"]
+            == "normalized_sine_reciprocal_exchange"
+        )
+        assert response["clock"] == "tau=e*t"
+        _assert_retained_full_box_taylor(response, protocol, h)
+        prior = tuple(map(_inference_interval, response["step"]["endpoint"]))
+    assert first["endpoint_readout_bounds"] == second["baseline_readout_bounds"]
+
+
+def _audit_two_pulse_inverse(inputs, result):
+    """Rebuild necessary interval constraints, without calling an inverse."""
+    from tnfr.mathematics._rational_interval import I, arg, cos, pi_interval, sin, sqrt
+
+    assert {key: result[key] for key in inputs} == inputs
+    x, y, h, noise = (
+        inputs[key]
+        for key in (
+            "form_radius",
+            "phase_radius",
+            "probe_duration",
+            "readout_error_bound",
+        )
+    )
+    b, c = inputs["bulk_angle_bounds"], inputs["receiver_short_angle_bounds"]
+    a1, a2 = inputs["phase_increments"]
+    gain = inputs["readout_gain_bounds"]
+    pi = pi_interval()
+    short, bulk = 4 * pi - 8 * I(*b), (2 * pi - I(*c)) / 8
+    nominal_gaps = (short, I(*b), I(*c), bulk, (short - I(*c)) / 2)
+    assert min((pi / 2).lo - gap.abs_max for gap in nominal_gaps) - y > 0
+    assert result["source_admitted"] and result["finite_response_certified"]
+    g, total = Q(1, 3069), 2 * h
+    qmax = (x + g * total * (4 + 4 * a2 + 2 * y)) / (1 - 4 * g * g * total * total)
+    error = 2 * h * qmax + 2 * g * h * y + 4 * g * g * total * h * qmax
+    assert result["finite_remainder_upper_bound"] == error
+    assert result["whole_window_form_norm_candidate"] == qmax
+    gamma = 1 / (1023 * pi)
+    scales = tuple(2 * gamma * h * sin(I(3 * a / 2)) for a in (a1, a2))
+    factor = I(0) if a1 == a2 else sin(I((a2 - a1) / 2))
+    assert tuple(map(_inference_interval, result["response_scale_bounds"])) == scales
+    assert _inference_interval(result["determinant_angle_factor_bounds"]) == factor
+    assert (
+        _inference_interval(result["determinant_bounds"])
+        == scales[0] * scales[1] * factor
+    )
+    rank = factor.lo > 0 and all(scale.lo > 0 for scale in scales)
+    assert result["rank_certified"] is rank and result["rank_deficient"] is (a1 == a2)
+    if not rank:
+        assert a1 == a2 and result["status"] == "unavailable"
+        assert (
+            result["inverse_matrix_bounds"] is result["raw_transformed_bounds"] is None
+        )
+        return "unavailable"
+    rows = (
+        (sin(I(a2 / 2)) / scales[0] / factor, -sin(I(a1 / 2)) / scales[1] / factor),
+        (-cos(I(a2 / 2)) / scales[0] / factor, cos(I(a1 / 2)) / scales[1] / factor),
+    )
+    assert (
+        tuple(
+            tuple(map(_inference_interval, row))
+            for row in result["inverse_matrix_bounds"]
+        )
+        == rows
+    )
+    midpoints = tuple((lo + hi) / 2 for lo, hi in inputs["recorded_reading_bounds"])
+    radii = tuple((hi - lo) / 2 for lo, hi in inputs["recorded_reading_bounds"])
+    differences = (midpoints[1] - midpoints[0], midpoints[2] - midpoints[1])
+    assert result["reading_midpoints"] == midpoints and result["reading_radii"] == radii
+    assert result["recorded_increment_midpoints"] == differences
+    centers = tuple(
+        -left * differences[0] - right * differences[1] for left, right in rows
+    )
+    coefficients = tuple((left, right - left, -right) for left, right in rows)
+    observed = tuple(
+        sum(
+            (radius + noise) * coefficient.abs_max
+            for radius, coefficient in zip(radii, row)
+        )
+        for row in coefficients
+    )
+    flow = tuple(
+        gain[1] * error * (left.abs_max + right.abs_max) for left, right in rows
+    )
+    assert tuple(map(_inference_interval, result["transformed_centers"])) == centers
+    assert result["transformed_observation_error_radii"] == observed
+    assert result["transformed_flow_error_radii"] == flow
+    assert (
+        tuple(
+            tuple(map(_inference_interval, row))
+            for row in result["transformed_reading_coefficients"]
+        )
+        == coefficients
+    )
+    raw = tuple(
+        center + I(-sensor - tail, sensor + tail)
+        for center, sensor, tail in zip(centers, observed, flow)
+    )
+    assert tuple(map(_inference_interval, result["raw_transformed_bounds"])) == raw
+    priors = (
+        I(*gain) * I(cos(I(b[1])).lo, cos(I(b[0])).hi),
+        I(*gain) * I(sin(I(b[0])).lo, sin(I(b[1])).hi),
+    )
+
+    def intersection(left, right):
+        lo, hi = max(left.lo, right.lo), min(left.hi, right.hi)
+        return None if lo > hi else I(lo, hi)
+
+    clipped = tuple(intersection(value, prior) for value, prior in zip(raw, priors))
+    if any(value is None for value in clipped):
+        status = "incompatible"
+    else:
+        angle = intersection(arg(*clipped), I(*b))
+        inferred_gain = intersection(sqrt(clipped[0] ** 2 + clipped[1] ** 2), I(*gain))
+        status = (
+            "incompatible"
+            if angle is None or inferred_gain is None
+            else "bounded_candidate"
+        )
+        if status == "bounded_candidate":
+            assert (
+                _inference_interval(result["nominal_bulk_angle_outer_bounds"]) == angle
+            )
+            assert (
+                _inference_interval(result["readout_gain_outer_bounds"])
+                == inferred_gain
+            )
+            assert _inference_interval(
+                result["actual_long_arc_mean_outer_bounds"]
+            ) == angle + I(-y / 8, y / 8)
+    assert result["status"] == status
+    return status
+
+
+def test_two_pulse_three_readings_public_constraints_and_all_stops(two_pulse_evidence):
+    protocol, saved, raw, manifest = two_pulse_evidence
+    public = protocol["public_inputs_without_observation"]
+    keys = set(public) | {"recorded_reading_bounds"}
+    assert len(keys) == 9 and set(protocol["public_packet"]["inverse_keys"]) == keys
+    assert public["form_radius"] == public["phase_radius"] == Q(1, 2**40)
+    assert public["readout_gain_bounds"] == (1, 2)
+    h, noise = public["probe_duration"], public["readout_error_bound"]
+    assert noise == Q(1, 2**60)
+    assert protocol["numerics"]["max_recorded_reading_halfwidth"] == noise
+    assert protocol["thresholds"] == {
+        "primary_actual_angle_width": Q(1, 1024),
+        "primary_gain_width": Q(1, 1024),
+    }
+    all_stops = {}
+    for index, (case, entry, original) in enumerate(
+        zip(protocol["hidden_cases"], saved["cases"], raw["cases"])
+    ):
+        _, form, phase, x2, y2, actual, actual_box = _two_pulse_source(
+            protocol, case, index
+        )
+        first, second = (response["report"] for response in entry["responses"])
+        errors = case["reading_errors"]
+        assert errors == (
+            Q(index - 1, 2**61),
+            Q(1 - index, 2**61),
+            Q((-1) ** index, 2**61),
+        )
+        raw_values = tuple(
+            _inference_interval(value)
+            for value in (
+                first["baseline_readout_bounds"],
+                first["endpoint_readout_bounds"],
+                second["endpoint_readout_bounds"],
+            )
+        )
+        assert raw_values[0].contains(-Q(index + 2, 2**54))
+        readings = tuple(
+            case["hidden_gain"] * value + case["hidden_offset"] + error
+            for value, error in zip(raw_values, errors)
+        )
+        differences = (readings[1] - readings[0], readings[2] - readings[1])
+        for name, values in (
+            ("raw_readout_bounds", raw_values),
+            ("recorded_reading_bounds", readings),
+            ("recorded_increment_bounds", differences),
+        ):
+            assert tuple(map(_inference_interval, entry["readings"][name])) == values
+        packet = entry["public_packet"]
+        assert set(packet) == {"schema", "inputs", "controls"}
+        assert packet["schema"] == protocol["public_packet"]["schema"]
+        assert packet["inputs"] == {
+            **public,
+            "recorded_reading_bounds": tuple(
+                (value.lo, value.hi) for value in readings
+            ),
+        }
+        assert packet["controls"] == protocol["controls"]
+        request = json.dumps(
+            original["public_packet"], sort_keys=True, allow_nan=False
+        ).encode("utf-8")
+        outputs = entry["inverse_outputs"]
+        assert outputs["request_sha256"] == hashlib.sha256(request).hexdigest()
+        primary, false_angle, false_gain, equal = (
+            outputs[key]["report"]
+            for key in ("primary", "false_angle", "false_gain", "equal_inputs")
+        )
+        statuses = tuple(
+            _audit_two_pulse_inverse({**packet["inputs"], **override}, report)
+            for report, override in (
+                (primary, {}),
+                (
+                    false_angle,
+                    {
+                        "bulk_angle_bounds": protocol["controls"][
+                            "false_bulk_angle_bounds"
+                        ]
+                    },
+                ),
+                (
+                    false_gain,
+                    {"readout_gain_bounds": protocol["controls"]["false_gain_bounds"]},
+                ),
+                (
+                    equal,
+                    {
+                        "phase_increments": protocol["controls"][
+                            "equal_phase_increments"
+                        ]
+                    },
+                ),
+            )
+        )
+        assert statuses == (
+            "bounded_candidate",
+            "incompatible",
+            "incompatible",
+            "unavailable",
+        )
+        nominal = _inference_interval(primary["nominal_bulk_angle_outer_bounds"])
+        actual_outer = _inference_interval(primary["actual_long_arc_mean_outer_bounds"])
+        gain_outer = _inference_interval(primary["readout_gain_outer_bounds"])
+        assert actual_outer.contains(actual) and actual_outer.contains(actual_box)
+        a1, a2 = public["phase_increments"]
+        q = tuple(Q(int(i == 4) - int(i == 5)) for i in range(18))
+        carried = tuple(map(_inference_interval, first["step"]["endpoint"]))
+        heat = (
+            2 * public["readout_gain_bounds"][1] * h * public["form_radius"] + 2 * noise
+        )
+        assert entry["phase_blind_recorded_bound"] == heat
+
+        def complete(response):
+            step = response["step"]
+            return (
+                response["status"] == "admitted"
+                and step["time"] == 0
+                and step["duration"] == h
+                and len(step["endpoint"]) == 36
+                and step["picard_interior_margin"] > 0
+            )
+
+        stops = {
+            "source_admitted": x2 < public["form_radius"] ** 2
+            and y2 < public["phase_radius"] ** 2
+            and public["bulk_angle_bounds"][0]
+            <= case["bulk_angle"]
+            <= public["bulk_angle_bounds"][1]
+            and public["receiver_short_angle_bounds"][0]
+            <= case["receiver_short_angle"]
+            <= public["receiver_short_angle_bounds"][1]
+            and all(case["form_residual"])
+            and all(case["phase_residual"])
+            and actual_box.contains(actual),
+            "first_complete_horizon": complete(first),
+            "phase_only_first_event": tuple(
+                map(_inference_interval, first["post_event_initial_box"])
+            )
+            == form
+            + tuple(value + a1 * coefficient for value, coefficient in zip(phase, q)),
+            "second_complete_horizon": complete(second),
+            "full_state_handoff": tuple(
+                map(
+                    _inference_interval,
+                    second["initial_form_bounds"] + second["initial_phase_bounds"],
+                )
+            )
+            == carried,
+            "phase_only_second_event": tuple(
+                map(_inference_interval, second["post_event_initial_box"])
+            )
+            == carried[:18]
+            + tuple(
+                value + (a2 - a1) * coefficient
+                for value, coefficient in zip(carried[18:], q)
+            ),
+            "shared_middle_readout": first["endpoint_readout_bounds"]
+            == second["baseline_readout_bounds"],
+            "sensor_admitted": public["readout_gain_bounds"][0]
+            <= case["hidden_gain"]
+            <= public["readout_gain_bounds"][1]
+            and max(map(abs, errors)) <= noise,
+            "numerical_reading_halfwidths": all(
+                value.radius <= noise for value in readings
+            ),
+            "public_only_packet": outputs["request_sha256"]
+            == hashlib.sha256(request).hexdigest(),
+            "primary_bounded_candidate": statuses[0] == "bounded_candidate",
+            "primary_rank_certified": primary["rank_certified"],
+            "nominal_angle_covered": nominal.contains(case["bulk_angle"]),
+            "actual_angle_covered": actual_outer.contains(actual_box),
+            "held_gain_covered": gain_outer.contains(case["hidden_gain"]),
+            "actual_angle_resolution": actual_outer.width
+            < protocol["thresholds"]["primary_actual_angle_width"],
+            "gain_resolution": gain_outer.width
+            < protocol["thresholds"]["primary_gain_width"],
+            "false_angle_prior_excluded": statuses[1] == "incompatible",
+            "false_gain_prior_excluded": statuses[2] == "incompatible",
+            "equal_amplitude_rank_abstention": statuses[3] == "unavailable"
+            and equal["rank_deficient"]
+            and not equal["rank_certified"],
+            "first_heat_alternative_excluded": differences[0].hi < -heat
+            or differences[0].lo > heat,
+            "second_heat_alternative_excluded": differences[1].hi < -heat
+            or differences[1].lo > heat,
+        }
+        assert entry["stopping_rule"] == stops and len(stops) == 22
+        all_stops.update({f"{case['id']}.{key}": value for key, value in stops.items()})
+    assert len(saved["cases"]) == 3 and len(all_stops) == 66
+    assert (
+        saved["frozen_stopping_rule"] == manifest["frozen_stopping_rule"] == all_stops
+    )
+    assert (
+        saved["frozen_stopping_rule_passed"]
+        is manifest["frozen_stopping_rule_passed"]
+        is all(all_stops.values())
+    )
+    assert (
+        saved["report"]["status"]
+        == manifest["status"]
+        == "certified_reserved_joint_inference"
     )
