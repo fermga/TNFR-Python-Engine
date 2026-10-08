@@ -25,6 +25,9 @@ docs/assets/relational_reversed_form_response/result.protocol.json -text
 docs/assets/relational_memory_response/result.prediction.json -text
 docs/assets/relational_memory_response/result.json -text
 docs/assets/relational_memory_response/result.sources.zip binary
+# This unchanged report uses CRLF; retain the bytes and ordinary space checks.
+docs/assets/sine_formed_classes/pair-v1.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+docs/assets/sine_formed_classes/response-v1.json -text
 theory/research/archive/EXECUTION_PLAN_PRE_FOUR_FOUNDATIONS_2026-09-26.txt -text -whitespace
 theory/research/archive/PORTFOLIO_PRE_FOUR_FOUNDATIONS_2026-09-26.txt -text -whitespace
 theory/research/archive/ROADMAP_PRE_FIVE_STAGE_2026-09-17.txt -text -whitespace

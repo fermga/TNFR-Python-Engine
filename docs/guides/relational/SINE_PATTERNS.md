@@ -4,6 +4,101 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-formed-class-response"></a>
+### Compare a common probe and recovery of the formed classes
+
+This assessment continues both original C9 source families after acquisition,
+applies one supplied mean-preserving phase jump, and bounds actual node-zero
+form after the same elapsed time. It also checks that each actual post-jump
+family remains within its own recovery domain.
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_formed_classes import (
+    assess_sine_formed_class_response,
+)
+from tnfr.sdk import relational_report_to_dict
+
+response = assess_sine_formed_class_response(
+    formation_time=100,
+    probe_time=200,
+    probe_duration=1,
+    phase_increment=Q(1, 100),
+    form_error_bound=Q(1, 10**10),
+    phase_error_bound=Q(1, 10**10),
+    readout_error_bound=Q(1, 10**10),
+    radius=Q(1, 12),
+)
+assert response.formation_certificate.status == "certified_two_formed_classes"
+assert response.recorded_contrast_bounds.lo > Q(1, 10**7)
+assert all(response.recovery_certified_by_class)
+assert response.status == "certified_formed_class_response"
+evidence = relational_report_to_dict(response)
+```
+
+Times are in `tau=e*t`, not laboratory seconds. The original source errors
+and their separate zero-sum constraints remain present through the warmup,
+probe and readout. No trajectory is reset to a target. The jump changes phase
+by `(1/100)*(e_0-(1/9)*1)` while form is unchanged; the same law then resumes.
+The source, support, law, probe amplitude and timing are supplied premises.
+
+Use `recorded_contrast_bounds` for the joint discriminator: it retains the
+common heat-response factor of both classes. Subtracting the marginal readout
+intervals loses that information and, for this frozen example, does not
+certify the declared `1e-7` threshold. Inspect `probe_work_bounds_by_class`
+separately from continuous loss. Recovery is admitted again for the actual
+post-jump families; an earlier unforced certificate alone cannot cover a
+new intervention.
+
+The generic status requires strict positive contrast, while this example
+also checks the larger frozen research threshold. `unavailable` denotes an
+uncertified sufficient obligation. This one-probe result establishes neither
+indefinite repeated-probe operation, autonomous event selection nor physical
+constituent identity. See the
+[contract](../../contracts/relational/SINE_PATTERNS.md#sine-formed-class-response)
+and [protocol and proof](../../../theory/nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-response).
+
+<a id="sine-formed-class-pair"></a>
+### Admit two formed attracting classes before comparing their responses
+
+This reader assesses fixed phase-flat preparations for the winding-one and
+winding-two targets on the same simple C9. Both families use the same
+positive-loss law and conserved means. Their source storage differs, although
+both must satisfy the same declared ceiling.
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_formed_classes import (
+    assess_sine_formed_class_pair,
+)
+from tnfr.sdk import relational_report_to_dict
+
+classes = assess_sine_formed_class_pair(
+    scaled_time=100,
+    form_error_bound=Q(1, 10**10),
+    phase_error_bound=Q(1, 10**10),
+    radius=Q(1, 12),
+)
+assert classes.status == "certified_two_formed_classes"
+assert all(classes.formation_certified_by_class)
+assert all(classes.source_budget_certified_by_class)
+assert classes.symmetry_inequivalent
+evidence = relational_report_to_dict(classes)
+```
+
+The time is `tau=e*t`, with `e=1023/1024`. Initial errors cover every fine
+coordinate but have zero sum separately in form and phase, so the admitted
+neighborhood is full dimensional on the sixteen-dimensional relative leaf.
+No additional common-origin uncertainty is hidden in the input widths.
+
+Inspect the separate source, geometry, storage and formation evidence before
+using the pair in another claim. `unavailable` means the sufficient analytic
+bounds did not certify admission. The assessment runs no trajectory and
+evaluates no response to a probe. Distinct attracting classes and a common
+measurement that distinguishes them are separate obligations. See the
+[contract](../../contracts/relational/SINE_PATTERNS.md#sine-formed-class-pair)
+and [protocol and proof](../../../theory/nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-pair).
+
 <a id="sine-formation-response"></a>
 ### Check formation and its inherited receiver signature together
 

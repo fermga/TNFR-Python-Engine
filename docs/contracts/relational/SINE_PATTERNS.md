@@ -4,6 +4,137 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-formed-class-response"></a>
+### A common supplied probe of two actually formed classes
+
+`assess_sine_formed_class_response(*, formation_time, probe_time,
+probe_duration, phase_increment, form_error_bound, phase_error_bound,
+readout_error_bound, radius)` in
+[`relational_sine_formed_classes.py`](../../../src/tnfr/physics/relational_sine_formed_classes.py)
+returns `SineFormedClassResponse`. It rebuilds the
+[pair-formation prerequisite](#sine-formed-class-pair) from primitive inputs,
+then bounds the continuation of those same complete source families. It
+accepts no incoming formation report, cached verdict or ideal-state reset.
+The [mathematical owner](../../../theory/nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-response)
+declares the full probe protocol and its proof obligations.
+
+The law, C9 support, capacities, rational source preparations and separate
+zero-sum initial error constraints remain those of the pair certificate.
+All times use `tau=e*t`. At `probe_time`, a supplied simultaneous phase jump
+adds `phase_increment*(e_0-(1/9)*1)` to the lifted phases and leaves form
+unchanged. It preserves the conserved means. The same unforced law resumes
+immediately, with no later inverse jump. The readout is actual signed form
+at node zero after `probe_duration`, with the supplied additive scalar error.
+This intervention is neither an autonomous event-selection law nor execution
+of a native semantic operator.
+
+All eight arguments are required and use shared exact/represented-real
+admission. Times, phase increment and all error widths are nonnegative;
+radius is positive. Require `formation_time <= probe_time`,
+`probe_time/5 <= 4096` and `2*probe_duration <= 4096`. Booleans and nonfinite
+physical scalars reject; exact fractions are retained. Zero increment or
+duration is admitted and does not by itself certify a response. Unsupported
+arithmetic domains reject; insufficient outward margins give unavailable
+evidence, not a proof of response equality or failed recovery.
+
+`formation_certificate` is freshly rebuilt. The `warmup_*` bounds retain
+original source errors and nonlinear history at the actual probe time.
+`warmup_scaled_form_remainder_upper_bounds` and
+`warmup_phase_error_upper_bounds` use the weighted norm `M=2*I`; the phase
+bound measures distance from the nominal proxy `v=gamma*x0`, not the target.
+`warmup_form_norm_upper_bounds` is the Euclidean form norm, while
+`warmup_target_phase_radius_upper_bounds` is the Euclidean phase distance
+from the target, including the proxy-to-target distance.
+`ideal_readout_bounds_by_class` is an analytic
+comparison, whose error is bounded in `response_error_upper_bounds`.
+`recorded_readout_bounds_by_class` includes that error and readout uncertainty.
+The class-two-minus-class-one `recorded_contrast_bounds` retains one common
+heat-response factor; subtracting the two marginal readout intervals generally
+loses this correlation and gives a weaker enclosure.
+
+`recovery_certified_by_class` requires strict acute-chart, post-jump radius
+and post-jump excess-storage margins for each actual family. These conditions
+invoke the existing positive-loss recovery theorem under the unchanged law.
+`probe_work_bounds_by_class` separately encloses the signed phase-potential
+jump about its nominal target value. The probe is not assumed passive: its
+work is distinct from continuous storage loss. No uncertainty in the supplied
+event amplitude, clock or timing is included in the initial-state widths.
+
+`response_certified` requires `recorded_contrast_bounds.lo > 0`.
+Joint `status="certified_formed_class_response"` additionally requires the
+fresh pair certificate and both recovery flags. Otherwise `status="unavailable"`
+retains named `unavailable_reasons`. The frozen research protocol has its own
+larger response threshold; that threshold is not the generic API's status rule.
+The direct schema is `tnfr.sine-formed-class-response.v1`; shared SDK projection
+and atomic export retain primitive inputs, separate margins and availability.
+This is a conditional mathematical probe of supplied preparations and law,
+not a physical measurement bridge or a proof of autonomous preparation.
+
+<a id="sine-formed-class-pair"></a>
+### Two formed attracting classes under one complete law
+
+`assess_sine_formed_class_pair(*, scaled_time, form_error_bound,
+phase_error_bound, radius)` in
+[`relational_sine_formed_classes.py`](../../../src/tnfr/physics/relational_sine_formed_classes.py)
+returns `SineFormedClassPair`. This detached analytic assessment concerns the
+two source families in the
+[mathematical owner](../../../theory/nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-pair).
+It accepts primitive budgets, not a captured graph, an observed endpoint or a
+cached formation verdict. It evaluates no probe or receiver response.
+
+The fixed support is a simple nine-node cycle, with unit held capacities and
+beta, effective coefficients `e=1023/1024`, `w=1/1024`, and structural clock
+`tau=e*t`. For target winding `k` equal to 1 or 2, nominal initial phases
+are zero and forms are `k*m*(j-4)`, where
+`m=(2046/9)*(355/113)**2` is exact rational preparation data. The target
+phases are mathematical `2*pi*k*(j-4)/9`; the rational source declaration
+does not replace pi in that target or in the complete law.
+
+Every initial form and phase lift admits an error bounded by the respective
+primitive width, subject to separate exact zero sums in the two channels.
+Errors may otherwise vary independently between classes. Thus every actual
+source has the same zero conserved form and phase means. Positive widths
+give a full sixteen-dimensional relative neighborhood while all eighteen
+fine coordinates remain represented. This is not an independent Cartesian
+box in the ambient coordinates, and it admits no additional unknown origin.
+`preparation_dimension` is 0, 8 or 16 according to the number of positive
+error widths; `full_relative_preparation` requires both to be positive.
+Nominal source storage is `36*k**2*m**2`, so the two costs differ; the common
+declared storage ceiling `10**9` is an upper budget, not an equal-energy constraint.
+
+All four arguments use shared original exact/represented-real admission.
+Time and error widths must be nonnegative and radius must be positive.
+Boolean and nonfinite physical scalars reject; exact fractions are retained.
+The analytic horizon also requires `scaled_time/5 <= 4096`, the shared
+exponential work limit. An unresolved sufficient inequality produces
+unavailable evidence, not a proof that formation fails.
+
+Capture concerns the actual full-law image of the original source set. The
+positive-loss recovery theorem then retains the attained sector and gives
+convergence to its attracting geometry, with no reset or change of law.
+The two targets must be inequivalent under the declared support, common-origin
+and sign/reflection symmetries. Opposite winding alone would not satisfy this
+obligation. Their distinct attracting geometries do not by themselves certify
+distinguishable responses to a common physical or mathematical probe.
+
+Class-indexed evidence follows `class_order=("winding_one","winding_two")`.
+`formation_certified_by_class` combines initial zero winding, the acute
+target chart and strict endpoint-radius and excess-storage margins.
+`source_budget_certified_by_class` is separate: each whole source set must
+fit the common storage budget. Joint `status="certified_two_formed_classes"`
+requires both formation flags, both source-budget flags and
+`symmetry_inequivalent`. Otherwise `status="unavailable"` retains named
+`unavailable_reasons`. Zero-containing outward margins do not certify.
+
+Export retains exact primitive data, separate class evidence and availability
+through the shared report projection and atomic writer; the direct schema is
+`tnfr.sine-formed-class-pair.v1`. Serialization neither
+authenticates an actual preparation nor selects the supplied support, source
+organization or positive-loss law. The
+[guide](../../guides/relational/SINE_PATTERNS.md#sine-formed-class-pair)
+shows the primitive call. Any subsequent interaction experiment needs its own
+declared probe, relaxation, work, readout and recovery obligations.
+
 <a id="sine-formation-response"></a>
 ### Prepared acquisition and actual receiver form
 

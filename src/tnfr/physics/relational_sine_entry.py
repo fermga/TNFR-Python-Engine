@@ -21,7 +21,7 @@ from .._exact_time import exact_or_represented_real
 from ..dynamics.relational import RelationalExchangeModel
 from ..mathematics._rational_interval import INTERVAL_METHOD, I, cos, pi_interval, sqrt
 from ..mathematics.krylov import exact_rank
-from ._sine_preparation import _sine_preparation
+from ._sine_preparation import _prepared_transit_radii, _sine_preparation
 from .phase_cycle_geometry import PhaseCycleGeometry
 from .relational_sine_comparison import (
     SineExchangeComparison,
@@ -1007,10 +1007,14 @@ def certify_sine_prepared_entry(
         raise ValueError("scaled_time must be nonnegative")
     horizon = tau / e
     decay = I(*_negative_exp_bounds(gap * tau))
-    scaled_form_radius = decay.hi * initial_norm.hi + eta.hi * forcing.hi * min(
-        tau, Q(1) / gap
+    scaled_form_radius, phase_radius = _prepared_transit_radii(
+        time=tau,
+        decay_upper=decay.hi,
+        gap_lower=gap,
+        initial_norm_upper=initial_norm.hi,
+        feedback_upper=eta.hi,
+        forcing_upper=forcing.hi,
     )
-    phase_radius = scaled_form_radius + eta.hi * tau * forcing.hi
     centered_form_bounds, centered_phase_bounds = [], []
     absolute_form_bounds, absolute_phase_bounds = [], []
     for index, value in enumerate(scaled_nominal):

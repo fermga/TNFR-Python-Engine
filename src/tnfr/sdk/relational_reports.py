@@ -197,6 +197,10 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
         SinePreparedEntry,
     )
     from ..physics.relational_sine_formation_response import SineFormationResponse
+    from ..physics.relational_sine_formed_classes import (
+        SineFormedClassPair,
+        SineFormedClassResponse,
+    )
     from ..physics.relational_sine_metric_connection import SineMetricConnection
     from ..physics.relational_sine_metric_forecast import SineSaddleMetricForecast
     from ..physics.relational_sine_pair import (
@@ -341,6 +345,8 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
             SinePairFiniteExchange,
             SinePairPersistentResponse,
             SineFormationResponse,
+            SineFormedClassPair,
+            SineFormedClassResponse,
             SinePairReceiverConfounding,
             SinePairReceiverDefect,
             SinePairReceiverReadout,

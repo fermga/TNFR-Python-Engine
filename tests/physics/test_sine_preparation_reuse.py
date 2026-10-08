@@ -1,6 +1,7 @@
 """Primitive admission and invocation-local reuse at the preparation boundary."""
 
 from dataclasses import replace
+from decimal import Decimal, localcontext
 from fractions import Fraction as Q
 
 import pytest
@@ -189,3 +190,35 @@ def test_fixed_consumer_rejects_original_inputs_before_domain_work(
     )
     with pytest.raises((TypeError, ValueError)):
         formation.assess_sine_formation_response(**(inputs | changes))
+
+
+@pytest.mark.parametrize("time", (Q(0), Q(1, 10), Q(3), Q(100)))
+@pytest.mark.parametrize("forcing_sign", (-1, 1))
+def test_transit_kernel_encloses_exact_constant_forcing_flow(time, forcing_sign):
+    # Independent scalar solution of z'=-2z+eta*f, theta'=2z. This
+    # exercises both transient cancellation and reinforcing forcing without
+    # replacing a full nonlinear trajectory by sampled endpoints.
+    from tnfr.physics.reversible_eigenmode_reference import _negative_exp_bounds
+
+    decay_upper = _negative_exp_bounds(2 * time)[1]
+    form_radius, phase_radius = preparation._prepared_transit_radii(
+        time=time,
+        decay_upper=decay_upper,
+        gap_lower=Q(2),
+        initial_norm_upper=Q(3),
+        feedback_upper=Q(1, 5),
+        forcing_upper=Q(7),
+    )
+
+    def decimal(value):
+        return Decimal(value.numerator) / Decimal(value.denominator)
+
+    with localcontext() as context:
+        context.prec = 90
+        elapsed = decimal(time)
+        decay = (-2 * elapsed).exp()
+        stationary_form = Decimal(forcing_sign * 7) / 10
+        form = stationary_form + (3 - stationary_form) * decay
+        phase = 2 * stationary_form * elapsed + (3 - stationary_form) * (1 - decay)
+        assert abs(form) <= decimal(form_radius)
+        assert abs(phase - 3) <= decimal(phase_radius)

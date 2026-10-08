@@ -21,24 +21,118 @@ composite's interactions under justified complete nodal laws? The route is
 -> independent observation**. A sufficient representation does not independently
 justify the law that evolves it.
 
-**No research campaign is active.** The latest
-[formation-and-response admission](#current-g3-gate) is closed in its stated
-scope. Resume only after naming a new discriminating premise or downstream
-need and declaring its F1-F4 obligations. Completed controls are reusable
-evidence, not work to repeat. Physical constituent emergence and independent
-law selection remain open; no empirical response has passed complete physical
-admission.
+**The formation, distinct-response and recovery gate is closed:** one
+[common supplied probe](#current-g3-gate) distinguishes the two formed classes
+under the frozen protocol, while both actual post-jump families recover their
+own attracting geometry. The [pair-admission prerequisite](#inequivalent-formed-classes-admission)
+remains a separate valid certificate. The single next queued admission is
+[uniform maintenance under repeated probes](#repeated-probe-maintenance-admission);
+its dwell and prospective evaluation are not yet admitted. Completed controls
+are reusable evidence, not work to repeat; no new probe or data campaign is
+active. Physical constituent emergence and independent law selection remain
+open; no empirical
+response has passed complete physical admission.
 
 <a id="2-one-status-board-and-dependency-chain"></a>
 ## Queue status
 
 | Status | Scope and owner |
 | --- | --- |
-| Latest closed gate | [Prepared acquisition and actual receiver response](#current-g3-gate) |
+| Latest closed gate | [Formation, common-probe discrimination and recovery](#current-g3-gate) under one complete law and support |
+| Closed prerequisite | [Two formed attracting classes](#inequivalent-formed-classes-admission), with matched conserved means and distinct preparation costs under one budget |
+| Next queued admission, not active | [Uniform repeated-probe maintenance](#repeated-probe-maintenance-admission); derive a sufficient return-map bound before fixing a common dwell and evaluating a new protocol |
 | Deferred | [Named dependencies and reopening conditions](#deferred-work-and-reopening-conditions); no parallel solver, uniqueness or data campaign |
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge); source-specific obstructions remain in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
+<a id="inequivalent-formed-classes-admission"></a>
+## Closed admission: two formed attracting classes under one complete law
+
+The new obligation is to distinguish acquired collective identities, rather
+than retain a transient memory of different preparations in one attracting
+class. The previous doubled-C5 result sends its two nominal sources to the
+same target and conserved means. The existing
+[whole-set recovery theorem](../nodal/SINE_PATTERN_RECOVERY.md#sine-cycle-recovery)
+therefore precludes a permanent nominal receiver contrast in that comparison;
+its successful finite response remains valid.
+
+The [frozen protocol and evaluated certificate](../nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-pair)
+admit both winding-one and winding-two attracting geometries on the same
+simple C9 under one positive-loss normalized-sine law. Whole source families
+around phase-flat nominal preparations acquire their respective geometry at
+the declared time and converge under the unchanged law. Zero-sum perturbations
+retain all fine coordinates in sixteen-dimensional relative neighborhoods
+with matched conserved means.
+Both complete source families meet the common storage ceiling; their initial
+storage costs differ. The [contract](../../docs/contracts/relational/SINE_PATTERNS.md#sine-formed-class-pair)
+keeps geometric formation, source budgets and symmetry inequivalence separate.
+
+The source, support and loss remain supplied. This result establishes neither
+an interaction discriminator nor autonomous class selection. The pair-admission
+certificate contains no probe; the following gate owns that new intervention.
+The earlier doubled-C5 response coefficients do not transfer to this different
+support.
+
 <a id="current-g3-gate"></a>
+<a id="common-probe-admission"></a>
+## Closed gate: formed classes, common-probe response and recovery
+
+The [frozen protocol and evaluated certificate](../nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-response)
+meet the joint stopping rule: the two whole source families form, give
+separated actual node-zero form responses to one common supplied phase jump,
+and recover their own attracting geometry afterward. The original C9 sources,
+positive-loss law, support, capacities, clock and zero-sum residual constraints
+are retained. Actual trajectories continue from acquisition through the probe
+and readout, with no reset to ideal targets.
+
+The [contract](../../docs/contracts/relational/SINE_PATTERNS.md#sine-formed-class-response)
+keeps the fresh formation prerequisite, correlated response enclosure, signed
+jump work and post-jump recovery evidence separate. Both actual post-jump
+families satisfy a new radius/storage admission; the previous unforced
+certificate is not simply extended across the intervention. The declared
+response threshold is met while retaining original preparation uncertainty
+and independent readout errors.
+
+**Resumption boundary:** source organization, support, constitutive law and
+the external phase jump with its storage work remain supplied. This is one
+declared probe, not autonomous event selection, a native semantic operator or
+a guarantee for indefinite repeated interventions. The result supplies a
+conditional formation-to-interaction example; physical constituent identity,
+an independent law restriction and the origin of the preparation remain open.
+Any further gate needs its own named dependency and prospective F1-F4 protocol.
+No horizon search, class substitution, repeated-probe or data campaign is active.
+
+<a id="repeated-probe-maintenance-admission"></a>
+## Queued admission: uniform response and identity under repeated probes
+
+Obtain an explicit certified common dwell, return inclusion and per-cycle
+response/work bounds for the same two formed C9 classes under repetitions of
+the existing supplied probe. The unresolved evidence is a quantitative
+uniform certificate, rather than qualitative existence of sufficiently long
+relaxation. A long finite pulse train does not establish that certificate.
+The original formation and one-probe certificates remain unchanged.
+
+| Obligation | Required admission |
+| --- | --- |
+| F1: complete state and preparation | Retain the same support, capacities, conserved means and whole source-error families. Connect their actual first post-jump states to class-specific pre/post-probe sets with nonempty relative interior; retain every fine coordinate and uncertainty, without resetting to targets |
+| F2: flow, jump and clock | Keep the complete positive-loss law, mean-preserving phase jump and existing readout/error premises. Derive a sufficient finite dwell common to both classes and longer than the readout offset; account for cumulative supplied jump work and intervening continuous loss separately |
+| F3: uniform maintenance and discrimination | Prove that flow followed by the next jump returns each admitted post-probe set into itself: `J o Phi_D(K_k^+)` is contained in `K_k^+`. Before each jump, the flow must return to its admitted pre-probe neighborhood, with whole-window identity bounds. Retain shared response correlations and prove one strictly positive recorded class contrast per cycle, including accumulated state deviations |
+| F4: prospective decision and stopping | First derive the analytic sufficient bounds, then declare the sets, dwell, uniform contrast margin and numerical budget before evaluating the reserved certificate. Close with an invariant return-map certificate, an explicitly insufficient bound or a proved obstruction; no dwell sweep or finite-run substitute |
+
+The [existing recovery theorem](../nodal/SINE_PATTERN_RECOVERY.md#sine-cycle-recovery)
+supplies qualitative convergence and local exponential recovery under its
+premises. It does not provide a numerical uniform dwell for these sets or
+justify another jump by itself. Recovery between probes means return to the
+admitted pre-probe neighborhood, not attainment of exact equilibrium in finite
+time; asymptotic convergence to the target applies if interventions stop.
+A failed sufficient inequality is unavailable evidence; only an independent
+exclusion proves impossibility. If a strictly positive uniform per-probe work
+lower bound is established, indefinitely repeated operation requires unbounded
+cumulative supplied work. It is not finite-budget autonomous maintenance.
+The intervention remains supplied, without autonomous probe selection or a
+physical identification. This queued admission has no frozen dwell, evaluated
+response or active numerical campaign. No practical-speed or resource-efficiency
+claim follows without an independently justified maximum dwell or work allowance.
+
 <a id="formation-response-admission"></a>
 ## Closed admission: prepared acquisition and actual receiver response
 
@@ -51,7 +145,8 @@ owns the separate formation, retention and response admissions.
 
 **Resumption boundary:** the positive-loss law, support and organized initial
 form profile remain supplied premises. The receiver signature is finite;
-maintenance of distinct response classes has not been established.
+this doubled-C5 comparison does not establish maintenance of distinct
+response classes.
 Earlier [conservative persistence and response](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-persistent-response)
 retain their own model: a two-sided invariant family cannot be entered from
 outside under the same unique flow. The positive-loss acquisition result
@@ -143,7 +238,7 @@ establish Josephson physics, particles or critical scaling.
 
 ## Stopping, provenance and resumption
 
-Read the active gate together with its actual proof, implementation and
+Read the selected gate together with its actual proof, implementation and
 evidence. Reuse the [source audit](archive/README.md#four-foundation-source-audit)
 when an older hypothesis matters; its label is not proof. Retain frozen
 declarations, protocols, source archives, responses and verdicts unchanged.

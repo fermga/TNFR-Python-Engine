@@ -97,6 +97,20 @@ source information and storage remain preparation costs. Geometric retention
 with a finite response signature does not establish autonomous preparation,
 distinct persistent constituents or physical identification.
 
+The [two formed winding classes](nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-pair)
+separately establish prepared acquisition of symmetry-inequivalent attracting
+geometries under one fixed support and complete law. Their source families
+retain all fine coordinates on a common conserved-mean leaf, with distinct
+preparation costs under one budget. A
+[common supplied probe](nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-response)
+then distinguishes their actual form responses while both post-probe families
+recover their own geometry, retaining the original preparation uncertainty
+and accounting separately for the intervention's storage work. This gives a
+conditional example of acquired organization with a distinguishable interaction
+response. It derives neither the organized source preparation, autonomous
+probe selection nor a physical constituent identity, and it does not certify
+indefinite repetition of the intervention.
+
 A collective observation/measurement map is eventually needed to test that
 hypothesis, but it may act on a pattern and its interaction with a measurement
 system rather than on one primitive coordinate. Its latent-state assumptions
@@ -423,9 +437,9 @@ Thus the useful synthesis is **retained internal dynamics plus ordered
 contact geometry**, with a compatible full-state maintenance budget. It
 does not require adding a new primitive pulse, treating resonance as an
 autonomous input, or assuming that a larger NFR erases its constituents.
-The [active admission gate](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-owns the next bounded question and any reopening of a physical preparation
-or operational formation dependency.
+The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns the current gate's status, the next admitted question and any reopening
+of a physical preparation or operational formation dependency.
 
 ## 2. Geometry and diagnostics do not close the dynamics
 

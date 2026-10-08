@@ -25,7 +25,11 @@ from ..mathematics._rational_interval import (
     sin,
     sqrt,
 )
-from ._sine_preparation import _sine_domain, _sine_preparation_from_rows
+from ._sine_preparation import (
+    _prepared_duhamel_bounds,
+    _sine_domain,
+    _sine_preparation_from_rows,
+)
 from .phase_cycle_geometry import _derive
 from .reversible_eigenmode_reference import _MAX_RATIONAL_EXPONENT, _negative_exp_bounds
 
@@ -86,39 +90,6 @@ def _poisson_geometry():
         if not exact_symmetric_semidefinite(shifted):
             raise ArithmeticError("the fixed mean-free semigroup bound failed")
     return poisson
-
-
-def _prepared_duhamel_bounds(
-    *,
-    time,
-    decay_upper,
-    gap_lower,
-    rate_upper,
-    forcing_upper,
-    initial_norm_upper,
-    scaled_form_error_upper,
-    phase_error_upper,
-    feedback_upper,
-):
-    """Bound a prepared scaled flow around its nominal Poisson profile.
-
-    Callers admit a self-adjoint mean-free generator with the supplied gap,
-    upper rate and global forcing/Lipschitz bounds. All arguments are exact
-    nonnegative bounds. The returned values enclose the weighted scaled-form
-    remainder and phase distance from the nominal initial scaled form.
-    This estimate retains the full transient and forcing history.
-    """
-    initial_error = scaled_form_error_upper + phase_error_upper
-    history = feedback_upper * forcing_upper * (time + 1 / gap_lower)
-    remainder = decay_upper * (
-        initial_norm_upper
-        + scaled_form_error_upper
-        + feedback_upper * forcing_upper / gap_lower
-    ) + feedback_upper * rate_upper * (
-        initial_norm_upper * time * decay_upper + (initial_error + history) / gap_lower
-    )
-    phase_error = decay_upper * initial_norm_upper + initial_error + history
-    return remainder, phase_error
 
 
 def _proxy_fields(preparation, poisson):
