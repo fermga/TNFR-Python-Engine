@@ -4,6 +4,90 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-aperture-inference"></a>
+### Necessary inference from four finite-aperture averages
+
+`infer_sine_geometry_gain_clock_aperture(*, bulk_angle_bounds,
+receiver_short_angle_bounds, form_radius, phase_radius, phase_increments,
+probe_duration, averaged_reading_bounds, readout_error_bound,
+readout_gain_bounds, clock_rate_bounds, clock_rate_derivative_bound)` in
+[`relational_sine_aperture_inference.py`](../../../src/tnfr/physics/relational_sine_aperture_inference.py)
+returns `SineApertureInference`. All eleven primitive arguments are mandatory.
+The [aperture theorem](../../../theory/nodal/SINE_APERTURE_INFERENCE.md#sine-aperture-inference)
+retains the [clock-drift source, event and clock domains](#sine-clock-drift-inference),
+including `H=probe_duration>0`, `rho_plus*H<=1/2`, the complete original
+source uncertainty and one held gain and offset on `[0,2*H]`.
+
+`averaged_reading_bounds` contains four ordered finite endpoint pairs.
+They enclose recorded scalar averages over `[0,H/3]`, `[H/3,2H/3]`,
+`[2H/3,H]` and `[H,2H]`. Each sensor kernel is nonnegative and constant
+on its declared interval, with integral one in observation time. Thus
+the first three averages use factor `3/H` and the last uses `1/H`.
+The fixed kernel, normalization and event alignment are independent
+premises, not quantities fitted or calibrated by this API. No configurable
+aperture, unknown timing shift or kernel perturbation is admitted.
+
+Each average has one additive error bounded by `readout_error_bound` in
+recorded units. This is not an error per integration sample. The four
+interval widths retain their separate numerical/observation provenance.
+The offset remains common and normalization preserves it. The phase events
+remain at `0,H`; form is continuous through them, while both full state rows
+continue evolving. The sensor is passive and uses no unspecified prehistory
+or post-horizon state. Shared exact/represented scalar and interval admission
+rejects malformed pairs, Booleans, nonfinite values and nonzero
+materialization loss.
+
+The adapter first bounds the averaged clock discrepancy against the
+constant first-window mean reference. The first three reference averages
+determine a unique quadratic moment reconstruction at virtual times
+`0,H/2,H`. The last virtual reading is twice the fourth average minus the
+reconstructed `H` value. The first-window cubic remainder and the separate
+second-window interpolation remainder respect the event at `H`; a smooth
+Taylor remainder is not continued across that jump. The derivative bounds
+are in structural time on each continuous window; the positive `C1`
+observation clock is not assumed to have a third derivative.
+
+`reconstruction_matrix`, `aperture_windows`, `virtual_observation_times`,
+`averaged_reading_midpoints` and `averaged_reading_radii` retain the exact
+observation map. `projected_numerical_radii`,
+`projected_sensor_error_radii`, `projected_clock_discrepancy_candidates`
+and `reconstruction_error_candidates` keep the four error sources separate.
+The original-error coefficients of the curvature and embedded inverse
+are exposed as `original_curvature_average_coefficients` and
+`embedded_inverse_average_coefficients`. They retain the common reading
+history before the conservative rectangular projection; that projection
+does not assert independent errors or joint realizability of its corners.
+
+`point_reference_reading_bounds` encloses auxiliary point constraints for
+one fresh `reference_envelope` from the curvature owner. Its sensor error
+is exactly zero because the four original sensor errors are already
+included in those bands. These virtual points are not newly measured
+samples, an evaluated constant-clock trajectory or a reset of the source.
+Do not add the original sensor allowance to the child a second time.
+
+Check `source_admitted`, `clock_drift_transfer_certified`,
+`aperture_reconstruction_certified`, `finite_curvature_bound_certified`
+and `inverse_enclosure_available` before consuming bounds. Form, readout
+speed, second/third derivatives, clock discrepancy and reconstruction
+have explicit candidate fields; certified `_upper_bound` or `_upper_bounds`
+fields require the original source premise. `nominal_bulk_angle_outer_bounds`,
+`actual_long_arc_mean_outer_bounds`, `effective_gain_outer_bounds`,
+`readout_gain_outer_bounds` and
+`first_window_mean_clock_rate_outer_bounds` are necessary marginals of
+the unchanged original source and `J=G*tau(H)/H`. They do not recover
+an instantaneous clock profile or certify a compatible parameter tuple.
+
+Malformed inputs raise. `bounded_candidate` means necessary projections
+are available; `incompatible` is a strict necessary exclusion; `unavailable`
+retains failed source, rank or arithmetic evidence without proving physical
+nonidentifiability. Zero drift removes only the clock discrepancy, not the
+finite-aperture reconstruction error. Equal sample/event clock exposures
+alone do not imply equal interval averages. This detached calculation
+evaluates no trajectory or reserved response. Export uses
+`tnfr.sine-aperture-inference.v1` with the shared SDK projection and atomic
+writer. See the [workflow](../../guides/relational/SINE_PATTERNS.md#sine-aperture-inference)
+for input admission without a response campaign.
+
 <a id="sine-clock-drift-inference"></a>
 ### Mean clock rate with bounded drift and sampled exposure
 

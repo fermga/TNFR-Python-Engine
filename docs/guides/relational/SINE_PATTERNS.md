@@ -4,6 +4,74 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-aperture-inference"></a>
+### Infer from interval averages with a declared sensor kernel
+
+Use `infer_sine_geometry_gain_clock_aperture` from
+[`relational_sine_aperture_inference`](../../../src/tnfr/physics/relational_sine_aperture_inference.py)
+when each recorded value is a normalized boxcar average. The four ordered
+windows are `[0,H/3]`, `[H/3,2H/3]`, `[2H/3,H]` and `[H,2H]` in observation
+time. Their widths are fixed fractions of the horizon. The
+[contract](../../contracts/relational/SINE_PATTERNS.md#sine-aperture-inference)
+replaces the drift adapter's `recorded_reading_bounds` with mandatory
+`averaged_reading_bounds`; the other ten source, input, sensor and clock
+arguments retain their meanings.
+
+Supply independently justified kernel normalization, interval alignment,
+held gain/offset and bounded positive clock drift. The function does not
+estimate a sensor kernel or select a physical acquisition time. The
+per-reading error applies once to each integrated scalar, separately
+from the width of its recorded interval. All thirty-six state coordinates
+continue through the phase events at `0,H`; none of the four averages
+uses data outside `[0,2H]`.
+
+The adapter reconstructs necessary virtual point bands by the known
+quadratic moments of the first three averages and a separate second-window
+bound. `reference_envelope` applies the existing curvature inverse to those
+auxiliary bands. Inspect `projected_numerical_radii`,
+`projected_sensor_error_radii`, the projected clock discrepancy and
+reconstruction error independently. The child receives zero additional
+sensor error, because the original errors have already entered the bands.
+Virtual readings are not actual point samples, and their rectangular bounds
+can lose correlations among the original four errors. The reconstructed
+initial constraint consumes all three first-window averages; it is not
+an observation available at time zero.
+
+This synthetic equal-input control checks conditional method abstention;
+the zero intervals are placeholders, not averaged response data:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_aperture_inference import infer_sine_geometry_gain_clock_aperture
+
+control = infer_sine_geometry_gain_clock_aperture(
+    bulk_angle_bounds=(Q(11, 8), Q(3, 2)),
+    receiver_short_angle_bounds=(Q(2, 3), Q(1)),
+    form_radius=Q(1, 2**40),
+    phase_radius=Q(1, 2**40),
+    phase_increments=(Q(1, 4), Q(1, 4)),
+    probe_duration=Q(1, 2**22),
+    averaged_reading_bounds=((Q(0), Q(0)),) * 4,
+    readout_error_bound=Q(0),
+    readout_gain_bounds=(Q(1), Q(2)),
+    clock_rate_bounds=(Q(1, 2), Q(2)),
+    clock_rate_derivative_bound=Q(1, 1024),
+)
+print(control.status)  # unavailable
+```
+
+Read `first_window_mean_clock_rate_outer_bounds` as a necessary bound on
+`tau(H)/H`, and `effective_gain_outer_bounds` as a bound on `G*tau(H)/H`.
+The actual angle remains the original-source long-arc mean. Neither the
+profile nor joint parameter realizability is reconstructed. Zero drift
+leaves aperture error present. The
+[theorem](../../../theory/nodal/SINE_APERTURE_INFERENCE.md#sine-aperture-inference)
+separates the retained curvature signal from its finite-error budget. Its
+[conditioning bound](../../../theory/nodal/SINE_APERTURE_INFERENCE.md#sine-aperture-conditioning)
+keeps informative necessary marginals at these fixed aperture fractions;
+reducing `H` also amplifies fixed sensor error after normalization.
+This example starts no reserved evaluation or physical-calibration campaign.
+
 <a id="sine-clock-drift-inference"></a>
 ### Bound a mean clock rate when the clock can drift
 

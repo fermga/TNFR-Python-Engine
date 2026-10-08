@@ -2461,6 +2461,12 @@ def test_prepared_composition_nested_label_admission(
             "infer_sine_geometry_gain_clock_drift",
             None,
         ),
+        (
+            "relational_sine_aperture_inference",
+            "SineApertureInference",
+            "infer_sine_geometry_gain_clock_aperture",
+            None,
+        ),
     ],
 )
 def test_reduced_port_sdk_wiring_does_not_evaluate_research(

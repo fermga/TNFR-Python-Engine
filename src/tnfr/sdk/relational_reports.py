@@ -170,6 +170,7 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
         RelationalSampleJetBudget,
     )
     from ..physics.relational_phase_storage import SaddleStorageDiscriminator
+    from ..physics.relational_sine_aperture_inference import SineApertureInference
     from ..physics.relational_sine_bridge_memory import SineBridgeMemoryAssessment
     from ..physics.relational_sine_budget import SineBudgetConsensus
     from ..physics.relational_sine_clock_drift_inference import SineClockDriftInference
@@ -392,6 +393,7 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
             SineClockInference,
             SineCurvatureInference,
             SineClockDriftInference,
+            SineApertureInference,
             SineFormedClassMaintenance,
             SineFormedClassPair,
             SineFormedClassResponse,

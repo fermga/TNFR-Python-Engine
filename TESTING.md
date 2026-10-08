@@ -166,6 +166,20 @@ this is an implementation check, not a reserved response or proof of
 instantaneous-profile recovery. Do not treat the widened reference readings
 as physical observations or a new independently sampled noise channel.
 
+For finite-aperture observation, select
+[`test_sine_aperture_inference.py`](tests/physics/test_sine_aperture_inference.py)
+with the clock-drift and curvature suites. Reconstruct the fixed boxcar
+moments and all four virtual-reading rows independently; test constant,
+linear and quadratic exactness, cubic remainders and the separate
+post-event second-window error. Keep all four primitive averaged pairs,
+their original sensor-error map, clock transfer and numerical widths
+distinct. The curvature child must receive zero additional sensor error.
+Check source-gated bounds, zero-drift aperture error, necessary marginal
+projection and method abstention. Independent full-state integration of
+the averaging law is an implementation control, not a reserved response
+or a calibration of the sensor kernel. Point-sample exposure equivalence
+alone must not be reused as equality of interval averages.
+
 When changing the independent full-state response generator, select the
 [direct source-box Taylor suite](tests/mathematics/test_validated_box_taylor.py)
 and [two-port readout suite](tests/physics/test_sine_two_port_readout.py).
@@ -183,6 +197,7 @@ python -m pytest tests/mathematics/test_validated_box_taylor.py tests/physics/te
 python -m pytest tests/physics/test_sine_clock_inference.py tests/physics/test_sine_two_pulse_inference.py tests/sdk/test_relational_reports.py -q
 python -m pytest tests/physics/test_sine_curvature_inference.py tests/physics/test_sine_clock_inference.py tests/physics/test_sine_two_pulse_inference.py -q
 python -m pytest tests/physics/test_sine_clock_drift_inference.py tests/physics/test_sine_curvature_inference.py tests/physics/test_sine_clock_inference.py tests/sdk/test_relational_reports.py -q
+python -m pytest tests/physics/test_sine_aperture_inference.py tests/physics/test_sine_clock_drift_inference.py tests/physics/test_sine_curvature_inference.py tests/sdk/test_relational_reports.py -q
 python -m pytest tests/physics/test_sine_formed_evidence.py tests/physics/test_sine_curvature_evidence.py tests/physics/test_sine_clock_drift_evidence.py -q
 ```
 
