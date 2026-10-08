@@ -4,6 +4,130 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-two-port-probe"></a>
+### Supplied donor pulse, finite transmission and identity recovery
+
+`assess_sine_two_port_probe(*, form_radius, phase_radius, pulse_amplitude,
+probe_duration, readout_error_bound, contrast_threshold, work_allowance)` in
+[`relational_sine_two_port_probe.py`](../../../src/tnfr/physics/relational_sine_two_port_probe.py)
+returns `SineTwoPortProbe`. All seven primitives are mandatory. Shared scalar
+admission preserves exact rationals and otherwise applies the finite
+represented-real contract; Boolean, nonfinite and nonzero-underflow inputs
+reject. The form and phase radii, readout error, contrast threshold and work
+allowance are nonnegative. Pulse amplitude is strictly positive and
+`0<probe_duration<=1` in the fast structural clock `tau=e*t`. The phase
+radius uses radians; form, readout and work retain their model units.
+
+The endpoint API is conditional: `form_radius=X` bounds the full
+degree-metric norm of centered form, and `phase_radius=Y` bounds the phase
+distance from the implicit joint equilibrium on the same mean leaf. It
+accepts neither a saved capture report nor a source-acquisition flag.
+Supplying these numbers does not establish that an arbitrary trajectory
+reached the endpoint ball. The
+[probe theorem](../../../theory/nodal/SINE_TWO_PORT_PROBE.md#sine-two-port-probe)
+and the separately matched
+[capture handoff](../../../theory/nodal/SINE_TWO_PORT_CAPTURE.md#sine-two-port-capture-result)
+give the declared original preparation its finite source-to-probe chain.
+The target geometry is freshly admitted with the fixed compatibility proof.
+
+The actual intervention adds one uniform form increment to all nine donor
+nodes, leaving every phase and support edge unchanged. It is a supplied
+hybrid jump, with a separate storage-work allowance. The same complete
+unforced normalized-sine law then resumes on the two-port support, with
+held capacities, `e=1023/1024`, `w=1/1024`, `gamma=1/(1023*pi)` and
+`sigma=gamma**2*tau`. The jump changes the global degree-weighted form
+mean by half the pulse amplitude and preserves the phase mean. Recovery
+therefore concerns the unchanged joint shape on the new form-mean leaf.
+
+The observation is the receiver's degree-weighted mean form increment
+between the pre-pulse state and the fixed elapsed endpoint. The matched
+unjoined control consists of two separate C9 rings evolving independently
+from the same original preparation under the same coefficient and clock
+rules, followed by the same donor pulse. Its receiver mean is exactly
+conserved. The same observation rule uses receiver degree mass `20` in
+the joined model and `18` in the unjoined model; its coefficient vectors
+are consequently different. No contact is removed from an acquired state,
+and no mean, residual or hidden coordinate is reset.
+Four scalar readings form the contrast: before and after in each model.
+Their independently bounded errors contribute at most four times
+`readout_error_bound`; no error cancellation is assumed.
+
+The reserved protocol uses the actual capture endpoint at `sigma=1025`,
+equivalently `tau=1025*1023**2*pi**2`, with endpoint allowances
+`X=1/8192`, `Y=1/1024`. It supplies pulse `1/2048`, elapsed fast time
+`1/4`, per-readout error `1/67108864`, strict recorded contrast above
+`1/262144` and work allowance `1/2000000`. The preceding full family
+retains all thirty-six independent original errors `1/65536`; the endpoint
+allowances do not redefine that preparation. The disconnected control uses
+the same original elapsed structural time. No laboratory clock or sensor
+calibration is supplied by these numerical choices.
+
+`target_admitted`, `response_certified`, `work_certified`,
+`joined_identity_certified` and `recovery_certified` expose the separate
+proof obligations. Joint status `certified_probe` requires every requested
+obligation; otherwise it is `unavailable`. Failed sufficient margins do
+not demonstrate trajectory failure. `recorded_contrast_bounds` includes
+all four readout errors; `response_margin` must be strictly positive.
+`joined_work_bounds` retains both actual event-work endpoints, while
+`work_allowance_margin` may equal zero. Post-event radius and capture
+storage margins must both be strictly positive. `positive_supplied_work_certified`
+is a separate statement about the lower work bound, not the passivity of the
+event. The whole-window form and phase candidates become certified bounds
+only after target admission; unavailable conditional fields remain `None`.
+The direct report schema is
+`tnfr.sine-two-port-probe.v1`, with shared SDK exact projection and atomic
+export. Projection alone neither authenticates source acquisition nor
+installs the declared intervention on a live network.
+
+The original frozen assessment attempt failed during control-report export
+after executing the primary assessment; it saved no complete response.
+The [retained result](../../../theory/nodal/SINE_TWO_PORT_PROBE.md#sine-two-port-probe-result)
+comes from a separately archived deterministic export recovery and passes
+all ten fixed conditions. It preserves the original failure and scientific
+inputs; it is not a successful first attempt. The correction changes only
+projection of the auxiliary control mapping and does not change the
+scientific runtime. The
+[execution plan](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#sine-two-port-probe-admission)
+owns its status. The source-evidence audit must re-admit primitive source,
+law, geometry and retained numerical evidence and rebuild consumed handoff
+bounds. It must state which obligations rely on the retained execution:
+matching hashes and a consistent chain are not independent numerical
+revalidation. The earlier producer and artifacts remain unchanged.
+
+The shared research owner
+[`sine_two_port_handoff.py`](../../../src/tnfr/research/sine_two_port_handoff.py)
+provides `audit_sine_two_port_capture_record(record, *, protocol)` for the
+fixed capture-v1 mapping and
+`audit_sine_two_port_capture_handoff(evidence_directory)` for its retained
+artifact directory. Incomplete, malformed or mismatched records reject.
+The mapping audit reconstructs the source preparation and support, checks
+the admitted root-bracket signs, rebuilds the implicit target, checks the
+complete reference metric chain and whole-tube margins, and recomputes the
+analytic original-form/phase handoff. Cached verdicts and derived report
+bounds are ignored. The directory wrapper additionally checks exact artifact
+sizes and hashes, archived inventory, protocol bytes, source revision and
+runtime-overlay associations. Mapping admission alone checks none of those
+file associations.
+
+Both return `SineTwoPortHandoffAudit`. Its direct `to_dict()` schema is
+`tnfr.sine-two-port-handoff-audit.v1`; this research audit is not registered
+as a generic SDK relational report. `numerical_execution_replayed` and
+`provenance_authenticated` remain false. The compact retained reference
+omits full Taylor coefficients, so the archived validated execution remains
+an explicit conditional premise for Picard inclusion, local remainders and
+computed endpoint centers. Root-sign and tube checks do not silently replace
+that premise with a fresh integration. The rebuilt endpoint radii
+must fit the fixed probe allowances `1/8192` and `1/1024`; no previous
+capture producer or target root search is run by these readers.
+
+This gate tests transmission on supplied support together with post-pulse
+identity maintenance. A pure heat law also transmits the ideal donor pulse,
+so the response is not a unique signature of winding, acquired deformation
+or sine coupling. Autonomous support selection, passive attachment,
+organization-specific response and physical identification remain separate.
+The [inspection guide](../../guides/relational/SINE_PATTERNS.md#sine-two-port-probe)
+keeps the conditional API separate from the original-family source handoff.
+
 <a id="sine-two-port-capture"></a>
 ### Validated reference transit and complete-state capture
 

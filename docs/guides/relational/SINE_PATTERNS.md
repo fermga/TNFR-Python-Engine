@@ -4,6 +4,124 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-two-port-probe"></a>
+### Inspect a supplied pulse and receiver transmission
+
+The [supplied-probe protocol](../../../theory/nodal/SINE_TWO_PORT_PROBE.md#sine-two-port-probe-protocol)
+continues the acquired two-port family at slow time `sigma=1025`.
+Its [finite capture handoff](#sine-two-port-capture) retains the original
+independent form and phase errors; the reached state is not reset to its
+target. A simultaneous form pulse of `1/2048` at all nine donor nodes is
+followed by `1/4` of fast structural time under the same complete law.
+
+The readout is the receiver's degree-weighted mean form increment. Compare
+it with the same observation rule on two unjoined C9 rings that evolved
+from the same original preparation for the same original elapsed time and
+receive the same donor pulse. Receiver degree mass is `20` when joined
+and `18` when unjoined, so the rule has different coefficient vectors.
+The unjoined receiver mean is exactly conserved. This control does not
+delete contacts or reset a captured state.
+The two before-and-after increments consume four scalar readings, with
+independently bounded errors and no assumed cancellation.
+
+The required inputs to `assess_sine_two_port_probe` are:
+
+| Primitive | Reserved value | Meaning |
+| --- | --- | --- |
+| `form_radius` | `1/8192` | Relative form norm at the actual pre-pulse endpoint, in the full degree metric |
+| `phase_radius` | `1/1024` | Relative phase distance from the joint target, in radians and the same metric |
+| `pulse_amplitude` | `1/2048` | Exact supplied donor form increment |
+| `probe_duration` | `1/4` | Elapsed fast clock `tau=e*t` after the pulse |
+| `readout_error_bound` | `1/67108864` | Independent additive error per declared scalar readout |
+| `contrast_threshold` | `1/262144` | Strict lower threshold for the recorded joined-minus-unjoined increment |
+| `work_allowance` | `1/2000000` | Upper allowance for the supplied storage jump |
+
+The standalone assessment is conditional on its endpoint ball. It returns
+`SineTwoPortProbe`, schema `tnfr.sine-two-port-probe.v1`, and separate
+response, work and recovery flags; it does not establish source acquisition.
+The frozen experiment needs the separately checked finite source handoff as
+well. Read the [API contract](../../contracts/relational/SINE_PATTERNS.md#sine-two-port-probe)
+before interpreting the flags. The original frozen attempt executed its
+primary assessment but failed during control-report export and saved no
+complete response. The
+[retained result](../../../theory/nodal/SINE_TWO_PORT_PROBE.md#sine-two-port-probe-result)
+passes all ten fixed conditions after a separately archived deterministic
+export recovery. Scientific inputs and runtime were unchanged; this is not
+a successful first attempt. The
+[execution plan](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#sine-two-port-probe-admission)
+owns that status. Inspect the saved response from the repository root:
+
+```python
+from fractions import Fraction as Q
+from pathlib import Path
+from tnfr.utils.io import json_loads
+
+saved = json_loads(
+    Path("docs/assets/sine_formed_classes/two-port-probe-v1.json").read_text(
+        encoding="utf-8"
+    )
+)
+assert saved["schema"] == "tnfr.sine-two-port-probe.v1"
+probe = saved["report"]
+handoff = saved["source_handoff"]["report"]
+
+def exact(value):
+    return Q(value["numerator"], value["denominator"])
+
+assert probe["status"] == "certified_probe"
+assert exact(probe["recorded_contrast_bounds"][0]) > Q(1, 262144)
+assert exact(probe["joined_work_bounds"][1]) <= Q(1, 2000000)
+assert exact(probe["capture_storage_margin"]) > 0
+assert probe["joined_identity_certified"] and probe["recovery_certified"]
+assert exact(handoff["endpoint_form_radius"]) < Q(1, 8192)
+assert exact(handoff["endpoint_phase_radius"]) < Q(1, 1024)
+assert handoff["numerical_execution_replayed"] is False
+assert handoff["provenance_authenticated"] is False
+assert len(saved["frozen_stopping_rule"]) == 10
+assert all(saved["frozen_stopping_rule"].values())
+assert saved["frozen_stopping_rule_passed"]
+history = saved["evaluation_history"]
+assert history["retained_assessment_kind"] == (
+    "separately_frozen_export_recovery_recomputation"
+)
+assert history["scientific_inputs_or_runtime_changed"] is False
+assert history["prior_capture_producer_replayed"] is False
+print(probe["status"], history["retained_assessment_kind"])
+```
+
+These are read-only checks of the
+[saved response](../../assets/sine_formed_classes/two-port-probe-v1.json).
+The original [protocol](../../assets/sine_formed_classes/two-port-probe-v1.protocol.json),
+[source archive](../../assets/sine_formed_classes/two-port-probe-v1.source.zip)
+and [failure record](../../assets/sine_formed_classes/two-port-probe-v1.first-attempt.json)
+remain separate from the
+[export-recovery wrapper](../../assets/sine_formed_classes/two-port-probe-v1.export-recovery.py.txt).
+The [manifest](../../assets/sine_formed_classes/two-port-probe-v1.manifest.json)
+retains their associations. No producer is invoked by this example.
+
+To admit the retained finite source, use the separate research reader
+`audit_sine_two_port_capture_handoff` on
+`docs/assets/sine_formed_classes`. It rebuilds the consumed source, target
+and endpoint bounds and checks archive associations. Its direct
+`SineTwoPortHandoffAudit.to_dict()` uses schema
+`tnfr.sine-two-port-handoff-audit.v1`; it is not a generic SDK relational
+report. The audit does not replay the archived numerical execution or
+authenticate its chronology. In particular, its checked metric chain and
+root signs retain the declared Taylor-execution premise. A conditional
+endpoint probe report and this finite source admission have different roles.
+
+The pulse shifts the global form mean by `1/4096`, while phase mean and
+support remain fixed. The proof therefore needs post-event work and a new
+trapping check; the earlier no-event convergence result cannot cross this
+jump on its own. Any certified recovery preserves the joint winding identity
+and approaches the same shape on the new form-mean leaf.
+
+Transmission on supplied support is the scope of this test. A pure heat
+countermodel retains the ideal signal. This result therefore does not select
+the sine law or isolate the effect of the acquired internal geometry.
+The intervention, structural clock and observation rule remain supplied;
+they are not a physical preparation or measurement bridge.
+
 <a id="sine-two-port-capture"></a>
 ### Inspect the complete same-family capture chain
 

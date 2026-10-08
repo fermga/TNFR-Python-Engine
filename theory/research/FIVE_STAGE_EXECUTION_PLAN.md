@@ -21,7 +21,17 @@ composite's interactions under justified complete nodal laws? The route is
 -> independent observation**. A sufficient representation does not independently
 justify the law that evolves it.
 
-**Latest closed gate:** [same-family capture on the two-port support](#current-g3-gate)
+**Latest closed gate:** [supplied-probe transmission and identity retention](#current-g3-gate)
+certifies a finite receiver response from the acquired two-port family after
+one donor form pulse, against an independently evolved unjoined control.
+Source handoff, observation, supplied work and post-pulse recovery pass
+together. The original attempt failed during export; the retained result
+comes from a separately archived deterministic export recovery with unchanged
+scientific inputs. This tests transmission on supplied support. A pure heat
+model also has the ideal signal, so the gate does not select the sine law
+or establish organization-specific interaction.
+
+**Earlier closed gate:** [same-family capture on the two-port support](#sine-two-port-capture-admission)
 certifies that the unchanged prepared family reaches a local trapping region
 and converges to the deformed joint equilibrium on each conserved-mean leaf.
 The first frozen assessment passed its complete reference transit and
@@ -87,7 +97,8 @@ response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Latest closed gate | [Same-family two-port capture](#current-g3-gate); all fixed reference steps and full-state handoff pass, establishing subsequent convergence for the unchanged complete preparation family on supplied support |
+| Latest closed gate | [Supplied two-port probe](#current-g3-gate); finite transmission, source handoff, supplied work and recovery pass in the retained export-recovery assessment; the original export failure remains preserved |
+| Closed gate | [Same-family two-port capture](#sine-two-port-capture-admission); all fixed reference steps and full-state handoff pass, establishing subsequent convergence for the unchanged complete preparation family on supplied support |
 | Closed gate | [Finite two-port directional transit](#sine-two-port-transit-admission); whole-window acute geometry and strict donor contraction/receiver expansion for the complete prepared family, without a capture claim from that finite result alone |
 | Closed gate | [Two-port storage handoff obstruction](#sine-two-port-handoff-admission); an exact lower-storage boundary witness excludes direct full-sector storage certification for undeformed `(2,1)` pairs and admitted phase-error neighborhoods, without deciding dynamical capture |
 | Closed gate | [Two-port C9 compatibility](#sine-two-port-compatibility-admission); unique acute equilibrium in the declared sector, forced internal deformation, balanced interface circulation and local attraction, with the matched-class zero-current control |
@@ -103,6 +114,65 @@ response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge); source-specific obstructions remain in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="sine-two-port-probe-admission"></a>
+## Closed gate: supplied transmission through the acquired composite
+
+The [retained probe result](../nodal/SINE_TWO_PORT_PROBE.md#sine-two-port-probe-result)
+certifies a response of the actual capture family at slow time `sigma=1025`,
+without replacing its state by the implicit equilibrium. Retain its full eighteen-node
+form and phase coordinates, all thirty-six original errors of radius
+`1/65536`, complete positive-loss law, supplied two-port support, held
+capacities and structural clocks. The preceding capture certificate supplies
+the finite handoff; asymptotic convergence alone would not do so.
+
+Supply a simultaneous form increment `a=1/2048` at all nine donor nodes,
+with phases unchanged. Resume the same complete law for `h=1/4` in the
+fast structural clock `tau=e*t`. Compare the receiver's degree-weighted
+mean increment with the same observation rule on two independently evolved,
+unjoined C9 components. That control has the same original preparation,
+coefficients, elapsed clocks and donor pulse; it has no contact-removal
+event or reset. Its receiver mean is conserved. The observation weights
+follow the admitted support: receiver degree mass is `20` when joined and
+`18` when unjoined.
+
+| Stage | Required admission |
+| --- | --- |
+| F1: finite source handoff | Match the preserved capture preparation, complete law, support, clock and finite endpoint evidence. Use conservative endpoint allowances `X=1/8192` for relative form and `Y=1/1024` radians for relative phase in the full degree metric. The standalone probe API is conditional on those endpoint bounds and does not itself certify acquisition. |
+| F2: supplied intervention and observation | Freeze the exact donor pulse and `tau` window, a per-readout error of `1/67108864`, strict recorded contrast above `1/262144` and an event-work allowance of `1/2000000`. Account for the actual mean shift and the storage jump separately from continuous loss. |
+| F3: response and maintenance | Bound both full-state channels throughout the finite response, including pre-pulse residuals. Require post-pulse entry below the local storage barrier and preservation of periods `(2,1,0)`, with recovery on the new conserved-mean leaf. |
+| F4: first frozen assessment | Preserve `two-port-probe-v1` protocol, proof and producing source before evaluating the reserved response. Keep the preceding capture artifact unchanged and do not rerun its producer. Preserve a failed sufficient margin without changing the pulse, observation, work allowance or numerical budgets. |
+
+The [saved response](../../docs/assets/sine_formed_classes/two-port-probe-v1.json)
+returns `certified_probe` and passes all ten fixed stopping conditions,
+including the finite source handoff and both joined and unjoined identities.
+The original frozen attempt reached the primary assessment but failed while
+projecting its control report for export, without saving a complete response.
+Its [failure record](../../docs/assets/sine_formed_classes/two-port-probe-v1.first-attempt.json)
+and original [protocol](../../docs/assets/sine_formed_classes/two-port-probe-v1.protocol.json)
+and [source archive](../../docs/assets/sine_formed_classes/two-port-probe-v1.source.zip)
+remain preserved. The retained result comes from the separately archived
+[export-recovery wrapper](../../docs/assets/sine_formed_classes/two-port-probe-v1.export-recovery.py.txt),
+which recomputed the same deterministic assessment after correcting only
+auxiliary dictionary projection. Scientific inputs and runtime were unchanged.
+The [manifest](../../docs/assets/sine_formed_classes/two-port-probe-v1.manifest.json)
+retains both attempts' associations. This is not a successful first attempt.
+The capture producer was not replayed; its read-only handoff audit rebuilds
+consumed bounds while retaining the declared numerical-execution premise.
+
+**Resumption boundary:** this gate establishes transmission and maintenance
+under a supplied intervention. It cannot attribute the response
+uniquely to winding, the acquired deformation or the sine constitutive law:
+the pure-heat countermodel retains the ideal transmission signal. The next
+bounded obligation is to derive a finite response that can distinguish the
+acquired internal deformation. The candidate uses one identical interior
+donor phase dipole and local form-difference readout on joined and unjoined
+supports, where the observed nodes have the same local degrees and adjacency.
+It requires a finite source-to-probe warmup, full nonlinear remainder bound,
+event-work and identity admission before freezing any response prediction.
+This candidate is inactive; no sign, threshold or successful discrimination
+has been certified. Autonomous contact, passive attachment work, laboratory
+time and physical identification remain separate obligations.
+
 <a id="sine-two-port-capture-admission"></a>
 ## Closed gate: capture of the unchanged prepared family
 
@@ -136,15 +206,13 @@ and [manifest](../../docs/assets/sine_formed_classes/two-port-capture-v1.manifes
 preserve this first evaluation. No source, horizon, step, order or threshold
 was changed to obtain the result. Exact bounds belong to the linked owner.
 
-**Resumption boundary:** the next bounded obligation is a discriminating
-response of this acquired composite under the same complete law. Before
-activating it, declare one supplied probe, readout and work budget, a matched
-unjoined control, and a finite preparation-to-readout error bound that retains
-the joint identity. Asymptotic convergence alone cannot provide that finite
-response certificate. No such probe campaign is active. Support, source
-preparation, contact occurrence, passive event work, laboratory time and
-physical binding remain separate premises or open questions. Earlier frozen
-evidence and the initial-storage obstruction remain unchanged.
+The separately declared [supplied-probe gate](#sine-two-port-probe-admission)
+uses this finite handoff and retains the original source family. It has its
+own intervention, observation, work and post-event identity obligations;
+the capture result alone does not certify them. Support, source preparation,
+contact occurrence, passive attachment work, laboratory time and physical
+binding remain separate premises or open questions. Earlier frozen evidence
+and the initial-storage obstruction remain unchanged.
 
 <a id="sine-two-port-transit-admission"></a>
 ## Closed gate: full-law deformation from an undeformed pair

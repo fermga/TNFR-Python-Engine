@@ -27,6 +27,7 @@ ARCHIVED = (
     "port-form-tracking-v1",
     "two-port-compatibility-v1",
     "two-port-capture-v1",
+    "two-port-probe-v1",
 )
 MANIFESTS = ("evidence.manifest.json",) + tuple(
     f"{stem}.manifest.json" for stem in ARCHIVED
@@ -46,6 +47,7 @@ def no_evidence_producers():
         relational_sine_reduced_class_ports,
         relational_sine_two_port_capture,
         relational_sine_two_port_compatibility,
+        relational_sine_two_port_probe,
     )
 
     def forbidden(*args, **kwargs):
@@ -63,6 +65,7 @@ def no_evidence_producers():
             relational_sine_reduced_class_ports,
             relational_sine_two_port_capture,
             relational_sine_two_port_compatibility,
+            relational_sine_two_port_probe,
         ):
             for name in vars(module):
                 if (
@@ -78,6 +81,7 @@ def no_evidence_producers():
                             "assess_sine_two_port_compatibility",
                             "assess_sine_two_port_capture",
                             "assess_sine_two_port_transit",
+                            "assess_sine_two_port_probe",
                         )
                     )
                     or name == "_unprobed_handoff"
@@ -104,17 +108,24 @@ def retained():
 
 def test_all_retained_artifact_sizes_and_hashes(retained):
     manifests, content = retained
-    expected = {"pair-v1.json", "response-v1.json"} | {
-        stem + suffix
-        for stem in ARCHIVED
-        for suffix in (".json", ".protocol.json", ".source.zip")
-    }
+    expected = (
+        {"pair-v1.json", "response-v1.json"}
+        | {
+            stem + suffix
+            for stem in ARCHIVED
+            for suffix in (".json", ".protocol.json", ".source.zip")
+        }
+        | {
+            "two-port-probe-v1.first-attempt.json",
+            "two-port-probe-v1.export-recovery.py.txt",
+        }
+    )
     names = [
         item["file"]
         for manifest in manifests.values()
         for item in manifest["artifacts"]
     ]
-    assert len(names) == len(set(names)) == 26 and set(names) == expected
+    assert len(names) == len(set(names)) == 31 and set(names) == expected
     for manifest in manifests.values():
         for item in manifest["artifacts"]:
             data = content[item["file"]]
@@ -1059,3 +1070,230 @@ def test_capture_stopping_rule_rebuilt_from_exact_handoff_evidence(retained):
         is manifest["frozen_stopping_rule_passed"]
         is all(stopping.values())
     )
+
+
+def test_probe_retains_failed_export_and_separate_same_protocol_recovery(retained):
+    manifests, content = retained
+    stem = "two-port-probe-v1"
+    saved = json_loads(content[f"{stem}.json"])
+    protocol = json_loads(content[f"{stem}.protocol.json"])
+    attempt = json_loads(content[f"{stem}.first-attempt.json"])
+    history = saved["evaluation_history"]
+    assert history == manifests[f"{stem}.manifest.json"]["evaluation_history"]
+    assert (
+        history["original_attempt"]
+        == attempt["status"]
+        == "assessment_completed_but_export_failed_without_retained_report"
+    )
+    assert attempt["retained_primary_report"] is False
+    assert attempt["exception_type"] == "TypeError"
+    assert attempt["original_evaluator_unchanged"] is True
+    assert attempt["scientific_inputs_or_runtime_changed"] is False
+    assert history["scientific_inputs_or_runtime_changed"] is False
+    assert history["prior_capture_producer_replayed"] is False
+    assert (
+        history["retained_assessment_kind"]
+        == "separately_frozen_export_recovery_recomputation"
+    )
+    assert history["failure_record"] == f"{stem}.first-attempt.json"
+    assert history["recovery_source"] == attempt["recovery_source"]["file"]
+    recovery = content[history["recovery_source"]]
+    assert len(recovery) == attempt["recovery_source"]["bytes"]
+    assert hashlib.sha256(recovery).hexdigest() == attempt["recovery_source"]["sha256"]
+    assert (
+        hashlib.sha256(content[f"{stem}.source.zip"]).hexdigest()
+        == attempt["frozen_source_sha256"]
+    )
+    with zipfile.ZipFile(DIRECTORY / f"{stem}.source.zip") as archive:
+        original = archive.read(
+            "build/two-port-probe-freeze/evaluate_two_port_probe.py"
+        )
+    assert (
+        original.count(b'saved["original_control_identity"] = _project(control)') == 1
+    )
+    assert b"{name: _project(value) for name, value in control.items()}" in recovery
+    assert saved["prior_capture_artifacts"] == protocol["prior_capture_artifacts"]
+    assert {item["file"] for item in protocol["prior_capture_artifacts"]} == {
+        "two-port-capture-v1" + suffix
+        for suffix in (".json", ".protocol.json", ".source.zip", ".manifest.json")
+    }
+    for item in protocol["prior_capture_artifacts"]:
+        data = (DIRECTORY / item["file"]).read_bytes()
+        assert len(data) == item["bytes"]
+        assert hashlib.sha256(data).hexdigest() == item["sha256"]
+
+
+def test_probe_fixed_support_and_control_use_actual_degree_observations(retained):
+    from tnfr.mathematics._exact_linear_algebra import exact_symmetric_semidefinite
+
+    _, content = retained
+    saved = json_loads(content["two-port-probe-v1.json"])
+    report = saved["report"]
+    protocol = json_loads(content["two-port-probe-v1.protocol.json"])
+    edges = {
+        tuple(sorted((offset + j, offset + (j + 1) % 9)))
+        for offset in (0, 9)
+        for j in range(9)
+    } | {(0, 9), (1, 10)}
+    assert {tuple(edge) for edge in protocol["joined_support"]["edges"]} == edges
+    assert {tuple(edge) for edge in report["geometry"]["edges"]} == edges
+    degrees = tuple(sum(node in edge for edge in edges) for node in range(18))
+    assert tuple(report["degrees"]) == degrees
+    assert sum(degrees) == 40 and sum(degrees[9:]) == 20
+    receiver = tuple(Q(degrees[i] * int(i >= 9), 20) for i in range(18))
+    assert tuple(map(_exact, report["receiver_weights"])) == receiver
+    control_edges = edges - {(0, 9), (1, 10)}
+    assert {tuple(edge) for edge in report["disconnected_edges"]} == control_edges
+    assert {
+        tuple(edge) for edge in protocol["unjoined_control"]["edges"]
+    } == control_edges
+    assert report["disconnected_degrees"] == [2] * 18
+    control_weights = tuple(map(_exact, report["disconnected_receiver_weights"]))
+    assert control_weights == tuple(Q(int(i >= 9), 9) for i in range(18))
+    assert receiver != control_weights
+    donor = tuple(Q(i < 9) for i in range(18))
+    assert tuple(map(_exact, report["donor_mask"])) == donor
+    # Both complete control rows cancel edgewise in the receiver mean; the
+    # same pulse has no edge difference and therefore no control work.
+    assert all(
+        control_weights[i] == control_weights[j] and donor[i] == donor[j]
+        for i, j in control_edges
+    )
+    assert tuple(map(_exact, report["disconnected_increment_bounds"])) == (0, 0)
+    assert tuple(map(_exact, report["disconnected_work_bounds"])) == (0, 0)
+    amplitude = _exact(report["pulse_amplitude"])
+    assert _exact(report["joined_form_mean_increment"]) == amplitude / 2
+    assert tuple(map(_exact, report["disconnected_form_mean_increments"])) == (
+        amplitude,
+        0,
+    )
+
+    control = saved["original_control_identity"]
+    ring = {edge for edge in control_edges if edge[1] < 9}
+    gap = Q(1, 18)
+    slack = tuple(
+        tuple(
+            Q(2 if i == j else -int(tuple(sorted((i, j))) in ring))
+            - gap * (2 * int(i == j) - Q(2, 9))
+            for j in range(9)
+        )
+        for i in range(9)
+    )
+    assert (
+        tuple(tuple(map(_exact, row)) for row in control["normalized_gap_slack_matrix"])
+        == slack
+    )
+    assert exact_symmetric_semidefinite(slack)
+    rx = Q(protocol["preparation"]["original_form_error_radius"])
+    ry = Q(protocol["preparation"]["original_phase_error_radius_radians"])
+    initial = 18 * (rx**2 + ry**2)
+    barrier = gap * Q(1, 25) * Q(1, 12) ** 2 / 2
+    assert _exact(control["initial_combined_norm_squared_upper_bound"]) == initial
+    assert _exact(control["initial_excess_storage_upper_bound"]) == initial
+    assert _exact(control["barrier_lower_bound"]) == barrier
+    assert _exact(control["storage_margin"]) == barrier - initial > 0
+    assert _exact(control["radius_margin"]) == Q(1, 144) - initial > 0
+
+
+def test_probe_response_work_and_stopping_rebuilt_from_primitive_evidence(retained):
+    from tnfr.research.sine_two_port_handoff import audit_sine_two_port_capture_handoff
+
+    manifests, content = retained
+    saved = json_loads(content["two-port-probe-v1.json"])
+    report = saved["report"]
+    protocol = json_loads(content["two-port-probe-v1.protocol.json"])
+    manifest = manifests["two-port-probe-v1.manifest.json"]
+    values = {key: _exact(value) for key, value in protocol["inputs"].items()}
+    assert values == {
+        "form_radius": Q(1, 8192),
+        "phase_radius": Q(1, 1024),
+        "pulse_amplitude": Q(1, 2048),
+        "probe_duration": Q(1, 4),
+        "readout_error_bound": Q(1, 67108864),
+        "contrast_threshold": Q(1, 262144),
+        "work_allowance": Q(1, 2000000),
+    }
+    assert all(_exact(report[key]) == value for key, value in values.items())
+    # Rebuild source-to-endpoint evidence without replaying any producer;
+    # equality of old/new summary labels is not source admission.
+    handoff = audit_sine_two_port_capture_handoff(DIRECTORY)
+    assert saved["source_handoff"] == handoff.to_dict()
+    assert handoff.numerical_execution_replayed is False
+    assert handoff.provenance_authenticated is False
+    old_target = json_loads(content["two-port-capture-v1.json"])["report"]["target"]
+    assert report["target"] == old_target
+    assert _exact(report["target_acute_margin_lower_bound"]) > Q(1, 8)
+    x, y = values["form_radius"], values["phase_radius"]
+    a, h = values["pulse_amplitude"], values["probe_duration"]
+    noise = values["readout_error_bound"]
+    q0 = x + Q(19, 6) * a
+    c = Q(2, 3069) * h
+    qmax = (q0 + c * y) / (1 - c**2)
+    pmax = y + c * qmax
+    background = Q(7, 120) * h * x
+    sine_error = h * pmax / 9207
+    lower = a * h * (1 - h) / 10 - background - sine_error
+    upper = a * h / 10 + background + sine_error
+    assert _exact(report["whole_window_form_norm_upper_bound"]) == qmax
+    assert _exact(report["whole_window_phase_norm_upper_bound"]) == pmax
+    assert _exact(report["response_error_upper_bound"]) == background + sine_error
+    assert tuple(map(_exact, report["joined_increment_bounds"])) == (lower, upper)
+    assert tuple(map(_exact, report["recorded_joined_increment_bounds"])) == (
+        lower - 2 * noise,
+        upper + 2 * noise,
+    )
+    assert tuple(map(_exact, report["recorded_disconnected_increment_bounds"])) == (
+        -2 * noise,
+        2 * noise,
+    )
+    assert tuple(map(_exact, report["recorded_contrast_bounds"])) == (
+        lower - 4 * noise,
+        upper + 4 * noise,
+    )
+    response_margin = lower - 4 * noise - values["contrast_threshold"]
+    assert _exact(report["response_margin"]) == response_margin > 0
+    work = (a * a - Q(7, 6) * a * x, a * a + Q(7, 6) * a * x)
+    assert tuple(map(_exact, report["joined_work_bounds"])) == work
+    assert (
+        _exact(report["work_allowance_margin"])
+        == values["work_allowance"] - work[1]
+        > 0
+    )
+    energy = x * x + y * y + work[1]
+    radius_margin = Q(1, 144) - q0 * q0 - y * y
+    storage_margin = Q(1, 648000) - energy
+    assert _exact(report["post_probe_excess_storage_upper_bound"]) == energy
+    assert _exact(report["post_probe_radius_margin"]) == radius_margin > 0
+    assert _exact(report["capture_storage_margin"]) == storage_margin > 0
+    identity = (
+        handoff.target_acute_margin_lower_bound > Q(1, 8)
+        and radius_margin > 0
+        and storage_margin > 0
+    )
+    control = saved["original_control_identity"]
+    stopping = {
+        "prior_capture_content_association": True,
+        "complete_source_handoff": handoff.endpoint_form_radius < x
+        and handoff.endpoint_phase_radius < y,
+        "fresh_implicit_target_admitted": handoff.target_acute_margin_lower_bound
+        > Q(1, 8),
+        "strict_recorded_response_margin": response_margin > 0,
+        "exact_unjoined_null_and_zero_work": all(
+            _exact(value) == 0
+            for name in ("disconnected_increment_bounds", "disconnected_work_bounds")
+            for value in report[name]
+        ),
+        "strictly_positive_supplied_work": work[0] > 0,
+        "supplied_work_within_allowance": work[1] <= values["work_allowance"],
+        "joined_identity_retained": identity,
+        "joined_recovery": identity,
+        "original_unjoined_identity_retained": _exact(control["radius_margin"]) > 0
+        and _exact(control["storage_margin"]) > 0,
+    }
+    assert saved["frozen_stopping_rule"] == manifest["frozen_stopping_rule"] == stopping
+    assert (
+        saved["frozen_stopping_rule_passed"]
+        is manifest["frozen_stopping_rule_passed"]
+        is all(stopping.values())
+    )
+    assert report["status"] == "certified_probe" and not report["unavailable_reasons"]

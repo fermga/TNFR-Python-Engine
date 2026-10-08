@@ -213,6 +213,16 @@ and partial validated horizons.
   bound; a small phase distance alone is insufficient. Keep incomplete
   prefixes and failed capture margins unavailable, and preserve the first
   fixed-budget response even when its sufficient criteria fail.
+  A supplied probe must retain the actual pre-event form and phase residuals,
+  the exact jump, its storage work and the changed conserved-mean leaf.
+  Reconstruct the receiver observation on each support: the common rule
+  uses receiver degree masses twenty and eighteen, not identical coefficient
+  vectors. Check the unjoined invariant directly, independent readout errors,
+  complete-law finite response remainders and strict post-event trapping.
+  An endpoint-ball assessor cannot certify the source's acquisition; test
+  the separate finite source handoff without consuming cached verdicts.
+  Keep a pure-heat transmission countermodel so the response is not reported
+  as winding-specific evidence or selection of the sine constitutive law.
 - **All-time and symmetry verdicts have different scope.** Fixed-budget
   consensus tests need an independent mixed-Lyapunov derivative from both
   full rows, zero-budget and failed-premise controls. Reflection excludes
@@ -282,6 +292,27 @@ preserve the original thirty-six-coordinate preparation, clocks, root
 prerequisites, strict tube margins, endpoint radius and final storage margin.
 Read the saved first response and archived source; do not rerun its producer
 to inspect the result or substitute the folded reference for the full family.
+The supplied two-port probe has a separate conditional endpoint suite,
+[response and maintenance controls](tests/physics/test_sine_two_port_probe.py).
+Its source-evidence audit must match the original capture primitives and
+rebuild every consumed handoff bound. Artifact hashes and rational chain
+consistency associate the retained record with its declared source; they do
+not independently revalidate omitted Taylor calculations or authenticate
+execution. The probe protocol freezes its own assessment without replaying
+the capture producer or altering its saved response. Its original attempt
+failed during auxiliary control export; the retained response comes from
+a separately archived deterministic export-recovery recomputation with
+unchanged scientific inputs and runtime. Check the original archive, failure
+record, recovery wrapper and explicit evaluation history separately. A
+successful retained recovery must not overwrite the failure or be labeled
+as a successful first attempt.
+Select the [source-handoff suite](tests/research/test_sine_two_port_handoff.py)
+with the conditional endpoint suite when changing this acquisition-to-probe
+chain. Exercise altered primitive laws, lost metric correlations, malformed
+or incomplete evidence and cached verdict changes independently; a cached
+flag must neither grant nor remove an otherwise justified handoff. The
+research audit's direct schema and explicit retained-execution premise are
+separate from the generic SDK projection of the probe report.
 
 ```sh
 python -m pytest tests/physics/test_sine_formed_evidence.py -q
