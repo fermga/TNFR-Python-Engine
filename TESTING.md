@@ -223,6 +223,21 @@ and partial validated horizons.
   the separate finite source handoff without consuming cached verdicts.
   Keep a pure-heat transmission countermodel so the response is not reported
   as winding-specific evidence or selection of the sine constitutive law.
+  An interior phase dipole needs the identical local coefficient vector in
+  both models, with scalar observation errors distinguished from per-node
+  errors. Verify its exact local sine response before bounding both full
+  propagators; matching local adjacency does not prove finite response
+  equality. Preserve the correlated target-angle contrast and every nonlinear
+  remainder term. A degree-metric warmup must remove each connected
+  component's own means, retain the combined control norm and prove strict
+  original-form and phase budgets through the shared modified-energy
+  kernels. Its starting source is already trapped; two norm caps alone
+  cannot grant acquisition or trapping. Test missing warmup and target
+  prerequisites so endpoint candidates never become delivered response,
+  work or identity evidence. The phase-blind control needs its own complete
+  rows and original-source heat bound: zero causal phase-pulse response
+  does not erase raw background relaxation. Preserve both sine-law storage
+  margins, signed jump work and all four scalar readout errors.
 - **All-time and symmetry verdicts have different scope.** Fixed-budget
   consensus tests need an independent mixed-Lyapunov derivative from both
   full rows, zero-budget and failed-premise controls. Reflection excludes
@@ -313,6 +328,17 @@ or incomplete evidence and cached verdict changes independently; a cached
 flag must neither grant nor remove an otherwise justified handoff. The
 research audit's direct schema and explicit retained-execution premise are
 separate from the generic SDK projection of the probe report.
+The [interior-dipole suite](tests/physics/test_sine_two_port_dipole.py) adds
+finite warmup, exact local response, full-flow remainders, phase-blind
+background exclusion and separate work/identity admissions. Select it with
+the [modified-energy kernel suite](tests/physics/test_sine_lyapunov.py)
+and the source-handoff suite for changes to that continuation. The initial
+capture evidence remains fixed; a later analytic warmup neither replays its
+validated reference nor authenticates its retained execution. The saved
+dipole response passes its thirteen conditions in the first frozen
+assessment. Audit its original protocol/source association, source handoffs,
+warmup, finite contrast, heat exclusion and both work/identity channels
+separately from the earlier form-probe export recovery.
 
 ```sh
 python -m pytest tests/physics/test_sine_formed_evidence.py -q

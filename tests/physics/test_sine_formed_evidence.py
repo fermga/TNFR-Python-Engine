@@ -28,6 +28,7 @@ ARCHIVED = (
     "two-port-compatibility-v1",
     "two-port-capture-v1",
     "two-port-probe-v1",
+    "two-port-dipole-v1",
 )
 MANIFESTS = ("evidence.manifest.json",) + tuple(
     f"{stem}.manifest.json" for stem in ARCHIVED
@@ -47,6 +48,7 @@ def no_evidence_producers():
         relational_sine_reduced_class_ports,
         relational_sine_two_port_capture,
         relational_sine_two_port_compatibility,
+        relational_sine_two_port_dipole,
         relational_sine_two_port_probe,
     )
 
@@ -65,6 +67,7 @@ def no_evidence_producers():
             relational_sine_reduced_class_ports,
             relational_sine_two_port_capture,
             relational_sine_two_port_compatibility,
+            relational_sine_two_port_dipole,
             relational_sine_two_port_probe,
         ):
             for name in vars(module):
@@ -82,6 +85,7 @@ def no_evidence_producers():
                             "assess_sine_two_port_capture",
                             "assess_sine_two_port_transit",
                             "assess_sine_two_port_probe",
+                            "assess_sine_two_port_dipole",
                         )
                     )
                     or name == "_unprobed_handoff"
@@ -125,7 +129,7 @@ def test_all_retained_artifact_sizes_and_hashes(retained):
         for manifest in manifests.values()
         for item in manifest["artifacts"]
     ]
-    assert len(names) == len(set(names)) == 31 and set(names) == expected
+    assert len(names) == len(set(names)) == 34 and set(names) == expected
     for manifest in manifests.values():
         for item in manifest["artifacts"]:
             data = content[item["file"]]
@@ -1195,9 +1199,16 @@ def test_probe_fixed_support_and_control_use_actual_degree_observations(retained
     assert _exact(control["radius_margin"]) == Q(1, 144) - initial > 0
 
 
-def test_probe_response_work_and_stopping_rebuilt_from_primitive_evidence(retained):
+@pytest.fixture(scope="module")
+def capture_handoff_audit():
     from tnfr.research.sine_two_port_handoff import audit_sine_two_port_capture_handoff
 
+    return audit_sine_two_port_capture_handoff(DIRECTORY)
+
+
+def test_probe_response_work_and_stopping_rebuilt_from_primitive_evidence(
+    retained, capture_handoff_audit
+):
     manifests, content = retained
     saved = json_loads(content["two-port-probe-v1.json"])
     report = saved["report"]
@@ -1216,7 +1227,7 @@ def test_probe_response_work_and_stopping_rebuilt_from_primitive_evidence(retain
     assert all(_exact(report[key]) == value for key, value in values.items())
     # Rebuild source-to-endpoint evidence without replaying any producer;
     # equality of old/new summary labels is not source admission.
-    handoff = audit_sine_two_port_capture_handoff(DIRECTORY)
+    handoff = capture_handoff_audit
     assert saved["source_handoff"] == handoff.to_dict()
     assert handoff.numerical_execution_replayed is False
     assert handoff.provenance_authenticated is False
@@ -1297,3 +1308,276 @@ def test_probe_response_work_and_stopping_rebuilt_from_primitive_evidence(retain
         is all(stopping.values())
     )
     assert report["status"] == "certified_probe" and not report["unavailable_reasons"]
+
+
+def test_dipole_original_source_and_finite_metric_warmup(
+    retained, capture_handoff_audit
+):
+    _, content = retained
+    saved = json_loads(content["two-port-dipole-v1.json"])
+    report = saved["report"]
+    protocol = json_loads(content["two-port-dipole-v1.protocol.json"])
+    inputs = {key: _exact(value) for key, value in protocol["inputs"].items()}
+    assert inputs == {
+        "warmup_duration": Q(285934809600000),
+        "form_radius": Q(1, 2**40),
+        "phase_radius": Q(1, 2**40),
+        "phase_increment": Q(1, 2**12),
+        "probe_duration": Q(1, 2**10),
+        "readout_error_bound": Q(1, 2**50),
+        "contrast_threshold": Q(1, 2**38),
+        "work_allowance": Q(1, 2**21),
+    }
+    assert all(_exact(report[key]) == value for key, value in inputs.items())
+    assert saved["source_handoff"] == capture_handoff_audit.to_dict()
+    assert saved["prior_capture_artifacts"] == protocol["prior_capture_artifacts"]
+    for item in protocol["prior_capture_artifacts"]:
+        data = (DIRECTORY / item["file"]).read_bytes()
+        assert type(item["bytes"]) is int and len(data) == item["bytes"]
+        assert hashlib.sha256(data).hexdigest() == item["sha256"]
+    assert {item["file"] for item in protocol["prior_capture_artifacts"]} == {
+        "two-port-capture-v1" + suffix
+        for suffix in (".json", ".protocol.json", ".source.zip", ".manifest.json")
+    }
+    control = saved["original_control_handoff"]
+    rx = Q(protocol["preparation"]["original_form_error_radius"])
+    ry = Q(protocol["preparation"]["original_phase_error_radius_radians"])
+    ring_energy = 18 * (rx**2 + ry**2)
+    assert _exact(control["initial_ring_excess_storage_upper_bound"]) == ring_energy
+    assert (
+        _exact(control["initial_ring_combined_norm_squared_upper_bound"]) == ring_energy
+    )
+    assert ring_energy < _exact(control["ring_capture_barrier"]) == Q(1, 129600)
+    assert _exact(control["total_excess_storage_upper_bound"]) == 2 * ring_energy
+    assert (
+        _exact(control["full_combined_norm_squared_upper_bound"]) == 9000 * ring_energy
+    )
+    assert 9000 * ring_energy < _exact(control["source_radius_squared"]) == Q(1, 144)
+    assert control["admitted"] is True
+
+    # Rebuild the modified-energy coefficients and returns directly. The
+    # original-source trapping is independently required above, not inferred
+    # from a product of norm caps or from a previous warmup flag.
+    gap, maximum, cosine = Q(1, 90), Q(2), Q(1, 25)
+    eta_lo, eta_hi = Q(1, 11000000), Q(1, 9000000)
+    epsilon = gap / 4
+    mu, stiffness = eta_lo * cosine * gap**2, eta_hi * maximum**2
+    amin = mu / 2 + gap**2 / 16
+    amax = stiffness / 2 + epsilon * maximum / 2 + epsilon**2
+    kappa = min(4 * (gap - epsilon) / 3, epsilon * mu / amax)
+    assert _exact(report["lyapunov_decay_rate"]) == kappa
+    assert _exact(report["lyapunov_position_lower_coefficient"]) == amin
+    assert _exact(report["lyapunov_position_upper_coefficient"]) == amax
+    assert kappa * inputs["warmup_duration"] == 128
+    assert report["warmup_decay_power"] == 128
+    decay = Q(1, 2**128)
+    assert _exact(report["warmup_decay_upper_bound"]) == decay
+    initial = (3 * eta_hi * maximum / 4 + amax / gap) * Q(1, 12) ** 2
+    assert _exact(report["initial_lyapunov_upper_bound"]) == initial
+    returned = initial * decay
+    x2, y2 = 4 * returned / (eta_lo * gap), maximum * returned / amin
+    assert (
+        _exact(report["warmup_form_norm_squared_upper_bound"])
+        == x2
+        < inputs["form_radius"] ** 2
+    )
+    assert (
+        _exact(report["warmup_phase_norm_squared_upper_bound"])
+        == y2
+        < inputs["phase_radius"] ** 2
+    )
+    assert _exact(report["warmup_form_margin"]) == inputs["form_radius"] ** 2 - x2 > 0
+    assert _exact(report["warmup_phase_margin"]) == inputs["phase_radius"] ** 2 - y2 > 0
+    assert capture_handoff_audit.numerical_execution_replayed is False
+    assert capture_handoff_audit.provenance_authenticated is False
+
+
+def test_dipole_fixed_local_readout_retains_each_full_support(retained):
+    from tnfr.mathematics._exact_linear_algebra import exact_symmetric_semidefinite
+
+    _, content = retained
+    report = json_loads(content["two-port-dipole-v1.json"])["report"]
+    protocol = json_loads(content["two-port-dipole-v1.protocol.json"])
+    q = tuple(Q(int(i == 4) - int(i == 5)) for i in range(18))
+    assert tuple(map(_exact, report["dipole"])) == q == tuple(protocol["input"]["q"])
+    for model, key in enumerate(("joined_edges", "unjoined_edges")):
+        edges = {tuple(edge) for edge in protocol["support"][key]}
+        stored = (
+            report["geometry"]["edges"] if model == 0 else report["disconnected_edges"]
+        )
+        assert {tuple(edge) for edge in stored} == edges
+        degrees = tuple(sum(i in edge for edge in edges) for i in range(18))
+        assert tuple(report["degrees_by_model"][model]) == degrees
+        assert sum(degrees[i] * q[i] ** 2 for i in range(18)) == 4
+        assert sum(q[i] ** 2 / degrees[i] for i in range(18)) == 1
+        assert sum((q[i] - q[j]) ** 2 for i, j in edges) == 6
+        assert {j if i == 4 else i for i, j in edges if 4 in (i, j)} == {3, 5}
+        assert {j if i == 5 else i for i, j in edges if 5 in (i, j)} == {4, 6}
+        components = (
+            (tuple(range(18)),)
+            if model == 0
+            else (tuple(range(9)), tuple(range(9, 18)))
+        )
+        assert all(sum(degrees[i] * q[i] for i in piece) == 0 for piece in components)
+        laplacian = tuple(
+            tuple(
+                Q(degrees[i] if i == j else -int(tuple(sorted((i, j))) in edges))
+                for j in range(18)
+            )
+            for i in range(18)
+        )
+        assert (
+            tuple(tuple(map(_exact, row)) for row in report["laplacians"][model])
+            == laplacian
+        )
+        lower = tuple(
+            tuple(
+                laplacian[i][j]
+                - Q(1, 90)
+                * (
+                    degrees[i] * int(i == j)
+                    - sum(
+                        (
+                            Q(degrees[i] * degrees[j], sum(degrees[k] for k in piece))
+                            for piece in components
+                            if i in piece and j in piece
+                        ),
+                        Q(0),
+                    )
+                )
+                for j in range(18)
+            )
+            for i in range(18)
+        )
+        assert (
+            tuple(
+                tuple(map(_exact, row))
+                for row in report["normalized_gap_slack_matrices"][model]
+            )
+            == lower
+        )
+        assert exact_symmetric_semidefinite(lower)
+    assert report["laplacians"][0] != report["laplacians"][1]
+
+
+def test_dipole_finite_response_work_heat_and_stops_from_primitives(
+    retained, capture_handoff_audit
+):
+    from tnfr.mathematics._rational_interval import I, cos, pi_interval, sin
+
+    manifests, content = retained
+    saved = json_loads(content["two-port-dipole-v1.json"])
+    r = saved["report"]
+    protocol = json_loads(content["two-port-dipole-v1.protocol.json"])
+    values = {key: _exact(value) for key, value in protocol["inputs"].items()}
+    x, y, a, h, noise = (
+        values[key]
+        for key in (
+            "form_radius",
+            "phase_radius",
+            "phase_increment",
+            "probe_duration",
+            "readout_error_bound",
+        )
+    )
+
+    def interval(raw):
+        return I(_exact(raw["lo"]), _exact(raw["hi"]))
+
+    def equal_interval(raw, value):
+        assert (_exact(raw["lo"]), _exact(raw["hi"])) == (value.lo, value.hi)
+
+    old_target = json_loads(content["two-port-capture-v1.json"])["report"]["target"]
+    assert r["target"] == old_target
+    pi = pi_interval()
+    gamma, g = 1 / (1023 * pi), Q(1, 3069)
+    b = 2 * pi * interval(old_target["bulk_arc_turn_bounds"][0])
+    b0 = 4 * pi / 9
+    cosine_gap = cos(b0 - a / 2) - cos(b - a / 2)
+    equal_interval(r["cosine_gap_bounds"], cosine_gap)
+    assert cosine_gap.lo > Q(1, 32)
+    c = 2 * g * h
+    qmax = (x + c * (y + 2 * a)) / (1 - c * c)
+    error = 2 * h * x + 4 * g * a * h * h + 2 * g * h * y + 4 * g * g * h * h * qmax
+    assert _exact(r["finite_remainder_upper_bound"]) == error
+    ideal = 2 * gamma * h * sin(I(Q(3, 2) * a)) * cosine_gap
+    recorded = ideal + I(-2 * error - 4 * noise, 2 * error + 4 * noise)
+    equal_interval(r["ideal_correlated_contrast_bounds"], ideal)
+    equal_interval(r["recorded_contrast_bounds"], recorded)
+    assert (
+        _exact(r["response_margin"]) == recorded.lo - values["contrast_threshold"] > 0
+    )
+    # A separate coarse analytic witness still passes; it uses neither the
+    # displayed contrast endpoints nor the fresh target's numerical gap.
+    coarse_lower = 5 * a * h / (64 * 3216) - 2 * error - 4 * noise
+    assert recorded.lo > coarse_lower > values["contrast_threshold"]
+    works = []
+    for model, angle in enumerate((b, b0)):
+        work = (
+            3 * cos(angle)
+            - 2 * cos(angle + a)
+            - cos(angle - 2 * a)
+            + I(-4 * a * y, 4 * a * y)
+        )
+        works.append(work)
+        equal_interval(r["work_bounds_by_model"][model], work)
+        assert 0 < 3 * a * a / 25 - 4 * a * y <= work.lo
+        assert work.hi <= 3 * a * a + 4 * a * y < values["work_allowance"]
+        assert (
+            _exact(r["work_allowance_margins"][model])
+            == values["work_allowance"] - work.hi
+        )
+        assert (
+            _exact(r["capture_storage_margins"][model])
+            == Q(1, 648000) - x * x - y * y - work.hi
+            > 0
+        )
+    radius_margin = Q(1, 144) - x * x - (y + 2 * a) ** 2
+    assert _exact(r["post_probe_radius_margin"]) == radius_margin > 0
+    # The alternative uses its own heat contraction from its original source,
+    # rather than treating the sine warmup or a causal null as a raw null.
+    heat_exponent = Q(1, 90) * values["warmup_duration"]
+    assert _exact(r["heat_warmup_exponent"]) == heat_exponent >= 128
+    heat_form = Q(7, 65536 * 2**128)
+    assert _exact(r["heat_warmup_form_norm_upper_bound"]) == heat_form < x
+    heat_bound = 4 * h * x + 4 * noise
+    assert _exact(r["phase_blind_recorded_contrast_upper_bound"]) == heat_bound > 0
+    assert _exact(r["phase_blind_exclusion_margin"]) == recorded.lo - heat_bound > 0
+    handoff = capture_handoff_audit
+    control = saved["original_control_handoff"]
+    stopping = {
+        "prior_capture_content_association": True,
+        "complete_joined_source_handoff": handoff.endpoint_form_radius**2
+        + handoff.endpoint_phase_radius**2
+        < Q(1, 144)
+        and handoff.endpoint_excess_storage_upper_bound < Q(1, 648000),
+        "original_unjoined_trapping_and_full_norm": _exact(
+            control["initial_ring_excess_storage_upper_bound"]
+        )
+        < Q(1, 129600)
+        and _exact(control["full_combined_norm_squared_upper_bound"]) < Q(1, 144),
+        "fresh_implicit_target_admitted": handoff.target_acute_margin_lower_bound
+        > Q(1, 8),
+        "finite_complete_law_warmup": _exact(r["warmup_form_margin"]) > 0
+        and _exact(r["warmup_phase_margin"]) > 0,
+        "strict_acquired_geometry_cosine_gap": cosine_gap.lo > Q(1, 32),
+        "strict_recorded_response_margin": recorded.lo > values["contrast_threshold"],
+        "phase_blind_original_source_warmup": heat_exponent >= 128 and heat_form <= x,
+        "phase_blind_response_excluded": recorded.lo > heat_bound,
+        "positive_supplied_work_both_models": all(work.lo > 0 for work in works),
+        "supplied_work_within_both_allowances": all(
+            work.hi <= values["work_allowance"] for work in works
+        ),
+        "both_identities_retained": radius_margin > 0
+        and all(x * x + y * y + work.hi < Q(1, 648000) for work in works),
+        "both_models_recover": radius_margin > 0
+        and all(x * x + y * y + work.hi < Q(1, 648000) for work in works),
+    }
+    manifest = manifests["two-port-dipole-v1.manifest.json"]
+    assert saved["frozen_stopping_rule"] == manifest["frozen_stopping_rule"] == stopping
+    assert (
+        saved["frozen_stopping_rule_passed"]
+        is manifest["frozen_stopping_rule_passed"]
+        is all(stopping.values())
+    )
+    assert r["status"] == "certified_dipole" and not r["unavailable_reasons"]

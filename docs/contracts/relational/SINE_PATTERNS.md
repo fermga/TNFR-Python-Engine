@@ -4,6 +4,120 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-two-port-dipole"></a>
+### Interior phase dipole after a finite complete-law warmup
+
+`assess_sine_two_port_dipole(*, warmup_duration, form_radius, phase_radius,
+phase_increment, probe_duration, readout_error_bound, contrast_threshold,
+work_allowance)` in
+[`relational_sine_two_port_dipole.py`](../../../src/tnfr/physics/relational_sine_two_port_dipole.py)
+returns `SineTwoPortDipole`. All eight scalars are mandatory. Shared
+admission preserves exact rationals and otherwise applies finite
+represented-real conversion; Boolean, nonfinite and nonzero-underflow
+inputs reject. Warmup duration, both radii, readout error, contrast threshold
+and work allowance are nonnegative. Phase increment and probe duration lie
+in `(0,1]`. Durations use the fast structural clock `tau=e*t`, phase uses
+radians and form retains its declared structural unit. The public decay
+budget requires `floor(kappa*warmup_duration)<=4096`, with exact
+`kappa=1/2233865700000`; unsupported domains reject before target evaluation.
+
+The source premise is two already forward-trapped full sine-law families
+inside their admitted relative radius `1/12`, with coarse form and phase
+norm caps `1/12`. Those caps do not admit every point of an independent
+product box. The joined state uses its full degree metric and one conserved
+form/phase mean. The unjoined state removes each C9's own means, then uses
+the combined eighteen-node degree norm. Independent per-ring caps cannot
+replace that combined norm. Both actual state channels, all source errors
+and every consumed complete-law row remain present.
+
+`form_radius` and `phase_radius` are desired bounds after the declared
+warmup, not a new initial preparation. The shared
+[modified-energy kernels](../../../src/tnfr/physics/_sine_lyapunov.py)
+apply through the degree-metric isometry proved in the
+[dipole owner](../../../theory/nodal/SINE_TWO_PORT_DIPOLE.md#sine-two-port-dipole).
+Each returned squared norm must lie strictly below its requested squared
+radius. Exact dyadic decay bounds avoid losing small residuals at a fixed
+interval square-root floor. This quantitative continuation neither establishes
+earlier acquisition nor resets the reached state to its target. No incoming
+report or cached acquisition flag supplies the source premise.
+
+The supplied event is `theta_plus=theta_minus+a*(e_4-e_5)`, with form
+unchanged, on each actual support. Nodes four and five have degree two in
+both models; the event preserves every relevant weighted phase mean, and
+all form means are unchanged. The scalar observation is
+`q.T*(x_after-x_before)`, with `q=e_4-e_5`. It uses the identical
+coefficient vector in both supports, with degree-metric dual norm one.
+`readout_error_bound` applies to one scalar `q.T*x` reading, not to each
+node; the recorded joined-minus-unjoined increment includes all four
+independently bounded reading errors.
+
+Fresh compatibility admission uses the fixed thirty-two outer and
+sixty-four inner root refinements. The joined bulk-angle interval and the
+unjoined twist determine the correlated ideal contrast. Retain that shared
+coefficient before adding the two complete-flow remainder bounds and four
+readout errors. Equal local degrees and adjacency do not imply equal
+finite-time propagators: the remainder includes each full support,
+pre-probe form and phase residuals, form relaxation and nonlinear phase
+motion. An initial derivative alone is insufficient.
+
+The separate phase-blind alternative declares both rows,
+`x_tau=-A*x`, `theta_tau=gamma*A*x`, on each actual support with the
+same capacities, clocks and original source family. Its form is unaffected
+by the phase intervention, but its recorded background is not silently
+replaced by zero. A separate heat warmup must place its residual below
+`form_radius`; the recorded contrast is then bounded above by
+`4*probe_duration*form_radius+4*readout_error_bound`. This comparator
+has its own complete law. Sine-law acquisition and recovery certificates
+are not transferred to it.
+
+The frozen protocol fixes `warmup_duration=285934809600000`,
+`form_radius=phase_radius=2^-40`, `phase_increment=2^-12`,
+`probe_duration=2^-10`, `readout_error_bound=2^-50`,
+`contrast_threshold=2^-38` and `work_allowance=2^-21`. The warmup
+starts at the unchanged capture handoff `sigma=1025`, so its end is at
+`tau=1025*1023**2*pi**2+warmup_duration`. The actual readout adds
+`probe_duration` in that same fast clock. The original thirty-six source
+errors remain `1/65536`. This is a new continuation from that preparation;
+the earlier uniform form pulse is not inserted into its history. The
+[retained capture audit](#sine-two-port-probe) and the unjoined original-family
+trapping argument supply separate source obligations. No laboratory clock
+or measurement calibration follows from these values.
+
+`target_admitted`, `warmup_certified`, `geometry_certified`,
+`response_certified`, `heat_warmup_certified`, `heat_control_excluded`,
+`work_certified`, `identity_certified` and `recovery_certified` expose
+distinct obligations. Status `certified_dipole` requires the complete chain;
+otherwise it is `unavailable`. `recorded_contrast_bounds` includes full-law
+and readout errors; `response_margin` and `phase_blind_exclusion_margin`
+must be strictly positive. Work upper bounds may equal the supplied allowance,
+while post-event radius and storage margins must be strictly positive for
+both sine models. Signed work intervals and positive-work flags are separate
+from passivity or autonomous event selection.
+
+Delivered response, work and identity bounds require certified warmup.
+Candidate fields remain distinguishable from those conditional bounds;
+unavailable delivered fields are `None`. `model_order` fixes joined then
+unjoined in per-model fields. The direct schema is
+`tnfr.sine-two-port-dipole.v1`, with shared SDK exact projection and atomic
+export. The assessment installs no event and runs no trajectory or earlier
+capture producer. Failed sufficient margins do not demonstrate a failed
+physical response.
+
+The [execution plan](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#sine-two-port-dipole-admission)
+owns the gate's status. The
+[retained first assessment](../../../theory/nodal/SINE_TWO_PORT_DIPOLE.md#sine-two-port-dipole-result)
+passes all thirteen fixed conditions, including both original-source handoffs,
+finite warmup, response, the heat comparison and post-event identities.
+Its protocol, proof and producing source were preserved before evaluation;
+no source, threshold or horizon was changed afterward. The earlier
+form-probe export failure and recovery remain separate historical evidence.
+The certified contrast concerns local geometric response under the declared
+preparation, supports and complete laws. It excludes the specified
+phase-blind comparator; it does not select a
+unique constitutive law or establish a topology-independent intrinsic or
+physical property. See the
+[inspection guide](../../guides/relational/SINE_PATTERNS.md#sine-two-port-dipole).
+
 <a id="sine-two-port-probe"></a>
 ### Supplied donor pulse, finite transmission and identity recovery
 

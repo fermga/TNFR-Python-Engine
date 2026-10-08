@@ -4,6 +4,117 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-two-port-dipole"></a>
+### Inspect a common interior phase probe and its finite warmup
+
+The [interior-dipole protocol](../../../theory/nodal/SINE_TWO_PORT_DIPOLE.md#sine-two-port-dipole-protocol)
+uses a new continuation of the original captured family. It retains all
+thirty-six initial form and phase errors and does not replay the earlier
+uniform form pulse. After a proved finite warmup, both the joined composite
+and an independently evolved unjoined control receive the same phase jump
+`theta_plus=theta_minus+a*(e_4-e_5)`, with form unchanged.
+
+The observation is the increment in local form difference:
+`(x_4-x_5)_after-(x_4-x_5)_before`. The coefficient vector, affected
+local edges and degrees agree in both supports. This does not make their
+whole-network responses identical; the proof retains a separate finite
+remainder for each full flow. Four scalar readings form the recorded
+joined-minus-unjoined contrast, with no assumed cancellation of their errors.
+
+The required inputs to `assess_sine_two_port_dipole` are:
+
+| Primitive | Frozen value | Meaning |
+| --- | --- | --- |
+| `warmup_duration` | `285934809600000` | Extra fast structural time after the existing finite capture handoff |
+| `form_radius` | `2^-40` | Desired original-form norm bound after warmup |
+| `phase_radius` | `2^-40` | Desired target-phase norm bound after warmup, in radians |
+| `phase_increment` | `2^-12` | Exact phase dipole amplitude |
+| `probe_duration` | `2^-10` | Elapsed fast structural time between the jump and readout |
+| `readout_error_bound` | `2^-50` | Error bound for one scalar local form-difference reading |
+| `contrast_threshold` | `2^-38` | Strict lower threshold for the recorded contrast |
+| `work_allowance` | `2^-21` | Storage-work allowance for each sine-law phase jump |
+
+These powers denote exact rationals; Python callers can use
+`Fraction(1, 2**40)` and the corresponding denominators. The returned
+`SineTwoPortDipole` uses schema `tnfr.sine-two-port-dipole.v1`.
+Its warmup is conditional on already trapped source families. The joined
+norm uses its global conserved means; the unjoined norm combines both
+rings after removing each ring's own means. The full-family source handoff
+is a separate obligation, and the small endpoint radii do not narrow the
+original preparation or replace it by an equilibrium.
+
+Read the [API contract](../../contracts/relational/SINE_PATTERNS.md#sine-two-port-dipole)
+before interpreting response, heat-control, work and recovery flags.
+The [retained result](../../../theory/nodal/SINE_TWO_PORT_DIPOLE.md#sine-two-port-dipole-result)
+passes all thirteen conditions in its first frozen assessment. Its recorded
+contrast is enclosed between approximately `8.3951e-12` and `9.6232e-12`,
+above threshold `2^-38`; the phase-blind recorded bound is about
+`7.1054e-15`. These are certified structural-model bounds, not measured
+laboratory responses. The
+[execution plan](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#sine-two-port-dipole-admission)
+owns its closed status. Inspect the saved record from the repository root:
+
+```python
+from fractions import Fraction as Q
+from pathlib import Path
+from tnfr.utils.io import json_loads
+
+saved = json_loads(
+    Path("docs/assets/sine_formed_classes/two-port-dipole-v1.json").read_text(
+        encoding="utf-8"
+    )
+)
+assert saved["schema"] == "tnfr.sine-two-port-dipole.v1"
+dipole = saved["report"]
+
+def exact(value):
+    return Q(value["numerator"], value["denominator"])
+
+assert dipole["status"] == "certified_dipole"
+assert exact(dipole["warmup_duration"]) == 285934809600000
+assert dipole["warmup_certified"]
+assert exact(dipole["warmup_form_margin"]) > 0
+assert exact(dipole["warmup_phase_margin"]) > 0
+contrast_lower = exact(dipole["recorded_contrast_bounds"]["lo"])
+assert contrast_lower > Q(1, 2**38)
+assert contrast_lower > exact(dipole["phase_blind_recorded_contrast_upper_bound"])
+assert dipole["heat_warmup_certified"] and dipole["heat_control_excluded"]
+assert all(exact(value) >= 0 for value in dipole["work_allowance_margins"])
+assert all(exact(value) > 0 for value in dipole["capture_storage_margins"])
+assert dipole["identity_certified"] and dipole["recovery_certified"]
+assert saved["original_control_handoff"]["admitted"]
+assert saved["source_handoff"]["report"]["numerical_execution_replayed"] is False
+assert len(saved["frozen_stopping_rule"]) == 13
+assert all(saved["frozen_stopping_rule"].values())
+assert saved["frozen_stopping_rule_passed"]
+print(dipole["status"], len(saved["frozen_stopping_rule"]))
+```
+
+These checks read the
+[retained response](../../assets/sine_formed_classes/two-port-dipole-v1.json)
+without invoking any assessor or trajectory. The
+[protocol](../../assets/sine_formed_classes/two-port-dipole-v1.protocol.json),
+[source archive](../../assets/sine_formed_classes/two-port-dipole-v1.source.zip)
+and [manifest](../../assets/sine_formed_classes/two-port-dipole-v1.manifest.json)
+preserve its first execution. The earlier capture's numerical execution
+remains an explicit premise of its rebuilt source handoff; the new warmup
+does not independently authenticate that execution. Earlier uniform-probe
+export recovery is a separate record.
+
+The separate phase-blind comparison has `x_tau=-A*x` and
+`theta_tau=gamma*A*x`, with its own actual support and the same original
+preparation. Its phase pulse has zero causal effect on form, while its
+remaining form background receives an explicit heat bound. The certified
+contrast clears both the declared response threshold and this bounded
+alternative. It does not establish uniqueness among all phase-sensitive
+laws or a physical measurement bridge.
+
+All durations use `tau=e*t`. The additional warmup starts at
+`tau=1025*1023**2*pi**2`; the phase probe and observation continue that
+clock without a reset. Both form and phase means remain preserved through
+this phase-only intervention. Its work and post-event identity must still
+be admitted separately from the earlier no-event capture theorem.
+
 <a id="sine-two-port-probe"></a>
 ### Inspect a supplied pulse and receiver transmission
 

@@ -24,6 +24,7 @@ These aliases route existing citations to their substantive owner.
 
 - <a id="regional-and-relational-sdk-workflows"></a>[Regional and relational SDK workflows](#regional-and-relational-sdk-workflows)
 
+- <a id="sine-two-port-dipole"></a>[Inspect a common interior phase probe and its finite warmup](relational/SINE_PATTERNS.md#sine-two-port-dipole)
 - <a id="sine-two-port-probe"></a>[Inspect a supplied pulse and receiver transmission](relational/SINE_PATTERNS.md#sine-two-port-probe)
 - <a id="sine-two-port-capture"></a>[Inspect the complete same-family capture chain](relational/SINE_PATTERNS.md#sine-two-port-capture)
 - <a id="sine-two-port-transit"></a>[Certify a finite deformation from the undeformed pair](relational/SINE_PATTERNS.md#sine-two-port-transit)
