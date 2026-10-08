@@ -1,0 +1,345 @@
+{
+  "schema": "tnfr.sine-port-relaxation-protocol.v1",
+  "evaluation_kind": "conditional_analytic_uniform_tracking_no_trajectory",
+  "inputs": {
+    "classes": [
+      1,
+      2,
+      1
+    ],
+    "contacts": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ]
+    ],
+    "phase_origins": [
+      {
+        "numerator": 0,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1000
+      },
+      {
+        "numerator": 0,
+        "denominator": 1
+      }
+    ],
+    "formation_time": {
+      "numerator": 100,
+      "denominator": 1
+    },
+    "relaxation_duration": {
+      "numerator": 10000000000000,
+      "denominator": 1
+    },
+    "form_error_bound": {
+      "numerator": 1,
+      "denominator": 10000000000
+    },
+    "phase_error_bound": {
+      "numerator": 1,
+      "denominator": 10000000000
+    },
+    "endpoint_radius": {
+      "numerator": 1,
+      "denominator": 100000000000000000000000000000000
+    },
+    "radius": {
+      "numerator": 1,
+      "denominator": 12
+    },
+    "decay_power": 512,
+    "work_allowance": {
+      "numerator": 1,
+      "denominator": 500000
+    },
+    "normalized_gap_lower_bound": {
+      "numerator": 3,
+      "denominator": 100
+    },
+    "phase_resolution_fraction": {
+      "numerator": 1,
+      "denominator": 2
+    },
+    "form_resolution_fraction": {
+      "numerator": 1,
+      "denominator": 2
+    }
+  },
+  "complete_model": "Normalized-sine rows x_prime=-K L x+gamma K S(theta), theta_prime=gamma K L x, gamma=1/(1023*pi). K uses each actual fine degree. Unit capacities, beta=1, e=1023/1024, w=1/1024, tau=e*t. Both rows transform. No forcing or phase probes.",
+  "preparation": "Three original C9 form sources k_i*(2046/9)*(355/113)^2*(j-4), initially phase-flat at origins (0,1/1000,0), classes (1,2,1). Independent per-coordinate form and continuous phase-lift errors <=1e-10 on every component, with separate exact zero sums. All sixteen relative source coordinates/component and original storage ceiling1e9 are retained; source costs need not agree.",
+  "support": {
+    "nodes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        8
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        4,
+        13
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        9,
+        10
+      ],
+      [
+        9,
+        17
+      ],
+      [
+        10,
+        11
+      ],
+      [
+        11,
+        12
+      ],
+      [
+        12,
+        13
+      ],
+      [
+        13,
+        14
+      ],
+      [
+        13,
+        22
+      ],
+      [
+        14,
+        15
+      ],
+      [
+        15,
+        16
+      ],
+      [
+        16,
+        17
+      ],
+      [
+        18,
+        19
+      ],
+      [
+        18,
+        26
+      ],
+      [
+        19,
+        20
+      ],
+      [
+        20,
+        21
+      ],
+      [
+        21,
+        22
+      ],
+      [
+        22,
+        23
+      ],
+      [
+        23,
+        24
+      ],
+      [
+        24,
+        25
+      ],
+      [
+        25,
+        26
+      ]
+    ],
+    "bridges": [
+      [
+        4,
+        13
+      ],
+      [
+        13,
+        22
+      ]
+    ],
+    "weights": "unit",
+    "capacities": "held one",
+    "component_order": [
+      0,
+      1,
+      2
+    ],
+    "local_node_order": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "central_local_port": 4
+  },
+  "schedule": "Fresh formation at tau=100; continue actual isolated flows unprobed for D=1e13; add both contacts simultaneously at tau_c=100+D without state reset; hold support afterward.",
+  "observation": "Uniform per-coordinate errors in all27 fine forms and continuous phase lifts relative to the same lifted30-state nominal surrogate, for every subsequent time after the supplied contact. Separate conserved global mean floors remain. No time horizon, trajectory integration or fitted coefficient.",
+  "retained_reduction": {
+    "orbits": [
+      [
+        4
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        2,
+        6
+      ],
+      [
+        1,
+        7
+      ],
+      [
+        0,
+        8
+      ]
+    ],
+    "full_state_coordinates": 54,
+    "reduced_state_coordinates": 30,
+    "layer_masses": [
+      [
+        3,
+        4,
+        4,
+        4,
+        4
+      ],
+      [
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      [
+        3,
+        4,
+        4,
+        4,
+        4
+      ]
+    ],
+    "component_parameters": "Class cosine cos(2*pi*k_i/9); internal L0=2*L_path5; M_i=diag(2+contact_degree_i,4,4,4,4). Every bridge phase difference derives from common component origins and retained real phase deviations.",
+    "composition": "Internal sine currents alone are linearized; exact bridge sine and form currents sum over all contacts. The ideal surrogate begins at zero forms/deviations. Actual original endpoint errors are bounded, never reset.",
+    "discarded_information": "Four reflection-odd modes per channel/component are omitted. Initial arbitrary odd uncertainty and nonlinear odd-mode generation remain in the full-space error proof. No exact invariant nonlinear quotient."
+  },
+  "prediction": {
+    "phase_resolution": "Strict outward positive margin for phase_error_upper < origin_span/2 =1/2000.",
+    "form_resolution": "Strict outward positive margin for form_error_upper < gamma*origin_span/2 =gamma/2000; compare against the lower outward allowance.",
+    "joint_resolution": "Both separately admitted channel margins must pass under the unchanged protocol.",
+    "scope": "The two channel scales are declared structural coordinate scales, not sensor errors, guaranteed signal lower bounds or the earlier donor contrast. A partial channel certificate is retained."
+  },
+  "method": {
+    "name": "acute_storage_parity_invariant_rectangle_v1",
+    "handoff": "Fresh original formation and exact guarded2^-512 unprobed decay. No incoming report, ideal reset or probe.",
+    "both_traps": "Shared joined radius/storage certificate admits the actual full family and the nominal extended surrogate around the same aligned target.",
+    "spectral": "Fresh exact PSD of reduced L−q*(M−mm^T/W), q=3/100. Odd blocks retain tridiagonal half-weight C9 operator with gap>7/30.",
+    "acute_refinement": "From retained excess E and original acute cosine c_r obtain beta=sqrt(2E/c_r); require cos(4*pi/9+beta)>=1/6. Then squared internal edge deviation <=12E.",
+    "defects": "Odd forcing <=B^2/sqrt(2); even forcing <=2B*odd_phase_norm+sqrt(2)*B^3/6, with B=sqrt(12E). Generated odd modes enter the comparison explicitly.",
+    "comparison": "Use c=1/6, a=c*lambda, b=lambda/gamma_upper^2−2, det=a*b−4>0. Positive2x2 inverse gives an invariant rectangle retaining initial error and forcing. Same simple method for both parity sectors; no optional form-gain refinement.",
+    "mean_floors": "Retain absolute form and phase mean differences <=2*edge_count*endpoint_radius/(18*component_count+2*edge_count).",
+    "interval_method": "rational_outward_dyadic128_machin_trigonometry_v1",
+    "trajectory_integration": false
+  },
+  "stopping_rule": "Require fresh handoff, actual and surrogate trapping, supplied work admission, exact normalized gap, refined cosine and positive stable comparison gains before claiming uniform envelopes. Preserve independent phase/form resolution and joint verdict. A failed sufficient form bound is not observed surrogate failure. Do not tune source, support, model, thresholds, precision or add a horizon search to turn a partial result into a joint pass.",
+  "source_base_commit": "c16b3d8b86b05da0a52c0ba7734264d8597812ec",
+  "source_overlay_archive": "port-relaxation-v1.source.zip",
+  "frozen_theory_owner": "theory/nodal/SINE_PORT_RELAXATION.md",
+  "runtime": {
+    "python": "3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows",
+    "backend": "Python exact Fraction, exact PSD and fixed outward dyadic128; exact squared decay below interval grid",
+    "packages": {
+      "numpy": "2.3.3",
+      "networkx": "3.5",
+      "scipy": "1.16.3",
+      "mpmath": "1.3.0"
+    },
+    "seed": null,
+    "seed_scope": "No random input or numerical trajectory. Complete pressure supplied analytically; no held-pressure approximation."
+  },
+  "scope": "An all-time comparison on unchanged supplied support and law. Distinct source uncertainty, parity defects and conserved means remain. No asymptotic full-error zero, physical sensor/clock bridge, autonomous contact or unique-law claim."
+}

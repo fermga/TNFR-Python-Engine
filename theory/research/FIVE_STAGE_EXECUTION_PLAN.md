@@ -21,8 +21,15 @@ composite's interactions under justified complete nodal laws? The route is
 -> independent observation**. A sufficient representation does not independently
 justify the law that evolves it.
 
-**Latest closed gate:** the
-[degree-aware network composition of reduced C9 components](#current-g3-gate)
+**Latest closed gate, qualified partial result:**
+[uniform tracking through uninterrupted recovery](#current-g3-gate) proves
+all-time error envelopes and meets the frozen phase resolution. Its form
+bound does not meet the frozen form allowance, so the joint resolution
+criterion fails. This is an insufficient sufficient bound, not an observed
+tracking failure.
+
+The earlier
+[degree-aware network composition of reduced C9 components](#reduced-port-network-composition-admission)
 derives exact surrogate balances and a uniform full-law approximation bound.
 Its frozen three-component control passes actual source handoff, joined
 identity, supplied work and whole-window accuracy without retuning.
@@ -38,17 +45,17 @@ The [repeated-probe result](#repeated-probe-maintenance-admission),
 The contact, reduced-transfer and network-composition protocols passed their
 unchanged first reserved evaluations, with proof and producing source
 preserved beforehand. Completed controls are reusable evidence, not work to
-repeat. No further campaign is automatically active. Physical constituent
-emergence and independent law
-selection remain open; no empirical response has passed complete physical
-admission.
+repeat. No further campaign is automatically active. Physical
+constituent emergence and independent law selection remain open; no empirical
+response has passed complete physical admission.
 
 <a id="2-one-status-board-and-dependency-chain"></a>
 ## Queue status
 
 | Status | Scope and owner |
 | --- | --- |
-| Latest closed gate | [Degree-aware reduced port composition](#current-g3-gate); generic unit-contact assembly, exact storage balance and uniform full-law error with one frozen actual-family three-component control |
+| Latest closed gate: qualified partial | [All-time reduced/full tracking](#current-g3-gate); valid uniform envelopes and phase resolution, with the unchanged form and joint resolution criteria not certified |
+| Closed gate | [Degree-aware reduced port composition](#reduced-port-network-composition-admission); generic unit-contact assembly, exact storage balance and uniform full-law error with one frozen actual-family three-component control |
 | Closed gate | [Reduced formed-class port description and receiver transfer](#reduced-formed-class-port-admission); twenty-coordinate surrogate, full-law error fraction, actual receiver discrimination and joined identity retention |
 | Closed gate | [Formed-C9 contact and actual receiver discrimination](#formed-class-contact-admission); actual source handoff, finite class-dependent response, supplied contact work and all-time joined identity retention |
 | Closed gate | [Quantitative repeated-probe maintenance](#repeated-probe-maintenance-admission); strict uniform return, per-cycle discrimination and supplied-work accounting |
@@ -58,6 +65,40 @@ admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge); source-specific obstructions remain in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="sine-port-relaxation-admission"></a>
+## Closed gate: all-time tracking with phase-only resolution
+
+The [protocol, proof and qualified result](../nodal/SINE_PORT_RELAXATION.md#sine-port-relaxation)
+compare the unchanged thirty-coordinate surrogate with the actual
+fifty-four-coordinate contact family throughout uninterrupted recovery.
+The source, path of classes `(1,2,1)`, origins, acquisition, relaxation,
+endpoint and work budgets remain unchanged from the composition control.
+No additional contact, reset, probe, forcing or coefficient fit is introduced.
+
+The proof admits both invariant charts and the actual normalized even gap,
+then bounds cross-flow error with parity-separated defects and invariant
+comparison rectangles. Initial state, nonlinear generation of odd modes and
+the permanent global degree-weighted mean differences remain explicit.
+Target convergence alone is not used as a contraction theorem.
+
+The [saved first assessment](../../docs/assets/sine_formed_classes/port-relaxation-v1.json)
+has status `phase_only`. Both all-time coordinate-error envelopes are valid,
+but only the phase bound meets its frozen allowance `phi/2`. The form bound
+does not meet `gamma*phi/2`, so the frozen joint stopping criterion is false.
+The producing source and protocol were preserved before evaluation; no
+threshold or source was changed to turn the partial result into a joint pass.
+Exact bounds, margins and provenance belong to the result owner.
+
+**Resumption boundary:** the admitted all-time phase resolution is distinct
+from all-channel predictive accuracy and from the earlier short-window
+donor-response certificate. The failed form sufficient bound proves neither
+a large actual form error nor impossibility of a sharper comparison. It must
+not be reported as a passing joint result or erased by enlarging the allowance.
+No bound-optimization, horizon, support, solver or data campaign is active.
+Further work needs a named downstream obligation and a new prospective
+admission; formation/support selection, physical measurement and independent
+law justification retain their separate unresolved premises.
+
 <a id="reduced-port-network-composition-admission"></a>
 ## Closed gate: degree-aware network composition of reduced ports
 

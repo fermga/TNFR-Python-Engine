@@ -169,6 +169,13 @@ and partial validated horizons.
   states whose instantaneous rows do not establish global capture. A uniform
   whole-state approximation bound must retain original preparation errors
   and generated odd modes; it is not a receiver-contrast or sensor budget.
+  For all-time tracking, independently admit both invariant charts and the
+  actual degree-weighted spectral gap. Preserve initial-error transients,
+  generated odd modes and both conserved global mean floors; convergence to
+  a target alone is not cross-flow contraction. Test separate form and phase
+  resolution margins, including a valid envelope that resolves only one
+  channel. Failure of a sufficient resolution bound is not trajectory error
+  evidence, and a phase pass must not hide a failed natural form scale.
 - **All-time and symmetry verdicts have different scope.** Fixed-budget
   consensus tests need an independent mixed-Lyapunov derivative from both
   full rows, zero-budget and failed-premise controls. Reflection excludes
@@ -209,11 +216,14 @@ A new reserved prediction needs its own declared inputs and prospective protocol
 
 The [formed C9 bundle audit](tests/physics/test_sine_formed_evidence.py) checks
 the committed artifact hashes, archived source inventories, protocol associations
-and both reduced-model stopping rules without calling an assessor or producer:
+and the distinct reduced-model stopping rules without calling an assessor or producer:
 the two-component error fraction uses its final outward receiver-gap lower
 endpoint, while network composition uses an absolute whole-window full-state
 allowance plus the exact degree/charge/storage control. Neither rule substitutes
 for its saved actual-family identity and supplied-work obligations.
+The all-time relaxation audit separately retains the phase and form resolution
+decisions, including any qualified partial outcome; it must not reinterpret
+a failed sufficient form margin as an observed tracking failure.
 
 ```sh
 python -m pytest tests/physics/test_sine_formed_evidence.py -q

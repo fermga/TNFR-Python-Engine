@@ -4,6 +4,70 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-port-relaxation"></a>
+### Inspect uniform tracking and separate channel resolution
+
+`assess_sine_port_relaxation` compares the unchanged reduced composition with
+the actual fine trajectories for all subsequent uninterrupted times. It takes
+the original source/support budgets and a checked normalized spectral gap;
+it has no contact-duration argument and accepts no cached certificate. The
+[API contract](../../contracts/relational/SINE_PATTERNS.md#sine-port-relaxation)
+owns its fourteen primitive arguments. Use the retained record to inspect the
+existing experiment without rerunning its assessment, from the repository root:
+
+```python
+from fractions import Fraction as Q
+from pathlib import Path
+from tnfr.utils.io import json_loads
+
+saved = json_loads(
+    Path("docs/assets/sine_formed_classes/port-relaxation-v1.json").read_text(
+        encoding="utf-8"
+    )
+)
+assert saved["schema"] == "tnfr.sine-port-relaxation.v1"
+record = saved["report"]
+
+def rational_or_none(value):
+    return None if value is None else Q(value["numerator"], value["denominator"])
+
+print(record["status"], record["unavailable_reasons"])
+exact_error_bounds = {}
+for channel in ("phase", "form"):
+    exact_error_bounds[channel] = rational_or_none(
+        record[f"all_time_{channel}_error_upper_bound"]
+    )
+    print(channel, record[f"{channel}_resolution_certified"])
+print(record["resolution_limitations"])
+```
+
+Read `all_time_envelopes_certified` separately from the phase, form and joint
+resolution flags. The envelopes include initial and generated odd modes and
+budgets for possibly nonzero conserved-mean differences. The `*_mean_error_floor`
+fields are upper budgets for constant offsets, not measured lower errors.
+Phase uses a fraction of the
+declared origin span; form uses its own fraction of `gamma` times that span.
+Each strict outward margin must pass independently. `phase_only` and
+`form_only` retain precisely that qualification; `envelopes_only` still gives
+uniform bounds, while `unavailable` names unmet prerequisites. A failed
+sufficient resolution test is not a measurement of a large actual error.
+`exact_error_bounds` retains the rational upper bounds, or `None` when absent.
+
+The [retained assessment](../../assets/sine_formed_classes/port-relaxation-v1.json)
+is `phase_only`: it supplies both all-time envelopes and resolves the frozen
+phase allowance, while its form bound does not certify the frozen form
+allowance. The joint stopping criterion remains false. This qualified result
+does not show that the actual form error exceeds the allowance.
+
+These all-time allowances differ from the short-window composition budget
+and the earlier donor-response resolution. Full and surrogate trapping are
+both proved before the comparison; recovery alone would not establish their
+closeness. The [result owner](../../../theory/nodal/SINE_PORT_RELAXATION.md#sine-port-relaxation)
+retains the protocol, proof and channel verdicts. The
+[evidence audit](../../../TESTING.md#current-checks-and-retained-evidence)
+checks source/record consistency separately from reading a JSON. No support
+selection, autonomous preparation or physical observation is inferred.
+
 <a id="sine-reduced-port-composition"></a>
 ### Assemble reduced components with their actual contact degrees
 

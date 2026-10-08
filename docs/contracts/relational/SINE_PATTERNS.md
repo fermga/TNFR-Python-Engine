@@ -4,6 +4,81 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="sine-port-relaxation"></a>
+### Uniform full and reduced tracking through recovery
+
+`assess_sine_port_relaxation(*, classes, contacts, phase_origins,
+formation_time, relaxation_duration, form_error_bound, phase_error_bound,
+endpoint_radius, radius, decay_power, work_allowance,
+normalized_gap_lower_bound, phase_resolution_fraction,
+form_resolution_fraction)` in
+[`relational_sine_port_relaxation.py`](../../../src/tnfr/physics/relational_sine_port_relaxation.py)
+returns `SinePortRelaxation`. All fourteen primitives are required. This
+detached assessment compares the unchanged degree-aware surrogate with the
+actual fine trajectories for all uninterrupted postcontact times. It neither
+accepts a prior report nor extends a finite-window budget by changing its
+horizon. The [proof and frozen protocol](../../../theory/nodal/SINE_PORT_RELAXATION.md#sine-port-relaxation)
+own the invariant charts, parity comparison and channel resolution rule.
+
+Support, classes, origins, original source errors and formation/relaxation
+budgets retain the [composition admission](#sine-reduced-port-composition),
+including its sixteen-component implementation cap and held unit law.
+There is no contact-duration argument. The proposed normalized gap satisfies
+`0<normalized_gap_lower_bound<=7/30`; the reader checks an exact rational
+positive-semidefinite inequality in the actual degree-weighted even quotient,
+rather than trusting the supplied number or an unnormalized graph gap.
+Failure of that check yields unavailable premises, not a substitute gap.
+Each resolution fraction lies in `(0,1]`. All scalar admission precedes
+arithmetic, retaining exact rationals and rejecting Boolean/nonfinite values.
+
+`unprobed_handoff` and `joined_bounds` are freshly rebuilt from the original
+source families. Both full and nominal surrogate trajectories must remain
+in their admitted acute charts. The fixed curvature refinement and normalized
+gap feed independent even/odd comparison bounds. Initial errors, their
+exchange between the mixed comparison coordinates, and odd modes generated
+by the full interior sine law all remain present; target convergence alone
+does not establish the comparison.
+
+`all_time_phase_error_upper_bound` and `all_time_form_error_upper_bound`
+bound every fine coordinate against the lifted surrogate, with the declared
+twists and component origins restored. `phase_mean_error_floor` and
+`form_mean_error_floor` are upper budgets for possible constant global
+weighted-mean offsets. Despite their field names, they are not measured
+positive errors or lower bounds: an actual member can have zero offset.
+These budgets remain in the final upper bounds; separately frozen component
+means are not assumed.
+`all_time_envelopes_certified` identifies valid uniform comparison bounds.
+Unmet source, joined-identity, gap or comparison prerequisites remain explicit
+in `unavailable_reasons`; unavailable bound fields are `None`.
+
+With `origin_span=max(phase_origins)-min(phase_origins)`, the phase allowance
+is `phase_resolution_fraction*origin_span`, and the form allowance is
+`gamma*form_resolution_fraction*origin_span`, where `gamma=1/(1023*pi)`.
+The form allowance retains its interval enclosure. Separate
+`phase_resolution_certified` and `form_resolution_certified` flags require
+strictly positive outward lower margins; `joint_resolution_certified`
+requires both. A valid uniform envelope can fail either resolution policy.
+`resolution_limitations` reports these failed sufficient comparisons separately
+from missing theorem prerequisites. Zero origin span is valid but supplies
+no positive resolution allowance. These are mathematical coordinate scales,
+not sensor precision or a guarantee of resolving the earlier donor contrast.
+
+With all source, theorem and supplied-work prerequisites admitted, `status`
+is `full`, `phase_only`, `form_only` or `envelopes_only`, according to the
+two independent channel tests. Otherwise it is `unavailable`. Mathematical
+envelope/channel flags can remain available when only the declared work
+allowance fails, but they do not override that joint admission failure.
+An `envelopes_only` result retains proved error bounds without resolving
+either requested channel; a single-channel status must retain its qualifier.
+
+The direct schema is `tnfr.sine-port-relaxation.v1`; shared SDK projection and
+atomic export retain exact bounds, optional fields and each channel's verdict.
+Failure of a sufficient resolution bound is not an observed trajectory error
+or a proof that no sharper bound exists. No solver, new support selection,
+physical identification or practical-time claim is supplied.
+The [usage guide](../../guides/relational/SINE_PATTERNS.md#sine-port-relaxation)
+shows how to inspect the retained bounds without rerunning their assessment.
+
 <a id="sine-reduced-port-composition"></a>
 ### Degree-aware assembly of reduced component ports
 

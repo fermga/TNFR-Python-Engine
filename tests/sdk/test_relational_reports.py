@@ -2375,6 +2375,14 @@ def test_prepared_composition_nested_label_admission(
             "evaluate_sine_port_composition",
         )
         for class_name in ("SinePortCompositionState", "SinePortComposition")
+    ]
+    + [
+        (
+            "relational_sine_port_relaxation",
+            "SinePortRelaxation",
+            "assess_sine_port_relaxation",
+            None,
+        )
     ],
 )
 def test_reduced_port_sdk_wiring_does_not_evaluate_research(
@@ -2393,7 +2401,8 @@ def test_reduced_port_sdk_wiring_does_not_evaluate_research(
         pytest.fail("SDK projection must not evaluate a research model")
 
     monkeypatch.setattr(owner, assessor, forbidden)
-    monkeypatch.setattr(owner, evaluator, forbidden)
+    if evaluator is not None:
+        monkeypatch.setattr(owner, evaluator, forbidden)
     assert relational_report_to_dict(report) == {
         "schema": "tnfr.relational-report.v1",
         "report_type": class_name,

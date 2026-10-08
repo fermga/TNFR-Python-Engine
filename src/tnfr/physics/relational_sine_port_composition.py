@@ -12,15 +12,9 @@ from fractions import Fraction as Q
 
 from .._exact_time import exact_or_represented_real
 from ..mathematics._exact_linear_algebra import exact_matrix_product
-from ..mathematics._rational_interval import (
-    INTERVAL_METHOD,
-    I,
-    cos,
-    pi_interval,
-    sin,
-    sqrt,
-)
+from ..mathematics._rational_interval import INTERVAL_METHOD, I, cos, pi_interval, sin
 from ._sine_formed_contact import _unprobed_handoff, _UnprobedHandoff
+from ._sine_port_bounds import _joined_port_bounds
 from ._sine_port_geometry import _central_port_geometry, _PortGeometry
 from .relational_observations import _ordered
 
@@ -429,49 +423,21 @@ def assess_sine_port_composition(
     if denominator <= 0:
         raise ArithmeticError("fixed composition bootstrap denominator is nonpositive")
     discrepancy = 2 * gamma.hi**5 * sigma**2 * h**5 / (5 * denominator**2 * (1 - 3 * h))
-    cosine = cos(4 * pi_interval() / 9 + sqrt(I(2)) * r)
-    supported = n >= 2 and geometry.connected
-    gap = Q(4, 9 * n * (geometry.contact_diameter + 8)) if supported else None
-    barrier = gap * cosine.lo * r**2 / 2 if gap is not None and cosine.lo > 0 else None
-    prep = total = approx_margin = z2 = energy = radius_margin = storage_margin = None
-    work = work_margin = mean_x = mean_phase = None
-    accuracy = identity = allowed = False
+    joined = _joined_port_bounds(
+        geometry=geometry,
+        phase_origins=origins,
+        endpoint_radius=eps,
+        radius=r,
+        work_allowance=v["work_allowance"],
+        handoff_available=all(handoff.handoff_certified_by_class),
+    )
+    prep = total = approx_margin = None
+    accuracy = False
     if all(handoff.handoff_certified_by_class):
         prep = eps / (1 - 3 * h)
         total = discrepancy + prep
         approx_margin = I(v["approximation_allowance"] - total)
         accuracy = approx_margin.lo > 0
-        origin_mean = sum(origins, Q(0)) / n
-        spread = sum(((value - origin_mean) ** 2 for value in origins), Q(0))
-        z2 = 2 * n * eps**2 + 9 * spread
-        phase_cost = sum(
-            ((abs(origins[j] - origins[i]) + 2 * eps) ** 2 / 2 for i, j in edges), Q(0)
-        )
-        energy = (4 + max(geometry.contact_degrees)) * n * eps**2 + phase_cost
-        radius_margin = I(r**2 - z2)
-        storage_margin = I(barrier - energy) if barrier is not None else None
-        identity = bool(
-            storage_margin is not None
-            and radius_margin.lo > 0
-            and storage_margin.lo > 0
-        )
-        work = 2 * len(edges) * eps**2 + phase_cost
-        work_margin = I(v["work_allowance"] - work)
-        allowed = work <= v["work_allowance"]
-        mass = 18 * n + 2 * len(edges)
-        mean_error = Q(2 * len(edges), mass) * eps
-        mean_x = I(-mean_error, mean_error)
-        center = (
-            sum(
-                (
-                    (18 + degree) * origin
-                    for degree, origin in zip(geometry.contact_degrees, origins)
-                ),
-                Q(0),
-            )
-            / mass
-        )
-        mean_phase = I(center - mean_error, center + mean_error)
     reasons = tuple(
         reason
         for condition, reason in (
@@ -483,9 +449,12 @@ def assess_sine_port_composition(
                 all(handoff.handoff_certified_by_class),
                 "unprobed_endpoint_budget_not_certified",
             ),
-            (supported, "connected_multi_component_identity_not_supported"),
-            (identity, "whole_network_identity_not_certified"),
-            (allowed, "supplied_contact_work_allowance_not_certified"),
+            (joined.supported, "connected_multi_component_identity_not_supported"),
+            (joined.identity_certified, "whole_network_identity_not_certified"),
+            (
+                joined.work_within_allowance,
+                "supplied_contact_work_allowance_not_certified",
+            ),
             (accuracy, "uniform_approximation_allowance_not_certified"),
         )
         if not condition
@@ -505,20 +474,20 @@ def assess_sine_port_composition(
         preparation_error_upper_bound=prep,
         total_approximation_error_upper_bound=total,
         approximation_margin_bounds=approx_margin,
-        joined_gap_lower_bound=gap,
-        joined_cosine_bounds=cosine,
-        joined_barrier_lower_bound=barrier,
-        joined_radius_squared_upper_bound=z2,
-        joined_excess_storage_upper_bound=energy,
-        joined_radius_margin_bounds=radius_margin,
-        joined_storage_margin_bounds=storage_margin,
-        contact_work_upper_bound=work,
-        work_margin_bounds=work_margin,
-        joined_form_mean_bounds=mean_x,
-        joined_phase_mean_bounds=mean_phase,
+        joined_gap_lower_bound=joined.joined_gap_lower_bound,
+        joined_cosine_bounds=joined.joined_cosine_bounds,
+        joined_barrier_lower_bound=joined.joined_barrier_lower_bound,
+        joined_radius_squared_upper_bound=joined.joined_radius_squared_upper_bound,
+        joined_excess_storage_upper_bound=joined.joined_excess_storage_upper_bound,
+        joined_radius_margin_bounds=joined.joined_radius_margin_bounds,
+        joined_storage_margin_bounds=joined.joined_storage_margin_bounds,
+        contact_work_upper_bound=joined.contact_work_upper_bound,
+        work_margin_bounds=joined.work_margin_bounds,
+        joined_form_mean_bounds=joined.joined_form_mean_bounds,
+        joined_phase_mean_bounds=joined.joined_phase_mean_bounds,
         approximation_certified=accuracy,
-        identity_certified=identity,
-        work_within_allowance=allowed,
+        identity_certified=joined.identity_certified,
+        work_within_allowance=joined.work_within_allowance,
         status="certified_sine_port_composition" if not reasons else "unavailable",
         unavailable_reasons=reasons,
     )
