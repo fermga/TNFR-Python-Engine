@@ -20,9 +20,10 @@ to a constant-mean reference and permits reuse of the existing necessary
 inverse. The added intervals represent clock-model discrepancy; the
 physical sensor-error allowance is unchanged.
 
-These are conditional results and implementation controls. No new reserved
-response is evaluated and no earlier frozen protocol, source or result is
-changed. The [ontology](../EMERGENT_ONTOLOGY.md#generative-bound-organization)
+The theoretical results and implementation controls require no reserved
+response. The separately specified evaluation below tests their finite
+software application; earlier frozen protocols, sources and results remain
+unchanged. The [ontology](../EMERGENT_ONTOLOGY.md#generative-bound-organization)
 continues to separate collective observation from physical identification.
 
 <a id="sine-clock-drift-source-and-law"></a>
@@ -322,3 +323,315 @@ maintenance retain their separate obligations. The
 [sole execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 owns any subsequent admission; no previous frozen response is replayed or
 reinterpreted under this larger clock class.
+
+<a id="sine-clock-drift-reserved-protocol"></a>
+## Prospective software evaluation with nonconstant clocks
+
+This protocol evaluates the finite-transfer method on new complete-flow
+responses. Its preparation, clocks, sensor, numerical budget and stopping
+criteria are fixed before the first response. The existing held-clock
+records are not inputs to this evaluation. The exact-exposure theorem
+permits reuse of the unchanged structural-time producer; no new variable-
+time solver or approximate clock quadrature is introduced.
+
+### F1-F2: shared preparation and three declared histories
+
+Use the public budget (14), including the positive allowance
+\(\Lambda=2^{-22}\), and the same public geometry priors. Set the
+hidden original geometry to \(b=23/16\), \(c=4/5\), the held sensor
+gain to \(G=7/5\), and the target first-window mean to
+\(\bar\rho_1=9/8\). These are supplied software preparations, not
+parameters selected from an evaluated response. Both variable-clock cases
+share their entire original source and sensor, with offset \(O=5/13\)
+and the same four errors
+\[
+(\eta_0,\eta_{1/2},\eta_1,\eta_2)=2^{-91}(-1,1,-1,1).
+\tag{19}
+\]
+
+For the eighteen nodes, use residual recipe \(r=4\):
+\[
+\widetilde u_i=\frac{(i+2)(r+2)}{2^{62}},\qquad
+\widetilde v_i=\frac{(5i+3r)\bmod23+1}{2^{62}},\qquad
+u=P_M\widetilde u,\quad v=P_M\widetilde v.
+\tag{20}
+\]
+The nominal phase geometry and its full weighted centering retain the
+source owner. Add common form \(6/11\), common phase \(-6/13\)
+and the corresponding centered residual to each coordinate. Retain the
+exact arrays and outward mathematical-pi source box. Every residual entry
+is nonzero; weighted centering preserves the squared-norm bound, and
+\(40\cdot114^2/2^{124}<2^{-96}\) admits both source norms.
+The original actual long-arc mean is \(b-5/2^{65}\), since the first
+two phase residuals differ by \(5/2^{62}\). Source-box materialization
+must separately retain the declared norm bounds and this statistic.
+
+The two variable clocks and one shared constant-mean reference are
+\[
+\rho_\pm(s)=\bar\rho_1\pm\frac{\Lambda}{2}(s-H/2),\qquad
+\rho_{\rm ref}(s)=\bar\rho_1.
+\tag{21}
+\]
+All satisfy the global prior and derivative allowance. Their first-window
+means agree exactly. For \(\kappa=\pm\Lambda/2\), their three
+structural segment durations are
+\[
+\left(\bar\rho_1H/2-\kappa H^2/8,\quad
+      \bar\rho_1H/2+\kappa H^2/8,\quad
+      \bar\rho_1H+\kappa H^2\right).
+\tag{22}
+\]
+These are positive exact rational exposures. The reference uses the same
+expression with \(\kappa=0\). Thus both nonconstant cases have
+strictly nonzero half-time and final exposure differences from the
+reference. Both rows of the complete autonomous law undergo the same
+time change; the reduction is exact, rather than freezing phase or using
+the mean rate separately in every actual segment.
+
+An additional ambiguity control is the declared profile
+\[
+\rho_{\rm companion}(s)=\rho_+(s)
+       +\epsilon\cos(4\pi s/H),\qquad \epsilon=\Lambda H/32.
+\tag{23}
+\]
+Its derivative has magnitude at most
+\(\Lambda/2+\pi\Lambda/8<\Lambda\), and its distance from
+\(\bar\rho_1\) is at most \(25\Lambda H/32\), well inside
+the fixed global prior. Its three exposures equal those of \(\rho_+\),
+while every sampled instantaneous rate differs by \(\epsilon>0\).
+By (6), the same complete trajectory record encloses its sampled states.
+Retain this explicit association and the analytic exposure certificate;
+do not rerun an identical producer or count the association as a second
+independent numerical response. No profile is inferred from a mean-rate
+output.
+
+### F3: exact exposure execution and separate public inference
+
+Generate exactly three complete structural histories: the two clocks in
+(21) and their shared reference. Each uses the existing
+[full-state producer](../../src/tnfr/physics/relational_sine_two_port_readout.py)
+with three sequential exposures (22), phase increments \((1/4,0,1/2)\),
+and all thirty-six endpoint intervals carried unchanged. The observation
+times remain \((0,H/2,H,2H)\). There is no event at the half-time
+sample and no state reset at either sample or the second phase jump.
+
+Use one direct source-box order-four Taylor step per segment, its
+whole-tube fifth-order remainder, the fixed sixteen-attempt Picard budget,
+and shared outward dyadic-128 arithmetic. Retain all nine full certificates,
+their source associations, strict inclusion margins, achieved horizons
+and both global clock coordinates. Do not subdivide, increase precision,
+replace the source box by its midpoint or retry a failed budget.
+Each sensor reading must have numerical half-width at most
+\(\delta=2^{-90}\), separately from its physical-error allowance.
+Optional acute flags remain observations, not stopping requirements.
+
+For each variable-clock case, pass only the eleven documented primitives
+to the isolated inverse worker. In particular, `probe_duration` is observed
+\(H\), and the clock inputs are the global prior and derivative bound.
+The source arrays, exact geometry, true gain, clock profiles, exposures,
+mean rate, reference trajectory and realized errors remain on the
+producer/evidence side. Retain allowlisted packets and hashes. The
+reference is used only for the independent transfer assessment, with no
+inverse evaluation. This is software information exclusion, not a secrecy
+or execution-authentication guarantee.
+
+### Response-free signed separation budget
+
+The transfer controls have a prospective finite-flow sign, not merely
+different clock formulas. Set \(T=4H\), \(Q_0=X+7gT\) and
+\(V=Y+2gTQ_0\). Equation (9) and the phase row give, throughout
+either pulse window and all comparison arcs,
+\[
+\|P_Mx\|_M\le Q_0,\qquad
+\|\theta-\theta_{\rm nominal}-m_\theta\mathbf1-a_jq\|_M
+ \le V.\tag{24}
+\]
+The centered nominal phase uses the same source convention as (20).
+At its pulse-shifted value,
+\(q^Tf=-F_j\), where
+\(F_j=2\sin(3a_j/2)\cos(b-a_j/2)>1/6\).
+For \(a_1=1/4\), use \(\sin(3/8)>1/3\) and the alternating
+cosine lower polynomial at \(21/16\), which exceeds \(1/4\).
+For \(a_2=3/4\), use \(\sin(9/8)>1/2\) and
+\(\cos(17/16)\ge223/512>1/6\). The sine map has weighted
+Lipschitz bound two, \(\|A\|_M\le2\), and
+\(1/3216<\gamma<g\). Consequently
+\[
+q^Tx_\tau<-m,\qquad
+m:=\frac1{6\cdot3216}-2Q_0-2gV>\frac1{20000}.
+\tag{25}
+\]
+All bounds follow from the declared primitives and elementary inequalities;
+no reserved response or measured derivative is used.
+
+The common sensor errors cancel between histories. Write \(D_{\pm,i}\)
+for the true variable/reference recorded difference. The half-time and
+final signs are
+\[
+D_{+,1}>0>D_{-,1},\qquad D_{+,3}<0<D_{-,3},
+\tag{26}
+\]
+with half-time magnitudes exceeding
+\(G\Lambda H^2/(16\cdot20000)=(14336/3125)\delta>4\delta\),
+and final magnitudes exceeding eight times that amount. Exact equality at
+\(0,H\) gives
+\(C_- - C_+>(57344/3125)\delta>16\delta\).
+An individual recorded interval of radius at most \(\delta\) has
+width at most \(2\delta\). Thus its variable/reference difference
+can extend at most \(4\delta\) beyond the true difference, and the
+two curvature intervals' difference at most \(16\delta\).
+The frozen numerical half-width criterion therefore suffices to retain
+all signs and the strict curvature ordering in the recorded intervals.
+
+For containment, the actual gain and half-budget slopes yield
+\(|D_{\pm,i}|\le(7/20)b_i\), for \(i=1,3\).
+The derivative cap is the active term in (8), and
+\(b_1/\delta=2^{18}U>500\), with \(b_3=8b_1\).
+Hence the additional \(4\delta\) enclosure allowance is less than
+\((13/20)b_i\). The entire retained difference intervals must fit
+strictly inside the transfer bands whenever their individual reading-width
+criteria pass. Inverse availability and the complete validated horizons
+still require the declared executable checks.
+
+### F4: fixed coverage, transfer and ambiguity criteria
+
+The first evaluation passes only if all source/clock/sensor admissions,
+complete horizons, endpoint associations and numerical budgets pass, and:
+
+- Both public inverses return `bounded_candidate`, with source, drift
+  transfer, finite curvature, rank and positive-division evidence admitted.
+  Their necessary marginals cover the original nominal and actual angle,
+  the retained initial actual-angle box, \(J_1=63/40\), \(G=7/5\)
+  and \(\bar\rho_1=9/8\).
+- Strict widths are below `1/1024` for the actual original angle,
+  `1/2048` for effective gain, `1/16` for gain and `1/80` for mean rate.
+  Nonempty marginals do not imply joint realizability of every retained
+  parameter tuple.
+- Each variable-clock half-time and final recorded interval has the strict
+  signed separation (26) from its reference interval. The entire difference
+  interval lies in the corresponding \([-b_i,b_i]\) from (10).
+  At \(H\), every pair of actual/reference full-state coordinate boxes
+  intersects, before and after the common phase event. This is numerical
+  consistency with the exact theorem, not an overlap proof of equality.
+- The finite-curvature intervals have the strict ordering \(C_+<C_-\).
+  Each uses the same four recorded readings and their original sensor
+  errors, without an independently supplied derivative observation.
+- False global clock prior `[25/32,13/16]` and false gain prior `[31/16,2]`
+  leave the corresponding coarse child available but produce a strict
+  curvature exclusion. The false angle prior `[11/8,353/256]` is excluded;
+  equal cumulative amplitudes `(1/4,1/4)` give the inherited rank abstention.
+  These controls use the same actual readings with altered declarations.
+- Both full-window increments exclude the complete phase-blind alternative
+  \(x_\tau=-Ax,\ \theta_\tau=\gamma Ax\), whose necessary recorded
+  band remains \([-B_{\rm heat},B_{\rm heat}]\), with
+  \(B_{\rm heat}=2G_+\rho_+HX+2\delta\). The varying clock still
+  gives at most \(\rho_+H\) structural time per window.
+- The companion clock's global and derivative bounds, strictly different
+  sampled rates, equal exposures and association with the positive-slope
+  complete record pass independently reconstructed exact checks.
+
+Freeze this prospective text, the machine-readable protocol, committed
+runtime source, evaluator and public worker before any response. The
+exclusive attempt ledger precedes the first flow. Retain the first outcome,
+including partial responses, failed criteria, unavailability or exception;
+no budget adjustment or second attempt is admitted. Corrections require
+separate evidence and cannot replace that outcome.
+
+Success would establish finite software robustness of the mean-rate/gain
+inference to the declared clock variation, and exercise a nonzero transfer
+allowance. It would not identify the instantaneous profile, establish
+physical clock units or feasible laboratory noise, select a unique law,
+or derive source formation and maintenance. The execution plan alone owns
+the next research boundary.
+
+<a id="sine-clock-drift-result"></a>
+## Retained first nonconstant-clock evaluation
+
+The first reserved evaluation returned
+`certified_reserved_clock_drift_inference`: all **112 fixed conditions**
+passed. The count comprises sixteen reference-history conditions,
+forty-three for each variable-clock history, one shared-source condition,
+one paired-curvature condition and eight companion-clock conditions.
+The [protocol](../../docs/assets/sine_formed_classes/clock-drift-inference-v1.protocol.json),
+[source archive](../../docs/assets/sine_formed_classes/clock-drift-inference-v1.source.zip),
+[attempt](../../docs/assets/sine_formed_classes/clock-drift-inference-v1.attempt.json),
+[response](../../docs/assets/sine_formed_classes/clock-drift-inference-v1.json)
+and [manifest](../../docs/assets/sine_formed_classes/clock-drift-inference-v1.manifest.json)
+preserve that first outcome. The prospective statements above retain their
+pre-evaluation wording; no retry, altered budget or older producer replay
+was used.
+
+All nine full thirty-six-coordinate segments completed their prescribed
+structural exposures with strict Picard inclusion. Every endpoint was
+carried unchanged into the next declared phase event or passive
+continuation. Both public inverse packets contained only the eleven
+documented primitives. Neither the reference history nor the companion
+profile entered those packets or received a separate inverse evaluation.
+
+Both necessary marginal reports cover the original nominal angle,
+\(B_{\rm initial}=23/16-5/2^{65}\), its retained initial source box,
+\(J_1=63/40\), \(G=7/5\) and \(\bar\rho_1=9/8\).
+The following widths are decimal **upper bounds**, rounded upwards to
+twelve places from the stored exact rational widths. The stopping tests
+use the rational values and their frozen strict thresholds.
+
+| Clock history | Original-angle width | Effective-gain width | Gain width | First-window mean-rate width |
+| --- | --- | --- | --- | --- |
+| Positive slope | `0.000057836407` | `0.000212441681` | `0.000803235837` | `0.000493713258` |
+| Negative slope | `0.000057836407` | `0.000212441681` | `0.000803235731` | `0.000493713316` |
+| Frozen strict threshold | `1/1024` | `1/2048` | `1/16` | `1/80` |
+
+The independently generated reference comparisons exercise nonzero
+transfer, rather than only exposure-equivalent clocks. In units of the
+supplied sensor allowance \(\delta\), the retained differences have
+the following outward-rounded enclosures:
+
+| Clock history | Half-time recorded difference / delta | Final recorded difference / delta |
+| --- | --- | --- |
+| Positive slope | `[5.341891,5.341892]` | `[-200.581040,-200.581039]` |
+| Negative slope | `[-5.341892,-5.341891]` | `[200.581039,200.581040]` |
+
+Every entire difference interval lies inside its independently rebuilt
+transfer band. Both histories have the predicted strict sign at each
+sample, and their recorded curvature intervals satisfy \(C_+<C_-\).
+At \(H\), all actual/reference coordinate enclosures intersect before
+and after the second event. The exact equality follows from the exposure
+theorem; the overlap is its numerical consistency check.
+
+The false clock/gain priors leave their coarse children available but are
+excluded by the finite-curvature refinement. The false angle is also
+excluded; equal cumulative inputs produce rank-based unavailability; both
+full-window increments exclude the specified complete phase-blind law.
+These controls retain their prospective meanings and do not establish
+joint realizability of alternative marginal tuples.
+
+The companion record reconstructs its positive global rate, derivative
+bound and integer cosine turns. Its sampled rates differ from those of
+the positive-slope history by \(\epsilon=2^{-51}\), yet its sample/event
+exposures agree exactly. It therefore uses the same full-state enclosure
+by theorem, with an explicit source/sensor/trajectory association. This
+is an exact ambiguity control, not a second independently simulated or
+measured response.
+
+The result establishes finite software robustness of the mean-rate/gain
+inference within the frozen preparation, clock class and held observation
+law. The extremely small stipulated sensor error and clock variation are
+numerical protocol premises; no experimental sensor performance or clock
+calibration follows. Instantaneous-profile ambiguity, joint source/noise
+feasibility, physical units, formation and maintenance remain separate
+questions. The global smooth-flow domain flags establish no acute-sector
+or identity-retention certificate.
+
+The source base is `1a717ca8f4f264f277bfdf661d9aeee4dd103af9`, with no
+runtime overlays. Its archive SHA-256 is
+`1a08af6a46c091cb49b6a1da8d12186768b824470facf14db5131193500a10b0`.
+The archived prospective owner contains **25,898 bytes**, with SHA-256
+`f1cebe3ab44153e51d700dbc7aba6bbc270cf87b375d08a70b2df1d916e98ce7`.
+Those bytes remain the unchanged prefix of this owner, modulo checkout
+newline conversion. Hashes associate retained records; they do not
+independently authenticate chronology, execution or physical acquisition.
+The [read-only evidence audit](../../tests/physics/test_sine_clock_drift_evidence.py)
+rebuilds the exposure, transfer, certificate and inverse arithmetic without
+rerunning any producer, inverse or archived worker. The
+[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns the closed gate and its separate inactive resumption boundary.

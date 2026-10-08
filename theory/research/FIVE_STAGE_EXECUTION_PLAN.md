@@ -23,21 +23,22 @@ composite's interactions under justified complete nodal laws? The route is
 collective properties from their physical identification. A sufficient
 representation does not independently justify the law that evolves it.
 
-The [bounded clock-drift theorem](#current-g3-gate) is closed. It separates
-inference of a first-window mean rate from exact sampled-profile ambiguity.
-A separately frozen nonconstant-clock software check is the next **inactive**
-boundary; no response campaign is active. The [reserved four-reading result](#reserved-curvature-inference-admission)
-and earlier evidence keep their original premises. Physical constituent
-emergence and independent law selection remain open; no empirical response
-has passed complete physical admission. Completed evidence is reusable.
+The [reserved nonconstant-clock evaluation](#current-g3-gate) is closed.
+Its first retained assessment passed the fixed transfer and mean-rate/gain
+criteria while preserving the exact sampled-profile ambiguity. The next
+boundary is an **inactive** theoretical finite-aperture observation audit;
+no response campaign is active. Earlier evidence keeps its original premises.
+Physical constituent emergence and independent law selection remain open;
+no empirical response has passed complete physical admission.
 
 <a id="2-one-status-board-and-dependency-chain"></a>
 ## Queue status
 
 | Status | Scope and owner |
 | --- | --- |
-| Latest closed theoretical gate | [Bounded clock drift](#current-g3-gate): exact sampled-exposure equivalence and finite-error inference of the first-window mean rate under held sensor and structural laws |
-| Inactive resumption boundary | [Nonconstant-clock software admission](#current-g3-gate), with frozen transfer-sensitive and equal-exposure controls, source/clock priors and resolution budgets |
+| Latest closed gate | [Reserved nonconstant-clock evaluation](#current-g3-gate): full-state signed transfer, mean-rate/gain coverage and exact sampled-profile ambiguity under frozen budgets |
+| Inactive resumption boundary | [Finite-aperture observation admission](#current-g3-gate): specify the averaging law and event/window relation, then derive finite constraints or a resolution obstruction |
+| Closed prerequisite | [Bounded clock drift](#sine-clock-drift-inference-admission): exact sampled-exposure equivalence and finite-error inference of the first-window mean rate under held sensor and structural laws |
 | Closed prerequisite | [Reserved four-reading software evaluation](#reserved-curvature-inference-admission): complete sequential response, public-only inverse and separate clock/gain resolution under fixed budgets |
 | Closed prerequisite | [Finite-curvature information](#sine-finite-curvature-inference-admission): full source/error bounds, necessary clock/gain refinement and scoped local minimality of the added reading |
 | Closed prerequisite | [Clock/scale identifiability](#sine-clock-inference-admission): necessary geometry and scale bounds, exact common-rate/clock equivalence and a gain/clock curvature counterexample |
@@ -47,6 +48,37 @@ has passed complete physical admission. Completed evidence is reusable.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="reserved-clock-drift-inference-admission"></a>
+<a id="active-reserved-admission-nonconstant-clock-mean-rate-inference"></a>
+## Closed reserved gate: nonconstant-clock mean-rate inference
+
+The [retained result](../nodal/SINE_CLOCK_DRIFT_INFERENCE.md#sine-clock-drift-result)
+passed all 112 fixed conditions in its first assessment. Two opposite
+linear clocks and one shared constant-mean reference completed nine full-state
+segments with the same source, sensor and events. The signed half-time and
+final reading differences exercised nonzero clock-transfer allowances, while
+public-only inference covered the original geometry, gain and first-window
+mean within the frozen width budgets. Exact bounds, controls and receipts
+belong to the result owner.
+
+The oscillating companion has equal sample/event exposures and reuses the
+positive-slope history by theorem; it is not another independent response.
+Distinct sampled rates remain invisible to these point observations.
+The result supplies conditional software robustness, not profile recovery,
+physical calibration, law selection or future maintenance. All earlier
+frozen records remain unchanged and no producer or inverse was replayed
+for the read-only evidence audit.
+
+**Inactive resumption boundary:** admit a theoretical finite-aperture
+observation law while retaining the structural law, source, clock class,
+held gain/offset and first-window mean target. Specify an independently
+justified nonnegative averaging kernel, its normalization, the windows'
+relation to sample/event times and the complete horizon. Derive finite-flow
+constraints or a resolution obstruction that retains the `H**2` curvature
+signal, source uncertainty and associated sensor errors. Do not declare an
+arbitrarily tiny aperture a solution or fit an instantaneous clock profile.
+No finite-aperture response or physical-data campaign is active.
+
 <a id="sine-clock-drift-inference-admission"></a>
 <a id="active-theoretical-gate-bounded-clock-drift-and-sampled-exposure"></a>
 ## Closed theoretical gate: bounded clock drift and sampled exposure
@@ -67,16 +99,6 @@ response. Proof, implementation and relevant controls agree. Necessary
 marginals do not reconstruct an instantaneous profile or certify joint
 realizability, empirical drift bounds or physical time units. No new
 reserved response or frozen-evidence change was part of this gate.
-
-**Inactive resumption boundary:** separately admit and freeze a
-nonconstant-clock software evaluation. Include differing segment exposures
-to exercise the finite transfer and an equal-exposure ambiguity control.
-Freeze derivative and global-rate priors, full preparation and selected
-clock profiles, held sensor/input laws, mean-rate/gain coverage and
-resolution criteria, horizons and numerical budgets before any response.
-Retain the original reading associations, uninterrupted complete state and
-first outcome, including failure or unavailability. Do not infer a profile
-from the mean-rate result or activate a physical-calibration campaign.
 
 <a id="reserved-curvature-inference-admission"></a>
 <a id="active-reserved-gate-four-reading-clock-and-gain-resolution"></a>

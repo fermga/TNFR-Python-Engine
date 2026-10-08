@@ -183,7 +183,7 @@ python -m pytest tests/mathematics/test_validated_box_taylor.py tests/physics/te
 python -m pytest tests/physics/test_sine_clock_inference.py tests/physics/test_sine_two_pulse_inference.py tests/sdk/test_relational_reports.py -q
 python -m pytest tests/physics/test_sine_curvature_inference.py tests/physics/test_sine_clock_inference.py tests/physics/test_sine_two_pulse_inference.py -q
 python -m pytest tests/physics/test_sine_clock_drift_inference.py tests/physics/test_sine_curvature_inference.py tests/physics/test_sine_clock_inference.py tests/sdk/test_relational_reports.py -q
-python -m pytest tests/physics/test_sine_formed_evidence.py tests/physics/test_sine_curvature_evidence.py -q
+python -m pytest tests/physics/test_sine_formed_evidence.py tests/physics/test_sine_curvature_evidence.py tests/physics/test_sine_clock_drift_evidence.py -q
 ```
 
 The [reserved inference protocol](theory/nodal/SINE_TWO_PORT_INFERENCE.md#sine-two-port-inference-protocol)
@@ -218,6 +218,19 @@ and fixed-control criteria from primitives, including available coarse
 children under false clock/gain priors. One half-time reading and its error
 must be reused consistently; a separate fitted curvature is not evidence.
 Preserve first failure, numerical abstention and optional acute flags.
+
+The [reserved nonconstant-clock result](theory/nodal/SINE_CLOCK_DRIFT_INFERENCE.md#sine-clock-drift-result)
+is audited by [`test_sine_clock_drift_evidence.py`](tests/physics/test_sine_clock_drift_evidence.py).
+Rebuild the primitive source, linear profile exposures, held sensor and
+all nine full-state certificates, then the recorded differences and necessary
+inverse bounds. Check the prospective sign/error margins, both endpoint
+handoffs per history, exact eleven-key packets, independent public transfer
+allowances, width/coverage and every fixed stopping predicate. The companion
+uses an exact equal-exposure association to the positive history; it is not
+a duplicate response. Reconstruct its derivative/rate admission and zero
+integral correction without executing an archived helper, producer or inverse.
+Saved derivative enclosures remain a premise, and hash/attempt receipts do
+not independently authenticate chronology or physical acquisition.
 
 ### Boundaries that need explicit regression coverage
 
