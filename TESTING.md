@@ -170,7 +170,7 @@ their existing comparison and retained-metric consumer suites.
 python -m pytest tests/mathematics/test_validated_box_taylor.py tests/physics/test_sine_two_port_readout.py tests/physics/test_sine_two_port_inference.py tests/physics/test_sine_two_pulse_inference.py -q
 python -m pytest tests/physics/test_sine_clock_inference.py tests/physics/test_sine_two_pulse_inference.py tests/sdk/test_relational_reports.py -q
 python -m pytest tests/physics/test_sine_curvature_inference.py tests/physics/test_sine_clock_inference.py tests/physics/test_sine_two_pulse_inference.py -q
-python -m pytest tests/physics/test_sine_formed_evidence.py -q
+python -m pytest tests/physics/test_sine_formed_evidence.py tests/physics/test_sine_curvature_evidence.py -q
 ```
 
 The [reserved inference protocol](theory/nodal/SINE_TWO_PORT_INFERENCE.md#sine-two-port-inference-protocol)
@@ -194,13 +194,13 @@ inverse. Preserve a false optional `whole_window_acute_certified` flag
 without treating it as a failed inference criterion or a proved trajectory
 event.
 
-The [prospective four-reading protocol](theory/nodal/SINE_FINITE_CURVATURE_INFERENCE.md#sine-curvature-reserved-protocol)
-adds a passive half-time observation and one held unknown clock per case.
+The [retained four-reading protocol and result](theory/nodal/SINE_FINITE_CURVATURE_INFERENCE.md#sine-curvature-inference-result)
+add a passive half-time observation and one held unknown clock per case.
 Select the same shared Taylor/readout suites for the zero-jump continuation;
-check all three complete endpoint handoffs and distinguish observed from
-structural segment times. After its first reserved evaluation, audit the
-retained four-reading record and public ten-key packets without replaying
-its producer or inverse. Rebuild finite-curvature, source, coverage, width
+check all three segments and both complete endpoint handoffs, distinguishing
+observed from structural segment times. The [dedicated read-only audit](tests/physics/test_sine_curvature_evidence.py)
+checks the retained four-reading record and public ten-key packets without
+replaying its producer or inverse. Rebuild finite-curvature, source, coverage, width
 and fixed-control criteria from primitives, including available coarse
 children under false clock/gain priors. One half-time reading and its error
 must be reused consistently; a separate fitted curvature is not evidence.

@@ -23,21 +23,22 @@ composite's interactions under justified complete nodal laws? The route is
 collective properties from their physical identification. A sufficient
 representation does not independently justify the law that evolves it.
 
-The [finite-curvature information theorem](#sine-finite-curvature-inference-admission)
-is closed. Its [reserved four-reading software evaluation](#current-g3-gate)
-is now the single active gate, with a prospective source/archive freeze
-required before the first response. Earlier clock, inference and response
-results retain their original premises and evidence. Physical constituent
-emergence and independent law selection remain open; no empirical response
-has passed complete physical admission. Completed evidence is reusable,
-not work to repeat.
+The [reserved four-reading software evaluation](#current-g3-gate) is closed.
+Its first retained assessment passed the fixed clock/gain coverage and
+resolution criteria under the supplied complete law and held observation
+model. The next boundary is an **inactive** theoretical clock-drift audit;
+no response campaign is active. Earlier results keep their original premises
+and evidence. Physical constituent emergence and independent law selection
+remain open; no empirical response has passed complete physical admission.
+Completed evidence is reusable, not work to repeat.
 
 <a id="2-one-status-board-and-dependency-chain"></a>
 ## Queue status
 
 | Status | Scope and owner |
 | --- | --- |
-| Active bounded gate | [Reserved four-reading software evaluation](#current-g3-gate): complete sequential response, public-only inverse, clock/gain coverage and marginal resolution under fixed budgets |
+| Latest closed gate | [Reserved four-reading software evaluation](#current-g3-gate): complete sequential response, public-only inverse and separate clock/gain resolution under fixed budgets |
+| Inactive resumption boundary | [Bounded clock-drift admission](#current-g3-gate): declare the clock class and inferred quantity, retain held gain/offset, then derive finite errors or an obstruction before another response |
 | Closed prerequisite | [Finite-curvature information](#sine-finite-curvature-inference-admission): full source/error bounds, necessary clock/gain refinement and scoped local minimality of the added reading |
 | Closed prerequisite | [Clock/scale identifiability](#sine-clock-inference-admission): necessary geometry and scale bounds, exact common-rate/clock equivalence and a gain/clock curvature counterexample |
 | Closed prerequisite | [Reserved two-input software inference](#reserved-two-pulse-inference-admission), whose known-clock assumptions and frozen evidence remain unchanged |
@@ -47,38 +48,35 @@ not work to repeat.
 
 <a id="current-g3-gate"></a>
 <a id="reserved-curvature-inference-admission"></a>
-## Active reserved gate: four-reading clock and gain resolution
+<a id="active-reserved-gate-four-reading-clock-and-gain-resolution"></a>
+## Closed reserved gate: four-reading clock and gain resolution
 
-The [prospective protocol](../nodal/SINE_FINITE_CURVATURE_INFERENCE.md#sine-curvature-reserved-protocol)
-fixes three full sources, one held clock/gain/offset per case and the four
-readings at `0,H/2,H,2H`, with events still at `0,H`. Here `H=2^-24`,
-source radii are `2^-48`, the per-reading error bound is `2^-90`, and the
-public priors are gain `[1,2]` and clock `[1/2,2]`. The first two cases
-share the complete source and product `G*rho=3/2`; the reserved comparison
-requires separated finite recorded-curvature intervals, without assuming
-their exact endpoint responses coincide.
+The [retained result](../nodal/SINE_FINITE_CURVATURE_INFERENCE.md#sine-curvature-inference-result)
+passed all 109 fixed conditions in its first assessment. All three full-state
+segments per case preserved the complete endpoint history, passive half-time
+reading and declared phase events. Public-only inference covered the original
+geometry, effective gain, gain and clock within the frozen marginal-width
+budgets. False clock/gain priors remained available to the coarse child but
+were excluded by curvature; the same-source, equal-product pair had separated
+finite contrasts. Exact bounds, controls and frozen receipts belong to the
+result owner, not to a new queue inventory.
 
-Three order-four full-state segments retain both continuous rows, all
-thirty-six endpoint coordinates and the passive half-time reading. Their
-phase jumps are `1/4,0,1/2`: zero is continuation, not a reset or an extra
-intervention. The inverse receives only ten declared public primitives,
-never hidden state, true sensor/clock parameters or producer certificates.
-Freeze the prospective committed source, proof, protocol, evaluator and
-separated worker under `curvature-inference-v1` before generating a response.
+This establishes conditional software resolution under a fixed sine law,
+held clock and affine sensor. Necessary marginals need not be jointly
+realizable. Optional acute flags did not pass, and neither maintenance nor
+physical calibration was claimed. The archived protocol, source, first
+attempt and response remain unchanged; no older producer was rerun.
 
-Require complete horizons, strict inclusion and source/observation admission,
-truth coverage, and actual-angle, effective-gain, gain and clock widths below
-`1/1024`, `1/2048`, `1/16` and `1/80`. Fixed false priors, a rank-abstention
-control and the complete phase-blind alternative have their own declared
-criteria. False clock/gain priors must retain an available coarse child but
-be excluded by the curvature refinement. Preserve the first outcome,
-including unavailability or export failure; no retuning or earlier-producer
-rerun is authorized. Optional acute flags do not certify maintenance.
-
-No response has yet been evaluated under this protocol. Its conditional
-software inference does not select the supplied law or establish a physical
-clock, sensor or constituent. No next campaign is active; its admission
-boundary will be recorded when this bounded gate closes.
+**Inactive resumption boundary:** admit one theoretical extension for a
+positive, nonconstant observation-clock rate, keeping sensor gain and offset,
+input calibration, support and complete structural law fixed. Declare the
+clock regularity and independent drift bounds, observation times, and the
+specific rate or elapsed-time quantity to infer. Transform both evolution
+rows and retain the entire event/readout history. Derive a finite-error
+constraint or an explicit ambiguity obstruction: clock drift contributes to
+observed curvature and cannot be silently absorbed into the constant-rate
+certificate. Do not relax other nuisance laws at the same time. No new
+response, physical-data evaluation or clock-drift campaign is active.
 
 <a id="sine-finite-curvature-inference-admission"></a>
 <a id="active-theoretical-gate-finite-curvature-from-one-additional-reading"></a>

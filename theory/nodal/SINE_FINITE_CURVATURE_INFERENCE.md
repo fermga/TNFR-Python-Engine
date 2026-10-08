@@ -619,3 +619,96 @@ supplied normalized-sine law and held observation model. It would not select
 that law, establish a laboratory clock or sensor, eliminate the exact common
 all-row-rate/clock equivalence, or identify physical constituents. Any next
 research gate requires separate admission in the execution plan.
+
+
+<a id="sine-curvature-inference-result"></a>
+## Retained first evaluation
+
+The prospective statements above retain their pre-evaluation wording.
+The first reserved evaluation completed with
+`certified_reserved_curvature_inference`: all **109 fixed conditions** passed
+(35 for each of the three cases, plus four paired-source conditions).
+The [attempt record](../../docs/assets/sine_formed_classes/curvature-inference-v1.attempt.json),
+[protocol](../../docs/assets/sine_formed_classes/curvature-inference-v1.protocol.json),
+[source archive](../../docs/assets/sine_formed_classes/curvature-inference-v1.source.zip),
+[response](../../docs/assets/sine_formed_classes/curvature-inference-v1.json)
+and [manifest](../../docs/assets/sine_formed_classes/curvature-inference-v1.manifest.json)
+retain that outcome. No retry, budget change, state reset or earlier frozen
+producer replay was used.
+
+All nine full-state segments completed their prescribed horizons with
+strict Picard inclusion. The passive half-time sample, zero-event
+continuation, both phase-only events and complete endpoint carry were
+retained. Each inverse received only its ten public primitives. The
+initial source, four associated readings, sensor errors and held clock
+passed their declared admission and information-separation checks.
+
+The following interval endpoints are rounded **outwards** to nine decimal
+places from the stored exact rational endpoints. Cases 0 and 1 share the
+same original complete source and effective gain, but their separate held
+gains and clocks lie inside these disjoint necessary intervals.
+
+| Protocol case | Gain outer interval | Clock-rate outer interval |
+| --- | --- | --- |
+| 0 | `[1.499571124, 1.500428784]` | `[0.999785284, 1.000214740]` |
+| 1 | `[1.199658759, 1.200341114]` | `[1.249733572, 1.250266462]` |
+| 2 | `[1.749472953, 1.750526932]` | `[0.874796884, 0.875203188]` |
+
+Each exact nominal angle, original actual mean
+\(B_{\rm initial}=b-5/2^{65}\), effective gain, gain and clock is covered.
+The actual-angle marginal also contains its retained initial-source-box
+interval. Widths below are conservative decimal **upper bounds**, rounded
+up to twelve decimal places; the tests against the frozen thresholds use
+exact rational widths.
+
+| Protocol case | Actual-angle width | Effective-gain width | Gain width | Clock-rate width |
+| --- | --- | --- | --- | --- |
+| 0 | `0.000064767591` | `0.000213475638` | `0.000857658487` | `0.000429455253` |
+| 1 | `0.000064767593` | `0.000213475638` | `0.000682354095` | `0.000532889190` |
+| 2 | `0.000055473855` | `0.000211200277` | `0.001053977818` | `0.000406303072` |
+| Frozen strict threshold | `1/1024` | `1/2048` | `1/16` | `1/80` |
+
+The paired recorded-curvature intervals are separated. Outward decimal
+summaries, in recorded units, are
+\[
+\begin{aligned}
+C_0&\in[1.3209747830116573,1.3209747830116574]\,10^{-19},\\
+C_1&\in[1.6512184641602141,1.6512184641602142]\,10^{-19}.
+\end{aligned}\tag{31}
+\]
+This is a finite contrast of the four retained readings, not access to an
+instantaneous derivative. Equal \(G\rho\) did not erase the observed
+finite-curvature distinction under the supplied law.
+
+For every case, the false clock and false gain priors left the coarse
+child available as `bounded_candidate`, while the curvature refinement
+returned `incompatible`. The false angle prior was also excluded. Equal
+amplitudes returned the declared rank-based `unavailable`; both full-window
+increments excluded the specified complete phase-blind alternative.
+These controls retain their prospective meanings: outer compatibility is
+not existence, and rank abstention is not an equal-response theorem.
+All three optional whole-window acute flags were false. This is neither
+proof of a sector exit nor a maintenance certificate.
+
+The outcome establishes finite software resolution of separate clock and
+sensor-gain marginals under one supplied law, preparation and held affine
+observation model. Receiver geometry and fine residuals remain nuisance
+state. No joint point identification, source formation, physical calibration,
+unique law, event funding or future recovery follows. In particular, the
+very small stipulated observation errors are a protocol premise, not a
+laboratory feasibility result. A free multiplier of every evolution row
+would still have the exact rate/clock equivalence proved earlier.
+
+The archive records source revision
+`8eb47d261ce971909c343901cc5ed7a7427a8428`, with no runtime overlays;
+its SHA-256 is
+`c6d5992168d7e98d9a2107dab6912455033ee56e3795d16070c86b06b1643ac4`.
+Its prospective proof has **27,353 bytes** and SHA-256
+`3410ebfbe4e1a3e62dae6d9b722f2c2fae55cac0eec8a2ffcae470fb4a689add`;
+that content is preserved above. Archived bytes define the receipt despite
+routine checkout newline conversions. Hashes associate retained records;
+they do not independently authenticate execution chronology or acquisition.
+The [read-only evidence audit](../../tests/physics/test_sine_curvature_evidence.py)
+checks retained primitives and certificate arithmetic without rerunning the
+producer or inverse. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+records the closed gate and the separate inactive boundary.
