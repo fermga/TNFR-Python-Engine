@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Prove [winding-one capture for the complete interior source family](theory/nodal/SINE_PREPARATION_PATH_CAPTURE.md)
+  through its actual mixed form/phase state. A finite passage cone and acute
+  contraction exclude the prior saddle and alternative-attractor candidates,
+  retaining all source errors, full storage and a common structural deadline.
+  No trajectory, state reset or universal-law conclusion is used.
 - Restrict [terminal states of the unchanged preparation path](theory/nodal/SINE_PREPARATION_PATH_LIMITS.md)
   using complete-state convergence and an exact critical-energy classification.
   Retain three attracting candidates and exceptional saddle sources without

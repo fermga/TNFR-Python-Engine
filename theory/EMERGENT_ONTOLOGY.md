@@ -105,6 +105,15 @@ a particular law; passivity or a successful prepared response cannot supply
 that distinction by itself. Autonomous preparation, contact occurrence and
 scale selection remain separate obligations.
 
+A useful open hypothesis is that some organized identities persist across
+an independently delimited class of complete laws. Shared attracting
+geometries would still require those laws to define trajectories, basins,
+rates and interactions. The target-matched comparison above already permits
+common identities with different nonlinear interaction signs. Extending
+robustness to every admissible TNFR law, or identifying it with a universal
+property of nature, requires an additional argument and independent physical
+evidence. A selected example does not establish that quantifier.
+
 Within the specified complete laws, equal nominal collective means and storage
 can hide response-relevant internal information. The
 [conservative persistence result](nodal/SINE_PAIR_INTERACTION.md#sine-pair-persistent-response)
@@ -166,6 +175,13 @@ parameter's full uncertainty chart; this supplies no probability law and
 does not exclude a saddle limit for a particular preparation. An attracting
 candidate becomes an acquired identity only through a source-specific
 capture argument.
+
+That stronger [capture argument](nodal/SINE_PREPARATION_PATH_CAPTURE.md)
+is available for the original interior source corridor: its actual mixed
+form/phase state enters the winding-one storage trap, excluding all other
+energy-compatible candidates there, including the saddle exceptions. The
+result retains the same supplied law and full source uncertainty; transfer
+to another law requires its own force, curvature and storage bounds.
 
 Distinct internal geometries need not be distinguishable through every
 contact. The [central-contact obstruction](nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-contact-admission)

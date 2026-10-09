@@ -357,7 +357,9 @@ transferred through the new map without re-admitting its errors.
 The [terminal-limit theorem](SINE_PREPARATION_PATH_LIMITS.md) continues these
 same histories. It proves complete-state convergence and narrows the interior
 corridor's energy-compatible critical configurations, while retaining saddle
-exceptions and the unresolved source-to-basin assignment.
+exceptions. The additional [source-specific capture proof](SINE_PREPARATION_PATH_CAPTURE.md)
+uses the actual mixed state to select winding one for this corridor and
+exclude those exceptions; the other path intervals retain their own scope.
 
 The private [path calculator](../../src/tnfr/physics/_sine_preparation_path_selection.py)
 admits a closed parameter interval, structural time, and separate latent form

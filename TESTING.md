@@ -177,6 +177,15 @@ selects a nominal source's basin. Changes to the shared odd-cycle algebra also
 require the C5 critical-set and resonance consumers; preserve their exact
 ordering, output, zero-current branches and existing proof scope.
 
+For the [source-specific capture selector](theory/nodal/SINE_PREPARATION_PATH_CAPTURE.md),
+select `tests/physics/test_sine_preparation_path_capture.py` together with the
+path-source and acute-sector owners. Independently check the exact mixed-state
+initialization, uniform hidden-form remainder, cone boundary derivatives,
+finite passage budget, acute tube and complete storage. Retain the distinction
+between each member's hitting/capture time and the common deadline justified
+by subsequent trapping. Failed initial cones or strict margins stay unavailable;
+capture does not assign the same deadline to a smaller recovery radius.
+
 For [class-mediated collective response](theory/nodal/SINE_CLASS_MEDIATED_RESPONSE.md),
 select both the primitive/report controls and independent full-support
 algebra. Rebuild the 27-node support, its `(3,4,3)` central degrees, common

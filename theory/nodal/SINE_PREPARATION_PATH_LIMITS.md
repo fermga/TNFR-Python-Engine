@@ -330,6 +330,13 @@ configuration, not an attracting acquired identity.
 The present restriction is therefore stronger than exclusion of winding two
 but weaker than whole-family capture by one organization.
 
+The separate [source-specific capture proof](SINE_PREPARATION_PATH_CAPTURE.md)
+now supplies that additional bridge for the original interior corridor.
+It carries the actual mixed state into the winding-one storage trap and
+excludes the other 56 candidates there, including every saddle exception.
+The energy classification above remains valid for other sources; its
+candidate list alone supplies no such selector.
+
 <a id="sine-path-limits-implementation"></a>
 ## Implementation and evidence boundary
 
