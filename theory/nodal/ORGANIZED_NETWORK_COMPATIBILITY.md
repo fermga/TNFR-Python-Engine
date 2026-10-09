@@ -436,10 +436,13 @@ on (5). This is conditional invariant-family identity, with no assertion
 that arbitrary nearby states remain there or that previously acquired
 two-object error budgets survive this different support and degree.
 Matching target geometry and local coefficients does not transfer
-nonlinear recovery or acquisition certificates. Off-family source
-transport, full-state stability, maintenance and event selection remain
-separate proof obligations. No trajectory, source producer, physical
-dataset, topology search or new numerical protocol was evaluated.
+nonlinear recovery or acquisition certificates. The separate
+[acquired-assembly proof](ACQUIRED_ORGANIZED_NETWORK_CAPTURE.md) establishes
+full-state capture and winding retention for the two fixed controls from
+their actual independently recovered sources, with supplied attachment
+work retained. Other mixtures, later inputs and event selection require
+their own admissions. No trajectory, source producer, physical dataset,
+topology search or new numerical protocol was evaluated here.
 
 This result neither identifies a fundamental physical interaction nor
 rules out a hierarchy carrying its actual boundary laws. The

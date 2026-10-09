@@ -230,6 +230,21 @@ acquired-source capture or transverse stability certificates. Reject invalid
 primitive scalars and phasors before deriving contact reports, and preserve
 the previous pair APIs and frozen evidence.
 
+For [capture of the acquired three-object assembly](theory/nodal/ACQUIRED_ORGANIZED_NETWORK_CAPTURE.md),
+select `tests/physics/test_acquired_organized_network_capture.py` with
+`tests/physics/test_organized_network_compatibility.py` and
+`tests/physics/test_sine_constitutive_recovery.py`. Independently reconstruct
+the complete weighted support and target fine-node balances for both fixed
+controls. Keep the implicit unequal-control target separate from a rounded
+phase assignment and the stationary equal-control reference. Check the
+full-state storage remainder, sector boundary and source entry, including
+all original residuals and their mean correlations. The containing sector
+allows nonacute transient edges; target acuteness cannot replace its actual
+proof. Retain attachment work separately from continuous loss and source
+excess below the interval grid. Reject invalid preparation inputs before
+source assessment, and exercise unavailable recovery rather than treating
+it as instability. These controls run no trajectory or frozen producer.
+
 For [preparation information and acquired modes](theory/nodal/SINE_PREPARATION_MODE_SELECTION.md),
 select `tests/physics/test_sine_preparation_mode_selection.py` with the shared
 preparation and isolated-class controls above. Reconstruct the Laplacian energy

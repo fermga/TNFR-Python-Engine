@@ -240,9 +240,16 @@ control also fails amplitude compatibility. Both nevertheless retain an
 exact six-coordinate law with their boundary data. This is information
 in the supplied relations, not a newly identified physical gauge field.
 The equal-control aligned state is stationary despite nonzero cancelling
-contact-current contributions; the unequal aligned state is not. Joined
-attraction, transverse identity and capture of actual recovered sources
-require their own full-state proof.
+contact-current contributions; the unequal aligned state is not. The separate
+[acquired-assembly proof](nodal/ACQUIRED_ORGANIZED_NETWORK_CAPTURE.md) now
+admits both full-state targets and carries the actual independently recovered
+sources into their respective joined identities. All three windings persist
+and the complete state converges modulo its conserved common origins; the
+unequal control changes the relative component origins. The containing
+phase sector does not require every transient edge to stay acute. Source
+residuals remain explicitly bounded and positive attachment work is supplied.
+This proves conditional composition from formed children, not passive or autonomous
+attachment, physical binding or a universal hierarchy.
 
 Distinct internal geometries need not be distinguishable through every
 contact. The [central-contact obstruction](nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-contact-admission)

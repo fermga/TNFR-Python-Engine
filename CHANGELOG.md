@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Prove [capture of the acquired three-object assembly](theory/nodal/ACQUIRED_ORGANIZED_NETWORK_CAPTURE.md)
+  under both fixed weighted contact controls. Retain every original source
+  residual, all 27 fine nodes and the supplied attachment work; derive the
+  shifted unequal-control target and full-state winding retention and
+  convergence. Use a storage barrier on a declared phase sector, without
+  assuming that every transient edge stays acute. Reuse isolated recovery
+  and network geometry; no trajectory or event selector is introduced.
 - Derive [network-wide compatibility of three organized C9 components](theory/nodal/ORGANIZED_NETWORK_COMPATIBILITY.md).
   The complete weighted law retains contact-cycle phase and amplitudes when
   pairwise charts cannot share one form/clock/reciprocal description. Preserve
