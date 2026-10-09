@@ -212,6 +212,25 @@ heat quadrature are coefficient controls, not complete sine trajectories.
 The tests acquire no source and replay no reserved response. SDK wiring
 uses `test_reduced_port_sdk_wiring_does_not_evaluate_research` separately.
 
+For the [independent class comparison protocol](theory/nodal/SINE_CLASS_COMPARISON_PROTOCOL.md),
+use unrelated polynomial controls for the two-source composition. Both sources
+must be admitted before either runs, and the first incomplete child must stop
+later execution. Reconstruct complete law, source, event carry, step arithmetic,
+counts and observations before consuming a child report. A saved band or status
+cannot replace that evidence; derivative generation remains an explicit premise.
+
+```sh
+python -m pytest tests/physics/test_sine_class_comparison_readout.py tests/physics/test_sine_class_comparison_protocol_algebra.py tests/physics/test_sine_class_readout.py tests/physics/test_sine_class_four_history_readout_algebra.py tests/research/test_frozen_source.py tests/scripts/test_restore_frozen_source.py -q
+```
+
+Keep nominal reference covers separate from the original correlated acquired
+families and their Cartesian outer covers. Check that source transport is added
+once, while the cubic prediction never narrows a forward interval. Test both
+open-prediction consistency checks, the transported width postcondition and the
+distinct strict eight/sixteen-error margins. A declared step/order policy does
+not guarantee the requested numerical width. Preserve unavailable and first
+failure evidence; these tests execute no selected reference or reserved response.
+
 For [common-scale amplitude feasibility](theory/nodal/SINE_CLASS_AMPLITUDE_FEASIBILITY.md),
 check whole-interval coefficient homogeneity and higher-amplitude bounds,
 the complex-domain boundary, the fixed source/noise allowances and the

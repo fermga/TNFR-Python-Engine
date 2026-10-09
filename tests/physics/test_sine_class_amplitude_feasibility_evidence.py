@@ -14,6 +14,10 @@ from tests.physics import test_sine_class_cubic_evidence as cubic_audit
 from tnfr.physics.relational_sine_class_amplitude_feasibility import (
     bound_sine_class_amplitude_feasibility,
 )
+from tnfr.research.sine_class_comparison_protocol import (
+    comparison_observation_policy,
+    comparison_producer_inputs,
+)
 
 # Reuse the existing bounded archive and arithmetic owner without collecting
 # its test functions or adding another scientific report reader.
@@ -110,3 +114,48 @@ def test_displayed_theorem_premise_is_a_conservative_enclosure(reconstructed):
     assert displayed.decision.null_separation_margin > Q(537, 10**33)
     assert displayed.feasible_interval_certified
     assert displayed.upper_scale_history_bounds == exact.upper_scale_history_bounds
+
+
+def test_fixed_comparison_predictions_enclose_reconstructed_scaled_evidence(
+    reconstructed,
+):
+    inputs, _, gamma, coefficient, _ = reconstructed
+    producer = comparison_producer_inputs()
+    policy = comparison_observation_policy()
+    scale = producer["first_probe_amplitude"] / inputs["first_probe_amplitude"]
+    assert scale == Q(7, 5)
+    assert (
+        producer["second_probe_amplitude"] / inputs["second_probe_amplitude"] == scale
+    )
+    assert (
+        producer["first_probe_amplitude"]
+        == producer["second_probe_amplitude"]
+        == Q(7, 10000)
+    )
+    assert producer["delay"] == inputs["delay"]
+    assert (
+        producer["total_duration"]
+        == policy["total_duration"]
+        == inputs["total_duration"]
+    )
+    assert policy["endpoint_radius"] == inputs["endpoint_radius"]
+    assert policy["readout_error_bound"] == inputs["readout_error_bound"]
+
+    # Rebuild both bands from the retained complete cubic coefficient, rather
+    # than expanding either rounded display or consuming a cached verdict.
+    a, b = producer["first_probe_amplitude"], producer["second_probe_amplitude"]
+    g, T = policy["gamma_upper"], producer["total_duration"]
+    assert gamma.hi < g == Q(1, 3000)
+    higher = 2 * sum(
+        256 * g**6 * A**5 * T / ((1 - 2 * g**2 * T**2) * (1 - 4 * g**2 * A**2))
+        for A in (Q(0), a, b, a + b)
+    )
+    nominal = scale**3 * coefficient[0] - higher, scale**3 * coefficient[1] + higher
+    source = 8 * policy["endpoint_radius"] / (1 - 2 * g * T)
+    actual = nominal[0] - source, nominal[1] + source
+    for key, rebuilt in (
+        ("reference_prediction_open_bounds", nominal),
+        ("prediction_open_bounds", actual),
+    ):
+        lower, upper = policy[key]
+        assert lower < rebuilt[0] <= rebuilt[1] < upper

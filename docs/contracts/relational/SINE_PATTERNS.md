@@ -1559,6 +1559,53 @@ The [guide](../../guides/relational/SINE_PATTERNS.md#sine-class-nonlinear-protoc
 evaluates the declared response-free design. Earlier frozen outcomes and
 the short-window record-overlap theorem remain unchanged.
 
+<a id="sine-class-comparison-readout"></a>
+### Two complete source readouts and independent source transfer
+
+[`bound_sine_class_comparison_readout`](../../../src/tnfr/physics/relational_sine_class_comparison_readout.py)
+returns `SineClassComparisonReadout`. Its nine mandatory inputs retain the
+single-source names: each of `initial_form_bounds` and `initial_phase_bounds`
+now contains two ordered 27-node covers. The other inputs are the shared two
+amplitudes, delay, duration, time step, Taylor order and total `max_steps`.
+Single-source scalar domains remain unchanged; the global ordinary-integer
+attempt cap is `1..8192`, with at most 4096 attempts per child.
+
+Both sources are admitted before the first execution. Children run in source
+order, receiving the remaining global budget up to their per-child limit.
+The first incomplete child stops all later execution. Budget exhaustion
+before the next child applies no event to that source. Reports retain both
+child slots, attempted/completed counts, failed-source association and
+unattempted source indices. The planned count is distinct from an attempt.
+
+Each child observation is reconstructed from its admitted complete law,
+source, branch ancestry and retained Taylor arithmetic through the shared
+evidence reader. Stored derivatives and strict Picard evidence retain their
+execution premise; arithmetic reconstruction does not regenerate or
+authenticate them. Rebuilt suffix increments provide `contrast_readout_bounds`
+as source zero minus source one. The separate `raw_endpoint_contrast_bounds`
+retains the wider endpoint construction. Both remain unavailable unless
+all four histories in both children complete. Shared SDK projection uses
+`tnfr.sine-class-comparison-readout.v1`.
+
+The forward API accepts no class, acquisition, prediction or sensor verdict.
+For the [fixed comparison protocol](../../../theory/nodal/SINE_CLASS_COMPARISON_PROTOCOL.md),
+its covers enclose mathematical nominal references. The separate
+[`assess_reference_contrast`](../../../src/tnfr/research/sine_class_comparison_protocol.py)
+uses exact primitive bounds to extend a reconstructed reference contrast to
+the original acquired families by `8*epsilon/(1-2*gamma_upper*T)`. Its caller
+must establish the matching law, reference and actual-source distance.
+The extension applies once, without adding a cubic approximation error or
+identifying every outer-cover corner as an acquired state.
+
+That helper reports both widths and tests the transported width against the
+declared allowance. Reference and actual open predictions are separate
+consistency checks; neither is intersected with a forward band. Missing
+observations retain unavailable decisions. Status precedence is `unavailable`,
+`consistency_conflict`, `resolution_not_certified`,
+`discrimination_not_certified`, then `discrimination_certified`. Individual
+sign/separation flags remain visible even if a width policy fails.
+The selected step/order policy promises neither completion nor resolution.
+
 <a id="sine-class-amplitude-feasibility"></a>
 ### Conditional feasibility over a common amplitude interval
 

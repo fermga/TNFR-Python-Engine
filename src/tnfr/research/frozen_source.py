@@ -1,6 +1,6 @@
 """Inspect and restore a declared frozen source without executing its code.
 
-The supported adapter is the class nonlinear-readout v1 freeze/source schema.
+Supported adapters are the class nonlinear-readout and comparison v1 schemas.
 Checks associate retained bytes with a complete Git base; they do not validate
 the experiment's mathematical premises, runtime dependencies or chronology.
 Other freeze schemas need an explicit adapter, not guessed field semantics.
@@ -26,9 +26,16 @@ from .artifact_io import (
 
 _RECORD_LIMIT = 32 * 1024**2
 _ARCHIVE_LIMIT = 128 * 1024**2
-_FREEZE_SCHEMA = "tnfr.sine-class-nonlinear-readout-freeze.v1"
-_PROTOCOL_SCHEMA = "tnfr.sine-class-nonlinear-readout-protocol.v1"
-_SOURCE_SCHEMA = "tnfr.sine-class-nonlinear-readout-source-snapshot.v1"
+_SCHEMAS = {
+    "tnfr.sine-class-nonlinear-readout-freeze.v1": (
+        "tnfr.sine-class-nonlinear-readout-protocol.v1",
+        "tnfr.sine-class-nonlinear-readout-source-snapshot.v1",
+    ),
+    "tnfr.sine-class-comparison-freeze.v1": (
+        "tnfr.sine-class-comparison-protocol.v1",
+        "tnfr.sine-class-comparison-source-snapshot.v1",
+    ),
+}
 
 
 @dataclass(frozen=True)
@@ -113,11 +120,13 @@ def _snapshot(root: Path, receipt_path: str) -> _Snapshot:
     )
     receipt = json_loads(receipt_data)
     if (
-        receipt["schema"] != _FREEZE_SCHEMA
+        not isinstance(receipt["schema"], str)
+        or receipt["schema"] not in _SCHEMAS
         or receipt["evaluation_status_at_freeze"] != "not_evaluated"
         or receipt["runtime_overlays"] != []
     ):
         raise ValueError("unsupported freeze schema or source overlays")
+    protocol_schema, source_schema = _SCHEMAS[receipt["schema"]]
     base = receipt["source_base_commit"]
     if not isinstance(base, str) or not re.fullmatch(r"[0-9a-f]{40}", base):
         raise ValueError("expected a full source commit identifier")
@@ -134,7 +143,7 @@ def _snapshot(root: Path, receipt_path: str) -> _Snapshot:
     retained[receipt_path] = receipt_data
     protocol = json_loads(retained[protocol_path])
     if (
-        protocol["schema"] != _PROTOCOL_SCHEMA
+        protocol["schema"] != protocol_schema
         or protocol["source_base_commit"] != base
         or protocol["runtime_overlays"] != []
     ):
@@ -147,7 +156,7 @@ def _snapshot(root: Path, receipt_path: str) -> _Snapshot:
         manifest_data = archive.read("source-manifest.json")
         manifest = json_loads(manifest_data)
         if (
-            manifest["schema"] != _SOURCE_SCHEMA
+            manifest["schema"] != source_schema
             or manifest["source_base_commit"] != base
             or manifest["runtime_overlays"] != []
         ):
@@ -198,6 +207,8 @@ def _snapshot(root: Path, receipt_path: str) -> _Snapshot:
     if len({name.casefold() for name in retained}) != len(retained):
         raise ValueError("retained paths collide on a case-insensitive filesystem")
     outcome_paths = (stem + ".attempt.json", stem + ".json")
+    if receipt["schema"] == "tnfr.sine-class-comparison-freeze.v1":
+        outcome_paths += (stem + ".export-error.json",)
     if any(name in retained for name in outcome_paths):
         raise ValueError("source supplements cannot install attempt/outcome evidence")
     existing = tuple(name for name in outcome_paths if _local_path(root, name).exists())

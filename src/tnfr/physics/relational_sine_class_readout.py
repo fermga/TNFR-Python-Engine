@@ -145,7 +145,7 @@ class SineClassFourHistoryReadout:
         }
 
 
-def bound_sine_class_four_history_readout(
+def _admit_class_readout_inputs(
     *,
     initial_form_bounds,
     initial_phase_bounds,
@@ -156,19 +156,8 @@ def bound_sine_class_four_history_readout(
     time_step,
     order,
     max_steps,
-) -> SineClassFourHistoryReadout:
-    """Enclose four complete histories from nine independently admitted inputs.
-
-    Source channels each have 27 ordered real endpoint pairs. Amplitudes are
-    signed finite reals. Require 0<=delay<=total_duration<=2, 0<time_step<=2,
-    ordinary integer order1..16 and max_steps1..4096. The latter caps all shared
-    kernel attempts across the six-segment tree, including a failed attempt.
-    Zero-duration segments apply their event without invoking a flow step.
-
-    First failure retains available prefixes and completed individual readings;
-    subsequent events are not applied. The complete four-reading tuple and its
-    mixed enclosure are unavailable until every suffix reaches total_duration.
-    """
+):
+    """Normalize the complete primitive boundary before any field execution."""
     channels = []
     for raw, label in (
         (initial_form_bounds, "initial_form_bounds"),
@@ -199,6 +188,44 @@ def bound_sine_class_four_history_readout(
     if type(max_steps) is not int or not 1 <= max_steps <= _MAX_STEPS:
         raise ValueError("max_steps must be an ordinary integer in 1..4096")
     form, phase = channels
+    return form, phase, a, b, s, total, h, order, max_steps
+
+
+def bound_sine_class_four_history_readout(
+    *,
+    initial_form_bounds,
+    initial_phase_bounds,
+    first_probe_amplitude,
+    second_probe_amplitude,
+    delay,
+    total_duration,
+    time_step,
+    order,
+    max_steps,
+) -> SineClassFourHistoryReadout:
+    """Enclose four complete histories from nine independently admitted inputs.
+
+    Source channels each have 27 ordered real endpoint pairs. Amplitudes are
+    signed finite reals. Require 0<=delay<=total_duration<=2, 0<time_step<=2,
+    ordinary integer order1..16 and max_steps1..4096. The latter caps all shared
+    kernel attempts across the six-segment tree, including a failed attempt.
+    Zero-duration segments apply their event without invoking a flow step.
+
+    First failure retains available prefixes and completed individual readings;
+    subsequent events are not applied. The complete four-reading tuple and its
+    mixed enclosure are unavailable until every suffix reaches total_duration.
+    """
+    form, phase, a, b, s, total, h, order, max_steps = _admit_class_readout_inputs(
+        initial_form_bounds=initial_form_bounds,
+        initial_phase_bounds=initial_phase_bounds,
+        first_probe_amplitude=first_probe_amplitude,
+        second_probe_amplitude=second_probe_amplitude,
+        delay=delay,
+        total_duration=total_duration,
+        time_step=time_step,
+        order=order,
+        max_steps=max_steps,
+    )
     source = form + phase
     geometry = _derive(_NODES, tuple(sorted(tuple(sorted(edge)) for edge in _EDGES)))
     degrees = tuple(sum(i in edge for edge in geometry.edges) for i in _NODES)

@@ -2450,6 +2450,12 @@ def test_prepared_composition_nested_label_admission(
             None,
         ),
         (
+            "relational_sine_class_comparison_readout",
+            "SineClassComparisonReadout",
+            "bound_sine_class_comparison_readout",
+            None,
+        ),
+        (
             "relational_sine_two_port_compatibility",
             "SineTwoPortCompatibility",
             "assess_sine_two_port_compatibility",

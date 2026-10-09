@@ -133,6 +133,31 @@ def test_inspection_is_read_only_and_uses_git_base(source):
     assert not (root / HELPER).exists()
 
 
+def test_comparison_adapter_requires_its_matching_protocol_and_manifest(source):
+    root, files, base = source
+    protocol = json_loads(files[STEM + ".protocol.json"])
+    protocol["schema"] = "tnfr.sine-class-comparison-protocol.v1"
+    files[STEM + ".protocol.json"] = _json(protocol)
+    (root / (STEM + ".protocol.json")).write_bytes(files[STEM + ".protocol.json"])
+
+    def comparison_manifest(manifest):
+        manifest["schema"] = "tnfr.sine-class-comparison-source-snapshot.v1"
+
+    _pack(root, files, base, mutate_manifest=comparison_manifest)
+    receipt = json_loads((root / RECEIPT).read_bytes())
+    # Cross-protocol receipts must not silently select the new semantics.
+    with pytest.raises(ValueError, match="protocol source association"):
+        inspect_frozen_source(root, RECEIPT)
+    receipt["schema"] = "tnfr.sine-class-comparison-freeze.v1"
+    (root / RECEIPT).write_bytes(_json(receipt))
+    report = inspect_frozen_source(root, RECEIPT)
+    assert report.source_base_commit == base
+    assert report.archived_file_count == 4 and report.existing_outcome_files == ()
+    export_error = STEM + ".export-error.json"
+    (root / export_error).write_bytes(b'{"error":"retained export failure"}')
+    assert inspect_frozen_source(root, RECEIPT).existing_outcome_files == (export_error,)
+
+
 def test_restore_complete_base_and_exact_supplements_without_execution(
     source, tmp_path
 ):

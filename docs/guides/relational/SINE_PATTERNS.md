@@ -1352,6 +1352,44 @@ response's sign. The [contract](../../contracts/relational/SINE_PATTERNS.md#sine
 retains these distinctions. This example does not replay any frozen
 response or establish laboratory feasibility.
 
+<a id="sine-class-comparison-protocol"></a>
+### Inspect the independent comparison protocol without running it
+
+The [protocol owner](../../../theory/nodal/SINE_CLASS_COMPARISON_PROTOCOL.md)
+fixes one intervention inside the admitted amplitude interval. Inspect its
+primitive inputs and a missing-observation result without producing a response:
+
+```python
+from fractions import Fraction as Q
+from tnfr.research.sine_class_comparison_protocol import (
+    assess_reference_contrast,
+    canonical_comparison_sources,
+    comparison_observation_policy,
+    comparison_producer_inputs,
+)
+
+sources = canonical_comparison_sources()
+inputs = comparison_producer_inputs()
+policy = comparison_observation_policy()
+assert inputs["first_probe_amplitude"] == Q(7, 10000)
+assert inputs["time_step"] == Q(1, 128)
+assert inputs["max_steps"] == 1536
+assert inputs["initial_form_bounds"] == sources["reference_form_bounds"]
+assert inputs["initial_form_bounds"] != sources["actual_form_bounds"]
+pending = assess_reference_contrast(None, **policy)
+assert pending["status"] == "unavailable"
+assert pending["actual_bounds"] is None
+```
+
+The reference covers belong to a numerical comparison; they do not replace
+the acquired preparation. A proved full-law bound transfers their result to
+the original actual families. The source allowance, reading errors and work
+requirements retain their original values. The final actual-family interval
+must meet the width budget independently of the analytic prediction.
+Follow the execution plan and frozen-source association before running the
+selected response. The [contract](../../contracts/relational/SINE_PATTERNS.md#sine-class-comparison-readout)
+describes complete/partial results and the separate numerical decisions.
+
 <a id="sine-class-amplitude-feasibility"></a>
 ### Check a whole interval of common probe amplitudes
 
