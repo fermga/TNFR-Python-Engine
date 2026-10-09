@@ -17,62 +17,34 @@ P1-P5 below governs physical evaluation; it is not another active queue.
 
 **Primary question:** can organized TNFR patterns generate observable
 collective properties that explain phenomena of fundamental physics?
-The next bounded question is whether an independent complete-law calculation
-confirms the newly derived nonadditive response to two distinct neighboring
-interventions, under one fixed prospective protocol.
 The route is **justified nodal dynamics -> collective organization
 -> inherited interaction properties -> independent physical observation**. The
 [ontology](../EMERGENT_ONTOLOGY.md#generative-bound-organization) distinguishes
 collective properties from their physical identification. A sufficient
 representation does not independently justify the law that evolves it.
 
-The conditional formation and [class-response certificate](#generative-class-mediated-response)
-connect acquired organization to distinguishable interaction, with
-[effective memory](#acquired-mediator-effective-memory) retaining hidden
-initialization. The [first within-class evaluation](#reserved-nonlinear-four-history-response)
-and [independent cross-class comparison](#reserved-scaled-cross-class-comparison)
-now support finite nonlinear interaction and its dependence on acquired
-internal organization under one declared complete law.
+Under the supplied smooth-sine law, acquired patterns have conditional
+[interaction and return](../nodal/SINE_CLASS_REPEATED_INTERACTION.md) and
+[causal component composition](../nodal/SINE_CLASS_INTERFACE_COMPOSITION.md)
+with hidden initialization, both boundary channels and finite error retained.
+The latest [distinct-neighbor theorem](../nodal/SINE_CLASS_NEIGHBOR_NONADDITIVITY.md)
+derives a nonadditive mediator response against separately matched nonlinear
+single-neighbor functionals. It is an analytic prediction awaiting an
+independent full-law evaluation.
 
-The [scaled comparison result](../nodal/SINE_CLASS_COMPARISON_PROTOCOL.md#sine-comparison-reserved-result)
-completed its frozen full-state calculation, met both prediction checks and
-its source-inclusive width policy, and separated the recorded contrast from
-the independently noisy zero-contrast alternative. Its source transfer
-preserves the original acquired families. Earlier
-[central](../nodal/SINE_CLASS_CUBIC_RESPONSE.md#sine-cubic-finite-result) and
-[spatial](../nodal/SINE_CLASS_SPATIAL_OBSERVATION.md#sine-spatial-finite-result)
-noise-cancellation results retain their unchanged intervention and reading
-budgets; the successful scaled design does not erase those obstructions.
+Existing frozen calculations support
+[within-class nonlinearity](#reserved-nonlinear-four-history-response),
+[organization-dependent interaction](#reserved-scaled-cross-class-comparison)
+and a separate [hidden-memory distinction](#reserved-changed-input-full-law-response)
+under their own protocols. The memory comparison does not establish nonlinear
+necessity. Earlier [central](../nodal/SINE_CLASS_CUBIC_RESPONSE.md#sine-cubic-finite-result)
+and [spatial](../nodal/SINE_CLASS_SPATIAL_OBSERVATION.md#sine-spatial-finite-result)
+noise obstructions retain their original budgets; later designs do not erase
+them. Result owners and the status table below retain the completed gates.
 
-The [joined return theorem](../nodal/SINE_CLASS_REPEATED_INTERACTION.md)
-extends the interaction to repeated supplied words with distinct carried
-residuals, exact mean accounting, per-event work and an independently
-maintained tangent comparator. Its very conservative common dwell proves
-conditional reuse, not practical repetition speed or a new formation image.
-The [nonlinear collective interface](../nodal/SINE_CLASS_COLLECTIVE_INTERFACE.md)
-retains six central port coordinates through causal histories, including
-quadratic internal feedback and hidden initialization. Its finite error bound
-preserves the known interaction contrast. The
-[changed-input causal prediction](../nodal/SINE_CLASS_CHANGED_INPUT_PREDICTION.md#sine-changed-input-prediction-result)
-now executes that interface for a mediator impulse. It separates a declared
-grounded tangent port alternative with source, numerical and recording errors
-retained. This leading separation tests linear hidden memory, not nonlinear
-necessity or a new class discriminator. The
-[independent full-law comparison](../nodal/SINE_CLASS_COLLECTIVE_FORWARD_PROTOCOL.md#sine-collective-forward-reserved-result)
-completed its single frozen attempt and met the classwise numerical,
-prediction-consistency and recorded-separation criteria. Its two nominal
-references are transported to the original acquired families.
-[Causal component composition](../nodal/SINE_CLASS_INTERFACE_COMPOSITION.md)
-now admits both endogenous boundary channels, a well-posed exact composition
-and conditional substitution bounds. An explicit component cubic hierarchy
-retains hidden initialization and preserves the named memory distinction
-without another response calculation. The
-[distinct-neighbor theorem](../nodal/SINE_CLASS_NEIGHBOR_NONADDITIVITY.md)
-now derives a finite mediator response that the sum of separately matched
-one-neighbor response functionals cannot reproduce. Static edge bounds use the
-observation budget of the earlier nonlinear studies and account for hidden
-quadratic feedback and the common source. The next obligation is
-[independent evaluation admission](#current-g3-gate), before any new response.
+The sole next admission is the [independent distinct-neighbor protocol](#current-g3-gate):
+extend shared observation execution, admit common-source transfer and freeze
+the numerical and recording policy before evaluating a new response.
 
 Supplied preparation, support, law, events and structural clock remain
 premises. In particular, the very small source/readout allowances and long
@@ -134,16 +106,20 @@ histories have present/absent simultaneous donor and receiver form impulses
 per-reading error `1e-30`. This tests a new intervention and comparator,
 not greater precision on an already evaluated response.
 
-1. Extend the shared full-state observation execution owner to admit distinct
-   event ports and the mediator selector. Preserve ordered support, all 54
-   coordinates, exact simultaneous jumps and complete state carry. Reuse the
-   shared validated integrator and evidence reconstruction; do not create a
-   parallel dynamics driver or fit the field to the inspected prediction.
+1. Extend the [shared full-state observation owner](../../src/tnfr/physics/relational_sine_class_readout.py)
+   and its reconstruction to admit distinct event ports and the mediator
+   selector while preserving existing defaults. Retain those selectors in
+   evidence. Preserve ordered support, all 54 coordinates, exact simultaneous
+   jumps and complete state carry. Reuse the shared validated integrator and
+   evidence reconstruction; do not create a parallel dynamics driver or fit
+   the field to the inspected prediction.
 2. Declare the one common complete source used by all four histories and the
    exact nominal reference conversion. Derive actual-family mixed-source
    transport separately from the numerical forward enclosure. Common linear
    initialization cancels only with a justified shared source and law; the
    remaining nonlinear source allowance cannot be replaced by nominal parity.
+   Cubic truncation and static-cone errors belong to the analytic prediction,
+   not the independent full-law forward enclosure.
 3. Freeze the event word, readout, observation convention, numerical width
    ceiling, horizon, order, step budget, backend and first-failure behavior
    before computing any selected response. Preserve signed mixed intervals
@@ -173,9 +149,10 @@ separately matched one-neighbor responses. Its mixed statistic is zero.
 
 Static bounds on all incident-edge currents and heat transport establish
 separation at the earlier nonlinear observation budget. The proof charges
-hidden quadratic recoupling, full phase feedback, amplitude tails and nonlinear initialization;
-only the exact common linear source cancels. Simultaneous signed event work,
-weighted means and whole-state identity retain their own certificates.
+hidden quadratic recoupling, full phase feedback, amplitude tails and nonlinear
+initialization; only the exact common linear source cancels. Simultaneous
+signed event work, weighted means and whole-state identity retain their own
+certificates.
 No selected time coefficient, trajectory or reserved response was evaluated.
 
 The nonadditivity is a collective response under a supplied pairwise law. It

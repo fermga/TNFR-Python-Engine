@@ -16,10 +16,11 @@ from ._sine_class_collective_interface import (
     _MAX_INPUT_VARIATION,
     _bound_collective_interface,
     _CollectiveInterfaceBound,
-    _derive_collective_interface,
 )
 from ._sine_class_contrast import _contrast_decision, _ContrastDecision
+from .relational_sine_class_cubic_response import _cubic_parameters
 from .relational_sine_class_mediation import _EDGES
+from .relational_sine_class_memory import _normalized_laplacian
 from .relational_sine_class_superposition import (
     _admit_probe_primitives,
     _ClassProbeEventLedger,
@@ -60,24 +61,19 @@ class _NeighborOnset:
 
 def _derive_neighbor_onset(mediator_class) -> _NeighborOnset:
     """Use first phase velocities and oriented cubic edge currents, not a solver."""
-    interface = _derive_collective_interface(mediator_class)
-    form = interface.spatial_partition.generator
+    parameters = _cubic_parameters(mediator_class)
+    form = _normalized_laplacian(_EDGES, parameters.degrees)
     donor, receiver = tuple(row[4] for row in form), tuple(row[22] for row in form)
     channels = [[Q(0), Q(0)] for _ in range(4)]
-    for index, (difference, current) in enumerate(
-        zip(
-            interface.edge_phase_difference_rows,
-            interface.normalized_edge_current_columns,
-        )
-    ):
-        left = sum((x * y for x, y in zip(difference, donor)), Q(0))
-        right = sum((x * y for x, y in zip(difference, receiver)), Q(0))
+    for index, (i, j) in enumerate(_EDGES):
+        left = donor[j] - donor[i]
+        right = receiver[j] - receiver[i]
+        current = Q(int(i == 13) - int(j == 13), parameters.degrees[13])
         channel = min(index // 9, 3)
         # The sine cubic contributes -1/6, the mixed monomial multiplicity
         # is three, and integration of t**3 supplies the separate factor 1/4.
-        channels[channel][0] -= current[13] * left**2 * right / 8
-        channels[channel][1] -= current[13] * left * right**2 / 8
-    parameters = interface.parameter_bounds
+        channels[channel][0] -= current * left**2 * right / 8
+        channels[channel][1] -= current * left * right**2 / 8
     return _NeighborOnset(
         mediator_class=mediator_class,
         gamma_bounds=parameters.gamma,
@@ -116,12 +112,14 @@ def _formal_onset_bounds(onset, donor, receiver, horizon):
 
 @dataclass(frozen=True)
 class _NeighborStaticCone:
-    """Static tangent-phase cones and a positive-heat mixed cubic enclosure.
+    """Static tangent-phase cones and a heat-transported direct cubic enclosure.
 
     The two exact columns A*e and A**2*e are geometric derivatives, not a
     time-series execution. The complete tangent-phase remainder is bounded
     analytically throughout the window. Every internal cosine is enclosed by
     [1/6,1], while the two contact cosines are exactly one.
+    The direct cubic heat term does not include the separately bounded
+    quadratic feedback and cubic phase recoupling correction.
     """
 
     tangent_phase_remainder_bound: Q
@@ -132,7 +130,7 @@ class _NeighborStaticCone:
     mediator_force_upper_bound: Q
     competing_force_upper_bound: Q
     normalized_heat_shape_bounds: tuple[Q, Q]
-    tangent_cubic_bounds: tuple[Q, Q]
+    direct_cubic_heat_bounds: tuple[Q, Q]
     complete_cubic_correction_upper_bound: Q
 
 
@@ -194,7 +192,7 @@ def _neighbor_static_cone(onset, amplitude, horizon):
         mediator_force_upper_bound=central,
         competing_force_upper_bound=competing,
         normalized_heat_shape_bounds=shape,
-        tangent_cubic_bounds=(min(products), max(products)),
+        direct_cubic_heat_bounds=(min(products), max(products)),
         complete_cubic_correction_upper_bound=correction,
     )
 
@@ -338,7 +336,7 @@ def _bound_neighbor_nonadditivity(
     elif cone is not None:
         correction = cone.complete_cubic_correction_upper_bound
         decision = _contrast_decision(
-            cone.tangent_cubic_bounds,
+            cone.direct_cubic_heat_bounds,
             correction + fifth + source,
             delta,
             reading_count=4,

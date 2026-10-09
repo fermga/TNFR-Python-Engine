@@ -503,10 +503,15 @@ fundamental interaction law.
 ## Implementation and verification boundary
 
 The [private analytic owner](../../src/tnfr/physics/_sine_class_neighbor_nonadditivity.py)
-rebuilds the local onset from exact edge factors, retains every static
-phase cone and force row, and combines the complete cubic, amplitude,
-source and observation allowances. Its finite cone certificate is
-restricted to equal positive impulses with \(0<T\le1/8\).
+reuses the fixed-law parameter and normalized-Laplacian owners to rebuild
+the local onset directly from oriented edges. It does not construct the
+collective memory partitions that this static calculation does not consume.
+It retains every static phase cone and force row, and combines the complete
+cubic, amplitude, source and observation allowances. The private field
+`direct_cubic_heat_bounds` encloses only the heat-transported direct cubic
+term \(Z_M\); `complete_cubic_correction_upper_bound` must still widen that
+interval to enclose the complete cubic response. Its finite cone certificate
+is restricted to equal positive impulses with \(0<T\le1/8\).
 Other admitted signed inputs retain the formal onset and conditional
 source/work bounds; absent a separate finite remainder they do not
 receive a finite sign verdict.

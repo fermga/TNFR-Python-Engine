@@ -307,6 +307,8 @@ For [distinct-neighbor nonadditivity](theory/nodal/SINE_CLASS_NEIGHBOR_NONADDITI
 derive the donor/receiver mixed onset from independent incident-edge algebra.
 Reconstruct all normalized rows used by the finite phase and cubic-current
 bounds; the mediator's internal edges contribute alongside its two contacts.
+Check exact agreement with the collective descriptor while preventing the
+onset calculation from constructing unconsumed coordinate-memory partitions.
 Retain hidden quadratic recoupling, cubic phase feedback, amplitude tails and
 the four nonlinear initialization defects. The exact common linear source
 cancels only because all four histories start from the same complete state.
@@ -315,14 +317,15 @@ cancels only because all four histories start from the same complete state.
 python -m pytest tests/physics/test_sine_class_neighbor_nonadditivity.py tests/physics/test_sine_class_collective_interface.py tests/physics/test_sine_class_superposition_algebra.py tests/physics/test_sine_class_interface_composition.py -q
 ```
 
-Check the exact zero-input identities, nominal opposite-input symmetry,
-the earlier nonlinear observation budget, strict independent-comparator
-threshold and separate work/identity admission. The reused event ledger receives an explicit pressure
-bound for the commuting distinct-port jumps; its old delayed donor default is
-not applicable. These controls compute static algebra and rational envelopes,
-not selected time coefficients or full-law responses. They admit a prospective
-mathematical distinction, without claiming an independently evaluated response
-or exclusion of all pairwise dynamical laws.
+Check the exact zero-input identities and preserve the scope of nominal
+opposite-input symmetry. Exercise the earlier nonlinear observation budget,
+strict independent-comparator threshold and separate work/identity admission.
+The reused event ledger receives an explicit pressure bound for the commuting
+distinct-port jumps; its old delayed donor default is not applicable. These
+controls check the implementation of the conditional analytic distinction
+using static algebra and rational envelopes. They neither evaluate selected time coefficients or
+full-law responses nor establish the mathematical proof or exclusion of all
+pairwise dynamical laws.
 
 For the [changed-input collective prediction](theory/nodal/SINE_CLASS_CHANGED_INPUT_PREDICTION.md),
 check grounded-path kernel coefficients, exact causal convolution weights,

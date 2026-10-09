@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 
 from tests.sine_evidence_helpers import forbid_sine_regeneration
+from tnfr.physics import _sine_class_collective_interface as collective
 from tnfr.physics import _sine_class_neighbor_nonadditivity as owner
 
 
@@ -60,6 +61,82 @@ def _arguments():
 @pytest.fixture(scope="module")
 def report():
     return owner._bound_neighbor_nonadditivity(**_arguments())
+
+
+def _descriptor_onset(mediator_class):
+    """Retain the former dense structural construction as an exact oracle."""
+    interface = collective._derive_collective_interface(mediator_class)
+    form = interface.spatial_partition.generator
+    donor = tuple(row[4] for row in form)
+    receiver = tuple(row[22] for row in form)
+    channels = [[Q(0), Q(0)] for _ in range(4)]
+    for index, (difference, current) in enumerate(
+        zip(
+            interface.edge_phase_difference_rows,
+            interface.normalized_edge_current_columns,
+        )
+    ):
+        left, right = _dot(difference, donor), _dot(difference, receiver)
+        channel = min(index // 9, 3)
+        channels[channel][0] -= current[13] * left**2 * right / 8
+        channels[channel][1] -= current[13] * left * right**2 / 8
+    parameters = interface.parameter_bounds
+    return owner._NeighborOnset(
+        mediator_class=mediator_class,
+        gamma_bounds=parameters.gamma,
+        channel_cosine_bounds=tuple(parameters.edge_cosines[9 * i] for i in range(3))
+        + (owner.I(1),),
+        mixed_channel_factors=tuple(map(tuple, channels)),
+        degrees=parameters.degrees,
+        donor_phase_velocity_column=donor,
+        receiver_phase_velocity_column=receiver,
+        donor_phase_curvature_column=_mv(form, donor),
+        receiver_phase_curvature_column=_mv(form, receiver),
+    )
+
+
+@pytest.mark.parametrize("mediator_class", (1, 2))
+@pytest.mark.parametrize("finite_cone", (False, True))
+def test_direct_geometry_preserves_entire_descriptor_based_report(
+    mediator_class, finite_cone, monkeypatch
+):
+    arguments = _arguments() | {"mediator_class": mediator_class}
+    if finite_cone:
+        arguments |= {
+            "donor_amplitude": Q(7, 10000),
+            "receiver_amplitude": Q(7, 10000),
+            "horizon": Q(1, 8),
+        }
+    direct = owner._bound_neighbor_nonadditivity(**arguments)
+    monkeypatch.setattr(owner, "_derive_neighbor_onset", _descriptor_onset)
+    former = owner._bound_neighbor_nonadditivity(**arguments)
+    # Includes every exact column, interval endpoint, error, event and verdict.
+    assert direct == former
+
+
+@pytest.mark.parametrize("mediator_class", (1, 2))
+def test_neighbor_does_not_construct_collective_memory_partitions(
+    mediator_class, monkeypatch
+):
+    def forbidden(*args, **kwargs):
+        pytest.fail("neighbor bounds do not consume collective memory partitions")
+
+    monkeypatch.setattr(collective, "_derive_collective_interface", forbidden)
+    monkeypatch.setattr(collective, "derive_coordinate_memory", forbidden)
+    result = owner._bound_neighbor_nonadditivity(
+        **(_arguments() | {"mediator_class": mediator_class})
+    )
+    assert result.onset.degrees == _geometry()[2]
+    assert result.onset.mixed_channel_factors[1] == (Q(-1, 1024),) * 2
+
+
+@pytest.mark.parametrize("bad", (True, np.int64(1), Q(1), 1.0, 0, 3))
+def test_onset_class_admission_precedes_normalized_geometry(bad, monkeypatch):
+    monkeypatch.setattr(
+        owner, "_normalized_laplacian", lambda *_: pytest.fail("late class admission")
+    )
+    with pytest.raises(ValueError, match="mediator class"):
+        owner._derive_neighbor_onset(bad)
 
 
 @pytest.mark.parametrize("mediator_class", (1, 2))
@@ -365,7 +442,7 @@ def test_finite_full_bound_keeps_feedback_fifth_order_source_and_reading_budgets
         for gamma in (finite.onset.gamma_bounds.lo, finite.onset.gamma_bounds.hi)
         for endpoint in (low, upper)
     )
-    assert cone.tangent_cubic_bounds == (min(products), max(products))
+    assert cone.direct_cubic_heat_bounds == (min(products), max(products))
     error = (
         extra
         + finite.higher_amplitude_error_upper_bound
