@@ -83,11 +83,15 @@ That robustness does not select a unique law or an autonomous preparation.
 The [preparation-information result](#preparation-information-mode-selection)
 now proves that exactly matched initial phase, means and storage can lead to
 different acquired winding magnitudes under the fixed sine law. The
-[source-path result](#source-to-basin-mode-selection) now gives two uniform
+[source-path result](#source-to-basin-mode-selection) gives two uniform
 capture corridors and an interior corridor whose actual winding two must
-later be lost. The sole next admission is [capture after that passage](#current-g3-gate)
-for the same interior source family and actual trajectories. Neither the
-complete basin map nor a unique transition threshold has been established.
+later be lost. The [post-slip limit theorem](#post-slip-capture-admission)
+now proves convergence of each complete trajectory to one of 57
+energy-compatible relative critical geometries, with only three attractors
+and the exceptional saddle sources retained. The sole next admission is a
+[source-specific basin selector](#current-g3-gate) for that same interior
+family. Neither its selected destinations nor a complete basin map have
+been established.
 The [prepared storage observer](#storage-comparison-producer-admission)
 is retained as an instrument; it has no frozen protocol or reserved response
 and is not the next campaign.
@@ -104,7 +108,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next theoretical admission | [Post-slip capture](#current-g3-gate): eventual capture or rigorously limited possible final identities for the same interior source corridor, carrying its actual full state, uncertainty and loss without a restart |
+| Next theoretical admission | [Source-specific basin selection](#current-g3-gate): exclude candidate basins or saddle limits, or certify capture, through a full-state bridge from the same original uncertain source family; no presumed destination |
+| Closed theoretical limit admission | [Post-slip limits](#post-slip-capture-admission): every actual trajectory converges to one complete critical state among 57 relative candidates; three attractors and 54 hyperbolic saddles, with fixed-parameter exceptional-source scope retained |
 | Closed theoretical path admission | [Source-to-basin mechanism](#source-to-basin-mode-selection): two uniform capture corridors and a third corridor proving that actual finite-time winding two is transient; other parameters and the complete basin map remain unresolved |
 | Closed theoretical preparation admission | [Preparation information and acquired-mode selection](#preparation-information-mode-selection): exactly matched initial phase, means and storage, but distinct acquired winding magnitudes for paired complete source families |
 | Closed theoretical acquisition admission | [Same-source formation across matched laws](#same-source-acquisition-result): own-law acquisition and capture for both original full C9 source families uniformly over `lambda in [0,1]`, at unchanged error, time, radius and source budgets |
@@ -149,7 +154,7 @@ remain open; no empirical response has passed complete physical admission.
 
 <a id="current-g3-gate"></a>
 <a id="foundational-organized-pattern-admission"></a>
-<a id="post-slip-capture-admission"></a>
+<a id="source-specific-basin-selection"></a>
 ## Primary plan: foundations tested by organized patterns
 
 Investigate which premises are sufficient, necessary within a declared class,
@@ -169,17 +174,21 @@ to its actual state, scale and execution path before treating a matched
 geometric or response property as sufficient. Retain the distinction between
 defining requirements, supplied hypotheses and derived restrictions.
 
-The next question is: **which identities can the same interior source family
-eventually acquire after its necessarily transient winding two is lost?**
+The next question is: **which of the energy-compatible destinations can be
+excluded or selected from the original fine preparation information?**
 Retain the `lambda=0` member of the
 [complete-law family](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md),
 unit capacities, isolated C9 support, positive loss and both declared clock
 rows. Use exactly the [declared Cayley source path](../nodal/SINE_PREPARATION_PATH_SELECTION.md#sine-preparation-path-selection)
 on `s in [3/4,4/5]`, with its paired latent errors, fixed initial phase,
-means, storage and original preparation budget. At `tau=200`, every actual
-source member has winding two but lies below the storage of every critical
-configuration in its closed winding-two region. The resulting eventual
-exit does not identify a final mode, a last crossing or a capture time.
+means, storage and original preparation budget. The
+[limit theorem](../nodal/SINE_PREPARATION_PATH_LIMITS.md#sine-preparation-path-limits)
+already proves convergence of every actual trajectory to one complete
+critical state. Its 57 relative candidates are energy-compatible, not all
+proved reachable from this family. Only consensus and uniform windings
+`-1,+1` attract locally; the remaining 54 saddles cannot be removed from
+the full uncertain family merely because their stable manifolds have
+measure zero at fixed `s`.
 
 Follow those same complete trajectories. Do not replace their reached states
 with a nominal ramp, an independently initialized slow solution or a target
@@ -188,14 +197,21 @@ lifts and the accumulated loss. Any description begun at `tau=200` is a
 proved continuation of the original source family, not a new preparation.
 No additional law, input, support event or source family is admitted.
 
-Use full-law phase passage, critical-state classification and capture, or a
-controlled slow/fast reduction, to prove eventual capture or narrow the
-possible final identities on the whole corridor. A reduction must retain
-the actual hidden initialization, both state channels, a justified clock
-and a full-state error bound through the passage and handoff. Its reference
-trajectory or stability alone cannot determine the original flow's basin.
-If a finite later horizon is needed, justify it prospectively from these
-bounds; do not replace the analysis with an uncontrolled time sweep.
+Derive a sufficient basin-selection or exclusion criterion in the original
+source coordinates and apply it uniformly to the corridor or a prospectively
+declared nontrivial subdomain. Use actual passage, invariant regions, loss
+and capture to connect that source information to a destination. Another
+critical-state census, or a stable manifold's dimension without locating
+its relation to these sources, does not supply this connection.
+
+A [controlled slow/fast comparison](../nodal/SINE_FORM_PHASE_REDUCTION.md#sine-controlled-slow-phase)
+is a candidate method, not an already admitted selector. It must retain the
+actual hidden initialization, both state channels, a justified clock and
+a full-state error bound through the passage and capture handoff. An
+independently initialized phase-gradient trajectory or its apparent basin
+cannot replace this bridge. If a finite later horizon is needed, justify
+it prospectively from the bounds; do not substitute an uncontrolled time
+sweep, fitted transition or nominal trajectory for the proof.
 
 Distinguish a transient winding, convergence to a critical configuration
 and entry into a forward-trapped identity chart. Do not assume the final
@@ -253,13 +269,13 @@ are not promoted into autonomous constituent birth.
    observation and error model are admitted. A controller added to produce a
    desired object is an additional premise, not a derivation of that object.
 
-The gate closes with a whole-family post-slip capture theorem, a rigorous
-restriction on the possible final identities beyond the known exclusion of
-winding two, or a scoped obstruction to the proposed capture mechanism.
-Repeating the exit proof, sampling a later endpoint or fitting a transition
-does not close it. Keep exceptional sources, unresolved regions and later
-effective-state handoffs explicit. No probability or autonomous choice of
-the preparation is inferred from deterministic basin selection.
+The gate closes with a source-specific exclusion of an energy-compatible
+candidate basin or saddle limit, a proved capture selector on its declared
+source domain, or a scoped obstruction to the proposed bridge or selector.
+A failed sufficient bound remains unresolved. Repeating convergence or the
+candidate list does not close it. Keep exceptional sources, undecided
+regions and later effective-state handoffs explicit. No probability,
+common deadline or autonomous choice of the preparation is inferred.
 
 The dependency order for subsequent work is:
 
@@ -284,6 +300,24 @@ The physical objective guides which mathematical property matters. Laboratory
 examples supply possible controls and discriminators; they do not replace
 the generative objective with imitation of a convenient apparatus. Substrate
 origin, universal laws and recurrence across scales remain open hypotheses.
+
+<a id="post-slip-capture-admission"></a>
+## Closed theoretical admission: complete post-slip limits
+
+The [limit theorem](../nodal/SINE_PREPARATION_PATH_LIMITS.md#sine-preparation-path-limits)
+continues every actual source from `s in [3/4,4/5]` and proves convergence
+in form, circular phase and the originally continued lifts to one complete
+equilibrium. The inherited energy permits exactly 57 labeled relative
+critical geometries: three locally attracting geometries and 54 hyperbolic
+saddles. This is a necessary candidate set, not a reachability inventory.
+
+At each fixed source parameter, saddle-converging latent sources have
+sixteen-dimensional Lebesgue measure zero. Their intersection with the
+admitted family is not proved empty; that result neither selects the nominal
+path's destination nor assigns outcome probabilities. Stable identities
+are limited to consensus and the two unit windings, while antipodal saddle
+limits need not have a well-defined eventual winding. No uniform capture
+time, source reset or later sampled response is used.
 
 <a id="source-to-basin-mode-selection"></a>
 ## Closed theoretical admission: uniform source-path corridors

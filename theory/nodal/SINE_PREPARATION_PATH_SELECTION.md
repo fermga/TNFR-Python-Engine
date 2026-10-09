@@ -354,6 +354,11 @@ preparation nor a uniquely selected constitutive law, substrate, size
 or physical identification. No old acquired-source certificate is
 transferred through the new map without re-admitting its errors.
 
+The [terminal-limit theorem](SINE_PREPARATION_PATH_LIMITS.md) continues these
+same histories. It proves complete-state convergence and narrows the interior
+corridor's energy-compatible critical configurations, while retaining saddle
+exceptions and the unresolved source-to-basin assignment.
+
 The private [path calculator](../../src/tnfr/physics/_sine_preparation_path_selection.py)
 admits a closed parameter interval, structural time, and separate latent form
 and phase error budgets. It rebuilds the exact generator and source identities,

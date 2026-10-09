@@ -166,6 +166,17 @@ acute-cell capture from the old small-ball certificate. The critical-energy
 obstruction proves later exclusion of winding two without a final-mode or
 crossing-time prediction; unresolved bounds must not become nonformation.
 
+For [terminal restrictions on those same sources](theory/nodal/SINE_PREPARATION_PATH_LIMITS.md),
+also select `tests/physics/test_sine_preparation_path_limits.py` and
+`tests/physics/test_odd_cycle_sine_geometry.py`. Check complete critical closure,
+independent signed-Hessian inertia and the full two-row Jacobian. Energy tests
+must retain equality and unresolved comparisons; an antipodal critical state
+has no certified winding. Generic exclusion of saddle sources requires both
+full-dimensional error rows at each fixed preparation parameter and never
+selects a nominal source's basin. Changes to the shared odd-cycle algebra also
+require the C5 critical-set and resonance consumers; preserve their exact
+ordering, output, zero-current branches and existing proof scope.
+
 For [class-mediated collective response](theory/nodal/SINE_CLASS_MEDIATED_RESPONSE.md),
 select both the primitive/report controls and independent full-support
 algebra. Rebuild the 27-node support, its `(3,4,3)` central degrees, common

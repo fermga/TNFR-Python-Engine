@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Restrict [terminal states of the unchanged preparation path](theory/nodal/SINE_PREPARATION_PATH_LIMITS.md)
+  using complete-state convergence and an exact critical-energy classification.
+  Retain three attracting candidates and exceptional saddle sources without
+  inferring basin selection. Share odd-cycle closure and inertia with the
+  existing C5 readers, preserving their exact outputs and evidence.
 - Derive [capture and forced phase passage along a preparation path](theory/nodal/SINE_PREPARATION_PATH_SELECTION.md)
   with exactly fixed initial phase, means and storage. Uniform source bounds
   certify two acute-cell capture corridors and an intermediate winding-two

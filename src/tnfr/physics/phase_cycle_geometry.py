@@ -168,6 +168,7 @@ class AcuteCyclePeriodAssessment:
     )
 
     def to_dict(self):
+        """Project the assessment after validating its node labels."""
         from ..sdk.relational_reports import _project, _validate_label
 
         for node in self.geometry.nodes:
@@ -542,6 +543,7 @@ class CircularPhaseState:
     )
 
     def to_dict(self):
+        """Project exact circular coordinates after validating node labels."""
         from ..sdk.relational_reports import _project, _validate_label
 
         for node in self.geometry.nodes:
@@ -604,6 +606,7 @@ class BridgeTreeHessianInertia:
     )
 
     def to_dict(self):
+        """Project the conditional inertia report to its declared schema."""
         from ..sdk.relational_reports import _project
 
         return {
@@ -778,6 +781,7 @@ class C5SineCriticalSet:
         return tuple(counts)
 
     def to_dict(self):
+        """Project the critical geometry after validating its labels."""
         from ..sdk.relational_reports import _project
 
         _validate_critical_set_labels(self)
@@ -815,6 +819,7 @@ class C5PhaseHessianInertia:
     )
 
     def to_dict(self):
+        """Project the phase-Hessian report after validating its labels."""
         from ..sdk.relational_reports import _project
 
         _validate_phase_hessian_labels(self)
@@ -832,7 +837,32 @@ def _validate_phase_hessian_labels(report):
 
 
 def _c5_negative_phase_modes(negative_edges):
-    return negative_edges - int(negative_edges >= 3)
+    return _odd_cycle_negative_phase_modes(5, negative_edges)
+
+
+def _odd_cycle_negative_phase_modes(size, negative_edges):
+    """Count relative negative signs of an odd cycle's critical Hessian.
+
+    Critical sine edges share one strictly positive cosine magnitude and
+    have signs +/-1. Their phase quadratic form is the signed diagonal edge
+    form restricted to zero-sum increments. The omitted normal has sign
+    size-2*negative_edges, so exactly one positive or negative dimension is
+    removed. Odd size excludes a relative zero mode. No dynamical stability
+    or basin conclusion is supplied by this geometric count.
+    """
+    _admit_odd_cycle_size(size)
+    if type(negative_edges) is not int:
+        raise TypeError("negative_edges must be a non-Boolean integer")
+    if not 0 <= negative_edges <= size:
+        raise ValueError("negative_edges must lie between zero and the cycle size")
+    return negative_edges - int(2 * negative_edges > size)
+
+
+def _admit_odd_cycle_size(size):
+    if type(size) is not int:
+        raise TypeError("cycle size must be a non-Boolean integer")
+    if size < 3 or size % 2 == 0:
+        raise ValueError("cycle size must be odd and at least three")
 
 
 def _rebuild_critical_set(critical):
@@ -887,19 +917,33 @@ def _validate_critical_set_labels(report):
 
 
 def _c5_sine_templates():
-    """Solve all labeled branch closures using exact integer arithmetic."""
+    """Retain the original C5 template order through the shared odd-cycle owner."""
+    return _odd_cycle_sine_templates(5)
+
+
+def _odd_cycle_sine_templates(size):
+    """Solve every labeled unit-sine critical branch of an odd simple cycle.
+
+    The principal sine branch is a in (-1/4,1/4) turns. Each edge is either
+    a or 1/2-a, retained as a continuous representative. With r supplementary
+    edges, closure is m=(size-2r)*a+r/2 for an integer m. Odd size makes its
+    denominator nonzero and excludes quarter-turn closures. Zero-current
+    branches, including every closing zero/half-turn pattern, are retained.
+    The output order is mask first, then increasing closure period. This is
+    finite geometric enumeration, not a phase law or a trajectory calculation.
+    """
+    _admit_odd_cycle_size(size)
     options, currents, masks = [], [], []
-    for mask in range(32):
+    for mask in range(1 << size):
         k = mask.bit_count()
-        # m=(5-2k)*a+k/2 with |a|<1/4 implies -1 <= m <= 3.
-        # Since five is odd, 5-2k never vanishes; the quarter-turn endpoints
-        # cannot close a five-cycle and are not silently identified.
-        for period in range(-1, 4):
-            a = Fraction(2 * period - k, 2 * (5 - 2 * k))
+        # Every branch lies within -size/4 < m < 3*size/4. For size=5
+        # this is precisely the historical range(-1,4), preserving its order.
+        for period in range(-(size // 4), 3 * size // 4 + 1):
+            a = Fraction(2 * period - k, 2 * (size - 2 * k))
             if abs(a) >= Fraction(1, 4):
                 continue
             options.append(
-                tuple(Fraction(1, 2) - a if mask & (1 << j) else a for j in range(5))
+                tuple(Fraction(1, 2) - a if mask & (1 << j) else a for j in range(size))
             )
             currents.append(a)
             masks.append(mask)

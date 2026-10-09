@@ -158,6 +158,15 @@ the same unforced trajectories must later leave it. This is a derived
 phase-passage consequence, not a scheduled hybrid event. It supplies neither
 the final mode nor a slip time, and does not identify the whole basin boundary.
 
+For those same sources, [terminal restrictions](nodal/SINE_PREPARATION_PATH_LIMITS.md)
+separate convergence from attraction: every trajectory has one complete
+equilibrium limit, while energy compatibility leaves both attracting and
+saddle configurations. Saddle-source sets have zero volume in each fixed
+parameter's full uncertainty chart; this supplies no probability law and
+does not exclude a saddle limit for a particular preparation. An attracting
+candidate becomes an acquired identity only through a source-specific
+capture argument.
+
 Distinct internal geometries need not be distinguishable through every
 contact. The [central-contact obstruction](nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-contact-admission)
 shows that the nominal formed C9 classes can remain invisible to the same
