@@ -467,6 +467,13 @@ attachment, universal hierarchy or physical identification. The
 [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 alone owns the next research decision.
 
+The [three-object network comparison](ORGANIZED_NETWORK_COMPATIBILITY.md)
+separately tests simultaneous use of these pairwise charts. Its cycle-phase
+and amplitude conditions can fail even though every pair has a valid sine
+description; the complete network then retains its boundary coefficients.
+Neither pairwise equivalence nor this retained network closure supplies an
+acquired-source identity certificate.
+
 ## Implementation and independent controls
 
 The detached static owner

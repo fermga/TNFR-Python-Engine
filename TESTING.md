@@ -215,6 +215,21 @@ interval quantifier. Test invalid exact scalars and signed form/phase
 admission before materialization. These static controls establish neither
 acquired-source identity nor event occurrence; frozen producers stay unchanged.
 
+For [network-wide organized compatibility](theory/nodal/ORGANIZED_NETWORK_COMPATIBILITY.md),
+select `tests/physics/test_organized_network_compatibility.py` with
+`tests/physics/test_oriented_interface_constitutive.py` when their shared
+contact factors change. Independently reconstruct all 27 nodes, weighted
+reverse incidences and degree-four normalization. Compare both fine and
+collective rows, full storage and loss, including cross terms missing from
+isolated-pair loss addition. Test the phase-cycle and amplitude conditions
+separately, the fixed equal/unequal controls and the compatible endpoint.
+Retain joint phasor consistency, marked-origin transformations, raw
+observations, input work and supplied support costs. Check full-node
+stationarity directly; exact closure and a nominal equilibrium are not
+acquired-source capture or transverse stability certificates. Reject invalid
+primitive scalars and phasors before deriving contact reports, and preserve
+the previous pair APIs and frozen evidence.
+
 For [preparation information and acquired modes](theory/nodal/SINE_PREPARATION_MODE_SELECTION.md),
 select `tests/physics/test_sine_preparation_mode_selection.py` with the shared
 preparation and isolated-class controls above. Reconstruct the Laplacian energy

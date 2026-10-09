@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Derive [network-wide compatibility of three organized C9 components](theory/nodal/ORGANIZED_NETWORK_COMPATIBILITY.md).
+  The complete weighted law retains contact-cycle phase and amplitudes when
+  pairwise charts cannot share one form/clock/reciprocal description. Preserve
+  exact collective rows, full network loss, storage baselines, inputs and
+  supplied contact work; share oriented-contact factors with the pair owner.
+  Nominal stationarity remains separate from full-state attraction and
+  capture of the independently acquired objects.
 - Derive [complete profile inheritance under weighted oriented contacts](theory/nodal/ORIENTED_INTERFACE_PROFILE_INHERITANCE.md).
   An open contact interval conditionally selects sine under an independently
   supplied unchanged-profile premise. Preserve exact nonsine collective laws

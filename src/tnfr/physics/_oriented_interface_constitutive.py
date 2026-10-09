@@ -33,6 +33,41 @@ def _mixing(value):
 
 
 @dataclass(frozen=True)
+class _OrientedContactFactors:
+    """Registered contact coefficients independent of the host graph degree."""
+
+    mixing: Q
+    alpha_cosine_bounds: I
+    real_multiplier_bounds: I
+    imaginary_multiplier_bounds: I
+    amplitude_bounds: I
+    phase_origin_shift_bounds: I
+    phase_origin_phasor_bounds: tuple[I, I]
+    form_scale_bounds: I
+
+
+def _derive_oriented_contact(*, mixing):
+    """Share the boundary geometry without transferring pair normalization."""
+    s = _mixing(mixing)
+    alpha = 2 * pi_interval() / 9
+    cosine, sine = cos(alpha), sin(alpha)
+    real, imaginary = 1 - s + s * cosine, s * sine
+    # Keep known unit modulus exact at both endpoint controls.
+    amplitude = sqrt(1 - 2 * s * (1 - s) * (1 - cosine))
+    beta = I(0) if s == 0 else alpha if s == 1 else arg(real, imaginary)
+    return _OrientedContactFactors(
+        mixing=s,
+        alpha_cosine_bounds=cosine,
+        real_multiplier_bounds=real,
+        imaginary_multiplier_bounds=imaginary,
+        amplitude_bounds=amplitude,
+        phase_origin_shift_bounds=beta,
+        phase_origin_phasor_bounds=(real / amplitude, imaginary / amplitude),
+        form_scale_bounds=sqrt(amplitude),
+    )
+
+
+@dataclass(frozen=True)
 class _OrientedInterface:
     """Fixed oriented contact geometry; zero weights are absent support."""
 
@@ -78,29 +113,23 @@ def _derive_oriented_interface(*, mixing):
         sum((w for i, j, w in edges if node in (i, j)), Q(0)) for node in range(18)
     )
     neighbors = tuple(sum(node in (i, j) for i, j, _ in edges) for node in range(18))
-    pi = pi_interval()
-    alpha = 2 * pi / 9
-    cosine, sine = cos(alpha), sin(alpha)
-    real, imaginary = 1 - s + s * cosine, s * sine
-    # This form keeps the known unit modulus exact at both endpoint controls.
-    amplitude = sqrt(1 - 2 * s * (1 - s) * (1 - cosine))
-    beta = I(0) if s == 0 else alpha if s == 1 else arg(real, imaginary)
-    scale, gamma = sqrt(amplitude), Q(1, 1023) / pi
+    contact = _derive_oriented_contact(mixing=s)
+    gamma = Q(1, 1023) / pi_interval()
     return _OrientedInterface(
         mixing=s,
         weighted_edges=edges,
         weighted_degrees=degrees,
         support_degrees=neighbors,
-        real_multiplier_bounds=real,
-        imaginary_multiplier_bounds=imaginary,
-        amplitude_bounds=amplitude,
-        phase_origin_shift_bounds=beta,
-        phase_origin_phasor_bounds=(real / amplitude, imaginary / amplitude),
-        form_scale_bounds=scale,
+        real_multiplier_bounds=contact.real_multiplier_bounds,
+        imaginary_multiplier_bounds=contact.imaginary_multiplier_bounds,
+        amplitude_bounds=contact.amplitude_bounds,
+        phase_origin_shift_bounds=contact.phase_origin_shift_bounds,
+        phase_origin_phasor_bounds=contact.phase_origin_phasor_bounds,
+        form_scale_bounds=contact.form_scale_bounds,
         gamma_bounds=gamma,
-        effective_gamma_bounds=gamma * scale,
-        internal_storage_bounds=18 * (1 - cosine),
-        aligned_attachment_work_bounds=9 * s * (1 - cosine),
+        effective_gamma_bounds=gamma * contact.form_scale_bounds,
+        internal_storage_bounds=18 * (1 - contact.alpha_cosine_bounds),
+        aligned_attachment_work_bounds=9 * s * (1 - contact.alpha_cosine_bounds),
     )
 
 

@@ -228,8 +228,21 @@ interface-dependent sine and cosine coefficients are retained. An effective
 NFR may carry that boundary information, internal coordinates or derived
 memory. Neither failure of a smaller description nor conditional selection
 under an extra premise invalidates those complete laws or independently
-selects a fundamental physical law. Pairwise coordinate equivalences also
-do not establish their simultaneous compatibility in a larger network.
+selects a fundamental physical law.
+
+The [network compatibility theorem](nodal/ORGANIZED_NETWORK_COMPATIBILITY.md)
+now separates pairwise equivalence from one simultaneous network chart.
+For the declared three-C9 contact cycle, an unshifted sine representation
+with positive node-form units, one clock and one reciprocal coefficient
+requires zero contact-cycle phase and equal inherited amplitudes. The fixed
+equal and unequal interior controls fail that phase condition; the unequal
+control also fails amplitude compatibility. Both nevertheless retain an
+exact six-coordinate law with their boundary data. This is information
+in the supplied relations, not a newly identified physical gauge field.
+The equal-control aligned state is stationary despite nonzero cancelling
+contact-current contributions; the unequal aligned state is not. Joined
+attraction, transverse identity and capture of actual recovered sources
+require their own full-state proof.
 
 Distinct internal geometries need not be distinguishable through every
 contact. The [central-contact obstruction](nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-contact-admission)
@@ -559,7 +572,7 @@ description, not a proof that its observed coherent identity persists.
 | --- | --- | --- |
 | Pulse and internal organization | The [actual mean-contact balance](nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-collective-pulse-transfer) derives exchange between collective motion and contact deviations on the conservative unit C5/private-leaf support. Certain phase preparations release collective storage and initiate internal form/phase motion. | The mean pulse is not generally closed; its lift-dependent remainder is signed. Release and internal growth do not prove the receiver acquires an identity. |
 | Resonance and environmental memory | The [work-port response](nodal/RESONANCE_FOUNDATIONS.md#collocated-resonance) and [causal bridge memory](nodal/RESONANCE_FOUNDATIONS.md#sine-bridge-causal-memory) both retain joint form/phase channels and an explicit input/readout or hidden source. Hidden initial state can drive visible response without an added external force. | A positive-loss driven gain theorem is not a conservative autonomous oscillation theorem. A two-C6 tangent kernel cannot be used as the nonlinear C5 environment; the reduction method, not its coefficients, transfers. |
-| Scale inheritance and moving geometry | [Replica inheritance](nodal/SINE_PAIR_STATE.md#sine-replica-inheritance) retains smaller constituents, the [phase-offset criterion](nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-phase-offset-partition) identifies compatible collective families, and [registered organized interfaces](nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md) derive changes in the constitutive and reciprocal coefficients. | Exact closure or prepared invariance does not establish spontaneous grouping, attraction, or the same scalar law at arbitrary scales. Different supports retain different inherited coefficients; acquired-state identity requires its own complete-law bound. |
+| Scale inheritance and moving geometry | [Replica inheritance](nodal/SINE_PAIR_STATE.md#sine-replica-inheritance) retains smaller constituents, the [phase-offset criterion](nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-phase-offset-partition) identifies compatible collective families, and [registered organized interfaces](nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md) derive changes in the constitutive and reciprocal coefficients. The [network theorem](nodal/ORGANIZED_NETWORK_COMPATIBILITY.md) retains boundary information when pairwise charts cannot coexist. | Exact closure or prepared invariance does not establish spontaneous grouping, attraction, or the same scalar law at arbitrary scales. Different supports retain different inherited coefficients; acquired-state identity requires its own complete-law bound. |
 | Formation and finite maintenance | [Same-orbit formation](nodal/SINE_CONSERVATIVE_PREPARATION.md#sine-conservative-formation-retention) joins zero winding to a full-state target retaining acute identity for one scaled unit, using both nonlinear corridors, a phase band and complete-field error bounds. [Energy-speed windows](nodal/SINE_CONSERVATIVE_PREPARATION.md#sine-energy-speed-retention) and [moving-reference bounds](nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-moving-pattern-window) remain separate tools. | The source and target centers are defined by the exact flow, and the source tolerance is formally positive but extremely small. This is conditional existence, not an operational preparation, autonomous selection, indefinite maintenance or physical identification. |
 | Primitive information and constitutive freedom | [First-resultant sufficiency](nodal/SINE_CONSTITUTIVE_INFORMATION.md#first-phase-moment-sufficiency) conditionally selects a sine current, while [storage-family controls](nodal/RESONANCE_FOUNDATIONS.md#storage-family-pattern-robustness) distinguish a shared identity from potential-dependent response. | Supplying the information class, storage or mobility remains an independent premise. Equilibrium geometry and tangent agreement do not select every nonlinear interaction or timescale. |
 

@@ -115,10 +115,15 @@ sine. The [oriented-interface classification](#interface-robust-profile-inherita
 selects sine only after additionally requiring the same profile throughout
 an open interval of weighted contacts. That is an independent composition
 premise; nonsine laws still have exact inherited dynamics with retained
-boundary coefficients. The sole next admission is
-[network-wide compatibility of organized interactions](#current-g3-gate):
-determine whether the pairwise phase-origin, form and reciprocal maps coexist
-in one complete law for a three-object contact cycle.
+boundary coefficients. The [network compatibility theorem](#organized-network-compatibility)
+now derives the three-object law and its chart conditions:
+the contact phase shifts must sum to zero modulo a turn and the inherited
+amplitudes must agree. Both fixed interior controls fail the cycle condition;
+the unequal control also fails the amplitude condition. Their exact collective
+laws remain valid with the boundary coefficients retained. The sole next
+admission is [capture of the acquired three-object assembly](#current-g3-gate):
+determine whether the original independently recovered sources retain their
+windings and approach a joined organization under these actual contacts.
 The [prepared storage observer](#storage-comparison-producer-admission)
 is retained as an instrument; it has no frozen protocol or reserved response
 and is not the next campaign.
@@ -135,7 +140,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next theoretical admission | [Network-wide compatibility of organized interactions](#current-g3-gate): derive a three-C9 contact-cycle law and test whether its pairwise phase-origin, form and reciprocal maps admit one network description with sufficient retained boundary information |
+| Next theoretical admission | [Capture of the acquired three-object assembly](#current-g3-gate): admit the joined target, full-state identity and source-to-target capture for the original independently recovered winding-one sources under the two fixed contact controls |
+| Closed theoretical network admission | [Network-wide compatibility of organized interactions](#organized-network-compatibility): exact three-C9 collective law; common phase-origin, form and reciprocal maps require zero contact-cycle phase and equal amplitudes, while retained boundary data supports both incompatible controls |
 | Closed theoretical profile admission | [Interface-robust profile inheritance](#interface-robust-profile-inheritance): sine is selected conditionally by unchanged-profile inheritance throughout the declared open weighted-interface interval; the extra profile premise is independent of NFR identity, and nonsine collective laws remain valid with boundary coefficients |
 | Closed theoretical classification admission | [Composition-compatible constitutive laws](#composition-compatible-constitutive-laws): Fourier restrictions, target moments and an explicit nonnegative analytic nonsine counterfamily preserve the profile under both registered C9 interfaces |
 | Closed theoretical inheritance admission | [Constitutive inheritance through organized composition](#organized-constitutive-inheritance): exact collective laws with joint form/clock/parameter maps, own-law acquired-state identity, contact work and finite residual bounds |
@@ -188,7 +194,7 @@ remain open; no empirical response has passed complete physical admission.
 
 <a id="current-g3-gate"></a>
 <a id="foundational-organized-pattern-admission"></a>
-<a id="organized-network-compatibility"></a>
+<a id="acquired-organized-network-capture"></a>
 ## Primary plan: foundations tested by organized patterns
 
 Investigate which premises are sufficient, necessary within a declared class,
@@ -208,53 +214,53 @@ to its actual state, scale and execution path before treating a matched
 geometric or response property as sufficient. Retain the distinction between
 defining requirements, supplied hypotheses and derived restrictions.
 
-The next question is: **can individually valid pair descriptions compose
-into one complete network law, and what relational information must an NFR
-retain when they cannot share a common chart?** The
-[oriented-interface result](#interface-robust-profile-inheritance) gives
-pairwise phase-origin and form/reciprocal maps. It does not establish their
-simultaneous compatibility around a cycle. This tests collective structure
-rather than adding another restriction to select a preferred edge law.
+The next question is: **do the actually acquired organizations survive
+the supplied contact cycle and approach a compatible joined identity?**
+The [network law](../nodal/ORGANIZED_NETWORK_COMPATIBILITY.md) closes on a
+registered family despite its chart obstructions. That does not prove
+attraction transverse to the family or capture from the acquired sources.
 
-Prospectively declare three labelled winding-one C9 components and one fixed
-triangle of cyclically registered contacts. Each component-pair contact uses
-offsets `{0,1}` with nonnegative weights `1-s_e,s_e` and total strength one,
-including its undirected reverse incidences. Retain all 27 fine forms and
-phases, held unit capacities, the structural clock and the supplied smooth
-sine current. Derive the weighted Laplacian, current and storage from this
-complete support; the two-contact degree of each constituent changes the
-normalization from the pair model. This remains a detached weighted-law
-comparison, not the native engine's phase-neighbor semantics.
+Retain its three labelled winding-one C9 components, all 27 fine forms and
+phases, held unit capacities, structural clock, reciprocal sine law and
+actual weighted degree four. Keep the same oriented contacts
+`(0,1),(1,2),(2,0)` with offsets `{0,1}` and weights `1-s_e,s_e`.
+The two fixed controls remain `s_e=(1/2,1/2,1/2)` and
+`s_e=(1/4,1/2,3/4)`. This is the detached weighted comparison;
+native phase-neighbor semantics and operator execution remain distinct.
 
-First prove or disprove invariance of the registered six-coordinate family
-and derive both collective rows, all storage baselines, continuous loss,
-inputs, observations and separately supplied support work. Then specify one
-allowed network chart and clock before testing whether the pairwise maps
-can all hold together. Investigate the consistency of contact phase shifts
-around the cycle and of positive form/reciprocal scales across incident
-edges. Include the fixed equal-weight control `s_e=1/2` and an explicitly
-declared unequal-weight control `s_e=(1/4,1/2,3/4)` in oriented contact order
-`(0,1),(1,2),(2,0)`; do not choose the chart after observing a desired response.
+Reuse three independent copies of the original sine class-one source and
+its [isolated recovery](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md#organized-inheritance-acquired-state),
+including the original coordinate errors, separate zero means, acquisition
+time and uninterrupted dwell. Supply the contact at that declared handoff;
+carry every residual into the joined law without resetting it to the nominal
+registered target. Rebuild the actual support work and post-contact storage;
+continuous loss is not an undeclared source of attachment energy.
 
-When an unchanged-profile network description fails, retain the actual
-boundary coefficients and phase registrations and determine what complete
-inherited law they support. A change of constituent phase origins must
-transform marked ports and observations together. A cycle-dependent
-quantity must be derived from the actual contacts; neither its name nor an
-analogy establishes a gauge field or physical interaction. The existing
-[auxiliary gauge construction](../GAUGE_SYMMETRY_AND_UNIFICATION.md)
-has separate state and premises.
+First establish the joined critical geometry on each complete support,
+including all fine-node balances, retained component windings and the single
+common phase origin. The equal-control aligned reference is stationary;
+the unequal-control aligned reference is not. Its possible shifted
+registration is therefore an implicit target to prove, not an already
+acquired identity. Apply the existing
+[acute-sector and stability machinery](../nodal/SINE_PATTERN_DYNAMICS.md#sine-cycle-sector-compatibility)
+only after admitting the actual weighted Hessian and complete reciprocal
+rows; the [different two-port proof](../nodal/SINE_TWO_PORT_COMPATIBILITY.md)
+does not transfer its constants or source certificate.
 
-Use the [NFR ontology](../EMERGENT_ONTOLOGY.md#nfr-participation-in-form)
-to distinguish inheritance from a universal scalar-node representation.
-The constituent configurations and their boundary relations remain part
-of the same fine state. Close with necessary and sufficient compatibility
-conditions in the declared chart class, or an explicit obstruction and a
-sufficient retained boundary description. State whether any claimed joined
-equilibrium or identity has its own full-state proof; pairwise closure alone
-supplies neither. Source acquisition, nonlinear recovery, event descent and
-occurrence remain separate admissions. No trajectory, source producer,
-physical dataset, topology search or protocol freeze is active.
+Then prove a full-state source-to-target capture and identity bound, or a
+precise obstruction or unavailable sufficient certificate. Control internal
+deviations as well as component means, retain their correlations, and
+distinguish local attraction from entry of every declared source. Freeze
+any required finite transport horizon and numerical budget before evaluating
+a reserved response. Close with justified winding retention, convergence or
+its precise unresolved dependency, and separately accounted support work.
+
+The [NFR ontology](../EMERGENT_ONTOLOGY.md#nfr-participation-in-form)
+allows the inherited law to retain its boundary coefficients. Failure of
+the smaller chart is not evidence that the joined identity fails. Neither
+a circulating edge-current balance nor successful capture identifies a
+physical gauge interaction or selects autonomous attachment. No trajectory,
+source producer, physical dataset, topology search or protocol freeze is active.
 
 1. **Declare the object and the claim.** Specify sufficient form/phase state,
    identity, source class, clock, support, capacity, boundaries and observation.
@@ -267,16 +273,16 @@ physical dataset, topology search or protocol freeze is active.
    postconditions. A collective event needs its own descent and occurrence
    analysis even when the continuous collective law closes.
 2. **Specify the proposed discrimination.** Fix the complete three-object
-   support and law, attachment controls, retained state and allowed network
-   parameter/chart maps.
+   support and law, original source errors and handoff, attachment controls,
+   target admission and any required finite transport budget.
    Separate constitutive freedom from supplied preparation and support.
    No controller, fitted sensor or hidden clock adjustment supplies closure.
 3. **Derive a discrimination or obstruction.** Match the declared preparation
    observations, geometry, units, clock and costs under each complete law.
    Check symmetries, equilibrium boundaries, reachable identities, balances,
-   event occurrence and information loss. Determine whether both collective
-   rows admit the proposed common network chart or require retained boundary
-   data; preserve source and identity obligations for every further claim.
+   event occurrence and information loss. Determine whether every admitted
+   full source enters the joined identity region under its actual law;
+   collective closure and local stability alone do not establish capture.
    Distinguish a new initial condition from a symmetry copy or a changed law. A
    necessary condition or failed sufficient bound is not a formation theorem.
 4. **Integrate only the justified result.** Preserve useful conditional proofs
@@ -301,7 +307,7 @@ The dependency order for subsequent work is:
 | Complete foundations | State and law choices are explicit; independent selection arguments and surviving countermodels are retained |
 | Formation and identity | Entry from the declared source, stability/maintenance and preparation costs; autonomous preparation and scale/support selection are separately identified |
 | Composite organization | Dynamical attachment/interaction, retained constituent identity and a declared separation/work criterion; negative rectangular storage excess alone is not binding |
-| Inheritance across scales | The completed interface comparisons concern pairwise descriptions; the next gate tests their simultaneous network compatibility with retained relational data. A hierarchy needs compatible repeated composition, justified parameter and clock maps, and identity/source control at every claimed level. Retain necessary hidden state, memory and event contracts through the existing [scale](../TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) and [collective closure](../nodal/DERIVED_FORM_PHASE.md#collective-interaction-closure-and-relational-state) owners. Matching a tangent or re-encoding the full state alone does not establish inheritance |
+| Inheritance across scales | The network compatibility theorem retains relational data when pairwise charts cannot coexist; actual acquired-source capture is the next unresolved obligation. A hierarchy needs compatible repeated composition, justified parameter and clock maps, and identity/source control at every claimed level. Retain necessary hidden state, memory and event contracts through the existing [scale](../TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) and [collective closure](../nodal/DERIVED_FORM_PHASE.md#collective-interaction-closure-and-relational-state) owners. Matching a tangent or re-encoding the full state alone does not establish inheritance |
 | Physical interpretation | Derive geometric/measurement transformations and quantitative observables with units, independent preparation and alternatives before identifying a fundamental constituent |
 
 For each subsequent law or hypothesis, record its status, independent
@@ -317,6 +323,34 @@ The physical objective guides which mathematical property matters. Laboratory
 examples supply possible controls and discriminators; they do not replace
 the generative objective with imitation of a convenient apparatus. Substrate
 origin, universal laws and recurrence across scales remain open hypotheses.
+
+<a id="organized-network-compatibility"></a>
+## Closed theoretical admission: network-wide organized compatibility
+
+The [three-C9 theorem](../nodal/ORGANIZED_NETWORK_COMPATIBILITY.md) derives
+both collective rows, storage, loss and supplied contact work from the
+complete degree-four weighted support. In the declared positive node-form
+chart, common clock and single reciprocal-coefficient class, a standard
+unshifted sine network exists exactly when the contact phase around the
+cycle is zero modulo a turn and all inherited amplitudes agree. For these
+cooriented contacts with nonnegative weights, only the all-zero control
+satisfies both conditions.
+
+Both fixed interior controls have contact-cycle phase `pi/3`. The unequal
+control also has incompatible amplitudes. These obstruct the smaller
+representation without invalidating the inherited dynamics:
+the original six-coordinate law closes with the actual boundary data.
+Full loss depends on the combined nodal Laplacian and cannot be obtained
+by adding isolated-pair losses. Inputs, observations and storage baselines
+transform together with any admitted chart.
+
+The equal-control nominal alignment is a full stationary state with
+nonzero, cancelling contact-current contributions. The unequal alignment
+is not stationary. Neither statement proves a joined attractor or the
+capture of the actual recovered objects; that is the
+[next admission](#acquired-organized-network-capture). The contact-cycle
+quantity is supplied-boundary information, not a physical gauge field or
+an autonomous event law.
 
 <a id="interface-robust-profile-inheritance"></a>
 ## Closed theoretical admission: interface-robust profile inheritance
@@ -343,8 +377,8 @@ Unchanged-profile inheritance is an independently supplied comparison
 premise, not a consequence of the NFR definition. Thus the theorem is a
 conditional selection result, not independent selection of a fundamental
 law. It transfers no source acquisition, recovery or contact-identity
-certificate. The [next gate](#organized-network-compatibility) tests whether
-the pairwise representations compose consistently around a network cycle.
+certificate. The [network compatibility result](#organized-network-compatibility)
+tests whether the pairwise representations compose around a contact cycle.
 
 <a id="composition-compatible-constitutive-laws"></a>
 ## Closed theoretical admission: composition-compatible constitutive laws
