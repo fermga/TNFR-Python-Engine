@@ -1,7 +1,7 @@
 """Inspect and restore a declared frozen source without executing its code.
 
-Supported adapters are the class nonlinear-readout, comparison and collective
-forward v1 schemas.
+Supported adapters are the class nonlinear-readout, comparison, collective
+forward and neighbor-forward v1 schemas.
 Checks associate retained bytes with a complete Git base; they do not validate
 the experiment's mathematical premises, runtime dependencies or chronology.
 Other freeze schemas need an explicit adapter, not guessed field semantics.
@@ -39,6 +39,10 @@ _SCHEMAS = {
     "tnfr.sine-class-collective-forward-freeze.v1": (
         "tnfr.sine-class-collective-forward-protocol.v1",
         "tnfr.sine-class-collective-forward-source-snapshot.v1",
+    ),
+    "tnfr.sine-class-neighbor-forward-freeze.v1": (
+        "tnfr.sine-class-neighbor-forward-protocol.v1",
+        "tnfr.sine-class-neighbor-forward-source-snapshot.v1",
     ),
 }
 
@@ -215,6 +219,7 @@ def _snapshot(root: Path, receipt_path: str) -> _Snapshot:
     if receipt["schema"] in {
         "tnfr.sine-class-comparison-freeze.v1",
         "tnfr.sine-class-collective-forward-freeze.v1",
+        "tnfr.sine-class-neighbor-forward-freeze.v1",
     }:
         outcome_paths += (stem + ".export-error.json",)
     if any(name in retained for name in outcome_paths):

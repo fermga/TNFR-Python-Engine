@@ -124,6 +124,7 @@ nav:
           - "Independent changed-input full-law protocol": theory/nodal/SINE_CLASS_COLLECTIVE_FORWARD_PROTOCOL.md
           - "Causal composition of acquired sine-class interfaces": theory/nodal/SINE_CLASS_INTERFACE_COMPOSITION.md
           - "Causal nonadditivity of distinct neighbor interventions": theory/nodal/SINE_CLASS_NEIGHBOR_NONADDITIVITY.md
+          - "Independent distinct-neighbor protocol": theory/nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL.md
           - "Uniform tracking of reduced sine ports": theory/nodal/SINE_PORT_RELAXATION.md
           - "Form tracking by ordered heat comparison": theory/nodal/SINE_PORT_FORM_TRACKING.md
           - "Two-port compatibility of sine classes": theory/nodal/SINE_TWO_PORT_COMPATIBILITY.md

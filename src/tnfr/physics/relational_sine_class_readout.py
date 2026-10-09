@@ -119,7 +119,7 @@ class SineClassFourHistoryReadout:
         "shared_complete_sine_law_both_rows_in_structural_tau_clock",
         "outer_source_cover_does_not_assert_acquisition_zero_sums_or_cycle_class",
         "two_shared_prefixes_then_four_full_state_suffixes_without_reset",
-        "only_donor_form_changes_at_supplied_events_all_phases_and_hidden_states_carry",
+        "only_selected_form_coordinates_change_at_events_all_phases_and_hidden_states_carry",
         "fixed_step_clipped_only_at_declared_delay_and_final_time",
         "global_unique_step_attempt_budget_no_adaptive_retry_or_response_tuning",
         "first_numerical_or_budget_failure_stops_all_later_steps_and_events",
@@ -131,6 +131,9 @@ class SineClassFourHistoryReadout:
         "global_smooth_tube_domain_does_not_certify_acute_identity_or_work",
         "no_prediction_inverse_source_handoff_sensor_noise_or_physical_observation_input",
     )
+    first_probe_node: int = 4
+    second_probe_node: int = 4
+    readout_node: int = 22
 
     @property
     def admitted(self):
@@ -191,6 +194,17 @@ def _admit_class_readout_inputs(
     return form, phase, a, b, s, total, h, order, max_steps
 
 
+def _admit_class_readout_selectors(first_probe_node, second_probe_node, readout_node):
+    """Admit fixed-support node indices before field or evidence consumption."""
+    selectors = first_probe_node, second_probe_node, readout_node
+    for value, label in zip(
+        selectors, ("first_probe_node", "second_probe_node", "readout_node")
+    ):
+        if type(value) is not int or value not in _NODES:
+            raise ValueError(f"{label} must be an ordinary integer in 0..26")
+    return selectors
+
+
 def bound_sine_class_four_history_readout(
     *,
     initial_form_bounds,
@@ -202,14 +216,24 @@ def bound_sine_class_four_history_readout(
     time_step,
     order,
     max_steps,
+    first_probe_node=4,
+    second_probe_node=4,
+    readout_node=22,
 ) -> SineClassFourHistoryReadout:
-    """Enclose four complete histories from nine independently admitted inputs.
+    """Enclose four complete histories from primitive sources and event selectors.
 
     Source channels each have 27 ordered real endpoint pairs. Amplitudes are
     signed finite reals. Require 0<=delay<=total_duration<=2, 0<time_step<=2,
     ordinary integer order1..16 and max_steps1..4096. The latter caps all shared
     kernel attempts across the six-segment tree, including a failed attempt.
     Zero-duration segments apply their event without invoking a flow step.
+
+    Optional impulse and form-observation nodes are ordinary integers in0..26.
+    Defaults preserve two impulses at node4 and observation at node22. The
+    legacy donor_node/receiver_node report names alias first_probe_node and
+    readout_node. Existing receiver-named interval fields track readout_node.
+    Even when an impulse acts at the observed node, its repeated suffix jump
+    cancels exactly in the mixed statistic; the four raw endpoints retain it.
 
     First failure retains available prefixes and completed individual readings;
     subsequent events are not applied. The complete four-reading tuple and its
@@ -226,6 +250,9 @@ def bound_sine_class_four_history_readout(
         order=order,
         max_steps=max_steps,
     )
+    first_node, second_node, observer = _admit_class_readout_selectors(
+        first_probe_node, second_probe_node, readout_node
+    )
     source = form + phase
     geometry = _derive(_NODES, tuple(sorted(tuple(sorted(edge)) for edge in _EDGES)))
     degrees = tuple(sum(i in edge for edge in geometry.edges) for i in _NODES)
@@ -239,18 +266,18 @@ def bound_sine_class_four_history_readout(
         return (ratio.numerator + ratio.denominator - 1) // ratio.denominator
 
     plan = (
-        ("prefix_unprobed", None, Q(0), s, Q(0)),
-        ("prefix_first", None, Q(0), s, a),
-        ("neither", 0, s, total, Q(0)),
-        ("first_only", 1, s, total, Q(0)),
-        ("second_only", 0, s, total, b),
-        ("both", 1, s, total, b),
+        ("prefix_unprobed", None, Q(0), s, Q(0), first_node),
+        ("prefix_first", None, Q(0), s, a, first_node),
+        ("neither", 0, s, total, Q(0), second_node),
+        ("first_only", 1, s, total, Q(0), second_node),
+        ("second_only", 0, s, total, b, second_node),
+        ("both", 1, s, total, b, second_node),
     )
     segments = []
     attempted = completed = 0
     failed_index = None
     reasons = []
-    for index, (label, parent, start, end, jump) in enumerate(plan):
+    for index, (label, parent, start, end, jump, jump_node) in enumerate(plan):
         pre_event = initial = state = failed_initial = failed_time = failed_tube = None
         increment = None
         current = None
@@ -270,7 +297,7 @@ def bound_sine_class_four_history_readout(
                 pre_event = state
                 if jump:
                     state = tuple(
-                        value + jump if i == 4 else value
+                        value + jump if i == jump_node else value
                         for i, value in enumerate(state)
                     )
                 initial, current = state, start
@@ -296,7 +323,7 @@ def bound_sine_class_four_history_readout(
                             reason = "shared_step_unavailable"
                         break
                     steps.append(step)
-                    increment += step.increment[22]
+                    increment += step.increment[observer]
                     state, current = step.endpoint, current + width
                     completed += 1
                     if completed % 64 == 0:
@@ -328,7 +355,7 @@ def bound_sine_class_four_history_readout(
             )
         )
     readings = tuple(
-        (segment.label, segment.final_state_bounds[22])
+        (segment.label, segment.final_state_bounds[observer])
         for segment in segments[2:]
         if segment.status == "admitted"
     )
@@ -364,7 +391,7 @@ def bound_sine_class_four_history_readout(
         geometry=geometry,
         degrees=degrees,
         source_box=source,
-        initial_receiver_form_bounds=form[22],
+        initial_receiver_form_bounds=form[observer],
         history_event_amplitudes=((Q(0), Q(0)), (a, Q(0)), (Q(0), b), (a, b)),
         segments=tuple(segments),
         planned_unique_step_count=2 * count(s) + 4 * count(total - s),
@@ -384,4 +411,9 @@ def bound_sine_class_four_history_readout(
         ),
         status="admitted" if endpoints is not None else "unavailable",
         unavailable_reasons=tuple(reasons),
+        donor_node=first_node,
+        receiver_node=observer,
+        first_probe_node=first_node,
+        second_probe_node=second_node,
+        readout_node=observer,
     )

@@ -1212,6 +1212,14 @@ assert len(readout.endpoint_readout_bounds) == 4
 assert readout.mixed_readout_bounds.lo <= 0 <= readout.mixed_readout_bounds.hi
 ```
 
+The optional `first_probe_node`, `second_probe_node` and `readout_node`
+keywords select ordinary integer nodes 0 through 26. Defaults `(4,4,22)`
+preserve the original two-probe arrangement. The
+[distinct-neighbor protocol](../../../theory/nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL.md)
+uses `(4,22,13)`; changing selectors alone does not admit that protocol's
+source, work or prediction. Existing receiver-named fields refer to the
+selected observed form coordinate.
+
 For a later matched class-two evaluation, the
 [canonical outer-cover recipe](../../../theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-validated-readout)
 uses a certified enclosure of pi and the independently proved endpoint

@@ -1407,11 +1407,17 @@ It consumes nine mandatory keyword primitives:
 | Primitive | Admission |
 | --- | --- |
 | `initial_form_bounds`, `initial_phase_bounds` | Exactly 27 ordered primitive real endpoint pairs each; phases are continuous lifts |
-| `first_probe_amplitude`, `second_probe_amplitude` | Finite signed donor form jumps |
+| `first_probe_amplitude`, `second_probe_amplitude` | Finite signed form jumps at the selected first/second nodes |
 | `delay`, `total_duration` | Structural times with `0<=delay<=total_duration<=2` |
 | `time_step` | Strictly positive, at most 2 |
 | `order` | Ordinary integer 1 through 16 |
 | `max_steps` | Ordinary integer 1 through 4096, counting all unique kernel attempts, including a failed attempt |
+
+Optional `first_probe_node=4`, `second_probe_node=4` and `readout_node=22`
+select the two event coordinates and the observed form coordinate. Each must
+be an ordinary integer in 0 through 26, admitted before field construction.
+The defaults preserve the original same-donor protocol. Selecting other nodes
+does not transfer its target-specific work, identity or response theorems.
 
 Shared interval and exact-or-represented-real admission rejects Boolean,
 nonfinite, reversed or unrepresentable inputs before flow construction.
@@ -1425,8 +1431,8 @@ members without asserting that every independent box corner is acquired.
 `source_box` is enclosed once in form-then-phase node order. The six
 `segments` are `prefix_unprobed`, `prefix_first`, `neither`, `first_only`,
 `second_only`, `both`. `history_segment_indices` retains the four ancestry
-pairs `(0,2)`, `(1,3)`, `(0,4)`, `(1,5)`. Every event changes only donor
-form coordinate 4; all other forms, phases and hidden coordinates carry.
+pairs `(0,2)`, `(1,3)`, `(0,4)`, `(1,5)`. Every event changes only its
+selected form coordinate; all other forms, phases and hidden coordinates carry.
 Every suffix starts from its parent's complete endpoint. A zero-length
 segment applies its event without a flow step. The fixed step size is
 clipped at declared event/final boundaries; there is no adaptive retry.
@@ -1451,10 +1457,11 @@ readings remain in `completed_history_readout_bounds`. The complete
 unavailable until every history completes. A partial endpoint is not the
 requested final endpoint.
 
-The primary `mixed_readout_bounds` combines suffix receiver increments
-with coefficients `(1,-1,-1,1)`. Each suffix sums `step.increment[22]`;
-the shared prefix receiver values cancel exactly, and donor jumps leave
-receiver form unchanged. `raw_endpoint_mixed_bounds` instead combines
+The primary `mixed_readout_bounds` combines suffix observed-form increments
+with coefficients `(1,-1,-1,1)`. Each suffix sums
+`step.increment[readout_node]`; shared prefix values cancel exactly.
+If the second jump acts at the observed node, its equal contributions to
+`second_only` and `both` also cancel. `raw_endpoint_mixed_bounds` instead combines
 the four endpoint bands and remains separate evidence. Both are safe
 outer bounds; remaining cross-history or step correlations can be
 relaxed, and arbitrary marginal choices need not be jointly realizable.
@@ -1465,6 +1472,12 @@ noise nor automatically pure numerical error. No response-sign, model
 discrimination, formation or physical-readiness verdict is inferred.
 The schema is `tnfr.sine-class-four-history-readout.v1`; shared SDK
 projection and atomic export retain the full evidence and availability.
+New reports retain all three selectors. Legacy `donor_node` and
+`receiver_node` alias the first event and observed node respectively;
+receiver-named interval fields use the selected observer. Reconstruction
+requires explicit fields to agree with admitted selectors and aliases.
+Older reports missing all three selectors are accepted only under legacy
+defaults; partial, invalid or conflicting metadata rejects reconstruction.
 The complete interval/jet field uses [`_sine_flow.py`](../../../src/tnfr/physics/_sine_flow.py)
 and snapshots held law/degree/capacity factors without changing nodal
 arithmetic order. Changed factors require a new evaluator. The shared
@@ -1473,6 +1486,8 @@ interval shapes, source containment in its tube and retained
 Horner/remainder/endpoint arithmetic. That reusable operation does not
 regenerate derivatives or prove Picard inclusion; a detached reader still
 owns its law, source, event and stored-certificate premises.
+The [distinct-neighbor protocol](../../../theory/nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL.md)
+uses this owner with selectors `(4,22,13)` and its own common-source transfer.
 The [guide](../../guides/relational/SINE_PATTERNS.md#sine-class-four-history-readout)
 uses an unrelated stationary fixture, not the reserved nonlinear design.
 The [separately frozen evaluation protocol](../../../theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-frozen-evaluation)

@@ -6,15 +6,18 @@ reserved class-two design nor a formation/analytic response is evaluated.
 
 import json
 import subprocess
+from dataclasses import replace
 from decimal import Decimal
 from fractions import Fraction as Q
 from inspect import Parameter, signature
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
 
 from tnfr.mathematics._rational_interval import I
 from tnfr.physics import relational_sine_class_readout as owner
+from tnfr.physics._sine_class_readout_evidence import _reconstruct_class_readout
 from tnfr.sdk.relational_reports import relational_report_to_dict
 from tnfr.utils.io import json_loads
 
@@ -79,11 +82,15 @@ def polynomial_report():
 
 def test_nine_mandatory_primitives_exclude_target_prediction_and_sensor():
     parameters = signature(owner.bound_sine_class_four_history_readout).parameters
-    assert set(parameters) == set(_arguments()) and len(parameters) == 9
-    assert all(
-        p.kind == Parameter.KEYWORD_ONLY and p.default == Parameter.empty
-        for p in parameters.values()
-    )
+    selectors = dict(first_probe_node=4, second_probe_node=4, readout_node=22)
+    mandatory = {
+        key: p for key, p in parameters.items() if p.default == Parameter.empty
+    }
+    assert set(mandatory) == set(_arguments()) and len(mandatory) == 9
+    assert all(p.kind == Parameter.KEYWORD_ONLY for p in parameters.values())
+    assert {
+        key: p.default for key, p in parameters.items() if key not in mandatory
+    } == (selectors)
     for key in (
         "mediator_class",
         "source_handoff",
@@ -93,6 +100,32 @@ def test_nine_mandatory_primitives_exclude_target_prediction_and_sensor():
     ):
         with pytest.raises(TypeError):
             owner.bound_sine_class_four_history_readout(**_arguments(), **{key: 0})
+
+
+def test_explicit_legacy_selectors_preserve_default_report(
+    polynomial_report, monkeypatch
+):
+    monkeypatch.setattr(owner, "_full_sine_field", _constant_field)
+    explicit = owner.bound_sine_class_four_history_readout(
+        **_arguments(), first_probe_node=4, second_probe_node=4, readout_node=22
+    )
+    assert explicit == polynomial_report
+
+
+@pytest.mark.parametrize(
+    "key", ("first_probe_node", "second_probe_node", "readout_node")
+)
+@pytest.mark.parametrize(
+    "bad", (True, np.bool_(False), np.int64(4), Q(4), 4.0, -1, 27, None)
+)
+def test_node_selectors_reject_before_field_or_step(key, bad, monkeypatch):
+    def forbidden(*args, **kwargs):
+        pytest.fail("selector admission must precede execution")
+
+    monkeypatch.setattr(owner, "_full_sine_field", forbidden)
+    monkeypatch.setattr(owner, "validated_box_taylor_step", forbidden)
+    with pytest.raises(ValueError, match=key):
+        owner.bound_sine_class_four_history_readout(**_arguments(), **{key: bad})
 
 
 @pytest.mark.parametrize("name", tuple(_arguments())[2:])
@@ -250,8 +283,9 @@ def _small_arguments(**updates):
 
 
 @pytest.mark.parametrize("failure_call", (1, 2, 4, 6))
+@pytest.mark.parametrize("selected", (False, True))
 def test_first_failed_step_stops_later_events_and_retains_partial_evidence(
-    failure_call, monkeypatch
+    failure_call, selected, monkeypatch
 ):
     monkeypatch.setattr(owner, "_full_sine_field", _constant_field)
     actual_step = owner.validated_box_taylor_step
@@ -265,7 +299,13 @@ def test_first_failed_step_stops_later_events_and_retains_partial_evidence(
         return actual_step(box, duration, flow, domain, **kwargs)
 
     monkeypatch.setattr(owner, "validated_box_taylor_step", selected_failure)
-    report = owner.bound_sine_class_four_history_readout(**_small_arguments())
+    selectors = (
+        dict(first_probe_node=4, second_probe_node=22, readout_node=13)
+        if selected
+        else {}
+    )
+    arguments = _small_arguments(**selectors)
+    report = owner.bound_sine_class_four_history_readout(**arguments)
     index = failure_call - 1
     assert len(calls) == report.attempted_step_count == failure_call
     assert report.completed_step_count == failure_call - 1
@@ -293,17 +333,33 @@ def test_first_failed_step_stops_later_events_and_retains_partial_evidence(
     if index == 5:
         assert segment.pre_event_box == report.segments[1].final_state_bounds
         assert (
-            segment.initial_box[4]
-            == segment.pre_event_box[4] + report.second_probe_amplitude
+            segment.initial_box[report.second_probe_node]
+            == segment.pre_event_box[report.second_probe_node]
+            + report.second_probe_amplitude
         )
         assert segment.initial_box[27:] == segment.pre_event_box[27:]
+    evidence = _reconstruct_class_readout(
+        report,
+        owner._admit_class_readout_inputs(
+            **{k: v for k, v in arguments.items() if k not in selectors}
+        ),
+        **selectors,
+    )
+    assert not evidence.complete and evidence.mixed_bounds is None
+    assert evidence.attempted_step_count == failure_call
 
 
 @pytest.mark.parametrize("budget", (1, 2, 3, 5))
-def test_global_work_cap_stops_before_the_next_event(budget, monkeypatch):
+@pytest.mark.parametrize("selected", (False, True))
+def test_global_work_cap_stops_before_the_next_event(budget, selected, monkeypatch):
     monkeypatch.setattr(owner, "_full_sine_field", _constant_field)
+    selectors = (
+        dict(first_probe_node=4, second_probe_node=22, readout_node=13)
+        if selected
+        else {}
+    )
     report = owner.bound_sine_class_four_history_readout(
-        **_small_arguments(max_steps=budget)
+        **_small_arguments(max_steps=budget, **selectors)
     )
     assert report.attempted_step_count == report.completed_step_count == budget
     assert report.failed_segment_index == budget
@@ -313,6 +369,12 @@ def test_global_work_cap_stops_before_the_next_event(budget, monkeypatch):
     assert failed.failed_tube is None and failed.completed_time is None
     assert failed.reason == "unique_step_budget_exhausted_before_event"
     assert not report.admitted and report.mixed_readout_bounds is None
+    evidence = _reconstruct_class_readout(
+        report,
+        owner._admit_class_readout_inputs(**_small_arguments(max_steps=budget)),
+        **selectors,
+    )
+    assert not evidence.complete and evidence.attempted_step_count == budget
 
 
 def test_budget_failure_inside_segment_retains_last_successful_full_endpoint(
@@ -393,3 +455,231 @@ def test_sdk_projects_full_step_provenance_and_explicit_availability(
     )
     assert partial.to_dict()["report"]["mixed_readout_bounds"] is None
     assert partial.to_dict()["report"]["segments"][2]["initial_box"] is None
+
+
+_DISTINCT_SELECTORS = dict(first_probe_node=4, second_probe_node=22, readout_node=13)
+
+
+def _distinct_polynomial_field(*_):
+    def flow(state):
+        result = [state[0] * 0] * 54
+        result[13] = state[4] * state[22]
+        return tuple(result)
+
+    return flow, lambda _: (Q(1),)
+
+
+def _distinct_arguments(delay, *, offset=Q(0)):
+    forms = [(Q(0), Q(0))] * 27
+    forms[4], forms[22], forms[13] = (
+        (Q(1, 8),) * 2,
+        (Q(-1, 16),) * 2,
+        (10 + offset, 11 + offset),
+    )
+    return dict(
+        initial_form_bounds=tuple(forms),
+        initial_phase_bounds=tuple((Q(i, 64), Q(i, 64)) for i in range(27)),
+        first_probe_amplitude=Q(1, 16),
+        second_probe_amplitude=Q(-1, 32),
+        delay=delay,
+        total_duration=Q(3, 8),
+        time_step=Q(1, 8),
+        order=2,
+        max_steps=12,
+    )
+
+
+@pytest.fixture(scope="module", params=(Q(0), Q(1, 8)))
+def distinct_polynomial(request):
+    arguments = _distinct_arguments(request.param)
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(owner, "_full_sine_field", _distinct_polynomial_field)
+        report = owner.bound_sine_class_four_history_readout(
+            **arguments, **_DISTINCT_SELECTORS
+        )
+    return report, arguments
+
+
+def test_distinct_simultaneous_and_delayed_events_have_independent_exact_mixed_signal(
+    distinct_polynomial,
+):
+    report, arguments = distinct_polynomial
+    a, b = arguments["first_probe_amplitude"], arguments["second_probe_amplitude"]
+    delay, total = arguments["delay"], arguments["total_duration"]
+    assert report.admitted
+    assert (report.first_probe_node, report.second_probe_node, report.readout_node) == (
+        4,
+        22,
+        13,
+    )
+    assert report.donor_node == 4 and report.receiver_node == 13
+    assert report.initial_receiver_form_bounds == I(10, 11)
+    for history, (first, second) in enumerate(report.history_event_amplitudes):
+        suffix = report.segments[history + 2]
+        parent = report.segments[suffix.parent_segment_index]
+        assert suffix.pre_event_box == parent.final_state_bounds
+        initial = list(parent.final_state_bounds)
+        initial[22] += second
+        assert suffix.initial_box == tuple(initial)
+        assert suffix.final_state_bounds[27:] == report.source_box[27:]
+        assert suffix.final_state_bounds[4] == I(Q(1, 8) + first)
+        assert suffix.final_state_bounds[22] == I(Q(-1, 16) + second)
+        increment = (Q(1, 8) + first) * (Q(-1, 16) + second) * (total - delay)
+        assert report.suffix_receiver_increment_bounds[history] == I(increment)
+        prefix_change = (Q(1, 8) + first) * Q(-1, 16) * delay
+        assert report.endpoint_readout_bounds[history] == I(
+            10 + prefix_change + increment, 11 + prefix_change + increment
+        )
+        for i in range(54):
+            if i not in (4, 13, 22):
+                assert suffix.final_state_bounds[i] == report.source_box[i]
+    assert report.mixed_readout_bounds == I(a * b * (total - delay))
+    assert report.raw_endpoint_mixed_bounds.width == 4
+    evidence = _reconstruct_class_readout(
+        report, owner._admit_class_readout_inputs(**arguments), **_DISTINCT_SELECTORS
+    )
+    assert evidence.complete and evidence.mixed_bounds == report.mixed_readout_bounds
+    assert evidence.endpoint_bounds == report.endpoint_readout_bounds
+
+
+def test_distinct_observation_cancels_shared_offset_and_projects_selectors(
+    distinct_polynomial, monkeypatch
+):
+    report, arguments = distinct_polynomial
+    monkeypatch.setattr(owner, "_full_sine_field", _distinct_polynomial_field)
+    shifted = owner.bound_sine_class_four_history_readout(
+        **_distinct_arguments(arguments["delay"], offset=Q(2**100)),
+        **_DISTINCT_SELECTORS,
+    )
+    assert shifted.mixed_readout_bounds == report.mixed_readout_bounds
+    assert (
+        shifted.suffix_receiver_increment_bounds
+        == report.suffix_receiver_increment_bounds
+    )
+    assert shifted.initial_receiver_form_bounds == I(10 + 2**100, 11 + 2**100)
+    encoded = relational_report_to_dict(report)
+    assert json_loads(json.dumps(encoded, allow_nan=False)) == encoded
+    assert {
+        key: encoded["report"][key] for key in _DISTINCT_SELECTORS
+    } == _DISTINCT_SELECTORS
+    assert encoded["report"]["donor_node"] == 4
+    assert encoded["report"]["receiver_node"] == 13
+
+
+@pytest.mark.parametrize("observer", (4, 22))
+@pytest.mark.parametrize("horizon", (Q(0), Q(1, 8)))
+def test_observed_impulse_at_final_time_cancels_without_losing_raw_event(
+    observer, horizon, monkeypatch
+):
+    monkeypatch.setattr(owner, "_full_sine_field", _constant_field)
+    arguments = _small_arguments(delay=horizon, total_duration=horizon, max_steps=2)
+    selectors = dict(first_probe_node=4, second_probe_node=22, readout_node=observer)
+    result = owner.bound_sine_class_four_history_readout(**arguments, **selectors)
+    assert result.admitted and result.suffix_receiver_increment_bounds == (I(0),) * 4
+    assert result.mixed_readout_bounds == I(0)
+    baseline = (
+        arguments["initial_form_bounds"][observer][0] + Q(observer + 1, 100) * horizon
+    )
+    for endpoint, (a, b) in zip(
+        result.endpoint_readout_bounds, result.history_event_amplitudes
+    ):
+        assert endpoint.contains(baseline + (a if observer == 4 else b))
+    rebuilt = _reconstruct_class_readout(
+        result, owner._admit_class_readout_inputs(**arguments), **selectors
+    )
+    assert rebuilt.complete and rebuilt.mixed_bounds == I(0)
+
+
+@pytest.mark.parametrize("key", (*_DISTINCT_SELECTORS, "donor_node", "receiver_node"))
+@pytest.mark.parametrize("bad", (True, Q(4), None, 26))
+def test_evidence_rejects_invalid_or_conflicting_selector_metadata(
+    distinct_polynomial, key, bad
+):
+    report, arguments = distinct_polynomial
+    with pytest.raises(ValueError):
+        _reconstruct_class_readout(
+            replace(report, **{key: bad}),
+            owner._admit_class_readout_inputs(**arguments),
+            **_DISTINCT_SELECTORS,
+        )
+
+
+def test_evidence_does_not_reinterpret_distinct_events_under_default_policy(
+    distinct_polynomial,
+):
+    report, arguments = distinct_polynomial
+    with pytest.raises(ValueError, match="selectors differ"):
+        _reconstruct_class_readout(
+            report, owner._admit_class_readout_inputs(**arguments)
+        )
+
+
+def test_evidence_rejects_wrong_event_coordinate_and_cached_observer_increment(
+    distinct_polynomial,
+):
+    report, arguments = distinct_polynomial
+    admitted = owner._admit_class_readout_inputs(**arguments)
+    segment = report.segments[4]
+    wrong = list(segment.pre_event_box)
+    wrong[4] += report.second_probe_amplitude
+    altered = replace(segment, initial_box=tuple(wrong))
+    with pytest.raises(ValueError, match="event changed another coordinate"):
+        _reconstruct_class_readout(
+            replace(
+                report, segments=report.segments[:4] + (altered,) + report.segments[5:]
+            ),
+            admitted,
+            **_DISTINCT_SELECTORS,
+        )
+    altered = replace(segment, completed_receiver_increment_bounds=I(42))
+    with pytest.raises(ValueError, match="branch completion differs"):
+        _reconstruct_class_readout(
+            replace(
+                report, segments=report.segments[:4] + (altered,) + report.segments[5:]
+            ),
+            admitted,
+            **_DISTINCT_SELECTORS,
+        )
+
+
+class _HistoricalRecord:
+    """Model the missing-key convention in retained lazy evidence views."""
+
+    def __init__(self, values):
+        self.values = values
+
+    def __getattr__(self, key):
+        return self.values[key]
+
+
+@pytest.mark.parametrize("record_type", (SimpleNamespace, _HistoricalRecord))
+def test_historical_evidence_without_selectors_is_legacy_only(
+    polynomial_report, record_type
+):
+    values = {
+        key: value
+        for key, value in vars(polynomial_report).items()
+        if key not in _DISTINCT_SELECTORS
+    }
+    old = (
+        record_type(**values) if record_type is SimpleNamespace else record_type(values)
+    )
+    admitted = owner._admit_class_readout_inputs(**_arguments())
+    assert _reconstruct_class_readout(old, admitted).complete
+    with pytest.raises(ValueError, match="legacy evidence lacks selected nodes"):
+        _reconstruct_class_readout(old, admitted, **_DISTINCT_SELECTORS)
+    values["first_probe_node"] = 4
+    partial = (
+        record_type(**values) if record_type is SimpleNamespace else record_type(values)
+    )
+    with pytest.raises(ValueError, match="partial selector evidence"):
+        _reconstruct_class_readout(partial, admitted)
+
+
+def test_consumer_admits_policy_selectors_before_reading_report():
+    with pytest.raises(ValueError, match="first_probe_node"):
+        _reconstruct_class_readout(
+            object(),
+            owner._admit_class_readout_inputs(**_arguments()),
+            first_probe_node=True,
+        )

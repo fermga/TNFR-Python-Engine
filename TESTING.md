@@ -327,6 +327,26 @@ using static algebra and rational envelopes. They neither evaluate selected time
 full-law responses nor establish the mathematical proof or exclusion of all
 pairwise dynamical laws.
 
+For the [independent distinct-neighbor protocol](theory/nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL.md),
+check optional event/readout selector admission, legacy defaults, complete
+state carry and retained arithmetic. Independent polynomial fixtures must
+exercise simultaneous and delayed distinct-port events, observed-node jumps,
+shared-prefix cancellation and first-failure behavior. Research controls
+rebuild the signed absolute-phase cover and the four nonlinear source defects;
+they keep numerical width, closed prediction overlap and four/eight-reading
+error decisions separate.
+
+```bash
+python -m pytest tests/physics/test_sine_class_readout.py tests/physics/test_sine_class_comparison_readout.py tests/research/test_sine_class_neighbor_forward.py tests/research/test_sine_class_neighbor_forward_evaluator.py tests/research/test_frozen_source.py tests/scripts/test_restore_frozen_source.py -q
+```
+
+The new research policy tests use the shared no-regeneration guard. Evaluator
+wiring uses unrelated temporary records and mocked scientific entry points;
+its attempt, exception, export-failure and no-retry controls do not execute the
+selected four-history response. Existing frozen default reports remain subject
+to their read-only reconstruction audits. A successful implementation test is
+not an independent full-law evaluation or a proof of source acquisition.
+
 For the [changed-input collective prediction](theory/nodal/SINE_CLASS_CHANGED_INPUT_PREDICTION.md),
 check grounded-path kernel coefficients, exact causal convolution weights,
 hidden quadratic feedback and independent linear initialization. Compare low

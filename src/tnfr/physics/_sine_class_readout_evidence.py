@@ -13,6 +13,7 @@ from ..mathematics._comparison_flow import _exact
 from ..mathematics._rational_interval import INTERVAL_METHOD, I
 from ..mathematics._validated_taylor import reconstruct_box_taylor_arithmetic
 from .relational_sine_class_mediation import _EDGES
+from .relational_sine_class_readout import _admit_class_readout_selectors
 
 
 def _require(condition, message):
@@ -54,9 +55,47 @@ class _ClassReadoutEvidence:
     raw_mixed_bounds: I | None
 
 
-def _reconstruct_class_readout(report, admitted_inputs):
+def _reconstruct_class_readout(
+    report,
+    admitted_inputs,
+    *,
+    first_probe_node=4,
+    second_probe_node=4,
+    readout_node=22,
+):
     """Check one fresh child against normalized inputs and rebuild its bands."""
     form, phase, a, b, delay, total, width, order, cap = admitted_inputs
+    selectors = _admit_class_readout_selectors(
+        first_probe_node, second_probe_node, readout_node
+    )
+    first_node, second_node, observer = selectors
+    # Historical v1 records predate the optional selectors. Only the complete
+    # absence of all three fields is compatible with the original defaults;
+    # a present invalid value never falls through to an alias or default.
+    missing = object()
+    recorded_selectors = []
+    for key in ("first_probe_node", "second_probe_node", "readout_node"):
+        try:
+            value = getattr(report, key)
+        except AttributeError:
+            value = missing
+        except KeyError as error:
+            # Older lazy record views use a mapping's missing-key convention.
+            if error.args != (key,):
+                raise
+            value = missing
+        recorded_selectors.append(value)
+    if all(value is missing for value in recorded_selectors):
+        _require(selectors == (4, 4, 22), "legacy evidence lacks selected nodes")
+    else:
+        _require(
+            all(value is not missing for value in recorded_selectors),
+            "partial selector evidence is unavailable",
+        )
+        _require(
+            _admit_class_readout_selectors(*recorded_selectors) == selectors,
+            "event or observation selectors differ",
+        )
     nodes = tuple(range(27))
     edges = tuple(sorted(tuple(sorted(edge)) for edge in _EDGES))
     _require(
@@ -85,7 +124,8 @@ def _reconstruct_class_readout(report, admitted_inputs):
         "state order differs",
     )
     _require(
-        _integer(report.donor_node) == 4 and _integer(report.receiver_node) == 22,
+        _integer(report.donor_node) == first_node
+        and _integer(report.receiver_node) == observer,
         "event or observation node differs",
     )
     source = form + phase
@@ -93,7 +133,7 @@ def _reconstruct_class_readout(report, admitted_inputs):
     _require(
         tuple(map(_interval, report.initial_form_bounds)) == form
         and tuple(map(_interval, report.initial_phase_bounds)) == phase
-        and _interval(report.initial_receiver_form_bounds) == form[22],
+        and _interval(report.initial_receiver_form_bounds) == form[observer],
         "source channel association differs",
     )
     for key, expected in (
@@ -129,19 +169,19 @@ def _reconstruct_class_readout(report, admitted_inputs):
         "history events differ",
     )
     plan = (
-        ("prefix_unprobed", None, Q(0), delay, Q(0)),
-        ("prefix_first", None, Q(0), delay, a),
-        ("neither", 0, delay, total, Q(0)),
-        ("first_only", 1, delay, total, Q(0)),
-        ("second_only", 0, delay, total, b),
-        ("both", 1, delay, total, b),
+        ("prefix_unprobed", None, Q(0), delay, Q(0), first_node),
+        ("prefix_first", None, Q(0), delay, a, first_node),
+        ("neither", 0, delay, total, Q(0), second_node),
+        ("first_only", 1, delay, total, Q(0), second_node),
+        ("second_only", 0, delay, total, b, second_node),
+        ("both", 1, delay, total, b, second_node),
     )
     _require(len(report.segments) == 6, "complete branch inventory is required")
     final, increments = {}, {}
     success = failed_attempts = 0
     failure = None
     for index, (segment, expected) in enumerate(zip(report.segments, plan)):
-        label, parent, start, end, jump = expected
+        label, parent, start, end, jump, jump_node = expected
         if segment.parent_segment_index is not None:
             _integer(segment.parent_segment_index)
         actual = (
@@ -151,7 +191,7 @@ def _reconstruct_class_readout(report, admitted_inputs):
             _exact(segment.end_time),
             _exact(segment.form_jump),
         )
-        _require(actual == expected, "branch ancestry or events differ")
+        _require(actual == expected[:5], "branch ancestry or events differ")
         if failure is not None:
             _require(
                 segment.status == "not_attempted" and not segment.steps,
@@ -206,7 +246,8 @@ def _reconstruct_class_readout(report, admitted_inputs):
         before = source if parent is None else final[parent]
         _require(_box(segment.pre_event_box) == before, "full pre-event carry differs")
         state = tuple(
-            value + jump if i == 4 and jump else value for i, value in enumerate(before)
+            value + jump if i == jump_node and jump else value
+            for i, value in enumerate(before)
         )
         _require(_box(segment.initial_box) == state, "event changed another coordinate")
         time, change = start, I(0)
@@ -234,7 +275,7 @@ def _reconstruct_class_readout(report, admitted_inputs):
                 _box(step.increment) == increment and _box(step.endpoint) == endpoint,
                 "retained Taylor arithmetic differs",
             )
-            change += increment[22]
+            change += increment[observer]
             state, time = endpoint, time + h
             success += 1
         _require(
@@ -299,7 +340,9 @@ def _reconstruct_class_readout(report, admitted_inputs):
     )
     planned = 2 * -(-delay // width) + 4 * -(-(total - delay) // width)
     _require(_integer(report.planned_unique_step_count) == planned, "step plan differs")
-    readings = tuple((plan[i][0], final[i][22]) for i in range(2, 6) if i in final)
+    readings = tuple(
+        (plan[i][0], final[i][observer]) for i in range(2, 6) if i in final
+    )
     _require(
         tuple(
             (label, _interval(value))
