@@ -99,6 +99,7 @@ nav:
           - "Relational coefficient and capacity identification": theory/nodal/RELATIONAL_RESPONSE_IDENTIFICATION.md
           - "Sine law and constitutive information boundaries": theory/nodal/SINE_CONSTITUTIVE_INFORMATION.md
           - "Constitutive freedom of organized patterns": theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md
+          - "Preparation information and acquired modes": theory/nodal/SINE_PREPARATION_MODE_SELECTION.md
           - "Native local recovery and regional interaction": theory/nodal/RELATIONAL_RECOVERY_AND_INTERACTION.md
           - "Native phase domains and capture": theory/nodal/RELATIONAL_DOMAIN_AND_CAPTURE.md
           - "Native validated transit and preparation controls": theory/nodal/RELATIONAL_FORMATION_CONTROLS.md

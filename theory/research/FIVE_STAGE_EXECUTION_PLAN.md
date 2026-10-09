@@ -80,9 +80,12 @@ finite-response signs have not been transferred. A separate
 the original full source families acquire both identities uniformly over
 `lambda in [0,1]`, with unchanged errors, time, radius and storage budget.
 That robustness does not select a unique law or an autonomous preparation.
-The sole active task is [preparation information and mode selection](#current-g3-gate):
-under one fixed law, determine whether matched initial phase, means and storage
-can conceal fine form information that selects a different acquired identity.
+The [preparation-information result](#preparation-information-mode-selection)
+now proves that exactly matched initial phase, means and storage can lead to
+different acquired winding magnitudes under the fixed sine law. The sole next
+admission is the [source-to-basin mechanism](#current-g3-gate): determine how
+fine preparation information changes capture along one declared path that
+preserves those observations, rather than repeat endpoint classification.
 The [prepared storage observer](#storage-comparison-producer-admission)
 is retained as an instrument; it has no frozen protocol or reserved response
 and is not the next campaign.
@@ -99,7 +102,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Active preparation-information admission | [Preparation information and acquired-mode selection](#current-g3-gate): fix one law and test whether matched initial phase, means and storage determine the acquired identity, retaining fine form correlations and full-family uncertainty |
+| Next theoretical admission | [Source-to-basin mechanism](#current-g3-gate): fixed-law capture selection along one independently declared constant-observation preparation path, with rigorous selectors, source errors and any unresolved transition region retained |
+| Closed theoretical preparation admission | [Preparation information and acquired-mode selection](#preparation-information-mode-selection): exactly matched initial phase, means and storage, but distinct acquired winding magnitudes for paired complete source families |
 | Closed theoretical acquisition admission | [Same-source formation across matched laws](#same-source-acquisition-result): own-law acquisition and capture for both original full C9 source families uniformly over `lambda in [0,1]`, at unchanged error, time, radius and source budgets |
 | Closed theoretical admission | [Target-matched organized-pattern laws](#target-matched-organized-law-result): equal target storage, tangent and quadratic fields with opposite nominal mixed onset; own-law local identity, without finite-response or acquisition transfer |
 | Prepared instrument; evaluation deferred | [Independent storage comparison](#storage-comparison-producer-admission): full/tangent passive-loss producer and arithmetic reader retained; observation policy, freeze and selected response remain unperformed |
@@ -142,7 +146,7 @@ remain open; no empirical response has passed complete physical admission.
 
 <a id="current-g3-gate"></a>
 <a id="foundational-organized-pattern-admission"></a>
-<a id="preparation-information-mode-selection"></a>
+<a id="source-to-basin-mode-selection"></a>
 ## Primary plan: foundations tested by organized patterns
 
 Investigate which premises are sufficient, necessary within a declared class,
@@ -162,40 +166,43 @@ to its actual state, scale and execution path before treating a matched
 geometric or response property as sufficient. Retain the distinction between
 defining requirements, supplied hypotheses and derived restrictions.
 
-The next question is: **under one fixed complete law, do initial phase,
-conserved means and storage determine the acquired mode, or can different
-fine form arrangements with those same observations select distinct
-organized identities?** Fix the `lambda=0` member of the
+The next question is: **which formation-stage mechanism changes the acquired
+mode along one continuous preparation path with fixed initial phase, means
+and storage?** Retain the `lambda=0` member of the
 [complete-law family](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md),
 unit capacities, isolated C9 support, positive loss and both declared clock
-rows. This fixes the constitutive choice while testing preparation information.
-Well-posed full-state dynamics selects a trajectory from each complete source;
-a coarse observation can still leave the selected mode undetermined.
+rows. The [paired-source theorem](../nodal/SINE_PREPARATION_MODE_SELECTION.md)
+already establishes two different capture outcomes. This gate asks how a
+continuous change in the omitted fine arrangement selects between capture
+regions; neither another equal-observation counterexample nor the existence
+of some boundary between two open basins is the required advance.
 
-Declare an algebraic source family and its preparation-observation map before
-assessing acquisition. Match the initial phase data, conserved means and
-storage while allowing different fine form correlations. Specify the exact
-pairing or constraints that preserve these equalities under source uncertainty;
-overlapping marginal error bands do not prove matched preparations. Seek
-symmetry-inequivalent acquired winding classes, rather than copies related by
-reflection or common-origin changes. Every admitted initial state must lack
-the claimed target identity.
+Declare one algebraic energy-isometric path and its full uncertain source
+family before analyzing outcomes. Preserve phase, means and exact storage
+for each latent source member along the path. Admit the transformed error
+family uniformly, including its endpoint associations: an isometry taking
+one nominal center to the other need not map residuals as the earlier
+reflection did. The earlier endpoint certificate cannot be borrowed for a
+different error family without checking its hypotheses. Retain initial zero
+winding, structural preparation cost and a declared parameter domain. No
+source is defined through an evaluated future flow or selected by a sweep.
 
-The [existing source ramps](../nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-pair)
-have different costs, so they do not already answer the matched-storage
-question. New independently specified sources may use their own declared
-storage, coordinate-error, horizon and capture budgets. Do not impose an
-impossible equal-cost condition within the old ramp formulas or tune sources
-through a response sweep. Sources defined by their desired future trajectory,
-target resets, coefficient searches and a precision race are outside scope.
+Use the existing semigroup, phase-passage and capture mechanisms to derive
+source-local sufficient selectors and a rigorously delimited undecided
+transition region, or prove a scoped obstruction to a specified selector.
+Relate the selection to actual continuous phase passage and loss under the
+full law. A proposed saddle or invariant separator needs its own dynamical
+proof; endpoint topology alone does not identify it. Do not assume a unique
+threshold, a monotone mode ordering, only two possible outcomes, or capture
+throughout the transition region. A failed sufficient capture bound remains
+unresolved, not evidence for a boundary or nonformation.
 
-Use the existing semigroup and capture owners to prove the acquired identity
-for each complete admitted source family, or establish a scoped obstruction.
-Retain all form/phase coordinates and correlations, initial winding and costs,
-own-law nonlinear forcing and strict capture margins. A failed sufficient
-bound remains an unresolved certificate; it does not establish nonformation
-or sufficiency of the coarse preparation map. Repeating only the already
-known equal-mean, unequal-cost examples does not close this gate.
+Wrapped phase-cut crossings are changes of the winding diagnostic along a
+smooth trajectory, not singularities or hybrid events in this law. A net
+winding difference proves that passage occurred but does not determine the
+crossing history or supply a formation-stage selector. Keep that distinction
+when deriving a finite-time corridor or an obstruction. No trajectory campaign,
+new controller, source-distribution assumption or precision search is admitted.
 
 An acquired mode can index an inherited effective description only after the
 actual state enters its admitted capture chart. Preserve that state's hidden
@@ -224,12 +231,12 @@ are not promoted into autonomous constituent birth.
    operator is consumed, its live preconditions, ordered composition and
    postconditions. A collective event needs its own descent and occurrence
    analysis even when the continuous collective law closes.
-2. **Identify the proposed sufficient preparation information.** Separate the
-   fixed law from the source coordinates and their retained observations.
-   State which fine correlations the preparation map discards and what claim
-   of acquired-mode prediction is being tested. Constitutive nonselection is
-   already established; no additional law or controller is introduced merely
-   to force a preferred mode.
+2. **Specify the proposed selection mechanism.** Separate the fixed law and
+   constant observed preparation from the varying fine arrangement. State
+   the source-local criterion, its uncertainty domain and what dynamical
+   conclusion it predicts. Constitutive nonselection and coarse-information
+   insufficiency are already established; no additional law or controller
+   is introduced merely to force a preferred mode.
 3. **Derive a discrimination or obstruction.** Match the declared preparation
    observations, geometry, units, clock and costs under the fixed complete law.
    Check symmetries, equilibrium boundaries, reachable identities, balances,
@@ -244,12 +251,13 @@ are not promoted into autonomous constituent birth.
    observation and error model are admitted. A controller added to produce a
    desired object is an additional premise, not a derivation of that object.
 
-The gate closes with a full-family mode-selection result for the declared
-preparation map, or a scoped obstruction: matched observations with distinct
-acquired identities show which omitted information matters; a proved exclusion
-or sufficiency claim must state its source domain. Keep inconclusive margins
-and later effective-state handoff obligations explicit. Local target stability
-or another nominal response alone does not close this gate.
+The gate closes with a predictive formation-stage result on the declared
+source path, including rigorous uncertainty and transition limits, or a
+scoped obstruction to its stated selector. Repeating the two endpoint capture
+certificates, invoking continuity alone or locating a nominal crossing does
+not close it. Keep unresolved parameter regions and later effective-state
+handoff obligations explicit. No probability or autonomous choice of the
+preparation is inferred from deterministic basin selection.
 
 The dependency order for subsequent work is:
 
@@ -274,6 +282,20 @@ The physical objective guides which mathematical property matters. Laboratory
 examples supply possible controls and discriminators; they do not replace
 the generative objective with imitation of a convenient apparatus. Substrate
 origin, universal laws and recurrence across scales remain open hypotheses.
+
+<a id="preparation-information-mode-selection"></a>
+## Closed theoretical admission: matched preparation, different acquired modes
+
+The [paired-source result](../nodal/SINE_PREPARATION_MODE_SELECTION.md#sine-preparation-mode-selection)
+uses one fixed sine law and an exact form-energy isometry to preserve the
+complete initial phase, both means and storage within every uncertain source
+pair. Both initially zero-winding families acquire and retain inequivalent
+winding magnitudes one and two. The new algebraic sources have their own
+time and storage budgets; mapped residual correlations and full-state capture
+are proved rather than inferred from overlapping marginal bands. This closes
+the coarse preparation map's sufficiency question on that domain, without
+deriving a minimal sufficient statistic, outcome probability, autonomous
+preparation or an initialized effective law.
 
 <a id="same-source-acquisition-result"></a>
 ## Closed theoretical admission: acquisition across matched laws

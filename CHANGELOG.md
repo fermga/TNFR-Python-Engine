@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Prove [preparation-dependent mode selection](theory/nodal/SINE_PREPARATION_MODE_SELECTION.md)
+  under one fixed C9 law: exactly matched initial phases, means and storage
+  can lead to distinct acquired winding identities. Retain correlated source
+  uncertainty, explicit preparation cost and full-law capture bounds through
+  shared exact transit arithmetic.
 - Add a [complete-law counterfamily](theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md)
   with unchanged organized targets, storage values, tangent and quadratic
   fields but opposite nominal nonlinear mixed onset. Integrate exact static

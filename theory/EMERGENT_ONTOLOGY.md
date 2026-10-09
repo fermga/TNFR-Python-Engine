@@ -139,6 +139,16 @@ for indefinite repetition; exact target convergence applies when probes
 stop. These results derive neither the organized source preparation,
 autonomous probe selection nor a physical constituent identity.
 
+The separate
+[preparation-information theorem](nodal/SINE_PREPARATION_MODE_SELECTION.md#sine-preparation-mode-selection)
+matches the complete initial phase state, conserved means and storage exactly
+between two correlated source families, yet proves acquisition of different
+winding magnitudes under one fixed positive-loss law. Fine form arrangement
+therefore carries mode-relevant information absent from those observations.
+The pairing retains all coordinates and uncertainty; independent errors would
+not preserve the equality. Its larger algebraic preparation and storage cost
+are explicit premises, not an autonomous selector or a probability of modes.
+
 Distinct internal geometries need not be distinguishable through every
 contact. The [central-contact obstruction](nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-contact-admission)
 shows that the nominal formed C9 classes can remain invisible to the same

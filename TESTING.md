@@ -145,6 +145,16 @@ positive stiffness or insufficient margins must remain unavailable. These
 checks do not extend later dwell, contact or finite-response certificates.
 The frozen sine producers remain unchanged.
 
+For [preparation information and acquired modes](theory/nodal/SINE_PREPARATION_MODE_SELECTION.md),
+select `tests/physics/test_sine_preparation_mode_selection.py` with the shared
+preparation and isolated-class controls above. Reconstruct the Laplacian energy
+isometry independently and test equality for paired perturbed states, not just
+centers or overlapping energy intervals. Retain mapped coordinate-error bounds,
+zero sums and unwrapped target lifts; verify winding in circular coordinates.
+Check complete-family transit and capture against an independent calculation,
+including strict-budget and unavailable cases. This source pairing is not a
+symmetry of the dynamics and does not transfer a later interaction certificate.
+
 For [class-mediated collective response](theory/nodal/SINE_CLASS_MEDIATED_RESPONSE.md),
 select both the primitive/report controls and independent full-support
 algebra. Rebuild the 27-node support, its `(3,4,3)` central degrees, common
