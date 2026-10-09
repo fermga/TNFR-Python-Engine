@@ -50,13 +50,150 @@ class _ClassProbeHistoryBound:
     final_form_mean_shift: Q
     final_form_mean_bounds: I
     final_phase_mean_bounds: I
-    tangent_endpoint_discrepancy_upper_bound: Q
+    tangent_endpoint_discrepancy_upper_bound: Q | None
     first_probe_work_within_allowance: bool
     second_probe_work_within_allowance: bool
     work_within_allowances: bool
     first_probe_identity_certified: bool
     second_probe_identity_certified: bool
     identity_certified: bool
+
+
+def _admit_probe_primitives(mediator_class, raw, maximum_duration):
+    """Admit the common two-event primitives before coefficient construction."""
+    if type(mediator_class) is not int or mediator_class not in (1, 2):
+        raise ValueError("mediator_class must be an ordinary integer one or two")
+    values = {key: exact_or_represented_real(value, key) for key, value in raw.items()}
+    if any(
+        value < 0
+        for key, value in values.items()
+        if key not in ("first_probe_amplitude", "second_probe_amplitude")
+    ):
+        raise ValueError(
+            "times, radii, readout error and work allowances must be nonnegative"
+        )
+    if not 0 <= values["delay"] <= values["total_duration"] <= maximum_duration:
+        raise ValueError(f"require 0<=delay<=total_duration<={maximum_duration}")
+    if not 0 < values["radius"] <= Q(1, 12):
+        raise ValueError("radius must lie in (0,1/12]")
+    return values
+
+
+@dataclass(frozen=True)
+class _ClassProbeEventLedger:
+    contact_work: Q
+    initial_radius: Q
+    initial_storage: Q
+    barrier: Q
+    initial_identity: bool
+    contact_allowed: bool
+    histories: tuple[_ClassProbeHistoryBound, ...]
+
+
+def _probe_event_ledger(values, g, discrepancies):
+    """Rebuild all carried event bounds; supplied discrepancy bounds are optional.
+
+    The norm and storage proof uses heat contraction and is valid whenever
+    1-2*g**2*T**2>0. Each caller admits its own proved horizon domain. A None
+    discrepancy means no individual tangent comparison is supplied here.
+    """
+    a, b, s, t, eps, r = (
+        values[key]
+        for key in (
+            "first_probe_amplitude",
+            "second_probe_amplitude",
+            "delay",
+            "total_duration",
+            "endpoint_radius",
+            "radius",
+        )
+    )
+    contact_work = 8 * eps**2
+    initial_radius, initial_storage = 6 * eps**2, 22 * eps**2
+    barrier = r**2 / 2700
+    initial_identity = initial_radius < r**2 and initial_storage < barrier
+    contact_allowed = contact_work <= values["contact_work_allowance"]
+
+    def envelope(amplitude, time):
+        form = (amplitude + eps + 2 * g * time * eps) / (1 - 2 * g**2 * time**2)
+        phase = eps + 2 * g * time * form
+        return form, phase
+
+    histories = []
+    for (label, first, second), discrepancy in zip(
+        (
+            ("neither", Q(0), Q(0)),
+            ("first_only", a, Q(0)),
+            ("second_only", Q(0), b),
+            ("both", a, b),
+        ),
+        discrepancies,
+    ):
+        amplitude = abs(first) + abs(second)
+        x, y = envelope(amplitude, t)
+        first_x, first_y = envelope(abs(first), t)
+        pre_x, pre_y = envelope(abs(first), s)
+        work1center, work1error = Q(3, 2) * first**2, 6 * abs(first) * eps
+        work2center, work2error = Q(3, 2) * second**2, 6 * abs(second) * pre_x
+        upper1, upper2 = work1center + work1error, work2center + work2error
+        z1, z2 = 27 * (first_x**2 + first_y**2), 27 * (x**2 + y**2)
+        e1, e2 = initial_storage + upper1, initial_storage + upper1 + upper2
+        identity1 = bool(initial_identity and z1 < r**2 and e1 < barrier)
+        identity2 = bool(identity1 and z2 < r**2 and e2 < barrier)
+        work1margin = values["first_probe_work_allowance"] - upper1
+        work2margin = values["second_probe_work_allowance"] - upper2
+        mean_error = Q(4, 58) * eps
+        shift = Q(3, 58) * (first + second)
+        histories.append(
+            _ClassProbeHistoryBound(
+                label=label,
+                first_probe_amplitude=first,
+                second_probe_amplitude=second,
+                second_event_time=s,
+                total_duration=t,
+                cumulative_amplitude_budget=amplitude,
+                maximum_form_coordinate_upper_bound=x,
+                maximum_phase_deviation_upper_bound=y,
+                pre_second_form_coordinate_upper_bound=pre_x,
+                pre_second_phase_deviation_upper_bound=pre_y,
+                first_probe_work_bounds=I(work1center - work1error, upper1),
+                second_probe_work_bounds=I(work2center - work2error, upper2),
+                first_probe_work_upper_bound=upper1,
+                second_probe_work_upper_bound=upper2,
+                first_probe_work_margin=work1margin,
+                second_probe_work_margin=work2margin,
+                after_first_radius_squared_upper_bound=z1,
+                after_second_radius_squared_upper_bound=z2,
+                after_first_excess_storage_upper_bound=e1,
+                after_second_excess_storage_upper_bound=e2,
+                after_first_radius_margin=r**2 - z1,
+                after_second_radius_margin=r**2 - z2,
+                after_first_storage_margin=barrier - e1,
+                after_second_storage_margin=barrier - e2,
+                first_form_mean_shift=Q(3, 58) * first,
+                final_form_mean_shift=shift,
+                final_form_mean_bounds=I(shift - mean_error, shift + mean_error),
+                final_phase_mean_bounds=I(-mean_error, mean_error),
+                tangent_endpoint_discrepancy_upper_bound=discrepancy,
+                first_probe_work_within_allowance=work1margin >= 0,
+                second_probe_work_within_allowance=work2margin >= 0,
+                work_within_allowances=bool(
+                    contact_allowed and work1margin >= 0 and work2margin >= 0
+                ),
+                first_probe_identity_certified=identity1,
+                second_probe_identity_certified=identity2,
+                identity_certified=identity2,
+            )
+        )
+    return _ClassProbeEventLedger(
+        contact_work,
+        initial_radius,
+        initial_storage,
+        barrier,
+        initial_identity,
+        contact_allowed,
+        tuple(histories),
+    )
 
 
 @dataclass(frozen=True)
@@ -190,8 +327,6 @@ def bound_sine_class_superposition(
     values before model construction. No supplied report or state reset is
     consumed. The endpoint ball and original zero sums remain hypotheses.
     """
-    if type(mediator_class) is not int or mediator_class not in (1, 2):
-        raise ValueError("mediator_class must be an ordinary integer one or two")
     raw = dict(
         first_probe_amplitude=first_probe_amplitude,
         second_probe_amplitude=second_probe_amplitude,
@@ -204,19 +339,7 @@ def bound_sine_class_superposition(
         first_probe_work_allowance=first_probe_work_allowance,
         second_probe_work_allowance=second_probe_work_allowance,
     )
-    v = {key: exact_or_represented_real(value, key) for key, value in raw.items()}
-    if any(
-        value < 0
-        for key, value in v.items()
-        if key not in ("first_probe_amplitude", "second_probe_amplitude")
-    ):
-        raise ValueError(
-            "times, radii, readout error and work allowances must be nonnegative"
-        )
-    if not 0 <= v["delay"] <= v["total_duration"] <= Q(1, 4):
-        raise ValueError("require 0<=delay<=total_duration<=1/4")
-    if not 0 < v["radius"] <= Q(1, 12):
-        raise ValueError("radius must lie in (0,1/12]")
+    v = _admit_probe_primitives(mediator_class, raw, Q(1, 4))
     a, b, s, t, eps, delta, r = (
         v[key]
         for key in (
@@ -262,81 +385,25 @@ def bound_sine_class_superposition(
     exact_zero = a == 0 or b == 0 or s == t
     mixed = Q(0) if exact_zero else nominal + source_error
     noise = 4 * delta
-    contact_work = 8 * eps**2
-    initial_radius, initial_storage = 6 * eps**2, 22 * eps**2
-    barrier = r**2 / 2700
-    initial_identity = initial_radius < r**2 and initial_storage < barrier
-    contact_allowed = contact_work <= v["contact_work_allowance"]
-
-    def envelope(amplitude, time):
-        form = (amplitude + eps + 2 * g * time * eps) / (1 - 2 * g**2 * time**2)
-        phase = eps + 2 * g * time * form
-        return form, phase
-
-    histories = []
-    for label, first, second in (
-        ("neither", Q(0), Q(0)),
-        ("first_only", a, Q(0)),
-        ("second_only", Q(0), b),
-        ("both", a, b),
-    ):
-        amplitude = abs(first) + abs(second)
-        x, y = envelope(amplitude, t)
-        first_x, first_y = envelope(abs(first), t)
-        pre_x, pre_y = envelope(abs(first), s)
-        work1center, work1error = Q(3, 2) * first**2, 6 * abs(first) * eps
-        work2center, work2error = Q(3, 2) * second**2, 6 * abs(second) * pre_x
-        upper1, upper2 = work1center + work1error, work2center + work2error
-        z1, z2 = 27 * (first_x**2 + first_y**2), 27 * (x**2 + y**2)
-        e1, e2 = initial_storage + upper1, initial_storage + upper1 + upper2
-        identity1 = bool(initial_identity and z1 < r**2 and e1 < barrier)
-        identity2 = bool(identity1 and z2 < r**2 and e2 < barrier)
-        work1margin = v["first_probe_work_allowance"] - upper1
-        work2margin = v["second_probe_work_allowance"] - upper2
-        mean_error = Q(4, 58) * eps
-        shift = Q(3, 58) * (first + second)
-        histories.append(
-            _ClassProbeHistoryBound(
-                label=label,
-                first_probe_amplitude=first,
-                second_probe_amplitude=second,
-                second_event_time=s,
-                total_duration=t,
-                cumulative_amplitude_budget=amplitude,
-                maximum_form_coordinate_upper_bound=x,
-                maximum_phase_deviation_upper_bound=y,
-                pre_second_form_coordinate_upper_bound=pre_x,
-                pre_second_phase_deviation_upper_bound=pre_y,
-                first_probe_work_bounds=I(work1center - work1error, upper1),
-                second_probe_work_bounds=I(work2center - work2error, upper2),
-                first_probe_work_upper_bound=upper1,
-                second_probe_work_upper_bound=upper2,
-                first_probe_work_margin=work1margin,
-                second_probe_work_margin=work2margin,
-                after_first_radius_squared_upper_bound=z1,
-                after_second_radius_squared_upper_bound=z2,
-                after_first_excess_storage_upper_bound=e1,
-                after_second_excess_storage_upper_bound=e2,
-                after_first_radius_margin=r**2 - z1,
-                after_second_radius_margin=r**2 - z2,
-                after_first_storage_margin=barrier - e1,
-                after_second_storage_margin=barrier - e2,
-                first_form_mean_shift=Q(3, 58) * first,
-                final_form_mean_shift=shift,
-                final_form_mean_bounds=I(shift - mean_error, shift + mean_error),
-                final_phase_mean_bounds=I(-mean_error, mean_error),
-                tangent_endpoint_discrepancy_upper_bound=cubic * amplitude**3
-                + 2 * eps / comparison,
-                first_probe_work_within_allowance=work1margin >= 0,
-                second_probe_work_within_allowance=work2margin >= 0,
-                work_within_allowances=bool(
-                    contact_allowed and work1margin >= 0 and work2margin >= 0
-                ),
-                first_probe_identity_certified=identity1,
-                second_probe_identity_certified=identity2,
-                identity_certified=identity2,
-            )
-        )
+    ledger = _probe_event_ledger(
+        v,
+        g,
+        tuple(
+            cubic * amplitude**3 + 2 * eps / comparison
+            for amplitude in (Q(0), abs(a), abs(b), abs(a) + abs(b))
+        ),
+    )
+    contact_work, initial_radius, initial_storage = (
+        ledger.contact_work,
+        ledger.initial_radius,
+        ledger.initial_storage,
+    )
+    barrier, initial_identity, contact_allowed, histories = (
+        ledger.barrier,
+        ledger.initial_identity,
+        ledger.contact_allowed,
+        ledger.histories,
+    )
     maximum = max(
         history.tangent_endpoint_discrepancy_upper_bound for history in histories
     )

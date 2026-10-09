@@ -111,6 +111,7 @@ nav:
           - "Acquired mediator class and a transmitted form response": theory/nodal/SINE_CLASS_MEDIATED_RESPONSE.md
           - "Effective memory of an acquired sine-class mediator": theory/nodal/SINE_CLASS_MEDIATED_MEMORY.md
           - "Two-probe superposition on an acquired sine composite": theory/nodal/SINE_CLASS_NONLINEAR_SUPERPOSITION.md
+          - "Finite separation of a nonlinear class-mediated response": theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md
           - "Uniform tracking of reduced sine ports": theory/nodal/SINE_PORT_RELAXATION.md
           - "Form tracking by ordered heat comparison": theory/nodal/SINE_PORT_FORM_TRACKING.md
           - "Two-port compatibility of sine classes": theory/nodal/SINE_TWO_PORT_COMPATIBILITY.md

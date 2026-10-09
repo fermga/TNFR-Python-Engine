@@ -1179,6 +1179,56 @@ retains the protocol, proof and channel verdicts. The
 checks source/record consistency separately from reading a JSON. No support
 selection, autonomous preparation or physical observation is inferred.
 
+<a id="sine-class-nonlinear-protocol"></a>
+### Check a finite nonlinear separation margin
+
+The [longer-horizon theorem](../../../theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-finite-separation)
+keeps the same complete source budget, two form impulses and reading
+noise, with a declared delay of one and final time of two structural
+units. Its conditional calculator integrates an exact heat polynomial and
+adds proved tails and nonlinear/source errors; it runs no nonlinear
+trajectory or formation assessment:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_class_nonlinear_protocol import (
+    bound_sine_class_nonlinear_protocol,
+)
+
+protocol = bound_sine_class_nonlinear_protocol(
+    mediator_class=2,
+    first_probe_amplitude=Q(1, 2000),
+    second_probe_amplitude=Q(1, 2000),
+    delay=Q(1),
+    total_duration=Q(2),
+    endpoint_radius=Q(1, 10**32),
+    readout_error_bound=Q(1, 10**30),
+    radius=Q(1, 12),
+    contact_work_allowance=Q(1, 10**12),
+    first_probe_work_allowance=Q(1, 500000),
+    second_probe_work_allowance=Q(1, 500000),
+)
+assert protocol.status == "record_sets_disjoint"
+assert protocol.predicted_orientation == -1
+assert protocol.disjoint_record_margin > 0
+assert protocol.all_work_within_allowances
+assert protocol.all_identities_certified
+```
+
+Read `true_mixed_bounds` and `recorded_mixed_bounds` as exact endpoint
+pairs. A recorded sign needs a margin above four reading errors; disjoint
+nonlinear/tangent four-record sets need eight because both models admit
+recording error. Inspect `strict_disjoint_noise_ceiling` as a sufficient
+mathematical allowance, not a measurement specification.
+
+Source acquisition and the conditional endpoint norms still need their
+own matched proof. Work and identity flags are independent of observation
+status. `bounds_only` does not prove overlap or the absence of nonlinear
+response, and a positive formal coefficient does not determine a finite
+response's sign. The [contract](../../contracts/relational/SINE_PATTERNS.md#sine-class-nonlinear-protocol)
+retains these distinctions. This example does not replay any frozen
+response or establish laboratory feasibility.
+
 <a id="sine-class-nonlinear-superposition"></a>
 ### Check what two form probes can resolve
 

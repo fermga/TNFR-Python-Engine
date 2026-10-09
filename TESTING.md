@@ -137,6 +137,27 @@ changes and the separate radius/storage guards. These are conditional
 arithmetic and implementation controls, not a new acquired response or
 permission to replay the frozen class-mediation assessment.
 
+For the [finite nonlinear protocol](theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md),
+test the fixed degree-32 heat polynomial as an analytic coefficient,
+including rational history cancellation, actual-degree normalization,
+three cosine channels and the contraction tail. The full-law remainder
+must retain the odd internal corrections and the source bound valid on
+the longer horizon. Use independent coefficient or algebra controls;
+an unvalidated trajectory cannot replace the claimed enclosure.
+
+```sh
+python -m pytest tests/physics/test_sine_class_nonlinear_protocol.py tests/physics/test_sine_class_nonlinear_protocol_algebra.py tests/physics/test_sine_class_superposition.py tests/physics/test_sine_class_mediation_evidence.py -q
+```
+
+Distinguish true sign, recorded sign above `4*delta` and disjoint
+nonlinear/tangent four-record sets above `8*delta`, including equality
+and unavailable-sign cases. Check exact rational endpoints separately
+from outward display intervals, signed impulses and exact null histories.
+The new horizon admission must not enlarge the old superposition API's
+domain. Reused work/identity ledgers retain both preevent states and
+independent policy guards. These controls acquire no source or reserved
+response and must not rerun a frozen producer.
+
 For a physical-source admission, test deductions from the declared source
 law separately from manufacturer specifications and measured responses.
 The [digital-PLL audit](theory/research/DPLL_PHYSICAL_ADMISSION.md) uses

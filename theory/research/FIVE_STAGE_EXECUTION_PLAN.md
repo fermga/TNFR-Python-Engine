@@ -25,12 +25,14 @@ The route is **justified nodal dynamics -> collective organization
 collective properties from their physical identification. A sufficient
 representation does not independently justify the law that evolves it.
 
-The [two-probe superposition theorem](#two-probe-nonlinear-superposition)
-is closed: nonlinear local curvature coexists with a proved overlap of
-four final observation records at the admitted error budget. The sole next
-primary admission is an [informative nonlinear interaction protocol](#current-g3-gate),
-not yet executed. It retains the acquired composite and its complete
-interaction history. The earlier
+The [finite nonlinear protocol](#informative-nonlinear-interaction-protocol)
+is closed: a controlled longer-horizon prediction separates nonlinear
+and tangent four-record sets at the inherited source and noise budgets.
+The earlier [short-window overlap](#two-probe-nonlinear-superposition)
+remains valid. The sole next primary admission is a
+[validated four-history observation producer](#current-g3-gate), not yet
+executed. It retains the same declared design and complete interaction
+history. The earlier
 [effective-memory theorem](#acquired-mediator-effective-memory) and
 [class-response certificate](#generative-class-mediated-response) remain
 unchanged. The
@@ -49,7 +51,8 @@ no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next primary admission, not yet executed | [Informative nonlinear interaction protocol](#current-g3-gate): derive a finite separation criterion while retaining source, history, observation errors, work and identity |
+| Next primary admission, not yet executed | [Validated four-history observation producer](#current-g3-gate): admit complete-state inputs, carried events and independent finite observation/error evidence before any frozen evaluation |
+| Closed theoretical gate | [Informative nonlinear interaction protocol](#informative-nonlinear-interaction-protocol): finite signed nonlinear/tangent separation under the declared longer horizon, with source, work and identity retained |
 | Closed theoretical gate | [Two-probe nonlinear superposition](#two-probe-nonlinear-superposition): actual local curvature, symmetry-aware finite bounds and a scoped four-endpoint observation obstruction |
 | Closed theoretical gate | [Acquired-mediator effective memory](#acquired-mediator-effective-memory): exact tangent source/kernel, matched-source nonlinear bound and scoped instantaneous-closure obstructions |
 | Closed conditional analytic assessment | [Class-mediated collective response](#generative-class-mediated-response): first frozen full-family contrast, phase-feedback control, work and identity certificates; no simulated or measured trajectory |
@@ -69,23 +72,44 @@ no empirical response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="validated-nonlinear-four-history-observation"></a>
+## Next primary admission: validated four-history observation producer
+
+Admit a validated complete-law observation producer for the same fixed
+class-two, two-probe design in the closed finite-separation theorem.
+Specify the full 54-coordinate input family, its association with the
+acquired source, all four matched histories, both carried event states
+and the common receiver readout before any reserved evaluation. Retain
+the fixed support, clock, capacities, source uncertainty, work/identity
+premises and four-reading error model.
+
+Define finite enclosure and output contracts, numerical budget and honest
+partial-failure evidence using shared validated-flow machinery. The
+analytic coefficient is a prediction, not a replacement for the complete
+nonlinear observations to be enclosed. Admit this producer before a
+separately frozen evaluation; no new reserved or physical campaign is
+part of this admission.
+
 <a id="informative-nonlinear-interaction-protocol"></a>
-## Next primary admission: informative nonlinear interaction protocol
+<a id="next-primary-admission-informative-nonlinear-interaction-protocol"></a>
+<a id="active-primary-admission-informative-nonlinear-interaction-protocol"></a>
+## Closed primary admission: informative nonlinear interaction protocol
 
-Determine whether one declared two-probe protocol on the same acquired
-three-C9 composite can separate its nonlinear receiver response from the
-matched linear-memory prediction with a justified finite margin. Retain
-one full source, class, support, clock and law, all four carried histories,
-the common final observation and its errors, both event-work terms and
-the identity guards. Admit amplitudes, delay, horizon and error budgets
-before any response evaluation. A formal leading coefficient or a failed
-overlap bound is not a positive separation certificate.
+The [finite-response theorem](../nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-finite-separation)
+uses an exact heat-cubic coefficient and a controlled complete-law
+remainder. The one declared longer-horizon design yields a negative
+mixed response whose margin exceeds eight reading errors, separating
+nonlinear and tangent four-endpoint record sets. Arbitrary original
+residuals, both preevent histories, work and all identities remain
+included. The coefficient's finite sign need not equal the earlier
+formal joint-short-time sign.
 
-Derive a sufficient finite lower bound with its complete remainder, or a
-scoped obstruction showing why the proposed observation cannot resolve
-the allowed nonlinear term. Preserve the proved symmetry cancellations
-and arbitrary source residuals. No new response campaign, physical
-scattering interpretation or autonomous probe law is part of this admission.
+This is a conditional analytic prediction, not a simulated or measured
+four-history response. It retains the previous preparation and noise
+budgets while explicitly changing the delay and final time. The
+short-window obstruction and all frozen evidence remain unchanged;
+physical feasibility, scattering and particle identification do not
+follow from the derived nonlinear interaction.
 
 <a id="two-probe-nonlinear-superposition"></a>
 <a id="next-primary-admission-two-probe-nonlinear-superposition"></a>

@@ -1394,6 +1394,78 @@ physical identification or practical-time claim is supplied.
 The [usage guide](../../guides/relational/SINE_PATTERNS.md#sine-port-relaxation)
 shows how to inspect the retained bounds without rerunning their assessment.
 
+<a id="sine-class-nonlinear-protocol"></a>
+### Finite nonlinear separation with the complete event history
+
+[`bound_sine_class_nonlinear_protocol`](../../../src/tnfr/physics/relational_sine_class_nonlinear_protocol.py)
+returns `SineClassNonlinearProtocol` from the same eleven mandatory
+[class/probe/source/work primitives](#sine-class-nonlinear-superposition).
+Its horizon domain is `0<=delay<=total_duration<=2`; the older
+superposition API retains its `1/4` ceiling. Signed amplitudes, ordinary
+integer class admission, radius and budget domains are otherwise unchanged.
+Shared exact-or-represented-real admission occurs before model arithmetic.
+The [new proof](../../../theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-class-nonlinear-protocol)
+replaces the short-time comparison with heat contraction; it does not
+extend an invalid `1/(1-3*T)` bound.
+
+Each of the four histories begins at the same complete actual source,
+with componentwise form/phase Euclidean error bounds and separate zero
+sums as conditional premises. All nodal and hidden coordinates carry
+through the delayed event. The calculator consumes no measured readings,
+source report, fitted coefficients or cached source verdict. It certifies
+no formation, physical precision or autonomous preparation.
+
+`heat_polynomial_order=32` is fixed. `heat_cubic_channel_coefficients`
+contains exact rational integrals for the outer-cycle cosine,
+mediator-cycle cosine and contact channel. The method preserves exact
+history cancellation before adjoining the ideal trigonometric factors.
+`heat_uniform_tail_upper_bound` and
+`heat_coefficient_truncation_error_upper_bound` bound the truncated heat
+polynomials. This is an analytic coefficient calculation, not an
+integration of the complete nonlinear trajectories.
+
+`gamma_fourth_scaled_heat_bounds` encloses the resulting finite cubic
+contribution. `per_history_ideal_remainder_upper_bounds`,
+`ideal_mixed_remainder_upper_bound` and `source_mixed_error_upper_bound`
+retain higher nonlinear orders and all arbitrary original residuals.
+`true_mixed_bounds` and `recorded_mixed_bounds` are authoritative exact
+rational endpoint pairs. Their `*_interval` fields are outward dyadic
+representations, not substitute inputs for exact sign decisions.
+A finite response orientation need not match the earlier formal
+joint-short-time coefficient.
+
+`predicted_orientation` records the sign of the enclosed heat contribution
+when available. `oriented_true_mixed_lower_bound` then subtracts the full
+nonlinear and source errors in that orientation; only a strictly positive
+bound certifies the true sign. `recorded_sign_margin` subtracts four scalar
+errors. `disjoint_record_margin` subtracts eight: the tangent comparator
+also permits four reading errors.
+`four_record_sets_disjoint` requires this latter margin to be strictly
+positive. `strict_disjoint_noise_ceiling` exposes a sufficient per-reading
+error ceiling; it is not an optimal information limit or instrument
+calibration. If the heat contribution has unresolved sign, the orientation
+is zero and its oriented bound and margins are unavailable. If its sign is
+available but the complete error bound is too large, the margins remain
+nonpositive and no true sign is certified. The noise ceiling is unavailable
+unless the complete true-sign bound is strictly positive.
+
+Status precedence is `record_sets_disjoint`, `recorded_sign_certified`,
+`true_sign_certified`, `exact_mixed_zero`, then `bounds_only`. A failed
+sufficient separation bound proves neither linearity nor record overlap.
+Exact null inputs or an observation at the delayed event are distinct
+from an unresolved enclosure. The existing work and strict identity
+guards remain separate from these observation statuses. Each history's
+second work uses its actual preevent envelope and its mean shifts are
+retained. `tangent_endpoint_discrepancy_upper_bound` is unavailable in
+these histories: this report bounds the mixed response, not individual
+nonlinear/tangent endpoint distances.
+
+The schema is `tnfr.sine-class-nonlinear-protocol.v1`; shared SDK projection
+and atomic export preserve normalized primitives, exact bounds and scope.
+The [guide](../../guides/relational/SINE_PATTERNS.md#sine-class-nonlinear-protocol)
+evaluates the declared response-free design. Earlier frozen outcomes and
+the short-window record-overlap theorem remain unchanged.
+
 <a id="sine-class-nonlinear-superposition"></a>
 ### Two form probes and a four-history superposition test
 
