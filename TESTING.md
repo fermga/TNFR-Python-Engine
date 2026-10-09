@@ -347,6 +347,14 @@ selected four-history response. Existing frozen default reports remain subject
 to their read-only reconstruction audits. A successful implementation test is
 not an independent full-law evaluation or a proof of source acquisition.
 
+After freezing, run the separate read-only association gate:
+`python -m pytest tests/research/test_sine_class_neighbor_forward_freeze.py -q`.
+It pins archive, protocol, receipt and Git base, then checks primitive policy
+and dormant evaluator structure under the no-regeneration guard. The evaluator
+wiring test admits pinned archive/member bytes before compiling only function
+definitions; it cannot silently fall back to a mutable build script. Freeze
+inspection never invokes the reserved experiment or authorizes a retry.
+
 For the [changed-input collective prediction](theory/nodal/SINE_CLASS_CHANGED_INPUT_PREDICTION.md),
 check grounded-path kernel coefficients, exact causal convolution weights,
 hidden quadratic feedback and independent linear initialization. Compare low

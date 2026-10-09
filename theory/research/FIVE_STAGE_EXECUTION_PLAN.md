@@ -42,9 +42,10 @@ and [spatial](../nodal/SINE_CLASS_SPATIAL_OBSERVATION.md#sine-spatial-finite-res
 noise obstructions retain their original budgets; later designs do not erase
 them. Result owners and the status table below retain the completed gates.
 
-The sole next admission is the [independent distinct-neighbor protocol](#current-g3-gate):
-extend shared observation execution, admit common-source transfer and freeze
-the numerical and recording policy before evaluating a new response.
+The [independent distinct-neighbor protocol](../nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL.md#sine-neighbor-forward-retained-freeze)
+now fixes the shared producer, common-source transfer and numerical/recording
+policy without evaluating a response. The sole next task is its
+[first frozen full-law evaluation](#current-g3-gate).
 
 Supplied preparation, support, law, events and structural clock remain
 premises. In particular, the very small source/readout allowances and long
@@ -58,7 +59,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Pending producer and protocol admission | [Independent distinct-neighbor evaluation](#current-g3-gate): shared complete-state execution for distinct input ports and mediator observation, explicit source transfer and one immutable prospective protocol |
+| Pending reserved evaluation | [Independent distinct-neighbor response](#current-g3-gate): retain the first full-law attempt and separately assess completion, source-inclusive width, prediction consistency and additive-comparator separation |
+| Closed producer and freeze admission | [Independent distinct-neighbor protocol](#independent-neighbor-evaluation-admission): shared complete-state selectors, legacy compatibility, nonlinear common-source transport and immutable runtime/protocol association; no response evaluated at freezing |
 | Closed theoretical admission | [Mixed-neighbor response](#mixed-neighbor-response-admission): a finite nonadditive mediator response separates matched additive functionals at the earlier nonlinear observation budget, with complete memory, source, work and identity retained |
 | Closed theoretical admission | [Causal interface composition](#causal-interface-composition): exact two-channel feedback, output-map and full-lift substitution contracts, and an explicit cubic residual preserving the named memory distinction |
 | Closed reserved evaluation | [Changed-input full-law response](#reserved-changed-input-full-law-response): both full54 histories complete, fixed source/width/consistency criteria pass, and the separately noisy grounded comparator is excluded |
@@ -94,47 +96,46 @@ remain open; no empirical response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="reserved-distinct-neighbor-full-law-response"></a>
+## Next primary evaluation: first independent distinct-neighbor response
+
+Execute and retain at most one attempt under the
+[frozen protocol](../nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL.md#sine-neighbor-forward-retained-freeze).
+It fixes class `(1,2,1)`, simultaneous inputs at nodes 4 and 22, mediator
+form at `T=1/8`, the original common acquired family and the earlier nonlinear
+recording budget. This tests a new intervention and additive comparator.
+
+1. Inspect the immutable receipt and restore its complete source base when
+   needed using the shared frozen-source owner. Check source, evaluator bytes,
+   environment and absence of an earlier attempt before execution.
+2. Run the archived evaluator once. Preserve its first outcome, including
+   partial histories, numerical failure, exceptions or export failure. Do not
+   change the frozen order, step, source, horizon or 64-attempt budget.
+3. Reconstruct all retained full-state evidence and apply only the declared
+   nonlinear common-source transport. Keep completion, numerical width,
+   prediction consistency, four-reading sign and separately noisy additive
+   separation distinct. Do not intersect a forward band with the prediction.
+4. Replace this queue status with a link to the retained result owner. An
+   unresolved outcome or conflict requires its stated interpretation and any
+   correction requires separate evidence; it does not authorize a retry.
+
+No new acquisition, fit, law selection or physical-data campaign is active.
+The laboratory observation bridge remains open regardless of this outcome.
+
 <a id="independent-neighbor-evaluation-admission"></a>
-## Next primary admission: independent distinct-neighbor evaluation
+## Closed admission: independent distinct-neighbor producer and protocol
 
-Admit one independent full-law check of the
-[new mixed-neighbor prediction](../nodal/SINE_CLASS_NEIGHBOR_NONADDITIVITY.md).
-Use class tuple `(1,2,1)`, the original acquired-family association and the
-same complete law, support, capacities, lifts and structural clock. The four
-histories have present/absent simultaneous donor and receiver form impulses
-`a=b=7/10000`; read mediator form at `T=1/8`, with the earlier nonlinear
-per-reading error `1e-30`. This tests a new intervention and comparator,
-not greater precision on an already evaluated response.
+The [protocol owner](../nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL.md)
+extends shared complete-state execution and reconstruction with explicit
+input/readout selectors while preserving legacy defaults and frozen reports.
+It derives the four nonlinear initialization defects after exact common
+linear-source cancellation. Cubic approximation errors remain solely in the
+analytic prediction, and raw and prefix-cancelled observations remain separate.
 
-1. Extend the [shared full-state observation owner](../../src/tnfr/physics/relational_sine_class_readout.py)
-   and its reconstruction to admit distinct event ports and the mediator
-   selector while preserving existing defaults. Retain those selectors in
-   evidence. Preserve ordered support, all 54 coordinates, exact simultaneous
-   jumps and complete state carry. Reuse the shared validated integrator and
-   evidence reconstruction; do not create a parallel dynamics driver or fit
-   the field to the inspected prediction.
-2. Declare the one common complete source used by all four histories and the
-   exact nominal reference conversion. Derive actual-family mixed-source
-   transport separately from the numerical forward enclosure. Common linear
-   initialization cancels only with a justified shared source and law; the
-   remaining nonlinear source allowance cannot be replaced by nominal parity.
-   Cubic truncation and static-cone errors belong to the analytic prediction,
-   not the independent full-law forward enclosure.
-3. Freeze the event word, readout, observation convention, numerical width
-   ceiling, horizon, order, step budget, backend and first-failure behavior
-   before computing any selected response. Preserve signed mixed intervals
-   without intersecting them with the prediction. Retain the four-reading
-   uncertainty and the separately noisy additive comparator independently.
-4. Require complete numerical evidence, prediction consistency and strict
-   recorded separation as distinct decisions. Check producer admission,
-   invalid inputs, unchanged source carry, partial failure and report wiring
-   without running the selected experiment. Pin source and protocol only
-   after the implementation is concrete and validated.
-
-This admission gate closes before the selected response is evaluated. The
-frozen comparison is the subsequent bounded evaluation; it cannot select its
-budget or alter the theoretical claim. This remains a conditional structural
-prediction, without a laboratory observation bridge or a universal force law.
+The [retained freeze](../nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL.md#sine-neighbor-forward-retained-freeze)
+pins the complete source base, primitive input covers, static theorem,
+numerical and recording policies, and first-attempt evaluator. Admission and
+synthetic wiring controls evaluated no selected response or time coefficient.
 
 <a id="mixed-neighbor-response-admission"></a>
 <a id="next-primary-admission-mixed-response-to-distinct-neighboring-organizations"></a>

@@ -237,3 +237,31 @@ evidence and its independently rebuilt decisions. Exceptions and export
 failure preserve the attempt and prevent an automatic retry. Neither an
 unresolved result nor a consistency conflict permits silently revising the
 policy. Any correction requires separately identified evidence.
+
+<a id="sine-neighbor-forward-retained-freeze"></a>
+## Retained prospective freeze
+
+The completed admission is pinned to complete source commit
+`8af5b1932308b81e5fbb4e519de0162b8e82ccfc`, with no runtime overlays.
+The [protocol](../../docs/assets/sine_formed_classes/class-neighbor-forward-v1.protocol.json),
+[source archive](../../docs/assets/sine_formed_classes/class-neighbor-forward-v1.source.zip)
+and [receipt](../../docs/assets/sine_formed_classes/class-neighbor-forward-v1.freeze.json)
+retain the policy above and 30 archived files plus their manifest.
+The protocol has 152589 bytes and SHA-256
+`bcdc0160bc91e628bb1259139f5451772d2af61298f88e068d55232fef498179`;
+the archive has 149640 bytes and SHA-256
+`2317c3a54dd83704d99ad1bcf9ff976d6f25e5cd7cc2754fa5e38726769733ec`.
+The receipt SHA-256 is
+`c2dec8230791e8b5377283cd088b1414c105f010d3ada82a4e5e075d8ddc0cdf`.
+
+The supplemental evaluator is
+`build/class-neighbor-forward-freeze/evaluate_neighbor.py`. The shared
+restorer can recover its full pinned runtime and archived supplements.
+No prior observed response is consumed; the original source remains the
+stated conditional acquisition premise. At freezing there was no attempt,
+response or export-error artifact. The
+[read-only freeze audit](../../tests/research/test_sine_class_neighbor_forward_freeze.py)
+checks this association and the sealed prospective text without importing
+the archived worker or regenerating scientific evidence. The
+[synthetic evaluator controls](../../tests/research/test_sine_class_neighbor_forward_evaluator.py)
+separately check preflight, attempt and export behavior with unrelated records.

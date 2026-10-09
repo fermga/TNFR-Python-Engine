@@ -1,0 +1,21 @@
+{
+  "schema":"tnfr.sine-class-neighbor-forward-freeze.v1",
+  "created_utc":"2026-10-09T16:11:24.121802+00:00",
+  "evaluation_status_at_freeze":"not_evaluated",
+  "source_base_commit":"8af5b1932308b81e5fbb4e519de0162b8e82ccfc",
+  "runtime_overlays":[],
+  "future_evaluator":"build/class-neighbor-forward-freeze/evaluate_neighbor.py",
+  "artifacts":[
+    {
+      "path":"docs/assets/sine_formed_classes/class-neighbor-forward-v1.protocol.json",
+      "bytes":152589,
+      "sha256":"bcdc0160bc91e628bb1259139f5451772d2af61298f88e068d55232fef498179"
+    },
+    {
+      "path":"docs/assets/sine_formed_classes/class-neighbor-forward-v1.source.zip",
+      "bytes":149640,
+      "sha256":"2317c3a54dd83704d99ad1bcf9ff976d6f25e5cd7cc2754fa5e38726769733ec"
+    }
+  ],
+  "claim":"prospective byte and complete Git-base association, not authenticated chronology, execution or scientific validation"
+}

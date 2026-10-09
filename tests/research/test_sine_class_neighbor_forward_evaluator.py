@@ -25,6 +25,7 @@ from tnfr.research.artifact_io import (
     encode_exact_tree,
     file_receipt,
     read_bytes_bounded,
+    sha256_bytes,
     write_json_once,
 )
 from tnfr.utils.io import json_dumps, json_loads
@@ -33,6 +34,12 @@ ROOT = Path(__file__).resolve().parents[2]
 ARCHIVE = ROOT / "docs/assets/sine_formed_classes/class-neighbor-forward-v1.source.zip"
 DRIVER = "build/class-neighbor-forward-freeze/evaluate_neighbor.py"
 STEM = "docs/assets/synthetic-forward"
+
+
+ARCHIVE_BYTES = 149640
+ARCHIVE_SHA256 = "2317c3a54dd83704d99ad1bcf9ff976d6f25e5cd7cc2754fa5e38726769733ec"
+DRIVER_BYTES = 6277
+DRIVER_SHA256 = "199b13d2d01cfb7858050faedf63226989f4d61c0255289f7efa05abdaa641a7"
 
 
 def _compile_definitions(source):
@@ -54,23 +61,41 @@ def _compile_definitions(source):
     )
 
 
+def _compile_evaluator(path):
+    # Pin the same bounded bytes that are opened; this owner may run without
+    # the separate source/protocol audit. Archived imports are never executed.
+    data = read_bytes_bounded(path, max_bytes=ARCHIVE_BYTES)
+    if len(data) != ARCHIVE_BYTES or sha256_bytes(data) != ARCHIVE_SHA256:
+        raise ValueError("frozen evaluator archive association differs")
+    with zipfile.ZipFile(io.BytesIO(data)) as archive:
+        with archive.open(DRIVER) as stream:
+            source = stream.read(DRIVER_BYTES + 1)
+    if len(source) != DRIVER_BYTES or sha256_bytes(source) != DRIVER_SHA256:
+        raise ValueError("frozen evaluator member association differs")
+    return _compile_definitions(source)
+
+
 @pytest.fixture(scope="module")
 def evaluator_source():
-    # Before the first freeze, exercise only reviewed definitions. The archive
-    # becomes the sole source as soon as the prospective receipt is retained.
-    if not ARCHIVE.exists():
-        return _compile_definitions(
-            read_bytes_bounded(ROOT / DRIVER, max_bytes=32 * 1024)
-        )
-    from tnfr.research.frozen_source import inspect_frozen_source
+    return _compile_evaluator(ARCHIVE)
 
-    receipt = "docs/assets/sine_formed_classes/class-neighbor-forward-v1.freeze.json"
-    inspection = inspect_frozen_source(ROOT, receipt)
-    assert inspection.future_evaluator == DRIVER
-    data = read_bytes_bounded(ARCHIVE, max_bytes=32 * 1024**2)
-    with zipfile.ZipFile(io.BytesIO(data)) as archive:
-        source = archive.read(DRIVER)
-    return _compile_definitions(source)
+
+@pytest.mark.parametrize("size_delta", [-1, 0, 1])
+def test_unassociated_archive_is_rejected_before_open_or_parse(
+    tmp_path, monkeypatch, size_delta
+):
+    path = tmp_path / "unassociated.zip"
+    path.write_bytes(b"x" * (ARCHIVE_BYTES + size_delta))
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("unassociated archive reached ZIP opening or AST parsing")
+
+    monkeypatch.setattr(zipfile, "ZipFile", forbidden)
+    monkeypatch.setattr(ast, "parse", forbidden)
+    with pytest.raises(
+        ValueError, match="association differs|exceeds audit byte budget"
+    ):
+        _compile_evaluator(path)
 
 
 @dataclass
