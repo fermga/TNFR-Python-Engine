@@ -446,8 +446,11 @@ The private
 [collective-interface owner](../../src/tnfr/physics/_sine_class_collective_interface.py)
 provides the fixed structural blocks, edge factors, modal-kernel
 description and error certificates. It reuses the admitted amplitude
-tail and repeated-interaction bounds. It does not yet execute kernel
-quadrature or add a coefficient or forward-response solver.
+tail and repeated-interaction bounds. The separate
+[changed-input prediction](SINE_CLASS_CHANGED_INPUT_PREDICTION.md)
+executes the causal time-coefficient calculation with its own fixed input,
+source, numerical and observation budgets. The structural descriptor itself
+does not evaluate a kernel or forward response.
 
 The [independent structural and budget controls](../../tests/physics/test_sine_class_collective_interface.py)
 check the complete partition, hidden modes, nonlinear recoupling,

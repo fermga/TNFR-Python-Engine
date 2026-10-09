@@ -17,8 +17,8 @@ P1-P5 below governs physical evaluation; it is not another active queue.
 
 **Primary question:** can organized TNFR patterns generate observable
 collective properties that explain phenomena of fundamental physics?
-The next bounded question is whether the derived collective interface can
-make an independently executable prediction for a genuinely changed input.
+The next bounded question is whether an independently validated full-law
+response confirms the collective interface's fixed changed-input prediction.
 The route is **justified nodal dynamics -> collective organization
 -> inherited interaction properties -> independent physical observation**. The
 [ontology](../EMERGENT_ONTOLOGY.md#generative-bound-organization) distinguishes
@@ -51,10 +51,14 @@ conditional reuse, not practical repetition speed or a new formation image.
 The [nonlinear collective interface](../nodal/SINE_CLASS_COLLECTIVE_INTERFACE.md)
 retains six central port coordinates through causal histories, including
 quadratic internal feedback and hidden initialization. Its finite error bound
-preserves the known interaction contrast. The next obligation is an
-[independently executable changed-input prediction](#current-g3-gate).
-The structural descriptor and error calculator alone are not that predictor;
-no new full-law response or physical-data campaign is active.
+preserves the known interaction contrast. The
+[changed-input causal prediction](../nodal/SINE_CLASS_CHANGED_INPUT_PREDICTION.md#sine-changed-input-prediction-result)
+now executes that interface for a mediator impulse. It separates a declared
+grounded tangent port alternative with source, numerical and recording errors
+retained. This leading separation tests linear hidden memory, not nonlinear
+necessity or a new class discriminator. The next obligation is admission of
+an [independent full-law comparison](#current-g3-gate); no such response or
+physical-data campaign has been evaluated.
 
 Supplied preparation, support, law, events and structural clock remain
 premises. In particular, the very small source/readout allowances and long
@@ -68,7 +72,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Pending predictor and protocol admission | [Changed-input interface transfer](#current-g3-gate): admit a causal port evaluator and one prospective prediction with independent input, work and error obligations |
+| Pending forward producer and freeze admission | [Changed-input full-law comparison](#current-g3-gate): preserve the evaluated causal prediction and independently enclose the complete law under the same source, input and observation protocol |
+| Closed predictor and prospective protocol admission | [Changed-input interface transfer](#changed-input-collective-interface-transfer): causal kernel execution, independent hidden source, changed-word work/identity, and strict separation from a grounded tangent port alternative |
 | Closed theoretical admission | [Nonlinear collective interface](#nonlinear-collective-interface-admission): six-port causal cubic representation, retained hidden source and quadratic feedback, finite output/work error and repeated class separation |
 | Closed theoretical admission | [Repeated joined interaction](#joined-class-interaction-return-admission): common finite return with distinct carried residuals, exact mean shifts, event work and a persistent tangent comparator's own memory allowance |
 | Closed reserved evaluation | [First independent class comparison](#reserved-scaled-cross-class-comparison): complete frozen full-law evaluation, both consistency checks, source-inclusive width and strict noisy-null separation |
@@ -99,39 +104,57 @@ remain open; no empirical response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="changed-input-full-law-comparison"></a>
+## Next primary admission: an independent changed-input full-law comparison
+
+Admit a validated forward producer and freeze for the
+[retained causal prediction](../nodal/SINE_CLASS_CHANGED_INPUT_PREDICTION.md#sine-changed-input-prediction-result).
+Keep the same two classes, joined support, original acquired families,
+common zero origins, mediator impulse \(7/10000\) at zero, structural
+horizon one, and separate central-form readings with error \(10^{-8}\).
+The existing prediction and its coefficient source are inspected evidence;
+the new complete-law response must remain independent of them.
+
+1. Reuse the shared validated continuous-flow machinery for all 54 original
+   coordinates. Rebuild each target and convert residual phase covers
+   \(y=\theta-\Theta_k\) into absolute continuous phase lifts explicitly.
+   Keep the time-zero jump out of the pre-input source and carry the full
+   state without a reset, altered pressure law or support change.
+2. Fix a reference/source transfer or direct-family enclosure, numerical
+   order, step/horizon and total-work budget before response evaluation.
+   Declare independent completion, width, prediction-consistency and
+   grounded-comparator separation conditions. Prediction intervals may be
+   used to check the result, not to fit or narrow the forward enclosure.
+3. Retain the changed word's proved work, storage, quotient identity and
+   exact mean shift. The comparator keeps its own six-coordinate law,
+   independent source and recording error; no full-state identity or
+   repeated-operation claim transfers to it.
+4. Associate the complete runtime, source, protocol and fixed observation
+   with an immutable receipt. Prepare one reserved attempt only after
+   producer and freeze admission, preserving partial or unsuccessful evidence.
+
+This gate admits the independent producer and its prospective evaluation
+policy. It does not itself execute the reserved response, change the selected
+input, scan alternatives, reacquire a source or open a physical-data campaign.
+
 <a id="changed-input-collective-interface-transfer"></a>
-## Next primary admission: an executable changed-input port prediction
+<a id="next-primary-admission-an-executable-changed-input-port-prediction"></a>
+## Closed admission: an executable changed-input port prediction
 
-Admit one independently executable prediction from the
-[causal nonlinear interface](../nodal/SINE_CLASS_COLLECTIVE_INTERFACE.md)
-on the unchanged three-C9 support, complete law, clock and source families.
-A new input must exercise the derived input-history map beyond the previously
-evaluated word, common amplitude scaling or a symmetry copy. This is transfer
-on fixed support, not admission of a new connection or a collective-scale law.
+The [result owner](../nodal/SINE_CLASS_CHANGED_INPUT_PREDICTION.md#sine-changed-input-prediction-result)
+retains the first degree-32 causal calculation for a new mediator impulse.
+Grounded-path kernels and exact convolution weights supply the port
+prediction, including hidden initialization and quadratic recoupling, without
+calling the old full-state coefficient producer or nonlinear solver.
+Both classes meet the numerical-radius and strict recorded-separation
+conditions against their independently initialized grounded tangent
+comparators. The new word has its own work, identity and mean certificate.
 
-1. Select one finite signed central-port input history within the proved
-   variation/horizon domain before evaluating new coefficients. Declare the
-   preparation, retained common origins, initial source information, reading
-   map and an explicit memory-loss comparator. The comparator's own state,
-   errors and initialization cannot be replaced by a zero response.
-2. Implement its causal port prediction with the shared mathematical owners.
-   Preserve hidden source terms and quadratic feedback, and certify numerical
-   kernel/quadrature or time-arithmetic error separately from the analytic
-   amplitude and initialization defects. No complete fine response may serve
-   as a fitted kernel or be relabeled as the independent reduced prediction.
-3. Prove that this particular input meets its event work, storage, identity
-   and source-carry requirements. Membership in the interface's approximation
-   domain does not transfer the original two-event word's maintenance proof.
-   Simultaneous multichannel events retain their quadratic cross terms.
-4. Fix a discriminating prediction with its complete source, numerical and
-   reading budgets, or close on a scoped obstruction or missing premise.
-   Associate source and protocol before any reserved complete-law evaluation;
-   previous response evidence remains inspected evidence, not a new holdout.
-
-This gate combines predictor and prospective protocol admission. It opens
-no parameter scan, new support, acquisition, full-law reserved evaluation or
-physical-data campaign. Its outcome must be concrete before the queue can
-activate an independent forward comparison.
+Source, protocol and implementation were associated before the calculation.
+Its complete outcome and read-only reconstruction preserve separate time,
+rounding, amplitude, initialization and recording errors. The result supplies
+a prospective full-law prediction, not a reserved forward observation,
+nonlinear-necessity theorem, minimal memory or physical identification.
 
 <a id="nonlinear-collective-interface-admission"></a>
 <a id="next-primary-admission-a-causal-nonlinear-collective-interface"></a>

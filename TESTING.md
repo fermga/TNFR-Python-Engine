@@ -284,6 +284,24 @@ or a nonlinear response. The modified unit-delay pressure helper also requires
 the amplitude, superposition and repeated-interaction contract tests; it does
 not merge their distinct initial storage, contact or mean hypotheses.
 
+For the [changed-input collective prediction](theory/nodal/SINE_CLASS_CHANGED_INPUT_PREDICTION.md),
+check grounded-path kernel coefficients, exact causal convolution weights,
+hidden quadratic feedback and independent linear initialization. Compare low
+orders with independently assembled edge equations; do not execute the old
+full-state coefficient producer as a substitute for this causal implementation.
+The new single mediator impulse needs degree-four work and its own mean shift.
+
+```sh
+python -m pytest tests/physics/test_sine_class_port_prediction.py tests/research/test_sine_class_collective_protocol.py tests/physics/test_sine_class_port_prediction_evidence.py -q
+```
+
+The evidence audit reconstructs retained endpoints and all consumed error
+allowances without rerunning the selected prediction or a complete-law response.
+Time-series error, interval rounding, physical source width, amplitude omission
+and recording errors remain separate. Success against the grounded tangent
+alternative does not prove nonlinear necessity, class discrimination or a
+reserved forward comparison.
+
 For [common-scale amplitude feasibility](theory/nodal/SINE_CLASS_AMPLITUDE_FEASIBILITY.md),
 check whole-interval coefficient homogeneity and higher-amplitude bounds,
 the complex-domain boundary, the fixed source/noise allowances and the
