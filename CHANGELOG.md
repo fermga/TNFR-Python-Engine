@@ -7,8 +7,10 @@ All notable changes to this project will be documented in this file.
 - Add a [complete-law counterfamily](theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md)
   with unchanged organized targets, storage values, tangent and quadratic
   fields but opposite nominal nonlinear mixed onset. Integrate exact static
-  field and balance observers and an own-law local identity proof; original
-  source acquisition and finite-window response remain separate obligations.
+  field and balance observers, an own-law local identity proof and full-family
+  acquisition bounds from the unchanged isolated C9 sources. Both classes form
+  throughout the declared continuous family without retuning preparation,
+  time or budget; later handoff and finite-window response remain separate.
 - Integrate acquired organized-class interaction, effective memory and finite
   nonlinear comparisons under their declared smooth-sine laws, with shared
   full-state observation tools and independently retained protocols and evidence.

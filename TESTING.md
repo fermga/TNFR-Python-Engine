@@ -134,8 +134,16 @@ own potential and oriented edge derivatives, both complete rate rows, storage
 loss and exact matching order. Rebuild the mixed onset from all incident edges,
 including internal mediator edges; test both signs and symmetry nulls. Retain
 exact phasor/scalar admission and independent derivative/identity bounds.
-These are static algebra and local-onset controls, not a new acquisition or
-finite-response evaluation. The frozen sine producers remain unchanged.
+These are static algebra and local-onset controls. For the separate
+[same-source acquisition proof](theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-same-source-acquisition),
+also select `tests/physics/test_sine_class_constitutive_acquisition.py` and
+`tests/physics/test_sine_formed_class_pair.py`. Independently check full-family
+transit, source cost, own-law Hessian and trapping margins. The endpoint
+deformation gives the worst bounds for the whole declared parameter interval;
+this is an analytic monotonicity argument, not a parameter sweep. Missing
+positive stiffness or insufficient margins must remain unavailable. These
+checks do not extend later dwell, contact or finite-response certificates.
+The frozen sine producers remain unchanged.
 
 For [class-mediated collective response](theory/nodal/SINE_CLASS_MEDIATED_RESPONSE.md),
 select both the primitive/report controls and independent full-support

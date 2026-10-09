@@ -7,6 +7,9 @@ quadratic dynamics can support opposite local nonlinear interactions.
 This owner proves that statement for the existing positive-loss three-C9
 support. It supplies an explicit analytic alternative to the sine potential;
 it neither selects that alternative nor repeats a finite response calculation.
+An own-law acquisition argument below also places the original isolated-C9
+source families in their capture neighborhoods for every member of this
+potential family, at the original common time and error budgets.
 
 The [earlier mobility counterfamily](SINE_PAIR_MOBILITY.md#sine-replica-constitutive-nonselection)
 and [smooth local continuation](SINE_CONSTITUTIVE_INFORMATION.md#local-phase-storage-nonselection)
@@ -341,15 +344,194 @@ coefficient is known to vanish; exact additivity does not follow. Zero input in 
 channel cancels (16) for every common source. At the nominal source,
 \(a=-b\) is also an exact null by outer-ring exchange and the sign symmetry.
 
+<a id="organized-pattern-same-source-acquisition"></a>
+## Own-law acquisition from the original isolated C9 sources
+
+This section changes support explicitly to one isolated unit C9, with nodes
+\(0,\ldots,8\), edges \(j--(j+1\bmod9)\), degree matrix \(D=2I\),
+capacities one and the same \(e,w,\gamma\) and clocks as (4). It does not
+apply the joined graph's spectral bound to an isolated component or identify
+the two supports' reached states. The original
+[two-class preparation](SINE_PATTERN_DYNAMICS.md#sine-formed-class-pair)
+supplies the following unchanged experiment for each law:
+
+- Classes \(k=1,2\), rational slope
+  \(m=(2046/9)(355/113)^2\), initial form
+  \(x_j(0)=km(j-4)+\xi_j^x\), and initial phase lifts
+  \(\theta_j(0)=\xi_j^\theta\).
+- Bounds \(|\xi_j^x|\le\rho_x=10^{-10}\) and
+  \(|\xi_j^\theta|\le\rho_\theta=10^{-10}\), with separate exact zero sums
+  \(\sum_j\xi_j^x=\sum_j\xi_j^\theta=0\). Each class has a complete
+  sixteen-dimensional relative source neighborhood, not an independently
+  selectable eighteen-dimensional ambient box.
+- Acquisition time \(T=100\) in \(\tau\), original time \(102400/1023\),
+  radius \(r=1/12\), and common whole-source storage budget \(10^9\).
+  No input, support event, state reset or coefficient change occurs.
+- Target \(x^*=0\), \(\theta_{k,j}^*=k\alpha(j-4)\), with
+  \(\alpha=2\pi/9\). Targets label the endpoint comparison, not replacement
+  endpoint states.
+
+Write \(A=L/2\), \(z=\gamma x\), \(\eta=\gamma^2\), and
+\(f_\lambda=S_\lambda/2\). The complete scaled law is
+\[
+ z'=-Az+\eta f_\lambda(\theta),\qquad
+ \theta'=Az,\qquad
+ (\theta+z)'=\eta f_\lambda(\theta).
+ \tag{18}
+\]
+Odd currents preserve both zero means. The full real-lift field is globally
+Lipschitz by (8), including nonacute states during acquisition. Continuous
+lifts are therefore retained through any winding changes.
+
+For \(P_9=I-\mathbf1\mathbf1^T/9\) and the norm
+\(\|u\|_{2I}=\sqrt2\|u\|_2\), the C9 graph gives the same
+law-independent semigroup gap \(g=1/5\):
+\(\|e^{-A\tau}P_9\|_{2I}\le e^{-g\tau}\).
+Indeed \(1-\cos(2\pi/9)>1/5\), so
+\(\lambda_2(L)>2/5\), while \(\lambda_{\max}(L)\le4\).
+The forcing and Hessian constants must instead be re-admitted:
+\[
+ \begin{aligned}
+ J_\lambda&=1+\lambda/1458,&
+ \|f_\lambda(\theta)\|_{2I}&\le F_\lambda=\sqrt{18}\,J_\lambda,\\
+ u_\lambda&=1+2\lambda/243,&
+ \nabla^2U_\lambda(\theta)&\preceq u_\lambda L .
+ \end{aligned}\tag{19}
+\]
+The first bound uses
+\(|\sin9\delta-\tfrac12\sin18\delta|\le3/2\); the second uses (10)
+and \(\cos\delta\le1\). They hold globally, not only near a target.
+The raw initial metric norms remain \(\sqrt{18}\rho_\theta\) and
+\(\sqrt{18}\gamma\rho_x\); multiplying those errors by the enlarged
+forcing constant would confuse distinct premises.
+
+The nominal phase storage initially vanishes. Since
+\(1-\cos(9v)\le81v^2/2\), the new potential term obeys
+\(0\le W(v)\le v^4/24\). The entire source family therefore has
+\[
+ B_{\lambda,k}
+ =36k^2m^2+32km\rho_x+18(\rho_x^2+\rho_\theta^2)
+                  +6\lambda\rho_\theta^4
+ \quad\hbox{as a storage upper bound}.                 \tag{20}
+\]
+The linear form term uses the sum \(16km\) of the absolute nominal
+edge differences; the last term uses all nine edges and
+\(|\Delta\xi^\theta|\le2\rho_\theta\).
+The exact nominal costs \(36k^2m^2\) are unchanged and differ by a factor
+four. The quartic source correction is retained even though at these
+budgets it is below one dyadic128 grid spacing. No equality of later
+losses or phase histories follows.
+
+Let \(\rho\) be an outward upper bound for \(e^{-g T}\). Define
+\[
+ \begin{aligned}
+ V_k&=\sqrt{120}\,k\gamma m,&
+ E_x&=\sqrt{18}\gamma\rho_x,& E_\theta&=\sqrt{18}\rho_\theta,\\
+ R_{z,\lambda,k}&=\rho(V_k+E_x)+\eta F_\lambda/g,&
+ R_{x,\lambda,k}&=R_{z,\lambda,k}/(\gamma\sqrt2),\\
+ D_k&=\sqrt{60}\,k|\gamma m-\alpha|,&
+ Y_{\lambda,k}&=D_k+
+       (E_x+E_\theta+R_{z,\lambda,k}+\eta F_\lambda T)/\sqrt2,\\
+ Z_{\lambda,k}^2&=R_{x,\lambda,k}^2+Y_{\lambda,k}^2 .
+ \end{aligned}\tag{21}
+\]
+Variation of constants bounds \(\|z(T)\|_{2I}\) by \(R_z\).
+Integrating the last row of (18) gives
+\[
+ \theta(T)-\gamma x^{\rm nom}(0)
+ =\xi^\theta+\gamma\xi^x-z(T)
+                 +\eta\int_0^T f_\lambda(\theta(s))\,ds .
+\]
+Consequently every actual endpoint satisfies
+\(\|x(T)\|_2\le R_x\),
+\(\|\theta(T)-\theta_k^*\|_2\le Y\) and the full radius bound \(Z^2\).
+This uses the entire nonlinear forcing and all initial residuals; it is
+not a tangent trajectory or a Cartesian reset of the reached family.
+
+Target stationarity and the global Hessian upper bound yield the split
+endpoint estimate
+\[
+ H_\lambda(T)-H_k^*
+ \le E_{\lambda,k}:=
+       2R_{x,\lambda,k}^2+2u_\lambda Y_{\lambda,k}^2,\qquad
+ H_k^*=9(1-\cos k\alpha).
+ \tag{22}
+\]
+The form and phase terms retain their different coefficients.
+For the common capture ball set
+\[
+ \mu=\pi/2-4\pi/9-\sqrt2r,\quad
+ c_r=\cos(4\pi/9+\sqrt2r),\quad
+ c_\lambda=c_r-2\lambda/243,\quad
+ b_\lambda=c_\lambda r^2/5 .
+ \tag{23}
+\]
+When \(\mu>0\) and \(c_\lambda>0\), the own-law phase Hessian throughout
+the ball is bounded below by \(c_\lambda L\). With the zero means and
+the isolated graph gap, this gives
+\(H_\lambda-H_k^*\ge(c_\lambda/5)
+(\|x\|_2^2+\|\theta-\theta_k^*\|_2^2)\).
+Thus \(Z_{\lambda,k}^2<r^2\) and \(E_{\lambda,k}<b_\lambda\) prove
+forward trapping under the own-law identity
+\(H_\lambda'=-\|Lx\|_2^2/2\).
+
+### Uniform fixed-budget result and its provenance
+
+The shared outward dyadic128 square-root, Machin-pi, cosine and
+negative-exponential arithmetic applied to (19)--(23) at \(\lambda=1\)
+gives the following strict rational bounds for both classes:
+\[
+ \begin{gathered}
+ \mu>56/1000,\qquad c_1>48/1000,\qquad
+ Z_{1,k}^2<23/10^6<r^2,\\
+ E_{1,k}<45/10^6,\qquad b_1>672/10^7,\qquad
+ b_1-E_{1,k}>222/10^7,\\
+ B_{1,1}<181230000,\qquad B_{1,2}<724918000<10^9 .
+ \end{gathered}\tag{24}
+\]
+Here the subscript one on \(c_1,b_1\) means deformation one, not winding
+class one. The bounds are rounded outward from direct scalar interval
+evaluation of the displayed formulas, not from a sampled trajectory or
+the earlier sine report. In particular the computed storage-margin
+lower bounds exceed \(2.29504274\,10^{-5}\) for winding one and
+\(2.22733831\,10^{-5}\) for winding two.
+
+Only the endpoint \(\lambda=1\) is needed: \(F_\lambda,u_\lambda\),
+the source-cost bound and the endpoint bounds increase with \(\lambda\),
+whereas \(c_\lambda,b_\lambda\) decrease. Hence (24) proves acquisition
+and capture uniformly for all \(0\le\lambda\le1\), including both laws
+used in (17). This is an analytic family argument, not a parameter sweep.
+
+Every initial phase edge has its small principal lift, so winding starts
+at zero. Endpoint membership in the target's acute ball fixes winding
+\(k\); it remains there thereafter. The change requires an intervening
+antipodal passage, allowed by (18); an acute constraint during the whole
+acquisition would be a different model. On the compact trapped zero-mean
+leaf, zero loss forces \(x=0\), and invariance forces \(S_\lambda=0\).
+Strict phase convexity leaves only \(\theta_k^*\). LaSalle therefore
+gives convergence; the unchanged positive target Hessian also retains
+local exponential stability of the complete form/phase tangent.
+For each positive eigenvalue \(\ell\) of \(L/2\), its characteristic
+polynomial is \(s^2+\ell s+\gamma^2\cos(k\alpha)\ell^2\), whose
+roots have negative real parts.
+Winding magnitudes one and two remain inequivalent under cycle
+automorphisms, common origins and joint sign reversal.
+
+This establishes acquisition from the same prescribed source family,
+with the same time, uncertainty and cost limits. It does not identify
+the reached fine states between laws, reproduce later very small
+residual budgets, or transfer a dwell, support-contact, joined-source
+or finite-response certificate. Those require the new law's own bounds.
+
 <a id="organized-pattern-information-boundary"></a>
 ## What this comparison constrains, and what it leaves open
 
-The prescribed source in (17) is an exact organized target, not a replay
-of the original acquired family. Matching its jets and proving local
-maintenance do not reproduce the sine law's formation source, cost,
-dwell or source-transport bounds. Arbitrary residuals need not have the
-nominal reflection symmetry. No sign at the earlier \(T=1/8\), finite
-noise discrimination or alternative-law acquisition is asserted here.
+The prescribed source in (17) is an exact organized target. The acquisition
+section proves own-law capture from the original isolated source families;
+it does not replace that nominal source by a reached fine state or transfer
+the onset sign to its residuals. Arbitrary residuals need not have the nominal
+reflection symmetry. No sign at the earlier \(T=1/8\), finite noise
+discrimination, later dwell or joined-source transfer is asserted here.
 
 The interaction differs in the held structural chart with the same form
 impulses and mediator readout. A common clock rescaling cannot account
@@ -386,3 +568,14 @@ both evolution rows and event/loss balances, and retain invalid-domain
 and symmetry controls. This does not install an alternative live law or
 reuse a sine response as evidence for it. No trajectory, selected
 time-coefficient producer or frozen scientific response is regenerated.
+
+The separate
+[_sine_class_constitutive_acquisition.py](../../src/tnfr/physics/_sine_class_constitutive_acquisition.py)
+rebuilds the isolated full-family transit, law-specific storage bounds and
+capture margins from primitive inputs, using shared semigroup arithmetic
+without treating the sine preparation's storage as the alternative law's.
+Its [controls](../../tests/physics/test_sine_class_constitutive_acquisition.py)
+check the forcing versus initial-error norms, quartic source correction,
+split endpoint storage and strict capture margins. The uniform conclusion
+uses the proved monotonic dependence and the endpoint \(\lambda=1\);
+it does not require a sweep or a trajectory producer.
