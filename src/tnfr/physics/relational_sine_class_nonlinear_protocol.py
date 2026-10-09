@@ -123,6 +123,22 @@ def _ideal_heat_remainder(amplitude, total, g):
     )
 
 
+def _heat_truncation_bounds(a, b, delay, total):
+    """Shared heat-polynomial and mixed cubic contraction error bounds.
+
+    Restricting the cubic operator to an edge subset retains this bound when
+    its selected incident edges use the original full-support degrees.
+    """
+    heat_tail = (2 * total) ** (_HEAT_ORDER + 1) / factorial(_HEAT_ORDER + 1)
+    cubic_tail = (
+        4
+        * (abs(a) ** 2 * abs(b) + abs(a) * abs(b) ** 2)
+        * (total - delay)
+        * ((1 + heat_tail) ** 4 - 1)
+    )
+    return heat_tail, cubic_tail
+
+
 @dataclass(frozen=True)
 class SineClassNonlinearProtocol:
     """A finite conditional protocol bound, without source or flow acquisition.
@@ -277,13 +293,7 @@ def bound_sine_class_nonlinear_protocol(
         products = (coefficient * interval.lo, coefficient * interval.hi)
         lower += min(products)
         upper += max(products)
-    heat_tail = (2 * t) ** (_HEAT_ORDER + 1) / factorial(_HEAT_ORDER + 1)
-    cubic_tail = (
-        4
-        * (abs(a) ** 2 * abs(b) + abs(a) * abs(b) ** 2)
-        * (t - s)
-        * ((1 + heat_tail) ** 4 - 1)
-    )
+    heat_tail, cubic_tail = _heat_truncation_bounds(a, b, s, t)
     coefficient_bounds = (lower - cubic_tail, upper + cubic_tail)
     products = tuple(
         value**4 * coefficient

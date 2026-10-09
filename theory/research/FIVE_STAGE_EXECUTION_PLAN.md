@@ -32,7 +32,10 @@ initialization. The [first frozen four-history evaluation](#reserved-nonlinear-f
 now supports the prospective within-class nonlinear/tangent separation
 under its declared error budget. These are complementary results: together
 they do not yet establish that the nonlinear mixed response changes with
-the mediator's organization. That missing comparison is the
+the mediator's organization. The [analytic class-contrast bound](../nodal/SINE_CLASS_NONLINEAR_ORGANIZATION.md)
+isolates a signed mediator contribution but leaves the complete response
+unresolved: the independent nonlinear remainders dominate it even with
+source and reading errors removed. Refining that estimate is the
 [sole next theoretical admission](#current-g3-gate), for the
 [organization-dependent interaction rationale](../NODAL_RESEARCH_STRATEGY.md#organization-dependent-nonlinearity).
 
@@ -51,7 +54,7 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next theoretical admission | [Mediator organization and nonlinear interaction](#current-g3-gate): matched acquired families, complete-law contrast or a scoped obstruction before another response |
+| Unresolved theoretical admission | [Mediator organization and nonlinear interaction](#current-g3-gate): common-channel cancellation is established, but the complete contrast needs a class-sensitive nonlinear remainder before another response |
 | Closed reserved evaluation | [First frozen four-history outcome](#reserved-nonlinear-four-history-response): full completion, independent forward enclosure, theorem consistency and strict nonlinear/tangent record-set separation |
 | Closed freeze admission | [Matched four-history evaluation freeze](#frozen-nonlinear-four-history-evaluation): immutable source/protocol/receipt association, with no response or attempt generated at freezing |
 | Closed producer admission | [Validated four-history observation producer](#validated-nonlinear-four-history-observation): full-state branches, exact events, shared-prefix cancellation and partial-failure evidence |
@@ -76,7 +79,7 @@ remain open; no empirical response has passed complete physical admission.
 
 <a id="current-g3-gate"></a>
 <a id="mediator-organization-nonlinear-interaction"></a>
-## Next primary admission: mediator organization and nonlinear interaction
+## Next primary admission: resolve the class-sensitive nonlinear remainder
 
 Determine whether the finite nonlinear mixed response itself depends on
 the mediator's acquired organization. Compare \(M_1-M_2\), where each
@@ -85,44 +88,45 @@ class-\(k\) source. The two classes have separate actually reached families
 under a matched preparation protocol; retain the same support, complete
 law, capacities, clock, probes and observation definition.
 
-This question differs from both the earlier one-probe class contrast and
-the retained within-class nonlinear/tangent separation. Its bounded
-deliverable is a finite separated contrast, a proved scoped symmetry or
-resolution obstruction, or a precisely identified unresolved estimate.
-Only the first two close the mathematical question within their stated
-domain. Admission proceeds as follows:
+The [first analytic bound](../nodal/SINE_CLASS_NONLINEAR_ORGANIZATION.md)
+retains the unchanged design and all source, work and identity premises.
+Exact cancellation removes the common outer-cycle and bridge heat channels.
+The remaining heat contribution is nonzero, but its full-law outer interval
+straddles zero. The owner's error-floor proof identifies a limitation of
+the independent-remainder estimate; it proves neither class equivalence
+nor an observational obstruction. This bounded assessment is complete;
+the organization-dependence question remains open.
 
-1. **Match the source and controls.** Start with the existing two acquired
-   class families and the admitted two-probe design. Preserve complete
-   event ancestry, arbitrary source residuals and all carried coordinates.
-   The two classes need not share a residual or a preparation cost;
-   cancellation within each four-history group does not grant cancellation
-   between classes. Account for both preparations, work and identities.
-2. **Derive the actual difference.** Check symmetries of the complete
-   source, law, ports and observation before estimating the contrast.
-   Reuse the shared heat, nonlinear-remainder and event owners. Cancel
-   common analytic contributions only where justified; different heat
-   coefficients or generic cosine dependence alone do not decide the
-   full finite response. Retain class-blind leading terms as controls.
-3. **Admit the observation margin.** Bound the true difference including
-   both full nonlinear and source errors. With four scalar readings per
-   class, each bounded by the same \(\delta\), the recorded cross-class
-   difference has an additional allowance \(8\delta\). Require a strict
-   signed margin beyond that allowance for uniform class discrimination.
-   Comparing against a separate alternative's eight-record sets requires
-   that alternative's own uncertainty as well; the previous within-class
-   eight-error criterion cannot simply be transferred.
-4. **Decide before another response.** A symmetry proof or explicit
-   compatible-record witness may establish a scoped obstruction; a wide
-   outer bound alone does not. Record the limiting term if unresolved.
-   Declare any changed design and its justification separately, preserve
-   earlier evidence, and fix the prediction and numerical budgets before
-   a new reserved evaluation. The retained class-two response is prior
-   information and cannot become unseen evidence for this comparison.
+The next deliverable is a controlled **complete cubic-amplitude response**
+or another justified class-sensitive remainder at the same finite design:
 
-No new reserved response or physical identification is part of this
-theoretical admission. Further solver optimization needs a demonstrated
-limiting estimate or implementation defect in this comparison.
+1. Retain both full class-specific tangent propagators and the quadratic
+   internal corrections feeding the central cubic response. The previous
+   heat correction discards terms that now belong in the leading retained
+   approximation. Do not treat a heat-only coefficient or the class-blind
+   joint-short-time onset as the complete amplitude coefficient.
+2. Bound the unretained nonlinear amplitude terms over both carried event
+   histories and the whole finite horizon. Use ideal reflection parity
+   only where valid; arbitrary actual source residuals still require their
+   separate transfer bound. Preserve each class's actual preparation,
+   distinct possible costs, complete coordinates, work and identity.
+3. Include both nonlinear/source errors before the observation decision.
+   Eight readings give the cross-class statistic an allowance \(8\delta\).
+   Require a strict margin beyond it for uniform recorded-sign separation.
+   Alternatively, an explicit compatible mixed-record witness may prove a
+   scoped resolution obstruction; overlap of mixed statistics need not
+   mean overlap of the full reading vectors. A separately noisy
+   zero-contrast alternative has its own eight errors as well.
+4. Keep unresolved estimates explicit. Declare any changed design
+   separately and justify it before use; no source narrowing, noise
+   reduction or horizon search is part of this gate. Fix any new numerical
+   coefficient budget prospectively. The retained class-two response is
+   prior information and cannot become unseen evidence again.
+
+No reserved nonlinear response, physical identification or new data
+campaign is part of this theoretical admission. Increasing the existing
+heat order or improving sensor/source precision alone cannot remove the
+proved floor of the current independent-remainder estimate.
 
 <a id="reserved-nonlinear-four-history-response"></a>
 <a id="next-primary-admission-execute-and-retain-the-first-frozen-outcome"></a>

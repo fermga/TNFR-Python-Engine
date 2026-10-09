@@ -191,6 +191,27 @@ domain. Reused work/identity ledgers retain both preevent states and
 independent policy guards. These controls acquire no source or reserved
 response and must not rerun a frozen producer.
 
+For [organization-dependent nonlinear interaction](theory/nodal/SINE_CLASS_NONLINEAR_ORGANIZATION.md),
+test exact common-channel cancellation before transcendental enclosure,
+the mediator-channel heat tail, two complete nonlinear remainders and
+independent source errors between classes. Keep the eight-reading recorded
+contrast budget separate from the sixteen-error comparison against an
+independently noisy zero-contrast alternative. Exercise exact nulls,
+strict boundaries, unavailable signs and independent work/identity guards.
+
+```sh
+python -m pytest tests/physics/test_sine_class_nonlinear_organization.py tests/physics/test_sine_class_nonlinear_organization_algebra.py tests/physics/test_sine_class_nonlinear_protocol.py tests/physics/test_sine_class_nonlinear_protocol_algebra.py tests/physics/test_sine_class_mediation_evidence.py -q
+```
+
+The unchanged design must retain its unresolved full-law verdict despite
+the signed heat contribution. Check that the independent nonlinear-error
+estimate still straddles zero with source and sensor errors removed;
+this proves a limitation of that estimate, not actual class equivalence
+or overlap of the original reading vectors. Independent edge algebra and
+heat quadrature are coefficient controls, not complete sine trajectories.
+The tests acquire no source and replay no reserved response. SDK wiring
+uses `test_reduced_port_sdk_wiring_does_not_evaluate_research` separately.
+
 For the [four-history observation producer](theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-validated-readout),
 select its full-state/event controls and the shared source-box kernel.
 Use unrelated sources: check both rows from independent edge sums,

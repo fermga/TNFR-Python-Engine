@@ -1559,6 +1559,54 @@ The [guide](../../guides/relational/SINE_PATTERNS.md#sine-class-nonlinear-protoc
 evaluates the declared response-free design. Earlier frozen outcomes and
 the short-window record-overlap theorem remain unchanged.
 
+<a id="sine-class-nonlinear-organization"></a>
+### Nonlinear contrast between acquired mediator organizations
+
+[`bound_sine_class_nonlinear_organization`](../../../src/tnfr/physics/relational_sine_class_nonlinear_organization.py)
+returns `SineClassNonlinearOrganization` from the ten mandatory primitives
+of the finite nonlinear protocol excluding `mediator_class`. The comparison
+is fixed: classes `(1,1,1)` minus `(1,2,1)` on the same complete law,
+support, clock and two-event design. Shared scalar admission retains
+`0<=delay<=total_duration<=2` and `0<radius<=1/12`. Each class has its
+own full source; exact source pairing applies only within its four histories.
+Acquisition, component norms and separate zero sums remain conditional
+premises, and original preparation costs need not be equal.
+
+The [proof](../../../theory/nodal/SINE_CLASS_NONLINEAR_ORGANIZATION.md)
+cancels the outer-cycle and bridge heat channels before enclosing the
+mediator coefficient and cosine difference. The shared order-32 heat
+tail also bounds the restricted mediator channel with actual full-graph
+degrees. `gamma_fourth_scaled_heat_contrast_bounds` is this analytic
+contribution, not the complete nonlinear contrast.
+`ideal_contrast_remainder_upper_bound` retains two full mixed remainders;
+`source_contrast_error_upper_bound` retains independent errors from both
+classes. Their sum widens the heat contribution into `true_contrast_bounds`.
+`recorded_contrast_bounds` adds eight scalar reading-error allowances.
+Exact endpoint pairs determine decisions; interval fields are outward
+dyadic projections.
+
+`predicted_orientation` refers to the heat contribution. A strictly positive
+`oriented_true_contrast_lower_bound` is additionally needed for a true-sign
+certificate. `recorded_sign_margin` subtracts `8*readout_error_bound`.
+The separate `zero_contrast_comparator_separation_margin` subtracts sixteen
+errors to exclude an alternative with zero true contrast and its own eight
+readings. This null condition does not supply that alternative's complete
+law. Status precedence is `zero_contrast_record_sets_disjoint`,
+`recorded_sign_certified`, `true_sign_certified`, `exact_contrast_zero`,
+then `bounds_only`. Failure certifies neither overlap nor class equivalence.
+The sufficient noise ceiling is unavailable without a true-sign certificate.
+
+`uniform_history_bounds` applies the shared event ledger separately to each
+class, without equating their states or actual work. Observation status,
+work policies and strict identity guards are independent. The fixed design
+in the [guide](../../guides/relational/SINE_PATTERNS.md#sine-class-nonlinear-organization)
+retains `bounds_only` even with source and reading errors removed: its
+independent nonlinear remainder dominates the isolated mediator signal.
+This limits that estimate, not the complete-law response. The calculator
+consumes no saved report or response and executes no formation or nonlinear
+trajectory. Shared SDK projection preserves exact bounds and scope under
+`tnfr.sine-class-nonlinear-organization.v1`.
+
 <a id="sine-class-nonlinear-superposition"></a>
 ### Two form probes and a four-history superposition test
 

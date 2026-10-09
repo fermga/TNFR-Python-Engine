@@ -180,6 +180,9 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
         SineClassMediatedMemory,
         SineClassMediatedMemoryBound,
     )
+    from ..physics.relational_sine_class_nonlinear_organization import (
+        SineClassNonlinearOrganization,
+    )
     from ..physics.relational_sine_class_nonlinear_protocol import (
         SineClassNonlinearProtocol,
     )
@@ -397,6 +400,7 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
             SineClassMediatedMemory,
             SineClassMediatedMemoryBound,
             SineClassSuperposition,
+            SineClassNonlinearOrganization,
             SineClassNonlinearProtocol,
             SineClassFourHistoryReadout,
             SineTwoPortCompatibility,

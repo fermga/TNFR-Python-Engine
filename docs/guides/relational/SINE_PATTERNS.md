@@ -1352,6 +1352,54 @@ response's sign. The [contract](../../contracts/relational/SINE_PATTERNS.md#sine
 retains these distinctions. This example does not replay any frozen
 response or establish laboratory feasibility.
 
+<a id="sine-class-nonlinear-organization"></a>
+### Inspect the organization-dependent nonlinear contrast
+
+The [class-contrast bound](../../../theory/nodal/SINE_CLASS_NONLINEAR_ORGANIZATION.md)
+asks whether the two mediator organizations have different mixed responses
+under the same finite design. It evaluates one analytic heat coefficient,
+cancels common channels and retains both complete-law error budgets. It
+uses no observed response:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_class_nonlinear_organization import (
+    bound_sine_class_nonlinear_organization,
+)
+
+contrast = bound_sine_class_nonlinear_organization(
+    first_probe_amplitude=Q(1, 2000),
+    second_probe_amplitude=Q(1, 2000),
+    delay=Q(1),
+    total_duration=Q(2),
+    endpoint_radius=Q(1, 10**32),
+    readout_error_bound=Q(1, 10**30),
+    radius=Q(1, 12),
+    contact_work_allowance=Q(1, 10**12),
+    first_probe_work_allowance=Q(1, 500000),
+    second_probe_work_allowance=Q(1, 500000),
+)
+assert contrast.gamma_fourth_scaled_heat_contrast_bounds[1] < 0
+assert contrast.true_contrast_bounds[0] < 0 < contrast.true_contrast_bounds[1]
+assert contrast.status == "bounds_only"
+assert not contrast.true_contrast_sign_certified
+assert contrast.strict_recorded_sign_noise_ceiling is None
+assert contrast.all_work_within_allowances
+assert contrast.all_identities_certified
+```
+
+The signed heat contribution does not establish a signed full response.
+The nonlinear error estimate dominates here, so the result establishes
+neither separation nor overlap. Shrinking reading errors alone cannot
+remove that mathematical limitation. The earlier within-class nonlinear
+result remains valid: its observable differs from this cross-class contrast.
+Each class's four histories share its own actual source, while uncertainty
+between classes remains independent. Equal event bounds do not mean equal
+preparation costs or actual states. The
+[contract](../../contracts/relational/SINE_PATTERNS.md#sine-class-nonlinear-organization)
+separates the eight-reading contrast allowance from a sixteen-error
+comparison against an independently noisy zero-contrast alternative.
+
 <a id="sine-class-nonlinear-superposition"></a>
 ### Check what two form probes can resolve
 
