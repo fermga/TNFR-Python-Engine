@@ -52,6 +52,7 @@ nav:
       - "Documentation map": docs/README.md
       - "Usage guides":
           - "CLI and SDK": docs/CLI_AND_SDK.md
+          - "Research evidence and frozen source restoration": docs/guides/RESEARCH_EVIDENCE.md
           - "Regional and relational SDK": docs/guides/REGIONAL_AND_RELATIONAL.md
           - "Native relational execution and observations": docs/guides/relational/RELATIONAL_EXECUTION.md
           - "Native relational capture, memory and continuous proofs": docs/guides/relational/RELATIONAL_CAPTURE_AND_MEMORY.md
@@ -104,6 +105,41 @@ nav:
           - "Effective mediated connections": theory/nodal/RELATIONAL_EFFECTIVE_CONNECTIONS.md
           - "Native formation and its obstructions": theory/nodal/RELATIONAL_NATIVE_FORMATION.md
           - "Smooth-sine pattern dynamics": theory/nodal/SINE_PATTERN_DYNAMICS.md
+          - "Repeated probes of formed sine classes": theory/nodal/SINE_FORMED_CLASS_MAINTENANCE.md
+          - "Contact of actually formed sine classes": theory/nodal/SINE_FORMED_CLASS_CONTACT.md
+          - "Reduced ports of formed sine classes": theory/nodal/SINE_REDUCED_CLASS_PORTS.md
+          - "Network composition of reduced sine ports": theory/nodal/SINE_REDUCED_PORT_COMPOSITION.md
+          - "Acquired mediator class and a transmitted form response": theory/nodal/SINE_CLASS_MEDIATED_RESPONSE.md
+          - "Effective memory of an acquired sine-class mediator": theory/nodal/SINE_CLASS_MEDIATED_MEMORY.md
+          - "Two-probe superposition on an acquired sine composite": theory/nodal/SINE_CLASS_NONLINEAR_SUPERPOSITION.md
+          - "Finite separation of a nonlinear class-mediated response": theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md
+          - "Organization dependence of nonlinear interaction": theory/nodal/SINE_CLASS_NONLINEAR_ORGANIZATION.md
+          - "Complete cubic-amplitude mediator response": theory/nodal/SINE_CLASS_CUBIC_RESPONSE.md
+          - "Spatial observation of nonlinear class interaction": theory/nodal/SINE_CLASS_SPATIAL_OBSERVATION.md
+          - "Feasible amplitudes for class discrimination": theory/nodal/SINE_CLASS_AMPLITUDE_FEASIBILITY.md
+          - "Independent full-law class comparison protocol": theory/nodal/SINE_CLASS_COMPARISON_PROTOCOL.md
+          - "Repeated joined class interaction": theory/nodal/SINE_CLASS_REPEATED_INTERACTION.md
+          - "Nonlinear collective interface": theory/nodal/SINE_CLASS_COLLECTIVE_INTERFACE.md
+          - "Changed-input collective prediction": theory/nodal/SINE_CLASS_CHANGED_INPUT_PREDICTION.md
+          - "Independent changed-input full-law protocol": theory/nodal/SINE_CLASS_COLLECTIVE_FORWARD_PROTOCOL.md
+          - "Causal composition of acquired sine-class interfaces": theory/nodal/SINE_CLASS_INTERFACE_COMPOSITION.md
+          - "Causal nonadditivity of distinct neighbor interventions": theory/nodal/SINE_CLASS_NEIGHBOR_NONADDITIVITY.md
+          - "Independent distinct-neighbor protocol": theory/nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL.md
+          - "Nonlinear excess storage and loss": theory/nodal/SINE_CLASS_STORAGE_EXCESS.md
+          - "Uniform tracking of reduced sine ports": theory/nodal/SINE_PORT_RELAXATION.md
+          - "Form tracking by ordered heat comparison": theory/nodal/SINE_PORT_FORM_TRACKING.md
+          - "Two-port compatibility of sine classes": theory/nodal/SINE_TWO_PORT_COMPATIBILITY.md
+          - "Finite transit of two-port sine classes": theory/nodal/SINE_TWO_PORT_TRANSIT.md
+          - "Prepared capture of two-port sine classes": theory/nodal/SINE_TWO_PORT_CAPTURE.md
+          - "Supplied probe of the acquired two-port composite": theory/nodal/SINE_TWO_PORT_PROBE.md
+          - "Interior phase probe of acquired two-port deformation": theory/nodal/SINE_TWO_PORT_DIPOLE.md
+          - "Two-port geometry from a calibrated local response": theory/nodal/SINE_TWO_PORT_INFERENCE.md
+          - "Geometry and gain from two successive phase inputs": theory/nodal/SINE_TWO_PULSE_INFERENCE.md
+          - "Geometry, sensor gain and a declared uncertain clock": theory/nodal/SINE_CLOCK_INFERENCE.md
+          - "Finite curvature from one additional reading": theory/nodal/SINE_FINITE_CURVATURE_INFERENCE.md
+          - "Clock drift, sampled exposure and robust mean-rate inference": theory/nodal/SINE_CLOCK_DRIFT_INFERENCE.md
+          - "Finite-aperture observations and mean-clock inference": theory/nodal/SINE_APERTURE_INFERENCE.md
+          - "Finite-noise and horizon resolution for the four boxcar observations": theory/nodal/SINE_APERTURE_RESOLUTION.md
           - "Exact and controlled form-phase reductions": theory/nodal/SINE_FORM_PHASE_REDUCTION.md
           - "Conservative regional formation and its barriers": theory/nodal/SINE_REGIONAL_FORMATION.md
           - "Collective phase families and live contact feedback": theory/nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md
@@ -172,6 +208,7 @@ nav:
           - "Research strategy": theory/NODAL_RESEARCH_STRATEGY.md
           - "Passive transport protocol": theory/research/PASSIVE_TRANSPORT_PROTOCOL.md
           - "Regional phase/amplitude protocol": theory/research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md
+          - "Physical admission of the delayed digital-PLL realization": theory/research/DPLL_PHYSICAL_ADMISSION.md
           - "TCLab comparison boundary": theory/research/TCLAB_EXPLORATORY_PROTOCOL.md
           - "Parked C6 evidence boundary": theory/C6_RESEARCH_MECHANISM_AUDIT.md
 # END GENERATED THEORY NAVIGATION

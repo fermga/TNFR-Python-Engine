@@ -54,6 +54,7 @@ the research task; an available guide does not create an active campaign.
 | Maintained owner | Use it for | Boundary |
 | --- | --- | --- |
 | [CLI and SDK](CLI_AND_SDK.md) | Network creation, operator studies, diagnostics, JSON and command routes | Word counts are not physical time; reports are not checkpoints |
+| [Research evidence and frozen source restoration](guides/RESEARCH_EVIDENCE.md) | Shared artifact admission, read-only audits and preparation of the declared source revision | Restoration does not execute an experiment; archive integrity does not prove scientific premises |
 | [Regional and relational SDK](guides/REGIONAL_AND_RELATIONAL.md) | Native joint evolution, separate sine assessments, regional observations and scoped certificates | Preparations, references and uncertainty are inputs; captured states and declared exact families have different admission |
 | [Native relational execution and observations](guides/relational/RELATIONAL_EXECUTION.md) | Argument-based field and finite-step execution, native tangents, prepared patterns and hypothetical support/state events. | Each result retains its declared complete law and evidence scope |
 | [Native relational capture, memory and continuous proofs](guides/relational/RELATIONAL_CAPTURE_AND_MEMORY.md) | Native capture and exclusions, cycle/contact memory, transit, reflected proofs, regularity and retained robustness evidence. | Each result retains its declared complete law and evidence scope |
@@ -99,7 +100,7 @@ the research task; an available guide does not create an active campaign.
 | Definitions, derivations and scientific scope | [Theory catalog](../theory/README.md); [glossary](../theory/GLOSSARY.md) for classified concept cards |
 | Grammar policies and verification | [Unified grammar](../theory/UNIFIED_GRAMMAR_RULES.md#9-verification-and-reporting); rules and evidence share that owner |
 | Research rationale and branch roles | [Portfolio](../TNFR_lineas_de_investigacion.txt) classifies branches; [strategy](../theory/NODAL_RESEARCH_STRATEGY.md) explains their scientific purpose |
-| Current state, resumption and active gates | [Execution checkpoint](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-checkpoint) and its [single active gate](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate), not additional overview task lists |
+| Current research state and resumption | [Execution checkpoint](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-checkpoint) and its [current gate status](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate), not additional overview task lists |
 | Maintained runnable entry points | [Examples](../examples/README.md), [benchmarks](../benchmarks/README.md), [optional applications](../applications/README.md) |
 | Historical results and supersession | [Archive](../theory/research/archive/README.md), including [reported interface observations](../theory/research/archive/REPORTED_INTERFACE_OBSERVATIONS.md) |
 | Past publication statements | [Changelog](../CHANGELOG.md); historical claims are not current guarantees |

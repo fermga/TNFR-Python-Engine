@@ -4,12 +4,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Callable
 
-from ..alias import get_attr
 from ..constants.aliases import ALIAS_D2EPI
 from ..glyph_history import recent_glyph
 from ..types import Glyph
-from ..utils import clamp01
-from .rules import get_norm, glyph_fallback, normalized_dnfr
+from .rules import _norm_attr, glyph_fallback, normalized_dnfr
 
 if TYPE_CHECKING:  # pragma: no cover - import cycle guard
     from collections.abc import Mapping
@@ -32,8 +30,7 @@ def acceleration_norm(ctx: "GrammarContext", nd: "Mapping[str, Any]") -> float:
     clamped to preserve structural comparability with ΔNFR-based heuristics.
     """
 
-    max_val = get_norm(ctx, "accel_max")
-    return clamp01(abs(get_attr(nd, ALIAS_D2EPI, 0.0)) / max_val)
+    return _norm_attr(ctx, nd, ALIAS_D2EPI, "accel_max")
 
 
 def check_repeats(ctx: "GrammarContext", n: Any, cand: Glyph | str) -> Glyph | str:

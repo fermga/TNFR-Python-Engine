@@ -1,9 +1,13 @@
 """Public wiring and exact evidence export, without another research campaign."""
 
+import hashlib
 import json
+import subprocess
 import sys
 from dataclasses import dataclass, replace
 from fractions import Fraction
+from importlib import import_module
+from pathlib import Path
 from types import ModuleType
 
 import networkx as nx
@@ -2354,3 +2358,559 @@ def test_prepared_composition_nested_label_admission(
     report = _replace_report_path(prepared_composition_exports[0], path, value)
     with pytest.raises(TypeError, match="node labels"):
         relational_report_to_dict(report)
+
+
+@pytest.mark.parametrize(
+    "owner_name,class_name,assessor,evaluator",
+    [
+        (
+            "relational_sine_reduced_class_ports",
+            class_name,
+            "assess_sine_reduced_class_ports",
+            "evaluate_sine_reduced_class_ports",
+        )
+        for class_name in ("SineReducedClassPortState", "SineReducedClassPorts")
+    ]
+    + [
+        (
+            "relational_sine_port_composition",
+            class_name,
+            "assess_sine_port_composition",
+            "evaluate_sine_port_composition",
+        )
+        for class_name in ("SinePortCompositionState", "SinePortComposition")
+    ]
+    + [
+        (
+            "relational_sine_port_relaxation",
+            "SinePortRelaxation",
+            "assess_sine_port_relaxation",
+            None,
+        ),
+        (
+            "relational_sine_port_form_tracking",
+            "SinePortFormTracking",
+            "assess_sine_port_form_tracking",
+            None,
+        ),
+        (
+            "relational_sine_class_mediation",
+            "SineClassMediation",
+            "assess_sine_class_mediation",
+            None,
+        ),
+        (
+            "relational_sine_class_memory",
+            "SineClassMediatedMemory",
+            "derive_sine_class_mediated_memory",
+            None,
+        ),
+        (
+            "relational_sine_class_memory",
+            "SineClassMediatedMemoryBound",
+            "bound_sine_class_mediated_memory",
+            None,
+        ),
+        (
+            "relational_sine_class_superposition",
+            "SineClassSuperposition",
+            "bound_sine_class_superposition",
+            None,
+        ),
+        (
+            "relational_sine_class_cubic_response",
+            "SineClassCubicResponse",
+            "bound_sine_class_cubic_response",
+            None,
+        ),
+        (
+            "relational_sine_class_spatial_observation",
+            "SineClassSpatialObservation",
+            "bound_sine_class_spatial_observation",
+            None,
+        ),
+        (
+            "relational_sine_class_amplitude_feasibility",
+            "SineClassAmplitudeFeasibility",
+            "bound_sine_class_amplitude_feasibility",
+            None,
+        ),
+        (
+            "relational_sine_class_nonlinear_organization",
+            "SineClassNonlinearOrganization",
+            "bound_sine_class_nonlinear_organization",
+            None,
+        ),
+        (
+            "relational_sine_class_nonlinear_protocol",
+            "SineClassNonlinearProtocol",
+            "bound_sine_class_nonlinear_protocol",
+            None,
+        ),
+        (
+            "relational_sine_class_readout",
+            "SineClassFourHistoryReadout",
+            "bound_sine_class_four_history_readout",
+            None,
+        ),
+        (
+            "relational_sine_class_comparison_readout",
+            "SineClassComparisonReadout",
+            "bound_sine_class_comparison_readout",
+            None,
+        ),
+        (
+            "relational_sine_class_port_readout",
+            "SineClassPortReadout",
+            "bound_sine_class_port_readout",
+            None,
+        ),
+        (
+            "relational_sine_class_storage_readout",
+            "SineClassStorageReadout",
+            "bound_sine_class_storage_readout",
+            None,
+        ),
+        (
+            "relational_sine_two_port_compatibility",
+            "SineTwoPortCompatibility",
+            "assess_sine_two_port_compatibility",
+            None,
+        ),
+        (
+            "relational_sine_two_port_compatibility",
+            "SineTwoPortHandoffObstruction",
+            "assess_sine_two_port_handoff_obstruction",
+            None,
+        ),
+        (
+            "relational_sine_two_port_transit",
+            "SineTwoPortTransit",
+            "assess_sine_two_port_transit",
+            None,
+        ),
+        (
+            "relational_sine_two_port_capture",
+            "SineTwoPortCapture",
+            "assess_sine_two_port_capture",
+            None,
+        ),
+        (
+            "relational_sine_two_port_probe",
+            "SineTwoPortProbe",
+            "assess_sine_two_port_probe",
+            None,
+        ),
+        (
+            "relational_sine_two_port_dipole",
+            "SineTwoPortDipole",
+            "assess_sine_two_port_dipole",
+            None,
+        ),
+        (
+            "relational_sine_two_port_inference",
+            "SineTwoPortInference",
+            "infer_sine_two_port_geometry",
+            None,
+        ),
+        (
+            "relational_sine_two_port_readout",
+            "SineTwoPortReadout",
+            "bound_sine_two_port_readout",
+            None,
+        ),
+        (
+            "relational_sine_two_pulse_inference",
+            "SineTwoPulseInference",
+            "infer_sine_two_pulse_geometry_gain",
+            None,
+        ),
+        (
+            "relational_sine_clock_inference",
+            "SineClockInference",
+            "infer_sine_geometry_gain_clock",
+            None,
+        ),
+        (
+            "relational_sine_curvature_inference",
+            "SineCurvatureInference",
+            "infer_sine_geometry_gain_clock_curvature",
+            None,
+        ),
+        (
+            "relational_sine_clock_drift_inference",
+            "SineClockDriftInference",
+            "infer_sine_geometry_gain_clock_drift",
+            None,
+        ),
+        (
+            "relational_sine_aperture_inference",
+            "SineApertureInference",
+            "infer_sine_geometry_gain_clock_aperture",
+            None,
+        ),
+        (
+            "relational_sine_aperture_budget",
+            "SineApertureBudget",
+            "assess_sine_aperture_budget",
+            None,
+        ),
+        (
+            "relational_sine_aperture_readout",
+            "SineApertureReadout",
+            "bound_sine_aperture_readout",
+            None,
+        ),
+    ],
+)
+def test_reduced_port_sdk_wiring_does_not_evaluate_research(
+    monkeypatch, owner_name, class_name, assessor, evaluator
+):
+    from importlib import import_module
+
+    owner = import_module(f"tnfr.physics.{owner_name}")
+
+    report_type = getattr(owner, class_name)
+    report = object.__new__(report_type)
+    body = {"unavailable": None, "retained_coordinates": 20}
+    monkeypatch.setattr(report_type, "to_dict", lambda self: {"report": body})
+
+    def forbidden(**kwargs):
+        pytest.fail("SDK projection must not evaluate a research model")
+
+    monkeypatch.setattr(owner, assessor, forbidden)
+    if evaluator is not None:
+        monkeypatch.setattr(owner, evaluator, forbidden)
+    assert relational_report_to_dict(report) == {
+        "schema": "tnfr.relational-report.v1",
+        "report_type": class_name,
+        "report": body,
+    }
+
+
+@pytest.fixture(params=("port", "storage"))
+def advanced_readout_exports(request, monkeypatch):
+    """Construct real zero-time reports and one mocked unavailable attempt.
+
+    No interval field, derivative, source handoff or time coefficient is run.
+    The unavailable case exercises genuine partial-report construction without
+    pretending that a synthetic kernel failure is scientific evidence.
+    """
+    from tnfr.mathematics import _validated_taylor
+    from tnfr.physics import (
+        _sine_class_port_prediction,
+        _sine_flow,
+        _sine_formed_contact,
+        relational_sine_class_cubic_response,
+        relational_sine_class_port_readout,
+        relational_sine_class_storage_readout,
+    )
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("SDK readout export must not evaluate a scientific field")
+
+    for module, names in (
+        (_validated_taylor, ("validated_box_taylor_step", "flow_jets", "picard_tube")),
+        (_sine_flow, ("_full_sine_field",)),
+        (_sine_formed_contact, ("_unprobed_handoff",)),
+        (
+            _sine_class_port_prediction,
+            ("_predict_collective_port_response", "_causal_coefficients"),
+        ),
+        (
+            relational_sine_class_cubic_response,
+            ("_class_cubic_coefficients", "_time_coefficients"),
+        ),
+    ):
+        for name in names:
+            monkeypatch.setattr(module, name, forbidden)
+    forms = tuple((Fraction(i - 13, 64),) * 2 for i in range(27))
+    phases = ((Fraction(1, 16),) * 2,) * 27
+    if request.param == "port":
+        owner = relational_sine_class_port_readout
+        producer = owner.bound_sine_class_port_readout
+        arguments = dict(
+            initial_form_bounds=(forms, forms),
+            initial_phase_bounds=(phases, phases),
+            port_impulse=(Fraction(1, 32), Fraction(-1, 16), Fraction(0)),
+        )
+        monkeypatch.setattr(
+            owner, "_full_sine_field", lambda *_: (forbidden, forbidden)
+        )
+        counts = (2, 54)
+    else:
+        owner = relational_sine_class_storage_readout
+        producer = owner.bound_sine_class_storage_readout
+        arguments = dict(
+            mediator_class=1,
+            initial_form_bounds=forms,
+            initial_phase_deviation_bounds=phases,
+            donor_amplitude=Fraction(1, 32),
+            receiver_amplitude=Fraction(-1, 16),
+        )
+        monkeypatch.setattr(
+            owner,
+            "_storage_loss_fields",
+            lambda *_: ((forbidden, forbidden), forbidden),
+        )
+        counts = (8, 55)
+    arguments.update(horizon=0, time_step=Fraction(1, 128), order=1, max_steps=1)
+    monkeypatch.setattr(owner, "validated_box_taylor_step", forbidden)
+    complete = producer(**arguments)
+    calls = []
+
+    def failed_attempt(state, duration, flow, domain, *, order, time):
+        calls.append((len(state), duration, order, time))
+        return None, state, "synthetic_export_failure"
+
+    monkeypatch.setattr(owner, "validated_box_taylor_step", failed_attempt)
+    unavailable = producer(**(arguments | {"horizon": Fraction(1, 128)}))
+    assert calls == [(counts[1], Fraction(1, 128), 1, Fraction(0))]
+    # Projection may inspect report fields, but must not call its producer.
+    monkeypatch.setattr(owner, producer.__name__, forbidden)
+    return request.param, complete, unavailable, counts
+
+
+def test_advanced_readout_sdk_export_preserves_exact_complete_and_partial_reports(
+    advanced_readout_exports, tmp_path
+):
+    kind, complete, unavailable, (history_count, dimension) = advanced_readout_exports
+    for report in (complete, unavailable):
+        generic = relational_report_to_dict(report)
+        assert generic == {
+            "schema": "tnfr.relational-report.v1",
+            "report_type": type(report).__name__,
+            "report": report.to_dict()["report"],
+        }
+        body = generic["report"]
+        assert body["time_step"] == {"numerator": 1, "denominator": 128}
+        assert body["capacity"][0] == {"numerator": 1, "denominator": 1}
+        assert len(body["histories"]) == history_count
+        assert len(body["histories"][0]["initial_box"]) == dimension
+        source = body["initial_form_bounds"]
+        if kind == "port":
+            source = source[0]
+        assert (
+            source[0]["lo"] == source[0]["hi"] == {"numerator": -13, "denominator": 64}
+        )
+        path = tmp_path / f"{kind}-{report.status}.json"
+        export_to_json(generic, path)
+        assert json.loads(path.read_text(encoding="utf-8")) == generic
+    assert complete.admitted and complete.attempted_step_count == 0
+    assert not unavailable.admitted
+    assert (
+        unavailable.attempted_step_count == 1 and unavailable.completed_step_count == 0
+    )
+    assert unavailable.histories[0].reason == "synthetic_export_failure"
+    assert all(row.initial_box is None for row in unavailable.histories[1:])
+    body = relational_report_to_dict(unavailable)["report"]
+    if kind == "port":
+        assert body["endpoint_readout_bounds"] is None
+        assert body["completed_source_count"] == 0
+    else:
+        assert body["loss_integral_bounds"] is None
+        assert body["excess_storage_bounds"] is None
+        assert body["integrated_excess_loss_bounds"] is None
+        assert body["completed_history_count"] == 0
+
+
+def test_advanced_readout_sdk_nonfinite_projection_preserves_existing_file(
+    advanced_readout_exports, tmp_path
+):
+    kind, report, _, _ = advanced_readout_exports
+    if kind == "port":
+        invalid = replace(report, port_impulse=(float("nan"), Fraction(0), Fraction(0)))
+    else:
+        invalid = replace(report, donor_amplitude=float("nan"))
+    destination = tmp_path / f"{kind}.json"
+    original = b'{"retained":true}\n'
+    destination.write_bytes(original)
+    with pytest.raises(ValueError, match="nonfinite"):
+        export_to_json(relational_report_to_dict(invalid), destination)
+    assert destination.read_bytes() == original
+
+
+def test_managed_report_registry_preserves_existing_owner_inventory():
+    from tnfr.sdk.relational_reports import _OWNER_MANAGED_REPORTS
+
+    additions = {
+        "SineClassPortReadout": "tnfr.physics.relational_sine_class_port_readout",
+        "SineClassStorageReadout": "tnfr.physics.relational_sine_class_storage_readout",
+    }
+    assert {name: _OWNER_MANAGED_REPORTS[name] for name in additions} == additions
+    legacy = {
+        name: owner
+        for name, owner in _OWNER_MANAGED_REPORTS.items()
+        if name not in additions
+    }
+    # Inventory fingerprint of the 125 previous explicit imports/tuple entries.
+    # This detects omissions without maintaining a second dispatch catalog.
+    inventory = "\n".join(f"{name}:{owner}" for name, owner in sorted(legacy.items()))
+    assert len(legacy) == 125
+    assert hashlib.sha256(inventory.encode("utf-8")).hexdigest() == (
+        "f238a6f29675cbfaedab7995180d9f80620024800006d2fa8a21ac31c0b57baa"
+    )
+
+
+def test_every_managed_report_resolves_real_owner_without_construction(monkeypatch):
+    from tnfr.sdk.relational_reports import _OWNER_MANAGED_REPORTS
+
+    for name, owner_name in _OWNER_MANAGED_REPORTS.items():
+        report_type = getattr(import_module(owner_name), name)
+        assert report_type.__name__ == name
+        assert report_type.__module__ == owner_name
+        report = object.__new__(report_type)
+        calls = []
+        body = {"value": {"numerator": -3, "denominator": 7}, "unavailable": None}
+
+        def project(self):
+            calls.append(self)
+            return {"report": body}
+
+        with monkeypatch.context() as patch:
+            patch.setattr(report_type, "to_dict", project)
+            assert relational_report_to_dict(report) == {
+                "schema": "tnfr.relational-report.v1",
+                "report_type": name,
+                "report": body,
+            }
+        assert calls == [report]
+
+
+def test_managed_report_custom_module_subclass_preserves_real_base(monkeypatch):
+    from tnfr.physics.relational_sine_class_storage_readout import (
+        SineClassStorageReadout,
+    )
+
+    class ApplicationReadout(SineClassStorageReadout):
+        pass
+
+    ApplicationReadout.__module__ = "application.models"
+    report = object.__new__(ApplicationReadout)
+    body = {"unavailable": None, "status": "synthetic_export_only"}
+    monkeypatch.setattr(ApplicationReadout, "to_dict", lambda self: {"report": body})
+    assert relational_report_to_dict(report) == {
+        "schema": "tnfr.relational-report.v1",
+        "report_type": "ApplicationReadout",
+        "report": body,
+    }
+
+
+@pytest.mark.parametrize("spoof", ("duck", "name", "module_and_name"))
+def test_managed_report_metadata_or_duck_typing_cannot_replace_class(spoof):
+    def forbidden(self):
+        pytest.fail("an unsupported object's projection must not be called")
+
+    report_type = type(
+        "Unregistered" if spoof == "duck" else "SineClassStorageReadout",
+        (),
+        {
+            "__module__": (
+                "tnfr.physics.relational_sine_class_storage_readout"
+                if spoof == "module_and_name"
+                else "application.untrusted"
+            ),
+            "to_dict": forbidden,
+        },
+    )
+    with pytest.raises(TypeError, match="expected a relational"):
+        relational_report_to_dict(report_type())
+
+
+@pytest.mark.parametrize("attribute_kind", ("getattribute", "property"))
+def test_managed_report_rejects_metaclass_reported_mro(attribute_kind):
+    from tnfr.physics.relational_sine_class_storage_readout import (
+        SineClassStorageReadout,
+    )
+
+    class ReportedMRO(type):
+        def __getattribute__(cls, name):
+            if name == "__mro__":
+                return (SineClassStorageReadout, object)
+            return super().__getattribute__(name)
+
+    class MROProperty(type):
+        @property
+        def __mro__(cls):
+            return (SineClassStorageReadout, object)
+
+    metaclass = ReportedMRO if attribute_kind == "getattribute" else MROProperty
+
+    class Unregistered(metaclass=metaclass):
+        def to_dict(self):
+            pytest.fail("an unrelated class's projection must not be called")
+
+    assert Unregistered.__mro__ == (SineClassStorageReadout, object)
+    assert not issubclass(Unregistered, SineClassStorageReadout)
+    with pytest.raises(TypeError, match="expected a relational"):
+        relational_report_to_dict(Unregistered())
+
+
+def test_managed_report_owner_failure_is_not_hidden(monkeypatch):
+    import tnfr.sdk.relational_reports as owner
+    from tnfr.physics.relational_sine_class_storage_readout import (
+        SineClassStorageReadout,
+    )
+
+    report = object.__new__(SineClassStorageReadout)
+    failure = ImportError("registered owner unavailable")
+
+    def unavailable(name):
+        assert name == "tnfr.physics.relational_sine_class_storage_readout"
+        raise failure
+
+    monkeypatch.setattr(owner, "import_module", unavailable)
+    with pytest.raises(ImportError) as caught:
+        relational_report_to_dict(report)
+    assert caught.value is failure
+
+
+@pytest.mark.parametrize("kind", ("native", "port", "storage"))
+def test_report_export_cold_imports_only_requested_managed_owner(
+    kind, source_tree_environment
+):
+    code = """
+import sys
+from tnfr.sdk import relational_report_to_dict
+from tnfr.sdk.relational_reports import _OWNER_MANAGED_REPORTS
+
+kind = sys.argv[1]
+if kind == "native":
+    import networkx as nx
+    from tnfr.sdk import Network, RelationalExchangeModel
+    graph = nx.Graph()
+    graph.add_edge(("port", 0), "right")
+    for node in graph:
+        graph.nodes[node].update(EPI=0, theta=0, nu_f=1)
+    report = Network(graph).relational_exchange(RelationalExchangeModel(1))
+else:
+    from importlib import import_module
+    name = "SineClassPortReadout" if kind == "port" else "SineClassStorageReadout"
+    owner = import_module(_OWNER_MANAGED_REPORTS[name])
+    report_type = getattr(owner, name)
+    report = object.__new__(report_type)
+    # A real registered shell tests dispatch without running any producer.
+    report_type.to_dict = lambda self: {"report": {"unavailable": None}}
+
+before = set(sys.modules)
+payload = relational_report_to_dict(report)
+assert payload["report_type"] == type(report).__name__
+new_managed = (set(sys.modules) - before) & set(_OWNER_MANAGED_REPORTS.values())
+assert not new_managed, sorted(new_managed)
+assert "tnfr.research.sine_constitutive_robustness" not in sys.modules
+assert "tnfr.physics.relational_sine_replica_pulse" not in sys.modules
+if kind == "native":
+    assert payload["report"]["nodes"] == [["port", 0], "right"]
+else:
+    assert payload["report"] == {"unavailable": None}
+"""
+    completed = subprocess.run(
+        [sys.executable, "-c", code, kind],
+        cwd=Path(__file__).resolve().parents[2],
+        env=source_tree_environment,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=30,
+    )
+    assert completed.returncode == 0, completed.stderr

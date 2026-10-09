@@ -14,12 +14,29 @@ physical observations. The [ontology](EMERGENT_ONTOLOGY.md#generative-bound-orga
 keeps this generative hypothesis separate from the conditional mathematics.
 EPI need not be a sensor reading: a collective observation map is allowed,
 but its preparation, clock and physical interpretation need independent support.
+The primary progression derives organization and its interaction properties
+from the nodal dynamics; it requires no prior identification of a primitive
+coordinate with a laboratory sensor. Direct-realization audits are auxiliary.
+Independent physical observation becomes the next obligation when a derived
+collective property has a specific falsifiable comparison.
 
 An identity can persist while its constituents move. A larger NFR can retain
 smaller constituents and their causal influence; a supplied graph or partition
 does not establish its own emergence. Formation under declared conditions is
 a meaningful intermediate target before autonomous preparation, substrate
 origin or physical identification has been resolved.
+
+The principal objective is to identify and justify TNFR's laws and hypotheses
+one at a time through their dependencies, including revisable foundational
+premises. Constructed organizations test the foundations that produced them.
+Compare complete laws on matched objects to distinguish consequences of
+retained geometry and information from consequences of a selected pressure,
+storage or event rule. A successful conditional construction is useful evidence
+for that model; it is not a reason to stop examining its independent premises.
+The [law-admission audit](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission)
+governs this return to the bases, and the execution plan selects one unresolved
+question at a time. Each justified correction should improve the common
+foundations and their consumers rather than add an isolated fitted mechanism.
 
 <a id="fundamental-research-dependencies"></a>
 ## 2. Information, interaction and complete laws
@@ -161,6 +178,30 @@ Constant means or cancelling currents do not establish absent internal motion.
 Supplied contact, effective interaction and primitive relation birth are
 different claims. Event passivity also does not select occurrence; continuous
 loss is not an event reserve without a reservoir law.
+
+<a id="organization-dependent-nonlinearity"></a>
+### Organization-dependent nonlinear interaction
+
+A class-dependent response and a nonlinear response answer different
+questions. A linear response may already distinguish two organizations;
+a nonlinear interaction in one organization need not distinguish it from
+another. To connect these claims, compare the same four-history mixed
+observable across actually acquired classes under one complete law.
+For an initial matched-source comparison, pair histories at the same full
+source within each class, while retaining independent preparation uncertainty
+and possibly unequal costs between classes. Repeated interventions instead
+carry distinct branch residuals: the [joined return theorem](nodal/SINE_CLASS_REPEATED_INTERACTION.md)
+requires a new return family and exact mean accounting, including the
+alternative model's own memory. Additive cancellation must not erase hidden
+initialization or nonlinear source sensitivity.
+
+This comparison tests whether internal organization controls an interaction
+property beyond additive response. Interface symmetry can hide that property;
+nonzero local curvature or a different formal coefficient does not guarantee
+a finite observable contrast. A useful result therefore includes either a
+full-error separation or a proved, scoped obstruction. Insufficient bounds
+alone leave the claim unresolved. Physical comparison still requires an
+independent measurement and clock bridge for the particular property.
 
 ## 5. Physical confrontation and comparison
 

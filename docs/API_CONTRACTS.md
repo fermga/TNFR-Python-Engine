@@ -626,6 +626,10 @@ adapter falls back to NumPy; unknown names raise `LookupError`.
 and the canonical `core.exceptions.BackendUnavailableError` identity.
 Backend selection supplies a numerical implementation, not an evolution law;
 reproducibility records must identify the adapter actually used.
+The PyTorch adapter copies read-only NumPy arrays before conversion because
+tensors cannot preserve their write protection. Writable arrays retain the
+existing sharing behavior when dtype/device permit; native tensor conversion
+preserves identity and autograd when no conversion is needed.
 The NumPy adapter delegates general matrix exponentials to the required SciPy
 dependency. If SciPy is unavailable, that operation raises
 `BackendUnavailableError`; a possibly defective eigenvector decomposition is
@@ -731,6 +735,21 @@ is canonicalized to zero. `compute_phase_difference` retains its signed
 `atan2(sin(delta), cos(delta))` convention and rejects unrepresentable
 subtractions. These numerical readers do not replace live U3 admission.
 The circular mean uses this same represented phase boundary.
+The shared `safe_divide` and `clamp_value` helpers reuse raw represented-real
+admission for values, bounds and fallback. Boolean, text, nonfinite and
+nonzero materialization-loss inputs reject on NumPy and scalar paths before
+division or clipping. A zero denominator selects the admitted fallback;
+overflow or nonzero underflow of a quotient rejects instead. NumPy
+broadcasting and the scalar path's one-dimensional broadcasting remain
+available. The `clamp`/`clamp01` adapters inherit this boundary, so clipping
+cannot turn an invalid observation into an apparently valid bounded score.
+Bounded pressure, capacity and grammar normalizations compare admitted
+magnitudes before dividing, so a finite ratio above the clipping bound can
+saturate without an overflowing intermediate. Nonzero interior ratios must
+remain representable; zero-normalizer conventions remain with each caller.
+Range and similarity helpers use exact represented differences when finite
+endpoints span more than binary64 can hold. These are numerical diagnostic
+policies, not stability certificates.
 `angle_diff_array` checks selected results in the requested output dtype
 before writing: narrowing that erases a nonzero difference rejects and leaves
 the output unchanged, including its unselected entries.

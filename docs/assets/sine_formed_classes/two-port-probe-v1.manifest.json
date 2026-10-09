@@ -1,0 +1,63 @@
+{
+  "schema": "tnfr.sine-two-port-probe-evidence.v1",
+  "artifacts": [
+    {
+      "file": "two-port-probe-v1.protocol.json",
+      "bytes": 9573,
+      "sha256": "14755d4957c6682d00b1569082f66b451787c619a72833137da9854e0094b4ea"
+    },
+    {
+      "file": "two-port-probe-v1.source.zip",
+      "bytes": 30267,
+      "sha256": "d54a607c76bdd992bedf26f92618360ed506739e2c2e70ed0b260fc704bda578"
+    },
+    {
+      "file": "two-port-probe-v1.first-attempt.json",
+      "bytes": 1303,
+      "sha256": "13d8d294a49fb6908b0c2c2b1622d7a0ba9b7e7c9343e68d7c8298d1f12ce9ee"
+    },
+    {
+      "file": "two-port-probe-v1.export-recovery.py.txt",
+      "bytes": 2329,
+      "sha256": "dccc67c44b64b726131f08e86f18287f9d179fb984efe5c3c018e04d63efc37b"
+    },
+    {
+      "file": "two-port-probe-v1.json",
+      "bytes": 391891,
+      "sha256": "bcce22c064232f097977092e0d4389b0e0896556e3fec5804f094e4489e5d134"
+    }
+  ],
+  "source_base_commit": "f1ce7f196a50708e5e5910cdf68d0143265059a1",
+  "runtime_overlays": [
+    "src/tnfr/physics/relational_sine_two_port_probe.py",
+    "src/tnfr/research/sine_two_port_handoff.py",
+    "src/tnfr/sdk/relational_reports.py"
+  ],
+  "source_reconstruction": "Checkout the base revision and overlay archived src/ files. The original prospective proof, protocol and evaluator are preserved unchanged. For the retained result, use the separately preserved export-recovery source and first-attempt record; prior capture artifacts are bound in the protocol.",
+  "evaluation": "Original assessment process completed its certificate calculations but failed projecting the auxiliary control dictionary before any report was retained. A separately frozen export-only correction recomputed the deterministic certificate with identical scientific inputs/runtime, then saved this report. This is a recovery assessment, not a retained first response.",
+  "evaluation_history": {
+    "original_attempt": "assessment_completed_but_export_failed_without_retained_report",
+    "failure_record": "two-port-probe-v1.first-attempt.json",
+    "retained_assessment_kind": "separately_frozen_export_recovery_recomputation",
+    "recovery_source": "two-port-probe-v1.export-recovery.py.txt",
+    "scientific_inputs_or_runtime_changed": false,
+    "prior_capture_producer_replayed": false
+  },
+  "result_owner": "../../../theory/nodal/SINE_TWO_PORT_PROBE.md#sine-two-port-probe-result",
+  "status": "certified_probe",
+  "frozen_stopping_rule": {
+    "prior_capture_content_association": true,
+    "complete_source_handoff": true,
+    "fresh_implicit_target_admitted": true,
+    "strict_recorded_response_margin": true,
+    "exact_unjoined_null_and_zero_work": true,
+    "strictly_positive_supplied_work": true,
+    "supplied_work_within_allowance": true,
+    "joined_identity_retained": true,
+    "joined_recovery": true,
+    "original_unjoined_identity_retained": true
+  },
+  "frozen_stopping_rule_passed": true,
+  "scope": "Analytic supplied-contact transmission and identity retention for the original complete source family, conditional on retained capture execution. Pure diffusion also transmits; this does not identify winding-specific interaction, the sine law or a physical measurement bridge.",
+  "provenance_limitations": "Content hashes and source snapshots establish recoverable associations, not independently authenticated chronology or execution. Original capture Taylor inclusion/local-error/center validity remains an explicit execution premise; that producer was not replayed."
+}

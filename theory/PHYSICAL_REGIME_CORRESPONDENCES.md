@@ -132,8 +132,29 @@ before they can discriminate the TNFR candidates.
 | Can topology distinguish persistent identities and their responses? | Conditional winding sectors, [formation and retention](nodal/SINE_CONSERVATIVE_PREPARATION.md#sine-conservative-formation-retention), and [interface reflection controls](nodal/RELATIONAL_MEDIATOR_DYNAMICS.md#mediator-orientation-scope) | A cycle integer is not generally conserved across phase slips. Determine whether a retained probe distinguishes the proposed identity, rather than merely reading a supplied oriented cycle. |
 | Can internal motion produce spin-like observable behavior? | [Global unordered pair state](nodal/SINE_PAIR_STATE.md#sine-global-pair-state), exact internal phase action and retained constituent motion | Derive physical spatial rotation, its observable action and outcome statistics. Circular phase symmetry and exchanging constituent labels do not supply these. |
 | Can pulse, storage and response account for energy or inertia? | Same-law joint storage, regional work and the [nonlinear storage representation](nodal/SINE_PATTERN_DYNAMICS.md); conditional maintained internal pulses | Derive the observation of motion and force, clock and energy units. A storage invariant, oscillation frequency or graph kinetic metric alone supplies neither mass nor an energy-frequency quantum relation. |
+| Can collective interaction produce measurable nonadditive work or energy? | [Distinct-neighbor response](nodal/SINE_CLASS_NEIGHBOR_NONADDITIVITY.md#sine-class-neighbor-nonadditivity) and [full-minus-tangent storage/loss excess](nodal/SINE_CLASS_STORAGE_EXCESS.md#sine-storage-exact-balance) under the same supplied law | Compare an independently observed interaction residual with matched lower-order alternatives; the [classical measurement below](#nonadditive-interaction-measurement) illustrates an observable, not an admitted TNFR correspondence or selected research target. |
 | Can mediated interactions acquire an effective field description? | [Causal hidden-state elimination](nodal/RELATIONAL_MEDIATOR_DYNAMICS.md#mediated-pattern-interaction) retaining memory, initial state and forcing | Establish the effective field's dynamics and response, including its [observation geometry](#physical-geometry-comparison). Directional response and gauge diagnostics retain the [magnetic-identification boundary](#charge-and-magnetic-response-boundary). |
 | Can collective patterns exhibit quantum properties? | Phase, internal motion, interference and memory are possible ingredients under their declared laws | Meet the [quantum-emergence obligations](#quantum-emergence-obligations), including transformations and detector statistics. These ingredients do not by themselves derive quantum mechanics. |
+
+<a id="nonadditive-interaction-measurement"></a>
+
+**Nonadditivity has a measurable classical counterpart.**
+[Brunner et al.](https://doi.org/10.1103/PhysRevLett.92.078301)
+measured a three-body contribution among optically trapped charged colloids,
+subtracting separately measured pair potentials from the total interaction.
+This motivates a physical test of inherited collective interaction. The
+present TNFR excess is a transient storage/loss contrast against its complete
+tangent model; it is not the experiment's equilibrium effective potential or
+an identified potential of mean force. A comparison needs an independent
+observation map, physical units, environmental and thermal dynamics,
+preparation, input and clock models, and propagated errors. Calibration must
+be separate from reserved predictions and equally informed alternatives.
+The storage-observer admission prepares that mathematical observable; it
+does not establish experimental attainability, quantum behavior or a new
+fundamental force. The generative objective remains explaining formation,
+identity and interaction from justified nodal dynamics, not reproducing this
+apparatus. This illustrative comparison remains governed by the sole execution
+plan and activates no experimental campaign.
 
 <a id="physical-geometry-comparison"></a>
 
@@ -758,6 +779,14 @@ dictionary; not every amplitude-phase system has this spectrum. Conversely,
 no absence theorem for physical realizations or quantitative tests has been
 proved. The atlas permits either exact reduction or a controlled approximation
 with a declared error budget.
+
+The auxiliary [digital-PLL admission](research/DPLL_PHYSICAL_ADMISSION.md#dpll-physical-admission)
+examines one published terrestrial realization with explicit filtering and
+delay. It is not admitted to the fixed sine inference: the current-state
+history obstruction has a stated preparation/mapping scope, and a different
+observation or controlled reduction still needs its own error evidence.
+This comparison neither excludes all oscillator realizations nor makes a
+direct circuit realization a prerequisite for generative pattern research.
 
 The [same-mode pole identity](nodal/RELATIONAL_RESPONSE_IDENTIFICATION.md#coefficient-memory-identification)
 can identify chi when both rates are observable and excited; a single decay or

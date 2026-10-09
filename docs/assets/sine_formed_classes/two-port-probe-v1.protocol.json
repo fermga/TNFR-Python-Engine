@@ -1,0 +1,329 @@
+{
+  "schema": "tnfr.sine-two-port-probe-protocol.v1",
+  "evaluation_kind": "analytic_finite_response_work_and_identity_certificate_with_retained_source_handoff",
+  "inputs": {
+    "form_radius": {
+      "numerator": 1,
+      "denominator": 8192
+    },
+    "phase_radius": {
+      "numerator": 1,
+      "denominator": 1024
+    },
+    "pulse_amplitude": {
+      "numerator": 1,
+      "denominator": 2048
+    },
+    "probe_duration": {
+      "numerator": 1,
+      "denominator": 4
+    },
+    "readout_error_bound": {
+      "numerator": 1,
+      "denominator": 67108864
+    },
+    "contrast_threshold": {
+      "numerator": 1,
+      "denominator": 262144
+    },
+    "work_allowance": {
+      "numerator": 1,
+      "denominator": 2000000
+    }
+  },
+  "complete_model": {
+    "law": "normalized_sine_reciprocal_exchange",
+    "rows_in_tau": "x'=-A*x+gamma*f(theta); theta'=gamma*A*x; A=M^-1*L; f=M^-1*S",
+    "gamma": "1/(1023*pi)",
+    "gamma_upper_bound": "1/3069",
+    "beta": 1,
+    "e": "1023/1024",
+    "w": "1/1024",
+    "capacity": "held unit at every node in both supports",
+    "clocks": "tau=e*t; sigma=gamma^2*tau; every evolution row transforms with the same clock",
+    "forcing": "absent between events",
+    "events": "one supplied simultaneous donor form jump at the fixed handoff; no support event",
+    "pressure": "complete instantaneous sine and form pressure; neither channel held at its initial value"
+  },
+  "joined_support": {
+    "nodes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        8
+      ],
+      [
+        0,
+        9
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        1,
+        10
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        9,
+        10
+      ],
+      [
+        9,
+        17
+      ],
+      [
+        10,
+        11
+      ],
+      [
+        11,
+        12
+      ],
+      [
+        12,
+        13
+      ],
+      [
+        13,
+        14
+      ],
+      [
+        14,
+        15
+      ],
+      [
+        15,
+        16
+      ],
+      [
+        16,
+        17
+      ]
+    ],
+    "weights": "unit",
+    "ports": [
+      0,
+      1,
+      9,
+      10
+    ],
+    "degree_mass": 40,
+    "receiver_degree_mass": 20,
+    "periods": [
+      2,
+      1,
+      0
+    ]
+  },
+  "preparation": {
+    "nominal_form": "zero",
+    "nominal_phase_turns_before_one_common_centering": "D_j=2*j/9; R_j=1/18+j/9",
+    "full_weighted_phase_mean_turns_subtracted": "229/360",
+    "original_form_error_radius": "1/65536",
+    "original_phase_error_radius_radians": "1/65536",
+    "errors": "All thirty-six original independent nodewise errors remain admitted, without symmetry, zero-sum restriction, reset or new source selection.",
+    "endpoint_domain": "form_radius and phase_radius are joined degree norms of centered form and phase relative to the compatible target with that member's continuous phase mean; not nodewise radii",
+    "handoff_slow_time": 1025,
+    "handoff_fast_time": "1025*1023^2*pi^2",
+    "handoff_original_time": "1025*1023*1024*pi^2",
+    "acquisition_premise": "The archived validated capture execution, including retained Picard inclusion, local errors and endpoint centers, is valid shared-kernel execution evidence. The read-only audit re-admits primitive law, state, target root signs, metric chain and analytic tail, but does not independently reproduce all Taylor coefficients or authenticate chronology."
+  },
+  "prior_capture_artifacts": [
+    {
+      "file": "two-port-capture-v1.json",
+      "bytes": 40970976,
+      "sha256": "1bb276acd7d99572c0628a52d55f4fd9718127ad8f6d8c92f18bdc39c7ec089c"
+    },
+    {
+      "file": "two-port-capture-v1.protocol.json",
+      "bytes": 8561,
+      "sha256": "eec9555ae04394f8ec53f9bc3501209b0b3c7e9ebaae013cdd1df9e9512d6b31"
+    },
+    {
+      "file": "two-port-capture-v1.source.zip",
+      "bytes": 23410,
+      "sha256": "b8df26578b59a32dae82b9cad58450b0d208d6c45dc234769575702830f0fb3f"
+    },
+    {
+      "file": "two-port-capture-v1.manifest.json",
+      "bytes": 2257,
+      "sha256": "cefa3bb2d01df10f1f6268e1e1a8c0236d7692e3a79fdeed1a6c336c07561fc0"
+    }
+  ],
+  "unjoined_control": {
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        8
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        9,
+        10
+      ],
+      [
+        9,
+        17
+      ],
+      [
+        10,
+        11
+      ],
+      [
+        11,
+        12
+      ],
+      [
+        12,
+        13
+      ],
+      [
+        13,
+        14
+      ],
+      [
+        14,
+        15
+      ],
+      [
+        15,
+        16
+      ],
+      [
+        16,
+        17
+      ]
+    ],
+    "preparation": "Same original nominal state and independent error budgets, evolved from preparation on two disconnected unit rings to the same original time; no contact deletion or endpoint reset.",
+    "degree_mass": 36,
+    "receiver_degree_mass": 18,
+    "law": "same complete rows and coefficients with its own M and L",
+    "input": "same nodal donor increment, constant on each component",
+    "invariants": "Each component weighted form mean is conserved between events. Receiver increment and jump work are exactly zero for every state. Donor mean increases by the pulse amplitude.",
+    "identity": "Original source lies inside each ring's radius 1/12 and storage barrier 1/129600: combined squared norm and excess storage at most 36/65536^2; normalized gap at least 1/18; cosine at least 1/25. Pulse changes no relative coordinate."
+  },
+  "input": {
+    "event_law": "x_plus=x_minus+a*indicator_donor; theta_plus=theta_minus",
+    "donor_nodes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "joined_mean_shift": "a/2",
+    "joined_work": "a^2+a*(x_0+x_1-x_9-x_10); bound a^2 +/- (7/6)*a*X",
+    "work_policy": "upper bound <= work_allowance; require strictly positive supplied work in this fixed research assessment; continuous loss is accounted separately"
+  },
+  "observation": {
+    "rule": "receiver actual-degree-weighted mean form after minus before the pulse; joined increment minus unjoined increment",
+    "weights": "own support-dependent coefficients: joined mass20, unjoined mass18; common rule is not an identical coefficient vector",
+    "window": "probe_duration in fast time tau; original increment 256/1023; slow increment 1/(4*1023^2*pi^2)",
+    "readouts": 4,
+    "error": "arbitrary independently bounded signed errors at each before/after reading, no statistical cancellation; total contrast error at most four times readout_error_bound",
+    "decision": "recorded contrast lower bound strictly greater than contrast_threshold"
+  },
+  "method": {
+    "target": "fresh compatible (2,1) correlated implicit root, outer32 and inner64 strict refinements; minimum acute margin strictly above 1/8 radian",
+    "response": "exact heat-semigroup uniformization plus background bound and full nonlinear Duhamel error; no probe trajectory or response fit",
+    "identity": "strict post-jump degree norm below radius1/12 and storage below1/648000, then unchanged loss and local invariance principle on the new mean leaf",
+    "precision": "exact Python Fraction and fixed outward dyadic128 target intervals",
+    "no_replay": "Do not rerun the prior 4096-step capture producer; source audit reads the frozen complete record."
+  },
+  "prediction": "Expect all fixed conditions to certify positive recorded receiver contrast, bounded positive supplied work, joined identity and recovery, and original unjoined winding retention. This is an analytic prediction from explicit premises, not a measured response.",
+  "stopping_rule": "Require bound prior artifacts, re-admitted complete source handoff inside both declared radii, fresh target acute admission, strict recorded response margin, exact unjoined null, positive joined work with upper bound at most allowance, strict joined identity and recovery, and the separate original-control trapping argument. Preserve every failed condition; no retuning, narrower source, replaced observation or repeated first assessment.",
+  "alternative": "Pure form diffusion already has the positive ideal transfer term. Passing does not select sine feedback, winding, acquired organization as the cause of transport, or a physical interaction.",
+  "source_base_commit": "f1ce7f196a50708e5e5910cdf68d0143265059a1",
+  "source_overlay_archive": "two-port-probe-v1.source.zip",
+  "frozen_theory_owner": "theory/nodal/SINE_TWO_PORT_PROBE.md",
+  "runtime": {
+    "python": "3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows",
+    "seed": null,
+    "seed_scope": "deterministic exact bounds and fixed root refinements; no random source sample or fit"
+  },
+  "scope": "Conditional transmission and maintenance baseline under a supplied pulse on supplied support. No autonomous input/contact selection, physical energy, laboratory clock or independent experimental evidence is claimed."
+}

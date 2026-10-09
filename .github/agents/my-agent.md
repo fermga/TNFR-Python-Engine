@@ -165,11 +165,21 @@ logs or duplicate result inventories. Follow F1-F4:
    obstruction. Freeze preparation, law, clock, observation, horizon and
    numerical budget before evaluating the reserved response.
 
+Use the [NFR ontology] and applicable operator contracts when admitting a law:
+declare identity, retained constituent/boundary state, symmetries and the
+actual execution path. A collective event needs its own admission, descent
+and occurrence argument even when continuous collective dynamics closes.
+Use formed organizations as conditional test cases, not as a reason to assume
+that every compatible law acquires them or realizes every registered operator.
+
 Reuse the [theory-to-execution map]. Combine results only after matching complete
 law, support, capacity, clock, preparation and retained coordinates. Methods can
 transfer between models; their coefficients and verdicts do not automatically
-transfer. Tangent reduction need not close a nonlinear law. Eliminating hidden
-state can introduce memory and retains hidden initialization and forcing.
+transfer. Matching equilibria and full tangents does not transfer nonlinear
+remainders, source transport or acquisition/capture certificates; re-admit
+regularity and bounds for the actual law. Tangent reduction need not close a
+nonlinear law. Eliminating hidden state can introduce memory and retains
+hidden initialization and forcing.
 Formation, recovery, winding, lifetime and maintenance have separate obligations:
 response peaks, pulses, recurrence, invariant families and finite retention do
 not establish formation or autonomous scale selection. An admissible connection
@@ -273,6 +283,7 @@ Detailed admission and verification belong to the linked contracts.
 [API contracts]: https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/API_CONTRACTS.md
 [form foundation]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/FUNDAMENTAL_THEORY.md
 [parameter foundation]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md
+[NFR ontology]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/EMERGENT_ONTOLOGY.md
 [grammar]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/UNIFIED_GRAMMAR_RULES.md
 [operator]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/STRUCTURAL_OPERATORS.md
 [event contracts]: https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/contracts/OPERATOR_EVENTS.md

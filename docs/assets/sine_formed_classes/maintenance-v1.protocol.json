@@ -1,0 +1,88 @@
+{
+  "schema": "tnfr.sine-formed-class-maintenance-protocol.v1",
+  "evaluation_kind": "conditional_analytic_interval_certificate_no_trajectory",
+  "inputs": {
+    "formation_time": {
+      "numerator": 100,
+      "denominator": 1
+    },
+    "probe_time": {
+      "numerator": 200,
+      "denominator": 1
+    },
+    "probe_duration": {
+      "numerator": 1,
+      "denominator": 1
+    },
+    "phase_increment": {
+      "numerator": 1,
+      "denominator": 100
+    },
+    "form_error_bound": {
+      "numerator": 1,
+      "denominator": 10000000000
+    },
+    "phase_error_bound": {
+      "numerator": 1,
+      "denominator": 10000000000
+    },
+    "readout_error_bound": {
+      "numerator": 1,
+      "denominator": 10000000000
+    },
+    "radius": {
+      "numerator": 1,
+      "denominator": 12
+    },
+    "common_dwell": {
+      "numerator": 1000000000000,
+      "denominator": 1
+    }
+  },
+  "complete_model": "Same fixed positive-loss normalized-sine C9 law and original mean-zero source families as response-v1.json; unit capacities and beta, e=1023/1024, w=1/1024, tau=e*t.",
+  "preprobe_sets": "Freshly rebuild Euclidean form and target-phase radii from the eight original primitive inputs; no incoming report supplies premises.",
+  "schedule": "Apply theta_plus=theta_minus+(1/100)*(e0-1/9) at tau=200+n*10^12; x is unchanged. Read x0 at tau=201+n*10^12, for every integer n>=0.",
+  "prediction": {
+    "strict_return_radius_factor": {
+      "numerator": 1,
+      "denominator": 2
+    },
+    "recorded_class_two_minus_one_lower_threshold": {
+      "numerator": 1,
+      "denominator": 10000000
+    },
+    "whole_window_winding": [
+      1,
+      2
+    ],
+    "recovery_after_interventions_stop": true
+  },
+  "method": {
+    "name": "strict_nonlinear_modified_energy_return_v1",
+    "lambda": "1/5",
+    "Lambda": "2",
+    "epsilon": "1/20",
+    "cosine": "common positive worst-class acute lower bound",
+    "interval_method": "rational_outward_dyadic128_machin_trigonometry_v1",
+    "max_rational_exponent": 4096
+  },
+  "work": "Retain signed work at every supplied jump and continuous loss separately; bound N-probe total supplied work by N times the common per-class event interval.",
+  "stopping_rule": "Pass only with fresh formation/one-probe prerequisites, both strict half-radius returns, preserved winding, the frozen per-cycle contrast threshold and explicit work. Preserve unavailable verdict without retuning.",
+  "source_base_commit": "5694997ebcea0e9540204de0966f64b1f8fb4d4b",
+  "source_overlay_archive": "maintenance-v1.source.zip",
+  "frozen_theory_owner": "theory/nodal/SINE_FORMED_CLASS_MAINTENANCE.md",
+  "runtime": {
+    "python": "3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows",
+    "backend": "Python exact Fraction plus fixed outward dyadic128 intervals",
+    "packages": {
+      "numpy": "2.3.3",
+      "networkx": "3.5",
+      "scipy": "1.16.3",
+      "mpmath": "1.3.0"
+    },
+    "seed": null,
+    "seed_scope": "No random input or sampled trajectory is used."
+  },
+  "scope": "Supplied repeated interventions with no reset, extra process noise or readout feedback. No practical-time, exact periodic-orbit, autonomous-selection or physical-identification claim."
+}

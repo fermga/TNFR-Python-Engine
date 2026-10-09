@@ -2025,6 +2025,934 @@ internal activity, signature and mutual separation need not persist
 indefinitely. No autonomous constituent selection, universal law
 selection or physical identification follows.
 
+<a id="sine-formed-class-pair"></a>
+## Two prepared nonzero winding classes under one complete law
+
+### Prospective class-admission claim and frozen protocol
+
+This gate asks whether one fixed positive-loss sine law admits two
+symmetry-inequivalent, nonzero winding attracting geometries reached from
+explicit nominally phase-flat form preparations. It tests formation and
+class admission before any future common-probe experiment. Both entire
+source families must reach their respective recovery neighborhoods at
+one declared time and subsequently converge under the unchanged law.
+
+Freeze the following before evaluating the certificate:
+
+- The support is the simple unit cycle C9, with node order `0,...,8`
+  and edges `j--(j+1 mod 9)`. All capacities and beta are one;
+  `e=1023/1024` and `w=1/1024` remain fixed. No forcing, support
+  events, capacity interventions, state resets or coefficient changes occur.
+- In the original structural clock, the complete rows are
+  `x_dot=-e*L*x/2+(w/pi)*S(theta)/2` and
+  `theta_dot=(w/pi)*L*x/2`, with
+  `S_i=sum_j sin(theta_j-theta_i)`. Declare `tau=e*t`,
+  `gamma=1/(1023*pi)`, `eta=gamma**2`, and `z=gamma*x` on the
+  zero-mean leaf. Then `z'=-L*z/2+eta*S(theta)/2` and
+  `theta'=L*z/2`.
+- Put `alpha=2*pi/9` and the exact rational
+  `m=(2046/9)*(355/113)**2`. Classes are ordered by `k=(1,2)`.
+  Their nominal initial forms are `x_j=k*m*(j-4)` and all nominal
+  phases are zero. Their respective target phases are
+  `theta_j^*=k*alpha*(j-4)`, with target form zero. Target phase
+  coordinates are compared modulo circular wrapping and the declared
+  common-phase quotient, not substituted for reached states.
+- At every node, admit initial form and continuous phase-lift residuals
+  of magnitude at most `1/10000000000`. In each class separately,
+  require the exact constraints `sum_j xi_j^x=0` and
+  `sum_j xi_j^theta=0`. All eighteen source coordinates remain
+  uncertain subject to these two constraints. The families contain
+  sixteen-dimensional relative neighborhoods, not open sets in the
+  full eighteen-dimensional state space. They have the same actual
+  conserved means, both zero. The residuals are otherwise unrestricted;
+  no response-dependent correlations are admitted.
+- The common scaled acquisition time is `T=100`, corresponding to
+  original time `102400/1023`. For each complete reached family,
+  require full relative Euclidean radius strictly less than `r=1/12`
+  about its own target and storage excess strictly below the shared
+  acute-neighborhood barrier proved below. Require initial winding
+  zero and attained winding `k` for every admitted source member.
+- Initial storage uses the same law and is at most the common budget
+  `1000000000` for both whole source families. The nominal costs are
+  allowed to differ and must be reported separately. Equal source
+  costs are not part of this claim.
+- Use exact rational primitives and the shared outward dyadic128/Machin
+  interval arithmetic. The declared semigroup bounds use `M=2*I`,
+  `lambda=1/5`, `F=sqrt(18)` and `lambda_max(L)<=4`, with the
+  shared negative-exponential enclosure. Retain every initial residual
+  and the complete nonlinear forcing bound. No trajectory integration,
+  search over sources or horizons, or precision sweep is included.
+- Pass only if both full source budgets, both geometric and storage
+  margins, the strict acute margin and exact inequivalence checks pass.
+  Otherwise retain the failed obligation without adjusting this
+  preparation, law, time, uncertainty, budget or arithmetic protocol.
+  Record evaluated bounds separately from this declaration.
+
+The requested inequivalence removes graph automorphisms, common phase
+rotations, common form translations and simultaneous form/phase sign
+reversal. It is a claim about two prepared relative geometries under a
+supplied model. There is no probe, readout discrimination, autonomous
+source selection, support birth or physical identification in this gate.
+
+### Why the earlier allocation signature cannot define two lasting classes
+
+The [doubled-cycle formation-response result](#sine-formation-response)
+retains both prepared allocations in one acute neighborhood of the same
+critical geometry. Its compact forward trapping, positive loss and
+strict phase convexity give a direct application of the convergence
+argument in [Section 26](#sine-target-free-sector-capture). On each
+conserved-mean leaf, zero storage dissipation forces uniform form.
+The phase row then vanishes; remaining in this zero-dissipation set
+requires zero sine pressure. Strict convexity leaves only the target
+phase geometry. LaSalle's argument therefore gives convergence to that
+geometry and the member's conserved uniform form.
+
+The two nominal preparations have identical conserved means, so their
+full relative states converge to the same target and their nominal
+receiver-form contrast tends to zero. The earlier independent source
+errors can give different conserved common origins; such offsets are
+not a retained identity of their internal allocation. Neither assertion
+equates distinct fine states at a finite time. In particular, the
+earlier finite receiver certificate remains valid. A uniform positive
+late-time allocation margin cannot be inferred from it. The new gate
+instead requires different relative attracting geometries from the outset.
+
+### Complete C9 law, source costs and two exact critical geometries
+
+Write \(P=I-\mathbf1\mathbf1^{\mathsf T}/9\),
+\(A=L/2\), \(M=2I\) and \(f(\theta)=S(\theta)/2\).
+The declared source constraints fix both conserved means to zero.
+The scaled rows, including their nonlinear sine term, are exactly
+\[
+z'=-Az+\eta f(\theta),\qquad
+\theta'=Az,\qquad
+(\theta+z)'=\eta f(\theta).
+\]
+The globally smooth periodic phase field and linear form rows give a
+unique global solution on continuous phase lifts. These lifts are fixed
+initially by the small residuals around phase zero and are continued
+without resetting them through any winding changes. The error constraints
+do not impose an additional equation of motion.
+
+For a cycle, the eigenvalues of \(A\) are
+\(1-\cos(2\pi j/9)\). Its positive gap is
+\(1-\cos(2\pi/9)\). The elementary bounds
+\[
+\cos(2\pi/9)<\cos(2/3)
+ \le 1-\frac{(2/3)^2}{2}+\frac{(2/3)^4}{24}
+ =\frac{191}{243}<\frac45
+\]
+use \(\pi>3\), monotonicity of cosine on \([0,\pi]\), and the
+alternating cosine-series bound at \(2/3\). Hence the declared
+\(\lambda=1/5\) is a strict lower bound for the semigroup gap,
+and \(\lambda_2(L)>2/5\). Also \(\lambda_{\max}(L)\le4\),
+by \(\sum_{i--j}(u_i-u_j)^2\le2\sum_i d_i u_i^2\).
+No computed small-eigenvalue approximation is required.
+The full nonlinear forcing satisfies
+\[
+\|f(\theta)\|_M^2
+ =\frac12\sum_i S_i(\theta)^2\le18=F^2
+\]
+at every phase state, including nonacute configurations during acquisition.
+
+For source \(k\), put \(a_k=km\). Its eight nonclosing nominal
+form differences are \(a_k\), and its closing difference is
+\(-8a_k\). Consequently its exact nominal storage is
+\[
+H_k(0)=\frac12(8+64)a_k^2=36k^2m^2.
+\]
+The phase potential initially vanishes for the nominal source.
+For the entire residual family, \(|\Delta\xi^x|\le2\rho_x\)
+and \(|\Delta\xi^\theta|\le2\rho_\theta\) imply the sufficient
+common-clock storage bound
+\[
+B_k=36k^2m^2+32km\rho_x
+       +18\rho_x^2+18\rho_\theta^2 .
+\]
+The linear term uses the sum \(16km\) of the absolute nominal edge
+differences; each quadratic term uses the nine edges and
+\(1-\cos u\le u^2/2\). This bound is valid on the full source
+family and need not saturate. The two nominal costs differ by a factor
+four, with both whole-family bounds compared to the same declared
+budget. No equality of accumulated loss is assumed.
+Since \(2\rho_\theta<\pi\), every initial principal phase difference
+equals its supplied small lift difference. Their sum around the cycle
+telescopes to zero, proving initial winding zero for every member.
+The assessor uses the stronger sufficient initial acute condition
+\(\pi/2-2\rho_\theta>0\); failure of that sufficient test alone
+would not prove nonzero initial winding.
+
+At target \(k\), all nine oriented principal phase increments are
+\(k\alpha\): the closing edge includes its integer offset \(2\pi k\).
+The two sine contributions cancel at every node, so
+\(S(\theta_k^*)=0\) exactly. Both targets have acute edges because
+\(0<\alpha<2\alpha<\pi/2\). Their phase Hessians are
+\[
+\nabla^2U(\theta_k^*)=\cos(k\alpha)L,
+\]
+strictly positive on the mean-zero space. The positive-loss full-state
+stability result above therefore supplies local exponential attraction,
+including perturbations of form and phase together. The finite source
+admission below does not replace this complete law by its tangent.
+
+### Full-family transit to the two target neighborhoods
+
+Set \(\rho\ge e^{-\lambda T}\), using the declared outward
+exponential enclosure, and define
+\[
+\begin{aligned}
+V_k&=\sqrt{120}\,k\gamma m,
+&E_v&=\sqrt{18}\,\gamma\rho_x,
+&E_\theta&=\sqrt{18}\,\rho_\theta,\\
+R_{z,k}&=\rho(V_k+E_v)+\eta F/\lambda,
+&R_{x,k}&=\frac{R_{z,k}}{\gamma\sqrt2},\\
+E_k&=\frac{E_v+E_\theta+R_{z,k}+\eta FT}{\sqrt2},
+&D_k&=\sqrt{60}\,k\,|\gamma m-\alpha|,\\
+Z_k^2&=R_{x,k}^2+(D_k+E_k)^2.
+\end{aligned}
+\]
+Here \(V_k\) is the nominal initial scaled-form norm, since
+\(\sum_{j=0}^8(j-4)^2=60\), and \(E_v,E_\theta\) bound the
+two complete initial residual vectors in the \(M\) norm.
+No node is removed from either bound.
+The reusable implementation can replace \(1/\lambda\) in the
+forcing part of \(R_{z,k}\) by \(\min(T,1/\lambda)\); this is
+the same bound at the frozen time and a valid improvement at shorter times.
+
+The operator \(A\) is self-adjoint for \(\|\cdot\|_M\).
+Variation of constants and the global forcing bound give
+\[
+\|z(T)\|_M
+ \le e^{-\lambda T}(V_k+E_v)
+       +\eta F\frac{1-e^{-\lambda T}}{\lambda}
+ \le R_{z,k}.
+\]
+Writing \(v_k=\gamma x_k^{\rm nom}\), the integrated complete
+rows also give
+\[
+\theta(T)-v_k
+ =\xi^\theta+\gamma\xi^x-z(T)
+       +\eta\int_0^T f(\theta(s))\,ds .
+\]
+Thus \(\|\theta(T)-v_k\|_2\le E_k\), using
+\(\|u\|_M=\sqrt2\|u\|_2\), and
+\(\|v_k-\theta_k^*\|_2=D_k\). The actual endpoint therefore
+satisfies
+\[
+\|x(T)\|_2^2+\|\theta(T)-\theta_k^*\|_2^2\le Z_k^2.
+\]
+This statement concerns every actual flow image of the original
+constrained source family. It neither installs an endpoint reset nor
+replaces the family by independently selected endpoint coordinates.
+
+Let \(H=\tfrac12x^{\mathsf T}Lx+U(\theta)\), where
+\(U(\theta)=\sum_{i--j}[1-\cos(\theta_j-\theta_i)]\), and
+\(H_k^*=9[1-\cos(k\alpha)]\). Stationarity at the target cancels
+the linear phase term. Because \(\nabla^2U\preceq L\preceq4I\)
+everywhere, the endpoint storage excess obeys
+\[
+H(T)-H_k^*\le2\|x(T)\|_2^2
+                   +2\|\theta(T)-\theta_k^*\|_2^2
+             \le2Z_k^2.
+\]
+This is an upper bound derived from the complete state, not from
+the phase coordinate alone.
+
+### One strict barrier gives retention, recovery and inequivalence
+
+Put
+\[
+\mu=\frac\pi2-2\alpha-\sqrt2r,\qquad
+c_r=\cos(2\alpha+\sqrt2r),\qquad
+\kappa=\frac{c_r}{5}.
+\]
+If \(\mu>0\), every phase edge in either relative radius-\(r\)
+ball stays strictly acute: its deviation from the target edge is at
+most \(\sqrt2r\). Throughout such a ball, the phase Hessian is
+bounded below by \(c_rL\). Taylor's integral remainder, the
+zero means and \(\lambda_2(L)>2/5\) give
+\[
+H-H_k^*\ge\kappa
+  \bigl(\|x\|_2^2+\|\theta-\theta_k^*\|_2^2\bigr).
+\]
+In the original clock the complete law gives exactly
+\[
+\frac{dH}{dt}=-\frac e2\|Lx\|_2^2\le0.
+\]
+Therefore the sufficient strict inequalities
+\[
+Z_k^2<r^2,\qquad 2Z_k^2<\kappa r^2
+\]
+place every reached member inside a compact forward-trapped acute
+neighborhood. A first exit through its radius boundary would require
+storage at least \(\kappa r^2\), contradicting the admitted endpoint
+bound and subsequent nonincrease. The attained winding \(k\) is
+retained for all later times. Since it began at zero, winding acquisition
+requires an intervening antipodal crossing, permitted by the unchanged
+smooth sine law.
+
+Within this compact neighborhood, zero dissipation forces \(Lx=0\),
+hence \(x=0\) on the fixed mean-zero leaf. For a trajectory to remain
+there, its form row requires \(S(\theta)=0\). Strict phase convexity
+in the ball makes \(\theta_k^*\) its only such state. LaSalle's
+invariance argument then gives convergence to the corresponding target.
+Together with its local exponential stability, this identifies a
+recoverable attracting geometry. No quantitative uniform recovery time
+or driven recovery protocol is asserted here.
+
+The automorphisms of C9 are rotations and reflections. They preserve
+the absolute winding magnitude; simultaneous form/phase sign reversal
+can only reverse its sign. Common translations and rotations do not
+alter winding. Thus magnitudes one and two are inequivalent under all
+the declared symmetries. Independently, their target storage values
+\(9[1-\cos\alpha]\) and \(9[1-\cos2\alpha]\) are different,
+whereas every declared symmetry preserves this storage. The distinction
+is not a relabeling of opposite orientations of one pattern.
+
+### Retained class-admission result and execution boundary
+
+The [complete saved report](../../docs/assets/sine_formed_classes/pair-v1.json)
+is retained byte-for-byte alongside an
+[evidence manifest](../../docs/assets/sine_formed_classes/evidence.manifest.json).
+The manifest distinguishes preserved evaluation output from subsequently
+versioned implementation; it does not authenticate evaluation-time source or
+chronology.
+
+The declared source families pass at scaled time \(100\), or original
+time \(102400/1023\), without changing the preparation or method.
+Their exact nominal initial costs, in class order, are
+\[
+\left(
+\frac{29548956783610000}{163047361},\quad
+\frac{118195827134440000}{163047361}
+\right).
+\]
+The full-family source upper bounds are respectively
+\[
+\frac{2216171758770837798673556004402278747}
+     {12228552075000000000000000000},\qquad
+\frac{8864687035083175597347112004402278747}
+     {12228552075000000000000000000},
+\]
+both below the common \(10^9\) budget. Let \(D=2^{128}\).
+The retained outward margin intervals below are \([N,N+d]/D\).
+Endpoint norm and excess-storage margins use the implementation's
+upward-rounded full-state bounds and downward-rounded barrier; they
+do not assume that the nominal endpoint is the exact target.
+
+| Strict margin | Lower numerator \(N\) | Width numerator \(d\) |
+| --- | ---: | ---: |
+| Initial acute margin, both classes | `534514291964426900545652493888260470163` | `2` |
+| Target-radius acute margin, both classes | `19287815364497400734698836429388645131` | `17` |
+| Radius-squared margin, winding one | `2355544828433730297092109439281976691` | `1` |
+| Radius-squared margin, winding two | `2355429713531756461723392506835889501` | `1` |
+| Storage-barrier margin, winding one | `11719962073973842397261359842045276` | `1` |
+| Storage-barrier margin, winding two | `11489732270026171659827494949870897` | `1` |
+| Source-budget margin, winding one | `278613236597683921307924110315898488355996937937` | `1` |
+| Source-budget margin, winding two | `93605845627925181166669313907300163947479107149` | `1` |
+
+In particular, both storage margins exceed \(3\times10^{-5}\).
+Each entire sixteen-dimensional relative source neighborhood acquires
+its own nonzero winding by the declared time, retains it thereafter,
+and converges to its own symmetry-inequivalent attracting geometry.
+This is an analytic certificate for complete nonlinear trajectories;
+no trajectory samples or physical measurements were evaluated.
+
+The primitive-only
+[`assess_sine_formed_class_pair`](../../src/tnfr/physics/relational_sine_formed_classes.py)
+returns `SineFormedClassPair`. It rebuilds the fixed complete support,
+law and both source rows through one freshly admitted shared preparation
+domain. It also checks the rational inequality \(L/2\succeq P/5\)
+directly. All consumed norms, source budgets, endpoint bounds and
+strict margins are rebuilt; no incoming report or cached verdict is
+accepted as a premise. An unavailable sufficient certificate is not
+evidence of failed formation. The
+[contract](../../docs/contracts/relational/SINE_PATTERNS.md#sine-formed-class-pair),
+[guide](../../docs/guides/relational/SINE_PATTERNS.md#sine-formed-class-pair)
+and [independent controls](../../tests/physics/test_sine_formed_class_pair.py)
+retain its execution and admission boundaries.
+
+These two classes differ in phase geometry while their limiting form
+is the same zero mean. Their different target Hessians do not by
+themselves certify a finite measurement or a response to an unspecified
+probe. A subsequent probe must retain the actual reached states, its
+own forcing or event law, observation errors and recovery obligations.
+The present construction supplies organized form information and a
+positive-loss law; it derives neither that preparation nor the loss
+mechanism, the support, an autonomous constituent selection or a
+physical interpretation of the two geometries.
+
+<a id="sine-formed-class-response"></a>
+## A common supplied probe distinguishes the two formed classes
+
+### Prospective formed-state probe and frozen protocol
+
+This gate continues the two full source families admitted in
+[the preceding class-formation result](#sine-formed-class-pair).
+It asks whether one declared probe gives different finite receiver-form
+responses while both actual post-probe families recover their own
+attracting geometry. The reached states are not reset to their targets.
+
+Freeze the following before evaluating the response:
+
+- Retain exactly the preceding simple unit C9 support, node order,
+  capacities, complete positive-loss sine law, clock, rational source
+  slope, ordered winding classes `(1,2)`, zero-mean source residual
+  constraints, per-coordinate form and phase budgets `1/10000000000`,
+  initial common storage budget `1000000000`, and radius `r=1/12`.
+  Their already declared acquisition time remains `tau=100`.
+- Continue each actual complete-law trajectory without a reset to the
+  fixed probe time `P=200` in scaled clock `tau=e*t`. This is original
+  time `204800/1023`. No forcing, event or coefficient change occurs
+  before that time.
+- Supply the exact simultaneous phase jump
+  `theta(P+)=theta(P-)+delta*q`, with `delta=1/100` and
+  `q=e_0-(1/9)*1`; form is unchanged. The jump, its support, amplitude
+  and time are part of the admitted experiment. Its zero mean preserves
+  the common phase origin. There is no support or capacity change,
+  and no inverse jump is subsequently applied. This supplied event is
+  not an autonomous event-selection law.
+- Resume the same unforced complete continuous law immediately after
+  the jump. At the single elapsed scaled time `h=1`, read actual form
+  `Y_k=x_0(P+h)`, with independent additive scalar readout error at
+  most `1/10000000000` for each class. The readout is at original
+  time `205824/1023`. Predict recorded `Y_2-Y_1>1/10000000`.
+  Event amplitude, timing, capacity and clock are exact premises;
+  the initial state and final readout have the declared errors.
+- Require both actual families immediately after the jump to remain
+  strictly within their own full relative radius `1/12` and below
+  the corresponding acute-neighborhood storage barrier. Subsequent
+  winding retention and recovery use the unchanged positive-loss law.
+  Account separately for the exact phase-potential jump; do not assume
+  that the supplied probe is passive or free of work.
+- Use the same exact rational primitives and outward dyadic128/Machin
+  interval arithmetic. The fixed warmup method is the complete
+  Duhamel bound below with `lambda=1/5`, `Lambda=2`, `M=2*I`,
+  `F=sqrt(18)` and the shared negative-exponential enclosure.
+  The reference is a constant-forcing comparison at each exact target
+  plus the same jump; bound its error against the actual unreset
+  trajectory. The receiver heat factor uses the fixed spectral bounds
+  below, not a fit or a trajectory sample. Retain the original source
+  uncertainty, nonlinear phase drift and final readout error.
+- Pass only if the unchanged source-formation obligations, both
+  post-jump recovery admissions and the strict recorded-response
+  threshold all pass. Otherwise retain the failed obligation without
+  changing the source, law, probe, horizon, observation or budgets.
+  Record evaluated response bounds separately from this declaration.
+
+The prediction concerns two prepared geometries under one supplied
+model and one externally specified intervention. It neither identifies
+physical constituents nor selects a unique constitutive law, an
+autonomous preparation mechanism or the origin of the probe.
+
+### Complete-law warmup retains both original source families
+
+Keep the preceding notation \(A=L/2\), \(M=2I\),
+\(f=S/2\), \(\gamma=1/(1023\pi)\), \(\eta=\gamma^2\),
+\(\lambda=1/5\), \(\Lambda=2\) and \(F=\sqrt{18}\).
+The map \(f\) is globally \(\Lambda\)-Lipschitz in both the
+Euclidean and \(M\) norms. Indeed, its derivative is minus one half
+of a Laplacian with cosine edge weights. Its absolute quadratic form
+is bounded by \(u^{\mathsf T}Lu/2\le2\|u\|_2^2\).
+In particular, \(\|f\|_2\le3\) globally.
+
+Let \(v_k=\gamma x_k^{\rm nom}\), and retain the earlier exact
+quantities \(V_k,E_v,E_\theta,D_k\). On the mean-zero space define
+the Poisson vector
+\[
+\chi_k=A^{-1}f(v_k).
+\]
+Since \(f(\theta_k^*)=0\), its two sufficient bounds are
+\[
+\|\chi_k\|_M\le F/\lambda,\qquad
+\|\chi_k\|_M\le\Lambda\sqrt2D_k/\lambda.
+\]
+The inverse here is only on the mean-zero space, where the positive
+gap has already been proved. No new forcing law is defined by this vector.
+
+Write \(\sigma\ge e^{-\lambda P}\). The exact variation-of-constants
+identity gives
+\[
+z(P)=\eta\chi_k+e^{-AP}[z(0)-\eta\chi_k]
+ +\eta\int_0^P e^{-A(P-s)}[f(\theta(s))-f(v_k)]\,ds .
+\]
+For every \(s\ge0\), the two complete scaled rows also give
+\[
+\theta(s)=\theta(0)+(I-e^{-As})z(0)
+ +\eta\int_0^s(I-e^{-A(s-u)})f(\theta(u))\,du .
+\]
+On the mean-zero space, \(\|I-e^{-As}\|_M\le1\). Consequently
+the following conservative history bound includes the original form
+and phase residuals without treating them as independent endpoint errors:
+\[
+\|\theta(s)-v_k\|_M
+ \le e^{-\lambda s}V_k+E_v+E_\theta
+       +\eta F(s+1/\lambda).
+\]
+The displayed identity even permits \(s\) in the last term; the
+larger expression is the retained method used for this gate.
+
+Convolving this bound with \(e^{-\lambda(P-s)}\), using
+\(\int_0^P e^{-\lambda(P-s)}e^{-\lambda s}ds
+=Pe^{-\lambda P}\), gives
+\[
+\begin{aligned}
+R_k={}&\sigma(V_k+E_v+\eta F/\lambda)\\
+ &+\eta\Lambda\left[
+   V_kP\sigma+
+   \frac{E_v+E_\theta+\eta F(P+1/\lambda)}{\lambda}
+   \right],\\
+\|z(P)-\eta\chi_k\|_M&\le R_k .
+\end{aligned}
+\]
+Thus valid Euclidean pre-probe bounds are
+\[
+\begin{aligned}
+b_{x,k}&=
+ \frac{\eta\Lambda\sqrt2D_k/\lambda+R_k}{\gamma\sqrt2},\\
+b_{\theta,k}&=D_k+
+ \frac{\sigma V_k+E_v+E_\theta+\eta F(P+1/\lambda)}{\sqrt2},\\
+\|x(P^-)\|_2&\le b_{x,k},\qquad
+\|\theta(P^-)-\theta_k^*\|_2\le b_{\theta,k}.
+\end{aligned}
+\]
+The refinement is needed because a global forcing bound alone need not
+make the remaining form sufficiently small for this response comparison.
+It uses the near-critical nominal phase proxy and the entire prior
+history, without assuming that the actual warmup endpoint is stationary.
+
+### One common phase jump and a receiver comparison with explicit error
+
+For \(q=e_0-\mathbf1/9\),
+\(\mathbf1^{\mathsf T}q=0\), \(\|q\|_2^2=8/9\), and
+\(q^{\mathsf T}Aq=1\). In particular its norm is
+\(\sqrt{8/9}\). Write \(c_k=\cos(k\alpha)\) and
+\(s_k=\sin(k\alpha)\). Directly summing the two incident currents
+at each affected node yields
+\[
+f(\theta_k^*+\delta q)
+ =-c_k\sin\delta\,Aq
+   +\frac{s_k(1-\cos\delta)}2(e_1-e_8).
+\]
+The reflection \(j\mapsto-j\pmod9\) commutes with \(A\),
+fixes node zero and makes \(e_1-e_8\) odd. Its heat response therefore
+vanishes identically at the observed node.
+
+Define an analytic comparison \(\widetilde x_k\), with initial form
+zero, by holding only this comparison's forcing constant:
+\[
+\widetilde x_k'=-A\widetilde x_k
+       +\gamma f(\theta_k^*+\delta q),\qquad
+\widetilde x_k(0)=0 .
+\]
+This auxiliary linear equation is not installed on the actual graph.
+Its node-zero value is exactly
+\[
+\widetilde Y_k(h)=-\gamma c_k\sin\delta\,g(h),\qquad
+g(h)=q^{\mathsf T}(I-e^{-Ah})q.
+\]
+For \(0\le\ell\le2\),
+\(1-e^{-\ell h}\ge\ell(1-e^{-2h})/2\), by concavity in
+\(\ell\). The spectral theorem and \(q^{\mathsf T}Aq=1\)
+give the fixed sufficient enclosure
+\[
+\frac{1-e^{-2h}}2\le g(h)\le\min(h,8/9).
+\]
+The upper bounds use respectively \(1-e^{-\ell h}\le\ell h\)
+and \(I-e^{-Ah}\preceq I\). This heat factor is exactly the same
+for both classes because their support, capacities and elapsed time
+are identical.
+
+In the scaled clock the actual continuous rows after the jump are
+\[
+x'=-Ax+\gamma f(\theta),\qquad \theta'=\gamma Ax.
+\]
+Semigroup contraction gives
+\(\|x(s)\|_2\le b_{x,k}+3\gamma s\), and therefore
+\[
+\|\theta(P+s)-\theta(P^+)\|_2
+ \le\gamma\Lambda(s b_{x,k}+3\gamma s^2/2).
+\]
+The actual post-jump phase and the comparison phase initially differ
+by at most \(b_{\theta,k}\). A second variation-of-constants bound,
+with the global Lipschitz constant \(\Lambda\), consequently gives
+\[
+\begin{aligned}
+|Y_k(h)-\widetilde Y_k(h)|&\le B_k,\\
+B_k&=b_{x,k}+\gamma\Lambda h b_{\theta,k}
+ +\frac{\gamma^2\Lambda^2h^2b_{x,k}}2
+ +\frac{3\gamma^3\Lambda^2h^3}{6}.
+\end{aligned}
+\]
+Each term concerns the same actual trajectory: residual initial form,
+residual initial phase, phase drift driven by that form, and the further
+drift from nonlinear forcing. With independent readout errors bounded
+by \(\varepsilon_Y\), every admitted pair of recorded responses obeys
+\[
+\begin{aligned}
+Y_2^{\rm rec}-Y_1^{\rm rec}
+\ge{}&\gamma(c_1-c_2)\sin\delta\,
+            \frac{1-e^{-2h}}2-B_1-B_2-2\varepsilon_Y,\\
+Y_2^{\rm rec}-Y_1^{\rm rec}
+\le{}&\gamma(c_1-c_2)\sin\delta\,
+            \min(h,8/9)+B_1+B_2+2\varepsilon_Y.
+\end{aligned}
+\]
+For the declared \(\delta\), the coefficient is positive.
+Retaining the common heat factor in this contrast is an exact structural
+correlation, not a presumed correlation of the independent preparation
+or readout errors. Separately rounded marginal response intervals may
+discard it. The assertion concerns the recorded two-class contrast;
+it is not a general inverse identification of an unknown fine state.
+
+### Probe work and recovery of each actual reached family
+
+The phase jump changes no form and preserves the common phase mean.
+Its exact storage jump on any actual pre-probe state is
+\[
+W_k=U(\theta(P^-)+\delta q)-U(\theta(P^-)).
+\]
+At the exact target this is \(2c_k(1-\cos\delta)\).
+Globally \(\|\nabla^2U\|_2\le4\); applying the fundamental
+theorem of calculus to the gradient of this potential difference gives
+\[
+\left|W_k-2c_k(1-\cos\delta)\right|
+ \le4\delta\sqrt{8/9}\,b_{\theta,k}.
+\]
+This accounts for a supplied hybrid event. Subsequent continuous
+loss is still \(-e\|Lx\|_2^2/2\). The event work is not counted
+as continuous dissipation, assumed passive, or attributed to an
+autonomously selected pressure source.
+
+Let
+\[
+\begin{aligned}
+b_{\theta,k}^+&=b_{\theta,k}+\delta\sqrt{8/9},\\
+N_k^+&=b_{x,k}^2+(b_{\theta,k}^+)^2,\\
+C_k^+&=\cos\!\left(\max(0,k\alpha-\sqrt2b_{\theta,k}^+)\right),\\
+E_k^+&=2b_{x,k}^2+2C_k^+(b_{\theta,k}^+)^2,\\
+\kappa_k&=\frac15\cos(k\alpha+\sqrt2r).
+\end{aligned}
+\]
+The first two expressions bound the full post-jump displacement.
+For the energy upper bound, every edge on the phase interpolation
+from its target deviates by at most \(\sqrt2b_{\theta,k}^+\).
+Its cosine is at most \(C_k^+\): if the lower angular endpoint is
+positive, the whole interval lies inside \((0,\pi)\); otherwise
+the global upper bound one applies. Target stationarity cancels the
+linear term, so \(H(P^+)-H_k^*\le E_k^+\).
+
+Whenever the class-specific acute margin is positive and
+\[
+N_k^+<r^2,\qquad E_k^+<\kappa_k r^2,
+\]
+the earlier compact trapping and LaSalle argument applies immediately
+after the actual jump. Each full family retains its own winding and
+converges to its own original target, without an inverse intervention
+or a replacement of the reached state. This proves response followed
+by recovery under the declared experiment; it does not make the
+transient receiver-form contrast persist indefinitely.
+
+The earlier uninterrupted formation certificate applies to the actual
+prefix up to \(P^-\). Its no-event forward conclusion cannot by
+itself be continued across the phase jump. The separate post-jump
+radius and storage admissions above provide that handoff to the
+resumed continuous law.
+
+### Retained common-probe response and recovery certificate
+
+The [complete saved report](../../docs/assets/sine_formed_classes/response-v1.json)
+is retained byte-for-byte under the same
+[evidence manifest](../../docs/assets/sine_formed_classes/evidence.manifest.json).
+This consolidation copies the existing evaluated output without rerunning its
+assessor or changing the frozen protocol.
+
+The unchanged frozen experiment passes. The probe and readout occur
+at original times \(204800/1023\) and \(205824/1023\), respectively.
+With \(D=2^{128}\), the retained recorded contrast is
+\[
+Y_2^{\rm rec}-Y_1^{\rm rec}\in
+\frac1D\left[
+116252861521748717635664206406824,\;
+712441838942872580413879874471662
+\right].
+\]
+Its lower endpoint exceeds \(3.4\times10^{-7}\), and therefore
+the prospective \(10^{-7}\) threshold. The comparison includes
+both original preparation families, the complete warmup, the nonlinear
+post-probe phase evolution and both independent readout errors.
+
+The retained recovery margins below have intervals \([N,N+d]/D\).
+All are strict; the full state immediately after the actual jump,
+rather than the constant-forcing comparison, is the admitted state.
+
+| Post-probe margin | Lower numerator \(N\) | Width numerator \(d\) |
+| --- | ---: | ---: |
+| Radius-squared margin, winding one | `2332435485037970454562726074935752860` | `1` |
+| Radius-squared margin, winding two | `2332429554268500590392795835718422695` | `1` |
+| Storage-barrier margin, winding one | `276350974143488465480789243144019653` | `1` |
+| Storage-barrier margin, winding two | `15323309165369098245604323637474595` | `1` |
+| Acute-radius margin, winding one | `256849722934490011370183363798693263646` | `10` |
+| Acute-radius margin, winding two | `19287815364497400734698836429388645131` | `17` |
+
+The storage margins exceed \(8\times10^{-4}\) and
+\(4.5\times10^{-5}\), respectively. Both actual post-probe
+families thus retain their different winding identities and recover
+their corresponding targets under the resumed positive-loss law.
+Their actual event-work enclosures are
+\[
+\begin{aligned}
+W_1&\in\frac1D[
+25291040304426712266496923605374385,\;
+26842808498892619294493488281813055],\\
+W_2&\in\frac1D[
+5121222566067361708584972223263012,\;
+6696561533508206534511574126693058].
+\end{aligned}
+\]
+Both are positive: this supplied phase probe injects storage in the
+admitted experiment. Its work is neither omitted nor identified with
+the ensuing continuous loss.
+
+For comparison, subtracting only the separately enclosed marginal
+readouts gives a lower bound of approximately
+\(9.4957531\times10^{-8}\). That weaker bound is positive but
+does not meet the declared \(10^{-7}\) threshold. The common
+deterministic heat factor retained in the direct contrast is needed
+for this certificate's stronger margin. No cancellation of unknown
+preparation or measurement errors is used.
+
+The primitive-only
+[`assess_sine_formed_class_response`](../../src/tnfr/physics/relational_sine_formed_classes.py)
+returns `SineFormedClassResponse`. It rebuilds the formation prerequisite
+from the supplied primitive budgets, requires the probe time not to
+precede that checkpoint, and reconstructs the warmup bounds through the
+shared exact preparation and Duhamel kernels. It accepts no incoming
+certificate as evidence. The report retains the ideal comparison,
+actual response-error bounds, direct recorded contrast, event work
+and separate post-jump recovery admissions. Its reusable response
+status requires strict positivity; this frozen experiment additionally
+passes the stronger threshold declared above. The
+[contract](../../docs/contracts/relational/SINE_PATTERNS.md#sine-formed-class-response),
+[guide](../../docs/guides/relational/SINE_PATTERNS.md#sine-formed-class-response)
+and [independent controls](../../tests/physics/test_sine_formed_class_response.py)
+retain the usage and admission boundaries.
+
+Together with the preceding formation result, this supplies two
+symmetry-inequivalent, prepared nonzero winding classes with different
+finite responses to one common probe and recovery afterward. It is an
+analytic complete-model result, not an executed trajectory or measured
+physical response. Both limiting forms are still zero; the transient
+readout is not an indefinitely retained form record. The structured
+preparation, support, positive loss, probe and measurement map remain
+supplied premises, so no autonomous constituent selection or physical
+identification follows.
+
+<a id="sine-formed-class-contact-admission"></a>
+## Central contact admission for the formed C9 classes
+
+This result audits an interface before proposing a finite interaction
+experiment. It uses the actual nominal preparations in
+[the two-class formation result](#sine-formed-class-pair), continued
+without the subsequent supplied phase probes. It proves an exact
+obstruction for one contact, with no new numerical response evaluation.
+The [relative-origin handoff](#sine-relative-frame-composition) and
+[prepared composition result](#sine-prepared-composition) retain the
+separate full-family admission obligations.
+
+### Complete law, source histories and the supplied contact
+
+Take two disjoint copies of the unit cycle C9, each with local node
+order \(j=0,\ldots,8\), and retain capacities and beta one,
+\(e=1023/1024\), \(w=1/1024\). In the original clock and on any
+fixed admitted support, the complete rows are
+\[
+\dot x=-eKLx+\frac{w}{\pi}KS(\theta),\qquad
+\dot\theta=\frac{w}{\pi}KLx,\qquad
+K=\operatorname{diag}(1/d_i),
+\]
+where \(L\) and \(d_i\) belong to that support and
+\(S_i(\theta)=\sum_{j\sim i}\sin(\theta_j-\theta_i)\).
+Thus in \(\tau=et\), with \(\gamma=1/(1023\pi)\),
+\[
+x'=-KLx+\gamma KS(\theta),\qquad
+\theta'=\gamma KLx. \tag{C1}
+\]
+Both rows use the same declared clock. On an isolated C9, \(K=I/2\).
+
+Choose a donor class \(k\in\{1,2\}\) and a fixed receiver class
+\(\ell\in\{1,2\}\). Their nominal initial conditions are respectively
+\[
+x_j(0)=km(j-4),\quad \theta_j(0)=0,\qquad
+x_j(0)=\ell m(j-4),\quad \theta_j(0)=0,\qquad
+m=\frac{2046}{9}\left(\frac{355}{113}\right)^2. \tag{C2}
+\]
+Use these real initial phase lifts and their continuous evolutions.
+Both form origins and both phase origins are zero in one shared frame.
+Continue the two actual isolated solutions to one declared common
+contact time \(\tau_c\). For \(\tau_c\ge100\), the preceding formation
+certificate already places these nominal members in their respective
+formed classes. The obstruction itself holds at every \(\tau_c\ge0\).
+
+At that time supply one unit bridge between the two local nodes \(4\),
+without changing any nodal value, capacity or coefficient. Hold the
+joined support afterward, with no forcing, additional event or probe.
+The two port degrees become three; all other degrees remain two.
+Equation (C1) therefore uses \(K_{44}^{+}=1/3\) at each port after
+contact. This is an explicitly supplied support event, not an
+autonomous contact-selection law.
+
+### Reflection and continuous lifts give an exact invisible interface
+
+Let \(R\) act within a cycle by \(j\mapsto8-j\). It preserves its
+edges and fixes node \(4\). Reflection commutes with the isolated
+Laplacian, while
+\[
+S(-R\theta)=-R S(\theta).
+\]
+Consequently the transformation
+\((x,\theta)\mapsto(-Rx,-R\theta)\) is an exact symmetry of
+the complete isolated law. Each initial state in (C2) is fixed by
+this transformation. The lifted vector field is globally Lipschitz:
+its form dependence is linear and all sine derivatives are bounded.
+Global existence and uniqueness therefore imply, at every time,
+\[
+x_j=-x_{8-j},\qquad
+\theta_j=-\theta_{8-j},\qquad
+x_4=\theta_4=0. \tag{C3}
+\]
+The phase conclusion is an equality of the continued real lifts.
+A circular fixed-point argument alone would also allow phase pi;
+it would not justify replacing (C3) by the selected zero lift.
+No wrapping, resetting or favorable branch choice is made during
+formation.
+
+Concatenate the two isolated solutions and continue them past
+\(\tau_c\). This candidate solves the joined complete law exactly.
+Indeed, its bridge has zero form difference and zero phase difference.
+At either port the internal contributions also vanish separately:
+\[
+(L_{\mathrm{cycle}}x)_4=2x_4-x_3-x_5=0,\qquad
+S_{\mathrm{cycle},4}
+ =\sin(\theta_3-\theta_4)+\sin(\theta_5-\theta_4)=0. \tag{C4}
+\]
+Adding the bridge contributes zero to each expression. Multiplying
+these zero sums by the correct new mobility \(1/3\) leaves both
+port rows zero. Every nonport row and its mobility are unchanged.
+Thus the candidate satisfies every joined row and the actual
+postevent initial state. Uniqueness of the joined lifted law proves
+that it is the actual joined solution for all later times.
+
+In particular, zero instantaneous bridge current has here been
+extended to an all-time statement by an invariant-state and uniqueness
+proof. Zero current at one arbitrary contact state would not suffice.
+The result concerns nonstationary prepared trajectories, not only
+the two limiting critical geometries.
+
+The nominal support-event storage jump is exactly
+\[
+\Delta H=\frac12(x_{4,\mathrm R}-x_{4,\mathrm D})^2+
+ 1-\cos(\theta_{4,\mathrm R}-\theta_{4,\mathrm D})=0. \tag{C5}
+\]
+The postevent weights still change. Their total is \(38\), and their
+form charge is
+\[
+Q_x^+=2\sum_{\mathrm D\cup\mathrm R}x_i+
+x_{4,\mathrm D}+x_{4,\mathrm R}=0,
+\]
+with the analogous identity for the lifted phase charge. These
+equalities use the nominal reflection property. They do not transfer
+unchanged to arbitrary uncertain source members.
+
+### Consequence for a uniform class-response claim
+
+Fix the receiver preparation, contact time and interface convention,
+and compare donor \(k=1\) with donor \(k=2\). In both cases the
+receiver's entire nominal state history after contact is exactly its
+disconnected isolated history. Hence every common observation
+depending only on that receiver history is identical between the
+two donor cases, at any horizon.
+
+Both admitted initial uncertainty families in the formation result
+include their zero-residual nominal members. The corresponding sets
+of possible receiver records therefore overlap. This remains true
+with bounded readout errors that admit zero: select the nominal
+members and the same zero readout error. No strictly positive uniform
+donor-class contrast or disjoint receiver-record certificate can
+hold over these whole source families for this zero-origin central
+contact. The obstruction also applies to an observation of the
+receiver's complete history; it is not caused by selecting one
+unfortunate scalar readout.
+
+This does not assert that every uncertain member has zero bridge
+current. General allowed errors can break the reflection. Their
+responses cannot remove a nominal counterexample to a uniform claim.
+Nor does the argument cover the later
+[common phase probe](#sine-formed-class-response) or
+[repeated supplied probes](SINE_FORMED_CLASS_MAINTENANCE.md#sine-formed-class-maintenance):
+the declared jump \(e_0-\mathbf1/9\) generally breaks (C3).
+This contact is a separate continuation of the original uninterrupted
+preparation flow, not a revision of either frozen probe protocol.
+
+### What a different interface would have to establish
+
+A declared relative common phase origin \(\varphi\) is additional
+preparation information. For example, prepare the donor with phase
+origin zero and the receiver with phase origin \(\varphi\), using
+the same \(\varphi\) in both donor comparisons. Isolated phase-shift
+symmetry then gives port phases zero and \(\varphi\), respectively,
+while both port forms remain zero. It does not permit a silent
+rotation of just one already prepared component at contact; such a
+rotation would be a distinct supplied state event.
+
+At contact, the correctly normalized additional form rates are
+\[
+x'_{4,\mathrm D}=\frac{\gamma}{3}\sin\varphi,\qquad
+x'_{4,\mathrm R}=-\frac{\gamma}{3}\sin\varphi, \tag{C6}
+\]
+and both initial port phase rates are zero. These rates are independent
+of donor \(k\). An offset with \(\sin\varphi\ne0\) breaks the preceding
+zero-current condition, but neither proves nor excludes a later
+class-dependent response through internal feedback. A merely nonzero
+circular offset is insufficient: at \(\varphi=\pi\), the product
+trajectory again solves the joined law with zero bridge current,
+although the nominal bridge adds storage \(2\). Event work and
+transmitted current are different observations.
+
+Before any positive interaction evaluation, a new protocol must retain:
+
+1. The actual two source histories, a common clock, and the declared
+   relative form and lifted phase origins, including their uncertainty.
+2. The full joined rows with their changed degrees and weighted means,
+   the exact support-event storage jump, and any independently supplied
+   event-work allowance.
+3. A whole-family postcontact identity-retention argument on the joined
+   support, and recovery if claimed. Isolated capture radii, spectral
+   gaps and maintenance return constants cannot be reused without
+   proving the new hypotheses.
+4. A prospective receiver comparison with the same interface premise
+   for both donor classes, its disconnected control, and fixed
+   observation, horizon and error budgets. Equal initial interface
+   rates cannot substitute for this finite response proof.
+
+No offset, response horizon or numerical budget is selected here.
+An admitted bridge remains supplied support. A finite response or
+postcontact trapping theorem would not by itself derive a binding
+force, support formation or autonomous composite selection.
+
+The separate [finite contact certificate](SINE_FORMED_CLASS_CONTACT.md#sine-formed-class-contact)
+meets these obligations for one declared nonzero relative origin and its
+actual prepared families. The aligned central-contact obstruction remains
+valid under its original zero-origin premise.
+
+The [contact contract](../../docs/contracts/relational/SINE_PATTERNS.md#sine-formed-class-contact-admission)
+retains these admission boundaries.
+[Static complete-row controls](../../tests/physics/test_sine_c9_central_contact.py)
+exercise the shared evaluator, reflection, changed endpoint degrees
+and source-class comparisons with exact inputs and outward enclosures.
+They do not propagate trajectories; the all-time conclusion follows
+from (C3)--(C4) and uniqueness.
+
 ## Section link directory
 
 These aliases route existing citations to their substantive owner.

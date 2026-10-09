@@ -1,0 +1,820 @@
+# Finite-aperture observations and mean-clock inference
+
+<a id="sine-aperture-inference"></a>
+
+## Question and conditional result
+
+A sensor that averages a response over time has a different observation
+law from the point sensor in the [clock-drift owner](SINE_CLOCK_DRIFT_INFERENCE.md#sine-clock-drift-inference).
+Replacing such an average by an endpoint value can introduce a first-order
+bias, large compared with the second-order curvature signal. This owner
+specifies four positive boxcar kernels and derives necessary inference
+from their averages without shrinking their widths relative to the probe.
+
+The first three apertures each span one third of the first window; the
+fourth spans the complete second window. Exact polynomial moments give
+an algebraic reconstruction whose first-window error is cubic in duration.
+The second-window endpoint needs only a quadratic error bound. A separate
+clock-transfer bound permits a positive varying observation clock while
+retaining the first-window mean-rate target. The resulting adapter reuses
+one existing curvature inverse and preserves the original sensor errors
+explicitly.
+
+These are conditional mathematical results and fresh implementation
+controls. They introduce no reserved response, physical calibration or
+reinterpretation of frozen point-reading evidence. The
+[ontology](../EMERGENT_ONTOLOGY.md#generative-bound-organization) retains
+the distinction between collective observation and physical identification.
+
+<a id="sine-aperture-source-and-law"></a>
+## F1-F2: complete dynamics and a fixed averaging law
+
+Retain the [complete source, support and clock class](SINE_CLOCK_DRIFT_INFERENCE.md#sine-clock-drift-source-and-law).
+On the eighteen-node two-port support, with degree matrix \(M\),
+\(A=M^{-1}L\), \(q=e_4-e_5\), held unit capacities and
+\(\gamma=1/(1023\pi)\), the structural rows are
+\[
+x_\tau=-Ax+\gamma f(\theta),\qquad \theta_\tau=\gamma Ax.
+\tag{1}
+\]
+Both rows multiply by the same positive \(C^1\) rate \(\rho(s)\)
+in observation time. Its supplied premises remain
+\(\rho_-\le\rho(s)\le\rho_+\), \(|\rho'(s)|\le\Lambda\)
+on \([0,2H]\), with \(H>0\), \(\Lambda\ge0\), and
+\(h_*:=\rho_+H\le1/2\). The target is
+\(\bar\rho_1=H^{-1}\int_0^H\rho(s)\,ds\).
+The full source retains arbitrary common means and centered residuals
+bounded by \(X,Y\), original nominal geometry priors and their acute
+admission. The actual angle remains \(B_{\rm initial}=b-(v_1-v_0)/8\).
+
+There are phase-only jumps \(a_1q\) at zero and
+\((a_2-a_1)q\) at \(H\), for \(0<a_1\le a_2\le1\).
+Every form coordinate is continuous at these events. No additional event,
+prehistory, state reset, capacity change or support change is supplied.
+
+Define the observed-time apertures and normalized densities
+\[
+\begin{aligned}
+W_0&=[0,H/3],& W_1&=[H/3,2H/3],\\
+W_2&=[2H/3,H],& W_3&=[H,2H],
+\qquad k_i(s)=\mathbf1_{W_i}(s)/|W_i|.
+\end{aligned}\tag{2}
+\]
+The four measured quantities are
+\[
+\mathcal A_i=\int_{W_i}k_i(s)\,[Gq^Tx(s)+O]\,ds+\eta_i,
+\qquad |\eta_i|\le\delta,
+\tag{3}
+\]
+with one held positive gain \(G\in[G_-,G_+]\) and offset \(O\).
+The primitive intervals \([\ell_i,u_i]\) enclose these four quantities.
+Their numerical widths differ from the supplied sensor-error allowance.
+There is one error per averaged channel; no pointwise noise process or
+independent error at each reconstructed point is assumed.
+
+The kernels are nonnegative, normalized, fixed in observation time and
+independently supplied. The adapter does not calibrate them or accept
+arbitrary windows under the same name. All support lies inside the declared
+horizon. No aperture straddles the phase event; its measure-zero endpoint
+does not affect an average of continuous form.
+
+### Why a direct endpoint substitution is insufficient
+
+A nonnegative normalized measure supported in \([0,2H]\) reproduces
+every affine function at zero only if its first moment is zero. Positivity
+then forces all its mass to be at zero. The corresponding statement at
+\(2H\) follows by reflection. Thus a genuine endpoint aperture generally
+has first-order timing bias; normalization alone does not remove it.
+
+Nor does symmetry automatically remove event bias. Near a phase event,
+a continuous readout can have
+\(y(H+t)=y(H)+v_-t+(v_+-v_-)t_++O(t^2)\).
+A symmetric kernel cancels the affine term but retains
+\((v_+-v_-)\int t_+k(t)\,dt\). In (1), a nonzero slope jump can
+arise from the changed phase pressure while form itself stays continuous.
+The old smooth remainder must not be extended across that jump.
+
+The finite-sample [Peano and timing method](SINE_ENVIRONMENTAL_MEMORY.md#sine-finite-sample-admission)
+is a useful mathematical precedent, with different source and event
+premises. Its coefficients and verdicts do not transfer to this sensor.
+
+<a id="sine-aperture-moment-reconstruction"></a>
+## Exact moment reconstruction at fixed relative aperture
+
+First consider a scalar function \(y(s)\) and its four noiseless
+averages under (2). In normalized time \(z=s/H\), the first three
+averages of \(1,z,z^2\) form the matrix
+\[
+V=\begin{pmatrix}1&1/6&1/27\\1&1/2&7/27\\1&5/6&19/27\end{pmatrix}.
+\]
+This invertible moment map gives the reconstruction
+\[
+P=\begin{pmatrix}
+11/6&-7/6&1/3&0\\
+-1/24&13/12&-1/24&0\\
+1/3&-7/6&11/6&0\\
+-1/3&7/6&-11/6&2
+\end{pmatrix}.
+\tag{4}
+\]
+The first three rows reproduce quadratic values at \(0,H/2,H\).
+The last row is \(2\mathcal A_3-(P\mathcal A)_2\): it estimates
+the second endpoint by a trapezoid relation on its own continuous window.
+Every row sums to one, so a held offset remains one common offset.
+The negative reconstruction coefficients are algebraic operations on
+positive sensor averages, not negative physical kernel weights.
+
+The curvature row and absolute row sums are
+\[
+(1,-2,1,0)P=(9/4,-9/2,9/4,0),\qquad
+\|P_{i,:}\|_1=(10/3,7/6,10/3,16/3)_i.
+\tag{5}
+\]
+Consequently constant and linear terms cancel exactly in the reconstructed
+curvature while a quadratic retains its \(H^2\) signal. This moment
+identity does not claim exact reconstruction of an arbitrary trajectory.
+
+<a id="sine-aperture-clock-transfer"></a>
+## Finite transfer of the averages to one mean-clock reference
+
+Use the same source, phase events and held sensor with constant rate
+\(\bar\rho_1\) as a reference. Its full state agrees exactly with
+the actual history at zero and \(H\), including the post-event state.
+The drift owner's [global contraction bound](SINE_CLOCK_DRIFT_INFERENCE.md#sine-clock-drift-finite-transfer)
+supplies, with \(g=1/3069>\gamma\),
+\[
+Q_0=X+14gh_*,\qquad U=2Q_0+7g,
+\qquad \|P_Mx\|_M\le Q_0,\quad \|x_\tau\|_M\le U.
+\tag{6}
+\]
+The bounds cover both complete histories and the comparison arcs.
+Phase evolves throughout; its forcing is bounded globally.
+
+For \(0\le s\le H\), write the exposure discrepancy as
+\[
+\tau(s)-\bar\rho_1s
+=\frac1H\int_0^s\int_s^H[\rho(u)-\rho(v)]\,dv\,du.
+\]
+For the second window, use
+\(\tau(H+t)-\tau(H)-\bar\rho_1t
+=H^{-1}\int_0^t\int_0^H[\rho(H+v)-\rho(u)]\,du\,dv\).
+The derivative and global range \(\Delta\rho=\rho_+-\rho_-\)
+therefore give
+\[
+\begin{aligned}
+|\tau(s)-\bar\rho_1s|&\le
+ \min\{\Lambda s(H-s)/2,\Delta\rho s(H-s)/H\},\\
+|\tau(H+t)-\tau(H)-\bar\rho_1t|&\le
+ \min\{\Lambda t(H+t)/2,\Delta\rho t\}.
+\end{aligned}\tag{7}
+\]
+Integrate each bound against its nonnegative kernel. With
+\((c_0,c_1,c_2)=(7,13,7)/108\), sufficient averaged exposure bounds are
+\[
+d_i=\min\{c_i\Lambda H^2,2c_i\Delta\rho H\}\ (i<3),
+\qquad d_3=\min\{5\Lambda H^2/12,\Delta\rho H/2\}.
+\tag{8}
+\]
+Taking the minimum after integration remains a valid upper bound.
+Since \(\|q\|_{M^{-1}}=1\), the actual/reference noiseless sensor
+averages differ by at most
+\[
+b_i=G_+Ud_i.\tag{9}
+\]
+This step transfers averages before reconstructing reference points. It
+does not substitute the mean rate into each actual window, differentiate
+\(\rho'\), or assume that a \(C^1\) clock has a bounded second
+derivative.
+
+<a id="sine-aperture-reconstruction-error"></a>
+## Complete-law reconstruction errors without crossing an event
+
+The contraction bound, \(\|A\|_M\le2\),
+\(\|Df\|_M\le2\), and
+\(\|D^2f[h,k]\|_M\le2\|h\|_M\|k\|_M\) give
+global structural derivative bounds on each continuous window:
+\[
+\begin{aligned}
+M_2&=4(1+g^2)Q_0+14g,\\
+M_3&=8(1+2g^2)Q_0+28g(1+g^2)+8g^3Q_0^2,\\
+\|x_{\tau\tau}\|_M&\le M_2,\qquad
+\|x_{\tau\tau\tau}\|_M\le M_3.
+\end{aligned}\tag{10}
+\]
+For example, differentiating (1) yields
+\(x_{\tau\tau}=-Ax_\tau+\gamma Df\,\theta_\tau\)
+and
+\(x_{\tau\tau\tau}=-Ax_{\tau\tau}
++\gamma D^2f[\theta_\tau,\theta_\tau]
++\gamma Df\,\theta_{\tau\tau}\).
+These bounds include every form and phase coordinate and use no frozen
+phase approximation. Their application below is to the constant-clock
+reference, whose observed derivatives introduce powers of \(\bar\rho_1\).
+
+For the first three reconstruction rows, define the order-three Peano
+kernel on \([0,1]\) by
+\[
+K_i(t)=\sum_{j=0}^2P_{ij}\,3\int_{j/3}^{(j+1)/3}
+                 (z-t)_+^2/2\,dz-(z_i-t)_+^2/2,
+\quad (z_0,z_1,z_2)=(0,1/2,1).
+\]
+Exact polynomial integration gives
+\[
+\int_0^1|K_i(t)|\,dt=(1/108,1/2304,1/108)_i.
+\tag{11}
+\]
+One explicit verification uses the nonnegative endpoint kernel
+\[
+K_0(t)=
+\begin{cases}
+t^2/2-11t^3/12,&0\le t\le1/3,\\
+(1-t)^3/6-3(2/3-t)^3/4,&1/3\le t\le2/3,\\
+(1-t)^3/6,&2/3\le t\le1,
+\end{cases}
+\]
+and \(K_2(t)=-K_0(1-t)\). For \(t\ge1/2\),
+\(K_1(t)=-(1-t)^3/48+(9/16)(2/3-t)_+^3\le0\);
+its reflection has opposite sign. Integration establishes (11), rather
+than bounding unrelated endpoint Taylor expansions independently.
+
+On the second window the exact trapezoid error satisfies
+\[
+\left|\frac2H\int_H^{2H}y(s)\,ds-y(H)-y(2H)\right|
+\le H^2\sup_{[H,2H]}|y''|/6.
+\tag{12}
+\]
+Form continuity identifies the two values at \(H\); derivatives are
+taken on the appropriate side. Combining (10)-(12), sufficient recorded
+reconstruction allowances are
+\[
+e_0=e_2=G_+M_3h_*^3/108,\qquad
+e_1=G_+M_3h_*^3/2304,\qquad
+e_3=e_2+G_+M_2h_*^2/6.
+\tag{13}
+\]
+Only the first three entries enter curvature. Their combined error is
+\((67/3456)G_+M_3h_*^3\), retaining cubic order at the fixed
+aperture fractions in (2). The quadratic last-entry error affects the
+coarse two-input inference, not the first-window curvature directly.
+
+<a id="sine-aperture-necessary-inference"></a>
+## Necessary inference and the original four errors
+
+Re-admit all eleven primitives. Apply the exact rational matrix \(P\)
+to the four primitive average intervals before outward interval
+materialization. Let this linear interval image be \(J_i\). The
+constant-mean reference's **noiseless** point readings at \(0,H/2,H,2H\)
+belong to
+\[
+\widehat I_i=J_i+[-a_i,a_i],\qquad
+a_i=e_i+\sum_j|P_{ij}|b_j+\delta\sum_j|P_{ij}|.
+\tag{14}
+\]
+The raw numerical half-width contributes through \(J_i\); the three
+terms in \(a_i\) respectively account for reconstruction, clock transfer
+and the original sensor errors. Offset cancellation occurs exactly in
+normalized rational arithmetic, even for a large common offset.
+
+Invoke the [existing curvature inverse](SINE_FINITE_CURVATURE_INFERENCE.md#sine-curvature-necessary-projections)
+once with \(\widehat I_i\), the unchanged source/input/gain/rate priors,
+observed duration \(H\), and child `readout_error_bound=0`.
+The child's zero means no additional error is attached to these auxiliary
+noiseless-point bands; the measured averages retain their original
+\(\delta\). Its held clock denotes \(\bar\rho_1\), and
+its effective gain denotes \(J_1=G\bar\rho_1\).
+
+Every compatible averaged history induces such a reference history, so
+the resulting marginals are necessary bounds on the original geometry,
+held gain and first-window mean. A strict exclusion rules out the admitted
+averaged model. Nonempty rectangular constraints need not have a jointly
+realizable source, clock or error vector. The implementation retains the
+shared four-error map \(P\), the curvature row (5), and the coarse
+inverse rows composed with \(P\); independent interval projection can
+discard their remaining correlations.
+
+For curvature specifically, there is no additional sensor support loss
+from the rectangular projection: its propagated allowance is
+\((10/3+2\cdot7/6+10/3)\delta=9\delta\), exactly the support
+of the composed row in (5). This equality does not extend automatically
+to the other rows or certify joint feasibility.
+
+The report distinguishes original numerical widths, projected sensor
+allowances, clock-transfer candidates and reconstruction candidates.
+Certified upper bounds require the freshly rebuilt child's original-source
+admission. `bounded_candidate`, `incompatible` and `unavailable` retain
+their necessary-constraint meanings; no unavailable quantity becomes zero.
+The inferred clock field explicitly names the first-window mean.
+
+<a id="sine-aperture-conditioning"></a>
+## Informative finite-width regime without selecting a response
+
+Use the previous positive-drift budget
+\[
+H=2^{-24},\quad X=Y=2^{-48},\quad (a_1,a_2)=(1/4,3/4),\quad
+G\in[1,2],\quad\rho\in[1/2,2],\quad
+\Lambda=2^{-22},\quad\delta=2^{-90},\quad t_i\le\delta.
+\tag{15}
+\]
+Here \(t_i\) are numerical half-widths of the four original averages,
+separate from their four bounded errors. No source realization or response
+is selected. The apertures remain \(H/3,H/3,H/3,H\).
+
+Put \(h_*=2H\), \(c=2U\Lambda H^2\),
+\(e=2M_3h_*^3/108\), \(e_m=2M_3h_*^3/2304\), and
+\(l=2M_2h_*^2/6\). Sufficient virtual-point half-widths are
+\[
+\begin{aligned}
+r_0=r_2&=20\delta/3+91c/324+e,\\
+r_1&=7\delta/3+11c/81+e_m,\\
+r_3&=r_2+4\delta+5c/6+l.
+\end{aligned}\tag{16}
+\]
+These include both \(t_i\) and \(\delta\). For the separate
+coarse-inverse remainder, retain its own specialized quantities
+\[
+Q_s=\frac{X+2gh_*(7+2Y)}{1-16g^2h_*^2},\qquad
+E_*=2h_*Q_s+2gh_*Y+8g^2h_*^2Q_s.
+\tag{17}
+\]
+Do not replace \(Q_s\) by the global \(Q_0\) merely because both
+are form bounds. For the [two shared inverse rows](SINE_TWO_PULSE_INFERENCE.md#sine-two-pulse-conditioning), let \(S_j\) be
+the sum of their absolute coefficients. Their combined bound is
+\(\sqrt{S_1^2+S_2^2}<36000/h_*\).
+For a row \(w=(w_1,w_2)\), the three reading-radius contribution is
+\(|w_1|r_0+|w_1-w_2|r_2+|w_2|r_3\).
+Since \(r_0=r_2\le r_3\), it is at most
+\((|w_1|+|w_2|)(r_2+r_3)\). Hence
+\[
+R\le\frac{36000}{h_*}(2E_*+r_2+r_3)<1/11700,
+\quad w_{J_1}\le4R<1/2900,
+\quad w_b\le\frac{2R}{1/4-2R}<1/1450.
+\tag{18}
+\]
+
+The child curvature remainder also keeps its own first-window bound:
+\(S_s=5+2Y+8gh_*Q_s<7\),
+\(M_{3,s}=8(1+2g^2)Q_s+4g(1+g^2)S_s+8g^3Q_s^2\),
+\(\varepsilon_2=4(1+g^2)X+4gY\).
+Exact rational substitution gives
+\(D=2\varepsilon_2+2HM_{3,s}<10^{-9}<1/800000000\).
+The normalized curvature numerator diameter obeys
+\[
+d_A\le\frac{8(r_0+2r_1+r_2)}{H^2}<1/100000000.
+\tag{19}
+\]
+The [positive natural coefficient bound](SINE_FINITE_CURVATURE_INFERENCE.md#sine-curvature-conditioning)
+remains \(K_->k_0=1/18000\), with
+\(w_K\le11gw_b/8\). Compatibility and these error bounds preserve
+positive quotient numerators. Set \(\beta=w_K/k_0\) and
+\(t=2w_{J_1}+\beta+2w_{J_1}\beta\). The same endpoint-width
+argument yields
+\[
+w_{\bar\rho_1}\le2d_A/k_0+(2+D/k_0)t+2D/k_0<1/64,
+\qquad w_G\le2w_{J_1}+4w_{\bar\rho_1}<1/16.
+\tag{20}
+\]
+The conservative rational caps in (18)-(19) and the stated cap on \(D\)
+already suffice. Also \(w_b+Y/4<1/1024\) and
+\(w_{J_1}<1/2048\). These are conditional exact-arithmetic resolution
+budgets. Executable outward arithmetic and inverse availability remain
+separate checks; the stipulated precision is not a laboratory performance
+claim. Fixed relative aperture, rather than an arbitrarily tiny additional
+window, is what the moment calculation admits.
+
+<a id="sine-aperture-scope"></a>
+## Implementation and remaining boundaries
+
+The [aperture adapter](../../src/tnfr/physics/relational_sine_aperture_inference.py)
+uses exact primitive admission, fixed moment coefficients and one fresh
+curvature calculation. The [contract](../../docs/contracts/relational/SINE_PATTERNS.md#sine-aperture-inference)
+owns its API; the [controls](../../tests/physics/test_sine_aperture_inference.py)
+separate polynomial moment identities, complete-law transfer and averaged
+synthetic histories from any reserved evidence.
+
+Point-sample exposure equivalence does not automatically give equal
+observed-time averages: the latter consume the response inside the
+intervals as well as their endpoints. Thus the earlier cosine-companion
+certificate cannot be transferred to this observation law. No converse
+claim of clock-profile identification follows either.
+
+General kernels, calibration uncertainty in their timing/weights,
+event-straddling apertures, variable sensor gain/offset and physical
+clock units require their own premises and bounds. Source formation,
+support selection and future maintenance remain separate. The
+[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns subsequent admission. No frozen response is averaged, replayed or
+reclassified by this theoretical extension.
+
+<a id="sine-aperture-validated-producer"></a>
+## Validated forward averages with an explicit affine clock
+
+The inverse above accepts primitive average bounds; it does not generate
+them. A separate forward construction supplies such bounds from complete
+initial form and phase boxes. It reuses the
+[source-box Picard/Taylor kernel](../../src/tnfr/mathematics/_validated_taylor.py)
+and the [complete structural field](../../src/tnfr/physics/relational_sine_two_port_readout.py),
+without consuming an inverse report, target angle or inferred parameter.
+Endpoint exposure equivalence alone is insufficient for this task: the
+observation-time average also depends on the interior response.
+
+### Sufficient state, clock and instrument law
+
+Keep the eighteen-node support, unit capacity, structural rows (1), dipole
+and four windows (2). Supply eighteen primitive intervals for each of
+\(x(0^-)\) and the continuous phase lift \(\theta(0^-)\).
+This forward domain does not require an acute chart or the inverse's
+nominal source family. Those are separate admission obligations when
+associating a produced response with an inference problem.
+
+Specify the forward clock completely:
+\[
+\rho(s)=r_0+\kappa s,\qquad
+\tau(s)=r_0s+\tfrac12\kappa s^2,\qquad 0\le s\le2H.
+\tag{21}
+\]
+Require \(H>0\),
+\(r_{\min}=\min(r_0,r_0+2\kappa H)>0\), and the work-policy
+bound \(r_{\max}H\le1/2\), where
+\(r_{\max}=\max(r_0,r_0+2\kappa H)\).
+These exact endpoint inequalities prove positivity on the whole horizon
+because the clock is affine. They also give total structural exposure
+\(\tau(2H)\le1\). There is no separate bound on \(H\) alone.
+The constant-clock case is \(\kappa=0\); negative slopes are admitted
+when the final rate remains positive. Arbitrary positive \(C^1\) clocks
+from the inverse's larger class do not thereby supply the higher derivatives
+needed by a Taylor producer.
+
+Let \(F(x,\theta)\) denote all thirty-six structural rows (1).
+Adjoin the selected rate \(r\) and a passive cumulative integral \(z\):
+\[
+\frac{d}{ds}(x,\theta,r,z)
+=\bigl(rF(x,\theta),\ \kappa,\ q^Tx\bigr),
+\qquad r(0)=r_0,\quad z(0)=0.
+\tag{22}
+\]
+Both nodal rows multiply by \(r\). The integral row does **not**:
+\(z(s)=\int_0^s q^Tx(u)\,du\) integrates in observation time.
+Multiplying it by \(r\) would instead integrate against structural
+exposure and change the sensor law. Its units are \([z]=[x][s]\).
+The two auxiliary coordinates specify a supplied clock and an instrument;
+they are not additional nodal constituents or a derived controller.
+The accumulator does not feed back into any evolution row. The supplied
+rate converts both structural rows to observation time.
+
+The phase events remain \(a_1q\) at zero and \((a_2-a_1)q\)
+at \(H\). The forward API admits \(0\le a_1\le a_2\le1\),
+so zero and equal inputs provide passive controls. The inverse retains its
+own stricter positive-input and rank obligations. Each event changes only
+phase; form, clock rate and cumulative integral remain continuous. There
+is no reset of \(z\) between apertures.
+
+The extended field is smooth on all of \(\mathbb R^{38}\).
+The selected exact affine clock is positive by (21), even if an enclosing
+numerical clock interval includes an extraneous nonpositive value.
+The Picard domain certifies smooth evaluation of the extended field;
+it does not assert that every point of the artificial tube is a positive
+clock, an acute phase state or a retained winding identity. These distinct
+claims must not be conflated.
+
+### Four certified increments and their normalization
+
+Use exactly four steps with observation-time starts
+\((0,H/3,2H/3,H)\) and durations \((H/3,H/3,H/3,H)\).
+The chosen ordinary integer order \(n\in[1,16]\) is held for all
+steps. Dimension thirty-eight is within the shared source-box policy of
+sixty-four; the comparison solver's separate dimension limit is unchanged.
+Each step must establish strict Picard inclusion and enclose all required
+Taylor derivatives on its whole-time tube. There is no adaptive subdivision,
+order change or retry of a failed step.
+
+For step \(i\), let \(B_i\) be its complete post-event initial
+box, \(T_i\) its admitted tube and \(\Delta_i=|W_i|\) its exact
+positive duration. If \(c_{j,k}(B_i)\) encloses the normalized
+\(k\)-th solution derivative of coordinate \(j\), the shared
+kernel constructs an increment enclosure
+\[
+D_{i,j}=\sum_{k=1}^n c_{j,k}(B_i)\Delta_i^k
+       +c_{j,n+1}(T_i)\Delta_i^{n+1}.
+\tag{23}
+\]
+The order-zero coordinate is omitted algebraically. For every trajectory
+starting in \(B_i\), Taylor's theorem and the tube certificate give
+\(w_j(s_i+\Delta_i)-w_j(s_i)\in D_{i,j}\).
+The endpoint may be tightened to \((B_i+D_i)\cap T_i\), but
+subtracting independent endpoint and initial intervals is not a substitute
+for the correlated increment (23).
+
+The raw normalized average therefore belongs to
+\[
+\mu_i=\frac{z(s_i+\Delta_i)-z(s_i)}{\Delta_i}
+     \in D_{i,z}/\Delta_i.
+\tag{24}
+\]
+Divide both interval endpoints by the exact positive rational \(\Delta_i\)
+before outward materialization. An interval representation of a very small
+positive duration may contain zero; that numerical enclosure must not erase
+the independently admitted divisor. This normalization preserves an enclosure,
+but neither guarantees a small width nor removes the finite precision floor.
+
+Carry the entire thirty-eight-coordinate endpoint box into the next step,
+then apply its declared phase jump. In particular, carry the evolved phase,
+the rate and the cumulative integral instead of reinstalling their initial
+values. Induction over the four steps proves that (24) encloses the four
+averages of the **same complete hybrid trajectory** for every admitted
+initial point. Interval widening can discard correlations but cannot justify
+choosing a different source or clock history for each window.
+The retained clock primitives and window boundaries determine exact values
+\(\rho(s_i)\), \(\rho(s_i+\Delta_i)\) and
+\(\tau(s_i+\Delta_i)-\tau(s_i)\); the report also retains
+cumulative structural exposures. This clock provenance does not change
+the observation-time denominator in (24).
+
+### Availability, evidence and sensor separation
+
+The [forward producer](../../src/tnfr/physics/relational_sine_aperture_readout.py)
+retains the primitive preparation, fixed support, phase jumps, clock law,
+all step certificates and the completed observation horizon. A failed step
+stops the sequence. Its last tube and reason remain available, but it yields
+no certified average, and later windows are not executed. A completed prefix
+is not a four-average response. The
+[API contract](../../docs/contracts/relational/SINE_PATTERNS.md#sine-aperture-validated-producer)
+owns the report's availability fields and the
+[independent controls](../../tests/physics/test_sine_aperture_readout.py)
+test the accumulator, clock transformation, event history and failure cases.
+
+The output encloses the raw average \(\mu_i\) for every admitted
+source point. Its interval width includes supplied source uncertainty
+and numerical enclosure error; it is not automatically a numerical-error
+estimate or sensor tolerance. A separately declared held
+sensor would give \(\mathcal A_i=G\mu_i+O+\eta_i\), with its
+own calibration, error allowance and primitive interval projection.
+The producer selects none of these quantities and calls no inverse.
+Forward enclosures and fresh synthetic controls establish conditional
+software behavior. A reserved evaluation still requires a separately
+frozen preparation, explicit clock, sensor realization, observation horizon,
+numerical budget and acceptance criteria before its response is evaluated.
+No source formation, kernel calibration or physical identification follows
+from this forward admission.
+
+<a id="sine-aperture-reserved-protocol"></a>
+## Prospective software evaluation of the four averages
+
+This protocol tests the admitted forward and inverse observation laws on
+new complete-flow averages. Preparation, clock profiles, sensor, numerical
+budget and decisions below are fixed before any reserved response. Earlier
+point-reading records are not observations for this sensor and are not
+inputs to the calculation.
+
+### F1-F2: fixed preparation and three clock histories
+
+Retain the public source and observation budget (15), the full nominal
+geometry priors, the two phase inputs and the four boxcars (2). Select the
+same explicit preparation recipe as the
+[earlier clock protocol](SINE_CLOCK_DRIFT_INFERENCE.md#sine-clock-drift-reserved-protocol):
+\(b=23/16\), \(c=4/5\), recipe index four, common form \(6/11\)
+and common phase \(-6/13\). In particular, independently specify
+\[
+\widetilde u_i=6(i+2)/2^{62},\qquad
+\widetilde v_i=((5i+12)\bmod23+1)/2^{62},\qquad
+u=P_M\widetilde u,\quad v=P_M\widetilde v.
+\tag{25}
+\]
+Construct the complete nominal phases from
+\(A_0=4\pi-8b\), \(d=(2\pi-c)/8\), \(\zeta=(A_0-c)/2\):
+the donor phases are \(0,A_0,A_0+b,\ldots,A_0+7b\), and the
+receiver phases are \(\zeta,\zeta+c,\ldots,\zeta+c+7d\).
+Subtract their full degree-weighted mean, then add the common phase and
+\(v\); form is the common form plus \(u\). Retain all thirty-six
+coordinates and an outward enclosure of mathematical \(\pi\).
+Both centered residual vectors have nonzero entries and norms below
+\(2^{-48}\); the coarse bound
+\(40\cdot114^2/2^{124}<2^{-96}\) suffices before materialization.
+Re-admit the actual constructed boxes separately. The original long-arc
+mean is \(B_{\rm initial}=23/16-5/2^{65}\); retain its complete
+initial box as well as that exact source value.
+
+Declare a held sensor \(G=7/5\), \(O=5/13\), and four errors
+\(\eta=2^{-91}(-1,1,-1,1)\). All histories share this same sensor
+realization and original source. Their clock laws are
+\[
+\rho_\pm(s)=9/8\pm(\Lambda/2)(s-H/2),\qquad
+\rho_{\rm ref}(s)=9/8.
+\tag{26}
+\]
+The global rate prior and derivative allowance hold exactly. Both actual
+first-window means are \(9/8\), with effective gain \(J_1=63/40\).
+Each actual/reference history agrees in nodal state at \(H\) by exact
+first-window exposure and the common source/event law. Their clock-rate
+and cumulative-integral coordinates need not agree.
+No oscillating companion or equality of interval averages is inferred
+from the older point-sample exposure certificate.
+
+### F3: independent integral response and public-only inference
+
+Evaluate the new forward producer exactly once for each of (26), starting
+with the constant reference, then the positive and negative slopes. Each
+call uses four fixed thirty-eight-coordinate steps of order four, with
+whole-tube fifth-order remainders, sixteen Picard iterations per step and
+shared outward dyadic-128 arithmetic. The total cap is twelve steps.
+Carry all coordinates, including the clock and cumulative integral;
+the two supplied phase events alone change phase. Retain every successful
+certificate, attempted source, failed tube and achieved horizon. No
+midpoint source, integrator substitution, subdivision, precision increase,
+state reset or budget retry is admitted.
+
+Form recorded average bands from the true raw averages using the held
+sensor and its fixed four errors. Require each recorded band's half-width
+to be at most \(r=\delta/16=2^{-94}\). This requirement concerns the
+combined source-materialization and numerical enclosure for this fixed
+preparation; the sensor-error allowance remains \(\delta=2^{-90}\).
+No producer-derived remainder may replace the inverse's independent bounds.
+
+Send each actual history to a fresh inverse worker through only the eleven
+documented primitives, with `averaged_reading_bounds` as its four observations.
+The public clock inputs are the prior and derivative allowance. The exact
+source, sensor, realized errors, forward clock profile, exposures, reference
+history and certificates remain outside that packet. Retain each request
+and hash. The reference has no inverse evaluation. This is software input
+separation, not a secrecy or provenance-authentication guarantee.
+
+### Prospective transfer, curvature and alternative bounds
+
+The preceding complete-law bounds apply unchanged. Set \(T=4H\),
+\(Q_0=X+7gT\), \(V=Y+2gTQ_0\). The
+[supplied-source slope bound](SINE_CLOCK_DRIFT_INFERENCE.md#sine-clock-drift-reserved-protocol)
+uses the actual two pulse values and gives, on both continuous windows
+and their comparison arcs,
+\[
+q^Tx_\tau<-m,\qquad
+m=1/(6\cdot3216)-2Q_0-2gV>1/20000.
+\tag{27}
+\]
+This is a source/law bound, not a derivative measured from the new response.
+For \(\kappa=\pm\Lambda/2\), the first-window exposure difference
+is \(-\kappa s(H-s)/2\), and the second is
+\(\kappa t(H+t)/2\), where \(s=H+t\).
+Therefore all three first-window positive-clock averages strictly exceed
+their reference averages; the last is strictly smaller. Negative-clock
+signs reverse. Using (8), the minimum true magnitudes in units of
+\(\delta\) exceed
+\[
+\left(\frac{200704}{84375},\frac{372736}{84375},
+\frac{200704}{84375},\frac{28672}{1875}\right).
+\tag{28}
+\]
+Shared sensor errors cancel in these comparisons. A difference of two
+recorded bands can extend by at most \(4r=\delta/4\) beyond its
+true difference, so their entire intervals retain these strict signs.
+Also, each true difference has magnitude at most \((7/20)b_i\)
+from (9), while \(\min_i b_i/\delta>300\).
+The same numerical allowance leaves each whole difference interval
+strictly within its independently reconstructed \([-b_i,b_i]\).
+
+Use the composed curvature \(C=(9/4,-9/2,9/4,0)\mathcal A\).
+Writing \(v_0=q^Tx_\tau(0^+)\), the reference slope varies by at
+most \(M_2T\); exact substitution gives \(M_2T<10^{-8}\).
+Linearizing only the actual/reference difference around that common
+slope, the integrated absolute coefficient sum is \(5/6\).
+Consequently
+\[
+C_- - C_+\ge G\Lambda H^2\,[1/80000-(5/6)M_2T]
+ >G\Lambda H^2/100000=(229376/15625)\delta.
+\tag{29}
+\]
+The two curvature interval enclosures can lose at most
+\(36r=9\delta/4\), leaving strict ordering \(C_+<C_-\).
+This reuses the original four averaged errors; no new derivative or noise
+channel is introduced.
+
+The explicit phase-blind alternative is
+\(x_\tau=-Ax,\ \theta_\tau=\gamma Ax\), with the same
+source, clocks, phase events and sensor class. Contraction gives
+\(|q^Tx|\le X\); hence any two recorded average differences lie
+in \([-B_{\rm heat},B_{\rm heat}]\), where
+\(B_{\rm heat}=2G_+X+2\delta\).
+Under (27) and \(\rho\ge1/2\), the first adjacent-third average
+decrease is at least \(GH/120000\); the final adjacent-window decrease
+is at least twice that. The smaller exceeds
+\(2G_+X+4\delta+\delta/4\) by exact primitive arithmetic.
+Thus both selected recorded differences \(\mathcal A_1-\mathcal A_0\)
+and \(\mathcal A_3-\mathcal A_2\) must strictly exclude that complete
+alternative band. No endpoint samples substitute for these averages.
+
+### F4: fixed decisions and first-outcome retention
+
+Pass only if all source, sensor, clock, complete-horizon, handoff and
+recorded-width checks pass, together with the following fixed decisions:
+
+- Each actual primary inverse returns `bounded_candidate` with source,
+  drift transfer, aperture reconstruction, finite curvature, rank and
+  positive-division evidence admitted. Its necessary marginals cover the
+  nominal angle, original actual angle and its initial source box,
+  \(J_1=63/40\), \(G=7/5\) and first-window mean \(9/8\).
+- Strict widths are below `1/1024` for original actual angle, `1/2048`
+  for effective gain, `1/16` for gain and `1/64` for mean rate, matching
+  the separately derived aperture budget. Marginal coverage is not joint
+  parameter realizability.
+- All four actual/reference difference bands have the predicted signs
+  and lie inside their transfer allowances. After the interval loss
+  accompanying (29), the two composed curvature intervals remain strictly
+  ordered: the positive-clock upper endpoint is below the negative-clock
+  lower endpoint. The thirty-six nodal coordinate boxes at \(H\)
+  intersect the reference boxes before and after the common event; this
+  is numerical consistency with exact exposure equality, not its proof.
+- False clock prior `[25/32,13/16]` and false gain prior `[31/16,2]`
+  leave their coarse children available but yield a strict curvature
+  exclusion. False angle prior `[11/8,353/256]` is excluded; equal
+  cumulative inputs `(1/4,1/4)` give rank-based unavailability. These
+  controls change declarations while retaining the actual observations.
+- Both selected adjacent average differences exclude the complete
+  phase-blind alternative with its admitted uncertainty and sensor band.
+
+Freeze this prospective text, machine-readable protocol, runtime source,
+evaluator and isolated worker before the response. An exclusive attempt
+ledger precedes the first flow. Retain the first outcome, including a
+partial response, failed criterion, unavailable calculation or exception.
+After an incomplete forward history, do not acquire remaining histories.
+No second attempt or alteration of the evaluated budget is admitted;
+corrections require separate evidence. Success would establish conditional
+software robustness for these fixed averages. It would not calibrate a
+physical sensor, infer the instantaneous clock, justify the supplied
+support/law/source, or establish a physical constituent.
+
+<a id="sine-aperture-result"></a>
+## Retained first finite-aperture evaluation
+
+The first reserved evaluation returned
+`certified_reserved_aperture_inference`: all **139 fixed conditions**
+passed. These comprise twenty-five reference-history conditions, fifty-six
+for each actual clock, the shared source admission and the paired curvature
+ordering. The [protocol](../../docs/assets/sine_formed_classes/aperture-inference-v1.protocol.json),
+[source archive](../../docs/assets/sine_formed_classes/aperture-inference-v1.source.zip),
+[attempt](../../docs/assets/sine_formed_classes/aperture-inference-v1.attempt.json),
+[response](../../docs/assets/sine_formed_classes/aperture-inference-v1.json)
+and [manifest](../../docs/assets/sine_formed_classes/aperture-inference-v1.manifest.json)
+retain the first outcome. The prospective statements above remain unchanged.
+
+Exactly three forward calls completed all twelve prescribed
+thirty-eight-coordinate steps. Every step retained a strict Picard tube,
+the complete clock-scaled nodal law, cumulative observation-time integral
+and its initial-coordinate cancellation. The recorded bands satisfied
+the fixed \(\delta/16\) half-width requirement; their maximum half-width
+was below \(0.000256347661\delta\). This is a bound for the selected
+source enclosure and arithmetic, not measured sensor performance.
+
+Both eleven-primitive inverse packets excluded the hidden preparation,
+sensor realization, clock profile, exposures and forward certificates.
+Their necessary marginals cover the original nominal angle,
+\(B_{\rm initial}=23/16-5/2^{65}\), its initial source box,
+\(J_1=63/40\), \(G=7/5\) and mean rate \(9/8\).
+The following decimal widths are rounded **upwards** from the saved exact
+rational bounds; the decisions use the frozen rational thresholds.
+
+| Clock history | Original-angle width | Effective-gain width | Gain width | First-window mean-rate width |
+| --- | --- | --- | --- | --- |
+| Positive slope | `0.000058682913` | `0.000217661061` | `0.000876129137` | `0.000548560067` |
+| Negative slope | `0.000058682913` | `0.000217661061` | `0.000876129015` | `0.000548560125` |
+| Frozen strict threshold | `1/1024` | `1/2048` | `1/16` | `1/64` |
+
+All four actual/reference average differences have their predicted strict
+signs and lie wholly inside the independently rebuilt clock-transfer
+allowances. Their outward-rounded intervals in units of \(\delta\) are:
+
+| Clock history | First third | Middle third | Last third | Second full window |
+| --- | --- | --- | --- | --- |
+| Positive slope | `[2.769323,2.770350]` | `[5.143615,5.144642]` | `[2.769323,2.770350]` | `[-83.575660,-83.575317]` |
+| Negative slope | `[-2.770350,-2.769323]` | `[-5.144385,-5.143359]` | `[-2.770350,-2.769323]` | `[83.575231,83.575574]` |
+
+The retained composed curvature intervals satisfy \(C_+<C_-\).
+At \(H\), all thirty-six actual/reference nodal boxes intersect
+before and after the common phase event, consistently with exact exposure
+equality. Clock rate and accumulated observation are excluded from that
+equality check. All thirty-eight coordinates remain carried within each
+individual history.
+
+The false gain and clock priors leave the coarse inference available but
+are excluded by curvature. The false angle prior is excluded; equal
+amplitudes yield rank-based abstention. Both prescribed adjacent average
+contrasts exclude the complete phase-blind alternative with its source
+and sensor allowances. These results do not establish joint realizability
+of every marginal tuple or identify a unique physical law.
+
+The committed runtime base is `035965355a8066622eebabd6fe08eedee9c7aef5`,
+without runtime overlays. The thirty-file archive has SHA-256
+`b8b48ae072411a871063c1db22f22e7e5ed851b4641b9b44dd1a14ddbad1c222`.
+Its prospective theorem contains **34,149 bytes**, with SHA-256
+`e670a301fc13117f12b86e5dab18d3174174b3f84ba98b40d1c5d55a48096b47`.
+Those bytes remain this owner's unchanged prefix, modulo checkout newline
+conversion. Hashes associate retained bytes and declared execution; they
+do not independently authenticate chronology or physical acquisition.
+The [read-only audit](../../tests/physics/test_sine_aperture_evidence.py)
+rebuilds retained arithmetic and associations without another forward or
+inverse evaluation.
+
+The result supports conditional finite-aperture inference under the fixed
+complete model and exceptionally small supplied error/drift budgets.
+It does not establish an attainable instrument precision, laboratory time
+unit, independent measurement map, source formation or physical constituent
+identity. Those missing bridges remain substantive research obligations;
+the [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns the next admission.

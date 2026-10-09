@@ -5,12 +5,19 @@ from __future__ import annotations
 import math
 from copy import deepcopy
 from fractions import Fraction
+from types import SimpleNamespace
 
 import networkx as nx
 import numpy as np
 import pytest
 
-from tnfr.constants.aliases import ALIAS_D2EPI, ALIAS_DEPI, ALIAS_DNFR, ALIAS_VF
+from tnfr.constants.aliases import (
+    ALIAS_D2EPI,
+    ALIAS_DEPI,
+    ALIAS_DNFR,
+    ALIAS_SI,
+    ALIAS_VF,
+)
 from tnfr.metrics import coherence, sense_index
 from tnfr.metrics.common import (
     _get_vf_dnfr_max,
@@ -25,6 +32,9 @@ from tnfr.metrics.common import (
     structural_coherence,
 )
 from tnfr.metrics.core import _metrics_step
+from tnfr.utils.numeric import _clipped_ratio, _norm01, similarity_abs
+from tnfr.validation.rules import _norm_attr, _si, get_norm, normalized_dnfr
+from tnfr.validation.soft_filters import acceleration_norm
 
 
 @pytest.mark.parametrize("use_numpy", [True, False])
@@ -280,6 +290,127 @@ def test_stored_maxima_and_normalization_keep_signed_magnitudes_and_missing_zero
     graph.nodes[0][ALIAS_D2EPI[0]] = None
     with pytest.raises((TypeError, ValueError)):
         compute_dnfr_accel_max(graph)
+
+
+@pytest.mark.parametrize("magnitude", [1e308, -1e308])
+def test_bounded_normalizers_saturate_before_finite_ratio_overflow(magnitude):
+    context = SimpleNamespace(norms={"dnfr_max": 1e-308, "accel_max": 1e-308})
+    data = {ALIAS_DNFR[0]: magnitude, ALIAS_D2EPI[0]: magnitude}
+    assert normalize_dnfr(data, 1e-308) == 1.0
+    assert normalized_dnfr(context, data) == 1.0
+    assert acceleration_norm(context, data) == 1.0
+    assert _norm_attr(context, data, ALIAS_DNFR, "dnfr_max") == 1.0
+
+
+def test_bounded_normalizers_keep_distinct_zero_and_sign_policies():
+    data = {ALIAS_DNFR[0]: -0.5, ALIAS_D2EPI[0]: -0.5}
+    context = SimpleNamespace(norms={"dnfr_max": 0.0, "accel_max": -1.0})
+    assert normalize_dnfr(data, 0.0) == 0.0
+    assert get_norm(context, "dnfr_max") == 1.0
+    assert normalized_dnfr(context, data) == 0.5
+    assert acceleration_norm(context, data) == 0.0
+    assert _clipped_ratio(-0.5, -1.0) == 0.5
+    with pytest.raises(ZeroDivisionError):
+        _clipped_ratio(1.0, 0.0)
+
+
+@pytest.mark.parametrize("helper", ["attribute", "acceleration", "sense"])
+@pytest.mark.parametrize(
+    "bad",
+    [True, np.bool_(True), "0.25", math.nan, math.inf, Fraction(1, 10**400), object()],
+)
+def test_validation_scores_reject_raw_authoritative_alias_after_valid_read(helper, bad):
+    context = SimpleNamespace(norms={"dnfr_max": 1.0, "accel_max": 1.0})
+    aliases, read = {
+        "attribute": (
+            ALIAS_DNFR,
+            lambda data: _norm_attr(context, data, ALIAS_DNFR, "dnfr_max"),
+        ),
+        "acceleration": (ALIAS_D2EPI, lambda data: acceleration_norm(context, data)),
+        "sense": (ALIAS_SI, _si),
+    }[helper]
+    data = {aliases[0]: 0.25, aliases[1]: 0.75}
+    assert read(data) == 0.25
+    data[aliases[0]] = bad
+    with pytest.raises((TypeError, ValueError)):
+        read(data)
+    del data[aliases[0]]
+    assert read(data) == 0.75
+
+
+def test_validation_scores_preserve_only_absent_channel_defaults():
+    context = SimpleNamespace(norms={})
+    assert _norm_attr(context, {}, ALIAS_DNFR, "dnfr_max") == 0.0
+    assert acceleration_norm(context, {}) == 0.0
+    assert _si({}) == 0.5
+
+
+@pytest.mark.parametrize("bad", [True, "1", math.nan, math.inf, Fraction(1, 10**400)])
+def test_clipped_ratio_admits_both_operands_before_saturation(bad):
+    with pytest.raises((TypeError, ValueError)):
+        _clipped_ratio(bad, 1e-308, absolute=True)
+    with pytest.raises((TypeError, ValueError)):
+        _clipped_ratio(1e308, bad, absolute=True)
+    with pytest.raises((TypeError, ValueError)):
+        get_norm(SimpleNamespace(norms={"accel_max": bad}), "accel_max")
+
+
+def test_clipped_ratio_preserves_subnormals_and_rejects_interior_nonzero_loss():
+    tiny = math.ulp(0.0)
+    assert normalize_dnfr({ALIAS_DNFR[0]: -tiny}, 1.0) == tiny
+    assert _clipped_ratio(tiny, tiny) == 1.0
+    with pytest.raises(ValueError, match="underflow"):
+        normalize_dnfr({ALIAS_DNFR[0]: tiny}, 2.0)
+
+
+def test_similarity_and_interval_normalization_avoid_overflowing_differences():
+    assert similarity_abs(1e308, -1e308, 0.0, 1.0) == 0.0
+    assert similarity_abs(1e308, 0.0, -1e308, 1e308) == 0.5
+    assert similarity_abs(0.25, 0.75, 0.0, 2.0) == 0.75
+    assert similarity_abs(1.0, 3.0, 2.0, 2.0) == 1.0
+    assert _norm01(0.0, -1e308, 1e308) == 0.5
+    assert _norm01(1e308, -1e308, 1e308) == 1.0
+    assert _norm01(-1e308, -1e308, 1e308) == 0.0
+    with pytest.raises(ValueError, match="underflow"):
+        _norm01(math.ulp(0.0), 0.0, 2.0)
+
+
+@pytest.mark.parametrize("bad", [True, "1", math.inf, math.nan])
+@pytest.mark.parametrize("position", range(4))
+def test_similarity_validates_inputs_even_with_degenerate_range(bad, position):
+    arguments = [0.0, 1.0, 2.0, 2.0]
+    arguments[position] = bad
+    with pytest.raises((TypeError, ValueError)):
+        similarity_abs(*arguments)
+
+
+def test_single_and_worker_si_preserve_finite_saturation():
+    data = {ALIAS_VF[0]: 1e308, ALIAS_DNFR[0]: -1e308}
+    options = dict(alpha=0.25, beta=0.5, gamma=0.25, vfmax=1e-308, dnfrmax=1e-308)
+    assert (
+        sense_index.compute_Si_node(
+            "n", data, phase_dispersion=0.0, inplace=False, **options
+        )
+        == 0.75
+    )
+    assert sense_index._compute_si_python_chunk(
+        [("n", (), 0.0, 1e308, -1e308)], cos_th={}, sin_th={}, **options
+    ) == {"n": 0.75}
+
+
+@pytest.mark.parametrize("use_numpy", [True, False])
+@pytest.mark.parametrize("aliases", [ALIAS_VF, ALIAS_DNFR])
+def test_si_normalization_rejects_nonzero_division_loss(
+    monkeypatch, use_numpy, aliases
+):
+    if not use_numpy:
+        monkeypatch.setattr(sense_index, "np", None)
+    graph = nx.path_graph(2)
+    for node, value in enumerate((math.ulp(0.0), 2.0)):
+        graph.nodes[node].update(nu_f=1.0, delta_NFR=0.0, phase=0.0)
+        graph.nodes[node][aliases[0]] = value
+    with pytest.raises(ValueError, match="underflow"):
+        sense_index.compute_Si(graph, inplace=False)
 
 
 @pytest.mark.parametrize("use_numpy", [True, False])

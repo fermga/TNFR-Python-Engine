@@ -106,6 +106,27 @@ blobs, not the original raw-capture line endings:
 | `EXECUTION_PLAN_PRE_FOUNDATION_REASSESSMENT_2026-09-20.txt` | `17775016433ca9a13dbf6a638cea8c96ea966fec` | 54354 | `f26468ebe060da159ef5b853131498cc05c5e553b80d7355d3c128a37e411fd7` |
 | `PORTFOLIO_PRE_FOUNDATION_REASSESSMENT_2026-09-20.txt` | `0cb05a80efc96dac7d12dcf8792fe1a0a010a9b6` | 38789 | `946c438fbff08ae35efa06eb6aa0a3a6c1497a6efe0cfd4047d18f26f38915a4` |
 
+<a id="two-pulse-plan-consolidation"></a>
+### Closed-gate plan consolidation
+
+The repeated closed-gate summaries and protocol inventories in
+`theory/research/FIVE_STAGE_EXECUTION_PLAN.md` are recoverable from immutable
+revision `62d3da86f071f6d65c0bf3afbe6d44fa10ee6701`, Git blob
+`0ead938a6d43f88048244ae6a56217bd9d895c2e` (81,767 bytes; SHA-256
+`e90802e051c62df639571d8df6d31121f816d2401e4e4dfc2ada627d14fd517b`).
+These identities describe the committed blob, independently of routine checkout
+newline conversion. No duplicate historical plan was created.
+
+The [current plan](../FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) retains the
+latest result, inactive resumption boundary, unresolved dependencies and
+admission rules. Its [retained aliases](../FIVE_STAGE_EXECUTION_PLAN.md#retained-admission-links)
+route all prior explicit and heading anchors to their canonical result owners;
+the [theory-to-execution map](../../README.md#theory-to-execution) owns the full
+proof, implementation and test inventory. Conditional scope, negative results
+and the separately archived two-port probe export recovery remain explicit.
+The plan consolidation removes no proof and changes no frozen protocol,
+source archive, response or verdict. It admits no new campaign.
+
 <a id="four-foundation-source-audit"></a>
 ### Historical source audit for the foundational stages
 

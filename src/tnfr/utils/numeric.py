@@ -10,7 +10,9 @@ delegate to its signed circular difference and are re-exported publicly via
 from __future__ import annotations
 
 # import warnings
+import math
 from collections.abc import Iterable, Sequence
+from fractions import Fraction
 from typing import Any
 
 from ..errors import TNFRValueError
@@ -43,6 +45,32 @@ def clamp01(x: float) -> float:
     return float(clamp_value(x, 0.0, 1.0))
 
 
+def _clipped_ratio(
+    numerator: float, denominator: float, *, absolute: bool = False
+) -> float:
+    """Clip a finite ratio without first overflowing its division.
+
+    Callers retain their own zero-normalizer conventions. A zero denominator
+    here raises; a nonzero interior ratio must survive binary64 division.
+    """
+    from ..mathematics.unified_numerical import _finite_real
+
+    num = _finite_real(numerator, label="numerator")
+    den = _finite_real(denominator, label="denominator")
+    if absolute:
+        num = abs(num)
+    if den == 0.0:
+        raise ZeroDivisionError("float division by zero")
+    if (num < 0.0) != (den < 0.0):
+        return 0.0
+    if abs(num) >= abs(den):
+        return 1.0
+    result = num / den
+    if num != 0.0 and result == 0.0:
+        raise TNFRValueError("normalized ratio underflows binary64")
+    return result
+
+
 def within_range(val: float, lower: float, upper: float, tol: float = 1e-9) -> bool:
     """Return ``True`` if ``val`` lies in ``[lower, upper]`` within ``tol``."""
     v = float(val)
@@ -51,14 +79,45 @@ def within_range(val: float, lower: float, upper: float, tol: float = 1e-9) -> b
 
 def _norm01(x: float, lo: float, hi: float) -> float:
     """Normalize ``x`` to the unit interval given bounds."""
+    from ..mathematics.unified_numerical import _finite_real
+
+    x = _finite_real(x, label="value")
+    lo = _finite_real(lo, label="lower bound")
+    hi = _finite_real(hi, label="upper bound")
     if hi <= lo:
         return 0.0
-    return clamp01((float(x) - float(lo)) / (float(hi) - float(lo)))
+    if x <= lo:
+        return 0.0
+    if x >= hi:
+        return 1.0
+    numerator, denominator = x - lo, hi - lo
+    if math.isfinite(numerator) and math.isfinite(denominator):
+        return _clipped_ratio(numerator, denominator)
+    # The represented inputs can span more than the binary64 range even when
+    # their interior normalized coordinate is finite.
+    ratio = (Fraction(x) - Fraction(lo)) / (Fraction(hi) - Fraction(lo))
+    return _finite_real(ratio, label="normalized ratio")
 
 
 def similarity_abs(a: float, b: float, lo: float, hi: float) -> float:
     """Return absolute similarity of ``a`` and ``b`` over ``[lo, hi]``."""
-    return 1.0 - _norm01(abs(float(a) - float(b)), 0.0, hi - lo)
+    from ..mathematics.unified_numerical import _finite_real
+
+    a = _finite_real(a, label="first value")
+    b = _finite_real(b, label="second value")
+    lo = _finite_real(lo, label="lower bound")
+    hi = _finite_real(hi, label="upper bound")
+    if hi <= lo:
+        return 1.0
+    difference, span = abs(a - b), hi - lo
+    if math.isfinite(difference) and math.isfinite(span):
+        return 1.0 - _norm01(difference, 0.0, span)
+    difference_exact = abs(Fraction(a) - Fraction(b))
+    span_exact = Fraction(hi) - Fraction(lo)
+    if difference_exact >= span_exact:
+        return 0.0
+    ratio = _finite_real(difference_exact / span_exact, label="normalized difference")
+    return 1.0 - ratio
 
 
 def kahan_sum_nd(values: Iterable[Sequence[float]], dims: int) -> tuple[float, ...]:

@@ -1,0 +1,18 @@
+{
+  "schema": "tnfr.sine-two-port-probe-first-attempt.v1",
+  "status": "assessment_completed_but_export_failed_without_retained_report",
+  "frozen_source_sha256": "d54a607c76bdd992bedf26f92618360ed506739e2c2e70ed0b260fc704bda578",
+  "failure_stage": "saved[\"original_control_identity\"] = _project(control)",
+  "exception_type": "TypeError",
+  "exception_message": "unsupported relational report value or node label: dict; use JSON scalar labels or tuples of them",
+  "retained_primary_report": false,
+  "original_evaluator_unchanged": true,
+  "scientific_inputs_or_runtime_changed": false,
+  "correction": "Project each value of the auxiliary control dictionary with the shared projector, preserving its keys. Add explicit evaluation history to the saved record. Recompute the deterministic certificate under the unchanged scientific protocol because the first process did not retain its in-memory report.",
+  "recovery_source": {
+    "file": "two-port-probe-v1.export-recovery.py.txt",
+    "bytes": 2329,
+    "sha256": "dccc67c44b64b726131f08e86f18287f9d179fb984efe5c3c018e04d63efc37b"
+  },
+  "scope": "This retains a software/export failure, not a failed mathematical inequality or an available first response. The recovery result cannot be represented as the first successful frozen assessment."
+}

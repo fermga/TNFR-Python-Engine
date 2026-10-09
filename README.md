@@ -102,23 +102,31 @@ has its own execution contract.
 
 ### What the research establishes
 
-The repository contains several kinds of reusable results:
+TNFR can construct and study mathematical organizations under supplied complete
+laws. The results fix support, capacity, clock and preparation; combining them
+requires compatible full-state handoffs and explicit event work.
 
 Some models use a mathematical **storage** quantity to account for exchanges
 and losses. Identifying it with measured physical energy needs a separate
 measurement model.
 
-- **Relaxation and recovery:** convergence of pure-form diffusion and recovery
-  of joint form/phase patterns under their stated support and law assumptions.
-- **Conditional formation:** selected preparations can develop phase winding
-  and reach a protected region. Native and sine models have separate results;
-  finite formation or retention does not establish indefinite maintenance.
+- **Acquired, distinguishable organizations:** in the smooth-sine model,
+  declared preparations on
+  nine-node cycles reach [two nonzero winding classes](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-pair).
+  Their internal phase geometry produces a [different response to the same probe](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-response).
+- **Retention and recovery:** admitted patterns remain in protected regions
+  and recover after bounded inputs. [Repeated joined interaction](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/SINE_CLASS_REPEATED_INTERACTION.md)
+  retains each branch's state, accumulated means and work under its supplied
+  protocol; finite retention alone does not establish indefinite maintenance.
 - **Identity with internal motion:** specified conservative sine families can
   preserve a collective arrangement while constituents remain active. An
   exact periodic orbit and resistance to disturbances are separate properties.
-- **Interaction, scale and memory:** collective descriptions can retain the
-  information needed to evolve their constituents. Eliminating hidden nodes
-  can produce an interaction with memory of their initial state and inputs.
+- **Interaction and memory:** an acquired mediator's class changes its
+  [transmitted response](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/SINE_CLASS_MEDIATED_RESPONSE.md#sine-class-mediated-result).
+  [Causal reductions](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/SINE_CLASS_MEDIATED_MEMORY.md)
+  retain hidden initialization and nonlinear error. A separate [full-law comparison](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL.md#sine-neighbor-forward-reserved-result)
+  confirms that two neighbors' combined response need not equal the sum of
+  their individual responses after subtracting the common baseline.
 - **Obstructions and counterexamples:** equal averages, available storage or
   matching local responses need not produce the same future. Some proposed
   formations are excluded by symmetry or storage constraints.
@@ -126,7 +134,12 @@ measurement model.
 The [theory-to-execution map](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md#theory-to-execution) routes models and responsibilities
 to their mathematical owners, implementation and representative checks. Proofs show
 what follows from premises; tests check code; finite experiments establish
-evidence for their declared cases. Physical identification needs another step.
+evidence for their declared cases. These objects do not yet establish physical
+particles, autonomous substrate birth or selection of their own preparation.
+
+The [formed-object SDK workflow](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/guides/relational/SINE_PATTERNS.md#formed-object-sdk-workflow)
+explains how to use their mathematical interfaces and preserve exact evidence
+through the shared exporter.
 
 ### How pulse, resonance and fractality fit together
 
@@ -149,9 +162,10 @@ collective organization -> independent observation**. We first specify the
 state and complete laws, check their consistency, then seek a prediction,
 equivalence or obstruction that distinguishes competing explanations.
 
-The current focus is how internal organization affects interaction: when can
-two patterns look the same from outside yet exchange form differently because
-of their internal state and surroundings? The
+Constructed organizations also test the foundations: which properties follow
+from their retained structure, and which depend on a supplied law or event?
+NFR properties and operator contracts constrain that question without selecting
+a unique continuous law. The
 [execution plan](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 owns the precise task, acceptance conditions and next step. The
 [strategy](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_RESEARCH_STRATEGY.md) explains the rationale; the

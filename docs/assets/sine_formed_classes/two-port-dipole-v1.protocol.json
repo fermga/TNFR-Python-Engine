@@ -1,0 +1,359 @@
+{
+  "schema": "tnfr.sine-two-port-dipole-protocol.v1",
+  "evaluation_kind": "analytic_finite_local_geometry_contrast_with_complete_source_warmup_and_phase_blind_alternative",
+  "inputs": {
+    "warmup_duration": {
+      "numerator": 285934809600000,
+      "denominator": 1
+    },
+    "form_radius": {
+      "numerator": 1,
+      "denominator": 1099511627776
+    },
+    "phase_radius": {
+      "numerator": 1,
+      "denominator": 1099511627776
+    },
+    "phase_increment": {
+      "numerator": 1,
+      "denominator": 4096
+    },
+    "probe_duration": {
+      "numerator": 1,
+      "denominator": 1024
+    },
+    "readout_error_bound": {
+      "numerator": 1,
+      "denominator": 1125899906842624
+    },
+    "contrast_threshold": {
+      "numerator": 1,
+      "denominator": 274877906944
+    },
+    "work_allowance": {
+      "numerator": 1,
+      "denominator": 2097152
+    }
+  },
+  "complete_model": {
+    "law": "normalized_sine_reciprocal_exchange",
+    "rows_in_tau": "x'=-A*x+gamma*f(theta); theta'=gamma*A*x; A=M^-1*L; f=M^-1*S",
+    "capacity": "held unit on all nodes",
+    "beta": 1,
+    "e": "1023/1024",
+    "w": "1/1024",
+    "gamma": "1/(1023*pi)",
+    "clocks": "tau=e*t; sigma=gamma^2*tau; both complete rows use the same clock",
+    "pressure": "instantaneous complete sine and form pressure; no frozen pressure approximation",
+    "continuous_forcing": "absent",
+    "events": "one supplied phase dipole only; no support event or previous form pulse"
+  },
+  "support": {
+    "nodes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "joined_edges": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        8
+      ],
+      [
+        0,
+        9
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        1,
+        10
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        9,
+        10
+      ],
+      [
+        9,
+        17
+      ],
+      [
+        10,
+        11
+      ],
+      [
+        11,
+        12
+      ],
+      [
+        12,
+        13
+      ],
+      [
+        13,
+        14
+      ],
+      [
+        14,
+        15
+      ],
+      [
+        15,
+        16
+      ],
+      [
+        16,
+        17
+      ]
+    ],
+    "unjoined_edges": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        8
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        9,
+        10
+      ],
+      [
+        9,
+        17
+      ],
+      [
+        10,
+        11
+      ],
+      [
+        11,
+        12
+      ],
+      [
+        12,
+        13
+      ],
+      [
+        13,
+        14
+      ],
+      [
+        14,
+        15
+      ],
+      [
+        15,
+        16
+      ],
+      [
+        16,
+        17
+      ]
+    ],
+    "weights": "unit",
+    "joined_degree_mass": 40,
+    "unjoined_degree_mass": 36,
+    "joined_periods": [
+      2,
+      1,
+      0
+    ],
+    "unjoined_periods": [
+      2,
+      1
+    ],
+    "local_rows": "Nodes4 and5 each have degree2 and neighbors(3,5) and(4,6) on both supports; finite propagators still differ."
+  },
+  "preparation": {
+    "nominal_form": "zero",
+    "nominal_phase_turns_before_common_centering": "D_j=2*j/9; R_j=1/18+j/9",
+    "common_centering_turns": "229/360",
+    "original_form_error_radius": "1/65536",
+    "original_phase_error_radius_radians": "1/65536",
+    "uncertainty": "All thirty-six independent original nodewise errors, without symmetry or zero-sum constraints; no endpoint reset or source narrowing.",
+    "branch": "New unprobed continuation of the original captured family. The previous uniform-form pulse experiment is not part of this state history.",
+    "unjoined_control": "Prepared on two separate unit C9 rings from the same nominal source and budgets; evolved for the same original elapsed time. No contact deletion.",
+    "means": "One weighted form/continuous-phase mean pair on joined support; separate pairs for each unjoined ring. Compare deviations in the full18-node degree norm after the respective mean projections.",
+    "handoff_slow_time": 1025,
+    "handoff_fast_time": "1025*1023^2*pi^2",
+    "handoff_original_time": "1025*1023*1024*pi^2",
+    "joined_source_admission": "Read-only primitive and retained-step capture audit; preserve the explicit archived Picard, local-error and endpoint-center execution premise.",
+    "control_source_admission": "Each original ring has excess storage and combined squared norm at most36/65536^2, within its radius1/12 and barrier1/129600. Sum both energies; common coercivity1/4500 gives full18-node norm squared at most4500*72/65536^2<1/144."
+  },
+  "prior_capture_artifacts": [
+    {
+      "file": "two-port-capture-v1.json",
+      "bytes": 40970976,
+      "sha256": "1bb276acd7d99572c0628a52d55f4fd9718127ad8f6d8c92f18bdc39c7ec089c"
+    },
+    {
+      "file": "two-port-capture-v1.protocol.json",
+      "bytes": 8561,
+      "sha256": "eec9555ae04394f8ec53f9bc3501209b0b3c7e9ebaae013cdd1df9e9512d6b31"
+    },
+    {
+      "file": "two-port-capture-v1.source.zip",
+      "bytes": 23410,
+      "sha256": "b8df26578b59a32dae82b9cad58450b0d208d6c45dc234769575702830f0fb3f"
+    },
+    {
+      "file": "two-port-capture-v1.manifest.json",
+      "bytes": 2257,
+      "sha256": "cefa3bb2d01df10f1f6268e1e1a8c0236d7692e3a79fdeed1a6c336c07561fc0"
+    }
+  ],
+  "warmup": {
+    "premise": "Both source families are already inside independently admitted forward-trapped acute charts. Norm caps alone do not establish trapping.",
+    "source_form_and_phase_caps": "1/12 each in own degree metric after appropriate mean removal",
+    "eta_bounds": [
+      "1/11000000",
+      "1/9000000"
+    ],
+    "common_gap_lower": "1/90",
+    "common_rate_upper": "2",
+    "cosine_lower": "1/25",
+    "method": "Constant degree-metric isometry and shared strict nonlinear Lyapunov kernels; no commutation or trajectory assumption",
+    "decay_rate": "1/2233865700000",
+    "decay_exponent": 128,
+    "decay_upper": "2^-128, retained as an exact rational before every squared-norm comparison",
+    "duration": "T=128/kappa in tau; added original time1024*T/1023",
+    "admission": "Both exact returned squared norms strictly below their declared form_radius^2 and phase_radius^2",
+    "scope": "Conservative finite structural duration, not a practical recovery speed or laboratory-unit claim"
+  },
+  "input": {
+    "q": [
+      0,
+      0,
+      0,
+      0,
+      1,
+      -1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "jump": "theta_plus=theta_minus+a*q; x_plus=x_minus",
+    "means": "Every relevant weighted phase and form mean is preserved",
+    "work": "Signed phase-potential jump, separately bounded for each model; no loss-funded reservoir or passive event claim",
+    "identity": "Post-jump norm strictly below1/12 and excess storage below common barrier1/648000, then unforced recovery on unchanged mean leaves"
+  },
+  "observation": {
+    "readout": "q^T[x(h)-x_minus]; scalar q^T*x equals x4-x5 in both models",
+    "contrast": "joined increment minus unjoined increment",
+    "window": "h=probe_duration in tau after the single jump",
+    "errors": "Four bounded scalar q^T*x readings: before and after in each model. readout_error_bound applies to each difference-channel reading, not each individual node sensor. Total contrast error at most4*readout_error_bound.",
+    "threshold": "recorded contrast lower bound strictly above contrast_threshold and the phase-blind comparison upper bound"
+  },
+  "finite_response": {
+    "target": "Fresh correlated(2,1) compatible target, outer32/inner64 strict root refinements; acute margin>1/8 radian",
+    "bulk_angles": "joined b=(4*pi-a_short)/8; unjoined b0=4*pi/9",
+    "local_coefficient": "2*gamma*h*sin(3*a/2)*(cos(b0-a/2)-cos(b-a/2)); require cosine gap>1/32",
+    "remainder": "Each complete model has error E=2*h*X+4*g*a*h^2+2*g*h*Y+4*g^2*h^2*Qmax, g=1/3069, Qmax=(X+2*g*h*(Y+2*a))/(1-4*g^2*h^2). Keep both remainders and all four readout errors.",
+    "scope": "The local leading coefficient depends on acquired bulk geometry. Both different full-support propagators are bounded; they are not assumed equal."
+  },
+  "phase_blind_alternative": {
+    "complete_rows": "x'=-A*x; theta'=gamma*A*x, same held capacities, support, clocks, source and supplied phase jump",
+    "distinction": "Explicit complete-law alternative, not an unannounced parameter mutation in the sine model",
+    "warmup": "Initial relative form norm<7/65536; heat gap>=1/90 and the same T give exp(-T/90)<=2^-128 and endpoint norm below form_radius",
+    "causal_response": "Exactly zero pulse-minus-sham form response at equal initial form",
+    "raw_contrast": "Retain background relaxation: absolute recorded joined-minus-unjoined increment at most4*h*X+4*readout_error_bound",
+    "scope": "This alternative can be separated; other phase-dependent laws are not uniquely excluded."
+  },
+  "prediction": "Expect the unchanged original family after finite warmup to produce a strict positive local recorded contrast above threshold and the phase-blind bound, with positive bounded supplied work and preserved joined/unjoined winding identities.",
+  "stopping_rule": "Require prior artifact association, actual joined capture and original unjoined trapping, full-metric source caps, fresh target and cosine-gap admission, finite warmup on both complete laws, both nonlinear remainders and four readout errors, strict contrast threshold and phase-blind separation, bounded signed work, strict post-jump identity and recovery. Preserve any unavailable condition; no retuning or repeated first reserved assessment.",
+  "source_base_commit": "4183b788ee63a61e1c44afc08b7b3950a0bdd311",
+  "source_overlay_archive": "two-port-dipole-v1.source.zip",
+  "frozen_theory_owner": "theory/nodal/SINE_TWO_PORT_DIPOLE.md",
+  "runtime": {
+    "python": "3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows",
+    "backend": "exact Fraction and fixed outward dyadic128 trigonometric target intervals",
+    "seed": null,
+    "seed_scope": "deterministic exact bounds, no sampled source or trajectory"
+  },
+  "scope": "Conditional sensitivity to acquired internal geometry under supplied complete laws and support. Not topology-independent intrinsic identity, unique sine-law selection, autonomous event/contact selection or physical identification."
+}

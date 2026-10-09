@@ -4,6 +4,2189 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="formed-object-sdk-workflow"></a>
+## Work with formed-object reports and exact SDK exports
+
+Use the mathematical owner for the claim being assessed: the existing
+[formation](#sine-formed-class-pair),
+[maintenance](#sine-formed-class-maintenance) and
+[composition](#sine-reduced-port-composition) examples supply their own
+primitive inputs and return detached reports. Keep the report together with
+its source bounds, node order, complete law, capacity, clock, events and error
+budgets. Passing an identity or formation check does not by itself admit a
+different support, probe or reduced state; use that consumer's source contract.
+These owners do not install their supplied sine law in a live `Network`.
+
+Use `tnfr.sdk.relational_report_to_dict` to project a supported report and
+`export_to_json` to save it with the shared atomic writer. This includes
+`SineClassPortReadout` and `SineClassStorageReadout`; their mathematical owners
+remain the source of execution and evidence admission. The
+[export contract](../../contracts/relational/RELATIONAL_EXECUTION.md#relational-report-export)
+preserves exact rational records, ordered state and unavailable fields.
+
+The following zero-horizon example constructs all eight full/tangent source
+and event records and exports them. Its zero loss integral follows from the
+zero duration; it tests neither formation nor a finite storage prediction.
+The phase input is a deviation from the named class target, in original radians.
+
+```python
+from fractions import Fraction as Q
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+from tnfr.physics.relational_sine_class_storage_readout import (
+    bound_sine_class_storage_readout,
+)
+from tnfr.sdk import export_to_json, relational_report_to_dict
+from tnfr.utils.io import json_loads
+
+report = bound_sine_class_storage_readout(
+    mediator_class=2,
+    initial_form_bounds=((Q(0), Q(0)),) * 27,
+    initial_phase_deviation_bounds=((Q(0), Q(0)),) * 27,
+    donor_amplitude=Q(1, 100),
+    receiver_amplitude=-Q(1, 300),
+    horizon=Q(0),
+    time_step=Q(1, 64),
+    order=2,
+    max_steps=1,
+)
+assert report.completed_history_count == 8
+assert report.attempted_step_count == 0
+assert report.excess_storage_bounds.lo == report.excess_storage_bounds.hi == 0
+
+payload = relational_report_to_dict(report)
+assert payload["report_type"] == "SineClassStorageReadout"
+assert payload["report"]["donor_amplitude"] == {
+    "numerator": 1, "denominator": 100,
+}
+with TemporaryDirectory() as directory:
+    path = Path(directory) / "storage-report.json"
+    export_to_json(payload, path)
+    assert json_loads(path.read_bytes()) == payload
+```
+
+For a nonzero horizon, inspect completion and failure evidence before consuming
+an output. Enclosure widths can include source uncertainty, wrapping and
+numerical error; sensor errors and work/identity premises need their own
+admission. JSON export preserves the supplied report, not a validated source,
+a resumable state or proof of acquisition. Scientific consumers must re-admit
+the required primitives and rebuild the evidence they use.
+
+<a id="sine-aperture-budget"></a>
+### Check a finite-noise and horizon budget before selecting readings
+
+Use `assess_sine_aperture_budget` from
+[`relational_sine_aperture_budget`](../../../src/tnfr/physics/relational_sine_aperture_budget.py)
+to assess declared uncertainty and duration for the fixed four-boxcar model.
+The [contract](../../contracts/relational/SINE_PATTERNS.md#sine-aperture-budget)
+fixes the source chart, phase inputs, gain/rate priors and resolution targets.
+The function accepts six scalar budgets, with no readings or hidden source.
+It invokes neither the forward producer nor an inverse.
+
+This exact-rational example checks one horizon in the theorem's uniform
+positive regime. Its error allowances are assumptions, not independently
+calibrated sensor precision:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_aperture_budget import assess_sine_aperture_budget
+
+budget = assess_sine_aperture_budget(
+    probe_duration=Q(1, 2**24),
+    form_radius=Q(1, 2**48),
+    phase_radius=Q(1, 2**48),
+    readout_error_bound=Q(1, 2**80),
+    averaged_reading_halfwidth_bound=Q(1, 2**80),
+    clock_rate_derivative_bound=Q(1, 2**22),
+)
+assert budget.sufficient_resolution_certified
+assert budget.actual_angle_width_upper_bound < Q(1, 1024)
+assert budget.mean_clock_width_upper_bound < Q(1, 64)
+assert not budget.noise_overlap_witness_admitted
+print(budget.status)  # certified_sufficient_budget
+```
+
+Keep `averaged_reading_halfwidth_bound` separate from the per-average
+sensor error. It bounds the entire recorded interval halfwidth, which may
+include propagated source uncertainty as well as numerical enclosure error.
+Inspect `sufficient_bound_eligible`, `ineligibility_reasons` and
+`unmet_resolution_targets` before interpreting absent or overly broad
+widths. A passing budget gives conditional ideal arithmetic bounds;
+actual data admission and outward numerical inverse availability still
+need their own checks. A failed budget does not prove nonidentifiability.
+
+The independent `noise_overlap_witness_admitted` flag has a stronger but
+narrower meaning: the declared sensor-error budget admits a common record
+from two complete histories with different gain and mean rate. It says
+neither that a particular future record is ambiguous nor that increasing
+numerical precision removes physical noise. The
+[horizon analysis and ambiguity proof](../../../theory/nodal/SINE_APERTURE_RESOLUTION.md#sine-aperture-resolution-horizons)
+separate these claims. No automatic horizon optimization or response search
+is performed. Laboratory units, source preparation and actual uncertainty
+remain independent admission obligations.
+
+<a id="sine-aperture-validated-producer"></a>
+### Generate certified averages with an explicit forward clock
+
+Use `bound_sine_aperture_readout` from
+[`relational_sine_aperture_readout`](../../../src/tnfr/physics/relational_sine_aperture_readout.py)
+to enclose true model averages over the fixed four boxcars. The
+[contract](../../contracts/relational/SINE_PATTERNS.md#sine-aperture-validated-producer)
+requires the full primitive source, cumulative phase inputs, horizon,
+explicit affine rate `rho(s)=initial_clock_rate+clock_slope*s` and Taylor
+order. Both endpoint rates must be positive, and their maximum times `H`
+must not exceed `1/2`. The broader inverse's `C1` clock prior is not an
+executable forward profile.
+
+All nodal coordinates, the evolving rate and a passive cumulative
+integral are carried across the four windows. Its row integrates `q.T*x`
+in observation time, and the supplied phase event at `H` is applied to the
+complete carried state. There is no accumulator reset. Certified step
+increments give each average directly; endpoint-value substitution and
+unrelated endpoint subtraction do not implement this observation law.
+
+This fresh stationary control has a uniform form and phase, no phase
+events and a constant positive clock. Its exact local average is zero:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_aperture_readout import bound_sine_aperture_readout
+
+control = bound_sine_aperture_readout(
+    initial_form_bounds=((Q(2), Q(2)),) * 18,
+    initial_phase_bounds=((Q(0), Q(0)),) * 18,
+    phase_increments=(Q(0), Q(0)),
+    probe_duration=Q(1, 1024),
+    initial_clock_rate=Q(1),
+    clock_slope=Q(0),
+    order=1,
+)
+assert control.completed_window_count == 4
+assert control.final_state_bounds is not None
+assert all(value.lo <= 0 <= value.hi for value in control.averaged_readout_bounds)
+```
+
+Inspect `completed_window_count` and `completed_observed_time` before using
+the output. `steps` retains the successful prefix; `window_initial_boxes`
+also retains the first failed attempt's source when present. If a later
+window is unavailable, retain the prefix and failed-window evidence;
+do not present it as a complete four-average record or retry a frozen
+scientific budget silently.
+
+The output contains model averages without a sensor gain, offset or noise.
+Its widths include source uncertainty and numerical enclosure error; do
+not relabel the whole width as solver error or sensor noise.
+A separately declared software evaluation must apply those observation
+quantities and pass only its public primitive average bands and priors to
+the inverse. This control uses no reserved preparation, and it does not
+show that its stationary source belongs to the inverse's geometric chart.
+The [proof](../../../theory/nodal/SINE_APERTURE_INFERENCE.md#sine-aperture-validated-producer)
+separates the affine-clock and integration premises from physical
+calibration and from the later frozen-evaluation boundary.
+
+The [reserved software result](../../../theory/nodal/SINE_APERTURE_INFERENCE.md#sine-aperture-result)
+has a separate frozen source, protocol, first-attempt record and response.
+Read its stored outcome directly; do not rerun its producer or inverse to
+inspect it:
+
+```python
+from pathlib import Path
+from tnfr.utils.io import json_loads
+
+saved = json_loads(
+    Path("docs/assets/sine_formed_classes/aperture-inference-v1.json").read_bytes()
+)
+assert saved["schema"] == "tnfr.sine-aperture-inference-experiment.v1"
+print(saved["report"]["status"])  # certified_reserved_aperture_inference
+print(len(saved["frozen_stopping_rule"]))  # 139
+```
+
+This snippet reads the retained declaration. The
+[dedicated audit](../../../tests/physics/test_sine_aperture_evidence.py)
+independently rebuilds the full-history, observation and necessary-inference
+arithmetic instead of treating success flags as premises. The result remains
+conditional software evidence, with no physical sensor calibration or
+instantaneous clock reconstruction.
+
+<a id="sine-aperture-inference"></a>
+### Infer from interval averages with a declared sensor kernel
+
+Use `infer_sine_geometry_gain_clock_aperture` from
+[`relational_sine_aperture_inference`](../../../src/tnfr/physics/relational_sine_aperture_inference.py)
+when each recorded value is a normalized boxcar average. The four ordered
+windows are `[0,H/3]`, `[H/3,2H/3]`, `[2H/3,H]` and `[H,2H]` in observation
+time. Their widths are fixed fractions of the horizon. The
+[contract](../../contracts/relational/SINE_PATTERNS.md#sine-aperture-inference)
+replaces the drift adapter's `recorded_reading_bounds` with mandatory
+`averaged_reading_bounds`; the other ten source, input, sensor and clock
+arguments retain their meanings.
+
+Supply independently justified kernel normalization, interval alignment,
+held gain/offset and bounded positive clock drift. The function does not
+estimate a sensor kernel or select a physical acquisition time. The
+per-reading error applies once to each integrated scalar, separately
+from the width of its recorded interval. All thirty-six state coordinates
+continue through the phase events at `0,H`; none of the four averages
+uses data outside `[0,2H]`.
+
+The adapter reconstructs necessary virtual point bands by the known
+quadratic moments of the first three averages and a separate second-window
+bound. `reference_envelope` applies the existing curvature inverse to those
+auxiliary bands. Inspect `projected_numerical_radii`,
+`projected_sensor_error_radii`, the projected clock discrepancy and
+reconstruction error independently. The child receives zero additional
+sensor error, because the original errors have already entered the bands.
+Virtual readings are not actual point samples, and their rectangular bounds
+can lose correlations among the original four errors. The reconstructed
+initial constraint consumes all three first-window averages; it is not
+an observation available at time zero.
+
+This synthetic equal-input control checks conditional method abstention;
+the zero intervals are placeholders, not averaged response data:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_aperture_inference import infer_sine_geometry_gain_clock_aperture
+
+control = infer_sine_geometry_gain_clock_aperture(
+    bulk_angle_bounds=(Q(11, 8), Q(3, 2)),
+    receiver_short_angle_bounds=(Q(2, 3), Q(1)),
+    form_radius=Q(1, 2**40),
+    phase_radius=Q(1, 2**40),
+    phase_increments=(Q(1, 4), Q(1, 4)),
+    probe_duration=Q(1, 2**22),
+    averaged_reading_bounds=((Q(0), Q(0)),) * 4,
+    readout_error_bound=Q(0),
+    readout_gain_bounds=(Q(1), Q(2)),
+    clock_rate_bounds=(Q(1, 2), Q(2)),
+    clock_rate_derivative_bound=Q(1, 1024),
+)
+print(control.status)  # unavailable
+```
+
+Read `first_window_mean_clock_rate_outer_bounds` as a necessary bound on
+`tau(H)/H`, and `effective_gain_outer_bounds` as a bound on `G*tau(H)/H`.
+The actual angle remains the original-source long-arc mean. Neither the
+profile nor joint parameter realizability is reconstructed. Zero drift
+leaves aperture error present. The
+[theorem](../../../theory/nodal/SINE_APERTURE_INFERENCE.md#sine-aperture-inference)
+separates the retained curvature signal from its finite-error budget. Its
+[conditioning bound](../../../theory/nodal/SINE_APERTURE_INFERENCE.md#sine-aperture-conditioning)
+keeps informative necessary marginals at these fixed aperture fractions;
+reducing `H` also amplifies fixed sensor error after normalization.
+This example starts no reserved evaluation or physical-calibration campaign.
+
+<a id="sine-clock-drift-inference"></a>
+### Bound a mean clock rate when the clock can drift
+
+Use `infer_sine_geometry_gain_clock_drift` from
+[`relational_sine_clock_drift_inference`](../../../src/tnfr/physics/relational_sine_clock_drift_inference.py)
+for the same four recorded intervals at `0,H/2,H,2*H` when the positive
+clock rate may vary. The [contract](../../contracts/relational/SINE_PATTERNS.md#sine-clock-drift-inference)
+adds mandatory `clock_rate_derivative_bound=L` to the ten curvature inputs.
+Supply an independently justified global rate prior and derivative bound;
+the function accepts no profile and does not measure either premise.
+Sensor gain and offset, calibrated inputs and the structural law stay fixed.
+
+Read `first_window_mean_clock_rate_outer_bounds` as a bound on
+`tau(H)/H`, and `effective_gain_outer_bounds` as a bound on `G*tau(H)/H`.
+Neither describes a pointwise clock rate. Clocks with the same accumulated
+time on each sample/event interval can give exactly identical full sampled
+states, even while their rates at the sample times differ.
+
+The method widens the half-time and final reading bands to enclose a
+constant-mean reference record. `reference_envelope` contains the fresh
+curvature calculation for those auxiliary bands. The original and `H`
+readings stay associated with the same source and first endpoint; all four
+sensor errors retain their original allowance. Clock-transfer error is
+separate from numerical reading width and sensor noise. Nonempty marginal
+bounds do not prove a compatible full trajectory or joint parameter tuple.
+
+This synthetic equal-input control checks abstention only; the four zero
+placeholders are not measured or generated response data:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_clock_drift_inference import infer_sine_geometry_gain_clock_drift
+
+control = infer_sine_geometry_gain_clock_drift(
+    bulk_angle_bounds=(Q(11, 8), Q(3, 2)),
+    receiver_short_angle_bounds=(Q(2, 3), Q(1)),
+    form_radius=Q(1, 2**40),
+    phase_radius=Q(1, 2**40),
+    phase_increments=(Q(1, 4), Q(1, 4)),
+    probe_duration=Q(1, 2**22),
+    recorded_reading_bounds=((Q(0), Q(0)),) * 4,
+    readout_error_bound=Q(0),
+    readout_gain_bounds=(Q(1), Q(2)),
+    clock_rate_bounds=(Q(1, 2), Q(2)),
+    clock_rate_derivative_bound=Q(1, 1024),
+)
+print(control.status)  # unavailable
+```
+
+The [positive-drift conditioning bound](../../../theory/nodal/SINE_CLOCK_DRIFT_INFERENCE.md#sine-clock-drift-conditioning)
+shows that a nonzero derivative allowance can retain informative mean-rate
+and gain bounds. Shortening the window alone does not remove the normalized
+drift allowance, while sensor-noise normalization still grows as `H**-2`.
+Those conditional budgets are not a measured clock or sensor specification.
+
+Zero drift or a singleton rate prior recovers the held-clock calculation;
+this does not mean a positive bound proves actual drift. Larger transfer
+bounds may leave weak or unavailable inference, without disproving
+identifiability by another observation design. The
+[theorem](../../../theory/nodal/SINE_CLOCK_DRIFT_INFERENCE.md#sine-clock-drift-inference)
+separates mean-rate inference from the exact profile ambiguity. Existing
+frozen records are unchanged, and this example starts no reserved or
+physical-calibration campaign.
+
+<a id="sine-curvature-inference"></a>
+### Use an additional first-window reading for finite curvature
+
+Use `infer_sine_geometry_gain_clock_curvature` from
+[`relational_sine_curvature_inference`](../../../src/tnfr/physics/relational_sine_curvature_inference.py)
+for four readings at `0,H/2,H,2*H` from one uninterrupted trajectory.
+The [contract](../../contracts/relational/SINE_PATTERNS.md#sine-curvature-inference)
+uses the same ten primitive inputs as the clock adapter, but requires
+four reading pairs. The phase events stay at `0,H`, and gain, offset and
+clock conversion remain held. All thirty-six source coordinates and their
+declared uncertainty keep evolving through both windows.
+
+The half-window reading is a new observation premise. Interpolating it
+from the earlier three readings supplies no new measured information.
+The initial and `H` readings contribute to both the older inverse and
+the finite difference `C=r_H-2*r_half+r_0`; their errors therefore remain
+associated. Supply primitive recorded intervals and their per-reading
+error bound, not a separately estimated curvature with invented
+independent noise. Sensor errors and numerical interval widths stay in
+recorded units.
+
+Inspect `clock_envelope` for the coarse three-reading result and
+`curvature_refinement_available` before using the refined clock/gain
+bounds. Initial-source and third-derivative errors are part of the new
+finite bound. An available candidate need not improve resolution, and
+its separate marginals do not assert a realizable parameter combination.
+If the refinement is unavailable, the nested coarse report keeps its
+own limited conclusion; unavailable parent outputs are not zeros.
+
+Shortening `H` reduces the smooth-flow remainder but amplifies normalized
+reading uncertainty as `H**-2`; the original-source error also remains.
+The [conditioning budget](../../../theory/nodal/SINE_FINITE_CURVATURE_INFERENCE.md#sine-curvature-conditioning)
+gives a conditional informative regime. Its arithmetic widths are not a
+sensor calibration or a reserved-response result.
+
+This synthetic equal-input control exercises admission and abstention;
+the four zero reading placeholders are not a generated response:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_curvature_inference import infer_sine_geometry_gain_clock_curvature
+
+control = infer_sine_geometry_gain_clock_curvature(
+    bulk_angle_bounds=(Q(11, 8), Q(3, 2)),
+    receiver_short_angle_bounds=(Q(2, 3), Q(1)),
+    form_radius=Q(1, 2**40),
+    phase_radius=Q(1, 2**40),
+    phase_increments=(Q(1, 4), Q(1, 4)),
+    probe_duration=Q(1, 2**22),
+    recorded_reading_bounds=((Q(0), Q(0)),) * 4,
+    readout_error_bound=Q(0),
+    readout_gain_bounds=(Q(1), Q(2)),
+    clock_rate_bounds=(Q(1, 2), Q(2)),
+)
+print(control.status, control.clock_envelope.rank_deficient)  # unavailable True
+```
+
+The [information theorem](../../../theory/nodal/SINE_FINITE_CURVATURE_INFERENCE.md)
+distinguishes a local noiseless source subfamily from the full uncertain
+problem. Four readings do not guarantee global state reconstruction,
+independent calibration or removal of exact law/clock equivalence. Earlier
+frozen records remain unchanged; this guide starts no reserved campaign.
+
+<a id="sine-clock-inference"></a>
+### Retain a bounded unknown conversion between observation and structural time
+
+Use `infer_sine_geometry_gain_clock` from
+[`relational_sine_clock_inference`](../../../src/tnfr/physics/relational_sine_clock_inference.py)
+when the complete sine law is known but one constant conversion
+`tau=rho*s` is only bounded. The
+[contract](../../contracts/relational/SINE_PATTERNS.md#sine-clock-inference)
+requires all nine joint-inverse inputs plus `clock_rate_bounds`.
+Supply `probe_duration=H` in observation time, with `rho_plus*H<=1/2`.
+Keep the original full source, both events, one held sensor and the same
+clock rate through both windows. Readings occur at `s=0,H,2*H`.
+
+Inspect `effective_gain_outer_bounds` as a bound on `J=G*rho`, then read
+the separate `readout_gain_outer_bounds` and `clock_rate_outer_bounds`.
+They project one necessary relation; arbitrary combinations of their
+endpoints need not be compatible. Neither sensor gain nor elapsed
+structural time is independently calibrated by this report. Geometry
+still refers to the original source and its actual pre-probe arc mean.
+
+The nested `constraint_envelope` uses maximum structural duration and
+auxiliary gain `L=G*rho/rho_plus` only to bound the necessary inequalities.
+Its gain is not the parent sensor gain, and its duration is not a new
+observed trajectory. Retain sensor errors in recorded units without
+dividing them by a chosen clock value.
+
+This synthetic arithmetic control demonstrates rank abstention. Its zero
+reading placeholders are not a generated response or a reserved experiment:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_clock_inference import infer_sine_geometry_gain_clock
+
+control = infer_sine_geometry_gain_clock(
+    bulk_angle_bounds=(Q(11, 8), Q(3, 2)),
+    receiver_short_angle_bounds=(Q(2, 3), Q(1)),
+    form_radius=Q(1, 2**40),
+    phase_radius=Q(1, 2**40),
+    phase_increments=(Q(1, 4), Q(1, 4)),
+    probe_duration=Q(1, 2**22),
+    recorded_reading_bounds=((Q(0), Q(0)),) * 3,
+    readout_error_bound=Q(0),
+    readout_gain_bounds=(Q(1), Q(2)),
+    clock_rate_bounds=(Q(1, 2), Q(2)),
+)
+print(control.status, control.rank_deficient)  # unavailable True
+```
+
+Equal cumulative amplitudes disable this inverse, without proving that
+the full nonlinear response is uninformative. The
+[theorem](../../../theory/nodal/SINE_CLOCK_INFERENCE.md) also separates exact
+clock/common-law-rate equivalence from merely leading gain/clock agreement.
+Its curvature control does not supply finite-noise clock recovery. Earlier
+known-clock records keep their original premises; this API does not turn
+them into a newly reserved unknown-clock experiment.
+
+<a id="sine-two-pulse-inference"></a>
+### Constrain geometry and gain using one uninterrupted trajectory
+
+Use `infer_sine_two_pulse_geometry_gain` from
+[`relational_sine_two_pulse_inference`](../../../src/tnfr/physics/relational_sine_two_pulse_inference.py)
+when three readings share one held sensor gain and offset, and two declared
+phase inputs act on the same complete state. The
+[contract](../../contracts/relational/SINE_PATTERNS.md#sine-two-pulse-inference)
+fixes the source family, graph, complete law and structural clock. This
+calculation supplies outer angle and gain constraints; it does not acquire
+a source or generate the readings.
+
+1. Admit the original angle priors and full-state residual radii. Supply a
+   positive gain interval independently; a broad interval is allowed.
+2. Declare `phase_increments=(a1,a2)` and the equal window duration `h`.
+   Apply `a1*q` first and only `(a2-a1)*q` at `h`. Carry the full form and
+   phase state into the second interval.
+3. Retain readings at `0,h,2*h` in three ordered bound pairs. Declare the
+   error of each reading separately from its numerical interval width.
+   Supply exact fractions where a large offset accompanies a small signal.
+4. Interpret `bounded_candidate` as necessary compatibility. An
+   `incompatible` result excludes the combined premises; an `unavailable`
+   result needs its source, rank or arithmetic limitation resolved before
+   any inference claim.
+
+The two measured increments share the middle reading. The implementation
+retains that correlation when propagating noise and interval widths through
+the inverse. It also cancels the common offset before multiplying by
+uncertain coefficients. Averaging away the intermediate state or treating
+the second input as a fresh source would change the model.
+
+Separated amplitudes provide a nonsingular leading geometry/gain map.
+The [theorem](../../../theory/nodal/SINE_TWO_PULSE_INFERENCE.md) also retains
+the full finite-flow error and gives a conditional resolution budget.
+Use `rank_certified` with the admitted scale and separation factors; a zero
+lower endpoint in the displayed determinant product alone need not mean
+unresolved rank. Equal amplitudes disable this inverse; they do not prove
+the two-time full response uninformative. Final marginal projections can
+discard correlations between angle and gain; their Cartesian product need
+not be jointly realizable. The receiver geometry and nodal residuals remain
+unresolved, and no physical sensor calibration follows.
+
+The [reserved two-input result](../../../theory/nodal/SINE_TWO_PULSE_INFERENCE.md#sine-two-pulse-inference-result)
+uses two complete flow windows and one shared sensor history per source.
+Inspect the saved record without rerunning its producer or inverse:
+
+```python
+from pathlib import Path
+from tnfr.utils.io import json_loads
+
+path = Path("docs/assets/sine_formed_classes/two-pulse-inference-v1.json")
+saved = json_loads(path.read_text(encoding="utf-8"))
+print(saved["report"]["status"])
+for case in saved["cases"]:
+    inferred = case["inverse_outputs"]["primary"]["report"]
+    print(case["id"], inferred["status"], inferred["whole_window_acute_certified"])
+```
+
+This displays retained outputs; the
+[evidence audit](../../../tests/physics/test_sine_formed_evidence.py)
+checks their primitive state, event, observation and numerical associations.
+An absent optional whole-window acute certificate does not invalidate the
+global inverse, and provides no maintenance or recovery claim. The
+[execution plan](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+alone admits any subsequent assessment. Earlier single-pulse records cannot
+supply the middle or final reading of a different event schedule.
+
+<a id="sine-two-port-readout"></a>
+### Generate a complete-flow local readout under a declared protocol
+
+Use `bound_sine_two_port_readout` from
+[`relational_sine_two_port_readout`](../../../src/tnfr/physics/relational_sine_two_port_readout.py)
+to enclose an independently prepared full-state response. Its
+[contract](../../contracts/relational/SINE_PATTERNS.md#sine-two-port-readout)
+fixes the eighteen-node support, complete sine law, held capacities,
+fast clock `tau=(1023/1024)*t` and local phase dipole. It takes these five
+mandatory inputs:
+
+| Input | Meaning |
+| --- | --- |
+| `initial_form_bounds` | Eighteen finite endpoint pairs for the pre-event signed form coordinates |
+| `initial_phase_bounds` | Eighteen finite endpoint pairs for the pre-event continuous phase lifts, in radians |
+| `phase_increment` | Supplied amplitude in `[0,1]`, applied at node four and with opposite sign at node five; zero means no phase event |
+| `probe_duration` | One positive fast-time step, at most one |
+| `order` | Fixed ordinary integer Taylor order from one through sixteen |
+
+Declare source, event, observation and numerical budget before a reserved
+calculation. Exact fractions preserve their mathematical values; the shared
+interval backend adds outward numerical enclosures. Supply all coordinates,
+including common means and residuals, rather than replacing a prepared
+state with an equilibrium. For a new reserved assessment, archive its source
+and producing code before its first response. The existing
+[calibrated single-input](../../../theory/nodal/SINE_TWO_PORT_INFERENCE.md#sine-two-port-inference-result)
+and [successive-input](../../../theory/nodal/SINE_TWO_PULSE_INFERENCE.md#sine-two-pulse-inference-result)
+assessments are already frozen and evaluated; inspect their retained records
+without rerunning the producer.
+
+Check `.admitted` before using the returned `true_increment_bounds`.
+An unavailable result retains `failed_tube` and its reasons; do not turn
+its last tube or a midpoint into a successful endpoint. A successful
+`step` retains all thirty-six endpoint coordinates, the full initial box,
+strict Picard tube, Taylor coefficients and remainder. The
+[direct source-box proof](../../../theory/nodal/SINE_TWO_PORT_INFERENCE.md#a-separate-full-state-response-certificate)
+explains why coefficients on the initial box and derivatives on the whole
+tube enclose the complete evolution.
+
+For a continuation without an event, pass `phase_increment=0` and convert
+all thirty-six preceding `step.endpoint` intervals to primitive `(lo, hi)`
+pairs, retaining their form/phase ordering. Both rows keep evolving; zero
+amplitude neither freezes the state nor resets it to the original source.
+An intermediate observation can therefore split a flow into declared
+segments without inserting another kick. Retain each segment's duration,
+absolute starting time and complete endpoint handoff.
+
+Keep `baseline_readout_bounds` and `endpoint_readout_bounds` with the
+raw response. Use `true_increment_bounds` for the same-state change:
+it cancels the common initial coordinate symbolically before arithmetic.
+The producer contains no sensor gain, offset or noise. Apply a separately
+declared held observation model. The [calibrated single-input inverse](#sine-two-port-inference)
+uses one recorded increment, its two reading errors and public calibration.
+The [successive-input inverse](#sine-two-pulse-inference) uses three recorded
+intervals and a broad held-gain prior. For that route, carry the entire
+first endpoint into a second producer call with jump `a2-a1`, retain both
+global window origins and construct the middle reading only once. The
+three readings share one gain and offset; the second call is not a new
+preparation. Source coordinates and forward diagnostics belong to the
+response audit, not either inverse request. A common offset cancels only
+under its held-offset premise.
+
+The report proves a finite conditional flow enclosure. Global smoothness
+does not supply acute-chart retention, recovery or a measurement bridge.
+`to_dict()` and the shared SDK export retain exact rational endpoints under
+schema `tnfr.sine-two-port-readout.v1`; saved reports remain separate from
+source admission and provenance authentication.
+
+<a id="sine-two-port-inference"></a>
+### Interpret a calibrated local response as a geometry constraint
+
+Use `infer_sine_two_port_geometry` from
+[`relational_sine_two_port_inference`](../../../src/tnfr/physics/relational_sine_two_port_inference.py)
+only after independently admitting the full-state family, complete sine law,
+supplied phase pulse, elapsed structural clock and observation calibration
+described by its [contract](../../contracts/relational/SINE_PATTERNS.md#sine-two-port-inference).
+Supply a prior range for the donor bulk angle and receiver short angle,
+full-state error radii, the recorded increment and its per-reading error,
+positive gain bounds, and a fixed refinement budget. Exact fractions retain
+their values; rounded observations describe their represented values.
+
+This calculation constrains a genuinely variable, generally nonstationary
+geometry. It does not infer the compatible equilibrium by repeating the
+assumptions that already determine it. Its observation is one local increment
+on the joined graph, not the earlier joined-minus-unjoined contrast; do not
+substitute the saved dipole contrast for that input.
+
+Read the nominal-angle enclosure and the actual pre-probe long-arc mean enclosure
+separately. Initial phase uncertainty makes them different. A nonempty outer
+interval is a necessary constraint, not proof of an underlying state that
+produces the reading. An empty result challenges the joint premises; it
+does not identify an individual failed calibration or law. No trajectory,
+equilibrium search or old frozen producer runs when constructing the report.
+
+The [theorem](../../../theory/nodal/SINE_TWO_PORT_INFERENCE.md) supplies the
+finite response and remote-current error proof. The separately frozen
+[three-case assessment](../../../theory/nodal/SINE_TWO_PORT_INFERENCE.md#sine-two-port-inference-result)
+tests this inverse using complete-flow responses and a held sensor calibrated
+from separate known references. Its first evaluation passes all forty-three
+conditions. The inverse worker receives only its recorded JSON public packet;
+hidden geometry, source coordinates and realized reading errors remain in
+the posterior audit. This is a software information boundary, not physical
+calibration or cryptographic blindness.
+
+Inspect the [saved record](../../assets/sine_formed_classes/two-port-inference-v1.json)
+without rerunning the producer. Each `cases` entry retains `response`,
+`readings`, `public_packet`, `inverse_outputs`, `source_audit` and
+`stopping_rule`. The three inverse outputs are `primary`, `broad_gain` and
+`false_prior`; the complete phase-blind comparison has its own recorded
+bound. Keep exact fractional endpoints when subtracting readings: a large
+common offset and a tiny increment can lose the signal in rounded displays.
+The [protocol](../../assets/sine_formed_classes/two-port-inference-v1.protocol.json),
+[source archive](../../assets/sine_formed_classes/two-port-inference-v1.source.zip)
+and [manifest](../../assets/sine_formed_classes/two-port-inference-v1.manifest.json)
+preserve source, budgets and verdicts. The
+[execution plan](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns subsequent admission.
+
+<a id="sine-two-port-dipole"></a>
+### Inspect a common interior phase probe and its finite warmup
+
+The [interior-dipole protocol](../../../theory/nodal/SINE_TWO_PORT_DIPOLE.md#sine-two-port-dipole-protocol)
+uses a new continuation of the original captured family. It retains all
+thirty-six initial form and phase errors and does not replay the earlier
+uniform form pulse. After a proved finite warmup, both the joined composite
+and an independently evolved unjoined control receive the same phase jump
+`theta_plus=theta_minus+a*(e_4-e_5)`, with form unchanged.
+
+The observation is the increment in local form difference:
+`(x_4-x_5)_after-(x_4-x_5)_before`. The coefficient vector, affected
+local edges and degrees agree in both supports. This does not make their
+whole-network responses identical; the proof retains a separate finite
+remainder for each full flow. Four scalar readings form the recorded
+joined-minus-unjoined contrast, with no assumed cancellation of their errors.
+
+The required inputs to `assess_sine_two_port_dipole` are:
+
+| Primitive | Frozen value | Meaning |
+| --- | --- | --- |
+| `warmup_duration` | `285934809600000` | Extra fast structural time after the existing finite capture handoff |
+| `form_radius` | `2^-40` | Desired original-form norm bound after warmup |
+| `phase_radius` | `2^-40` | Desired target-phase norm bound after warmup, in radians |
+| `phase_increment` | `2^-12` | Exact phase dipole amplitude |
+| `probe_duration` | `2^-10` | Elapsed fast structural time between the jump and readout |
+| `readout_error_bound` | `2^-50` | Error bound for one scalar local form-difference reading |
+| `contrast_threshold` | `2^-38` | Strict lower threshold for the recorded contrast |
+| `work_allowance` | `2^-21` | Storage-work allowance for each sine-law phase jump |
+
+These powers denote exact rationals; Python callers can use
+`Fraction(1, 2**40)` and the corresponding denominators. The returned
+`SineTwoPortDipole` uses schema `tnfr.sine-two-port-dipole.v1`.
+Its warmup is conditional on already trapped source families. The joined
+norm uses its global conserved means; the unjoined norm combines both
+rings after removing each ring's own means. The full-family source handoff
+is a separate obligation, and the small endpoint radii do not narrow the
+original preparation or replace it by an equilibrium.
+
+Read the [API contract](../../contracts/relational/SINE_PATTERNS.md#sine-two-port-dipole)
+before interpreting response, heat-control, work and recovery flags.
+The [retained result](../../../theory/nodal/SINE_TWO_PORT_DIPOLE.md#sine-two-port-dipole-result)
+passes all thirteen conditions in its first frozen assessment. Its recorded
+contrast is enclosed between approximately `8.3951e-12` and `9.6232e-12`,
+above threshold `2^-38`; the phase-blind recorded bound is about
+`7.1054e-15`. These are certified structural-model bounds, not measured
+laboratory responses. The
+[execution plan](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#sine-two-port-dipole-admission)
+owns its closed status. Inspect the saved record from the repository root:
+
+```python
+from fractions import Fraction as Q
+from pathlib import Path
+from tnfr.utils.io import json_loads
+
+saved = json_loads(
+    Path("docs/assets/sine_formed_classes/two-port-dipole-v1.json").read_text(
+        encoding="utf-8"
+    )
+)
+assert saved["schema"] == "tnfr.sine-two-port-dipole.v1"
+dipole = saved["report"]
+
+def exact(value):
+    return Q(value["numerator"], value["denominator"])
+
+assert dipole["status"] == "certified_dipole"
+assert exact(dipole["warmup_duration"]) == 285934809600000
+assert dipole["warmup_certified"]
+assert exact(dipole["warmup_form_margin"]) > 0
+assert exact(dipole["warmup_phase_margin"]) > 0
+contrast_lower = exact(dipole["recorded_contrast_bounds"]["lo"])
+assert contrast_lower > Q(1, 2**38)
+assert contrast_lower > exact(dipole["phase_blind_recorded_contrast_upper_bound"])
+assert dipole["heat_warmup_certified"] and dipole["heat_control_excluded"]
+assert all(exact(value) >= 0 for value in dipole["work_allowance_margins"])
+assert all(exact(value) > 0 for value in dipole["capture_storage_margins"])
+assert dipole["identity_certified"] and dipole["recovery_certified"]
+assert saved["original_control_handoff"]["admitted"]
+assert saved["source_handoff"]["report"]["numerical_execution_replayed"] is False
+assert len(saved["frozen_stopping_rule"]) == 13
+assert all(saved["frozen_stopping_rule"].values())
+assert saved["frozen_stopping_rule_passed"]
+print(dipole["status"], len(saved["frozen_stopping_rule"]))
+```
+
+These checks read the
+[retained response](../../assets/sine_formed_classes/two-port-dipole-v1.json)
+without invoking any assessor or trajectory. The
+[protocol](../../assets/sine_formed_classes/two-port-dipole-v1.protocol.json),
+[source archive](../../assets/sine_formed_classes/two-port-dipole-v1.source.zip)
+and [manifest](../../assets/sine_formed_classes/two-port-dipole-v1.manifest.json)
+preserve its first execution. The earlier capture's numerical execution
+remains an explicit premise of its rebuilt source handoff; the new warmup
+does not independently authenticate that execution. Earlier uniform-probe
+export recovery is a separate record.
+
+The separate phase-blind comparison has `x_tau=-A*x` and
+`theta_tau=gamma*A*x`, with its own actual support and the same original
+preparation. Its phase pulse has zero causal effect on form, while its
+remaining form background receives an explicit heat bound. The certified
+contrast clears both the declared response threshold and this bounded
+alternative. It does not establish uniqueness among all phase-sensitive
+laws or a physical measurement bridge.
+
+All durations use `tau=e*t`. The additional warmup starts at
+`tau=1025*1023**2*pi**2`; the phase probe and observation continue that
+clock without a reset. Both form and phase means remain preserved through
+this phase-only intervention. Its work and post-event identity must still
+be admitted separately from the earlier no-event capture theorem.
+
+<a id="sine-two-port-probe"></a>
+### Inspect a supplied pulse and receiver transmission
+
+The [supplied-probe protocol](../../../theory/nodal/SINE_TWO_PORT_PROBE.md#sine-two-port-probe-protocol)
+continues the acquired two-port family at slow time `sigma=1025`.
+Its [finite capture handoff](#sine-two-port-capture) retains the original
+independent form and phase errors; the reached state is not reset to its
+target. A simultaneous form pulse of `1/2048` at all nine donor nodes is
+followed by `1/4` of fast structural time under the same complete law.
+
+The readout is the receiver's degree-weighted mean form increment. Compare
+it with the same observation rule on two unjoined C9 rings that evolved
+from the same original preparation for the same original elapsed time and
+receive the same donor pulse. Receiver degree mass is `20` when joined
+and `18` when unjoined, so the rule has different coefficient vectors.
+The unjoined receiver mean is exactly conserved. This control does not
+delete contacts or reset a captured state.
+The two before-and-after increments consume four scalar readings, with
+independently bounded errors and no assumed cancellation.
+
+The required inputs to `assess_sine_two_port_probe` are:
+
+| Primitive | Reserved value | Meaning |
+| --- | --- | --- |
+| `form_radius` | `1/8192` | Relative form norm at the actual pre-pulse endpoint, in the full degree metric |
+| `phase_radius` | `1/1024` | Relative phase distance from the joint target, in radians and the same metric |
+| `pulse_amplitude` | `1/2048` | Exact supplied donor form increment |
+| `probe_duration` | `1/4` | Elapsed fast clock `tau=e*t` after the pulse |
+| `readout_error_bound` | `1/67108864` | Independent additive error per declared scalar readout |
+| `contrast_threshold` | `1/262144` | Strict lower threshold for the recorded joined-minus-unjoined increment |
+| `work_allowance` | `1/2000000` | Upper allowance for the supplied storage jump |
+
+The standalone assessment is conditional on its endpoint ball. It returns
+`SineTwoPortProbe`, schema `tnfr.sine-two-port-probe.v1`, and separate
+response, work and recovery flags; it does not establish source acquisition.
+The frozen experiment needs the separately checked finite source handoff as
+well. Read the [API contract](../../contracts/relational/SINE_PATTERNS.md#sine-two-port-probe)
+before interpreting the flags. The original frozen attempt executed its
+primary assessment but failed during control-report export and saved no
+complete response. The
+[retained result](../../../theory/nodal/SINE_TWO_PORT_PROBE.md#sine-two-port-probe-result)
+passes all ten fixed conditions after a separately archived deterministic
+export recovery. Scientific inputs and runtime were unchanged; this is not
+a successful first attempt. The
+[execution plan](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#sine-two-port-probe-admission)
+owns that status. Inspect the saved response from the repository root:
+
+```python
+from fractions import Fraction as Q
+from pathlib import Path
+from tnfr.utils.io import json_loads
+
+saved = json_loads(
+    Path("docs/assets/sine_formed_classes/two-port-probe-v1.json").read_text(
+        encoding="utf-8"
+    )
+)
+assert saved["schema"] == "tnfr.sine-two-port-probe.v1"
+probe = saved["report"]
+handoff = saved["source_handoff"]["report"]
+
+def exact(value):
+    return Q(value["numerator"], value["denominator"])
+
+assert probe["status"] == "certified_probe"
+assert exact(probe["recorded_contrast_bounds"][0]) > Q(1, 262144)
+assert exact(probe["joined_work_bounds"][1]) <= Q(1, 2000000)
+assert exact(probe["capture_storage_margin"]) > 0
+assert probe["joined_identity_certified"] and probe["recovery_certified"]
+assert exact(handoff["endpoint_form_radius"]) < Q(1, 8192)
+assert exact(handoff["endpoint_phase_radius"]) < Q(1, 1024)
+assert handoff["numerical_execution_replayed"] is False
+assert handoff["provenance_authenticated"] is False
+assert len(saved["frozen_stopping_rule"]) == 10
+assert all(saved["frozen_stopping_rule"].values())
+assert saved["frozen_stopping_rule_passed"]
+history = saved["evaluation_history"]
+assert history["retained_assessment_kind"] == (
+    "separately_frozen_export_recovery_recomputation"
+)
+assert history["scientific_inputs_or_runtime_changed"] is False
+assert history["prior_capture_producer_replayed"] is False
+print(probe["status"], history["retained_assessment_kind"])
+```
+
+These are read-only checks of the
+[saved response](../../assets/sine_formed_classes/two-port-probe-v1.json).
+The original [protocol](../../assets/sine_formed_classes/two-port-probe-v1.protocol.json),
+[source archive](../../assets/sine_formed_classes/two-port-probe-v1.source.zip)
+and [failure record](../../assets/sine_formed_classes/two-port-probe-v1.first-attempt.json)
+remain separate from the
+[export-recovery wrapper](../../assets/sine_formed_classes/two-port-probe-v1.export-recovery.py.txt).
+The [manifest](../../assets/sine_formed_classes/two-port-probe-v1.manifest.json)
+retains their associations. No producer is invoked by this example.
+
+To admit the retained finite source, use the separate research reader
+`audit_sine_two_port_capture_handoff` on
+`docs/assets/sine_formed_classes`. It rebuilds the consumed source, target
+and endpoint bounds and checks archive associations. Its direct
+`SineTwoPortHandoffAudit.to_dict()` uses schema
+`tnfr.sine-two-port-handoff-audit.v1`; it is not a generic SDK relational
+report. The audit does not replay the archived numerical execution or
+authenticate its chronology. In particular, its checked metric chain and
+root signs retain the declared Taylor-execution premise. A conditional
+endpoint probe report and this finite source admission have different roles.
+
+The pulse shifts the global form mean by `1/4096`, while phase mean and
+support remain fixed. The proof therefore needs post-event work and a new
+trapping check; the earlier no-event convergence result cannot cross this
+jump on its own. Any certified recovery preserves the joint winding identity
+and approaches the same shape on the new form-mean leaf.
+
+Transmission on supplied support is the scope of this test. A pure heat
+countermodel retains the ideal signal. This result therefore does not select
+the sine law or isolate the effect of the acquired internal geometry.
+The intervention, structural clock and observation rule remain supplied;
+they are not a physical preparation or measurement bridge.
+
+<a id="sine-two-port-capture"></a>
+### Inspect the complete same-family capture chain
+
+The [retained capture result](../../../theory/nodal/SINE_TWO_PORT_CAPTURE.md#sine-two-port-capture-result)
+certifies that the same midpoint-aligned preparation family enters a local
+trapping region and converges to the joint equilibrium. All original form
+and phase errors remain admitted. The first preserved assessment passed
+every numerical and full-state handoff premise of the
+[theorem](../../../theory/nodal/SINE_TWO_PORT_CAPTURE.md#sine-two-port-capture).
+The [declared protocol](../../assets/sine_formed_classes/two-port-capture-v1.protocol.json)
+fixes the six primitives consumed by `assess_sine_two_port_capture` and
+schema `tnfr.sine-two-port-capture.v1` for its report. Neither a protocol
+alone nor a successful static target report would establish this result.
+
+Read selected fields from the saved response at the repository root:
+
+```python
+from fractions import Fraction as Q
+from pathlib import Path
+from tnfr.utils.io import json_loads
+
+saved = json_loads(
+    Path("docs/assets/sine_formed_classes/two-port-capture-v1.json").read_text(
+        encoding="utf-8"
+    )
+)
+assert saved["schema"] == "tnfr.sine-two-port-capture.v1"
+capture = saved["report"]
+
+def exact(name):
+    value = capture[name]
+    return Q(value["numerator"], value["denominator"])
+
+assert capture["status"] == "certified_capture"
+assert len(capture["reference_steps"]) == 4096
+assert exact("validated_reference_duration") == exact("reference_duration") == 1024
+assert exact("full_slow_horizon") == 1025
+assert exact("reference_minimum_acute_margin") > Q(1, 2048)
+assert exact("reference_target_distance_upper_bound") <= Q(1, 2048)
+assert exact("endpoint_excess_storage_upper_bound") < Q(1, 648000)
+assert exact("capture_storage_margin") > 0
+assert capture["capture_certified"]
+assert saved["frozen_stopping_rule_passed"]
+print(capture["status"], capture["unavailable_reasons"])
+```
+
+These are read-only checks of the retained record, not a new assessment.
+The [saved response](../../assets/sine_formed_classes/two-port-capture-v1.json)
+includes every compact reference-step certificate. The
+[source archive](../../assets/sine_formed_classes/two-port-capture-v1.source.zip)
+and [manifest](../../assets/sine_formed_classes/two-port-capture-v1.manifest.json)
+retain its producing implementation and content hashes; the
+[evidence audit](../../../TESTING.md#current-checks-and-retained-evidence)
+checks those associations without rerunning the producer.
+
+The nominal gradient reference is validated through slow time `1024` using
+an eight-coordinate reconstruction, the shared retained-metric Taylor
+kernel, step `1/4`, order eight and at most 4,096 steps. This smaller
+reference does not impose symmetry on the actual eighteen-node form-phase
+family. The strict reference margin `1/2048` radians and endpoint-distance
+allowance `1/2048` radians in the full degree metric are checked separately
+from the actual full-flow error.
+
+One additional slow unit is handled analytically, continuing the same
+reference and full trajectories to `1025`. Capture then requires the
+original form coordinate, the actual phase error and the complete excess
+storage to pass their common local barrier. Inspect the entire chain:
+a small reference endpoint alone is insufficient, and a partial validated
+prefix does not represent the requested horizon.
+
+The protocol, producing source and proof were preserved before the first
+evaluation. Inspect its saved result without rerunning the frozen producer.
+The successful chain admits the full original preparation family; it does
+not impose the reference's reflection symmetry on actual errors. A separate
+current-source assessment with an unavailable result must preserve its
+failed premise and budget rather than replace the retained first response.
+The
+[contract](../../contracts/relational/SINE_PATTERNS.md#sine-two-port-capture)
+separates this conditional capture from contact occurrence, event work and
+physical identification.
+
+<a id="sine-two-port-transit"></a>
+### Certify a finite deformation from the undeformed pair
+
+The [directional transit theorem](../../../theory/nodal/SINE_TWO_PORT_TRANSIT.md#sine-two-port-directional-transit)
+starts from two undeformed uniform twists with nominal form zero and
+midpoint-aligned contact gaps `+pi/9`, `-pi/9`. It proves motion under the
+complete law while retaining independent errors in all eighteen form and
+phase coordinates. The source does not use the solved equilibrium.
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_two_port_transit import (
+    assess_sine_two_port_transit,
+)
+from tnfr.sdk import relational_report_to_dict
+
+transit = assess_sine_two_port_transit(
+    form_error_radius=Q(1, 65536),
+    phase_error_radius=Q(1, 65536),
+)
+assert transit.energy_budget_admitted
+assert transit.error_certified
+assert transit.whole_window_acute_certified
+assert transit.short_arc_change_lower_bound > Q(1, 32)
+assert transit.direction_certified
+assert transit.status == "certified_directional_transit"
+payload = relational_report_to_dict(transit)
+```
+
+The fixed endpoint is slow time `sigma=1/4`, with
+`sigma=gamma**2*tau`, `tau=e*t`, and `gamma=1/(1023*pi)`.
+This is original structural time `t=261888*pi**2`, not a laboratory clock.
+At that endpoint, every admitted donor short gap has contracted by more
+than `1/32` radian and every receiver short gap has expanded by more than
+`1/32` radian, each compared with its own initial gap. All edges remain
+acute throughout this finite window, preserving periods `(2,1,0)`.
+The phase-error radius is in radians; the form radius uses the declared
+structural form coordinate.
+
+The assessor evaluates analytic bounds, not a numerical trajectory.
+Its gradient reference supplies a comparison while the retained mixed
+coordinate reconstructs the actual full-state law. Inspect the energy,
+bootstrap and direction flags separately: candidate estimates cannot
+substitute for certified bounds, and a failed sufficient margin is not
+an observed failure of motion. The
+[API contract](../../contracts/relational/SINE_PATTERNS.md#sine-two-port-transit)
+specifies those distinctions.
+
+Midpoint alignment is a supplied preparation. In the earlier centered-ring
+convention it corresponds to receiver origin `-7*pi/9`, so this is not the
+old `1/1000`-origin contact experiment. The finite motion is compatible with
+the earlier scalar-storage obstruction: neither that obstruction nor the
+new directional certificate decides eventual capture. No contact event,
+passive work budget or physical binding is established.
+
+<a id="sine-two-port-handoff-obstruction"></a>
+### Check the limit of a scalar storage handoff
+
+The two-port `(2,1)` equilibrium is locally attracting, but that fact does
+not place an undeformed pair in its basin. The
+[handoff obstruction](../../../theory/nodal/SINE_TWO_PORT_COMPATIBILITY.md#sine-two-port-handoff-obstruction)
+identifies a specific limit of the target-free sector-capture theorem:
+even an exact lower bound over all acute boundary faces cannot certify
+these sources directly from total storage. This applies to every relative
+component origin and includes a stated phase-error neighborhood.
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_two_port_compatibility import (
+    assess_sine_two_port_handoff_obstruction,
+)
+from tnfr.sdk import relational_report_to_dict
+
+handoff = assess_sine_two_port_handoff_obstruction(
+    phase_error_radius=Q(1, 65536),
+)
+assert handoff.storage_gap_lower_bound == Q(17, 13824) - 40 * Q(1, 65536)
+assert handoff.storage_gap_lower_bound > 0
+assert handoff.handoff_obstruction_certified
+assert handoff.status == "certified_handoff_obstruction"
+payload = relational_report_to_dict(handoff)
+```
+
+The radius is a per-node phase-lift error in radians around the isolated
+uniform twists; the complete law and both unit contacts remain fixed. Form
+coordinates are arbitrary finite signed values, and their nonnegative
+storage cannot restore the failed scalar inequality. The assessor constructs
+an exact lower-storage boundary witness. It does not integrate a trajectory,
+solve for the equilibrium again or change the earlier frozen evidence.
+
+Read `storage_gap_lower_bound` as a margin excluding this proof method.
+It is not a prediction that a trajectory reaches the boundary or loses its
+identity. A zero or negative conservative margin gives `unavailable`, not
+proof of capture. Actual acquisition needs additional control of the
+direction and evolution of the full state. Earlier central-port contact
+certificates do not apply unchanged to this different support. The
+[contract](../../contracts/relational/SINE_PATTERNS.md#sine-two-port-handoff-obstruction)
+specifies admission, the strict rational threshold and the scope of each flag.
+
+<a id="sine-two-port-compatibility"></a>
+### Inspect compatibility at two distinct ports
+
+`assess_sine_two_port_compatibility` admits an implicit acute equilibrium on
+two C9 rings joined at local nodes zero and one. Its three required arguments
+are `classes`, `outer_refinements` and `inner_refinements`; the
+[API contract](../../contracts/relational/SINE_PATTERNS.md#sine-two-port-compatibility)
+owns their domains and the fixed complete law. This is a different interface
+from the central-port reduction, whose trajectory bounds cannot be reused
+unchanged. Read the retained primary and matched control from the repository
+root without rerunning either assessment:
+
+```python
+from fractions import Fraction as Q
+from pathlib import Path
+from tnfr.utils.io import json_loads
+
+saved = json_loads(
+    Path("docs/assets/sine_formed_classes/two-port-compatibility-v1.json").read_text(
+        encoding="utf-8"
+    )
+)
+assert saved["schema"] == "tnfr.sine-two-port-compatibility.v1"
+primary = saved["report"]
+matched = saved["matched_control"]["report"]
+
+for label, record in (("unequal classes", primary), ("matched classes", matched)):
+    print(label, record["classes"], record["status"])
+    print("acute", record["acute_geometry_certified"])
+    print("local attraction", record["local_attraction_certified"])
+    print("undeformed pair compatible", record["uniform_pair_compatible"])
+    print(record["unavailable_reasons"])
+
+def first_contact_current(record):
+    index = record["geometry"]["edges"].index([0, 9])
+    interval = record["edge_current_bounds"][index]
+    return tuple(Q(interval[key]["numerator"], interval[key]["denominator"])
+                 for key in ("lo", "hi"))
+
+primary_current = first_contact_current(primary)
+matched_current = first_contact_current(matched)
+assert primary_current[0] > 0
+assert matched_current == (Q(0), Q(0))
+assert saved["frozen_stopping_rule_passed"]
+```
+
+Both [saved certificates](../../assets/sine_formed_classes/two-port-compatibility-v1.json)
+have status `certified_compatible`. The unequal-class first contact current
+is approximately `0.11461`; the matched current is exactly zero. The unequal
+twists deform to satisfy the joint balance; independently rotating their
+undeformed copies cannot make both contacts compatible. These are static
+geometric distinctions, not an evaluated formation trajectory.
+
+Inspect `bridge_turn_bounds`, `edge_current_bounds` and the correlated affine
+turn coefficients together. The intervals enclose one implicit geometry;
+their midpoint and arbitrary independent endpoint choices are not exact
+equilibria. `full_nodal_residuals_consistent` checks interval consistency,
+while exact stationarity rests on the proved root equations and complete
+nodal factorization. Matched classes use exact uniform twists, so absent
+root brackets are expected rather than missing evidence.
+
+The [theory owner](../../../theory/nodal/SINE_TWO_PORT_COMPATIBILITY.md#sine-two-port-compatibility)
+separates this compatibility question from earlier source formation. Local
+attraction does not show that the previous isolated preparations reach the
+new basin, or that a contact occurs or pays its storage cost. Stationary sine
+circulation has zero nodal velocities; it is not sustained nodal motion or
+a physical current. The [retained-evidence audit](../../../TESTING.md#current-checks-and-retained-evidence)
+checks the frozen bundle separately from this read-only inspection.
+
+<a id="sine-port-form-tracking"></a>
+### Inspect the sharper form bound and its preserved baseline
+
+`assess_sine_port_form_tracking` uses the same fourteen primitive arguments as
+the [all-time relaxation assessment](#sine-port-relaxation). It rebuilds those
+premises and applies a separately justified ordered heat comparison, retaining
+the same surrogate, nonlinear bridge and channel allowances. The
+[API contract](../../contracts/relational/SINE_PATTERNS.md#sine-port-form-tracking)
+owns admission and field availability. To inspect the saved experiment from
+the repository root without repeating its assessment:
+
+```python
+from fractions import Fraction as Q
+from pathlib import Path
+from tnfr.utils.io import json_loads
+
+saved = json_loads(
+    Path("docs/assets/sine_formed_classes/port-form-tracking-v1.json").read_text(
+        encoding="utf-8"
+    )
+)
+assert saved["schema"] == "tnfr.sine-port-form-tracking.v1"
+record = saved["report"]
+baseline = record["baseline_certificate"]
+
+def rational(value):
+    return Q(value["numerator"], value["denominator"])
+
+print("baseline", baseline["status"], "new method", record["status"])
+new_form_bound = rational(record["all_time_form_error_upper_bound"])
+old_form_bound = rational(baseline["all_time_form_error_upper_bound"])
+assert new_form_bound < old_form_bound
+assert record["all_time_phase_error_upper_bound"] == baseline[
+    "all_time_phase_error_upper_bound"
+]
+print("phase", record["phase_resolution_certified"])
+print("form", record["form_resolution_certified"])
+print("joint", record["joint_resolution_certified"])
+```
+
+The [retained new assessment](../../assets/sine_formed_classes/port-form-tracking-v1.json)
+has status `full`. Its form upper bound is approximately `5.66e-8`, below the
+unchanged allowance of approximately `1.56e-7`; its original phase bound remains
+approximately `2.65e-4`, below `5e-4`. These are uniform error guarantees, not
+measured errors. The nested baseline remains `phase_only` and equals the
+earlier frozen report body, whose joint stopping criterion remains false.
+
+Inspect `odd_heat_bounds`, `even_heat_bounds` and the explicit bridge-variation
+fields for the new method's contributions and strict feedback margins.
+Unavailable bounds remain `None`; a valid envelope and each channel's
+resolution flag are separate questions. Overall admission also retains the
+supplied-work policy. The `*_mean_error_floor` fields remain upper budgets for
+possible constant offsets, not unavoidable positive errors.
+
+The [result owner](../../../theory/nodal/SINE_PORT_FORM_TRACKING.md#sine-port-form-tracking)
+retains the proof and complete frozen evidence. The
+[read-only evidence audit](../../../TESTING.md#current-checks-and-retained-evidence)
+checks provenance and the unchanged stopping rules separately from this JSON
+inspection. This result does not establish practical acquisition time, a
+sensor specification or physical identification of the formed components.
+
+<a id="sine-port-relaxation"></a>
+### Inspect uniform tracking and separate channel resolution
+
+`assess_sine_port_relaxation` compares the unchanged reduced composition with
+the actual fine trajectories for all subsequent uninterrupted times. It takes
+the original source/support budgets and a checked normalized spectral gap;
+it has no contact-duration argument and accepts no cached certificate. The
+[API contract](../../contracts/relational/SINE_PATTERNS.md#sine-port-relaxation)
+owns its fourteen primitive arguments. Use the retained record to inspect the
+existing experiment without rerunning its assessment, from the repository root:
+
+```python
+from fractions import Fraction as Q
+from pathlib import Path
+from tnfr.utils.io import json_loads
+
+saved = json_loads(
+    Path("docs/assets/sine_formed_classes/port-relaxation-v1.json").read_text(
+        encoding="utf-8"
+    )
+)
+assert saved["schema"] == "tnfr.sine-port-relaxation.v1"
+record = saved["report"]
+
+def rational_or_none(value):
+    return None if value is None else Q(value["numerator"], value["denominator"])
+
+print(record["status"], record["unavailable_reasons"])
+exact_error_bounds = {}
+for channel in ("phase", "form"):
+    exact_error_bounds[channel] = rational_or_none(
+        record[f"all_time_{channel}_error_upper_bound"]
+    )
+    print(channel, record[f"{channel}_resolution_certified"])
+print(record["resolution_limitations"])
+```
+
+Read `all_time_envelopes_certified` separately from the phase, form and joint
+resolution flags. The envelopes include initial and generated odd modes and
+budgets for possibly nonzero conserved-mean differences. The `*_mean_error_floor`
+fields are upper budgets for constant offsets, not measured lower errors.
+Phase uses a fraction of the
+declared origin span; form uses its own fraction of `gamma` times that span.
+Each strict outward margin must pass independently. `phase_only` and
+`form_only` retain precisely that qualification; `envelopes_only` still gives
+uniform bounds, while `unavailable` names unmet prerequisites. A failed
+sufficient resolution test is not a measurement of a large actual error.
+`exact_error_bounds` retains the rational upper bounds, or `None` when absent.
+
+The [retained assessment](../../assets/sine_formed_classes/port-relaxation-v1.json)
+is `phase_only`: it supplies both all-time envelopes and resolves the frozen
+phase allowance, while its form bound does not certify the frozen form
+allowance. The joint stopping criterion remains false. This qualified result
+does not show that the actual form error exceeds the allowance.
+
+These all-time allowances differ from the short-window composition budget
+and the earlier donor-response resolution. Full and surrogate trapping are
+both proved before the comparison; recovery alone would not establish their
+closeness. The [result owner](../../../theory/nodal/SINE_PORT_RELAXATION.md#sine-port-relaxation)
+retains the protocol, proof and channel verdicts. The
+[evidence audit](../../../TESTING.md#current-checks-and-retained-evidence)
+checks source/record consistency separately from reading a JSON. No support
+selection, autonomous preparation or physical observation is inferred.
+
+<a id="sine-class-four-history-readout"></a>
+### Enclose four complete probe histories
+
+The [forward producer](../../contracts/relational/SINE_PATTERNS.md#sine-class-four-history-readout)
+accepts every form and phase coordinate and a fixed numerical budget. It
+shares two prefixes, then carries their complete endpoints into four
+suffixes. This unrelated stationary example exercises the interface
+without evaluating the declared class-two response:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_class_readout import (
+    bound_sine_class_four_history_readout,
+)
+
+zero_source = tuple((Q(0), Q(0)) for _ in range(27))
+readout = bound_sine_class_four_history_readout(
+    initial_form_bounds=zero_source,
+    initial_phase_bounds=zero_source,
+    first_probe_amplitude=Q(0),
+    second_probe_amplitude=Q(0),
+    delay=Q(1, 128),
+    total_duration=Q(1, 64),
+    time_step=Q(1, 128),
+    order=2,
+    max_steps=6,
+)
+assert readout.admitted
+assert len(readout.source_box) == 54
+assert len(readout.endpoint_readout_bounds) == 4
+assert readout.mixed_readout_bounds.lo <= 0 <= readout.mixed_readout_bounds.hi
+```
+
+The optional `first_probe_node`, `second_probe_node` and `readout_node`
+keywords select ordinary integer nodes 0 through 26. Defaults `(4,4,22)`
+preserve the original two-probe arrangement. The
+[distinct-neighbor protocol](../../../theory/nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL.md)
+uses `(4,22,13)`; changing selectors alone does not admit that protocol's
+source, work or prediction. Existing receiver-named fields refer to the
+selected observed form coordinate.
+
+For a later matched class-two evaluation, the
+[canonical outer-cover recipe](../../../theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-validated-readout)
+uses a certified enclosure of pi and the independently proved endpoint
+radius. It covers the actual acquired family; independent interval
+corners need not satisfy its norm or zero-sum correlations. A successful
+flow enclosure does not itself admit acquisition or identity.
+
+Inspect `mixed_readout_bounds` with `suffix_receiver_increment_bounds`.
+The primary mixed interval retains exact cancellation of shared prefix
+receiver values. `endpoint_readout_bounds` and
+`raw_endpoint_mixed_bounds` expose the separate marginal construction.
+Their widths include preparation uncertainty and enclosure widening;
+add any declared sensor errors only in a separate observation protocol.
+
+If the report is unavailable, inspect `failed_segment_index`, its reason,
+completed steps/readings and `unattempted_segment_indices`. Later events
+have not been executed after the first failure, and incomplete histories
+provide no common-final-time mixed reading. Do not replace a failed
+prefix by a midpoint or silently retry with a larger budget. Any future
+reserved source, prediction, budget and first-outcome policy must be
+frozen separately; this example neither fits nor tests that prediction.
+
+The [matched evaluation protocol](../../../theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-frozen-evaluation)
+freezes the class-two source, observation and numerical policy before its
+response. Inspect its primitive JSON and freeze receipt read-only; neither
+inspection nor a passing hash check runs the producer or establishes a
+response. Keep the original acquired-family proof separate from the
+Cartesian cover, and retain both forward mixed constructions. The
+forward interval must remain unmodified by the analytic prediction.
+
+The [protocol](../../assets/sine_formed_classes/class-nonlinear-readout-v1.protocol.json),
+[source archive](../../assets/sine_formed_classes/class-nonlinear-readout-v1.source.zip)
+and [freeze receipt](../../assets/sine_formed_classes/class-nonlinear-readout-v1.freeze.json)
+can be inspected from the repository root without importing a scientific
+producer or an archived helper:
+
+```python
+from pathlib import Path
+from tnfr.utils.io import json_loads
+
+assets = Path("docs/assets/sine_formed_classes")
+stem = "class-nonlinear-readout-v1"
+protocol = json_loads((assets / (stem + ".protocol.json")).read_bytes())
+freeze = json_loads((assets / (stem + ".freeze.json")).read_bytes())
+assert protocol["schema"] == "tnfr.sine-class-nonlinear-readout-protocol.v1"
+assert freeze["schema"] == "tnfr.sine-class-nonlinear-readout-freeze.v1"
+assert protocol["evaluation_status_at_freeze"] == "not_evaluated"
+assert freeze["evaluation_status_at_freeze"] == "not_evaluated"
+assert protocol["producer_inputs"]["order"] == 16
+assert protocol["producer_inputs"]["max_steps"] == 384
+assert protocol["numerical_policy"]["time_step"] == {
+    "numerator": 1, "denominator": 64,
+}
+```
+
+`evaluation_status_at_freeze` describes the immutable pre-evaluation
+record; it is not a query about a later outcome. This inspection creates
+neither an attempt nor a response. The
+[first retained outcome](../../../theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-reserved-result)
+now has a separate
+[attempt ledger](../../assets/sine_formed_classes/class-nonlinear-readout-v1.attempt.json)
+and [response ZIP](../../assets/sine_formed_classes/class-nonlinear-readout-v1.response.zip).
+The ZIP preserves the complete original JSON as one member; do not rerun
+the producer to inspect this outcome. Its transport can be inspected
+without materializing the large JSON:
+
+```python
+from zipfile import ZipFile
+
+with ZipFile(assets / (stem + ".response.zip")) as archive:
+    entries = archive.infolist()
+    assert len(entries) == 1
+    assert entries[0].filename == stem + ".json"
+    assert entries[0].file_size == 191_886_903
+```
+
+This metadata check proves neither the content digest nor the numerical
+verdict. The [retained-evidence test selection](../../../TESTING.md)
+verifies bytes and reconstructs consumed arithmetic without executing
+the archived worker. The result owner records exact response bounds and
+the separate four-error sign and eight-error record-set conclusions.
+
+This evaluation used the
+[frozen-source restoration workflow](../RESEARCH_EVIDENCE.md#restore-the-declared-source-before-a-later-execution)
+with the complete `fa8e98a9b1bdd755709da481de7fc092b57bfe65` source tree
+and its archived helpers. Its first outcome is now retained; restoration
+refuses an existing attempt. A current reader's successful audit does not
+make refactored runtime code interchangeable with the frozen implementation
+or authorize a replay.
+
+<a id="sine-class-nonlinear-protocol"></a>
+### Check a finite nonlinear separation margin
+
+The [longer-horizon theorem](../../../theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-finite-separation)
+keeps the same complete source budget, two form impulses and reading
+noise, with a declared delay of one and final time of two structural
+units. Its conditional calculator integrates an exact heat polynomial and
+adds proved tails and nonlinear/source errors; it runs no nonlinear
+trajectory or formation assessment:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_class_nonlinear_protocol import (
+    bound_sine_class_nonlinear_protocol,
+)
+
+protocol = bound_sine_class_nonlinear_protocol(
+    mediator_class=2,
+    first_probe_amplitude=Q(1, 2000),
+    second_probe_amplitude=Q(1, 2000),
+    delay=Q(1),
+    total_duration=Q(2),
+    endpoint_radius=Q(1, 10**32),
+    readout_error_bound=Q(1, 10**30),
+    radius=Q(1, 12),
+    contact_work_allowance=Q(1, 10**12),
+    first_probe_work_allowance=Q(1, 500000),
+    second_probe_work_allowance=Q(1, 500000),
+)
+assert protocol.status == "record_sets_disjoint"
+assert protocol.predicted_orientation == -1
+assert protocol.disjoint_record_margin > 0
+assert protocol.all_work_within_allowances
+assert protocol.all_identities_certified
+```
+
+Read `true_mixed_bounds` and `recorded_mixed_bounds` as exact endpoint
+pairs. A recorded sign needs a margin above four reading errors; disjoint
+nonlinear/tangent four-record sets need eight because both models admit
+recording error. Inspect `strict_disjoint_noise_ceiling` as a sufficient
+mathematical allowance, not a measurement specification.
+
+Source acquisition and the conditional endpoint norms still need their
+own matched proof. Work and identity flags are independent of observation
+status. `bounds_only` does not prove overlap or the absence of nonlinear
+response, and a positive formal coefficient does not determine a finite
+response's sign. The [contract](../../contracts/relational/SINE_PATTERNS.md#sine-class-nonlinear-protocol)
+retains these distinctions. This example does not replay any frozen
+response or establish laboratory feasibility.
+
+<a id="sine-class-comparison-protocol"></a>
+### Inspect the independent comparison protocol without running it
+
+The [protocol owner](../../../theory/nodal/SINE_CLASS_COMPARISON_PROTOCOL.md)
+fixes one intervention inside the admitted amplitude interval. Inspect its
+primitive inputs and a missing-observation result without producing a response:
+
+```python
+from fractions import Fraction as Q
+from tnfr.research.sine_class_comparison_protocol import (
+    assess_reference_contrast,
+    canonical_comparison_sources,
+    comparison_observation_policy,
+    comparison_producer_inputs,
+)
+
+sources = canonical_comparison_sources()
+inputs = comparison_producer_inputs()
+policy = comparison_observation_policy()
+assert inputs["first_probe_amplitude"] == Q(7, 10000)
+assert inputs["time_step"] == Q(1, 128)
+assert inputs["max_steps"] == 1536
+assert inputs["initial_form_bounds"] == sources["reference_form_bounds"]
+assert inputs["initial_form_bounds"] != sources["actual_form_bounds"]
+pending = assess_reference_contrast(None, **policy)
+assert pending["status"] == "unavailable"
+assert pending["actual_bounds"] is None
+```
+
+The reference covers belong to a numerical comparison; they do not replace
+the acquired preparation. A proved full-law bound transfers their result to
+the original actual families. The source allowance, reading errors and work
+requirements retain their original values. The final actual-family interval
+must meet the width budget independently of the analytic prediction.
+Follow the execution plan and frozen-source association before running the
+selected response. The [contract](../../contracts/relational/SINE_PATTERNS.md#sine-class-comparison-readout)
+describes complete/partial results and the separate numerical decisions.
+
+<a id="sine-class-amplitude-feasibility"></a>
+### Check a whole interval of common probe amplitudes
+
+The [amplitude theorem](../../../theory/nodal/SINE_CLASS_AMPLITUDE_FEASIBILITY.md)
+uses the already retained complete cubic coefficient. The following
+scalar enclosure is a conservative outer bound of that evidence,
+including its finite time error; its justification comes from the
+retained-evidence audit, not from accepting two numbers in the API.
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_class_amplitude_feasibility import (
+    bound_sine_class_amplitude_feasibility,
+)
+
+feasibility = bound_sine_class_amplitude_feasibility(
+    amplitude_scale_lower=Q(4, 3),
+    amplitude_scale_upper=Q(7, 5),
+    base_cubic_lower=-Q(7013764940694, 10**42),
+    base_cubic_upper=-Q(7013764940692, 10**42),
+)
+assert feasibility.decision.recorded_sign
+assert feasibility.decision.null_excluded
+assert feasibility.all_work_within_allowances
+assert feasibility.all_identities_certified
+```
+
+Every common scale in that interval passes the sufficient inequalities.
+The calculation retains the full higher-amplitude remainder and both
+actual-source allowances. It also bounds the delayed impulse's carried
+work, storage and identity under the original ceilings. The
+`upper_scale_history_bounds` describe the upper endpoint used for those
+uniform bounds; inspect the separate mean intervals for conserved means
+over the whole scale range.
+
+The [contract](../../contracts/relational/SINE_PATTERNS.md#sine-class-amplitude-feasibility)
+keeps the supplied coefficient premise, domain admission and work/identity
+decisions explicit. This example makes no new coefficient or nonlinear
+response calculation, chooses no single evaluation intervention, and
+establishes no laboratory measurement precision.
+
+<a id="sine-class-spatial-observation"></a>
+### Assess a two-node spatial observation of the receiver
+
+The [spatial observation theorem](../../../theory/nodal/SINE_CLASS_SPATIAL_OBSERVATION.md)
+uses `x[23]-x[21]` at the same final time in all four histories and both
+classes. It retains the same ten primitive inputs as the central cubic
+comparison, while each node contributes its own recording uncertainty:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_class_spatial_observation import (
+    bound_sine_class_spatial_observation,
+)
+
+spatial = bound_sine_class_spatial_observation(
+    first_probe_amplitude=Q(1, 2000),
+    second_probe_amplitude=Q(1, 2000),
+    delay=Q(1),
+    total_duration=Q(2),
+    endpoint_radius=Q(1, 10**32),
+    readout_error_bound=Q(1, 10**30),
+    radius=Q(1, 12),
+    contact_work_allowance=Q(1, 10**12),
+    first_probe_work_allowance=Q(1, 500000),
+    second_probe_work_allowance=Q(1, 500000),
+)
+assert spatial.reading_count == 16
+assert spatial.decision.true_bounds[0] > 0
+assert spatial.status == "true_sign_certified"
+assert spatial.decision.scalar_cancellation
+assert not spatial.decision.recorded_sign
+assert not spatial.decision.null_excluded
+assert spatial.all_work_within_allowances
+assert spatial.all_identities_certified
+```
+
+The positive true contrast includes all higher amplitude orders and
+arbitrary source residuals through proved bounds. However, allowed errors
+can erase the recorded statistic. Its slightly larger signal than the
+central contrast does not compensate for twice as many scalar reading
+errors. The [contract](../../contracts/relational/SINE_PATTERNS.md#sine-class-spatial-observation)
+distinguishes true sign, recorded sign, null separation and unavailable
+domains. Inspect the [retained first assessment](../../../theory/nodal/SINE_CLASS_SPATIAL_OBSERVATION.md#sine-spatial-finite-result)
+for the fixed outcome and its reference to the existing complete
+coefficient evidence. This calculation evaluates no new nonlinear response.
+
+<a id="sine-class-cubic-response"></a>
+### Separate a true organization contrast from its recording limit
+
+The [complete cubic comparison](../../../theory/nodal/SINE_CLASS_CUBIC_RESPONSE.md)
+retains phase feedback and the quadratic internal corrections absent from
+the heat-only estimate. It encloses a finite amplitude coefficient,
+then includes every higher amplitude order and arbitrary actual-source
+residuals through separate bounds. This calculation uses no nonlinear
+trajectory or acquired response:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_class_cubic_response import (
+    bound_sine_class_cubic_response,
+)
+
+cubic = bound_sine_class_cubic_response(
+    first_probe_amplitude=Q(1, 2000),
+    second_probe_amplitude=Q(1, 2000),
+    delay=Q(1),
+    total_duration=Q(2),
+    endpoint_radius=Q(1, 10**32),
+    readout_error_bound=Q(1, 10**30),
+    radius=Q(1, 12),
+    contact_work_allowance=Q(1, 10**12),
+    first_probe_work_allowance=Q(1, 500000),
+    second_probe_work_allowance=Q(1, 500000),
+)
+assert cubic.response_bound_available
+assert cubic.decision.true_bounds[1] < 0
+assert cubic.status == "true_sign_certified"
+assert cubic.decision.scalar_cancellation
+assert not cubic.decision.recorded_sign
+assert not cubic.decision.null_excluded
+assert cubic.all_work_within_allowances
+assert cubic.all_identities_certified
+```
+
+The strict true sign establishes organization dependence under the model's
+premises. At this reading-error budget, each actual source pair also admits
+some allowed errors that cancel the recorded scalar contrast. This is not
+one error choice for all states or equality of the full reading vectors.
+The [contract](../../contracts/relational/SINE_PATTERNS.md#sine-class-cubic-response)
+keeps these decisions and unsupported-domain availability separate.
+The coefficient cache is bounded and stores only immutable analytic
+results; each call re-admits primitives and rebuilds source, work and
+observation decisions.
+
+To inspect the first calculation's evidence without repeating it, use
+the [read-only archive audit](../../../TESTING.md) and
+[retained result](../../../theory/nodal/SINE_CLASS_CUBIC_RESPONSE.md#sine-cubic-finite-result).
+These conditional budgets do not establish laboratory preparation or
+sensor feasibility.
+
+<a id="sine-class-nonlinear-organization"></a>
+### Inspect the organization-dependent nonlinear contrast
+
+The [class-contrast bound](../../../theory/nodal/SINE_CLASS_NONLINEAR_ORGANIZATION.md)
+asks whether the two mediator organizations have different mixed responses
+under the same finite design. It evaluates one analytic heat coefficient,
+cancels common channels and retains both complete-law error budgets. It
+uses no observed response:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_class_nonlinear_organization import (
+    bound_sine_class_nonlinear_organization,
+)
+
+contrast = bound_sine_class_nonlinear_organization(
+    first_probe_amplitude=Q(1, 2000),
+    second_probe_amplitude=Q(1, 2000),
+    delay=Q(1),
+    total_duration=Q(2),
+    endpoint_radius=Q(1, 10**32),
+    readout_error_bound=Q(1, 10**30),
+    radius=Q(1, 12),
+    contact_work_allowance=Q(1, 10**12),
+    first_probe_work_allowance=Q(1, 500000),
+    second_probe_work_allowance=Q(1, 500000),
+)
+assert contrast.gamma_fourth_scaled_heat_contrast_bounds[1] < 0
+assert contrast.true_contrast_bounds[0] < 0 < contrast.true_contrast_bounds[1]
+assert contrast.status == "bounds_only"
+assert not contrast.true_contrast_sign_certified
+assert contrast.strict_recorded_sign_noise_ceiling is None
+assert contrast.all_work_within_allowances
+assert contrast.all_identities_certified
+```
+
+The signed heat contribution does not establish a signed full response.
+The nonlinear error estimate dominates here, so the result establishes
+neither separation nor overlap. Shrinking reading errors alone cannot
+remove that mathematical limitation. The earlier within-class nonlinear
+result remains valid: its observable differs from this cross-class contrast.
+Each class's four histories share its own actual source, while uncertainty
+between classes remains independent. Equal event bounds do not mean equal
+preparation costs or actual states. The
+[contract](../../contracts/relational/SINE_PATTERNS.md#sine-class-nonlinear-organization)
+separates the eight-reading contrast allowance from a sixteen-error
+comparison against an independently noisy zero-contrast alternative.
+
+<a id="sine-class-nonlinear-superposition"></a>
+### Check what two form probes can resolve
+
+The [superposition theorem](../../../theory/nodal/SINE_CLASS_NONLINEAR_SUPERPOSITION.md#sine-class-nonlinear-superposition)
+compares neither probe, first only, second only and both on one complete
+acquired source. All four receiver readings occur at the same final time.
+The delayed-only control carries its unprobed state to its event. This
+response-free example checks a conditional endpoint budget:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_class_superposition import (
+    bound_sine_class_superposition,
+)
+
+bound = bound_sine_class_superposition(
+    mediator_class=2,
+    first_probe_amplitude=Q(1, 2000),
+    second_probe_amplitude=Q(1, 2000),
+    delay=Q(1, 20000),
+    total_duration=Q(1, 10000),
+    endpoint_radius=Q(1, 10**32),
+    readout_error_bound=Q(1, 10**30),
+    radius=Q(1, 12),
+    contact_work_allowance=Q(1, 10**12),
+    first_probe_work_allowance=Q(1, 500000),
+    second_probe_work_allowance=Q(1, 500000),
+)
+assert bound.status == "four_record_overlap"
+assert bound.scalar_cancellation_admitted
+assert bound.four_record_overlap_admitted
+assert bound.all_work_within_allowances
+assert bound.all_identities_certified
+```
+
+The endpoint radius and original componentwise zero sums are hypotheses;
+this call does not establish acquisition. The work and identity guards
+apply conditionally to all four carried histories. Inspect them separately
+from `status`, which reports only the observation conclusion.
+
+`four_record_overlap` means at least one admissible vector of four final
+readings is shared by the complete nonlinear law and its full tangent
+description started from the same actual state. It does not mean all
+records or continuous trajectories agree. A positive formal nonlinear
+coefficient or instantaneous-curvature certificate can coexist with this
+finite observation limit. Conversely, `bounds_only` is no positive
+discrimination result. The [contract](../../contracts/relational/SINE_PATTERNS.md#sine-class-nonlinear-superposition)
+keeps these meanings separate; no frozen producer or response is replayed.
+
+<a id="sine-class-mediated-memory"></a>
+### Retain the mediator's causal state and interaction history
+
+The [effective-memory theorem](../../../theory/nodal/SINE_CLASS_MEDIATED_MEMORY.md#sine-class-mediated-memory)
+keeps all donor and receiver coordinates visible while hiding the middle
+C9. Its exact tangent description contains a class-dependent kernel and
+the full hidden initial-state source. Inspect its fixed structure without
+evaluating any trajectory or formation source:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_class_memory import (
+    derive_sine_class_mediated_memory,
+)
+
+memory = derive_sine_class_mediated_memory()
+assert memory.full_state_dimension == 54
+assert (memory.visible_state_dimension, memory.hidden_state_dimension) == (36, 18)
+assert memory.grounded_hidden_laplacian_positive
+assert memory.midpoint_equations_verified
+assert memory.kernel_derivative_difference_spatial_matrix[13][4] == Q(1, 24)
+```
+
+That rational entry is one spatial factor; the class-dependent full kernel
+coefficient includes `gamma**2` and the class-cosine difference. The report
+keeps their ideal definitions and outward enclosures. The retained 18 hidden
+coordinates are not claimed to be a minimal realization.
+
+Use `bound_sine_class_mediated_memory` only after declaring its four
+[primitive budgets](../../contracts/relational/SINE_PATTERNS.md#sine-class-mediated-memory).
+It bounds a conditional reached-state family; it does not establish that
+the original formation reaches the supplied `endpoint_radius`. Within each
+class, the probe and unprobed baseline must begin at exactly the same full
+state. Their tangent initial sources then cancel in the difference, while
+both individual effective trajectories still need their hidden initialization.
+The nonlinear paired error remains explicit.
+
+Inspect `recorded_class_contrast_bounds` with
+`quasistatic_nonlinear_recorded_contrast_bounds` and
+`quasistatic_exclusion_margin_bounds`. `bounds_only` retains a finite
+estimate without certifying the selected distinction. The stationary
+midpoint comparator discards actual hidden initialization and keeps only
+the visible projection; it is not the same prepared full state or an
+invariant reduction of its flow. Its nonlinear null also retains visible
+source uncertainty, unlike the exactly cancelling linear comparator.
+
+The existing source costs, contact/probe work and winding-retention results
+still require their own matched full-law premises. Neither an available
+kernel nor a positive conditional contrast supplies those certificates,
+physical parameter identification or autonomous contact selection.
+
+<a id="sine-class-mediated-response"></a>
+### Inspect how an acquired mediator changes transmission
+
+`assess_sine_class_mediation` studies a donor, mediator and receiver on the
+same central-contact path. Donor and receiver remain class one; only the
+mediator changes between classes one and two. A supplied central donor
+form jump is paired with an unprobed continuation of the same reached
+state, and the receiver central form difference defines the response.
+The [proof and prospective protocol](../../../theory/nodal/SINE_CLASS_MEDIATED_RESPONSE.md#sine-class-mediated-protocol)
+retain all original source coordinates, formation and relaxation, changed
+port degrees, contact/probe work and all three winding identities.
+
+Before a new assessment, declare its twelve primitive inputs through the
+[contract](../../contracts/relational/SINE_PATTERNS.md#sine-class-mediated-response).
+The API rebuilds the source handoff and bounds the finite nonlinear
+contrast analytically. It does not run a trajectory or consume a passing
+report as evidence. Inspect `source_handoff_certified` before interpreting
+`actual_contrast_bounds` or `recorded_contrast_bounds`; both are unavailable
+when the actual-family handoff fails. Ideal coefficients alone cannot
+certify a formed-family response.
+
+Read `response_certified`, `phase_blind_alternative_excluded`,
+`identity_certified` and `work_within_allowances` together. The common
+early diffusion terms are class blind; the finite distinction is inherited
+from later mediator form/phase feedback. The phase-blind control is a
+postcontact ablation supplied with the same reached sources, not an
+alternative proof of their preceding formation. Baseline subtraction
+removes a prepared static current from the response definition, while the
+retained error allowance still covers the actual unprobed trajectory.
+
+The prototype's strict mathematical readout budget and long structural
+dwell are premises, not established sensor precision or laboratory time.
+Different acquired classes retain different source costs. The source,
+contact/probe selection and complete law remain supplied; an interaction
+signature does not identify physical mass, charge or spin.
+
+Inspect the [retained first assessment](../../../theory/nodal/SINE_CLASS_MEDIATED_RESPONSE.md#sine-class-mediated-result)
+without rerunning its source admission or analytic assessment. From the
+repository root:
+
+```python
+from fractions import Fraction as Q
+from pathlib import Path
+from tnfr.utils.io import json_loads
+
+saved = json_loads(Path(
+    "docs/assets/sine_formed_classes/class-mediation-v1.json"
+).read_text(encoding="utf-8"))
+report = saved["response"]["report"]
+lower = report["recorded_contrast_bounds"]["lo"]
+contrast_lower = Q(lower["numerator"], lower["denominator"])
+assert saved["evaluation_kind"] == "conditional_analytic_complete_family_no_trajectory"
+assert report["status"] == "certified_class_mediation"
+assert contrast_lower > Q(1, 10**25)
+assert report["identity_certified"] and report["work_within_allowances"]
+```
+
+This only inspects retained values. The dedicated read-only evidence audit
+in [TESTING](../../../TESTING.md#current-checks-and-retained-evidence)
+separately reconstructs consumed arithmetic and checks the frozen source
+association. A passing stored verdict alone does not verify its premises
+or authenticate provenance.
+
+<a id="sine-reduced-port-composition"></a>
+### Assemble reduced components with their actual contact degrees
+
+Use `evaluate_sine_port_composition` for a network of unit central contacts.
+Each component contributes five forms and five real phase deviations, ordered
+as in the [two-component workflow](#sine-reduced-class-ports). A second contact
+changes the central degree in both rows; it cannot reuse the old denominator
+three unchanged. This instantaneous control needs no formation assessment:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_port_composition import (
+    evaluate_sine_port_composition,
+)
+
+forms = [Q(0)] * 15
+forms[5] = Q(1)  # Central layer of the middle component.
+rows = evaluate_sine_port_composition(
+    classes=(1, 2, 1),
+    contacts=((0, 1), (1, 2)),
+    phase_origins=(Q(0),) * 3,
+    forms=forms,
+    phase_deviations=(Q(0),) * 15,
+)
+assert rows.geometry.contact_degrees == (1, 2, 1)
+assert rows.form_rate_bounds[5].lo <= -1 <= rows.form_rate_bounds[5].hi
+assert rows.form_rate_bounds[5].lo > -Q(4, 3)
+assert rows.form_storage == 2
+assert rows.storage_rate == -Q(17, 3)
+assert rows.network_form_charge_rate == rows.network_phase_charge_rate == 0
+```
+
+The bridge sine remains nonlinear. Internal phase exchange is the inherited
+class tangent, and the exact reduced storage includes both internal and bridge
+terms. Origins are already supplied separately; phase deviations must exclude
+them. These rows admit disconnected contacts but do not establish a full-law
+trajectory, formation or global recovery.
+
+The separate `assess_sine_port_composition` takes original source, support,
+time and budget primitives. It rebuilds the actual unprobed formation family,
+then bounds all fine coordinates against the lifted surrogate over the whole
+contact window. Inspect `unprobed_handoff`,
+`total_approximation_error_upper_bound`, `approximation_margin_bounds`,
+`identity_certified`, `work_within_allowance` and `unavailable_reasons` together.
+An instantaneous storage identity cannot replace these actual-family checks.
+The absolute approximation allowance is not a readout error or an observed
+class contrast; connected joined identity and all-time recovery use the full
+sine law separately. Consult the
+[primitive API contract](../../contracts/relational/SINE_PATTERNS.md#sine-reduced-port-composition)
+and [protocol/result owner](../../../theory/nodal/SINE_REDUCED_PORT_COMPOSITION.md#sine-reduced-port-composition)
+before a new assessment. Neither reader executes contact in a live graph or
+establishes autonomous hierarchy selection or a physical measurement bridge.
+
+The [saved three-component certificate](../../assets/sine_formed_classes/port-composition-v1.json)
+can be inspected without running another assessment. Its report has
+`status="certified_sine_port_composition"`; the outer `algebraic_control`
+records the exact normalization/storage control, and
+`frozen_stopping_rule_passed` records the joint frozen rule. The full-state
+allowance is a different stopping rule from the fractional receiver-gap
+criterion in the two-component result below. The
+[retained-evidence audit](../../../TESTING.md#current-checks-and-retained-evidence)
+checks their byte/source consistency and respective exact stopping criteria;
+reading a passing JSON alone does not verify provenance.
+
+<a id="sine-reduced-class-ports"></a>
+### Evaluate reduced port rows and inspect their retained certificate
+
+Use `evaluate_sine_reduced_class_ports` to inspect the instantaneous field of
+the twenty-coordinate surrogate. Each state row contains five donor values
+followed by five receiver values, ordered by the reflection layers
+`(4), (3,5), (2,6), (1,7), (0,8)`. The form row and phase-deviation row together
+contain twenty coordinates; they are not two scalar component states.
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_reduced_class_ports import (
+    evaluate_sine_reduced_class_ports,
+)
+from tnfr.sdk import relational_report_to_dict
+
+rows = evaluate_sine_reduced_class_ports(
+    donor_class=1,
+    receiver_class=2,
+    forms=(Q(0),) * 10,
+    phase_deviations=(Q(0),) * 10,
+    phase_origin_difference=Q(1, 1000),
+)
+assert rows.bridge_phase_difference == Q(1, 1000)
+assert rows.form_rate_bounds[0].lo > 0
+assert rows.form_rate_bounds[5].hi < 0
+row_payload = relational_report_to_dict(rows)
+```
+
+Zero phase deviations mean each component is at its own reference twist and
+declared common origin. The receiver origin is already supplied by
+`phase_origin_difference`; do not add it to the receiver deviation entries
+again. The [coordinate contract](../../contracts/relational/SINE_PATTERNS.md#sine-reduced-class-ports)
+gives the explicit lift. These supplied coordinates evaluate reduced rows;
+they do not prove formation, approximate an arbitrary fine state or install
+a bridge in a live graph.
+
+The separate `assess_sine_reduced_class_ports` reader rebuilds the original
+source families and their error bounds from twelve primitive inputs. Its
+retained result can be inspected without calling that reader again. Run the
+following from the repository root:
+
+```python
+from fractions import Fraction as Q
+from pathlib import Path
+from tnfr.utils.io import json_loads
+
+saved = json_loads(
+    Path("docs/assets/sine_formed_classes/reduced-ports-v1.json").read_text(
+        encoding="utf-8"
+    )
+)
+assert saved["schema"] == "tnfr.sine-reduced-class-ports.v1"
+record = saved["report"]
+
+def rational(value):
+    return Q(value["numerator"], value["denominator"])
+
+assert record["status"] == "certified_reduced_class_ports"
+assert all(record["unprobed_handoff"]["handoff_certified_by_class"])
+assert record["identity_certified"] and record["work_within_allowance"]
+gap_lower = rational(record["recorded_contrast_bounds"]["lo"])
+error_ratio = rational(record["error_ratio_upper_bound"])
+assert gap_lower > 0
+assert error_ratio < rational(record["error_fraction"])
+assert rational(record["error_fraction_margin_bounds"]["lo"]) > 0
+```
+
+`recorded_contrast_bounds` concerns actual receiver-port form for donor class
+two minus donor class one. The error ratio uses that interval's final lower
+endpoint and includes reduced evaluation, model discrepancy, preparation and
+readout errors. The reduced model's accuracy is finite-window evidence;
+whole-family identity and recovery are separate full-law obligations.
+
+Reading the JSON inspects retained assertions; it does not verify its archive
+or authenticate chronology. Use the
+[retained-evidence audit](../../../TESTING.md#current-checks-and-retained-evidence)
+for byte/source consistency, and the
+[result owner](../../../theory/nodal/SINE_REDUCED_CLASS_PORTS.md#sine-reduced-class-ports)
+for the frozen protocol and scope. A new assessment takes original primitives,
+not `rows`, `record` or a cached passing flag. An unavailable assessment keeps
+missing actual-family fields as `None`; a successful instantaneous evaluation
+does not supply those missing premises. No solver, measured speedup, practical
+clock or physical identification is established by this workflow.
+
+<a id="sine-formed-class-contact"></a>
+### Compare actual receiver responses after a supplied contact
+
+This reader rebuilds the original C9 formation families and their subsequent
+uninterrupted recovery. It compares the same winding-one receiver joined to
+donor winding one or two by one central unit bridge. The receiver's common
+phase origin is declared from initial preparation; no phase jump or reset
+occurs before or at contact.
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_formed_class_contact import (
+    assess_sine_formed_class_contact,
+)
+from tnfr.sdk import relational_report_to_dict
+
+contact = assess_sine_formed_class_contact(
+    formation_time=100,
+    relaxation_duration=10**13,
+    phase_origin_difference=Q(1, 1000),
+    contact_duration=Q(1, 100),
+    form_error_bound=Q(1, 10**10),
+    phase_error_bound=Q(1, 10**10),
+    endpoint_radius=Q(1, 10**32),
+    readout_error_bound=Q(1, 10**30),
+    radius=Q(1, 12),
+    work_allowance=Q(1, 10**6),
+    decay_power=512,
+)
+assert contact.status == "certified_formed_class_contact"
+assert all(contact.handoff_certified_by_class)
+assert contact.identity_certified and contact.work_within_allowance
+assert contact.recorded_contrast_bounds.lo > Q(1, 10**25)
+evidence = relational_report_to_dict(contact)
+```
+
+All times use `tau=e*t`, with `e=1023/1024`. Contact occurs at
+`tau=100+10**13`; the readout is actual form at receiver node `13`, one
+hundredth of a scaled unit later. The recorded contrast is donor winding two
+minus donor winding one. `decay_power=512` selects an exact rational decay
+bound admitted by the derived exponent; it does not count events.
+The initial form/phase errors retain their separate exact zero-sum constraints
+on each component. The small endpoint allowance is proved from those actual
+source families, not installed as a replacement state.
+
+Inspect `bridge_work_bounds` and `joined_form_mean_bounds` /
+`joined_phase_mean_bounds` separately. The support event changes degrees and
+conserved weighted means and adds supplied storage work; continuous loss
+does not pay for that event. `identity_certified` checks the complete joined
+state, retaining both windings under all later uninterrupted flow and recovery
+on the new mean leaf. No later forcing or event is included.
+
+The generic status needs a strictly positive recorded contrast; the example
+also checks the larger frozen threshold. `unavailable` means a sufficient
+obligation did not certify. Without an admitted source handoff, actual
+response, work and retention bounds remain `None`. The shared forecast is
+not used for the eighteen-node graph, and no incoming report is trusted in
+place of original primitives.
+
+The long structural relaxation, small readout error, initial organization,
+constitutive law and bridge occurrence are supplied premises. This is a
+conditional interaction certificate, not a practical timing claim, sensor
+model, autonomous support-selection law or physical identification.
+See the [contract](../../contracts/relational/SINE_PATTERNS.md#sine-formed-class-contact)
+and [frozen protocol, proof and evidence](../../../theory/nodal/SINE_FORMED_CLASS_CONTACT.md#sine-formed-class-contact).
+
+<a id="sine-formed-class-maintenance"></a>
+### Certify a uniform return between repeated supplied probes
+
+This reader rebuilds the original formation and first-probe evidence, then
+checks a nonlinear return bound for every member of both pre-probe sets.
+It certifies all repetitions by set inclusion rather than running a finite
+sequence of trajectories.
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_formed_class_maintenance import (
+    assess_sine_formed_class_maintenance,
+)
+from tnfr.sdk import relational_report_to_dict
+
+maintenance = assess_sine_formed_class_maintenance(
+    formation_time=100,
+    probe_time=200,
+    probe_duration=1,
+    phase_increment=Q(1, 100),
+    form_error_bound=Q(1, 10**10),
+    phase_error_bound=Q(1, 10**10),
+    readout_error_bound=Q(1, 10**10),
+    radius=Q(1, 12),
+    common_dwell=10**12,
+)
+assert maintenance.status == "certified_repeated_probe_maintenance"
+assert all(maintenance.return_certified_by_class)
+reference = maintenance.reference_certificate
+assert reference.recorded_contrast_bounds.lo > Q(1, 10**7)
+assert all(bound.lo > 0 for bound in reference.probe_work_bounds_by_class)
+evidence = relational_report_to_dict(maintenance)
+```
+
+The jumps occur at `tau=200+n*10**12`, with each node-zero form readout one
+scaled unit later. The large dwell is a conservative mathematical bound in
+`tau=e*t`; it is not a physical operating time or a minimum-dwell estimate.
+Inspect both `form_return_margin_bounds` and `phase_return_margin_bounds`:
+their strictly positive lower endpoints certify return inside half the
+original pre-probe radii. The original full-coordinate preparation uncertainty
+remains represented in the admitted sets, and both conserved means remain zero.
+There is no reset, adaptive waiting rule or additional state disturbance.
+
+The nested reference's correlated contrast and signed work intervals apply
+to every cycle. Readout error is bounded separately for each observation
+and does not feed back into state. After `N` events, multiply each per-event
+work interval by `N` to enclose cumulative supplied work. Its positive lower
+bound in this example makes indefinite operation require unbounded total
+external work; the initial preparation budget is a separate resource.
+
+This proves invariant neighborhoods and repeatable discrimination, not an
+exact periodic orbit or a unique driven attractor. Return to a neighborhood
+occurs within the admitted dwell; asymptotic target convergence applies when
+the interventions stop. `unavailable` means a sufficient prerequisite or
+return bound failed to certify, not that repeated operation is impossible.
+See the [contract](../../contracts/relational/SINE_PATTERNS.md#sine-formed-class-maintenance)
+and [frozen protocol, proof and evidence](../../../theory/nodal/SINE_FORMED_CLASS_MAINTENANCE.md#sine-formed-class-maintenance).
+
+<a id="sine-formed-class-response"></a>
+### Compare a common probe and recovery of the formed classes
+
+This assessment continues both original C9 source families after acquisition,
+applies one supplied mean-preserving phase jump, and bounds actual node-zero
+form after the same elapsed time. It also checks that each actual post-jump
+family remains within its own recovery domain.
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_formed_classes import (
+    assess_sine_formed_class_response,
+)
+from tnfr.sdk import relational_report_to_dict
+
+response = assess_sine_formed_class_response(
+    formation_time=100,
+    probe_time=200,
+    probe_duration=1,
+    phase_increment=Q(1, 100),
+    form_error_bound=Q(1, 10**10),
+    phase_error_bound=Q(1, 10**10),
+    readout_error_bound=Q(1, 10**10),
+    radius=Q(1, 12),
+)
+assert response.formation_certificate.status == "certified_two_formed_classes"
+assert response.recorded_contrast_bounds.lo > Q(1, 10**7)
+assert all(response.recovery_certified_by_class)
+assert response.status == "certified_formed_class_response"
+evidence = relational_report_to_dict(response)
+```
+
+Times are in `tau=e*t`, not laboratory seconds. The original source errors
+and their separate zero-sum constraints remain present through the warmup,
+probe and readout. No trajectory is reset to a target. The jump changes phase
+by `(1/100)*(e_0-(1/9)*1)` while form is unchanged; the same law then resumes.
+The source, support, law, probe amplitude and timing are supplied premises.
+
+Use `recorded_contrast_bounds` for the joint discriminator: it retains the
+common heat-response factor of both classes. Subtracting the marginal readout
+intervals loses that information and, for this frozen example, does not
+certify the declared `1e-7` threshold. Inspect `probe_work_bounds_by_class`
+separately from continuous loss. Recovery is admitted again for the actual
+post-jump families; an earlier unforced certificate alone cannot cover a
+new intervention.
+
+The generic status requires strict positive contrast, while this example
+also checks the larger frozen research threshold. `unavailable` denotes an
+uncertified sufficient obligation. This one-probe result establishes neither
+indefinite repeated-probe operation, autonomous event selection nor physical
+constituent identity. See the
+[contract](../../contracts/relational/SINE_PATTERNS.md#sine-formed-class-response)
+and [protocol and proof](../../../theory/nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-response).
+
+<a id="sine-formed-class-pair"></a>
+### Admit two formed attracting classes before comparing their responses
+
+This reader assesses fixed phase-flat preparations for the winding-one and
+winding-two targets on the same simple C9. Both families use the same
+positive-loss law and conserved means. Their source storage differs, although
+both must satisfy the same declared ceiling.
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_formed_classes import (
+    assess_sine_formed_class_pair,
+)
+from tnfr.sdk import relational_report_to_dict
+
+classes = assess_sine_formed_class_pair(
+    scaled_time=100,
+    form_error_bound=Q(1, 10**10),
+    phase_error_bound=Q(1, 10**10),
+    radius=Q(1, 12),
+)
+assert classes.status == "certified_two_formed_classes"
+assert all(classes.formation_certified_by_class)
+assert all(classes.source_budget_certified_by_class)
+assert classes.symmetry_inequivalent
+evidence = relational_report_to_dict(classes)
+```
+
+The time is `tau=e*t`, with `e=1023/1024`. Initial errors cover every fine
+coordinate but have zero sum separately in form and phase, so the admitted
+neighborhood is full dimensional on the sixteen-dimensional relative leaf.
+No additional common-origin uncertainty is hidden in the input widths.
+
+Inspect the separate source, geometry, storage and formation evidence before
+using the pair in another claim. `unavailable` means the sufficient analytic
+bounds did not certify admission. The assessment runs no trajectory and
+evaluates no response to a probe. Distinct attracting classes and a common
+measurement that distinguishes them are separate obligations. See the
+[contract](../../contracts/relational/SINE_PATTERNS.md#sine-formed-class-pair)
+and [protocol and proof](../../../theory/nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-pair).
+
 <a id="sine-formation-response"></a>
 ### Check formation and its inherited receiver signature together
 

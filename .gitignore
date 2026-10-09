@@ -30,6 +30,9 @@ Thumbs.db
 artifacts/
 profiles/
 
+# Exact frozen full-step response is versioned losslessly in its response ZIP.
+/docs/assets/sine_formed_classes/class-nonlinear-readout-v1.json
+
 # Crypto transient logs
 crypto/extract_debug.txt
 crypto/extract_stderr.txt

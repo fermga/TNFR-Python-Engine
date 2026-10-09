@@ -60,6 +60,39 @@ then inspect their source and tests. That map links shared implementations,
 representative controls and theorem owners; this guide does not maintain a
 second inventory of research results or individual test cases.
 
+## Shared evidence maintenance
+
+The [evidence workflow](docs/guides/RESEARCH_EVIDENCE.md) separates maintained
+artifact mechanics, model-specific audits and immutable archived programs.
+For changes to their shared owners, select exact-record, archive and restoration
+controls separately from scientific producers:
+
+```sh
+python -m pytest tests/research/test_artifact_io.py tests/research/test_frozen_source.py tests/scripts/test_restore_frozen_source.py tests/mathematics/test_validated_taylor_arithmetic.py tests/mathematics/test_validated_box_taylor.py tests/physics/test_sine_flow_kernel.py -q
+```
+
+Exercise duplicate/nonfinite JSON, exact tags before scalar comparison, unsafe or
+duplicate archive names, expanded-byte limits, altered hashes and refusal to
+replace an existing record. Restoration controls use disposable synthetic Git
+repositories and read-only inspection of the committed freeze. Verify the full
+pinned base, admitted supplemental files and destination rejection; do not
+create a real reserved workspace or invoke an evaluator during regression.
+
+Retained Taylor reconstruction checks primitive shape/source admission and
+Horner/remainder/endpoint arithmetic. It does not prove stored derivative
+enclosures or replace a consumer's source, law, event or strict Picard checks.
+The shared sine field still needs independent edge-sum and jet controls for its
+layouts and held coefficients. Select changed consumers and existing read-only
+evidence audits in addition to these shared tests.
+
+Reuse expensive parsed records and archive bytes through module-scoped fixtures;
+copy a fixture before a mutation test. Pure test helpers must not import other
+test modules' autouse fixtures. Keep no-execution guards scoped and reversible,
+so an audit cannot leak patched producers or subprocess calls into unrelated
+tests. Shared arithmetic must not collapse a producer and its independent
+mathematical expectation into the same implementation. Current-code regression
+does not update frozen evidence or authorize the pending research response.
+
 ## Select research checks by contract
 
 Select the changed mathematical owner and its consuming APIs through the
@@ -67,6 +100,575 @@ Select the changed mathematical owner and its consuming APIs through the
 individual module/test links; proofs own model-specific hypotheses, constants
 and frozen preparations. This guide groups the obligations needed to choose
 coverage, rather than repeating each research result.
+
+For the [constitutive foundation audit](theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission),
+select the countermodels and complete-law controls whose premises are being
+reassessed. Check pressure selection, capacity and support freedom, auxiliary
+variational premises, phase closure, structural clock and event occurrence
+separately; no one channel's success supplies the other laws.
+
+```sh
+python -m pytest tests/physics/test_pressure_constitutive_scope.py tests/physics/test_constitutive_capacity_scope.py tests/physics/test_constitutive_support_scope.py tests/physics/test_constitutive_variational_scope.py tests/physics/test_phase_exchange_constitutive_freedom.py tests/physics/test_structural_clock_scope.py tests/physics/test_selection_birth_closure.py tests/physics/test_relational_sine_comparison.py tests/research/test_sine_constitutive_robustness.py -q
+```
+
+These existing controls preserve scoped alternatives and known nonselection
+results. They do not evaluate a new alternative at the currently acquired
+objects or close a new research gate. Formation, response and storage evidence
+remain associated with their own complete laws. Read retained evidence without
+replaying its producers; test each new constitutive consequence independently
+when its mathematical owner changes.
+
+For claimed NFR representations and collective actions, also select
+`tests/physics/test_epi_phase_representation_scope.py` and
+`tests/physics/test_operator_quotient.py`; the routine gate covers registered
+operator and grammar contracts. A new constitutive comparison must test its
+actual full field, balance, matching order and law-specific derivative/source
+bounds. Existing sine controls do not certify a different current, even when
+target storage and the full tangent agree. Keep local-onset evidence separate
+from finite-horizon discrimination and from acquisition under the new law.
+
+For [class-mediated collective response](theory/nodal/SINE_CLASS_MEDIATED_RESPONSE.md),
+select both the primitive/report controls and independent full-support
+algebra. Rebuild the 27-node support, its `(3,4,3)` central degrees, common
+early derivatives and the first class-dependent receiver term. Retain
+paired probe/unprobed histories, all source errors, the complete phase-blind
+postcontact control, exact event work and actual conserved-mean shifts.
+Reflection and absent-probe controls must not invent a distinction that the
+interface hides. A tangent coefficient alone cannot replace a finite
+nonlinear remainder, fresh formation handoff or full-family identity.
+
+```sh
+python -m pytest tests/physics/test_sine_class_mediation.py tests/physics/test_sine_class_mediation_algebra.py tests/physics/test_sine_class_mediation_evidence.py -q
+```
+
+Before the protocol freeze, these controls must not evaluate an admitted
+reserved source. After a retained outcome exists, audit its primitives and
+arithmetic separately from report wiring; keep old formation/contact
+evidence unchanged and do not rerun frozen producers for unrelated changes.
+The [read-only saved-evidence suite](tests/physics/test_sine_class_mediation_evidence.py)
+checks the archive/protocol association, preserved prospective proof,
+original source and endpoint budgets, exact interval inflation, work and
+identity margins, and all declared stopping predicates. It neither calls
+the assessor nor executes its archived producer.
+
+For [acquired-mediator effective memory](theory/nodal/SINE_CLASS_MEDIATED_MEMORY.md),
+also select the memory reader/bound controls and independent full-support
+algebra. Check the 36-visible/18-hidden partition, rational spatial factors
+with separate ideal scalar enclosures, class-independent zero-lag kernel
+and class-dependent first derivative. Retain the hidden initial source;
+test its cancellation only in a paired tangent difference with the same
+full initialization. Verify the nonlinear residual bound against both
+probe and baseline, including exact zero budgets and failed sufficient
+separation without erasing available finite bounds.
+
+```sh
+python -m pytest tests/physics/test_sine_class_memory.py tests/physics/test_sine_class_memory_algebra.py tests/physics/test_sine_class_mediation_evidence.py -q
+```
+
+The stationary-map controls must keep visible mobility and distinguish
+linear paired cancellation from the nonlinear comparator's uncertain
+visible sources. They establish no invariant midpoint section or fast
+limit. The same-charge hidden perturbation checks the exact visible
+acceleration difference; the proof separately supplies existence within
+the finite formation image, without a measured reachable radius. Changes
+to shared response coefficients must preserve the frozen source/report
+arithmetic. These controls need no new acquisition or reserved campaign.
+
+For [two-probe nonlinear superposition](theory/nodal/SINE_CLASS_NONLINEAR_SUPERPOSITION.md),
+rebuild four continuations of one complete initial state with a common
+final readout. The delayed-only control carries its unprobed state to the
+second event. Check exact tangent cancellation, full-law reflection/sign
+equivariance, the carried bridge-gap curvature identity and the ideal
+cubic-amplitude, fourth-joint-time coefficient. Arbitrary source residuals
+must remain admitted rather than being projected onto a symmetric subset.
+
+```sh
+python -m pytest tests/physics/test_sine_class_superposition.py tests/physics/test_sine_class_superposition_algebra.py tests/physics/test_sine_class_mediation_evidence.py -q
+```
+
+Keep scalar-statistic cancellation distinct from intersection of all four
+endpoint record sets; neither proves continuous-history equivalence or
+that every record is shared. Test equality at each sufficient noise
+threshold, failed bounds without a fabricated positive response, and
+signed/zero impulses and boundary event times. Independent work and
+identity checks retain the actual preevent state, both conserved-mean
+changes and the separate radius/storage guards. These are conditional
+arithmetic and implementation controls, not a new acquired response or
+permission to replay the frozen class-mediation assessment.
+
+For the [finite nonlinear protocol](theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md),
+test the fixed degree-32 heat polynomial as an analytic coefficient,
+including rational history cancellation, actual-degree normalization,
+three cosine channels and the contraction tail. The full-law remainder
+must retain the odd internal corrections and the source bound valid on
+the longer horizon. Use independent coefficient or algebra controls;
+an unvalidated trajectory cannot replace the claimed enclosure.
+
+```sh
+python -m pytest tests/physics/test_sine_class_nonlinear_protocol.py tests/physics/test_sine_class_nonlinear_protocol_algebra.py tests/physics/test_sine_class_superposition.py tests/physics/test_sine_class_mediation_evidence.py -q
+```
+
+Distinguish true sign, recorded sign above `4*delta` and disjoint
+nonlinear/tangent four-record sets above `8*delta`, including equality
+and unavailable-sign cases. Check exact rational endpoints separately
+from outward display intervals, signed impulses and exact null histories.
+The new horizon admission must not enlarge the old superposition API's
+domain. Reused work/identity ledgers retain both preevent states and
+independent policy guards. These controls acquire no source or reserved
+response and must not rerun a frozen producer.
+
+For [organization-dependent nonlinear interaction](theory/nodal/SINE_CLASS_NONLINEAR_ORGANIZATION.md),
+test exact common-channel cancellation before transcendental enclosure,
+the mediator-channel heat tail, two complete nonlinear remainders and
+independent source errors between classes. Keep the eight-reading recorded
+contrast budget separate from the sixteen-error comparison against an
+independently noisy zero-contrast alternative. Exercise exact nulls,
+strict boundaries, unavailable signs and independent work/identity guards.
+
+```sh
+python -m pytest tests/physics/test_sine_class_nonlinear_organization.py tests/physics/test_sine_class_nonlinear_organization_algebra.py tests/physics/test_sine_class_nonlinear_protocol.py tests/physics/test_sine_class_nonlinear_protocol_algebra.py tests/physics/test_sine_class_mediation_evidence.py -q
+```
+
+The unchanged design must retain its unresolved full-law verdict despite
+the signed heat contribution. Check that the independent nonlinear-error
+estimate still straddles zero with source and sensor errors removed;
+this proves a limitation of that estimate, not actual class equivalence
+or overlap of the original reading vectors. Independent edge algebra and
+heat quadrature are coefficient controls, not complete sine trajectories.
+The tests acquire no source and replay no reserved response. SDK wiring
+uses `test_reduced_port_sdk_wiring_does_not_evaluate_research` separately.
+
+For the [independent class comparison protocol](theory/nodal/SINE_CLASS_COMPARISON_PROTOCOL.md),
+use unrelated polynomial controls for the two-source composition. Both sources
+must be admitted before either runs, and the first incomplete child must stop
+later execution. Reconstruct complete law, source, event carry, step arithmetic,
+counts and observations before consuming a child report. A saved band or status
+cannot replace that evidence; derivative generation remains an explicit premise.
+
+```sh
+python -m pytest tests/physics/test_sine_class_comparison_readout.py tests/physics/test_sine_class_comparison_protocol_algebra.py tests/physics/test_sine_class_readout.py tests/physics/test_sine_class_four_history_readout_algebra.py tests/research/test_frozen_source.py tests/scripts/test_restore_frozen_source.py -q
+```
+
+Keep nominal reference covers separate from the original correlated acquired
+families and their Cartesian outer covers. Check that source transport is added
+once, while the cubic prediction never narrows a forward interval. Test both
+open-prediction consistency checks, the transported width postcondition and the
+distinct strict eight/sixteen-error margins. A declared step/order policy does
+not guarantee the requested numerical width. Preserve unavailable and first
+failure evidence; these tests execute no selected reference or reserved response.
+
+The comparison freeze has a separate read-only association and synthetic-helper
+gate: `python -m pytest tests/physics/test_sine_class_comparison_freeze.py -q`.
+Reuse the shared source inspector for archive/base checks. Admit both source
+recipes, fixed predictions, version policy and prospective proof prefix;
+compile only the named pure helpers for serialization/error-retention controls.
+Never execute an archived main or producer to validate the freeze.
+
+The first retained comparison has its own read-only response gate:
+`python -m pytest tests/physics/test_sine_class_comparison_evidence.py -q`.
+Parse the large response once, reconstruct both complete branch trees with the
+shared evidence reader, then independently rebuild the cross-class contrast,
+source transfer and all observation criteria. Retained derivatives and Picard
+generation remain execution premises. This gate must not rerun the producer,
+regenerate a coefficient or replace missing response evidence.
+
+For [repeated joined interaction](theory/nodal/SINE_CLASS_REPEATED_INTERACTION.md),
+check the full joined degree metric, its exact spectral bounds, the distinction
+between Euclidean and degree-weighted common-origin projections, and the
+preserved means of all eight branches. Rebuild recurrent work and storage from
+the new relative source family; it is not the original formation image.
+Test exact return bounds below the interval grid and the independent tangent
+residual allowance, including the common-mean counterexample and strict noise
+boundary. Reuse the comparison audit's module fixture to associate the nominal
+interval only after reconstructing its retained full response.
+
+```sh
+python -m pytest tests/physics/test_sine_class_repeated_interaction.py tests/physics/test_sine_lyapunov.py tests/physics/test_sine_class_comparison_evidence.py -q
+```
+
+These are conditional arithmetic and read-only evidence checks. They neither
+simulate the repeated schedule nor replay acquisition or a frozen producer.
+The quadratic tangent return and the nonlinear acute trapping proof retain
+different premises despite sharing the modified-energy kernel.
+
+For the [nonlinear collective interface](theory/nodal/SINE_CLASS_COLLECTIVE_INTERFACE.md),
+check the six-port/hidden-state partition, retained source term, reflection-odd
+quadratic feedback, and central pressure observers independently of the
+coefficient producer. The finite input family and its approximation error do
+not establish identity or work admission for arbitrary schedules. Exercise
+separate nominal amplitude tails and nonlinear initialization defects without
+assigning nominal parity to actual residuals. Simultaneous port jumps retain
+their quadratic cross terms.
+
+```sh
+python -m pytest tests/physics/test_sine_class_collective_interface.py tests/physics/test_sine_class_cubic_evidence.py tests/physics/test_sine_class_repeated_interaction.py -q
+```
+
+The cubic evidence module reconstructs the supplied comparison premise once
+before applying the interface certificate. It must not regenerate coefficients
+or a nonlinear response. The modified unit-delay pressure helper also requires
+the amplitude, superposition and repeated-interaction contract tests; it does
+not merge their distinct initial storage, contact or mean hypotheses.
+
+For [causal component composition](theory/nodal/SINE_CLASS_INTERFACE_COMPOSITION.md),
+check both complete boundary rows against independent edge equations with the
+actual joined degrees. Exercise component charge exchange, internal and bridge
+storage, simultaneous signed event work, hidden initialization and primitive
+full-lift residual admission. The explicit cubic residual includes hidden
+quadratic feedback, nonlinear source interactions and omitted bridge terms.
+
+```sh
+python -m pytest tests/physics/test_sine_class_interface_composition.py tests/physics/test_sine_class_collective_interface.py tests/physics/test_sine_class_port_readout_evidence.py -q
+```
+
+The retained-response audit reuses its module fixture and reconstructed gap
+to check that this substitution preserves the existing memory distinction.
+It subtracts the new approximation defect once; actual-source transport and
+both recording errors are already present. No coefficient or response is
+regenerated. A tolerance for one impulse is not a uniform two-channel input-map
+certificate, and output closeness alone proves neither feedback existence
+nor exact storage, identity or work properties for an arbitrary substitute.
+
+For [distinct-neighbor nonadditivity](theory/nodal/SINE_CLASS_NEIGHBOR_NONADDITIVITY.md),
+derive the donor/receiver mixed onset from independent incident-edge algebra.
+Reconstruct all normalized rows used by the finite phase and cubic-current
+bounds; the mediator's internal edges contribute alongside its two contacts.
+Check exact agreement with the collective descriptor while preventing the
+onset calculation from constructing unconsumed coordinate-memory partitions.
+Retain hidden quadratic recoupling, cubic phase feedback, amplitude tails and
+the four nonlinear initialization defects. The exact common linear source
+cancels only because all four histories start from the same complete state.
+
+```sh
+python -m pytest tests/physics/test_sine_class_neighbor_nonadditivity.py tests/physics/test_sine_class_collective_interface.py tests/physics/test_sine_class_superposition_algebra.py tests/physics/test_sine_class_interface_composition.py -q
+```
+
+Check the exact zero-input identities and preserve the scope of nominal
+opposite-input symmetry. Exercise the earlier nonlinear observation budget,
+strict independent-comparator threshold and separate work/identity admission.
+The reused event ledger receives an explicit pressure bound for the commuting
+distinct-port jumps; its old delayed donor default is not applicable. These
+controls check the implementation of the conditional analytic distinction
+using static algebra and rational envelopes. They neither evaluate selected time coefficients or
+full-law responses nor establish the mathematical proof or exclusion of all
+pairwise dynamical laws.
+
+For the [independent distinct-neighbor protocol](theory/nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL.md),
+check optional event/readout selector admission, legacy defaults, complete
+state carry and retained arithmetic. Independent polynomial fixtures must
+exercise simultaneous and delayed distinct-port events, observed-node jumps,
+shared-prefix cancellation and first-failure behavior. Research controls
+rebuild the signed absolute-phase cover and the four nonlinear source defects;
+they keep numerical width, closed prediction overlap and four/eight-reading
+error decisions separate.
+
+```bash
+python -m pytest tests/physics/test_sine_class_readout.py tests/physics/test_sine_class_comparison_readout.py tests/research/test_sine_class_neighbor_forward.py tests/research/test_sine_class_neighbor_forward_evaluator.py tests/research/test_frozen_source.py tests/scripts/test_restore_frozen_source.py -q
+```
+
+The new research policy tests use the shared no-regeneration guard. Evaluator
+wiring uses unrelated temporary records and mocked scientific entry points;
+its attempt, exception, export-failure and no-retry controls do not execute the
+selected four-history response. Existing frozen default reports remain subject
+to their read-only reconstruction audits. A successful implementation test is
+not an independent full-law evaluation or a proof of source acquisition.
+
+After freezing, run the separate read-only association gate:
+`python -m pytest tests/research/test_sine_class_neighbor_forward_freeze.py -q`.
+It pins archive, protocol, receipt and Git base, then checks primitive policy
+and dormant evaluator structure under the no-regeneration guard. The evaluator
+wiring test admits pinned archive/member bytes before compiling only function
+definitions; it cannot silently fall back to a mutable build script. Freeze
+inspection never invokes the reserved experiment or authorizes a retry.
+
+For [nonlinear excess storage and loss](theory/nodal/SINE_CLASS_STORAGE_EXCESS.md),
+run the response-free mathematical gate:
+
+```bash
+python -m pytest tests/physics/test_sine_class_storage_excess.py tests/physics/test_sine_class_neighbor_nonadditivity.py tests/physics/test_sine_class_collective_interface.py tests/physics/test_sine_class_interface_composition.py -q
+```
+
+Check full/tangent balances using their own original-coordinate states,
+simultaneous event work, nonzero ordinary tangent cross-energy, exact onset
+and static adjoint cones. Rebuild quartic, amplitude-tail and common-source
+errors independently, including the zero-input source defect. Exercise exact
+nulls, unresolved bounds, primitive admission and the separately supplied
+coordinate-to-storage observation allowance. The shared no-regeneration guard
+must block response and time-coefficient execution. A finite static sign is
+an analytic prediction, not retained storage-response evidence.
+
+For the [prepared passive-loss observer](theory/nodal/SINE_CLASS_STORAGE_EXCESS.md#sine-storage-prepared-observer),
+check the complete full/tangent fields, original phase units, carried passive
+loss, simultaneous events, global work limits and first-failure evidence.
+
+```sh
+python -m pytest tests/physics/test_sine_class_storage_readout.py tests/physics/test_sine_class_storage_excess.py tests/mathematics/test_validated_taylor_arithmetic.py -q
+```
+
+Synthetic polynomial fields test wiring and arithmetic reconstruction; an
+unrelated small full-law reference checks the actual fields. Guards reject
+the selected storage word and historical scientific producers. Re-admit
+source, target, law and every consumed Taylor step before checking cached
+losses. Derivative and strict Picard generation remain execution premises.
+These controls prepare an instrument, not a frozen storage comparison or
+an independent evaluation of the selected storage prediction.
+
+The [first retained neighbor response](theory/nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL.md#sine-neighbor-forward-reserved-result)
+has a separate read-only gate:
+`python -m pytest tests/research/test_sine_class_neighbor_forward_evidence.py -q`.
+Admit exact attempt, protocol, archive and sole outcome-member bytes before
+decoding. Reuse one module-scoped report reconstruction to check all 64 full54
+steps and distinct-port events. Rebuild source, width, prediction and recorded
+separation decisions independently; cached endpoints/verdicts are checked,
+never used as their own premises. Selective corruptions exercise selector,
+carry and Taylor-arithmetic rejection. Shared guards block all scientific
+regeneration; derivative and strict Picard generation remain retained
+execution premises rather than authenticated by this arithmetic audit.
+
+For the [changed-input collective prediction](theory/nodal/SINE_CLASS_CHANGED_INPUT_PREDICTION.md),
+check grounded-path kernel coefficients, exact causal convolution weights,
+hidden quadratic feedback and independent linear initialization. Compare low
+orders with independently assembled edge equations; do not execute the old
+full-state coefficient producer as a substitute for this causal implementation.
+The new single mediator impulse needs degree-four work and its own mean shift.
+
+```sh
+python -m pytest tests/physics/test_sine_class_port_prediction.py tests/research/test_sine_class_collective_protocol.py tests/physics/test_sine_class_port_prediction_evidence.py -q
+```
+
+The evidence audit reconstructs retained endpoints and all consumed error
+allowances without rerunning the selected prediction or a complete-law response.
+Time-series error, interval rounding, physical source width, amplitude omission
+and recording errors remain separate. Success against the grounded tangent
+alternative does not prove nonlinear necessity, class discrimination or a
+reserved forward comparison.
+
+For the [independent changed-input full-law protocol](theory/nodal/SINE_CLASS_COLLECTIVE_FORWARD_PROTOCOL.md),
+select the complete 54-coordinate producer, its retained-evidence reader and
+the research policy together. Check both primitive sources before any field
+execution, absolute phase lifts, the single mediator form event, all-coordinate
+carry and the global first-failure attempt budget. Rebuild retained Taylor
+endpoints before consuming readings; stored derivative and strict Picard
+generation remain separate execution premises.
+
+```sh
+python -m pytest tests/physics/test_sine_class_port_readout.py tests/research/test_sine_class_collective_forward.py tests/research/test_sine_class_collective_forward_freeze.py tests/research/test_sine_class_collective_forward_evaluator.py tests/mathematics/test_validated_taylor_arithmetic.py -q
+```
+
+The policy controls reconstruct the already retained causal prediction without
+regenerating its coefficients. They independently check target-plus-residual
+source association, one actual-family source allowance, closed nominal
+prediction overlap, the declared agreement tolerance and strict two-error
+recorded separation. Amplitude and nonlinear-initialization errors belong to
+the inspected reduced prediction, not the full-law forward enclosure.
+
+This selection admits the producer and prospective freeze; it does not execute
+the selected forward response. Freeze controls inspect source, protocol and
+attempt boundaries. The [evaluator wiring controls](tests/research/test_sine_class_collective_forward_evaluator.py)
+admit pinned archive/member bytes before compiling function definitions and
+exercise only temporary records with mocked scientific calls and Git inspection.
+They can be selected independently of the freeze audit. They check preflight rejection,
+exclusive attempts and retained projection/export failures without executing
+the selected producer or restoring its workspace. Numerical completion,
+resolution, prediction consistency and discrimination remain separate verdicts;
+an earlier passing prediction cannot narrow or substitute for an independent forward
+interval.
+
+For the [retained first full-law comparison](theory/nodal/SINE_CLASS_COLLECTIVE_FORWARD_PROTOCOL.md#sine-collective-forward-reserved-result),
+select the [read-only response audit](tests/physics/test_sine_class_port_readout_evidence.py):
+
+```sh
+python -m pytest tests/physics/test_sine_class_port_readout_evidence.py -q
+```
+
+The audit reads the canonical response ZIP and preserves its exact uncompressed
+record and attempt association. It re-admits both absolute full-state sources,
+the form event, complete law and fixed schedule, then reconstructs retained
+Taylor endpoints before applying the source allowance once. Prediction overlap,
+the declared resolution tolerance and noisy-comparator separation are checked
+independently. Producer and coefficient regeneration remain prohibited; stored
+derivative enclosures and Picard generation remain explicit execution premises.
+This finite comparison does not establish physical identification or nonlinear
+necessity for the changed-input observation.
+
+The forward-policy, forward-freeze and retained-prediction audits share the
+lazy [execution guard](tests/sine_evidence_helpers.py). Each module opts in
+separately: scientific generators and their imported aliases, acquisition and
+restoration are blocked until fixture teardown. Subprocesses are prohibited
+except for the freeze audit's exact pinned read-only Git commands. Independent
+mathematical assertions and artifact hashes remain with each audit owner.
+The [guard controls](tests/research/test_sine_evidence_helpers.py) check lazy
+imports, alias coverage and restoration after failure or nested use:
+
+```sh
+python -m pytest tests/research/test_sine_evidence_helpers.py -q
+```
+
+For [common-scale amplitude feasibility](theory/nodal/SINE_CLASS_AMPLITUDE_FEASIBILITY.md),
+check whole-interval coefficient homogeneity and higher-amplitude bounds,
+the complex-domain boundary, the fixed source/noise allowances and the
+separate work and identity verdicts. The supplied base coefficient is a
+conditional premise of the public calculator; finite scalar admission
+alone does not establish its association with the model.
+
+```sh
+python -m pytest tests/physics/test_sine_class_amplitude_feasibility.py tests/physics/test_sine_class_amplitude_feasibility_algebra.py tests/physics/test_sine_class_amplitude_feasibility_evidence.py tests/physics/test_sine_class_cubic_evidence.py -q
+```
+
+Independent algebra checks cover carried amplitude levels, weighted heat
+symmetry and the donor Laplacian in the exact jump work. Reconstruct the
+retained coefficient endpoints and tails before applying the conditional
+calculator; do not regenerate coefficients or a nonlinear response.
+Upper-scale work and radius bounds cover the interval by monotonicity,
+whereas conserved means require their own interval bounds. If the shared
+event ledger changes, also select the superposition, nonlinear protocol,
+organization, cubic and spatial contract owners. Preserve their default
+conservative bounds and frozen evidence.
+
+For the [spatial class observation](theory/nodal/SINE_CLASS_SPATIAL_OBSERVATION.md),
+test the two-node observation, receiver-odd locality, complete quadratic
+phase feedback and the heat-only class-blind control. Exact low-order jets
+check the first class-sensitive time coefficient independently of the
+finite assessment. The higher-amplitude bound already compares classes;
+sum its three nonzero-history contributions only once.
+
+```sh
+python -m pytest tests/physics/test_sine_class_spatial_observation.py tests/physics/test_sine_class_spatial_observation_algebra.py tests/physics/test_sine_class_contrast.py -q
+```
+
+Preserve arbitrary source residuals and sixteen independent nodal reading
+errors; the separately noisy null comparison needs thirty-two. Reuse the
+full-coordinate coefficient owner instead of a second solver. Previously
+retained coordinates are prior information, not unseen responses. Test
+the original eight-reading decisions and cubic/heat contracts when their
+shared projection or decision helpers change.
+
+The compact spatial assessment references the preceding complete
+coefficient bundle. Its [read-only audit](tests/physics/test_sine_class_spatial_evidence.py)
+reuses the full coefficient-evidence checks and reconstructs the new
+two-node quadratic projection, higher-order bound and source/noise
+decisions. Select both evidence owners together:
+
+```sh
+python -m pytest tests/physics/test_sine_class_spatial_evidence.py tests/physics/test_sine_class_cubic_evidence.py -q
+```
+
+The reference prevents duplicating complete series; it does not authenticate
+their generation. No audit may execute a coefficient or response producer.
+
+For the [complete cubic-amplitude response](theory/nodal/SINE_CLASS_CUBIC_RESPONSE.md),
+check all three full-coordinate variation levels, the gamma scalings,
+oriented-edge signs, quadratic odd-mode feedback and exact jump ancestry.
+Time-polynomial truncation and the higher-amplitude Cauchy remainder need
+independent controls. Fixed order 64 uses exponential-tail starts 65, 64
+and 63, with each endpoint enclosure carried into its suffix. This analytic
+coefficient recurrence does not change the full-flow integrator's limits.
+
+```sh
+python -m pytest tests/physics/test_sine_class_cubic_response.py tests/physics/test_sine_class_cubic_response_algebra.py tests/physics/test_sine_class_contrast.py tests/physics/test_sine_class_nonlinear_organization.py tests/physics/test_sine_class_nonlinear_organization_algebra.py -q
+```
+
+Use module fixtures for the complete finite coefficient; admission and
+decision controls reuse it or use explicitly synthetic coefficients.
+Nominal amplitude parity cannot remove arbitrary actual-source errors.
+An unavailable complex-amplitude domain must withhold the full-response
+bound, while exact event-pairing identities remain separate. A true sign
+can coexist with a certified scalar noise-cancellation witness; neither
+implies that the complete recorded vectors overlap. Preserve the original
+heat method's unresolved outcome after shared decision refactoring. These
+controls evaluate no acquired source or reserved nonlinear response.
+
+The [retained coefficient evidence](docs/assets/sine_formed_classes/class-cubic-response-v1.evidence.zip)
+has a separate read-only audit:
+
+`python -m pytest tests/physics/test_sine_class_cubic_evidence.py -q`
+
+It verifies bounded archive/source associations and re-admits the primitive
+policy and all retained intervals. Rebuild the three-level event carry,
+time-polynomial endpoints and tails, class subtraction and complete
+source/noise/work decisions. Coefficient generation remains the archived
+execution premise; the audit neither regenerates the coefficients nor
+replays a nonlinear producer. Preserve the recorded packaging failure
+before the numerical attempt and the subsequent complete source archive.
+
+For the [four-history observation producer](theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-validated-readout),
+select its full-state/event controls and the shared source-box kernel.
+Use unrelated sources: check both rows from independent edge sums,
+stationary states, exact donor-only jumps, all 54 carried coordinates,
+shared-prefix ancestry and the delayed-only unprobed control. Zero delay,
+final-time jumps and zero duration must preserve their declared events.
+
+```sh
+python -m pytest tests/physics/test_sine_class_readout.py tests/physics/test_sine_class_four_history_readout_algebra.py tests/mathematics/test_validated_box_taylor.py tests/physics/test_sine_two_port_readout.py tests/physics/test_sine_aperture_readout.py -q
+```
+
+The [independent field/source/prefix controls](tests/physics/test_sine_class_four_history_readout_algebra.py)
+rebuild both nodal rows and retained first derivatives, distinguish an
+acquired subset from its Cartesian cover, and reconstruct suffix receiver
+increments under nonzero source width. Raw endpoint subtraction is a
+separate outer bound. Exercise
+failure inside a segment, budget exhaustion before an event and explicit
+unattempted branches. All-four availability must not be inferred from a
+completed prefix or an individual reading. Domain guards establish smooth
+flow, not acquisition or identity. Interval widths contain source and
+numerical enclosure effects; no sensor error is supplied by the producer.
+Do not evaluate the prospective class-two source to tune this admission;
+retain every earlier frozen source and response unchanged.
+
+For the [matched four-history freeze](theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-frozen-evaluation),
+audit immutable protocol/archive/receipt associations and the canonical
+source cover from primitive arithmetic. Check the acquired-family
+assumptions separately from its Cartesian cover, fixed event ancestry,
+the unique-step budget and the isolated forward argument list. Read-only
+controls must reject altered bytes, undeclared inputs and any response or
+attempt claim at the freeze stage; they must not call acquisition,
+prediction, the reserved producer or an archived worker. Test open-band
+overlap/containment and strict zero/four-error/eight-error classification
+using unrelated synthetic intervals, including equality and unavailable
+evidence. Hash agreement establishes association, not authentication or
+the truth of retained derivative enclosures.
+
+```sh
+python -m pytest tests/physics/test_sine_class_readout_freeze.py tests/physics/test_sine_class_readout_protocol_algebra.py -q
+```
+
+The [independent protocol arithmetic](tests/physics/test_sine_class_readout_protocol_algebra.py)
+checks the fixed branch budget, source cover and strict observation
+criteria without executing a reserved flow. The
+[freeze audit](tests/physics/test_sine_class_readout_freeze.py)
+checks the archived execution boundary and immutable byte associations;
+it is not a retained-response audit.
+
+For the [retained first outcome](theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-reserved-result),
+select the [read-only response audit](tests/physics/test_sine_class_readout_evidence.py):
+
+```sh
+python -m pytest tests/physics/test_sine_class_readout_evidence.py -q
+```
+
+Its module fixture reads the canonical response ZIP once, verifies the
+unchanged outer and uncompressed bytes, and checks the pinned
+source/protocol/attempt association. It reconstructs every retained Taylor
+increment and endpoint, full-state handoffs, exact events, raw endpoint
+and shared-prefix mixed bounds, and all five declared predicates. Guards
+prevent producer, field, jet, Picard and subprocess execution. Retained
+derivative enclosures and their generation remain numerical premises;
+arithmetic reconstruction is not independent derivative validation. The
+source cover does not erase the acquired family's correlation requirements.
+
+For a physical-source admission, test deductions from the declared source
+law separately from manufacturer specifications and measured responses.
+The [digital-PLL audit](theory/research/DPLL_PHYSICAL_ADMISSION.md) uses
+[`test_dpll_physical_admission.py`](tests/research/test_dpll_physical_admission.py)
+to derive the detector from exact XOR overlap, construct distinct delayed
+histories with identical current state, and check the scoped current-state
+and phase-map obstructions. These algebraic controls neither establish
+experimental reachability of their supplied history family nor calibrate
+an instrument. They require no response download, fitting or frozen replay.
+
+```sh
+python -m pytest tests/research/test_dpll_physical_admission.py -q
+```
 
 Shared admission changes can cross the routine/research selection boundary.
 The default gate includes native relational execution through `tests/test_*.py`
@@ -104,6 +706,193 @@ and partial validated horizons.
 | Resonance, pulse and recurrence | Retain the selected port/readout, full tangent pencil and actual coefficient domain. Distinguish gain peaks from complex poles, exact periodicity from orbital stability, and family recurrence from a chosen-state verdict. Independent quadrature or static variation controls do not prove a nonlinear infinite-time response. |
 | SDK, CLI and evidence projection | Check delegation, one-source capture, immutable observations, unavailable values, supported node labels and exact fraction export. Direct report schemas and the generic SDK envelope are separate contracts. Malformed reports and source changes must not authenticate themselves through serialization. |
 
+For local-response geometry inference, select the inverse owner and SDK
+projection through the theory-to-execution map. Use independent full-node
+edge sums and graph-distance cancellations to check the noncritical affine
+family and its remote-current remainder. Synthetic observation bands test
+monotone exclusion, calibration/noise propagation and unresolved arithmetic;
+they are not reserved responses. Keep the nominal-family parameter separate
+from the actual arc mean under phase residuals. An enclosing interval cannot
+serve as an existence or non-identifiability witness. Retained dipole and
+capture evidence can be audited without rerunning their frozen producers.
+
+For successive-input geometry/gain inference, also select
+[`test_sine_two_pulse_inference.py`](tests/physics/test_sine_two_pulse_inference.py).
+Check the complete carried state, the factored leading determinant,
+degenerate and unresolved rank, and all three reading-error coefficients.
+Positive factors can certify rank even when their determinant product rounds
+across zero; test factor-cancelled inversion and unresolved individual factors
+separately, including horizons below the product's resolution floor.
+A shared middle reading must retain its incidence coefficients; for this
+inverse's opposite-sign rows the marginal sensor bounds coincide with the
+conservative separate-increment bounds. Test exact large-offset cancellation and
+distinguish interval width from sensor error. Synthetic leading responses
+exercise the inverse but are not reserved complete-flow observations;
+necessary marginal intervals prove neither joint realizability nor exact
+full-state identifiability.
+
+For the bounded observation-clock adapter, also select
+[`test_sine_clock_inference.py`](tests/physics/test_sine_clock_inference.py)
+and the shared joint-inverse suite. Check constant-rate reduction,
+observation-time versus structural-time duration, maximum-duration error
+admission, effective gain `J=G*rho`, exact positive-prior projections and
+the shared three-reading error map. Include rational scale extremes and
+rejection at invalid clock/horizon domains. The nested auxiliary envelope
+must not be treated as an actual maximum-clock trajectory. Keep the exact
+all-row-rate/clock equivalence distinct from an ideal-source curvature
+control disproving exact gain/clock equivalence. Neither synthetic control
+is a reserved response or uniform noisy clock-identification theorem.
+
+For four-reading finite-curvature inference, also select
+[`test_sine_curvature_inference.py`](tests/physics/test_sine_curvature_inference.py)
+with the clock and joint-inverse suites. Independently check the raw
+finite-difference coefficients, original-source and third-derivative
+errors, positive divisions, necessary clock/gain projection and unchanged
+actual-angle meaning. All four reading pairs require admission, including
+a malformed half-window value absent from the coarse child. Preserve one
+middle-reading history and exact offset cancellation; curvature is not a
+new independent sensor error. Test unavailable refinement with a retained
+coarse report, strict exclusions, touching constraints and informative as
+well as nonimproving outer bounds. Exact local information results for an
+ideal fixed-source subfamily do not imply noisy global identification.
+
+For clock drift, select
+[`test_sine_clock_drift_inference.py`](tests/physics/test_sine_clock_drift_inference.py)
+with the curvature and clock suites. Check exact equal-exposure ambiguity,
+positive global rate and derivative-bound admission, endpoint matching,
+individual reading-transfer bounds and the unchanged sensor-error allowance.
+Include zero drift and singleton-prior reduction, all four primitive pairs,
+necessary mean-rate/gain projections and unavailable reference arithmetic.
+Use an independent varying-clock full-state control for finite transfer;
+this is an implementation check, not a reserved response or proof of
+instantaneous-profile recovery. Do not treat the widened reference readings
+as physical observations or a new independently sampled noise channel.
+
+For finite-aperture observation, select
+[`test_sine_aperture_inference.py`](tests/physics/test_sine_aperture_inference.py)
+with the clock-drift and curvature suites. Reconstruct the fixed boxcar
+moments and all four virtual-reading rows independently; test constant,
+linear and quadratic exactness, cubic remainders and the separate
+post-event second-window error. Keep all four primitive averaged pairs,
+their original sensor-error map, clock transfer and numerical widths
+distinct. The curvature child must receive zero additional sensor error.
+Check source-gated bounds, zero-drift aperture error, necessary marginal
+projection and method abstention. Independent full-state integration of
+the averaging law is an implementation control, not a reserved response
+or a calibration of the sensor kernel. Point-sample exposure equivalence
+alone must not be reused as equality of interval averages.
+
+For the [response-free resolution budget](theory/nodal/SINE_APERTURE_RESOLUTION.md),
+select [`test_sine_aperture_budget.py`](tests/physics/test_sine_aperture_budget.py)
+with the aperture inverse and SDK suites. Independently reconstruct moment
+row norms, separate sensor/enclosure/clock/reconstruction errors, strict
+source and quotient guards, and conditional width targets. Exercise exact
+boundary equality, large and subgrid rational inputs, and failed sufficient
+budgets without inventing unavailable width certificates. Rebuild the
+noise-overlap threshold from the two complete-history remainder bounds;
+check that only additive sensor error admits that existential witness.
+Numerical halfwidth alone must not trigger it, and an inadmissible whole-ball
+sufficient guard must not erase the valid zero-residual witness. Guard
+these controls against producer, inverse and frozen-worker execution.
+No selected readings or reserved responses are required for this theorem.
+
+When changing the independent full-state response generator, select the
+[direct source-box Taylor suite](tests/mathematics/test_validated_box_taylor.py)
+and [two-port readout suite](tests/physics/test_sine_two_port_readout.py).
+The former checks independent linear, coupled oscillator and nonlinear
+solutions, uncertain-baseline cancellation, thirty-six and sixty-four
+coordinates, domain failures and the fixed Picard budget. The latter
+rebuilds both fast-clock sine rows and the actual support, retains all state
+coordinates and tests complete-flow enclosures on unrelated synthetic
+preparations. Its numerical cross-check is not a validated response or a
+reserved experiment. Changes to the common Picard or jet owners also need
+their existing comparison and retained-metric consumer suites.
+
+For the [validated finite-aperture producer](theory/nodal/SINE_APERTURE_INFERENCE.md#sine-aperture-validated-producer),
+also select [`test_sine_aperture_readout.py`](tests/physics/test_sine_aperture_readout.py).
+Check affine endpoint-rate positivity separately from the smooth extended
+field, both nodal clock-scaled rows, the observation-time integral row
+and complete 38-coordinate carry. Verify all four exact aperture widths,
+phase-only events and cumulative integral increments without resets or
+unrelated endpoint subtraction. Independent stationary, exact-integral
+and coupled numerical controls must not substitute the inverse's response
+approximation for the forward law. Exercise a later-window failure and
+retain its successful prefix, failed tube and absent complete result.
+These controls admit an implementation; they do not execute a reserved
+response or calibrate an averaging sensor.
+
+```sh
+python -m pytest tests/mathematics/test_validated_box_taylor.py tests/physics/test_sine_two_port_readout.py tests/physics/test_sine_two_port_inference.py tests/physics/test_sine_two_pulse_inference.py -q
+python -m pytest tests/physics/test_sine_clock_inference.py tests/physics/test_sine_two_pulse_inference.py tests/sdk/test_relational_reports.py -q
+python -m pytest tests/physics/test_sine_curvature_inference.py tests/physics/test_sine_clock_inference.py tests/physics/test_sine_two_pulse_inference.py -q
+python -m pytest tests/physics/test_sine_clock_drift_inference.py tests/physics/test_sine_curvature_inference.py tests/physics/test_sine_clock_inference.py tests/sdk/test_relational_reports.py -q
+python -m pytest tests/physics/test_sine_aperture_inference.py tests/physics/test_sine_clock_drift_inference.py tests/physics/test_sine_curvature_inference.py tests/sdk/test_relational_reports.py -q
+python -m pytest tests/physics/test_sine_aperture_budget.py tests/physics/test_sine_aperture_inference.py tests/sdk/test_relational_reports.py -q
+python -m pytest tests/physics/test_sine_aperture_readout.py tests/mathematics/test_validated_box_taylor.py tests/physics/test_sine_two_port_readout.py tests/sdk/test_relational_reports.py -q
+python -m pytest tests/physics/test_sine_formed_evidence.py tests/physics/test_sine_curvature_evidence.py tests/physics/test_sine_clock_drift_evidence.py tests/physics/test_sine_aperture_evidence.py -q
+```
+
+The [reserved inference protocol](theory/nodal/SINE_TWO_PORT_INFERENCE.md#sine-two-port-inference-protocol)
+separates the full response producer from the inverse. Verify the actual
+inverse keyword allowlist: no hidden state, true angle, exact sensor gain,
+realized error or producer remainder may enter. Retain the two scalar
+readings and baseline correlation, independent calibration readings,
+numerical interval width and per-reading error as distinct evidence.
+Run retained-record audits after a first evaluation; tests must not
+regenerate that reserved response or silently retune a failed budget.
+
+The [reserved two-input protocol](theory/nodal/SINE_TWO_PULSE_INFERENCE.md#sine-two-pulse-inference-protocol)
+uses one held but uncalibrated gain per trajectory and three readings.
+The [retained-record suite](tests/physics/test_sine_formed_evidence.py)
+checks both complete thirty-six-coordinate Taylor certificates, exact
+endpoint/event carry, the one middle reading, public-only inverse packets,
+original angle/gain coverage, marginal widths and the fixed controls.
+Rebuild consumed arithmetic from saved primitives; cached success flags
+are not the evidence. These audits execute neither frozen producer nor
+inverse. Preserve a false optional `whole_window_acute_certified` flag
+without treating it as a failed inference criterion or a proved trajectory
+event.
+
+The [retained four-reading protocol and result](theory/nodal/SINE_FINITE_CURVATURE_INFERENCE.md#sine-curvature-inference-result)
+add a passive half-time observation and one held unknown clock per case.
+Select the same shared Taylor/readout suites for the zero-jump continuation;
+check all three segments and both complete endpoint handoffs, distinguishing
+observed from structural segment times. The [dedicated read-only audit](tests/physics/test_sine_curvature_evidence.py)
+checks the retained four-reading record and public ten-key packets without
+replaying its producer or inverse. Rebuild finite-curvature, source, coverage, width
+and fixed-control criteria from primitives, including available coarse
+children under false clock/gain priors. One half-time reading and its error
+must be reused consistently; a separate fitted curvature is not evidence.
+Preserve first failure, numerical abstention and optional acute flags.
+
+The [reserved nonconstant-clock result](theory/nodal/SINE_CLOCK_DRIFT_INFERENCE.md#sine-clock-drift-result)
+is audited by [`test_sine_clock_drift_evidence.py`](tests/physics/test_sine_clock_drift_evidence.py).
+Rebuild the primitive source, linear profile exposures, held sensor and
+all nine full-state certificates, then the recorded differences and necessary
+inverse bounds. Check the prospective sign/error margins, both endpoint
+handoffs per history, exact eleven-key packets, independent public transfer
+allowances, width/coverage and every fixed stopping predicate. The companion
+uses an exact equal-exposure association to the positive history; it is not
+a duplicate response. Reconstruct its derivative/rate admission and zero
+integral correction without executing an archived helper, producer or inverse.
+Saved derivative enclosures remain a premise, and hash/attempt receipts do
+not independently authenticate chronology or physical acquisition.
+
+The [retained finite-aperture result](theory/nodal/SINE_APERTURE_INFERENCE.md#sine-aperture-result)
+is checked by [`test_sine_aperture_evidence.py`](tests/physics/test_sine_aperture_evidence.py).
+Rebuild all twelve 38-coordinate step certificates, affine-clock provenance,
+full endpoint carry, passive cumulative integral and exact observed-width
+normalization. Reconstruct the raw averages, held sensor/errors, eleven-key
+public packets, moment/error transfer, nested inverse and every frozen stop.
+Check the signed-average/curvature budgets independently of the saved verdict.
+Only the 36 nodal coordinates share the exact first-window exposure equality;
+the rate and cumulative integral need not match the reference. No point-sample
+companion association transfers automatically to these averages. Namespace
+imports of shared audit helpers must not import their autouse fixtures into
+another module. Keep producer/inverse/worker guards and frozen-byte checks;
+stored derivative enclosures remain premises, with independently assembled
+first-rate consistency and whole-tube inclusion checks.
+
 ### Boundaries that need explicit regression coverage
 
 - **Chained evidence is rebuilt from its premises.** Change primitive inputs
@@ -117,9 +906,13 @@ and partial validated horizons.
 - **Shared admission does not mean shared theorem domains.** Specialized
   sine-cycle recovery retains its larger support domain (including the
   51-node control); general phase geometry has separate work caps. The
-  validated Taylor/comparison owner has a 24-coordinate limit, with boundary
-  refusal and independent 23-coordinate controls. Its sine layout uses
-  `2*n+1` coordinates; dimension admission alone certifies no response.
+  validated comparison and retained-metric Taylor owners keep their
+  24-coordinate limit, with boundary refusal and independent controls.
+  Hidden-capacity sine forecasts use `2*n+1` coordinates. The separate
+  direct source-box Taylor path admits at most 64 coordinates, without
+  changing that comparison cap or introducing a Jacobian propagation.
+  Test both policies and the full 36-coordinate two-port source; dimension
+  admission alone certifies no response.
 - **Metric uncertainty remains correlated.** Compare retained-ball propagation
   with independent analytic rotating, contracting and nonlinear flows, including
   boundary points outside coordinate axes. Check original-clock growth bounds,
@@ -154,6 +947,90 @@ and partial validated horizons.
   test its signed remainder and exact local derivatives without treating them
   as a finite-horizon prediction. Exact-family membership, finite-width
   maintenance and acquisition into that neighborhood need separate controls.
+  For reduced component ports, independently verify projection/lift identities,
+  orbit multiplicities, the nonlinear bridge and its changed degree weights.
+  Include odd initial errors and nonlinearly generated discarded modes; linear
+  parity invariance is not an exact nonlinear quotient. Transfer the unchanged
+  component law to the held-out receiver and compare total prediction error
+  against the final outward full-response lower bound, retaining preparation
+  and readout errors. Prove actual joined identity from the full law, not from
+  the surrogate's stability or coordinate count.
+  For network assembly, derive central mobility from every live contact
+  degree and check exact charge/storage identities against the fine graph.
+  Include a multiply connected port that rejects unchanged one-contact
+  normalization, cycles with consistent component origins, and disconnected
+  states whose instantaneous rows do not establish global capture. A uniform
+  whole-state approximation bound must retain original preparation errors
+  and generated odd modes; it is not a receiver-contrast or sensor budget.
+  For all-time tracking, independently admit both invariant charts and the
+  actual degree-weighted spectral gap. Preserve initial-error transients,
+  generated odd modes and both conserved global mean floors; convergence to
+  a target alone is not cross-flow contraction. Test separate form and phase
+  resolution margins, including a valid envelope that resolves only one
+  channel. Failure of a sufficient resolution bound is not trajectory error
+  evidence, and a phase pass must not hide a failed natural form scale.
+  A sharper form comparison must preserve operator order in its heat
+  convolution, include the initial phase-to-form contribution and nonlinear
+  bridge variation, and strictly admit both parity feedback gains. Exercise
+  noncommuting operators and dyadic gain boundaries independently. Keep the
+  previous partial artifact unchanged; a new method is separate evidence,
+  not permission to enlarge the old allowance or replace its verdict.
+  A two-port equilibrium admission must reconstruct every fine edge and
+  cycle period, distinguish balanced circulation from nonzero nodal rates,
+  and retain the matched-class zero-current control. Enclosed root existence
+  and strict acute margins, not small residuals, justify the equilibrium;
+  local recovery does not establish capture of a supplied initial family.
+  For a storage handoff obstruction, reconstruct the complete boundary
+  witness and its integer periods independently of the equilibrium root.
+  Check the source lower bound across relative origins, the nonnegative
+  full-form contribution and the radian phase-error allowance. Exercise the
+  exact strict-margin boundary and reject Boolean or nonfinite radii. A
+  lower-storage boundary witness excludes the scalar certificate, not capture
+  by the full dynamics; current-source checks must leave frozen equilibrium
+  evidence untouched.
+  A finite two-port transit certificate must retain both initial form and
+  phase errors, actual degrees and conserved means, every consumed clock
+  factor and the full-state reconstruction. Verify its reference derivative
+  independently on all eighteen nodes. Its acute-chart comparison needs a
+  closed first-exit argument, not an assumed reference domain. Test actual
+  endpoint changes against each member's own initial short gaps, with the
+  initial error counted as well as the endpoint error. Whole-window acuteness
+  and finite directional change do not establish eventual capture. Keep
+  nonsymmetric error families and explicit unavailable margins in coverage.
+  A longer capture gate must distinguish a validated nominal gradient
+  reference from the full uncertain form-phase family. Check the folded
+  metric and full reconstruction, whole-time tube admission, exact completed
+  horizon and retained numerical radius. Every reference target, rate and
+  chart prerequisite must be rebuilt from primitives. The analytic final
+  interval continues the same full flow and needs its own original-form
+  bound; a small phase distance alone is insufficient. Keep incomplete
+  prefixes and failed capture margins unavailable, and preserve the first
+  fixed-budget response even when its sufficient criteria fail.
+  A supplied probe must retain the actual pre-event form and phase residuals,
+  the exact jump, its storage work and the changed conserved-mean leaf.
+  Reconstruct the receiver observation on each support: the common rule
+  uses receiver degree masses twenty and eighteen, not identical coefficient
+  vectors. Check the unjoined invariant directly, independent readout errors,
+  complete-law finite response remainders and strict post-event trapping.
+  An endpoint-ball assessor cannot certify the source's acquisition; test
+  the separate finite source handoff without consuming cached verdicts.
+  Keep a pure-heat transmission countermodel so the response is not reported
+  as winding-specific evidence or selection of the sine constitutive law.
+  An interior phase dipole needs the identical local coefficient vector in
+  both models, with scalar observation errors distinguished from per-node
+  errors. Verify its exact local sine response before bounding both full
+  propagators; matching local adjacency does not prove finite response
+  equality. Preserve the correlated target-angle contrast and every nonlinear
+  remainder term. A degree-metric warmup must remove each connected
+  component's own means, retain the combined control norm and prove strict
+  original-form and phase budgets through the shared modified-energy
+  kernels. Its starting source is already trapped; two norm caps alone
+  cannot grant acquisition or trapping. Test missing warmup and target
+  prerequisites so endpoint candidates never become delivered response,
+  work or identity evidence. The phase-blind control needs its own complete
+  rows and original-source heat bound: zero causal phase-pulse response
+  does not erase raw background relaxation. Preserve both sine-law storage
+  margins, signed jump work and all four scalar readout errors.
 - **All-time and symmetry verdicts have different scope.** Fixed-budget
   consensus tests need an independent mixed-Lyapunov derivative from both
   full rows, zero-budget and failed-premise controls. Reflection excludes
@@ -191,6 +1068,79 @@ The [benchmark guide](benchmarks/README.md#running-and-reporting) owns producer
 invocation, freezing and artifact lifecycle. Reuse the appropriate saved evidence
 or shared fixture; do not regenerate completed responses for unrelated changes.
 A new reserved prediction needs its own declared inputs and prospective protocol.
+
+The [formed C9 bundle audit](tests/physics/test_sine_formed_evidence.py) checks
+the committed artifact hashes, archived source inventories, protocol associations
+and the distinct reduced-model stopping rules without calling an assessor or producer:
+the two-component error fraction uses its final outward receiver-gap lower
+endpoint, while network composition uses an absolute whole-window full-state
+allowance plus the exact degree/charge/storage control. Neither rule substitutes
+for its saved actual-family identity and supplied-work obligations.
+The all-time relaxation audit separately retains the phase and form resolution
+decisions, including any qualified partial outcome; it must not reinterpret
+a failed sufficient form margin as an observed tracking failure.
+The separate ordered-heat form certificate preserves that earlier report body
+as its baseline and applies the same primitive inputs and channel allowances.
+Its audit checks both new strict margins without relabeling the original
+`phase_only` result or its false joint stopping rule.
+The two-port compatibility bundle has a different static criterion: primary
+and matched-control equilibrium admission, full cycle/current consistency,
+strict acute and Hessian bounds, and nonzero versus zero interface current.
+It certifies neither a source trajectory nor capture after an attachment.
+The separate two-port handoff obstruction is an exact analytic result with
+current-source boundary-witness controls in
+[the handoff suite](tests/physics/test_sine_two_port_handoff_obstruction.py),
+not another frozen experiment. Select it together with
+[the compatibility suite](tests/physics/test_sine_two_port_compatibility.py)
+when changing their shared owner. Its failed scalar admission does not
+revise the compatibility bundle or assert a failed trajectory.
+The two-port capture bundle retains all 4,096 successful nominal-reference
+steps separately from its analytic complete-state handoff. Its audit must
+preserve the original thirty-six-coordinate preparation, clocks, root
+prerequisites, strict tube margins, endpoint radius and final storage margin.
+Read the saved first response and archived source; do not rerun its producer
+to inspect the result or substitute the folded reference for the full family.
+The supplied two-port probe has a separate conditional endpoint suite,
+[response and maintenance controls](tests/physics/test_sine_two_port_probe.py).
+Its source-evidence audit must match the original capture primitives and
+rebuild every consumed handoff bound. Artifact hashes and rational chain
+consistency associate the retained record with its declared source; they do
+not independently revalidate omitted Taylor calculations or authenticate
+execution. The probe protocol freezes its own assessment without replaying
+the capture producer or altering its saved response. Its original attempt
+failed during auxiliary control export; the retained response comes from
+a separately archived deterministic export-recovery recomputation with
+unchanged scientific inputs and runtime. Check the original archive, failure
+record, recovery wrapper and explicit evaluation history separately. A
+successful retained recovery must not overwrite the failure or be labeled
+as a successful first attempt.
+Select the [source-handoff suite](tests/research/test_sine_two_port_handoff.py)
+with the conditional endpoint suite when changing this acquisition-to-probe
+chain. Exercise altered primitive laws, lost metric correlations, malformed
+or incomplete evidence and cached verdict changes independently; a cached
+flag must neither grant nor remove an otherwise justified handoff. The
+research audit's direct schema and explicit retained-execution premise are
+separate from the generic SDK projection of the probe report.
+The [interior-dipole suite](tests/physics/test_sine_two_port_dipole.py) adds
+finite warmup, exact local response, full-flow remainders, phase-blind
+background exclusion and separate work/identity admissions. Select it with
+the [modified-energy kernel suite](tests/physics/test_sine_lyapunov.py)
+and the source-handoff suite for changes to that continuation. The initial
+capture evidence remains fixed; a later analytic warmup neither replays its
+validated reference nor authenticates its retained execution. The saved
+dipole response passes its thirteen conditions in the first frozen
+assessment. Audit its original protocol/source association, source handoffs,
+warmup, finite contrast, heat exclusion and both work/identity channels
+separately from the earlier form-probe export recovery.
+
+```sh
+python -m pytest tests/physics/test_sine_formed_evidence.py -q
+```
+
+Missing committed artifacts fail this check. Historical source need not match
+the current implementation; current-source regression remains separate. The
+original pair/probe records still lack an evaluation-time source snapshot.
+Content consistency neither authenticates chronology nor proves the mathematics.
 
 Optional retained-record audits skip explicitly when local evidence is absent;
 they must not recreate a producer or count missing evidence as a passed response.
@@ -371,6 +1321,14 @@ typing facade. After changing that map, run
 source AST without importing TNFR, and the
 [facade tests](tests/physics/test_physics_facade_imports.py) check typed exports,
 runtime object identity and cold import boundaries.
+
+For shared relational report export, select
+`tests/sdk/test_relational_reports.py`. Preserve every registered owner-managed
+type, actual-class and subclass admission, native label validation, exact
+fractions and unavailable fields. Cold-process controls must show that export
+does not import unrelated research owners. Use guarded zero-horizon reports
+or synthetic wiring for producer-backed types; an SDK export test must not
+regenerate a selected scientific response.
 
 Optional pre-commit setup requires installing `pre-commit` separately before
 `pre-commit install`. [.pre-commit-config.yaml](.pre-commit-config.yaml)

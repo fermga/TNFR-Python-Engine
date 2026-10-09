@@ -21,6 +21,66 @@ from .relational_sine_pattern import SineRelativePattern
 from .structural_diffusion import _exact_flow_gap_from_rationals
 
 
+def _prepared_transit_radii(
+    *,
+    time,
+    decay_upper,
+    gap_lower,
+    initial_norm_upper,
+    feedback_upper,
+    forcing_upper,
+):
+    """Bound scaled form and the integrated phase remainder of a prepared flow.
+
+    Callers admit the complete positive-loss law, its weighted mean-free
+    semigroup gap, nonnegative time and bounds before using this kernel.
+    Arguments are exact rational bounds. The phase radius is measured from
+    the actual initial scaled form plus initial phase; a nominal-source
+    comparison must retain its initial form and phase errors separately.
+    These are norm bounds for the actual coupled flow, not endpoint boxes
+    or a capture verdict. No source, law or horizon is cached here.
+    """
+    scaled_form_radius = (
+        decay_upper * initial_norm_upper
+        + feedback_upper * forcing_upper * min(time, Q(1) / gap_lower)
+    )
+    phase_radius = scaled_form_radius + feedback_upper * time * forcing_upper
+    return scaled_form_radius, phase_radius
+
+
+def _prepared_duhamel_bounds(
+    *,
+    time,
+    decay_upper,
+    gap_lower,
+    rate_upper,
+    forcing_upper,
+    initial_norm_upper,
+    scaled_form_error_upper,
+    phase_error_upper,
+    feedback_upper,
+):
+    """Bound a prepared scaled flow around its nominal Poisson profile.
+
+    Callers admit a self-adjoint mean-free generator with the supplied gap,
+    upper rate and global forcing/Lipschitz bounds. All arguments are exact
+    nonnegative bounds. The returned values enclose the weighted scaled-form
+    remainder and phase distance from the nominal initial scaled form.
+    This estimate retains the full transient and forcing history.
+    """
+    initial_error = scaled_form_error_upper + phase_error_upper
+    history = feedback_upper * forcing_upper * (time + 1 / gap_lower)
+    remainder = decay_upper * (
+        initial_norm_upper
+        + scaled_form_error_upper
+        + feedback_upper * forcing_upper / gap_lower
+    ) + feedback_upper * rate_upper * (
+        initial_norm_upper * time * decay_upper + (initial_error + history) / gap_lower
+    )
+    phase_error = decay_upper * initial_norm_upper + initial_error + history
+    return remainder, phase_error
+
+
 @dataclass(frozen=True)
 class _SineDomain:
     geometry: PhaseCycleGeometry

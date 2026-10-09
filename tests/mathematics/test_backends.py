@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import warnings
 from typing import cast
 
 import numpy as np
@@ -354,3 +355,52 @@ def test_torch_backend_handles_numpy_complex_dtype() -> None:
     tensor = ensure_array(matrix, dtype=np.complex128, backend=backend)
 
     assert tensor.dtype == torch_module.complex128
+
+
+@pytest.fixture
+def cpu_torch_backend():
+    torch = pytest.importorskip("torch")
+    return backend_registry._TorchBackend(
+        torch, torch.linalg, torch.device("cpu"), False
+    )
+
+
+@pytest.mark.parametrize("dtype", [np.float32, np.float64, np.complex128])
+@pytest.mark.parametrize("view", [False, True])
+def test_torch_readonly_numpy_conversion_owns_storage(cpu_torch_backend, dtype, view):
+    storage = np.arange(8, dtype=dtype)
+    if np.issubdtype(dtype, np.complexfloating):
+        storage += 2j
+    source = storage[::2] if view else storage
+    source.setflags(write=False)
+    before = storage.copy()
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", UserWarning)
+        tensor = cpu_torch_backend.as_array(source, dtype=dtype)
+
+    np.testing.assert_array_equal(tensor.numpy(), source)
+    assert not np.shares_memory(tensor.numpy(), storage)
+    tensor[0] = -99
+    np.testing.assert_array_equal(storage, before)
+    assert not source.flags.writeable
+
+
+def test_torch_writable_numpy_conversion_retains_alias(cpu_torch_backend):
+    source = np.array([1.0, 2.0])
+    tensor = cpu_torch_backend.as_array(source)
+
+    assert np.shares_memory(tensor.numpy(), source)
+    tensor[0] = 3.0
+    np.testing.assert_array_equal(source, [3.0, 2.0])
+
+
+def test_torch_native_conversion_preserves_identity_and_gradient(cpu_torch_backend):
+    torch = cpu_torch_backend._torch
+    source = torch.tensor([1.0, 2.0], dtype=torch.float64, requires_grad=True)
+
+    tensor = cpu_torch_backend.as_array(source)
+
+    assert tensor is source
+    (3 * tensor).sum().backward()
+    np.testing.assert_array_equal(source.grad.numpy(), [3.0, 3.0])

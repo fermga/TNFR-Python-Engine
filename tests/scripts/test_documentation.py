@@ -566,6 +566,65 @@ def test_documentation_links_include_own_repository_urls_and_reference_style(
     assert failures == []
 
 
+@pytest.mark.parametrize(
+    "math",
+    (
+        "\\[\n\\left[a\\right](T)\n[not-a-reference]: absent-math.md\n\\]",
+        r"\(\left[a\right](T)\)",
+        r"\\\[\left[a\right](T)\\\]",
+        r"\\\(\left[a\right](T)\\\)",
+        r"$$[algebra](T)$$",
+        r"$[algebra](T)$",
+    ),
+)
+def test_math_wrappers_hide_algebra_but_leave_real_links_checked(
+    reference_workspace, math
+):
+    _, examples, checker = reference_workspace
+    (examples / "target.md").write_text("# Real target\n", encoding="utf-8")
+    (examples / "guide.md").write_text(
+        "[Valid](target.md#real-target)\n\n" + math + "\n\n[Broken](absent-prose.md)\n",
+        encoding="utf-8",
+    )
+
+    references, failures = checker.verify(["."])
+
+    assert references == 2
+    assert len(failures) == 1
+    assert "absent-prose.md" in failures[0]
+
+
+@pytest.mark.parametrize(
+    "prose",
+    (
+        r"\[ [Ordinary](missing.md)",
+        r"[Ordinary](missing.md) \]",
+        r"\( [Ordinary](missing.md)",
+        r"[Ordinary](missing.md) \)",
+        r"\\[ [Ordinary](missing.md) \\]",
+        r"\\( [Ordinary](missing.md) \\)",
+        r"\[ [Ordinary](missing.md) \\]",
+        r"\\[ [Ordinary](missing.md) \]",
+        r"\[ [Ordinary](missing.md) \)",
+        r"\[ [Ordinary](missing.md) \( [Algebra](T) \)",
+    ),
+)
+def test_unmatched_or_escaped_tex_wrappers_do_not_hide_links(
+    reference_workspace, prose
+):
+    _, examples, checker = reference_workspace
+    (examples / "target.md").write_text("# Target\n", encoding="utf-8")
+    (examples / "guide.md").write_text(
+        prose + "\n\n[Outside](target.md)\n", encoding="utf-8"
+    )
+
+    references, failures = checker.verify(["."])
+
+    assert references == 2
+    assert len(failures) == 1
+    assert "missing.md" in failures[0]
+
+
 def test_fenced_markdown_examples_do_not_create_live_references(reference_workspace):
     _, examples, checker = reference_workspace
     (examples / "target.md").write_text("# Real target\n", encoding="utf-8")
@@ -695,6 +754,81 @@ def test_staging_preserves_inline_and_reference_link_destinations(
     assert (output / "index.md").is_file()
     assert not (output / "README.md").exists()
     assert (examples / "guide.md").read_text(encoding="utf-8") == original
+
+
+def test_staged_adjacent_display_math_renders_without_a_false_link(
+    tmp_path, monkeypatch
+):
+    markdown = pytest.importorskip("markdown")
+    pytest.importorskip("pymdownx.arithmatex")
+    from scripts import prepare_docs as staging
+
+    monkeypatch.setattr(staging, "REPO_ROOT", tmp_path)
+    monkeypatch.setattr(staging, "STAGE_DIR", tmp_path / "build" / "docs-source")
+    for relative in staging.ROOT_FILES:
+        (tmp_path / relative).write_text("placeholder\n", encoding="utf-8")
+    (tmp_path / "README.md").write_text("# Home\n", encoding="utf-8")
+    examples = tmp_path / "examples"
+    examples.mkdir()
+    (examples / "target.md").write_text("# Live target\n", encoding="utf-8")
+    display = "\\[\nD=\\gamma^3\\ell\\left[\nu_1-u_2\n\\right](T).\n\\]\n"
+    original = "Prose immediately before.\n" + display + "After [Live](target.md).\n"
+    source = examples / "guide.md"
+    canonical = original.replace("\n", "\r\n").encode("utf-8")
+    source.write_bytes(canonical)
+
+    output = staging.prepare()
+
+    staged = (output / "examples" / "guide.md").read_text(encoding="utf-8")
+    assert (
+        staged
+        == "Prose immediately before.\n\n" + display + "\nAfter [Live](target.md).\n"
+    )
+    assert staging._separate_display_math(staged) == staged
+    assert source.read_bytes() == canonical
+    rendered = markdown.markdown(
+        staged,
+        extensions=["pymdownx.arithmatex"],
+        extension_configs={"pymdownx.arithmatex": {"generic": True}},
+    )
+    assert '<div class="arithmatex">' in rendered
+    assert 'href="T"' not in rendered
+    assert 'href="target.md"' in rendered
+    assert r"\right](T)" in rendered
+
+
+@pytest.mark.parametrize(
+    "unchanged",
+    (
+        "```tex\n\\[\na\n\\]\n```\n",
+        "~~~tex\n\\[\na\n\\]\n~~~\n",
+        "`multiline example\n\\[\na\n\\]\n`\n",
+        "`code`\\[\na\n\\]\nAfter\n",
+        "Before\n\\[\na\n\\]`code`\nAfter\n",
+        "    \\[\n    a\n    \\]\n",
+        "\tBefore\n\t\\[\n\ta\n\t\\]\n\tAfter\n",
+        " \tBefore\n \t\\[\n \ta\n \t\\]\n \tAfter\n",
+        "\\\\[\na\n\\\\]\n",
+        "Before\n\\[\na\nUnclosed display\n",
+        "Before\na\n\\]\nUnopened display\n",
+        r"Inline \(a\) and inline \[b\] remain unchanged.",
+    ),
+)
+def test_display_staging_preserves_code_inline_escaped_and_unmatched_text(unchanged):
+    from scripts.prepare_docs import _separate_display_math
+
+    assert _separate_display_math(unchanged) == unchanged
+
+
+def test_display_staging_adds_only_missing_boundaries_between_matched_blocks():
+    from scripts.prepare_docs import _separate_display_math
+
+    first, second = "\\[\na\n\\]\n", "\\[\nb\n\\]\n"
+    original = "Before\n" + first + second + "After\n"
+    expected = "Before\n\n" + first + "\n" + second + "\nAfter\n"
+    assert _separate_display_math(original) == expected
+    assert _separate_display_math(expected) == expected
+    assert first in expected and second in expected
 
 
 @pytest.mark.parametrize(

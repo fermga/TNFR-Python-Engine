@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import argparse
 import ast
-import hashlib
 import io
 import zipfile
 from dataclasses import dataclass
@@ -30,7 +29,11 @@ from ..physics.relational_sine_forecast import _admit_support
 from ..physics.relational_sine_partition import _private_leaf_support
 from ..physics.relational_sine_regional import _branches
 from ..utils.io import json_dumps, json_loads, safe_write
-from .relational_acquisition import _exact, _require, _verify_archive
+from .artifact_io import _require
+from .artifact_io import exact_record as _exact
+from .artifact_io import read_bytes_bounded
+from .artifact_io import sha256_bytes as _sha
+from .artifact_io import verify_archive_members as _verify_archive
 
 __all__ = ("SineConstitutiveRobustness", "assess_sine_constitutive_robustness")
 
@@ -58,6 +61,7 @@ _FLOW_FUNCTIONS = (
 )
 _METHOD_FILES = (
     "src/tnfr/research/sine_constitutive_robustness.py",
+    "src/tnfr/research/artifact_io.py",
     "src/tnfr/research/relational_acquisition.py",
     "src/tnfr/mathematics/_rational_interval.py",
     "src/tnfr/physics/_sine_admission.py",
@@ -66,10 +70,6 @@ _METHOD_FILES = (
     "src/tnfr/physics/relational_sine_regional.py",
     "src/tnfr/physics/relational_sine_partition.py",
 )
-
-
-def _sha(data):
-    return hashlib.sha256(data).hexdigest()
 
 
 def _method_path(name):
@@ -109,8 +109,7 @@ def _function_ast(data, name):
 def _load_frozen_evidence(directory):
     """Verify exact known bytes without importing the archived package."""
     path = Path(directory) / "response-v1.evidence.zip"
-    _require(path.stat().st_size <= 16 * 1024**2, "evidence bundle exceeds byte budget")
-    bundle = path.read_bytes()
+    bundle = read_bytes_bounded(path, max_bytes=16 * 1024**2)
     _require(
         _sha(bundle) == _BUNDLE_SHA256, "unsupported or changed frozen evidence bundle"
     )

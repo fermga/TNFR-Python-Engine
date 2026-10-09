@@ -19,6 +19,7 @@ from ..utils import (
     normalize_optional_int,
     normalize_weights,
 )
+from ..utils.numeric import _clipped_ratio
 
 __all__ = (
     "GraphLike",
@@ -535,7 +536,7 @@ def normalize_dnfr(nd: NodeAttrMap, max_val: float) -> float:
     val = abs(_stored_metric_scalar(nd, ALIAS_DNFR))
     if max_val == 0.0:
         return 0.0
-    return clamp01(val / max_val)
+    return _clipped_ratio(val, max_val)
 
 
 def min_max_range(

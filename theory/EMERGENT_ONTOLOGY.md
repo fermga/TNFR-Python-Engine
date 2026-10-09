@@ -83,6 +83,28 @@ information, even when their collective means coincide. This supports studying
 sufficient interaction state and inherited dynamics before physical naming;
 it does not derive an atom or a unique constitutive law.
 
+The [distinct-neighbor comparison](nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL.md#sine-neighbor-forward-reserved-result)
+supports nonadditive interaction of the prepared organizations under the
+supplied smooth-sine law. A separate
+[storage theorem](nodal/SINE_CLASS_STORAGE_EXCESS.md#sine-storage-exact-balance)
+derives nonlinear storage and loss beyond the matched complete tangent model.
+Its negative excess is a signed combination of four histories and two models,
+not a negative binding potential or evidence of energetic attachment. It has
+not been independently observed through a storage measurement. Formation,
+retained identity and interaction remain steps toward an independently
+measurable collective property; none alone establishes a physical constituent.
+
+These consequences do not select the microscopic law. The existing
+[alternative-storage family](nodal/SINE_CONSTITUTIVE_INFORMATION.md#phase-storage-selection-boundary)
+preserves circularity, local reciprocal exchange, dissipation and the consensus
+tangent while changing nonlinear pressure and storage. Its protected geometry
+can also persist, without transferring another law's acquisition or response
+certificates. The [constitutive admission](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission)
+must distinguish properties that survive this freedom from those requiring
+a particular law; passivity or a successful prepared response cannot supply
+that distinction by itself. Autonomous preparation, contact occurrence and
+scale selection remain separate obligations.
+
 Within the specified complete laws, equal nominal collective means and storage
 can hide response-relevant internal information. The
 [conservative persistence result](nodal/SINE_PAIR_INTERACTION.md#sine-pair-persistent-response)
@@ -96,6 +118,41 @@ Support, preparation and constitutive law remain supplied, and the structured
 source information and storage remain preparation costs. Geometric retention
 with a finite response signature does not establish autonomous preparation,
 distinct persistent constituents or physical identification.
+
+The [two formed winding classes](nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-pair)
+separately establish prepared acquisition of symmetry-inequivalent attracting
+geometries under one fixed support and complete law. Their source families
+retain all fine coordinates on a common conserved-mean leaf, with distinct
+preparation costs under one budget. A
+[common supplied probe](nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-response)
+then distinguishes their actual form responses while both post-probe families
+recover their own geometry, retaining the original preparation uncertainty
+and accounting separately for the intervention's storage work. This gives a
+conditional example of acquired organization with a distinguishable interaction
+response. The separate
+[quantitative return certificate](nodal/SINE_FORMED_CLASS_MAINTENANCE.md#sine-formed-class-maintenance)
+extends that discrimination and geometric retention to every repetition of
+one fixed supplied probe schedule. It proves invariant neighborhoods with a
+finite common dwell, not a unique periodic orbit or a practical operating
+speed. Positive work per probe requires unbounded cumulative external work
+for indefinite repetition; exact target convergence applies when probes
+stop. These results derive neither the organized source preparation,
+autonomous probe selection nor a physical constituent identity.
+
+Distinct internal geometries need not be distinguishable through every
+contact. The [central-contact obstruction](nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-contact-admission)
+shows that the nominal formed C9 classes can remain invisible to the same
+receiver under an aligned supplied bridge. Interface symmetry and retained
+internal information are therefore part of an interaction claim.
+
+A [declared nonzero relative origin](nodal/SINE_FORMED_CLASS_CONTACT.md#sine-formed-class-contact)
+admits a different result: the two actually formed donors produce separated
+finite responses in one receiver class while both cycle identities remain
+retained under the complete joined law. Original source uncertainty, changed
+port degrees and contact work are included. This connects acquired internal
+organization to its effect on another organization, conditional on the supplied
+preparation, law and contact. Its conservative structural dwell and very small
+readout error establish no laboratory feasibility or physical identification.
 
 A collective observation/measurement map is eventually needed to test that
 hypothesis, but it may act on a pattern and its interaction with a measurement
@@ -172,6 +229,11 @@ the same fine interaction, without counting it again as an independent force
 exerted by a second copy of the pattern. The
 [collective interaction owner](nodal/DERIVED_FORM_PHASE.md#collective-interaction-closure-and-relational-state)
 already shows why relations between patterns can carry necessary state.
+The [reduced formed-class ports](nodal/SINE_REDUCED_CLASS_PORTS.md#sine-reduced-class-ports)
+give a controlled approximation example: a smaller component state transfers
+to a different receiver with explicit finite error for discarded modes and
+initial uncertainty. This supplies neither an exact nonlinear quotient nor
+physical identification; the full-law identity proof remains separate.
 
 A larger NFR would organize the internal nodes or patterns without erasing
 their existence or motion. The [conservative sine replica calculation](nodal/SINE_PAIR_STATE.md#sine-replica-inheritance)
@@ -423,9 +485,9 @@ Thus the useful synthesis is **retained internal dynamics plus ordered
 contact geometry**, with a compatible full-state maintenance budget. It
 does not require adding a new primitive pulse, treating resonance as an
 autonomous input, or assuming that a larger NFR erases its constituents.
-The [active admission gate](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-owns the next bounded question and any reopening of a physical preparation
-or operational formation dependency.
+The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns the current gate's status, the next admitted question and any reopening
+of a physical preparation or operational formation dependency.
 
 ## 2. Geometry and diagnostics do not close the dynamics
 

@@ -1,0 +1,771 @@
+# Finite separation of a nonlinear class-mediated response
+
+<a id="sine-class-nonlinear-protocol"></a>
+
+The [two-probe theorem](SINE_CLASS_NONLINEAR_SUPERPOSITION.md#sine-class-nonlinear-superposition)
+derives nonlinear local curvature while proving overlap of four final
+observation records at its short horizon. A nonzero derivative does not
+remove that obstruction. This owner admits a longer-horizon comparison
+under the same acquired source, complete law and readout error. Its
+prospective design is fixed before calculating the finite coefficient.
+The resulting finite negative mixed response separates the full nonlinear
+and same-source tangent four-record sets at the inherited noise budget.
+No trajectory, reserved response or physical data is
+acquired, and the earlier theorem and frozen evidence remain unchanged.
+
+The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns this bounded admission. The coefficient calculation, full nonlinear
+remainder, source uncertainty and observation margin have separate roles.
+
+<a id="sine-nonlinear-protocol-state-and-design"></a>
+## F1-F2: fixed complete source, law and observation
+
+Retain the three-C9 donor, mediator and receiver support with both
+central contacts, original unit capacities and classes \((1,2,1)\).
+The mediator class is fixed before the coefficient calculation. All 54
+form and primitive-phase coordinates remain present, with actual central
+degrees \((3,4,3)\), total degree mass 58, and the inherited rows
+\[
+x'=-Ax+\gamma KS(\theta),\qquad \theta'=\gamma Ax,
+\qquad A=KL,\quad\gamma=1/(1023\pi).
+\tag{1}
+\]
+Primes refer to structural time \(\tau=et\), \(e=1023/1024\).
+Form has the previous normalized structural units, angles are radians,
+and target deviations \(y=\theta-\Theta_2\) retain continuous
+lifts. No laboratory-unit conversion or physical noise model is supplied.
+
+The original formation and dwell remain separate matched obligations of
+the [acquired response owner](SINE_CLASS_MEDIATED_RESPONSE.md#sine-class-mediated-result).
+This theorem consumes its conditional reached-state family: each
+component's form and phase-deviation Euclidean norms are at most
+\(\epsilon\), with the original separate zero unweighted sums.
+Every allowed residual remains present; it is not made reflection
+symmetric. All four continuations start at the same complete actual
+state, including the hidden mediator initialization.
+
+Supply donor central form impulses \(a\) at time 0 and \(b\) at
+delay \(s\), in the four histories \(00,10,01,11\) defined in the
+previous theorem. All rows and coordinates continue across the delay.
+The delayed-only history has its own unprobed preevent state. Read receiver
+central form at the common time \(T\), and retain
+\[
+M=R_{11}-R_{10}-R_{01}+R_{00},\qquad
+\widehat M=M+e_{11}-e_{10}-e_{01}+e_{00},\quad |e_j|\le\delta.
+\tag{2}
+\]
+The comparison is the same-source complete tangent law, equivalently its
+exact linear memory with hidden initialization. Its noiseless mixed
+statistic is zero for every common full initial state. No state reset,
+changed observation or refitted comparator is admitted.
+
+The single prospectively fixed analytic design is
+\[
+a=b=1/2000,\qquad s=1,\qquad T=2,\qquad
+\epsilon=10^{-32},\quad\delta=10^{-30},\quad r=1/12.
+\tag{3}
+\]
+Contact work allowance is \(10^{-12}\); each impulse has its own
+allowance \(2\,10^{-6}\). Thus preparation precision, amplitudes,
+identity radius and readout noise remain as in the split-probe design;
+the delay and observation horizon explicitly change. The short-time
+\(1/(1-3T)\) estimates are not extended to this domain.
+
+<a id="sine-nonlinear-protocol-source-transfer"></a>
+## Actual-source transfer without a short-time denominator
+
+The normalized heat semigroup \(P(t)=\exp(-At)\) contracts maximum
+norm. The sine map is globally Lipschitz with normalized constant two.
+For actual and ideal trajectories with the same events, write \(X,Y\)
+for their form and phase maximum-norm differences. Then
+\[
+X(t)\le\epsilon+2\gamma\int_0^tY(v)\,dv,\qquad
+Y(t)\le\epsilon+2\gamma\int_0^tX(v)\,dv.
+\tag{4}
+\]
+For \(\gamma\le g<1/3000\) and \(2gT<1\), this gives the
+whole-window comparison
+\[
+\max(X,Y)\le\frac{\epsilon}{1-2gT}.
+\tag{5}
+\]
+The same argument applies to the tangent law. It works in the original
+coordinates, with no phase uncertainty divided by \(\gamma\).
+Form jumps cancel in these source comparisons. Consequently a finite
+ideal mixed-response enclosure transfers to the actual family with
+additional absolute error at most
+\[
+B_{\rm source}=\frac{4\epsilon}{1-2gT}<4.01\,10^{-32}
+\quad\text{at (3).}
+\tag{6}
+\]
+This preserves arbitrary source residuals and the shared initial state
+without claiming they cancel in the nonlinear law.
+
+<a id="sine-nonlinear-protocol-events-and-identity"></a>
+## F3: both event histories retain their work and identity
+
+For absolute supplied amplitude budget \(A_*\), diffusion contraction
+and phase integration give
+\[
+Q_{A_*}(t)=\frac{A_*+\epsilon+2gt\epsilon}{1-2g^2t^2},\qquad
+\|x(t)\|_\infty\le Q_{A_*}(t),\quad
+\|y(t)\|_\infty\le\epsilon+2gtQ_{A_*}(t),
+\tag{7}
+\]
+whenever the denominator is positive. The bound follows from the complete
+law and the declared events, not a new held-state assumption.
+
+The exact work of a central donor form jump \(q\) is
+\(q(Lx^-)_D+3q^2/2\). Thus each second work uses its own preevent
+history. Uniform bounds for the four histories are
+\[
+W_1\le\tfrac32a^2+6|a|\epsilon,\qquad
+W_2\le\tfrac32b^2+6|b|Q_{|a|}(s),\qquad
+\mathcal E\le22\epsilon^2+W_{1,\rm upper}+W_{2,\rm upper}.
+\tag{8}
+\]
+Absent impulses use zero work; the delayed-only history has the smaller
+\(Q_0(s)\) preevent bound. At (3), exact rational substitution with
+\(g=1/3000\) yields both work bounds below \(2\,10^{-6}\) and
+\[
+\mathcal E<2.250003\,10^{-6}<r^2/2700=1/388800.
+\tag{9}
+\]
+Contact work remains at most \(8\epsilon^2<10^{-12}\). The
+representative squared-radius ceiling
+\[
+27\{Q_{|a|+|b|}(T)^2+
+ [\epsilon+2gTQ_{|a|+|b|}(T)]^2\}<r^2
+\tag{10}
+\]
+admits both postevent states. The strict radius/storage guards therefore
+retain all three cycle identities and unforced recovery after the last
+event. These identity conditions are distinct from compliance with the
+separate work allowances. Continuous storage loss does not become an
+undeclared event reservoir.
+
+The form mean shifts by \(3a/58\) and \(3b/58\) in histories
+where those events occur; the phase mean is unchanged. No common mean is
+reset at the delay, and recovery refers to each resulting mean leaf.
+
+<a id="sine-nonlinear-protocol-heat-coefficient"></a>
+## Finite heat-convolution coefficient
+
+Let \(c_{ij}=\cos(\Theta_j-\Theta_i)\). These are
+\(\cos(2\pi/9)\) on donor and receiver cycle edges,
+\(\cos(4\pi/9)\) on mediator cycle edges, and one on contacts.
+The coefficient and remainder proofs also apply to mediator class
+\(k\in\{1,2\}\), using \(\cos(2\pi k/9)\) on its cycle edges;
+the numerical design and separation below concern only the fixed class two.
+Define the homogeneous cubic map
+\[
+N_{3,k}(v)_i=-\frac1{6d_i}\sum_{j\sim i}c_{ij}(v_j-v_i)^3.
+\tag{11}
+\]
+This is the cubic part of the reflection-even sine residual, derived
+from (1); it is not a supplied new interaction law. For \(t\ge s\),
+put \(p(t)=a[I-P(t)]e_D\) and
+\(q(t)=b[I-P(t-s)]e_D\). The ideal heat references are obtained
+by setting phase feedback to zero in the form row and integrating the
+unchanged phase row. Their phase deviations are \(\gamma p\),
+\(\gamma q\) or \(\gamma(p+q)\). The mixed coefficient is
+\[
+\mathcal C_k=
+\int_s^T e_R^{\mathsf T}P(T-t)
+ [N_{3,k}(p+q)-N_{3,k}(p)-N_{3,k}(q)]\,dt.
+\tag{12}
+\]
+For an oriented edge \((i,j)\), writing
+\(\Delta p=p_j-p_i\) and \(\Delta q=q_j-q_i\), its integrand
+is
+\[
+-\frac12c_{ij}
+ \left[\frac{P(T-t)_{R,i}}{d_i}-\frac{P(T-t)_{R,j}}{d_j}\right]
+ \Delta p\,\Delta q\,(\Delta p+\Delta q).
+\]
+Both orientation reversals cancel. The predicted contribution is
+\(\gamma^4\mathcal C_k\), with the full support, time shifts
+and degree normalization retained. The finite coefficient uses all
+internal cosine weights, so its class dependence must be kept even
+though the earlier joint-short-time leading term was class blind.
+
+<a id="sine-nonlinear-protocol-remainder"></a>
+## A controlled full-law remainder at the longer horizon
+
+For an ideal history with total absolute impulse budget \(A_*\), put
+\(D=1-2g^2T^2\) and \(L_*=1-2gT\). Markov contraction gives
+\(\|[I-P(t)]e_D\|_\infty\le1\), hence the heat phase is at
+most \(gA_*\). Nested form/phase integrals imply
+\[
+Y\le gA_*/D,\qquad
+\|y-y_{\rm heat}\|_\infty\le2g^3A_*t^2/D.
+\tag{13}
+\]
+This sharper envelope, rather than a linear growth estimate for the heat
+phase, is used at \(T=2\).
+
+The reflection projections from the two-probe theorem commute with the
+full tangent law; all supplied central jumps are even. The complete
+quadratic residual bounds and heat contraction yield
+\[
+\|x_{\rm odd}(t)\|_\infty\le
+ \frac{2g^3A_*^2t}{D^2L_*},\qquad
+\|y_{\rm odd}(t)\|_\infty\le
+ \frac{2g^4A_*^2t^2}{D^2L_*}.
+\tag{14}
+\]
+Odd internal corrections are retained. The even forcing error after
+replacing the full phase by the heat phase in the cubic term is bounded
+by the sum
+\[
+\frac{8g^6A_*^3t^2}{D^3}
+ +\frac{8g^6A_*^3t^2}{D^3L_*}
+ +\frac{4g^6A_*^5}{15D^5}.
+\]
+The first term uses the cubic derivative and (13); the second retains
+coupling to (14); the third is the fifth-order sine remainder. These are
+global sine inequalities on the retained lifts, not an assumption that
+the nonlinear even subspace closes.
+
+The even nonlinear-minus-tangent form discrepancy is at most
+\((4/3)g^4A_*^3t/(D^3L_*)+(8/3)g^6A_*^3t^3/(D^3L_*^2)\).
+Replacing propagation of that discrepancy by heat adds at most
+\(4g^2\int_0^T(T-t)|x_{\rm even,nonlinear}-x_{\rm even,tangent}|\,dt\).
+Integrating these terms and the forcing errors gives the per-history bound
+\[
+B(A_*,T)=
+\frac{g^6A_*^3T^3}{D^3}
+ \left(\frac83+\frac{32}{9L_*}\right)
+ +\frac{4g^6A_*^5T}{15D^5}
+ +\frac{8g^8A_*^3T^5}{15D^3L_*^2}.
+\tag{15}
+\]
+The ideal unprobed history is stationary, so the mixed nonlinear remainder
+is bounded by \(B(|a|+|b|,T)+B(|a|,T)+B(|b|,T)\). The
+actual-source error is still (6). This compares the complete sine law
+with its complete tangent law and cubic heat correction, not a spatially
+truncated mediator model.
+
+<a id="sine-nonlinear-protocol-coefficient-enclosure"></a>
+## Exact polynomial integration and an explicit heat tail
+
+The coefficient calculation fixes degree \(N=32\). Replace each heat
+matrix by \(P_N(t)=\sum_{n=0}^{32}(-At)^n/n!\). Because
+\(\|A\|_\infty\le2\) and the exact heat semigroup contracts,
+Taylor's integral remainder gives, for \(0\le t\le T\),
+\[
+\|P(t)-P_N(t)\|_\infty\le
+\eta_N=\frac{(2T)^{33}}{33!}.
+\tag{16}
+\]
+No exponential amplification factor is needed. The rational spatial
+matrix, polynomial products and integral over \([s,T]\) are evaluated
+exactly. They produce three rational channels multiplying the donor/receiver
+cosine, the mediator cosine and the contact weight one. Ideal cosine and
+\(\gamma\) definitions retain outward enclosures separately.
+
+There are three phase factors and one propagated heat factor in (12).
+Their exact phase columns have norm at most one before amplitude scaling;
+each polynomial replacement changes its norm by at most \(\eta_N\).
+Using edge differences and the normalized cubic map gives the coefficient
+tail
+\[
+E_{\rm heat}\le
+4(|a|^2|b|+|a||b|^2)(T-s)[(1+\eta_N)^4-1].
+\tag{17}
+\]
+Multiply this tail by an outward bound for \(\gamma^4\), then add
+the three remainders (15) and the actual-source allowance (6). This yields
+a finite interval for the true mixed statistic. Sensor errors are added
+afterward. The computation is a finite algebraic coefficient enclosure
+with proved tails; it is not a numerical full trajectory or an observation
+of the four acquired continuations.
+
+<a id="sine-nonlinear-protocol-discrimination"></a>
+## F4: recorded sign and complete-record separation
+
+A proved true lower bound \(M\ge m>4\delta\) would make every
+allowed nonlinear recorded mixed statistic positive. It would not alone
+exclude the tangent model, whose four scalar errors permit any recorded
+mixed value in \([-4\delta,4\delta]\). A sufficient strict
+condition for disjoint nonlinear and tangent four-record sets is instead
+\[
+m>8\delta.
+\tag{18}
+\]
+Then the nonlinear recorded mixed value is always greater than
+\(4\delta\), outside the tangent range. The analogous negative
+condition uses a strict upper bound less than \(-8\delta\).
+This suffices for record-set separation because the mixed statistic is a
+fixed linear function of the same four readings; it does not claim that
+every possible model can be discriminated by those readings.
+
+Any such conclusion requires a finite nonlinear coefficient enclosure,
+its complete remainder and (6). A formal coefficient, an unavailable
+overlap certificate or a local nonzero derivative is insufficient.
+Failure of this sufficient separation test would retain an unresolved
+design, not prove equality of the complete laws. The supplied law,
+preparation, support and event choices also remain independent of any
+subsequent physical interpretation.
+
+<a id="sine-nonlinear-protocol-finite-separation"></a>
+## A signed finite result at the declared design
+
+For the fixed class-two design (3), exact degree-32 integration, outward
+trigonometric factors and the heat tail (17) give
+\[
+-3.100\,10^{-27}<\gamma^4\mathcal C_2<-3.099\,10^{-27}.
+\tag{19}
+\]
+These decimal bounds denote exact terminating rationals; both strict
+endpoint comparisons are checked in exact arithmetic. Independently,
+substitution of \(g=1/3000\) in (15) gives
+\[
+B(1/1000,2)+2B(1/2000,2)<9\,10^{-29},\qquad
+B_{\rm source}<4.01\,10^{-32}.
+\tag{20}
+\]
+Thus every admitted actual nonlinear four-history family obeys the
+conservative enclosure
+\[
+-3.2\,10^{-27}<M<-3\,10^{-27}.
+\tag{21}
+\]
+The negative sign was obtained from the one declared coefficient
+calculation; neither class, source, delay, horizon nor error budget was
+changed to obtain it. It is compatible with the positive formal
+joint-short-time term in the earlier theorem: (12) retains the complete
+finite-time propagation and every cosine-weighted edge contribution.
+A short-time coefficient does not fix the sign at all later horizons.
+
+At \(\delta=10^{-30}\), even the conservative signed true margin
+\(3\,10^{-27}\) exceeds \(8\delta\). Every nonlinear recorded
+mixed value is less than \(-2.996\,10^{-27}\), whereas tangent
+recorded mixed values lie in \([-4\,10^{-30},4\,10^{-30}]\).
+Consequently the complete four-endpoint record sets are disjoint under
+the declared error model. This statement retains all actual source
+residuals and the two event histories, not merely a nominal trajectory.
+
+The same conservative calculation exposes sufficient noise ceilings:
+\(\delta<7.5\,10^{-28}\) guarantees recorded sign, while
+\(\delta<3.75\,10^{-28}\) guarantees disjoint tangent/nonlinear
+four-record sets. These are sufficient bounds of this method, not optimal
+information limits or independently attainable instrument errors.
+The work and identity obligations (8)-(10) pass separately. No probe
+schedule, interaction graph or preparation process becomes autonomous.
+
+This is a conditional finite-response theorem established by coefficient
+arithmetic and error bounds. It is not a retained numerical full-flow
+experiment, physical observation or identification of a fundamental
+particle property. The earlier short-window overlap remains true in its
+own domain; the longer-horizon result does not rewrite that evidence.
+
+<a id="sine-nonlinear-protocol-implementation"></a>
+## Implementation and independent checks
+
+[`bound_sine_class_nonlinear_protocol`](../../src/tnfr/physics/relational_sine_class_nonlinear_protocol.py)
+admits the same eleven primitive class, impulse, source and policy inputs
+as the superposition calculator, with a separate horizon domain up to two.
+It fixes heat degree 32, rebuilds the rational channels and retains exact
+rational endpoint pairs before outward display intervals. Its observation
+flags distinguish true sign, recorded sign and disjoint four-record sets;
+work and strict identity flags remain separate conditional statements.
+An unavailable sufficient separation proves neither overlap nor linearity.
+
+The [contract](../../docs/contracts/relational/SINE_PATTERNS.md#sine-class-nonlinear-protocol)
+and [guide](../../docs/guides/relational/SINE_PATTERNS.md#sine-class-nonlinear-protocol)
+keep coefficient calculation distinct from nonlinear response generation.
+The [selected controls](../../TESTING.md#current-checks-and-retained-evidence)
+check admission, exact coefficients, independent full-support algebra,
+finite tails and error thresholds. Formation remains a matched proof
+premise, not a verdict inferred from a positive or negative response bound.
+
+
+<a id="sine-nonlinear-protocol-validated-readout"></a>
+## Validated four-history observation admission
+
+The analytic coefficient above predicts a complete-law response without
+producing its four trajectories. A separate forward instrument must
+retain the same fine state and event history, and may return unavailable
+finite evidence. The
+[`bound_sine_class_four_history_readout`](../../src/tnfr/physics/relational_sine_class_readout.py)
+producer consumes primitive source bounds and a declared numerical budget;
+it consumes neither the coefficient, a desired sign nor a cached source
+verdict. This admission does not evaluate the reserved class-two design.
+
+### Source enclosure and its association with acquisition
+
+The input is one Cartesian box of all 27 signed forms and all 27
+continuous phase lifts. It is enclosed once and shared by the four
+continuations. No centering, wrapping, class substitution or scalar-mean
+reconstruction replaces those inputs. A supplied outer box can contain
+the actual correlated reached family without every corner being acquired.
+Numerical flow on that box proves neither its acquisition nor the exact
+zero-sum, identity or work premises of the preceding theorem.
+
+For the canonical family, let \(\Pi\) be an independently certified
+rational enclosure of \(\pi\), and retain the already proved endpoint
+radius \(\epsilon\). In component order \(k_c=(1,2,1)\), a sufficient
+coordinate cover is
+\[
+I_{x,cj}=[-\epsilon,\epsilon],\qquad
+I_{\theta,cj}=\frac{2k_c(j-4)}9\Pi+[-\epsilon,\epsilon],
+\qquad j=0,\ldots,8.
+\tag{22}
+\]
+Use outward interval arithmetic for both signs of the coefficient and
+retain all rational endpoints. Componentwise Euclidean norm caps imply
+each coordinate cap, so every actual reached state is covered. The
+original zero sums and norm correlations select a subset of (22); they
+are not imposed by independent choices of interval endpoints. Uncertainty
+in the target enclosure must also be retained, rather than treating a
+rounded multiple of pi as the exact acquired phase.
+
+Equation (22) is an outer cover derived from the original handoff proof,
+not an instruction to prepare a new target state. A later experiment must
+associate the declared source family, its original preparation proof,
+its chosen enclosure and the fixed target/law parameters before using the
+analytic prediction. A successful forward interval alone cannot establish
+that association or narrow the acquired family after seeing a response.
+
+### Complete flow and exact branch events
+
+The producer uses the same 27-node support, normalized degrees and both
+rows of (1), in their original 54 coordinates. The sine law consumes the
+primitive phases, so no mediator-class label is needed by the forward
+field. Class and acquisition claims remain separate source associations.
+The held law parameters, support, node order and structural clock are
+retained throughout every step. The globally smooth sine extension does
+not require an acute chart; a successful domain check therefore certifies
+flow availability, not winding retention or the storage barrier.
+
+The two prefixes run from zero to the declared delay: one unprobed and
+one after the first donor form jump. At the delay, each validated full
+endpoint box supplies two suffixes, with and without the second jump.
+Every event changes only donor form coordinate 4 by its exact admitted
+amplitude. All phases, other forms and hidden coordinates carry unchanged
+through that event. Each suffix then reaches the same requested final
+time. Prefix sharing saves identical work without replacing the delayed
+control by a shifted initial-state solution.
+
+The fixed step grid is clipped only at the declared delay and final
+boundaries; the caller supplies step size, Taylor order and a total
+unique-step attempt budget in advance. Zero-length segments contain the
+declared events but no invented continuous evolution. A zero delay
+composes the two applicable jumps at time zero. A jump at the final time
+is retained in the final state even though it does not directly change
+the receiver form observation.
+
+### Finite enclosures and partial failure
+
+The shared [validated Taylor kernel](../../src/tnfr/mathematics/_validated_taylor.py)
+checks strict Picard inclusion for a complete 54-coordinate tube. For
+an admitted source box \(B_0\), order \(p\) and step \(h\), its
+source-box jets \(J_n(B_0)\) enclose the initial derivative coefficients;
+the order-\(p+1\) coefficient on the tube \(B\) bounds the remainder:
+\[
+\Delta z\in\sum_{n=1}^{p}h^nJ_n(B_0)+h^{p+1}J_{p+1}(B).
+\tag{23}
+\]
+The endpoint also lies in the validated tube. Smoothness, all consumed
+rows, strict inclusion and the coefficient enclosures are premises of
+this statement. A midpoint trajectory or a Taylor polynomial without its
+remainder is not the same certificate. Full endpoint handoffs and exact
+jump maps propagate the enclosure to each branch by induction.
+
+A global first failure stops further kernel attempts. The report retains
+completed steps and prefixes, the failed segment/step and available tube,
+the actual attempted count and the segments not attempted. A budget stop
+is distinct from failure of strict Picard inclusion. Missing final
+endpoints remain unavailable; a last successful prefix cannot be renamed
+the requested final state. Valid primitive input does not promise a
+successful or sufficiently narrow enclosure at its supplied budget.
+
+When all four histories reach the common final time, the primary mixed
+readout uses the receiver increments on the four suffixes. The common
+prefix receiver value cancels in each kicked/unkicked pair, and a donor
+jump does not change receiver form. Exactly,
+\[
+M=\Delta R_{00,[s,T]}-\Delta R_{10,[s,T]}
+  -\Delta R_{01,[s,T]}+\Delta R_{11,[s,T]}.
+\tag{24}
+\]
+Each suffix increment is the sum of its shared-kernel step increments at
+receiver coordinate 22, not subtraction of two widened endpoint boxes.
+This preserves the proved prefix cancellation without constructing a
+joint 216-coordinate flow or consuming the analytic prediction. All 54
+coordinates still carry through every prefix, event and suffix.
+
+The four raw endpoint bands and their direct mixed interval remain
+separate evidence. Both constructions can relax dependencies across
+steps or suffixes: every same-source response is enclosed, but arbitrary
+choices from the marginal endpoint or increment bands need not be jointly
+realizable. Neither construction supplies mixed observations before all
+four histories complete. A wide interval remains inconclusive and need
+not contradict the analytic theorem.
+
+Interval width combines supplied source uncertainty, target/parameter
+rounding, validated truncation and accumulated enclosure widening. It is
+not automatically a pure numerical error and is not sensor noise. The
+forward producer supplies no sensor model or nonlinear/tangent comparison
+verdict; a later declared observation protocol adds recording errors and
+checks the relevant sign or record-set criterion separately.
+
+The [execution contract](../../docs/contracts/relational/SINE_PATTERNS.md#sine-class-four-history-readout)
+and [guide](../../docs/guides/relational/SINE_PATTERNS.md#sine-class-four-history-readout)
+retain exact input domains, branch provenance and availability. Independent
+controls use unrelated source fixtures and shared-kernel postconditions.
+The fixed class-two response must remain unevaluated until its source,
+protocol, numerical budget and first-outcome retention are separately
+frozen; this admission opens no physical-data campaign.
+
+
+<a id="sine-nonlinear-protocol-frozen-evaluation"></a>
+## Prospective freeze of the matched four-history evaluation
+
+This protocol separates the analytic prediction from its future validated
+forward evaluation. The present admission freezes preparation association,
+all laws and observations, the numerical policy and first-outcome handling.
+It generates no reserved trajectory, response or attempt record. Any later
+outcome belongs in a separate retained record; a freeze receipt is not an
+execution certificate or evidence of physical measurement.
+
+### F1: complete source and the retained information
+
+Use the actual acquired family associated with the unchanged
+[class-mediation source proof](SINE_CLASS_MEDIATED_RESPONSE.md#sine-class-mediated-protocol)
+and its [retained evidence](SINE_CLASS_MEDIATED_RESPONSE.md#sine-class-mediated-result).
+The source has component classes \((1,2,1)\), original preparation errors,
+formation and relaxation already declared there, and final componentwise
+form and phase error norms at most \(\epsilon=10^{-32}\), with the original
+zero unweighted means. Acquisition is a conditional mathematical premise;
+the new forward calculation neither reruns formation nor replaces its
+proof by a cached passing flag.
+
+Construct and retain all 54 rational source intervals by (22), including
+the independent enclosure of pi and the signed phase coefficients. Archive
+the source recipe, its realized bounds and its association with the
+original preparation/proof revision. Every acquired state is covered, but
+the independent interval corners can violate the consumed norm or mean
+correlations. Keep the correlated family and its Cartesian outer cover
+as distinct domains throughout the audit.
+
+The one source supplies all four histories in the fixed order
+\((00,10,01,11)\). Observe signed receiver form at coordinate 22 at their
+common final time. Four scalar recording errors are each bounded by
+\(\delta=10^{-30}\). This is a declared observation-error model in
+normalized structural form units, without an inferred laboratory unit or
+instrument calibration. Forms, continuous phase lifts, full mediator
+state and all event ancestry remain in the forward evidence.
+
+### F2 and F3: unchanged law, events and numerical policy
+
+Retain the complete law (1), unit capacities, the same 27-node support and
+degree normalization, \(\gamma=1/(1023\pi)\), and structural clock
+\(\tau=e t\). The donor-only form jumps have
+\(a=b=1/2000\), delay \(s=1\) and final time \(T=2\). The delayed-only
+history carries the unprobed prefix; it is not a newly prepared state.
+The branch tree, exact phase-preserving jumps and full-state handoffs are
+those of the validated producer above. No source reset, wrapping, mean
+projection, fitted pressure, alternate law or predicted response enters
+that producer.
+
+The identity radius is \(r=1/12\), with contact work allowance
+\(10^{-12}\) and each probe work allowance \(2\,10^{-6}\). The matched
+source/event theorem supplies their conditional storage and radius
+bounds. The forward smooth-domain flag alone supplies none of these
+identity or work conclusions, especially for additional box corners.
+
+Fix one numerical policy before observing any reserved response:
+
+| Quantity | Frozen value or rule |
+| --- | --- |
+| Step size | \(1/64\) structural time units, clipped only at declared event/final boundaries |
+| Taylor order | 16 |
+| Global unique-attempt cap | 384: two prefixes of 64 steps and four suffixes of 64 steps |
+| Arithmetic | Shared exact rational and outward dyadic-128 interval arithmetic, with the archived elementary-function implementation |
+| Tube admission | Unchanged shared strict Picard inclusion and full source-box Taylor coefficients/remainder |
+| Randomness | None; no fitting, seed selection or source sweep |
+| Failure policy | Global first failure, with every completed prefix, failed attempt and unattempted branch retained |
+
+For a fixed smooth order-17 remainder coefficient, halving the step doubles
+the number of steps and reduces their accumulated local truncation scale
+by \(2^{16}\). This is an a priori policy rationale, not a promise about
+strict tube admission or final interval width. Source uncertainty,
+parameter rounding, wrapping and finite arithmetic remain separately
+relevant. There is no extra width threshold: retain the actual widths and
+evaluate the declared discrimination margins.
+
+### F4: separate forward, consistency and discrimination claims
+
+The previously derived true-response prediction is the open rational band
+\(J=(-3.2\,10^{-27},-3\,10^{-27})\) on the acquired correlated family.
+The future forward producer must return its own interval
+\(I=[I_-,I_+]\) from primitive source bounds and the fixed numerical policy.
+It must not consume the predicted sign or endpoints, and its interval must
+never be intersected with \(J\) to manufacture a successful result.
+
+Retain full completion, source association and each of these distinct
+predicates rather than collapsing them into one passing label:
+
+| Predicate | Meaning when the forward interval is available |
+| --- | --- |
+| \(I_+>-3.2\,10^{-27}\) and \(I_-<-3\,10^{-27}\) | Nonempty overlap with the open prediction band; consistency, not independent confirmation of the full prediction |
+| \(I\subset J\) | A stronger sufficient enclosure check, including the outer cover's additional states |
+| \(I_+<0\) | Uniform negative true mixed response on the forward source cover |
+| \(I_++4\delta<0\) | Every admitted nonlinear recorded mixed response is negative |
+| \(I_++8\delta<0\) | Nonlinear and same-source tangent four-endpoint record sets are disjoint under their separate four-error budgets |
+
+The mixed tangent response is exactly zero for the same complete initial
+state and input histories. Its possible recorded mixed values lie in
+\([-4\delta,4\delta]\), while the nonlinear recorded interval is
+\(I+[-4\delta,4\delta]\). This explains the strict eight-error separation
+criterion; the four-error sign criterion alone is insufficient for that
+claim. These are complete-model software comparisons, not physical
+identification or observational equivalence of continuous histories.
+
+The primary forward interval uses the suffix increments in (24). Retain
+its four operands, all raw final receiver bands and the separate raw
+endpoint mixed interval. Different widths expose different retained
+correlations; no narrow construction can be substituted after seeing a
+preferred sign. Width includes source uncertainty and numerical enclosure
+effects, not a measured sensor error. A wide interval or failed
+containment can be inconclusive because the Cartesian cover is larger
+than the acquired family. Missing completion leaves common-final-time
+predicates unavailable. Keep invalid or missing evidence, complete but
+unresolved bounds, and disjointness from the open theorem band as distinct
+outcomes. A conflict calls for auditing the source association, theorem
+and numerical premises; it is not automatically an acquired-state or
+physical counterexample. Touching only an excluded theorem endpoint does
+not establish overlap. Exact equality at a strict margin does not pass.
+
+### Archive boundary and the first later outcome
+
+Use the stem `class-nonlinear-readout-v1`. The protocol owns the exact
+source recipe and realized bounds, support/node order, held laws and
+units, source-proof associations, all inputs/events, branch order,
+observation definition, numerical policy, fixed predicate meanings and
+first-outcome procedure. The source archive retains the immutable base
+revision and any explicit overlays, the prospective proof prefix, the
+protocol and isolated evaluator/support dependencies. Record byte sizes,
+SHA-256 digests, arithmetic/runtime versions and the exact allowed forward
+argument list; the predictor and preparation assessor are not execution
+inputs to the forward call.
+
+The freeze consists only of `.protocol.json`, `.source.zip` and
+`.freeze.json`, created without replacing earlier evidence. The receipt
+associates those immutable bytes and records
+`evaluation_status_at_freeze="not_evaluated"`. This historical field
+remains true even after a separately admitted later evaluation. It is neither provenance authentication nor a claim that the
+archived evaluator has run. Tests may inspect source, hashes, primitive
+arithmetic and call isolation without executing the reserved worker.
+
+When a later evaluation is admitted, retain its first outcome under this
+frozen policy, including strict-inclusion failure, budget exhaustion,
+partial histories, exceptions or export failure. Do not retry, expand
+the budget, narrow the source or revise a predicate to turn that outcome
+into a success. A correction requires separately identified evidence.
+All earlier frozen protocols and responses remain unchanged. The sole
+[execution queue](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+controls that later admission.
+
+
+<a id="sine-nonlinear-protocol-reserved-result"></a>
+## Retained first full-law evaluation
+
+The first evaluation following the frozen protocol above completed once
+under the complete pinned source revision
+`fa8e98a9b1bdd755709da481de7fc092b57bfe65`. The retained status is
+`certified_reserved_readout`, with no evaluation error: all 384 attempted
+steps completed, comprising six segments of 64 steps. No source narrowing,
+retry, numerical-budget change or intersection with the analytic prediction
+was used. The freeze receipt's `not_evaluated` value remains its historical
+status at freezing, not the status of this later outcome.
+
+The primary, prefix-cancelled interval is exactly
+
+\[
+ I=\left[-\frac{263844792565}{2^{126}},
+         -\frac{263523400319}{2^{126}}\right].
+ \tag{25}
+\]
+
+The separate raw endpoint mixed interval is
+\([-527739886489/2^{127},-526996499279/2^{127}]\).
+The following decimal bounds are rounded outward; exact rational endpoints
+in the retained record determine all predicates.
+
+| Quantity | Retained bound |
+| --- | --- |
+| Primary true mixed response \(I\) | \([-3.101480631540357847189,-3.097702683844646977897]10^{-27}\) |
+| Primary interval width | \(\le 3.777947695710869290439\,10^{-30}\) |
+| Raw endpoint mixed interval width | \(\le 4.369237329142707581834\,10^{-30}\) |
+| Nonlinear recorded mixed response \(I+[-4\delta,4\delta]\) | \([-3.105480631540357847189,-3.093702683844646977897]10^{-27}\) |
+| Four-record separation margin \(-I_+-8\delta\) | \(>3.089702683844646977897\,10^{-27}\) |
+
+All five declared predicates pass: open-theorem overlap, the stronger
+containment \(I\subset(-3.2\,10^{-27},-3.0\,10^{-27})\), negative true
+mixed response, negative recorded mixed response and disjoint nonlinear
+and same-source tangent four-endpoint record sets. The last conclusion
+uses the separate eight-error margin, not merely the recorded sign.
+The narrower primary interval comes from the prospectively selected
+shared-prefix cancellation; both constructions and all operands remain
+retained.
+
+### Retained bytes and read-only audit
+
+The [exclusive attempt ledger](../../docs/assets/sine_formed_classes/class-nonlinear-readout-v1.attempt.json)
+and [compressed response](../../docs/assets/sine_formed_classes/class-nonlinear-readout-v1.response.zip)
+are associated with the unchanged
+[protocol](../../docs/assets/sine_formed_classes/class-nonlinear-readout-v1.protocol.json),
+[source archive](../../docs/assets/sine_formed_classes/class-nonlinear-readout-v1.source.zip)
+and [freeze receipt](../../docs/assets/sine_formed_classes/class-nonlinear-readout-v1.freeze.json).
+Compression changes only the transport: the ZIP contains the single member
+`class-nonlinear-readout-v1.json`, with the exact original response bytes.
+
+| Retained object | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Attempt ledger | 543 | `616361ae09d035199ef672432b6a544f576f344e01c453f6df4f40e1107d6c93` |
+| Response ZIP | 10,554,263 | `b2e96205ed6f185a1193e4a936735572be8f59fd9a585c13203d53309875fbc5` |
+| Uncompressed response member | 191,886,903 | `35c5c049dd00576f515a8ad3e63969a0bf9c12708ded9376beb7f48d7c9e9be2` |
+
+The [read-only evidence audit](../../tests/physics/test_sine_class_readout_evidence.py)
+checks the outer and inner bytes, pinned source/protocol/attempt association,
+primitive source and held-law declarations, every retained step's arithmetic,
+full-state handoffs and events, both mixed constructions and the five
+predicates. It performs no producer, field, jet, Picard or archived-worker
+execution. The archived generation of derivative enclosures and Picard certificates
+remains a numerical execution premise; reconstructing retained arithmetic
+does not independently regenerate or prove those derivatives.
+
+The archived prospective proof has 33,289 bytes and SHA-256
+`5bc192cfa87230c6aaace9def4e98c819d5ec3e9c68f2e2dd38c9da1ca82181d`;
+its content is preserved above. All earlier frozen evidence is unchanged.
+
+### Scope of the observed separation
+
+For the declared signed receiver coordinate, \(M<0\) means
+\(R_{11}-R_{00}<(R_{10}-R_{00})+(R_{01}-R_{00})\): the combined change
+falls below the sum of the two individual changes. It does not determine
+the sign of any individual response, a coherence change or a stability
+verdict. The successful outcome is agreement with a prospective finite
+prediction and separation from the stated alternative; a negative sign
+is not itself a criterion of benefit or deterioration.
+
+This is a validated software enclosure for the supplied complete law and
+source cover. Every conditionally acquired correlated source lies in that
+cover; an arbitrary Cartesian corner need not be acquired or satisfy the
+mean, work and identity premises. Those conclusions still use the matched
+source/event theorem, not the solver's smooth-domain flag. No formation
+was rerun and no source was reset between paired histories.
+
+The result separates this finite nonlinear interaction from its declared
+same-source tangent alternative under the fixed four-reading error model.
+It neither identifies a physical particle or interaction nor establishes
+attainable laboratory preparation, clock or measurement precision. The
+finite negative response is consistent with the earlier positive formal
+joint-short-time coefficient, whose limiting regime differs. Dependence
+of this nonlinear mixed response on the mediator's acquired class is addressed
+by the separate [scaled comparison](SINE_CLASS_COMPARISON_PROTOCOL.md#sine-comparison-reserved-result),
+with its own source transfer, eight readings and prospective criteria.

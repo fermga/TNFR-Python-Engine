@@ -11,7 +11,6 @@ autonomous pattern formation. Run with ``python -m tnfr.research.phase_form_resp
 from __future__ import annotations
 
 import argparse
-import hashlib
 import math
 import platform
 from fractions import Fraction
@@ -26,7 +25,9 @@ from ..dynamics.dnfr import default_compute_delta_nfr
 from ..dynamics.integrators import update_epi_via_nodal_equation
 from ..physics.extended import compute_phase_current
 from ..physics.forcing_realization import capture_non_epi_forcing
-from ..utils.io import json_dumps, safe_write
+from ..utils.io import json_dumps
+from .artifact_io import sha256_file as _hash
+from .artifact_io import write_json_once
 from .claims import ClaimStatus
 from .core_manifests import CoreExperimentManifest, current_git_source_provenance
 from .evidence_sidecar import EvidenceSidecar
@@ -276,19 +277,7 @@ def _run_case(declaration, model, spread):
 
 
 def _save_new(path, data):
-    safe_write(
-        path,
-        lambda stream: stream.write(
-            json_dumps(data, sort_keys=True, indent=2, allow_nan=False) + "\n"
-        ),
-        mode="x",
-        atomic=False,
-        sync=True,
-    )
-
-
-def _hash(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    write_json_once(path, data, sort_keys=True, newline=None)
 
 
 def run_phase_form_response(output_dir, *, repository=None):

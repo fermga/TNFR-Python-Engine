@@ -198,6 +198,7 @@ from ..utils import (
     resolve_chunk_size,
     stable_json,
 )
+from ..utils.numeric import _clipped_ratio
 from .buffer_cache import ensure_numpy_buffers
 from .common import (
     _coerce_jobs,
@@ -571,10 +572,10 @@ def compute_Si_node(
         raise TypeError("Missing required keyword-only argument: 'phase_dispersion'")
 
     vf = _stored_metric_scalar(nd, ALIAS_VF)
-    vf_norm = clamp01(abs(vf) / vfmax)
+    vf_norm = _clipped_ratio(vf, vfmax, absolute=True)
 
     dnfr = _stored_metric_scalar(nd, ALIAS_DNFR)
-    dnfr_norm = clamp01(abs(dnfr) / dnfrmax)
+    dnfr_norm = _clipped_ratio(dnfr, dnfrmax, absolute=True)
 
     Si = alpha * vf_norm + beta * (1.0 - phase_dispersion) + gamma * (1.0 - dnfr_norm)
     Si = clamp01(Si)
@@ -645,8 +646,8 @@ def _compute_si_python_chunk(
             neigh, cos_th=cos_th, sin_th=sin_th, fallback=theta
         )
         phase_dispersion = abs(angle_diff(theta, th_bar)) / math.pi
-        vf_norm = clamp01(abs(vf) / vfmax)
-        dnfr_norm = clamp01(abs(dnfr) / dnfrmax)
+        vf_norm = _clipped_ratio(vf, vfmax, absolute=True)
+        dnfr_norm = _clipped_ratio(dnfr, dnfrmax, absolute=True)
         Si = (
             alpha * vf_norm
             + beta * (1.0 - phase_dispersion)
@@ -1037,10 +1038,14 @@ def compute_Si(
         # cached layout.
         np.abs(vf_arr, out=raw_si)
         np.divide(raw_si, vfmax, out=raw_si)
+        if np.any((vf_arr != 0.0) & (raw_si == 0.0)):
+            raise TNFRValueError("normalized capacity underflows binary64")
         np.clip(raw_si, 0.0, 1.0, out=raw_si)
         vf_norm = raw_si
         np.abs(dnfr_arr, out=si_values)
         np.divide(si_values, dnfrmax, out=si_values)
+        if np.any((dnfr_arr != 0.0) & (si_values == 0.0)):
+            raise TNFRValueError("normalized pressure underflows binary64")
         np.clip(si_values, 0.0, 1.0, out=si_values)
         dnfr_norm = si_values
         phase_dispersion.fill(0.0)

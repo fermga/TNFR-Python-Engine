@@ -15,7 +15,10 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from scripts.clean_repository import generated_directory
-from scripts.verify_internal_references import rewrite_markdown_prose
+from scripts.verify_internal_references import (
+    _markdown_segments,
+    rewrite_markdown_prose,
+)
 
 STAGE_DIR = REPO_ROOT / "build" / "docs-source"
 
@@ -74,6 +77,45 @@ def _copy_tree(relative: str) -> None:
             continue
         destination = STAGE_DIR / source.relative_to(REPO_ROOT)
         _copy_file(source, destination)
+
+
+def _separate_display_math(content: str) -> str:
+    """Give matched standalone TeX displays paragraph boundaries in staging."""
+
+    def separate(prose: str, offset: int) -> str:
+        opening = None
+        boundaries: set[int] = set()
+        for token in re.finditer(r"(?m)^ {0,3}\\([\[\]])[ \t]*(?:\n|$)", prose):
+            absolute = offset + token.start()
+            if absolute and content[absolute - 1] != "\n":
+                continue
+            end = offset + token.end()
+            if (
+                not token.group(0).endswith("\n")
+                and end < len(content)
+                and content[end] != "\n"
+            ):
+                continue
+            if token.group(1) == "[":
+                opening = token.start()
+            elif opening is not None:
+                if opening and not prose[:opening].endswith("\n\n"):
+                    boundaries.add(opening)
+                if token.end() < len(prose) and prose[token.end()] != "\n":
+                    boundaries.add(token.end())
+                opening = None
+        pieces, previous = [], 0
+        for boundary in sorted(boundaries):
+            pieces.extend((prose[previous:boundary], "\n"))
+            previous = boundary
+        pieces.append(prose[previous:])
+        return "".join(pieces)
+
+    rendered, offset = [], 0
+    for text, prose in _markdown_segments(content):
+        rendered.append(separate(text, offset) if prose else text)
+        offset += len(text)
+    return "".join(rendered)
 
 
 def prepare() -> Path:
@@ -166,7 +208,9 @@ def prepare() -> Path:
                 flags=re.MULTILINE,
             )
 
-        rendered = rewrite_markdown_prose(content, convert_links)
+        rendered = _separate_display_math(
+            rewrite_markdown_prose(content, convert_links)
+        )
         if rendered != content:
             document.write_text(rendered, encoding="utf-8")
 
