@@ -2408,6 +2408,12 @@ def test_prepared_composition_nested_label_admission(
             None,
         ),
         (
+            "relational_sine_class_superposition",
+            "SineClassSuperposition",
+            "bound_sine_class_superposition",
+            None,
+        ),
+        (
             "relational_sine_two_port_compatibility",
             "SineTwoPortCompatibility",
             "assess_sine_two_port_compatibility",

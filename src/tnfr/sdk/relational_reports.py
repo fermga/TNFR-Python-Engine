@@ -180,6 +180,7 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
         SineClassMediatedMemory,
         SineClassMediatedMemoryBound,
     )
+    from ..physics.relational_sine_class_superposition import SineClassSuperposition
     from ..physics.relational_sine_clock_drift_inference import SineClockDriftInference
     from ..physics.relational_sine_clock_inference import SineClockInference
     from ..physics.relational_sine_comparison import (
@@ -391,6 +392,7 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
             SineClassMediation,
             SineClassMediatedMemory,
             SineClassMediatedMemoryBound,
+            SineClassSuperposition,
             SineTwoPortCompatibility,
             SineTwoPortHandoffObstruction,
             SineTwoPortCapture,

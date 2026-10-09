@@ -1394,6 +1394,88 @@ physical identification or practical-time claim is supplied.
 The [usage guide](../../guides/relational/SINE_PATTERNS.md#sine-port-relaxation)
 shows how to inspect the retained bounds without rerunning their assessment.
 
+<a id="sine-class-nonlinear-superposition"></a>
+### Two form probes and a four-history superposition test
+
+[`bound_sine_class_superposition`](../../../src/tnfr/physics/relational_sine_class_superposition.py)
+returns `SineClassSuperposition` for the fixed three-C9 complete law.
+The [proof](../../../theory/nodal/SINE_CLASS_NONLINEAR_SUPERPOSITION.md#sine-class-nonlinear-superposition)
+owns the symmetry, nonlinear onset, finite error and observation-overlap
+claims. This calculator evaluates bounds; it generates no trajectory and
+admits no formation source.
+
+All eleven keyword primitives are mandatory:
+
+| Primitive | Admission |
+| --- | --- |
+| `mediator_class` | Ordinary integer 1 or 2; donor and receiver remain class 1 |
+| `first_probe_amplitude`, `second_probe_amplitude` | Finite signed form jumps at the donor central node |
+| `delay`, `total_duration` | Structural times with `0<=delay<=total_duration<=1/4` |
+| `endpoint_radius`, `readout_error_bound` | Nonnegative conditional source and per-reading error bounds |
+| `radius` | Strictly positive identity radius, at most `1/12` |
+| `contact_work_allowance`, `first_probe_work_allowance`, `second_probe_work_allowance` | Separate nonnegative work ceilings |
+
+Shared exact-or-represented-real admission preserves exact rationals and
+rejects Boolean, nonfinite or underflowing represented scalars before
+model construction. Zero amplitudes, endpoint radius, noise or duration
+are admitted. The source premise is one complete reached state whose
+componentwise form and target-phase Euclidean errors are at most
+`endpoint_radius`, with separate unweighted zero sums in each component
+and channel. It is not reconstructed from a supplied report or verdict.
+
+The four `histories` are ordered `neither`, `first_only`, `second_only`,
+`both`. They share that initial full state, mediator class, support,
+capacity and clock. The delayed-only history follows its unprobed flow;
+the both-probe history retains its first-probe state. The common final
+readout is receiver central form, with coefficients `(1,-1,-1,1)`.
+Four scalar errors contribute `4*readout_error_bound`. Neither a shifted
+single-input solution nor a reset at the delayed event is admitted.
+
+`formal_mixed_coefficient_rational_factor` and its sign retain the exact
+amplitude/time polynomial separately from the outward `gamma**4` factor.
+It is cubic in amplitudes and fourth order in a joint rescaling of delay
+and final time. Its sign is not a finite endpoint lower bound.
+`oriented_instantaneous_curvature_lower_bound` concerns the right second
+derivative just after the second event, with orientation given by the
+second amplitude's sign. It is `None` when the sufficient gap bound does
+not resolve a sign, and zero for a proved exact-null case. The associated
+certificate neither measures that derivative nor infers the final mixed
+readout's sign.
+
+`true_mixed_upper_bound` bounds the absolute mixed statistic, including
+arbitrary original residuals; `recorded_mixed_bounds` also includes all
+four reading errors. Nominal odd symmetry does not impose symmetry on
+actual sources. `scalar_cancellation_admitted` means the true-statistic
+bound is at most `4*readout_error_bound`: each true value can be hidden by
+some admissible error vector. It does not assert common individual records.
+
+`maximum_tangent_endpoint_discrepancy_upper_bound` compares each full
+nonlinear endpoint with the tangent endpoint initialized at the same
+actual full state. If it is at most the per-reading error,
+`four_record_overlap_admitted` establishes a common vector of all four
+final readings, using admissible nonlinear-model errors and zero tangent
+errors. This is existential endpoint compatibility, not equality of the
+continuous histories or indistinguishability of every possible record.
+The statuses `four_record_overlap`, `scalar_cancellation_only` and
+`bounds_only` retain those separate conclusions. A failed sufficient
+overlap bound does not establish nonlinear discrimination.
+
+Each history retains its actual pre-second-event state envelope, both
+work intervals, radius/storage margins and mean shifts. The second work
+uses that history's carried form, not another single-probe certificate.
+Work allowances admit equality; identity needs strict entry-radius and
+storage margins after each event. `all_work_within_allowances` and
+`all_identities_certified` are separate conditional guards. They do not
+control the observation status: finite observation bounds remain valid
+when a policy or sufficient identity guard fails. No formation, physical
+precision or autonomous event selection follows from any flag.
+
+The direct schema is `tnfr.sine-class-superposition.v1`; shared SDK
+projection and atomic export preserve the exact primitives and report
+scope. The [guide](../../guides/relational/SINE_PATTERNS.md#sine-class-nonlinear-superposition)
+shows a response-free analytic budget, leaving the frozen single-probe
+class-response assessment unchanged.
+
 <a id="sine-class-mediated-memory"></a>
 ### Effective memory of the acquired mediator
 

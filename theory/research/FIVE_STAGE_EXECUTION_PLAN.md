@@ -25,12 +25,15 @@ The route is **justified nodal dynamics -> collective organization
 collective properties from their physical identification. A sufficient
 representation does not independently justify the law that evolves it.
 
-The [acquired-mediator effective-memory theorem](#acquired-mediator-effective-memory)
-is closed: its matched-source nonlinear error preserves the earlier
-[class-response certificate](#generative-class-mediated-response), with
-explicit limits on instantaneous closure. The sole next primary admission
-is [two-probe nonlinear superposition](#current-g3-gate), not yet executed.
-It concerns repeated interactions on the same acquired composite. The
+The [two-probe superposition theorem](#two-probe-nonlinear-superposition)
+is closed: nonlinear local curvature coexists with a proved overlap of
+four final observation records at the admitted error budget. The sole next
+primary admission is an [informative nonlinear interaction protocol](#current-g3-gate),
+not yet executed. It retains the acquired composite and its complete
+interaction history. The earlier
+[effective-memory theorem](#acquired-mediator-effective-memory) and
+[class-response certificate](#generative-class-mediated-response) remain
+unchanged. The
 [digital-PLL review](#terrestrial-coupled-phase-admission) is a closed
 auxiliary result, with no admitted physical bridge. The
 [finite-noise/horizon theorem](#sine-aperture-resolution-admission) is closed.
@@ -46,7 +49,8 @@ no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next primary admission, not yet executed | [Two-probe nonlinear superposition](#current-g3-gate): admit symmetry, histories and a finite mixed response or a scoped obstruction |
+| Next primary admission, not yet executed | [Informative nonlinear interaction protocol](#current-g3-gate): derive a finite separation criterion while retaining source, history, observation errors, work and identity |
+| Closed theoretical gate | [Two-probe nonlinear superposition](#two-probe-nonlinear-superposition): actual local curvature, symmetry-aware finite bounds and a scoped four-endpoint observation obstruction |
 | Closed theoretical gate | [Acquired-mediator effective memory](#acquired-mediator-effective-memory): exact tangent source/kernel, matched-source nonlinear bound and scoped instantaneous-closure obstructions |
 | Closed conditional analytic assessment | [Class-mediated collective response](#generative-class-mediated-response): first frozen full-family contrast, phase-feedback control, work and identity certificates; no simulated or measured trajectory |
 | Closed auxiliary admission | [Terrestrial coupled-phase feasibility](#terrestrial-coupled-phase-admission): selected digital-PLL bridge not admitted; neither a prerequisite for generative pattern research nor a physical identification |
@@ -65,29 +69,45 @@ no empirical response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="informative-nonlinear-interaction-protocol"></a>
+## Next primary admission: informative nonlinear interaction protocol
+
+Determine whether one declared two-probe protocol on the same acquired
+three-C9 composite can separate its nonlinear receiver response from the
+matched linear-memory prediction with a justified finite margin. Retain
+one full source, class, support, clock and law, all four carried histories,
+the common final observation and its errors, both event-work terms and
+the identity guards. Admit amplitudes, delay, horizon and error budgets
+before any response evaluation. A formal leading coefficient or a failed
+overlap bound is not a positive separation certificate.
+
+Derive a sufficient finite lower bound with its complete remainder, or a
+scoped obstruction showing why the proposed observation cannot resolve
+the allowed nonlinear term. Preserve the proved symmetry cancellations
+and arbitrary source residuals. No new response campaign, physical
+scattering interpretation or autonomous probe law is part of this admission.
+
 <a id="two-probe-nonlinear-superposition"></a>
-## Next primary admission: two-probe nonlinear superposition
+<a id="next-primary-admission-two-probe-nonlinear-superposition"></a>
+<a id="active-primary-admission-two-probe-nonlinear-superposition"></a>
+## Closed primary admission: two-probe nonlinear superposition
 
-Determine whether the derived class-dependent linear memory remains a
-sufficient interaction description under two supplied donor form probes
-on the same acquired three-C9 composite. Retain one complete source,
-law, clock, support and class, together with contact/probe work, identities
-and the full first-probe history through the second event. Compare four
-matched continuations: neither probe, the first only, the second only and
-both, with receiver contrast `R12-R1-R2+R0` at one common final time.
-The delayed single-probe control follows its own unprobed history
-to that event; it is not a reset or a time-shifted initial-state solution.
+The [four-history theorem](../nodal/SINE_CLASS_NONLINEAR_SUPERPOSITION.md#sine-class-nonlinear-superposition)
+retains the same complete reached state in neither, first-only,
+delayed-only and both-probe continuations. Ideal reflection/sign symmetry
+removes even amplitude degrees; arbitrary actual residuals remain bounded
+separately. An exact carried-gap identity admits nonzero actual local
+mixed curvature, while the formal first joint-time coefficient is cubic
+in amplitudes and class blind at that order.
 
-Admit the symmetry and first possible nonlinear response order before
-choosing a coefficient or budget. Check whether the combined reflection
-and sign change of the ideal aligned target and nominal formation forces
-the central response to be odd under simultaneous probe-sign reversal;
-do not assume a quadratic mixed term survives. Arbitrary source residuals remain admitted and
-their effects must be bounded, not made symmetric by assumption.
-Derive a finite mixed-response discrepancy from linear superposition or
-a scoped symmetry/resolution obstruction, with all finite errors retained.
-No new response campaign or physical scattering claim is part of this
-theoretical admission.
+The [finite design](../nodal/SINE_CLASS_NONLINEAR_SUPERPOSITION.md#sine-superposition-analytic-design)
+passes both work and identity guards yet allows the full nonlinear and
+same-source tangent models to share all four final scalar records under
+the stated error budget. This is an existential endpoint-record overlap,
+not equality of continuous histories or every allowed observation.
+The conditional calculator establishes no formation or physical precision.
+No reserved response was evaluated, and all earlier frozen evidence is
+unchanged.
 
 <a id="acquired-mediator-effective-memory"></a>
 <a id="next-primary-admission-acquired-mediator-effective-memory"></a>

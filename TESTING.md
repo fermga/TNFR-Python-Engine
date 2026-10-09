@@ -115,6 +115,28 @@ the finite formation image, without a measured reachable radius. Changes
 to shared response coefficients must preserve the frozen source/report
 arithmetic. These controls need no new acquisition or reserved campaign.
 
+For [two-probe nonlinear superposition](theory/nodal/SINE_CLASS_NONLINEAR_SUPERPOSITION.md),
+rebuild four continuations of one complete initial state with a common
+final readout. The delayed-only control carries its unprobed state to the
+second event. Check exact tangent cancellation, full-law reflection/sign
+equivariance, the carried bridge-gap curvature identity and the ideal
+cubic-amplitude, fourth-joint-time coefficient. Arbitrary source residuals
+must remain admitted rather than being projected onto a symmetric subset.
+
+```sh
+python -m pytest tests/physics/test_sine_class_superposition.py tests/physics/test_sine_class_superposition_algebra.py tests/physics/test_sine_class_mediation_evidence.py -q
+```
+
+Keep scalar-statistic cancellation distinct from intersection of all four
+endpoint record sets; neither proves continuous-history equivalence or
+that every record is shared. Test equality at each sufficient noise
+threshold, failed bounds without a fabricated positive response, and
+signed/zero impulses and boundary event times. Independent work and
+identity checks retain the actual preevent state, both conserved-mean
+changes and the separate radius/storage guards. These are conditional
+arithmetic and implementation controls, not a new acquired response or
+permission to replay the frozen class-mediation assessment.
+
 For a physical-source admission, test deductions from the declared source
 law separately from manufacturer specifications and measured responses.
 The [digital-PLL audit](theory/research/DPLL_PHYSICAL_ADMISSION.md) uses

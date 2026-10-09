@@ -1179,6 +1179,55 @@ retains the protocol, proof and channel verdicts. The
 checks source/record consistency separately from reading a JSON. No support
 selection, autonomous preparation or physical observation is inferred.
 
+<a id="sine-class-nonlinear-superposition"></a>
+### Check what two form probes can resolve
+
+The [superposition theorem](../../../theory/nodal/SINE_CLASS_NONLINEAR_SUPERPOSITION.md#sine-class-nonlinear-superposition)
+compares neither probe, first only, second only and both on one complete
+acquired source. All four receiver readings occur at the same final time.
+The delayed-only control carries its unprobed state to its event. This
+response-free example checks a conditional endpoint budget:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_class_superposition import (
+    bound_sine_class_superposition,
+)
+
+bound = bound_sine_class_superposition(
+    mediator_class=2,
+    first_probe_amplitude=Q(1, 2000),
+    second_probe_amplitude=Q(1, 2000),
+    delay=Q(1, 20000),
+    total_duration=Q(1, 10000),
+    endpoint_radius=Q(1, 10**32),
+    readout_error_bound=Q(1, 10**30),
+    radius=Q(1, 12),
+    contact_work_allowance=Q(1, 10**12),
+    first_probe_work_allowance=Q(1, 500000),
+    second_probe_work_allowance=Q(1, 500000),
+)
+assert bound.status == "four_record_overlap"
+assert bound.scalar_cancellation_admitted
+assert bound.four_record_overlap_admitted
+assert bound.all_work_within_allowances
+assert bound.all_identities_certified
+```
+
+The endpoint radius and original componentwise zero sums are hypotheses;
+this call does not establish acquisition. The work and identity guards
+apply conditionally to all four carried histories. Inspect them separately
+from `status`, which reports only the observation conclusion.
+
+`four_record_overlap` means at least one admissible vector of four final
+readings is shared by the complete nonlinear law and its full tangent
+description started from the same actual state. It does not mean all
+records or continuous trajectories agree. A positive formal nonlinear
+coefficient or instantaneous-curvature certificate can coexist with this
+finite observation limit. Conversely, `bounds_only` is no positive
+discrimination result. The [contract](../../contracts/relational/SINE_PATTERNS.md#sine-class-nonlinear-superposition)
+keeps these meanings separate; no frozen producer or response is replayed.
+
 <a id="sine-class-mediated-memory"></a>
 ### Retain the mediator's causal state and interaction history
 
