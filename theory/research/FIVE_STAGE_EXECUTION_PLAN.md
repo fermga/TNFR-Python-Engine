@@ -44,10 +44,16 @@ and [spatial](../nodal/SINE_CLASS_SPATIAL_OBSERVATION.md#sine-spatial-finite-res
 noise obstructions retain their original budgets; later designs do not erase
 them. Result owners and the status table below retain the completed gates.
 
-The sole next task is [nonlinear excess storage and loss](#current-g3-gate):
-determine whether this interaction has an energetic consequence beyond the
-matched complete tangent model. Endpoint nonadditivity alone does not settle
-that question.
+The [excess-storage theorem](../nodal/SINE_CLASS_STORAGE_EXCESS.md)
+now proves a finite negative rectangular storage excess, equivalently a
+positive integrated rectangular loss excess, beyond the complete tangent
+model under that same word. It retains hidden quadratic feedback, all higher
+amplitude orders and the original common-source uncertainty. This is an
+analytic prediction; the earlier form response does not evaluate it.
+
+The sole next task is [storage comparison producer and observation
+admission](#current-g3-gate): justify a stable full/tangent observation and
+freeze its independent numerical and recording policy before any response.
 
 Supplied preparation, support, law, events and structural clock remain
 premises. In particular, the very small source/readout allowances and long
@@ -61,7 +67,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Pending theoretical admission | [Nonlinear excess storage and loss](#current-g3-gate): remove ordinary tangent cross-energy, retain complete source/event balances, and derive a finite distinction or scoped obstruction before another response |
+| Pending producer and observation admission | [Independent storage comparison](#current-g3-gate): retain both complete models and their common source, admit a stable excess/loss observable with its own error budget, then freeze before response execution |
+| Closed theoretical admission | [Nonlinear excess storage and loss](#nonlinear-excess-storage-admission): finite signed excess beyond the complete tangent model, with simultaneous event cancellation, full amplitude/source bounds and a separate storage observation requirement |
 | Closed reserved evaluation | [Independent distinct-neighbor response](#reserved-distinct-neighbor-full-law-response): all 64 full-state steps complete, source-inclusive width and prediction overlaps pass, and the independently recorded additive functional is separated |
 | Closed producer and freeze admission | [Independent distinct-neighbor protocol](#independent-neighbor-evaluation-admission): shared complete-state selectors, legacy compatibility, nonlinear common-source transport and immutable runtime/protocol association; no response evaluated at freezing |
 | Closed theoretical admission | [Mixed-neighbor response](#mixed-neighbor-response-admission): a finite nonadditive mediator response separates matched additive functionals at the earlier nonlinear observation budget, with complete memory, source, work and identity retained |
@@ -99,39 +106,50 @@ remain open; no empirical response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="storage-comparison-producer-admission"></a>
+## Next primary admission: storage comparison producer and observation
+
+Prepare one independent test of the
+[finite storage/loss prediction](../nodal/SINE_CLASS_STORAGE_EXCESS.md#sine-storage-complete-errors)
+under the unchanged distinct-neighbor word, support, class `(1,2,1)`, clock
+and original common source. This admits a new observable; the earlier scalar
+form response and its recording allowance do not certify storage.
+
+1. Extend shared validated flow/evidence owners for the full law and its own
+   complete tangent trajectory, with original phase units, matched time-zero
+   jumps and explicit partial-failure evidence. Avoid a second integrator.
+2. Derive a numerically stable observation of the rectangular excess. The
+   exact loss integral with the carried full-minus-tangent state is a candidate;
+   any endpoint check must handle target-relative potential and polarized
+   quadratic terms without subtracting large nearly equal absolute stores.
+   Retain initial and event terms; passive observers install no new law.
+3. Admit the source transport, numerical width, observation map and recording
+   errors separately. Use the storage theorem's own error contract, including
+   the independently recorded zero-excess comparison; do not transfer the old
+   mediator-reading allowance or use the prediction to narrow a response.
+4. Test balance, state carry, nulls, representation boundaries and failures
+   independently. Freeze preparation, complete source/runtime, observer,
+   horizon, work limits and decision rules before the first reserved attempt.
+
+No selected response, new acquisition, parameter fit or physical-data campaign
+is active at this admission. An unresolvable representation or observation
+budget is a valid scoped obstruction; it does not authorize changing the word
+after observing a response.
+
 <a id="nonlinear-excess-storage-admission"></a>
-## Next primary admission: nonlinear excess storage and loss
+## Closed admission: nonlinear excess storage and loss
 
-Determine whether the existing distinct-neighbor interaction produces a finite
-nonlinear redistribution of the supplied storage and dissipation. Use the same
-complete law, class `(1,2,1)`, support, clock, original common source and
-simultaneous two-input word. A quadratic energy cross term already occurs in
-linear systems; it is insufficient evidence of the requested nonlinear effect.
+The [result owner](../nodal/SINE_CLASS_STORAGE_EXCESS.md) proves the exact
+whole-support event/flow balance against the matched complete tangent model.
+Static edge cones, complete quartic corrections, an even-amplitude tail and
+nonlinear common-source transport certify a finite negative storage contrast
+for the existing word. This is the negative of the integrated rectangular
+loss difference; no individual-branch loss ordering is asserted.
 
-1. Declare the exact full storage and the target-Hessian quadratic storage of
-   the complete tangent model, with both form and phase coordinates retained.
-   Give the tangent its own matched initial state and events. Define the
-   proposed observable `E_ex(T)=Delta4[H_full(T)-H_tangent(T)]`, where
-   `Delta4` uses `(1,-1,-1,1)` across the same four histories.
-2. Derive the joint event/flow balance before evaluating that observable.
-   Account for initial common-source terms, identical form-event work,
-   terminal storage and the integrated full-minus-tangent loss. Do not count
-   ordinary tangent cross-energy as nonlinear interaction, interpret continuous
-   loss as an event reserve, or infer an energy sign from the form-readout sign.
-3. Derive source and observation error bounds for this nonlinear functional.
-   The existing scalar form-reading budget and linear-source cancellation do
-   not automatically apply to a quadratic/phase storage observation. State the
-   measurement map and structural units without identifying physical energy.
-4. Establish a finite nonzero excess-storage/loss bound with a discriminating
-   error budget, or a precise symmetry, equivalence or resolution obstruction.
-   Reuse shared complete-state and fidelity owners. Freeze any later response
-   protocol before execution; previously retained projections are retrospective
-   evidence, not new reserved observations.
-
-This is a theoretical admission, not another numerical precision campaign.
-No new trajectory, source acquisition, additional probe event or physical-data
-evaluation is active. A valid obstruction is an acceptable outcome; binding,
-universal forces and physical energy identification remain separate obligations.
+The observer requires its own storage or complete-state error model. The
+instantaneous mediator-reading obstruction does not prove nonidentifiability
+of the selected four-history inverse problem. No trajectory or finite-time
+coefficient was evaluated, and no physical energy or binding law is identified.
 
 <a id="reserved-distinct-neighbor-full-law-response"></a>
 ## Closed evaluation: first independent distinct-neighbor response

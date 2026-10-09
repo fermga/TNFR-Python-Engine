@@ -355,6 +355,22 @@ wiring test admits pinned archive/member bytes before compiling only function
 definitions; it cannot silently fall back to a mutable build script. Freeze
 inspection never invokes the reserved experiment or authorizes a retry.
 
+For [nonlinear excess storage and loss](theory/nodal/SINE_CLASS_STORAGE_EXCESS.md),
+run the response-free mathematical gate:
+
+```bash
+python -m pytest tests/physics/test_sine_class_storage_excess.py tests/physics/test_sine_class_neighbor_nonadditivity.py tests/physics/test_sine_class_collective_interface.py tests/physics/test_sine_class_interface_composition.py -q
+```
+
+Check full/tangent balances using their own original-coordinate states,
+simultaneous event work, nonzero ordinary tangent cross-energy, exact onset
+and static adjoint cones. Rebuild quartic, amplitude-tail and common-source
+errors independently, including the zero-input source defect. Exercise exact
+nulls, unresolved bounds, primitive admission and the separately supplied
+coordinate-to-storage observation allowance. The shared no-regeneration guard
+must block response and time-coefficient execution. A finite static sign is
+an analytic prediction, not retained storage-response evidence.
+
 The [first retained neighbor response](theory/nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL.md#sine-neighbor-forward-reserved-result)
 has a separate read-only gate:
 `python -m pytest tests/research/test_sine_class_neighbor_forward_evidence.py -q`.
