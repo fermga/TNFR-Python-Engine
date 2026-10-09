@@ -121,6 +121,7 @@ nav:
           - "Repeated joined class interaction": theory/nodal/SINE_CLASS_REPEATED_INTERACTION.md
           - "Nonlinear collective interface": theory/nodal/SINE_CLASS_COLLECTIVE_INTERFACE.md
           - "Changed-input collective prediction": theory/nodal/SINE_CLASS_CHANGED_INPUT_PREDICTION.md
+          - "Independent changed-input full-law protocol": theory/nodal/SINE_CLASS_COLLECTIVE_FORWARD_PROTOCOL.md
           - "Uniform tracking of reduced sine ports": theory/nodal/SINE_PORT_RELAXATION.md
           - "Form tracking by ordered heat comparison": theory/nodal/SINE_PORT_FORM_TRACKING.md
           - "Two-port compatibility of sine classes": theory/nodal/SINE_TWO_PORT_COMPATIBILITY.md

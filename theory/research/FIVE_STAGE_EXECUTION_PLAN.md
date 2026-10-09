@@ -56,9 +56,11 @@ preserves the known interaction contrast. The
 now executes that interface for a mediator impulse. It separates a declared
 grounded tangent port alternative with source, numerical and recording errors
 retained. This leading separation tests linear hidden memory, not nonlinear
-necessity or a new class discriminator. The next obligation is admission of
-an [independent full-law comparison](#current-g3-gate); no such response or
-physical-data campaign has been evaluated.
+necessity or a new class discriminator. The
+[independent full-law producer and protocol](../nodal/SINE_CLASS_COLLECTIVE_FORWARD_PROTOCOL.md#sine-collective-forward-frozen-association)
+are now admitted and frozen. The next obligation is their
+[first reserved evaluation](#current-g3-gate); no such response or physical-data
+campaign has been evaluated.
 
 Supplied preparation, support, law, events and structural clock remain
 premises. In particular, the very small source/readout allowances and long
@@ -72,7 +74,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Pending forward producer and freeze admission | [Changed-input full-law comparison](#current-g3-gate): preserve the evaluated causal prediction and independently enclose the complete law under the same source, input and observation protocol |
+| Pending reserved evaluation | [Changed-input full-law response](#current-g3-gate): retain one independent complete-law response under the frozen source, input, numerical and observation protocol |
+| Closed producer and freeze admission | [Changed-input full-law comparison](#changed-input-full-law-comparison): shared full54 producer, absolute source conversion, separate source transport and immutable runtime/protocol association; no response evaluated at freezing |
 | Closed predictor and prospective protocol admission | [Changed-input interface transfer](#changed-input-collective-interface-transfer): causal kernel execution, independent hidden source, changed-word work/identity, and strict separation from a grounded tangent port alternative |
 | Closed theoretical admission | [Nonlinear collective interface](#nonlinear-collective-interface-admission): six-port causal cubic representation, retained hidden source and quadratic feedback, finite output/work error and repeated class separation |
 | Closed theoretical admission | [Repeated joined interaction](#joined-class-interaction-return-admission): common finite return with distinct carried residuals, exact mean shifts, event work and a persistent tangent comparator's own memory allowance |
@@ -104,38 +107,55 @@ remain open; no empirical response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="reserved-changed-input-full-law-response"></a>
+## Next primary evaluation: retain the first changed-input full-law response
+
+Evaluate the [frozen independent comparison](../nodal/SINE_CLASS_COLLECTIVE_FORWARD_PROTOCOL.md#sine-collective-forward-frozen-association)
+once. The causal prediction is retained evidence, not a numerical constraint.
+Keep both original acquired families, common origins, joined support, central
+impulse `7/10000`, horizon one and separate central-form observations.
+
+1. Select one new isolated workspace and restore the full pinned base,
+   prospective protocol and archived evaluator with the shared restoration
+   entry point. Verify the declared interpreter/dependencies, complete runtime,
+   live evaluator bytes and prior-prediction association before execution.
+2. Invoke the archived evaluator once with its fixed order-12, `1/16` step and
+   32-attempt total policy. Retain the exclusive attempt and the first outcome,
+   including partial evidence, unavailable response or export failure. Do not
+   retry, refine, reset a source or replace the evaluated protocol.
+3. Re-admit the retained law, absolute source, event, clock and step evidence.
+   Reconstruct the endpoint arithmetic before applying source transport once.
+   Check completion, nominal radius, exact nominal prediction overlap,
+   declared actual-family resolution and strict recorded separation from the
+   grounded comparator independently for each class. Never intersect the
+   forward enclosure with a prediction.
+4. Retain the response, source association and read-only audit with the result
+   owner. Classify an unavailable, wide, inconsistent or nondiscriminating
+   outcome according to the fixed policy before changing this queue.
+
+This gate evaluates one finite conditional comparison. It opens no new input
+scan, acquired-source campaign, fit, physical-data evaluation or claim of
+nonlinear necessity, minimal memory or fundamental-particle identification.
+
 <a id="changed-input-full-law-comparison"></a>
-## Next primary admission: an independent changed-input full-law comparison
+<a id="next-primary-admission-an-independent-changed-input-full-law-comparison"></a>
+## Closed admission: an independent changed-input full-law comparison
 
-Admit a validated forward producer and freeze for the
-[retained causal prediction](../nodal/SINE_CLASS_CHANGED_INPUT_PREDICTION.md#sine-changed-input-prediction-result).
-Keep the same two classes, joined support, original acquired families,
-common zero origins, mediator impulse \(7/10000\) at zero, structural
-horizon one, and separate central-form readings with error \(10^{-8}\).
-The existing prediction and its coefficient source are inspected evidence;
-the new complete-law response must remain independent of them.
+The [result owner](../nodal/SINE_CLASS_COLLECTIVE_FORWARD_PROTOCOL.md#sine-collective-forward-frozen-association)
+retains the shared full54 producer and its immutable source/protocol association.
+Absolute target lifts, original acquired-family transport and the sole form
+jump remain distinct. The field consumes neither the inspected causal prediction
+nor its comparator; those enter only the later observation assessment.
 
-1. Reuse the shared validated continuous-flow machinery for all 54 original
-   coordinates. Rebuild each target and convert residual phase covers
-   \(y=\theta-\Theta_k\) into absolute continuous phase lifts explicitly.
-   Keep the time-zero jump out of the pre-input source and carry the full
-   state without a reset, altered pressure law or support change.
-2. Fix a reference/source transfer or direct-family enclosure, numerical
-   order, step/horizon and total-work budget before response evaluation.
-   Declare independent completion, width, prediction-consistency and
-   grounded-comparator separation conditions. Prediction intervals may be
-   used to check the result, not to fit or narrow the forward enclosure.
-3. Retain the changed word's proved work, storage, quotient identity and
-   exact mean shift. The comparator keeps its own six-coordinate law,
-   independent source and recording error; no full-state identity or
-   repeated-operation claim transfers to it.
-4. Associate the complete runtime, source, protocol and fixed observation
-   with an immutable receipt. Prepare one reserved attempt only after
-   producer and freeze admission, preserving partial or unsuccessful evidence.
+The reference has a separate numerical radius policy. Its exact full-law source
+allowance is applied once, with no cubic approximation defect added to the
+forward solution. The unchanged work, identity and mean certificate applies
+to the actual complete model; the grounded comparator retains its own source
+and recording error without inheriting whole-state identity or repeated use.
 
-This gate admits the independent producer and its prospective evaluation
-policy. It does not itself execute the reserved response, change the selected
-input, scan alternatives, reacquire a source or open a physical-data campaign.
+This admission generated no selected full-law response or reserved attempt.
+The subsequent evaluation must retain its own outcome; source inspection,
+synthetic controls and the historical freeze status cannot establish it.
 
 <a id="changed-input-collective-interface-transfer"></a>
 <a id="next-primary-admission-an-executable-changed-input-port-prediction"></a>

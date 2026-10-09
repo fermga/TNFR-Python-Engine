@@ -107,26 +107,37 @@ freeze but cannot substitute its runtime for the declared one. The immutable
 state; it is not a query about subsequent execution.
 
 The maintained [restoration entry point](../../scripts/restore_frozen_source.py)
-currently admits this explicit freeze schema. Inspect its receipt, archive and
-pinned Git source without creating a workspace:
+admits three explicit schema families: class nonlinear-readout v1, class
+comparison v1, and class collective-forward v1. Each requires its own matching
+protocol and source-snapshot schema, a complete pinned Git base and no runtime
+overlays. Support for one does not admit an unrelated freeze format.
+
+The [collective-forward admission](../../theory/nodal/SINE_CLASS_COLLECTIVE_FORWARD_PROTOCOL.md#sine-class-collective-forward-protocol)
+retains the prior causal prediction as a separate byte-verified ZIP. Restoring
+that association neither regenerates the prediction nor evaluates the new
+complete-law response. Its immutable `not_evaluated` receipt records preparation
+at freeze time; any later execution needs its own attempt and outcome.
+
+Inspect this receipt, archive and pinned Git source without creating a workspace:
 
 ```sh
-python scripts/restore_frozen_source.py --receipt docs/assets/sine_formed_classes/class-nonlinear-readout-v1.freeze.json
+python scripts/restore_frozen_source.py --receipt docs/assets/sine_formed_classes/class-collective-forward-v1.freeze.json
 ```
 
 When source preparation is explicitly needed, supply a new destination:
 
 ```sh
-python scripts/restore_frozen_source.py --receipt docs/assets/sine_formed_classes/class-nonlinear-readout-v1.freeze.json --destination C:/TNFR-frozen-class-readout
+python scripts/restore_frozen_source.py --receipt docs/assets/sine_formed_classes/class-collective-forward-v1.freeze.json --destination C:/TNFR-frozen-collective-forward
 ```
 
 The destination must not exist and must be outside the active repository, with
 an existing unredirected parent directory. The utility refuses restoration when
-an attempt or outcome already exists in the source evidence directory. It
-creates a detached worktree of the full pinned base and restores the verified
-supplemental files, receipt and associated prior evidence; this admitted schema
-has no runtime overlays. It does not run the evaluator or certify interpreter
-and dependency compatibility. A prepared workspace is neither an admitted
+an attempt or outcome already exists in the source evidence directory; the
+comparison and collective-forward schemas also reject a retained export-error
+record. It creates a detached worktree of the full pinned base and restores the
+verified supplemental files, receipt and associated prior evidence. It does not
+run the evaluator or certify interpreter and dependency compatibility. A prepared
+workspace is neither an admitted
 scientific attempt nor a global lock across copies: the research gate still
 selects one execution workspace and preserves its first outcome. Do not modify
 archived checks to make a different current runtime appear compatible.
@@ -139,6 +150,10 @@ call and refuse replacement of an existing attempt or outcome. Keep failure,
 partial evidence, an inconclusive interval and export failure distinct. Do not
 change source, precision, work limits or decision rules to repair a reserved
 outcome; a correction requires separately identified evidence.
+
+An export-error record preserves the failure metadata and points to the retained
+attempt. Any partial output remains unchanged. It does not establish that the
+complete in-memory report was successfully written.
 
 The [benchmark lifecycle](../../benchmarks/README.md#running-and-reporting)
 and each protocol own their declared execution procedure. This guide centralizes

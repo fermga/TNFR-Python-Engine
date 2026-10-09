@@ -338,3 +338,53 @@ evaluate a selected full-law response, regenerate a frozen coefficient
 producer or acquire a new source. Exact byte associations preserve the
 declared evidence boundary; they do not independently authenticate
 chronology, execution or physical preparation.
+
+<a id="sine-collective-forward-frozen-association"></a>
+## Retained producer and protocol admission
+
+The [protocol](../../docs/assets/sine_formed_classes/class-collective-forward-v1.protocol.json),
+[source snapshot](../../docs/assets/sine_formed_classes/class-collective-forward-v1.source.zip)
+and [freeze receipt](../../docs/assets/sine_formed_classes/class-collective-forward-v1.freeze.json)
+associate this prospective policy with the complete Git base
+`362124d03f34940e23b5d84ca29c6c839d6471a1`, without runtime overlays.
+The archive retains 24 files, including the complete producer, evidence reader,
+source/policy owners, shared numerical kernels, this prospective document and
+the future evaluator. The full Git base pins dependencies beyond those snapshots.
+The archived document is the unchanged prefix preceding this admission record.
+
+The protocol retains the two original class-source covers and their nominal
+references, absolute phase conversion, sole jump, fixed order-12 steps of
+`1/16`, 32 total attempts, observation criteria and inspected prediction bands.
+Its separate prior-artifact receipt names the immutable causal-prediction ZIP;
+no coefficient producer was regenerated. Exact fractions retain mathematical
+budgets without binary-float conversion. The declared interpreter, platform
+and dependency versions are prospective execution preconditions.
+
+| Artifact | SHA-256 |
+| --- | --- |
+| Protocol | `e47ac667ecedf44d0863dd21a44da7deacc507a742a026cd0fe7d9bfd066f147` |
+| Source snapshot | `a99b8f05153ebebe4964c7512183d606fb3d1e5317f133e20af57c28833204a3` |
+| Freeze receipt | `919b2d79ba8beddce19664437d9d0c8738142e771c062878b98af986a38da5d2` |
+
+The [shared source inspector](../../src/tnfr/research/frozen_source.py) verifies
+these byte/base associations without executing archived code. Its restoration
+path prepares a new detached full-base workspace. The archived evaluator
+`build/class-collective-forward-freeze/evaluate_forward.py` additionally checks
+its exact live bytes, the complete `src` tree, the declared environment and
+reconstructed input/prediction associations before writing an exclusive attempt.
+Only the seven primitive inputs reach the complete-law producer.
+
+The [freeze audit](../../tests/research/test_sine_class_collective_forward_freeze.py)
+re-admits the retained protocol and source association without response execution.
+The [synthetic evaluator controls](../../tests/research/test_sine_class_collective_forward_evaluator.py)
+exercise refusal, single-attempt wiring, incomplete/error outcomes and failed
+serialization using unrelated inputs and mocked scientific entry points.
+An export failure retains the attempt, any partial output and failure metadata;
+it does not establish that an unexported in-memory report survived.
+
+At this admission no reserved attempt, complete-law response or export-error
+record exists. `evaluation_status_at_freeze="not_evaluated"` records that
+historical boundary, not the status of any future execution. Producer controls
+use unrelated synthetic sources; they do not establish completion, numerical
+resolution or agreement for the selected response. The first reserved evaluation
+is the next gate in the [sole execution queue](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).

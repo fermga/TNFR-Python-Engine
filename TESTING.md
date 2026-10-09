@@ -302,6 +302,36 @@ and recording errors remain separate. Success against the grounded tangent
 alternative does not prove nonlinear necessity, class discrimination or a
 reserved forward comparison.
 
+For the [independent changed-input full-law protocol](theory/nodal/SINE_CLASS_COLLECTIVE_FORWARD_PROTOCOL.md),
+select the complete 54-coordinate producer, its retained-evidence reader and
+the research policy together. Check both primitive sources before any field
+execution, absolute phase lifts, the single mediator form event, all-coordinate
+carry and the global first-failure attempt budget. Rebuild retained Taylor
+endpoints before consuming readings; stored derivative and strict Picard
+generation remain separate execution premises.
+
+```sh
+python -m pytest tests/physics/test_sine_class_port_readout.py tests/research/test_sine_class_collective_forward.py tests/research/test_sine_class_collective_forward_freeze.py tests/research/test_sine_class_collective_forward_evaluator.py tests/mathematics/test_validated_taylor_arithmetic.py -q
+```
+
+The policy controls reconstruct the already retained causal prediction without
+regenerating its coefficients. They independently check target-plus-residual
+source association, one actual-family source allowance, closed nominal
+prediction overlap, the declared agreement tolerance and strict two-error
+recorded separation. Amplitude and nonlinear-initialization errors belong to
+the inspected reduced prediction, not the full-law forward enclosure.
+
+This selection admits the producer and prospective freeze; it does not execute
+the selected forward response. Freeze controls inspect source, protocol and
+attempt boundaries. The [evaluator wiring controls](tests/research/test_sine_class_collective_forward_evaluator.py)
+compile archived function definitions and exercise only temporary records with
+mocked scientific calls and Git inspection. They check preflight rejection,
+exclusive attempts and retained projection/export failures without executing
+the selected producer or restoring its workspace. Numerical completion,
+resolution, prediction consistency and discrimination remain separate verdicts;
+an earlier passing prediction cannot narrow or substitute for a future forward
+interval.
+
 For [common-scale amplitude feasibility](theory/nodal/SINE_CLASS_AMPLITUDE_FEASIBILITY.md),
 check whole-interval coefficient homogeneity and higher-amplitude bounds,
 the complex-domain boundary, the fixed source/noise allowances and the
