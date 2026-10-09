@@ -16,6 +16,7 @@ STEM = "docs/assets/control"
 RECEIPT = STEM + ".freeze.json"
 SOURCE = "src/control.py"
 HELPER = "build/frozen/evaluate.py"
+FORWARD = "tnfr.sine-class-collective-forward"
 
 
 def _git(root, *arguments):
@@ -30,7 +31,14 @@ def _receipt(path, data):
     return {"path": path, "bytes": len(data), "sha256": sha256_bytes(data)}
 
 
-def _pack(root, files, base, mutate_manifest=None):
+def _pack(
+    root,
+    files,
+    base,
+    mutate_manifest=None,
+    *,
+    schema="tnfr.sine-class-nonlinear-readout",
+):
     entries = []
     for name, data in files.items():
         entry = _receipt(name, data)
@@ -40,7 +48,7 @@ def _pack(root, files, base, mutate_manifest=None):
             entry["normalized_lf_sha256"] = sha256_bytes(data.replace(b"\r\n", b"\n"))
         entries.append(entry)
     manifest = {
-        "schema": "tnfr.sine-class-nonlinear-readout-source-snapshot.v1",
+        "schema": schema + "-source-snapshot.v1",
         "source_base_commit": base,
         "runtime_overlays": [],
         "files": entries,
@@ -55,7 +63,7 @@ def _pack(root, files, base, mutate_manifest=None):
     data = stream.getvalue()
     (root / (STEM + ".source.zip")).write_bytes(data)
     frozen = {
-        "schema": "tnfr.sine-class-nonlinear-readout-freeze.v1",
+        "schema": schema + "-freeze.v1",
         "source_base_commit": base,
         "runtime_overlays": [],
         "evaluation_status_at_freeze": "not_evaluated",
@@ -133,22 +141,23 @@ def test_inspection_is_read_only_and_uses_git_base(source):
     assert not (root / HELPER).exists()
 
 
-def test_comparison_adapter_requires_its_matching_protocol_and_manifest(source):
+@pytest.mark.parametrize("schema", ["tnfr.sine-class-comparison", FORWARD])
+def test_adapter_requires_its_matching_protocol_and_manifest(source, schema):
     root, files, base = source
     protocol = json_loads(files[STEM + ".protocol.json"])
-    protocol["schema"] = "tnfr.sine-class-comparison-protocol.v1"
+    protocol["schema"] = schema + "-protocol.v1"
     files[STEM + ".protocol.json"] = _json(protocol)
     (root / (STEM + ".protocol.json")).write_bytes(files[STEM + ".protocol.json"])
 
-    def comparison_manifest(manifest):
-        manifest["schema"] = "tnfr.sine-class-comparison-source-snapshot.v1"
+    def selected_manifest(manifest):
+        manifest["schema"] = schema + "-source-snapshot.v1"
 
-    _pack(root, files, base, mutate_manifest=comparison_manifest)
+    _pack(root, files, base, mutate_manifest=selected_manifest)
     receipt = json_loads((root / RECEIPT).read_bytes())
     # Cross-protocol receipts must not silently select the new semantics.
     with pytest.raises(ValueError, match="protocol source association"):
         inspect_frozen_source(root, RECEIPT)
-    receipt["schema"] = "tnfr.sine-class-comparison-freeze.v1"
+    receipt["schema"] = schema + "-freeze.v1"
     (root / RECEIPT).write_bytes(_json(receipt))
     report = inspect_frozen_source(root, RECEIPT)
     assert report.source_base_commit == base
@@ -158,6 +167,90 @@ def test_comparison_adapter_requires_its_matching_protocol_and_manifest(source):
     assert inspect_frozen_source(root, RECEIPT).existing_outcome_files == (
         export_error,
     )
+
+
+@pytest.fixture
+def collective_forward_source(source):
+    root, files, base = source
+    # The prior prediction is retained as opaque ZIP bytes. Restoration neither
+    # imports its code nor treats its verdict as a new scientific premise.
+    stream = io.BytesIO()
+    with zipfile.ZipFile(stream, "w") as archive:
+        archive.writestr("outcome.json", b'{"synthetic":true}')
+        archive.writestr("never_execute.py", b"raise RuntimeError('Do not run')")
+    prior_path = "docs/assets/prior-prediction.zip"
+    prior = stream.getvalue()
+    (root / prior_path).write_bytes(prior)
+    protocol = json_loads(files[STEM + ".protocol.json"])
+    protocol["schema"] = FORWARD + "-protocol.v1"
+    protocol["source_specification"]["prior_artifact_receipts"] = [
+        _receipt(prior_path, prior)
+    ]
+    files[STEM + ".protocol.json"] = _json(protocol)
+    (root / (STEM + ".protocol.json")).write_bytes(files[STEM + ".protocol.json"])
+    _pack(root, files, base, schema=FORWARD)
+    return root, files, base, prior_path, prior
+
+
+def test_collective_forward_restores_full_base_and_opaque_prediction(
+    collective_forward_source, tmp_path
+):
+    root, files, base, prior_path, prior = collective_forward_source
+    destination = tmp_path / "forward-restored"
+    original = (root / SOURCE).read_bytes()
+    report = restore_frozen_source(root, RECEIPT, destination)
+    assert report.source_base_commit == base
+    assert report.prior_artifact_count == 1
+    assert report.existing_outcome_files == ()
+    assert (destination / SOURCE).read_bytes() == b"original = 1\n"
+    assert (destination / "src/unlisted.py").read_bytes() == b"dependency = 'pinned'\n"
+    assert _git(destination, "diff", base, "--name-only", "--", "src") == b""
+    assert (destination / prior_path).read_bytes() == prior
+    assert (destination / HELPER).read_bytes() == files[HELPER]
+    assert (root / SOURCE).read_bytes() == original
+    assert inspect_frozen_source(destination, RECEIPT) == report
+    assert not (destination / "never_execute.py").exists()
+
+
+@pytest.mark.parametrize("suffix", [".attempt.json", ".json", ".export-error.json"])
+def test_collective_forward_retains_each_first_outcome_without_restore(
+    collective_forward_source, tmp_path, suffix
+):
+    root, _, _, _, _ = collective_forward_source
+    evidence = root / (STEM + suffix)
+    evidence.write_bytes(b"retained first outcome")
+    assert inspect_frozen_source(root, RECEIPT).existing_outcome_files == (
+        STEM + suffix,
+    )
+    destination = tmp_path / "not-created"
+    with pytest.raises(FileExistsError, match="first attempt"):
+        restore_frozen_source(root, RECEIPT, destination)
+    assert not destination.exists()
+    assert evidence.read_bytes() == b"retained first outcome"
+
+
+@pytest.mark.parametrize("suffix", [".attempt.json", ".json", ".export-error.json"])
+def test_collective_forward_cannot_install_outcome_supplements(
+    collective_forward_source, suffix
+):
+    root, files, base, _, _ = collective_forward_source
+    files[STEM + suffix] = b"fabricated outcome"
+    _pack(root, files, base, schema=FORWARD)
+    with pytest.raises(ValueError, match="cannot install"):
+        inspect_frozen_source(root, RECEIPT)
+
+
+def test_collective_forward_rejects_cross_schema_source_manifest(
+    collective_forward_source,
+):
+    root, files, base, _, _ = collective_forward_source
+
+    def unrelated_manifest(manifest):
+        manifest["schema"] = "tnfr.sine-class-comparison-source-snapshot.v1"
+
+    _pack(root, files, base, unrelated_manifest, schema=FORWARD)
+    with pytest.raises(ValueError, match="source manifest association"):
+        inspect_frozen_source(root, RECEIPT)
 
 
 def test_restore_complete_base_and_exact_supplements_without_execution(
