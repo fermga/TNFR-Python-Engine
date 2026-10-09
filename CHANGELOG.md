@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Derive [complete profile inheritance under weighted oriented contacts](theory/nodal/ORIENTED_INTERFACE_PROFILE_INHERITANCE.md).
+  An open contact interval conditionally selects sine under an independently
+  supplied unchanged-profile premise. Preserve exact nonsine collective laws
+  with their boundary coefficients, full chart and observation transformations,
+  storage baselines and contact work. Share harmonic evaluation with the
+  symmetric-interface controls; source and identity certificates do not transfer.
 - Classify [composition-compatible constitutive laws](theory/nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md)
   under the two registered C9 interfaces. An explicit nonnegative analytic
   nonsine family preserves target storage, local fields and its inherited

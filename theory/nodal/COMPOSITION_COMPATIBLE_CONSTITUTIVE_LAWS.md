@@ -533,6 +533,12 @@ against retained NFR and boundary state rather than chosen to remove the
 counterexample. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 owns that decision; this proof creates no parallel research queue.
 
+The [oriented weighted-interface comparison](ORIENTED_INTERFACE_PROFILE_INHERITANCE.md)
+now isolates one such extra premise: unchanged profiles across its declared
+open interface interval select sine within this class. The other currents
+still inherit exact boundary-dependent laws, so that conditional selector
+does not follow from the NFR ontology or invalidate the present counterfamily.
+
 ## Implementation and independent controls
 
 The detached static owner

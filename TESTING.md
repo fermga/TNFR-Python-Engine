@@ -201,6 +201,20 @@ establish static algebra, not acquisition, recovery, contact identity or
 autonomous composition. Do not rerun frozen producers or borrow their
 source certificates for the new law.
 
+For [oriented-interface profile inheritance](theory/nodal/ORIENTED_INTERFACE_PROFILE_INHERITANCE.md),
+select `tests/physics/test_oriented_interface_constitutive.py` with the
+composition-compatible and inherited-algebra owners when shared harmonic
+evaluation changes. Independently reconstruct weighted undirected incidences,
+degree normalization, full fine rows, storage, loss and positive support work.
+Check both evolution rows under the clock/form/reciprocal/phase-origin map,
+including inputs and raw-coordinate observations. Exercise the explicit
+nonsine family's interior obstruction and endpoint compatibility without
+mistaking that family-specific result for exclusion of every law at one
+weight. Retain the distinct midpoint counterfamily and the theorem's open
+interval quantifier. Test invalid exact scalars and signed form/phase
+admission before materialization. These static controls establish neither
+acquired-source identity nor event occurrence; frozen producers stay unchanged.
+
 For [preparation information and acquired modes](theory/nodal/SINE_PREPARATION_MODE_SELECTION.md),
 select `tests/physics/test_sine_preparation_mode_selection.py` with the shared
 preparation and isolated-class controls above. Reconstruct the Laplacian energy

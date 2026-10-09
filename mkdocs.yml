@@ -101,6 +101,7 @@ nav:
           - "Constitutive freedom of organized patterns": theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md
           - "Constitutive inheritance through organized interfaces": theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md
           - "Composition-compatible constitutive laws": theory/nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md
+          - "Oriented-interface profile inheritance": theory/nodal/ORIENTED_INTERFACE_PROFILE_INHERITANCE.md
           - "Preparation information and acquired modes": theory/nodal/SINE_PREPARATION_MODE_SELECTION.md
           - "Preparation paths, capture and forced phase passage": theory/nodal/SINE_PREPARATION_PATH_SELECTION.md
           - "Terminal restrictions on the same preparation path": theory/nodal/SINE_PREPARATION_PATH_LIMITS.md

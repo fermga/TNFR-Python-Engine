@@ -219,9 +219,17 @@ own profile under both registered C9 interfaces. These requirements therefore
 do not select sine. Their harmonic information remains relevant even though
 the named interfaces act on it identically. The result concerns conditional
 organized targets; it transfers no source acquisition or contact identity to
-the new laws. Requiring the same profile under a larger interface class would
-be an additional premise. An effective NFR may instead retain more boundary
-information, internal coordinates or derived memory.
+the new laws. The [oriented-interface theorem](nodal/ORIENTED_INTERFACE_PROFILE_INHERITANCE.md)
+then conditionally selects sine by requiring unchanged-profile inheritance
+throughout an open interval of weighted registered contacts. This stronger
+requirement is independently supplied; it is not derived from nesting or
+identity. Nonsine currents still give exact collective dynamics when their
+interface-dependent sine and cosine coefficients are retained. An effective
+NFR may carry that boundary information, internal coordinates or derived
+memory. Neither failure of a smaller description nor conditional selection
+under an extra premise invalidates those complete laws or independently
+selects a fundamental physical law. Pairwise coordinate equivalences also
+do not establish their simultaneous compatibility in a larger network.
 
 Distinct internal geometries need not be distinguishable through every
 contact. The [central-contact obstruction](nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-contact-admission)

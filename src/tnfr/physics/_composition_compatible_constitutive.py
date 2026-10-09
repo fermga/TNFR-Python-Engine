@@ -84,8 +84,13 @@ def _derive_composition_compatible_law(*, deformation):
     )
 
 
-def _edge_values(phasor, law):
-    """Evaluate finite harmonics exactly on an already admitted unit phasor."""
+def _registered_edge_components(phasor, law):
+    """Evaluate the law and its registered quadratures on an admitted phasor.
+
+    The cosine-current companion and its sine primitive retain the orientation
+    of C9 interface offsets. They are derived from this law's signed residues,
+    not extra state or the pressure of a newly installed runtime model.
+    """
     cosine, sine = phasor
     powers = [(Q(1), Q(0))]
     for _ in range(19):
@@ -106,6 +111,26 @@ def _edge_values(phasor, law):
         )
         for order in range(4)
     )
+    companion_current = sum(
+        (
+            (1 if n % 9 == 1 else -1) * b * powers[n][0]
+            for n, b in law.current_coefficients
+        ),
+        Q(0),
+    )
+    companion_potential = sum(
+        (
+            (1 if n % 9 == 1 else -1) * b * powers[n][1] / n
+            for n, b in law.current_coefficients
+        ),
+        Q(0),
+    )
+    return potential, jet, companion_current, companion_potential
+
+
+def _edge_values(phasor, law):
+    """Retain the original potential/current-jet view of the shared evaluator."""
+    potential, jet, _, _ = _registered_edge_components(phasor, law)
     return potential, jet
 
 
