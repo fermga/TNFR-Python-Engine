@@ -21,7 +21,10 @@ from ._sine_lyapunov import (
 )
 from .phase_cycle_geometry import _derive
 from .relational_sine_class_mediation import _EDGES, _NODES
-from .relational_sine_class_superposition import _probe_coordinate_envelope
+from .relational_sine_class_superposition import (
+    _probe_coordinate_envelope,
+    _unit_delay_donor_laplacian_bounds,
+)
 
 _EPSILON = Q(1, 10**32)
 _DELTA = Q(1, 10**30)
@@ -137,9 +140,9 @@ def _repeated_histories(geometry: _RepeatedGeometry) -> tuple[_RepeatedHistory, 
         ("second_only", Q(0), a),
         ("both", a, a),
     ):
-        pre_form, _ = _probe_coordinate_envelope(first, _DELAY, eps, g)
-        defect = eps + 2 * g * _DELAY * eps + 2 * g**2 * _DELAY**2 * pre_form
-        pressure = -6 * defect, Q(9, 8) * first + 6 * defect
+        pressure = _unit_delay_donor_laplacian_bounds(
+            first_amplitude=first, endpoint_radius=eps, gamma_upper=g
+        )
         first_work = (
             Q(3, 2) * first**2 - 6 * first * eps,
             Q(3, 2) * first**2 + 6 * first * eps,

@@ -535,3 +535,68 @@ def _audit_work_and_identity(values, report, gamma):
 def test_work_and_identity_are_rebuilt_separately(evidence):
     values, report, gamma, _ = evidence
     _audit_work_and_identity(values, report, gamma)
+
+
+def test_collective_interface_uses_reconstructed_cubic_evidence_once(evidence):
+    """Associate the causal interface with rebuilt coefficients, never a verdict."""
+    from tnfr.physics._sine_class_collective_interface import (
+        _bound_repeated_collective_interface,
+    )
+
+    values, report, gamma, mixed = evidence
+    difference = mixed[0] - mixed[1]
+    products = tuple(
+        g**4 * coefficient
+        for g in (gamma.lo, gamma.hi)
+        for coefficient in (difference.lo, difference.hi)
+    )
+    result = _bound_repeated_collective_interface(
+        base_cubic_lower=min(products), base_cubic_upper=max(products)
+    )
+    assert result.base_cubic_bounds == (min(products), max(products))
+    assert result.repeated.compared_classes == tuple(
+        map(tuple, report["compared_classes"])
+    )
+    assert result.repeated.clock == report["clock"]
+    assert result.repeated.delay == values["delay"]
+    assert result.repeated.total_duration == values["total_duration"]
+    scale = result.repeated.first_probe_amplitude / values["first_probe_amplitude"]
+    assert scale == result.amplitude_scale == Q(7, 5)
+    assert (
+        result.repeated.second_probe_amplitude
+        == scale * values["second_probe_amplitude"]
+    )
+    assert result.repeated.epsilon == values["endpoint_radius"]
+    assert result.repeated.readout_error_bound == values["readout_error_bound"]
+
+    g, duration, eps = Q(1, 3000), Q(2), values["endpoint_radius"]
+    ell, denominator = 1 - 2 * g * duration, 1 - 2 * g**2 * duration**2
+    amplitude = scale * values["first_probe_amplitude"]
+    budgets = (Q(0), amplitude, amplitude, 2 * amplitude)
+    fifth = 2 * sum(
+        256 * g**6 * a**5 * duration / (denominator * (1 - 4 * g**2 * a**2))
+        for a in budgets
+    )
+    initialization = 2 * sum(
+        4 * g * duration * eps / (ell * denominator) * (g * a / denominator + eps / ell)
+        for a in budgets
+    )
+    source = 8 * eps / ell
+    assert result.nominal_fifth_order_contrast_error_upper_bound == fifth
+    assert result.nonlinear_initialization_contrast_error_upper_bound == initialization
+    # The coefficient already includes finite-time arithmetic. Add the amplitude
+    # tail once, both independent linear-source allowances, and the extra
+    # nonlinear initialization defect; no full-response interval is substituted.
+    expected = (
+        -(scale**3) * max(products)
+        - fifth
+        - initialization
+        - 2 * source
+        - Q(16, 10**30)
+    )
+    assert result.interface_separation_margin == expected > Q(30775, 10**34)
+    assert result.conditional_repeated_interface_sufficient
+    assert (
+        result.recorded_full_response_via_interface_bounds[1]
+        < result.repeated.recorded_tangent_bounds[0]
+    )

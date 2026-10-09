@@ -356,6 +356,80 @@ def test_default_event_ledger_is_exactly_preserved(a, b, s, t):
         )
 
 
+@pytest.mark.parametrize(
+    "first,eps,g",
+    (
+        (Q(7, 10000), Q(1, 10**32), Q(1, 3000)),
+        (Q(3, 7), Q(2, 13), Q(1, 11)),
+        (Q(0), Q(1, 2**500), Q(1, 3000)),
+        (Q(1, 2**500), Q(0), Q(0)),
+        (Q(0), Q(0), Q(7, 10)),
+    ),
+)
+def test_shared_unit_delay_pressure_matches_independent_heat_defect(first, eps, g):
+    form = (first + eps + 2 * g * eps) / (1 - 2 * g**2)
+    defect = eps + 2 * g * eps + 2 * g**2 * form
+    expected = -6 * defect, Q(9, 8) * first + 6 * defect
+    actual = events._unit_delay_donor_laplacian_bounds(
+        first_amplitude=first, endpoint_radius=eps, gamma_upper=g
+    )
+    assert actual == expected
+    assert all(type(value) is Q for value in actual)
+    assert actual[0] <= 0 <= actual[1]
+    assert actual[1] + actual[0] == Q(9, 8) * first
+
+
+@pytest.mark.parametrize("key", ("first_amplitude", "endpoint_radius", "gamma_upper"))
+@pytest.mark.parametrize("bad", (True, np.bool_(False), 0.0, float("inf"), Q(-1)))
+def test_shared_unit_delay_pressure_admits_exact_domains_before_envelope(
+    key, bad, monkeypatch
+):
+    monkeypatch.setattr(
+        events, "_probe_coordinate_envelope", lambda *_: pytest.fail("late admission")
+    )
+    values = dict(first_amplitude=Q(1), endpoint_radius=Q(0), gamma_upper=Q(1, 3000))
+    with pytest.raises((TypeError, ValueError)):
+        events._unit_delay_donor_laplacian_bounds(**(values | {key: bad}))
+
+
+@pytest.mark.parametrize("g", (Q(3, 4), Q(1), Q(10**100)))
+def test_shared_unit_delay_pressure_rejects_missing_bootstrap_before_envelope(
+    g, monkeypatch
+):
+    monkeypatch.setattr(
+        events, "_probe_coordinate_envelope", lambda *_: pytest.fail("late admission")
+    )
+    with pytest.raises(ValueError, match="requires"):
+        events._unit_delay_donor_laplacian_bounds(
+            first_amplitude=Q(1), endpoint_radius=Q(0), gamma_upper=g
+        )
+
+
+def test_amplitude_adapter_retains_the_original_pressure_and_consumes_shared_owner(
+    monkeypatch,
+):
+    received = []
+    shared = events._unit_delay_donor_laplacian_bounds
+
+    def observe(**values):
+        received.append(values)
+        return shared(**values)
+
+    monkeypatch.setattr(owner, "_unit_delay_donor_laplacian_bounds", observe)
+    for amplitude in (Q(0), Q(3, 8000)):
+        eps, g = Q(1, 10**32), Q(1, 3000)
+        form = (amplitude + eps + 2 * g * eps) / (1 - 2 * g**2)
+        defect = eps + 2 * g * eps + 2 * g**2 * form
+        assert owner._delayed_laplacian_bounds(amplitude) == (
+            -6 * defect,
+            Q(9, 8) * amplitude + 6 * defect,
+        )
+    assert received == [
+        dict(first_amplitude=a, endpoint_radius=Q(1, 10**32), gamma_upper=Q(1, 3000))
+        for a in (Q(0), Q(3, 8000))
+    ]
+
+
 def test_exact_sdk_projection_and_unavailable_fields(report):
     encoded = relational_report_to_dict(report)
     assert encoded["report_type"] == "SineClassAmplitudeFeasibility"

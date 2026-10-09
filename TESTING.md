@@ -265,6 +265,25 @@ simulate the repeated schedule nor replay acquisition or a frozen producer.
 The quadratic tangent return and the nonlinear acute trapping proof retain
 different premises despite sharing the modified-energy kernel.
 
+For the [nonlinear collective interface](theory/nodal/SINE_CLASS_COLLECTIVE_INTERFACE.md),
+check the six-port/hidden-state partition, retained source term, reflection-odd
+quadratic feedback, and central pressure observers independently of the
+coefficient producer. The finite input family and its approximation error do
+not establish identity or work admission for arbitrary schedules. Exercise
+separate nominal amplitude tails and nonlinear initialization defects without
+assigning nominal parity to actual residuals. Simultaneous port jumps retain
+their quadratic cross terms.
+
+```sh
+python -m pytest tests/physics/test_sine_class_collective_interface.py tests/physics/test_sine_class_cubic_evidence.py tests/physics/test_sine_class_repeated_interaction.py -q
+```
+
+The cubic evidence module reconstructs the supplied comparison premise once
+before applying the interface certificate. It must not regenerate coefficients
+or a nonlinear response. The modified unit-delay pressure helper also requires
+the amplitude, superposition and repeated-interaction contract tests; it does
+not merge their distinct initial storage, contact or mean hypotheses.
+
 For [common-scale amplitude feasibility](theory/nodal/SINE_CLASS_AMPLITUDE_FEASIBILITY.md),
 check whole-interval coefficient homogeneity and higher-amplitude bounds,
 the complex-domain boundary, the fixed source/noise allowances and the

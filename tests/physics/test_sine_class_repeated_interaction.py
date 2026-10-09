@@ -306,6 +306,38 @@ def test_recurrent_work_and_identity_use_carried_pressure_without_reattachment(r
         assert history.tangent_endpoint_within_return_budget
 
 
+def test_recurrent_pressure_uses_shared_owner_without_changing_history_bounds(
+    report, monkeypatch
+):
+    received = []
+    shared = owner._unit_delay_donor_laplacian_bounds
+
+    def observe(**values):
+        received.append(values)
+        return shared(**values)
+
+    monkeypatch.setattr(owner, "_unit_delay_donor_laplacian_bounds", observe)
+    histories = owner._repeated_histories(report.geometry)
+    assert histories == report.histories
+    assert received == [
+        dict(
+            first_amplitude=a,
+            endpoint_radius=report.epsilon,
+            gamma_upper=report.gamma_upper_bound,
+        )
+        for a in (
+            Q(0),
+            report.first_probe_amplitude,
+            Q(0),
+            report.first_probe_amplitude,
+        )
+    ]
+    # The recurrent source storage premise is distinct from acquired-source
+    # contact storage; centralizing pressure must not merge those contracts.
+    assert report.initial_excess_storage_upper_bound == 2 * report.epsilon**2
+    assert report.recurring_contact_work == 0
+
+
 def test_full_state_jump_work_and_mean_increment_independent_of_common_offset(report):
     _, laplacian = _graph()
     d = report.geometry.degrees

@@ -97,6 +97,28 @@ def _probe_coordinate_envelope(amplitude, time, endpoint_radius, gamma_upper):
     return form, eps + 2 * g * time * form
 
 
+def _unit_delay_donor_laplacian_bounds(
+    *, first_amplitude, endpoint_radius, gamma_upper
+):
+    """Bound the carried donor pressure at unit time on the joined three-C9 graph.
+
+    Inputs are exact nonnegative bounds. The caller supplies the complete law
+    and coordinate source error; this helper neither admits acquisition nor
+    identifies a return family. For a nonnegative first donor impulse, the
+    graph's spectral heat bound is ``0 <= (L exp(-A))44 < 9/8`` at time one.
+    The sine/source defect supplies the remaining signed pressure enclosure.
+    The constant 9/8 is not an arbitrary-delay or arbitrary-support bound.
+    """
+    amplitude, eps, g = map(_exact, (first_amplitude, endpoint_radius, gamma_upper))
+    if min(amplitude, eps, g) < 0:
+        raise ValueError("unit-delay pressure bounds require nonnegative inputs")
+    if 1 - 2 * g**2 <= 0:
+        raise ValueError("unit-delay pressure requires 1-2*gamma_upper**2>0")
+    form, _ = _probe_coordinate_envelope(amplitude, Q(1), eps, g)
+    defect = eps + 2 * g * eps + 2 * g**2 * form
+    return -6 * defect, Q(9, 8) * amplitude + 6 * defect
+
+
 def _probe_event_ledger(
     values, g, discrepancies, *, pre_second_laplacian_abs_bounds=None
 ):

@@ -21,8 +21,8 @@ from .relational_sine_class_cubic_response import (
 from .relational_sine_class_mediation import _CONTACTS, _EDGES, _NODES
 from .relational_sine_class_superposition import (
     _ClassProbeHistoryBound,
-    _probe_coordinate_envelope,
     _probe_event_ledger,
+    _unit_delay_donor_laplacian_bounds,
 )
 from .relational_sine_port_composition import _parameters
 
@@ -38,10 +38,11 @@ _PROBE_ALLOWANCE = Q(1, 500000)
 
 def _delayed_laplacian_bounds(first_amplitude):
     """Fixed-delay heat pressure plus the complete-law/source defect."""
-    g = _CAUCHY_GAMMA
-    form, _ = _probe_coordinate_envelope(first_amplitude, _DELAY, _EPSILON, g)
-    defect = _EPSILON + 2 * g * _EPSILON + 2 * g**2 * form
-    return -6 * defect, Q(9, 8) * first_amplitude + 6 * defect
+    return _unit_delay_donor_laplacian_bounds(
+        first_amplitude=first_amplitude,
+        endpoint_radius=_EPSILON,
+        gamma_upper=_CAUCHY_GAMMA,
+    )
 
 
 @dataclass(frozen=True)
