@@ -231,6 +231,13 @@ distinct strict eight/sixteen-error margins. A declared step/order policy does
 not guarantee the requested numerical width. Preserve unavailable and first
 failure evidence; these tests execute no selected reference or reserved response.
 
+The comparison freeze has a separate read-only association and synthetic-helper
+gate: `python -m pytest tests/physics/test_sine_class_comparison_freeze.py -q`.
+Reuse the shared source inspector for archive/base checks. Admit both source
+recipes, fixed predictions, version policy and prospective proof prefix;
+compile only the named pure helpers for serialization/error-retention controls.
+Never execute an archived main or producer to validate the freeze.
+
 For [common-scale amplitude feasibility](theory/nodal/SINE_CLASS_AMPLITUDE_FEASIBILITY.md),
 check whole-interval coefficient homogeneity and higher-amplitude bounds,
 the complex-domain boundary, the fixed source/noise allowances and the

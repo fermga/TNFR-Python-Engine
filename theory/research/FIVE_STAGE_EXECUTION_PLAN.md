@@ -48,8 +48,12 @@ under this budget. The [amplitude feasibility theorem](../nodal/SINE_CLASS_AMPLI
 now certifies a nonempty common-scale interval with robust central
 discrimination under the original reading, work and identity budgets.
 This conditional result reuses the retained cubic coefficient and proves
-a sharper bound on the delayed impulse's carried work. A single matched
-cross-class evaluation protocol is the [sole next admission](#current-g3-gate), for the
+a sharper bound on the delayed impulse's carried work. The
+[fixed comparison protocol](../nodal/SINE_CLASS_COMPARISON_PROTOCOL.md#sine-comparison-frozen-association)
+now separates complete nonlinear reference integration from an independent
+bound transferring it to the original acquired families. Its source,
+intervention, numerical budget and outcome criteria are frozen. The first
+independent cross-class response is the [sole next evaluation](#current-g3-gate), for the
 [organization-dependent interaction rationale](../NODAL_RESEARCH_STRATEGY.md#organization-dependent-nonlinearity).
 
 The admitted producer, frozen protocol and first outcome are consolidated;
@@ -67,7 +71,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Pending protocol admission | [Scaled cross-class evaluation](#current-g3-gate): fix one admitted intervention, match both actual source families and bound the required independent forward-observation precision before freezing a response |
+| Pending reserved evaluation | [First independent class comparison](#current-g3-gate): execute the frozen reference-plus-source protocol once and retain completion, width, consistency and discrimination separately |
+| Closed protocol and freeze admission | [Scaled cross-class evaluation](#scaled-cross-class-evaluation-admission): one fixed intervention, shared full-state producer, original acquired-family transfer and immutable source/protocol association; no response evaluated |
 | Closed theoretical admission | [Probe-amplitude feasibility](#organization-probe-amplitude-feasibility): a whole common-scale interval separates central records from a noisy zero-contrast alternative within the original work and identity budgets |
 | Closed conditional analytic assessment | [Spatial organization observation](#organization-sensitive-observation): true quadratic class dependence and simultaneous central/spatial scalar noise cancellation, without full-record overlap |
 | Closed conditional analytic assessment | [Mediator organization and nonlinear interaction](#mediator-organization-nonlinear-interaction): complete cubic dynamics certify a true class contrast and a scoped scalar noise-cancellation witness |
@@ -94,39 +99,59 @@ remain open; no empirical response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="reserved-scaled-cross-class-comparison"></a>
+## Next primary evaluation: retain the first independent class comparison
+
+Execute the [frozen comparison protocol](../nodal/SINE_CLASS_COMPARISON_PROTOCOL.md#sine-comparison-frozen-association)
+once from its pinned source and runtime. The two complete nonlinear reference
+calculations share the declared law and supplied event schedule; their
+independent source-transfer bound preserves the original acquired families.
+The analytic prediction must remain separate from every forward enclosure.
+
+1. Inspect the immutable receipt and restore its complete Git base with the
+   shared frozen-source tool. Verify runtime versions and the absence of
+   an earlier attempt, outcome or export-error record before execution.
+2. Run the archived evaluator with its unchanged `7/10000` impulses,
+   `1/128` step, order 16 and 1536 total attempt cap. Preserve both complete
+   carried trees and the first numerical failure; apply no later child
+   after a failed source and make no parameter or source adjustment.
+3. Retain reference and raw-endpoint contrasts, the independent transfer
+   to actual sources, both widths and both open-prediction consistency
+   checks. Evaluate the actual-width `1e-30` postcondition and the distinct
+   true/recorded signs and sixteen-error null separation. Inconclusive
+   width, missing observations and conflicting evidence remain distinct.
+4. Retain the exclusive first attempt and complete or partial outcome,
+   including an export failure when applicable. Audit primitive inputs,
+   law, ancestry and consumed arithmetic without regenerating derivatives.
+   Close this queue entry with the result owner, even if a required
+   numerical postcondition is unresolved.
+
+The freeze contains no selected response. The fixed width is a sufficient
+acceptance requirement, not a guarantee that the interval solver attains it.
+Preparation, clock and reading precision remain mathematical premises;
+no physical-data campaign or fundamental-law identification is active.
+
 <a id="scaled-cross-class-evaluation-admission"></a>
-## Next primary admission: a single scaled cross-class observation protocol
+## Closed admission: a single scaled cross-class observation protocol
 
-Prepare one independent full-law evaluation of the central organization
-contrast inside the [certified amplitude interval](../nodal/SINE_CLASS_AMPLITUDE_FEASIBILITY.md).
-Fix one common scale, both acquired source families, the two donor events,
-clock, horizon, eight scalar readings and unchanged work/identity budgets.
-The amplitude theorem supplies a prediction; it must not supply the
-forward response or conceal the forward enclosure's numerical width.
+The [prospective owner](../nodal/SINE_CLASS_COMPARISON_PROTOCOL.md) fixes
+scale `7/5` by the proved monotone signal bound and keeps the original
+source, sensor, work and identity requirements. The maintained two-source
+composition reuses the complete four-history producer, reconstructs its
+consumed evidence and stops globally after the first incomplete child.
 
-1. Select a single scale from the admitted interval by a declared design
-   criterion, then freeze its analytic prediction and error allowances.
-   No coefficient or response sweep is needed to choose it.
-2. Reuse the [full-state four-history producer](../../src/tnfr/physics/relational_sine_class_readout.py)
-   for each class. Retain independent actual-source residuals across
-   classes and matched complete sources within each class; declare the
-   Cartesian covers and their association with the acquired families.
-   Carry all form and phase coordinates through both events.
-3. Specify an a priori numerical budget sufficient to test the predicted
-   sign and separation from a separately noisy zero-contrast alternative.
-   Include cross-class subtraction, interval width, exact sensor-error
-   counts, and the distinction between a source cover and its correlated
-   acquired subset. Preserve raw endpoints and shared-prefix observations.
-4. Admit the composition and failure contract using independent controls,
-   then prepare the immutable source/protocol association. Record partial
-   completion and the first failed attempt honestly; a failed enclosure
-   is not a physical counterexample or permission to tune against a
-   reserved response.
+Repeated source-box widening is separated from physical preparation
+uncertainty by a justified nominal-reference comparison. A full-law source
+bound transfers its independently generated contrast to the original
+acquired families; neither the ideal reference nor every Cartesian corner
+is claimed to be an acquired preparation. No cubic error is added to that
+forward result and no analytic prediction narrows it.
 
-This is protocol and numerical-readiness admission. A new reserved response
-requires the resulting frozen protocol; none has been evaluated at the
-changed intervention. No laboratory source, measurement calibration or
-physical identification is admitted by the amplitude theorem.
+The [immutable source/protocol association](../nodal/SINE_CLASS_COMPARISON_PROTOCOL.md#sine-comparison-frozen-association)
+pins the numerical work policy, transported-width postcondition, two
+consistency checks, noise counts and first-outcome/export-failure handling.
+This admission generated no selected reference, nonlinear response or
+attempt record. Numerical completion and resolution remain to be evaluated.
 
 <a id="organization-probe-amplitude-feasibility"></a>
 ## Closed admission: a justified amplitude regime for discrimination

@@ -155,7 +155,9 @@ def test_comparison_adapter_requires_its_matching_protocol_and_manifest(source):
     assert report.archived_file_count == 4 and report.existing_outcome_files == ()
     export_error = STEM + ".export-error.json"
     (root / export_error).write_bytes(b'{"error":"retained export failure"}')
-    assert inspect_frozen_source(root, RECEIPT).existing_outcome_files == (export_error,)
+    assert inspect_frozen_source(root, RECEIPT).existing_outcome_files == (
+        export_error,
+    )
 
 
 def test_restore_complete_base_and_exact_supplements_without_execution(
