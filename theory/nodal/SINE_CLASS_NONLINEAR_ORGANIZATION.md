@@ -303,7 +303,7 @@ noise-overlap witness, or absence of organization dependence. In particular,
 overlap of outer intervals is not a pair of realizable complete records.
 
 <a id="sine-nonlinear-organization-boundary"></a>
-## Implementation boundary and the remaining mathematical obligation
+## Implementation boundary and the refined comparison
 
 The [conditional calculator](../../src/tnfr/physics/relational_sine_class_nonlinear_organization.py)
 uses the existing shared exact heat polynomial and fixed geometry. Its
@@ -317,22 +317,19 @@ tail, noise thresholds and method limitation. An unresolved result does
 not convert failure of a sufficient inequality into physical
 nonidentifiability.
 
-The unresolved question calls for a tighter full-law comparison at the
-same finite horizon. A candidate is the complete class-dependent
-cubic-amplitude variational response around the nominal equilibrium,
-retaining phase feedback and the quadratic reflection-odd corrections
-which return to the central observation at cubic order. The current heat
-coefficient omits these contributions into (10). Such a derivation must
-retain both event times, all hidden initialization, original-coordinate
-source errors and a rigorous remainder beyond the cubic-amplitude term.
-Amplitude parity applies to the nominal source, not arbitrary residuals.
-The present calculation evaluates neither that refined coefficient nor
-a new response.
+The separate [complete cubic-amplitude comparison](SINE_CLASS_CUBIC_RESPONSE.md#sine-cubic-finite-result)
+resolves the full-law sign at this unchanged finite design. It retains
+phase feedback and the quadratic reflection-odd corrections which return
+to the central observation at cubic order; this heat approximation includes
+those terms only in (10). The refined coefficient carries both event
+times and retains original-coordinate actual-source errors and a rigorous
+higher-amplitude remainder. Nominal parity does not restrict actual residuals.
 
-A tighter bound could establish a finite sign, or prove that this scalar
-statistic admits noise cancellation. The latter would still not imply
-overlap of the full eight-record sets. Those are separate future proof
-obligations, not results of this owner. The
+That tighter bound proves a negative true contrast and, separately, an
+allowed scalar noise-cancellation witness for each actual source pair.
+It does not imply overlap of the full eight-record sets. These are results
+of the linked refined comparison, not of the present weaker estimate,
+whose unresolved interval and error-floor proof remain valid. The
 [ontology](../EMERGENT_ONTOLOGY.md#generative-bound-organization) likewise
 keeps an inherited organization-dependent property distinct from a
 physical identification or a uniquely selected microscopic law.

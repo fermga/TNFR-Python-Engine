@@ -1352,6 +1352,60 @@ response's sign. The [contract](../../contracts/relational/SINE_PATTERNS.md#sine
 retains these distinctions. This example does not replay any frozen
 response or establish laboratory feasibility.
 
+<a id="sine-class-cubic-response"></a>
+### Separate a true organization contrast from its recording limit
+
+The [complete cubic comparison](../../../theory/nodal/SINE_CLASS_CUBIC_RESPONSE.md)
+retains phase feedback and the quadratic internal corrections absent from
+the heat-only estimate. It encloses a finite amplitude coefficient,
+then includes every higher amplitude order and arbitrary actual-source
+residuals through separate bounds. This calculation uses no nonlinear
+trajectory or acquired response:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_class_cubic_response import (
+    bound_sine_class_cubic_response,
+)
+
+cubic = bound_sine_class_cubic_response(
+    first_probe_amplitude=Q(1, 2000),
+    second_probe_amplitude=Q(1, 2000),
+    delay=Q(1),
+    total_duration=Q(2),
+    endpoint_radius=Q(1, 10**32),
+    readout_error_bound=Q(1, 10**30),
+    radius=Q(1, 12),
+    contact_work_allowance=Q(1, 10**12),
+    first_probe_work_allowance=Q(1, 500000),
+    second_probe_work_allowance=Q(1, 500000),
+)
+assert cubic.response_bound_available
+assert cubic.decision.true_bounds[1] < 0
+assert cubic.status == "true_sign_certified"
+assert cubic.decision.scalar_cancellation
+assert not cubic.decision.recorded_sign
+assert not cubic.decision.null_excluded
+assert cubic.all_work_within_allowances
+assert cubic.all_identities_certified
+```
+
+The strict true sign establishes organization dependence under the model's
+premises. At this reading-error budget, each actual source pair also admits
+some allowed errors that cancel the recorded scalar contrast. This is not
+one error choice for all states or equality of the full reading vectors.
+The [contract](../../contracts/relational/SINE_PATTERNS.md#sine-class-cubic-response)
+keeps these decisions and unsupported-domain availability separate.
+The coefficient cache is bounded and stores only immutable analytic
+results; each call re-admits primitives and rebuilds source, work and
+observation decisions.
+
+To inspect the first calculation's evidence without repeating it, use
+the [read-only archive audit](../../../TESTING.md) and
+[retained result](../../../theory/nodal/SINE_CLASS_CUBIC_RESPONSE.md#sine-cubic-finite-result).
+These conditional budgets do not establish laboratory preparation or
+sensor feasibility.
+
 <a id="sine-class-nonlinear-organization"></a>
 ### Inspect the organization-dependent nonlinear contrast
 

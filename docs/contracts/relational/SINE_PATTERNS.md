@@ -1559,6 +1559,60 @@ The [guide](../../guides/relational/SINE_PATTERNS.md#sine-class-nonlinear-protoc
 evaluates the declared response-free design. Earlier frozen outcomes and
 the short-window record-overlap theorem remain unchanged.
 
+<a id="sine-class-cubic-response"></a>
+### Complete cubic-amplitude class response and recording limits
+
+[`bound_sine_class_cubic_response`](../../../src/tnfr/physics/relational_sine_class_cubic_response.py)
+returns `SineClassCubicResponse` from the same ten mandatory primitives as
+the organization contrast. Shared admission retains signed amplitudes,
+`0<=delay<=total_duration<=2` and `0<radius<=1/12`. The class pair,
+complete law, support, clock and observation remain fixed. The
+[proof](../../../theory/nodal/SINE_CLASS_CUBIC_RESPONSE.md) retains the full
+first, second and third amplitude equations; its complex parameter is an
+analytic device for a remainder bound, not a complex physical EPI.
+
+The coefficient uses fixed time order 64 and shared dyadic128 arithmetic.
+`class_parameters` and `class_segments` retain all 54 coordinates at
+each of three amplitude levels, oriented-edge coefficients, normalized
+time series, initial norms, majorant tails and carried endpoints. Each
+class has one first-probe prefix and three suffixes. The delayed event
+changes only the first level's donor form; higher levels and every phase
+coordinate carry unchanged. This triangular polynomial calculation
+neither changes the general integrator's limits nor evaluates a full
+nonlinear response.
+
+`scaled_class_cubic_bounds` includes the factor `gamma**4` converting
+the conditioned third-level coordinates back to form. Their difference
+is enclosed by `complete_cubic_contrast_bounds`. Time truncation is
+included in those coefficient bounds. The separate
+`higher_amplitude_contrast_error_upper_bound` uses the nominal central
+parity and the Cauchy estimate with fixed `g=1/3000`; the original-coordinate
+`source_contrast_error_upper_bound` retains both actual source families.
+The shared tighter gamma enclosure is sufficient for the latter.
+
+`cauchy_admitted` requires strict bootstrap and amplitude-radius margins.
+If they fail, the full-response decision remains unavailable with explicit
+reasons. Exact zero-input or final-event pairing identities remain
+available separately, without a coefficient evaluation. Missing remainders
+are `None`, not zero. Acquisition and full-family source association
+remain external matched premises.
+
+`decision` uses the shared exact class-contrast rules. A true sign,
+a recorded sign above eight reading errors, and exclusion of a separately
+noisy zero-contrast alternative above sixteen errors are distinct.
+`decision.scalar_cancellation` certifies that every allowed true contrast
+admits some allowed error vector making the mixed recorded contrast zero;
+it asserts neither one error vector for all states nor overlap of raw
+reading vectors. This flag can coexist with `true_sign_certified` status.
+Work and identity guards remain independent. Shared SDK projection under
+`tnfr.sine-class-cubic-response.v1` preserves the retained coefficient
+evidence, exact decision bounds and unavailable fields.
+
+Only immutable class coefficients enter the bounded cache; primitive
+admission precedes it and source, observation and work decisions rebuild
+on every call. The [usage example](../../guides/relational/SINE_PATTERNS.md#sine-class-cubic-response)
+shows the separate true-sign and scalar-cancellation decisions.
+
 <a id="sine-class-nonlinear-organization"></a>
 ### Nonlinear contrast between acquired mediator organizations
 

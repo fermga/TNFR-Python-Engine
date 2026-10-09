@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from fractions import Fraction as Q
 
 from ..mathematics._rational_interval import INTERVAL_METHOD, I
+from ._sine_class_contrast import _contrast_decision
 from .relational_sine_class_mediation import _CONTACTS, _EDGES, _NODES
 from .relational_sine_class_nonlinear_protocol import (
     _HEAT_ORDER,
@@ -213,21 +214,7 @@ def bound_sine_class_nonlinear_organization(
     ideal_error, source_error = 2 * per_class_error, 8 * eps / ell
     error = ideal_error + source_error
     exact_zero = a == 0 or b == 0 or s == t
-    true_bounds = (
-        (Q(0), Q(0)) if exact_zero else (heat_bounds[0] - error, heat_bounds[1] + error)
-    )
-    recorded = true_bounds[0] - 8 * delta, true_bounds[1] + 8 * delta
-    orientation = 1 if heat_bounds[0] > 0 else -1 if heat_bounds[1] < 0 else 0
-    oriented = (
-        (true_bounds[0] if orientation > 0 else -true_bounds[1])
-        if orientation
-        else None
-    )
-    sign_margin = None if oriented is None else oriented - 8 * delta
-    null_margin = None if oriented is None else oriented - 16 * delta
-    true_sign = oriented is not None and oriented > 0
-    recorded_sign = sign_margin is not None and sign_margin > 0
-    null_excluded = null_margin is not None and null_margin > 0
+    decision = _contrast_decision(heat_bounds, error, delta, exact_zero=exact_zero)
     ledger = _probe_event_ledger(values, g, (None,) * 4)
     return SineClassNonlinearOrganization(
         **values,
@@ -249,18 +236,18 @@ def bound_sine_class_nonlinear_organization(
         source_contrast_error_upper_bound=source_error,
         total_true_contrast_error_upper_bound=error,
         readout_contrast_error_upper_bound=8 * delta,
-        true_contrast_bounds=true_bounds,
-        true_contrast_interval=I(*true_bounds),
-        recorded_contrast_bounds=recorded,
-        recorded_contrast_interval=I(*recorded),
-        predicted_orientation=orientation,
-        oriented_true_contrast_lower_bound=oriented,
-        recorded_sign_margin=sign_margin,
-        zero_contrast_comparator_separation_margin=null_margin,
-        strict_recorded_sign_noise_ceiling=oriented / 8 if true_sign else None,
-        true_contrast_sign_certified=true_sign,
-        recorded_contrast_sign_certified=recorded_sign,
-        zero_contrast_record_sets_disjoint=null_excluded,
+        true_contrast_bounds=decision.true_bounds,
+        true_contrast_interval=I(*decision.true_bounds),
+        recorded_contrast_bounds=decision.recorded_bounds,
+        recorded_contrast_interval=I(*decision.recorded_bounds),
+        predicted_orientation=decision.orientation,
+        oriented_true_contrast_lower_bound=decision.oriented_lower,
+        recorded_sign_margin=decision.recorded_sign_margin,
+        zero_contrast_comparator_separation_margin=decision.null_separation_margin,
+        strict_recorded_sign_noise_ceiling=decision.noise_ceiling,
+        true_contrast_sign_certified=decision.true_sign,
+        recorded_contrast_sign_certified=decision.recorded_sign,
+        zero_contrast_record_sets_disjoint=decision.null_excluded,
         exact_contrast_zero=exact_zero,
         contact_work_bounds=I(0, ledger.contact_work),
         contact_work_upper_bound=ledger.contact_work,
@@ -275,17 +262,5 @@ def bound_sine_class_nonlinear_organization(
         all_work_within_allowances=all(
             h.work_within_allowances for h in ledger.histories
         ),
-        status=(
-            "zero_contrast_record_sets_disjoint"
-            if null_excluded
-            else (
-                "recorded_sign_certified"
-                if recorded_sign
-                else (
-                    "true_sign_certified"
-                    if true_sign
-                    else "exact_contrast_zero" if exact_zero else "bounds_only"
-                )
-            )
-        ),
+        status=decision.status,
     )

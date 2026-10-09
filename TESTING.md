@@ -212,6 +212,41 @@ heat quadrature are coefficient controls, not complete sine trajectories.
 The tests acquire no source and replay no reserved response. SDK wiring
 uses `test_reduced_port_sdk_wiring_does_not_evaluate_research` separately.
 
+For the [complete cubic-amplitude response](theory/nodal/SINE_CLASS_CUBIC_RESPONSE.md),
+check all three full-coordinate variation levels, the gamma scalings,
+oriented-edge signs, quadratic odd-mode feedback and exact jump ancestry.
+Time-polynomial truncation and the higher-amplitude Cauchy remainder need
+independent controls. Fixed order 64 uses exponential-tail starts 65, 64
+and 63, with each endpoint enclosure carried into its suffix. This analytic
+coefficient recurrence does not change the full-flow integrator's limits.
+
+```sh
+python -m pytest tests/physics/test_sine_class_cubic_response.py tests/physics/test_sine_class_cubic_response_algebra.py tests/physics/test_sine_class_contrast.py tests/physics/test_sine_class_nonlinear_organization.py tests/physics/test_sine_class_nonlinear_organization_algebra.py -q
+```
+
+Use module fixtures for the complete finite coefficient; admission and
+decision controls reuse it or use explicitly synthetic coefficients.
+Nominal amplitude parity cannot remove arbitrary actual-source errors.
+An unavailable complex-amplitude domain must withhold the full-response
+bound, while exact event-pairing identities remain separate. A true sign
+can coexist with a certified scalar noise-cancellation witness; neither
+implies that the complete recorded vectors overlap. Preserve the original
+heat method's unresolved outcome after shared decision refactoring. These
+controls evaluate no acquired source or reserved nonlinear response.
+
+The [retained coefficient evidence](docs/assets/sine_formed_classes/class-cubic-response-v1.evidence.zip)
+has a separate read-only audit:
+
+`python -m pytest tests/physics/test_sine_class_cubic_evidence.py -q`
+
+It verifies bounded archive/source associations and re-admits the primitive
+policy and all retained intervals. Rebuild the three-level event carry,
+time-polynomial endpoints and tails, class subtraction and complete
+source/noise/work decisions. Coefficient generation remains the archived
+execution premise; the audit neither regenerates the coefficients nor
+replays a nonlinear producer. Preserve the recorded packaging failure
+before the numerical attempt and the subsequent complete source archive.
+
 For the [four-history observation producer](theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-validated-readout),
 select its full-state/event controls and the shared source-box kernel.
 Use unrelated sources: check both rows from independent edge sums,

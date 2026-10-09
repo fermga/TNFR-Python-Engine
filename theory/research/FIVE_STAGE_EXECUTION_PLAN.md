@@ -30,13 +30,16 @@ connect acquired organization to a distinguishable interaction, with
 [effective memory](#acquired-mediator-effective-memory) retaining hidden
 initialization. The [first frozen four-history evaluation](#reserved-nonlinear-four-history-response)
 now supports the prospective within-class nonlinear/tangent separation
-under its declared error budget. These are complementary results: together
-they do not yet establish that the nonlinear mixed response changes with
-the mediator's organization. The [analytic class-contrast bound](../nodal/SINE_CLASS_NONLINEAR_ORGANIZATION.md)
-isolates a signed mediator contribution but leaves the complete response
-unresolved: the independent nonlinear remainders dominate it even with
-source and reading errors removed. Refining that estimate is the
-[sole next theoretical admission](#current-g3-gate), for the
+under its declared error budget. The [complete cubic-amplitude bound](../nodal/SINE_CLASS_CUBIC_RESPONSE.md#sine-cubic-finite-result)
+now establishes that the nonlinear mixed response changes with the
+mediator's organization at the unchanged finite design. Its full-law true
+contrast is strictly negative, including actual-source uncertainty, but
+the allowed reading errors can erase this scalar contrast for every
+admitted actual source pair. This scoped obstruction does not establish
+overlap of complete reading vectors. The earlier
+[independent-remainder limitation](../nodal/SINE_CLASS_NONLINEAR_ORGANIZATION.md)
+remains valid for that weaker estimate. Admitting a more informative
+observation is the [sole next theoretical task](#current-g3-gate), for the
 [organization-dependent interaction rationale](../NODAL_RESEARCH_STRATEGY.md#organization-dependent-nonlinearity).
 
 The admitted producer, frozen protocol and first outcome are consolidated;
@@ -54,7 +57,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Unresolved theoretical admission | [Mediator organization and nonlinear interaction](#current-g3-gate): common-channel cancellation is established, but the complete contrast needs a class-sensitive nonlinear remainder before another response |
+| Pending theoretical admission | [Organization-sensitive observation](#current-g3-gate): derive symmetry, locality and full error budgets before evaluating an alternative coefficient |
+| Closed conditional analytic assessment | [Mediator organization and nonlinear interaction](#mediator-organization-nonlinear-interaction): complete cubic dynamics certify a true class contrast and a scoped scalar noise-cancellation witness |
 | Closed reserved evaluation | [First frozen four-history outcome](#reserved-nonlinear-four-history-response): full completion, independent forward enclosure, theorem consistency and strict nonlinear/tangent record-set separation |
 | Closed freeze admission | [Matched four-history evaluation freeze](#frozen-nonlinear-four-history-evaluation): immutable source/protocol/receipt association, with no response or attempt generated at freezing |
 | Closed producer admission | [Validated four-history observation producer](#validated-nonlinear-four-history-observation): full-state branches, exact events, shared-prefix cancellation and partial-failure evidence |
@@ -78,55 +82,64 @@ remain open; no empirical response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="organization-sensitive-observation"></a>
+## Next primary admission: an observation of organization-dependent interaction
+
+Determine whether a spatial receiver observation can resolve the inherited
+nonlinear class contrast under the same complete law, preparation, support,
+clock, two probes, horizon and per-reading uncertainty. The
+[central scalar obstruction](../nodal/SINE_CLASS_CUBIC_RESPONSE.md#sine-cubic-finite-result)
+justifies changing the observation; it does not justify changing the source
+or treating a previously computed response as unseen evidence.
+
+The bounded candidate is a reflection-odd difference between receiver
+nodes adjacent to its central port. Before evaluating its finite
+coefficient:
+
+1. Define the two sensor readings, their signs and the cross-class
+   four-history statistic. Prove its symmetry and event pairing on the
+   complete law; arbitrary actual-source residuals retain a separate
+   transfer bound.
+2. Derive the first class-sensitive amplitude term with full phase
+   feedback. A quadratic receiver term alone does not establish mediator
+   sensitivity: the receiver's class is unchanged and the leading heat
+   propagation is class blind. Check whether the mediator's odd internal
+   correction reaches the central contacts rather than assuming that a
+   local quadratic mode is an observable transmitted signal.
+3. Bound all omitted amplitude and finite-time terms, source uncertainty
+   and the declared observation errors. Two scalar readings per history
+   mean sixteen reading-error contributions across the two classes.
+   A directly measured spatial difference would need its own observation
+   law; it cannot silently inherit the single-node error budget.
+4. Close with an informative conditional bound or a proved limitation.
+   If a finite coefficient calculation is justified, freeze its numerical
+   policy before the first evaluation. Reuse the common event/source and
+   decision owners only where their hypotheses and error counts match.
+
+This admission selects no improved sensor accuracy, amplitude or horizon
+by search. It evaluates no new acquired source, reserved nonlinear
+response or physical dataset. A better observation remains a hypothesis,
+and the physical preparation, measurement and laboratory-clock bridge
+remain separate obligations.
+
 <a id="mediator-organization-nonlinear-interaction"></a>
-## Next primary admission: resolve the class-sensitive nonlinear remainder
+## Closed assessment: organization-dependent nonlinear response
 
-Determine whether the finite nonlinear mixed response itself depends on
-the mediator's acquired organization. Compare \(M_1-M_2\), where each
-\(M_k=R_{11}-R_{10}-R_{01}+R_{00}\) uses four histories from one actual
-class-\(k\) source. The two classes have separate actually reached families
-under a matched preparation protocol; retain the same support, complete
-law, capacities, clock, probes and observation definition.
+The [complete cubic-amplitude result](../nodal/SINE_CLASS_CUBIC_RESPONSE.md#sine-cubic-finite-result)
+retains the full tangent feedback, quadratic internal recoupling, carried
+events and a rigorous higher-amplitude remainder. Its first fixed analytic
+calculation certifies a strictly negative class-one-minus-class-two mixed
+response over the independently reached source families. This resolves
+the mathematical dependence on acquired mediator organization.
 
-The [first analytic bound](../nodal/SINE_CLASS_NONLINEAR_ORGANIZATION.md)
-retains the unchanged design and all source, work and identity premises.
-Exact cancellation removes the common outer-cycle and bridge heat channels.
-The remaining heat contribution is nonzero, but its full-law outer interval
-straddles zero. The owner's error-floor proof identifies a limitation of
-the independent-remainder estimate; it proves neither class equivalence
-nor an observational obstruction. This bounded assessment is complete;
-the organization-dependence question remains open.
-
-The next deliverable is a controlled **complete cubic-amplitude response**
-or another justified class-sensitive remainder at the same finite design:
-
-1. Retain both full class-specific tangent propagators and the quadratic
-   internal corrections feeding the central cubic response. The previous
-   heat correction discards terms that now belong in the leading retained
-   approximation. Do not treat a heat-only coefficient or the class-blind
-   joint-short-time onset as the complete amplitude coefficient.
-2. Bound the unretained nonlinear amplitude terms over both carried event
-   histories and the whole finite horizon. Use ideal reflection parity
-   only where valid; arbitrary actual source residuals still require their
-   separate transfer bound. Preserve each class's actual preparation,
-   distinct possible costs, complete coordinates, work and identity.
-3. Include both nonlinear/source errors before the observation decision.
-   Eight readings give the cross-class statistic an allowance \(8\delta\).
-   Require a strict margin beyond it for uniform recorded-sign separation.
-   Alternatively, an explicit compatible mixed-record witness may prove a
-   scoped resolution obstruction; overlap of mixed statistics need not
-   mean overlap of the full reading vectors. A separately noisy
-   zero-contrast alternative has its own eight errors as well.
-4. Keep unresolved estimates explicit. Declare any changed design
-   separately and justify it before use; no source narrowing, noise
-   reduction or horizon search is part of this gate. Fix any new numerical
-   coefficient budget prospectively. The retained class-two response is
-   prior information and cannot become unseen evidence again.
-
-No reserved nonlinear response, physical identification or new data
-campaign is part of this theoretical admission. Increasing the existing
-heat order or improving sensor/source precision alone cannot remove the
-proved floor of the current independent-remainder estimate.
+The same bound proves that permitted reading errors can cancel this
+scalar contrast for every actual source pair. This is a limitation of
+that statistic under the declared noise budget, not class equivalence
+or overlap of the complete eight-record vectors. The original source,
+work and identity premises and the earlier heat-method counterexample
+remain intact. Exact coefficient evidence, policy, first attempt and
+evaluated source are retained; no new nonlinear trajectory or physical
+response was evaluated.
 
 <a id="reserved-nonlinear-four-history-response"></a>
 <a id="next-primary-admission-execute-and-retain-the-first-frozen-outcome"></a>

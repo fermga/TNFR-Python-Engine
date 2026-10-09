@@ -175,6 +175,7 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
     from ..physics.relational_sine_aperture_readout import SineApertureReadout
     from ..physics.relational_sine_bridge_memory import SineBridgeMemoryAssessment
     from ..physics.relational_sine_budget import SineBudgetConsensus
+    from ..physics.relational_sine_class_cubic_response import SineClassCubicResponse
     from ..physics.relational_sine_class_mediation import SineClassMediation
     from ..physics.relational_sine_class_memory import (
         SineClassMediatedMemory,
@@ -400,6 +401,7 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
             SineClassMediatedMemory,
             SineClassMediatedMemoryBound,
             SineClassSuperposition,
+            SineClassCubicResponse,
             SineClassNonlinearOrganization,
             SineClassNonlinearProtocol,
             SineClassFourHistoryReadout,
