@@ -212,6 +212,17 @@ finite approximation and local identity are distinct conclusions. Neither
 the enlarged parameters nor a ninth phase moment alone inherit the original
 source guarantees or recover discarded attachment registration.
 
+The [composition-compatible classification](nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md)
+adds a distinct boundary: admitted nonsine analytic laws can match the same
+target storage, complete tangent and quadratic fields while preserving their
+own profile under both registered C9 interfaces. These requirements therefore
+do not select sine. Their harmonic information remains relevant even though
+the named interfaces act on it identically. The result concerns conditional
+organized targets; it transfers no source acquisition or contact identity to
+the new laws. Requiring the same profile under a larger interface class would
+be an additional premise. An effective NFR may instead retain more boundary
+information, internal coordinates or derived memory.
+
 Distinct internal geometries need not be distinguishable through every
 contact. The [central-contact obstruction](nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-contact-admission)
 shows that the nominal formed C9 classes can remain invisible to the same

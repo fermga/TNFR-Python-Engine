@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Classify [composition-compatible constitutive laws](theory/nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md)
+  under the two registered C9 interfaces. An explicit nonnegative analytic
+  nonsine family preserves target storage, local fields and its inherited
+  profile under the full form/clock/reciprocal map. Integrate detached exact
+  algebra without transferring source acquisition or contact certificates;
+  these composition requirements do not select a unique law.
 - Derive [constitutive inheritance through two registered organized interfaces](theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md).
   Matching contacts preserve the law after a common clock conversion; the
   three-offset contact requires derived changes to both the constitutive

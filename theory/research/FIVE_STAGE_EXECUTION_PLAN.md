@@ -107,10 +107,15 @@ now derives complete collective laws for two registered interfaces, with
 form/clock/parameter maps, full storage and actual acquired-state identity.
 One interface preserves the original coefficients; the other requires a
 larger constitutive family and does not select a unique law.
-The sole next admission is
-[composition-compatible constitutive laws](#current-g3-gate): do the same
-organized target and interface constraints select a sine current, or do
-other admitted analytic laws preserve their profile under composition?
+The [composition-compatible classification](#composition-compatible-constitutive-laws)
+now exhibits admitted nonsine analytic currents with the same organized
+target storage, tangent and quadratic fields, and the same constitutive
+profile under both interfaces. Those requirements therefore do not select
+sine. The sole next admission is
+[interface-robust profile inheritance](#current-g3-gate): determine what a
+declared orientation-sensitive interface family restricts, and whether its
+same-profile requirement is an independent premise rather than an NFR
+definition.
 The [prepared storage observer](#storage-comparison-producer-admission)
 is retained as an instrument; it has no frozen protocol or reserved response
 and is not the next campaign.
@@ -127,7 +132,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next theoretical admission | [Composition-compatible constitutive laws](#current-g3-gate): classify odd analytic currents under the two fixed interfaces and target/storage/local-dynamics constraints, separating conditional selection from surviving law freedom |
+| Next theoretical admission | [Interface-robust profile inheritance](#current-g3-gate): admit a declared orientation-sensitive weighted interface family and classify complete-law profile inheritance, separating any conditional restriction from the additional composition premise |
+| Closed theoretical classification admission | [Composition-compatible constitutive laws](#composition-compatible-constitutive-laws): Fourier restrictions, target moments and an explicit nonnegative analytic nonsine counterfamily preserve the profile under both registered C9 interfaces |
 | Closed theoretical inheritance admission | [Constitutive inheritance through organized composition](#organized-constitutive-inheritance): exact collective laws with joint form/clock/parameter maps, own-law acquired-state identity, contact work and finite residual bounds |
 | Closed theoretical observation admission | [Calibrated constitutive observation](#calibrated-constitutive-observation): common scalar sensor conditions preserve finite mixed separation; a nonlinear sensor can remove opposite signs without collapsing complete records |
 | Closed theoretical discrimination admission | [Carried-state constitutive discrimination](#carried-state-constitutive-discrimination): opposite finite recorded mixed responses under the two existing endpoint laws, with original acquired sources, own-law recovery, attachment work and full response errors retained |
@@ -178,7 +184,7 @@ remain open; no empirical response has passed complete physical admission.
 
 <a id="current-g3-gate"></a>
 <a id="foundational-organized-pattern-admission"></a>
-<a id="composition-compatible-constitutive-laws"></a>
+<a id="interface-robust-profile-inheritance"></a>
 ## Primary plan: foundations tested by organized patterns
 
 Investigate which premises are sufficient, necessary within a declared class,
@@ -198,54 +204,57 @@ to its actual state, scale and execution path before treating a matched
 geometric or response property as sufficient. Retain the distinction between
 defining requirements, supplied hypotheses and derived restrictions.
 
-The next question is: **does retaining organized targets and the same
-constitutive profile under their prescribed composition restrict the law
-to sine, or leave further analytic freedom?** The
-[completed inheritance comparison](#organized-constitutive-inheritance)
-answers how its chosen potential family transforms. It does not classify
-every law compatible with those organizations. Changing the constitutive
-class is the new question; another trajectory or sharper residual is not.
+The next question is: **which laws retain their constitutive profile across
+a declared orientation-sensitive interface family, and what independently
+justifies requiring that invariance?** The
+[completed classification](#composition-compatible-constitutive-laws)
+leaves nonsine freedom under the two symmetric registered controls.
+Another trajectory or sharper residual cannot decide this new composition
+premise.
 
-Retain exactly the two existing unit interfaces, winding-one registration,
-held capacities, positive loss and complete reciprocal form/phase rows.
-Let `alpha=2*pi/9` and test a declared odd real-analytic, `2*pi`-periodic
-current `j=V'`. Admit an even periodic potential with `V(0)=0` and `V>=0`
-independently; current symmetry alone does not prove these storage properties.
-State convergence/regularity hypotheses before using a Fourier expansion.
-No new support, topology search or event selector is introduced.
+Keep the registered winding-one C9 geometry, held positive capacities,
+positive loss and the odd analytic current with its independently admitted
+even nonnegative potential. Prospectively examine cyclic contacts on offsets
+`{0,1}` with relative weights `1-s,s`, for a declared open interval inside
+`0<s<1`. Specify the weighted fine law, normalization, total contact strength
+and undirected reverse contacts before deriving its collective action. This
+is a new weighted-law extension of the unit comparison, not the native
+engine's phase-neighbor semantics or a transferred acquired-source theorem.
+Check whether the fixed internal geometry remains an invariant family for
+the complete weighted rows.
 
-Derive the action of the actual matching and three-offset interfaces on
-the current. Use the already admitted form chart and collective clock to
-define precisely what it means for a constitutive profile to be preserved.
-Transform both rows, reciprocal coefficient, storage and observations;
-holding that coefficient fixed would change the equivalence question.
-Separate a changed constitutive profile from a geometric rate or unit change.
+The proposed interface probes
+`J_s(delta)=(1-s)*j(delta)+s*j(delta+alpha)`, with `alpha=2*pi/9`.
+Derive this expression from the actual fine law. Declare the allowed common
+clock, positive form chart, reciprocal-coefficient map and contact-dependent
+phase-origin shift before testing profile inheritance. Transform both rows,
+storage, loss, inputs and observations. A phase-origin shift must retain its
+relation to the marked constituent ports; it cannot silently discard
+registration or supply a fitted observation.
 
-Within the resulting class, impose the organized target storage and complete
-tangent/quadratic matching conditions at the consumed target gaps, including
-zero and both C9 winding gaps. Determine necessary restrictions and whether
-they are jointly sufficient. A surviving law must have an explicit potential,
-domain, normalization and independently checked bounds. A candidate finite
-Fourier perturbation may supply a counterexample, but it remains an ansatz
-until all these requirements have been proved. Do not choose a preferred law
-from its algebraic simplicity or the desired outcome.
+Classify the currents whose complete inherited laws satisfy that requirement
+throughout the declared interface interval. Test the existing admitted
+nonsine counterfamily explicitly. If its profile changes, derive which
+boundary coefficients or additional retained information represent the
+actual collective law. Failure of an unchanged-profile description does not
+by itself invalidate a law or the existence of the organized pattern.
 
-This is distinct from the existing
-[first-resultant sufficiency theorem](../nodal/SINE_CONSTITUTIVE_INFORMATION.md#first-phase-moment-sufficiency):
-do not assume that only the first phase moment is available. The present
-restriction concerns information preserved by the two named organized
-interfaces. Requiring the same property for other cycle sizes or every
-possible composition would be an additional hypothesis, not a consequence.
+Use the [NFR ontology](../EMERGENT_ONTOLOGY.md#12-can-nfr-properties-justify-a-joint-law)
+to distinguish necessary inherited dynamics from a stronger imposed
+same-profile condition. The ontology permits retained internal/boundary
+state, justified memory and controlled approximation; nesting alone does
+not require a universal scalar macro-node. Do not assume the existing
+[first-resultant sufficiency premise](../nodal/SINE_CONSTITUTIVE_INFORMATION.md#first-phase-moment-sufficiency),
+or choose an interface class solely because it favors a desired law.
 
-Close with a conditional classification/selection theorem, an explicit
-admitted nonsine counterfamily, or a precise unresolved compatibility
-condition. Organized targets are conditional test cases. Matching their
-storage and local dynamics does not transfer the original source acquisition,
-nonlinear recovery or full-state contact certificates to a new law. Prove
-those again before making any acquired-object claim outside the original
-model. No trajectory, source producer, physical dataset or protocol freeze
-is active. Neither same-profile inheritance nor its failure determines
-autonomous support occurrence or a universal hierarchy.
+Close with a conditional classification, surviving counterfamily or precise
+obstruction, and separately classify the new composition requirement as
+derived, independently supplied or unsupported. No sine-selection result
+under this prospective weighted family is yet claimed. Source acquisition,
+nonlinear recovery, contact identity and event occurrence remain separate
+admissions. No trajectory, source producer, physical dataset, topology search
+or protocol freeze is active; these fixed mathematical controls do not
+establish autonomous support occurrence or a universal hierarchy.
 
 1. **Declare the object and the claim.** Specify sufficient form/phase state,
    identity, source class, clock, support, capacity, boundaries and observation.
@@ -291,7 +300,7 @@ The dependency order for subsequent work is:
 | Complete foundations | State and law choices are explicit; independent selection arguments and surviving countermodels are retained |
 | Formation and identity | Entry from the declared source, stability/maintenance and preparation costs; autonomous preparation and scale/support selection are separately identified |
 | Composite organization | Dynamical attachment/interaction, retained constituent identity and a declared separation/work criterion; negative rectangular storage excess alone is not binding |
-| Inheritance across scales | The completed interface comparison and current law-classification gate concern one declared grouping. A hierarchy needs compatible repeated composition, justified parameter and clock maps, and identity/source control at every claimed level. Retain necessary hidden state, memory and event contracts through the existing [scale](../TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) and [collective closure](../nodal/DERIVED_FORM_PHASE.md#collective-interaction-closure-and-relational-state) owners. Matching a tangent or re-encoding the full state alone does not establish inheritance |
+| Inheritance across scales | The completed interface comparison and profile classification concern one declared grouping; the next gate tests an additional interface-robustness premise. A hierarchy needs compatible repeated composition, justified parameter and clock maps, and identity/source control at every claimed level. Retain necessary hidden state, memory and event contracts through the existing [scale](../TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) and [collective closure](../nodal/DERIVED_FORM_PHASE.md#collective-interaction-closure-and-relational-state) owners. Matching a tangent or re-encoding the full state alone does not establish inheritance |
 | Physical interpretation | Derive geometric/measurement transformations and quantitative observables with units, independent preparation and alternatives before identifying a fundamental constituent |
 
 For each subsequent law or hypothesis, record its status, independent
@@ -307,6 +316,33 @@ The physical objective guides which mathematical property matters. Laboratory
 examples supply possible controls and discriminators; they do not replace
 the generative objective with imitation of a convenient apparatus. Substrate
 origin, universal laws and recurrence across scales remain open hypotheses.
+
+<a id="composition-compatible-constitutive-laws"></a>
+## Closed theoretical admission: composition-compatible constitutive laws
+
+The [classification and counterfamily](../nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md)
+retain the two existing unit interfaces and registered C9 geometry. For odd
+analytic currents, same-profile inheritance restricts Fourier support to
+`n=+1 or -1 modulo 9`. Three target moments characterize the required
+storage, complete tangent and quadratic-field matching. A fourth moment
+additionally matches individual edge currents; symmetric target equilibrium
+does not require that stronger condition. Nonnegativity of the normalized
+periodic potential is an additional admission, not a consequence of those
+linear conditions.
+
+The explicit potential
+`V_epsilon(delta)=1-cos(delta)+epsilon*cos(delta)*(1-cos(9*delta))^2`
+is admitted for `|epsilon|<=1/324`. Its nonsine members satisfy all of these
+conditions. The same epsilon survives both interfaces after the full form,
+clock and reciprocal-coefficient map, with complete storage and observations
+retained. Thus these target and composition requirements do not select sine.
+
+This is an exact conditional classification and static complete-law result.
+Matching organized equilibria and local fields does not transfer the original
+source acquisition, recovery or contact certificates. The
+[next gate](#interface-robust-profile-inheritance) tests a new interface class
+and the status of its stronger profile requirement; it does not retroactively
+add that premise to this result.
 
 <a id="organized-constitutive-inheritance"></a>
 ## Closed theoretical admission: constitutive inheritance through organized composition
@@ -334,9 +370,9 @@ the whole invariant family is not claimed.
 This closes the two prescribed interface controls without a trajectory or
 new source acquisition. Positive attachment work still needs supplied work;
 no occurrence or reservoir is derived. Effective parameters outside the
-original model do not inherit its source or identity guarantees. The
-[next gate](#composition-compatible-constitutive-laws) asks which broader
-constitutive laws satisfy the same named composition and target constraints.
+original model do not inherit its source or identity guarantees. The separate
+[classification](#composition-compatible-constitutive-laws) establishes
+broader nonsine freedom under the same named composition and target constraints.
 
 <a id="calibrated-constitutive-observation"></a>
 ## Closed theoretical admission: calibration of a common scalar observation

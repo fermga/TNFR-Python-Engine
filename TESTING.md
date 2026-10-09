@@ -187,6 +187,20 @@ registration in ninth-moment-only observations and unavailable source/budget
 premises. Algebraic parameter extension does not transfer formation, and
 invariance of the organized family does not prove its generic attraction.
 
+For [composition-compatible constitutive laws](theory/nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md),
+select `tests/physics/test_composition_compatible_constitutive.py` together
+with `tests/physics/test_sine_constitutive_inheritance_algebra.py`. Check
+harmonic support and target moments independently, including controls that
+satisfy those linear restrictions but fail potential nonnegativity. Derive
+the counterfamily's potential/current relation and target derivatives from
+its explicit formula. Reconstruct the two full fine supports and compare
+both collective rows, storage, loss and the complete chart/clock/reciprocal
+map; epsilon must remain unchanged. Exercise exact signed parameter endpoints,
+invalid domains and signed form/phasor admission. These detached controls
+establish static algebra, not acquisition, recovery, contact identity or
+autonomous composition. Do not rerun frozen producers or borrow their
+source certificates for the new law.
+
 For [preparation information and acquired modes](theory/nodal/SINE_PREPARATION_MODE_SELECTION.md),
 select `tests/physics/test_sine_preparation_mode_selection.py` with the shared
 preparation and isolated-class controls above. Reconstruct the Laplacian energy

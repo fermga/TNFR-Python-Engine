@@ -322,6 +322,12 @@ The fixed point \(\lambda=0\) of this particular parameter map does not
 select sine: the supplied matching interface preserves every \(\lambda\),
 and the larger family accommodates the three-offset map.
 
+Even imposing an unchanged constitutive profile under both interfaces does
+not select sine. The [analytic classification and counterfamily](COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md)
+retain the same target storage and local derivatives while preserving a
+different nonlinear profile. Its new laws have their own admission scope;
+the acquired-state certificates below remain specific to (2).
+
 <a id="organized-inheritance-input-observation"></a>
 ## Inputs, observations and event boundaries
 
