@@ -149,6 +149,15 @@ The pairing retains all coordinates and uncertainty; independent errors would
 not preserve the equality. Its larger algebraic preparation and storage cost
 are explicit premises, not an autonomous selector or a probability of modes.
 
+Along an exactly observation-preserving
+[continuous preparation path](nodal/SINE_PREPARATION_PATH_SELECTION.md),
+full-family bounds distinguish acute-cell capture from transient winding.
+One admitted interval has winding two at the declared observation time but
+storage below every critical state in the closure of that winding region;
+the same unforced trajectories must later leave it. This is a derived
+phase-passage consequence, not a scheduled hybrid event. It supplies neither
+the final mode nor a slip time, and does not identify the whole basin boundary.
+
 Distinct internal geometries need not be distinguishable through every
 contact. The [central-contact obstruction](nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-contact-admission)
 shows that the nominal formed C9 classes can remain invisible to the same

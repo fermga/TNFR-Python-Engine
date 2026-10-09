@@ -299,6 +299,11 @@ must re-admit the reached states, hidden initialization, support, clock
 and errors. Equal initial storage does not imply equal instantaneous
 loss, accumulated loss, or complete histories.
 
+The [continuous source-path comparison](SINE_PREPARATION_PATH_SELECTION.md)
+retains these distinctions when interpolating the fine preparation. Its
+endpoint residual map is newly admitted, and a transient winding label
+does not replace the complete-state capture premise.
+
 ## Implementation and independent controls
 
 The private

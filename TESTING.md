@@ -155,6 +155,17 @@ Check complete-family transit and capture against an independent calculation,
 including strict-budget and unavailable cases. This source pairing is not a
 symmetry of the dynamics and does not transfer a later interaction certificate.
 
+For [source-path capture and phase passage](theory/nodal/SINE_PREPARATION_PATH_SELECTION.md),
+also select `tests/physics/test_sine_preparation_path_selection.py` and
+`tests/physics/test_relational_sine_sector_capture.py`. Check the exact
+Cayley isometry independently, including its changed endpoint residual map.
+Admit parameter intervals before materialization, retain uniform source
+transport and correlated ramp-potential extrema, and compare the shared
+all-face boundary bounds with the independent C9 formula. Distinguish
+acute-cell capture from the old small-ball certificate. The critical-energy
+obstruction proves later exclusion of winding two without a final-mode or
+crossing-time prediction; unresolved bounds must not become nonformation.
+
 For [class-mediated collective response](theory/nodal/SINE_CLASS_MEDIATED_RESPONSE.md),
 select both the primitive/report controls and independent full-support
 algebra. Rebuild the 27-node support, its `(3,4,3)` central degrees, common

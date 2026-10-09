@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Derive [capture and forced phase passage along a preparation path](theory/nodal/SINE_PREPARATION_PATH_SELECTION.md)
+  with exactly fixed initial phase, means and storage. Uniform source bounds
+  certify two acute-cell capture corridors and an intermediate winding-two
+  corridor whose storage forces a later exit. Preserve unresolved parameters,
+  final modes and crossing times without replaying trajectories.
 - Prove [preparation-dependent mode selection](theory/nodal/SINE_PREPARATION_MODE_SELECTION.md)
   under one fixed C9 law: exactly matched initial phases, means and storage
   can lead to distinct acquired winding identities. Retain correlated source
