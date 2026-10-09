@@ -17,9 +17,9 @@ P1-P5 below governs physical evaluation; it is not another active queue.
 
 **Primary question:** can organized TNFR patterns generate observable
 collective properties that explain phenomena of fundamental physics?
-The next bounded question is whether interventions on two distinct neighboring
-organizations produce an observable response that cannot be represented as a
-sum of their separately matched one-neighbor response functionals.
+The next bounded question is whether an independent complete-law calculation
+confirms the newly derived nonadditive response to two distinct neighboring
+interventions, under one fixed prospective protocol.
 The route is **justified nodal dynamics -> collective organization
 -> inherited interaction properties -> independent physical observation**. The
 [ontology](../EMERGENT_ONTOLOGY.md#generative-bound-organization) distinguishes
@@ -66,9 +66,13 @@ references are transported to the original acquired families.
 now admits both endogenous boundary channels, a well-posed exact composition
 and conditional substitution bounds. An explicit component cubic hierarchy
 retains hidden initialization and preserves the named memory distinction
-without another response calculation. The next obligation is
-[mixed-neighbor response admission](#current-g3-gate): derive a collective
-interaction property beyond the sum of separately matched interventions.
+without another response calculation. The
+[distinct-neighbor theorem](../nodal/SINE_CLASS_NEIGHBOR_NONADDITIVITY.md)
+now derives a finite mediator response that the sum of separately matched
+one-neighbor response functionals cannot reproduce. Static edge bounds use the
+observation budget of the earlier nonlinear studies and account for hidden
+quadratic feedback and the common source. The next obligation is
+[independent evaluation admission](#current-g3-gate), before any new response.
 
 Supplied preparation, support, law, events and structural clock remain
 premises. In particular, the very small source/readout allowances and long
@@ -82,7 +86,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Pending theoretical admission | [Mixed-neighbor response](#current-g3-gate): derive a causal interaction between distinct neighbor interventions that a sum of separately matched response functionals cannot reproduce, or establish a scoped obstruction |
+| Pending producer and protocol admission | [Independent distinct-neighbor evaluation](#current-g3-gate): shared complete-state execution for distinct input ports and mediator observation, explicit source transfer and one immutable prospective protocol |
+| Closed theoretical admission | [Mixed-neighbor response](#mixed-neighbor-response-admission): a finite nonadditive mediator response separates matched additive functionals at the earlier nonlinear observation budget, with complete memory, source, work and identity retained |
 | Closed theoretical admission | [Causal interface composition](#causal-interface-composition): exact two-channel feedback, output-map and full-lift substitution contracts, and an explicit cubic residual preserving the named memory distinction |
 | Closed reserved evaluation | [Changed-input full-law response](#reserved-changed-input-full-law-response): both full54 histories complete, fixed source/width/consistency criteria pass, and the separately noisy grounded comparator is excluded |
 | Closed producer and freeze admission | [Changed-input full-law comparison](#changed-input-full-law-comparison): shared full54 producer, absolute source conversion, separate source transport and immutable runtime/protocol association; no response evaluated at freezing |
@@ -117,42 +122,66 @@ remain open; no empirical response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="independent-neighbor-evaluation-admission"></a>
+## Next primary admission: independent distinct-neighbor evaluation
+
+Admit one independent full-law check of the
+[new mixed-neighbor prediction](../nodal/SINE_CLASS_NEIGHBOR_NONADDITIVITY.md).
+Use class tuple `(1,2,1)`, the original acquired-family association and the
+same complete law, support, capacities, lifts and structural clock. The four
+histories have present/absent simultaneous donor and receiver form impulses
+`a=b=7/10000`; read mediator form at `T=1/8`, with the earlier nonlinear
+per-reading error `1e-30`. This tests a new intervention and comparator,
+not greater precision on an already evaluated response.
+
+1. Extend the shared full-state observation execution owner to admit distinct
+   event ports and the mediator selector. Preserve ordered support, all 54
+   coordinates, exact simultaneous jumps and complete state carry. Reuse the
+   shared validated integrator and evidence reconstruction; do not create a
+   parallel dynamics driver or fit the field to the inspected prediction.
+2. Declare the one common complete source used by all four histories and the
+   exact nominal reference conversion. Derive actual-family mixed-source
+   transport separately from the numerical forward enclosure. Common linear
+   initialization cancels only with a justified shared source and law; the
+   remaining nonlinear source allowance cannot be replaced by nominal parity.
+3. Freeze the event word, readout, observation convention, numerical width
+   ceiling, horizon, order, step budget, backend and first-failure behavior
+   before computing any selected response. Preserve signed mixed intervals
+   without intersecting them with the prediction. Retain the four-reading
+   uncertainty and the separately noisy additive comparator independently.
+4. Require complete numerical evidence, prediction consistency and strict
+   recorded separation as distinct decisions. Check producer admission,
+   invalid inputs, unchanged source carry, partial failure and report wiring
+   without running the selected experiment. Pin source and protocol only
+   after the implementation is concrete and validated.
+
+This admission gate closes before the selected response is evaluated. The
+frozen comparison is the subsequent bounded evaluation; it cannot select its
+budget or alter the theoretical claim. This remains a conditional structural
+prediction, without a laboratory observation bridge or a universal force law.
+
 <a id="mixed-neighbor-response-admission"></a>
-## Next primary admission: mixed response to distinct neighboring organizations
+<a id="next-primary-admission-mixed-response-to-distinct-neighboring-organizations"></a>
+## Closed admission: mixed response to distinct neighboring organizations
 
-Use the same three-C9 support, original acquired families, joined degrees,
-complete nodal law, capacities, structural clock and continuous lifts as the
-[component composition](../nodal/SINE_CLASS_INTERFACE_COMPOSITION.md).
-The question is whether the mediator's causal response to independently
-specified donor and receiver interventions has a nonzero mixed contribution.
-This would identify a collective interaction that two separately matched
-one-neighbor response functionals cannot reproduce by addition.
+The [result owner](../nodal/SINE_CLASS_NEIGHBOR_NONADDITIVITY.md) derives the
+mixed causal hierarchy, its first symmetry-allowed onset and a finite signed
+mediator response for equal positive simultaneous end-port interventions.
+All four histories retain the same support and complete acquired source.
+The comparator consists of the baseline plus the two baseline-subtracted,
+separately matched one-neighbor responses. Its mixed statistic is zero.
 
-1. Define independent external form-intervention histories at the donor and
-   receiver central nodes, a common full-state preparation and an observation.
-   Retain all three components and their memory in every branch. Distinguish
-   interventions from the endogenous port histories, which change under
-   feedback; do not treat them as independently clamped boundary values.
-2. Define the four-history mixed difference at fixed preparation and complete
-   law. The comparator is the baseline plus the two separately matched,
-   baseline-subtracted one-neighbor responses, with no shared hidden-state update
-   between them. It is not the class of all pairwise dynamical laws: the
-   microscopic sine law itself has pairwise edges.
-3. Derive the leading mixed causal operator, including symmetry cancellations,
-   hidden quadratic recoupling and bridge terms. Show that it is nonzero for
-   distinct neighbor interventions, or prove its vanishing or an observation
-   obstruction on the declared domain. A same-port two-probe result or a
-   stationary environmental potential does not discharge this requirement.
-4. Establish a finite observation/error criterion with source, approximation,
-   numerical and separate recording budgets. Retain each branch's means,
-   event work and complete-state identity under their own hypotheses. A
-   nonzero formal coefficient alone does not prove finite distinguishability.
+Static bounds on all incident-edge currents and heat transport establish
+separation at the earlier nonlinear observation budget. The proof charges
+hidden quadratic recoupling, full phase feedback, amplitude tails and nonlinear initialization;
+only the exact common linear source cancels. Simultaneous signed event work,
+weighted means and whole-state identity retain their own certificates.
+No selected time coefficient, trajectory or reserved response was evaluated.
 
-This is an analytic admission gate. Derive the discriminator before selecting
-any response evaluation; no finer repeat of an existing word closes it.
-The law and support remain supplied, and nonadditivity would not by itself
-identify a physical force, a fundamental constituent or universality across
-scales. A negative result closes the stated question with its scope.
+The nonadditivity is a collective response under a supplied pairwise law. It
+does not exclude pairwise microscopic dynamics, establish a finite cross-class
+contrast or identify a physical force. Nominal symmetry can erase the response
+for other interventions, and the finite sign theorem keeps its stated domain.
 
 <a id="causal-interface-composition"></a>
 <a id="next-primary-admission-causal-composition-through-existing-boundary-currents"></a>
