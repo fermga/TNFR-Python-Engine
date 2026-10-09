@@ -17,8 +17,8 @@ P1-P5 below governs physical evaluation; it is not another active queue.
 
 **Primary question:** can organized TNFR patterns generate observable
 collective properties that explain phenomena of fundamental physics?
-The next bounded question is whether the acquired organization-dependent
-interaction survives repeated use under the same complete nodal law.
+The next bounded question is which collective interface can retain the
+acquired organization-dependent nonlinear interaction and its memory.
 The route is **justified nodal dynamics -> collective organization
 -> inherited interaction properties -> independent physical observation**. The
 [ontology](../EMERGENT_ONTOLOGY.md#generative-bound-organization) distinguishes
@@ -43,11 +43,15 @@ preserves the original acquired families. Earlier
 noise-cancellation results retain their unchanged intervention and reading
 budgets; the successful scaled design does not erase those obstructions.
 
-The next obligation is [carried repeatability on the joined network](#current-g3-gate):
-determine whether this interaction property survives repeated use with its
-full residual state, mean shifts and work accounted for. A new common source
-cannot be assumed after each word. This is a theoretical return-family
-admission, not another reserved response or a physical-data campaign.
+The [joined return theorem](../nodal/SINE_CLASS_REPEATED_INTERACTION.md)
+extends the interaction to repeated supplied words with distinct carried
+residuals, exact mean accounting, per-event work and an independently
+maintained tangent comparator. Its very conservative common dwell proves
+conditional reuse, not practical repetition speed or a new formation image.
+The next obligation is [nonlinear collective-interface admission](#current-g3-gate):
+retain the interaction and hidden memory when describing the organized
+regions through their ports. This activates no new response or physical-data
+campaign.
 
 Supplied preparation, support, law, events and structural clock remain
 premises. In particular, the very small source/readout allowances and long
@@ -61,7 +65,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Pending theoretical admission | [Repeated joined interaction](#current-g3-gate): admit a common finite return family with carried branch memory, conserved-mean shifts, work and comparator error |
+| Pending theoretical admission | [Nonlinear collective interface](#current-g3-gate): derive a causal port description retaining internal organization, hidden source and nonlinear feedback under a declared input family |
+| Closed theoretical admission | [Repeated joined interaction](#joined-class-interaction-return-admission): common finite return with distinct carried residuals, exact mean shifts, event work and a persistent tangent comparator's own memory allowance |
 | Closed reserved evaluation | [First independent class comparison](#reserved-scaled-cross-class-comparison): complete frozen full-law evaluation, both consistency checks, source-inclusive width and strict noisy-null separation |
 | Closed protocol and freeze admission | [Scaled cross-class evaluation](#scaled-cross-class-evaluation-admission): one fixed intervention, shared full-state producer, original acquired-family transfer and immutable source/protocol association; no response evaluated at freezing |
 | Closed theoretical admission | [Probe-amplitude feasibility](#organization-probe-amplitude-feasibility): a whole common-scale interval separates central records from a noisy zero-contrast alternative within the original work and identity budgets |
@@ -90,37 +95,62 @@ remain open; no empirical response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="nonlinear-collective-interface-admission"></a>
+## Next primary admission: a causal nonlinear collective interface
+
+Determine whether the organized regions can be described through a smaller
+causal interface while retaining the [repeated nonlinear class interaction](../nodal/SINE_CLASS_REPEATED_INTERACTION.md).
+Use the unchanged three-C9 support, complete law, clock and carried source
+families. A class label or a static response coefficient is not sufficient
+future state; the existing tangent memory kernel does not close the nonlinear
+law.
+
+1. Declare the retained port coordinates, common origins, class information,
+   admissible input histories and hidden initialization. The input family must
+   include the admitted two-event word; do not silently replace its hybrid
+   jumps with finite-duration forcing or assume that every input retains identity.
+2. Derive a causal nonlinear port representation with explicit source memory
+   and internal feedback. If truncated by amplitude, retain the quadratic
+   internal modes that feed the cubic central response and bound the discarded
+   terms under the actual complete law. An exact full-state re-encoding alone
+   does not establish a useful reduction.
+3. Check whether that representation preserves the known nonadditive class
+   contrast, its carried-source and reading budgets, and the boundary work
+   balance. Give a quantitative sufficient approximation domain or a precise
+   obstruction; no new response may be fitted to obtain the interface.
+4. State the information a later connection of such regions would consume.
+   A port description on fixed support neither admits a new contact nor proves
+   a same-form nodal law at the collective scale.
+
+This gate admits a representation or identifies its missing state. It opens
+no source acquisition, coefficient search, new joined-support experiment,
+reserved response or physical-data evaluation. The retained one-word evidence
+remains available for read-only consistency and error accounting.
+
 <a id="joined-class-interaction-return-admission"></a>
-## Next primary admission: carried return for repeated joined interaction
+<a id="next-primary-admission-carried-return-for-repeated-joined-interaction"></a>
+## Closed admission: carried return for repeated joined interaction
 
-Determine whether the [finite class-dependent interaction](../nodal/SINE_CLASS_COMPARISON_PROTOCOL.md#sine-comparison-reserved-result)
-can become a reusable property under repeated supplied probe words on the
-same joined support and complete law. Retain all eight branch states across
-words; the four histories within a class no longer start from one shared
-complete source after their first different interventions.
+The [result owner](../nodal/SINE_CLASS_REPEATED_INTERACTION.md) proves a common
+finite relaxation into a new degree-metric return family on the actual joined
+support. The first word uses its original acquired-source certificate; later
+words retain all eight distinct full states and their accumulated means.
+Euclidean capture geometry and degree-weighted conserved-mean coordinates
+remain separate, and exact rational decay avoids an interval-grid floor.
 
-1. Define the full carried state, degree-weighted form and phase means,
-   relative coordinates and observation for every branch. Establish the
-   exact mean increments and their cancellation in the mixed statistic;
-   retain absolute means rather than silently resetting or discarding them.
-2. Prove a common finite dwell returning all relative branch states to a
-   declared neighborhood uniformly in the repetition count, or identify a
-   precise obstruction. Reuse the [isolated-class maintenance method](../nodal/SINE_FORMED_CLASS_MAINTENANCE.md#sine-formed-class-maintenance)
-   only after deriving the joined support's own constants and hypotheses.
-   A forward return family is not automatically the original formation image.
-3. Bound the next word's response from these distinct carried residuals.
-   Retain the named comparator's own residual and memory allowance; its
-   mixed statistic cannot be set to zero merely by reusing the first word's
-   shared-source argument. Check the remaining strict reading-error margin.
-4. Account for actual preevent work, identity and each intervening flow under
-   the same law. A return proof supplies neither an autonomous event selector
-   nor a reservoir. Close on a conditional return/separation result, a scoped
-   obstruction or the precise missing premise before admitting new execution.
+The same supplied word retains identity and the original per-event work
+ceilings in that family. A persistent tangent alternative has its own global
+quadratic return and independent residual allowance. Both models' compatible
+means cancel in the mixed observation; quotient recovery alone would not
+justify that cancellation. The retained nominal reference, transported with
+both residual allowances and independent reading errors, gives strict
+separation uniformly in the repetition count.
 
-This gate transfers a method, not the old isolated cycle's coefficients or
-verdicts. It activates no reset, new acquisition, numerical parameter search
-or further reserved response. Physical identification and inheritance across
-scales remain separate obligations.
+This conditional theorem evaluates no new trajectory and changes no frozen
+source or response. It proves neither a repeated common source, autonomous
+event selection, finite cumulative work, practical timing nor physical
+identification. It transfers the isolated maintenance method with newly
+proved joined constants, not the isolated model's verdict.
 
 <a id="reserved-scaled-cross-class-comparison"></a>
 <a id="next-primary-evaluation-retain-the-first-independent-class-comparison"></a>

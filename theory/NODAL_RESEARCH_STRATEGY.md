@@ -175,10 +175,13 @@ questions. A linear response may already distinguish two organizations;
 a nonlinear interaction in one organization need not distinguish it from
 another. To connect these claims, compare the same four-history mixed
 observable across actually acquired classes under one complete law.
-Pair histories at the same full source within each class, while retaining
-independent preparation uncertainty and possibly unequal costs between
-classes. Additive cancellation must not erase hidden initialization or
-nonlinear source sensitivity.
+For an initial matched-source comparison, pair histories at the same full
+source within each class, while retaining independent preparation uncertainty
+and possibly unequal costs between classes. Repeated interventions instead
+carry distinct branch residuals: the [joined return theorem](nodal/SINE_CLASS_REPEATED_INTERACTION.md)
+requires a new return family and exact mean accounting, including the
+alternative model's own memory. Additive cancellation must not erase hidden
+initialization or nonlinear source sensitivity.
 
 This comparison tests whether internal organization controls an interaction
 property beyond additive response. Interface symmetry can hide that property;

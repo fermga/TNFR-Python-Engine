@@ -246,6 +246,25 @@ source transfer and all observation criteria. Retained derivatives and Picard
 generation remain execution premises. This gate must not rerun the producer,
 regenerate a coefficient or replace missing response evidence.
 
+For [repeated joined interaction](theory/nodal/SINE_CLASS_REPEATED_INTERACTION.md),
+check the full joined degree metric, its exact spectral bounds, the distinction
+between Euclidean and degree-weighted common-origin projections, and the
+preserved means of all eight branches. Rebuild recurrent work and storage from
+the new relative source family; it is not the original formation image.
+Test exact return bounds below the interval grid and the independent tangent
+residual allowance, including the common-mean counterexample and strict noise
+boundary. Reuse the comparison audit's module fixture to associate the nominal
+interval only after reconstructing its retained full response.
+
+```sh
+python -m pytest tests/physics/test_sine_class_repeated_interaction.py tests/physics/test_sine_lyapunov.py tests/physics/test_sine_class_comparison_evidence.py -q
+```
+
+These are conditional arithmetic and read-only evidence checks. They neither
+simulate the repeated schedule nor replay acquisition or a frozen producer.
+The quadratic tangent return and the nonlinear acute trapping proof retain
+different premises despite sharing the modified-energy kernel.
+
 For [common-scale amplitude feasibility](theory/nodal/SINE_CLASS_AMPLITUDE_FEASIBILITY.md),
 check whole-interval coefficient homogeneity and higher-amplitude bounds,
 the complex-domain boundary, the fixed source/noise allowances and the

@@ -704,3 +704,28 @@ def test_retained_first_outcome_has_the_reconstructed_negative_bands(
         assert saved["decision"]["recorded_sign"] is True
         assert saved["decision"]["null_excluded"] is True
         assert saved["decision"]["scalar_cancellation"] is False
+
+
+def test_repeated_interaction_uses_the_reconstructed_nominal_premise(reconstructed):
+    """Transfer fresh per-word residuals only after rebuilding retained evidence."""
+    from tnfr.physics._sine_class_repeated_interaction import (
+        _bound_repeated_interaction,
+    )
+
+    primary, _, children = reconstructed
+    assert all(child.complete for child in children)
+    report = _bound_repeated_interaction(
+        nominal_contrast_lower=primary.lo,
+        nominal_contrast_upper=primary.hi,
+    )
+    # Two separately carried model families, each with eight coordinate errors,
+    # plus eight independent readings for each model. No source is reset.
+    residual = 8 * Q(1, 10**32) / (1 - Q(4, 3000))
+    noise = Q(16, 10**30)
+    expected_gap = -primary.hi - 2 * residual - noise
+    assert report.nominal_contrast_bounds == (primary.lo, primary.hi)
+    assert report.nonlinear_source_error_upper_bound == residual
+    assert report.tangent_source_error_upper_bound == residual
+    assert report.separation_margin == expected_gap > Q(3085468428957, 10**42)
+    assert report.recorded_contrast_bounds[1] < report.recorded_tangent_bounds[0]
+    assert report.conditional_repeatability_sufficient
