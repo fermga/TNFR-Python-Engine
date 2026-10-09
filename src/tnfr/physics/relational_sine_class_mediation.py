@@ -45,6 +45,49 @@ def _mediation_walks(geometry):
 
 
 @dataclass(frozen=True)
+class _MediationReferenceBounds:
+    """Shared ideal-reference algebra; callers admit the physical primitives."""
+
+    gamma: I
+    cosines: tuple[I, I]
+    eta: I
+    difference: I
+    common: Q
+    walk: Q
+    leading: I
+    tail: Q
+    denominator: Q
+    nonlinear: Q
+    ideal: I
+
+
+def _mediation_reference_bounds(geometry, a, h):
+    """Retain the established outward operation order of the ideal contrast."""
+    common, walk = _mediation_walks(geometry)
+    gamma, cosines = _parameters((1, 2))
+    eta = gamma**2
+    difference = cosines[0] - cosines[1]
+    leading = a * eta * difference * h**3 * walk / 6
+    tail = 9 * a * eta.hi * difference.hi * h**4 / (1 - 3 * h / 4)
+    denominator = 1 - 2 * eta.hi * h**2
+    nonlinear = 16 * gamma.hi**3 * a**2 * h**3 / (3 * denominator**2 * (1 - 3 * h))
+    ideal = leading + I(-tail - nonlinear, tail + nonlinear)
+    return _MediationReferenceBounds(
+        gamma,
+        cosines,
+        eta,
+        difference,
+        common,
+        walk,
+        leading,
+        tail,
+        denominator,
+        nonlinear,
+        ideal,
+    )
+
+
+@dataclass(frozen=True)
 class SineClassMediation:
     """Conditional response, identity and event-work certificates.
 
@@ -216,15 +259,7 @@ def assess_sine_class_mediation(
         for key in ("probe_amplitude", "contact_duration", "endpoint_radius", "radius")
     )
     geometry = _central_port_geometry(3, _CONTACTS)
-    common, walk = _mediation_walks(geometry)
-    gamma, cosines = _parameters((1, 2))
-    eta = gamma**2
-    difference = cosines[0] - cosines[1]
-    leading = a * eta * difference * h**3 * walk / 6
-    tail = 9 * a * eta.hi * difference.hi * h**4 / (1 - 3 * h / 4)
-    denominator = 1 - 2 * eta.hi * h**2
-    nonlinear = 16 * gamma.hi**3 * a**2 * h**3 / (3 * denominator**2 * (1 - 3 * h))
-    ideal = leading + I(-tail - nonlinear, tail + nonlinear)
+    reference = _mediation_reference_bounds(geometry, a, h)
 
     handoff = _unprobed_handoff(
         **{
@@ -257,7 +292,7 @@ def assess_sine_class_mediation(
     if source:
         preparation = 4 * eps / (1 - 3 * h)
         readout = 4 * v["readout_error_bound"]
-        actual = ideal + I(-preparation, preparation)
+        actual = reference.ideal + I(-preparation, preparation)
         recorded = actual + I(-readout, readout)
         blind = I(-preparation - readout, preparation + readout)
         blind_margin = recorded - blind.hi
@@ -297,18 +332,19 @@ def assess_sine_class_mediation(
         geometry=geometry,
         source_handoff=handoff,
         joined_bounds=joined,
-        gamma_bounds=gamma,
-        eta_bounds=eta,
-        mediator_cosine_bounds=cosines,
-        mediator_cosine_difference_bounds=difference,
-        common_diffusion_walk_coefficient=common,
-        common_second_derivative_per_amplitude_bounds=(1 - eta) * common,
-        mediator_walk_coefficient=walk,
-        leading_contrast_bounds=leading,
-        linear_tail_upper_bound=tail,
-        nonlinear_contrast_error_upper_bound=nonlinear,
-        nonlinear_bootstrap_margin=denominator,
-        ideal_nonlinear_contrast_bounds=ideal,
+        gamma_bounds=reference.gamma,
+        eta_bounds=reference.eta,
+        mediator_cosine_bounds=reference.cosines,
+        mediator_cosine_difference_bounds=reference.difference,
+        common_diffusion_walk_coefficient=reference.common,
+        common_second_derivative_per_amplitude_bounds=(1 - reference.eta)
+        * reference.common,
+        mediator_walk_coefficient=reference.walk,
+        leading_contrast_bounds=reference.leading,
+        linear_tail_upper_bound=reference.tail,
+        nonlinear_contrast_error_upper_bound=reference.nonlinear,
+        nonlinear_bootstrap_margin=reference.denominator,
+        ideal_nonlinear_contrast_bounds=reference.ideal,
         preparation_contrast_error_upper_bound=preparation,
         readout_contrast_error_upper_bound=readout,
         actual_contrast_bounds=actual,

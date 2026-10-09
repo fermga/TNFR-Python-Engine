@@ -25,11 +25,12 @@ The route is **justified nodal dynamics -> collective organization
 collective properties from their physical identification. A sufficient
 representation does not independently justify the law that evolves it.
 
-The [class-mediated collective response](#generative-class-mediated-response)
-gate is closed by its first frozen conditional analytic assessment. The
-sole next primary admission is [acquired-mediator effective memory](#current-g3-gate),
-not yet executed: derive a controlled donor-receiver law that retains the
-mediator's internal class and hidden initialization. The
+The [acquired-mediator effective-memory theorem](#acquired-mediator-effective-memory)
+is closed: its matched-source nonlinear error preserves the earlier
+[class-response certificate](#generative-class-mediated-response), with
+explicit limits on instantaneous closure. The sole next primary admission
+is [two-probe nonlinear superposition](#current-g3-gate), not yet executed.
+It concerns repeated interactions on the same acquired composite. The
 [digital-PLL review](#terrestrial-coupled-phase-admission) is a closed
 auxiliary result, with no admitted physical bridge. The
 [finite-noise/horizon theorem](#sine-aperture-resolution-admission) is closed.
@@ -45,7 +46,8 @@ no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next primary admission, not yet executed | [Acquired-mediator effective memory](#current-g3-gate): retain class, hidden initialization and finite nonlinear error in a donor-receiver interaction law |
+| Next primary admission, not yet executed | [Two-probe nonlinear superposition](#current-g3-gate): admit symmetry, histories and a finite mixed response or a scoped obstruction |
+| Closed theoretical gate | [Acquired-mediator effective memory](#acquired-mediator-effective-memory): exact tangent source/kernel, matched-source nonlinear bound and scoped instantaneous-closure obstructions |
 | Closed conditional analytic assessment | [Class-mediated collective response](#generative-class-mediated-response): first frozen full-family contrast, phase-feedback control, work and identity certificates; no simulated or measured trajectory |
 | Closed auxiliary admission | [Terrestrial coupled-phase feasibility](#terrestrial-coupled-phase-admission): selected digital-PLL bridge not admitted; neither a prerequisite for generative pattern research nor a physical identification |
 | Latest closed theoretical gate | [Finite-noise/horizon resolution](#sine-aperture-resolution-admission): sufficient error/window budgets and a separate complete-history noise-overlap obstruction |
@@ -63,26 +65,51 @@ no empirical response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="two-probe-nonlinear-superposition"></a>
+## Next primary admission: two-probe nonlinear superposition
+
+Determine whether the derived class-dependent linear memory remains a
+sufficient interaction description under two supplied donor form probes
+on the same acquired three-C9 composite. Retain one complete source,
+law, clock, support and class, together with contact/probe work, identities
+and the full first-probe history through the second event. Compare four
+matched continuations: neither probe, the first only, the second only and
+both, with receiver contrast `R12-R1-R2+R0` at one common final time.
+The delayed single-probe control follows its own unprobed history
+to that event; it is not a reset or a time-shifted initial-state solution.
+
+Admit the symmetry and first possible nonlinear response order before
+choosing a coefficient or budget. Check whether the combined reflection
+and sign change of the ideal aligned target and nominal formation forces
+the central response to be odd under simultaneous probe-sign reversal;
+do not assume a quadratic mixed term survives. Arbitrary source residuals remain admitted and
+their effects must be bounded, not made symmetric by assumption.
+Derive a finite mixed-response discrepancy from linear superposition or
+a scoped symmetry/resolution obstruction, with all finite errors retained.
+No new response campaign or physical scattering claim is part of this
+theoretical admission.
+
 <a id="acquired-mediator-effective-memory"></a>
-## Next primary admission: acquired-mediator effective memory
+<a id="next-primary-admission-acquired-mediator-effective-memory"></a>
+<a id="active-primary-admission-acquired-mediator-effective-memory"></a>
+## Closed primary admission: acquired-mediator effective memory
 
-Derive the effective donor-receiver law after eliminating the actual
-two-contact acquired mediator of the
-[closed class-response result](../nodal/SINE_CLASS_MEDIATED_RESPONSE.md#sine-class-mediated-result).
-Retain the same full law, support, clock, class information, complete hidden
-initialization, source families, event work and identity obligations. Bound
-the nonlinear reduction error tightly enough to preserve the certified
-finite class contrast. Compare an explicitly declared instantaneous law
-on a stated preparation and observation domain; unavailable information
-must remain unavailable.
+The [causal-law theorem](../nodal/SINE_CLASS_MEDIATED_MEMORY.md#sine-class-mediated-memory)
+retains all 36 visible and 18 hidden coordinates, the class-dependent
+tangent kernel, full hidden initialization and exact nonlinear residual.
+Its [matched-source error bound](../nodal/SINE_CLASS_MEDIATED_MEMORY.md#sine-class-memory-matched-source-error)
+preserves the prior finite class contrast without resetting any reached
+state. Stationary midpoint comparators lose that distinction; a separate
+[same-charge witness](../nodal/SINE_CLASS_MEDIATED_MEMORY.md#sine-class-memory-reached-closure-obstruction)
+in actual finite formation images obstructs regular
+visible-only closure on the stated family.
 
-The [component port kernel](../nodal/SINE_REDUCED_CLASS_PORTS.md#the-retained-component-state-and-one-contact-normalization)
-and [existing causal-memory method](../nodal/RESONANCE_FOUNDATIONS.md#sine-bridge-causal-memory)
-are reusable prerequisites. A generic convolution identity alone is not
-the new result: the obligation is a controlled interaction law for this
-actually acquired, two-contact mediator and its observed class effect.
-No new response campaign, assumed instantaneous closure, autonomous support
-selection or physical identification is part of this admission.
+The conditional calculator admits no source acquisition, work or identity
+by itself. Those remain matched obligations of the unchanged full model.
+No new reserved assessment was needed, and the earlier frozen response
+and all other evidence remain unchanged. This result supplies a causal
+interaction description, not autonomous support selection or physical
+identification.
 
 <a id="generative-class-mediated-response"></a>
 <a id="next-primary-admission-class-mediated-collective-response"></a>

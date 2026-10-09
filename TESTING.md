@@ -92,6 +92,29 @@ original source and endpoint budgets, exact interval inflation, work and
 identity margins, and all declared stopping predicates. It neither calls
 the assessor nor executes its archived producer.
 
+For [acquired-mediator effective memory](theory/nodal/SINE_CLASS_MEDIATED_MEMORY.md),
+also select the memory reader/bound controls and independent full-support
+algebra. Check the 36-visible/18-hidden partition, rational spatial factors
+with separate ideal scalar enclosures, class-independent zero-lag kernel
+and class-dependent first derivative. Retain the hidden initial source;
+test its cancellation only in a paired tangent difference with the same
+full initialization. Verify the nonlinear residual bound against both
+probe and baseline, including exact zero budgets and failed sufficient
+separation without erasing available finite bounds.
+
+```sh
+python -m pytest tests/physics/test_sine_class_memory.py tests/physics/test_sine_class_memory_algebra.py tests/physics/test_sine_class_mediation_evidence.py -q
+```
+
+The stationary-map controls must keep visible mobility and distinguish
+linear paired cancellation from the nonlinear comparator's uncertain
+visible sources. They establish no invariant midpoint section or fast
+limit. The same-charge hidden perturbation checks the exact visible
+acceleration difference; the proof separately supplies existence within
+the finite formation image, without a measured reachable radius. Changes
+to shared response coefficients must preserve the frozen source/report
+arithmetic. These controls need no new acquisition or reserved campaign.
+
 For a physical-source admission, test deductions from the declared source
 law separately from manufacturer specifications and measured responses.
 The [digital-PLL audit](theory/research/DPLL_PHYSICAL_ADMISSION.md) uses

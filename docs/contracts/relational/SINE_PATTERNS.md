@@ -1394,6 +1394,87 @@ physical identification or practical-time claim is supplied.
 The [usage guide](../../guides/relational/SINE_PATTERNS.md#sine-port-relaxation)
 shows how to inspect the retained bounds without rerunning their assessment.
 
+<a id="sine-class-mediated-memory"></a>
+### Effective memory of the acquired mediator
+
+[`relational_sine_class_memory.py`](../../../src/tnfr/physics/relational_sine_class_memory.py)
+provides a structural reader and a separate conditional finite-error
+calculator. The [proof](../../../theory/nodal/SINE_CLASS_MEDIATED_MEMORY.md#sine-class-mediated-memory)
+owns the exact causal identities, matched-source nonlinear error and scoped
+instantaneous-comparator obstructions. Neither reader runs a trajectory,
+admits a formation source or mutates a graph.
+
+`derive_sine_class_mediated_memory()` takes no inputs and returns
+`SineClassMediatedMemory` for the fixed three-C9 comparison. It retains all
+36 donor/receiver coordinates as visible and all 18 mediator coordinates
+as hidden, with forms before real target-phase deviations. Actual central
+degrees remain `(3,4,3)` and the clock is `tau=e*t`. The full hidden
+dimension is not asserted minimal. No phase rescaling is used.
+
+`normalized_laplacian_vv`, `_vh`, `_hv` and `_hh` are exact rational spatial
+blocks. Separate phase-interior/contact blocks and named `gamma` and class
+cosine factors define the ideal full tangent generator. The shared rational
+coordinate-memory owner partitions only the spatial matrix; its result is
+not a rational replacement for the transcendental full law. The report
+keeps outward scalar coefficient enclosures separately.
+`kernel_at_zero_spatial_matrix` and `kernel_at_zero_scalar_bounds` assemble
+the common two-channel zero-lag kernel; the corresponding
+`kernel_derivative_difference_*` fields retain its class-dependent first
+derivative. No exponential or fitted memory timescale is evaluated.
+
+The effective tangent law retains both `B*exp(D_k*t)*h0` and its convolution
+kernel. Exact nonlinear elimination also retains the visible residual and
+the propagated hidden residual; dropping them requires the finite-error
+bound. The supplied class does not determine `h0`. Its cancellation in a
+paired tangent probe response requires the same full initial state in the
+probe and baseline trajectories.
+
+`hidden_midpoint_map` and `quasistatic_*` fields describe declared stationary
+comparators. They start from the same visible projection but generally
+replace the actual hidden initialization. Visible mobility is inherited;
+no degree renormalization follows from eliminating a node. The midpoint
+section is not generally invariant, and its reconstructed total charge,
+storage and identity are not certified by the original full-law result.
+It is neither an installed effective law nor an admitted fast limit.
+
+`bound_sine_class_mediated_memory(*, probe_amplitude, contact_duration,
+endpoint_radius, readout_error_bound)` returns `SineClassMediatedMemoryBound`.
+All four primitives are mandatory. Shared exact-or-represented-real admission
+preserves exact rationals and rejects Boolean, nonfinite or underflowing
+represented inputs. All budgets are nonnegative and
+`0<=contact_duration<=1/4`; zero endpoint radius is admitted. The conditional
+source premise is that each reached component's form and target-phase
+Euclidean errors are at most `endpoint_radius`. It is not verified from a
+source, report, observation or saved verdict by this API.
+
+`probe_tangent_error_upper_bound` and `baseline_tangent_error_upper_bound`
+compare each nonlinear trajectory with its tangent trajectory started at
+the same full state. `paired_class_reduction_error_upper_bound` is twice
+their sum. `recorded_class_contrast_bounds` adds the correlated class-tail
+bound and four scalar readout errors. No extra ideal-initialization error
+is inserted after the proved paired cancellation.
+`whole_window_kernel_norm_upper_bound` and
+`hidden_initial_source_norm_upper_bound` are norm ceilings, not evaluated
+kernel histories, memory-decay statements or reconstructed hidden states.
+
+The tangent stationary comparator has recorded null bounds `±4*delta`.
+Its nonlinear counterpart also retains the independently uncertain visible
+initial states, giving `±(4*epsilon/(1-3*h)+4*delta)`.
+`quasistatic_exclusion_margin_bounds` uses this latter, stronger obligation.
+`status="certified_conditional_contrast"` requires a strictly positive
+recorded contrast and exclusion of that declared comparator; otherwise
+`status="bounds_only"` retains all finite bounds. These are conditional
+flags, not acquisition, work or identity verdicts. A failed sufficient
+margin does not establish response equality or exclude another error bound.
+
+The direct schemas are `tnfr.sine-class-mediated-memory.v1` and
+`tnfr.sine-class-mediated-memory-bound.v1`. Shared SDK projection and atomic
+export retain exact values and scope. Applying the bound to an acquired
+family requires independently matching the existing
+[formation/contact/probe obligations](#sine-class-mediated-response).
+The [guide](../../guides/relational/SINE_PATTERNS.md#sine-class-mediated-memory)
+shows structural inspection without replaying the frozen assessment.
+
 <a id="sine-class-mediated-response"></a>
 ### Acquired mediator class and a transmitted form response
 

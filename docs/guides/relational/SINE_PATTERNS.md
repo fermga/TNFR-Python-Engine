@@ -1179,6 +1179,57 @@ retains the protocol, proof and channel verdicts. The
 checks source/record consistency separately from reading a JSON. No support
 selection, autonomous preparation or physical observation is inferred.
 
+<a id="sine-class-mediated-memory"></a>
+### Retain the mediator's causal state and interaction history
+
+The [effective-memory theorem](../../../theory/nodal/SINE_CLASS_MEDIATED_MEMORY.md#sine-class-mediated-memory)
+keeps all donor and receiver coordinates visible while hiding the middle
+C9. Its exact tangent description contains a class-dependent kernel and
+the full hidden initial-state source. Inspect its fixed structure without
+evaluating any trajectory or formation source:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_class_memory import (
+    derive_sine_class_mediated_memory,
+)
+
+memory = derive_sine_class_mediated_memory()
+assert memory.full_state_dimension == 54
+assert (memory.visible_state_dimension, memory.hidden_state_dimension) == (36, 18)
+assert memory.grounded_hidden_laplacian_positive
+assert memory.midpoint_equations_verified
+assert memory.kernel_derivative_difference_spatial_matrix[13][4] == Q(1, 24)
+```
+
+That rational entry is one spatial factor; the class-dependent full kernel
+coefficient includes `gamma**2` and the class-cosine difference. The report
+keeps their ideal definitions and outward enclosures. The retained 18 hidden
+coordinates are not claimed to be a minimal realization.
+
+Use `bound_sine_class_mediated_memory` only after declaring its four
+[primitive budgets](../../contracts/relational/SINE_PATTERNS.md#sine-class-mediated-memory).
+It bounds a conditional reached-state family; it does not establish that
+the original formation reaches the supplied `endpoint_radius`. Within each
+class, the probe and unprobed baseline must begin at exactly the same full
+state. Their tangent initial sources then cancel in the difference, while
+both individual effective trajectories still need their hidden initialization.
+The nonlinear paired error remains explicit.
+
+Inspect `recorded_class_contrast_bounds` with
+`quasistatic_nonlinear_recorded_contrast_bounds` and
+`quasistatic_exclusion_margin_bounds`. `bounds_only` retains a finite
+estimate without certifying the selected distinction. The stationary
+midpoint comparator discards actual hidden initialization and keeps only
+the visible projection; it is not the same prepared full state or an
+invariant reduction of its flow. Its nonlinear null also retains visible
+source uncertainty, unlike the exactly cancelling linear comparator.
+
+The existing source costs, contact/probe work and winding-retention results
+still require their own matched full-law premises. Neither an available
+kernel nor a positive conditional contrast supplies those certificates,
+physical parameter identification or autonomous contact selection.
+
 <a id="sine-class-mediated-response"></a>
 ### Inspect how an acquired mediator changes transmission
 
