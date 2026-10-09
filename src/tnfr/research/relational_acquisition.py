@@ -22,16 +22,9 @@ from ..physics.relational_observations import (
 )
 from ..sdk.relational_reports import relational_report_to_dict
 from ..utils.io import json_dumps, json_loads
-from .artifact_io import (
-    _require,
-    encode_exact_tree,
-)
+from .artifact_io import _require, encode_exact_tree
 from .artifact_io import exact_record as _exact
-from .artifact_io import (
-    read_bytes_bounded,
-    sha256_bytes,
-    verify_archive_members,
-)
+from .artifact_io import read_bytes_bounded, sha256_bytes, verify_archive_members
 
 __all__ = (
     "RelationalAcquisitionAudit",

@@ -44,10 +44,7 @@ TRANSPORT_SHA256 = "991d771464d84f65a25c0a82c9b08f7e5a579e450885141b32fef1a1ed82
 @pytest.fixture(scope="module", autouse=True)
 def no_coefficient_response_or_worker_execution():
     from tnfr.mathematics import _validated_taylor
-    from tnfr.physics import (
-        _sine_flow,
-        _sine_formed_contact,
-    )
+    from tnfr.physics import _sine_flow, _sine_formed_contact
     from tnfr.physics import relational_sine_class_cubic_response as cubic
     from tnfr.physics import relational_sine_class_readout as readout
 

@@ -23,10 +23,7 @@ from ..constants.canonical import (
     K_PHI_CANONICAL_THRESHOLD,
 )
 from ..constants.canonical import PI as CANONICAL_PI
-from ..constants.canonical import (
-    U6_STRUCTURAL_POTENTIAL_LIMIT,
-    XI_C_CRITICAL_RATIO,
-)
+from ..constants.canonical import U6_STRUCTURAL_POTENTIAL_LIMIT, XI_C_CRITICAL_RATIO
 from ..errors import TNFRValueError
 
 # UNIFIED NUMPY IMPORT - Single point of import for entire TNFR codebase

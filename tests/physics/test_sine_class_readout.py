@@ -460,6 +460,66 @@ def _small_arguments(**updates):
     return values
 
 
+@pytest.fixture(scope="module", params=("before_event", "inside_segment"))
+def budget_stopped_report(request):
+    arguments = _small_arguments(max_steps=1)
+    if request.param == "inside_segment":
+        arguments.update(delay=Q(3, 16), time_step=Q(1, 16))
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(owner, "_full_sine_field", _constant_field)
+        report = owner.bound_sine_class_four_history_readout(**arguments)
+    return report, owner._admit_class_readout_inputs(**arguments)
+
+
+@pytest.mark.parametrize(
+    "mutation", ("reason", "failed_tube", "missing_summary", "different_summary")
+)
+def test_reader_rejects_contradictory_budget_failure_provenance(
+    budget_stopped_report, mutation
+):
+    report, admitted = budget_stopped_report
+    retained = _reconstruct_class_readout(report, admitted)
+    assert not retained.complete and retained.attempted_step_count == 1
+    index = report.failed_segment_index
+    segment = report.segments[index]
+    if mutation == "reason":
+        # Keep the summary consistent with the forged segment: the exact
+        # budget-stop contract itself must reject a solver-failure label.
+        segment = replace(segment, reason="solver_domain_failure")
+        report = replace(
+            report, unavailable_reasons=(f"{segment.label}: {segment.reason}",)
+        )
+    elif mutation == "failed_tube":
+        segment = replace(segment, failed_tube=(I(0),) * 54)
+    elif mutation == "missing_summary":
+        report = replace(report, unavailable_reasons=())
+    else:
+        report = replace(report, unavailable_reasons=("another_branch: failure",))
+    report = replace(
+        report,
+        segments=report.segments[:index] + (segment,) + report.segments[index + 1 :],
+    )
+    with pytest.raises(ValueError):
+        _reconstruct_class_readout(report, admitted)
+
+
+@pytest.mark.parametrize(
+    "changes",
+    (
+        {"method": "another_producer"},
+        {"unavailable_reasons": ("invented_failure",)},
+    ),
+)
+def test_reader_checks_complete_report_method_and_failure_summary(
+    polynomial_report, changes
+):
+    with pytest.raises(ValueError):
+        _reconstruct_class_readout(
+            replace(polynomial_report, **changes),
+            owner._admit_class_readout_inputs(**_arguments()),
+        )
+
+
 @pytest.mark.parametrize("failure_call", (1, 2, 4, 6))
 @pytest.mark.parametrize("selected", (False, True))
 def test_first_failed_step_stops_later_events_and_retains_partial_evidence(

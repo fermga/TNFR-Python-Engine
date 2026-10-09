@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Integrate acquired organized-class interaction, effective memory and finite
+  nonlinear comparisons under their declared smooth-sine laws, with shared
+  full-state observation tools and independently retained protocols and evidence.
+  The [theory catalog](theory/README.md#theory-to-execution) owns the conditional
+  results; no physical constituent identification or unique law follows.
+- Consolidate advanced-report SDK exports, signed numerical admission and
+  retained trajectory reconstruction. Reject contradictory failure metadata,
+  invalid authoritative aliases and underflow to zero; handle clipped
+  ratios without intermediate overflow and preserve exact values and explicit
+  unavailability.
+- Refocus the [research plan](theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+  on complete-law admission using organized patterns, with matched target
+  geometry and tangent dynamics. Add a deferred test of law inheritance across
+  scales, retaining hidden state and memory when collective closure fails.
+
 - Route structured grammar errors and aggregate validation through the complete
   shared validator, retaining operator parameters and registry metadata.
   Unknown operators and unsupported deep recursivity can no longer appear valid

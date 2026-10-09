@@ -220,6 +220,10 @@ def _reconstruct_class_readout(
     )
     _require(report.arithmetic_method == INTERVAL_METHOD, "arithmetic method differs")
     _require(
+        report.method == "shared_prefix_full54_source_box_Picard_Taylor_v1",
+        "producer method differs",
+    )
+    _require(
         report.history_order == ("neither", "first_only", "second_only", "both")
         and tuple(tuple(map(_integer, row)) for row in report.history_segment_indices)
         == ((0, 2), (1, 3), (0, 4), (1, 5)),
@@ -248,6 +252,7 @@ def _reconstruct_class_readout(
     final, increments = {}, {}
     success = failed_attempts = 0
     failure = None
+    reasons = []
     for index, (segment, expected) in enumerate(zip(report.segments, plan)):
         label, parent, start, end, jump, jump_node = expected
         if segment.parent_segment_index is not None:
@@ -310,6 +315,7 @@ def _reconstruct_class_readout(
                 "budget stop applied an event",
             )
             failure = index
+            reasons.append(f"{label}: {segment.reason}")
             continue
         before = source if parent is None else final[parent]
         _require(_box(segment.pre_event_box) == before, "full pre-event carry differs")
@@ -362,13 +368,19 @@ def _reconstruct_class_readout(
                 and bool(segment.reason),
                 "failed attempt association differs",
             )
-            if segment.failed_tube is not None:
-                _box(segment.failed_tube)
             if segment.status == "unavailable":
+                if segment.failed_tube is not None:
+                    _box(segment.failed_tube)
                 failed_attempts = 1
             else:
-                _require(success == cap, "attempt budget not exhausted")
+                _require(
+                    success == cap
+                    and segment.reason == "unique_step_budget_exhausted"
+                    and segment.failed_tube is None,
+                    "budget failure provenance differs",
+                )
             failure = index
+            reasons.append(f"{label}: {segment.reason}")
     attempted = success + failed_attempts
     _require(attempted <= cap, "attempt cap exceeded")
     _require(
@@ -427,8 +439,10 @@ def _reconstruct_class_readout(
             "cached observation tuple differs",
         )
     _require(
-        report.status == ("admitted" if complete else "unavailable"),
-        "cached status differs",
+        report.status == ("admitted" if complete else "unavailable")
+        and _evidence_rows(report.unavailable_reasons, len(reasons), "failure reasons")
+        == tuple(reasons),
+        "cached availability differs",
     )
     return _ClassReadoutEvidence(
         complete, planned, attempted, success, endpoints, suffix, primary, raw

@@ -87,6 +87,9 @@ consumed only through the declared row length or shared dimension cap plus one.
 This adds no derivative
 replay or provenance authentication. Each reader still owns its law, source,
 event and attempt-budget checks, failure policy and observation combination.
+It must also reconcile the producer method, stopping reasons, failed-step
+records and reconstructed availability summary; consistent endpoint arithmetic
+does not admit contradictory failure metadata.
 
 Inspect incomplete and unsuccessful records as such. Missing observations are
 unavailable, not zero; a completed prefix is not the requested endpoint.
