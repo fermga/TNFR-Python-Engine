@@ -707,6 +707,7 @@ require keeping an inconsistent dimensional equation or a lossy chart claim.
 | Component | Implemented or derived content | Missing implication |
 |-----------|--------------------------------|---------------------|
 | EPI flow | Shared integrator implements capacity times declared pressure; isolated EPI diffusion has its exact Dirichlet balance. | The nodal identity alone does not choose the state space or pressure functional. |
+| Detached smooth-sine research | [Reciprocal form/phase exchange](nodal/RESONANCE_FOUNDATIONS.md#reciprocal-exchange) derives joint balances and response under a complete, globally defined comparison law. | The sine kernel, cosine storage, exchange/loss scales, held capacities/support, clock, preparation and events remain premises. The [storage counterfamily](nodal/SINE_CONSTITUTIVE_INFORMATION.md#phase-storage-selection-boundary) retains balances and organized equilibria without uniquely selecting that law; it is separate from native argument-pressure execution. |
 | Phase relaxation | [coordination.py](../src/tnfr/dynamics/coordination.py) blends global/local circular means per invocation with configured, possibly adaptive gains. | Invocation time, gains and their adjustment policy are not derived by the EPI identity. |
 | Oscillator proposal | [phase_evolution.py](../src/tnfr/dynamics/phase_evolution.py) adds `dt*nu` and a configured sine coupling over admitted neighbors. | Capacity as angular speed and the coupling coefficient are additional constitutive premises. This is distinct from mean relaxation. |
 | Capacity adaptation | [adaptation.py](../src/tnfr/dynamics/adaptation.py) applies clipped neighbor averaging after stored Si/pressure gates and a consecutive-call count. | Averaging gain, thresholds, waiting count and use of that diagnostic as a controller are supplied policies; there is no independently derived capacity rate. |
@@ -853,6 +854,61 @@ note. A scalar observable may close without reconstructing the full state;
 a rich storage object may still lack any justified evolution. Retain all
 four tetrad channels as consequences to account for, and introduce neither
 a physical clock nor a selection functional solely to obtain stability.
+
+<a id="justified-law-admission"></a>
+### When an additional law is justified
+
+A predictive model needs additional laws or declared input histories whenever
+a consumed channel has no specified evolution or justified elimination.
+Holding capacity, support or another channel fixed is already an explicit
+completion; every such channel need not immediately acquire autonomous
+evolution. Missing closure does not by itself invalidate the nodal row or
+establish a need for a more general equation. Mathematical closure,
+well-posedness and physical justification are separate obligations. A proposed
+law may be an independently stated constitutive hypothesis, a consequence of
+stronger premises, or an inherited reduction with retained memory and error.
+Its status must survive integration into the engine.
+
+Evaluate each proposed law or hypothesis against its existing owner: state
+its domain and units, classify its logical status, expose its independent
+premises, and derive the consequence that needs it. Test an alternative or
+counterexample before claiming necessity or uniqueness. Record whether the
+claim is derived under those premises, remains a supplied hypothesis, is
+underdetermined, or is rejected in the declared domain. A revised foundational
+premise needs the same scrutiny and a dependency review of earlier results;
+a failure in one completion does not invalidate every model of the nodal row.
+
+The existing [parameter ledger](NODAL_PARAMETER_FOUNDATIONS.md#2-parameter-and-dependency-ledger)
+identifies the missing premises. The
+[phase/storage alternatives](nodal/SINE_CONSTITUTIVE_INFORMATION.md#phase-storage-selection-boundary)
+and [replication counterfamily](nodal/SINE_PAIR_MOBILITY.md#sine-replica-constitutive-nonselection)
+show why balance, symmetry, organized equilibria or a shared local response
+cannot alone select the complete nonlinear law. An added information or
+selection principle needs independent justification; reproducing a desired
+pattern does not provide it. Distinguish genuinely different completions from
+coordinate or clock changes that transform every row of the same model.
+
+Use the derived organizations as test cases for those premises. Specify which
+generative claim requires more than the present preparation, identity and
+interaction results, then revisit the premise that blocks it. For example,
+[uniqueness at full equilibrium](FUNDAMENTAL_THEORY.md#environment-substrate-and-pressure)
+does not supply spontaneous initial activity, and
+[finite positive-loss dynamics](nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission)
+restricts sustained nonstationary motion. Neither restriction excludes static
+organized identities or every other admitted completion. Autonomous source
+preparation, contact occurrence, scale selection and a physical observation
+require their own arguments; they are not consequences of a successful
+prepared response. The [bound-organization target](EMERGENT_ONTOLOGY.md#generative-bound-organization)
+also needs a stated composite identity and binding criterion; a signed
+storage excess alone supplies neither.
+
+Integrate an admitted completion through its declared-law and shared execution
+owners, with matched domains, sources, events, balances and observations.
+Diagnostics and grammar do not silently provide its missing controller.
+Preserve valid conditional objects and counterexamples while testing a
+prospective discriminator, equivalence or obstruction between alternatives.
+The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+selects the investigation; this admission criterion creates no parallel queue.
 
 ### Cross-channel foundation audit
 

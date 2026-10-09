@@ -101,6 +101,23 @@ individual module/test links; proofs own model-specific hypotheses, constants
 and frozen preparations. This guide groups the obligations needed to choose
 coverage, rather than repeating each research result.
 
+For the [constitutive foundation audit](theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission),
+select the countermodels and complete-law controls whose premises are being
+reassessed. Check pressure selection, capacity and support freedom, auxiliary
+variational premises, phase closure, structural clock and event occurrence
+separately; no one channel's success supplies the other laws.
+
+```sh
+python -m pytest tests/physics/test_pressure_constitutive_scope.py tests/physics/test_constitutive_capacity_scope.py tests/physics/test_constitutive_support_scope.py tests/physics/test_constitutive_variational_scope.py tests/physics/test_phase_exchange_constitutive_freedom.py tests/physics/test_structural_clock_scope.py tests/physics/test_selection_birth_closure.py tests/physics/test_relational_sine_comparison.py tests/research/test_sine_constitutive_robustness.py -q
+```
+
+These existing controls preserve scoped alternatives and known nonselection
+results. They do not evaluate a new alternative at the currently acquired
+objects or close a new research gate. Formation, response and storage evidence
+remain associated with their own complete laws. Read retained evidence without
+replaying its producers; test each new constitutive consequence independently
+when its mathematical owner changes.
+
 For [class-mediated collective response](theory/nodal/SINE_CLASS_MEDIATED_RESPONSE.md),
 select both the primitive/report controls and independent full-support
 algebra. Rebuild the 27-node support, its `(3,4,3)` central degrees, common
@@ -370,6 +387,22 @@ nulls, unresolved bounds, primitive admission and the separately supplied
 coordinate-to-storage observation allowance. The shared no-regeneration guard
 must block response and time-coefficient execution. A finite static sign is
 an analytic prediction, not retained storage-response evidence.
+
+For the [prepared passive-loss observer](theory/nodal/SINE_CLASS_STORAGE_EXCESS.md#sine-storage-prepared-observer),
+check the complete full/tangent fields, original phase units, carried passive
+loss, simultaneous events, global work limits and first-failure evidence.
+
+```sh
+python -m pytest tests/physics/test_sine_class_storage_readout.py tests/physics/test_sine_class_storage_excess.py tests/mathematics/test_validated_taylor_arithmetic.py -q
+```
+
+Synthetic polynomial fields test wiring and arithmetic reconstruction; an
+unrelated small full-law reference checks the actual fields. Guards reject
+the selected storage word and historical scientific producers. Re-admit
+source, target, law and every consumed Taylor step before checking cached
+losses. Derivative and strict Picard generation remain execution premises.
+These controls prepare an instrument, not a frozen storage comparison or
+an independent evaluation of the selected storage prediction.
 
 The [first retained neighbor response](theory/nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL.md#sine-neighbor-forward-reserved-result)
 has a separate read-only gate:

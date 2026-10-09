@@ -12,6 +12,17 @@ Definitions, completed results, implementations and tests belong to the
 The method is **F1 state -> F2 complete law -> F3 consistency -> F4 discrimination**.
 P1-P5 below governs physical evaluation; it is not another active queue.
 
+The governing priority is to identify and justify the laws and hypotheses
+of TNFR one at a time, using the constructed mathematical organizations
+to reassess and strengthen the foundations. Definitions and foundational
+premises, including the nodal row, remain revisable with explicit scope;
+completion of a model does not by itself require replacing that row.
+Further response calculations serve a named foundational or generative
+question; increasing precision or adding an observable alone does not
+determine the next task. The intended
+route remains formation and interaction of organizations, then independently
+testable physical properties, including the eventual constituent hypothesis.
+
 <a id="current-checkpoint"></a>
 ## Current checkpoint and resumption
 
@@ -51,9 +62,22 @@ model under that same word. It retains hidden quadratic feedback, all higher
 amplitude orders and the original common-source uncertainty. This is an
 analytic prediction; the earlier form response does not evaluate it.
 
-The sole next task is [storage comparison producer and observation
-admission](#current-g3-gate): justify a stable full/tangent observation and
-freeze its independent numerical and recording policy before any response.
+These objects now serve as test cases for a return to the foundations. The
+[constitutive audit](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission)
+finds that the nodal row, dissipation, circularity and shared organized
+equilibria do not select the complete sine law, capacity/support evolution,
+preparation or event occurrence. Those freedoms are known through explicit
+countermodels, not inferred from a failed implementation. The conditional
+formation, memory, interaction and storage results remain valid in their
+declared models.
+
+The sole active task is [foundational admission using organized-pattern
+witnesses](#current-g3-gate). Its first deliverable is a complete-model
+comparison quantifying the nonlinear interaction freedom of the present
+positive-loss joined objects under matched targets and tangent dynamics.
+The [prepared storage observer](#storage-comparison-producer-admission)
+is retained as an instrument; it has no frozen protocol or reserved response
+and is not the next campaign.
 
 Supplied preparation, support, law, events and structural clock remain
 premises. In particular, the very small source/readout allowances and long
@@ -67,7 +91,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Pending producer and observation admission | [Independent storage comparison](#current-g3-gate): retain both complete models and their common source, admit a stable excess/loss observable with its own error budget, then freeze before response execution |
+| Active foundational admission | [Organized patterns as foundation tests](#current-g3-gate): match target geometry, storage values and full tangent dynamics; derive a new nonlinear interaction consequence for the positive-loss joined objects and identify the remaining constitutive premise |
+| Prepared instrument; evaluation deferred | [Independent storage comparison](#storage-comparison-producer-admission): full/tangent passive-loss producer and arithmetic reader retained; observation policy, freeze and selected response remain unperformed |
 | Closed theoretical admission | [Nonlinear excess storage and loss](#nonlinear-excess-storage-admission): finite signed excess beyond the complete tangent model, with simultaneous event cancellation, full amplitude/source bounds and a separate storage observation requirement |
 | Closed reserved evaluation | [Independent distinct-neighbor response](#reserved-distinct-neighbor-full-law-response): all 64 full-state steps complete, source-inclusive width and prediction overlaps pass, and the independently recorded additive functional is separated |
 | Closed producer and freeze admission | [Independent distinct-neighbor protocol](#independent-neighbor-evaluation-admission): shared complete-state selectors, legacy compatibility, nonlinear common-source transport and immutable runtime/protocol association; no response evaluated at freezing |
@@ -106,35 +131,122 @@ remain open; no empirical response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="foundational-organized-pattern-admission"></a>
+## Primary plan: foundations tested by organized patterns
+
+Investigate which premises are sufficient, necessary within a declared class,
+or still free when TNFR produces organized mathematical objects. Use the
+[foundation definitions](../FUNDAMENTAL_THEORY.md#24-physical-concepts-mathematical-types-and-implementation),
+[parameter ledger](../NODAL_PARAMETER_FOUNDATIONS.md),
+[constitutive audit](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission)
+and [ontology](../EMERGENT_ONTOLOGY.md#generative-bound-organization) as the
+owners. Correct those owners and their consumers together when a defect is
+found; do not replace them with another catalog or infer a law from labels.
+
+The first question is: **which nonlinear interaction of the present
+positive-loss joined objects remains free when their target geometry,
+storage values and complete tangent dynamics are fixed, and what independent
+premise would constrain it?** Generic nonselection is already established:
+the [mobility counterfamily](../nodal/SINE_PAIR_MOBILITY.md#sine-replica-constitutive-nonselection)
+shares the full equilibrium tangent even at nonconsensus targets in its
+conservative model, while a [smooth storage continuation](../nodal/SINE_CONSTITUTIVE_INFORMATION.md#local-phase-storage-nonselection)
+shares all local derivatives but changes global winding passage. Repeating
+either result does not close this gate.
+
+Restrict the first comparison to smooth circular additive edge currents
+with constant reciprocal mobility, the same positive loss, support, capacity
+and clock. Seek a complete alternative preserving the present wound targets,
+their storage values, equilibrium and full Hessian; derive a new quantitative
+consequence for their nonlinear interaction, such as a changed mixed onset
+or a scoped obstruction to changing it. Matched target storage here means
+equal values at the targets, not equality of the entire storage functional.
+The alternative is a logical test, not a fitted replacement law. Acquisition
+under it needs its own proof: the original source costs, dwell and formation
+verdict do not transfer from matching local geometry.
+
+This connects the active comparison to the broader generative question:
+which independently justified complete laws can form distinguishable stable
+organizations from a specified identity-absent source? Existing acquisition
+remains a conditional witness. Its information, support and preparation costs
+are not promoted into autonomous constituent birth.
+
+1. **Declare the object and the claim.** Specify sufficient form/phase state,
+   identity, source class, clock, support, capacity, boundaries and observation.
+   Distinguish an independently described preparation from a source defined
+   through the desired future trajectory. State which part of formation or
+   selection is actually under investigation. Fixed support or capacity may
+   remain explicit premises while that narrower question is isolated.
+2. **Identify the minimal closure and a real alternative.** Separate definitions,
+   supplied laws, held quantities, derived restrictions and remaining freedom.
+   Start with the pressure/phase/storage completion consumed by the acquired
+   objects; use the existing current, mobility and local-continuation
+   counterfamilies to identify the freedom that this interaction comparison
+   must sharpen. Their known nonselection result is an input, not a new
+   discovery to repeat.
+   Require a new consequence for the declared interaction or formation claim.
+   Do not open simultaneous capacity, support, clock and controller campaigns
+   merely because the nodal row leaves them free.
+3. **Derive a discrimination or obstruction.** Match source, geometry, units,
+   clock, retained coordinates and intervention costs across complete laws.
+   Check symmetries, equilibrium boundaries, reachable identities, balances,
+   event occurrence and information loss. Determine what is robust under the
+   alternative and what depends on the chosen law. Distinguish a new law from
+   a chart change, clock rescaling or a reduced law with hidden memory. A
+   necessary condition or failed sufficient bound is not a formation theorem.
+4. **Integrate only the justified result.** Preserve useful conditional proofs
+   and frozen evidence; change shared mathematical/execution owners and
+   consumers only where the contract changes. Require independent tests or
+   counterexamples. Freeze a numerical or physical comparison only after its
+   observation and error model are admitted. A controller added to produce a
+   desired object is an additional premise, not a derivation of that object.
+
+The gate closes with one explicit complete-model contract, a justified
+restriction or retained freedom, and a new theorem, counterexample or scoped
+obstruction for the present positive-loss joined-object interaction within
+the declared alternative class. If no independent criterion selects a law,
+report the surviving freedom and the information needed to resolve it.
+Another favorable sine-model response alone does not close this
+foundational gate.
+
+The dependency order for subsequent work is:
+
+| Dependency | Required advance before the associated claim |
+| --- | --- |
+| Complete foundations | State and law choices are explicit; independent selection arguments and surviving countermodels are retained |
+| Formation and identity | Entry from the declared source, stability/maintenance and preparation costs; autonomous preparation and scale/support selection are separately identified |
+| Composite organization | Dynamical attachment/interaction, retained constituent identity and a declared separation/work criterion; negative rectangular storage excess alone is not binding |
+| Physical interpretation | Derive geometric/measurement transformations and quantitative observables with units, independent preparation and alternatives before identifying a fundamental constituent |
+
+For each subsequent law or hypothesis, record its status, independent
+premises, consequences, countermodels and decision in the existing definition
+or proof owner and parameter ledger. Close or revise the active gate before
+selecting the next unresolved dependency here. A proposed law is not accepted
+merely because it produces a desired object, and a retained hypothesis is not
+reported as derived. This is a dependency-ordered investigation, not a promise
+that one uniquely selected law or a finite exhaustive list must exist.
+
+These are dependencies of this one plan, not parallel active campaigns.
+The physical objective guides which mathematical property matters. Laboratory
+examples supply possible controls and discriminators; they do not replace
+the generative objective with imitation of a convenient apparatus. Substrate
+origin, universal laws and recurrence across scales remain open hypotheses.
+
 <a id="storage-comparison-producer-admission"></a>
-## Next primary admission: storage comparison producer and observation
+## Prepared, deferred: independent storage comparison
 
-Prepare one independent test of the
-[finite storage/loss prediction](../nodal/SINE_CLASS_STORAGE_EXCESS.md#sine-storage-complete-errors)
-under the unchanged distinct-neighbor word, support, class `(1,2,1)`, clock
-and original common source. This admits a new observable; the earlier scalar
-form response and its recording allowance do not certify storage.
+The [prepared observer](../nodal/SINE_CLASS_STORAGE_EXCESS.md#sine-storage-prepared-observer)
+retains eight complete full/tangent histories, each with a passive loss
+integral, using the shared validated flow kernel. Its arithmetic reader
+checks source, target, law, events, state carry and partial-failure evidence.
+Preparation controls use synthetic or unrelated inputs, not the selected
+storage response.
 
-1. Extend shared validated flow/evidence owners for the full law and its own
-   complete tangent trajectory, with original phase units, matched time-zero
-   jumps and explicit partial-failure evidence. Avoid a second integrator.
-2. Derive a numerically stable observation of the rectangular excess. The
-   exact loss integral with the carried full-minus-tangent state is a candidate;
-   any endpoint check must handle target-relative potential and polarized
-   quadratic terms without subtracting large nearly equal absolute stores.
-   Retain initial and event terms; passive observers install no new law.
-3. Admit the source transport, numerical width, observation map and recording
-   errors separately. Use the storage theorem's own error contract, including
-   the independently recorded zero-excess comparison; do not transfer the old
-   mediator-reading allowance or use the prediction to narrow a response.
-4. Test balance, state carry, nulls, representation boundaries and failures
-   independently. Freeze preparation, complete source/runtime, observer,
-   horizon, work limits and decision rules before the first reserved attempt.
-
-No selected response, new acquisition, parameter fit or physical-data campaign
-is active at this admission. An unresolvable representation or observation
-budget is a valid scoped obstruction; it does not authorize changing the word
-after observing a response.
+This instrument preserves the work already done while foundations take
+priority. There is no frozen storage protocol, reserved attempt or evaluated
+storage response. Reopening requires a named question from the foundational
+gate, independent source/observation and numerical budgets, and a prospective
+freeze. Neither the earlier mediator-reading allowance nor the analytic
+storage prediction may narrow its eventual output.
 
 <a id="nonlinear-excess-storage-admission"></a>
 ## Closed admission: nonlinear excess storage and loss

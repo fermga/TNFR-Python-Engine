@@ -83,6 +83,28 @@ information, even when their collective means coincide. This supports studying
 sufficient interaction state and inherited dynamics before physical naming;
 it does not derive an atom or a unique constitutive law.
 
+The [distinct-neighbor comparison](nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL.md#sine-neighbor-forward-reserved-result)
+supports nonadditive interaction of the prepared organizations under the
+supplied smooth-sine law. A separate
+[storage theorem](nodal/SINE_CLASS_STORAGE_EXCESS.md#sine-storage-exact-balance)
+derives nonlinear storage and loss beyond the matched complete tangent model.
+Its negative excess is a signed combination of four histories and two models,
+not a negative binding potential or evidence of energetic attachment. It has
+not been independently observed through a storage measurement. Formation,
+retained identity and interaction remain steps toward an independently
+measurable collective property; none alone establishes a physical constituent.
+
+These consequences do not select the microscopic law. The existing
+[alternative-storage family](nodal/SINE_CONSTITUTIVE_INFORMATION.md#phase-storage-selection-boundary)
+preserves circularity, local reciprocal exchange, dissipation and the consensus
+tangent while changing nonlinear pressure and storage. Its protected geometry
+can also persist, without transferring another law's acquisition or response
+certificates. The [constitutive admission](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission)
+must distinguish properties that survive this freedom from those requiring
+a particular law; passivity or a successful prepared response cannot supply
+that distinction by itself. Autonomous preparation, contact occurrence and
+scale selection remain separate obligations.
+
 Within the specified complete laws, equal nominal collective means and storage
 can hide response-relevant internal information. The
 [conservative persistence result](nodal/SINE_PAIR_INTERACTION.md#sine-pair-persistent-response)

@@ -308,3 +308,44 @@ keeps direct/quartic/tail/source bounds separate and introduces no integrator
 or runtime law. The [independent tests](../../tests/physics/test_sine_class_storage_excess.py)
 check edge algebra, complete balances, event work, finite rational bounds,
 observation errors and invalid domains under the shared no-regeneration guard.
+
+<a id="sine-storage-prepared-observer"></a>
+## Prepared passive-loss observer
+
+The [detached observer](../../src/tnfr/physics/relational_sine_class_storage_readout.py)
+provides `bound_sine_class_storage_readout` with nine mandatory primitives:
+`mediator_class`, `initial_form_bounds`, `initial_phase_deviation_bounds`,
+`donor_amplitude`, `receiver_amplitude`, `horizon`, `time_step`, `order`
+and `max_steps`. It retains all 27 form and 27 phase coordinates, adding only
+a passive cumulative loss row \(\ell'=\mathcal D(x)\) to each model.
+The shared validated box Taylor kernel and its dimension limit are unchanged.
+
+One complete pre-input source cover and the named exact target are shared
+associations. Full phases are constructed as \(\Theta+y_0\); tangent phases
+are \(y_0\) in original radians. The history order is `(00,10,01,11)`, each
+full then tangent. Events change only forms at nodes 4 and 22. The loss
+accumulator starts at zero and carries without reset. The source, acquisition,
+same-source correlation and exact target remain mathematical premises;
+independent interval enclosures relax their correlations conservatively.
+
+The complete reported observable is \(-\Delta_4(\ell_N-\ell_T)\), which
+equals (4) by the matched initial/event cancellation. Retained Taylor loss
+increments remove the accumulator baseline. This avoids subtracting large
+absolute cosine stores, but does not guarantee a sufficiently narrow
+full-minus-tangent interval. Raw accumulator endpoints and each individual
+loss remain available. A failure stops later flow calls and events and
+retains the completed prefix; incomplete sets provide no mixed verdict.
+
+The [arithmetic reader](../../src/tnfr/physics/_sine_class_storage_readout_evidence.py)
+re-admits primitives and rebuilds target/law, event carry, every consumed
+55-coordinate Taylor step and the signed observation before comparing cached
+fields. Derivative and strict Picard generation remain execution premises.
+[Controls](../../tests/physics/test_sine_class_storage_readout.py) cover invalid
+domains, independent field algebra, synthetic carry/failure/corruption, and
+an unrelated small reference; they do not evaluate the selected word (2).
+
+This is a prepared instrument. No storage source/protocol freeze, reserved
+attempt or selected storage response exists. Observation and numerical
+resolution policies still need admission before such a comparison. Its
+status and reopening conditions belong solely to the
+[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#storage-comparison-producer-admission).

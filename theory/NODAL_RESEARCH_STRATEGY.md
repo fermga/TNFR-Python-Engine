@@ -26,6 +26,18 @@ does not establish its own emergence. Formation under declared conditions is
 a meaningful intermediate target before autonomous preparation, substrate
 origin or physical identification has been resolved.
 
+The principal objective is to identify and justify TNFR's laws and hypotheses
+one at a time through their dependencies, including revisable foundational
+premises. Constructed organizations test the foundations that produced them.
+Compare complete laws on matched objects to distinguish consequences of
+retained geometry and information from consequences of a selected pressure,
+storage or event rule. A successful conditional construction is useful evidence
+for that model; it is not a reason to stop examining its independent premises.
+The [law-admission audit](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission)
+governs this return to the bases, and the execution plan selects one unresolved
+question at a time. Each justified correction should improve the common
+foundations and their consumers rather than add an isolated fitted mechanism.
+
 <a id="fundamental-research-dependencies"></a>
 ## 2. Information, interaction and complete laws
 
