@@ -1559,6 +1559,55 @@ The [guide](../../guides/relational/SINE_PATTERNS.md#sine-class-nonlinear-protoc
 evaluates the declared response-free design. Earlier frozen outcomes and
 the short-window record-overlap theorem remain unchanged.
 
+<a id="sine-class-amplitude-feasibility"></a>
+### Conditional feasibility over a common amplitude interval
+
+[`bound_sine_class_amplitude_feasibility`](../../../src/tnfr/physics/relational_sine_class_amplitude_feasibility.py)
+returns `SineClassAmplitudeFeasibility` from four mandatory scalar inputs:
+`amplitude_scale_lower`, `amplitude_scale_upper`, `base_cubic_lower` and
+`base_cubic_upper`. Admit finite represented reals before arithmetic;
+require an ordered strictly positive scale interval and an ordered base
+coefficient interval. Booleans and nonfinite values reject admission.
+
+The coefficient interval is an explicitly supplied mathematical premise
+for the complete central cubic coefficient at the original fixed design.
+The calculator does not authenticate it, consume a saved report verdict,
+or establish its model association. The [proof and retained-evidence audit](../../../theory/nodal/SINE_CLASS_AMPLITUDE_FEASIBILITY.md)
+provide that association for the documented example. A consumer reusing
+other reports must re-admit their primitive model and coefficient evidence
+and reconstruct every consumed derived enclosure.
+
+Both donor impulses are scaled from `1/2000`; the two source families,
+support, complete law, clock, delay `1`, duration `2`, source radius
+`1e-32`, per-reading error `1e-30`, identity radius `1/12` and original
+work ceilings are fixed. Common-scale homogeneity multiplies the entire
+base cubic interval, including its time error, by the cube of the scale.
+The higher-amplitude error uses the upper scale and the source allowance
+remains unchanged. The shared eight-reading decision distinguishes true
+sign, recorded sign and separation from a separately noisy null requiring
+sixteen errors. A failed sufficient margin establishes no impossibility.
+
+The strict complex-amplitude guard applies throughout the scale interval.
+Outside its domain, full-response bounds remain unavailable; a negative
+remainder denominator cannot produce a certificate. Work and identity
+guards are independent of observation resolution.
+
+The new delayed-work estimate bounds the carried donor Laplacian through
+the reversible heat spectrum and a full-law source defect. It retains
+the exact work `q*(L*x_pre)[4] + 3*q*q/2`. It credits no continuous loss as
+an event reserve and leaves earlier conservative ledger defaults intact.
+`upper_scale_history_bounds` contains the four histories at the upper
+scale; monotonicity makes their work, storage and radius ceilings uniform.
+Their pointwise mean shifts are not uniform means: separate
+`first_form_mean_bounds`, `final_form_mean_bounds` and `phase_mean_bounds`
+cover the full scale interval and original source uncertainty.
+
+Shared SDK projection uses `tnfr.sine-class-amplitude-feasibility.v1`.
+This detached arithmetic report generates no coefficient, nonlinear
+trajectory or acquired source. It is not a frozen evaluation protocol.
+The [guide](../../guides/relational/SINE_PATTERNS.md#sine-class-amplitude-feasibility)
+demonstrates the conditional interval calculation.
+
 <a id="sine-class-spatial-observation"></a>
 ### Spatial receiver observation with sixteen scalar reading errors
 

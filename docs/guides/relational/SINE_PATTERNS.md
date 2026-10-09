@@ -1352,6 +1352,47 @@ response's sign. The [contract](../../contracts/relational/SINE_PATTERNS.md#sine
 retains these distinctions. This example does not replay any frozen
 response or establish laboratory feasibility.
 
+<a id="sine-class-amplitude-feasibility"></a>
+### Check a whole interval of common probe amplitudes
+
+The [amplitude theorem](../../../theory/nodal/SINE_CLASS_AMPLITUDE_FEASIBILITY.md)
+uses the already retained complete cubic coefficient. The following
+scalar enclosure is a conservative outer bound of that evidence,
+including its finite time error; its justification comes from the
+retained-evidence audit, not from accepting two numbers in the API.
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_class_amplitude_feasibility import (
+    bound_sine_class_amplitude_feasibility,
+)
+
+feasibility = bound_sine_class_amplitude_feasibility(
+    amplitude_scale_lower=Q(4, 3),
+    amplitude_scale_upper=Q(7, 5),
+    base_cubic_lower=-Q(7013764940694, 10**42),
+    base_cubic_upper=-Q(7013764940692, 10**42),
+)
+assert feasibility.decision.recorded_sign
+assert feasibility.decision.null_excluded
+assert feasibility.all_work_within_allowances
+assert feasibility.all_identities_certified
+```
+
+Every common scale in that interval passes the sufficient inequalities.
+The calculation retains the full higher-amplitude remainder and both
+actual-source allowances. It also bounds the delayed impulse's carried
+work, storage and identity under the original ceilings. The
+`upper_scale_history_bounds` describe the upper endpoint used for those
+uniform bounds; inspect the separate mean intervals for conserved means
+over the whole scale range.
+
+The [contract](../../contracts/relational/SINE_PATTERNS.md#sine-class-amplitude-feasibility)
+keeps the supplied coefficient premise, domain admission and work/identity
+decisions explicit. This example makes no new coefficient or nonlinear
+response calculation, chooses no single evaluation intervention, and
+establishes no laboratory measurement precision.
+
 <a id="sine-class-spatial-observation"></a>
 ### Assess a two-node spatial observation of the receiver
 

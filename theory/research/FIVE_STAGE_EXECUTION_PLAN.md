@@ -44,8 +44,12 @@ also certifies a true organization contrast, but its sixteen reading
 errors can erase it. Because the central and spatial readings use disjoint
 nodes, allowed errors can cancel both statistics simultaneously. No
 linear combination of these two statistics guarantees discrimination
-under this budget. A justified probe-amplitude regime is the
-[sole next theoretical task](#current-g3-gate), for the
+under this budget. The [amplitude feasibility theorem](../nodal/SINE_CLASS_AMPLITUDE_FEASIBILITY.md)
+now certifies a nonempty common-scale interval with robust central
+discrimination under the original reading, work and identity budgets.
+This conditional result reuses the retained cubic coefficient and proves
+a sharper bound on the delayed impulse's carried work. A single matched
+cross-class evaluation protocol is the [sole next admission](#current-g3-gate), for the
 [organization-dependent interaction rationale](../NODAL_RESEARCH_STRATEGY.md#organization-dependent-nonlinearity).
 
 The admitted producer, frozen protocol and first outcome are consolidated;
@@ -63,7 +67,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Pending theoretical admission | [Probe-amplitude feasibility](#current-g3-gate): combine homogeneous response scaling, complete errors and carried work/identity constraints before selecting an intervention |
+| Pending protocol admission | [Scaled cross-class evaluation](#current-g3-gate): fix one admitted intervention, match both actual source families and bound the required independent forward-observation precision before freezing a response |
+| Closed theoretical admission | [Probe-amplitude feasibility](#organization-probe-amplitude-feasibility): a whole common-scale interval separates central records from a noisy zero-contrast alternative within the original work and identity budgets |
 | Closed conditional analytic assessment | [Spatial organization observation](#organization-sensitive-observation): true quadratic class dependence and simultaneous central/spatial scalar noise cancellation, without full-record overlap |
 | Closed conditional analytic assessment | [Mediator organization and nonlinear interaction](#mediator-organization-nonlinear-interaction): complete cubic dynamics certify a true class contrast and a scoped scalar noise-cancellation witness |
 | Closed reserved evaluation | [First frozen four-history outcome](#reserved-nonlinear-four-history-response): full completion, independent forward enclosure, theorem consistency and strict nonlinear/tangent record-set separation |
@@ -89,42 +94,65 @@ remain open; no empirical response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="scaled-cross-class-evaluation-admission"></a>
+## Next primary admission: a single scaled cross-class observation protocol
+
+Prepare one independent full-law evaluation of the central organization
+contrast inside the [certified amplitude interval](../nodal/SINE_CLASS_AMPLITUDE_FEASIBILITY.md).
+Fix one common scale, both acquired source families, the two donor events,
+clock, horizon, eight scalar readings and unchanged work/identity budgets.
+The amplitude theorem supplies a prediction; it must not supply the
+forward response or conceal the forward enclosure's numerical width.
+
+1. Select a single scale from the admitted interval by a declared design
+   criterion, then freeze its analytic prediction and error allowances.
+   No coefficient or response sweep is needed to choose it.
+2. Reuse the [full-state four-history producer](../../src/tnfr/physics/relational_sine_class_readout.py)
+   for each class. Retain independent actual-source residuals across
+   classes and matched complete sources within each class; declare the
+   Cartesian covers and their association with the acquired families.
+   Carry all form and phase coordinates through both events.
+3. Specify an a priori numerical budget sufficient to test the predicted
+   sign and separation from a separately noisy zero-contrast alternative.
+   Include cross-class subtraction, interval width, exact sensor-error
+   counts, and the distinction between a source cover and its correlated
+   acquired subset. Preserve raw endpoints and shared-prefix observations.
+4. Admit the composition and failure contract using independent controls,
+   then prepare the immutable source/protocol association. Record partial
+   completion and the first failed attempt honestly; a failed enclosure
+   is not a physical counterexample or permission to tune against a
+   reserved response.
+
+This is protocol and numerical-readiness admission. A new reserved response
+requires the resulting frozen protocol; none has been evaluated at the
+changed intervention. No laboratory source, measurement calibration or
+physical identification is admitted by the amplitude theorem.
+
 <a id="organization-probe-amplitude-feasibility"></a>
-## Next primary admission: a justified amplitude regime for discrimination
+## Closed admission: a justified amplitude regime for discrimination
 
-Determine whether a common scale factor for the two existing donor
-impulses can give robust central mixed-contrast discrimination while
-retaining the complete law, support, acquired source families, clock,
-event times, horizon, sensor error and existing work/identity requirements.
-The [joint observation obstruction](../nodal/SINE_CLASS_SPATIAL_OBSERVATION.md#sine-spatial-joint-cancellation)
-rules out obtaining a worst-case guarantee simply by combining the two
-assessed statistics. This motivates a declared intervention change,
-not a search over responses or a claim that every observation is blind.
+The [amplitude feasibility theorem](../nodal/SINE_CLASS_AMPLITUDE_FEASIBILITY.md)
+certifies every common scale in `[4/3,7/5]` under the unchanged complete
+law, sources, clock, event times, horizon and reading errors. Homogeneity
+carries the already enclosed cubic coefficient through both event windows;
+the full higher-amplitude and actual-source errors remain explicit.
+The resulting central contrast has a strictly negative recorded sign and
+is separated from a separately noisy zero-contrast alternative throughout
+that interval.
 
-1. Introduce a common positive amplitude scale with no new source or
-   hidden-state reset. The already enclosed complete central cubic
-   coefficient scales cubically; derive this homogeneity for both
-   carried event histories. Keep its finite time error, the scaled
-   higher-amplitude remainder and unchanged actual-source allowance.
-2. Derive the scale inequalities for the eight-reading recorded sign and
-   the separately noisy null comparison. Bound the whole claimed scale
-   interval, including the complex-amplitude domain, rather than
-   selecting a pulse after inspecting a response.
-3. Re-admit contact and each impulse against the original work ceilings,
-   conserved means, storage and identity guards. The delayed jump's work
-   includes the actual carried form state: its quadratic self-term alone
-   is insufficient. Existing conservative bounds may prevent scaling;
-   any sharper heat/full-law work or storage estimate needs a derivation.
-4. Close with a certified nonempty feasible regime or a scoped
-   obstruction identifying which requirement cannot be met. Only after
-   this admission may a single changed intervention and any numerical
-   evaluation budget be fixed prospectively.
+A reversible-heat spectral estimate bounds the delayed donor Laplacian,
+including the full-law and actual-source defect. The exact carried work
+then satisfies both original impulse ceilings, while storage and radius
+guards retain all three cycle identities. No continuous loss is credited
+as an event reserve. The former conservative work bounds and the original
+design's [joint recording obstruction](../nodal/SINE_CLASS_SPATIAL_OBSERVATION.md#sine-spatial-joint-cancellation)
+retain their scope.
 
-Reuse retained analytic coefficients where homogeneity justifies it;
-another coefficient or nonlinear-response sweep is not part of this
-gate. No scale factor is admitted by the present queue entry. Relaxing
-work, identity or sensor requirements would be a separate design change.
-Laboratory preparation and measurement feasibility remain open.
+The shared conditional calculator consumes scalar coefficient premises;
+the retained-evidence audit separately reconstructs the base enclosure.
+This proof-only admission evaluates no new coefficient, acquired source
+or nonlinear trajectory. It selects neither a single intervention nor a
+physical measurement model; those obligations remain in the next gate.
 
 <a id="organization-sensitive-observation"></a>
 <a id="next-primary-admission-an-observation-of-organization-dependent-interaction"></a>

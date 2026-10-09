@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from fractions import Fraction as Q
 
 from .._exact_time import exact_or_represented_real
-from ..mathematics._rational_interval import INTERVAL_METHOD, I
+from ..mathematics._rational_interval import INTERVAL_METHOD, I, _exact
 from .relational_sine_class_mediation import _CONTACTS, _EDGES, _NODES
 from .relational_sine_port_composition import _parameters
 
@@ -90,13 +90,34 @@ class _ClassProbeEventLedger:
     histories: tuple[_ClassProbeHistoryBound, ...]
 
 
-def _probe_event_ledger(values, g, discrepancies):
+def _probe_coordinate_envelope(amplitude, time, endpoint_radius, gamma_upper):
+    """Shared global coordinate bounds after admitted nonnegative budgets."""
+    eps, g = endpoint_radius, gamma_upper
+    form = (amplitude + eps + 2 * g * time * eps) / (1 - 2 * g**2 * time**2)
+    return form, eps + 2 * g * time * form
+
+
+def _probe_event_ledger(
+    values, g, discrepancies, *, pre_second_laplacian_abs_bounds=None
+):
     """Rebuild all carried event bounds; supplied discrepancy bounds are optional.
 
     The norm and storage proof uses heat contraction and is valid whenever
     1-2*g**2*T**2>0. Each caller admits its own proved horizon domain. A None
     discrepancy means no individual tangent comparison is supplied here.
+    Optional delayed donor-Laplacian absolute bounds require an independent
+    proof from the caller. Their four nonnegative exact values replace only
+    the default pressure estimate; this ledger does not establish that proof.
     """
+    if pre_second_laplacian_abs_bounds is not None:
+        bounds = tuple(pre_second_laplacian_abs_bounds)
+        if len(bounds) != 4:
+            raise ValueError("four delayed donor-Laplacian bounds are required")
+        bounds = tuple(_exact(value) for value in bounds)
+        if any(value < 0 for value in bounds):
+            raise ValueError("delayed donor-Laplacian bounds must be nonnegative")
+    else:
+        bounds = (None,) * 4
     a, b, s, t, eps, r = (
         values[key]
         for key in (
@@ -115,12 +136,10 @@ def _probe_event_ledger(values, g, discrepancies):
     contact_allowed = contact_work <= values["contact_work_allowance"]
 
     def envelope(amplitude, time):
-        form = (amplitude + eps + 2 * g * time * eps) / (1 - 2 * g**2 * time**2)
-        phase = eps + 2 * g * time * form
-        return form, phase
+        return _probe_coordinate_envelope(amplitude, time, eps, g)
 
     histories = []
-    for (label, first, second), discrepancy in zip(
+    for (label, first, second), discrepancy, laplacian_bound in zip(
         (
             ("neither", Q(0), Q(0)),
             ("first_only", a, Q(0)),
@@ -128,13 +147,19 @@ def _probe_event_ledger(values, g, discrepancies):
             ("both", a, b),
         ),
         discrepancies,
+        bounds,
     ):
         amplitude = abs(first) + abs(second)
         x, y = envelope(amplitude, t)
         first_x, first_y = envelope(abs(first), t)
         pre_x, pre_y = envelope(abs(first), s)
         work1center, work1error = Q(3, 2) * first**2, 6 * abs(first) * eps
-        work2center, work2error = Q(3, 2) * second**2, 6 * abs(second) * pre_x
+        work2center = Q(3, 2) * second**2
+        work2error = (
+            6 * abs(second) * pre_x
+            if laplacian_bound is None
+            else abs(second) * laplacian_bound
+        )
         upper1, upper2 = work1center + work1error, work2center + work2error
         z1, z2 = 27 * (first_x**2 + first_y**2), 27 * (x**2 + y**2)
         e1, e2 = initial_storage + upper1, initial_storage + upper1 + upper2

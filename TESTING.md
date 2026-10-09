@@ -212,6 +212,27 @@ heat quadrature are coefficient controls, not complete sine trajectories.
 The tests acquire no source and replay no reserved response. SDK wiring
 uses `test_reduced_port_sdk_wiring_does_not_evaluate_research` separately.
 
+For [common-scale amplitude feasibility](theory/nodal/SINE_CLASS_AMPLITUDE_FEASIBILITY.md),
+check whole-interval coefficient homogeneity and higher-amplitude bounds,
+the complex-domain boundary, the fixed source/noise allowances and the
+separate work and identity verdicts. The supplied base coefficient is a
+conditional premise of the public calculator; finite scalar admission
+alone does not establish its association with the model.
+
+```sh
+python -m pytest tests/physics/test_sine_class_amplitude_feasibility.py tests/physics/test_sine_class_amplitude_feasibility_algebra.py tests/physics/test_sine_class_amplitude_feasibility_evidence.py tests/physics/test_sine_class_cubic_evidence.py -q
+```
+
+Independent algebra checks cover carried amplitude levels, weighted heat
+symmetry and the donor Laplacian in the exact jump work. Reconstruct the
+retained coefficient endpoints and tails before applying the conditional
+calculator; do not regenerate coefficients or a nonlinear response.
+Upper-scale work and radius bounds cover the interval by monotonicity,
+whereas conserved means require their own interval bounds. If the shared
+event ledger changes, also select the superposition, nonlinear protocol,
+organization, cubic and spatial contract owners. Preserve their default
+conservative bounds and frozen evidence.
+
 For the [spatial class observation](theory/nodal/SINE_CLASS_SPATIAL_OBSERVATION.md),
 test the two-node observation, receiver-odd locality, complete quadratic
 phase feedback and the heat-only class-blind control. Exact low-order jets

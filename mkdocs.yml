@@ -116,6 +116,7 @@ nav:
           - "Organization dependence of nonlinear interaction": theory/nodal/SINE_CLASS_NONLINEAR_ORGANIZATION.md
           - "Complete cubic-amplitude mediator response": theory/nodal/SINE_CLASS_CUBIC_RESPONSE.md
           - "Spatial observation of nonlinear class interaction": theory/nodal/SINE_CLASS_SPATIAL_OBSERVATION.md
+          - "Feasible amplitudes for class discrimination": theory/nodal/SINE_CLASS_AMPLITUDE_FEASIBILITY.md
           - "Uniform tracking of reduced sine ports": theory/nodal/SINE_PORT_RELAXATION.md
           - "Form tracking by ordered heat comparison": theory/nodal/SINE_PORT_FORM_TRACKING.md
           - "Two-port compatibility of sine classes": theory/nodal/SINE_TWO_PORT_COMPATIBILITY.md
