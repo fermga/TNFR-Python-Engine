@@ -745,6 +745,14 @@ its content is preserved above. All earlier frozen evidence is unchanged.
 
 ### Scope of the observed separation
 
+For the declared signed receiver coordinate, \(M<0\) means
+\(R_{11}-R_{00}<(R_{10}-R_{00})+(R_{01}-R_{00})\): the combined change
+falls below the sum of the two individual changes. It does not determine
+the sign of any individual response, a coherence change or a stability
+verdict. The successful outcome is agreement with a prospective finite
+prediction and separation from the stated alternative; a negative sign
+is not itself a criterion of benefit or deterioration.
+
 This is a validated software enclosure for the supplied complete law and
 source cover. Every conditionally acquired correlated source lies in that
 cover; an arbitrary Cartesian corner need not be acquired or satisfy the

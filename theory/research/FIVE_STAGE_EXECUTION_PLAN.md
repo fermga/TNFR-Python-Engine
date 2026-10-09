@@ -25,29 +25,26 @@ The route is **justified nodal dynamics -> collective organization
 collective properties from their physical identification. A sufficient
 representation does not independently justify the law that evolves it.
 
-The [validated four-history producer](#validated-nonlinear-four-history-observation)
-is admitted: it retains full state, exact event ancestry, finite evidence
-and honest partial failure independently of the prediction. The
-[finite nonlinear theorem](#informative-nonlinear-interaction-protocol)
-and earlier [short-window overlap](#two-probe-nonlinear-superposition)
-remain valid. The [matched evaluation freeze](#frozen-nonlinear-four-history-evaluation)
-is complete. Its [first reserved evaluation](#reserved-nonlinear-four-history-response)
-closed with a retained full-law enclosure separating nonlinear and tangent
-four-record sets under the declared error budget. The sole next admission
-is [mediator-organization dependence of that nonlinear interaction](#current-g3-gate);
-no further response has been evaluated. The earlier
-[effective-memory theorem](#acquired-mediator-effective-memory) and
-[class-response certificate](#generative-class-mediated-response) remain
-unchanged. The
-[digital-PLL review](#terrestrial-coupled-phase-admission) is a closed
-auxiliary result, with no admitted physical bridge. The
-[finite-noise/horizon theorem](#sine-aperture-resolution-admission) is closed.
-The [reserved finite-aperture result](#reserved-aperture-inference-admission)
-remains unchanged. No source acquisition, fitting or physical-data
-evaluation is active; declared mathematical budgets do not establish
-attainable preparation or measurement precision.
-Physical constituent emergence and independent law selection remain open;
-no empirical response has passed complete physical admission.
+The conditional formation and [class-response certificate](#generative-class-mediated-response)
+connect acquired organization to a distinguishable interaction, with
+[effective memory](#acquired-mediator-effective-memory) retaining hidden
+initialization. The [first frozen four-history evaluation](#reserved-nonlinear-four-history-response)
+now supports the prospective within-class nonlinear/tangent separation
+under its declared error budget. These are complementary results: together
+they do not yet establish that the nonlinear mixed response changes with
+the mediator's organization. That missing comparison is the
+[sole next theoretical admission](#current-g3-gate), for the
+[organization-dependent interaction rationale](../NODAL_RESEARCH_STRATEGY.md#organization-dependent-nonlinearity).
+
+The admitted producer, frozen protocol and first outcome are consolidated;
+no further reserved response is needed to restate that result. Earlier
+obstructions and source-specific physical reviews retain their scope.
+Supplied preparation, support, law, events and structural clock remain
+premises. In particular, the very small source/readout allowances and long
+preparation dwell are mathematical budgets, not demonstrated laboratory
+capabilities. No source acquisition, fitting or physical-data evaluation
+is active. Physical constituent emergence and independent law selection
+remain open; no empirical response has passed complete physical admission.
 
 <a id="2-one-status-board-and-dependency-chain"></a>
 ## Queue status
@@ -63,9 +60,9 @@ no empirical response has passed complete physical admission.
 | Closed theoretical gate | [Acquired-mediator effective memory](#acquired-mediator-effective-memory): exact tangent source/kernel, matched-source nonlinear bound and scoped instantaneous-closure obstructions |
 | Closed conditional analytic assessment | [Class-mediated collective response](#generative-class-mediated-response): first frozen full-family contrast, phase-feedback control, work and identity certificates; no simulated or measured trajectory |
 | Closed auxiliary admission | [Terrestrial coupled-phase feasibility](#terrestrial-coupled-phase-admission): selected digital-PLL bridge not admitted; neither a prerequisite for generative pattern research nor a physical identification |
-| Latest closed theoretical gate | [Finite-noise/horizon resolution](#sine-aperture-resolution-admission): sufficient error/window budgets and a separate complete-history noise-overlap obstruction |
-| Latest closed reserved gate | [Finite-aperture software evaluation](#reserved-aperture-inference-admission): first frozen full-history averages, public-only inverse and declared transfer/alternative controls |
-| Latest closed admission gate | [Validated integral-observation producer](#sine-aperture-readout-admission): explicit affine clock, complete carried state and certified averages or an honest partial prefix |
+| Closed theoretical gate | [Finite-noise/horizon resolution](#sine-aperture-resolution-admission): sufficient error/window budgets and a separate complete-history noise-overlap obstruction |
+| Closed reserved gate | [Finite-aperture software evaluation](#reserved-aperture-inference-admission): first frozen full-history averages, public-only inverse and declared transfer/alternative controls |
+| Closed admission gate | [Validated integral-observation producer](#sine-aperture-readout-admission): explicit affine clock, complete carried state and certified averages or an honest partial prefix |
 | Closed prerequisite | [Finite-aperture observation](#sine-aperture-inference-admission): exact moments and finite-error necessary inference at fixed positive aperture fractions |
 | Closed prerequisite | [Reserved nonconstant-clock evaluation](#reserved-clock-drift-inference-admission): full-state signed transfer, mean-rate/gain coverage and exact sampled-profile ambiguity under frozen budgets |
 | Closed prerequisite | [Bounded clock drift](#sine-clock-drift-inference-admission): exact sampled-exposure equivalence and finite-error inference of the first-window mean rate under held sensor and structural laws |
@@ -88,14 +85,44 @@ class-\(k\) source. The two classes have separate actually reached families
 under a matched preparation protocol; retain the same support, complete
 law, capacities, clock, probes and observation definition.
 
-Derive a finite separated contrast, or a scoped symmetry or resolution
-obstruction, including full nonlinear and source errors, carried event
-history, preparation costs, work and identity. Different heat coefficients
-or generic cosine dependence alone do not close this gate. This question
-differs from both the earlier one-probe class contrast and the now retained
-within-class nonlinear/tangent separation. Admit the prediction and its
-budgets before any new reserved response; no such response or physical
-identification is part of this theoretical admission.
+This question differs from both the earlier one-probe class contrast and
+the retained within-class nonlinear/tangent separation. Its bounded
+deliverable is a finite separated contrast, a proved scoped symmetry or
+resolution obstruction, or a precisely identified unresolved estimate.
+Only the first two close the mathematical question within their stated
+domain. Admission proceeds as follows:
+
+1. **Match the source and controls.** Start with the existing two acquired
+   class families and the admitted two-probe design. Preserve complete
+   event ancestry, arbitrary source residuals and all carried coordinates.
+   The two classes need not share a residual or a preparation cost;
+   cancellation within each four-history group does not grant cancellation
+   between classes. Account for both preparations, work and identities.
+2. **Derive the actual difference.** Check symmetries of the complete
+   source, law, ports and observation before estimating the contrast.
+   Reuse the shared heat, nonlinear-remainder and event owners. Cancel
+   common analytic contributions only where justified; different heat
+   coefficients or generic cosine dependence alone do not decide the
+   full finite response. Retain class-blind leading terms as controls.
+3. **Admit the observation margin.** Bound the true difference including
+   both full nonlinear and source errors. With four scalar readings per
+   class, each bounded by the same \(\delta\), the recorded cross-class
+   difference has an additional allowance \(8\delta\). Require a strict
+   signed margin beyond that allowance for uniform class discrimination.
+   Comparing against a separate alternative's eight-record sets requires
+   that alternative's own uncertainty as well; the previous within-class
+   eight-error criterion cannot simply be transferred.
+4. **Decide before another response.** A symmetry proof or explicit
+   compatible-record witness may establish a scoped obstruction; a wide
+   outer bound alone does not. Record the limiting term if unresolved.
+   Declare any changed design and its justification separately, preserve
+   earlier evidence, and fix the prediction and numerical budgets before
+   a new reserved evaluation. The retained class-two response is prior
+   information and cannot become unseen evidence for this comparison.
+
+No new reserved response or physical identification is part of this
+theoretical admission. Further solver optimization needs a demonstrated
+limiting estimate or implementation defect in this comparison.
 
 <a id="reserved-nonlinear-four-history-response"></a>
 <a id="next-primary-admission-execute-and-retain-the-first-frozen-outcome"></a>
@@ -156,9 +183,10 @@ A global first failure retains validated prefixes, failed-attempt
 evidence and unattempted branches. Interval widths contain source and
 numerical enclosure effects, not an inferred sensor budget. The outer
 source cover admits neither acquisition nor every corner's identity.
-Independent controls use unrelated sources. The matched class-two
-four-history response was not evaluated; all frozen evidence remains
-unchanged.
+Independent controls use unrelated sources. No matched class-two
+four-history response was evaluated during producer admission; its later
+[frozen outcome](#reserved-nonlinear-four-history-response) is retained
+separately. All earlier frozen evidence remains unchanged.
 
 <a id="informative-nonlinear-interaction-protocol"></a>
 <a id="next-primary-admission-informative-nonlinear-interaction-protocol"></a>

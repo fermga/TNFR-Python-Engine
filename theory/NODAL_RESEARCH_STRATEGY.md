@@ -167,6 +167,27 @@ Supplied contact, effective interaction and primitive relation birth are
 different claims. Event passivity also does not select occurrence; continuous
 loss is not an event reserve without a reservoir law.
 
+<a id="organization-dependent-nonlinearity"></a>
+### Organization-dependent nonlinear interaction
+
+A class-dependent response and a nonlinear response answer different
+questions. A linear response may already distinguish two organizations;
+a nonlinear interaction in one organization need not distinguish it from
+another. To connect these claims, compare the same four-history mixed
+observable across actually acquired classes under one complete law.
+Pair histories at the same full source within each class, while retaining
+independent preparation uncertainty and possibly unequal costs between
+classes. Additive cancellation must not erase hidden initialization or
+nonlinear source sensitivity.
+
+This comparison tests whether internal organization controls an interaction
+property beyond additive response. Interface symmetry can hide that property;
+nonzero local curvature or a different formal coefficient does not guarantee
+a finite observable contrast. A useful result therefore includes either a
+full-error separation or a proved, scoped obstruction. Insufficient bounds
+alone leave the claim unresolved. Physical comparison still requires an
+independent measurement and clock bridge for the particular property.
+
 ## 5. Physical confrontation and comparison
 
 Physical comparison tests a named mechanism under the plan's
