@@ -284,6 +284,25 @@ or a nonlinear response. The modified unit-delay pressure helper also requires
 the amplitude, superposition and repeated-interaction contract tests; it does
 not merge their distinct initial storage, contact or mean hypotheses.
 
+For [causal component composition](theory/nodal/SINE_CLASS_INTERFACE_COMPOSITION.md),
+check both complete boundary rows against independent edge equations with the
+actual joined degrees. Exercise component charge exchange, internal and bridge
+storage, simultaneous signed event work, hidden initialization and primitive
+full-lift residual admission. The explicit cubic residual includes hidden
+quadratic feedback, nonlinear source interactions and omitted bridge terms.
+
+```sh
+python -m pytest tests/physics/test_sine_class_interface_composition.py tests/physics/test_sine_class_collective_interface.py tests/physics/test_sine_class_port_readout_evidence.py -q
+```
+
+The retained-response audit reuses its module fixture and reconstructed gap
+to check that this substitution preserves the existing memory distinction.
+It subtracts the new approximation defect once; actual-source transport and
+both recording errors are already present. No coefficient or response is
+regenerated. A tolerance for one impulse is not a uniform two-channel input-map
+certificate, and output closeness alone proves neither feedback existence
+nor exact storage, identity or work properties for an arbitrary substitute.
+
 For the [changed-input collective prediction](theory/nodal/SINE_CLASS_CHANGED_INPUT_PREDICTION.md),
 check grounded-path kernel coefficients, exact causal convolution weights,
 hidden quadratic feedback and independent linear initialization. Compare low

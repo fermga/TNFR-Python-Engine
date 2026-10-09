@@ -17,9 +17,9 @@ P1-P5 below governs physical evaluation; it is not another active queue.
 
 **Primary question:** can organized TNFR patterns generate observable
 collective properties that explain phenomena of fundamental physics?
-The next bounded question is whether component causal interfaces can be
-composed through their existing boundary currents with a justified finite
-error bound, retaining the organization that generates those responses.
+The next bounded question is whether interventions on two distinct neighboring
+organizations produce an observable response that cannot be represented as a
+sum of their separately matched one-neighbor response functionals.
 The route is **justified nodal dynamics -> collective organization
 -> inherited interaction properties -> independent physical observation**. The
 [ontology](../EMERGENT_ONTOLOGY.md#generative-bound-organization) distinguishes
@@ -61,9 +61,14 @@ necessity or a new class discriminator. The
 [independent full-law comparison](../nodal/SINE_CLASS_COLLECTIVE_FORWARD_PROTOCOL.md#sine-collective-forward-reserved-result)
 completed its single frozen attempt and met the classwise numerical,
 prediction-consistency and recorded-separation criteria. Its two nominal
-references are transported to the original acquired families. The next
-obligation is [causal interface composition](#current-g3-gate), with the
-neighboring patterns supplying boundary inputs under the same nodal law.
+references are transported to the original acquired families.
+[Causal component composition](../nodal/SINE_CLASS_INTERFACE_COMPOSITION.md)
+now admits both endogenous boundary channels, a well-posed exact composition
+and conditional substitution bounds. An explicit component cubic hierarchy
+retains hidden initialization and preserves the named memory distinction
+without another response calculation. The next obligation is
+[mixed-neighbor response admission](#current-g3-gate): derive a collective
+interaction property beyond the sum of separately matched interventions.
 
 Supplied preparation, support, law, events and structural clock remain
 premises. In particular, the very small source/readout allowances and long
@@ -77,7 +82,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Pending theoretical admission | [Causal interface composition](#current-g3-gate): factor the existing three-ring support into component interfaces, derive both boundary rows and bound feedback error with hidden initialization retained |
+| Pending theoretical admission | [Mixed-neighbor response](#current-g3-gate): derive a causal interaction between distinct neighbor interventions that a sum of separately matched response functionals cannot reproduce, or establish a scoped obstruction |
+| Closed theoretical admission | [Causal interface composition](#causal-interface-composition): exact two-channel feedback, output-map and full-lift substitution contracts, and an explicit cubic residual preserving the named memory distinction |
 | Closed reserved evaluation | [Changed-input full-law response](#reserved-changed-input-full-law-response): both full54 histories complete, fixed source/width/consistency criteria pass, and the separately noisy grounded comparator is excluded |
 | Closed producer and freeze admission | [Changed-input full-law comparison](#changed-input-full-law-comparison): shared full54 producer, absolute source conversion, separate source transport and immutable runtime/protocol association; no response evaluated at freezing |
 | Closed predictor and prospective protocol admission | [Changed-input interface transfer](#changed-input-collective-interface-transfer): causal kernel execution, independent hidden source, changed-word work/identity, and strict separation from a grounded tangent port alternative |
@@ -111,44 +117,65 @@ remain open; no empirical response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="mixed-neighbor-response-admission"></a>
+## Next primary admission: mixed response to distinct neighboring organizations
+
+Use the same three-C9 support, original acquired families, joined degrees,
+complete nodal law, capacities, structural clock and continuous lifts as the
+[component composition](../nodal/SINE_CLASS_INTERFACE_COMPOSITION.md).
+The question is whether the mediator's causal response to independently
+specified donor and receiver interventions has a nonzero mixed contribution.
+This would identify a collective interaction that two separately matched
+one-neighbor response functionals cannot reproduce by addition.
+
+1. Define independent external form-intervention histories at the donor and
+   receiver central nodes, a common full-state preparation and an observation.
+   Retain all three components and their memory in every branch. Distinguish
+   interventions from the endogenous port histories, which change under
+   feedback; do not treat them as independently clamped boundary values.
+2. Define the four-history mixed difference at fixed preparation and complete
+   law. The comparator is the baseline plus the two separately matched,
+   baseline-subtracted one-neighbor responses, with no shared hidden-state update
+   between them. It is not the class of all pairwise dynamical laws: the
+   microscopic sine law itself has pairwise edges.
+3. Derive the leading mixed causal operator, including symmetry cancellations,
+   hidden quadratic recoupling and bridge terms. Show that it is nonzero for
+   distinct neighbor interventions, or prove its vanishing or an observation
+   obstruction on the declared domain. A same-port two-probe result or a
+   stationary environmental potential does not discharge this requirement.
+4. Establish a finite observation/error criterion with source, approximation,
+   numerical and separate recording budgets. Retain each branch's means,
+   event work and complete-state identity under their own hypotheses. A
+   nonzero formal coefficient alone does not prove finite distinguishability.
+
+This is an analytic admission gate. Derive the discriminator before selecting
+any response evaluation; no finer repeat of an existing word closes it.
+The law and support remain supplied, and nonadditivity would not by itself
+identify a physical force, a fundamental constituent or universality across
+scales. A negative result closes the stated question with its scope.
+
 <a id="causal-interface-composition"></a>
-## Next primary admission: causal composition through existing boundary currents
+<a id="next-primary-admission-causal-composition-through-existing-boundary-currents"></a>
+## Closed admission: causal composition through existing boundary currents
 
-Use the same three-C9 support, two admitted central bridges, original acquired
-families, capacities, structural clock and continuous phase lifts as the
-[collective interface](../nodal/SINE_CLASS_COLLECTIVE_INTERFACE.md) and
-[retained full-law comparison](../nodal/SINE_CLASS_COLLECTIVE_FORWARD_PROTOCOL.md#sine-collective-forward-reserved-result).
-Admit three component causal interfaces, each retaining its central form and
-phase, whose boundary inputs come from the other components' evolving ports.
-The complete nodal law and the two bridges remain supplied premises.
+The [composition owner](../nodal/SINE_CLASS_INTERFACE_COMPOSITION.md)
+derives exact component rows with joined central degrees `(3,4,3)`, both
+endogenous boundary inputs, complete hidden initialization and a unique causal
+feedback solution. Recomposition preserves the full law, weighted charges and
+signed storage/work balances. An isolated degree-two kernel would change it.
 
-1. Split both exact central evolution rows into internal-ring terms and the
-   existing bridge currents. Keep the actual final degrees `(3,4,3)` at the
-   central nodes and degree two elsewhere. Prove that recomposition recovers
-   the original 54-coordinate law, its weighted mean balances and signed
-   boundary storage/work transfer. An isolated degree-two C9 kernel cannot
-   substitute for a block with its joined degree normalization.
-2. Declare sufficient retained and hidden state, common origins, source
-   correlations, observation, finite window and input/port domain. Derive
-   the form **and** phase boundary inputs from the same complete law and
-   establish a well-posed causal feedback problem. A prescribed input or
-   reconstructed pressure is not an endogenous interaction law.
-3. Derive a quantitative error bound for component approximations under that
-   feedback, retaining each hidden initialization and the quadratic feedback
-   needed by cubic response. The existing theorem for finitely many form
-   impulses does not automatically admit continuous boundary inputs. Retain
-   complete-state identity, continuous balances and any supplied event work
-   under their own hypotheses.
-4. Establish that the composed observation preserves at least one named
-   previously admitted interaction distinction, or prove a scoped obstruction
-   or loss of resolution. Reuse compatible retained evidence without replay;
-   rederive coefficients or bounds when the block normalization requires it.
+Two distinct substitution contracts are proved: uniform component output-map
+tolerance under separately admitted feedback existence, and complete lifted
+row residuals with coupled form/phase error. The explicit triangular cubic
+construction is well posed, retains hidden quadratic recoupling, and charges
+internal, bridge and initialization nonlinear residuals. Its finite full-state
+bound preserves the previously admitted memory distinction. The retained
+full-law audit independently checks the transferred gap without regeneration.
 
-This gate admits a composability theorem and its limits, not another selected
-trajectory. It adds no support edge, source acquisition, coupling fit, physical
-clock or sensor model. A successful composition would explain a collective
-interaction under the supplied nodal law; it would not derive that law's unique
-physical validity or identify a fundamental constituent.
+No new selected coefficient or trajectory was evaluated. Output closeness does
+not grant exact storage, work or identity to arbitrary substitutes. The support,
+law, events, source and structural clock remain premises; the theorem supports
+collective interaction under that model, not unique physical law selection.
 
 <a id="reserved-changed-input-full-law-response"></a>
 <a id="next-primary-evaluation-retain-the-first-changed-input-full-law-response"></a>

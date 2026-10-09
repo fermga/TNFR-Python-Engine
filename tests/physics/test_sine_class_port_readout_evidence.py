@@ -20,6 +20,9 @@ import pytest
 from tests.physics import test_sine_class_comparison_evidence as views
 from tests.sine_evidence_helpers import forbid_sine_regeneration
 from tnfr.mathematics._phase_midpoint import _pi_bounds
+from tnfr.physics._sine_class_interface_composition import (
+    _bound_cubic_interface_composition,
+)
 from tnfr.physics._sine_class_port_readout_evidence import _reconstruct_port_readout
 from tnfr.physics.relational_sine_class_port_readout import _admit_port_readout_inputs
 from tnfr.research import sine_class_collective_forward as policy_owner
@@ -401,3 +404,27 @@ def test_observed_first_outcome_satisfies_reconstructed_prospective_conditions(
         # stopping criteria or a guarantee about unobserved inputs.
         assert row["reference_radius"] < Q(1, 10**24)
         assert row["recorded_separation_margin"] > Q(1, 40000)
+
+
+def test_component_substitution_preserves_the_reconstructed_memory_distinction(
+    retained, reconstructed_assessment
+):
+    # Reuse the original source, law, event and observation admission. The new
+    # bound changes neither this retained response nor its frozen assessment.
+    inputs = retained.inputs
+    policy = retained.records[".protocol.json"]["observation_policy"]
+    bound = _bound_cubic_interface_composition(
+        total_input_variation=sum(map(abs, inputs["port_impulse"]), Q(0)),
+        horizon=inputs["horizon"],
+        endpoint_radius=exact_record(policy["endpoint_radius"]),
+    )
+    error = bound.composition_error.form_error_upper_bound
+    assert 0 < error < Q(22, 10**30)
+    for row in reconstructed_assessment["comparisons"]:
+        # Source transport and both recording errors are already in this gap.
+        # Charge only the new lifted-response substitution defect, once.
+        lo, _ = row["recorded_full_bounds"]
+        _, other_hi = row["recorded_comparator_bounds"]
+        substitute_gap = lo - error - other_hi
+        assert substitute_gap == row["recorded_separation_margin"] - error
+        assert substitute_gap > Q(249, 10**7)
