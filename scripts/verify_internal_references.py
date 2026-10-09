@@ -156,6 +156,28 @@ def rewrite_markdown_prose(content: str, transform: Callable[[str], str]) -> str
     )
 
 
+def _without_tex_math(content: str) -> str:
+    """Mask matched TeX math wrappers; escaped or unmatched tokens remain prose."""
+    parts: list[str] = []
+    cursor = 0
+    opening: tuple[int, str] | None = None
+    for token in re.finditer(r"(\\+)([\[\]()])", content):
+        if len(token.group(1)) % 2 == 0:
+            continue
+        delimiter = token.group(2)
+        if delimiter in "[(":
+            # An unclosed earlier opener must not consume intervening prose.
+            opening = (token.end() - 2, "]" if delimiter == "[" else ")")
+        elif opening is not None and delimiter == opening[1]:
+            start, _ = opening
+            parts.append(content[cursor:start])
+            parts.append(re.sub(r"[^\n]", " ", content[start : token.end()]))
+            cursor = token.end()
+            opening = None
+    parts.append(content[cursor:])
+    return "".join(parts)
+
+
 def _anchors(markdown: Path) -> set[str]:
     content = _without_fenced_code(markdown.read_text(encoding="utf-8-sig"))
     anchors = set(HTML_ID_PATTERN.findall(content))
@@ -210,6 +232,7 @@ def verify(search_roots: Iterable[str], verbose: bool = False) -> tuple[int, lis
             )
         )
         # Algebra such as [1-s](q-k) is not a link inside a math wrapper.
+        content = _without_tex_math(content)
         content = re.sub(r"(?<!\\)\$\$[\s\S]*?(?<!\\)\$\$", "", content)
         content = re.sub(r"(?<!\\)\$(?!\s)[^\n$]*?(?<!\s)(?<!\\)\$", "", content)
         targets = [value for _, value in LINK_PATTERN.findall(content)]

@@ -1352,6 +1352,52 @@ response's sign. The [contract](../../contracts/relational/SINE_PATTERNS.md#sine
 retains these distinctions. This example does not replay any frozen
 response or establish laboratory feasibility.
 
+<a id="sine-class-spatial-observation"></a>
+### Assess a two-node spatial observation of the receiver
+
+The [spatial observation theorem](../../../theory/nodal/SINE_CLASS_SPATIAL_OBSERVATION.md)
+uses `x[23]-x[21]` at the same final time in all four histories and both
+classes. It retains the same ten primitive inputs as the central cubic
+comparison, while each node contributes its own recording uncertainty:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_class_spatial_observation import (
+    bound_sine_class_spatial_observation,
+)
+
+spatial = bound_sine_class_spatial_observation(
+    first_probe_amplitude=Q(1, 2000),
+    second_probe_amplitude=Q(1, 2000),
+    delay=Q(1),
+    total_duration=Q(2),
+    endpoint_radius=Q(1, 10**32),
+    readout_error_bound=Q(1, 10**30),
+    radius=Q(1, 12),
+    contact_work_allowance=Q(1, 10**12),
+    first_probe_work_allowance=Q(1, 500000),
+    second_probe_work_allowance=Q(1, 500000),
+)
+assert spatial.reading_count == 16
+assert spatial.decision.true_bounds[0] > 0
+assert spatial.status == "true_sign_certified"
+assert spatial.decision.scalar_cancellation
+assert not spatial.decision.recorded_sign
+assert not spatial.decision.null_excluded
+assert spatial.all_work_within_allowances
+assert spatial.all_identities_certified
+```
+
+The positive true contrast includes all higher amplitude orders and
+arbitrary source residuals through proved bounds. However, allowed errors
+can erase the recorded statistic. Its slightly larger signal than the
+central contrast does not compensate for twice as many scalar reading
+errors. The [contract](../../contracts/relational/SINE_PATTERNS.md#sine-class-spatial-observation)
+distinguishes true sign, recorded sign, null separation and unavailable
+domains. Inspect the [retained first assessment](../../../theory/nodal/SINE_CLASS_SPATIAL_OBSERVATION.md#sine-spatial-finite-result)
+for the fixed outcome and its reference to the existing complete
+coefficient evidence. This calculation evaluates no new nonlinear response.
+
 <a id="sine-class-cubic-response"></a>
 ### Separate a true organization contrast from its recording limit
 

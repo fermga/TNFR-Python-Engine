@@ -2420,6 +2420,12 @@ def test_prepared_composition_nested_label_admission(
             None,
         ),
         (
+            "relational_sine_class_spatial_observation",
+            "SineClassSpatialObservation",
+            "bound_sine_class_spatial_observation",
+            None,
+        ),
+        (
             "relational_sine_class_nonlinear_organization",
             "SineClassNonlinearOrganization",
             "bound_sine_class_nonlinear_organization",

@@ -463,8 +463,7 @@ def test_amplitude_tail_source_error_and_every_observation_decision(evidence):
     assert max(map(abs, true)) / 8 <= delta
 
 
-def test_work_and_identity_are_rebuilt_separately(evidence):
-    values, report, gamma, _ = evidence
+def _audit_work_and_identity(values, report, gamma):
     eps, r, g, s, t = (
         values["endpoint_radius"],
         values["radius"],
@@ -531,3 +530,8 @@ def test_work_and_identity_are_rebuilt_separately(evidence):
         works.append(work)
     assert report["all_identities_certified"] is all(identities)
     assert report["all_work_within_allowances"] is all(works)
+
+
+def test_work_and_identity_are_rebuilt_separately(evidence):
+    values, report, gamma, _ = evidence
+    _audit_work_and_identity(values, report, gamma)

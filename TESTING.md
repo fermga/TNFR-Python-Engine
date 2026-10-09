@@ -212,6 +212,37 @@ heat quadrature are coefficient controls, not complete sine trajectories.
 The tests acquire no source and replay no reserved response. SDK wiring
 uses `test_reduced_port_sdk_wiring_does_not_evaluate_research` separately.
 
+For the [spatial class observation](theory/nodal/SINE_CLASS_SPATIAL_OBSERVATION.md),
+test the two-node observation, receiver-odd locality, complete quadratic
+phase feedback and the heat-only class-blind control. Exact low-order jets
+check the first class-sensitive time coefficient independently of the
+finite assessment. The higher-amplitude bound already compares classes;
+sum its three nonzero-history contributions only once.
+
+```sh
+python -m pytest tests/physics/test_sine_class_spatial_observation.py tests/physics/test_sine_class_spatial_observation_algebra.py tests/physics/test_sine_class_contrast.py -q
+```
+
+Preserve arbitrary source residuals and sixteen independent nodal reading
+errors; the separately noisy null comparison needs thirty-two. Reuse the
+full-coordinate coefficient owner instead of a second solver. Previously
+retained coordinates are prior information, not unseen responses. Test
+the original eight-reading decisions and cubic/heat contracts when their
+shared projection or decision helpers change.
+
+The compact spatial assessment references the preceding complete
+coefficient bundle. Its [read-only audit](tests/physics/test_sine_class_spatial_evidence.py)
+reuses the full coefficient-evidence checks and reconstructs the new
+two-node quadratic projection, higher-order bound and source/noise
+decisions. Select both evidence owners together:
+
+```sh
+python -m pytest tests/physics/test_sine_class_spatial_evidence.py tests/physics/test_sine_class_cubic_evidence.py -q
+```
+
+The reference prevents duplicating complete series; it does not authenticate
+their generation. No audit may execute a coefficient or response producer.
+
 For the [complete cubic-amplitude response](theory/nodal/SINE_CLASS_CUBIC_RESPONSE.md),
 check all three full-coordinate variation levels, the gamma scalings,
 oriented-edge signs, quadratic odd-mode feedback and exact jump ancestry.

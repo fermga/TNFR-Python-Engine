@@ -244,12 +244,34 @@ def _class_cubic_coefficients(mediator_class, a, b, delay, total):
     second = _coefficient_segment(
         "second_only_suffix", None, delay, total, b, _ZERO_LEVELS, parameters
     )
-    mixed = (
-        both.endpoint_levels[2][22]
-        - first.endpoint_levels[2][22]
-        - second.endpoint_levels[2][22]
+    history = (prefix, first, both, second)
+    mixed = _mixed_form_projection(history, 2, ((22, 1),))
+    return parameters, history, mixed
+
+
+def _mixed_form_projection(history, amplitude_level, weights):
+    """Project an internally admitted coefficient history without a state reset.
+
+    The nominal neither-pulse history is exactly zero. This private projection
+    supplies no admission for a saved report or an externally supplied field.
+    """
+    _, first, both, second = history
+
+    def project(segment):
+        row = segment.endpoint_levels[amplitude_level]
+        return sum((weight * row[node] for node, weight in weights), _ZERO)
+
+    return project(both) - project(first) - project(second)
+
+
+def _scale_by_shared_gamma(interval, gamma, power):
+    """Keep exact products after a shared-parameter coordinate subtraction."""
+    products = tuple(
+        g**power * value
+        for g in (gamma.lo, gamma.hi)
+        for value in (interval.lo, interval.hi)
     )
-    return parameters, (prefix, first, both, second), mixed
+    return min(products), max(products)
 
 
 def _higher_amplitude_remainder(amplitude, total):
@@ -409,16 +431,10 @@ def bound_sine_class_cubic_response(
             segments.append(history)
             coefficients.append(coefficient)
 
-        def scale(interval):
-            products = tuple(
-                g**4 * v
-                for g in (gamma.lo, gamma.hi)
-                for v in (interval.lo, interval.hi)
-            )
-            return min(products), max(products)
-
-        class_bounds = tuple(scale(value) for value in coefficients)
-        contrast = scale(coefficients[0] - coefficients[1])
+        class_bounds = tuple(
+            _scale_by_shared_gamma(value, gamma, 4) for value in coefficients
+        )
+        contrast = _scale_by_shared_gamma(coefficients[0] - coefficients[1], gamma, 4)
         remainders = tuple(
             _higher_amplitude_remainder(value, t)
             for value in (Q(0), abs(a), abs(b), amplitude)

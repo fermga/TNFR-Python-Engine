@@ -1559,6 +1559,48 @@ The [guide](../../guides/relational/SINE_PATTERNS.md#sine-class-nonlinear-protoc
 evaluates the declared response-free design. Earlier frozen outcomes and
 the short-window record-overlap theorem remain unchanged.
 
+<a id="sine-class-spatial-observation"></a>
+### Spatial receiver observation with sixteen scalar reading errors
+
+[`bound_sine_class_spatial_observation`](../../../src/tnfr/physics/relational_sine_class_spatial_observation.py)
+returns `SineClassSpatialObservation` from the same ten mandatory primitives
+as the cubic comparison. It keeps the complete law, source families,
+support, clock, events and horizon domain. The observation is fixed:
+`x[23]-x[21]`, followed by the four-history mixed difference in each class
+and class one minus class two. Two independently bounded nodal readings
+per history give `reading_count=16`; this is not a directly calibrated
+difference sensor.
+
+The [proof](../../../theory/nodal/SINE_CLASS_SPATIAL_OBSERVATION.md)
+uses nominal reflection parity and receiver locality. It retains the
+full quadratic hierarchy and tangent phase feedback. The heat-only
+quadratic term is class blind; neither a lower amplitude degree nor a
+formal short-time term certifies a finite response.
+
+`class_parameters` and `class_segments` reuse the shared fixed order-64,
+dyadic128 coefficient owner, retaining all coordinates and event ancestry.
+`complete_quadratic_contrast_bounds` projects the second amplitude level,
+subtracts classes and then applies the shared `gamma**3` enclosure.
+The `scaled_class_quadratic_bounds` are the separate class coefficients.
+Finite time tails are included in these intervals.
+
+Each `per_history_higher_amplitude_contrast_remainder_upper_bounds` entry
+already compares both nominal classes. Their sum supplies the
+`higher_amplitude_contrast_error_upper_bound`, with no extra factor two.
+The separate `source_contrast_error_upper_bound` is
+`16*endpoint_radius/(1-2*gamma_upper*total_duration)` and admits arbitrary
+actual-source residuals. The complex-amplitude guard and exact event-pairing
+zeros retain the cubic owner's availability boundaries.
+
+`decision` uses sixteen errors for the recorded sign and thirty-two to
+exclude a separately noisy zero-contrast alternative by this statistic.
+Strict separation, true sign and a compatible scalar cancellation witness
+remain different statements; a failed sufficient inequality does not prove
+record overlap. Work and identity guards remain independent.
+Model-specific SDK projection uses `tnfr.sine-class-spatial-observation.v1`.
+Compact retained assessments reference the complete coefficient evidence
+explicitly; they are not interchangeable with a full report or checkpoint.
+
 <a id="sine-class-cubic-response"></a>
 ### Complete cubic-amplitude class response and recording limits
 

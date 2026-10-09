@@ -38,8 +38,14 @@ the allowed reading errors can erase this scalar contrast for every
 admitted actual source pair. This scoped obstruction does not establish
 overlap of complete reading vectors. The earlier
 [independent-remainder limitation](../nodal/SINE_CLASS_NONLINEAR_ORGANIZATION.md)
-remains valid for that weaker estimate. Admitting a more informative
-observation is the [sole next theoretical task](#current-g3-gate), for the
+remains valid for that weaker estimate. The
+[spatial receiver assessment](../nodal/SINE_CLASS_SPATIAL_OBSERVATION.md#sine-spatial-finite-result)
+also certifies a true organization contrast, but its sixteen reading
+errors can erase it. Because the central and spatial readings use disjoint
+nodes, allowed errors can cancel both statistics simultaneously. No
+linear combination of these two statistics guarantees discrimination
+under this budget. A justified probe-amplitude regime is the
+[sole next theoretical task](#current-g3-gate), for the
 [organization-dependent interaction rationale](../NODAL_RESEARCH_STRATEGY.md#organization-dependent-nonlinearity).
 
 The admitted producer, frozen protocol and first outcome are consolidated;
@@ -57,7 +63,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Pending theoretical admission | [Organization-sensitive observation](#current-g3-gate): derive symmetry, locality and full error budgets before evaluating an alternative coefficient |
+| Pending theoretical admission | [Probe-amplitude feasibility](#current-g3-gate): combine homogeneous response scaling, complete errors and carried work/identity constraints before selecting an intervention |
+| Closed conditional analytic assessment | [Spatial organization observation](#organization-sensitive-observation): true quadratic class dependence and simultaneous central/spatial scalar noise cancellation, without full-record overlap |
 | Closed conditional analytic assessment | [Mediator organization and nonlinear interaction](#mediator-organization-nonlinear-interaction): complete cubic dynamics certify a true class contrast and a scoped scalar noise-cancellation witness |
 | Closed reserved evaluation | [First frozen four-history outcome](#reserved-nonlinear-four-history-response): full completion, independent forward enclosure, theorem consistency and strict nonlinear/tangent record-set separation |
 | Closed freeze admission | [Matched four-history evaluation freeze](#frozen-nonlinear-four-history-evaluation): immutable source/protocol/receipt association, with no response or attempt generated at freezing |
@@ -82,45 +89,61 @@ remain open; no empirical response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="organization-probe-amplitude-feasibility"></a>
+## Next primary admission: a justified amplitude regime for discrimination
+
+Determine whether a common scale factor for the two existing donor
+impulses can give robust central mixed-contrast discrimination while
+retaining the complete law, support, acquired source families, clock,
+event times, horizon, sensor error and existing work/identity requirements.
+The [joint observation obstruction](../nodal/SINE_CLASS_SPATIAL_OBSERVATION.md#sine-spatial-joint-cancellation)
+rules out obtaining a worst-case guarantee simply by combining the two
+assessed statistics. This motivates a declared intervention change,
+not a search over responses or a claim that every observation is blind.
+
+1. Introduce a common positive amplitude scale with no new source or
+   hidden-state reset. The already enclosed complete central cubic
+   coefficient scales cubically; derive this homogeneity for both
+   carried event histories. Keep its finite time error, the scaled
+   higher-amplitude remainder and unchanged actual-source allowance.
+2. Derive the scale inequalities for the eight-reading recorded sign and
+   the separately noisy null comparison. Bound the whole claimed scale
+   interval, including the complex-amplitude domain, rather than
+   selecting a pulse after inspecting a response.
+3. Re-admit contact and each impulse against the original work ceilings,
+   conserved means, storage and identity guards. The delayed jump's work
+   includes the actual carried form state: its quadratic self-term alone
+   is insufficient. Existing conservative bounds may prevent scaling;
+   any sharper heat/full-law work or storage estimate needs a derivation.
+4. Close with a certified nonempty feasible regime or a scoped
+   obstruction identifying which requirement cannot be met. Only after
+   this admission may a single changed intervention and any numerical
+   evaluation budget be fixed prospectively.
+
+Reuse retained analytic coefficients where homogeneity justifies it;
+another coefficient or nonlinear-response sweep is not part of this
+gate. No scale factor is admitted by the present queue entry. Relaxing
+work, identity or sensor requirements would be a separate design change.
+Laboratory preparation and measurement feasibility remain open.
+
 <a id="organization-sensitive-observation"></a>
-## Next primary admission: an observation of organization-dependent interaction
+<a id="next-primary-admission-an-observation-of-organization-dependent-interaction"></a>
+## Closed assessment: spatial receiver contrast and joint recording limit
 
-Determine whether a spatial receiver observation can resolve the inherited
-nonlinear class contrast under the same complete law, preparation, support,
-clock, two probes, horizon and per-reading uncertainty. The
-[central scalar obstruction](../nodal/SINE_CLASS_CUBIC_RESPONSE.md#sine-cubic-finite-result)
-justifies changing the observation; it does not justify changing the source
-or treating a previously computed response as unseen evidence.
+The [spatial observation result](../nodal/SINE_CLASS_SPATIAL_OBSERVATION.md#sine-spatial-finite-result)
+retains full quadratic feedback and a correlated higher-amplitude bound.
+The receiver's two-node form difference has a strictly positive true
+class contrast at the unchanged design, but remains below its
+sixteen-reading error allowance. The complete coefficient fields match
+the previously retained evidence exactly; a compact receipt records the
+new declared projection without duplicating those series.
 
-The bounded candidate is a reflection-odd difference between receiver
-nodes adjacent to its central port. Before evaluating its finite
-coefficient:
-
-1. Define the two sensor readings, their signs and the cross-class
-   four-history statistic. Prove its symmetry and event pairing on the
-   complete law; arbitrary actual-source residuals retain a separate
-   transfer bound.
-2. Derive the first class-sensitive amplitude term with full phase
-   feedback. A quadratic receiver term alone does not establish mediator
-   sensitivity: the receiver's class is unchanged and the leading heat
-   propagation is class blind. Check whether the mediator's odd internal
-   correction reaches the central contacts rather than assuming that a
-   local quadratic mode is an observable transmitted signal.
-3. Bound all omitted amplitude and finite-time terms, source uncertainty
-   and the declared observation errors. Two scalar readings per history
-   mean sixteen reading-error contributions across the two classes.
-   A directly measured spatial difference would need its own observation
-   law; it cannot silently inherit the single-node error budget.
-4. Close with an informative conditional bound or a proved limitation.
-   If a finite coefficient calculation is justified, freeze its numerical
-   policy before the first evaluation. Reuse the common event/source and
-   decision owners only where their hypotheses and error counts match.
-
-This admission selects no improved sensor accuracy, amplitude or horizon
-by search. It evaluates no new acquired source, reserved nonlinear
-response or physical dataset. A better observation remains a hypothesis,
-and the physical preparation, measurement and laboratory-clock bridge
-remain separate obligations.
+The [joint cancellation witness](../nodal/SINE_CLASS_SPATIAL_OBSERVATION.md#sine-spatial-joint-cancellation)
+uses disjoint allowed errors to erase this statistic and the central
+contrast for each actual source pair. This excludes a guaranteed gain
+from their linear combination, not other observations or overlap of all
+raw records. Source, work and identity premises remain unchanged, and
+no nonlinear trajectory or physical response was evaluated.
 
 <a id="mediator-organization-nonlinear-interaction"></a>
 ## Closed assessment: organization-dependent nonlinear response

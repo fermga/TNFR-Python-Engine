@@ -327,7 +327,9 @@ def test_production_time_tail_matches_all_three_independent_majorants():
     assert min(retained_tails) > 0
 
 
-def _floating_variational_coefficient(geometry, mediator_class):
+def _floating_variational_coefficient(
+    geometry, mediator_class, *, amplitude_level=2, weights=((22, 1),)
+):
     """Auxiliary floating three-level flow, never the nonlinear sine flow.
 
     Independent dense incidence matrices and numerical integration check the
@@ -382,9 +384,12 @@ def _floating_variational_coefficient(geometry, mediator_class):
     first = advance(prefix, 0)
     both = advance(prefix, 1 / 2000)
     second = advance(zero, 1 / 2000)
-    receiver_cubic = 108 + 22
-    return gamma**4 * (
-        both[receiver_cubic] - first[receiver_cubic] - second[receiver_cubic]
+    assert amplitude_level in (1, 2)
+    gamma_power = 3 if amplitude_level == 1 else 4
+    offset = 54 * amplitude_level
+    return gamma**gamma_power * sum(
+        weight * (both[offset + node] - first[offset + node] - second[offset + node])
+        for node, weight in weights
     )
 
 
