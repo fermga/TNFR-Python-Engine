@@ -380,3 +380,142 @@ The [selected controls](../../TESTING.md#current-checks-and-retained-evidence)
 check admission, exact coefficients, independent full-support algebra,
 finite tails and error thresholds. Formation remains a matched proof
 premise, not a verdict inferred from a positive or negative response bound.
+
+
+<a id="sine-nonlinear-protocol-validated-readout"></a>
+## Validated four-history observation admission
+
+The analytic coefficient above predicts a complete-law response without
+producing its four trajectories. A separate forward instrument must
+retain the same fine state and event history, and may return unavailable
+finite evidence. The
+[`bound_sine_class_four_history_readout`](../../src/tnfr/physics/relational_sine_class_readout.py)
+producer consumes primitive source bounds and a declared numerical budget;
+it consumes neither the coefficient, a desired sign nor a cached source
+verdict. This admission does not evaluate the reserved class-two design.
+
+### Source enclosure and its association with acquisition
+
+The input is one Cartesian box of all 27 signed forms and all 27
+continuous phase lifts. It is enclosed once and shared by the four
+continuations. No centering, wrapping, class substitution or scalar-mean
+reconstruction replaces those inputs. A supplied outer box can contain
+the actual correlated reached family without every corner being acquired.
+Numerical flow on that box proves neither its acquisition nor the exact
+zero-sum, identity or work premises of the preceding theorem.
+
+For the canonical family, let \(\Pi\) be an independently certified
+rational enclosure of \(\pi\), and retain the already proved endpoint
+radius \(\epsilon\). In component order \(k_c=(1,2,1)\), a sufficient
+coordinate cover is
+\[
+I_{x,cj}=[-\epsilon,\epsilon],\qquad
+I_{\theta,cj}=\frac{2k_c(j-4)}9\Pi+[-\epsilon,\epsilon],
+\qquad j=0,\ldots,8.
+\tag{22}
+\]
+Use outward interval arithmetic for both signs of the coefficient and
+retain all rational endpoints. Componentwise Euclidean norm caps imply
+each coordinate cap, so every actual reached state is covered. The
+original zero sums and norm correlations select a subset of (22); they
+are not imposed by independent choices of interval endpoints. Uncertainty
+in the target enclosure must also be retained, rather than treating a
+rounded multiple of pi as the exact acquired phase.
+
+Equation (22) is an outer cover derived from the original handoff proof,
+not an instruction to prepare a new target state. A later experiment must
+associate the declared source family, its original preparation proof,
+its chosen enclosure and the fixed target/law parameters before using the
+analytic prediction. A successful forward interval alone cannot establish
+that association or narrow the acquired family after seeing a response.
+
+### Complete flow and exact branch events
+
+The producer uses the same 27-node support, normalized degrees and both
+rows of (1), in their original 54 coordinates. The sine law consumes the
+primitive phases, so no mediator-class label is needed by the forward
+field. Class and acquisition claims remain separate source associations.
+The held law parameters, support, node order and structural clock are
+retained throughout every step. The globally smooth sine extension does
+not require an acute chart; a successful domain check therefore certifies
+flow availability, not winding retention or the storage barrier.
+
+The two prefixes run from zero to the declared delay: one unprobed and
+one after the first donor form jump. At the delay, each validated full
+endpoint box supplies two suffixes, with and without the second jump.
+Every event changes only donor form coordinate 4 by its exact admitted
+amplitude. All phases, other forms and hidden coordinates carry unchanged
+through that event. Each suffix then reaches the same requested final
+time. Prefix sharing saves identical work without replacing the delayed
+control by a shifted initial-state solution.
+
+The fixed step grid is clipped only at the declared delay and final
+boundaries; the caller supplies step size, Taylor order and a total
+unique-step attempt budget in advance. Zero-length segments contain the
+declared events but no invented continuous evolution. A zero delay
+composes the two applicable jumps at time zero. A jump at the final time
+is retained in the final state even though it does not directly change
+the receiver form observation.
+
+### Finite enclosures and partial failure
+
+The shared [validated Taylor kernel](../../src/tnfr/mathematics/_validated_taylor.py)
+checks strict Picard inclusion for a complete 54-coordinate tube. For
+an admitted source box \(B_0\), order \(p\) and step \(h\), its
+source-box jets \(J_n(B_0)\) enclose the initial derivative coefficients;
+the order-\(p+1\) coefficient on the tube \(B\) bounds the remainder:
+\[
+\Delta z\in\sum_{n=1}^{p}h^nJ_n(B_0)+h^{p+1}J_{p+1}(B).
+\tag{23}
+\]
+The endpoint also lies in the validated tube. Smoothness, all consumed
+rows, strict inclusion and the coefficient enclosures are premises of
+this statement. A midpoint trajectory or a Taylor polynomial without its
+remainder is not the same certificate. Full endpoint handoffs and exact
+jump maps propagate the enclosure to each branch by induction.
+
+A global first failure stops further kernel attempts. The report retains
+completed steps and prefixes, the failed segment/step and available tube,
+the actual attempted count and the segments not attempted. A budget stop
+is distinct from failure of strict Picard inclusion. Missing final
+endpoints remain unavailable; a last successful prefix cannot be renamed
+the requested final state. Valid primitive input does not promise a
+successful or sufficiently narrow enclosure at its supplied budget.
+
+When all four histories reach the common final time, the primary mixed
+readout uses the receiver increments on the four suffixes. The common
+prefix receiver value cancels in each kicked/unkicked pair, and a donor
+jump does not change receiver form. Exactly,
+\[
+M=\Delta R_{00,[s,T]}-\Delta R_{10,[s,T]}
+  -\Delta R_{01,[s,T]}+\Delta R_{11,[s,T]}.
+\tag{24}
+\]
+Each suffix increment is the sum of its shared-kernel step increments at
+receiver coordinate 22, not subtraction of two widened endpoint boxes.
+This preserves the proved prefix cancellation without constructing a
+joint 216-coordinate flow or consuming the analytic prediction. All 54
+coordinates still carry through every prefix, event and suffix.
+
+The four raw endpoint bands and their direct mixed interval remain
+separate evidence. Both constructions can relax dependencies across
+steps or suffixes: every same-source response is enclosed, but arbitrary
+choices from the marginal endpoint or increment bands need not be jointly
+realizable. Neither construction supplies mixed observations before all
+four histories complete. A wide interval remains inconclusive and need
+not contradict the analytic theorem.
+
+Interval width combines supplied source uncertainty, target/parameter
+rounding, validated truncation and accumulated enclosure widening. It is
+not automatically a pure numerical error and is not sensor noise. The
+forward producer supplies no sensor model or nonlinear/tangent comparison
+verdict; a later declared observation protocol adds recording errors and
+checks the relevant sign or record-set criterion separately.
+
+The [execution contract](../../docs/contracts/relational/SINE_PATTERNS.md#sine-class-four-history-readout)
+and [guide](../../docs/guides/relational/SINE_PATTERNS.md#sine-class-four-history-readout)
+retain exact input domains, branch provenance and availability. Independent
+controls use unrelated source fixtures and shared-kernel postconditions.
+The fixed class-two response must remain unevaluated until its source,
+protocol, numerical budget and first-outcome retention are separately
+frozen; this admission opens no physical-data campaign.

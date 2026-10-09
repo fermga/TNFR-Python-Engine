@@ -1394,6 +1394,80 @@ physical identification or practical-time claim is supplied.
 The [usage guide](../../guides/relational/SINE_PATTERNS.md#sine-port-relaxation)
 shows how to inspect the retained bounds without rerunning their assessment.
 
+<a id="sine-class-four-history-readout"></a>
+### Validated full-state observations of four probe histories
+
+[`bound_sine_class_four_history_readout`](../../../src/tnfr/physics/relational_sine_class_readout.py)
+returns `SineClassFourHistoryReadout` on the fixed three-C9 support and
+complete normalized-sine law. Its
+[admission proof](../../../theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-validated-readout)
+uses the shared source-box Picard/Taylor kernel with all 54 coordinates.
+It consumes nine mandatory keyword primitives:
+
+| Primitive | Admission |
+| --- | --- |
+| `initial_form_bounds`, `initial_phase_bounds` | Exactly 27 ordered primitive real endpoint pairs each; phases are continuous lifts |
+| `first_probe_amplitude`, `second_probe_amplitude` | Finite signed donor form jumps |
+| `delay`, `total_duration` | Structural times with `0<=delay<=total_duration<=2` |
+| `time_step` | Strictly positive, at most 2 |
+| `order` | Ordinary integer 1 through 16 |
+| `max_steps` | Ordinary integer 1 through 4096, counting all unique kernel attempts, including a failed attempt |
+
+Shared interval and exact-or-represented-real admission rejects Boolean,
+nonfinite, reversed or unrepresentable inputs before flow construction.
+No class label, sensor error, prediction, inverse or source-report verdict
+is accepted. Class is encoded in the primitive phases. The one input box
+may cover a correlated acquired family; acquisition, original zero sums,
+identity and work remain external premises. The proof's symbolic source
+recipe preserves exact target enclosures and covers all actual family
+members without asserting that every independent box corner is acquired.
+
+`source_box` is enclosed once in form-then-phase node order. The six
+`segments` are `prefix_unprobed`, `prefix_first`, `neither`, `first_only`,
+`second_only`, `both`. `history_segment_indices` retains the four ancestry
+pairs `(0,2)`, `(1,3)`, `(0,4)`, `(1,5)`. Every event changes only donor
+form coordinate 4; all other forms, phases and hidden coordinates carry.
+Every suffix starts from its parent's complete endpoint. A zero-length
+segment applies its event without a flow step. The fixed step size is
+clipped at declared event/final boundaries; there is no adaptive retry.
+
+Each successful step retains the complete initial box, strict Picard
+tube, Taylor coefficients, remainder and full endpoint. The smooth-law
+domain guard does not certify an acute chart, winding identity or event
+work. `planned_unique_step_count`, `attempted_step_count` and
+`completed_step_count` distinguish requested work, attempts and validated
+steps. A global first failure stops subsequent attempts and events.
+Segment statuses distinguish `admitted`, `unavailable`, `budget_exhausted`
+and `not_attempted`; the report preserves completed prefixes, failed
+source/time/tube, reasons and unattempted ancestry. Failure before an
+event leaves its preevent/initial boxes unavailable rather than applying
+that event silently.
+
+Global `status="admitted"` requires all four suffixes to reach the common
+final time; otherwise it is `unavailable`. Completed individual receiver
+readings remain in `completed_history_readout_bounds`. The complete
+`endpoint_readout_bounds`, `raw_endpoint_mixed_bounds`,
+`suffix_receiver_increment_bounds` and `mixed_readout_bounds` are all
+unavailable until every history completes. A partial endpoint is not the
+requested final endpoint.
+
+The primary `mixed_readout_bounds` combines suffix receiver increments
+with coefficients `(1,-1,-1,1)`. Each suffix sums `step.increment[22]`;
+the shared prefix receiver values cancel exactly, and donor jumps leave
+receiver form unchanged. `raw_endpoint_mixed_bounds` instead combines
+the four endpoint bands and remains separate evidence. Both are safe
+outer bounds; remaining cross-history or step correlations can be
+relaxed, and arbitrary marginal choices need not be jointly realizable.
+
+Interval widths include supplied-state uncertainty, parameter rounding,
+truncation and accumulated enclosure widening. They are neither sensor
+noise nor automatically pure numerical error. No response-sign, model
+discrimination, formation or physical-readiness verdict is inferred.
+The schema is `tnfr.sine-class-four-history-readout.v1`; shared SDK
+projection and atomic export retain the full evidence and availability.
+The [guide](../../guides/relational/SINE_PATTERNS.md#sine-class-four-history-readout)
+uses an unrelated stationary fixture, not the reserved nonlinear design.
+
 <a id="sine-class-nonlinear-protocol"></a>
 ### Finite nonlinear separation with the complete event history
 

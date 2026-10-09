@@ -1179,6 +1179,61 @@ retains the protocol, proof and channel verdicts. The
 checks source/record consistency separately from reading a JSON. No support
 selection, autonomous preparation or physical observation is inferred.
 
+<a id="sine-class-four-history-readout"></a>
+### Enclose four complete probe histories
+
+The [forward producer](../../contracts/relational/SINE_PATTERNS.md#sine-class-four-history-readout)
+accepts every form and phase coordinate and a fixed numerical budget. It
+shares two prefixes, then carries their complete endpoints into four
+suffixes. This unrelated stationary example exercises the interface
+without evaluating the declared class-two response:
+
+```python
+from fractions import Fraction as Q
+from tnfr.physics.relational_sine_class_readout import (
+    bound_sine_class_four_history_readout,
+)
+
+zero_source = tuple((Q(0), Q(0)) for _ in range(27))
+readout = bound_sine_class_four_history_readout(
+    initial_form_bounds=zero_source,
+    initial_phase_bounds=zero_source,
+    first_probe_amplitude=Q(0),
+    second_probe_amplitude=Q(0),
+    delay=Q(1, 128),
+    total_duration=Q(1, 64),
+    time_step=Q(1, 128),
+    order=2,
+    max_steps=6,
+)
+assert readout.admitted
+assert len(readout.source_box) == 54
+assert len(readout.endpoint_readout_bounds) == 4
+assert readout.mixed_readout_bounds.lo <= 0 <= readout.mixed_readout_bounds.hi
+```
+
+For a later matched class-two evaluation, the
+[canonical outer-cover recipe](../../../theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-validated-readout)
+uses a certified enclosure of pi and the independently proved endpoint
+radius. It covers the actual acquired family; independent interval
+corners need not satisfy its norm or zero-sum correlations. A successful
+flow enclosure does not itself admit acquisition or identity.
+
+Inspect `mixed_readout_bounds` with `suffix_receiver_increment_bounds`.
+The primary mixed interval retains exact cancellation of shared prefix
+receiver values. `endpoint_readout_bounds` and
+`raw_endpoint_mixed_bounds` expose the separate marginal construction.
+Their widths include preparation uncertainty and enclosure widening;
+add any declared sensor errors only in a separate observation protocol.
+
+If the report is unavailable, inspect `failed_segment_index`, its reason,
+completed steps/readings and `unattempted_segment_indices`. Later events
+have not been executed after the first failure, and incomplete histories
+provide no common-final-time mixed reading. Do not replace a failed
+prefix by a midpoint or silently retry with a larger budget. Any future
+reserved source, prediction, budget and first-outcome policy must be
+frozen separately; this example neither fits nor tests that prediction.
+
 <a id="sine-class-nonlinear-protocol"></a>
 ### Check a finite nonlinear separation margin
 

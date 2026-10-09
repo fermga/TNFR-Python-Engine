@@ -25,14 +25,14 @@ The route is **justified nodal dynamics -> collective organization
 collective properties from their physical identification. A sufficient
 representation does not independently justify the law that evolves it.
 
-The [finite nonlinear protocol](#informative-nonlinear-interaction-protocol)
-is closed: a controlled longer-horizon prediction separates nonlinear
-and tangent four-record sets at the inherited source and noise budgets.
-The earlier [short-window overlap](#two-probe-nonlinear-superposition)
-remains valid. The sole next primary admission is a
-[validated four-history observation producer](#current-g3-gate), not yet
-executed. It retains the same declared design and complete interaction
-history. The earlier
+The [validated four-history producer](#validated-nonlinear-four-history-observation)
+is admitted: it retains full state, exact event ancestry, finite evidence
+and honest partial failure independently of the prediction. The
+[finite nonlinear theorem](#informative-nonlinear-interaction-protocol)
+and earlier [short-window overlap](#two-probe-nonlinear-superposition)
+remain valid. The sole next admission is to
+[freeze the matched four-history evaluation](#current-g3-gate), not yet
+executed. No reserved response for this protocol has been generated. The earlier
 [effective-memory theorem](#acquired-mediator-effective-memory) and
 [class-response certificate](#generative-class-mediated-response) remain
 unchanged. The
@@ -51,7 +51,8 @@ no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next primary admission, not yet executed | [Validated four-history observation producer](#current-g3-gate): admit complete-state inputs, carried events and independent finite observation/error evidence before any frozen evaluation |
+| Next primary admission, not yet executed | [Freeze the matched four-history evaluation](#current-g3-gate): preserve the acquired-family association, observation criteria, numerical budget and first outcome before any reserved response |
+| Closed producer admission | [Validated four-history observation producer](#validated-nonlinear-four-history-observation): full-state branches, exact events, shared-prefix cancellation and partial-failure evidence |
 | Closed theoretical gate | [Informative nonlinear interaction protocol](#informative-nonlinear-interaction-protocol): finite signed nonlinear/tangent separation under the declared longer horizon, with source, work and identity retained |
 | Closed theoretical gate | [Two-probe nonlinear superposition](#two-probe-nonlinear-superposition): actual local curvature, symmetry-aware finite bounds and a scoped four-endpoint observation obstruction |
 | Closed theoretical gate | [Acquired-mediator effective memory](#acquired-mediator-effective-memory): exact tangent source/kernel, matched-source nonlinear bound and scoped instantaneous-closure obstructions |
@@ -72,23 +73,45 @@ no empirical response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="frozen-nonlinear-four-history-evaluation"></a>
+## Next primary admission: freeze the matched four-history evaluation
+
+Freeze one source/protocol/archive association for the fixed class-two
+nonlinear prediction before evaluating its reserved response. Preserve
+the canonical full-state outer cover and its original acquired-family
+proof, all four matched histories, declared impulses, delay and horizon,
+common receiver observation, sensor errors and separate work/identity
+obligations. A box enclosure does not make every corner acquired or
+replace the source correlations consumed by the theorem.
+
+Fix the validated step size, Taylor order, total unique-attempt budget,
+finite-enclosure and observation stopping criteria, source revision and
+first-outcome retention before any response. Keep raw endpoint and
+prefix-cancelled increment evidence distinct. Do not tune the preparation,
+budget or prediction to a reserved result. This is the sole next
+admission; no response evaluation or physical-data campaign has been
+performed by the completed producer work.
+
 <a id="validated-nonlinear-four-history-observation"></a>
-## Next primary admission: validated four-history observation producer
+<a id="next-primary-admission-validated-four-history-observation-producer"></a>
+<a id="active-primary-admission-validated-four-history-observation-producer"></a>
+## Closed primary admission: validated four-history observation producer
 
-Admit a validated complete-law observation producer for the same fixed
-class-two, two-probe design in the closed finite-separation theorem.
-Specify the full 54-coordinate input family, its association with the
-acquired source, all four matched histories, both carried event states
-and the common receiver readout before any reserved evaluation. Retain
-the fixed support, clock, capacities, source uncertainty, work/identity
-premises and four-reading error model.
+The [producer-admission owner](../nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-validated-readout)
+specifies one primitive 54-coordinate source box, two shared prefixes
+and four carried suffixes under the unchanged complete law. Shared
+Picard/Taylor evidence validates each attempted step; exact donor events
+retain all other coordinates. The mixed readout cancels common prefix
+receiver values through suffix increments, while raw endpoint bands
+remain separately available.
 
-Define finite enclosure and output contracts, numerical budget and honest
-partial-failure evidence using shared validated-flow machinery. The
-analytic coefficient is a prediction, not a replacement for the complete
-nonlinear observations to be enclosed. Admit this producer before a
-separately frozen evaluation; no new reserved or physical campaign is
-part of this admission.
+A global first failure retains validated prefixes, failed-attempt
+evidence and unattempted branches. Interval widths contain source and
+numerical enclosure effects, not an inferred sensor budget. The outer
+source cover admits neither acquisition nor every corner's identity.
+Independent controls use unrelated sources. The matched class-two
+four-history response was not evaluated; all frozen evidence remains
+unchanged.
 
 <a id="informative-nonlinear-interaction-protocol"></a>
 <a id="next-primary-admission-informative-nonlinear-interaction-protocol"></a>

@@ -32,17 +32,20 @@ __all__ = ("SineTwoPortReadout", "bound_sine_two_port_readout")
 def _full_sine_field(model, geometry, degrees):
     """Use the shared complete law, transforming both rows to tau=e*t."""
     loss, _, _ = _sine_model_coefficients(model, positive_loss=True)
+    size = len(geometry.nodes)
     neighbors = tuple(
         tuple(j if i == node else i for i, j in geometry.edges if node in (i, j))
-        for node in _NODES
+        for node in range(size)
     )
+    if tuple(degrees) != tuple(map(len, neighbors)):
+        raise ValueError("degrees must match every indexed support neighbor row")
 
     def flow(state):
-        epi, phase = state[:18], state[18:]
+        epi, phase = state[:size], state[size:]
         is_jet = isinstance(state[0], Jet)
         zero = Jet.constant(0, state[0].order) if is_jet else I(0)
         sine = jet_sin if is_jet else sin
-        currents = [zero for _ in _NODES]
+        currents = [zero for _ in range(size)]
         for i, j in geometry.edges:
             current = sine(phase[j] - phase[i])
             currents[i] += current
@@ -51,7 +54,7 @@ def _full_sine_field(model, geometry, degrees):
             model,
             degrees,
             _sine_form_gradient(epi, neighbors),
-            (Q(1),) * 18,
+            (Q(1),) * size,
             tuple(currents),
         )
         return tuple(
@@ -59,7 +62,7 @@ def _full_sine_field(model, geometry, degrees):
         )
 
     def domain(_):
-        # The complete comparison law is globally smooth on R^36. This does
+        # The complete comparison law is globally smooth on R^(2*size). This does
         # not assert an acute chart, cycle identity or a native continuation.
         return (Q(1),)
 

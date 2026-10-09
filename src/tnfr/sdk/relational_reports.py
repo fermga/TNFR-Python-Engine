@@ -183,6 +183,7 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
     from ..physics.relational_sine_class_nonlinear_protocol import (
         SineClassNonlinearProtocol,
     )
+    from ..physics.relational_sine_class_readout import SineClassFourHistoryReadout
     from ..physics.relational_sine_class_superposition import SineClassSuperposition
     from ..physics.relational_sine_clock_drift_inference import SineClockDriftInference
     from ..physics.relational_sine_clock_inference import SineClockInference
@@ -397,6 +398,7 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
             SineClassMediatedMemoryBound,
             SineClassSuperposition,
             SineClassNonlinearProtocol,
+            SineClassFourHistoryReadout,
             SineTwoPortCompatibility,
             SineTwoPortHandoffObstruction,
             SineTwoPortCapture,

@@ -158,6 +158,30 @@ domain. Reused work/identity ledgers retain both preevent states and
 independent policy guards. These controls acquire no source or reserved
 response and must not rerun a frozen producer.
 
+For the [four-history observation producer](theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-validated-readout),
+select its full-state/event controls and the shared source-box kernel.
+Use unrelated sources: check both rows from independent edge sums,
+stationary states, exact donor-only jumps, all 54 carried coordinates,
+shared-prefix ancestry and the delayed-only unprobed control. Zero delay,
+final-time jumps and zero duration must preserve their declared events.
+
+```sh
+python -m pytest tests/physics/test_sine_class_readout.py tests/physics/test_sine_class_four_history_readout_algebra.py tests/mathematics/test_validated_box_taylor.py tests/physics/test_sine_two_port_readout.py tests/physics/test_sine_aperture_readout.py -q
+```
+
+The [independent field/source/prefix controls](tests/physics/test_sine_class_four_history_readout_algebra.py)
+rebuild both nodal rows and retained first derivatives, distinguish an
+acquired subset from its Cartesian cover, and reconstruct suffix receiver
+increments under nonzero source width. Raw endpoint subtraction is a
+separate outer bound. Exercise
+failure inside a segment, budget exhaustion before an event and explicit
+unattempted branches. All-four availability must not be inferred from a
+completed prefix or an individual reading. Domain guards establish smooth
+flow, not acquisition or identity. Interval widths contain source and
+numerical enclosure effects; no sensor error is supplied by the producer.
+Do not evaluate the prospective class-two source to tune this admission;
+retain every earlier frozen source and response unchanged.
+
 For a physical-source admission, test deductions from the declared source
 law separately from manufacturer specifications and measured responses.
 The [digital-PLL audit](theory/research/DPLL_PHYSICAL_ADMISSION.md) uses
