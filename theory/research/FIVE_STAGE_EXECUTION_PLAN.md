@@ -143,6 +143,14 @@ and [ontology](../EMERGENT_ONTOLOGY.md#generative-bound-organization) as the
 owners. Correct those owners and their consumers together when a defect is
 found; do not replace them with another catalog or infer a law from labels.
 
+Each candidate must first declare which
+[NFR properties](../EMERGENT_ONTOLOGY.md#12-can-nfr-properties-justify-a-joint-law)
+and [operator contracts](../STRUCTURAL_OPERATORS.md#22-operator-as-transformation)
+it realizes. Apply the [compatibility admission](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission)
+to its actual state, scale and execution path before treating a matched
+geometric or response property as sufficient. Retain the distinction between
+defining requirements, supplied hypotheses and derived restrictions.
+
 The first question is: **which nonlinear interaction of the present
 positive-loss joined objects remains free when their target geometry,
 storage values and complete tangent dynamics are fixed, and what independent
@@ -164,6 +172,12 @@ The alternative is a logical test, not a fitted replacement law. Acquisition
 under it needs its own proof: the original source costs, dwell and formation
 verdict do not transfer from matching local geometry.
 
+Additive edge currents and constant reciprocal mobility are restrictions of
+this first comparison, not consequences already forced by the NFR definition
+or the operator catalog. Its supplied probes retain their event contracts;
+identifying a probe with a registered operator or deriving its autonomous
+occurrence needs the corresponding proof.
+
 This connects the active comparison to the broader generative question:
 which independently justified complete laws can form distinguishable stable
 organizations from a specified identity-absent source? Existing acquisition
@@ -176,6 +190,10 @@ are not promoted into autonomous constituent birth.
    through the desired future trajectory. State which part of formation or
    selection is actually under investigation. Fixed support or capacity may
    remain explicit premises while that narrower question is isolated.
+   Include the claimed NFR identity and nesting requirements and, where an
+   operator is consumed, its live preconditions, ordered composition and
+   postconditions. A collective event needs its own descent and occurrence
+   analysis even when the continuous collective law closes.
 2. **Identify the minimal closure and a real alternative.** Separate definitions,
    supplied laws, held quantities, derived restrictions and remaining freedom.
    Start with the pressure/phase/storage completion consumed by the acquired
