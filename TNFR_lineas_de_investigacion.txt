@@ -1,0 +1,102 @@
+TNFR - RESEARCH PORTFOLIO
+========================
+
+1. OBJECTIVE AND OWNERSHIP
+=========================
+Investigate whether justified nodal dynamics can generate interacting patterns
+whose collective properties eventually explain independent physical observations.
+Under admitted composition premises, a larger NFR can retain its constituents
+and their causal influence. Deriving material constituents or quantum behavior
+from TNFR, and explaining the origin of a shared substrate, remain open.
+A collective measurement map is allowed; sensors need not equal primitive EPI.
+
+The primary line is:
+  information -> interaction -> complete law -> organization -> observation
+
+This file classifies contributions. It contains no task queue, theorem
+inventory or run history. Use the maintained owners:
+
+  Current task, acceptance, dependencies and reopening conditions:
+    theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate
+  Scientific rationale and compatibility:
+    theory/NODAL_RESEARCH_STRATEGY.md#fundamental-research-dependencies
+  Definitions, results, source and test map:
+    theory/README.md#theory-to-execution
+  Execution and public usage:
+    docs/API_CONTRACTS.md
+    docs/CLI_AND_SDK.md
+
+2. THREE CONTRIBUTIONS TO THE PRIMARY LINE
+==========================================
+
+A. SUFFICIENT INFORMATION AND JUSTIFIED INTERACTION
+Determine what an interaction consumes, which premises determine its response,
+and what state predicts its future. Instantaneous current and sufficient
+future state are different obligations. Derived moments need not be new
+primitive variables. Conditional selection and countermodels identify what
+remains undetermined; compatibility alone cannot select a fundamental law.
+
+  theory/NODAL_PARAMETER_FOUNDATIONS.md#derived-information-ledger
+  theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md
+  theory/nodal/PRESSURE_CONSTITUTIVE_SCOPE.md
+
+B. ORGANIZATION, IDENTITY AND INTERACTION RESPONSE
+Determine which identity forms, what maintains it and how it affects another
+region under the same complete law. Reuse formation, persistence and response
+results with their actual preparation, support and horizon premises. Stable
+geometry, internal motion and perturbation stability are distinct; none alone
+selects preparation, primitive support or physical identity.
+
+  theory/EMERGENT_ONTOLOGY.md#organization-and-internal-pulse
+  theory/nodal/SINE_PATTERN_DYNAMICS.md
+  theory/nodal/RESONANCE_FOUNDATIONS.md
+
+C. COMPOSITION, SCALE AND RETAINED MEMORY
+Determine which state and interaction survive grouping or eliminating
+constituents. Exact representations, invariant collective families and causal
+memory have different purposes. Preserve internal associations, relative
+origins, hidden initialization and forcing where consumed. A repeated graph
+or a faithful re-encoding alone is not an emergent hierarchy or coarse closure.
+
+  theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md
+  theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md
+  theory/nodal/RELATIONAL_PATTERN_MEMORY.md
+  theory/DERIVED_EPI_MEMORY.md
+
+3. SUPPORTING METHODS
+=====================
+Mathematical and numerical admission serves the selected claim; the theory
+catalog and TESTING.md own evidence and checks. Diagnostics and grammar are
+observation/admission contracts, not a complete state or autonomous controller.
+Continuous balances and event work require their respective laws.
+
+Independent physical confrontation uses justified preparation, measurement,
+clock and uncertainty under P1-P5. The atlas retains candidate mechanisms and
+source reviews; protocols are designs until admitted. Public terrestrial
+surface data or ordinary laboratory protocols must be usable with a workstation.
+No extraterrestrial observations or large-facility programme is part of this line.
+
+  theory/research/FIVE_STAGE_EXECUTION_PLAN.md#supporting-measurement-bridge
+  theory/PHYSICAL_REGIME_CORRESPONDENCES.md
+  theory/research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md
+  theory/research/PASSIVE_TRANSPORT_PROTOCOL.md
+
+4. DEPENDENCIES AND AUXILIARY MATERIAL
+====================================
+Capacity evolution, support birth, clock origin, autonomous preparation,
+general hierarchy formation and physical identification reopen only when the
+plan names a claim that needs them. They are not parallel campaigns.
+
+Arithmetic/Riemann studies, graph waves, field-space Hamiltonians, cotangent
+comparisons and gauge constructions retain independent premises. Reuse valid
+mathematics or counterexamples without promoting analogies to matter or a
+substrate. The archive retains evaluated-model boundaries and retirement
+provenance; consolidation does not erase unresolved or negative results.
+
+Preserve frozen declarations, source archives, responses and verdicts.
+Previously inspected or evaluated observations cannot become unseen again.
+
+  theory/research/FIVE_STAGE_EXECUTION_PLAN.md#deferred-work-and-reopening-conditions
+  theory/research/archive/README.md
+  theory/research/archive/RETIRED_PROGRAMME_BOUNDARIES.md
+  theory/research/archive/RETIRED_SCOPE_2026-09-20.json

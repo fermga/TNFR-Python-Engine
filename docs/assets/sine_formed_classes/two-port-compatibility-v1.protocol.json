@@ -1,0 +1,213 @@
+{
+  "schema": "tnfr.sine-two-port-compatibility-protocol.v1",
+  "evaluation_kind": "conditional_static_geometry_and_local_attraction_no_trajectory",
+  "inputs": {
+    "classes": [
+      2,
+      1
+    ],
+    "outer_refinements": 32,
+    "inner_refinements": 64
+  },
+  "matched_control_inputs": {
+    "classes": [
+      1,
+      1
+    ],
+    "outer_refinements": 32,
+    "inner_refinements": 64
+  },
+  "complete_model": "Fixed normalized-sine rows x_prime=-K L x+gamma K S(theta), theta_prime=gamma K L x, gamma=1/(1023*pi). K uses actual full fine degrees. Held unit capacities, beta=1, e=1023/1024, w=1/1024, tau=e*t. No forcing or events. This is the positive-loss sine model, not native resultant-direction dynamics.",
+  "support": {
+    "nodes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        8
+      ],
+      [
+        0,
+        9
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        1,
+        10
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        9,
+        10
+      ],
+      [
+        9,
+        17
+      ],
+      [
+        10,
+        11
+      ],
+      [
+        11,
+        12
+      ],
+      [
+        12,
+        13
+      ],
+      [
+        13,
+        14
+      ],
+      [
+        14,
+        15
+      ],
+      [
+        15,
+        16
+      ],
+      [
+        16,
+        17
+      ]
+    ],
+    "left_cycle": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "right_cycle": [
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "bridges": [
+      [
+        0,
+        9
+      ],
+      [
+        1,
+        10
+      ]
+    ],
+    "mixed_cycle": [
+      0,
+      9,
+      10,
+      1
+    ],
+    "weights": "unit",
+    "capacities": "held one",
+    "degree_mass": 40,
+    "ports": [
+      0,
+      1,
+      9,
+      10
+    ],
+    "orientation": "Both internal cycles follow increasing local index, closing8 to0. Both bridge currents are oriented left to right."
+  },
+  "target": {
+    "cycle_periods": [
+      2,
+      1,
+      0
+    ],
+    "form": "Uniform zero on all18 nodes; no hidden form source.",
+    "phase_gauge": "One real-lift representative with zero full degree-weighted common phase; retain exact affine correlations and closing-edge integer offsets.",
+    "acute_domain": "Every principal edge gap lies strictly between -pi/2 and pi/2. Uniqueness is restricted to this full cycle-period cell, modulo the common phase."
+  },
+  "preparation": "No initial source family or trajectory is assessed. The previously acquired classes motivate the target labels only. This is not a handoff from either formed-family preparation, and no late attachment, work budget or basin-entry claim is inferred.",
+  "observation": "Implicit equilibrium geometry, strictly positive left0-to-right0 sine current for classes(2,1), zero bridge current for matched classes(1,1), all fine nodal balance equations, strict acute margins and the local full-law stability classification. Stationary edge currents do not imply nodal motion, form transport or dissipated power.",
+  "method": {
+    "name": "two_monotone_turn_roots_with_full_affine_cycle_reconstruction_v1",
+    "arc_constraints": "a+8b=2*pi*k_left, c+8d=2*pi*k_right, delta=(a-c)/2. Bridge gaps are delta,-delta. Complete critical equations: sin(b)-sin(a)=sin(c)-sin(d)=sin(delta).",
+    "outer_variable": "For canonical classes(2,1), a/(2*pi) lies in[1/9,2/9]. Write h_k(s)=sin((2*pi*k-s)/8)-sin(s). For each outer a, solve h_1(c)+h_2(a)=0 in c/(2*pi) in[1/9,2/9].",
+    "inner_endpoint": "At a=4*pi/9, h_2(a)=0 and c=2*pi/9 analytically; do not ask a strict-sign root solver to certify an endpoint zero by rounding.",
+    "outer_residual": "h_2(a)-sin((a-c(a))/2) is strictly decreasing, with strictly positive/negative endpoint signs. Reuse the shared exact-turn decreasing-root bracket owner, inner64 and outer32 refinements, fixed outward interval arithmetic. Unresolved numerical signs remain explicitly unavailable.",
+    "reconstruction": "Use rational-affine nodal turns in the correlated two root coordinates, exact degree-weighted gauge cancellation and exact integer cycle periods. Rebuild all20 edge currents and all18 nodal residuals, including their symbolic dependence on the two root equations. A midpoint or independent interval box is not an exact equilibrium.",
+    "recovery": "Strict acute edge cosines give a positive relative phase Hessian on the actual connected support. Reuse the complete two-row positive-loss quadratic-pencil argument without commutation to infer local exponential attraction on the conserved mean leaf, with34 stable relative directions. No global attraction or specified basin entry follows.",
+    "control": "Equal classes have their unchanged uniform twists and zero bridge gaps/current; construct this control analytically without an artificial root solve.",
+    "interval_method": "rational_outward_dyadic128_machin_trigonometry_v1",
+    "trajectory_integration": false
+  },
+  "prediction": {
+    "unequal_classes": "Unique strictly acute critical geometry in period cell(2,1,0), positive first oriented bridge sine current, opposite second current, and local full-law attraction. Internal twists must deform; no relative origin preserves both undeformed unequal twists as an acute equilibrium.",
+    "matched_classes": "Exact unchanged class-one twists, zero bridge current and strict acute local attraction in cell(1,1,0).",
+    "scope": "Admission of known formed-class geometries to a new interface. General circulation and acute-cell uniqueness are reused theorems, not new universal laws. The earlier central-port reduced-model bounds do not transfer to this support."
+  },
+  "stopping_rule": "Require both admitted geometries, exact full-cycle and nodal-factorization consistency, strict acute/Hessian margins, the predicted nonzero-versus-zero interface-current distinction and the justified local-stability classification. Preserve an unavailable result if fixed interval signs cannot be resolved. Freeze proof, source and protocol before evaluation; do not retune support, class, precision or refinement budgets afterward. No trajectory search, initial-family capture or physical binding claim.",
+  "source_base_commit": "3a313196640bfd99d2164d8c2c2e5c89cb504c50",
+  "source_overlay_archive": "two-port-compatibility-v1.source.zip",
+  "frozen_theory_owner": "theory/nodal/SINE_TWO_PORT_COMPATIBILITY.md",
+  "runtime": {
+    "python": "3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows",
+    "backend": "Python exact Fraction and fixed outward dyadic128 trigonometry; shared monotone phase-root brackets",
+    "seed": null,
+    "seed_scope": "No random state or numerical trajectory. The complete pressure law and fixed support are declared analytically."
+  }
+}

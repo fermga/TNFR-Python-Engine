@@ -1,0 +1,43 @@
+{
+  "schema": "tnfr.sine-port-composition-evidence.v1",
+  "artifacts": [
+    {
+      "file": "port-composition-v1.protocol.json",
+      "bytes": 9445,
+      "sha256": "61a268447b33ceb5f9d0cae3efdd340a4356a3e22706ad028b22f76d62f64566"
+    },
+    {
+      "file": "port-composition-v1.source.zip",
+      "bytes": 32243,
+      "sha256": "3fa9b7ef0a7032151d6213653e7d3e9752a425e5b933da96fcdef5196a3d6e17"
+    },
+    {
+      "file": "port-composition-v1.json",
+      "bytes": 121062,
+      "sha256": "959c811c34ef951fffeecdfd8c840679e67511874e8da9832441dd9c26065e9e"
+    }
+  ],
+  "source_base_commit": "f9c419c42bce35df8bd94b136ac73ca9999103b1",
+  "runtime_overlays": [
+    "src/tnfr/physics/_sine_port_geometry.py",
+    "src/tnfr/physics/relational_sine_port_composition.py",
+    "src/tnfr/physics/relational_sine_reduced_class_ports.py",
+    "src/tnfr/sdk/relational_reports.py"
+  ],
+  "source_reconstruction": "Checkout the base Git commit, then overlay archived src/ files. The archive also retains the exact pre-evaluation proof, protocol and evaluator. Unchanged dependencies remain recoverable from Git.",
+  "evaluation": "One reserved evaluation of the unchanged frozen three-component-path protocol after archiving proof, inputs, evaluator and exact runtime overlays. Current-source regression tests remain separate and preserve saved evidence.",
+  "result_owner": "../../../theory/nodal/SINE_REDUCED_PORT_COMPOSITION.md#sine-reduced-port-composition",
+  "status": "certified_sine_port_composition",
+  "frozen_stopping_rule_passed": true,
+  "algebraic_control_passed": true,
+  "approximation_allowance": {
+    "numerator": 1,
+    "denominator": 50000000000000000000000000000000
+  },
+  "contact_work_allowance": {
+    "numerator": 1,
+    "denominator": 500000
+  },
+  "scope": "Conditional degree-aware composition of three actually formed C9 families: thirty retained coordinates, exact reduced balance, uniform full-state approximation on the declared finite window and separate full-law all-time identity/recovery. Supplied unit support, law, preparation, clock and work; no exact nonlinear quotient, autonomous event law, minimality, trajectory acquisition or physical identification.",
+  "provenance_limitations": "Hashes establish content consistency and source recoverability, not independent authentication of chronology or physical acquisition."
+}

@@ -1,0 +1,78 @@
+{
+  "schema": "tnfr.sine-two-port-inference-evidence.v1",
+  "artifacts": [
+    {
+      "file": "two-port-inference-v1.protocol.json",
+      "bytes": 30953,
+      "sha256": "551d6551a9c8fb6fc0160904c96d87ddabfe46e363922d4c5b06780ba7693d02"
+    },
+    {
+      "file": "two-port-inference-v1.source.zip",
+      "bytes": 40639,
+      "sha256": "9ba1d094f820459a5d7fd10879b47195d30954f8db9aa33d30a2d9729dbcc745"
+    },
+    {
+      "file": "two-port-inference-v1.json",
+      "bytes": 2133938,
+      "sha256": "2510e48311294204843879d00994a03b36e85d9972cdf7e11573e43e430059a0"
+    }
+  ],
+  "source_base_commit": "4fb76a40cfac14227e2e582f26722f2718c296ea",
+  "runtime_overlays": [
+    "src/tnfr/mathematics/_validated_taylor.py",
+    "src/tnfr/physics/relational_sine_two_port_readout.py",
+    "src/tnfr/sdk/relational_reports.py"
+  ],
+  "source_reconstruction": "Checkout the base revision and overlay the three archived src/ files. Restore the archived evaluator, helper, public worker and protocol; the archived proof is its prospective prefix. The existing inverse is unchanged at the base revision.",
+  "evaluation": "One fixed one-step fourth-order complete36-coordinate response for each of three frozen source realizations; each public packet is consumed by a fresh process with primary, broad-gain and false-prior inference. No search, rerun, precision change or earlier frozen producer.",
+  "result_owner": "../../../theory/nodal/SINE_TWO_PORT_INFERENCE.md#sine-two-port-inference-result",
+  "status": "certified_reserved_inference",
+  "frozen_stopping_rule": {
+    "calibration_admitted": true,
+    "case-1.source_admitted": true,
+    "case-1.complete_horizon": true,
+    "case-1.reading_errors_admitted": true,
+    "case-1.numerical_readout_width": true,
+    "case-1.public_only_packet": true,
+    "case-1.primary_bounded_candidate": true,
+    "case-1.nominal_angle_covered": true,
+    "case-1.actual_angle_covered": true,
+    "case-1.primary_resolution": true,
+    "case-1.broad_gain_bounded_candidate": true,
+    "case-1.broad_gain_contains_primary": true,
+    "case-1.broad_gain_loses_resolution": true,
+    "case-1.false_prior_excluded": true,
+    "case-1.phase_blind_alternative_excluded": true,
+    "case-2.source_admitted": true,
+    "case-2.complete_horizon": true,
+    "case-2.reading_errors_admitted": true,
+    "case-2.numerical_readout_width": true,
+    "case-2.public_only_packet": true,
+    "case-2.primary_bounded_candidate": true,
+    "case-2.nominal_angle_covered": true,
+    "case-2.actual_angle_covered": true,
+    "case-2.primary_resolution": true,
+    "case-2.broad_gain_bounded_candidate": true,
+    "case-2.broad_gain_contains_primary": true,
+    "case-2.broad_gain_loses_resolution": true,
+    "case-2.false_prior_excluded": true,
+    "case-2.phase_blind_alternative_excluded": true,
+    "case-3.source_admitted": true,
+    "case-3.complete_horizon": true,
+    "case-3.reading_errors_admitted": true,
+    "case-3.numerical_readout_width": true,
+    "case-3.public_only_packet": true,
+    "case-3.primary_bounded_candidate": true,
+    "case-3.nominal_angle_covered": true,
+    "case-3.actual_angle_covered": true,
+    "case-3.primary_resolution": true,
+    "case-3.broad_gain_bounded_candidate": true,
+    "case-3.broad_gain_contains_primary": true,
+    "case-3.broad_gain_loses_resolution": true,
+    "case-3.false_prior_excluded": true,
+    "case-3.phase_blind_alternative_excluded": true
+  },
+  "frozen_stopping_rule_passed": true,
+  "scope": "Finite conditional software evidence of calibrated partial geometry inference, not physical calibration, independent field data, complete hidden-state reconstruction or uniqueness of the law.",
+  "provenance_limitations": "Content hashes and archived source permit consistency and recovery checks, not independent timing or execution authentication. The public-packet boundary excludes hidden inputs in this code path; it is not cryptographic blindness. Validated numerical execution is recorded and can be audited without rerunning the producer."
+}

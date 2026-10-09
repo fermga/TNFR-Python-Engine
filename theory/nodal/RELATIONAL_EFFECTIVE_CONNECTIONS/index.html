@@ -1,0 +1,7192 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/nodal/RELATIONAL_EFFECTIVE_CONNECTIONS/">
+      
+      
+        <link rel="prev" href="../RELATIONAL_PATTERN_COMPOSITION/">
+      
+      
+        <link rel="next" href="../RELATIONAL_NATIVE_FORMATION/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Effective mediated connections - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#mediated-connections-and-pattern-detachment" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Effective mediated connections
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributor and agent instructions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Usage guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/CLI_AND_SDK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI and SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/RESEARCH_EVIDENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research evidence and frozen source restoration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/REGIONAL_AND_RELATIONAL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Regional and relational SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/relational/RELATIONAL_EXECUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native relational execution and observations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/relational/RELATIONAL_CAPTURE_AND_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native relational capture, memory and continuous proofs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/relational/OBSERVATION_AND_INFORMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shared observations, information and finite-sample bounds
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/relational/SINE_COMPARISON_AND_INFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Normalized-sine comparison, inference and forecasts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/relational/SINE_RESPONSE_AND_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sine response, constitutive comparisons and hidden memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/relational/SINE_PATTERNS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sine pattern geometry, formation and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/relational/SINE_SADDLE_CERTIFICATES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conservative sine saddle preparations and certificates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/relational/SINE_REGIONAL_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conservative sine regional and collective dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/relational/SINE_PAIR_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retained sine pair state, identification and pulses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observational interfaces
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optional Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contracts and diagnostics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contracts and diagnostics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/contracts/RELATIONAL_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relational dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/contracts/relational/RELATIONAL_EXECUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native relational execution and observations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/contracts/relational/RELATIONAL_CAPTURE_AND_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native relational capture, memory and continuous proofs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/contracts/relational/OBSERVATION_AND_INFORMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shared observations, information and finite-sample bounds
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/contracts/relational/SINE_COMPARISON_AND_INFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Normalized-sine comparison, inference and forecasts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/contracts/relational/SINE_RESPONSE_AND_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sine response, constitutive comparisons and hidden memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/contracts/relational/SINE_PATTERNS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sine pattern geometry, formation and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/contracts/relational/SINE_SADDLE_CERTIFICATES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conservative sine saddle preparations and certificates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/contracts/relational/SINE_REGIONAL_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conservative sine regional and collective dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/contracts/relational/SINE_PAIR_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retained sine pair state, identification and pulses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/contracts/OPERATOR_EVENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator events
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State and laws
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    State and laws
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../FUNDAMENTAL_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fundamental theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NODAL_PARAMETER_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATION_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relation foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PRESSURE_CONSTITUTIVE_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pressure premises
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JOINT_PARAMETER_RESPONSE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Joint parameter response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../GLOSSARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Form, phase and coherent patterns
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Form, phase and coherent patterns
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../INHERITED_FORM_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inherited form dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PHASE_FORM_EXCHANGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase-to-form exchange
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PRIMITIVE_PHASE_CLOSURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primitive phase closure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DERIVED_FORM_PHASE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived form phase
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATIONAL_EXCHANGE_ADMISSION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relational law and chapter index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATIONAL_RESPONSE_IDENTIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relational coefficient and capacity identification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CONSTITUTIVE_INFORMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sine law and constitutive information boundaries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATIONAL_RECOVERY_AND_INTERACTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native local recovery and regional interaction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATIONAL_DOMAIN_AND_CAPTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native phase domains and capture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATIONAL_FORMATION_CONTROLS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native validated transit and preparation controls
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATIONAL_PATTERN_COMPOSITION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relational pattern composition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Effective mediated connections
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Effective mediated connections
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#14-connection-mechanisms-mediation-reinforcement-and-primitive-birth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Connection mechanisms: mediation, reinforcement and primitive birth
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="14. Connection mechanisms: mediation, reinforcement and primitive birth">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-mediated-effective-connection-follows-from-existing-nodal-transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A mediated effective connection follows from existing nodal transport
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-same-phase-geometry-induces-a-restoring-relation-through-a-mediator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The same phase geometry induces a restoring relation through a mediator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simultaneous-nodal-loss-can-admit-continuous-reinforcement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Simultaneous nodal loss can admit continuous reinforcement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-the-repository-supplies-and-what-is-still-missing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the repository supplies, and what is still missing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#15-sufficient-conditions-for-a-restoring-effective-link" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. Sufficient conditions for a restoring effective link
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="15. Sufficient conditions for a restoring effective link">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#operational-meaning-and-fixed-premises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operational meaning and fixed premises
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-unique-shortest-path-gives-a-full-pair-causal-response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A unique shortest path gives a full-pair causal response
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#at-consensus-all-shortest-active-paths-reinforce-the-same-block" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        At consensus, all shortest active paths reinforce the same block
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-frozen-separator-is-an-exact-nonlinear-causal-null" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A frozen separator is an exact nonlinear causal null
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#static-effective-curvature-and-dynamic-recovery-are-complementary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Static effective curvature and dynamic recovery are complementary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#an-explicit-local-formation-to-maintenance-preparation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        An explicit local formation-to-maintenance preparation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-capture-domain-retaining-the-intermediarys-initial-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A capture domain retaining the intermediary's initial state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identical-mediator-pressure-does-not-specify-the-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identical mediator pressure does not specify the environment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#16-formation-enabling-support-and-later-pattern-detachment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16. Formation-enabling support and later pattern detachment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="16. Formation-enabling support and later pattern detachment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#event-and-post-event-state-card" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Event and post-event state card
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-sufficient-maintenance-basin-for-one-isolated-c5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A sufficient maintenance basin for one isolated C5
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-joined-sector-certificate-already-admits-both-detached-rings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The joined sector certificate already admits both detached rings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zero-bridge-cost-throughout-formation-does-not-make-an-early-cut-safe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zero bridge cost throughout formation does not make an early cut safe
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-sufficiently-late-detachment-window-follows-from-formed-state-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A sufficiently late detachment window follows from formed-state recovery
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shared-observation-and-implementation-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shared observation and implementation scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATIONAL_NATIVE_FORMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native formation and its obstructions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_PATTERN_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Smooth-sine pattern dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_FORMED_CLASS_MAINTENANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repeated probes of formed sine classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_FORMED_CLASS_CONTACT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contact of actually formed sine classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_REDUCED_CLASS_PORTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reduced ports of formed sine classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_REDUCED_PORT_COMPOSITION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Network composition of reduced sine ports
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_MEDIATED_RESPONSE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acquired mediator class and a transmitted form response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_MEDIATED_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Effective memory of an acquired sine-class mediator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_NONLINEAR_SUPERPOSITION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-probe superposition on an acquired sine composite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_NONLINEAR_PROTOCOL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finite separation of a nonlinear class-mediated response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_NONLINEAR_ORGANIZATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Organization dependence of nonlinear interaction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_CUBIC_RESPONSE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Complete cubic-amplitude mediator response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_SPATIAL_OBSERVATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial observation of nonlinear class interaction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_AMPLITUDE_FEASIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feasible amplitudes for class discrimination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_COMPARISON_PROTOCOL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Independent full-law class comparison protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_REPEATED_INTERACTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repeated joined class interaction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_COLLECTIVE_INTERFACE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nonlinear collective interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_CHANGED_INPUT_PREDICTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changed-input collective prediction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_COLLECTIVE_FORWARD_PROTOCOL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Independent changed-input full-law protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_INTERFACE_COMPOSITION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Causal composition of acquired sine-class interfaces
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_NEIGHBOR_NONADDITIVITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Causal nonadditivity of distinct neighbor interventions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Independent distinct-neighbor protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_STORAGE_EXCESS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nonlinear excess storage and loss
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_PORT_RELAXATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Uniform tracking of reduced sine ports
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_PORT_FORM_TRACKING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Form tracking by ordered heat comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_TWO_PORT_COMPATIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-port compatibility of sine classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_TWO_PORT_TRANSIT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finite transit of two-port sine classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_TWO_PORT_CAPTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prepared capture of two-port sine classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_TWO_PORT_PROBE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supplied probe of the acquired two-port composite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_TWO_PORT_DIPOLE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interior phase probe of acquired two-port deformation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_TWO_PORT_INFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-port geometry from a calibrated local response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_TWO_PULSE_INFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry and gain from two successive phase inputs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLOCK_INFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry, sensor gain and a declared uncertain clock
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_FINITE_CURVATURE_INFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finite curvature from one additional reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLOCK_DRIFT_INFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clock drift, sampled exposure and robust mean-rate inference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_APERTURE_INFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finite-aperture observations and mean-clock inference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_APERTURE_RESOLUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finite-noise and horizon resolution for the four boxcar observations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_FORM_PHASE_REDUCTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exact and controlled form-phase reductions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_REGIONAL_FORMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conservative regional formation and its barriers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_COLLECTIVE_PHASE_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Collective phase families and live contact feedback
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CONSERVATIVE_PREPARATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conservative source preparation and finite retention
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATIONAL_PATTERN_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native reduction and memory index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATIONAL_MEDIATOR_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native mediated pattern dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_ENVIRONMENTAL_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sine environmental state and causal memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATIONAL_RETURN_PATH_GEOMETRY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Return-path geometry and collective response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATIONAL_PHASE_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retained phase records and finite contact readout
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_PATTERN_RECOVERY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sine relative state, recovery and conservative identity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RESONANCE_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Resonance foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../EMERGENT_ONTOLOGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Emergence and ontology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transport, memory and clocks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Transport, memory and clocks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EPI diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_DIRECTED_NONNORMAL_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Directed nonnormal dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DERIVED_EPI_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived EPI memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CAPACITY_LOCALIZATION_BALANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Capacity and localization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CYCLE_SUPPORT_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cycle support dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CYCLE_MEMORY_RELAXATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cycle memory relaxation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../FORCED_SUPPORT_BALANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forced support balance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FORCED_REGIONAL_RESPONSE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forced regional response and environmental readouts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FORCED_SOURCE_AND_CLOCK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forced-source closure and phase clocks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FORCED_PHASE_LOCKING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conditional phase locking and circulation geometry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FORCED_WINDING_AND_WRITERS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Winding generation and native writer boundaries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FORCED_GEOMETRIC_IDENTITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometric identity and capacity-feedback bounds
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../REMESH_INFINITY_DERIVATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REMESH fixed-delay models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and collective-state index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_PAIR_STATE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sufficient unordered pair state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_REPLICA_PULSE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Internal replica pulses and their perturbations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_PAIR_GROUPING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase and joint form-phase grouping
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_PAIR_MOBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pair geometry under alternative reciprocal mobility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_PAIR_INTERACTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pair actions, regional exchange and cancellation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_5" id="__nav_5_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators, grammar and support events
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operators, grammar and support events
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STRUCTURAL_OPERATORS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unified grammar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic and grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../COUPLING_WINDING_PERSISTENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coupling and winding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATIONAL_SUPPORT_EVENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relational support events
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../COHERENT_PATTERN_CONTACT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coherent pattern contact
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../THOL_PRESSURE_FEEDBACK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    THOL pressure feedback
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../THOL_BIRTH_AND_TRANSPORT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    THOL birth and transport
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CHILD_COUPLING_FEEDBACK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Child coupling feedback
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6" id="__nav_5_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostics and geometry
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Diagnostics and geometry
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STRUCTURAL_STABILITY_AND_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stability and dynamics diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../EXTENDED_FIELDS_AND_DERIVED_QUANTITIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extended fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Auxiliary models and physical comparisons
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Auxiliary models and physical comparisons
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_VARIATIONAL_PRINCIPLE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Variational and exchange models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DISSIPATIVE_AND_OPEN_SYSTEMS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dissipative/open-system models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../GAUGE_SYMMETRY_AND_UNIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gauge and polarization constructions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PHYSICAL_REGIME_CORRESPONDENCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Physical phenomena atlas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arithmetic and applications
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Arithmetic and applications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_NUMBER_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Number theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_STRUCTURAL_OBSERVABILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural observability — R1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_ARITHMETIC_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arithmetic dynamics — R2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_CRT_FRACTALITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CRT composition — R3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_PADIC_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    p-adic dynamics — R4
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_ALGEBRAIC_NUMBER_FIELDS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algebraic number fields — R5
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_ADDITIVE_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Additive dynamics — R6
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_ARITHMETIC_PRESSURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arithmetic pressure — R7
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_ARITHMETIC_OPERATORS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arithmetic operators — R8
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_RIEMANN_RESEARCH_NOTES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Riemann scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_9" id="__nav_5_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research, measurement and parked evidence
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research, measurement and parked evidence
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/FIVE_STAGE_EXECUTION_PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Execution plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NODAL_RESEARCH_STRATEGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/PASSIVE_TRANSPORT_PROTOCOL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Passive transport protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Regional phase/amplitude protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/DPLL_PHYSICAL_ADMISSION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Physical admission of the delayed digital-PLL realization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/TCLAB_EXPLORATORY_PROTOCOL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TCLab comparison boundary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../C6_RESEARCH_MECHANISM_AUDIT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parked C6 evidence boundary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/archive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Historical archive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/archive/RETIRED_PROGRAMME_BOUNDARIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retired programme boundaries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../applications/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Applications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Applications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../applications/factorization-lab/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Factorization lab
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../applications/primality-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.github/WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#14-connection-mechanisms-mediation-reinforcement-and-primitive-birth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Connection mechanisms: mediation, reinforcement and primitive birth
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="14. Connection mechanisms: mediation, reinforcement and primitive birth">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-mediated-effective-connection-follows-from-existing-nodal-transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A mediated effective connection follows from existing nodal transport
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-same-phase-geometry-induces-a-restoring-relation-through-a-mediator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The same phase geometry induces a restoring relation through a mediator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simultaneous-nodal-loss-can-admit-continuous-reinforcement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Simultaneous nodal loss can admit continuous reinforcement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-the-repository-supplies-and-what-is-still-missing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the repository supplies, and what is still missing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#15-sufficient-conditions-for-a-restoring-effective-link" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. Sufficient conditions for a restoring effective link
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="15. Sufficient conditions for a restoring effective link">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#operational-meaning-and-fixed-premises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operational meaning and fixed premises
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-unique-shortest-path-gives-a-full-pair-causal-response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A unique shortest path gives a full-pair causal response
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#at-consensus-all-shortest-active-paths-reinforce-the-same-block" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        At consensus, all shortest active paths reinforce the same block
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-frozen-separator-is-an-exact-nonlinear-causal-null" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A frozen separator is an exact nonlinear causal null
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#static-effective-curvature-and-dynamic-recovery-are-complementary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Static effective curvature and dynamic recovery are complementary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#an-explicit-local-formation-to-maintenance-preparation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        An explicit local formation-to-maintenance preparation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-capture-domain-retaining-the-intermediarys-initial-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A capture domain retaining the intermediary's initial state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identical-mediator-pressure-does-not-specify-the-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identical mediator pressure does not specify the environment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#16-formation-enabling-support-and-later-pattern-detachment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16. Formation-enabling support and later pattern detachment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="16. Formation-enabling support and later pattern detachment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#event-and-post-event-state-card" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Event and post-event state card
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-sufficient-maintenance-basin-for-one-isolated-c5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A sufficient maintenance basin for one isolated C5
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-joined-sector-certificate-already-admits-both-detached-rings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The joined sector certificate already admits both detached rings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zero-bridge-cost-throughout-formation-does-not-make-an-early-cut-safe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zero bridge cost throughout formation does not make an early cut safe
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-sufficiently-late-detachment-window-follows-from-formed-state-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A sufficiently late detachment window follows from formed-state recovery
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shared-observation-and-implementation-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shared observation and implementation scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="mediated-connections-and-pattern-detachment">Mediated connections and pattern detachment<a class="headerlink" href="#mediated-connections-and-pattern-detachment" title="Permanent link">&para;</a></h1>
+<p>Sections 14–16 distinguish causal influence, restoring interaction and
+support birth. Exact hidden-state elimination retains initial state and
+memory; local recovery and detachment use their stated native-law premises.
+The results assume fine support and do not create it autonomously.</p>
+<p>Part of <a href="../RELATIONAL_PATTERN_COMPOSITION/">Native regional composition</a>.
+Section numbers remain stable across this collection. Each result keeps
+its full hypotheses, implementation and checks; the
+<a href="../../research/FIVE_STAGE_EXECUTION_PLAN/#current-g3-gate">execution plan</a>
+alone assigns research work.</p>
+<p><a id="connection-mechanisms-and-mediators"></a></p>
+<h2 id="14-connection-mechanisms-mediation-reinforcement-and-primitive-birth">14. Connection mechanisms: mediation, reinforcement and primitive birth<a class="headerlink" href="#14-connection-mechanisms-mediation-reinforcement-and-primitive-birth" title="Permanent link">&para;</a></h2>
+<p>The <a href="../../PHYSICAL_REGIME_CORRESPONDENCES/#physical-binding-and-interaction">physical binding comparisons</a>
+motivate a precise distinction. A channel of influence, a dynamically bound
+configuration and a primitive support event are different model claims.
+Existing interactions can organize a composite without creating a new
+fundamental interaction. This does not explain the origin of the fine support.</p>
+<h3 id="a-mediated-effective-connection-follows-from-existing-nodal-transport">A mediated effective connection follows from existing nodal transport<a class="headerlink" href="#a-mediated-effective-connection-follows-from-existing-nodal-transport" title="Permanent link">&para;</a></h3>
+<p>Reuse <a href="../../DERIVED_EPI_MEMORY/#3-exact-elimination-including-the-initial-hidden-state">exact hidden-state elimination</a>
+on unit P3, <code>A--M--B</code>, with common held capacity <code>nu&gt;0</code> and pure-EPI pressure.
+Observe <code>y=(x_A,x_B)</code> and hide <code>h=x_M</code>. The actual normalized nodal law gives</p>
+<div class="arithmatex">\[
+\dot y=-\nu y+\nu\mathbf1h,\qquad
+\dot h=\frac\nu2\mathbf1^Ty-\nu h.
+\]</div>
+<p>Eliminating the mediator gives the exact endpoint law</p>
+<div class="arithmatex">\[
+\dot y(t)=-\nu y(t)+\nu e^{-\nu t}\mathbf1h(0)
++\int_0^t\frac{\nu^2}{2}e^{-\nu(t-s)}
+\mathbf1\mathbf1^Ty(s)\,ds.
+\]</div>
+<p>Its off-diagonal memory term transmits influence without a direct A--B edge.
+For an initial donor-only difference <code>(delta x_A,delta h,delta x_B)=(a,0,0)</code>,</p>
+<div class="arithmatex">\[
+\delta x_B(t)=\frac a4(1-e^{-\nu t})^2
+=\frac{a\nu^2}{4}t^2+O(t^3).
+\]</div>
+<p>The recipient's initial rate difference is zero; its acceleration difference
+is <code>a*nu^2/2</code>.
+Removing the mediator paths removes that influence. An instantaneous direct
+edge with positive conductance instead gives a nonzero initial recipient rate
+difference for <code>a!=0</code>. This is a bounded analytic discriminator, not a new
+simulation campaign, autonomous edge birth or a bound-state theorem.</p>
+<p>Replacing the hidden row by <code>h=(x_A+x_B)/2</code> gives a direct reduced coupling,
+but here it is exact only on that invariant preparation manifold; the donor-
+only control is outside it. The
+<a href="../../DERIVED_EPI_MEMORY/#11-minimal-linear-state-retaining-a-declared-observation">minimal realization</a>
+requires three linear coordinates for arbitrary preparations: endpoint
+observation rows have rank two, and their first generator products raise the
+rank to three. The partition-based <code>observe_epi_memory</code> API cannot be called
+with the mediator omitted from its partition. Reuse the elimination algebra
+or the general linear-realization owner instead. The older unnormalized Kron
+example has a different capacity law, as that document already specifies.</p>
+<p>The <a href="../RELATIONAL_MEDIATOR_DYNAMICS/#mediated-pattern-interaction">joint mediator extension</a>
+now uses the existing nonlinear form/phase law on two C5 regions linked through
+one nodal intermediary. It derives a two-coordinate tangent memory, a
+capacity-dependent transient and a direct-versus-mediated onset discriminator;
+the existing local theorem admits recovery of the supplied joint geometry.
+This extends the mechanism beyond pure diffusion without explaining primitive
+support origin or replacing a finite capture study.</p>
+<p><a id="mediated-restoring-geometry"></a></p>
+<h3 id="the-same-phase-geometry-induces-a-restoring-relation-through-a-mediator">The same phase geometry induces a restoring relation through a mediator<a class="headerlink" href="#the-same-phase-geometry-induces-a-restoring-relation-through-a-mediator" title="Permanent link">&para;</a></h3>
+<p>The <a href="../RELATIONAL_RECOVERY_AND_INTERACTION/#relational-local-recovery">local recovery theorem</a>
+uses the Hessian of the existing phase storage, with edge weights
+<code>k_ij=cos(delta_ij)&gt;0</code> at an acute equilibrium. These are derived curvatures,
+not new conductances or physical spring constants. Restrict its quadratic
+form to a two-edge path <code>A--M--B</code>, holding regional shapes fixed and allowing
+phase offsets <code>a,b</code> at its endpoints and <code>h</code> at its mediator. Its contribution is</p>
+<div class="arithmatex">\[
+Q(a,h,b)=\frac\beta2\big[k_1(h-a)^2+k_2(b-h)^2\big].
+\]</div>
+<p>Completing the square gives the exact quadratic identity</p>
+<div class="arithmatex">\[
+Q=\frac{\beta(k_1+k_2)}2(h-h_*)^2
++\frac{\beta k_{\rm eff}}2(b-a)^2,\qquad
+h_* = \frac{k_1a+k_2b}{k_1+k_2},\quad
+k_{\rm eff}=\frac{k_1k_2}{k_1+k_2}&gt;0.
+\]</div>
+<p>Thus eliminating a hidden coordinate in a <strong>static constrained minimum</strong>
+leaves positive curvature in the endpoints' relative phase despite no direct
+edge. A common offset costs nothing. Other routes and internal deformations
+retain their own contributions; this two-edge expression is not the complete
+stiffness of the return-path graph.</p>
+<p>For an aligned unit path, <code>k_1=k_2=1</code>, so <code>k_eff=1/2</code>. More than the local
+quadratic term is available here. With lifted endpoint difference
+<code>d=b-a</code> satisfying <code>abs(d)&lt;pi</code> and both path gaps acute, its exact constrained
+phase-storage minimum is</p>
+<div class="arithmatex">\[
+\min_h\beta[2-\cos(h-a)-\cos(b-h)]
+=2\beta[1-\cos(d/2)]
+=\frac\beta4d^2+O(d^4).
+\]</div>
+<p>Indeed the expression before minimization is
+<code>2*beta*[1-cos(d/2)*cos(h-(a+b)/2)]</code>; its unique minimum in this acute lift
+is at the midpoint. This calculation restricts the existing storage rather
+than selecting another pressure law or introducing a synchronization threshold.</p>
+<p>Static minimization is <strong>not dynamic elimination</strong>. Endpoints and ring shapes
+are fixed only for this calculation; that constrained family need not be
+invariant under the actual flow. Neither <code>h=h_*</code> nor a direct endpoint law
+may replace the mediator's form and phase rows without another argument.
+The <a href="../RELATIONAL_MEDIATOR_DYNAMICS/#mediated-pattern-interaction">derived memory</a>
+retains those rows, their initial state and their capacity. In particular a
+zero-capacity mediator can stay away from this constrained minimum: geometric
+curvature does not by itself make an inactive node move.
+The <a href="../../../tests/physics/test_relational_mediation.py">native mediation controls</a>
+check the exact path cost and its gradient against engine observations,
+including this zero-capacity boundary, without a trajectory campaign.</p>
+<p>Under the full local theorem's positive-capacity premises, phase deformation
+drives form through pressure, and form contrast feeds back into phase; form
+loss then damps the joint deviation. A restored configuration can remain at
+rest with all rates zero. What follows is a conditional restoring collective
+relation, not a requirement for perpetual oscillation. Holding fine support
+fixed still explains why its edges persist in the model; this curvature
+calculation does not explain their primitive birth or physical identification.</p>
+<h3 id="simultaneous-nodal-loss-can-admit-continuous-reinforcement">Simultaneous nodal loss can admit continuous reinforcement<a class="headerlink" href="#simultaneous-nodal-loss-can-admit-continuous-reinforcement" title="Permanent link">&para;</a></h3>
+<p>The shared <a href="../../../src/tnfr/physics/support_transport.py">transport derivative</a>
+and <a href="../JOINT_PARAMETER_RESPONSE/#10-joint-pressure-response-and-the-capacity-product-rule">joint response</a>
+already separate changing conductance from nodal change. Fix a simple bare
+support <code>U</code>, positive symmetric conductances <code>a_ij</code>, strengths <code>d_i&gt;0</code>, held
+positive <code>N=diag(nu_i)</code> and regular <code>H_U&gt;0</code>, with <code>H_U*g_U=-grad(V_U)</code>.
+Let <code>e&gt;=0</code>, <code>w&gt;0</code>, <code>beta&gt;0</code> and declare the conductance/storage scales.
+Consider the <strong>explicit weighted extension</strong>, not the unit-only executor,</p>
+<div class="arithmatex">\[
+q=B_a x,\quad
+\dot x=N(-eD_a^{-1}q+w g_U),\quad
+\dot\theta=(w/\beta)H_U^{-1}Nq,\quad
+S=\tfrac12x^TB_a x+\beta V_U.
+\]</div>
+<p>For held <code>e,w,beta,nu_i</code>, differentiating and cancelling the exchange terms gives</p>
+<div class="arithmatex">\[
+\dot S=-e\sum_i\frac{\nu_iq_i^2}{d_i}
++\frac12\sum_{\{i,j\}\in U}\dot a_{ij}(x_i-x_j)^2.
+\]</div>
+<p>Thus contemporaneous form loss can accommodate positive conductance work
+under an additional <code>S_dot&lt;=0</code> premise. This is not expenditure of past loss
+from an invented reservoir. It is an admissibility inequality, leaving the
+allocation, speed and occurrence of reinforcement undetermined. It supplies
+no evolution law for <code>a</code>, and no weighted executor or global recovery theorem
+is installed by this calculation.
+For common-capacity P2 with nonzero form contrast it reduces to
+<code>a_dot&lt;=4*e*nu*a</code>: positive reinforcement can be admitted without selecting
+its rate. Conductance scaling leaves normalized form transport unchanged but
+changes this extension's phase row at fixed <code>beta</code>; the storage budget is not
+an independently calibrated physical growth law.</p>
+<p>This calculation holds bare phase support fixed. A zero-weight edge already
+belongs to that support and participates in its phase pressure; it is not an
+absent relation. The existing fixed-active-edge derivative rejects birth from
+zero, and a zero-strength row needs separate admission. Adding a genuinely
+absent edge also changes <code>V_U</code>, <code>g_U</code>, <code>H_U</code> and support degrees, so its event
+needs the <a href="../RELATIONAL_SUPPORT_EVENTS/#nodal-reorganization-and-contact">complete reset budget</a>.
+At unchanged phase, its added phase cost <code>beta*(1-cos(theta_j-theta_i))</code>
+does not vanish as the newborn conductance tends to zero. Small transport
+weight therefore does not regularize native bare-support birth.
+Likewise a regular multiplicative rule <code>a_dot=a*f</code> preserves an initially zero
+weight when <code>f</code> is locally bounded: <code>a(t)=a(0)*exp(integral(f))</code>. Naming such a
+rule adaptive does not make it a birth mechanism.</p>
+<h3 id="what-the-repository-supplies-and-what-is-still-missing">What the repository supplies, and what is still missing<a class="headerlink" href="#what-the-repository-supplies-and-what-is-still-missing" title="Permanent link">&para;</a></h3>
+<p>The <a href="../RELATION_FOUNDATIONS/">relation foundation</a> defines support, conductance,
+metric and causal dependence as distinct objects. Its
+<a href="../RELATION_FOUNDATIONS/#zero-relation-boundary">zero-relation admission</a>
+shows why a small transport weight need not describe a weak or newly forming
+interaction, including the separate first-neighbor normalization boundary.
+That foundational contract precedes a proposed law for creating a relation;
+the effective-link results below retain their supplied fine support.</p>
+<p>UM can add a chord and create a new cycle sector; the existing
+<a href="../FORCED_PHASE_LOCKING/#31-one-added-chord-extends-the-cycle-lattice-not-a-phase-generation-law">sector-birth control</a>
+separates that event from simultaneous phase writes and its configured Si
+gate. Topological REMESH constructs MST/kNN support from supplied EPI distances
+and settings. The runtime's ordinary REMESH gate instead invokes delayed EPI
+mixing. Topology and coupling-support observations do not install either law.
+These are reusable mechanisms and controls, not a hidden autonomous selector.</p>
+<p>With a component-local fixed-support vector field, genuinely disconnected
+components have no causal cross-response. Shared initial rhythms do not alter
+that fact. A prospective binding model must therefore declare whether its
+precursor interaction is an existing fine path, an explicitly supplied field
+or candidate relation, or a newly postulated support law. Relabeling a
+zero-weight edge or a globally read candidate as no prior interaction conceals
+that premise. A pre-material interpretation remains open until this state and
+law are justified and a prospective response is derived. The
+<a href="../../research/FIVE_STAGE_EXECUTION_PLAN/#current-g3-gate">sole queue</a> admits that
+mechanism before extending the composite-identity experiment.</p>
+<p><a id="effective-link-admission"></a></p>
+<h2 id="15-sufficient-conditions-for-a-restoring-effective-link">15. Sufficient conditions for a restoring effective link<a class="headerlink" href="#15-sufficient-conditions-for-a-restoring-effective-link" title="Permanent link">&para;</a></h2>
+<h3 id="operational-meaning-and-fixed-premises">Operational meaning and fixed premises<a class="headerlink" href="#operational-meaning-and-fixed-premises" title="Permanent link">&para;</a></h3>
+<p>Here a <strong>local restoring effective link</strong> means two properties under the same
+declared law: interventions in a region's retained form/phase state affect the
+other region, and sufficiently small joint perturbations recover the reference
+geometry modulo common offsets. This is an operational criterion for the
+present model, not a universal definition of an NFR, a microscopic edge-birth
+law or a physical spatial binding claim. A reference equilibrium need not
+oscillate or carry a nonzero signal to have this response to perturbations.</p>
+<p>Fix the <a href="../RELATIONAL_EXCHANGE_ADMISSION/#1-state-inherited-geometry-and-the-independent-premise">complete relational law</a>
+on a finite connected simple unit graph, with held positive capacities,
+<code>e,w,beta&gt;0</code>, no forcing or events, and an acute equilibrium
+<code>x_*=c*1</code>, <code>theta_*</code> with zero neighbor sine sums. Use local lifted phase
+deviations and interleave the coordinates as <code>z_i=(u_i,v_i)</code> for each node.
+This is a permutation of the native tangent's all-form, then all-phase order.
+The following identities concern the ideal equilibrium and real-valued field;
+a materialized tangent retains its own numerical residuals.</p>
+<h3 id="a-unique-shortest-path-gives-a-full-pair-causal-response">A unique shortest path gives a full-pair causal response<a class="headerlink" href="#a-unique-shortest-path-gives-a-full-pair-causal-response" title="Permanent link">&para;</a></h3>
+<p>Let <code>J=DF(z_*)</code>. Its off-diagonal block on an edge <code>j--i</code> is</p>
+<div class="arithmatex">\[
+J_{ij}=\begin{pmatrix}
+e\nu_i/d_i &amp; w\nu_i\cos(\theta_{*,j}-\theta_{*,i})/H_i\\
+-w\nu_i/(\beta H_i)&amp;0
+\end{pmatrix},\qquad
+\det J_{ij}=\frac{w^2\nu_i^2\cos(\theta_{*,j}-\theta_{*,i})}
+ {\beta H_i^2}&gt;0.
+\]</div>
+<p>Nonadjacent off-diagonal blocks vanish. This follows directly from the
+<a href="../RELATIONAL_RECOVERY_AND_INTERACTION/#quotient-linearization-and-the-restoring-mechanism">equilibrium Jacobian</a>,
+not from a graph-wave equation. Suppose distinct nodes <code>a,b</code> have a unique
+shortest support path <code>a=v_0,...,v_ell=b</code>, with length <code>ell&gt;=1</code>. Locality gives
+<code>(J^k)_{ba}=0</code> for <code>k&lt;ell</code>. At order <code>ell</code>, a contributing walk cannot contain
+a diagonal stay or a detour; uniqueness therefore gives</p>
+<div class="arithmatex">\[
+P_{ba}=(J^\ell)_{ba}
+=J_{v_\ell v_{\ell-1}}\cdots J_{v_1v_0},\qquad \det P_{ba}&gt;0.
+\]</div>
+<p>For the flow <code>Phi_t</code>, the tangent transfer of the donor's two coordinates to
+the receiver's two coordinates is consequently</p>
+<div class="arithmatex">\[
+T_{ba}(t)=D_{z_a}(\Phi_t)_b(z_*)=(e^{tJ})_{ba}
+=\frac{t^\ell}{\ell!}P_{ba}+O(t^{\ell+1}),
+\]</div>
+<div class="arithmatex">\[
+\det T_{ba}(t)
+=\frac{t^{2\ell}}{(\ell!)^2}\det P_{ba}+O(t^{2\ell+1})&gt;0
+\]</div>
+<p>for every sufficiently small positive <code>t</code>. The reversed unique path gives
+the reciprocal statement. This is a rank-two response, not a guarantee that
+each matrix entry, a chosen scalar sensor or a regional average is nonzero.
+For each such fixed time, smoothness and the inverse function theorem also
+make the actual nonlinear map from the donor pair to the receiver pair locally
+invertible, with other initial coordinates held fixed. The neighborhood may
+depend on time; no arbitrary-amplitude or global response follows.</p>
+<p>With several shortest paths the leading coefficient is the <strong>sum</strong> of their
+ordered block products. Invertibility of each product alone does not establish
+invertibility of the sum. The unique-path result is sufficient, not necessary;
+the following consensus specialization removes that restriction.</p>
+<h3 id="at-consensus-all-shortest-active-paths-reinforce-the-same-block">At consensus, all shortest active paths reinforce the same block<a class="headerlink" href="#at-consensus-all-shortest-active-paths-reinforce-the-same-block" title="Permanent link">&para;</a></h3>
+<p>At phase consensus, <code>H_i=pi*d_i</code> and every edge cosine is one. Here even held
+nonnegative capacities are allowed for the transfer calculation. Put</p>
+<div class="arithmatex">\[
+A=ND^{-1}B,\qquad
+T=\begin{pmatrix}e&amp;w/\pi\\-w/(\beta\pi)&amp;0\end{pmatrix},
+\qquad J=-A\otimes T,\qquad \det T=\frac{w^2}{\beta\pi^2}&gt;0.
+\]</div>
+<p>Call the directed step <code>j -&gt; i</code> active when <code>j--i</code> is a support edge and
+<code>nu_i&gt;0</code>: the receiving row determines transmission. If the shortest active
+path from <code>a</code> to <code>b</code> has length <code>ell</code>, the same walk expansion gives</p>
+<div class="arithmatex">\[
+(J^\ell)_{ba}=s_{ba}T^\ell,\qquad
+s_{ba}=\sum_{\substack{a=v_0\to\cdots\to v_\ell=b\\
+                         \text{shortest active paths}}}
+               \prod_{r=1}^\ell\frac{\nu_{v_r}}{d_{v_r}}&gt;0.
+\]</div>
+<p>Thus all such paths have the same matrix factor and there is no leading-block
+cancellation, regardless of their number. The full-pair small-time conclusion
+holds whenever an active path exists. The degrees remain those of the actual
+support, including neighbors of zero capacity. In particular, <code>nu_a=0</code> does
+not prevent a perturbed donor value from acting as a fixed boundary source;
+capacity zero freezes its response, not its neighbors' dependence on its state.
+This extension concerns transfer only: the whole-network recovery theorem
+below still requires strictly positive capacities. Positive <code>e</code> is required
+there for attraction, not for the displayed off-diagonal determinants.</p>
+<h3 id="a-frozen-separator-is-an-exact-nonlinear-causal-null">A frozen separator is an exact nonlinear causal null<a class="headerlink" href="#a-frozen-separator-is-an-exact-nonlinear-causal-null" title="Permanent link">&para;</a></h3>
+<p>Let a set of zero-capacity vertices separate the donor and receiver in the
+support, and hold capacities and support fixed. Compare two admitted solutions
+with identical initial separator and receiver-side states, changing only the
+donor side. Both rows of every separator node are identically zero under the
+selected joint law. Its state therefore stays the same in both solutions.
+The receiver-side equations consume only their own evolving state and this
+same fixed boundary. Local uniqueness makes their solutions identical for
+their common existence interval. The argument is nonlinear and does not use
+a tangent approximation. A remaining active route invalidates this null.</p>
+<p>The <a href="../RELATIONAL_MEDIATOR_DYNAMICS/#finite-mediated-response">grounded recovery control</a>
+shows why this distinction matters: independent regions can each restore a
+geometry imposed by one frozen boundary without transmitting changes to one
+another. Neither similar shapes nor equal rhythms establishes causal linkage.</p>
+<h3 id="static-effective-curvature-and-dynamic-recovery-are-complementary">Static effective curvature and dynamic recovery are complementary<a class="headerlink" href="#static-effective-curvature-and-dynamic-recovery-are-complementary" title="Permanent link">&para;</a></h3>
+<p>Let <code>K</code> be the acute equilibrium's cosine-weighted phase Hessian. Retain two
+distinct endpoints <code>R={a,b}</code> and minimize its quadratic storage over the other
+vertices <code>I</code>. When <code>I</code> is nonempty, connected positive edge weights give
+<code>K_II&gt;0</code>; the unique constrained minimum has effective Hessian</p>
+<div class="arithmatex">\[
+K_{\rm eff}=K_{RR}-K_{RI}K_{II}^{-1}K_{IR}
+=k_{ab}\begin{pmatrix}1&amp;-1\\-1&amp;1\end{pmatrix},\qquad k_{ab}&gt;0.
+\]</div>
+<p>Indeed the minimized quadratic is nonnegative, vanishes for common endpoint
+offsets, and cannot vanish for unequal offsets: a zero full-graph quadratic
+requires every phase deviation to be equal. These facts give the displayed
+rank-one form and strict coefficient. For two vertices with no interior, use
+<code>K</code> itself. The minimum phase contribution is
+<code>beta*k_ab*(v_b-v_a)^2/2</code>. This generalizes the
+<a href="#mediated-restoring-geometry">two-edge calculation</a>; it is static curvature,
+not a new pressure, conductance or instantaneous evolution law.</p>
+<p>Under the positive-capacity premises, the existing
+<a href="../RELATIONAL_RECOVERY_AND_INTERACTION/#relational-local-recovery">local recovery theorem and sufficient basin</a>
+complete the restoring claim. In its notation, <code>||z(0)||&lt;r</code> and
+<code>E_rel(0)&lt;k_r*r^2</code> keep the joint state in an admitted acute neighborhood and
+give convergence to the reference geometry modulo common form/phase offsets.
+The effective-curvature coefficient <code>k_ab</code> is distinct from that basin bound
+<code>k_r</code>. The causal theorem plus this recovery result supplies a sufficient
+restoring effective link for the stated pairs; no extra synchronization
+threshold, pulse variable or operator schedule is required.</p>
+<p>If hidden nodes are eliminated dynamically, the resulting effective law must
+retain the <a href="../RELATIONAL_MEDIATOR_DYNAMICS/#mediated-pattern-interaction">derived memory and hidden initial state</a>.
+The <a href="../JOINT_PARAMETER_RESPONSE/#pressure-state-closure">pressure-state obstruction</a>
+also rules out replacing this environment in general by its instantaneous
+total pressure: equal pressure can conceal different future responses under
+the same law. Zero pressure is not an empty substrate.
+Static Schur minimization cannot replace that law. A trajectory entering the
+sufficient basin can be said to acquire the maintained joint geometry; proving
+entry from another preparation is a separate capture obligation. When a fine
+active path already exists, causal influence has no positive waiting interval
+in this local ODE argument. A detection threshold does not create its onset,
+and neither this result nor capture explains the birth of primitive support.</p>
+<h3 id="an-explicit-local-formation-to-maintenance-preparation">An explicit local formation-to-maintenance preparation<a class="headerlink" href="#an-explicit-local-formation-to-maintenance-preparation" title="Permanent link">&para;</a></h3>
+<p>The same two unit C5 rings with path <code>0--10--5</code> provide a capture statement
+without another trajectory calculation. Fix unit capacities,
+<code>e=w=1/2</code>, <code>beta=1</code>, and the aligned winding-one reference of the
+<a href="../RELATIONAL_MEDIATOR_DYNAMICS/#mediated-pattern-interaction">mediator owner</a>.
+Prepare uniform zero form, leave the first ring's phases at the reference,
+rotate the entire second ring by <code>delta</code>, and set the mediator phase to
+<code>delta/2</code>. Both internal windings are unchanged. The common phase offset is
+<code>delta/2</code>, so the initial quotient norm and excess storage are exactly</p>
+<div class="arithmatex">\[
+\|z(0)\|^2=\frac52\delta^2,\qquad
+\mathcal E_{\rm rel}(0)=2[1-\cos(\delta/2)]\le\frac{\delta^2}4.
+\]</div>
+<p>This graph has eleven nodes and diameter six. For any centered vertex vector,
+its squared norm is at most <code>n*(max-min)^2/4</code>, while Cauchy--Schwarz along a
+shortest path between its extrema bounds the graph energy below by
+<code>(max-min)^2/diameter</code>. Thus <code>lambda_2(B)&gt;=4/(n*diameter)=2/33</code>.
+The reference acute margin is <code>m=pi/10</code>. Taking</p>
+<div class="arithmatex">\[
+r=\frac{\pi}{20\sqrt2},\qquad
+c_r=\sin(\pi/20),\qquad
+\underline k=\frac{\sin(\pi/20)}{33}\le k_r
+\]</div>
+<p>in the existing basin theorem proves capture whenever</p>
+<div class="arithmatex">\[
+|\delta|&lt;\min\{r\sqrt{2/5},\ 2r\sqrt{\underline k}\}.
+\]</div>
+<p>For example, <code>delta=1/128</code> satisfies the strict bounds without a floating
+evaluation: <code>pi&gt;3</code> and <code>sin(pi/20)&gt;1/10</code> give <code>r^2&gt;9/800</code> and
+<code>underline(k)*r^2&gt;9/264000&gt;1/65536</code>, whereas the preparation has
+<code>||z(0)||^2=5/32768</code> and <code>E_rel(0)&lt;=1/65536</code>.</p>
+<p>The full continuous law therefore keeps this preparation acute and converges
+to the aligned joint geometry modulo one common phase and one common form
+offset. It restores an initially nonzero relative regional offset and retains
+both windings. This establishes local acquisition and maintenance of the
+joint geometry on supplied support; it is not creation of the already active
+causal path. No monotone regional phase difference, finite-time exact locking,
+global capture, autonomous preparation or Euler-trajectory certificate is
+asserted. The static midpoint preparation does not keep the mediator or the
+ring shapes constrained during this subsequent evolution.</p>
+<p>The <a href="../../../tests/physics/test_relational_effective_link.py">focused controls</a>
+check the path, consensus and frozen-separator distinctions through the shared
+native tangent and field owners. Finite represented checks support integration;
+they do not replace the ideal proofs or certify a numerical recovery trajectory.</p>
+<p><a id="environmental-capture-domain"></a></p>
+<h3 id="a-capture-domain-retaining-the-intermediarys-initial-state">A capture domain retaining the intermediary's initial state<a class="headerlink" href="#a-capture-domain-retaining-the-intermediarys-initial-state" title="Permanent link">&para;</a></h3>
+<p>Keep the preceding two-C5 plus mediator support, aligned winding-one reference,
+unit capacities, <code>e=w=1/2</code> and <code>beta=1</code>. A wider preparation gives the mediator
+form <code>a</code> while all ring forms are zero. Leave the first ring's phases at their
+reference, rotate the second ring by <code>delta</code>, and set the mediator phase to
+<code>delta/2+eta</code>. These are three supplied initial coordinates, not an invariant
+restriction on the later evolution or a new environment law.</p>
+<p>The common offsets of the deviations from the reference are <code>a/11</code> in form
+and <code>delta/2+eta/11</code> in phase. Subtracting them gives exactly</p>
+<div class="arithmatex">\[
+\|z(0)\|^2=\frac{10}{11}(a^2+\eta^2)+\frac52\delta^2.
+\]</div>
+<p>Only the two mediator edges change storage relative to the reference. Their
+form contribution is <code>a^2</code>, and their phase gaps are <code>delta/2+eta</code> and
+<code>delta/2-eta</code>. Therefore</p>
+<div class="arithmatex">\[
+\begin{aligned}
+\mathcal E_{\rm rel}(0)
+ &amp;=a^2+2[1-\cos(\delta/2)\cos\eta]\\
+ &amp;\le a^2+\eta^2+\frac{\delta^2}4
+ =:\mathcal B(a,\eta,\delta).
+\end{aligned}
+\]</div>
+<p>The inequality follows by applying <code>1-cos(u)&lt;=u^2/2</code> to each gap. Reuse the
+same <code>r</code> and <code>underline(k)</code> as above and define
+<code>kappa=underline(k)*r^2</code>. The single sufficient condition</p>
+<div class="arithmatex">\[
+\boxed{\quad \mathcal B(a,\eta,\delta)&lt;\kappa\quad}
+\]</div>
+<p>implies both basin hypotheses: <code>E_rel(0)&lt;kappa&lt;=k_r*r^2</code>, and
+<code>||z(0)||^2&lt;=10*B&lt;10*underline(k)*r^2&lt;r^2</code>, since
+<code>10*underline(k)&lt;10/33&lt;1</code>. Thus the initial state is in the acute neighborhood
+and its full continuous evolution remains there and approaches the same joint
+geometry modulo common offsets. The mediator's nonzero initial form and phase
+are included in this theorem, rather than replaced by their equilibrium values.</p>
+<p>A wholly nonzero rational example is
+<code>delta=1/256</code>, <code>a=eta=1/512</code>. It has
+<code>B=3/262144&lt;9/264000&lt;kappa</code>, using the preceding exact lower bound. No
+trajectory or transcendental rounding assumption enters this sufficient
+admission. Violating this conservative bound establishes neither escape nor
+failure to recover; it leaves the stated certificate unavailable.</p>
+<h3 id="identical-mediator-pressure-does-not-specify-the-environment">Identical mediator pressure does not specify the environment<a class="headerlink" href="#identical-mediator-pressure-does-not-specify-the-environment" title="Permanent link">&para;</a></h3>
+<p>The family also connects capture to the
+<a href="../JOINT_PARAMETER_RESPONSE/#pressure-state-closure">pressure-state obstruction</a>.
+In the admitted lift the two port phases are zero and <code>delta</code>, so their
+resultant points at <code>delta/2</code>. The mediator phase source and total pressure are</p>
+<div class="arithmatex">\[
+g_m=-\eta/\pi,\qquad p_m=-ea-\frac w\pi\eta.
+\]</div>
+<p>Fix the same <code>delta</code> and compare the reference intermediary <code>a=eta=0</code> with
+a compensated intermediary</p>
+<div class="arithmatex">\[
+\eta\ne0,\qquad a=-\frac{w\eta}{\pi e}.
+\]</div>
+<p>Both preparations have identical ring form/phase coordinates, identical
+capacities and the same instantaneous mediator pressure <code>p_m=0</code>. Nevertheless
+the receiving port has form gradient <code>q_5=-a</code>, hence</p>
+<div class="arithmatex">\[
+\dot\theta_5=-\frac{wa}{\beta H_5}\ne0
+\]</div>
+<p>in the compensated preparation, whereas its phase rate is zero in the
+reference preparation. For example, with <code>c=cos(2*pi/5)</code> and
+<code>alpha=Arg(2*c+exp(i*(eta-delta/2)))</code>, the metric is the native
+<code>H_5=pi*abs(2*c+exp(i*(eta-delta/2)))*sinc(alpha)&gt;0</code>. The distinction uses the
+existing phase row and the complete hidden state, not a pressure reconstructed
+from the receiver's observed derivative.</p>
+<p>At the fixed coefficients, choose <code>delta=1/256</code>, <code>eta=1/512</code> and
+<code>a=-eta/pi</code>. Then <code>B=(2+1/pi^2)/262144&lt;3/262144&lt;kappa</code>; the reference
+intermediary also satisfies the bound. Thus both environments belong to the
+same proved capture domain but produce different initial receiver responses.
+The claim concerns the <strong>mediator's</strong> pressure, not equality of every nodal
+pressure or every subsequent trajectory.</p>
+<p>The <a href="../RELATIONAL_MEDIATOR_DYNAMICS/#mediated-pattern-interaction">existing two-coordinate memory result</a>
+already proves why both hidden mediator coordinates must be retained for the
+specified all-ring tangent observation. This example shows concretely why
+replacing them by the single mediator pressure loses information. The memory
+owner retains hidden initial state and nonlinear forcing; it does not replace
+the mediator by instantaneous static minimization. The initial preparation
+family above need not remain rigid, pressure-compensated or otherwise closed
+under the full flow.</p>
+<p>The <a href="../../../tests/physics/test_relational_effective_link.py">effective-link controls</a>
+check these static identities and native response distinctions without treating
+finite arithmetic as the continuous capture proof. The
+<a href="../../research/FIVE_STAGE_EXECUTION_PLAN/#current-g3-gate">sole execution plan</a>
+owns subsequent work. Supplied fine support, model premises and preparation
+remain explicit; this result does not establish physical vacuum, autonomous
+substrate creation or a universal zero-pressure criterion.</p>
+<h2 id="16-formation-enabling-support-and-later-pattern-detachment">16. Formation-enabling support and later pattern detachment<a class="headerlink" href="#16-formation-enabling-support-and-later-pattern-detachment" title="Permanent link">&para;</a></h2>
+<p><a id="relational-pattern-detachment"></a></p>
+<p>The two supplied bridges can enable formation without being necessary for
+the eventual maintenance of either ring. This distinction follows from the
+existing formation, storage and cycle-geometry results; it does not require
+another trajectory or an autonomous edge-deletion rule.</p>
+<h3 id="event-and-post-event-state-card">Event and post-event state card<a class="headerlink" href="#event-and-post-event-state-card" title="Permanent link">&para;</a></h3>
+<p>Start with the two unit C5 rings and the two matching bridges at positions
+0 and 1 used by the <a href="../RELATIONAL_FORMATION_CONTROLS/#relational-validated-transit">formation proof</a>.
+At a supplied time, delete both bridges and retain every nodal form, phase
+and capacity coordinate. The resulting support consists of two C5 components.
+Evaluate each component separately with its own newly computed degree,
+gradient, resultant and phase metric. The connected relational executor is
+not thereby extended to a disconnected graph.</p>
+<p>On each component, retain positive held capacities and <code>e,w,beta&gt;0</code>, the
+native form row and the chosen Dirichlet/cosine storage. The phase law must
+be admitted on that <strong>post-event</strong> support: autonomous, <code>C1</code>, invariant
+under common form/phase shifts, at rest when <code>q=g=0</code>, and satisfying
+<code>E_dot&lt;=-c*L</code> for a fixed <code>c&gt;0</code> on the relevant regular neighborhood. No
+forcing, further event or capacity change occurs during the claimed
+continuation. The same component-local rule can be used before and after
+the cut; its actual support-dependent quantities must be refreshed. The
+reference, rho and eta laws have this component-local property and the
+previously proved loss bounds. A law that reads another component's state
+does not acquire independent-component dynamics merely because the graph
+was cut.</p>
+<h3 id="a-sufficient-maintenance-basin-for-one-isolated-c5">A sufficient maintenance basin for one isolated C5<a class="headerlink" href="#a-sufficient-maintenance-basin-for-one-isolated-c5" title="Permanent link">&para;</a></h3>
+<p>For an oriented C5, let its true wrapped edge gaps be strictly acute and
+have winding <code>s</code>, with <code>s=+1</code> or <code>-1</code>. Define</p>
+<div class="arithmatex">\[
+V_*=5[1-\cos(2\pi/5)],\qquad
+V_{\rm face}=5-4\cos(3\pi/8),\qquad
+E_R=\frac12x_R^TB_Rx_R+\beta V_R.
+\]</div>
+<p><strong>Conditional isolated-ring capture.</strong> If</p>
+<div class="arithmatex">\[
+\boxed{\qquad E_R&lt;\beta V_{\rm face},\qquad}
+\]</div>
+<p>then every law admitted by the preceding state card preserves the acute
+winding sector and converges to uniform component form and the winding-s
+uniform twist. Convergence is eventually exponential modulo the component's
+common form and phase offsets, which have finite limits. Neither reflection
+nor uniform capacity is a premise.</p>
+<p>For <code>s=+1</code>, the five acute gaps sum to <code>2*pi</code>. A first boundary gap cannot
+be <code>-pi/2</code>: the other four cannot supply the required remaining <code>5*pi/2</code>.
+A boundary gap of <code>pi/2</code> leaves sum <code>3*pi/2</code> for the other four. Convexity
+of <code>1-cos(delta)</code> on the closed acute interval gives</p>
+<div class="arithmatex">\[
+V_R\ge1+4[1-\cos(3\pi/8)]=V_{\rm face}
+\]</div>
+<p>there. Reversing all gaps proves the negative-winding case. Storage
+nonincrease therefore prevents a first exit. The strict sublevel is compact
+modulo common offsets and stays a positive distance from the acute boundary.
+Every resultant and phase-metric entry remains regular and positive.</p>
+<p>In the phase quotient the fixed-period acute component is convex, and the
+phase Hessian is the cycle Laplacian with positive weights <code>cos(delta)</code>.
+Its unique critical geometry is the uniform twist: zero phase gradient
+makes all oriented edge sines equal, and sine is injective on the acute
+interval. The common gap is consequently <code>s*2*pi/5</code>.</p>
+<p>The strict loss bound and positive capacities force <code>q=B_R*x_R=0</code> on the
+invariant zero-loss set. To preserve this condition, the unchanged form row
+requires <code>B_R*N_R*g_R=0</code>, so <code>N_R*g_R=a*1</code>. The identity
+<code>sum(H_i*g_i)=0</code> then gives <code>a*sum(H_i/nu_i)=0</code>, hence <code>a=0</code> and <code>g_R=0</code>.
+Rest makes that target invariant. Compactness and LaSalle's principle give
+convergence. The <a href="../RELATIONAL_DOMAIN_AND_CAPTURE/#relational-sector-law-class">local law-class proof</a>
+uses only connected support, positive capacities, a positive acute phase
+Hessian and the full-neighborhood strict loss bound for its Hurwitz step;
+those hypotheses hold on this C5. Its exponential-recovery and integrable
+common-offset arguments therefore apply independently to each component.
+The barrier is a sufficient capture test, not a classification of every
+initial state that could recover.</p>
+<h3 id="the-joined-sector-certificate-already-admits-both-detached-rings">The joined sector certificate already admits both detached rings<a class="headerlink" href="#the-joined-sector-certificate-already-admits-both-detached-rings" title="Permanent link">&para;</a></h3>
+<p>Let <code>E_total</code> be the full two-ring storage immediately before deletion.
+Suppose the existing <a href="../RELATIONAL_DOMAIN_AND_CAPTURE/#relational-acute-sector-capture">joined acute-sector conditions</a>
+hold, including common winding <code>s=+1</code> or <code>-1</code> and</p>
+<div class="arithmatex">\[
+E_{\rm total}&lt;\beta(V_*+V_{\rm face}).
+\]</div>
+<p>Write <code>E_1,E_2</code> for the two internal ring storages and <code>C_bridge&gt;=0</code> for
+the two bridge costs. Jensen's inequality gives <code>E_j&gt;=beta*V_*</code> for each
+acute winding-s ring. Thus</p>
+<div class="arithmatex">\[
+E_{\rm total}=E_1+E_2+C_{\rm bridge},\qquad
+E_1\le E_{\rm total}-\beta V_*&lt;\beta V_{\rm face},
+\]</div>
+<p>and the same calculation applies to <code>E_2</code>. Deleting the bridges changes
+neither internal phase gaps nor either internal storage. <strong>Every snapshot
+admitted by the joined geometric sector test therefore already satisfies
+the two isolated-ring capture tests</strong>, provided the post-cut laws and
+capacities are admitted separately. No smaller Euclidean neighborhood or
+extra numerical formation run is needed. Directly checking the two component
+basins may also admit states outside this sufficient joined criterion.</p>
+<p>For arbitrary full states the exact event budget is</p>
+<div class="arithmatex">\[
+\Delta E=-\sum_{\{i,j\}\in\mathrm{bridges}}
+\left\{\tfrac12(x_i-x_j)^2+\beta[1-\cos(\theta_i-\theta_j)]\right\}
+\le0.
+\]</div>
+<p>This is the <a href="../RELATIONAL_SUPPORT_EVENTS/#support-event-premise-admission">existing deletion identity</a>.
+The geometric basin conditions supply the additional future-identity
+obligation; nonpositive event cost alone does not do so. After the cut,
+component means can evolve differently, and common phase offsets need not
+remain mutually aligned. The theorem maintains each ring's winding geometry,
+not a restoring interaction between disconnected components or a joint
+future determined by an aggregate observation.</p>
+<h3 id="zero-bridge-cost-throughout-formation-does-not-make-an-early-cut-safe">Zero bridge cost throughout formation does not make an early cut safe<a class="headerlink" href="#zero-bridge-cost-throughout-formation-does-not-make-an-early-cut-safe" title="Permanent link">&para;</a></h3>
+<p>In the exact copied preparation, corresponding endpoints of each bridge
+have equal form and phase throughout the ideal pre-cut flow. Both bridge
+costs are therefore identically zero, not merely zero at equilibrium.
+Nevertheless, removing them changes each port's degree and resultant even
+when its form gradient is unchanged. A zero storage jump does not imply
+unchanged pressure, phase metric or future evolution.</p>
+<p>The original represented seed supplies an exact early-cut control. Each
+ring has phases</p>
+<div class="arithmatex">\[
+(a_0,-a_0,-a_0,0,a_0),\qquad
+a_0=\frac{875483625981347}{562949953421312},\qquad
+0&lt;a_0&lt;\pi/2.
+\]</div>
+<p>The ordinary ring winding is zero. On the pure C5, the five resultants are
+<code>1+exp(-2*i*a_0)</code>, <code>1+exp(2*i*a_0)</code>, <code>1+exp(i*a_0)</code>,
+<code>2*cos(a_0)</code> and <code>1+exp(-i*a_0)</code>. Their real parts are strictly positive,
+so the early cut itself has an admitted regular post-event state. It is
+not rejected merely because the domain was undefined.</p>
+<p>The <a href="../RELATIONAL_DOMAIN_AND_CAPTURE/#relational-cycle-resultant-obstruction">pure-cycle resultant invariant</a>
+now distinguishes it from either maintained acute twist. Around the derived
+skip cycle <code>(0,2,4,1,3)</code>, its true wrapped gaps are</p>
+<div class="arithmatex">\[
+(-2a_0,\ 2a_0,\ -2a_0,\ a_0,\ a_0),
+\]</div>
+<p>all strictly inside <code>(-pi,pi)</code> and summing to zero. Its skip winding is
+therefore zero. Every acute winding-s C5 twist has skip winding <code>2*s</code>.
+A continuous pure-C5 path with nonzero resultants preserves that skip
+winding, independently of the pressure or phase kinetics. Thus the early
+detached seed cannot reach either acute winding-one identity along a
+regular continuation of any of the named laws. The conclusion does not
+assert consensus, finite-time singularity, or the absence of other regular
+behavior. It is a precise obstruction to the target already obtained with
+the supplied bridges.</p>
+<h3 id="a-sufficiently-late-detachment-window-follows-from-formed-state-recovery">A sufficiently late detachment window follows from formed-state recovery<a class="headerlink" href="#a-sufficiently-late-detachment-window-follows-from-formed-state-recovery" title="Permanent link">&para;</a></h3>
+<p>The <a href="../RELATIONAL_FORMATION_CONTROLS/#relational-validated-transit">reference formation result</a>
+and its <a href="../RELATIONAL_FORMATION_CONTROLS/#relational-formation-law-robustness">bounded phase-law comparisons</a>
+converge to the same joined aligned twist. Its edge gaps are strictly acute,
+each ring storage tends to <code>beta*V_*</code>, and
+<code>V_*&lt;V_face</code>. Consequently there is a finite time after which every
+pre-cut state lies in the strict joined acute-sector basin and hence in
+both inherited isolated-ring basins. A supplied deletion of both bridges
+at any such later time retains the formed winding identities under the
+admitted component laws. This establishes the existence of a detachment
+window without locating its first time or producing a new trajectory.</p>
+<p>The previously retained horizon-32 endpoint is certified in the larger
+reflected <code>E&lt;7*beta</code> basin, not in this smaller acute-sector sublevel. It
+must not be silently labeled an already certified cut time. A particular
+detachment snapshot needs its own post-cut geometry and law admission.
+The conclusion also does not select the cut, its candidates or its clock,
+and makes no claim of autonomous substrate birth, physical particles or
+the origin of the supplied preparation. It distinguishes support that
+enables a formation route from support required for subsequent maintenance.</p>
+<h3 id="shared-observation-and-implementation-scope">Shared observation and implementation scope<a class="headerlink" href="#shared-observation-and-implementation-scope" title="Permanent link">&para;</a></h3>
+<p><a href="../../../src/tnfr/physics/relational_capture.py"><code>certify_relational_cycle_capture</code> and <code>observe_relational_detachment</code></a>
+reuse the native field, exact acute-gap/period and cosine-storage kernels.
+The detachment report evaluates one connected pre-cut field and two fresh
+post-cut component fields, with unchanged primitive state. It retains
+component capture certificates, per-node pressure/metric/rate changes and
+the shared reset budget without deleting live edges. The reset's represented
+wrapped phase cost and the native fields' raw-gap phase costs retain their
+separate reconciliation residual. A direct component certificate need not
+require that the stronger joined-sector condition passed first.</p>
+<p>These APIs certify the selected reference relational model. The broader
+strict-loss theorem requires the chosen alternative law's independent
+admission; the report does not install or validate an arbitrary phase
+callback. The <a href="../../../tests/test_relational_detachment.py">engine controls</a>
+cover independent component admission, state-preserving accounting and
+early-cut limitations. The <a href="../../../tests/sdk/test_relational_detachment.py">SDK controls</a>
+check delegation and export while retaining that same scope. No control
+replays the frozen formation trajectory or chooses a cut time.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../../docs/assets/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+      
+    
+  </body>
+</html>

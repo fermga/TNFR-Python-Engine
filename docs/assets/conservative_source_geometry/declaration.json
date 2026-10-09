@@ -1,0 +1,33 @@
+{
+  "schema": "tnfr.conservative-source-geometry-declaration.v1",
+  "nodes": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+  "ring_edges": [[0, 1], [1, 2], [2, 3], [3, 4], [4, 0]],
+  "connecting_edges": [[0, 5], [1, 6], [2, 7], [3, 8], [4, 9]],
+  "form": [0, 0, 0, 0, 0, 60, 30, 0, -30, -60],
+  "control_form": [9, 9, 9, 9, 9, 9, -21, -51, -51, -21],
+  "phase": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  "capacity": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  "law": "normalized_sine_reciprocal_e0_w1_beta1",
+  "support": "fixed_simple_connected_unit_undirected",
+  "clock": "tau=t/pi",
+  "forcing": "none",
+  "events": "none",
+  "receiver_cycle": [0, 1, 2, 3, 4],
+  "scaled_window": ["1/8", "2/15"],
+  "edge_turn_offsets": [0, 0, 0, 0, -1],
+  "declared_window_winding": 1,
+  "minimum_acute_margin": "1/5",
+  "control_reflection": [0, 4, 3, 2, 1, 5, 9, 8, 7, 6],
+  "declared_total_storage": 4500,
+  "declared_weighted_form_mean": 0,
+  "preparation_rationale": "private ports span relative receiver velocities; the signed environmental ramp gives an interior acute phase ray, while a reflected preparation with exactly equal storage and conserved mean supplies an obstruction control",
+  "acceptance": "shared analytic whole-window certificate proves winding +1 and acute margin greater than 1/5; complete-law reflection excludes control acute nonzero winding; both sources retain identical support, coefficients, storage partitions and degree-weighted form mean",
+  "scope": [
+    "analytic full-nonlinear global enclosure, not a sampled or reserved trajectory",
+    "same conservative law as the closed two-port control; a separately supplied distributed support and preparation",
+    "finite acquisition and retention over the declared window, not attraction or indefinite maintenance",
+    "target direction encoded in the supplied environment, not an autonomous source or support selection law",
+    "full relative rank suffices for arbitrary directions but is not necessary for one acute configuration",
+    "no physical identification or universal microscopic law selection"
+  ]
+}

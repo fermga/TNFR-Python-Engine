@@ -1,0 +1,1520 @@
+{
+  "schema": "tnfr.sine-curvature-inference-protocol.v1",
+  "evaluation_kind": "reserved_full_state_four_reading_software_inference",
+  "source_base_commit": "8eb47d261ce971909c343901cc5ed7a7427a8428",
+  "source_overlay_archive": "curvature-inference-v1.source.zip",
+  "support": {
+    "nodes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        8
+      ],
+      [
+        0,
+        9
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        1,
+        10
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        9,
+        10
+      ],
+      [
+        9,
+        17
+      ],
+      [
+        10,
+        11
+      ],
+      [
+        11,
+        12
+      ],
+      [
+        12,
+        13
+      ],
+      [
+        13,
+        14
+      ],
+      [
+        14,
+        15
+      ],
+      [
+        15,
+        16
+      ],
+      [
+        16,
+        17
+      ]
+    ],
+    "degrees": [
+      3,
+      3,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "weights": "unit",
+    "original_periods": [
+      2,
+      1,
+      0
+    ]
+  },
+  "complete_model": {
+    "law": "normalized_sine_reciprocal_exchange",
+    "capacity": [
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      }
+    ],
+    "beta": {
+      "numerator": 1,
+      "denominator": 1
+    },
+    "loss": {
+      "numerator": 1023,
+      "denominator": 1024
+    },
+    "exchange": {
+      "numerator": 1,
+      "denominator": 1024
+    },
+    "gamma": "1/(1023*pi)",
+    "structural_clock": "tau=(1023/1024)*t",
+    "observation_clock": "tau=rho*s; one hidden positive held rho per case",
+    "structural_rows": "x_tau=-A*x+gamma*f(theta); theta_tau=gamma*A*x",
+    "observation_rows": "Both structural evolution rows multiply rho in observation time s",
+    "pressure": "Live complete form and sine terms, no response-fitted pressure",
+    "events": "Phase jumps q/4 at s=0 and q/2 at s=H; no event at H/2; unchanged form"
+  },
+  "public_inputs_without_observation": {
+    "bulk_angle_bounds": [
+      {
+        "numerator": 11,
+        "denominator": 8
+      },
+      {
+        "numerator": 3,
+        "denominator": 2
+      }
+    ],
+    "receiver_short_angle_bounds": [
+      {
+        "numerator": 2,
+        "denominator": 3
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      }
+    ],
+    "form_radius": {
+      "numerator": 1,
+      "denominator": 281474976710656
+    },
+    "phase_radius": {
+      "numerator": 1,
+      "denominator": 281474976710656
+    },
+    "phase_increments": [
+      {
+        "numerator": 1,
+        "denominator": 4
+      },
+      {
+        "numerator": 3,
+        "denominator": 4
+      }
+    ],
+    "probe_duration": {
+      "numerator": 1,
+      "denominator": 16777216
+    },
+    "readout_error_bound": {
+      "numerator": 1,
+      "denominator": 1237940039285380274899124224
+    },
+    "readout_gain_bounds": [
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 2,
+        "denominator": 1
+      }
+    ],
+    "clock_rate_bounds": [
+      {
+        "numerator": 1,
+        "denominator": 2
+      },
+      {
+        "numerator": 2,
+        "denominator": 1
+      }
+    ]
+  },
+  "hidden_cases": [
+    {
+      "id": "case-1",
+      "recipe_index": 0,
+      "bulk_angle": {
+        "numerator": 45,
+        "denominator": 32
+      },
+      "receiver_short_angle": {
+        "numerator": 3,
+        "denominator": 4
+      },
+      "common_form": {
+        "numerator": 2,
+        "denominator": 11
+      },
+      "common_phase": {
+        "numerator": -2,
+        "denominator": 13
+      },
+      "raw_form_residual": [
+        {
+          "numerator": 1,
+          "denominator": 1152921504606846976
+        },
+        {
+          "numerator": 3,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 1,
+          "denominator": 576460752303423488
+        },
+        {
+          "numerator": 5,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 3,
+          "denominator": 1152921504606846976
+        },
+        {
+          "numerator": 7,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 1,
+          "denominator": 288230376151711744
+        },
+        {
+          "numerator": 9,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 5,
+          "denominator": 1152921504606846976
+        },
+        {
+          "numerator": 11,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 3,
+          "denominator": 576460752303423488
+        },
+        {
+          "numerator": 13,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 7,
+          "denominator": 1152921504606846976
+        },
+        {
+          "numerator": 15,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 1,
+          "denominator": 144115188075855872
+        },
+        {
+          "numerator": 17,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 9,
+          "denominator": 1152921504606846976
+        },
+        {
+          "numerator": 19,
+          "denominator": 2305843009213693952
+        }
+      ],
+      "raw_phase_residual": [
+        {
+          "numerator": 1,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 3,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 11,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 1,
+          "denominator": 288230376151711744
+        },
+        {
+          "numerator": 21,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 3,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 1,
+          "denominator": 576460752303423488
+        },
+        {
+          "numerator": 13,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 9,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 23,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 5,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 5,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 15,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 5,
+          "denominator": 1152921504606846976
+        },
+        {
+          "numerator": 1,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 7,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 3,
+          "denominator": 1152921504606846976
+        },
+        {
+          "numerator": 17,
+          "denominator": 4611686018427387904
+        }
+      ],
+      "form_residual": [
+        {
+          "numerator": -163,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": -143,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": -123,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": -103,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": -83,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": -63,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": -43,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": -23,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": -3,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 17,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 37,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 57,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 77,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 97,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 117,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 137,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 157,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 177,
+          "denominator": 46116860184273879040
+        }
+      ],
+      "phase_residual": [
+        {
+          "numerator": -411,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": -211,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": -11,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": 189,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": 389,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": -331,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": -131,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": 69,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": 269,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": 469,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": -251,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": -51,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": 149,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": 349,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": -371,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": -171,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": 29,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": 229,
+          "denominator": 184467440737095516160
+        }
+      ],
+      "hidden_gain": {
+        "numerator": 3,
+        "denominator": 2
+      },
+      "hidden_clock_rate": {
+        "numerator": 1,
+        "denominator": 1
+      },
+      "hidden_offset": {
+        "numerator": 3,
+        "denominator": 11
+      },
+      "reading_errors": [
+        {
+          "numerator": -1,
+          "denominator": 2475880078570760549798248448
+        },
+        {
+          "numerator": 1,
+          "denominator": 2475880078570760549798248448
+        },
+        {
+          "numerator": 1,
+          "denominator": 2475880078570760549798248448
+        },
+        {
+          "numerator": -1,
+          "denominator": 2475880078570760549798248448
+        }
+      ]
+    },
+    {
+      "id": "case-2",
+      "recipe_index": 0,
+      "bulk_angle": {
+        "numerator": 45,
+        "denominator": 32
+      },
+      "receiver_short_angle": {
+        "numerator": 3,
+        "denominator": 4
+      },
+      "common_form": {
+        "numerator": 2,
+        "denominator": 11
+      },
+      "common_phase": {
+        "numerator": -2,
+        "denominator": 13
+      },
+      "raw_form_residual": [
+        {
+          "numerator": 1,
+          "denominator": 1152921504606846976
+        },
+        {
+          "numerator": 3,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 1,
+          "denominator": 576460752303423488
+        },
+        {
+          "numerator": 5,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 3,
+          "denominator": 1152921504606846976
+        },
+        {
+          "numerator": 7,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 1,
+          "denominator": 288230376151711744
+        },
+        {
+          "numerator": 9,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 5,
+          "denominator": 1152921504606846976
+        },
+        {
+          "numerator": 11,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 3,
+          "denominator": 576460752303423488
+        },
+        {
+          "numerator": 13,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 7,
+          "denominator": 1152921504606846976
+        },
+        {
+          "numerator": 15,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 1,
+          "denominator": 144115188075855872
+        },
+        {
+          "numerator": 17,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 9,
+          "denominator": 1152921504606846976
+        },
+        {
+          "numerator": 19,
+          "denominator": 2305843009213693952
+        }
+      ],
+      "raw_phase_residual": [
+        {
+          "numerator": 1,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 3,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 11,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 1,
+          "denominator": 288230376151711744
+        },
+        {
+          "numerator": 21,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 3,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 1,
+          "denominator": 576460752303423488
+        },
+        {
+          "numerator": 13,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 9,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 23,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 5,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 5,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 15,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 5,
+          "denominator": 1152921504606846976
+        },
+        {
+          "numerator": 1,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 7,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 3,
+          "denominator": 1152921504606846976
+        },
+        {
+          "numerator": 17,
+          "denominator": 4611686018427387904
+        }
+      ],
+      "form_residual": [
+        {
+          "numerator": -163,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": -143,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": -123,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": -103,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": -83,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": -63,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": -43,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": -23,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": -3,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 17,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 37,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 57,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 77,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 97,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 117,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 137,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 157,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 177,
+          "denominator": 46116860184273879040
+        }
+      ],
+      "phase_residual": [
+        {
+          "numerator": -411,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": -211,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": -11,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": 189,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": 389,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": -331,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": -131,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": 69,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": 269,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": 469,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": -251,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": -51,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": 149,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": 349,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": -371,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": -171,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": 29,
+          "denominator": 184467440737095516160
+        },
+        {
+          "numerator": 229,
+          "denominator": 184467440737095516160
+        }
+      ],
+      "hidden_gain": {
+        "numerator": 6,
+        "denominator": 5
+      },
+      "hidden_clock_rate": {
+        "numerator": 5,
+        "denominator": 4
+      },
+      "hidden_offset": {
+        "numerator": 5,
+        "denominator": 11
+      },
+      "reading_errors": [
+        {
+          "numerator": 0,
+          "denominator": 1
+        },
+        {
+          "numerator": 0,
+          "denominator": 1
+        },
+        {
+          "numerator": -1,
+          "denominator": 2475880078570760549798248448
+        },
+        {
+          "numerator": 0,
+          "denominator": 1
+        }
+      ]
+    },
+    {
+      "id": "case-3",
+      "recipe_index": 2,
+      "bulk_angle": {
+        "numerator": 47,
+        "denominator": 32
+      },
+      "receiver_short_angle": {
+        "numerator": 11,
+        "denominator": 12
+      },
+      "common_form": {
+        "numerator": 4,
+        "denominator": 11
+      },
+      "common_phase": {
+        "numerator": -4,
+        "denominator": 13
+      },
+      "raw_form_residual": [
+        {
+          "numerator": 1,
+          "denominator": 576460752303423488
+        },
+        {
+          "numerator": 3,
+          "denominator": 1152921504606846976
+        },
+        {
+          "numerator": 1,
+          "denominator": 288230376151711744
+        },
+        {
+          "numerator": 5,
+          "denominator": 1152921504606846976
+        },
+        {
+          "numerator": 3,
+          "denominator": 576460752303423488
+        },
+        {
+          "numerator": 7,
+          "denominator": 1152921504606846976
+        },
+        {
+          "numerator": 1,
+          "denominator": 144115188075855872
+        },
+        {
+          "numerator": 9,
+          "denominator": 1152921504606846976
+        },
+        {
+          "numerator": 5,
+          "denominator": 576460752303423488
+        },
+        {
+          "numerator": 11,
+          "denominator": 1152921504606846976
+        },
+        {
+          "numerator": 3,
+          "denominator": 288230376151711744
+        },
+        {
+          "numerator": 13,
+          "denominator": 1152921504606846976
+        },
+        {
+          "numerator": 7,
+          "denominator": 576460752303423488
+        },
+        {
+          "numerator": 15,
+          "denominator": 1152921504606846976
+        },
+        {
+          "numerator": 1,
+          "denominator": 72057594037927936
+        },
+        {
+          "numerator": 17,
+          "denominator": 1152921504606846976
+        },
+        {
+          "numerator": 9,
+          "denominator": 576460752303423488
+        },
+        {
+          "numerator": 19,
+          "denominator": 1152921504606846976
+        }
+      ],
+      "raw_phase_residual": [
+        {
+          "numerator": 7,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 3,
+          "denominator": 1152921504606846976
+        },
+        {
+          "numerator": 17,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 11,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 1,
+          "denominator": 1152921504606846976
+        },
+        {
+          "numerator": 9,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 7,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 19,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 1,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 3,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 11,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 1,
+          "denominator": 288230376151711744
+        },
+        {
+          "numerator": 21,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 3,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 1,
+          "denominator": 576460752303423488
+        },
+        {
+          "numerator": 13,
+          "denominator": 4611686018427387904
+        },
+        {
+          "numerator": 9,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 23,
+          "denominator": 4611686018427387904
+        }
+      ],
+      "form_residual": [
+        {
+          "numerator": -163,
+          "denominator": 23058430092136939520
+        },
+        {
+          "numerator": -143,
+          "denominator": 23058430092136939520
+        },
+        {
+          "numerator": -123,
+          "denominator": 23058430092136939520
+        },
+        {
+          "numerator": -103,
+          "denominator": 23058430092136939520
+        },
+        {
+          "numerator": -83,
+          "denominator": 23058430092136939520
+        },
+        {
+          "numerator": -63,
+          "denominator": 23058430092136939520
+        },
+        {
+          "numerator": -43,
+          "denominator": 23058430092136939520
+        },
+        {
+          "numerator": -23,
+          "denominator": 23058430092136939520
+        },
+        {
+          "numerator": -3,
+          "denominator": 23058430092136939520
+        },
+        {
+          "numerator": 17,
+          "denominator": 23058430092136939520
+        },
+        {
+          "numerator": 37,
+          "denominator": 23058430092136939520
+        },
+        {
+          "numerator": 57,
+          "denominator": 23058430092136939520
+        },
+        {
+          "numerator": 77,
+          "denominator": 23058430092136939520
+        },
+        {
+          "numerator": 97,
+          "denominator": 23058430092136939520
+        },
+        {
+          "numerator": 117,
+          "denominator": 23058430092136939520
+        },
+        {
+          "numerator": 137,
+          "denominator": 23058430092136939520
+        },
+        {
+          "numerator": 157,
+          "denominator": 23058430092136939520
+        },
+        {
+          "numerator": 177,
+          "denominator": 23058430092136939520
+        }
+      ],
+      "phase_residual": [
+        {
+          "numerator": -51,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": -1,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 49,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 99,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": -81,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": -31,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 19,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 69,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": -111,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": -61,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": -11,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 39,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 89,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": -91,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": -41,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 9,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 59,
+          "denominator": 46116860184273879040
+        },
+        {
+          "numerator": 109,
+          "denominator": 46116860184273879040
+        }
+      ],
+      "hidden_gain": {
+        "numerator": 7,
+        "denominator": 4
+      },
+      "hidden_clock_rate": {
+        "numerator": 7,
+        "denominator": 8
+      },
+      "hidden_offset": {
+        "numerator": 7,
+        "denominator": 11
+      },
+      "reading_errors": [
+        {
+          "numerator": 1,
+          "denominator": 2475880078570760549798248448
+        },
+        {
+          "numerator": -1,
+          "denominator": 2475880078570760549798248448
+        },
+        {
+          "numerator": 1,
+          "denominator": 2475880078570760549798248448
+        },
+        {
+          "numerator": 1,
+          "denominator": 2475880078570760549798248448
+        }
+      ]
+    }
+  ],
+  "source_recipe": "s=4*pi-8*b; d=(2*pi-c)/8; zeta=(s-c)/2; D0=0,Dj=s+(j-1)*b; R0=zeta,Rj=zeta+c+(j-1)*d. Remove one full M-weighted mean, add common phase and centered residual; form=common form+centered residual. Mathematical pi outward enclosed. All36 coordinates retained.",
+  "observation": {
+    "times": [
+      {
+        "numerator": 0,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 33554432
+      },
+      {
+        "numerator": 1,
+        "denominator": 16777216
+      },
+      {
+        "numerator": 1,
+        "denominator": 8388608
+      }
+    ],
+    "readout": "r_i=G*q^T*x(s_i)+O+eta_i",
+    "sensor": "One held positive gain and offset per complete history, with four declared bounded errors",
+    "association": "Single intervals at0,H/2,H,2H; clock child consumes0,2,3, curvature consumes0,1,2",
+    "curvature_coefficients": [
+      1,
+      -2,
+      1,
+      0
+    ],
+    "numerical_band": "Independent full-law endpoint enclosures, never inverse or leading-response targets"
+  },
+  "numerics": {
+    "segments": 3,
+    "steps_per_segment": 1,
+    "order": 4,
+    "picard_iteration_cap": 16,
+    "interval_bits": 128,
+    "dimension": 36,
+    "observed_segment_starts": [
+      {
+        "numerator": 0,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 33554432
+      },
+      {
+        "numerator": 1,
+        "denominator": 16777216
+      }
+    ],
+    "observed_segment_durations": [
+      {
+        "numerator": 1,
+        "denominator": 33554432
+      },
+      {
+        "numerator": 1,
+        "denominator": 33554432
+      },
+      {
+        "numerator": 1,
+        "denominator": 16777216
+      }
+    ],
+    "phase_increments": [
+      {
+        "numerator": 1,
+        "denominator": 4
+      },
+      {
+        "numerator": 0,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 2
+      }
+    ],
+    "max_recorded_reading_halfwidth": {
+      "numerator": 1,
+      "denominator": 1237940039285380274899124224
+    },
+    "policy": "Multiply each duration by hidden rho for the shared structural-time solver. Three fixed source-box order4 steps with whole-tube order5 remainder. All36 endpoint bounds carried unchanged; no midpoint reset, artificial kick, retry, subdivision or budget adaptation."
+  },
+  "public_packet": {
+    "schema": "tnfr.sine-curvature-public-inference.v1",
+    "inverse_keys": [
+      "bulk_angle_bounds",
+      "receiver_short_angle_bounds",
+      "form_radius",
+      "phase_radius",
+      "phase_increments",
+      "probe_duration",
+      "recorded_reading_bounds",
+      "readout_error_bound",
+      "readout_gain_bounds",
+      "clock_rate_bounds"
+    ],
+    "worker": "build/curvature-inference-freeze/invert_public_packet.py",
+    "scope": "Fresh process receives only10 public primitives and fixed controls through stdin; no hidden source, rate, gain, errors or producer report. Software exclusion, not cryptographic blindness."
+  },
+  "controls": {
+    "false_bulk_angle_bounds": [
+      {
+        "numerator": 11,
+        "denominator": 8
+      },
+      {
+        "numerator": 353,
+        "denominator": 256
+      }
+    ],
+    "false_gain_bounds": [
+      {
+        "numerator": 31,
+        "denominator": 16
+      },
+      {
+        "numerator": 2,
+        "denominator": 1
+      }
+    ],
+    "false_clock_bounds": [
+      {
+        "numerator": 25,
+        "denominator": 32
+      },
+      {
+        "numerator": 13,
+        "denominator": 16
+      }
+    ],
+    "equal_phase_increments": [
+      {
+        "numerator": 1,
+        "denominator": 4
+      },
+      {
+        "numerator": 1,
+        "denominator": 4
+      }
+    ]
+  },
+  "thresholds": {
+    "primary_actual_angle_width": {
+      "numerator": 1,
+      "denominator": 1024
+    },
+    "primary_effective_gain_width": {
+      "numerator": 1,
+      "denominator": 2048
+    },
+    "primary_gain_width": {
+      "numerator": 1,
+      "denominator": 16
+    },
+    "primary_clock_width": {
+      "numerator": 1,
+      "denominator": 80
+    }
+  },
+  "phase_blind_alternative": {
+    "structural_rows": "x_tau=-A*x; theta_tau=gamma*A*x",
+    "preparation": "Same original complete source, both events, held clock/sensor and priors",
+    "recorded_increment_bound": "2*G_plus*rho_plus*H*X+2*delta for each complete observed window",
+    "scope": "Heat contraction preserves original centered form norm; no alternative trajectory reset"
+  },
+  "prediction": "Each primary contains original nominal/actual angle, J, G and rho at declared strict widths. False angle excluded; false gain and clock excluded by curvature while their coarse clock reports remain available. Equal-input rank abstention. Both increments exclude phase-blind law. First two identical-source/equal-J cases have disjoint recorded finite-curvature intervals.",
+  "stopping_rule": "All full source/sensor priors, original actual-angle association,3 complete36D strict Picard steps,2 exact endpoint handoffs,no event atH/2,phase-only events at0,H,one held sensor with shared readings,halfwidth<=delta,public-only packet hash,primary certificates/coverage/widths,all fixed inverse controls,2 heat exclusions percase and paired-source/effective-scale identity with finite-curvature separation. Optional whole-window acuteness is not required. No retuning on failure.",
+  "first_attempt": "Exclusive attempt ledger precedes first flow; any existing ledger forbids another run. Preserve partial responses and first verdict, including exception/unavailability; no retry or overwritten attempt.",
+  "runtime": {
+    "python": "3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows",
+    "seed": null,
+    "backend": "Exact Fraction and shared outward dyadic128 Picard/Taylor",
+    "seed_scope": "Explicit deterministic source and error realizations"
+  },
+  "scope": "Finite software constraints under supplied complete law/source and held sensor/clock. No physical calibration, full uncertain-state identification, unique law, autonomous formation or maintenance claim."
+}

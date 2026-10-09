@@ -1,0 +1,239 @@
+{
+  "schema": "tnfr.cleanup-recovery.v1",
+  "date": "2026-10-07",
+  "scope": "Remove obsolete mandatory-dependency fallback blocks and guards in physics; retain module attributes and optional dependency paths.",
+  "recovery_revision": "5967dc3574d1eea91633a26099fd9833c33d8582",
+  "verification": "Every retired source segment was matched against the immutable committed blob after newline normalization. Three containing files already included first-pass edits; those edits were retained.",
+  "sources": [
+    {
+      "path": "src/tnfr/physics/canonical.py",
+      "git_blob": "273407538a76fba8ab3ce8159319976f2339dc17",
+      "git_blob_sha256": "ad25b2ca3e2ba44f446cf233cc713b79abe45119b32a6f37e59a21be9ae72ccb",
+      "source_unmodified_at_task_start": false,
+      "retired_segments_match_committed_source": true,
+      "retired_segments": [
+        {
+          "kind": "mandatory_dependency_fallback",
+          "second_pass_source_line": 78,
+          "recovery_blob_line": 78,
+          "normalized_segment_sha256": "8c902a144b947515a01f7a12b28581f1a3a666bd4ebcefc96799a480e9ffe409"
+        },
+        {
+          "kind": "unreachable_dependency_guard",
+          "second_pass_source_line": 215,
+          "recovery_blob_line": 293,
+          "normalized_segment_sha256": "b0125376d3bb7764569006ff01683b85e1926469cce5747c28af7ee5f12d677f"
+        }
+      ]
+    },
+    {
+      "path": "src/tnfr/physics/conservation.py",
+      "git_blob": "3e0e3c137aab04cf6ba16282f96aaf3d0781076e",
+      "git_blob_sha256": "3b03d572baa9b7b73d67a7cb9630b6a06b65c7b69da9e6eb5e5ba85ceb3a3b27",
+      "source_unmodified_at_task_start": true,
+      "retired_segments_match_committed_source": true,
+      "retired_segments": [
+        {
+          "kind": "mandatory_dependency_fallback",
+          "second_pass_source_line": 61,
+          "recovery_blob_line": 61,
+          "normalized_segment_sha256": "baf28b3ea34e4d76ba35c39e46050b34f80ee681b516b3f6c3985180c0c74f71"
+        }
+      ]
+    },
+    {
+      "path": "src/tnfr/physics/extended.py",
+      "git_blob": "bfb559a4e9cd77a8d27e4cf0fad2fb79daa50a37",
+      "git_blob_sha256": "7e7b0b34e6da4eebdc1ab369e1e9c2fb59cbc810901c69f4b274e86a74b59d20",
+      "source_unmodified_at_task_start": false,
+      "retired_segments_match_committed_source": true,
+      "retired_segments": [
+        {
+          "kind": "mandatory_dependency_fallback",
+          "second_pass_source_line": 28,
+          "recovery_blob_line": 28,
+          "normalized_segment_sha256": "8c902a144b947515a01f7a12b28581f1a3a666bd4ebcefc96799a480e9ffe409"
+        }
+      ]
+    },
+    {
+      "path": "src/tnfr/physics/fields.py",
+      "git_blob": "45b755adfc82a95a5a15f3503d79e0d38cf3ce5a",
+      "git_blob_sha256": "9b570607db9bba2dfe252e02df74bb3603f56e36cecc6ef319f93793765c7d6f",
+      "source_unmodified_at_task_start": false,
+      "retired_segments_match_committed_source": true,
+      "retired_segments": [
+        {
+          "kind": "mandatory_dependency_fallback",
+          "second_pass_source_line": 73,
+          "recovery_blob_line": 73,
+          "normalized_segment_sha256": "8c902a144b947515a01f7a12b28581f1a3a666bd4ebcefc96799a480e9ffe409"
+        },
+        {
+          "kind": "unreachable_dependency_guard",
+          "second_pass_source_line": 218,
+          "recovery_blob_line": 224,
+          "normalized_segment_sha256": "0747bb4f3f313ebc9da9f1256b7ec01b9ef591ad18190e0797e4e86c911ec5e6"
+        },
+        {
+          "kind": "unreachable_dependency_guard",
+          "second_pass_source_line": 363,
+          "recovery_blob_line": 369,
+          "normalized_segment_sha256": "b3ddd1869737f256da1a564646a2af9a6ec42ee95a8c407fc6f9354db3d6a008"
+        }
+      ]
+    },
+    {
+      "path": "src/tnfr/physics/gauge.py",
+      "git_blob": "377a8e6348c94dd5054831555055497115a6ae71",
+      "git_blob_sha256": "279dd640bcb397d22031701d950de61b7a59d02fd78d268b6629f0d4510f08ef",
+      "source_unmodified_at_task_start": true,
+      "retired_segments_match_committed_source": true,
+      "retired_segments": [
+        {
+          "kind": "mandatory_dependency_fallback",
+          "second_pass_source_line": 51,
+          "recovery_blob_line": 51,
+          "normalized_segment_sha256": "baf28b3ea34e4d76ba35c39e46050b34f80ee681b516b3f6c3985180c0c74f71"
+        },
+        {
+          "kind": "unreachable_dependency_guard",
+          "second_pass_source_line": 422,
+          "recovery_blob_line": 422,
+          "normalized_segment_sha256": "3d481db688c1c009351baff0a0b4a8919a2499b1fdc60f8f8601f498acba7245"
+        }
+      ]
+    },
+    {
+      "path": "src/tnfr/physics/interactions.py",
+      "git_blob": "3677831ec00551d5d4f0fb219b4652e1e9a7e492",
+      "git_blob_sha256": "7e7d2e114b70a9b0effe2a56cc2a89d336aa8a8b1dd0180e632e6a131813f9d0",
+      "source_unmodified_at_task_start": true,
+      "retired_segments_match_committed_source": true,
+      "retired_segments": [
+        {
+          "kind": "mandatory_dependency_fallback",
+          "second_pass_source_line": 58,
+          "recovery_blob_line": 58,
+          "normalized_segment_sha256": "2030ccc513d70d1a9ef0d984d95b2a1f52144998bae9926279ad3eff32851208"
+        }
+      ]
+    },
+    {
+      "path": "src/tnfr/physics/lyapunov.py",
+      "git_blob": "9ced3eafb15ed1bbbbc4a77115628d43d3d5c307",
+      "git_blob_sha256": "b7fc6fc4ae2d0c5c7274bfa9f692ae7e5eebedcaeed35a6cc4e808a29304c8d0",
+      "source_unmodified_at_task_start": true,
+      "retired_segments_match_committed_source": true,
+      "retired_segments": [
+        {
+          "kind": "mandatory_dependency_fallback",
+          "second_pass_source_line": 59,
+          "recovery_blob_line": 59,
+          "normalized_segment_sha256": "4db9c7a013fb15f34d3fd77ee12507ec1a6b93cbfd8d5b7887e6d438bc8c1d1e"
+        },
+        {
+          "kind": "mandatory_dependency_fallback",
+          "second_pass_source_line": 64,
+          "recovery_blob_line": 64,
+          "normalized_segment_sha256": "baf28b3ea34e4d76ba35c39e46050b34f80ee681b516b3f6c3985180c0c74f71"
+        },
+        {
+          "kind": "unreachable_dependency_guard",
+          "second_pass_source_line": 714,
+          "recovery_blob_line": 714,
+          "normalized_segment_sha256": "630aa96e1364d5dac6f7831105c25f2b41714a9be1dc2ff43b96141e875e4d36"
+        }
+      ]
+    },
+    {
+      "path": "src/tnfr/physics/phase_transition.py",
+      "git_blob": "1d22a5a3db5ae306dbaec088266f55c8c552e438",
+      "git_blob_sha256": "345c5fdf9c84771b0652637883c923a4b873dc00c1e05d3407d896bd78a22be3",
+      "source_unmodified_at_task_start": true,
+      "retired_segments_match_committed_source": true,
+      "retired_segments": [
+        {
+          "kind": "mandatory_dependency_fallback",
+          "second_pass_source_line": 50,
+          "recovery_blob_line": 50,
+          "normalized_segment_sha256": "baf28b3ea34e4d76ba35c39e46050b34f80ee681b516b3f6c3985180c0c74f71"
+        }
+      ]
+    },
+    {
+      "path": "src/tnfr/physics/signatures.py",
+      "git_blob": "cdc310f0d81f18d8ae28c5c8ff6445ec8c448440",
+      "git_blob_sha256": "7b682c43e1bf81da59d24d4140c801e3dc9aa28571470f2fe1addb403684b25e",
+      "source_unmodified_at_task_start": true,
+      "retired_segments_match_committed_source": true,
+      "retired_segments": [
+        {
+          "kind": "mandatory_dependency_fallback",
+          "second_pass_source_line": 16,
+          "recovery_blob_line": 16,
+          "normalized_segment_sha256": "8c902a144b947515a01f7a12b28581f1a3a666bd4ebcefc96799a480e9ffe409"
+        },
+        {
+          "kind": "unreachable_dependency_guard",
+          "second_pass_source_line": 121,
+          "recovery_blob_line": 121,
+          "normalized_segment_sha256": "ce2fbd88e0a0a1eae23055da3228616e9bbb535a09f9e11cc6d6078f4fc6e1c1"
+        }
+      ]
+    },
+    {
+      "path": "src/tnfr/physics/variational.py",
+      "git_blob": "333b63d86587d12f448ff39828eb27e4f522df58",
+      "git_blob_sha256": "35d200453f59c58ccea94fac4f4497530cd94baeaf0bc65cec8a9f8dfdd5af36",
+      "source_unmodified_at_task_start": true,
+      "retired_segments_match_committed_source": true,
+      "retired_segments": [
+        {
+          "kind": "mandatory_dependency_fallback",
+          "second_pass_source_line": 58,
+          "recovery_blob_line": 58,
+          "normalized_segment_sha256": "baf28b3ea34e4d76ba35c39e46050b34f80ee681b516b3f6c3985180c0c74f71"
+        }
+      ]
+    },
+    {
+      "path": "src/tnfr/physics/vectorized_ops.py",
+      "git_blob": "24a74ab59b3f55d7b462bec1c6da0385bfe4d2fe",
+      "git_blob_sha256": "d4ea1667c08e83b52916bde7b7700ab79174ed6811ee5c0a10a017543fddb5da",
+      "source_unmodified_at_task_start": true,
+      "retired_segments_match_committed_source": true,
+      "retired_segments": [
+        {
+          "kind": "mandatory_dependency_fallback",
+          "second_pass_source_line": 15,
+          "recovery_blob_line": 15,
+          "normalized_segment_sha256": "8c902a144b947515a01f7a12b28581f1a3a666bd4ebcefc96799a480e9ffe409"
+        }
+      ]
+    },
+    {
+      "path": "src/tnfr/physics/dissipative_conservation.py",
+      "git_blob": "21614b5ee4e6fd15f32e0d67b49edf20becbddfe",
+      "git_blob_sha256": "a350ad9dd7a32c426fc6f05465f4db7bbc2bdf2c8f40827b33fcbf371ef99853",
+      "source_unmodified_at_task_start": true,
+      "retired_segments_match_committed_source": true,
+      "retired_segments": [
+        {
+          "kind": "mandatory_dependency_fallback",
+          "second_pass_source_line": 40,
+          "recovery_blob_line": 40,
+          "normalized_segment_sha256": "eb017aacd0de302e96685d13c1f8f007de60d1c548be465950910b457045ef62"
+        },
+        {
+          "kind": "unreachable_dependency_guard",
+          "second_pass_source_line": 681,
+          "recovery_blob_line": 681,
+          "normalized_segment_sha256": "a1a6efd72c4fd66b1b1c65a91c218f393b4b2303079bac629ff175d22ee00077"
+        }
+      ]
+    }
+  ],
+  "replacement": "Direct NetworkX and NumPy imports follow the core dependencies in pyproject.toml. The internal ensure_numpy helper is imported from its existing mandatory backend owner.",
+  "preserved": "No whole module, conditional proof, frozen protocol, source archive or evaluated response was retired or regenerated. Pulse definitions were relocated unchanged with compatible old imports; resistance geometry is reused only within each verifier call."
+}

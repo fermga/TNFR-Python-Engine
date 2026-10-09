@@ -1,0 +1,409 @@
+{
+  "schema": "tnfr.sine-port-composition-protocol.v1",
+  "evaluation_kind": "conditional_analytic_degree_aware_composition_no_trajectory",
+  "inputs": {
+    "classes": [
+      1,
+      2,
+      1
+    ],
+    "contacts": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ]
+    ],
+    "phase_origins": [
+      {
+        "numerator": 0,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1000
+      },
+      {
+        "numerator": 0,
+        "denominator": 1
+      }
+    ],
+    "formation_time": {
+      "numerator": 100,
+      "denominator": 1
+    },
+    "relaxation_duration": {
+      "numerator": 10000000000000,
+      "denominator": 1
+    },
+    "contact_duration": {
+      "numerator": 1,
+      "denominator": 100
+    },
+    "form_error_bound": {
+      "numerator": 1,
+      "denominator": 10000000000
+    },
+    "phase_error_bound": {
+      "numerator": 1,
+      "denominator": 10000000000
+    },
+    "endpoint_radius": {
+      "numerator": 1,
+      "denominator": 100000000000000000000000000000000
+    },
+    "radius": {
+      "numerator": 1,
+      "denominator": 12
+    },
+    "decay_power": 512,
+    "work_allowance": {
+      "numerator": 1,
+      "denominator": 500000
+    },
+    "approximation_allowance": {
+      "numerator": 1,
+      "denominator": 50000000000000000000000000000000
+    }
+  },
+  "complete_model": "Normalized-sine rows x_prime=-K L x+gamma K S(theta), theta_prime=gamma K L x, gamma=1/(1023*pi). K uses each actual fine degree. Unit capacities, beta=1, e=1023/1024, w=1/1024, tau=e*t. Both rows transform. No forcing or phase probes.",
+  "preparation": "Three original C9 form sources k_i*(2046/9)*(355/113)^2*(j-4), initially phase-flat at origins (0,1/1000,0), classes (1,2,1). Independent per-coordinate form and continuous phase-lift errors <=1e-10 on every component, with separate exact zero sums. All sixteen relative source coordinates/component and original storage ceiling1e9 are retained; source costs need not agree.",
+  "support": {
+    "nodes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        8
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        4,
+        13
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        9,
+        10
+      ],
+      [
+        9,
+        17
+      ],
+      [
+        10,
+        11
+      ],
+      [
+        11,
+        12
+      ],
+      [
+        12,
+        13
+      ],
+      [
+        13,
+        14
+      ],
+      [
+        13,
+        22
+      ],
+      [
+        14,
+        15
+      ],
+      [
+        15,
+        16
+      ],
+      [
+        16,
+        17
+      ],
+      [
+        18,
+        19
+      ],
+      [
+        18,
+        26
+      ],
+      [
+        19,
+        20
+      ],
+      [
+        20,
+        21
+      ],
+      [
+        21,
+        22
+      ],
+      [
+        22,
+        23
+      ],
+      [
+        23,
+        24
+      ],
+      [
+        24,
+        25
+      ],
+      [
+        25,
+        26
+      ]
+    ],
+    "bridges": [
+      [
+        4,
+        13
+      ],
+      [
+        13,
+        22
+      ]
+    ],
+    "weights": "unit",
+    "capacities": "held one",
+    "component_order": [
+      0,
+      1,
+      2
+    ],
+    "local_node_order": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "central_local_port": 4
+  },
+  "schedule": "Fresh formation at tau=100; continue actual isolated flows unprobed for D=1e13; add both contacts simultaneously at tau_c=100+D without state reset; hold support afterward.",
+  "observation": "Uniform maximum absolute error in all 27 fine form and27 continuous phase-lift coordinates between the actual fine trajectory and the lifted nominal surrogate throughout[0,1/100] after contact. This coordinate allowance is not a sensor precision or response contrast.",
+  "retained_reduction": {
+    "orbits": [
+      [
+        4
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        2,
+        6
+      ],
+      [
+        1,
+        7
+      ],
+      [
+        0,
+        8
+      ]
+    ],
+    "full_state_coordinates": 54,
+    "reduced_state_coordinates": 30,
+    "layer_masses": [
+      [
+        3,
+        4,
+        4,
+        4,
+        4
+      ],
+      [
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      [
+        3,
+        4,
+        4,
+        4,
+        4
+      ]
+    ],
+    "component_parameters": "Class cosine cos(2*pi*k_i/9); internal L0=2*L_path5; M_i=diag(2+contact_degree_i,4,4,4,4). Every bridge phase difference derives from common component origins and retained real phase deviations.",
+    "composition": "Internal sine currents alone are linearized; exact bridge sine and form currents sum over all contacts. The ideal surrogate begins at zero forms/deviations. Actual original endpoint errors are bounded, never reset.",
+    "discarded_information": "Four reflection-odd modes per channel/component are omitted. Initial arbitrary odd uncertainty and nonlinear odd-mode generation remain in the full-space error proof. No exact invariant nonlinear quotient."
+  },
+  "algebraic_control": {
+    "phase_origins": [
+      0,
+      0,
+      0
+    ],
+    "forms": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "phase_deviations": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "expected_middle_form_rate": {
+      "numerator": -1,
+      "denominator": 1
+    },
+    "naive_middle_form_rate": {
+      "numerator": -4,
+      "denominator": 3
+    },
+    "naive_weighted_charge_rate": {
+      "numerator": -4,
+      "denominator": 3
+    },
+    "exact_charge_rate": 0,
+    "form_storage": 2,
+    "dissipation": {
+      "numerator": 17,
+      "denominator": 3
+    }
+  },
+  "prediction": {
+    "full_state_uniform_error_strictly_below": {
+      "numerator": 1,
+      "denominator": 50000000000000000000000000000000
+    },
+    "all_original_windings_retained_all_future": true,
+    "recovery_on_actual_postevent_mean_leaf": true,
+    "contact_work_allowance": {
+      "numerator": 1,
+      "denominator": 500000
+    },
+    "exact_reduced_storage_rate": "-(L_joined*x)^T*M^-1*(L_joined*x)",
+    "exact_weighted_charge_rates": [
+      0,
+      0
+    ]
+  },
+  "method": {
+    "name": "degree_aware_even_ports_exact_bridge_full_space_defect_v1",
+    "handoff": "Fresh original source library; exact2^-512 only if512<=kappa*D<=4096. Tiny squared endpoint bounds remain exact rational.",
+    "joined_identity": "Actual full sine law; gap>=4/[9*m*(contact_diameter+8)], cosine>=cos(4*pi/9+sqrt(2)*r)>1/20. Strict initial quotient-radius and storage-barrier margins.",
+    "sigma": "Maximum absolute signed ideal port sine sum divided by actual fine degree, interval bounded from origins.",
+    "ideal_discrepancy": "2*gamma_upper^5*sigma_upper^2*h^5/[5*(1-2*gamma_upper^2*h^2/3)^2*(1-3*h)]",
+    "actual_preparation_error": "epsilon/(1-3*h)",
+    "interval_method": "rational_outward_dyadic128_machin_trigonometry_v1",
+    "trajectory_integration": false
+  },
+  "stopping_rule": "Pass only if fresh formation, every actual unprobed handoff, full joined identity/recovery, declared event-work allowance, exact degree/storage/charge controls and a strictly positive outward lower margin for the whole-window error allowance all hold. Preserve failure/unavailable without tuning any input, law, horizon, precision or threshold.",
+  "source_base_commit": "f9c419c42bce35df8bd94b136ac73ca9999103b1",
+  "source_overlay_archive": "port-composition-v1.source.zip",
+  "frozen_theory_owner": "theory/nodal/SINE_REDUCED_PORT_COMPOSITION.md",
+  "runtime": {
+    "python": "3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows",
+    "backend": "Python exact Fraction plus fixed outward dyadic128; exact squared decay below interval grid",
+    "packages": {
+      "numpy": "2.3.3",
+      "networkx": "3.5",
+      "scipy": "1.16.3",
+      "mpmath": "1.3.0"
+    },
+    "seed": null,
+    "seed_scope": "No random input or numerical trajectory. Complete pressure field is supplied analytically; no held-pressure approximation."
+  },
+  "scope": "One frozen three-component-path control of a generic simple-unit-contact theorem. Supplied law, capacities, preparation, clock, support and work. No weighted-support extension, contact selection, minimality, autonomous hierarchy, laboratory acquisition or physical identification."
+}

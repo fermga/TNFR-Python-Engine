@@ -1,0 +1,34 @@
+{
+  "schema": "tnfr.sine-formed-classes-evidence.v1",
+  "artifacts": [
+    {
+      "file": "pair-v1.json",
+      "bytes": 22443,
+      "sha256": "2e6c005955406bd2113c71dd9644768665a02c9f707136ba778264ee28bcde4c",
+      "schema": "tnfr.sine-formed-class-pair.v1",
+      "source_kind": "original_saved_analytic_report",
+      "protocol_and_result": "../../../theory/nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-pair"
+    },
+    {
+      "file": "response-v1.json",
+      "bytes": 31089,
+      "sha256": "44aa49feab7b994baa3d51673530c6d00d1271a67b5b247f556bce9a3bd8a618",
+      "schema": "tnfr.sine-formed-class-response.v1",
+      "source_kind": "original_saved_analytic_report",
+      "protocol_and_result": "../../../theory/nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-response"
+    }
+  ],
+  "preservation": "Copied byte-for-byte from the original retained evaluation outputs. No assessor or frozen producer was rerun during consolidation.",
+  "original_evaluated_source_snapshot_archived": false,
+  "reviewed_source": {
+    "kind": "reviewed_consolidation_worktree_not_evaluation_snapshot",
+    "implementation": "../../../src/tnfr/physics/relational_sine_formed_classes.py",
+    "shared_preparation": "../../../src/tnfr/physics/_sine_preparation.py"
+  },
+  "provenance_limitations": [
+    "The original evaluation-time source snapshot was not archived with these reports.",
+    "These saved bytes and their hashes do not authenticate the source or chronology of their evaluation.",
+    "The separately reviewed consolidation source is not an archived evaluation-time snapshot."
+  ],
+  "evidence_kind": "Conditional analytic interval certificates; no trajectory samples or physical measurements."
+}

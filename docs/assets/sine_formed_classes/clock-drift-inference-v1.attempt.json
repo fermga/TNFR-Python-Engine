@@ -1,0 +1,8 @@
+{
+  "schema": "tnfr.sine-clock-drift-first-attempt.v1",
+  "started_utc": "2026-10-08T21:49:57.609055+00:00",
+  "source_base_commit": "1a717ca8f4f264f277bfdf661d9aeee4dd103af9",
+  "source_archive_sha256": "1a08af6a46c091cb49b6a1da8d12186768b824470facf14db5131193500a10b0",
+  "protocol_sha256": "bb3c5dae1f384c7cb14ce2b7a2f10556bc6deee3882b0f0f9730d7cc5c1d215d",
+  "policy": "No second attempt or overwritten result"
+}

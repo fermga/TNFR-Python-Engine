@@ -1,0 +1,47 @@
+"""Recover the failed export with unchanged scientific source and parameters.
+
+The first assessment completed but its process exited while projecting the
+auxiliary control dictionary, before any report was saved. This separately
+retained recovery recomputes the deterministic assessment; it is not a retained
+first response. The original frozen evaluator and archive remain unchanged.
+"""
+
+import hashlib
+import sys
+import zipfile
+from pathlib import Path
+
+sys.path.insert(0, str(Path.cwd() / "src"))
+
+from tnfr.utils.io import json_loads
+
+directory = Path("docs/assets/sine_formed_classes")
+stem = "two-port-probe-v1"
+attempt_path = directory / f"{stem}.first-attempt.json"
+attempt = json_loads(attempt_path.read_bytes())
+archive_path = directory / f"{stem}.source.zip"
+if hashlib.sha256(archive_path.read_bytes()).hexdigest() != attempt["frozen_source_sha256"]:
+    raise RuntimeError("Original frozen source differs")
+recovery_path = directory / attempt["recovery_source"]["file"]
+recovery = recovery_path.read_bytes()
+if len(recovery) != attempt["recovery_source"]["bytes"] or hashlib.sha256(recovery).hexdigest() != attempt["recovery_source"]["sha256"]:
+    raise RuntimeError("Frozen recovery source differs")
+with zipfile.ZipFile(archive_path) as archive:
+    original = archive.read("build/two-port-probe-freeze/evaluate_two_port_probe.py").decode("utf-8")
+old = 'saved["original_control_identity"] = _project(control)'
+new = 'saved["original_control_identity"] = {name: _project(value) for name, value in control.items()}'
+if original.count(old) != 1 or original.count("export_to_json(saved, target)") != 1:
+    raise RuntimeError("The expected single serialization correction does not match")
+history = {
+    "original_attempt": "assessment_completed_but_export_failed_without_retained_report",
+    "failure_record": attempt_path.name,
+    "retained_assessment_kind": "separately_frozen_export_recovery_recomputation",
+    "recovery_source": recovery_path.name,
+    "scientific_inputs_or_runtime_changed": False,
+    "prior_capture_producer_replayed": False,
+}
+patched = original.replace(old, new).replace(
+    "export_to_json(saved, target)",
+    'saved["evaluation_history"] = ' + repr(history) + "\nexport_to_json(saved, target)",
+)
+exec(compile(patched, "<frozen-evaluator-with-declared-export-recovery>", "exec"))

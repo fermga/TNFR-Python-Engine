@@ -1,0 +1,241 @@
+{
+  "schema": "tnfr.sine-reduced-class-ports-protocol.v1",
+  "evaluation_kind": "conditional_analytic_reduced_model_transfer_no_trajectory",
+  "inputs": {
+    "formation_time": {
+      "numerator": 100,
+      "denominator": 1
+    },
+    "relaxation_duration": {
+      "numerator": 10000000000000,
+      "denominator": 1
+    },
+    "phase_origin_difference": {
+      "numerator": 1,
+      "denominator": 1000
+    },
+    "contact_duration": {
+      "numerator": 1,
+      "denominator": 100
+    },
+    "form_error_bound": {
+      "numerator": 1,
+      "denominator": 10000000000
+    },
+    "phase_error_bound": {
+      "numerator": 1,
+      "denominator": 10000000000
+    },
+    "endpoint_radius": {
+      "numerator": 1,
+      "denominator": 100000000000000000000000000000000
+    },
+    "readout_error_bound": {
+      "numerator": 1,
+      "denominator": 1000000000000000000000000000000
+    },
+    "radius": {
+      "numerator": 1,
+      "denominator": 12
+    },
+    "work_allowance": {
+      "numerator": 1,
+      "denominator": 1000000
+    },
+    "decay_power": 512,
+    "error_fraction": {
+      "numerator": 1,
+      "denominator": 4
+    }
+  },
+  "complete_model": "Normalized-sine law with e=1023/1024, w=1/1024, beta=1, held capacities one. tau=e*t; both rows transform. No forcing or phase probes.",
+  "preparation": "Original C9 nominal forms k*(2046/9)*(355/113)^2*(j-4), initially phase-flat; donor k=1 or 2, held-out receiver k=2. Each original form/phase residual is bounded by 1e-10 with separate exact zero sums. Receiver common phase origin 1/1000 is declared from initial preparation; donor origin 0. Form origins 0. Both original sixteen-dimensional relative families remain admitted.",
+  "support": {
+    "nodes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        8
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        4,
+        13
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        9,
+        10
+      ],
+      [
+        9,
+        17
+      ],
+      [
+        10,
+        11
+      ],
+      [
+        11,
+        12
+      ],
+      [
+        12,
+        13
+      ],
+      [
+        13,
+        14
+      ],
+      [
+        14,
+        15
+      ],
+      [
+        15,
+        16
+      ],
+      [
+        16,
+        17
+      ]
+    ],
+    "bridge": [
+      4,
+      13
+    ],
+    "weights": "unit",
+    "capacity": "held one at every node"
+  },
+  "schedule": "Acquire at tau=100, continue both isolated actual flows unprobed for D=10^13, attach one unit bridge at tau_c=100+D with no state reset, then hold support. No further events.",
+  "observation": "Actual held-out receiver class-two form at global node 13 at tau_c+1/100; donor-two minus donor-one contrast. Independent additive readout error <=1e-30 in each record.",
+  "retained_reduction": {
+    "orbits": [
+      [
+        4
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        2,
+        6
+      ],
+      [
+        1,
+        7
+      ],
+      [
+        0,
+        8
+      ]
+    ],
+    "full_state_coordinates": 36,
+    "reduced_state_coordinates": 20,
+    "component_state": "Five signed forms and five real target-phase deviations, retaining both component origins; common form and phase origins are not quotiented.",
+    "component_parameters": "Class index k in {1,2}; internal cosine cos(2*pi*k/9), gamma=1/(1023*pi), internal C9 mobility with the actual degree-three port. Parameters are derived independently of recipient responses and unchanged between recipient classes.",
+    "composition": "Exact nonlinear sine of the relative port phases and linear port form exchange; internal sine field alone is linearized about the formed twist.",
+    "discarded_information": "Four reflection-odd modes per channel per component are omitted from retained state. Their initial uncertainty and nonlinear generation are covered by explicit full-space error estimates; no exact invariant nonlinear quotient is claimed."
+  },
+  "prediction": {
+    "recorded_class_two_minus_one_lower_threshold": {
+      "numerator": 1,
+      "denominator": 10000000000000000000000000
+    },
+    "fraction_of_certified_full_gap": {
+      "numerator": 1,
+      "denominator": 4
+    },
+    "error_criterion": "Total prediction error E must be strictly less than one quarter of the final outward recorded_contrast_bounds.lo, itself positive. This interval is built from the interval enclosure of the exact leading expression P plus [-E,E]. E includes semigroup tail, reduced nonlinear finite-response remainder, twice the lifted surrogate/full discrepancy, actual-source uncertainty and both readout errors. A positive exact fractional margin whose outward lower endpoint is zero does not certify.",
+    "both_windings_retained_all_future": true,
+    "recovery_modulo_actual_postevent_means": true,
+    "contact_work_allowance": {
+      "numerator": 1,
+      "denominator": 1000000
+    }
+  },
+  "controls": [
+    "Exact projection and lift identify five reflection-even spatial modes; the odd internal nonlinear residual is retained in the error proof.",
+    "The unchanged component matrices support recipient classes one and two; per-case response derivatives retain receiver-class dependence.",
+    "The reduced-matrix fourth contrast coefficient is derived directly; lower donor contrasts vanish under a shared recipient.",
+    "Zero phase offset and disconnected controls retain their separate scope; no contact or hidden-state selection law is inferred."
+  ],
+  "method": {
+    "name": "reflection_even_ports_exact_bridge_correlated_interval_v1",
+    "isolated_handoff": "2^-512 only if512<=kappa*D<=4096",
+    "joined_identity": "Full original eighteen-node law, gap >=2/81, cosine >=1/20, radius1/12; no surrogate storage substitution.",
+    "finite_response": "Derivatives through fourth order from the reduced matrices, common-semigroup tail and full nonlinear bridge remainder.",
+    "ideal_surrogate_to_full_per_case": "8*gamma^5*sin(phi)^2*h^5 / (45*(1-3*h)) upper bound, using upper absolute sine and gamma bounds.",
+    "actual_preparation_contrast_error": "2*epsilon/(1-3*h)",
+    "interval_method": "rational_outward_dyadic128_machin_trigonometry_v1",
+    "generic_forecast": "Not used. The row evaluator is a detached surrogate field, not a trajectory solver or an increased generic forecast work cap."
+  },
+  "stopping_rule": "Pass only if fresh formation, both actual unprobed handoffs, full joined identity, event-work allowance, strict final outward actual recorded contrast lower bound >1e-25, and a positive outward lower bound for error_fraction*recorded_contrast_bounds.lo-E all hold. Preserve an unavailable or negative result without tuning protocol primitives, coefficients, precision or thresholds.",
+  "source_base_commit": "8a46511a2baa08cd431c5aeff4524b2281d3a48b",
+  "source_overlay_archive": "reduced-ports-v1.source.zip",
+  "frozen_theory_owner": "theory/nodal/SINE_REDUCED_CLASS_PORTS.md",
+  "runtime": {
+    "python": "3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows",
+    "backend": "Python exact Fraction plus fixed outward dyadic128; exact squared decay bounds below interval grid",
+    "packages": {
+      "numpy": "2.3.3",
+      "networkx": "3.5",
+      "scipy": "1.16.3",
+      "mpmath": "1.3.0"
+    },
+    "seed": null,
+    "seed_scope": "No random input or trajectory samples; pressure supplied analytically by complete law, no held-pressure approximation."
+  },
+  "scope": "One prospective transfer of a rigorously bounded smaller constituent model under supplied law, source preparation, clock, observation and contact. No autonomous constituent/contact selection, exact nonlinear closure, minimality, practical sensing or physical identification."
+}

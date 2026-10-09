@@ -1,0 +1,390 @@
+{
+  "schema": "tnfr.deep-cleanup.v1",
+  "date": "2026-10-06",
+  "scope": "Third dependency-checked cleanup: retire unused duplicate math/grammar/catalog helpers and unsupported instrument inferences; retain shared calculus, actual fields, live grammar and scoped arithmetic proofs.",
+  "recovery": "Read Git blobs in binary mode and verify their hashes. For whole files apply working_newlines and verify working_sha256. For partial removals extract the named definition (including decorators), apply its normalization and verify its hash; an uncommitted_definition_utf8 value takes precedence where present.",
+  "api_migration": "docs/API_CONTRACTS.md#removed-unsupported-helpers",
+  "files": [
+    {
+      "path": "src/tnfr/math/optimizer.py",
+      "reason": "Unused greedy word-length/label-score optimizer; it does not check canonical grammar or certify an optimum/dynamical behavior.",
+      "replacement": "src/tnfr/operators/grammar.py",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "261303b402ed1e816ba8157198d3e19b45c80b5f",
+      "git_blob_bytes": 3199,
+      "git_blob_sha256": "9a614b00fff96f3730f42c1a3ad5dc828665142ee33c1439f54ad3ab9ed739e0",
+      "working_bytes": 3299,
+      "working_sha256": "52d3b20f7070de796d6549d09c33b8a89f41742feeeedb37dacb859c50b4d1ad",
+      "working_equals_git": false,
+      "working_equals_git_after_newline_normalization": true,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/src/tnfr/math/optimizer.py",
+      "working_newlines": "Normalize the Git blob to LF, then replace each LF with CRLF."
+    },
+    {
+      "path": "src/tnfr/math/grammar_validators.py",
+      "reason": "Unused parallel U2/U4 scalar-score rules with supplied increments and windows; only the retired optimizer/self-demo and a copied-set test consume them.",
+      "replacement": "src/tnfr/operators/grammar.py",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "a5fc19718fb3de09bbbfab3d239e740a050fa0a0",
+      "git_blob_bytes": 8712,
+      "git_blob_sha256": "d0fce46cee4c12eaf66202127cd57b9de65398b95549fdc59059baa00b2b7d8d",
+      "working_bytes": 8884,
+      "working_sha256": "944d0528218af9259376768e31bad2bc0b65c28bff136a669ea9f797b9f2a34e",
+      "working_equals_git": false,
+      "working_equals_git_after_newline_normalization": true,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/src/tnfr/math/grammar_validators.py",
+      "working_newlines": {
+        "rule": "Normalize the Git blob to LF, replace LF with CRLF except at these one-based lines.",
+        "bare_lf_lines": [
+          7,
+          8,
+          9,
+          11,
+          12,
+          38,
+          48,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          73,
+          75,
+          76,
+          77,
+          78,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          121,
+          122,
+          123,
+          124,
+          125,
+          134,
+          136,
+          137,
+          138,
+          139,
+          169,
+          174,
+          175,
+          178,
+          179,
+          180,
+          181,
+          196,
+          197,
+          202,
+          208,
+          212
+        ]
+      }
+    },
+    {
+      "path": "src/tnfr/math/fields_symbolic.py",
+      "reason": "Unused continuum field constructions differ from maintained graph/circular diagnostics and include an unexcluded potential self term; confinement interpretations are unsupported.",
+      "replacement": "src/tnfr/physics/fields.py",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "eb1fac3d1ca7635986c19b5644c3382284799cba",
+      "git_blob_bytes": 6728,
+      "git_blob_sha256": "f3a0b2b673cd1a8c21ff7ffdf1ca75ef064f693827df24c7e7a457ac3a52915c",
+      "working_bytes": 6932,
+      "working_sha256": "946a7aedaa8ad17134e43f15aa706c107c8d8868e3064d21f516dedc6ffc9afa",
+      "working_equals_git": false,
+      "working_equals_git_after_newline_normalization": true,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/src/tnfr/math/fields_symbolic.py",
+      "working_newlines": "Normalize the Git blob to LF, then replace each LF with CRLF."
+    },
+    {
+      "path": "src/tnfr/riemann/operator_catalog_discipline_signature.py",
+      "reason": "Duplicate hard-coded operator inventory/schema score assumes fixed size of a compatibility registry that permits subclass registration; canonical contract checks have a shared owner.",
+      "replacement": "src/tnfr/operators/operator_contracts.py",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "66556df76292cd590448ac8e1314f91fc79f33ae",
+      "git_blob_bytes": 13296,
+      "git_blob_sha256": "76b6e0058c58cd3674bd219d0d5b667583c2fefc09613150ec9901b3db1155fb",
+      "working_bytes": 13584,
+      "working_sha256": "c5a349abfd28942197dbcad3fbc5bef37ba03ef95b851621d6686267349cf06f",
+      "working_equals_git": false,
+      "working_equals_git_after_newline_normalization": true,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/src/tnfr/riemann/operator_catalog_discipline_signature.py",
+      "working_newlines": {
+        "rule": "Normalize the Git blob to LF, replace LF with CRLF except at these one-based lines.",
+        "bare_lf_lines": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          23,
+          47,
+          48,
+          49,
+          50,
+          66,
+          67,
+          73,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          237,
+          238,
+          239,
+          240,
+          241,
+          242,
+          243,
+          244,
+          245,
+          246,
+          249,
+          250,
+          251,
+          271,
+          272,
+          273,
+          274,
+          275,
+          276,
+          299,
+          300,
+          301,
+          302,
+          340,
+          341,
+          342,
+          343,
+          344,
+          345,
+          346
+        ]
+      }
+    },
+    {
+      "path": "examples/05_type_hygiene/89_operator_catalog_discipline_signature_demo.py",
+      "reason": "Demo repeats retired registry-size score and implies no fourteenth transformation from finite introspection; actual registry/class/contract tests retained.",
+      "replacement": "tests/operators/test_operator_contracts.py",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "676b8c06d295ee7c333ba60205939737270f9763",
+      "git_blob_bytes": 2367,
+      "git_blob_sha256": "909cffb3bb643d346efb12cda598b86103f17a9641e8862d6a901db6f9a9fc5e",
+      "working_bytes": 2427,
+      "working_sha256": "2dfaeecce6ce1e2b9fc52e99cbf7aac5abb21887bdc15207cf1bb449f610722e",
+      "working_equals_git": false,
+      "working_equals_git_after_newline_normalization": true,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/examples/05_type_hygiene/89_operator_catalog_discipline_signature_demo.py",
+      "working_newlines": "Normalize the Git blob to LF, then replace each LF with CRLF."
+    },
+    {
+      "path": "benchmarks/primes_as_consequence.py",
+      "reason": "Duplicate arithmetic campaign wrapper; supplied encodings, inconsistent fallback weights and vacuous subset check do not derive prime emergence.",
+      "replacement": [
+        "benchmarks/arithmetic_pressure_audit.py",
+        "benchmarks/paley_bridge.py",
+        "benchmarks/composition_arithmetic.py",
+        "benchmarks/operational_irreducibility.py"
+      ],
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "3016279b09098e58381317a712fe704ccc9a7ceb",
+      "git_blob_bytes": 19658,
+      "git_blob_sha256": "e9a1de7e2f21a0377baa0051427ee7a0d3fb506a18665fd6a4215fa7e698fb1e",
+      "working_bytes": 20084,
+      "working_sha256": "24cff671f3a5375f8021186d185402a493c923ed29875d122bbdb9d99ab52f0f",
+      "working_equals_git": false,
+      "working_equals_git_after_newline_normalization": true,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/benchmarks/primes_as_consequence.py",
+      "working_newlines": {
+        "rule": "Normalize the Git blob to LF, replace LF with CRLF except at these one-based lines.",
+        "bare_lf_lines": [
+          293,
+          294,
+          295,
+          296,
+          304
+        ]
+      }
+    }
+  ],
+  "retired_symbols": [
+    {
+      "path": "src/tnfr/operators/grammar.py",
+      "reason": "Unused duplicate cache wrapper or literal compatibility no-op; surviving implementation definitions unchanged.",
+      "replacement": "docs/API_CONTRACTS.md#removed-unsupported-helpers",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "479fdb1595a8977d9a69d5b9a3447dabb4ba005d",
+      "git_blob_sha256": "b37cfea95830480b75897d30d9380c54b05c4bb31bb797d71fc2b3aa17b5c97d",
+      "symbols": [
+        {
+          "name": "get_grammar_cache_stats",
+          "definition_normalization": "UTF-8, LF, includes decorators and one terminal newline",
+          "git_definition_sha256": "090e962efd770a47d4f5e4561337d697cb17926582b248c46dc561fe8a81c4a7",
+          "working_definition_sha256": "090e962efd770a47d4f5e4561337d697cb17926582b248c46dc561fe8a81c4a7"
+        },
+        {
+          "name": "_sequence_hash",
+          "definition_normalization": "UTF-8, LF, includes decorators and one terminal newline",
+          "git_definition_sha256": "4e8c66a5f0d622c28f492ba28c61b67d44ea03cca3e31085ff4010ba2c800cae",
+          "working_definition_sha256": "4e8c66a5f0d622c28f492ba28c61b67d44ea03cca3e31085ff4010ba2c800cae"
+        },
+        {
+          "name": "_validate_grammar_rules_cached",
+          "definition_normalization": "UTF-8, LF, includes decorators and one terminal newline",
+          "git_definition_sha256": "5615f92cf4ad6bc86f926ca3c8572fa07e27526f2bb86ef120d9d14affa6d2a2",
+          "working_definition_sha256": "5615f92cf4ad6bc86f926ca3c8572fa07e27526f2bb86ef120d9d14affa6d2a2"
+        },
+        {
+          "name": "validate_sequence_cached",
+          "definition_normalization": "UTF-8, LF, includes decorators and one terminal newline",
+          "git_definition_sha256": "df45e9b80bdae2e4012f0dffbe3e3c4dc6e969741d362ba181d26c7115a84170",
+          "working_definition_sha256": "df45e9b80bdae2e4012f0dffbe3e3c4dc6e969741d362ba181d26c7115a84170"
+        },
+        {
+          "name": "clear_validation_cache",
+          "definition_normalization": "UTF-8, LF, includes decorators and one terminal newline",
+          "git_definition_sha256": "94e4b9783d6dbc3298088b322c3552092d0e2f5881ea306ba8a0671430b90f4f",
+          "working_definition_sha256": "94e4b9783d6dbc3298088b322c3552092d0e2f5881ea306ba8a0671430b90f4f"
+        },
+        {
+          "name": "get_validation_cache_stats",
+          "definition_normalization": "UTF-8, LF, includes decorators and one terminal newline",
+          "git_definition_sha256": "0b85843507bf492987b4798ee931576ecccb8c702d420eee63359c70aaa43a11",
+          "working_definition_sha256": "0b85843507bf492987b4798ee931576ecccb8c702d420eee63359c70aaa43a11"
+        }
+      ]
+    },
+    {
+      "path": "src/tnfr/utils/io.py",
+      "reason": "Unused duplicate cache wrapper or literal compatibility no-op; surviving implementation definitions unchanged.",
+      "replacement": "docs/API_CONTRACTS.md#removed-unsupported-helpers",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "b0b35fccbb2dc70e02aabe36b0e624a8eda2cb76",
+      "git_blob_sha256": "7ae528dca57ed97cb745aed6027c609f86f5e7bb5ce1c4c87a3d3adcb76b08ae",
+      "symbols": [
+        {
+          "name": "clear_orjson_param_warnings",
+          "definition_normalization": "UTF-8, LF, includes decorators and one terminal newline",
+          "git_definition_sha256": "2eb4ed9f5fc727e1fdba44aa17c46341015c7948251dfd1ce1002a1702bc818a",
+          "working_definition_sha256": "2eb4ed9f5fc727e1fdba44aa17c46341015c7948251dfd1ce1002a1702bc818a"
+        }
+      ]
+    },
+    {
+      "path": "src/tnfr/config/presets.py",
+      "reason": "Unused duplicate cache wrapper or literal compatibility no-op; surviving implementation definitions unchanged.",
+      "replacement": "docs/API_CONTRACTS.md#removed-unsupported-helpers",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "0080e5872f71d1e823ac3c7590f50143332a2f84",
+      "git_blob_sha256": "a701b9b26da5fca4c2698473aec523f6b22baaee5aa10118ea3d32facebfd21e",
+      "symbols": [
+        {
+          "name": "legacy_preset_guidance",
+          "definition_normalization": "UTF-8, LF, includes decorators and one terminal newline",
+          "git_definition_sha256": "b03fe39e97aa632dd4d0ff168cda61f241e8ccecc5a60dcf8b1bb6cffb4dd1b2",
+          "working_definition_sha256": "b03fe39e97aa632dd4d0ff168cda61f241e8ccecc5a60dcf8b1bb6cffb4dd1b2"
+        }
+      ]
+    },
+    {
+      "path": "benchmarks/paley_bridge.py",
+      "reason": "An arbitrary distance between integer prime labels and supplied zeta heights cannot prove an analytic obstruction.",
+      "replacement": "theory/TNFR_RIEMANN_RESEARCH_NOTES.md",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "97a824ca09353ba667e4459825dec29326fdbabc",
+      "git_blob_sha256": "3c75e64f1f4e8d75f04f7d536c70de2b5dcc21018248389e10607e3f0d44f083",
+      "symbols": [
+        {
+          "name": "test_paley_does_not_reach_the_phase",
+          "definition_normalization": "UTF-8, LF, includes decorators and one terminal newline",
+          "git_definition_sha256": "5f36bc28f7aa6296eec2b376f5bad59f9a557f1f9e34d0556693076a4536b10b",
+          "working_definition_sha256": "5f36bc28f7aa6296eec2b376f5bad59f9a557f1f9e34d0556693076a4536b10b"
+        }
+      ]
+    }
+  ],
+  "corrections": [
+    {
+      "paths": [
+        "src/tnfr/operators/grammar.pyi"
+      ],
+      "scope": "Reexport actual grammar owners instead of stale duplicate classes and nonexistent private declarations."
+    },
+    {
+      "paths": [
+        "src/tnfr/math/__init__.py"
+      ],
+      "scope": "Retain the shared symbolic calculus; obtain version from package metadata."
+    },
+    {
+      "paths": [
+        "src/tnfr/validation/config.py",
+        "docs/API_CONTRACTS.md"
+      ],
+      "scope": "Label five retained global configuration compatibility fields as inactive; no admission, caching or timeout behavior is changed."
+    },
+    {
+      "paths": [
+        "theory/STRUCTURAL_STABILITY_AND_DYNAMICS.md",
+        "theory/EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md",
+        "theory/TNFR_DIRECTED_NONNORMAL_DYNAMICS.md"
+      ],
+      "scope": "Align lifecycle coherence/circular phase, unavailable probe verdict and capacity-clock factor with the implemented models."
+    },
+    {
+      "paths": [
+        "theory/TNFR_DIFFUSION_STABILITY_THEOREM.md",
+        "theory/TNFR_NUMBER_THEORY.md",
+        "theory/REMESH_INFINITY_DERIVATION.md"
+      ],
+      "scope": "Centralize overview and executable-owner links; preserve conditional proofs."
+    },
+    {
+      "paths": [
+        "benchmarks/word_equivariance_closure.py",
+        "benchmarks/directed_paley_bridge.py",
+        "tests/physics/test_arithmetic_instrument_scope.py"
+      ],
+      "scope": "Separate finite word probes from equivariance proofs; use shortest-arc phase distance and retain independent seam/geometry controls."
+    }
+  ],
+  "preserved_boundaries": [
+    "No active research gate or complete dynamical law changed.",
+    "No frozen protocol, archived producer or evaluated response regenerated.",
+    "A finite catalog or score cannot prove ontological completeness or dynamical stability."
+  ]
+}

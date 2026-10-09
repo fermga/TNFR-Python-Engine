@@ -1,0 +1,7981 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/nodal/FORCED_PHASE_LOCKING/">
+      
+      
+        <link rel="prev" href="../FORCED_SOURCE_AND_CLOCK/">
+      
+      
+        <link rel="next" href="../FORCED_WINDING_AND_WRITERS/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Conditional phase locking and circulation geometry - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#conditional-phase-locking-and-circulation-geometry" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Conditional phase locking and circulation geometry
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributor and agent instructions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Usage guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/CLI_AND_SDK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI and SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/RESEARCH_EVIDENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research evidence and frozen source restoration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/REGIONAL_AND_RELATIONAL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Regional and relational SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/relational/RELATIONAL_EXECUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native relational execution and observations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/relational/RELATIONAL_CAPTURE_AND_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native relational capture, memory and continuous proofs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/relational/OBSERVATION_AND_INFORMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shared observations, information and finite-sample bounds
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/relational/SINE_COMPARISON_AND_INFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Normalized-sine comparison, inference and forecasts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/relational/SINE_RESPONSE_AND_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sine response, constitutive comparisons and hidden memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/relational/SINE_PATTERNS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sine pattern geometry, formation and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/relational/SINE_SADDLE_CERTIFICATES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conservative sine saddle preparations and certificates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/relational/SINE_REGIONAL_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conservative sine regional and collective dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/relational/SINE_PAIR_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retained sine pair state, identification and pulses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observational interfaces
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optional Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contracts and diagnostics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contracts and diagnostics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/contracts/RELATIONAL_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relational dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/contracts/relational/RELATIONAL_EXECUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native relational execution and observations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/contracts/relational/RELATIONAL_CAPTURE_AND_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native relational capture, memory and continuous proofs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/contracts/relational/OBSERVATION_AND_INFORMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shared observations, information and finite-sample bounds
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/contracts/relational/SINE_COMPARISON_AND_INFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Normalized-sine comparison, inference and forecasts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/contracts/relational/SINE_RESPONSE_AND_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sine response, constitutive comparisons and hidden memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/contracts/relational/SINE_PATTERNS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sine pattern geometry, formation and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/contracts/relational/SINE_SADDLE_CERTIFICATES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conservative sine saddle preparations and certificates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/contracts/relational/SINE_REGIONAL_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conservative sine regional and collective dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/contracts/relational/SINE_PAIR_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retained sine pair state, identification and pulses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/contracts/OPERATOR_EVENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator events
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State and laws
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    State and laws
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../FUNDAMENTAL_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fundamental theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NODAL_PARAMETER_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATION_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relation foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PRESSURE_CONSTITUTIVE_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pressure premises
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JOINT_PARAMETER_RESPONSE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Joint parameter response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../GLOSSARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Form, phase and coherent patterns
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Form, phase and coherent patterns
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../INHERITED_FORM_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inherited form dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PHASE_FORM_EXCHANGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase-to-form exchange
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PRIMITIVE_PHASE_CLOSURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primitive phase closure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DERIVED_FORM_PHASE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived form phase
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATIONAL_EXCHANGE_ADMISSION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relational law and chapter index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATIONAL_RESPONSE_IDENTIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relational coefficient and capacity identification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CONSTITUTIVE_INFORMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sine law and constitutive information boundaries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATIONAL_RECOVERY_AND_INTERACTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native local recovery and regional interaction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATIONAL_DOMAIN_AND_CAPTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native phase domains and capture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATIONAL_FORMATION_CONTROLS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native validated transit and preparation controls
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATIONAL_PATTERN_COMPOSITION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relational pattern composition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATIONAL_EFFECTIVE_CONNECTIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Effective mediated connections
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATIONAL_NATIVE_FORMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native formation and its obstructions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_PATTERN_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Smooth-sine pattern dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_FORMED_CLASS_MAINTENANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repeated probes of formed sine classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_FORMED_CLASS_CONTACT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contact of actually formed sine classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_REDUCED_CLASS_PORTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reduced ports of formed sine classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_REDUCED_PORT_COMPOSITION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Network composition of reduced sine ports
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_MEDIATED_RESPONSE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acquired mediator class and a transmitted form response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_MEDIATED_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Effective memory of an acquired sine-class mediator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_NONLINEAR_SUPERPOSITION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-probe superposition on an acquired sine composite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_NONLINEAR_PROTOCOL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finite separation of a nonlinear class-mediated response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_NONLINEAR_ORGANIZATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Organization dependence of nonlinear interaction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_CUBIC_RESPONSE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Complete cubic-amplitude mediator response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_SPATIAL_OBSERVATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial observation of nonlinear class interaction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_AMPLITUDE_FEASIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feasible amplitudes for class discrimination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_COMPARISON_PROTOCOL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Independent full-law class comparison protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_REPEATED_INTERACTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repeated joined class interaction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_COLLECTIVE_INTERFACE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nonlinear collective interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_CHANGED_INPUT_PREDICTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changed-input collective prediction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_COLLECTIVE_FORWARD_PROTOCOL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Independent changed-input full-law protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_INTERFACE_COMPOSITION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Causal composition of acquired sine-class interfaces
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_NEIGHBOR_NONADDITIVITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Causal nonadditivity of distinct neighbor interventions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Independent distinct-neighbor protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLASS_STORAGE_EXCESS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nonlinear excess storage and loss
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_PORT_RELAXATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Uniform tracking of reduced sine ports
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_PORT_FORM_TRACKING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Form tracking by ordered heat comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_TWO_PORT_COMPATIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-port compatibility of sine classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_TWO_PORT_TRANSIT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finite transit of two-port sine classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_TWO_PORT_CAPTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prepared capture of two-port sine classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_TWO_PORT_PROBE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supplied probe of the acquired two-port composite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_TWO_PORT_DIPOLE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interior phase probe of acquired two-port deformation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_TWO_PORT_INFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-port geometry from a calibrated local response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_TWO_PULSE_INFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry and gain from two successive phase inputs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLOCK_INFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry, sensor gain and a declared uncertain clock
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_FINITE_CURVATURE_INFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finite curvature from one additional reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CLOCK_DRIFT_INFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clock drift, sampled exposure and robust mean-rate inference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_APERTURE_INFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finite-aperture observations and mean-clock inference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_APERTURE_RESOLUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finite-noise and horizon resolution for the four boxcar observations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_FORM_PHASE_REDUCTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exact and controlled form-phase reductions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_REGIONAL_FORMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conservative regional formation and its barriers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_COLLECTIVE_PHASE_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Collective phase families and live contact feedback
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_CONSERVATIVE_PREPARATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conservative source preparation and finite retention
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATIONAL_PATTERN_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native reduction and memory index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATIONAL_MEDIATOR_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native mediated pattern dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_ENVIRONMENTAL_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sine environmental state and causal memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATIONAL_RETURN_PATH_GEOMETRY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Return-path geometry and collective response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATIONAL_PHASE_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retained phase records and finite contact readout
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_PATTERN_RECOVERY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sine relative state, recovery and conservative identity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RESONANCE_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Resonance foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../EMERGENT_ONTOLOGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Emergence and ontology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transport, memory and clocks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Transport, memory and clocks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EPI diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_DIRECTED_NONNORMAL_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Directed nonnormal dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DERIVED_EPI_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived EPI memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CAPACITY_LOCALIZATION_BALANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Capacity and localization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CYCLE_SUPPORT_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cycle support dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CYCLE_MEMORY_RELAXATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cycle memory relaxation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../FORCED_SUPPORT_BALANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forced support balance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FORCED_REGIONAL_RESPONSE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forced regional response and environmental readouts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FORCED_SOURCE_AND_CLOCK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forced-source closure and phase clocks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conditional phase locking and circulation geometry
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conditional phase locking and circulation geometry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#26-conditional-phase-locking-and-form-restoration-on-fixed-p2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        26. Conditional phase locking and form restoration on fixed P2
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="26. Conditional phase locking and form restoration on fixed P2">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#declared-composition-and-complete-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Declared composition and complete state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#locked-target-conserved-mean-and-local-response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Locked target, conserved mean and local response
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#an-invariant-chart-and-explicit-error-bounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        An invariant chart and explicit error bounds
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inactive-channel-control-and-implementation-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inactive-channel control and implementation boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#27-capacity-adaptation-moves-the-conditional-p2-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        27. Capacity adaptation moves the conditional P2 target
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="27. Capacity adaptation moves the conditional P2 target">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exact-event-calculation-and-its-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exact event calculation and its limits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#immediate-pressure-and-subsequent-form-response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Immediate pressure and subsequent form response
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finite-default-policy-witness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finite default-policy witness
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#28-geometry-limited-regional-phase-locking-on-the-unit-barbell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        28. Geometry-limited regional phase locking on the unit barbell
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="28. Geometry-limited regional phase locking on the unit barbell">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#declared-model-and-the-bridge-constraint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Declared model and the bridge constraint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#full-six-node-local-stability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full six-node local stability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-actual-phasor-source-and-its-compatible-form" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The actual phasor source and its compatible form
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mean-conservation-is-conditional-on-the-phase-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mean conservation is conditional on the phase source
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prospective-finite-recovery-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prospective finite recovery protocol
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finite-outcome-with-the-frozen-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finite outcome with the frozen target
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#29-graph-independent-locking-and-phase-source-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        29. Graph-independent locking and phase-source constraints
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="29. Graph-independent locking and phase-source constraints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exact-model-phase-support-is-not-transport-conductance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exact model: phase support is not transport conductance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#locked-rate-cut-load-and-the-sign-of-the-phase-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Locked rate, cut load and the sign of the phase source
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-equal-capacities-obstruct-and-what-they-do-not" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What equal capacities obstruct, and what they do not
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-residual-bound-away-from-exact-locking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A residual bound away from exact locking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capacity-contrast-is-necessary-here-not-sufficient-for-stationary-form" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Capacity contrast is necessary here, not sufficient for stationary form
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#admission-boundaries-and-represented-observations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Admission boundaries and represented observations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#30-acute-phase-locks-are-circulation-states-with-integral-cycle-periods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        30. Acute phase locks are circulation states with integral cycle periods
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="30. Acute phase locks are circulation states with integral cycle periods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed-support-common-capacity-and-the-declared-phase-law" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed support, common capacity and the declared phase law
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integral-periods-and-reconstruction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integral periods and reconstruction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#necessary-and-sufficient-locking-equations-and-sector-uniqueness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Necessary and sufficient locking equations, and sector uniqueness
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-graph-structure-permits-or-excludes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What graph structure permits or excludes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#persistence-of-a-sector-is-not-its-formation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Persistence of a sector is not its formation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exact-implementation-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exact implementation boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#31-one-added-chord-extends-the-cycle-lattice-not-a-phase-generation-law" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        31. One added chord extends the cycle lattice, not a phase-generation law
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="31. One added chord extends the cycle lattice, not a phase-generation law">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#retained-support-and-the-exact-lattice-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Retained support and the exact lattice identity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-new-period-comes-from-the-actual-endpoint-gap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The new period comes from the actual endpoint gap
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#separate-a-support-extension-from-phase-writes-at-the-same-event" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Separate a support extension from phase writes at the same event
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-larger-cycle-lattice-does-not-guarantee-a-maintained-lock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A larger cycle lattice does not guarantee a maintained lock
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shared-implementation-and-production-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shared implementation and production boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prospective-default-coupling-event-and-policy-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prospective default-Coupling event and policy control
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FORCED_WINDING_AND_WRITERS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Winding generation and native writer boundaries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FORCED_GEOMETRIC_IDENTITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometric identity and capacity-feedback bounds
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../REMESH_INFINITY_DERIVATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REMESH fixed-delay models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and collective-state index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_PAIR_STATE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sufficient unordered pair state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_REPLICA_PULSE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Internal replica pulses and their perturbations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_PAIR_GROUPING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase and joint form-phase grouping
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_PAIR_MOBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pair geometry under alternative reciprocal mobility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINE_PAIR_INTERACTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pair actions, regional exchange and cancellation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_5" id="__nav_5_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators, grammar and support events
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operators, grammar and support events
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STRUCTURAL_OPERATORS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unified grammar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic and grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../COUPLING_WINDING_PERSISTENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coupling and winding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELATIONAL_SUPPORT_EVENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relational support events
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../COHERENT_PATTERN_CONTACT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coherent pattern contact
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../THOL_PRESSURE_FEEDBACK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    THOL pressure feedback
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../THOL_BIRTH_AND_TRANSPORT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    THOL birth and transport
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CHILD_COUPLING_FEEDBACK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Child coupling feedback
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6" id="__nav_5_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostics and geometry
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Diagnostics and geometry
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STRUCTURAL_STABILITY_AND_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stability and dynamics diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../EXTENDED_FIELDS_AND_DERIVED_QUANTITIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extended fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Auxiliary models and physical comparisons
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Auxiliary models and physical comparisons
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_VARIATIONAL_PRINCIPLE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Variational and exchange models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DISSIPATIVE_AND_OPEN_SYSTEMS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dissipative/open-system models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../GAUGE_SYMMETRY_AND_UNIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gauge and polarization constructions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PHYSICAL_REGIME_CORRESPONDENCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Physical phenomena atlas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arithmetic and applications
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Arithmetic and applications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_NUMBER_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Number theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_STRUCTURAL_OBSERVABILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural observability — R1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_ARITHMETIC_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arithmetic dynamics — R2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_CRT_FRACTALITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CRT composition — R3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_PADIC_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    p-adic dynamics — R4
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_ALGEBRAIC_NUMBER_FIELDS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algebraic number fields — R5
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_ADDITIVE_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Additive dynamics — R6
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_ARITHMETIC_PRESSURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arithmetic pressure — R7
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_ARITHMETIC_OPERATORS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arithmetic operators — R8
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_RIEMANN_RESEARCH_NOTES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Riemann scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_9" id="__nav_5_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research, measurement and parked evidence
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research, measurement and parked evidence
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/FIVE_STAGE_EXECUTION_PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Execution plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NODAL_RESEARCH_STRATEGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/PASSIVE_TRANSPORT_PROTOCOL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Passive transport protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Regional phase/amplitude protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/DPLL_PHYSICAL_ADMISSION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Physical admission of the delayed digital-PLL realization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/TCLAB_EXPLORATORY_PROTOCOL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TCLab comparison boundary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../C6_RESEARCH_MECHANISM_AUDIT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parked C6 evidence boundary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/archive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Historical archive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/archive/RETIRED_PROGRAMME_BOUNDARIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retired programme boundaries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../applications/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Applications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Applications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../applications/factorization-lab/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Factorization lab
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../applications/primality-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.github/WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#26-conditional-phase-locking-and-form-restoration-on-fixed-p2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        26. Conditional phase locking and form restoration on fixed P2
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="26. Conditional phase locking and form restoration on fixed P2">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#declared-composition-and-complete-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Declared composition and complete state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#locked-target-conserved-mean-and-local-response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Locked target, conserved mean and local response
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#an-invariant-chart-and-explicit-error-bounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        An invariant chart and explicit error bounds
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inactive-channel-control-and-implementation-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inactive-channel control and implementation boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#27-capacity-adaptation-moves-the-conditional-p2-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        27. Capacity adaptation moves the conditional P2 target
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="27. Capacity adaptation moves the conditional P2 target">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exact-event-calculation-and-its-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exact event calculation and its limits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#immediate-pressure-and-subsequent-form-response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Immediate pressure and subsequent form response
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finite-default-policy-witness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finite default-policy witness
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#28-geometry-limited-regional-phase-locking-on-the-unit-barbell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        28. Geometry-limited regional phase locking on the unit barbell
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="28. Geometry-limited regional phase locking on the unit barbell">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#declared-model-and-the-bridge-constraint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Declared model and the bridge constraint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#full-six-node-local-stability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full six-node local stability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-actual-phasor-source-and-its-compatible-form" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The actual phasor source and its compatible form
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mean-conservation-is-conditional-on-the-phase-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mean conservation is conditional on the phase source
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prospective-finite-recovery-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prospective finite recovery protocol
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finite-outcome-with-the-frozen-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finite outcome with the frozen target
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#29-graph-independent-locking-and-phase-source-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        29. Graph-independent locking and phase-source constraints
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="29. Graph-independent locking and phase-source constraints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exact-model-phase-support-is-not-transport-conductance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exact model: phase support is not transport conductance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#locked-rate-cut-load-and-the-sign-of-the-phase-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Locked rate, cut load and the sign of the phase source
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-equal-capacities-obstruct-and-what-they-do-not" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What equal capacities obstruct, and what they do not
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-residual-bound-away-from-exact-locking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A residual bound away from exact locking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capacity-contrast-is-necessary-here-not-sufficient-for-stationary-form" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Capacity contrast is necessary here, not sufficient for stationary form
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#admission-boundaries-and-represented-observations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Admission boundaries and represented observations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#30-acute-phase-locks-are-circulation-states-with-integral-cycle-periods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        30. Acute phase locks are circulation states with integral cycle periods
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="30. Acute phase locks are circulation states with integral cycle periods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed-support-common-capacity-and-the-declared-phase-law" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed support, common capacity and the declared phase law
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integral-periods-and-reconstruction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integral periods and reconstruction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#necessary-and-sufficient-locking-equations-and-sector-uniqueness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Necessary and sufficient locking equations, and sector uniqueness
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-graph-structure-permits-or-excludes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What graph structure permits or excludes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#persistence-of-a-sector-is-not-its-formation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Persistence of a sector is not its formation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exact-implementation-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exact implementation boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#31-one-added-chord-extends-the-cycle-lattice-not-a-phase-generation-law" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        31. One added chord extends the cycle lattice, not a phase-generation law
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="31. One added chord extends the cycle lattice, not a phase-generation law">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#retained-support-and-the-exact-lattice-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Retained support and the exact lattice identity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-new-period-comes-from-the-actual-endpoint-gap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The new period comes from the actual endpoint gap
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#separate-a-support-extension-from-phase-writes-at-the-same-event" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Separate a support extension from phase writes at the same event
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-larger-cycle-lattice-does-not-guarantee-a-maintained-lock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A larger cycle lattice does not guarantee a maintained lock
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shared-implementation-and-production-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shared implementation and production boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prospective-default-coupling-event-and-policy-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prospective default-Coupling event and policy control
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="conditional-phase-locking-and-circulation-geometry">Conditional phase locking and circulation geometry<a class="headerlink" href="#conditional-phase-locking-and-circulation-geometry" title="Permanent link">&para;</a></h1>
+<p>P2 and network locking, capacity adaptation, circulation and cycle periods.</p>
+<p>Part of <a href="../../FORCED_SUPPORT_BALANCE/">Forced support balance and model boundaries</a>. Section numbers are stable across the collection; hypotheses and model changes remain local to each result.</p>
+<h2 id="26-conditional-phase-locking-and-form-restoration-on-fixed-p2">26. Conditional phase locking and form restoration on fixed P2<a class="headerlink" href="#26-conditional-phase-locking-and-form-restoration-on-fixed-p2" title="Permanent link">&para;</a></h2>
+<h3 id="declared-composition-and-complete-state">Declared composition and complete state<a class="headerlink" href="#declared-composition-and-complete-state" title="Permanent link">&para;</a></h3>
+<p>Compose the existing <a href="../../../src/tnfr/dynamics/phase_evolution.py">U3-gated phase proposal</a>
+with fresh <a href="../../../src/tnfr/dynamics/dnfr.py">canonical multichannel pressure</a>
+on the fixed undirected unit edge <code>0--1</code>. This explicitly named composition
+is separate from the optimizer/FFT routes, whose phase updates do not feed
+back into their pure-EPI pressure. No new oscillator formula is introduced.</p>
+<p>The continuous comparison below supplies constant positive capacities
+<code>nu0,nu1</code>, fixed support, coupling <code>K&gt;0</code>, and effective pressure coefficients
+<code>e&gt;0,w&gt;=0,v&gt;=0</code> for EPI, phase and capacity. The topology gradient is zero
+on P2. The equations <code>nu_dot=0</code> and <code>support_dot=0</code> are premises. Capacity
+as angular speed and the sine interaction are the existing configured model,
+not deductions from <code>x_dot=nu*p</code>. With a continuous phase lift satisfying
+<code>|theta1-theta0|&lt;gamma</code>, where <code>0&lt;gamma&lt;=pi/2</code> is the effective U3 limit,
+the complete varying state obeys</p>
+<div class="highlight"><pre><span></span><code>theta0_dot=nu0+K*sin(theta1-theta0),
+theta1_dot=nu1+K*sin(theta0-theta1),
+p0=-e*(x0-x1)+w*(theta1-theta0)/pi+v*(nu1-nu0),  p1=-p0,
+x0_dot=nu0*p0,                                      x1_dot=nu1*p1.
+</code></pre></div>
+<p>Pressure is evaluated from the current state, never evolved independently
+or reconstructed to fit a desired form. These fixed equations define an
+autonomous conditional model, without a time-dependent external signal or
+operator dispatch. They do not explain the origin of their supplied
+capacities, support or constitutive identification. Coupling is <strong>phase to
+EPI</strong>, not bidirectional: EPI does not enter either phase equation.</p>
+<h3 id="locked-target-conserved-mean-and-local-response">Locked target, conserved mean and local response<a class="headerlink" href="#locked-target-conserved-mean-and-local-response" title="Permanent link">&para;</a></h3>
+<p>Define <code>sigma=nu0+nu1</code>, <code>d=nu1-nu0</code>, <code>delta=theta1-theta0</code>, <code>q=x0-x1</code> and
+<code>b=(theta0+theta1)/2</code>. Direct addition and subtraction give</p>
+<div class="highlight"><pre><span></span><code>delta_dot=d-2*K*sin(delta),
+q_dot=sigma*(-e*q+w*delta/pi+v*d),
+b_dot=sigma/2,
+m=(nu1*x0+nu0*x1)/sigma,             m_dot=0.
+</code></pre></div>
+<p>The weighted mean is generally not the arithmetic EPI mean. Reconstruction
+is <code>x0=m+nu0*q/sigma</code>, <code>x1=m-nu1*q/sigma</code>. There is exactly one strictly
+admitted phase lock if and only if</p>
+<div class="highlight"><pre><span></span><code>|d|&lt;2*K*sin(gamma),
+delta_star=asin(d/(2*K)),
+q_star=(w*delta_star/pi+v*d)/e.
+</code></pre></div>
+<p>At the lock both phases advance at <code>sigma/2</code>, while EPI is stationary at
+the reconstructed target with its initial m. In particular, maintained
+contrast does not imply nonzero instantaneous EPI rate or growing pressure.
+The phase and form contrast linearization is triangular, with eigenvalues
+<code>-2*K*cos(delta_star)&lt;0</code> and <code>-e*sigma&lt;0</code>. This proves local attraction of
+the relative state. The conserved m and common rotation leave neutral
+directions; no single absolute full-state point attracts all preparations.</p>
+<p>Equality in the gate condition places the lock on its excluded boundary.
+At <code>|delta|=pi/2</code> the phase linearization also loses strict contraction.
+For <code>K=0</code>, a nonzero d produces relative drift, while <code>d=0</code> leaves arbitrary
+relative phase with no restoring response. Those are not admitted strict
+locking cases. When capacities agree, the admitted target has
+<code>delta_star=q_star=0</code>: common phase rotation alone supplies no contrast.</p>
+<p>The fresh-pressure chain rule is a further independent consistency check:</p>
+<div class="highlight"><pre><span></span><code>p0_dot=-e*sigma*p0+(w/pi)*(d-2*K*sin(delta)),  p1_dot=-p0_dot.
+</code></pre></div>
+<p>Thus zero pressure away from the phase lock need not remain zero. This
+identity follows from the same constitutive map; it does not authorize an
+independently prescribed pressure evolution.</p>
+<h3 id="an-invariant-chart-and-explicit-error-bounds">An invariant chart and explicit error bounds<a class="headerlink" href="#an-invariant-chart-and-explicit-error-bounds" title="Permanent link">&para;</a></h3>
+<p>Choose a proof interval <code>[-rho,rho]</code> with <code>0&lt;rho&lt;gamma</code>,
+<code>|delta(0)|&lt;=rho</code> and <code>|d|&lt;=2*K*sin(rho)</code>. The phase vector field points
+inward at its endpoints. The interval is therefore forward invariant, with
+nonzero phasor resultants and strict U3 throughout the ideal evolution.
+It is an admission region, not a new dynamical coefficient. Put</p>
+<div class="highlight"><pre><span></span><code>mu=2*K*cos(rho)&gt;0,       A=e*sigma&gt;0,       C=sigma*w/pi,
+D0=|delta(0)-delta_star|, E0=|q(0)-q_star|.
+</code></pre></div>
+<p>The sine secant on the interval is at least <code>cos(rho)</code>. Consequently, for
+every <code>t&gt;=0</code>,</p>
+<div class="highlight"><pre><span></span><code>|delta(t)-delta_star| &lt;= D0*exp(-mu*t),
+|q(t)-q_star| &lt;= E0*exp(-A*t)+C*D0*I(A,mu,t),
+I(A,mu,t)=(exp(-mu*t)-exp(-A*t))/(A-mu)       if A!=mu,
+I(A,A,t)=t*exp(-A*t).
+</code></pre></div>
+<p>The nonnegative I is the convolution of the two decaying exponentials;
+the second bound follows by variation of constants. Pressure satisfies
+<code>|p0|=|p1|&lt;=e*|q-q_star|+(w/pi)*|delta-delta_star|</code>. Errors of the individual
+EPI coordinates relative to the same-m target are respectively <code>nu0/sigma</code>
+and <code>nu1/sigma</code> times the contrast error. A perturbation changing m changes
+the final mean rather than being restored to the old absolute target.</p>
+<p>There is also a bounded form interval. Write <code>Q(delta)=(w*delta/pi+v*d)/e</code>
+and set <code>q_lo=min(q(0),Q(-rho))</code>, <code>q_hi=max(q(0),Q(rho))</code>. The q vector
+field points inward at these endpoints. Its reconstruction gives bounds
+for both node forms, which can verify that configured clipping remains
+inactive. A clipped trajectory is not automatically this smooth model.</p>
+<p>For the <strong>ideal simultaneous Euler map</strong> with a fixed step h, the sufficient
+conditions <code>h&gt;0</code>, <code>2*h*K&lt;=1</code> and <code>h*A&lt;=1</code> preserve both intervals. Indeed,
+the phase map is nondecreasing there and maps its endpoints inward, while
+the form map is a convex combination of q and Q(delta). With
+<code>alpha=1-h*mu</code> and <code>beta=1-h*A</code>, both in <code>[0,1)</code>, the discrete errors obey</p>
+<div class="highlight"><pre><span></span><code>D_n &lt;= alpha^n*D0,
+E_n &lt;= beta^n*E0+h*C*D0*sum(beta^(n-1-j)*alpha^j, j=0,...,n-1).
+</code></pre></div>
+<p>The sum is empty at n=0. These are conservative sufficient conditions,
+not a claim that every larger step is unstable. They refer to exact Euler
+arithmetic, separately from the continuous theorem and represented execution.
+Signed numerical defects must be accounted for and chart membership checked
+before any corresponding finite binary64 claim; no infinite runtime
+convergence follows merely from these formulas.</p>
+<h3 id="inactive-channel-control-and-implementation-boundary">Inactive-channel control and implementation boundary<a class="headerlink" href="#inactive-channel-control-and-implementation-boundary" title="Permanent link">&para;</a></h3>
+<p>The prospective <code>w=0</code> control must hold <strong>effective</strong> e and v fixed. Then
+phase evolution is unchanged, but <code>q_star=v*d/e</code> and the phase-to-form term
+vanishes. With v also zero the target contrast vanishes; with v nonzero the
+old capacity-supported contrast remains. Conversely, v=0 with w&gt;0 and d!=0
+isolates the contribution supplied by the phase lock.</p>
+<p>The pressure owner normalizes configured weights. Simply deleting the raw
+phase weight would generally change e and v and invalidate that comparison.
+On this P2 only, moving the removed phase weight to the inactive topology
+channel preserves the other effective coefficients; the captured normalized
+values must still be checked. This uses a zero existing channel, not an
+additional force or an altered nodal equation.</p>
+<p>The explicit <a href="../../../src/tnfr/physics/p2_phase_form.py">P2 composition owner</a>
+exports <code>derive_p2_phase_form_model</code> and <code>propose_p2_phase_form_step</code> through
+<code>tnfr.physics</code>. The first returns a frozen <code>P2PhaseFormModel</code>: represented
+capacities and normalized coefficients, an exact rational locking ratio and
+classification for the ideal real half-pi gate, binary64 target estimates,
+and the sufficient monotone step ceiling. The displayed phase decay rate is
+the least binary64 upper enclosure of the exact rational radicand's square
+root <code>sqrt((2K-d)*(2K+d))</code>; it is not a lower contraction certificate. This
+calculation avoids intermediate overflow and underflow near the lock boundary.
+Its default K reuses the existing
+operational coupling setting, not a newly derived structural constant.
+The theorem above allows general <code>gamma&lt;=pi/2</code>; this implementation uses
+the half-pi case and separately checks the represented strict gate.</p>
+<p><code>propose_p2_phase_form_step</code> creates its own detached fixed P2 and returns
+a frozen <code>P2PhaseFormStep</code>. It admits canonical phases in <code>[0,2*pi)</code>, checks
+the strict represented half-pi gap before and after, and requires initial
+and proposed EPI in <code>[-1,1]</code> with clipping inactive. The shared phase kernel
+and <code>DefaultIntegrator</code> use one initial state and one unsplit Euler segment;
+pressure is freshly evaluated before consumption and again at the endpoint.
+<code>capture_non_epi_forcing</code> and <code>SupportTransportEuler</code> retain the source and
+Euler residuals, alongside measured weighted-mean drift. No caller graph or
+complete runtime invocation is certified. A single proposal is reproducible
+with the declared recipe:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.physics</span><span class="w"> </span><span class="kn">import</span> <span class="n">derive_p2_phase_form_model</span><span class="p">,</span> <span class="n">propose_p2_phase_form_step</span>
+<span class="n">weights</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"phase"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"epi"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"vf"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"topo"</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">derive_p2_phase_form_model</span><span class="p">((</span><span class="mf">0.95</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">),</span> <span class="n">pressure_weights</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span>
+<span class="n">step</span> <span class="o">=</span> <span class="n">propose_p2_phase_form_step</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">lock_status</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">locked_contrast_estimate</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">step</span><span class="o">.</span><span class="n">after_epi</span><span class="p">)),</span> <span class="n">step</span><span class="o">.</span><span class="n">after_phase_gap</span><span class="p">)</span>
+</code></pre></div>
+<p>Target estimates are not transcendental interval certificates, and a finite
+accepted proposal does not prove repeated binary64 stability. The
+<a href="../../../tests/physics/test_p2_phase_form.py">portable controls</a> compare prospective
+targets, perturbations and the inactive phase channel within this scope.</p>
+<p>The result establishes conditional restoration of a differentiated form
+under a specified source-state law. It does not derive the supporting
+capacity distribution, full substrate evolution, autonomous NFR creation,
+a physical clock or a particle interpretation. The
+<a href="../../research/FIVE_STAGE_EXECUTION_PLAN/#current-g3-gate">single G3 plan</a> owns
+any subsequent admission or experiment; existing passive and independent-
+pressure results are not rerun or promoted by this composition.</p>
+<h2 id="27-capacity-adaptation-moves-the-conditional-p2-target">27. Capacity adaptation moves the conditional P2 target<a class="headerlink" href="#27-capacity-adaptation-moves-the-conditional-p2-target" title="Permanent link">&para;</a></h2>
+<p>The <a href="../../../src/tnfr/dynamics/adaptation.py">existing capacity adaptation owner</a>
+moves an eligible node toward the immutable-snapshot mean of its neighbors.
+Its eligibility gate consumes stored pressure, stored Si and a consecutive
+evaluation counter. It is a configured controller, not a capacity law derived
+from the nodal equation. The following one-event calculation tests whether
+this controller preserves the supporting capacities of Section 26.</p>
+<h3 id="exact-event-calculation-and-its-limits">Exact event calculation and its limits<a class="headerlink" href="#exact-event-calculation-and-its-limits" title="Permanent link">&para;</a></h3>
+<p>Retain the positive P2 capacities and definitions of Section 26. Let
+<code>a0,a1</code> be the eligibility indicators at one event, and let <code>0&lt;=mu&lt;=1</code> be
+the configured adaptation fraction. In exact arithmetic, with clipping
+inactive, the simultaneous capacity proposals are</p>
+<div class="highlight"><pre><span></span><code>nu0_plus=nu0+mu*a0*d,       nu1_plus=nu1-mu*a1*d,
+d_plus=(1-mu*(a0+a1))*d,
+sigma_plus=sigma+mu*(a0-a1)*d.
+</code></pre></div>
+<p>Positive capacities remain positive because the active proposals are convex
+combinations of the two positive inputs. Moreover, <code>|d_plus|&lt;=|d|</code>, so a
+strictly admitted fixed-capacity phase lock remains available after this
+event, at the same K and phase gate. Availability of a new lock does not mean
+that the previous locked state remains a lock.</p>
+<p>When both nodes are eligible, sigma is unchanged and d is multiplied by
+<code>1-2*mu</code>. Its magnitude strictly decreases for <code>0&lt;mu&lt;1</code> and <code>d!=0</code>.
+The endpoint <code>mu=1</code> swaps capacities and reverses d; it is not a strict
+contraction. If just one node is eligible, d is multiplied by <code>1-mu</code>,
+while sigma increases or decreases by <code>mu*d</code>. With neither node eligible,
+or with <code>mu=0</code>, the capacities do not change. These alternatives matter:
+partial eligibility also changes the form decay rate <code>e*sigma_plus</code> and
+the sufficient Euler step ceiling. They must be checked for the next step.</p>
+<p>The post-event comparison target follows from the same constitutive law:</p>
+<div class="highlight"><pre><span></span><code>delta_star_plus=asin(d_plus/(2*K)),
+q_star_plus=(w*delta_star_plus/pi+v*d_plus)/e.
+</code></pre></div>
+<p>The old target remains the reference for the preservation test. Computing
+the new target explains its displacement; it does not replace the old
+reference or fit a trajectory. For <code>w&gt;0</code>, <code>v&gt;=0</code> and <code>d!=0</code>, reducing
+<code>|d|</code> reduces the target's magnitude. In the phase-only source witness
+<code>v=0</code>, eliminating the capacity contrast eliminates the predicted
+phase-supported form contrast. Indefinitely repeated eligibility would
+need additional evidence; the one-event identity does not establish it.</p>
+<h3 id="immediate-pressure-and-subsequent-form-response">Immediate pressure and subsequent form response<a class="headerlink" href="#immediate-pressure-and-subsequent-form-response" title="Permanent link">&para;</a></h3>
+<p>The event changes capacity, but leaves EPI and phase unchanged. At the same
+form and phase, freshly evaluated pressure therefore changes by</p>
+<div class="highlight"><pre><span></span><code>p0_plus-p0=v*(d_plus-d),       p1_plus-p1=-(p0_plus-p0).
+</code></pre></div>
+<p>In particular, with <code>v=0</code> an immediate pressure check misses the displaced
+target: pressure is unchanged even though the relative phase derivative
+changes by <code>d_plus-d</code>. Starting at the ideal old lock and subsequently
+holding the new capacities fixed gives</p>
+<div class="highlight"><pre><span></span><code>delta_dot(0_plus)=d_plus-d,
+p0(0_plus)=0,
+p0_dot(0_plus)=(w/pi)*(d_plus-d),
+q_dot(0_plus)=0,
+q_ddot(0_plus)=sigma_plus*(w/pi)*(d_plus-d).
+</code></pre></div>
+<p>This is the existing phase-to-pressure-to-form path. No independent pressure
+evolution is introduced. An ideal simultaneous Euler step first changes the
+phase gap by <code>h*(d_plus-d)</code> while leaving q unchanged; the second changes q
+by <code>h^2*sigma_plus*(w/pi)*(d_plus-d)</code>. Actual binary64 residuals and chart
+admission remain separate obligations.</p>
+<p>The conserved mean of Section 26 is also specific to fixed capacities.
+Writing its post-event value using unchanged x gives the exact jump</p>
+<div class="highlight"><pre><span></span><code>m_plus-m=-mu*d*q*(a1*nu0+a0*nu1)/(sigma*sigma_plus).
+</code></pre></div>
+<p>Subsequent fixed-capacity segments conserve the new mean. They do not
+restore the old absolute target simply because each segment has its own
+weighted-mean conservation law. There is no EPI jump in this capacity event;
+the mean changes because its weights change.</p>
+<h3 id="finite-default-policy-witness">Finite default-policy witness<a class="headerlink" href="#finite-default-policy-witness" title="Permanent link">&para;</a></h3>
+<p>The <a href="../../../tests/physics/test_p2_phase_form.py">P2 regression controls</a> prepare
+the prospective Section 26 lock for capacities <code>(0.95,1.05)</code>, raw pressure
+weights <code>phase=epi=1</code>, <code>vf=topo=0</code>, and the existing coupling <code>K=0.1</code>.
+They compare an active capacity writer with an inactive-writer control,
+preserving the old target in both branches. Fresh pressure and fresh Si
+are computed through their shared owners before the gate is evaluated.</p>
+<p>For the specified binary64 preparation and current shared phase-pressure
+kernel, pressure is <code>(0,0)</code> and Si is approximately
+<code>(0.8972318538363662,0.9694744245977734)</code>. Both nodes qualify under the existing defaults:
+<code>EPS_DNFR_STABLE=0.001</code>, <code>si_hi=0.5</code>, <code>VF_ADAPT_TAU=5</code> and
+<code>VF_ADAPT_MU=0.1</code>. Beginning with zero counters, the fifth qualifying
+evaluation changes capacities to <code>(0.96,1.04)</code>. These are five gate
+evaluations on a prepared state, not five elapsed units of physical time.</p>
+<p>The old target estimates are <code>delta_star=0.5235987755982994</code> and
+<code>q_star=0.16666666666666682</code>. Reapplying the unchanged model to the observed
+new capacities gives <code>delta_star_plus=0.4115168460674884</code> and
+<code>q_star_plus=0.13098988043445475</code>. The new target is displaced, although
+strict locking remains available. With only node 0 or only node 1 eligible,
+the respective ideal proposals are <code>(0.96,1.05)</code> or <code>(0.95,1.04)</code>; both
+give a phase target near <code>0.46676533904729683</code> and a form contrast near
+<code>0.1485760219466835</code>, with different total capacities.
+The unchanged high-threshold regression declares <code>si_hi=0.875</code> before
+execution. Both nodes now qualify. The earlier pressure arithmetic produced
+<code>(-2.7755575615628914e-17,2.7755575615628914e-17)</code> and Si approximately
+<code>(0.8389323,0.91117487)</code>, admitting only the higher-capacity node. The current
+shared principal-phase difference and division by represented pi instead
+cancel the prepared form gradient exactly in this witness. We retain the
+threshold and record the changed outcome rather than retuning it to restore
+partial eligibility. The single-node proposals above remain conditional
+blend identities, not the outcome of this current runtime control. This is a
+separate configured policy control, not another canonical threshold.</p>
+<p>After the writer window is closed, two existing P2 proposals with <code>h=0.25</code>
+expose the delayed form response. In the active branch the first phase-gap
+change is approximately <code>-0.005</code>; the second contrast change is
+approximately <code>-0.00039788735772973427</code>. The inactive-writer branch retains
+the old contrast within the existing <code>1e-14</code> regression criterion in this
+finite comparison. These decimal
+values are represented observations or target estimates, not exact
+transcendental certificates or infinite-time runtime bounds.</p>
+<p>The adaptation owner itself refreshes neither pressure nor Si. Si normalizes
+pressure by the current maximum magnitude, so an arbitrarily small nonzero
+antisymmetric pressure can lose the full pressure contribution to Si compared
+with exact zero. The audit retains the actual fresh values instead of
+silently substituting their ideal equilibrium limits. Counters count
+qualifying calls, reset on a failed gate and are not reset by an adaptation
+event; continued eligibility can therefore cause a write on the next call.</p>
+<p>This detached, finite policy audit rejects preservation of this nonzero
+fixed-capacity target by the existing default writer. It does not establish
+instability of the new lock, a complete default runtime trajectory, permanent
+eligibility, or an emergent law for Si, capacity or substrate formation.</p>
+<h2 id="28-geometry-limited-regional-phase-locking-on-the-unit-barbell">28. Geometry-limited regional phase locking on the unit barbell<a class="headerlink" href="#28-geometry-limited-regional-phase-locking-on-the-unit-barbell" title="Permanent link">&para;</a></h2>
+<h3 id="declared-model-and-the-bridge-constraint">Declared model and the bridge constraint<a class="headerlink" href="#declared-model-and-the-bridge-constraint" title="Permanent link">&para;</a></h3>
+<p>Use triangles <code>(0,1,2)</code> and <code>(3,4,5)</code>, joined only by edge <code>(2,3)</code>, with
+unit symmetric conductance and degrees <code>d=(2,2,3,3,2,2)</code>. Capacities are
+constant within each region: <code>nu_L=kappa-epsilon</code>, <code>nu_R=kappa+epsilon</code>,
+with <code>kappa&gt;|epsilon|</code>. These positive supplied capacities are also the
+free angular rates in the existing averaged-sine phase law. Set the
+effective pressure coefficients to <code>e&gt;0,w&gt;0</code> for form and phase, with
+capacity and topology coefficients zero. The topology channel is disabled,
+not identically zero on this irregular graph. The ideal equations are</p>
+<div class="highlight"><pre><span></span><code>theta_dot_i = nu_i + (K/d_i) sum_(j~i) sin(theta_j-theta_i),  K&gt;0,
+x_dot = diag(nu) [-e L_rw x + w g(theta)],
+g_i(theta) = Arg(sum_(j~i) exp(i(theta_j-theta_i))) / pi.
+</code></pre></div>
+<p>All edges must remain U3-admitted. This composition excludes Gamma,
+events, clipping, capacity adaptation and other controllers. The scalar
+form chart is signed real; zero capacity is outside this result. These
+assumptions specify an additional phase/capacity model, not a consequence
+of the nodal product alone.</p>
+<p>Multiplication of the phase row by <code>d_i</code> cancels the sine interaction on
+each undirected edge. Any common locked angular rate must therefore be
+<code>omega=sum(d_i nu_i)/14=kappa</code>. Summing only the left region gives the
+necessary cut balance <code>K sin(theta_3-theta_2)=7 epsilon</code>: its volume is
+seven, and its sole outward edge carries all of its phase imbalance.
+Consequently no lock under this model exists when <code>|7 epsilon|&gt;K</code>.</p>
+<p>For <code>|7 epsilon|&lt;K</code>, let the principal angles and lock offsets be</p>
+<div class="highlight"><pre><span></span><code>alpha = asin(2 epsilon/K),       beta = asin(7 epsilon/K),
+psi = (-alpha-beta/2, -alpha-beta/2, -beta/2,
+        beta/2,        alpha+beta/2, alpha+beta/2).
+</code></pre></div>
+<p>Substitution in all six rows gives <code>theta(t)=psi+kappa*t*1</code>. The interior
+and bridge loads are different: <code>sin(alpha)=2 epsilon/K</code> and
+<code>sin(beta)=7 epsilon/K</code>. A two-region average erases that distinction.
+With the half-pi U3 gate the strict threshold is <code>|epsilon|&lt;K/7</code>;
+a narrower configured gate additionally requires <code>|beta|</code> to lie strictly
+inside that gate. At equality <code>|7 epsilon|=K</code>, the bridge cosine vanishes
+and strict relative restoring stability is lost. The overloaded result
+uses the cut equation and does not depend on imposing equal interior phases.</p>
+<h3 id="full-six-node-local-stability">Full six-node local stability<a class="headerlink" href="#full-six-node-local-stability" title="Permanent link">&para;</a></h3>
+<p>The phase Jacobian at the lock is <code>-K D^(-1) B_cos</code>, where <code>B_cos</code> is the
+weighted graph Laplacian with edge weights <code>cos(psi_j-psi_i)</code>. On the
+strict branch every weight is positive. Similarity by <code>D^(1/2)</code> gives
+one neutral common-rotation mode and five strictly negative modes. This
+includes perturbations that split either interior pair; it is not merely
+stability within the four-fiber reduction.</p>
+<p>A finite neighborhood follows without linearizing. For a fixed common chart
+offset <code>c0</code>, write <code>y=theta-psi-(c0+kappa*t)*1</code> in a continuous lift.
+For any edge its nonlinear
+error coupling equals <code>a_ij(y)(y_j-y_i)</code>, where</p>
+<div class="highlight"><pre><span></span><code>a_ij(y) = integral_0^1 cos(psi_j-psi_i+s*(y_j-y_i)) ds.
+</code></pre></div>
+<p>If <code>|beta|+osc(y(0))&lt;pi/2</code> and is strictly inside the configured gate,
+the coefficients are symmetric and positive. At a largest error the
+derivative is nonpositive; at a smallest error it is nonnegative. Thus
+the error range is invariant and the degree-weighted error mean is
+conserved. With that mean set to zero,</p>
+<div class="highlight"><pre><span></span><code>||y(t)||_D &lt;= exp(-K*cos(|beta|+osc(y(0)))*lambda_2*t) ||y(0)||_D,
+lambda_2 = (11-sqrt(73))/12.
+</code></pre></div>
+<p>The same range argument holds for ideal simultaneous Euler when <code>h*K&lt;=1</code>.
+For the norm bound it suffices to require <code>h*K&lt;=1/2</code>; the symmetric error
+map then has nonnegative eigenvalues and contracts by at most
+<code>1-h*K*cos(|beta|+osc(y(0)))*lambda_2</code> on the centered subspace.</p>
+<h3 id="the-actual-phasor-source-and-its-compatible-form">The actual phasor source and its compatible form<a class="headerlink" href="#the-actual-phasor-source-and-its-compatible-form" title="Permanent link">&para;</a></h3>
+<p>The phase source is not the sine interaction or a global Laplacian
+substitute. At the lock define</p>
+<div class="highlight"><pre><span></span><code>gamma = atan2(3 epsilon/K, 2*cos(alpha)+cos(beta)),
+g_star = (alpha/2, alpha/2, gamma, -gamma, -alpha/2, -alpha/2) / pi.
+</code></pre></div>
+<p>The two-neighbor rows are phasor midpoints; a bridge row instead has the
+resultant <code>2 exp(-i alpha)+exp(i beta)</code>. Its imaginary part is
+<code>3 epsilon/K</code> and its real part is positive on the strict branch.
+Reflection makes <code>sum(d_i*g_star_i)=0</code> exactly, so the source is
+compatible with a stationary form. With <code>s=w/(e*pi)</code>, an independent
+solution of <code>L_rw*z=(w/e)*g_star</code> is</p>
+<div class="highlight"><pre><span></span><code>F = 2*alpha+3*gamma,
+z = s*(F/2+alpha, F/2+alpha, F/2, -F/2, -F/2-alpha, -F/2-alpha).
+</code></pre></div>
+<p>The complete stationary family is <code>x_star=z+c*1</code>. Its physically relevant
+mean for this declared nodal model uses <code>H=diag(d_i/nu_i)</code>, not uniform
+weights and not <code>D</code> alone. To specify initial weighted mean <code>m</code>, set</p>
+<div class="highlight"><pre><span></span><code>m_H(z) = s*(epsilon/kappa)*((11/7)*alpha+(3/2)*gamma),
+x_star = z + (m-m_H(z))*1.
+</code></pre></div>
+<p>The <a href="../../../src/tnfr/physics/regional_phase_lock.py">target evaluator</a>
+<code>derive_regional_phase_lock</code> reuses <code>derive_forced_support_balance</code> for
+the represented source and mean constraint. The analytic formula above
+provides an independent reference. Exact rational cut loads, binary64
+inverse-trigonometric estimates, the exactly odd represented source and
+the actual production phasor source are distinct evidence. In particular,
+enforcing reflection in a comparison source is not permission to replace
+or silently correct the production pressure.</p>
+<h3 id="mean-conservation-is-conditional-on-the-phase-source">Mean conservation is conditional on the phase source<a class="headerlink" href="#mean-conservation-is-conditional-on-the-phase-source" title="Permanent link">&para;</a></h3>
+<p>In general the full form mean obeys</p>
+<div class="highlight"><pre><span></span><code>d(m_H(x))/dt = w*sum(d_i*g_i(theta)) / sum(d_i/nu_i).
+</code></pre></div>
+<p>Canonical phasor directions do not generally cancel in that sum. Thus an
+arbitrary phase perturbation can move the absolute form target even with
+fixed capacities. The phase degree mean, whose sine terms do cancel,
+does not supply a form conservation law.</p>
+<p>There is a useful invariant restricted preparation. Let reversal exchange
+<code>0&lt;-&gt;5</code>, <code>1&lt;-&gt;4</code>, <code>2&lt;-&gt;3</code>, and require the rotating phase offsets to be
+odd under that reversal. The supplied detuning and graph share this
+symmetry, so both the ideal continuous phase law and its Euler map
+preserve it. The fresh phase source remains odd, its degree sum vanishes,
+and <code>m_H(x)</code> is conserved for any initial form. This symmetry permits a
+fixed full form reference during recovery without repeatedly recentering
+the observed trajectory. General preparations retain the measured drift.</p>
+<h3 id="prospective-finite-recovery-protocol">Prospective finite recovery protocol<a class="headerlink" href="#prospective-finite-recovery-protocol" title="Permanent link">&para;</a></h3>
+<p>The following preparation and criteria precede runtime observations:
+<code>kappa=1</code>, <code>K=1/2</code>, <code>epsilon=1/32</code>, <code>e=w=1/2</code>, <code>h=1/8</code>, and 256
+simultaneous phase/form Euler steps. Fix <code>m=0</code>, use <code>x_star</code> above, and
+initialize</p>
+<div class="highlight"><pre><span></span><code>theta(0) = psi + a common canonical chart offset
+           + (2,-1,1,-1,1,-2)/128,
+x(0) = x_star + (31,31,31,-33,-33,-33)/256.
+</code></pre></div>
+<p>The phase perturbation splits both interior pairs and preserves reflection.
+It has degree mean zero and <code>Y0^2=||y(0)||_D^2=13/8192</code>. The form
+perturbation is H-centered with <code>X0^2=||x(0)-x_star||_H^2=7/32</code>.
+Neither input nor target is fitted to an observed endpoint.</p>
+<p>Elementary bounds give <code>alpha&lt;1/7</code>, <code>beta&lt;1/2</code>, total phase width below
+one radian, edge separation at most <code>17/32</code>, and <code>lambda_2&gt;1/5</code>.
+The following rational lower rates suffice:</p>
+<div class="highlight"><pre><span></span><code>lambda_p = 1759/20480,       lambda_x = 31/320,
+a = 1-h*lambda_p,            b = 1-h*lambda_x.
+</code></pre></div>
+<p>For the form rate, <code>e*x^T B*x &gt;= e*nu_min*lambda_2*||x||_H^2</code>
+on the H-centered subspace follows by comparing the minimizing constant
+in the D and H variances. The ideal Euler form map has nonnegative
+spectrum under <code>h*e*nu_max&lt;=1/2</code>, satisfied here.</p>
+<p>To bound the changing source, on a common lift of width below one the
+phasor-direction derivative is <code>(R-I)/pi</code>, with nonnegative entries
+<code>R_ij&lt;=2/d_i</code> on support. Hence <code>||R||_D&lt;=2</code> and the phase-source
+Lipschitz bound is strictly below one, since <code>pi&gt;3</code>. This yields</p>
+<div class="highlight"><pre><span></span><code>Y_n &lt;= a^n*Y0,
+X_n &lt;= b^n*X0
+       + w*sqrt(nu_max)*Y0*(a^n-b^n)/(lambda_x-lambda_p).
+</code></pre></div>
+<p>Here <code>w*sqrt(nu_max)*Y0/X0=sqrt(429/229376)&lt;1/23</code>. Exact rational
+evaluation at <code>n=256</code> therefore verifies, before execution,</p>
+<div class="highlight"><pre><span></span><code>a^256 &lt; 1/10,
+b^256 + (a^256-b^256)/(23*(lambda_x-lambda_p)) &lt; 1/5.
+</code></pre></div>
+<p>The selected acceptance is a phase error below one tenth and a full fixed
+mean form error below one fifth of their initial norms. These are scoped
+ideal-Euler predictions, not a posteriori choices of a favorable time.
+The <a href="../../../tests/physics/test_regional_phase_lock.py">finite execution controls</a>
+use the existing phase proposal, fresh canonical pressure and shared nodal
+integrator. They separately retain source and Euler defects, non-symmetric
+mean drift, overload and configured-gate controls. Common rotation crosses
+the canonical phase wrap during this experiment; relative circular errors
+must be reconstructed against the fixed rotating reference, rather than
+mistaking a wrap jump for physical phase recovery or instability.</p>
+<p>No ideal estimate above certifies infinite binary64 stability or a complete
+runtime containing other writers. This mechanism conditionally maintains
+regional differentiation while its supplied capacity contrast and phase law
+persist. It neither selects those inputs autonomously nor establishes a
+physical NFR, particle or endogenous substrate.</p>
+<h3 id="finite-outcome-with-the-frozen-target">Finite outcome with the frozen target<a class="headerlink" href="#finite-outcome-with-the-frozen-target" title="Permanent link">&para;</a></h3>
+<p>The production control passes both reserved recovery criteria after 256 steps
+(<code>t=32</code> in the supplied clock). The target estimates are
+<code>alpha=0.1253278311680654</code>, <code>beta=0.4528165947449256</code> and</p>
+<div class="highlight"><pre><span></span><code>x_star = (0.10786151777372711, 0.10786151777372711, 0.06796843009895889,
+         -0.07382420301501220, -0.11371729068978044, -0.11371729068978044).
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Error norm</th>
+<th>Initial</th>
+<th>Final</th>
+<th>Observed ratio</th>
+<th>Precomputed ideal upper ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Phase, D norm</td>
+<td>0.0398361</td>
+<td>0.000883519</td>
+<td>0.0221789</td>
+<td>0.0630834</td>
+</tr>
+<tr>
+<td>Full form, H norm</td>
+<td>0.467707</td>
+<td>0.0160276</td>
+<td>0.0342685</td>
+<td>0.118917</td>
+</tr>
+</tbody>
+</table>
+<p>No target is recentered or fitted after execution. The reflected preparation's
+largest observed weighted-mean drift is below <code>2.77e-16</code>; its signed Euler
+defects are below <code>1.42e-17</code>. A separate unperturbed target control keeps form
+unchanged at its represented coordinates and has final phase error below
+<code>5.48e-15</code>. Numerical comparisons permit a separately declared <code>1e-11</code>
+allowance; neither that allowance nor these measured residuals certifies
+asymptotic binary64 accuracy.</p>
+<p>The controls also retain a genuinely nonconserving mean response to an
+asymmetric phase perturbation, failure to preserve the old form when phase
+pressure is disabled, exact overload classification and tighter-gate rejection
+of an otherwise strict ideal lock. The target is independently checked against
+80-digit phasor and closed Poisson formulas. These results support conditional
+regional maintenance and recovery, while the source of the supplied capacity
+contrast and phase law remains open.</p>
+<h2 id="29-graph-independent-locking-and-phase-source-constraints">29. Graph-independent locking and phase-source constraints<a class="headerlink" href="#29-graph-independent-locking-and-phase-source-constraints" title="Permanent link">&para;</a></h2>
+<h3 id="exact-model-phase-support-is-not-transport-conductance">Exact model: phase support is not transport conductance<a class="headerlink" href="#exact-model-phase-support-is-not-transport-conductance" title="Permanent link">&para;</a></h3>
+<p>Let the phase support be a fixed connected, simple undirected graph with at
+least two nodes, unique neighbor sets <code>N_i</code> and counts <code>d_i=|N_i|</code>. Capacities
+<code>nu_i&gt;0</code> and the shared coupling <code>K&gt;0</code> are fixed. Every support edge is admitted
+by the U3 gate. The supplied phase law is the same averaged-sine law as in
+Sections 26 and 28:</p>
+<div class="highlight"><pre><span></span><code>v_i = theta_dot_i = nu_i + (K/d_i) sum_(j in N_i) sin(theta_j-theta_i),
+Z_i = sum_(j in N_i) exp(i*(theta_j-theta_i)),
+g_i = Arg(Z_i)/pi, when Z_i != 0.
+</code></pre></div>
+<p>Here <code>g</code> is the ideal canonical neighbor-phasor pressure channel, not the sine
+coupling itself. The formulas use circular edge displacements; they do not
+require all phases to lie in one global semicircle. The identification of
+capacity with free angular rate and the value of K remain constitutive inputs.</p>
+<p>Transport may separately use symmetric nonnegative conductances <code>W_ij</code> with
+strengths <code>s_i=sum_j W_ij</code> and <code>L_W=I-diag(s)^(-1)W</code>. Phase counts <code>d_i</code>
+include every support neighbor, even one with zero transport conductance.
+Replacing <code>d_i</code> by <code>s_i</code> in the phase law changes the model. Statements about
+stationary form below require the positive-conductance transport graph to be
+connected, so every <code>s_i&gt;0</code>.</p>
+<h3 id="locked-rate-cut-load-and-the-sign-of-the-phase-source">Locked rate, cut load and the sign of the phase source<a class="headerlink" href="#locked-rate-cut-load-and-the-sign-of-the-phase-source" title="Permanent link">&para;</a></h3>
+<p>At a common-rate lock <code>theta_i(t)=psi_i+omega*t</code>, multiply each phase row by
+<code>d_i</code>. Contributions from the two orientations of an edge cancel exactly.
+Therefore</p>
+<div class="highlight"><pre><span></span><code>omega = sum_i d_i*nu_i / sum_i d_i,
+Im(Z_i) = d_i*(omega-nu_i)/K.
+</code></pre></div>
+<p>More generally, summing only over a vertex set S gives the necessary cut balance</p>
+<div class="highlight"><pre><span></span><code>sum_(i in S) d_i*(omega-nu_i)
+    = K*sum_(i in S, j outside S, i~j) sin(psi_j-psi_i).
+</code></pre></div>
+<p>For strictly acute edge gaps, its absolute value is less than
+<code>K*|boundary(S)|</code> for every nonempty proper S. If the gap magnitudes are at
+most <code>rho&lt;pi/2</code>, the sharper upper bound is <code>K*|boundary(S)|*sin(rho)</code>.
+The one-bridge load in Section 28 is one instance. Cut inequalities are
+necessary, not sufficient: compatible phase differences on cycles and the
+actual gate must still be satisfied. No enumeration of graph cuts is required
+to use the identity for a specified region.</p>
+<p>Now assume every circular edge gap has magnitude strictly below <code>pi/2</code>.
+Every cosine is positive, so define</p>
+<div class="highlight"><pre><span></span><code>r_i = Re(Z_i)/d_i &gt; 0,
+g_i = atan((omega-nu_i)/(K*r_i))/pi.
+</code></pre></div>
+<p>The resultant lies in the right half-plane, removing both the zero-resultant
+and argument-branch ambiguities. Consequently</p>
+<div class="highlight"><pre><span></span><code>sign(g_i) = sign(omega-nu_i),
+g_i = 0  if and only if  nu_i = omega.
+</code></pre></div>
+<p>For an edge bound <code>rho&lt;pi/2</code>, <code>cos(rho)&lt;=r_i&lt;=1</code>, hence</p>
+<div class="highlight"><pre><span></span><code>atan(|omega-nu_i|/K)/pi
+    &lt;= |g_i|
+    &lt;= atan(|omega-nu_i|/(K*cos(rho)))/pi
+    &lt;= |omega-nu_i|/(pi*K*cos(rho)).
+</code></pre></div>
+<p>The nodal capacity imbalance fixes the source's sign and constrains its
+magnitude. It does not reconstruct the source without the retained resultant
+geometry <code>r_i</code>, nor prove that a lock exists for the proposed capacities.</p>
+<h3 id="what-equal-capacities-obstruct-and-what-they-do-not">What equal capacities obstruct, and what they do not<a class="headerlink" href="#what-equal-capacities-obstruct-and-what-they-do-not" title="Permanent link">&para;</a></h3>
+<p>With common capacity <code>nu_i=kappa&gt;0</code>, the locked rate is <code>omega=kappa</code> and
+the strictly acute, fully admitted lock has <code>g=0</code>. For the unforced form row</p>
+<div class="highlight"><pre><span></span><code>x_dot = diag(nu) [-e*L_W*x + w*g],   e&gt;0, w&gt;=0,
+</code></pre></div>
+<p>all stationary forms therefore satisfy <code>L_W*x=0</code>. Connected nonnegative
+reciprocal transport makes x constant. This conclusion requires the capacity
+and topology pressure contributions to be absent or zero, Gamma to be zero,
+and no other event, history, clipping or controller term to alter the row.
+Equal capacity itself makes the capacity-gradient channel zero; it does not
+make topology pressure vanish on an irregular graph.</p>
+<p>This is an obstruction to differentiated stationary <strong>scalar EPI through this
+phase-source mechanism</strong>. It is not a prohibition of nonuniform phase, a
+nontrivial triad geometry, moving patterns, or every possible NFR identity.
+In particular, on a unit cycle C_n with <code>n&gt;=5</code>, set</p>
+<div class="highlight"><pre><span></span><code>psi_j = 2*pi*j/n  modulo 2*pi.
+</code></pre></div>
+<p>Each node has two relative neighbor angles <code>+2*pi/n</code> and <code>-2*pi/n</code>.
+Their sine sum is zero and <code>Z_i=2*cos(2*pi/n)&gt;0</code>. Common capacity therefore
+gives an exact rotating phase lock with <code>g=0</code>, despite winding once around the
+circle and lacking a narrow global phase chart. The local absolute phase
+gradient is <code>2*pi/n</code>, not zero; for C6 it is <code>pi/3</code>. The pattern retains
+nonuniform phase while its phase channel supplies no differentiated stationary
+form. This identity alone asserts neither perturbation stability nor
+autonomous formation of that winding state.
+The existing <a href="../../COUPLING_WINDING_PERSISTENCE/#5-nonzero-winding-can-coexist-with-zero-canonical-pressure">winding owner</a>
+already records this pressure/phase distinction; its additional UM/IL
+preservation and recovery theorems retain their own execution hypotheses.</p>
+<p>Zero capacity, disconnected positive-conductance transport and other source
+channels are different mechanisms. Zero capacity can freeze nonzero pressure;
+disconnected transport permits componentwise constants. They are not
+counterexamples to the positive-capacity connected-transport statement.</p>
+<h3 id="a-residual-bound-away-from-exact-locking">A residual bound away from exact locking<a class="headerlink" href="#a-residual-bound-away-from-exact-locking" title="Permanent link">&para;</a></h3>
+<p>Use the same degree-weighted capacity mean omega at an arbitrary admitted
+strictly acute state, and define the exact phase-rate residual
+<code>epsilon_i=v_i-omega</code>. Edge cancellation still gives <code>sum_i d_i*epsilon_i=0</code>
+and</p>
+<div class="highlight"><pre><span></span><code>Im(Z_i) = d_i*(omega-nu_i+epsilon_i)/K,
+g_i = atan((omega-nu_i+epsilon_i)/(K*r_i))/pi.
+</code></pre></div>
+<p>For common capacity and the edge bound rho this yields</p>
+<div class="highlight"><pre><span></span><code>|g_i| &lt;= atan(|epsilon_i|/(K*cos(rho)))/pi
+       &lt;= |epsilon_i|/(pi*K*cos(rho)).
+</code></pre></div>
+<p>Thus a nonzero observed phase-rate residual can support a nonzero transient
+source even when all capacities agree. A small residual is not an exact lock,
+and this algebra does not prove the residual will decay. Computed sine sums,
+resultants, production pressure and binary64 phase-step residuals retain their
+separate numerical errors; a numerical value near zero is not a symbolic proof.</p>
+<h3 id="capacity-contrast-is-necessary-here-not-sufficient-for-stationary-form">Capacity contrast is necessary here, not sufficient for stationary form<a class="headerlink" href="#capacity-contrast-is-necessary-here-not-sufficient-for-stationary-form" title="Permanent link">&para;</a></h3>
+<p>For any fixed positive capacities, multiplication of the full form row by
+<code>H_i=s_i/nu_i</code> gives the mean balance</p>
+<div class="highlight"><pre><span></span><code>d(m_H(x))/dt = w*sum_i s_i*g_i / sum_i s_i/nu_i.
+</code></pre></div>
+<p>A stationary form with <code>w&gt;0</code> therefore requires <code>sum_i s_i*g_i=0</code>.
+For this fixed connected transport, this is also the Poisson compatibility
+condition for the declared source. It is not implied by the phase identity
+<code>sum_i d_i*(omega-nu_i)=0</code>: taking phasor arguments is nonlinear, and transport
+strengths need not equal phase-support counts. The existing
+<a href="../../../src/tnfr/physics/forced_support.py"><code>derive_forced_support_balance</code></a> owns
+the compatible-profile and drift calculations.</p>
+<p>An exact countercontrol uses the unit star K1,3 with center first. Declare
+<code>K=1</code> and rational capacities</p>
+<div class="highlight"><pre><span></span><code>nu = (5/6, 3/2, 3/2, 1/2).
+</code></pre></div>
+<p>The common rate is one. The principal leaf equations give the strictly acute
+lock <code>psi=(0,pi/6,pi/6,-pi/6)</code>. Set
+<code>gamma=atan(1/(3*sqrt(3)))</code>. Its canonical source and compatibility sum are</p>
+<div class="highlight"><pre><span></span><code>g = (gamma/pi, -1/6, -1/6, 1/6),
+sum_i d_i*g_i = 3*gamma/pi - 1/6 &gt; 0.
+</code></pre></div>
+<p>For the strict inequality, <code>0&lt;gamma&lt;pi/6</code> and
+<code>tan(3*gamma)=10/(9*sqrt(3))&gt;tan(pi/6)</code>; both compared angles lie in
+<code>(0,pi/2)</code>. Thus the lock's nonzero source has nonzero mean drive. No stationary
+EPI solves this phase/form model, although the forced-support owner can still
+describe its relative profile and common drift. The capacities precede the
+phase and form calculation; no desired EPI target defines them retrospectively.
+Section 28's reflection symmetry supplies compatibility for its barbell;
+heterogeneity by itself does not.</p>
+<h3 id="admission-boundaries-and-represented-observations">Admission boundaries and represented observations<a class="headerlink" href="#admission-boundaries-and-represented-observations" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Missing gated edges:</strong> phase motion averages only admitted neighbors, while
+  canonical pressure reads all support neighbors. On P2, a gap <code>1/2</code> with an
+  effective gate <code>1/4</code> removes both phase interactions. Equal capacities then
+  give common free advance while full-support pressure has
+  <code>g=(1/(2*pi),-1/(2*pi))</code>. This is outside full-support admission even though
+  the gap is acute. The full-support identities cannot silently use the
+  smaller admitted-neighbor denominator.</li>
+<li><strong>Half-pi boundary and zero resultants:</strong> ideal C4 quarter-turn winding has
+  opposite neighbor phasors and <code>Z_i=0</code>; its direction is undefined. Binary64
+  trigonometric evaluation can leave a tiny nonzero resultant, which must not
+  be mistaken for an exact nonzero ideal direction or exact degeneracy.</li>
+<li><strong>Nonacute branches:</strong> an ungated antipodal P2 has zero sine sum and a negative
+  real resultant, so equal capacity does not imply zero phasor pressure. This
+  is a mathematical boundary control, not an admitted production U3 branch:
+  the engine's hard gate cannot exceed <code>pi/2</code>, and drops those interactions.</li>
+<li><strong>Nonreciprocal support:</strong> a directed C6 with one outgoing neighbor per node
+  and winding one has common rate <code>kappa+K*sin(pi/3)</code> and <code>g=1/3</code>. The reciprocal
+  cancellation and degree-weighted rate formula do not apply.</li>
+<li><strong>Other dynamics:</strong> capacity evolution, changes of support, different phase
+  laws, additional pressure channels and Gamma require their actual balances.
+  The theorem does not authenticate an executor or admit all configured graph
+  writers merely because one snapshot satisfies the geometric assumptions.</li>
+</ul>
+<p>The detached <a href="../../../src/tnfr/physics/phase_response.py"><code>observe_phase_lock_source</code></a>
+read-out keeps the support, capacity, actual phase-pressure capture and
+numerically evaluated lock/source relations together. It reports numerical
+residuals, not an <code>is_lock</code> decision or an exact trigonometric certificate.
+The <a href="../../../tests/physics/test_phase_lock_source.py">independent controls</a> exercise
+the production owners and the symbolic identities and boundaries above.
+Exact theorem hypotheses, represented coefficients, finite numerical evidence
+and autonomous-law selection remain distinct.</p>
+<h2 id="30-acute-phase-locks-are-circulation-states-with-integral-cycle-periods">30. Acute phase locks are circulation states with integral cycle periods<a class="headerlink" href="#30-acute-phase-locks-are-circulation-states-with-integral-cycle-periods" title="Permanent link">&para;</a></h2>
+<h3 id="fixed-support-common-capacity-and-the-declared-phase-law">Fixed support, common capacity and the declared phase law<a class="headerlink" href="#fixed-support-common-capacity-and-the-declared-phase-law" title="Permanent link">&para;</a></h3>
+<p>Retain Section 29's connected simple undirected phase support, full U3
+admission, common fixed capacity <code>nu_i=kappa&gt;0</code> and supplied coupling <code>K&gt;0</code>.
+The phase law is</p>
+<div class="highlight"><pre><span></span><code>theta_dot_i = kappa + (K/d_i)*sum_(j in N_i) sin(theta_j-theta_i).
+</code></pre></div>
+<p>Every oriented shortest-arc edge gap is strictly inside <code>(-pi/2,pi/2)</code>.
+This is a local condition; no common real-valued phase chart is assumed.
+The theorem concerns exact common-rate solutions of this supplied phase law.
+It does not identify continuous sine evolution with UM events, establish
+stability, or derive a phase or support law from the nodal EPI equation.</p>
+<p>Choose an arbitrary orientation of each of the <code>M</code> support edges. Let B be
+the <code>N</code> by <code>M</code> incidence matrix with <code>-1</code> at the tail and <code>+1</code> at the head.
+Write</p>
+<div class="highlight"><pre><span></span><code>delta_e = wrap(psi_head(e)-psi_tail(e)),
+f_e = sin(delta_e),
+-pi/2 &lt; delta_e &lt; pi/2.
+</code></pre></div>
+<p>The neighbor sine sum at node i is <code>-(B*f)_i</code>. Section 29 fixes the locked
+rate to kappa, so the equal-capacity locking equations are exactly</p>
+<div class="highlight"><pre><span></span><code>B*f = 0.
+</code></pre></div>
+<p>Thus f is an edge circulation with no nodal sources or sinks. This is an
+algebraic observation derived from the existing phase coordinates, not a new
+primitive or an independently prescribed physical current. Transport
+conductances do not enter this unweighted phase balance.</p>
+<h3 id="integral-periods-and-reconstruction">Integral periods and reconstruction<a class="headerlink" href="#integral-periods-and-reconstruction" title="Permanent link">&para;</a></h3>
+<p>Choose a spanning tree T. For each edge outside T, orient the corresponding
+fundamental cycle so that this chord has coefficient <code>+1</code>; complete the cycle
+with its unique return path in T. The resulting matrix C has one signed
+cycle column per chord. It has <code>b=M-N+1</code> columns, <code>B*C=0</code>, and its chord rows
+form the identity. These columns span all real circulations: subtracting the
+combination given by a circulation's chord entries leaves a circulation
+supported on a tree, which must vanish successively at leaves. The same
+argument for integer entries shows that C is also an integer lattice basis.</p>
+<p>For a circle-valued phase assignment, each closed cycle returns to its
+starting phase, hence</p>
+<div class="highlight"><pre><span></span><code>C^T*delta = 2*pi*w,       w in Z^b.
+</code></pre></div>
+<p>Conversely, these fundamental-cycle period conditions suffice. Fix a root
+phase and integrate delta along the tree to assign real lifts to every
+vertex. The period condition for each chord says that its supplied gap
+differs from the difference of those lifts by an integer multiple of <code>2*pi</code>.
+Reducing all lifts modulo <code>2*pi</code> therefore reconstructs the required edge
+gaps. Strict acuity makes each supplied gap the unique shortest-arc value.
+Connectedness makes the reconstruction unique modulo one common rotation.</p>
+<p>The integer-lattice qualification matters. An arbitrary real cycle-space
+basis cannot be used with an unmodified integer-period test. Even an integer
+basis need not generate the whole integer lattice: on C5, replacing its
+oriented cycle c by <code>2*c</code> would incorrectly admit constant gaps <code>pi/5</code>, since
+<code>(2*c)^T*delta=2*pi</code> while <code>c^T*delta=pi</code>. Those gaps cannot come from closed
+circle-valued node phases. Fundamental cycles prevent this false admission.
+Another integer lattice basis changes winding coordinates by an invertible
+integer matrix; the underlying phase configuration does not change.</p>
+<h3 id="necessary-and-sufficient-locking-equations-and-sector-uniqueness">Necessary and sufficient locking equations, and sector uniqueness<a class="headerlink" href="#necessary-and-sufficient-locking-equations-and-sector-uniqueness" title="Permanent link">&para;</a></h3>
+<p>Since sine is one-to-one in the acute interval, every lock has a unique
+circulation coordinate z and satisfies</p>
+<div class="highlight"><pre><span></span><code>f = C*z,
+abs((C*z)_e) &lt; 1                         for every edge,
+C^T*asin(C*z) = 2*pi*w,                   w in Z^b.
+</code></pre></div>
+<p>Conversely, a solution of these equations supplies
+<code>delta=asin(C*z)</code>. The period conditions reconstruct phases, the circulation
+condition supplies zero neighbor sine sums, and common rotation at rate
+kappa gives the required exact lock. Actual configured U3 limits must also
+admit every reconstructed gap; the nonlinear equations do not override a
+tighter gate. The criterion is an existence equivalence, not an assertion
+that every integer vector w has a solution.</p>
+<p>There is at most one strictly acute lock per winding sector w, up to common
+rotation. To prove this, suppose <code>f=C*z</code> and <code>f'=C*z'</code> solve the same sector.
+Then</p>
+<div class="highlight"><pre><span></span><code>sum_e (f_e-f'_e)*(asin(f_e)-asin(f'_e))
+    = (z-z')^T*C^T*(asin(f)-asin(f'))
+    = 0.
+</code></pre></div>
+<p>Each summand is nonnegative and is strictly positive when <code>f_e!=f'_e</code>.
+Consequently <code>f=f'</code>, then <code>delta=delta'</code>, and the reconstruction differs only
+by common rotation. In particular, the zero-winding sector contains only
+phase consensus, since zero gaps supply one solution in that sector.
+The result gives uniqueness of a locked geometry, not convergence toward it
+or invariance of the acute domain under future evolution.</p>
+<p>An equivalent variational formulation makes the same distinction. On the
+open convex domain <code>abs(C*z)&lt;1</code>, define</p>
+<div class="highlight"><pre><span></span><code>F_w(z) = sum_e [f_e*asin(f_e) + sqrt(1-f_e^2) - 1]
+         - 2*pi*w^T*z,       f=C*z.
+</code></pre></div>
+<p>Its gradient is <code>C^T*asin(C*z)-2*pi*w</code>, and its Hessian is
+<code>C^T*diag(1/sqrt(1-f_e^2))*C</code>, positive definite when <code>b&gt;0</code>.
+This provides the same at-most-one interior critical point. It does not
+guarantee an interior critical point or equate this auxiliary circulation
+functional with the engine's EPI pressure or dynamical Lyapunov function.</p>
+<h3 id="what-graph-structure-permits-or-excludes">What graph structure permits or excludes<a class="headerlink" href="#what-graph-structure-permits-or-excludes" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Trees:</strong> <code>b=0</code>, so every circulation is zero. Every acute equal-capacity
+  lock is phase consensus.</li>
+<li><strong>Bridges:</strong> sum <code>B*f=0</code> over either side of a bridge. Its single cut term
+  forces <code>f_e=0</code>, hence <code>delta_e=0</code>. Distinct cycle-bearing regions can carry
+  their own allowed circulation, but the bridge endpoints have equal phase
+  in a lock. A bridge does not generate a capacity-free phase source.</li>
+<li><strong>Short cycles:</strong> a simple cycle of length l has
+  <code>abs(sum_cycle delta)&lt;l*pi/2</code>. For <code>l&lt;=4</code>, its integral winding must be zero.
+  If cycles of length at most four span the real cycle space, all acute
+  locks are consensus. Indeed, delta is then orthogonal to every circulation,
+  so <code>delta^T*f=0</code>; every term <code>delta_e*sin(delta_e)</code> is positive unless
+  <code>delta_e=0</code>. Here real spanning is sufficient because the periods already
+  vanish, unlike the integer reconstruction problem above.</li>
+<li><strong>Long cycles are necessary somewhere, not sufficient by themselves:</strong> a
+  nonzero acute lock must have nonzero winding on some simple cycle, which
+  must have at least five edges. The mere presence of a long cycle does not
+  imply a nonzero lock. K5 contains a five-cycle, but its cycle space is
+  generated by triangles, excluding any nonconsensus acute lock.</li>
+<li><strong>A single cycle with attached trees:</strong> bridges have zero gap and circulation
+  is constant around the unique n-cycle. The complete acute lock family is
+  <code>delta_cycle=2*pi*w/n</code>, with integer <code>abs(w)&lt;n/4</code>, additionally restricted
+  by the actual U3 gate. Tree vertices share the phase of their attachment
+  vertex. Thus the unit windings of C5 and C6 are the first nonzero members,
+  while C4's unit winding lies on the excluded half-pi boundary.</li>
+</ul>
+<p>For the third and fourth statements, if every simple-cycle period were zero,
+the fundamental-cycle periods would be zero and sector uniqueness would give
+consensus. No enumeration of every graph or a new numerical recovery sweep
+is needed to obtain these obstructions.</p>
+<p>At each admitted acute lock, <code>B*f=0</code> and positive neighbor cosines imply zero
+canonical phase pressure, as proved in Section 29. Nonzero winding still
+gives nonzero local absolute phase gradients on its nonzero-gap edges. A
+unique phase geometry in a sector can therefore retain information that a
+zero-pressure label alone does not describe. This classifies candidate phase
+identity; it does not prove differentiated stationary EPI, autonomous NFR
+formation, physical identity or a complete state description by winding alone.</p>
+<h3 id="persistence-of-a-sector-is-not-its-formation">Persistence of a sector is not its formation<a class="headerlink" href="#persistence-of-a-sector-is-not-its-formation" title="Permanent link">&para;</a></h3>
+<p>For a continuous circle-valued phase trajectory on fixed support, retain the
+same oriented fundamental cycles. If no edge reaches antipodal separation,
+its wrapped gap varies continuously inside <code>(-pi,pi)</code>. Every cycle period is
+both continuous and an integer multiple of <code>2*pi</code>; its winding is therefore
+constant on that time interval. This argument does not require the sine law,
+equal capacities, locking, or even acute gaps.</p>
+<p>The U3 boundary and the winding boundary are different. Crossing a configured
+gate at or below <code>pi/2</code> can change which neighbors the phase law uses, without
+changing a support-cycle winding. A winding change on fixed support requires
+an antipodal branch encounter at <code>abs(delta)=pi</code> in any continuous phase
+history. Loss of U3 admission is therefore not evidence of a winding slip.
+Conversely, gate admission at finitely sampled endpoints does not certify
+the unobserved path or exclude cancelling slips. Discrete operator events
+need their own path witness or endpoint interpretation.</p>
+<p>Changing support can create or remove the cycle whose winding is being
+classified. For example, prepare a five-vertex path with consecutive phase
+gaps <code>2*pi/5</code>, then add the edge joining its endpoints. All five resulting
+cycle gaps are acute and the new cycle has winding one, with no phase change
+or branch encounter. The prepared phase arrangement and edge addition are
+inputs in this example; it is not a derivation of their endogenous selection.
+Comparing sectors across a support change therefore requires identifying
+which old cycles survive and which cycle classes are new.</p>
+<p>This separates two research obligations: maintaining a phase configuration
+within an existing sector, and explaining how the retained configuration and
+its support sector are produced. The protected UM results in the
+<a href="../../COUPLING_WINDING_PERSISTENCE/">winding owner</a> address specified preservation
+and recovery maps. They neither replace the present continuous sine law nor
+supply an autonomous mechanism that selects nonzero winding from a
+zero-winding, fixed-support, branch-safe preparation.</p>
+<h3 id="exact-implementation-boundary">Exact implementation boundary<a class="headerlink" href="#exact-implementation-boundary" title="Permanent link">&para;</a></h3>
+<p><a href="../../../src/tnfr/physics/phase_cycle_geometry.py"><code>phase_cycle_geometry.py</code></a>
+centralizes oriented support and the fundamental integer cycle basis. Its
+exact rational-turn reconstruction uses <code>a_e=delta_e/(2*pi)</code>, requires
+<code>abs(a_e)&lt;1/4</code>, and tests that <code>C^T*a</code> has integer entries. This certifies
+declared edge-phase compatibility without converting rounded trigonometric
+residuals into an exact lock claim. The represented live phases and actual
+U3 execution still require their separate observations and admission.</p>
+<p>The implemented symbolic odd-sine cancellation test groups equal absolute
+turns with opposite incidence signs at each node. A successful exact
+cancellation supplies a sufficient locking witness; failure to cancel this
+way is inconclusive, since more general trigonometric identities may also
+balance a node. The implementation does not solve the full nonlinear
+<code>C^T*asin(C*z)=2*pi*w</code> existence problem. The
+<a href="../../../tests/physics/test_phase_cycle_geometry.py">independent controls</a> retain
+these topology, reconstruction and sufficient-witness boundaries separately
+from finite checks against the production phase and pressure owners.</p>
+<p>One control makes this incompleteness explicit: three internally disjoint
+paths between the same endpoints have lengths <code>(10,6,10)</code> and constant
+oriented turns <code>(1/20,1/12,-3/20)</code>. Their endpoint differences agree modulo
+one turn. Internal nodes cancel pairwise, while the endpoints use
+<code>sin(pi/10)+sin(pi/6)=sin(3*pi/10)</code>, verified by the exact coefficients of
+<code>1</code> and <code>sqrt(5)</code>. This is an acute lock under the supplied equal-capacity
+law, but the oddness-only checker correctly reports <code>unresolved</code>. A failed
+sufficient symbolic check must therefore not be presented as nonexistence.</p>
+<h2 id="31-one-added-chord-extends-the-cycle-lattice-not-a-phase-generation-law">31. One added chord extends the cycle lattice, not a phase-generation law<a class="headerlink" href="#31-one-added-chord-extends-the-cycle-lattice-not-a-phase-generation-law" title="Permanent link">&para;</a></h2>
+<h3 id="retained-support-and-the-exact-lattice-identity">Retained support and the exact lattice identity<a class="headerlink" href="#retained-support-and-the-exact-lattice-identity" title="Permanent link">&para;</a></h3>
+<p>Let <code>G=(V,E)</code> be a connected simple undirected phase support. Add exactly one
+missing edge <code>e_*=(u,v)</code> between its existing vertices, retaining every old
+edge and vertex. Orient the new edge from u to v and retain the orientations
+of the old edges. No conductance, capacity, phase law or locking assumption
+is needed for the following topology identity. Connecting distinct components,
+deleting edges, changing node identity, loops and parallel edges are different
+operations outside this one-chord result.</p>
+<p>Retain an old spanning tree T. Write R for the old fundamental cycle basis
+in <strong>rows</strong>, so <code>B*R^T=0</code> for Section 30's oriented incidence B. Each row has
+coefficient <code>+1</code> on its own non-tree edge. Embed R in the new edge space by
+inserting zero in the added-edge column. Let r be the signed old-edge vector
+of the unique tree path from v back to u. Appending the row</p>
+<div class="highlight"><pre><span></span><code>c_* = (r, 1)
+</code></pre></div>
+<p>gives the retained-tree basis <code>R_ext</code> of the new graph. Here the displayed
+last coordinate denotes the added edge; implementations may retain their
+lexicographic edge order instead. The edge e_* followed by this tree path
+is a closed oriented cycle, so <code>B_+*c_*^T=0</code>.</p>
+<p>The new cycle rank is <code>b_+=b+1</code>. More strongly, these rows generate the full
+<strong>integer</strong> cycle lattice. For any integer circulation h on the new support,
+subtract its added-edge coefficient times c_*. The remainder has zero on
+the added edge and is an integer circulation on G, hence an integer
+combination of R's rows. Independence follows first from the added-edge
+coordinate and then from independence of R. Thus</p>
+<div class="highlight"><pre><span></span><code>Z_1(G_+; Z) = embedded Z_1(G; Z) + Z*c_*
+</code></pre></div>
+<p>is a direct sum for this chosen tree, and the quotient by the embedded old
+lattice has rank one. This identifies the surviving old cycles before any
+comparison of winding coordinates.</p>
+<p>A fresh deterministic spanning-tree calculation can produce a different
+post-event basis <code>R_+</code>. Both are integer lattice bases, so</p>
+<div class="highlight"><pre><span></span><code>R_ext = U*R_+,            U and U^(-1) have integer entries,
+det(U) = +1 or -1.
+</code></pre></div>
+<p>One can compute U without a real-valued inverse: its columns are the
+entries of <code>R_ext</code> on the non-tree edge columns of <code>R_+</code>, whose corresponding
+submatrix is the identity. The reciprocal construction supplies the integer
+inverse. Basis changes therefore cannot create or erase a winding; they
+change its coordinates. A comparison that simply subtracts two independently
+chosen basis-coordinate lists need not compare the same cycles.</p>
+<h3 id="the-new-period-comes-from-the-actual-endpoint-gap">The new period comes from the actual endpoint gap<a class="headerlink" href="#the-new-period-comes-from-the-actual-endpoint-gap" title="Permanent link">&para;</a></h3>
+<p>Express a circle-valued phase field in turns, with oriented edge gaps
+<code>a_e=wrap_turn(phi_head-phi_tail)</code> in <code>(-1/2,1/2)</code>. This statement excludes
+antipodal edge pairs so that the shortest-arc gap is unambiguous. It does not
+require strict acuity or U3 admission. For the final field on the new support,
+let <code>a_old^+</code> be its gaps restricted to old edges and <code>a_*^+</code> its new-edge gap.
+Then</p>
+<div class="highlight"><pre><span></span><code>w_old^+ = R*a_old^+,
+w_*^+ = r*a_old^+ + a_*^+,
+w_+ = U^(-1) * (w_old^+, w_*^+).
+</code></pre></div>
+<p>Every displayed cycle period is an integer. The return-path sum differs
+from <code>phi_u-phi_v</code> by an integer, while the new-edge gap differs from
+<code>phi_v-phi_u</code> by an integer. Their sum is therefore integral. No desired
+period supplies the gap: the existing path and actual endpoint phases
+determine it. Conversely, appending an arbitrary prescribed edge gap without
+checking this relation can fail circular reconstruction.</p>
+<p>The tree is a coordinate choice. Replacing its return path by another old
+return path changes c_* by an old integer cycle, so</p>
+<div class="highlight"><pre><span></span><code>w_*' = w_* + z^T*w_old              for some integer vector z.
+</code></pre></div>
+<p>The quotient lattice has a single generator up to orientation, but a winding
+functional descends to that quotient only when it vanishes on all old cycles.
+In general, a particular numeric "new winding" is therefore a retained-path
+coordinate, not an intrinsic new scalar charge. The complete embedded old
+periods together with the chosen new period are unambiguous data.</p>
+<h3 id="separate-a-support-extension-from-phase-writes-at-the-same-event">Separate a support extension from phase writes at the same event<a class="headerlink" href="#separate-a-support-extension-from-phase-writes-at-the-same-event" title="Permanent link">&para;</a></h3>
+<p>For branch-safe initial and final phase fields, the old cycles have endpoint
+change</p>
+<div class="highlight"><pre><span></span><code>Delta_w_old = R*(a_old^+ - a_old^-).
+</code></pre></div>
+<p>If the support-only operation leaves the phase gaps unchanged, this is zero.
+The new cycle can nevertheless have nonzero winding. For example, prepare
+a five-vertex path with ascending edge turns <code>1/5</code> and add the endpoint edge.
+With the implementation's orientation <code>0 -&gt; 4</code>, its gap is <code>-1/5</code> and the
+tree return path has sum <code>-4/5</code>, giving <code>w_*=-1</code>. Traversing the same cycle
+as <code>0 -&gt; 1 -&gt; 2 -&gt; 3 -&gt; 4 -&gt; 0</code> gives <code>+1</code>. All gaps are strictly acute;
+there is no phase change or pre-existing cycle whose winding slipped.
+The initial nonuniform path field and the added edge remain supplied inputs.</p>
+<p>When an actual event also writes phase, compute the final new period from
+the <strong>final</strong> path gaps and endpoint gap. A useful counterfactual is to add
+the same edge to the old phase field. With <code>S^-=r*a_old^-</code>, it has</p>
+<div class="highlight"><pre><span></span><code>a_*^0 = wrap_turn(-S^-),
+w_*^0 = S^- + a_*^0,
+</code></pre></div>
+<p>provided the old endpoints are not antipodal. Its gap can be nonacute even
+when both actual endpoint states satisfy their strict-acute domains. If the
+counterfactual endpoints are antipodal, retain its unavailability instead of
+choosing a winding by a rounding convention. When defined, <code>w_*^+-w_*^0</code>
+records an endpoint difference relative to that old-phase extension.</p>
+<p>This decomposition does not claim that the counterfactual stage actually
+executed, or impose an order on simultaneous phase and support writes.
+An executor's event provenance and before/after fields are separate evidence.
+Neither equal endpoint periods nor a changed endpoint period describes an
+unobserved continuous phase path. On fixed support, an actual continuous
+winding change requires an antipodal branch encounter; a discrete operator
+jump instead supplies an endpoint change unless a path is also specified.
+Crossing the U3 gate alone is still not a winding slip.</p>
+<h3 id="a-larger-cycle-lattice-does-not-guarantee-a-maintained-lock">A larger cycle lattice does not guarantee a maintained lock<a class="headerlink" href="#a-larger-cycle-lattice-does-not-guarantee-a-maintained-lock" title="Permanent link">&para;</a></h3>
+<p>The rank increase is topological. It neither supplies sine balance nor
+preserves the set of acute locks. Adding a diagonal to C5, for example,
+produces independent triangle and square cycles spanning its two-dimensional
+cycle space. Section 30 then excludes every nonconsensus acute equal-capacity
+lock under the fully admitted supplied sine law. The original C5 unit winding
+has a nonacute gap across either such diagonal, consistently failing the
+new full-support acute premise. Adding a connection can thus remove a
+previously available lock class while increasing the number of cycle
+coordinates.</p>
+<p>A topology-only path closure, an operator event that closes the path while
+writing phase, and subsequent relaxation to a lock are three distinct
+claims. This support-reset identity establishes the first comparison and
+accounts for the second's observed endpoint phases. It does not establish
+the third, derive candidate selection, or show autonomous generation of a
+coherence pattern or a physical entity.</p>
+<h3 id="shared-implementation-and-production-boundary">Shared implementation and production boundary<a class="headerlink" href="#shared-implementation-and-production-boundary" title="Permanent link">&para;</a></h3>
+<p><a href="../../../src/tnfr/physics/phase_cycle_geometry.py"><code>phase_cycle_geometry.py</code></a>
+owns the one-chord support extension and exact endpoint reset alongside its
+existing fundamental-cycle basis. The implementation requires the same
+ordered nodes and exactly one added edge, rederives supplied geometry/state
+data, and retains both integer basis-coordinate maps. Its exact phase reset
+uses the existing rational-turn <code>PhaseCycleState</code> domain: both actual
+endpoint fields are strictly acute and reconstructible. The topology and
+branch-safe mathematical identities above have broader scope; this finite
+implementation does not silently certify that larger domain.</p>
+<p>The counterfactual old-phase extension is reported separately, including
+antipodal unavailability. Exact turns are declared angles divided by
+mathematical <code>2*pi</code>; dividing binary64 runtime radians by represented tau
+does not turn an observed event into an exact-angle certificate. Actual
+operator endpoints instead retain the shared branch-aware winding observer
+and their numerical residuals. The
+<a href="../../../tests/physics/test_phase_chord_reset.py">exact reset controls</a> and
+<a href="../../../tests/physics/test_coupling_sector_birth.py">Coupling event control</a>
+exercise those different evidence paths. Neither the graph-theoretic result
+nor a finite observed sector birth derives the Coupling writer's configured
+candidate, threshold or Sense Index policy.</p>
+<h3 id="prospective-default-coupling-event-and-policy-control">Prospective default-Coupling event and policy control<a class="headerlink" href="#prospective-default-coupling-event-and-policy-control" title="Permanent link">&para;</a></h3>
+<p>The finite control initializes the five-node path with <code>theta_j=2*pi*j/5</code>,
+<code>EPI=1/8</code>, <code>nu=1</code>, Si <code>=0.8</code>, unit old conductances and refreshed pressure.
+Its four path gaps span <code>4/5</code> of a turn; there is no cycle or initial winding.
+It uses the existing atomic two-phase Coupling executor on target 0 with
+declared history <code>AL</code>, seed 17, all eligible candidates, and the default UM
+factors, bidirectional phase writes, capacity synchronization, pressure
+stabilization and functional-link threshold. No factor or threshold is tuned.
+The pressure observation uses effective phase/EPI weights <code>(1/2,1/2)</code> and
+zero capacity/topology weights, without Gamma.</p>
+<p>Write <code>f=1/(pi+1)</code> for the default phase push. Before execution, the kernel
+predicts node 0's displacement <code>+f*pi/5</code> and node 1's <code>-f*pi/5</code>; other phases
+are unchanged. Only nonneighbor 4 is initially phase-compatible. The final
+closing gap and maximum old-edge gap are <code>(2+f)*pi/5&lt;pi/2</code>. The resulting
+compatibility score for equal form and Si is</p>
+<div class="highlight"><pre><span></span><code>a = 1-(2+f)/10 = 0.7758546992994776,
+threshold = pi/(pi+1) = 0.7585469929947761.
+</code></pre></div>
+<p>The executed stage adds exactly edge <code>(0,4)</code> with represented weight a.
+Its observed winding is <code>+1</code> around <code>(0,1,2,3,4)</code>, or <code>-1</code> in the exact
+reset owner's added-chord orientation. The finite U3 margin is approximately
+<code>0.16244986676002404</code> radians. Actual phase writes agree with the prediction;
+EPI and capacity stay unchanged. The retained stage result and histories
+identify this finite invocation, without asserting an unobserved future.</p>
+<p>The final state is not a sine lock. On its acute cycle, the ideal phasor
+source is</p>
+<div class="highlight"><pre><span></span><code>g = (f/10)*(-3,3,-1,0,1).
+</code></pre></div>
+<p>The runtime source matches this within the test's separate binary64 allowance.
+Coupling's target-local pressure reduction leaves a positive stored pressure
+at node 0, while a canonical refresh gives negative pressure there. A direct
+operator write is therefore not identified with freshly computed pressure.
+The read-out retains both fields and their difference.</p>
+<p>The closing edge is not unit conductance: transport strengths are
+<code>s=(1+a,2,2,2,1+a)</code>, whereas phase-neighbor counts are all two. With
+<code>F=g/2</code>, the initial source compatibility sum is</p>
+<div class="highlight"><pre><span></span><code>sum_i s_i*F_i = f*(1-a)/10 &gt; 0
+               approximately 0.005412055686023124.
+</code></pre></div>
+<p>The shared forced-support observer confirms its positive represented value.
+Thus the subsequent weighted EPI mean cannot simply be assumed conserved,
+even though the unweighted phase-source sum is zero. Replacing the new edge
+by a unit weight would change this actual event's form dynamics.</p>
+<p>Two controls delimit the result. Changing only candidate 4's Si from <code>0.8</code>
+to <code>0.0</code> lowers compatibility by <code>0.2</code> and suppresses edge creation. Disabling
+functional links also prevents closure. Both preserve the same primary
+phase, EPI, capacity, stored-pressure and history writes; the differing
+support changes the subsequent pressure refresh. This is evidence of the
+existing writer's policy dependency, not a proposal to use Si as a fundamental
+support law. The event is admitted as finite, policy-selected sector birth;
+autonomous selection remains open. The event alone does not establish
+subsequent maintenance; Section 32 supplies its conditional phase/form result.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../../docs/assets/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+      
+    
+  </body>
+</html>

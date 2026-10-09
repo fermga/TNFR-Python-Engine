@@ -1,0 +1,7818 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/research/archive/c6/RELATIONAL_REGIONS/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>C6 relational regions and exit exclusions - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#c6-relational-regions-and-exit-exclusions" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              C6 relational regions and exit exclusions
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributor and agent instructions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Usage guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/CLI_AND_SDK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI and SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/guides/RESEARCH_EVIDENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research evidence and frozen source restoration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/guides/REGIONAL_AND_RELATIONAL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Regional and relational SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/guides/relational/RELATIONAL_EXECUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native relational execution and observations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/guides/relational/RELATIONAL_CAPTURE_AND_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native relational capture, memory and continuous proofs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/guides/relational/OBSERVATION_AND_INFORMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shared observations, information and finite-sample bounds
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/guides/relational/SINE_COMPARISON_AND_INFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Normalized-sine comparison, inference and forecasts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/guides/relational/SINE_RESPONSE_AND_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sine response, constitutive comparisons and hidden memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/guides/relational/SINE_PATTERNS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sine pattern geometry, formation and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/guides/relational/SINE_SADDLE_CERTIFICATES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conservative sine saddle preparations and certificates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/guides/relational/SINE_REGIONAL_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conservative sine regional and collective dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/guides/relational/SINE_PAIR_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retained sine pair state, identification and pulses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observational interfaces
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optional Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contracts and diagnostics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contracts and diagnostics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/contracts/RELATIONAL_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relational dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/contracts/relational/RELATIONAL_EXECUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native relational execution and observations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/contracts/relational/RELATIONAL_CAPTURE_AND_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native relational capture, memory and continuous proofs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/contracts/relational/OBSERVATION_AND_INFORMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shared observations, information and finite-sample bounds
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/contracts/relational/SINE_COMPARISON_AND_INFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Normalized-sine comparison, inference and forecasts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/contracts/relational/SINE_RESPONSE_AND_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sine response, constitutive comparisons and hidden memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/contracts/relational/SINE_PATTERNS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sine pattern geometry, formation and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/contracts/relational/SINE_SADDLE_CERTIFICATES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conservative sine saddle preparations and certificates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/contracts/relational/SINE_REGIONAL_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conservative sine regional and collective dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/contracts/relational/SINE_PAIR_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retained sine pair state, identification and pulses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/contracts/OPERATOR_EVENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator events
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State and laws
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    State and laws
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../FUNDAMENTAL_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fundamental theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../NODAL_PARAMETER_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/RELATION_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relation foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/PRESSURE_CONSTITUTIVE_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pressure premises
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/JOINT_PARAMETER_RESPONSE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Joint parameter response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../GLOSSARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Form, phase and coherent patterns
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Form, phase and coherent patterns
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/INHERITED_FORM_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inherited form dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/PHASE_FORM_EXCHANGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase-to-form exchange
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/PRIMITIVE_PHASE_CLOSURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primitive phase closure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/DERIVED_FORM_PHASE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived form phase
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/RELATIONAL_EXCHANGE_ADMISSION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relational law and chapter index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/RELATIONAL_RESPONSE_IDENTIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relational coefficient and capacity identification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_CONSTITUTIVE_INFORMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sine law and constitutive information boundaries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/RELATIONAL_RECOVERY_AND_INTERACTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native local recovery and regional interaction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/RELATIONAL_DOMAIN_AND_CAPTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native phase domains and capture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/RELATIONAL_FORMATION_CONTROLS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native validated transit and preparation controls
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/RELATIONAL_PATTERN_COMPOSITION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relational pattern composition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/RELATIONAL_EFFECTIVE_CONNECTIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Effective mediated connections
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/RELATIONAL_NATIVE_FORMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native formation and its obstructions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_PATTERN_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Smooth-sine pattern dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_FORMED_CLASS_MAINTENANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repeated probes of formed sine classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_FORMED_CLASS_CONTACT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contact of actually formed sine classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_REDUCED_CLASS_PORTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reduced ports of formed sine classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_REDUCED_PORT_COMPOSITION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Network composition of reduced sine ports
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_CLASS_MEDIATED_RESPONSE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acquired mediator class and a transmitted form response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_CLASS_MEDIATED_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Effective memory of an acquired sine-class mediator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_CLASS_NONLINEAR_SUPERPOSITION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-probe superposition on an acquired sine composite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_CLASS_NONLINEAR_PROTOCOL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finite separation of a nonlinear class-mediated response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_CLASS_NONLINEAR_ORGANIZATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Organization dependence of nonlinear interaction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_CLASS_CUBIC_RESPONSE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Complete cubic-amplitude mediator response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_CLASS_SPATIAL_OBSERVATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial observation of nonlinear class interaction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_CLASS_AMPLITUDE_FEASIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feasible amplitudes for class discrimination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_CLASS_COMPARISON_PROTOCOL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Independent full-law class comparison protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_CLASS_REPEATED_INTERACTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repeated joined class interaction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_CLASS_COLLECTIVE_INTERFACE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nonlinear collective interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_CLASS_CHANGED_INPUT_PREDICTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changed-input collective prediction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_CLASS_COLLECTIVE_FORWARD_PROTOCOL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Independent changed-input full-law protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_CLASS_INTERFACE_COMPOSITION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Causal composition of acquired sine-class interfaces
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_CLASS_NEIGHBOR_NONADDITIVITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Causal nonadditivity of distinct neighbor interventions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Independent distinct-neighbor protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_CLASS_STORAGE_EXCESS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nonlinear excess storage and loss
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_PORT_RELAXATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Uniform tracking of reduced sine ports
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_PORT_FORM_TRACKING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Form tracking by ordered heat comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_TWO_PORT_COMPATIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-port compatibility of sine classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_TWO_PORT_TRANSIT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finite transit of two-port sine classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_TWO_PORT_CAPTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prepared capture of two-port sine classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_TWO_PORT_PROBE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supplied probe of the acquired two-port composite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_TWO_PORT_DIPOLE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interior phase probe of acquired two-port deformation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_TWO_PORT_INFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-port geometry from a calibrated local response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_TWO_PULSE_INFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry and gain from two successive phase inputs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_CLOCK_INFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry, sensor gain and a declared uncertain clock
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_FINITE_CURVATURE_INFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finite curvature from one additional reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_CLOCK_DRIFT_INFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clock drift, sampled exposure and robust mean-rate inference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_APERTURE_INFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finite-aperture observations and mean-clock inference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_APERTURE_RESOLUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finite-noise and horizon resolution for the four boxcar observations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_FORM_PHASE_REDUCTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exact and controlled form-phase reductions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_REGIONAL_FORMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conservative regional formation and its barriers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_COLLECTIVE_PHASE_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Collective phase families and live contact feedback
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_CONSERVATIVE_PREPARATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conservative source preparation and finite retention
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/RELATIONAL_PATTERN_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native reduction and memory index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/RELATIONAL_MEDIATOR_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Native mediated pattern dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_ENVIRONMENTAL_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sine environmental state and causal memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/RELATIONAL_RETURN_PATH_GEOMETRY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Return-path geometry and collective response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/RELATIONAL_PHASE_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retained phase records and finite contact readout
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_PATTERN_RECOVERY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sine relative state, recovery and conservative identity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/RESONANCE_FOUNDATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Resonance foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../EMERGENT_ONTOLOGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Emergence and ontology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transport, memory and clocks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Transport, memory and clocks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EPI diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../TNFR_DIRECTED_NONNORMAL_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Directed nonnormal dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../DERIVED_EPI_MEMORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived EPI memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../CAPACITY_LOCALIZATION_BALANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Capacity and localization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../CYCLE_SUPPORT_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cycle support dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../CYCLE_MEMORY_RELAXATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cycle memory relaxation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../FORCED_SUPPORT_BALANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forced support balance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/FORCED_REGIONAL_RESPONSE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forced regional response and environmental readouts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/FORCED_SOURCE_AND_CLOCK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forced-source closure and phase clocks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/FORCED_PHASE_LOCKING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conditional phase locking and circulation geometry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/FORCED_WINDING_AND_WRITERS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Winding generation and native writer boundaries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/FORCED_GEOMETRIC_IDENTITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometric identity and capacity-feedback bounds
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../REMESH_INFINITY_DERIVATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REMESH fixed-delay models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and collective-state index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_PAIR_STATE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sufficient unordered pair state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_REPLICA_PULSE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Internal replica pulses and their perturbations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_PAIR_GROUPING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase and joint form-phase grouping
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_PAIR_MOBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pair geometry under alternative reciprocal mobility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/SINE_PAIR_INTERACTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pair actions, regional exchange and cancellation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_5" id="__nav_5_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators, grammar and support events
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operators, grammar and support events
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../STRUCTURAL_OPERATORS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unified grammar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic and grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../COUPLING_WINDING_PERSISTENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coupling and winding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../nodal/RELATIONAL_SUPPORT_EVENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relational support events
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../COHERENT_PATTERN_CONTACT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coherent pattern contact
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../THOL_PRESSURE_FEEDBACK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    THOL pressure feedback
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../THOL_BIRTH_AND_TRANSPORT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    THOL birth and transport
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../CHILD_COUPLING_FEEDBACK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Child coupling feedback
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6" id="__nav_5_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostics and geometry
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Diagnostics and geometry
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../STRUCTURAL_STABILITY_AND_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stability and dynamics diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../EXTENDED_FIELDS_AND_DERIVED_QUANTITIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extended fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Auxiliary models and physical comparisons
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Auxiliary models and physical comparisons
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../TNFR_VARIATIONAL_PRINCIPLE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Variational and exchange models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../DISSIPATIVE_AND_OPEN_SYSTEMS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dissipative/open-system models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../GAUGE_SYMMETRY_AND_UNIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gauge and polarization constructions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../PHYSICAL_REGIME_CORRESPONDENCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Physical phenomena atlas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arithmetic and applications
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Arithmetic and applications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../TNFR_NUMBER_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Number theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../TNFR_STRUCTURAL_OBSERVABILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural observability — R1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../TNFR_ARITHMETIC_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arithmetic dynamics — R2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../TNFR_CRT_FRACTALITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CRT composition — R3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../TNFR_PADIC_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    p-adic dynamics — R4
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../TNFR_ALGEBRAIC_NUMBER_FIELDS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algebraic number fields — R5
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../TNFR_ADDITIVE_DYNAMICS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Additive dynamics — R6
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../TNFR_ARITHMETIC_PRESSURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arithmetic pressure — R7
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../TNFR_ARITHMETIC_OPERATORS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arithmetic operators — R8
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../TNFR_RIEMANN_RESEARCH_NOTES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Riemann scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_9" id="__nav_5_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research, measurement and parked evidence
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research, measurement and parked evidence
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../FIVE_STAGE_EXECUTION_PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Execution plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../NODAL_RESEARCH_STRATEGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../PASSIVE_TRANSPORT_PROTOCOL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Passive transport protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Regional phase/amplitude protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DPLL_PHYSICAL_ADMISSION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Physical admission of the delayed digital-PLL realization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../TCLAB_EXPLORATORY_PROTOCOL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TCLab comparison boundary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../C6_RESEARCH_MECHANISM_AUDIT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parked C6 evidence boundary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Historical archive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RETIRED_PROGRAMME_BOUNDARIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retired programme boundaries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../../applications/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Applications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Applications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../applications/factorization-lab/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Factorization lab
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../applications/primality-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../.github/WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#39-b45-the-coordinate-arithmetic-class-does-not-rescue-local-mean-confinement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        39. B45: the coordinate arithmetic class does not rescue local mean confinement
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="39. B45: the coordinate arithmetic class does not rescue local mean confinement">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#coordinate-congruences-derived-from-the-allowed-nodal-areas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coordinate congruences derived from the allowed nodal areas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-mean-preserving-lift-onto-all-six-coordinate-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A mean-preserving lift onto all six coordinate classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uniform-energy-control-without-enumerating-lifted-states" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Uniform energy control without enumerating lifted states
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-independent-mean-boundary-still-has-an-outward-witness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The independent mean boundary still has an outward witness
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#40-b46-opposite-node-relay-strips-and-a-signed-local-budget" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        40. B46: opposite-node relay strips and a signed local budget
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="40. B46: opposite-node relay strips and a signed local budget">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#two-coupled-cell-coordinates-with-independent-switches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two coupled cell coordinates with independent switches
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#removing-the-oscillatory-contribution-exposes-a-signed-drift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Removing the oscillatory contribution exposes a signed drift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#result-and-next-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Result and next boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#41-b47-a-local-relay-budget-survives-the-interacting-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        41. B47: a local relay budget survives the interacting boundary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="41. B47: a local relay budget survives the interacting boundary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-third-switch-cannot-be-treated-as-another-independent-relay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The third switch cannot be treated as another independent relay
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#local-support-supplies-a-common-corrected-coordinate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local support supplies a common corrected coordinate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#analytic-deadline-and-first-held-neighborhood-exit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analytic deadline and first held-neighborhood exit
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#42-b48-exact-correlated-set-viability-and-the-remaining-global-gap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        42. B48: exact correlated-set viability and the remaining global gap
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="42. B48: exact correlated-set viability and the remaining global gap">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#universal-preimages-rather-than-an-observed-return" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Universal preimages, rather than an observed return
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-actual-profile-candidate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The actual profile candidate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exact-scope-of-the-quadratic-controls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exact scope of the quadratic controls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reproduction-and-unresolved-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reproduction and unresolved target
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#43-b49-protected-pair-contrasts-and-relational-past-envelopes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        43. B49: protected pair contrasts and relational past envelopes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="43. B49: protected pair contrasts and relational past envelopes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#conditional-contrast-strips-from-the-nodal-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conditional contrast strips from the nodal map
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-compact-envelope-of-states-with-a-compatible-past" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A compact envelope of states with a compatible past
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#current-result-and-reproduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current result and reproduction
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#44-b50-exact-point-predecessors-and-the-temporal-correlation-gap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        44. B50: exact point predecessors and the temporal-correlation gap
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="44. B50: exact point predecessors and the temporal-correlation gap">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exact-predecessor-sets-not-a-graph-of-visible-labels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exact predecessor sets, not a graph of visible labels
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#current-branch-and-pointwise-first-exit-exclusions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current branch and pointwise first-exit exclusions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-retaining-temporal-labels-helps-and-what-remains-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why retaining temporal labels helps, and what remains open
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#45-b51-whole-outgoing-regions-excluded-by-their-complete-pasts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        45. B51: whole outgoing regions excluded by their complete pasts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="45. B51: whole outgoing regions excluded by their complete pasts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#region-targets-and-the-complete-past-argument" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Region targets and the complete-past argument
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#current-c6-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current C6 result
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complementary-probes-and-the-next-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complementary probes and the next boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#independent-validation-and-retained-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Independent validation and retained source
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#46-b52-a-nodal-excursion-budget-excludes-the-node-2-lower-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        46. B52: a nodal excursion budget excludes the node-2 lower boundary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="46. B52: a nodal excursion budget excludes the node-2 lower boundary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-infinite-claim-reduces-to-one-derived-finite-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The infinite claim reduces to one derived finite gate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shared-implementation-and-present-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shared implementation and present coverage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complementary-controls-and-next-proof-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complementary controls and next proof target
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#47-b53-separate-cell-offset-budgets-exclude-four-further-regions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        47. B53: separate cell-offset budgets exclude four further regions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="47. B53: separate cell-offset budgets exclude four further regions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-shared-origin-containing-forward-envelope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A shared origin-containing forward envelope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#preserve-each-targets-own-proof-coordinate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Preserve each target's own proof coordinate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#remaining-gap-and-useful-negative-controls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remaining gap and useful negative controls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validated-return-reduction-and-stopped-refinements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validated return reduction and stopped refinements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#48-b54-complete-return-guards-exclude-two-node-0-lower-regions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        48. B54: complete return guards exclude two node-0 lower regions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="48. B54: complete return guards exclude two node-0 lower regions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#preserve-the-intermediate-state-in-one-shared-relation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Preserve the intermediate state in one shared relation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backward-exclusion-covers-every-possible-visit-length" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backward exclusion covers every possible visit length
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-tested-stronger-temporal-refinement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A tested stronger temporal refinement
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#49-b55-exact-unions-exclude-another-complete-first-exit-region" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        49. B55: exact unions exclude another complete first-exit region
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="49. B55: exact unions exclude another complete first-exit region">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bounded-complementary-controls-and-reuse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bounded complementary controls and reuse
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="c6-relational-regions-and-exit-exclusions">C6 relational regions and exit exclusions<a class="headerlink" href="#c6-relational-regions-and-exit-exclusions" title="Permanent link">&para;</a></h1>
+<p>Correlated regions, histories and regional exclusion proofs.</p>
+<p>Part of <a href="../../../../COUPLING_WINDING_PERSISTENCE/">Cycle winding under Coupling: scope and retained evidence</a>. Section numbers are stable across the collection; hypotheses and model changes remain local to each result.</p>
+<p><strong>Archived research record.</strong> This preserves conditional derivations and source-bound evidence. Its local next-step language is historical and does not schedule work.</p>
+<h2 id="39-b45-the-coordinate-arithmetic-class-does-not-rescue-local-mean-confinement">39. B45: the coordinate arithmetic class does not rescue local mean confinement<a class="headerlink" href="#39-b45-the-coordinate-arithmetic-class-does-not-rescue-local-mean-confinement" title="Permanent link">&para;</a></h2>
+<p>B2.d.45 strengthens section 38 by imposing a necessary arithmetic
+restriction inherited from B43's actual starting state. The uniform-carry
+templates used by B44 need not satisfy this finer restriction. The new
+construction places both outward witnesses in the correct coordinate
+arithmetic class while preserving their displayed canonical pressures.
+It still addresses a proposed region, not reachability of its witnesses
+along the saved trajectory.</p>
+<p>The owner
+<a href="../../../../../src/tnfr/physics/c6_carried_affine_mean.py"><code>c6_carried_affine_mean.py</code></a>
+implements <code>derive_c6_carried_affine_mean_obstruction</code> and
+<code>observe_c6_carried_affine_mean_escape</code>. The domain is the same conditional
+fixed-phase, unit-capacity C6 map, with the same represented channel weights,
+<code>h=1/16</code>, declared band and B37 centered-energy bound. The reference state
+<code>X0</code> is B43's actual pre-SHA encoding, not a zero-carry replacement.</p>
+<h3 id="coordinate-congruences-derived-from-the-allowed-nodal-areas">Coordinate congruences derived from the allowed nodal areas<a class="headerlink" href="#coordinate-congruences-derived-from-the-allowed-nodal-areas" title="Permanent link">&para;</a></h3>
+<p>The B37 envelope supplies necessary integer-gradient intervals. For each
+node <code>i</code>, evaluate the existing rounded pressure law at every integer in
+its declared interval and take the exact rational greatest common divisor
+of the resulting represented nodal increments <code>h*p_i(m)</code>. Denote this
+coordinate spacing by <code>gamma_i</code>. These are finite arithmetic operations
+on the fixed numerical pressure law, not an additional physical parameter
+or a claim of physical quantization. The row intervals can include gradients
+that are not jointly realizable; including them only weakens the necessary
+congruence restriction.</p>
+<p>Every admitted increment is an integer multiple of its <code>gamma_i</code>. Thus,
+while the fixed source, timestep and gradient bounds apply, every successive
+reconstructed coordinate satisfies</p>
+<div class="highlight"><pre><span></span><code>X_i in X0_i + gamma_i*Z.
+</code></pre></div>
+<p>For the declared B43 source the exact spacings are</p>
+<div class="highlight"><pre><span></span><code>m = 2^-113,
+(gamma_0,...,gamma_5) = (m,m,2*m,4*m,8*m,4*m),
+q = m/6 = 1/(3*2^114).
+</code></pre></div>
+<p>All six actual <code>X0_i</code> have zero residue modulo their respective spacings.
+The mean of any state in this product of affine lattices belongs to
+<code>mu0+q*Z</code>. This is a necessary condition, not a converse reachability
+criterion. It is also coarser than the general encoding grid <code>g=2^-3222</code>:
+B44's common carry <code>c0</code> is a half-integer multiple of <code>m</code> and cannot by
+itself supply the required coordinate congruences.</p>
+<h3 id="a-mean-preserving-lift-onto-all-six-coordinate-classes">A mean-preserving lift onto all six coordinate classes<a class="headerlink" href="#a-mean-preserving-lift-onto-all-six-coordinate-classes" title="Permanent link">&para;</a></h3>
+<p>Use the two displayed templates of section 38, with common displayed mean
+<code>m_x=1/2-delta/3</code>. For a requested arithmetic mean <code>mu=mu0+k*q</code>, set
+<code>c=mu-m_x</code>. In a general affine class, let <code>a_i</code> be the residue of
+<code>X0_i-x_i</code> modulo <code>gamma_i</code>, chosen in <code>[0,gamma_i)</code> for the selected
+displayed row. The present two templates have <code>a_i=0</code>, but the construction
+retains the affine residues rather than assuming they vanish.</p>
+<p>Select coordinate <code>0</code>, whose spacing is the minimum <code>m</code>, to balance the
+sum. Define</p>
+<div class="highlight"><pre><span></span><code>r_i = a_i + gamma_i*floor((c-a_i)/gamma_i),    i=1,...,5,
+r_0 = 6*c - sum_{i=1}^5 r_i.
+</code></pre></div>
+<p>The last identity makes the mean exactly <code>mu</code>. Moreover,
+<code>6*c-sum_i a_i</code> is an integer multiple of <code>m</code>: the requested mean differs
+from <code>mu0</code> by <code>k*q</code>, and every coordinate spacing is an integer multiple
+of <code>m</code>. Each <code>r_i-a_i</code> for <code>i&gt;=1</code> is already an integer multiple of its
+own spacing. Consequently <code>r_0-a_0</code> is a multiple of <code>m</code> as well. All six
+reconstructed coordinates therefore belong to their initial arithmetic
+classes. This is a direct exact construction, without searching periods
+or treating a convex pressure combination as an executable schedule.</p>
+<p>The auxiliary common carry <code>c</code> need not itself be dyadic: a requested
+mean can contain a factor of three in its denominator. It is not asserted
+to be an intermediate encoded state. Instead,
+<code>6*c=sum_i X0_i+k*m-sum_i x_i</code> is dyadic on the shared encoding grid.
+The affine residues, spacings and five floored carries lie on that grid,
+so their balanced sixth carry does as well. The final six-coordinate
+state, rather than the auxiliary uniform vector, undergoes the shared
+encoding and cell checks.</p>
+<p>Write <code>r=c*1+e</code>. The floor operations give</p>
+<div class="highlight"><pre><span></span><code>-gamma_i &lt; e_i &lt;= 0,    i=1,...,5,
+0 &lt;= e_0 &lt; G,          G=sum_{i=1}^5 gamma_i=19*m,
+sum_i e_i = 0.
+</code></pre></div>
+<p>The largest nonpivot spacing is <code>8*m</code>. Therefore every constructed carry
+lies in the shared legal interval <code>[c_min,c_max]</code> of section 38 whenever</p>
+<div class="highlight"><pre><span></span><code>c_min + 8*m &lt;= c &lt;= c_max - 19*m,
+c_min = -delta/2+g,    c_max = delta/2-g.
+</code></pre></div>
+<p>The resulting sufficient mean window is</p>
+<div class="highlight"><pre><span></span><code>W'_lower = W_lower + 8*m,
+W'_upper = W_upper - 19*m.
+</code></pre></div>
+<p>It still contains the actual <code>mu0</code> strictly. Its shrinkage comes directly
+from the coordinate spacings and the balancing construction. It is a
+sufficient window for this lift, not a maximal domain of possible
+arithmetic-class states or an optimized physical threshold.</p>
+<h3 id="uniform-energy-control-without-enumerating-lifted-states">Uniform energy control without enumerating lifted states<a class="headerlink" href="#uniform-energy-control-without-enumerating-lifted-states" title="Permanent link">&para;</a></h3>
+<p>Since the lift error has zero mean, the centered state differs from the
+uniform-carry template by exactly <code>e</code>. Its squared norm obeys</p>
+<div class="highlight"><pre><span></span><code>||e||^2 &lt;= G^2 + sum_{i=1}^5 gamma_i^2
+        = (19^2+1^2+2^2+4^2+8^2+4^2)*m^2
+        = 462*m^2.
+</code></pre></div>
+<p>The elementary inequality <code>||v+e||^2&lt;=2*||v||^2+2*||e||^2</code>, applied to
+the template's centered profile error <code>v</code>, yields</p>
+<div class="highlight"><pre><span></span><code>E_lift &lt;= 2*E_template + 924*m^2.
+</code></pre></div>
+<p>Both right-hand sides are strictly below the rederived B43 envelope by
+exact rational comparison. In units of <code>delta^2</code>, they are approximately
+<code>24.2595163638</code> for the negative template and <code>5.77441769843</code> for the
+positive template, against <code>E_bar</code> approximately <code>96.00000000000064</code>.
+Thus every lift in the sufficient mean window satisfies the centered
+energy constraint. This analytic estimate covers the complete integer
+family; no finite residue enumeration is needed to establish it.</p>
+<h3 id="the-independent-mean-boundary-still-has-an-outward-witness">The independent mean boundary still has an outward witness<a class="headerlink" href="#the-independent-mean-boundary-still-has-an-outward-witness" title="Permanent link">&para;</a></h3>
+<p>Consider a rational interval satisfying
+<code>W'_lower&lt;=a&lt;=mu0&lt;=b&lt;=W'_upper</code>. Choose the requested means</p>
+<div class="highlight"><pre><span></span><code>mu_upper = mu0 + q*floor((b-mu0)/q),
+mu_lower = mu0 + q*ceil((a-mu0)/q).
+</code></pre></div>
+<p>They remain inside <code>[a,b]</code> and within less than <code>q</code> of its respective
+boundaries. Apply the exact lift to the positive template at <code>mu_upper</code>
+and the negative template at <code>mu_lower</code>. Each input now satisfies all four
+candidate restrictions: legal encoding in the band, the energy envelope,
+the mean interval and every coordinate congruence inherited from <code>X0</code>.
+Displayed EPI has not changed, so the freshly recomputed mean increments
+remain</p>
+<div class="highlight"><pre><span></span><code>h*mean(p_negative) = -3*q,
+h*mean(p_positive) =  9*q.
+</code></pre></div>
+<p>They strictly exceed the possible boundary gaps in their outward
+directions. A valid shared-kernel endpoint therefore leaves the proposed
+mean interval; a formal candidate outside the physical band already
+violates admission and is recorded separately. The declared witnesses
+remain in the band. Their coordinate congruences are also retained after
+the step, because each canonical nodal increment is a multiple of its
+derived coordinate spacing.</p>
+<p>B45 consequently excludes the local centered-energy/independent-mean
+candidate even after intersection with this necessary arithmetic class.
+It strengthens B44's domain statement without turning congruence
+membership into temporal reachability. Both witness states are hypothetical;
+neither is claimed to lie on B43's actual future trajectory. Wider mean
+windows, tighter jointly reachable subsets, and restrictions that couple
+mean to shape and individual carries remain open. These results supply
+neither an infinite stability theorem nor whole-band escape.</p>
+<h2 id="40-b46-opposite-node-relay-strips-and-a-signed-local-budget">40. B46: opposite-node relay strips and a signed local budget<a class="headerlink" href="#40-b46-opposite-node-relay-strips-and-a-signed-local-budget" title="Permanent link">&para;</a></h2>
+<p>B2.d.46 addresses joint carry/shape compatibility at the actual B43
+pre-SHA endpoint. The source remains the fixed phase, unit C6 support,
+unit capacity, canonical pressure weights, band <code>[.375,.625]</code> and
+<code>h=1/16</code>. All six incoming remainders are retained. This is a conditional
+numerical branch: B43's historical terminal SHA changed capacity, and
+replaying its serialized evidence does not recreate a live execution seal.</p>
+<p>The owner is <a href="../../../../../src/tnfr/physics/c6_carried_relay.py">c6_carried_relay.py</a>,
+with a reproducible producer in
+<a href="../../../../../benchmarks/c6_winding_relay_budget.py">c6_winding_relay_budget.py</a>.
+The producer reuses the complete B43 arithmetic replay, shared C6 pressure,
+closure and carried nodal integrator. No pressure projection, extra
+oscillator, coefficient fit or carry reset is introduced.</p>
+<h3 id="two-coupled-cell-coordinates-with-independent-switches">Two coupled cell coordinates with independent switches<a class="headerlink" href="#two-coupled-cell-coordinates-with-independent-switches" title="Permanent link">&para;</a></h3>
+<p>Write <code>delta=2^-54</code>, <code>m=2^-113</code>, <code>X=x+r</code>. From the actual initial visible
+row <code>(.5 + delta*(-3,0,2,0,8,-5))</code>, select nodes 0 and 3 and their immediate
+predecessor floats. This gives four displayed rows, in delta offsets:</p>
+<div class="highlight"><pre><span></span><code>C00 = (-3,0,2, 0,8,-5),    C10 = (-4,0,2, 0,8,-5),
+C01 = (-3,0,2,-1,8,-5),    C11 = (-4,0,2,-1,8,-5).
+</code></pre></div>
+<p>The two nodes are opposite on C6. Their pressure-response supports are
+disjoint, but the certificate still recomputes all four canonical pressure
+rows and verifies the exact binary64 increment identity</p>
+<div class="highlight"><pre><span></span><code>A00 = h*p(C00),
+d0  = h*p(C10)-A00,    d3 = h*p(C01)-A00,
+h*p(C11) = A00+d0+d3.
+</code></pre></div>
+<p>No idealized <code>-1/2</code> neighbor coefficient is substituted for these represented
+differences. Each selected node has strictly inward increments: <code>-a_s</code>
+in its upper cell and <code>+b_s</code> in its lower cell. They are</p>
+<table>
+<thead>
+<tr>
+<th>Node</th>
+<th><code>a_s/m</code></th>
+<th><code>b_s/m</code></th>
+<th><code>(a_s+b_s)/m</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>3039824576180305</td>
+<td>3558973984143090</td>
+<td>6598798560323395</td>
+</tr>
+<tr>
+<td>3</td>
+<td>1803052714421816</td>
+<td>4795745845901584</td>
+<td>6598798560323400</td>
+</tr>
+</tbody>
+</table>
+<p>Let <code>t_s</code> be the exact midpoint of its adjacent floats, and
+<code>u_s=X_s-t_s</code>. Nearest-even rounding assigns the node-0 facet to the lower
+cell, giving the invariant strip <code>-a0&lt;u0&lt;=b0</code>. The node-3 facet belongs to
+the upper cell, giving <code>-a3&lt;=u3&lt;b3</code>. The complete strips fit strictly
+inside their two-cell unions and stay in the declared band. The actual
+incoming offsets are <code>2638626784309416*m</code> and <code>2678732075009744*m</code>, so both
+membership checks pass without modifying the state.</p>
+<p>For the first orientation the exact rotation is</p>
+<div class="highlight"><pre><span></span><code>u0(n) = b0 - ((b0-u0(0)+n*a0) mod (a0+b0)),
+</code></pre></div>
+<p>and for the second it is</p>
+<div class="highlight"><pre><span></span><code>u3(n) = -a3 + ((u3(0)+a3-n*a3) mod (a3+b3)).
+</code></pre></div>
+<p>These identities prove inclusion for every legal point of each strip,
+conditional on the other four displayed values staying fixed. They do
+not establish full six-node invariance. They require no enumeration of
+the very long rational rotation periods.</p>
+<h3 id="removing-the-oscillatory-contribution-exposes-a-signed-drift">Removing the oscillatory contribution exposes a signed drift<a class="headerlink" href="#removing-the-oscillatory-contribution-exposes-a-signed-drift" title="Permanent link">&para;</a></h3>
+<p>Define <code>k_s=d_s/(a_s+b_s)</code> and <code>v=A00+k0*a0+k3*a3</code>. Exact pressure
+independence gives <code>k_s[s]=1</code>, zero cross-relay entries and <code>v0=v3=0</code>.
+For every step before another displayed coordinate exits, including the
+step that first exits, the complete vector identity is</p>
+<div class="highlight"><pre><span></span><code>X(n) = X(0) + n*v + k0*(u0(n)-u0(0)) + k3*(u3(n)-u3(0)).
+</code></pre></div>
+<p>The correction columns are exactly</p>
+<div class="highlight"><pre><span></span><code>k0 = (1, -3299399280161697/6598798560323395, 0, 0, 0,
+         -3299399280161696/6598798560323395),
+k3 = (0, 0, -412424910020212/824849820040425, 1,
+         -137474970006737/274949940013475, 0).
+</code></pre></div>
+<p>Thus <code>X_j-k0[j]*X0-k3[j]*X3</code> has constant increment <code>v_j</code> within this
+four-cell region. In particular,</p>
+<div class="highlight"><pre><span></span><code>v4 = -163545780653844840044770794592 * m / 274949940013475 &lt; 0.
+</code></pre></div>
+<p>This is a signed recurrent budget derived from the actual nodal increments.
+It is valid across switches of either relay; a frozen single-cell pressure
+is not assumed. It is also local: after a non-relay displayed value changes,
+these four pressure rows no longer describe the next transition.</p>
+<p>For each non-relay coordinate bound the oscillatory correction over the
+two strips by exact rational endpoints <code>c_j^-</code> and <code>c_j^+</code>. If <code>v_j&lt;0</code>,
+choose the first positive integer <code>N</code> satisfying
+<code>X_j(0)+N*v_j+c_j^+&lt;RN_lower(x_j)</code>. For positive drift use
+<code>X_j(0)+N*v_j+c_j^-&gt;RN_upper(x_j)</code>. Strict inequalities keep the bound
+valid for either rounding-tie orientation. The four individual deadlines
+for nodes <code>(1,2,4,5)</code> are <code>(205,299,10,2899)</code>. Therefore a non-relay cell
+exit or earlier band failure must occur by step 10 from this input.</p>
+<p>The observer first derives that deadline, then evaluates the exact formula
+and shared nodal transitions only until the first exit. It finds node 4
+exiting at step <strong>7</strong>, with visible endpoint offsets
+<code>(-3,0,2,0,6,-5)</code>. All seven steps remain inside the physical band. Their
+complete nodal balance residual is zero in all six coordinates, the local
+mean area is exactly <code>1/2^114</code>, and the vector area is nonzero. Adding this
+conditional area to B43's original budget gives <code>3296/(3*2^114)</code> relative
+to <code>.5</code>; it is neither a complete return nor a new live graph observation.</p>
+<h3 id="result-and-next-boundary">Result and next boundary<a class="headerlink" href="#result-and-next-boundary" title="Permanent link">&para;</a></h3>
+<p>This block gives a constructive joint subcell mechanism and its precise
+limit: the two relay coordinates are conditionally trapped, while a
+different corrected coordinate forces departure from the local region.
+The retained report is <code>artifacts/research/c6_winding_relay_budget.json</code>.
+Its endpoint includes the exact remainder and is the next conditional
+numerical input; the original B43 record remains unchanged.</p>
+<p>Any extension must include node 4's actual new displayed value and recompute
+the affected pressure rows. Local corrected-coordinate budgets can be
+combined only after checking exact transition compatibility and the change
+of correction across their common boundary. Merely concatenating local
+deadlines, convex pressure balances or projected relay periods does not
+establish a global signed budget or an invariant region. General trapping,
+indefinite mean control, future operator admission and physical
+correspondence remain open.</p>
+<h2 id="41-b47-a-local-relay-budget-survives-the-interacting-boundary">41. B47: a local relay budget survives the interacting boundary<a class="headerlink" href="#41-b47-a-local-relay-budget-survives-the-interacting-boundary" title="Permanent link">&para;</a></h2>
+<p>B2.d.47 resumes the exact conditional B46 endpoint, including all six
+remainders. Its visible offsets from <code>.5</code>, in <code>delta=2^-54</code>, are
+<code>(-3,0,2,0,6,-5)</code>. The fixed phase, unit capacities, unit C6 support,
+canonical pressure coefficients, <code>h=1/16</code> and <code>[.375,.625]</code> band are retained.
+The complete B43 arithmetic evidence and seven B46 conditional steps are
+replayed before accepting this input. This binds serialized numerical
+lineage, without recreating a live graph seal or undoing historical SHA.</p>
+<p>The new APIs extend <a href="../../../../../src/tnfr/physics/c6_carried_relay.py">the existing relay owner</a>:
+<code>derive_c6_carried_local_relay_budget</code> and
+<code>observe_c6_carried_local_relay_exit</code>. The
+<a href="../../../../../benchmarks/c6_winding_relay_handoff.py">handoff producer</a> reuses
+<code>replay_c6_relay_budget_evidence</code>; the original B46 producer shares that
+reconstruction and record logic. There is no second solver or pressure law.</p>
+<h3 id="the-third-switch-cannot-be-treated-as-another-independent-relay">The third switch cannot be treated as another independent relay<a class="headerlink" href="#the-third-switch-cannot-be-treated-as-another-independent-relay" title="Permanent link">&para;</a></h3>
+<p>Add node 4's displayed pair <code>6/8</code> to B46's node-0 pair <code>-4/-3</code> and node-3
+pair <code>-1/0</code>. Recomputing all eight canonical pressure rows reveals the
+nonzero mixed increment</p>
+<div class="highlight"><pre><span></span><code>h*p(node3 lower, node4 lower) - h*p(node3 lower, node4 upper)
+  - h*p(node3 upper, node4 lower) + h*p(node3 upper, node4 upper)
+    = -8 * 2^-113 * (e3+e4).
+</code></pre></div>
+<p>Node 0 is held at its upper value in this expression; the same result
+holds in its lower branch. Its two pairwise mixed differences and the
+three-way mixed difference vanish. The nonzero term is an exact consequence
+of the represented pressure product/assembly. Treating nodes 3 and 4 as
+independent would omit it. These eight evaluations are a finite control,
+not the proof of the broader locality statement below.</p>
+<h3 id="local-support-supplies-a-common-corrected-coordinate">Local support supplies a common corrected coordinate<a class="headerlink" href="#local-support-supplies-a-common-corrected-coordinate" title="Permanent link">&para;</a></h3>
+<p>On fixed C6 the two required EPI pressure gradients are exactly</p>
+<div class="highlight"><pre><span></span><code>g0 = (x5+x1)/2-x0,
+g1 = (x0+x2)/2-x1.
+</code></pre></div>
+<p>The shared indexed pressure reader applies its represented product and
+fixed phase-source assembly to these gradients. Consequently, holding
+displayed nodes <code>(1,2,5)</code> fixes both pressure functions of <code>x0</code>, regardless
+of the admitted displayed values of nodes <code>(3,4)</code>. The source/target support
+union derives this held set; it is not a selected cancellation assumption.
+The proof allows arbitrary node-3/node-4 values in the declared band, not
+only the eight boundary cells. Their own pressure rows continue to refresh.</p>
+<p>Node 0 therefore keeps its B46 invariant strip <code>-a&lt;u&lt;=b</code>, where
+<code>u=X0-facet</code>, <code>a=3039824576180305*2^-113</code> and
+<code>b=3558973984143090*2^-113</code>. The incoming B46 remainder belongs to it.
+Recompute the two local pressure rows and set</p>
+<div class="highlight"><pre><span></span><code>k = h*(p1_lower-p1_upper)/(a+b)
+  = -3299399280161697/6598798560323395,
+v = h*p1_upper+k*a
+  = -3360475576564941293533924113653 * 2^-113 / 1319759712064679 &lt; 0.
+</code></pre></div>
+<p>For every transition whose source retains the held neighborhood,</p>
+<div class="highlight"><pre><span></span><code>W = X1-k*X0,          W(n)-W(0) = n*v,
+X1(n) = X1(0)+n*v+k*(u(n)-u(0)).
+</code></pre></div>
+<p>The node-0 modular formula remains the same exact rotation as in B46.
+Only these two coordinates have a closed formula; no independent formula
+for the other four coordinates is asserted. This common budget crosses
+the node-4 boundary without an omitted change of correction potential:
+its coefficient and drift are identical on both sides. It remains valid
+through the first outgoing step whose endpoint changes a held value.</p>
+<h3 id="analytic-deadline-and-first-held-neighborhood-exit">Analytic deadline and first held-neighborhood exit<a class="headerlink" href="#analytic-deadline-and-first-held-neighborhood-exit" title="Permanent link">&para;</a></h3>
+<p>Let <code>c_plus=max(k*(-a-u(0)), k*(b-u(0)))</code>. Since <code>v&lt;0</code>, the least integer</p>
+<div class="highlight"><pre><span></span><code>N = floor((X1(0)+c_plus-RN_lower(x1))/(-v)) + 1
+</code></pre></div>
+<p>puts even the largest possible corrected coordinate strictly below its
+original rounding cell. For the actual incoming state this gives <strong>198</strong>.
+Until that deadline, either a held displayed value changes, or numerical
+band admission fails. The existing independent band-horizon certificate
+covers <strong>196713720348826205</strong> steps from this input, which exceeds 198.
+That sufficient bound is not a simulated duration or a claim of indefinite
+stability. Here it eliminates band failure as the earlier alternative.</p>
+<p>The observer derives the deadline before taking any new step, refreshes
+all six canonical pressure rows at every step and stops at the first held
+change. This occurs at <strong>197</strong>, node <strong>1</strong>, with endpoint offsets
+<code>(-3,-1,2,0,8,-5)</code>. All 197 shared-kernel steps and all 198 formula points
+have zero nodal and corrected-budget residuals. The complete vector area
+is retained and nonzero. The local mean area is <code>349/(3*2^114)</code>; together
+with B43 and B46 it is <code>3645/(3*2^114)=1215/2^114</code> relative to the original
+uniform <code>.5</code> preparation. There are 204 conditional steps after B43, and
+no additional live graph-owned word.</p>
+<p>This observed branch stays within the eight boundary cells until the same
+step 197. The broader theorem's benefit is its independence from any
+restriction on the free coordinates, not a claim that this particular
+trajectory visited additional cells. Membership in the local theorem
+alone does not prove that an arbitrary supplied state descends from B46;
+the report establishes that numerical lineage separately by replay.</p>
+<p>The retained result is <code>artifacts/research/c6_winding_relay_handoff.json</code>.
+Its <code>B47_conditional_first_exit.endpoint</code> is the next conditional input,
+with the full remainder. Node 1's changed value now modifies node 0's
+pressure as well as the corrected-coordinate budget. Continuing from this
+dependency boundary requires rederiving the affected relay to
+account for any change in correction potential before composing another
+budget. Repeating B47's formula beyond this endpoint is invalid. The result
+does not establish a global signed budget, invariant trapping, future
+operator admission or empirical correspondence.</p>
+<h2 id="42-b48-exact-correlated-set-viability-and-the-remaining-global-gap">42. B48: exact correlated-set viability and the remaining global gap<a class="headerlink" href="#42-b48-exact-correlated-set-viability-and-the-remaining-global-gap" title="Permanent link">&para;</a></h2>
+<p>The target is indefinite boundedness of the <strong>current fixed C6 numerical
+branch</strong>, with the unchanged B47 endpoint and complete carry. No theorem
+about arbitrary TNFR networks or future operator words is being inferred.
+The canonical pressure, phase tuple, unit capacity, <code>h=1/16</code> and positive
+band remain fixed. No post-B47 trajectory steps are taken in this audit.</p>
+<h3 id="universal-preimages-rather-than-an-observed-return">Universal preimages, rather than an observed return<a class="headerlink" href="#universal-preimages-rather-than-an-observed-return" title="Permanent link">&para;</a></h3>
+<p>The shared carried nodal equation is a translation in each displayed cell:</p>
+<div class="highlight"><pre><span></span><code>X = x+r,   F(X) = X+h*p(x),   x_next = RN(F(X)).
+</code></pre></div>
+<p>For a finite declared visible family, derive each coordinate spacing as
+<code>gamma_i=gcd({h*p_i(x)})</code>. These are arithmetic consequences of the source
+table, not fitted physical parameters. If a coordinate has identically zero
+increment, the implementation uses the shared <code>2^-3222</code> encoding grid.
+The affine cosets through the unchanged origin are preserved while pressure
+comes from that family. On them, a subcell is a closed integer box inside
+the exact band-clipped nearest-even cell. Different pieces must be disjoint
+on these cosets; their geometric hulls may overlap only off that grid.</p>
+<p>Starting from the candidate <code>K_0</code>, compute</p>
+<div class="highlight"><pre><span></span><code>K_(n+1) = K_n intersect F^-1(K_n).
+</code></pre></div>
+<p>Canonical pressure is freshly read for every source cell. Exact translation
+and intersection with target boxes retain the incoming-carry relation.
+Adjacent boxes are merged only when their other coordinate bounds agree.
+Because the sets are finite and nested, equality of <strong>exact integer point
+counts</strong> proves equality of sets. It is not a floating volume comparison.</p>
+<p>The reusable owner
+<a href="../../../../../src/tnfr/physics/c6_carried_viability.py"><code>derive_c6_carried_viability</code></a>
+has three distinct outcomes:</p>
+<ul>
+<li><code>fixed_point</code>: a complete nonempty fixed set contains the supplied origin.
+  Induction proves arbitrary repetition remains in the retained boxes and
+  band. This is conditional numerical boundedness, without convergence or
+  live-graph provenance.</li>
+<li><code>origin_excluded</code>: the origin leaves the initial candidate or its band
+  within the recorded descent depth. This does not prove whole-band escape.</li>
+<li><code>resource_limit</code>: only the last fully completed descent is returned.
+  No infinite-time or origin-exit conclusion follows from unfinished work.</li>
+</ul>
+<p>The positive proof contract is tested on a stationary C6 case and a
+nonstationary alternating C6 two-cycle, including retained carry. Neither
+control replaces the pressure source of the research branch.</p>
+<h3 id="the-actual-profile-candidate">The actual profile candidate<a class="headerlink" href="#the-actual-profile-candidate" title="Permanent link">&para;</a></h3>
+<p>Use the existing exact forced profile <code>z</code> and the actual B47 mean <code>mu</code>.
+The adjacent represented values bracketing <code>mu+z_i</code> give the lower and upper
+offsets, in units <code>delta=2^-54</code> from <code>.5</code>:</p>
+<div class="highlight"><pre><span></span><code>lower = (-4,-1,2,-1,6,-6)
+upper = (-3, 0,4, 0,8,-5).
+</code></pre></div>
+<p>Their 64 combinations include the unchanged B47 endpoint at mask 57, where
+bit <code>i</code> selects the upper value of coordinate <code>i</code>. The candidate-pressure
+gcds give <code>gamma=2^-113*(1,1,4,8,8,8)</code>, which are specific to this family.
+Three complete descents retain 64, 416, and 4,285 boxes respectively, with strictly
+decreasing exact point counts and the origin still present. The fourth
+descent exhausts the 500,000-work-item guard. The result is therefore
+<strong>undecided</strong>. The guard controls computational work, not physical time.
+No new trajectory, invariant set or escape is asserted by these counts.</p>
+<h3 id="exact-scope-of-the-quadratic-controls">Exact scope of the quadratic controls<a class="headerlink" href="#exact-scope-of-the-quadratic-controls" title="Permanent link">&para;</a></h3>
+<p>Write the cube's nodal increments in units <code>m=2^-113</code> as
+<code>a_sigma=b-M*sigma+e_sigma</code>, using the six one-bit differences to define
+<code>M</code>. With <code>K=3299399280161697</code>, the positive diagonal symmetrizer is</p>
+<div class="highlight"><pre><span></span><code>D = diag(1,1,2K/(K+3),K/(K+3),2K/(K-1),K/(K-1)).
+v = (1,1,1/2,1,1/2,1).
+M*v = (1,0,-8,-8,0,0).
+v^T*D*M*v = (3-15K)/(K+3) &lt; 0.
+</code></pre></div>
+<p>Thus the proposed inverse-affine positive quadratic cannot supply the
+desired energy. This is a failure of that surrogate, not a dynamical
+instability proof. The exact mixed remainders range over <code>(0..1,0,-8..0,
+-8..0,-8..0,0)</code> in these units; they cannot be dropped in a mean argument.</p>
+<p>A second control uses the <strong>actual</strong> nonlinear table. Let <code>Q_i=e_i-e_5</code>.
+Every symmetric matrix can be written
+<code>H=Q*S*Q^T+Q*a*1^T+1*a^T*Q^T+K*beta*1*1^T</code>. A retained 21-term positive
+rational dual, recomputed and checked against all its exact coefficients,
+gives</p>
+<div class="highlight"><pre><span></span><code>sum_j y_j * sign(sigma_j[i_j]-1/2) * (H*a_sigma_j)[i_j]/K
+    = lambda * trace(S),
+y_j &gt; 0, sum_j y_j=1, lambda &gt; 0.
+</code></pre></div>
+<p>Positive definite <code>H</code> implies positive definite <code>S</code> by congruence, so at
+least one selected oriented component must be outward. This excludes the
+all-orthant inward common-quadratic <strong>sufficient criterion</strong>. It does not
+exclude every quadratic invariant of a finite region, shifted or piecewise
+potentials, or a reachability-trimmed subset. No numerical LP tolerance is
+used to admit either exact obstruction.</p>
+<h3 id="reproduction-and-unresolved-target">Reproduction and unresolved target<a class="headerlink" href="#reproduction-and-unresolved-target" title="Permanent link">&para;</a></h3>
+<p>Run <code>benchmarks/c6_winding_invariant_region.py</code>. It reuses the centralized
+B47 evidence replay, verifies the complete B43/B46/B47 numerical lineage,
+and retains the source digest, input hashes, canonical pressure table,
+exact quadratic witnesses and all last-completed subcell bounds in
+<code>artifacts/research/c6_winding_invariant_region.json</code>. The original B47
+endpoint remains the next dynamical input; the proof search does not create
+a later state or reverse historical SHA.</p>
+<p>Global boundedness of this actual C6 branch remains <strong>open</strong>. The required
+next mathematical object is a closed carry-correlated region containing that
+state, or an exact temporally compatible signed budget proving escape.
+Independent pressure balances, pairwise existential edges and longer finite
+prefixes cannot substitute for this universal inclusion or budget argument.</p>
+<h2 id="43-b49-protected-pair-contrasts-and-relational-past-envelopes">43. B49: protected pair contrasts and relational past envelopes<a class="headerlink" href="#43-b49-protected-pair-contrasts-and-relational-past-envelopes" title="Permanent link">&para;</a></h2>
+<p>This block keeps the B47 input, canonical pressure source, unit capacities,
+<code>h=1/16</code>, positive band and complete carry. It changes the representation of
+a proof candidate, not the nodal dynamics. Both search directions now share
+source, state, pressure and exact RN-cell preparation in
+<a href="../../../../../src/tnfr/physics/c6_carried_viability.py"><code>c6_carried_viability.py</code></a>.</p>
+<h3 id="conditional-contrast-strips-from-the-nodal-map">Conditional contrast strips from the nodal map<a class="headerlink" href="#conditional-contrast-strips-from-the-nodal-map" title="Permanent link">&para;</a></h3>
+<p>Let <code>g</code> be the rational gcd of all declared nodal increments, with the shared
+encoding grid used if all increments vanish. Write
+<code>X_i=X_initial_i+g*k_i</code> on the initial state's preserved arithmetic class.
+All <code>k_i</code> are integers; this common grid may contain more states than the
+separate coordinate gcds. It is a sound relaxation,
+not a change of carry. Each exact RN cell gives integer coordinate bounds,
+including nearest-even endpoint ownership, and one fixed translation <code>a_c</code>.</p>
+<p>For a pair <code>(i,j)</code>, project that cell onto <code>d=k_i-k_j</code>, obtaining <code>[L_c,U_c]</code>
+and signed increment <code>b_c=a_c[i]-a_c[j]</code>. Start a candidate strip <code>[l,u]</code>
+at the actual value zero. Whenever it intersects a projected cell with
+<code>b_c&lt;0</code>, extend <code>l</code> to include <code>L_c+b_c</code>; for <code>b_c&gt;0</code>, extend <code>u</code> to include
+<code>U_c+b_c</code>. Only the finite set of cell endpoints can change either bound.
+At termination, verify directly, for every nonempty intersection,</p>
+<div class="highlight"><pre><span></span><code>max(l,L_c)+b_c &gt;= l,   min(u,U_c)+b_c &lt;= u.
+</code></pre></div>
+<p>Thus every pair strip is preserved by a step whose source stays in the
+declared cube. Their simultaneous intersection contains the unchanged
+initial state. This is a <strong>conditional</strong> result: it does not itself keep
+the next visible state in the cube. All 15 pair contrasts tighten the
+current candidate. For example, the contrast between coordinates 4 and 2,
+after subtracting their central-facet difference, is confined to roughly
+<code>[-0.0125*delta, 2.022*delta]</code>, compared with the original <code>[-4*delta,4*delta]</code>,
+where <code>delta=2^-54</code>. Exact bounds and their source premises are retained.</p>
+<h3 id="a-compact-envelope-of-states-with-a-compatible-past">A compact envelope of states with a compatible past<a class="headerlink" href="#a-compact-envelope-of-states-with-a-compatible-past" title="Permanent link">&para;</a></h3>
+<p>One relational zone per visible cell stores the integer inequalities
+<code>k_i-k_j&lt;=B_ij</code>, including a seventh fixed coordinate <code>k_6=0</code> for absolute
+bounds. Shortest-path closure gives exact implied bounds. Translating a
+zone adds <code>a_i-a_j</code> to each entry. Intersections are closed exactly; the
+entrywise maximum of closed nonempty matrices is their least zone hull.
+The hull can include extra states, so membership alone never proves a
+compatible past.</p>
+<p>Let <code>D</code> be the RN cube intersected with the independently protected pair
+strips, and let <code>alpha_D</code> form this hull separately inside each cell of <code>D</code>.
+The successive outer envelopes are</p>
+<div class="highlight"><pre><span></span><code>R_0=D,   R_(n+1)=alpha_D(F(R_n) intersect D).
+</code></pre></div>
+<p>Monotonicity implies <code>R_(n+1) subset R_n</code>. If a complete image <code>F(R_n)</code>
+stays inside the original cube, the conditional pair-strip theorem also
+keeps it in <code>D</code>. Consequently</p>
+<div class="highlight"><pre><span></span><code>F(R_n) subset alpha_D(F(R_n)) = R_(n+1) subset R_n.
+</code></pre></div>
+<p>This proves an invariant core without requiring equality between successive
+envelopes. The complete Cartesian RN cover is checked before an outer-box
+test is used; holes in an arbitrary family cannot be silently filled.
+An empty core, a stationary abstraction with outgoing states and an
+unfinished layer do not establish boundedness of the supplied origin.</p>
+<p>Actual initial membership is a separate gate. If a certified core contains
+the original carried state, induction applies immediately. Otherwise only
+a replay of the proof-derived finite entry prefix can bind that state to
+the core. Its entire prefix must stay admitted and end inside the retained
+core. Union with those prefix points then gives an invariant set containing
+the original state. No trajectory is advanced merely to look for recurrence.</p>
+<h3 id="current-result-and-reproduction">Current result and reproduction<a class="headerlink" href="#current-result-and-reproduction" title="Permanent link">&para;</a></h3>
+<p>Run <code>benchmarks/c6_winding_invariant_region.py --method forward</code>. The same
+campaign and B47 lineage replay serve both B48 and B49, with distinct output
+files. The current result is retained in
+<code>artifacts/research/c6_winding_forward_envelope.json</code>.</p>
+<p>The relational representation keeps only 64 zones. With the pair strips,
+the retained bounded search completes 259 image layers and reduces possible
+outgoing coordinate facets from 72 to 56, while retaining the original B47
+point. Its 250000-intersection guard is computational. Since outgoing
+facets remain, the result is <strong>inconclusive</strong>, not a trapping theorem or a
+trajectory escape. The report makes no new live-graph or asymptotic claim.</p>
+<p>An independent exact replay recomputes all 259 layers and verifies 15 pair
+barriers, 128 initial/final closed matrices and all 56 outward facets. Ten
+of those outward slabs contain explicit hypothetical states with <strong>exactly
+the original B47 mean</strong> and its separate coordinate cosets
+<code>g*(1,1,4,8,8,8)</code>. Six leave through node 0's lower boundary (masks
+<code>8,12,16,20,24,28</code>); four through node 5's upper boundary (masks
+<code>49,51,57,59</code>). Every witness satisfies all retained zone inequalities and
+the exact RN cell. Consequently, intersecting this particular retained
+envelope with any independent mean interval containing the original mean
+cannot make it invariant. This does not exclude a mean/shape/carry-correlated
+subset, and none of these hypothetical points is claimed reachable. The
+independent replay and witnesses are retained in
+<code>artifacts/research/c6_winding_forward_envelope.validation.json</code> and
+<code>artifacts/research/validate_b49_envelope.py</code>.</p>
+<p>A separate static refinement restores those coordinate cosets by snapping
+difference bounds to their exact gcds and reclosing the matrices. It tightens
+1,588 entries, but all 56 outward facets still have exact coset-admissible
+witnesses. One complete refined image also retains 56 such facets. These
+witnesses are checked with the shared nodal kernel; they are hypothetical
+one-step states, not a continuation of B47. Thus restoring coordinate
+arithmetic alone does not close this retained envelope. Evidence:
+<code>artifacts/research/c6_b49_coordinate_coset_probe.json</code>.</p>
+<p>Validation includes 636 targeted passing tests. A separate canonical
+zero-phase control has 729 exactly enumerated states and forward layers
+<code>729 -&gt; 45 -&gt; 9 -&gt; 3</code>; the implementation verifies entry into that invariant
+core from a nonstationary initial state. Other controls prevent an escaping
+origin, a partial image or a stationary outer envelope with outgoing states
+from being certified. These are verifier checks, not parameter changes to
+the current fixed-phase <code>h=1/16</code> research branch. The retained B49 source
+delta and validation record bind the report to its scientific source digest.</p>
+<p>A separate bounded falsification probe took 10000 shared-kernel steps from
+the same B47 state and found no exit from the 64-cell cube. Its explicit
+computational budget and full finite trace are retained in
+<code>artifacts/research/c6_cube_counterexample_probe.json</code>. This does not prove
+stability and does not replace B47 as the primary proof input. Global
+boundedness remains open: the surviving outward states may require stronger
+correlations than pair differences, a smaller reachable region, or a
+different candidate. Their presence in an outer envelope does not establish
+their reachability from B47.</p>
+<h2 id="44-b50-exact-point-predecessors-and-the-temporal-correlation-gap">44. B50: exact point predecessors and the temporal-correlation gap<a class="headerlink" href="#44-b50-exact-point-predecessors-and-the-temporal-correlation-gap" title="Permanent link">&para;</a></h2>
+<p>B49's outward states are hypothetical members of an outer envelope. B50 asks
+whether selected points can have an exact carried past, using the same C6
+pressure, phase, unit capacity, timestep, RN rule and full remainder. It adds
+no physical law or parameter. The public predecessor observer shares source
+and RN-cell preparation with both existing viability methods in
+<a href="../../../../../src/tnfr/physics/c6_carried_viability.py"><code>c6_carried_viability.py</code></a>.</p>
+<h3 id="exact-predecessor-sets-not-a-graph-of-visible-labels">Exact predecessor sets, not a graph of visible labels<a class="headerlink" href="#exact-predecessor-sets-not-a-graph-of-visible-labels" title="Permanent link">&para;</a></h3>
+<p>Fix a complete target state <code>X</code>, a declared source domain <code>D</code> and the original
+affine coordinate cosets. In visible cell <code>c</code>, the only possible predecessor is</p>
+<div class="highlight"><pre><span></span><code>Y_c = X - h*p(c).
+</code></pre></div>
+<p>It is admitted only if it has that exact nearest-even visible row, stays in
+the band and domain, and belongs to the preserved coordinate cosets. Every
+accepted edge is checked with the shared nodal integrator, including its full
+carry. Each complete predecessor layer retains exact states and successor
+indices, so adjacent edges cannot silently change their intermediate state.
+Pressure is reconstructed from the canonical source rather than trusted from
+a cached or serialized table.</p>
+<p>Starting from <code>P_0={X}</code>, compute <code>P_(n+1)=D intersect F^-1(P_n)</code>. These sets
+are not generally nested, and repeated cardinalities do not imply equality.
+If a complete <code>P_n</code> is empty, no admitted depth-n history ends at <code>X</code>.
+This excludes occurrence after n transitions during a path wholly inside D;
+it does <strong>not</strong> exclude earlier transient visits. A nonempty layer certifies
+finite compatible pasts, without proving connection to the actual B47 origin.
+Resource interruption discards the partial next layer.</p>
+<p>Origin matching is a separate exact test across all retained layers. A match
+plus its linked steps proves a finite origin-to-target path under the declared
+map. If the complete predecessor tree exhausts without any origin match,
+every origin-to-target path wholly inside D is excluded, including transient
+ones. Neither result applies to paths that leave D and later return. A point
+certificate says nothing universal about its containing facet or other points
+with the same displayed EPI.</p>
+<h3 id="current-branch-and-pointwise-first-exit-exclusions">Current branch and pointwise first-exit exclusions<a class="headerlink" href="#current-branch-and-pointwise-first-exit-exclusions" title="Permanent link">&para;</a></h3>
+<p>The campaign <code>benchmarks/c6_winding_invariant_region.py --method predecessors</code>
+first reconstructs all B49 payload fields from B47's unchanged lineage. It
+checks the selected witness bytes, exact original mean, RN cell and actual
+outgoing nodal step. Each target is then audited in two distinct domains:
+the full 64-cell RN cube and the retained relational envelope <code>R259</code>.</p>
+<p>The campaign also verifies the exact clipped identity
+<code>F(R259) intersect D subset R259</code>, where D is the cube intersected with B49's
+protected pair strips. Since the original state belongs to R259, every
+prefix before its first cube exit remains in R259. Complete point-predecessor
+exclusion from that origin therefore rules out that point as the cause of the
+first cube exit. It does not exclude the entire facet, prove confinement or
+control a later trajectory that has already left the cube.</p>
+<p>The retained point audit is
+<code>artifacts/research/c6_winding_temporal_predecessors.json</code>. It introduces no
+new actual trajectory steps or live execution; shared-kernel checks on
+hypothetical edges are explicitly distinct from the B47 research trajectory.</p>
+<p>Of the ten selected original-mean outward points, nine have exhausted exact
+predecessor trees in R259, with no B47 origin in any complete layer. Their
+first empty depths, indexed by visible mask, are
+<code>8:12, 12:9, 16:3, 20:1, 24:3, 49:1, 51:1, 57:1, 59:4</code>.
+Those nine particular points cannot cause the first cube exit of the retained
+branch under the fixed map. Mask 28 remains undecided after 21 complete
+predecessor layers and the 32,768-row-check guard; a partial deeper tree is
+not promoted. The broader complete RN cube gives five exhausted trees:
+<code>20:42, 49:91, 51:120, 57:91, 59:40</code>; its other five searches are resource
+limited. These two domains and depth bounds must not be conflated.</p>
+<p>The implementation passes 690 targeted tests, including 54 new point/past
+and report cases. A separate validator independently reconstructs all 20
+serialized certificates and replays 4,014 exact predecessor edges plus ten
+hypothetical outgoing steps. It verifies 893 nonempty clipped image pieces
+for the R259 inclusion. Artifacts:
+<code>artifacts/research/c6_winding_temporal_predecessors.validation.json</code>,
+<code>artifacts/research/validate_b50_predecessors.py</code> and
+<code>artifacts/research/b50_final_validation.json</code>. These tests and mathematical
+checks do not supply empirical physical evidence or a whole-region theorem.</p>
+<h3 id="why-retaining-temporal-labels-helps-and-what-remains-open">Why retaining temporal labels helps, and what remains open<a class="headerlink" href="#why-retaining-temporal-labels-helps-and-what-remains-open" title="Permanent link">&para;</a></h3>
+<p>A separate bounded prototype keeps the preceding visible cell as part of
+each abstract mode before taking any matrix hull. One preceding cell gives
+870 modes after seven complete refinements, reducing distinct outward facets
+from 56 to 48 and retaining six of the ten selected point witnesses. Two
+preceding cells give 7,387 modes after one complete refinement, 46 outward
+facets and four surviving selected witnesses. Each lifted clipped-image
+inclusion is verified; no actual entry or invariant core is claimed.
+The mode counts are computational state representations, not extra TNFR
+variables. Evidence: <code>artifacts/research/c6_temporal_mode_envelope_probe.json</code>.</p>
+<p>For comparison, exact full unsafe-set preimages without any hull retain
+56, 280, 861, 2,553 and 7,963 zones through depths zero to four before a
+20,000-zone guard interrupts the next complete layer. This is again a
+representation limit, not an escape or stability theorem; see
+<code>artifacts/research/c6_b50_unsafe_past_probe.json</code>. These probes show precisely
+where temporal information is lost and where retaining every disjunction
+becomes expensive. The remaining task is a compact, universally checked
+temporal refinement or a source-derived invariant region. More finite
+trajectory steps cannot replace that inclusion proof.</p>
+<h2 id="45-b51-whole-outgoing-regions-excluded-by-their-complete-pasts">45. B51: whole outgoing regions excluded by their complete pasts<a class="headerlink" href="#45-b51-whole-outgoing-regions-excluded-by-their-complete-pasts" title="Permanent link">&para;</a></h2>
+<p>B51 replaces selected point targets with the entire outward slabs of the
+retained R259 domain. The same nodal source, unit capacity, <code>h=1/16</code>, band
+and complete carried B47 state are unchanged. Both point and region campaigns
+now use one B49 reconstruction and clipped-inclusion helper, and the physics
+owner reuses the existing source, RN-cell and relational-domain validation.</p>
+<h3 id="region-targets-and-the-complete-past-argument">Region targets and the complete-past argument<a class="headerlink" href="#region-targets-and-the-complete-past-argument" title="Permanent link">&para;</a></h3>
+<p>Write <code>X_i=X_initial_i+g*k_i</code>, with B49's common increment grid <code>g=2^-113</code>.
+The full 64-cell RN cube has exact integer endpoints <code>l_i,u_i</code>, including
+nearest-even ownership. These endpoints are reconstructed from complete RN
+cells: the protected pair strips can tighten coordinate projections and
+must not redefine the original cube's exit boundary. In source cell c with
+integer increment <code>a_c</code>, the lower and upper outward slabs are respectively</p>
+<div class="highlight"><pre><span></span><code>T_(c,i,lower) = R259_c intersect {k_i &lt;= l_i-a_c[i]-1},
+T_(c,i,upper) = R259_c intersect {k_i &gt;= u_i-a_c[i]+1}.
+</code></pre></div>
+<p>The nonempty slabs cover every possible first-cube-exit source in R259.
+They can overlap; their number is not a probability or a progress percentage.
+The common grid relaxes the finer coordinate cosets, so exclusion is sound
+for the actual state even though an admitted hypothetical point need not
+have its full arithmetic provenance.</p>
+<p>For each complete slab T separately, begin with <code>P_0=T</code>. In each source cell
+i, translate every target zone backward by the actual increment <code>a_i</code>,
+intersect with R259_i and take the least closed difference-bound hull. Thus</p>
+<div class="highlight"><pre><span></span><code>P_(n+1) = alpha_R259(R259 intersect F^-1(P_n)).
+</code></pre></div>
+<p>Every exact n-step predecessor is included. The layers need not be nested;
+cardinality equality is insufficient. If a complete layer is empty, there
+are no predecessors at that or any later depth. If consecutive complete
+abstract layers are exactly equal, the deterministic abstract recurrence
+stays equal thereafter. Either case proves no origin-to-T path within R259
+when the origin is absent from every earlier complete layer as well.
+An origin admitted by a hull is only inconclusive, not an actual path.</p>
+<p>The established identity <code>F(R259) intersect D subset R259</code>, with D the cube
+and its protected pair strips, combines with the conditional pair-strip
+preservation proved in section 43 and initial membership to keep every
+actual pre-cube-exit prefix in R259.
+Therefore an entire excluded target slab cannot cause the first cube exit.
+This includes early transients because every complete preceding layer is
+checked for the origin. It does not assert that the slab is empty, that
+arbitrary hypothetical starts are safe, or that later exit-and-return paths
+are excluded.</p>
+<h3 id="current-c6-result">Current C6 result<a class="headerlink" href="#current-c6-result" title="Permanent link">&para;</a></h3>
+<p>The production batch owner <code>derive_c6_carried_region_exclusions</code> advances
+all 56 labeled slab queries in round-robin order under one computational
+intersection guard. It records each completed layer and discards an
+interrupted partial layer. The campaign is
+<code>benchmarks/c6_winding_invariant_region.py --method regions</code>; its report is
+<code>artifacts/research/c6_winding_region_exclusions.json</code>.</p>
+<p>The retained 250,000-intersection search excludes 24 <strong>whole slabs</strong>:
+all 16 node-1 upper slabs and all eight node-5 upper slabs. Their complete
+predecessor layers become empty within depths two through eight for node 1,
+and at depth six for node 5, with the actual origin absent throughout.
+These two node/direction classes cannot produce the first cube exit under
+the fixed map. The remaining 32 slabs are eight each for node-0 lower,
+node-2 lower, node-3 upper and node-4 upper. Their bounded searches remain
+inconclusive. The engine does not certify indefinite trapping or actual
+escape, and no new actual trajectory or live graph execution is run.</p>
+<h3 id="complementary-probes-and-the-next-boundary">Complementary probes and the next boundary<a class="headerlink" href="#complementary-probes-and-the-next-boundary" title="Permanent link">&para;</a></h3>
+<p>An independent increasing backward-reachability hull gives nine complete
+closed-set exclusions, all within the node-1 upper class. The hull of the
+union of all unsafe targets instead admits the origin immediately; that is
+loss of information, not an observed exit. This supports keeping target
+labels separate. Evidence: <code>artifacts/research/c6_unsafe_backward_hull_probe.json</code>.</p>
+<p>A separate point-tree lifting calculation translates the same perturbation
+through every ancestor of an exhausted B50 tree. Preserving one violated
+domain inequality for each rejected row prevents new branches; preserving
+one signed coordinate of every admitted ancestor excludes the origin.
+Intersecting these exact difference constraints gives nontrivial excluded
+regions around the nine former point witnesses. Five lie in node-0 lower
+slabs (masks 8, 12, 16, 20 and 24), outside the two fully excluded exit
+classes. These partial-region exclusions remain complementary evidence;
+they do not exclude their whole slabs. See
+<code>artifacts/research/c6_b51_point_region_probe.json</code>.</p>
+<p>Coarsening temporal labels to only the prior bits of node 1 and its two
+neighbors reduces memory cost, but leaves 51 outward facets, versus 48/46
+with one/two complete preceding cells. The local pressure dependency alone
+does not preserve all useful cross-node temporal constraints.</p>
+<p>The regional exclusions also support a sound domain refinement: remove each
+proven unreachable slab by its exact complementary bound in that source
+cell. Every actual prefix before the first cube exit remains in the refined
+domain, although universal forward invariance of that domain is not claimed.
+The retained probe rechecks all 24 exclusions, tightens 104 matrix entries
+across 22 cells and preserves the actual origin. With the same 250,000
+intersection guard, all 32 remaining queries are still inconclusive after
+33 or 34 complete layers; no further slab is excluded. Evidence:
+<code>artifacts/research/c6_b51_iterated_certified_cuts.json</code>.</p>
+<p>The unresolved obligation at this stage is a compact proof over the four remaining exit classes,
+preserving more of their coupled pressure, carry and temporal relations.
+Merely repeating the certified cuts, increasing a resource guard or testing
+additional isolated points cannot supply the missing universal proof.</p>
+<h3 id="independent-validation-and-retained-source">Independent validation and retained source<a class="headerlink" href="#independent-validation-and-retained-source" title="Permanent link">&para;</a></h3>
+<p><code>artifacts/research/validate_b51_regions.py</code> independently reconstructs the
+64 canonical pressure rows, complete RN cells, all 56 unsafe slabs, 893
+clipped forward-image pieces and all 1,176 completed backward layers. Its
+exact 250,000-intersection replay confirms the 24 whole-region exclusions
+and 32 resource-limited queries. The validation is bound to the four input
+hashes, report bytes and implementation source in
+<code>artifacts/research/c6_winding_region_exclusions.validation.json</code>.
+The source archive chain ends at <code>b51_scientific_source_delta.json</code>; the
+combined software and documentation checks are retained in
+<code>artifacts/research/b51_final_validation.json</code>.
+The targeted suite passes 729 tests in 163.37 seconds, including 39 new
+regional-owner and report cases. Tests cover independently enumerated
+finite models, exact stationary frontiers, nonnested layers, false origin
+membership caused by hulls, interrupted budgets and evidence integrity.</p>
+<h2 id="46-b52-a-nodal-excursion-budget-excludes-the-node-2-lower-boundary">46. B52: a nodal excursion budget excludes the node-2 lower boundary<a class="headerlink" href="#46-b52-a-nodal-excursion-budget-excludes-the-node-2-lower-boundary" title="Permanent link">&para;</a></h2>
+<p>The remaining regional queries need information that survives their hulls.
+A useful exact relation is now available for the half of the original
+64-cell cube in which node 2 has its lower represented value. Keep B47 as
+the primary origin and use the same integer carried coordinates
+<code>X=X_B47+g*k</code>, <code>g=2^-113</code>. Define the proof coordinate</p>
+<div class="highlight"><pre><span></span><code>W(k) = -2*k_0 + 2*k_2 + k_3 - k_5.
+</code></pre></div>
+<p>This is a linear read-out of the existing nodal state. It adds no dynamics,
+pressure coefficient, capacity, timestep or state reset.</p>
+<p>Its coefficients are derived from the unit-C6 nodal diffusion geometry:
+they are the primitive integer zero-mean Poisson contrast satisfying
+<code>L_rw*w=(3/2)*(e_2-e_0)</code>. The campaign solves that rational system rather
+than selecting new physical weights. This geometric identity motivates
+the read-out; the complete binary64 pressure table separately proves its
+drift, including all nonlinear rounding terms:</p>
+<div class="highlight"><pre><span></span><code>W(k_next)-W(k) &gt;= d = 1418638309884336 &gt; 0.
+</code></pre></div>
+<p>The complete node-2 lower unsafe slabs inside R259 have
+<code>W &lt;= M = 237475340900157211</code>. Every admitted transition from the other half
+of R259 into this half has
+<code>W &gt;= L = 449419196811482809 &gt; M</code>. Each extremum is certified by an integer
+transport dual and a matching admissible primal point; every crossing
+intersection is enumerated exactly. These bounds already hold in R259,
+without the optional B51 cuts.</p>
+<h3 id="the-infinite-claim-reduces-to-one-derived-finite-gate">The infinite claim reduces to one derived finite gate<a class="headerlink" href="#the-infinite-claim-reduces-to-one-derived-finite-gate" title="Permanent link">&para;</a></h3>
+<p>After any reentry, W starts above M and increases throughout the active
+visit, so that visit cannot reach a node-2 lower unsafe slab. The original
+B47 point starts in the active half at W=0. During its initial visit, a
+target could therefore be reached only at source ordinals
+<code>n &lt;= floor(M/d) = 167</code>. This is a mathematical bound, not a selected
+simulation horizon.</p>
+<p>The shared carried integrator checks the initial visit with freshly rebuilt
+canonical pressure and complete incoming remainders. It can stop as soon as
+the visit ends or W exceeds M. On the actual B47 input this occurs at step
+56, with <code>W = 247713108641769776 &gt; M</code>. Every checked source avoids the
+targets, all 56 steps remain in R259 and the full RN cube, and every nodal
+balance residual is exactly zero. The earlier scratch check of all 168
+steps is redundant for this certificate; its endpoint never replaces B47.</p>
+<p>Consequently, no path from the unchanged B47 origin that remains in R259
+can reach any of the eight node-2 lower unsafe slabs. Section 43's
+conditional pair-strip preservation and the rebuilt clipped forward
+inclusion bind this to every actual prefix before a first cube exit. Thus
+the eight complete slabs cannot cause that first exit at any later time.
+This is neither invariance for arbitrary starts nor a claim about paths
+that have already left the proof domain.</p>
+<h3 id="shared-implementation-and-present-coverage">Shared implementation and present coverage<a class="headerlink" href="#shared-implementation-and-present-coverage" title="Permanent link">&para;</a></h3>
+<p><code>src/tnfr/physics/c6_carried_excursion.py</code> owns the excursion theorem,
+integer extremum certificates, complete ingress checks and derived-prefix
+observer. It shares canonical source, RN-cell and relational-domain
+preparation with <code>c6_carried_viability.py</code>, and uses the shared nodal
+integrator for the finite gate. A nonpositive drift, nonstrict ingress gap
+or unfinished prefix remains inconclusive. Domain departure only settles
+domain-confined path exclusion; the owner never certifies global trapping.</p>
+<p>The existing campaign's <code>--method excursion</code> reconstructs B49, rechecks all
+24 positive B51 queries, and applies the new certificate to the full
+node-2 lower target family. Full RN geometry and unsafe-slab construction
+are now shared by the regional and excursion campaigns. The combined
+result excludes <strong>32 of 56</strong> complete first-exit slabs. The remaining 24
+are eight each for node-0 lower, node-3 upper and node-4 upper. Indefinite
+boundedness of this C6 case remains open; no live graph invocation occurs.
+Evidence: <code>artifacts/research/c6_winding_excursion_exclusion.json</code> and its
+independent validation; source/check retention uses the B52 archive and
+<code>artifacts/research/b52_final_validation.json</code>.
+The combined targeted suite passes 772 tests in 215.06 seconds, including
+43 new owner/report cases. Independent validation checks all 199 ingress
+intersections, 271 attaining primal/dual extrema, the 56 shared prefix
+steps, and the 24 prior exclusions through 112 complete predecessor layers.</p>
+<h3 id="complementary-controls-and-next-proof-target">Complementary controls and next proof target<a class="headerlink" href="#complementary-controls-and-next-proof-target" title="Permanent link">&para;</a></h3>
+<p>A second exact coordinate, with coefficients <code>(1,-1,-3,-5,5,3)</code>, has positive
+drift in the node-3 upper half, but its ingress lower bound is below the
+unsafe ceiling. That coefficient vector supplies no corresponding reentry
+exclusion. A bounded separation search further produces an exact obstruction
+to this entire single-linear-coordinate template on the full common-grid
+R259 domain: seven strictly positive rational coefficients balance five
+active pressure vectors and two admissible ingress-minus-target point
+differences to zero. No linear functional can be strictly positive on all
+those vectors. Thus changing the weights alone cannot simultaneously give
+positive drift on every node-3 upper row and strict separation of every
+ingress from every unsafe target in this domain. The obstruction does not
+cover smaller reachable domains, mode-dependent coordinates or nonlinear
+barriers. Evidence: <code>artifacts/research/c6_b52_node3_excursion_separator_probe.json</code>.
+The next attack is a coupled ingress/exit budget or finer certified domain
+for the three remaining classes, retaining the distinctions that made node
+2 decidable.</p>
+<p>One concrete next candidate is a cell-dependent proof coordinate
+<code>V_c(k)=w*k+b_c</code>. Every admitted active transition <code>c -&gt; d</code> would need a
+strictly positive verified increment <code>w*a_c+b_d-b_c</code>, with target and
+ingress extrema using their own cell offsets. The initial budget must
+start at <code>V_initial</code>, not silently at zero. The current seven-vector
+obstruction does not include such cell offsets. Their feasibility and
+finite-prefix gate remain unproved; the offsets would belong only to the
+proof, never to the nodal update.</p>
+<p>Three bounded refinements explain why more geometric detail alone has not
+closed the argument. Successor-cell modes preserve immediate temporal
+correlation but leave all former 32 queries undecided at depths 13/14 under
+250,000 intersections. Removing the five lifted node-0 excluded regions
+creates 102 disjoint domain pieces and reaches depths 23/24 without another
+exclusion; joining those pieces per original cell fills all five holes.
+Two affine read-outs in a lifted DBM reach depths 34/35 but likewise yield
+no additional exclusion at the same guard. These are conditional outer
+approximations, not actual exits. Retained probes are
+<code>c6_b52_successor_modes_probe.json</code>, <code>c6_b52_lifted_domain_probe.json</code> and
+<code>c6_b52_affine_lift_probe.json</code> under <code>artifacts/research</code>.</p>
+<h2 id="47-b53-separate-cell-offset-budgets-exclude-four-further-regions">47. B53: separate cell-offset budgets exclude four further regions<a class="headerlink" href="#47-b53-separate-cell-offset-budgets-exclude-four-further-regions" title="Permanent link">&para;</a></h2>
+<p>The original B47 state and canonical carried map remain unchanged. B53
+first removes the 32 whole first-exit slabs already excluded by B51/B52,
+using their exact complementary inequalities in the original RN cube.
+Call this restricted domain D32. Every actual prefix before the first cube
+exit remains in D32; this is not a forward-invariance assertion for every
+point of D32.</p>
+<h3 id="a-shared-origin-containing-forward-envelope">A shared origin-containing forward envelope<a class="headerlink" href="#a-shared-origin-containing-forward-envelope" title="Permanent link">&para;</a></h3>
+<p>The new <code>derive_c6_carried_reachable_envelope</code> in
+<code>src/tnfr/physics/c6_carried_viability.py</code> computes</p>
+<div class="highlight"><pre><span></span><code>R_0 = D32
+R_(n+1) = hull_per_RN_cell({B47 origin} union (F(R_n) intersect D32)).
+</code></pre></div>
+<p>The complete layers descend and contain the unchanged origin. Induction
+therefore puts every domain-confined origin path inside every retained
+layer, including a complete layer retained after a resource limit. Each
+layer satisfies <code>F(R_n) intersect D32 subset R_n</code>. In this instance, 264
+strict descents are followed by exact matrix equality, after 232,802
+intersection checks. The resulting R* still has 24 outward labels. Its
+clipped fixed point is not a trapping certificate.</p>
+<h3 id="preserve-each-targets-own-proof-coordinate">Preserve each target's own proof coordinate<a class="headerlink" href="#preserve-each-targets-own-proof-coordinate" title="Permanent link">&para;</a></h3>
+<p>For a visit to the 32 cells with node 3 at its upper displayed value, use
+<code>V_c(k)=w dot k+b_c</code>. Its exact change on an admitted active transition
+<code>c -&gt; d</code> is <code>w dot a_c+b_d-b_c</code>. The added constants are proof read-outs,
+not new nodal parameters, pressure terms or state writes.</p>
+<p>Four separate candidates succeed for the whole node-3 upper unsafe slabs
+with masks <strong>29, 31, 61 and 63</strong>. Each has strict positive change on every
+one of the 242 admitted active transitions. Each of the 189 ingress
+pieces has potential strictly above that candidate's complete target
+ceiling. The original B47 point is already above the ceiling as well, so
+the derived initial gate is zero: these four results require no additional
+trajectory steps. The independently checked 760 attaining primal/dual
+extrema cover the four target maxima and all their ingress minima.</p>
+<p>The candidates are stored as exact rational proof proposals in
+<code>benchmarks/c6_winding_mode_excursion_candidates.json</code>. A shared positive
+normalization converts each complete weight/offset family to integers.
+<code>derive_c6_carried_mode_excursion_exclusion</code> shares source, RN, grid,
+extremum and prefix machinery with the B52 owner, and checks every active
+edge explicitly. The initial value and all ingress/target bounds include
+their own cell offsets. A family with no internal edge has visits of at
+most one point; it receives no fictitious positive drift certificate.</p>
+<p>The existing campaign's <code>--method modes</code> reconstructs the prior evidence
+and validates these proposals against one common pre-candidate domain.
+No candidate assumes its own exclusion. It then removes the four newly
+proved slabs and closes the remaining domain, D36. This second closure is
+already fixed at its first complete image, with 830 intersection checks.
+The report binds the B47, B46, B43, B49, B51 and B52 input bytes and the
+candidate bytes. Replaying B52's 56-step gate is prior-proof verification,
+separate from the zero new steps required by B53.</p>
+<h3 id="remaining-gap-and-useful-negative-controls">Remaining gap and useful negative controls<a class="headerlink" href="#remaining-gap-and-useful-negative-controls" title="Permanent link">&para;</a></h3>
+<p>Coverage is now <strong>36 of 56</strong> complete first-exit slabs:</p>
+<table>
+<thead>
+<tr>
+<th>Pending class</th>
+<th>Masks</th>
+<th>Count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Node 0 lower</td>
+<td>0, 4, 8, 12, 16, 20, 24, 28</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Node 3 upper</td>
+<td>28, 30, 60, 62</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Node 4 upper</td>
+<td>56, 57, 58, 59, 60, 61, 62, 63</td>
+<td>8</td>
+</tr>
+</tbody>
+</table>
+<p>Twenty slabs remain unresolved. Neither these counts nor a successful
+restricted proof establish global C6 stability, convergence or a live
+post-SHA runtime theorem. All statements still concern the fixed-phase,
+unit-capacity carried continuation from B47, with <code>h=1/16</code>.</p>
+<p>The successful single-target functions do not combine into a proof for
+all eight original node-3 targets. Bounded common-gradient/offset searches
+retain exact template obstructions or explicit inconclusive outcomes for
+the residual targets. An apparently nonincreasing mean proposal also
+fails exactly: an admissible coordinate-coset transition <code>50 -&gt; 0</code>
+increases <code>sum(k)/2^59</code> by <code>13/2^59</code>. This hypothetical edge is checked
+with the shared nodal kernel, but is not claimed reachable from B47.
+Ignoring the small residual would create a false theorem. Reparameterized
+mean-corrector searches keep this integer defect visible and have not
+produced a validated barrier. These failures restrict those proof
+templates; they do not prove instability of the actual path.</p>
+<p>The exact next structural reduction is to preserve complete short return
+relations, including every intermediate exit gate, instead of joining
+away the coupled ingress and pressure information. Retained evidence and
+validation for the integrated four-region result are in
+<code>artifacts/research/c6_winding_mode_excursions.json</code> and its independent
+validation. The B53 source archive records the exact scientific source.</p>
+<h3 id="validated-return-reduction-and-stopped-refinements">Validated return reduction and stopped refinements<a class="headerlink" href="#validated-return-reduction-and-stopped-refinements" title="Permanent link">&para;</a></h3>
+<p>Inside D36, no admitted transition connects two cells whose node-2 bit is
+high. The original B47 point has that bit low. Retain each direct low-to-low
+transition and each low-to-high-to-low path as a separate translated guard;
+there are 1,265 such pieces. Origin-containing closure on the low modes
+reaches equality after three iterations and 3,795 intersections. Rebuilding
+every high intermediate from every retained low source tightens 26 of the
+64 cells. An intermediate is retained even if it has no subsequent low
+return, so an intermediate outward transition cannot disappear from the
+audit. All 20 remaining labels still occur.</p>
+<p>The coverage argument is induction over successive low visits, followed by
+one-step reconstruction of high visits. It is not a claim of one-step
+invariance for the projected per-cell hulls. Independent validation checks
+all 830 ordinary edges, every compressed guard and all three complete
+layers. The retained prototype is
+<code>artifacts/research/c6_b53_compressed_return_probe.json</code>, with its domain
+loader and validation. Sixty strict and sixty nondecreasing coupled-return
+separator queries produce no positive certificate; 728 independently
+checked constraints and overlap witnesses certify their stated negative
+results, with other queries explicitly inconclusive.</p>
+<p>The exact coordinate cosets also admit a finite temporal check. Write
+<code>k=8*z+r</code>, with 128 allowed residues: <code>r_0,r_1</code> range from 0 through 7,
+<code>r_2</code> is 0 or 4, and <code>r_3=r_4=r_5=0</code>. Integer closure of
+<code>z_i-z_j &lt;= floor((B_ij-r_i+r_j)/8)</code> decides every guard/coset intersection.
+All 106,240 intersections are nonempty; abstract reachability from B47
+reaches all 8,192 cell/residue vertices. Each of the 20 unsafe slabs remains
+nonempty in all 128 residues. This rules out exclusion by this particular
+necessary graph test, not by exact trajectory analysis. Evidence and full
+independent enumeration are retained in
+<code>artifacts/research/c6_b53_mod8_temporal_graph_probe.json</code> and its validation.</p>
+<p>A lifted total-coordinate envelope also retains all 20 labels after 301
+complete layers and its 250,000-intersection guard. Increasing these guards
+or retaining the same residue labels supplies no new established mechanism.
+The next proof needs a stronger coupled temporal relation or a barrier
+verified on complete return guards, preserving their common source state
+and all intermediate exits. An abstract path assembled from separate edge
+witnesses does not provide such a state.</p>
+<p>The final production campaign passes independent validation of 64 pressure
+rows, 1,016 primal/dual extrema, 968 active transitions and 756 ingress
+pieces. The targeted suite passes <strong>845 tests in 267.02 seconds</strong>, including
+73 new reachable-owner, mode-owner and campaign cases. The unchanged B47
+origin, seven input hashes and scientific source archive are recorded in
+<code>artifacts/research/b53_final_validation.json</code>. This validation closes the
+four additional regional claims, while the requested remaining twenty-region
+and indefinite-boundedness proof remains open.</p>
+<h2 id="48-b54-complete-return-guards-exclude-two-node-0-lower-regions">48. B54: complete return guards exclude two node-0 lower regions<a class="headerlink" href="#48-b54-complete-return-guards-exclude-two-node-0-lower-regions" title="Permanent link">&para;</a></h2>
+<p>The two remaining layers of information in section 47 have different
+roles. The return envelope is a forward outer bound on possible origin
+paths. A backward query asks whether a complete unsafe slab can have an
+origin-compatible past. Combining them now excludes <strong>node-0 lower masks
+4 and 12</strong>, without advancing the actual trajectory.</p>
+<h3 id="preserve-the-intermediate-state-in-one-shared-relation">Preserve the intermediate state in one shared relation<a class="headerlink" href="#preserve-the-intermediate-state-in-one-shared-relation" title="Permanent link">&para;</a></h3>
+<p><code>src/tnfr/physics/c6_carried_return.py</code> owns both the exact short-return
+envelope and its whole-region predecessor queries. It rebuilds canonical
+pressures, RN cells, the full carried origin and the common integer grid.
+The transient partition selects node 2's upper displayed value; the
+complete one-step relation must have no transient-to-transient edge, and
+the original state must be in the complementary base set. These are
+verified proof premises, not changes to the dynamics.</p>
+<p>For a direct return <code>a -&gt; c</code>, retain its exact source guard and increment.
+For a two-step return <code>a -&gt; b -&gt; c</code>, intersect the incoming guard in cell b
+with the outgoing guard <strong>at that same intermediate state</strong>. Translate
+this intersection back to a and forward to c, retaining the complete
+six-coordinate increment. Separate first-step records retain every
+base-to-transient visit, including visits with no subsequent return.
+The current D36 instance has 830 ordinary edges and 1,265 return records.</p>
+<p>The origin-injected base closure and reconstruction of all transient
+visits reproduce the independently validated envelope from section 47.
+Resource accounting includes ordinary candidate pairs, return construction,
+complete closure layers and transient reconstruction. Incomplete relation
+construction retains the supplied domain and exposes no usable partial
+relation. An interrupted closure layer is discarded. A return fixed point
+still does not assert one-step invariance of joined intermediate hulls.</p>
+<h3 id="backward-exclusion-covers-every-possible-visit-length">Backward exclusion covers every possible visit length<a class="headerlink" href="#backward-exclusion-covers-every-possible-visit-length" title="Permanent link">&para;</a></h3>
+<p>Let Q0 contain unsafe base states together with every base predecessor of
+an unsafe transient state. The latter is computed from the complete
+first-step records, even where no later return exists. For each exact
+return guard G with displacement a, the next backward piece is</p>
+<div class="highlight"><pre><span></span><code>G intersect (Q_n - a).
+</code></pre></div>
+<p>Only after applying each complete guard are these pieces joined per base
+RN cell. Each resulting complete layer is checked against the unchanged
+B47 origin. For both newly excluded slabs, <strong>layer 7 is empty</strong>, and the
+origin is absent from every preceding layer. Earlier lengths are therefore
+excluded directly; every later layer remains empty. Seven counts returns,
+not a selected physical-time simulation horizon. These layers need not be
+nested, and an abstract origin collision would be inconclusive.</p>
+<p>The original full supplied targets remain in the certificate. Their
+intersection with the origin-containing return envelope is justified by
+its path-coverage theorem, not by an assumption that every point in that
+envelope is reachable. Independent reconstruction of the two positive
+queries checks 1,375 intersections, six transient target preimages, the
+complete 830-edge ordinary relation and all 1,265 return records. The
+production envelope accounts for 10,303 intersections: 5,578 during
+construction and 4,725 during closure and intermediate reconstruction.</p>
+<p>The existing campaign adds <code>--method returns</code>. It reconstructs B53 and
+checks its complete retained payload against eight frozen input byte
+streams before using D36. The shared unsafe-slab helper uses original RN
+cube facets throughout. The result is <strong>38 of 56</strong> complete first-exit
+slabs excluded, with <strong>18 unresolved</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Pending class</th>
+<th>Masks</th>
+<th>Count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Node 0 lower</td>
+<td>0, 8, 16, 20, 24, 28</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Node 3 upper</td>
+<td>28, 30, 60, 62</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Node 4 upper</td>
+<td>56, 57, 58, 59, 60, 61, 62, 63</td>
+<td>8</td>
+</tr>
+</tbody>
+</table>
+<p>The original fixed-phase, unit-capacity <code>h=1/16</code> map and B47 carry are
+unchanged. B52's finite gate is replayed only as a prior proof premise;
+B54 requires zero new trajectory steps and no live graph invocation.
+Global C6 boundedness, convergence and post-SHA runtime promotion remain
+open. Report: <code>artifacts/research/c6_winding_return_regions.json</code>.</p>
+<h3 id="a-tested-stronger-temporal-refinement">A tested stronger temporal refinement<a class="headerlink" href="#a-tested-stronger-temporal-refinement" title="Permanent link">&para;</a></h3>
+<p>A separate exact prototype composes pairs of returns before joining their
+middle state. Of 85,272 compatible-label pairs, 9,590 have a nonempty
+common carried-source guard. Twenty-six complete even-return closure
+layers use 249,340 intersections before the computational guard. Coverage
+then includes the one-return image for odd visits and every transient
+intermediate, avoiding an even-endpoint-only claim. This tightens 53 cells
+relative to the single-return envelope, but excludes no additional label
+by itself. Its independent validator reconstructs every pair, every
+complete layer and the odd/intermediate coverage.</p>
+<p>Evidence: <code>artifacts/research/c6_b54_double_return_probe.json</code> and its
+validation. A backward search on this stronger outer domain finds the
+same two positive slabs, with the other 18 still resource-limited. The
+useful gain in B54 comes from complete guarded backward exclusion; tighter
+forward hulls alone have not supplied the missing full confinement proof.</p>
+<p>Removing the two newly excluded slabs and repeating the return audit does
+not add an exclusion at the same 500,000-query-intersection guard. A further
+backward prototype keeps direct and transient first-return components
+separate and intersects each exact guard before joining. All 18 queries
+still reach their guard at complete depths 19 or 20, without an empty or
+stationary layer or an origin collision. These retained controls are
+<code>c6_b54_post_exclusion_probe.json</code> and
+<code>c6_b54_partitioned_return_predecessors.json</code> under <code>artifacts/research</code>.
+Their unfinished searches do not prove that their targets are reachable.</p>
+<p>The final targeted suite passes <strong>925 tests in 346.90 seconds</strong>, including
+80 new return-owner, regional-query and campaign cases. Independent
+validation binds all eight input hashes, the archived scientific source,
+all complete return guards, every original unsafe target and both positive
+proofs. Software, documentation and provenance checks are retained in
+<code>artifacts/research/b54_final_validation.json</code>; source reconstruction uses
+<code>b54_scientific_source_delta.json</code>. The remaining 18-region proof is open.</p>
+<h2 id="49-b55-exact-unions-exclude-another-complete-first-exit-region">49. B55: exact unions exclude another complete first-exit region<a class="headerlink" href="#49-b55-exact-unions-exclude-another-complete-first-exit-region" title="Permanent link">&para;</a></h2>
+<p>This block preserves the B47 origin, full carry, source pressure, phases,
+unit capacity and <code>h=1/16</code>. It changes only the representation of possible
+predecessors. A convex hull can fill a gap between two regions and thereby
+introduce a spurious path. The new query retains a finite union of closed
+integer difference-bound regions for each base RN cell.</p>
+<p>For a return edge <code>e</code> with exact source guard <code>G_e</code>, displacement <code>a_e</code>
+and target cell <code>d</code>, each individual target piece <code>Z</code> contributes</p>
+<div class="highlight"><pre><span></span><code>Pre_e(Z) = G_e intersect (Z - a_e).
+</code></pre></div>
+<p>The union is formed without a hull. A piece may be removed only when a
+retained piece in the same cell contains it. This pairwise subsumption
+preserves the exact union. Initial targets remain the full original unsafe
+slabs, clipped only by the previously justified path envelope; transient
+targets contribute every unjoined first-step preimage. Thus possible last
+visits to transient cells are not lost.</p>
+<p>Every complete layer is checked against the unchanged origin. A complete
+empty layer, or identical consecutive normalized unions with all earlier
+layers excluding the origin, excludes all domain-confined visit lengths.
+Equal counts alone are insufficient. These layers need not be nested.
+The common integer grid and the inherited forward envelope remain outer
+approximations, so origin membership would not prove actual reachability.</p>
+<p>For <strong>mask 0, node 0 lower</strong>, the complete zone counts are
+<code>1 -&gt; 5 -&gt; 9 -&gt; 14 -&gt; 0</code>. The origin is absent at every depth. Production
+accounting verifies <strong>1,237 intersections</strong> (one initial clipping plus
+1,236 predecessor pairs) and <strong>90 subsumption comparisons</strong>. Layer 4 is
+empty; all later layers are therefore empty as well. This excludes the
+entire original target slab as a first-cube-exit source, not merely a
+chosen outward point. It requires no new trajectory step.</p>
+<p>The implementation lives in the existing
+<a href="../../../../../src/tnfr/physics/c6_carried_return.py"><code>c6_carried_return.py</code></a> owner as
+<code>derive_c6_carried_return_union_exclusions</code>. Shared preparation for both
+query representations rebuilds pressure, RN cells, carried origin and all
+intermediate guards. The previous B54 envelope and all twenty B54 query
+payloads remain identical. Query limits bound intersections, pairwise
+comparisons and the number of pieces; interrupted initialization publishes
+no absence claim, and later interruptions retain the last complete layer.</p>
+<p>The existing benchmark adds <code>--method unions</code>. It reconstructs the whole
+B54 result before comparing its retained bytes and binds nine input files.
+The final campaign spends 500,000 query intersections and 894,744
+subsumption comparisons. Its positive proof raises coverage to <strong>39/56</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Pending first-exit class</th>
+<th>Masks</th>
+<th>Count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Node 0 lower</td>
+<td>8, 16, 20, 24, 28</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Node 3 upper</td>
+<td>28, 30, 60, 62</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Node 4 upper</td>
+<td>56, 57, 58, 59, 60, 61, 62, 63</td>
+<td>8</td>
+</tr>
+</tbody>
+</table>
+<p>The other seventeen queries remain resource-limited. Report:
+<code>artifacts/research/c6_winding_return_unions.json</code>. Its independent
+validator binds the source and nine-input chain, reconstructs original
+targets and replays the positive finite-union proof using separate matrix
+arithmetic. Global C6 boundedness, convergence and post-SHA runtime
+promotion remain open.</p>
+<h3 id="bounded-complementary-controls-and-reuse">Bounded complementary controls and reuse<a class="headerlink" href="#bounded-complementary-controls-and-reuse" title="Permanent link">&para;</a></h3>
+<p>Independent exact-union probes with 250,000 intersections per query find
+no additional positive among the other seventeen targets. Coordinate-
+coset tightening adds none; 61 verified adjacent integer-cut union merges
+reduce fragmentation but add none. Rebuilding every return guard after
+removing node-0 masks 0, 4 and 12 leaves all completed residual backward
+layer hashes unchanged.</p>
+<p>A signed embedding <code>(k0,-k0,...,k5,-k5,0)</code> additionally preserves pair sums.
+Its coherence, integer unary tightening and difference closure preserve
+all embedded integer points, as checked by independent finite-set oracles.
+The 100,000-intersection forward probe and eighteen backward queries with
+50,000 intersections each produce no further exclusion. A separate fixed
+partition at zero nodal carry preserves each sign combination before
+joining. Four representative targets reach their 100,000-intersection
+limits at depths 52, 51, 30 and 21 without a proof. These are inconclusive
+bounded searches, not impossibility results for richer domains.</p>
+<p>The earlier complete spatial increment lattice is reverified against all
+64 B54 pressure rows: its exact basis is <code>diag(1,1,4,8,8,8)</code>, of index 2048.
+It supplies no additional time-free spatial congruence. The existing
+necessary full-return period divisor remains
+<code>2721508902482880257845796439528</code>; it proves neither a periodic orbit nor
+confinement. Reuse that arithmetic result rather than searching the period.</p>
+<p>A cumulative backward worklist additionally drops a newly encountered
+region if an earlier visited region in the same cell contains it. Across
+all seventeen residual targets, its 134 complete frontiers (depths 5--12)
+show no cross-depth subsumption and match the ordinary exact-union layers.
+Sixteen queries stop at comparison limits and one at an intersection
+limit. This bookkeeping alone supplies no further proof; the retained
+control is <code>c6_b55_cumulative_union_return_probe.summary.json</code>.</p>
+<p>Source reconstruction and final checks are retained in
+<code>artifacts/research/b55_scientific_source_delta.json</code> and
+<code>artifacts/research/b55_final_validation.json</code>. The remaining proof needs
+inductive nonconvex coverage or a stronger coupled temporal barrier, with
+the original full-target and pre-first-exit quantifiers preserved.
+The focused shared-return and campaign suite passes <strong>146 tests in 168.17
+seconds</strong>, including 66 new cases; documentation integrity and lint checks
+also pass. These checks concern the implementation and its scoped proof,
+not empirical confirmation of the paradigm.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../../../../docs/assets/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+      
+    
+  </body>
+</html>
