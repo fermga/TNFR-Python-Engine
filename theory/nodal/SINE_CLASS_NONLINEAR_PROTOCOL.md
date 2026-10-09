@@ -766,6 +766,6 @@ It neither identifies a physical particle or interaction nor establishes
 attainable laboratory preparation, clock or measurement precision. The
 finite negative response is consistent with the earlier positive formal
 joint-short-time coefficient, whose limiting regime differs. Dependence
-of this nonlinear mixed response on the mediator's acquired class remains
-a separate question in the sole
-[execution queue](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).
+of this nonlinear mixed response on the mediator's acquired class is addressed
+by the separate [scaled comparison](SINE_CLASS_COMPARISON_PROTOCOL.md#sine-comparison-reserved-result),
+with its own source transfer, eight readings and prospective criteria.

@@ -364,6 +364,9 @@ reference histories.
 <a id="sine-comparison-frozen-association"></a>
 ## Immutable source and protocol association
 
+The prospective text above is preserved unchanged. Its unevaluated statements
+describe protocol admission; the later outcome has a separate section below.
+
 The [exact protocol](../../docs/assets/sine_formed_classes/class-comparison-readout-v1.protocol.json),
 [source archive](../../docs/assets/sine_formed_classes/class-comparison-readout-v1.source.zip)
 and [freeze receipt](../../docs/assets/sine_formed_classes/class-comparison-readout-v1.freeze.json)
@@ -396,5 +399,93 @@ worktree when the execution plan activates its reserved evaluation. The
 [freeze audit](../../tests/physics/test_sine_class_comparison_freeze.py)
 checks this association and synthetic helper behavior without scientific
 execution. The sole [next-task queue](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-owns the future response; the numerical width remains an unevaluated
-postcondition.
+owns later evaluation and follow-up work. The numerical width was an
+unevaluated postcondition at freezing; its first outcome is retained below.
+
+<a id="sine-comparison-reserved-result"></a>
+## Retained first independent comparison
+
+The single evaluation from the pinned complete source above completed all
+1536 attempted steps: two classes, each with six carried segments of 128
+steps. No evaluation error, source reset, retry, parameter change or
+prediction intersection was used. Both the primary suffix-increment
+contrast and the separate raw-endpoint contrast have retained status
+`discrimination_certified`. The historical `not_evaluated` freeze status
+is unchanged.
+
+The primary reference interval is exactly
+\[
+ I_{\mathrm{ref}}=
+ \left[-\frac{6549026775}{2^{128}},
+       -\frac{6548966240}{2^{128}}\right].
+ \tag{14}
+\]
+The raw-endpoint reference interval is
+\([-6549030940/2^{128},-6548962075/2^{128}]\).
+Their widths are respectively \(60535/2^{128}\) and \(68865/2^{128}\).
+Equation (8) adds the same independently proved source allowance once to
+each construction. The resulting bounds below are rounded outward;
+retained exact rational endpoints determine every decision.
+
+| Quantity | Primary retained bound, in units of \(10^{-30}\) |
+| --- | --- |
+| Independent reference contrast | \([-19.245859943492,-19.245682047114]\) |
+| Source allowance \(B_{\mathrm{source}}\) | \(\le0.080106809079\) |
+| Actual-family contrast | \([-19.325966752570,-19.165575238035]\) |
+| Reference width | \(\le0.000177896377\) |
+| Actual-family width | \(\le0.160391514534<1\) |
+| Recorded contrast, including eight reading errors | \([-27.325966752570,-11.165575238035]\) |
+| Gap from the independently noisy zero-contrast alternative | \(>3.165575238035\) |
+
+Both forward reference intervals lie strictly inside the open
+reference prediction (11); both transported intervals lie strictly inside
+the actual-family prediction (12). Thus the required overlap checks and
+the stronger, optional containment diagnostics pass. The actual-family
+width requirement passes for both constructions: the raw-endpoint width
+is at most \(0.160415994204\,10^{-30}\), with null-separation margin
+greater than \(3.165562998200\,10^{-30}\). The primary construction was
+selected prospectively; these are not alternative trials from which to
+choose a favorable response.
+
+The true and recorded contrasts are strictly negative. In the fixed class
+order, this means \(M_1<M_2\): the two organizations have different
+nonlinear mixed responses. It is not a coherence or stability ranking.
+The recorded contrast is disjoint from \([-8\delta,8\delta]\), the
+declared independently noisy zero-class-contrast alternative. This finite
+separation uses the sixteen-error criterion, not merely a signed midpoint.
+
+### Byte association and reconstruction
+
+The [exclusive attempt](../../docs/assets/sine_formed_classes/class-comparison-readout-v1.attempt.json)
+and [compressed response](../../docs/assets/sine_formed_classes/class-comparison-readout-v1.response.zip)
+retain the first evaluation. The ZIP contains only
+`class-comparison-readout-v1.json`, preserving its original bytes.
+
+| Retained object | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Attempt ledger | 723 | `0f55f35c32edde0cc5584767d84d03aaeb5113a87c55a8de9004b10c8d5077d7` |
+| Response ZIP | 42,090,162 | `c77d5b48a3e77e3e2c826dfb6c850dba73769d861ddc95acbc5bcf1828d8131c` |
+| Uncompressed response member | 808,798,262 | `a6553e20450454a5ff191b608c35a651bd85a82c9ba9dfc5ed78c98302aff03b` |
+
+The [read-only response audit](../../tests/physics/test_sine_class_comparison_evidence.py)
+re-admits source, support, law, clock, events and numerical policy. It uses
+the shared evidence reader to reconstruct all retained step arithmetic,
+full-state handoffs, both observation constructions and global completion.
+It then independently rebuilds source transport, widths, prediction checks
+and reading-error decisions. It executes no producer, field, derivative,
+Picard certificate generator or archived evaluator. Stored derivative and
+Picard generation remain numerical execution premises; reconstruction and
+digests do not authenticate execution or source acquisition.
+
+This result is an independent complete-law numerical enclosure plus the
+proved transfer to the original correlated acquired families. No formation
+was rerun, and arbitrary Cartesian source corners are not thereby acquired.
+The work and identity claims retain the matched amplitude/source theorem;
+solver smoothness flags cannot replace it. The old unscaled central/spatial
+noise-cancellation results remain valid for their unchanged interventions.
+
+The evaluation supports organization-dependent nonlinear interaction at one
+declared finite design. Repeated use must retain branch-specific state and
+memory; it cannot assume a new common source after each word. Laboratory
+preparation and reading precision, physical identification, autonomous
+intervention selection and inheritance across scales remain open.

@@ -238,6 +238,14 @@ recipes, fixed predictions, version policy and prospective proof prefix;
 compile only the named pure helpers for serialization/error-retention controls.
 Never execute an archived main or producer to validate the freeze.
 
+The first retained comparison has its own read-only response gate:
+`python -m pytest tests/physics/test_sine_class_comparison_evidence.py -q`.
+Parse the large response once, reconstruct both complete branch trees with the
+shared evidence reader, then independently rebuild the cross-class contrast,
+source transfer and all observation criteria. Retained derivatives and Picard
+generation remain execution premises. This gate must not rerun the producer,
+regenerate a coefficient or replace missing response evidence.
+
 For [common-scale amplitude feasibility](theory/nodal/SINE_CLASS_AMPLITUDE_FEASIBILITY.md),
 check whole-interval coefficient homogeneity and higher-amplitude bounds,
 the complex-domain boundary, the fixed source/noise allowances and the

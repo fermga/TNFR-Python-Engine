@@ -1,0 +1,22 @@
+{
+  "schema":"tnfr.sine-class-comparison-attempt.v1",
+  "started_utc":"2026-10-09T11:52:48.060447+00:00",
+  "source_base_commit":"8e40dac013c026c0f198a2f95131512277286bbf",
+  "freeze":{
+    "path":"docs/assets/sine_formed_classes/class-comparison-readout-v1.freeze.json",
+    "bytes":1009,
+    "sha256":"4616665bac697157b11471f98d0dd4efb7a3055f977ed5e7535367e318295840"
+  },
+  "runtime":{
+    "python":"3.13.6",
+    "implementation":"CPython",
+    "platform":"Windows-11-10.0.26300-SP0",
+    "dependencies":{
+      "numpy":"2.3.3",
+      "networkx":"3.5"
+    },
+    "backend":"exact Fraction and outward dyadic128",
+    "randomness":"none"
+  },
+  "retry_policy":"none; retain first success, partial outcome or exception"
+}

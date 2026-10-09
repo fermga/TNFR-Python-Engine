@@ -17,8 +17,8 @@ P1-P5 below governs physical evaluation; it is not another active queue.
 
 **Primary question:** can organized TNFR patterns generate observable
 collective properties that explain phenomena of fundamental physics?
-The next bounded question concerns how acquired internal organization
-determines interaction between patterns under one complete nodal law.
+The next bounded question is whether the acquired organization-dependent
+interaction survives repeated use under the same complete nodal law.
 The route is **justified nodal dynamics -> collective organization
 -> inherited interaction properties -> independent physical observation**. The
 [ontology](../EMERGENT_ONTOLOGY.md#generative-bound-organization) distinguishes
@@ -26,39 +26,29 @@ collective properties from their physical identification. A sufficient
 representation does not independently justify the law that evolves it.
 
 The conditional formation and [class-response certificate](#generative-class-mediated-response)
-connect acquired organization to a distinguishable interaction, with
+connect acquired organization to distinguishable interaction, with
 [effective memory](#acquired-mediator-effective-memory) retaining hidden
-initialization. The [first frozen four-history evaluation](#reserved-nonlinear-four-history-response)
-now supports the prospective within-class nonlinear/tangent separation
-under its declared error budget. The [complete cubic-amplitude bound](../nodal/SINE_CLASS_CUBIC_RESPONSE.md#sine-cubic-finite-result)
-now establishes that the nonlinear mixed response changes with the
-mediator's organization at the unchanged finite design. Its full-law true
-contrast is strictly negative, including actual-source uncertainty, but
-the allowed reading errors can erase this scalar contrast for every
-admitted actual source pair. This scoped obstruction does not establish
-overlap of complete reading vectors. The earlier
-[independent-remainder limitation](../nodal/SINE_CLASS_NONLINEAR_ORGANIZATION.md)
-remains valid for that weaker estimate. The
-[spatial receiver assessment](../nodal/SINE_CLASS_SPATIAL_OBSERVATION.md#sine-spatial-finite-result)
-also certifies a true organization contrast, but its sixteen reading
-errors can erase it. Because the central and spatial readings use disjoint
-nodes, allowed errors can cancel both statistics simultaneously. No
-linear combination of these two statistics guarantees discrimination
-under this budget. The [amplitude feasibility theorem](../nodal/SINE_CLASS_AMPLITUDE_FEASIBILITY.md)
-now certifies a nonempty common-scale interval with robust central
-discrimination under the original reading, work and identity budgets.
-This conditional result reuses the retained cubic coefficient and proves
-a sharper bound on the delayed impulse's carried work. The
-[fixed comparison protocol](../nodal/SINE_CLASS_COMPARISON_PROTOCOL.md#sine-comparison-frozen-association)
-now separates complete nonlinear reference integration from an independent
-bound transferring it to the original acquired families. Its source,
-intervention, numerical budget and outcome criteria are frozen. The first
-independent cross-class response is the [sole next evaluation](#current-g3-gate), for the
-[organization-dependent interaction rationale](../NODAL_RESEARCH_STRATEGY.md#organization-dependent-nonlinearity).
+initialization. The [first within-class evaluation](#reserved-nonlinear-four-history-response)
+and [independent cross-class comparison](#reserved-scaled-cross-class-comparison)
+now support finite nonlinear interaction and its dependence on acquired
+internal organization under one declared complete law.
 
-The admitted producer, frozen protocol and first outcome are consolidated;
-no further reserved response is needed to restate that result. Earlier
-obstructions and source-specific physical reviews retain their scope.
+The [scaled comparison result](../nodal/SINE_CLASS_COMPARISON_PROTOCOL.md#sine-comparison-reserved-result)
+completed its frozen full-state calculation, met both prediction checks and
+its source-inclusive width policy, and separated the recorded contrast from
+the independently noisy zero-contrast alternative. Its source transfer
+preserves the original acquired families. Earlier
+[central](../nodal/SINE_CLASS_CUBIC_RESPONSE.md#sine-cubic-finite-result) and
+[spatial](../nodal/SINE_CLASS_SPATIAL_OBSERVATION.md#sine-spatial-finite-result)
+noise-cancellation results retain their unchanged intervention and reading
+budgets; the successful scaled design does not erase those obstructions.
+
+The next obligation is [carried repeatability on the joined network](#current-g3-gate):
+determine whether this interaction property survives repeated use with its
+full residual state, mean shifts and work accounted for. A new common source
+cannot be assumed after each word. This is a theoretical return-family
+admission, not another reserved response or a physical-data campaign.
+
 Supplied preparation, support, law, events and structural clock remain
 premises. In particular, the very small source/readout allowances and long
 preparation dwell are mathematical budgets, not demonstrated laboratory
@@ -71,8 +61,9 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Pending reserved evaluation | [First independent class comparison](#current-g3-gate): execute the frozen reference-plus-source protocol once and retain completion, width, consistency and discrimination separately |
-| Closed protocol and freeze admission | [Scaled cross-class evaluation](#scaled-cross-class-evaluation-admission): one fixed intervention, shared full-state producer, original acquired-family transfer and immutable source/protocol association; no response evaluated |
+| Pending theoretical admission | [Repeated joined interaction](#current-g3-gate): admit a common finite return family with carried branch memory, conserved-mean shifts, work and comparator error |
+| Closed reserved evaluation | [First independent class comparison](#reserved-scaled-cross-class-comparison): complete frozen full-law evaluation, both consistency checks, source-inclusive width and strict noisy-null separation |
+| Closed protocol and freeze admission | [Scaled cross-class evaluation](#scaled-cross-class-evaluation-admission): one fixed intervention, shared full-state producer, original acquired-family transfer and immutable source/protocol association; no response evaluated at freezing |
 | Closed theoretical admission | [Probe-amplitude feasibility](#organization-probe-amplitude-feasibility): a whole common-scale interval separates central records from a noisy zero-contrast alternative within the original work and identity budgets |
 | Closed conditional analytic assessment | [Spatial organization observation](#organization-sensitive-observation): true quadratic class dependence and simultaneous central/spatial scalar noise cancellation, without full-record overlap |
 | Closed conditional analytic assessment | [Mediator organization and nonlinear interaction](#mediator-organization-nonlinear-interaction): complete cubic dynamics certify a true class contrast and a scoped scalar noise-cancellation witness |
@@ -99,37 +90,55 @@ remain open; no empirical response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="joined-class-interaction-return-admission"></a>
+## Next primary admission: carried return for repeated joined interaction
+
+Determine whether the [finite class-dependent interaction](../nodal/SINE_CLASS_COMPARISON_PROTOCOL.md#sine-comparison-reserved-result)
+can become a reusable property under repeated supplied probe words on the
+same joined support and complete law. Retain all eight branch states across
+words; the four histories within a class no longer start from one shared
+complete source after their first different interventions.
+
+1. Define the full carried state, degree-weighted form and phase means,
+   relative coordinates and observation for every branch. Establish the
+   exact mean increments and their cancellation in the mixed statistic;
+   retain absolute means rather than silently resetting or discarding them.
+2. Prove a common finite dwell returning all relative branch states to a
+   declared neighborhood uniformly in the repetition count, or identify a
+   precise obstruction. Reuse the [isolated-class maintenance method](../nodal/SINE_FORMED_CLASS_MAINTENANCE.md#sine-formed-class-maintenance)
+   only after deriving the joined support's own constants and hypotheses.
+   A forward return family is not automatically the original formation image.
+3. Bound the next word's response from these distinct carried residuals.
+   Retain the named comparator's own residual and memory allowance; its
+   mixed statistic cannot be set to zero merely by reusing the first word's
+   shared-source argument. Check the remaining strict reading-error margin.
+4. Account for actual preevent work, identity and each intervening flow under
+   the same law. A return proof supplies neither an autonomous event selector
+   nor a reservoir. Close on a conditional return/separation result, a scoped
+   obstruction or the precise missing premise before admitting new execution.
+
+This gate transfers a method, not the old isolated cycle's coefficients or
+verdicts. It activates no reset, new acquisition, numerical parameter search
+or further reserved response. Physical identification and inheritance across
+scales remain separate obligations.
+
 <a id="reserved-scaled-cross-class-comparison"></a>
-## Next primary evaluation: retain the first independent class comparison
+<a id="next-primary-evaluation-retain-the-first-independent-class-comparison"></a>
+## Closed evaluation: first independent class comparison
 
-Execute the [frozen comparison protocol](../nodal/SINE_CLASS_COMPARISON_PROTOCOL.md#sine-comparison-frozen-association)
-once from its pinned source and runtime. The two complete nonlinear reference
-calculations share the declared law and supplied event schedule; their
-independent source-transfer bound preserves the original acquired families.
-The analytic prediction must remain separate from every forward enclosure.
+The [retained result](../nodal/SINE_CLASS_COMPARISON_PROTOCOL.md#sine-comparison-reserved-result)
+completed both full-state reference calculations once under the frozen source,
+intervention and work policy. The independently transported actual-family
+contrast meets its numerical-width requirement, agrees with both prospective
+open predictions and excludes the declared independently noisy zero-contrast
+alternative. The separate raw-endpoint diagnostic reaches the same verdict
+from the same retained histories.
 
-1. Inspect the immutable receipt and restore its complete Git base with the
-   shared frozen-source tool. Verify runtime versions and the absence of
-   an earlier attempt, outcome or export-error record before execution.
-2. Run the archived evaluator with its unchanged `7/10000` impulses,
-   `1/128` step, order 16 and 1536 total attempt cap. Preserve both complete
-   carried trees and the first numerical failure; apply no later child
-   after a failed source and make no parameter or source adjustment.
-3. Retain reference and raw-endpoint contrasts, the independent transfer
-   to actual sources, both widths and both open-prediction consistency
-   checks. Evaluate the actual-width `1e-30` postcondition and the distinct
-   true/recorded signs and sixteen-error null separation. Inconclusive
-   width, missing observations and conflicting evidence remain distinct.
-4. Retain the exclusive first attempt and complete or partial outcome,
-   including an export failure when applicable. Audit primitive inputs,
-   law, ancestry and consumed arithmetic without regenerating derivatives.
-   Close this queue entry with the result owner, even if a required
-   numerical postcondition is unresolved.
-
-The freeze contains no selected response. The fixed width is a sufficient
-acceptance requirement, not a guarantee that the interval solver attains it.
-Preparation, clock and reading precision remain mathematical premises;
-no physical-data campaign or fundamental-law identification is active.
+The immutable attempt and response retain the complete carried evidence.
+Read-only reconstruction re-admits primitive state, law, events, arithmetic
+and criteria without rerunning derivatives or trajectories. This finite
+conditional result establishes neither repeated shared-source preparation,
+attainable laboratory precision nor a physical constituent identity.
 
 <a id="scaled-cross-class-evaluation-admission"></a>
 ## Closed admission: a single scaled cross-class observation protocol
@@ -151,7 +160,8 @@ The [immutable source/protocol association](../nodal/SINE_CLASS_COMPARISON_PROTO
 pins the numerical work policy, transported-width postcondition, two
 consistency checks, noise counts and first-outcome/export-failure handling.
 This admission generated no selected reference, nonlinear response or
-attempt record. Numerical completion and resolution remain to be evaluated.
+attempt record. Its later numerical completion and resolution belong to the
+[separate retained evaluation](#reserved-scaled-cross-class-comparison).
 
 <a id="organization-probe-amplitude-feasibility"></a>
 ## Closed admission: a justified amplitude regime for discrimination
