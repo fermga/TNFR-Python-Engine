@@ -60,6 +60,39 @@ then inspect their source and tests. That map links shared implementations,
 representative controls and theorem owners; this guide does not maintain a
 second inventory of research results or individual test cases.
 
+## Shared evidence maintenance
+
+The [evidence workflow](docs/guides/RESEARCH_EVIDENCE.md) separates maintained
+artifact mechanics, model-specific audits and immutable archived programs.
+For changes to their shared owners, select exact-record, archive and restoration
+controls separately from scientific producers:
+
+```sh
+python -m pytest tests/research/test_artifact_io.py tests/research/test_frozen_source.py tests/scripts/test_restore_frozen_source.py tests/mathematics/test_validated_taylor_arithmetic.py tests/mathematics/test_validated_box_taylor.py tests/physics/test_sine_flow_kernel.py -q
+```
+
+Exercise duplicate/nonfinite JSON, exact tags before scalar comparison, unsafe or
+duplicate archive names, expanded-byte limits, altered hashes and refusal to
+replace an existing record. Restoration controls use disposable synthetic Git
+repositories and read-only inspection of the committed freeze. Verify the full
+pinned base, admitted supplemental files and destination rejection; do not
+create a real reserved workspace or invoke an evaluator during regression.
+
+Retained Taylor reconstruction checks primitive shape/source admission and
+Horner/remainder/endpoint arithmetic. It does not prove stored derivative
+enclosures or replace a consumer's source, law, event or strict Picard checks.
+The shared sine field still needs independent edge-sum and jet controls for its
+layouts and held coefficients. Select changed consumers and existing read-only
+evidence audits in addition to these shared tests.
+
+Reuse expensive parsed records and archive bytes through module-scoped fixtures;
+copy a fixture before a mutation test. Pure test helpers must not import other
+test modules' autouse fixtures. Keep no-execution guards scoped and reversible,
+so an audit cannot leak patched producers or subprocess calls into unrelated
+tests. Shared arithmetic must not collapse a producer and its independent
+mathematical expectation into the same implementation. Current-code regression
+does not update frozen evidence or authorize the pending research response.
+
 ## Select research checks by contract
 
 Select the changed mathematical owner and its consuming APIs through the

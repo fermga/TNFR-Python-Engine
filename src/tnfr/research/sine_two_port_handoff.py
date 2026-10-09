@@ -9,7 +9,6 @@ No capture producer, root search, trajectory, or graph mutation is executed.
 
 from __future__ import annotations
 
-import hashlib
 import re
 import zipfile
 from dataclasses import dataclass
@@ -25,7 +24,10 @@ from ..physics.relational_sine_two_port_compatibility import (
     _current_factorization,
 )
 from ..utils.io import json_loads
-from .relational_acquisition import _exact, _require, _verify_archive
+from .artifact_io import _require
+from .artifact_io import exact_record as _exact
+from .artifact_io import read_bytes_bounded, sha256_bytes
+from .artifact_io import verify_archive_members as _verify_archive
 
 __all__ = (
     "SineTwoPortHandoffAudit",
@@ -459,10 +461,7 @@ def audit_sine_two_port_capture_handoff(evidence_directory):
 
     def read(name):
         path = directory / name
-        _require(
-            path.stat().st_size <= _LIMIT, "retained artifact exceeds the read budget"
-        )
-        return path.read_bytes()
+        return read_bytes_bounded(path, max_bytes=_LIMIT)
 
     manifest = json_loads(read(f"{_STEM}.manifest.json"))
     expected = {
@@ -479,7 +478,7 @@ def audit_sine_two_port_capture_handoff(evidence_directory):
         _require(
             type(item["bytes"]) is int
             and len(data) == item["bytes"]
-            and hashlib.sha256(data).hexdigest() == item["sha256"],
+            and sha256_bytes(data) == item["sha256"],
             "retained artifact size or digest differs",
         )
         content[item["file"]] = data
@@ -504,7 +503,7 @@ def audit_sine_two_port_capture_handoff(evidence_directory):
             "different original capture source inventory",
         )
         digests = {item["path"]: item["sha256"] for item in source["files"]}
-        digests["source-manifest.json"] = hashlib.sha256(source_bytes).hexdigest()
+        digests["source-manifest.json"] = sha256_bytes(source_bytes)
         _verify_archive(directory / f"{_STEM}.source.zip", digests)
         for item in source["files"]:
             _require(

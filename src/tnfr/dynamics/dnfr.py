@@ -443,8 +443,8 @@ def _init_dnfr_cache(
 ]:
     """Initialise or reuse cached ΔNFR arrays.
 
-    ``manager`` telemetry became mandatory in TNFR 9.0 to expose cache hits,
-    misses and timings. Older callers still pass a ``cache`` instance as the
+    ``manager`` telemetry records cache hits, misses and timings. Legacy
+    callers can still pass a ``cache`` instance as the
     third positional argument; this helper supports both signatures by seeding
     the manager-backed state with the provided cache when necessary.
     """

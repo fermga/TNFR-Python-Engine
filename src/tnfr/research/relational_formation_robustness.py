@@ -9,7 +9,6 @@ single-law comparisons with the same reflected preparation, not a joint box.
 from __future__ import annotations
 
 import ast
-import hashlib
 import zipfile
 from dataclasses import dataclass
 from fractions import Fraction as Q
@@ -21,7 +20,11 @@ from ..mathematics._rational_interval import I, pi_interval
 from ..physics import relational_transit as transit
 from ..sdk.relational_reports import _project
 from ..utils.io import json_loads
-from .relational_acquisition import _exact, _read, _require, _verify_archive
+from .artifact_io import _require
+from .artifact_io import decode_exact_tree as _decode
+from .artifact_io import exact_record as _exact
+from .artifact_io import read_bytes_bounded, sha256_bytes, sha256_file
+from .artifact_io import verify_archive_members as _verify_archive
 
 __all__ = (
     "RelationalFormationComparisonStep",
@@ -50,6 +53,10 @@ _HORIZON = Q(32)
 _STEP = Q(1, 8)
 _COORDINATE_LIMITS = (Q(101, 100), Q(1, 4))
 _RESULTANT_LIMITS = (Q(97, 100), Q(21, 25), Q(29, 1000))
+
+
+def _read(path):
+    return read_bytes_bounded(path, max_bytes=32 * 1024**2)
 
 
 @dataclass(frozen=True)
@@ -137,16 +144,6 @@ class RelationalFormationRobustnessAudit:
         }
 
 
-def _decode(value):
-    if isinstance(value, dict):
-        if set(value) == {"numerator", "denominator"}:
-            return _exact(value)
-        return {key: _decode(item) for key, item in value.items()}
-    if isinstance(value, list):
-        return tuple(_decode(item) for item in value)
-    return value
-
-
 def _box(values):
     _require(len(values) == 4, "reference requires four reduced coordinates")
     return tuple(I(_exact(value["lo"]), _exact(value["hi"])) for value in values)
@@ -218,6 +215,7 @@ def _reference_comparison_matrix(tube, e, w, beta):
 
 def _source_hashes():
     from ..mathematics import _interval_taylor, _rational_interval, _validated_taylor
+    from . import artifact_io
 
     paths = (
         Path(__file__),
@@ -225,10 +223,9 @@ def _source_hashes():
         Path(_interval_taylor.__file__),
         Path(_rational_interval.__file__),
         Path(_validated_taylor.__file__),
+        Path(artifact_io.__file__),
     )
-    return tuple(
-        (path.name, hashlib.sha256(path.read_bytes()).hexdigest()) for path in paths
-    )
+    return tuple((path.name, sha256_file(path)) for path in paths)
 
 
 def _bound_reference(record, protocol):
@@ -459,7 +456,7 @@ def audit_relational_formation_robustness(
         raw = tuple(_read(item) for item in paths)
         for data, (name, digest) in zip(raw, _REFERENCE_HASHES):
             _require(
-                hashlib.sha256(data).hexdigest() == digest,
+                sha256_bytes(data) == digest,
                 f"immutable reference changed: {name}",
             )
         record, protocol = (_decode(json_loads(data)) for data in raw[:2])

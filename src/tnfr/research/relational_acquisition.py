@@ -8,8 +8,6 @@ current-source replay, blind calibration and physical model admission.
 from __future__ import annotations
 
 import argparse
-import hashlib
-import re
 import zipfile
 from collections.abc import Mapping
 from dataclasses import dataclass
@@ -24,6 +22,16 @@ from ..physics.relational_observations import (
 )
 from ..sdk.relational_reports import relational_report_to_dict
 from ..utils.io import json_dumps, json_loads
+from .artifact_io import (
+    _require,
+    encode_exact_tree,
+)
+from .artifact_io import exact_record as _exact
+from .artifact_io import (
+    read_bytes_bounded,
+    sha256_bytes,
+    verify_archive_members,
+)
 
 __all__ = (
     "RelationalAcquisitionAudit",
@@ -34,24 +42,6 @@ __all__ = (
 _MAX_STEPS = 4096
 _MAX_RECORD_BYTES = 32 * 1024**2
 _MAX_ARCHIVE_BYTES = 128 * 1024**2
-
-
-def _require(condition, message):
-    if not condition:
-        raise ValueError(message)
-
-
-def _exact(raw):
-    if isinstance(raw, Mapping):
-        _require(set(raw) == {"numerator", "denominator"}, "invalid fraction record")
-        numerator, denominator = raw["numerator"], raw["denominator"]
-        _require(
-            type(numerator) is int and type(denominator) is int and denominator > 0,
-            "fraction fields require integers and a positive denominator",
-        )
-        return Q(numerator, denominator)
-    _require(type(raw) in (int, Q), "exact record requires an integer or fraction")
-    return Q(raw)
 
 
 def _pair(raw, *, represented=False):
@@ -69,12 +59,7 @@ def _pair(raw, *, represented=False):
 
 
 def _encoded(value):
-    def exact(item):
-        if isinstance(item, Q):
-            return {"numerator": item.numerator, "denominator": item.denominator}
-        raise TypeError("unsupported record value")
-
-    return json_dumps(value, sort_keys=True, allow_nan=False, default=exact)
+    return json_dumps(value, sort_keys=True, allow_nan=False, default=encode_exact_tree)
 
 
 def _same(actual, expected, label):
@@ -389,46 +374,12 @@ def audit_relational_coefficient_record(
 
 
 def _read(path):
-    _require(
-        path.stat().st_size <= _MAX_RECORD_BYTES, "record exceeds audit byte budget"
-    )
-    return path.read_bytes()
+    return read_bytes_bounded(path, max_bytes=_MAX_RECORD_BYTES)
 
 
 def _verify_archive(path, manifest):
-    _require(
-        isinstance(manifest, Mapping) and bool(manifest), "missing source manifest"
-    )
-    with zipfile.ZipFile(path) as archive:
-        names = archive.namelist()
-        _require(
-            len(names) == len(set(names)) and set(names) == set(manifest),
-            "source archive inventory differs",
-        )
-        entries = archive.infolist()
-        _require(
-            sum(info.file_size for info in entries) <= _MAX_ARCHIVE_BYTES,
-            "expanded archive exceeds audit byte budget",
-        )
-        _require(
-            all(
-                not info.flag_bits & 1
-                and info.compress_type in (zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED)
-                for info in entries
-            ),
-            "unsupported source archive encoding",
-        )
-        for name, expected in manifest.items():
-            _require(
-                isinstance(expected, str)
-                and re.fullmatch(r"[0-9a-f]{64}", expected) is not None,
-                "invalid source digest",
-            )
-            digest = hashlib.sha256()
-            with archive.open(name) as stream:
-                for chunk in iter(lambda: stream.read(65536), b""):
-                    digest.update(chunk)
-            _require(digest.hexdigest() == expected, "archived source digest differs")
+    # Historical readers and archived helpers import this private signature.
+    verify_archive_members(path, manifest, max_bytes=_MAX_ARCHIVE_BYTES)
 
 
 def audit_relational_coefficient_acquisition(
@@ -454,12 +405,11 @@ def audit_relational_coefficient_acquisition(
         record, protocol = json_loads(response_bytes), json_loads(protocol_bytes)
         _require(isinstance(record, Mapping), "response must be an object")
         _require(
-            record["protocol_sha256"] == hashlib.sha256(protocol_bytes).hexdigest(),
+            record["protocol_sha256"] == sha256_bytes(protocol_bytes),
             "protocol digest differs",
         )
         _require(
-            record["source_archive_sha256"]
-            == hashlib.sha256(_read(archive)).hexdigest(),
+            record["source_archive_sha256"] == sha256_bytes(_read(archive)),
             "archive digest differs",
         )
         _verify_archive(archive, protocol["source_sha256"])

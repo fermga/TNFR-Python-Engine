@@ -59,6 +59,8 @@ graph invalidation and persistence retain their separate responsibilities.
 | Public high-level API | [`sdk/simple.py`](src/tnfr/sdk/simple.py) |
 | JSON decoding and atomic file writes | [`utils/io.py`](src/tnfr/utils/io.py); one strict JSON value policy shared by configuration and SDK readers |
 | JSON report I/O | [`sdk/utils.py`](src/tnfr/sdk/utils.py); delegates to shared decoding/writing, also used by the CLI and fluent `save()` |
+| Research artifact records and byte integrity | [`research/artifact_io.py`](src/tnfr/research/artifact_io.py); exact tagged records, bounded reads/hashes, receipts, ZIP inventory and exclusive creation; scientific admission remains with each consumer |
+| Pinned frozen-source preparation | [`research/frozen_source.py`](src/tnfr/research/frozen_source.py); explicit freeze-schema inspection and detached source restoration, without evaluator execution or runtime certification |
 | Configured validation orchestration | [`validation/validator.py`](src/tnfr/validation/validator.py); fresh checks, shared input/precondition owners and explicit runtime clamp effects |
 | Manifest graph transport | [`engines/manifest.py`](src/tnfr/engines/manifest.py); strict v1 records for the supported finite JSON state subset |
 | Buffered event storage | [`telemetry/unified_telemetry_system.py`](src/tnfr/telemetry/unified_telemetry_system.py); shared capture/flush path using `utils.io` atomic writes |
@@ -149,6 +151,15 @@ Generic error guidance describes these domains and points to current references;
 it supplies neither arbitrary global EPI/pressure/capacity bounds nor universal
 coherence monotonicity. Consumer-specific bounds remain explicit configuration.
 
+Shared scalar and alias admission does not select a complete evolution law.
+Ordinary nodal integration retains its held pressure and live Gamma source;
+native relational execution retains its declared resultant normalization;
+detached sine calculations retain their separate pairwise law and clock.
+Missing-state defaults, required full coordinates and represented-output
+checks belong to the consuming path. Reusing a held-law evaluator is valid
+only while its coefficients, capacity and support remain the admitted ones;
+it does not refresh stored pressure or turn an observation into evolution.
+
 Nodal held-step validation and THOL proposal validation share a comparison
 kernel and the configured tolerance/clipping policy. They check a supplied
 single held-input step; they do not authenticate pressure provenance, account
@@ -228,7 +239,8 @@ lost in that conversion.
 | [`mathematics/_exact_linear_algebra.py`](src/tnfr/mathematics/_exact_linear_algebra.py) | Shared exact products, powers, inverses and semidefinite tests; compatibility physics imports, fixed-map network-stage powers and p-adic tower products delegate here. The tower adapter retains its mutable list rows. Products skip exact zero factors while retaining full rational output shapes and the consumers' product-call accounting. |
 | [`mathematics/krylov.py`](src/tnfr/mathematics/krylov.py) | Exact rational rank, Krylov reachability and Hankel moment calculations under their declared input/output premises. |
 | [`mathematics/_phase_resultant_chamber.py`](src/tnfr/mathematics/_phase_resultant_chamber.py) | Rational trigonometric/resultant bounds, principal-argument charts and supplied-rate kinematics. Reused geometry does not transfer a law. |
-| [`mathematics/_validated_taylor.py`](src/tnfr/mathematics/_validated_taylor.py) | Strict Picard tubes, Taylor remainders and initial-box propagation; the comparison kernel owns the shared 1–24-coordinate work limit. Each flow adapter retains its layout and other admission budgets. |
+| [`mathematics/_validated_taylor.py`](src/tnfr/mathematics/_validated_taylor.py) | Strict Picard tubes and Taylor remainders; comparison propagation retains its 1–24-coordinate policy, while direct source-box propagation has its separate 1–64-coordinate policy. Each flow adapter retains its layout and other admission budgets. |
+| [`physics/_sine_flow.py`](src/tnfr/physics/_sine_flow.py) | Complete normalized-sine form/phase field on admitted geometry, reusing held degree/law factors for interval and jet evaluation; the old two-port owner retains a compatibility import. |
 | [`mathematics/_validated_metric.py`](src/tnfr/mathematics/_validated_metric.py) | Reuses Picard/Taylor machinery while retaining an SPD-metric radius between steps. The caller proves its whole-tube logarithmic bound; local truncation/rounding errors enter the same norm. Coordinate projections do not replace the retained uncertainty. |
 | [`sdk/relational_reports.py`](src/tnfr/sdk/relational_reports.py) | Shared exact JSON projection and supported report delegation, using the atomic SDK writer; not a checkpoint or provenance authenticator. |
 
@@ -309,11 +321,34 @@ owns the mathematical implications of this reuse.
 
 #### Retained evidence adapters
 
-`tnfr.research` readers consume frozen protocols, source archives and responses
-through the shared numerical owners. They can reconstruct declared sources,
-compare retained bounds or analyze an evaluated trajectory without replaying
-the producer. A source hash binds bytes; it does not prove a mathematical model
-or authenticate the historical execution.
+`research/artifact_io.py` owns shared exact-record encoding, bounded byte reads
+and digests, receipts, exact ZIP inventory verification and exclusive record
+creation. JSON syntax and finite-value policy still belong to `utils/io.py`.
+Historical private imports delegate to the shared mechanics; their consumers
+retain their existing schemas, admission errors and scientific domains.
+
+Model-specific `tnfr.research` readers reconstruct consumed source, law, clock,
+event and observation evidence through shared numerical owners. Generic artifact
+integrity or retained Taylor arithmetic cannot replace those checks or prove the
+validity of stored derivative enclosures. A hash binds bytes; it neither proves
+a mathematical model nor authenticates historical execution.
+
+`reconstruct_box_taylor_arithmetic` in `_validated_taylor.py` re-admits interval
+shape, source/tube inclusion and the retained polynomial/remainder arithmetic,
+returning increments and intersected endpoints. The source-box solver reuses
+this arithmetic; it does not generate derivatives or a Picard certificate on
+its own. A detached reader using it must still compare cached outputs and retain
+its own complete-law, event and strict-inclusion obligations.
+
+Frozen helper programs and archives remain immutable. Current maintenance code
+can audit their bytes without executing them. A later frozen execution requires
+its entire declared base revision plus admitted overlays and original environment;
+selected archived snapshots are not a replacement for unlisted dependencies.
+`research/frozen_source.py` and its `scripts/restore_frozen_source.py` adapter
+inspect the explicit supported freeze schema and can prepare a new detached
+worktree; they never invoke its scientific entry point or certify its runtime.
+The [evidence workflow](docs/guides/RESEARCH_EVIDENCE.md) separates audit,
+immutable freeze, source restoration and first-outcome execution.
 
 The [benchmark catalog](benchmarks/README.md) owns instrument selection and
 lifecycle. Preparation, prospective prediction, reserved evaluation and

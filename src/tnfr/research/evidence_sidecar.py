@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import math
 import re
 from collections.abc import Mapping
@@ -13,6 +12,7 @@ from types import MappingProxyType
 from typing import Any
 
 from ..utils.io import json_dumps, safe_write
+from .artifact_io import sha256_file
 from .certificates import NumericalCertificate
 from .core_manifests import CoreExperimentManifest
 from .manifests import ExperimentManifest
@@ -272,11 +272,7 @@ class EvidenceSidecar:
                 raise EvidenceAdmissionError(
                     "artifact must be an existing file within root_dir"
                 )
-            digest = hashlib.sha256()
-            with path.open("rb") as stream:
-                for chunk in iter(lambda: stream.read(1 << 16), b""):
-                    digest.update(chunk)
-            if digest.hexdigest() != _digest(expected):
+            if sha256_file(path) != _digest(expected):
                 raise EvidenceAdmissionError(f"artifact SHA-256 mismatch: {name}")
             paths.append(path)
         return tuple(paths)

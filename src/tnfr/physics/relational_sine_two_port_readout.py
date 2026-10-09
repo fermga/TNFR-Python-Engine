@@ -13,60 +13,18 @@ from fractions import Fraction as Q
 
 from .._exact_time import exact_or_represented_real
 from ..dynamics.relational import RelationalExchangeModel
-from ..mathematics._interval_taylor import MAX_ORDER, Jet
-from ..mathematics._interval_taylor import sin as jet_sin
-from ..mathematics._rational_interval import INTERVAL_METHOD, I, sin
+from ..mathematics._interval_taylor import MAX_ORDER
+from ..mathematics._rational_interval import INTERVAL_METHOD, I
 from ..mathematics._validated_taylor import (
     ValidatedBoxTaylorStep,
     validated_box_taylor_step,
 )
-from ._sine_admission import _sine_model_coefficients
+from ._sine_flow import _full_sine_field
 from .phase_cycle_geometry import PhaseCycleGeometry, _derive
 from .relational_observations import _interval, _ordered
-from .relational_sine_comparison import _sine_form_gradient, _sine_rates
 from .relational_sine_two_port_compatibility import _EDGES, _NODES
 
 __all__ = ("SineTwoPortReadout", "bound_sine_two_port_readout")
-
-
-def _full_sine_field(model, geometry, degrees):
-    """Use the shared complete law, transforming both rows to tau=e*t."""
-    loss, _, _ = _sine_model_coefficients(model, positive_loss=True)
-    size = len(geometry.nodes)
-    neighbors = tuple(
-        tuple(j if i == node else i for i, j in geometry.edges if node in (i, j))
-        for node in range(size)
-    )
-    if tuple(degrees) != tuple(map(len, neighbors)):
-        raise ValueError("degrees must match every indexed support neighbor row")
-
-    def flow(state):
-        epi, phase = state[:size], state[size:]
-        is_jet = isinstance(state[0], Jet)
-        zero = Jet.constant(0, state[0].order) if is_jet else I(0)
-        sine = jet_sin if is_jet else sin
-        currents = [zero for _ in range(size)]
-        for i, j in geometry.edges:
-            current = sine(phase[j] - phase[i])
-            currents[i] += current
-            currents[j] -= current
-        rates = _sine_rates(
-            model,
-            degrees,
-            _sine_form_gradient(epi, neighbors),
-            (Q(1),) * size,
-            tuple(currents),
-        )
-        return tuple(
-            value / loss for value in rates["form_rates"] + rates["phase_rates"]
-        )
-
-    def domain(_):
-        # The complete comparison law is globally smooth on R^(2*size). This does
-        # not assert an acute chart, cycle identity or a native continuation.
-        return (Q(1),)
-
-    return flow, domain
 
 
 @dataclass(frozen=True)
@@ -172,7 +130,6 @@ def bound_sine_two_port_readout(
     model = RelationalExchangeModel(
         1, epi_weight=Q(1023, 1024), phase_weight=Q(1, 1024), phase_domain="regular"
     )
-    _sine_model_coefficients(model, positive_loss=True)
     q = tuple(Q(int(i == 4) - int(i == 5)) for i in _NODES)
     initial = form + tuple(
         value + amplitude * coefficient for value, coefficient in zip(phase, q)

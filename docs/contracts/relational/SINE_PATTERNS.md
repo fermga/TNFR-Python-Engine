@@ -1465,6 +1465,14 @@ noise nor automatically pure numerical error. No response-sign, model
 discrimination, formation or physical-readiness verdict is inferred.
 The schema is `tnfr.sine-class-four-history-readout.v1`; shared SDK
 projection and atomic export retain the full evidence and availability.
+The complete interval/jet field uses [`_sine_flow.py`](../../../src/tnfr/physics/_sine_flow.py)
+and snapshots held law/degree/capacity factors without changing nodal
+arithmetic order. Changed factors require a new evaluator. The shared
+Taylor solver uses `reconstruct_box_taylor_arithmetic` to check exact
+interval shapes, source containment in its tube and retained
+Horner/remainder/endpoint arithmetic. That reusable operation does not
+regenerate derivatives or prove Picard inclusion; a detached reader still
+owns its law, source, event and stored-certificate premises.
 The [guide](../../guides/relational/SINE_PATTERNS.md#sine-class-four-history-readout)
 uses an unrelated stationary fixture, not the reserved nonlinear design.
 The [separately frozen evaluation protocol](../../../theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-frozen-evaluation)

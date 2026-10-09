@@ -19,10 +19,10 @@ from ..mathematics._validated_taylor import (
     ValidatedBoxTaylorStep,
     validated_box_taylor_step,
 )
+from ._sine_flow import _full_sine_field
 from .phase_cycle_geometry import PhaseCycleGeometry, _derive
 from .relational_observations import _interval, _ordered
 from .relational_sine_class_mediation import _EDGES, _NODES
-from .relational_sine_two_port_readout import _full_sine_field
 
 __all__ = ("SineClassFourHistoryReadout", "bound_sine_class_four_history_readout")
 

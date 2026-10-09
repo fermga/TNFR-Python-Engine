@@ -1273,6 +1273,13 @@ neither an attempt nor a response. A later evaluation must retain its first
 outcome, including failure or an inconclusive interval, under the same
 protocol.
 
+After current-source maintenance, follow the
+[frozen-source restoration workflow](../RESEARCH_EVIDENCE.md#restore-the-declared-source-before-a-later-execution)
+before any separately admitted execution. This protocol requires the full
+`fa8e98a9b1bdd755709da481de7fc092b57bfe65` source tree and its archived
+helpers; a current reader's successful audit does not make refactored
+runtime code interchangeable with that frozen implementation.
+
 <a id="sine-class-nonlinear-protocol"></a>
 ### Check a finite nonlinear separation margin
 

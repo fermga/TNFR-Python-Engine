@@ -18,11 +18,10 @@ from ..mathematics._validated_taylor import (
     ValidatedBoxTaylorStep,
     validated_box_taylor_step,
 )
-from ._sine_admission import _sine_model_coefficients
+from ._sine_flow import _full_sine_field
 from .phase_cycle_geometry import PhaseCycleGeometry, _derive
 from .relational_observations import _interval, _ordered
 from .relational_sine_two_port_compatibility import _EDGES, _NODES
-from .relational_sine_two_port_readout import _full_sine_field
 
 __all__ = ("SineApertureReadout", "bound_sine_aperture_readout")
 
@@ -213,7 +212,6 @@ def bound_sine_aperture_readout(
     model = RelationalExchangeModel(
         1, epi_weight=Q(1023, 1024), phase_weight=Q(1, 1024), phase_domain="regular"
     )
-    _sine_model_coefficients(model, positive_loss=True)
     q = tuple(Q(int(i == 4) - int(i == 5)) for i in _NODES)
     boundaries = (Q(0), horizon / 3, 2 * horizon / 3, horizon, 2 * horizon)
     windows = tuple(zip(boundaries, boundaries[1:]))

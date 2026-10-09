@@ -262,22 +262,12 @@ def validated_box_taylor_step(
     tube, margin, bounds = admission
     try:
         series = flow_jets(box, order, flow)
+        remainder_scale = duration ** (order + 1)
         remainder = tuple(
-            row[-1] * duration ** (order + 1)
-            for row in flow_jets(tube, order + 1, flow)
+            row[-1] * remainder_scale for row in flow_jets(tube, order + 1, flow)
         )
-        increment = []
-        for row, error in zip(series, remainder):
-            value = row[-1]
-            for coefficient in reversed(row[1:-1]):
-                value = value * duration + coefficient
-            increment.append(value * duration + error)
-        increment = tuple(increment)
-        endpoint = tuple(value + change for value, change in zip(box, increment))
-        if any(max(x.lo, b.lo) > min(x.hi, b.hi) for x, b in zip(endpoint, tube)):
-            raise ArithmeticError("disjoint endpoint and whole-time enclosures")
-        endpoint = tuple(
-            I(max(x.lo, b.lo), min(x.hi, b.hi)) for x, b in zip(endpoint, tube)
+        increment, endpoint = reconstruct_box_taylor_arithmetic(
+            box, tube, series, remainder, duration, order=order
         )
     except (ValueError, ZeroDivisionError, ArithmeticError) as exc:
         return None, tube, f"Taylor_source_box_unavailable: {exc}"
@@ -298,3 +288,67 @@ def validated_box_taylor_step(
         None,
         None,
     )
+
+
+def reconstruct_box_taylor_arithmetic(
+    initial_box,
+    tube,
+    series,
+    local_remainder_bounds,
+    duration,
+    *,
+    order,
+):
+    """Rebuild source-box Taylor increments and endpoints without a field call.
+
+    This is an arithmetic check, not a trajectory certificate. The caller must
+    separately establish the derivative enclosures, whole-time remainder and
+    strict Picard/domain admission. Retained-report readers must also match
+    their model, source, clock and events and compare consumed cached outputs.
+
+    Exact positive duration, order1..16 and complete dimensions1..64 are
+    admitted here. Each source coefficient must equal its initial interval,
+    and the tube must contain the initial box. Horner evaluation excludes the
+    common order-zero term before interval arithmetic. Only the endpoint is
+    intersected with the tube; its increment retains its original enclosure.
+    """
+    duration = _exact(duration)
+    if duration <= 0:
+        raise ValueError("source-box Taylor duration must be positive")
+    if type(order) is not int or not 1 <= order <= MAX_ORDER:
+        raise ValueError("Taylor order outside the shared jet domain")
+    initial = tuple(I.coerce(value) for value in _ordered(initial_box, "initial box"))
+    size = len(initial)
+    if not 1 <= size <= MAX_BOX_TAYLOR_DIMENSION:
+        raise ValueError("source-box Taylor dimension outside the shared domain")
+    whole = tuple(I.coerce(value) for value in _ordered(tube, "whole-time tube"))
+    remainder = tuple(
+        I.coerce(value)
+        for value in _ordered(local_remainder_bounds, "local remainder bounds")
+    )
+    coefficients = tuple(
+        tuple(I.coerce(value) for value in _ordered(row, "Taylor coefficient row"))
+        for row in _ordered(series, "Taylor series")
+    )
+    if len(whole) != size or len(remainder) != size or len(coefficients) != size:
+        raise ValueError("source-box Taylor evidence dimensions differ")
+    if any(len(row) != order + 1 for row in coefficients):
+        raise ValueError("Taylor coefficient count differs from the declared order")
+    if any(row[0] != value for row, value in zip(coefficients, initial)):
+        raise ValueError("Taylor source coefficient differs from the initial box")
+    if any(not value.subset_of(bound) for value, bound in zip(initial, whole)):
+        raise ValueError("initial box is not contained in the whole-time tube")
+    increment = []
+    for row, error in zip(coefficients, remainder):
+        value = row[-1]
+        for coefficient in reversed(row[1:-1]):
+            value = value * duration + coefficient
+        increment.append(value * duration + error)
+    increment = tuple(increment)
+    endpoint = tuple(value + change for value, change in zip(initial, increment))
+    if any(max(x.lo, b.lo) > min(x.hi, b.hi) for x, b in zip(endpoint, whole)):
+        raise ArithmeticError("disjoint endpoint and whole-time enclosures")
+    endpoint = tuple(
+        I(max(x.lo, b.lo), min(x.hi, b.hi)) for x, b in zip(endpoint, whole)
+    )
+    return increment, endpoint

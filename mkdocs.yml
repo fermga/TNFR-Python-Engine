@@ -52,6 +52,7 @@ nav:
       - "Documentation map": docs/README.md
       - "Usage guides":
           - "CLI and SDK": docs/CLI_AND_SDK.md
+          - "Research evidence and frozen source restoration": docs/guides/RESEARCH_EVIDENCE.md
           - "Regional and relational SDK": docs/guides/REGIONAL_AND_RELATIONAL.md
           - "Native relational execution and observations": docs/guides/relational/RELATIONAL_EXECUTION.md
           - "Native relational capture, memory and continuous proofs": docs/guides/relational/RELATIONAL_CAPTURE_AND_MEMORY.md

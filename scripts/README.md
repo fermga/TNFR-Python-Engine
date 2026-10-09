@@ -60,12 +60,17 @@ neither follows a redirected output directory into source or another tree.
 | --- | --- |
 | `rebuild_failure_manifest.py` | Recover the latest failure record per integer input from an explicitly selected artifact directory; validate inputs before replacing the index. |
 | `replay/register_manifest.py` | Register replay metadata for a stored run. |
+| `restore_frozen_source.py` | Inspect a supported freeze against its complete Git base; optionally restore verified supplements in a new detached worktree, without executing archived code. |
 | `run_self_optimization.py` | Execute the manifest-driven self-optimization workflow. |
 | `run_self_opt_validation.py` | Run current-code regression suites selected by recommendation operation type; it does not apply or evaluate the recommendations. |
 | `tnfr_is_prime.py` | Compatibility entry point for the TNFR primality tool. |
 
 Use `--help` on scripts that expose command-line options. Reproducible runs must
 record their seed, inputs, operator sequence, and generated manifest.
+
+Frozen-source restoration follows the [research evidence workflow](../docs/guides/RESEARCH_EVIDENCE.md).
+The default is read-only inspection; `--destination` must name a new location.
+Source restoration does not verify installed dependencies or execute an evaluation.
 
 Failure-manifest recovery requires `--artifacts-dir` and `--manifest`;
 `--expected-count` optionally checks the number of distinct inputs. It does not

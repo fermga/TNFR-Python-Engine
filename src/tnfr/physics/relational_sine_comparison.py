@@ -909,6 +909,28 @@ def _sine_rates(
     exchange_factors=None,
 ):
     """Shared ideal rate rows for rational intervals or matched Taylor jets."""
+    evaluate = _sine_rate_evaluator(
+        reference_model, degrees, capacity, exchange_factors=exchange_factors
+    )
+    return evaluate(gradient, phase_currents)
+
+
+def _sine_rate_evaluator(
+    reference_model,
+    degrees,
+    capacity,
+    *,
+    exchange_factors=None,
+):
+    """Prepare held coefficients for repeated evaluations of the same law.
+
+    Callers supply already admitted rows and retain their source/support
+    provenance. Only immutable snapshots of degree, capacity, model and any
+    supplied exchange factors are retained. A caller refreshing those factors
+    must prepare a new evaluator or use ``_sine_rates`` for each evaluation.
+    The nodal arithmetic order is unchanged for intervals and Taylor jets.
+    """
+    degrees, capacity = tuple(degrees), tuple(capacity)
     pi = pi_interval()
     inverse_metric = tuple(1 / (pi * degree) for degree in degrees)
     if exchange_factors is not None:
@@ -916,27 +938,32 @@ def _sine_rates(
             factor * mobility
             for factor, mobility in zip(exchange_factors, inverse_metric)
         )
-    sources = tuple(
-        imag * mobility for imag, mobility in zip(phase_currents, inverse_metric)
-    )
     e, w = map(Q, reference_model.effective_weights)
     beta = Q(reference_model.storage_scale)
-    pressure = tuple(
-        -e * q / degree + w * source
-        for q, degree, source in zip(gradient, degrees, sources)
-    )
-    form_rates = tuple(nu * value for nu, value in zip(capacity, pressure))
-    phase_rates = tuple(
-        (w / beta) * nu * q * mobility
-        for nu, q, mobility in zip(capacity, gradient, inverse_metric)
-    )
-    return dict(
-        inverse_phase_metric=inverse_metric,
-        phase_sources=sources,
-        pressure=pressure,
-        form_rates=form_rates,
-        phase_rates=phase_rates,
-    )
+    exchange_ratio = w / beta
+
+    def evaluate(gradient, phase_currents):
+        sources = tuple(
+            imag * mobility for imag, mobility in zip(phase_currents, inverse_metric)
+        )
+        pressure = tuple(
+            -e * q / degree + w * source
+            for q, degree, source in zip(gradient, degrees, sources)
+        )
+        form_rates = tuple(nu * value for nu, value in zip(capacity, pressure))
+        phase_rates = tuple(
+            exchange_ratio * nu * q * mobility
+            for nu, q, mobility in zip(capacity, gradient, inverse_metric)
+        )
+        return dict(
+            inverse_phase_metric=inverse_metric,
+            phase_sources=sources,
+            pressure=pressure,
+            form_rates=form_rates,
+            phase_rates=phase_rates,
+        )
+
+    return evaluate
 
 
 def _sine_work(
