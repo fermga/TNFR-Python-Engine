@@ -355,6 +355,18 @@ wiring test admits pinned archive/member bytes before compiling only function
 definitions; it cannot silently fall back to a mutable build script. Freeze
 inspection never invokes the reserved experiment or authorizes a retry.
 
+The [first retained neighbor response](theory/nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL.md#sine-neighbor-forward-reserved-result)
+has a separate read-only gate:
+`python -m pytest tests/research/test_sine_class_neighbor_forward_evidence.py -q`.
+Admit exact attempt, protocol, archive and sole outcome-member bytes before
+decoding. Reuse one module-scoped report reconstruction to check all 64 full54
+steps and distinct-port events. Rebuild source, width, prediction and recorded
+separation decisions independently; cached endpoints/verdicts are checked,
+never used as their own premises. Selective corruptions exercise selector,
+carry and Taylor-arithmetic rejection. Shared guards block all scientific
+regeneration; derivative and strict Picard generation remain retained
+execution premises rather than authenticated by this arithmetic audit.
+
 For the [changed-input collective prediction](theory/nodal/SINE_CLASS_CHANGED_INPUT_PREDICTION.md),
 check grounded-path kernel coefficients, exact causal convolution weights,
 hidden quadratic feedback and independent linear initialization. Compare low

@@ -27,10 +27,12 @@ Under the supplied smooth-sine law, acquired patterns have conditional
 [interaction and return](../nodal/SINE_CLASS_REPEATED_INTERACTION.md) and
 [causal component composition](../nodal/SINE_CLASS_INTERFACE_COMPOSITION.md)
 with hidden initialization, both boundary channels and finite error retained.
-The latest [distinct-neighbor theorem](../nodal/SINE_CLASS_NEIGHBOR_NONADDITIVITY.md)
-derives a nonadditive mediator response against separately matched nonlinear
-single-neighbor functionals. It is an analytic prediction awaiting an
-independent full-law evaluation.
+The [distinct-neighbor theorem](../nodal/SINE_CLASS_NEIGHBOR_NONADDITIVITY.md)
+and its [independent full-law result](../nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL.md#sine-neighbor-forward-reserved-result)
+now support a finite nonadditive mediator response against separately matched
+nonlinear single-neighbor functionals under the frozen source and observation
+premises. The numerical, consistency and separate recorded-comparator checks
+all pass; no physical identification follows from that comparison.
 
 Existing frozen calculations support
 [within-class nonlinearity](#reserved-nonlinear-four-history-response),
@@ -42,10 +44,10 @@ and [spatial](../nodal/SINE_CLASS_SPATIAL_OBSERVATION.md#sine-spatial-finite-res
 noise obstructions retain their original budgets; later designs do not erase
 them. Result owners and the status table below retain the completed gates.
 
-The [independent distinct-neighbor protocol](../nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL.md#sine-neighbor-forward-retained-freeze)
-now fixes the shared producer, common-source transfer and numerical/recording
-policy without evaluating a response. The sole next task is its
-[first frozen full-law evaluation](#current-g3-gate).
+The sole next task is [nonlinear excess storage and loss](#current-g3-gate):
+determine whether this interaction has an energetic consequence beyond the
+matched complete tangent model. Endpoint nonadditivity alone does not settle
+that question.
 
 Supplied preparation, support, law, events and structural clock remain
 premises. In particular, the very small source/readout allowances and long
@@ -59,7 +61,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Pending reserved evaluation | [Independent distinct-neighbor response](#current-g3-gate): retain the first full-law attempt and separately assess completion, source-inclusive width, prediction consistency and additive-comparator separation |
+| Pending theoretical admission | [Nonlinear excess storage and loss](#current-g3-gate): remove ordinary tangent cross-energy, retain complete source/event balances, and derive a finite distinction or scoped obstruction before another response |
+| Closed reserved evaluation | [Independent distinct-neighbor response](#reserved-distinct-neighbor-full-law-response): all 64 full-state steps complete, source-inclusive width and prediction overlaps pass, and the independently recorded additive functional is separated |
 | Closed producer and freeze admission | [Independent distinct-neighbor protocol](#independent-neighbor-evaluation-admission): shared complete-state selectors, legacy compatibility, nonlinear common-source transport and immutable runtime/protocol association; no response evaluated at freezing |
 | Closed theoretical admission | [Mixed-neighbor response](#mixed-neighbor-response-admission): a finite nonadditive mediator response separates matched additive functionals at the earlier nonlinear observation budget, with complete memory, source, work and identity retained |
 | Closed theoretical admission | [Causal interface composition](#causal-interface-composition): exact two-channel feedback, output-map and full-lift substitution contracts, and an explicit cubic residual preserving the named memory distinction |
@@ -96,31 +99,56 @@ remain open; no empirical response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="nonlinear-excess-storage-admission"></a>
+## Next primary admission: nonlinear excess storage and loss
+
+Determine whether the existing distinct-neighbor interaction produces a finite
+nonlinear redistribution of the supplied storage and dissipation. Use the same
+complete law, class `(1,2,1)`, support, clock, original common source and
+simultaneous two-input word. A quadratic energy cross term already occurs in
+linear systems; it is insufficient evidence of the requested nonlinear effect.
+
+1. Declare the exact full storage and the target-Hessian quadratic storage of
+   the complete tangent model, with both form and phase coordinates retained.
+   Give the tangent its own matched initial state and events. Define the
+   proposed observable `E_ex(T)=Delta4[H_full(T)-H_tangent(T)]`, where
+   `Delta4` uses `(1,-1,-1,1)` across the same four histories.
+2. Derive the joint event/flow balance before evaluating that observable.
+   Account for initial common-source terms, identical form-event work,
+   terminal storage and the integrated full-minus-tangent loss. Do not count
+   ordinary tangent cross-energy as nonlinear interaction, interpret continuous
+   loss as an event reserve, or infer an energy sign from the form-readout sign.
+3. Derive source and observation error bounds for this nonlinear functional.
+   The existing scalar form-reading budget and linear-source cancellation do
+   not automatically apply to a quadratic/phase storage observation. State the
+   measurement map and structural units without identifying physical energy.
+4. Establish a finite nonzero excess-storage/loss bound with a discriminating
+   error budget, or a precise symmetry, equivalence or resolution obstruction.
+   Reuse shared complete-state and fidelity owners. Freeze any later response
+   protocol before execution; previously retained projections are retrospective
+   evidence, not new reserved observations.
+
+This is a theoretical admission, not another numerical precision campaign.
+No new trajectory, source acquisition, additional probe event or physical-data
+evaluation is active. A valid obstruction is an acceptable outcome; binding,
+universal forces and physical energy identification remain separate obligations.
+
 <a id="reserved-distinct-neighbor-full-law-response"></a>
-## Next primary evaluation: first independent distinct-neighbor response
+## Closed evaluation: first independent distinct-neighbor response
 
-Execute and retain at most one attempt under the
-[frozen protocol](../nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL.md#sine-neighbor-forward-retained-freeze).
-It fixes class `(1,2,1)`, simultaneous inputs at nodes 4 and 22, mediator
-form at `T=1/8`, the original common acquired family and the earlier nonlinear
-recording budget. This tests a new intervention and additive comparator.
+The [retained result](../nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL.md#sine-neighbor-forward-reserved-result)
+completed the single frozen attempt: all four full54 histories reached the
+declared horizon without a retry or altered budget. Reconstructed nominal and
+actual-family bands overlap the prospective predictions; the transported
+width is below its fixed ceiling. The recorded mixed response remains strictly
+separated from the independently recorded additive single-neighbor functional.
 
-1. Inspect the immutable receipt and restore its complete source base when
-   needed using the shared frozen-source owner. Check source, evaluator bytes,
-   environment and absence of an earlier attempt before execution.
-2. Run the archived evaluator once. Preserve its first outcome, including
-   partial histories, numerical failure, exceptions or export failure. Do not
-   change the frozen order, step, source, horizon or 64-attempt budget.
-3. Reconstruct all retained full-state evidence and apply only the declared
-   nonlinear common-source transport. Keep completion, numerical width,
-   prediction consistency, four-reading sign and separately noisy additive
-   separation distinct. Do not intersect a forward band with the prediction.
-4. Replace this queue status with a link to the retained result owner. An
-   unresolved outcome or conflict requires its stated interpretation and any
-   correction requires separate evidence; it does not authorize a retry.
-
-No new acquisition, fit, law selection or physical-data campaign is active.
-The laboratory observation bridge remains open regardless of this outcome.
+The attempt, raw outcome bytes and complete numerical evidence are retained.
+Read-only reconstruction checks support, law, selectors, carry, Taylor
+arithmetic and independent source/recording decisions without regenerating a
+response. The original acquisition and derivative-generation premises remain
+explicit. The result establishes neither class discrimination nor an energetic
+or physical force law.
 
 <a id="independent-neighbor-evaluation-admission"></a>
 ## Closed admission: independent distinct-neighbor producer and protocol

@@ -265,3 +265,70 @@ checks this association and the sealed prospective text without importing
 the archived worker or regenerating scientific evidence. The
 [synthetic evaluator controls](../../tests/research/test_sine_class_neighbor_forward_evaluator.py)
 separately check preflight, attempt and export behavior with unrelated records.
+
+<a id="sine-neighbor-forward-reserved-result"></a>
+## First reserved full-law result
+
+The [exclusive attempt](../../docs/assets/sine_formed_classes/class-neighbor-forward-v1.attempt.json)
+and [retained response](../../docs/assets/sine_formed_classes/class-neighbor-forward-v1.response.zip)
+record the one execution in a restored workspace at the pinned source base.
+The complete runtime, environment, evaluator bytes and primitive inputs
+matched the frozen declaration. No source, observer, horizon, step, order or
+budget was changed. Both zero-duration prefixes and all four full-state
+suffixes completed: 64 planned, attempted and validated steps, six completed
+segments and no failed or unattempted branch. The recorded calculation and
+assessment took approximately 125.504 seconds of wall time; the structural
+horizon remains \(1/8\). No retry or export-error artifact was produced.
+
+The [read-only response audit](../../tests/research/test_sine_class_neighbor_forward_evidence.py)
+admits exact artifact and member bytes before decoding. It reconstructs every
+54-coordinate event carry, retained Taylor increment and endpoint before
+rebuilding the observation. Original derivative/Picard generation remains
+an execution premise; the audit does not rerun the flow or authenticate
+acquisition. Independent source and recording arithmetic agree with the
+saved assessment without trusting its cached verdicts.
+
+The exact primary nominal mixed interval reconstructed from the four suffix
+increments is
+\[
+ F=\left[-\frac{1456691539}{2^{126}},
+         -\frac{2913382991}{2^{127}}\right],\qquad
+ \operatorname{width}(F)=\frac{87}{2^{127}}.
+ \tag{9}
+\]
+Apply only the common-source allowance (7). Conservative outward summaries
+of the exact rational decisions are:
+
+| Quantity | Retained bound |
+| --- | --- |
+| Actual-family mixed response \(I=F+[-S,S]\) | \([-1.71233267499,-1.71233262385]\,10^{-29}\) |
+| Nonlinear source allowance \(S\) | \(<1.55568520680\,10^{-42}\) |
+| Actual-family interval width | \(<5.11343153979\,10^{-37}\), below the frozen \(10^{-30}\) ceiling |
+| Four-reading recorded interval | \([-2.11233267499,-1.31233262385]\,10^{-29}\) |
+| Separate additive recorded interval | \([-4,4]\,10^{-30}\) |
+| Strict independent-additive separation margin | \(>9.12332623850\,10^{-30}\) |
+
+Both nominal and actual closed prediction overlaps pass. The independently
+computed forward intervals are retained in full, without intersection with
+either prediction. All fixed conditions pass: completion, numerical width,
+prediction consistency and strict separation after the two independent
+four-reading error budgets. True and recorded negativity remain separately
+reported predicates, not substitutes for the eight-error comparison.
+
+The response ZIP contains the exact original JSON outcome as its sole member,
+without reserialization. Its associations are:
+
+| Retained item | Bytes | SHA-256 |
+| --- | --- | --- |
+| Attempt | 762 | `3ed3763c37a7ddc83f075eb1d2ee5cd369d5b88991091f441e6598e96b7bc537` |
+| Response ZIP | 2,016,937 | `c62c4edcdf8765028f4af9c9c41b7ff35bc02a9d89bdddfed8c14b34501b6c68` |
+| Outcome member `class-neighbor-forward-v1.json` | 29,737,680 | `e308c8c9432d94372e515f68673471b1e056258ba28f829b79eb9a9048abea97` |
+
+This finite result supports the prospective distinct-neighbor prediction
+under the supplied complete law and original source premises. Separately
+matched nonlinear single-neighbor responses do not reproduce the joint
+response by addition. It does not exclude pairwise microscopic dynamics,
+establish a difference between classes, determine an energetic interaction
+law or identify a physical force. The laboratory observation bridge remains
+open. The historical `not_evaluated` freeze field continues to describe the
+earlier admission stage; this section owns the subsequent result.
