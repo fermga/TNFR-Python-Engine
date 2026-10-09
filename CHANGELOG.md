@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Admit [finite constitutive discrimination after actual acquisition](theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-finite-carried-response).
+  Own-law nonlinear recovery and supplied contact retain the original source
+  errors, work and identity. A real nonlinear remainder separates the two
+  endpoint laws under explicit structural-time and raw-readout allowances.
+  The shared recovery kernel now accepts the actual potential's upper Hessian.
 - Prove [source-path capture uniformly across the declared potential family](theory/nodal/SINE_PREPARATION_PATH_ROBUSTNESS.md).
   Rebuild each law's source transit, closing-edge current, contraction and
   full storage bounds. The shared winding-one outcome leaves the existing

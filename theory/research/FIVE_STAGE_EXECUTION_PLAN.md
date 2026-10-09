@@ -74,8 +74,8 @@ declared models.
 The [target-matched law comparison](#target-matched-organized-law-result)
 now separates target identity from nonlinear interaction: two complete
 positive-loss laws have equal target storage, tangent and quadratic fields,
-yet opposite nominal mixed onset. Local identity is separately re-admitted;
-finite-response signs have not been transferred. A separate
+yet opposite nominal mixed onset. That local theorem alone does not transfer
+finite-response signs. A separate
 [own-law acquisition result](#same-source-acquisition-result) now proves that
 the original full source families acquire both identities uniformly over
 `lambda in [0,1]`, with unchanged errors, time, radius and storage budget.
@@ -95,10 +95,14 @@ not a small-radius recovery time or a complete basin map. The
 [own-law robustness theorem](#constitutive-selector-robustness) now retains
 that whole interior corridor uniformly over `lambda in [0,1]`, with the
 original source errors and the same total slow-time budget. This captured
-identity does not distinguish those laws. The sole next admission is
-[finite constitutive discrimination after acquisition](#current-g3-gate):
-does their nominal interaction distinction survive an actual carried-state
-handoff, with each law's residuals and finite response errors retained?
+identity does not distinguish those laws. The
+[finite carried-state discriminator](#carried-state-constitutive-discrimination)
+now separates their recorded mixed form responses with each law's acquisition,
+recovery, attachment work, residuals and finite response bounds retained.
+The sole next admission is the
+[calibration of its observation map](#current-g3-gate): which independently
+specified scalar sensor conditions preserve that distinction when observing
+the four actual mediator readings?
 The [prepared storage observer](#storage-comparison-producer-admission)
 is retained as an instrument; it has no frozen protocol or reserved response
 and is not the next campaign.
@@ -115,7 +119,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next theoretical admission | [Carried-state constitutive discrimination](#current-g3-gate): admit one finite interaction observation of the original acquired class-one sources under the two existing endpoint laws, with own-law handoff, work, residuals and response bounds |
+| Next theoretical admission | [Calibrated constitutive observation](#current-g3-gate): admit one common scalar sensor class and independent gain/curvature calibration for the existing carried-state four-reading discriminator; distinguish mixed-sign preservation from separation of complete recorded observations |
+| Closed theoretical discrimination admission | [Carried-state constitutive discrimination](#carried-state-constitutive-discrimination): opposite finite recorded mixed responses under the two existing endpoint laws, with original acquired sources, own-law recovery, attachment work and full response errors retained |
 | Closed theoretical robustness admission | [Constitutive selector robustness](#constitutive-selector-robustness): uniform winding-one capture of the original interior source corridor over `lambda in [0,1]`, with rebuilt source, passage, contraction and full-storage bounds |
 | Closed theoretical selector admission | [Source-specific basin selection](#source-specific-basin-selection): whole-family winding-one capture through the actual phase passage, excluding the other 56 candidates with a finite acute-cell deadline |
 | Closed theoretical limit admission | [Post-slip limits](#post-slip-capture-admission): every actual trajectory converges to one complete critical state among 57 relative candidates; three attractors and 54 hyperbolic saddles, with fixed-parameter exceptional-source scope retained |
@@ -163,7 +168,7 @@ remain open; no empirical response has passed complete physical admission.
 
 <a id="current-g3-gate"></a>
 <a id="foundational-organized-pattern-admission"></a>
-<a id="carried-state-constitutive-discrimination"></a>
+<a id="calibrated-constitutive-observation"></a>
 ## Primary plan: foundations tested by organized patterns
 
 Investigate which premises are sufficient, necessary within a declared class,
@@ -183,55 +188,51 @@ to its actual state, scale and execution path before treating a matched
 geometric or response property as sufficient. Retain the distinction between
 defining requirements, supplied hypotheses and derived restrictions.
 
-The next question is: **can the two existing complete laws be distinguished
-by one finite interaction of their actually acquired organizations?** The
-[robust selector](../nodal/SINE_PREPARATION_PATH_ROBUSTNESS.md) makes the
-captured identity non-discriminating within the declared potential family.
-The [nominal interaction theorem](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-mixed-onset)
-nevertheless gives opposite local mixed signs for its endpoint laws
-`lambda=0` and `lambda=1`. It starts at an exact target and supplies no
-finite observation budget or transfer to acquired residuals. Close this
-specific gap before interpreting the response as a property of formed
-objects. No additional law, source sweep or physical-data campaign is active.
+The next question is: **which independently calibrated observation maps
+preserve the distinction between these two laws' formed-object responses?**
+The [finite carried-state theorem](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-finite-carried-response)
+uses mediator form itself, with an additive error on each reading. It supplies
+a mathematical discriminator without identifying form with a sensor output.
+The existing [gain/clock owner](../nodal/SINE_CLOCK_INFERENCE.md#sine-clock-source-and-law)
+admits a held affine sensor for a different experiment; it does not justify
+that sensor or cover nonlinear calibration for this four-history comparison.
 
-Use three copies of the already admitted
-[original class-one source family](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-same-source-acquisition)
-under each endpoint law. Retain the full original source uncertainty,
-unit capacities, positive loss, structural clock and all form/phase rows.
-The same primitive preparation specification can be used in both models;
-their reached states and own-law source storage need not agree. Preserve
-the actual state through any further recovery dwell. Entry into an acute
-cell is not contact readiness or a reset to the target. Derive each law's
-quantitative return and joined-state bounds before using them.
+Retain exactly the two endpoint laws, original acquired class-one sources,
+carried recovery, prescribed attachment, simultaneous inputs, structural
+clock and finite horizon of the new theorem. Write its actual readings as
+`Y_ij=x_13^ij(T)`. Admit a prospective observation class
+`r_ij=h(Y_ij)+eta_ij`, using the same named static scalar sensor across all
+four histories and both candidate models. Declare its domain, orientation,
+units and independently supplied calibration/error bounds before consuming
+the response. Positive gain bounds and bounds on sensor curvature are
+candidate calibration premises, not measured facts or already proved
+sufficient conditions. Retain the full source uncertainty and absolute
+reference origins when establishing the sensor's required operating range.
+Admit observation errors in sensor units; the completed theorem's raw-form
+allowance is not an unchanged error budget after an arbitrary sensor map.
 
-Admit one prescribed attachment on the existing three-C9 support, with
-bridges `(4,13)` and `(13,22)`, followed by the existing simultaneous
-central-form inputs `a=b=7/10000` at nodes 4 and 22. Use the four branches
-with neither input, each single input and both inputs, paired at the same
-actual full pre-input state within each law. Observe only their mixed
-mediator form `M(T)=x_13^11(T)-x_13^10(T)-x_13^01(T)+x_13^00(T)`.
-Attachment remains a supplied event with its own storage work, changed
-degrees and retained relative origins. Its admission does not select its
-occurrence. Do not infer equal event work from identical input amplitudes
-when the actual pre-event states differ.
+Derive how the recorded mixed scalar changes under that observation and
+which finite calibration conditions preserve strict discrimination. Separate
+a passive sensor map from a regular state-chart change, which must transform
+the full law, inputs, storage and observations under the
+[form-chart contract](../FUNDAMENTAL_THEORY.md#26-a-structural-coordinate-must-transform-its-pressure).
+The possibility that sensor nonlinearity changes a mixed sign must be tested;
+a changed sign alone does not prove that the two laws' complete four-reading
+record sets overlap. A common sensor may contribute to both mixed scalars
+while leaving other recorded differences available. Any overlap claim must
+exhibit compatible full readings and calibration under its explicitly stated
+nuisance-parameter quantifiers. Do not fit a separate observation map to each
+law's response or assert impossibility from a failed sufficient bound.
 
-Derive a common finite recovery/observation budget and an explicit readout
-allowance from the two actual laws before evaluating any response. Retain
-the acquired hidden initialization, source errors, full-state nonlinear
-remainders and identity margins. Broken nominal symmetry can introduce
-response terms absent at the exact target; it must be bounded rather than
-removed by resetting or averaging the source. Matching targets, tangents
-and quadratic fields does not transfer sine-specific complex growth or
-finite-time estimates to the added harmonics. Reuse the
-[effective-interface owners](../nodal/SINE_CLASS_COLLECTIVE_INTERFACE.md#sine-collective-interface-domain)
-only after re-admitting the complete law and all consumed bounds.
-
-This is an analytic admission of one constitutive discriminator, not a
-reserved response evaluation. A subsequent producer or protocol freeze
-requires its own queue decision after the theorem and observation are
-admitted. Preserve the earlier frozen sine responses without regeneration.
-Do not add laws, source classes, observation channels or repeated campaigns
-to rescue a failed comparison. Other source-path intervals, autonomous
+Close this analytic admission with an explicit independently specified
+calibration contract sufficient for the existing finite comparison, or a
+proved observational equivalence or obstruction on its stated sensor class.
+If a weaker class fails, record exactly which calibration information is
+missing; do not assume physical access to the resulting mathematical budget.
+No new physical sensor, dataset, trajectory, producer or protocol freeze is
+active. The existing analytic law separation requires none of those to remain
+valid in its structural coordinates. Preserve frozen sine evidence and avoid
+another response campaign merely to reproduce its consequence. Autonomous
 preparation, support selection, inherited scale laws and physical
 identification retain their separate unresolved obligations.
 
@@ -246,10 +247,10 @@ identification retain their separate unresolved obligations.
    postconditions. A collective event needs its own descent and occurrence
    analysis even when the continuous collective law closes.
 2. **Specify the proposed discrimination.** State the two complete laws,
-   actual-state handoff, prescribed attachment and mixed observation.
-   Separate the fixed preparation from constitutive freedom and retain
-   each law's own source, recovery and response bounds. No controller is
-   introduced to force a mode or a response sign.
+   actual-state handoff, prescribed attachment and common sensor class.
+   Separate fixed preparation and calibration premises from constitutive
+   freedom, retaining each law's own response bounds. No controller or
+   response-fitted sensor is introduced to force a mode or a response sign.
 3. **Derive a discrimination or obstruction.** Match the declared preparation
    observations, geometry, units, clock and costs under each complete law.
    Check symmetries, equilibrium boundaries, reachable identities, balances,
@@ -264,16 +265,14 @@ identification retain their separate unresolved obligations.
    observation and error model are admitted. A controller added to produce a
    desired object is an additional premise, not a derivation of that object.
 
-The gate closes with strict separation of the two laws' admitted finite
-record sets for this carried-state comparison, or a proved observational
-collision or obstruction on its stated domain. A nominal sign difference
-alone is insufficient; a failed sufficient inequality is unavailable
-evidence, not proof of identical dynamics or an impossible discriminator.
-State any unresolved estimate explicitly rather than expanding the design
-or claiming a negative result. Formation remains non-discriminating within
-the already admitted family; further same-result law sampling is not the
-next task. No outcome probability, autonomous preparation, universal
-attractor or unique physical law follows from either outcome.
+The gate distinguishes structural law separation, invariance of a selected
+mixed sign, and identifiable recorded observations under the declared sensor
+class. Only the first is already supplied by the carried-state theorem.
+State an unresolved estimate or missing calibration premise explicitly
+rather than expanding the design or claiming a negative result. Formation
+remains non-discriminating within the admitted law family; further
+same-result law sampling is not the next task. No outcome probability,
+autonomous preparation, universal attractor or unique physical law follows.
 
 The dependency order for subsequent work is:
 
@@ -299,6 +298,32 @@ examples supply possible controls and discriminators; they do not replace
 the generative objective with imitation of a convenient apparatus. Substrate
 origin, universal laws and recurrence across scales remain open hypotheses.
 
+<a id="carried-state-constitutive-discrimination"></a>
+## Closed theoretical admission: finite discrimination after acquisition
+
+The [finite carried-state theorem](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-finite-carried-response)
+proves opposite recorded mixed mediator-form signs for the two endpoint laws
+`lambda=0,1`. Each starts from three copies of the original uncertain
+class-one ramp source. Own-law acquisition at structural time `100` and a
+common additional dwell `10^13` supply component residuals bounded by
+`10^-70`, without resetting their actual form or phase. Prescribed bridges
+`(4,13),(13,22)` and the four paired form-input branches with
+`a=b=7/10000` retain their own work, changed degrees, hidden state and means.
+The common finite response horizon is `T=10^-6`; each raw mediator reading
+has additive allowance `10^-54`. Full nonlinear remainder and actual-source
+transport bounds preserve strict separation and the declared joined identity.
+
+This closes the transfer from nominal onset to a finite interaction of the
+actually acquired source families. The different reached states and event
+work are retained; agreement of target geometry and tangents supplies neither.
+The result is analytic, with exact scalar certificates rather than a selected
+trajectory, and needs no reserved response campaign to establish its stated
+law separation. Its very small observation allowance and long structural
+dwell are mathematical budgets, not laboratory capabilities. It does not
+admit a nonlinear sensor, independent physical law selection, autonomous
+attachment or a physical constituent. The active gate above isolates the
+remaining observation-map premise without changing this completed theorem.
+
 <a id="constitutive-selector-robustness"></a>
 ## Closed theoretical admission: uniform constitutive selector robustness
 
@@ -319,8 +344,10 @@ borrowed sine certificate nor a small-radius recovery or contact-readiness
 claim. No trajectory, source sweep or frozen response was evaluated.
 
 Captured identity and acquisition therefore do not select one law within
-this class. The opposite nominal nonlinear onsets remain valid, while
-finite carried-state response discrimination is the next admission above.
+this class. The opposite nominal nonlinear onsets remain valid; the separate
+[carried-state theorem](#carried-state-constitutive-discrimination) supplies
+finite response discrimination from the original class-one ramp family.
+It does not claim the same interaction bounds for this interior corridor.
 Other source intervals, a universal attractor, autonomous support or
 preparation and physical law selection remain open.
 

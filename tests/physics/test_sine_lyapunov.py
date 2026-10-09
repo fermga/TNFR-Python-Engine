@@ -26,15 +26,16 @@ def _coefficients(**changes):
 
 
 @pytest.mark.parametrize("damping", [GAP, Q(1), RATE])
+@pytest.mark.parametrize("hessian_upper", [Q(1), Q(3, 2)])
 @pytest.mark.parametrize("stiffness_position", [Q(0), Q(1, 2), Q(1)])
 @pytest.mark.parametrize(
     "position,velocity",
     [(Q(0), Q(1)), (Q(1), Q(0)), (Q(1), Q(2)), (Q(-2), Q(1)), (Q(3, 7), Q(-5, 11))],
 )
 def test_exact_damped_gradient_rows_prove_decay_and_energy_sandwich(
-    damping, stiffness_position, position, velocity
+    damping, stiffness_position, position, velocity, hessian_upper
 ):
-    mu, maximum, lower, upper, decay = _coefficients()
+    mu, maximum, lower, upper, decay = _coefficients(phase_hessian_upper=hessian_upper)
     epsilon = GAP / 4
     stiffness = mu + stiffness_position * (maximum - mu)
     potential = stiffness * position**2 / 2
@@ -62,6 +63,20 @@ def test_exact_damped_gradient_rows_prove_decay_and_energy_sandwich(
         <= modified
         <= 3 * velocity**2 / 4 + upper * position**2
     )
+
+
+def test_own_hessian_upper_changes_nonlinear_stiffness_and_decay():
+    sine, enlarged = _coefficients(), _coefficients(phase_hessian_upper=Q(3, 2))
+    assert enlarged[0] == sine[0] and enlarged[2] == sine[2]
+    assert enlarged[1] == Q(3, 2) * sine[1]
+    assert enlarged[3] - sine[3] == ETA_HIGH * RATE**2 / 4
+    assert enlarged[4] < sine[4]
+
+
+@pytest.mark.parametrize("upper", [True, 1.0, Q(0), Q(-1), Q(1, 4)])
+def test_invalid_or_contradictory_hessian_upper_rejects(upper):
+    with pytest.raises(ValueError, match="Hessian|hessian"):
+        _coefficients(phase_hessian_upper=upper)
 
 
 @pytest.mark.parametrize(

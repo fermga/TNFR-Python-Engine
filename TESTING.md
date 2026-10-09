@@ -145,6 +145,18 @@ positive stiffness or insufficient margins must remain unavailable. These
 checks do not extend later dwell, contact or finite-response certificates.
 The frozen sine producers remain unchanged.
 
+For [finite constitutive discrimination of actually acquired objects](theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-finite-carried-response),
+select `tests/physics/test_sine_constitutive_handoff.py` and
+`tests/physics/test_sine_constitutive_discrimination.py` with the acquisition,
+onset and `test_sine_lyapunov.py` owners. Upper-Hessian changes also require the
+existing maintenance, dipole, repeated-interaction and formed-contact consumers.
+Check actual nonlinear stiffness, preserved source means, exact subgrid return
+bounds, support/input work and all four branch identities. Derive the real
+variation/remainder constants and static onset independently; propagate arbitrary
+carried-state errors and all four raw-reading errors. A failed sufficient bound
+is unavailability, not an observational collision. The observation allowances
+are mathematical premises, not demonstrated physical calibration or resolution.
+
 For [preparation information and acquired modes](theory/nodal/SINE_PREPARATION_MODE_SELECTION.md),
 select `tests/physics/test_sine_preparation_mode_selection.py` with the shared
 preparation and isolated-class controls above. Reconstruct the Laplacian energy

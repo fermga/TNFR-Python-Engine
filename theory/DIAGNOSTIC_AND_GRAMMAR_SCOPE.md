@@ -919,9 +919,11 @@ constitutive admission. Its separate
 [same-source acquisition proof](nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-same-source-acquisition)
 retains both formed identities across the continuous constitutive family,
 using each law's own force, storage and capture bounds. Formation from this
-supplied source therefore does not select one member either. The changed
-interaction concerns nominal local onset; later source transport, a finite
-noisy discriminator and physical law selection remain separate claims.
+supplied source therefore does not select one member either. Beyond the nominal
+local onset, the [finite carried-state comparison](nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-finite-carried-response)
+retains opposite mixed responses under its own-law recovery, contact-work and
+observation-error premises. Physical sensor calibration and law selection remain
+open.
 
 Use the derived organizations as test cases for those premises. Specify which
 generative claim requires more than the present preparation, identity and

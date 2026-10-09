@@ -185,8 +185,13 @@ result retains the same supplied law and full source uncertainty. The
 force, passage, curvature and storage bounds for the declared potential family
 and proves the same capture uniformly over `lambda in [0,1]`. This formation
 outcome therefore does not distinguish those laws. Their different nominal
-nonlinear interaction onsets remain; transferring that distinction to actual
-acquired states and a finite observation requires its own argument.
+nonlinear interaction onsets remain. The
+[carried-state comparison](nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-finite-carried-response)
+now transfers that distinction to a finite raw-form observation of the original
+class-one ramp families, using each law's recovery, contact work and nonlinear
+remainder. It retains very small mathematical error allowances and a supplied
+observation map; physical resolution and independent sensor calibration remain
+open. This is not a transfer to the different Cayley source corridor.
 
 Distinct internal geometries need not be distinguishable through every
 contact. The [central-contact obstruction](nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-contact-admission)

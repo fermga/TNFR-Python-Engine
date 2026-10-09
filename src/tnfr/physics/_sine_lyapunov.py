@@ -1,4 +1,4 @@
-"""Exact modified-energy kernels for conditional nonlinear sine recovery.
+"""Exact modified-energy kernels for conditional reciprocal-potential recovery.
 
 Public owners admit the full law, mean leaf, acute trapping neighborhood and
 primitive values. These private kernels take normalized rational bounds only;
@@ -18,6 +18,7 @@ def _sine_lyapunov_coefficients(
     cosine_lower: Q | None,
     gap_lower: Q,
     rate_upper: Q,
+    phase_hessian_upper: Q = Q(1),
 ) -> tuple[Q | None, Q, Q | None, Q, Q | None]:
     """Return ``(mu, M, a_minus, a_plus, decay_rate)`` for admitted bounds.
 
@@ -26,10 +27,17 @@ def _sine_lyapunov_coefficients(
     denotes a missing cosine premise, retaining only the upper coefficients.
     A zero lower stiffness supplies no positive decay rate. The spectral and
     nonlinear Hessian hypotheses belong to the caller's complete model.
+    ``phase_hessian_upper`` bounds the actual phase Hessian relative to the
+    graph Laplacian; its default one retains the original sine calculation.
+    A different potential must supply its own bound, even at matched tangents.
     """
+    if not isinstance(phase_hessian_upper, Q) or phase_hessian_upper <= 0:
+        raise ValueError("phase_hessian_upper must be a positive rational bound")
+    if cosine_lower is not None and cosine_lower > phase_hessian_upper:
+        raise ValueError("phase Hessian lower bound exceeds its upper bound")
     epsilon = gap_lower / 4
     mu = eta_lower * cosine_lower * gap_lower**2 if cosine_lower is not None else None
-    upper_stiffness = eta_upper * rate_upper**2
+    upper_stiffness = eta_upper * phase_hessian_upper * rate_upper**2
     lower_position = mu / 2 + gap_lower**2 / 16 if mu is not None else None
     upper_position = upper_stiffness / 2 + epsilon * rate_upper / 2 + epsilon**2
     decay_rate = (

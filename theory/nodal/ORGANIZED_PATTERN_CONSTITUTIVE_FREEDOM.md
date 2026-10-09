@@ -18,6 +18,13 @@ current and storage bounds make that formation outcome non-discriminating.
 The nominal interaction distinction below retains its scope; neither formation
 result transfers it to an acquired residual state or a finite response.
 
+The [carried-state observation](#organized-pattern-carried-handoff) below
+closes that separate obligation for the two endpoint laws and the original
+class-one ramp sources. Own-law recovery, prescribed attachment work and a
+real nonlinear remainder give opposite finite measured signs under an explicit
+mathematical error allowance. No laboratory resolution or physical clock is
+inferred from that allowance.
+
 The [earlier mobility counterfamily](SINE_PAIR_MOBILITY.md#sine-replica-constitutive-nonselection)
 and [smooth local continuation](SINE_CONSTITUTIVE_INFORMATION.md#local-phase-storage-nonselection)
 already establish other nonselection results. Here mobility stays constant,
@@ -530,6 +537,301 @@ the reached fine states between laws, reproduce later very small
 residual budgets, or transfer a dwell, support-contact, joined-source
 or finite-response certificate. Those require the new law's own bounds.
 
+<a id="organized-pattern-carried-handoff"></a>
+## Carrying actual acquired states through recovery and contact
+
+Use three copies of the original class-one ramp family from the
+[acquisition section](#organized-pattern-same-source-acquisition), each with
+its full separate zero-sum form and phase residuals bounded by \(10^{-10}\).
+Use \(\lambda=0\) or \(\lambda=1\) consistently throughout each complete
+history. At \(\tau=100\), each actual state is in the forward-trapped
+radius-\(r=1/12\) neighborhood of its isolated winding-one target.
+The following dwell changes no source, mean, state coordinate or law.
+
+Re-admit the [modified-energy argument](SINE_FORMED_CLASS_MAINTENANCE.md#sine-formed-class-maintenance)
+using the actual nonlinear potential. Put \(g=1/5\), \(\Lambda=2\),
+\(c_\lambda=\cos(4\pi/9+\sqrt2r)-2\lambda/243\), and
+\(u_\lambda=1+2\lambda/243\). The common lower curvature is conservative
+for class one. On the retained mean-zero chart, with
+\(y=\theta-\Theta_1\), the proof coordinates
+\(\xi=A^{-1/2}y\), \(v=\gamma A^{1/2}x\) obey
+\[
+ \xi'=v,\qquad v'=-Av-\nabla\mathcal W_\lambda(\xi),\qquad
+ \mathcal W_\lambda=\frac{\eta}{2}
+     [U_\lambda(\Theta_1+A^{1/2}\xi)-U_\lambda(\Theta_1)].
+\]
+With freshly reconstructed \(\underline\eta,\overline\eta\), its Hessian
+lies between \(\mu I\) and \(MI\), where
+\[
+ \mu=\underline\eta c_\lambda g^2,\quad
+ M=\overline\eta u_\lambda\Lambda^2,\quad \epsilon_L=g/4,
+ \quad a_-=\mu/2+g^2/16,\quad
+ a_+=M/2+\epsilon_L\Lambda/2+\epsilon_L^2.
+\]
+The upper coefficient includes this law's \(u_\lambda\). Target tangent
+matching does not justify setting it to one. The modified energy
+\[
+ \mathcal V=\tfrac12\|v\|^2+\mathcal W_\lambda
+     +\epsilon_L\xi^Tv+\tfrac{\epsilon_L}{2}\xi^TA\xi
+\]
+satisfies the same algebraic sandwich and derivative inequality,
+\[
+ \tfrac14\|v\|^2+a_-\|\xi\|^2\le\mathcal V
+ \le\tfrac34\|v\|^2+a_+\|\xi\|^2,\qquad
+ \mathcal V'\le-\kappa\mathcal V,
+ \quad \kappa=\min\{4(g-\epsilon_L)/3,\epsilon_L\mu/a_+\}.
+\]
+This controls the actual nonlinear evolution inside its already admitted
+trap. It is not a tangent-only convergence claim.
+
+Fix a common unforced dwell \(D=10^{13}\) in \(\tau\). The elementary
+own-law bounds \(0.048<c_\lambda<0.06\),
+\(9\,10^{-8}<\eta<10^{-7}\), \(u_\lambda<1.01\) give
+\[
+ a_->1/400,\quad 21/400<a_+<53/1000,\quad
+ 10^{-10}<\kappa<8/(35\,10^9),\quad
+ 1000<\kappa D<16000/7<4096.
+\]
+The initial modified-energy bound is
+\(V_0=3\overline\eta\Lambda b_x^2/4+a_+b_\theta^2/g<1/500\),
+using the freshly proved acquisition radii. Thus
+\(e^{-\kappa D}<2^{-512}\), with an exponent inside the shared arithmetic
+work limit. Exact rational return estimates yield
+\[
+ \|x\|_2^2\le\frac{4V_0\,2^{-512}}{\underline\eta g}
+      <\frac{4\,10^6}{9}2^{-512}<10^{-148},\qquad
+ \|y\|_2^2\le\frac{\Lambda V_0\,2^{-512}}{a_-}
+      <\frac85\,2^{-512}<10^{-148}.
+\]
+Both norms are consequently below \(\varepsilon=10^{-70}\) at the
+common actual handoff \(\tau_h=100+10^{13}\), or
+\(t_h=(1024/1023)(100+10^{13})\). These conservative structural budgets
+are not laboratory times. The tiny bounds are retained as exact rationals.
+
+Now prescribe the two bridges \((4,13)\), \((13,22)\), keeping the reached
+state unchanged. Each new edge has form and phase differences at most
+\(2\varepsilon\), so its actual work and the total joined excess obey
+\[
+ 0\le\Delta H_{\rm attach}\le4(1+u_\lambda)\varepsilon^2,
+ \qquad H_\lambda^- -H_{*,1}\le10(1+u_\lambda)\varepsilon^2.
+\]
+The second estimate combines three isolated excesses bounded by
+\(2(1+u_\lambda)\varepsilon^2\) with both bridge costs. It preserves
+the relative phase origins and includes form storage. No loss is spent as
+an undeclared event reserve.
+
+For each prescribed input \(f=ae_4+be_{22}\), with
+\((a,b)\in\{0,m\}^2\), \(m=7/10000\), formula (15) gives
+\[
+ \left|\Delta H_{\rm input}-\tfrac32(a^2+b^2)\right|
+       \le6(a+b)\varepsilon,
+\]
+and the actual quotient radius after that input satisfies
+\[
+ Z_+^2\le6\varepsilon^2+2(a+b)\varepsilon+a^2+b^2
+                                      -(a+b)^2/27<r^2.
+\]
+Every branch's complete excess is less than \(1/486000\), because the
+largest nominal input work is \(3m^2=1.47\,10^{-6}\) and the retained
+corrections fit strictly below that barrier. Equations (13)--(14) therefore
+preserve the joined identity throughout all four unforced observation
+histories and afterwards. Contact and input occurrence are supplied events,
+not consequences of passivity or an autonomous selector.
+
+The new degree-weighted means are retained explicitly. Just before input,
+\[
+ \bar x_D^-=(x_4+2x_{13}+x_{22})/58,\quad
+ \bar y_D^-=(y_4+2y_{13}+y_{22})/58,\quad
+ |\bar x_D^-|,|\bar y_D^-|\le2\varepsilon/29.
+\]
+Input adds \(3(a+b)/58\) only to the form mean. The four-history mean
+combination cancels by common pre-input state and affine jumps; individual
+histories need not have zero means. Reached states and event work need not
+agree between laws. Within each law all four branches share the same actual
+pre-input state. The entire joined raw state remains within \(\varepsilon\)
+of its nominal target before those inputs, which supplies the next proof's
+actual-state premise without resetting it.
+
+<a id="organized-pattern-finite-carried-response"></a>
+## A finite observation with the actual law's nonlinear remainder
+
+This section fixes the mediator to class one, both endpoint laws
+\(\lambda\in\{0,1\}\), and the same two form impulses
+\(a=b=m=7/10000\). It proves a finite nominal estimate and its transfer
+to a full pre-input state within a declared radius. The following bounds
+use the alternative law's real derivatives, including its extra harmonics.
+They do not reuse a sine complex-analytic tail or evaluate a time-coefficient
+producer, a trajectory or a reserved response.
+
+In the estimates below, \(t\) denotes elapsed \(\tau\)-time, not the
+original clock; the observation duration is converted back explicitly.
+
+For a nominal post-input branch write \(u=ae_4+be_{22}\), with each
+amplitude either zero or \(m\), and introduce the analytical coordinate
+\(v=(\theta-\Theta_1)/\gamma\). The pair \(X=(x,v)\) retains all
+54 coordinates; this scaling is neither a reduced model nor a phase reset.
+Use the maximum norm on this pair. The target-normalized quadratic and
+cubic current maps, including their factorials, are denoted by \(Q,C\).
+Their static target jets in (11) give
+
+\[
+ \|Q(v,w)\|_\infty\le2\|v\|_\infty\|w\|_\infty,
+ \qquad
+ \|C(v,w,z)\|_\infty\le\frac43
+       \|v\|_\infty\|w\|_\infty\|z\|_\infty.
+\]
+
+Indeed \(|j''|\le1\) and \(|j'''|\le1\) at every target edge for
+these two laws and class one. The fourth-derivative bound is instead the
+own-law global value from (8),
+\(|j_\lambda^{(4)}|\le1+(9^4+18^4/2)/2187=28\). Taylor's real
+remainder on each complete edge therefore gives the exact field
+
+\[
+ X'=\mathcal J X+
+       \bigl(\gamma^3Q(v,v)+\gamma^4C(v,v,v)+R_4(v),0\bigr),
+ \qquad
+ \|R_4(v)\|_\infty\le\frac{56}{3}\gamma^5\|v\|_\infty^4,
+\]
+
+where \(\mathcal J\) is the full tangent in these scaled coordinates.
+The normalized Laplacian and target phase Hessian have maximum-norm
+operator bounds two. Thus \(\|\mathcal J\|_\infty<3\), and the
+complete scaled field is globally Lipschitz with constant below three
+because \(2+2\gamma^2(1+2/243)<3\). For \(0\le t\le1/100\),
+\(e^{3t}<11/10\); this last rational bound also follows from
+\(e^{3/100}\le(1-3/100)^{-1}<11/10\).
+
+Define the first three full amplitude variations by variation of constants:
+\(X_1=e^{\mathcal Jt}(u,0)\), with the second and third forced by
+\((\gamma^3Q(v_1,v_1),0)\) and
+\((2\gamma^3Q(v_1,v_2)+\gamma^4C(v_1,v_1,v_1),0)\), respectively.
+These are definitions used in inequalities, not evaluated histories.
+The phase row is always \(v_i'=Ax_i\). Direct integration gives
+
+\[
+\begin{array}{lll}
+ \|X_1\|_\infty\le11m/10,&
+ \|v_1\|_\infty\le11mt/5,&
+ \|v_1-Aut\|_\infty\le9mt^2/4,\\
+ \|X_2\|_\infty\le4\gamma^3m^2t^3,&
+ \|v_2\|_\infty\le2\gamma^3m^2t^4,&\\
+ \|X_3\|_\infty\le4\gamma^4m^3t^4,&
+ \|v_3\|_\infty\le2\gamma^4m^3t^5.&
+\end{array}
+\]
+
+For example, \(\|x_1'\|_\infty<9m/4\) proves the first-row
+phase approximation. The second-state coefficient is at most
+\((11/10)2(11/5)^2/3=1331/375<4\); the third-state coefficient is
+at most
+\[
+ \frac{11}{10}\left[
+       \frac{(4/3)(11/5)^3}{4}
+       +\frac{(88/5)\gamma^2t^2}{6}\right]<4.
+\]
+All these bounds use \(\gamma<1/3000\) and \(t\le1/100\).
+The quadratic history has not been deleted: it contributes to the third
+variation and can be nonzero at unobserved coordinates.
+
+To control the entire remaining amplitude series without assuming its
+convergence, let \(X_{\rm app}=X_1+X_2+X_3\). Its phase coordinate
+satisfies \(\|v_{\rm app}\|_\infty<9mt/4\), and
+\(\|v_2+v_3\|_\infty\le3\gamma^3m^2t^4\). Substitution into the
+exact field leaves quadratic and cubic defects each bounded by
+\(\gamma^5m^4t^4\): their sharper coefficients relative to that
+quantity are at most
+\(18\gamma^2t^2+18\gamma^4t^4\) and
+\(243\gamma^2t^2/4\), respectively. The fourth-order remainder is
+bounded by
+\((56/3)(9/4)^4\gamma^5m^4t^4\).
+Global Lipschitz stability and time integration therefore give
+
+\[
+ \|X-X_{\rm app}\|_\infty
+ \le\frac{11}{50}
+       \left[2+\frac{56}{3}\left(\frac94\right)^4\right]
+       \gamma^5m^4t^5
+ <106\gamma^5m^4t^5.
+\]
+
+It remains to compare the complete cubic history to its first nonzero
+time term. Since
+\(\|e^{\mathcal Js}-I\|_\infty\le33s/10\), transport of the
+leading direct force contributes at most
+\((44/25)\gamma^4m^3t^5\). Replacing \(v_1(s)\) by \(Au s\)
+in its cubic force contributes at most
+\((10923/1250)\gamma^4m^3t^5\): the force difference before
+integration is bounded by
+\[
+ \frac43\frac94
+   \left[\left(\frac{11}{5}\right)^2+
+                       2\frac{11}{5}+4\right]m^3s^4
+ =\frac{993}{25}m^3s^4.
+\]
+The retained quadratic recoupling contributes at most
+\((242/75)\gamma^6m^3t^6\). Consequently
+\[
+ \left\|x_3(t)-\frac{\gamma^4}{4}C(Au,Au,Au)t^4\right\|_\infty
+ \le\left[\frac{44}{25}+\frac{10923}{1250}
+                    +\frac{242}{75}\gamma^2t\right]
+          \gamma^4m^3t^5
+ <11\gamma^4m^3t^5.
+\]
+
+At the nominal source the exact reflection/sign symmetry makes the central
+second variation zero, while the first variation cancels in the mixed
+observation. Combining the last two bounds costs less than
+\(12\gamma^4m^3t^5\) in each nonzero-input branch, since
+\(106\gamma m<1\). The zero-input nominal branch stays at equilibrium.
+The complete onset calculation (17), with all internal and bridge edges,
+therefore yields the finite estimate
+
+\[
+ \boxed{\left|M_{\lambda,1}(m,m,T;0)
+       -\frac{16\lambda-15-\cos\alpha}{512}
+                         \gamma^4m^3T^4\right|
+       \le36\gamma^4m^3T^5},\qquad 0\le T\le\frac1{100}.
+\]
+
+Fix the common observation duration to \(T=10^{-6}\) in \(\tau\),
+or \(1024T/1023\) in the original clock. Since
+\(\alpha>2/3\), cosine monotonicity and its alternating Taylor bound
+give \(\cos\alpha<1-2/9+2/243=191/243<4/5\).
+This and \(\gamma>1/3300\), together with
+\(1/2560-36/10^6>1/3000\), give opposite nominal signs with the
+same explicit lower margin:
+\[
+ M_{1,1}(m,m,T;0)>S,\qquad M_{0,1}(m,m,T;0)<-S,
+ \qquad
+ S=\frac{m^3T^4}{3000\,3300^4}>9\,10^{-52}.
+\]
+
+Now retain an actual pre-input full state satisfying
+\(\|(x,\theta-\Theta_1)\|_\infty\le\varepsilon=10^{-70}\),
+with its actual continuous lifts. Each law's four branches start from
+that same reached state before their prescribed form inputs. In these
+unscaled coordinates the global field Lipschitz constant is also below
+three. Each actual-to-nominal branch discrepancy at the observation time
+is below \(2\varepsilon\), hence the mixed discrepancy is below
+\(8\varepsilon\). This estimate retains arbitrary symmetry-breaking
+residuals; it does not impose nominal reflection on a reached source.
+
+Declare a supplied absolute error allowance
+\(\delta=10^{-54}\) for each of the four raw mediator readings.
+Their mixed reading has error at most \(4\delta\), and
+\(8\varepsilon+4\delta<10^{-53}\). Thus every admitted reached
+state and every admitted readout error preserve the signs, with measured
+mixed responses above \(8\,10^{-52}\) for \(\lambda=1\) and
+below \(-8\,10^{-52}\) for \(\lambda=0\).
+
+This is a prospective mathematical observation allowance. Its very small
+scale is not established laboratory resolution, and the finite horizon is
+in structural time. Reaching the pre-input radius, preserving identity at
+contact, and accounting for support and impulse work are supplied by the
+[own-law handoff above](#organized-pattern-carried-handoff). The theorem supplies neither a physical identification
+nor an evaluated experimental response.
+
 <a id="organized-pattern-information-boundary"></a>
 ## What this comparison constrains, and what it leaves open
 
@@ -537,8 +839,11 @@ The prescribed source in (17) is an exact organized target. The acquisition
 section proves own-law capture from the original isolated source families;
 it does not replace that nominal source by a reached fine state or transfer
 the onset sign to its residuals. Arbitrary residuals need not have the nominal
-reflection symmetry. No sign at the earlier \(T=1/8\), finite noise
-discrimination, later dwell or joined-source transfer is asserted here.
+reflection symmetry. The finite theorem above retains those residuals under
+its explicit pre-input radius and readout allowance, with recovery and contact
+now admitted separately above. Acquisition alone does not establish that
+smaller radius or admit contact. No sign at the earlier
+\(T=1/8\) is asserted for the alternative law.
 
 The interaction differs in the held structural chart with the same form
 impulses and mediator readout. A common clock rescaling cannot account
@@ -586,3 +891,16 @@ check the forcing versus initial-error norms, quartic source correction,
 split endpoint storage and strict capture margins. The uniform conclusion
 uses the proved monotonic dependence and the endpoint \(\lambda=1\);
 it does not require a sweep or a trajectory producer.
+
+The [actual-source handoff](../../src/tnfr/physics/_sine_constitutive_handoff.py)
+uses the shared [modified-energy kernel](../../src/tnfr/physics/_sine_lyapunov.py)
+with the actual potential's upper Hessian. Its
+[controls](../../tests/physics/test_sine_constitutive_handoff.py) retain raw
+source errors, uninterrupted recovery, support work, input work and joined
+identity. The [finite discriminator](../../src/tnfr/physics/_sine_constitutive_discrimination.py)
+then combines fresh handoff and static onset with the real nonlinear tail.
+Its [independent controls](../../tests/physics/test_sine_constitutive_discrimination.py)
+rebuild the tail constants and response coefficients, retain exact tiny
+rational records and reject unsupported source or readout margins. The
+returned intervals admit a prospective comparison; they are not evaluated
+responses or calibration records.
