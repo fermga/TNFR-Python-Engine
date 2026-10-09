@@ -71,10 +71,14 @@ countermodels, not inferred from a failed implementation. The conditional
 formation, memory, interaction and storage results remain valid in their
 declared models.
 
-The sole active task is [foundational admission using organized-pattern
-witnesses](#current-g3-gate). Its first deliverable is a complete-model
-comparison quantifying the nonlinear interaction freedom of the present
-positive-loss joined objects under matched targets and tangent dynamics.
+The [target-matched law comparison](#target-matched-organized-law-result)
+now separates target identity from nonlinear interaction: two complete
+positive-loss laws have equal target storage, tangent and quadratic fields,
+yet opposite nominal mixed onset. Local identity is separately re-admitted;
+acquisition and finite-response signs have not been transferred.
+The sole active task is [same-source formation admission](#current-g3-gate):
+determine whether the original winding-zero preparation still acquires both
+organized classes under the declared alternative law.
 The [prepared storage observer](#storage-comparison-producer-admission)
 is retained as an instrument; it has no frozen protocol or reserved response
 and is not the next campaign.
@@ -82,7 +86,7 @@ and is not the next campaign.
 Supplied preparation, support, law, events and structural clock remain
 premises. In particular, the very small source/readout allowances and long
 preparation dwell are mathematical budgets, not demonstrated laboratory
-capabilities. No source acquisition, fitting or physical-data evaluation
+capabilities. No new acquisition run, fitting or physical-data evaluation
 is active. Physical constituent emergence and independent law selection
 remain open; no empirical response has passed complete physical admission.
 
@@ -91,7 +95,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Active foundational admission | [Organized patterns as foundation tests](#current-g3-gate): match target geometry, storage values and full tangent dynamics; derive a new nonlinear interaction consequence for the positive-loss joined objects and identify the remaining constitutive premise |
+| Active foundational formation admission | [Same-source formation across matched laws](#current-g3-gate): test the original winding-zero C9 source families under the fixed alternative with its own current, storage, capture and uncertainty bounds |
+| Closed theoretical admission | [Target-matched organized-pattern laws](#target-matched-organized-law-result): equal target storage, tangent and quadratic fields with opposite nominal mixed onset; own-law local identity and unresolved source acquisition |
 | Prepared instrument; evaluation deferred | [Independent storage comparison](#storage-comparison-producer-admission): full/tangent passive-loss producer and arithmetic reader retained; observation policy, freeze and selected response remain unperformed |
 | Closed theoretical admission | [Nonlinear excess storage and loss](#nonlinear-excess-storage-admission): finite signed excess beyond the complete tangent model, with simultaneous event cancellation, full amplitude/source bounds and a separate storage observation requirement |
 | Closed reserved evaluation | [Independent distinct-neighbor response](#reserved-distinct-neighbor-full-law-response): all 64 full-state steps complete, source-inclusive width and prediction overlaps pass, and the independently recorded additive functional is separated |
@@ -151,55 +156,49 @@ to its actual state, scale and execution path before treating a matched
 geometric or response property as sufficient. Retain the distinction between
 defining requirements, supplied hypotheses and derived restrictions.
 
-The first question is: **which nonlinear interaction of the present
-positive-loss joined objects remains free when their target geometry,
-storage values and complete tangent dynamics are fixed, and what independent
-premise would constrain it?** Generic nonselection is already established:
-the [mobility counterfamily](../nodal/SINE_PAIR_MOBILITY.md#sine-replica-constitutive-nonselection)
-shares the full equilibrium tangent even at nonconsensus targets in its
-conservative model, while a [smooth storage continuation](../nodal/SINE_CONSTITUTIVE_INFORMATION.md#local-phase-storage-nonselection)
-shares all local derivatives but changes global winding passage. Repeating
-either result does not close this gate.
+The next question is: **does the same independently supplied winding-zero
+preparation acquire the same organized identities under both target-matched
+laws, or does acquisition constrain the remaining constitutive freedom?**
+Use the [new complete-law family](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md)
+at its fixed members `lambda=0` and `lambda=1`. Their different nominal mixed
+onsets already close the preceding gate. Another ideal coefficient or a
+repeat of generic nonselection does not answer this formation question.
 
-Restrict the first comparison to smooth circular additive edge currents
-with constant reciprocal mobility, the same positive loss, support, capacity
-and clock. Seek a complete alternative preserving the present wound targets,
-their storage values, equilibrium and full Hessian; derive a new quantitative
-consequence for their nonlinear interaction, such as a changed mixed onset
-or a scoped obstruction to changing it. Matched target storage here means
-equal values at the targets, not equality of the entire storage functional.
-The alternative is a logical test, not a fitted replacement law. Acquisition
-under it needs its own proof: the original source costs, dwell and formation
-verdict do not transfer from matching local geometry.
+Keep the original [C9 source families](../nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-pair)
+for `k=1,2`: the same rational form ramps, initially near-flat phases,
+per-coordinate errors `10^-10` and separate zero-sum constraints. Keep unit
+capacity, the isolated cycle support, positive loss and both declared clock
+rows. The unchanged acquisition time `tau=100`, radius `1/12` and source
+storage ceiling `10^9` are the first comparison targets. They belong to the
+original protocol; a new proof must calculate their margins under the new
+potential rather than copy the sine verdict. No source search, refitting or
+future-defined preparation is admitted.
 
-Additive edge currents and constant reciprocal mobility are restrictions of
-this first comparison, not consequences already forced by the NFR definition
-or the operator catalog. Its supplied probes retain their event contracts;
-identifying a probe with a registered operator or deriving its autonomous
-occurrence needs the corresponding proof.
+First derive an own-law full-family acquisition and capture certificate, or
+a rigorous obstruction under these premises. Retain all form/phase coordinates,
+winding, initial storage, true source error and the alternative's nonlinear
+forcing. Reuse the existing semigroup/capture method only after admitting its
+actual current and derivative bounds. A failed sufficient bound is an
+unresolved certificate, not a proof that acquisition fails. Strict target
+stability and the nominal post-probe trapping result do not establish entry
+from this source.
 
-Before calculating the alternative response, specify its oriented edge
-current, parity, periodic potential and normalization, and the reciprocal
-phase row. Check the joint storage balance in the declared clock. At the
-target gaps `0`, `+/-2*pi/9` and `+/-4*pi/9`, state exactly which potential
-values and derivatives agree; matching a full tangent does not match every
-higher derivative consumed by nonlinear interaction. Declare the common
-supplied source and observation separately from acquisition under either law,
-and account for each preparation and intervention in its own model.
+The alternative remains a logical constitutive test, not a fitted physical
+replacement. Additive currents, constant reciprocal mobility, held support
+and supplied preparation remain premises. A common successful formation would
+show that this source and identity do not select between these two laws;
+a genuine obstruction would identify a preparation-dependent restriction.
+Neither outcome independently justifies first-moment sufficiency, autonomous
+source selection or a unique fundamental law.
 
-The comparison must identify whether its result concerns a local onset or a
-finite response with errors. The sine-specific
-[amplitude and source bounds](../nodal/SINE_CLASS_COLLECTIVE_INTERFACE.md#sine-collective-interface-fidelity)
-and [analytic storage tail](../nodal/SINE_CLASS_STORAGE_EXCESS.md#sine-storage-complete-errors)
-are not bounds for an arbitrary smooth alternative. Supply real derivative
-bounds on the consumed domain, or explicitly justify an analytic extension
-and its complex-domain bounds when that proof method is used. Re-admit any
-local identity or source transport certificate under the new law. The
-[validated Taylor kernel](../../src/tnfr/mathematics/_validated_taylor.py)
-is reusable machinery; the existing sine fields and prepared storage observer
-implement fixed laws and cannot evaluate an alternative by relabeling it.
-Select the relevant [foundation controls](../../TESTING.md#select-research-checks-by-contract)
-and add independent controls for the new mathematical consequence.
+This gate concerns isolated acquisition and capture. The later `10^13` dwell,
+`10^-32` handoff, support-contact work and finite interaction observations need
+their own bounds before transfer and are not activated by a local result.
+No new trajectory, reserved response or storage comparison is authorized by
+the availability of a solver. The shared [validated Taylor kernel](../../src/tnfr/mathematics/_validated_taylor.py)
+remains reusable machinery; the sine fields cannot implement the alternative
+by relabeling their reports. Select the relevant
+[foundation controls](../../TESTING.md#select-research-checks-by-contract).
 
 This connects the active comparison to the broader generative question:
 which independently justified complete laws can form distinguishable stable
@@ -221,8 +220,8 @@ are not promoted into autonomous constituent birth.
    supplied laws, held quantities, derived restrictions and remaining freedom.
    Start with the pressure/phase/storage completion consumed by the acquired
    objects; use the existing current, mobility and local-continuation
-   counterfamilies to identify the freedom that this interaction comparison
-   must sharpen. Their known nonselection result is an input, not a new
+   counterfamilies to identify the freedom that this acquisition comparison
+   must test. Their known nonselection result is an input, not a new
    discovery to repeat.
    Require a new consequence for the declared interaction or formation claim.
    Do not open simultaneous capacity, support, clock and controller campaigns
@@ -241,13 +240,11 @@ are not promoted into autonomous constituent birth.
    observation and error model are admitted. A controller added to produce a
    desired object is an additional premise, not a derivation of that object.
 
-The gate closes with one explicit complete-model contract, a justified
-restriction or retained freedom, and a new theorem, counterexample or scoped
-obstruction for the present positive-loss joined-object interaction within
-the declared alternative class. If no independent criterion selects a law,
-report the surviving freedom and the information needed to resolve it.
-Another favorable sine-model response alone does not close this
-foundational gate.
+The gate closes with a whole-source acquisition/capture theorem or a justified
+obstruction for the declared alternative and preparation, identifying which
+generative claim survives the constitutive change. Keep inconclusive margins
+and later handoff obligations explicit. A successful sine response or local
+target stability alone does not close this foundational formation gate.
 
 The dependency order for subsequent work is:
 
@@ -272,6 +269,19 @@ The physical objective guides which mathematical property matters. Laboratory
 examples supply possible controls and discriminators; they do not replace
 the generative objective with imitation of a convenient apparatus. Substrate
 origin, universal laws and recurrence across scales remain open hypotheses.
+
+<a id="target-matched-organized-law-result"></a>
+## Closed theoretical admission: target-matched organized-pattern laws
+
+The [result owner](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md) gives an
+explicit analytic periodic potential family with unchanged target storage,
+equilibria, full tangent and quadratic fields on the joined positive-loss
+objects. Its own derivative bounds and storage balance establish a nominal
+local mixed sign reversal and independently retained local identity.
+The extra ninth/eighteenth phase information remains a constitutive premise.
+No finite-window sign, original-source acquisition, source transport, physical
+observation or unique law selection follows. Frozen sine results retain their
+original laws and protocols.
 
 <a id="storage-comparison-producer-admission"></a>
 ## Prepared, deferred: independent storage comparison

@@ -910,6 +910,15 @@ selection principle needs independent justification; reproducing a desired
 pattern does not provide it. Distinguish genuinely different completions from
 coordinate or clock changes that transform every row of the same model.
 
+The [organized-target comparison](nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-constitutive-freedom)
+retains positive loss, target storage, the complete tangent and the quadratic
+field, yet reverses the nominal mixed interaction's leading nonlinear sign.
+Its additional phase moments `Z9,Z18` make the remaining information premise
+explicit. Matching these local object properties therefore does not replace
+constitutive admission. The result concerns a supplied nominal source and
+local onset; acquisition, a finite noisy discriminator and physical law
+selection remain separate claims.
+
 Use the derived organizations as test cases for those premises. Specify which
 generative claim requires more than the present preparation, identity and
 interaction results, then revisit the premise that blocks it. For example,

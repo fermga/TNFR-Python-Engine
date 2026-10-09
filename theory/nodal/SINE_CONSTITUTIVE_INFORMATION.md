@@ -654,6 +654,18 @@ native-pressure-derived storage classification cannot be transferred to
 it without checking their changed hypotheses. It supplies no new default
 law, runtime setting or physical storage identification.
 
+The [organized-target comparison](ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-target-matching)
+strengthens this local nonselection boundary for the positive-loss joined
+objects: an analytic periodic potential preserves their target values,
+equilibria, full tangent and quadratic field, while changing the sign of a
+nominal mixed interaction onset. Its additive current consumes `Z9,Z18`
+in addition to `Z1`. The [first-moment classification](#first-phase-moment-sufficiency)
+would exclude that alternative only if its additional information premise
+were independently admitted.
+This is neither a finite-response comparison nor a transfer of sine-law
+acquisition, and it does not replace the separate global-continuation result
+below.
+
 <a id="local-phase-storage-nonselection"></a>
 
 #### Exact local agreement does not select global winding passage

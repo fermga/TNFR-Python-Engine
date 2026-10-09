@@ -127,6 +127,16 @@ bounds. Existing sine controls do not certify a different current, even when
 target storage and the full tangent agree. Keep local-onset evidence separate
 from finite-horizon discrimination and from acquisition under the new law.
 
+For the [target-matched organized-pattern comparison](theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md),
+select `tests/physics/test_sine_class_constitutive_comparison.py` together with
+`tests/physics/test_sine_class_neighbor_nonadditivity.py`. Check the alternative's
+own potential and oriented edge derivatives, both complete rate rows, storage
+loss and exact matching order. Rebuild the mixed onset from all incident edges,
+including internal mediator edges; test both signs and symmetry nulls. Retain
+exact phasor/scalar admission and independent derivative/identity bounds.
+These are static algebra and local-onset controls, not a new acquisition or
+finite-response evaluation. The frozen sine producers remain unchanged.
+
 For [class-mediated collective response](theory/nodal/SINE_CLASS_MEDIATED_RESPONSE.md),
 select both the primitive/report controls and independent full-support
 algebra. Rebuild the 27-node support, its `(3,4,3)` central degrees, common
