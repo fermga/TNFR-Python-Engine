@@ -107,6 +107,8 @@ docs/assets/sine_formed_classes/class-collective-prediction-v1.evidence.zip bina
 docs/assets/sine_formed_classes/class-collective-forward-v1.protocol.json -text
 docs/assets/sine_formed_classes/class-collective-forward-v1.freeze.json -text
 docs/assets/sine_formed_classes/class-collective-forward-v1.source.zip binary
+docs/assets/sine_formed_classes/class-collective-forward-v1.attempt.json -text
+docs/assets/sine_formed_classes/class-collective-forward-v1.response.zip binary
 theory/research/archive/EXECUTION_PLAN_PRE_FOUR_FOUNDATIONS_2026-09-26.txt -text -whitespace
 theory/research/archive/PORTFOLIO_PRE_FOUR_FOUNDATIONS_2026-09-26.txt -text -whitespace
 theory/research/archive/ROADMAP_PRE_FIVE_STAGE_2026-09-17.txt -text -whitespace

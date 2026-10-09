@@ -330,8 +330,25 @@ They can be selected independently of the freeze audit. They check preflight rej
 exclusive attempts and retained projection/export failures without executing
 the selected producer or restoring its workspace. Numerical completion,
 resolution, prediction consistency and discrimination remain separate verdicts;
-an earlier passing prediction cannot narrow or substitute for a future forward
+an earlier passing prediction cannot narrow or substitute for an independent forward
 interval.
+
+For the [retained first full-law comparison](theory/nodal/SINE_CLASS_COLLECTIVE_FORWARD_PROTOCOL.md#sine-collective-forward-reserved-result),
+select the [read-only response audit](tests/physics/test_sine_class_port_readout_evidence.py):
+
+```sh
+python -m pytest tests/physics/test_sine_class_port_readout_evidence.py -q
+```
+
+The audit reads the canonical response ZIP and preserves its exact uncompressed
+record and attempt association. It re-admits both absolute full-state sources,
+the form event, complete law and fixed schedule, then reconstructs retained
+Taylor endpoints before applying the source allowance once. Prediction overlap,
+the declared resolution tolerance and noisy-comparator separation are checked
+independently. Producer and coefficient regeneration remain prohibited; stored
+derivative enclosures and Picard generation remain explicit execution premises.
+This finite comparison does not establish physical identification or nonlinear
+necessity for the changed-input observation.
 
 The forward-policy, forward-freeze and retained-prediction audits share the
 lazy [execution guard](tests/sine_evidence_helpers.py). Each module opts in

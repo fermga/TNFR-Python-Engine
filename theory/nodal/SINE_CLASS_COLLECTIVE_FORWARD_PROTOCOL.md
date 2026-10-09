@@ -384,9 +384,75 @@ serialization using unrelated inputs and mocked scientific entry points.
 An export failure retains the attempt, any partial output and failure metadata;
 it does not establish that an unexported in-memory report survived.
 
-At this admission no reserved attempt, complete-law response or export-error
-record exists. `evaluation_status_at_freeze="not_evaluated"` records that
+At freezing no reserved attempt, complete-law response or export-error
+record existed. `evaluation_status_at_freeze="not_evaluated"` records that
 historical boundary, not the status of any future execution. Producer controls
 use unrelated synthetic sources; they do not establish completion, numerical
 resolution or agreement for the selected response. The first reserved evaluation
-is the next gate in the [sole execution queue](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).
+has its [separate retained result](#sine-collective-forward-reserved-result).
+
+<a id="sine-collective-forward-reserved-result"></a>
+## First reserved complete-law comparison
+
+The [exclusive attempt](../../docs/assets/sine_formed_classes/class-collective-forward-v1.attempt.json)
+and [retained response](../../docs/assets/sine_formed_classes/class-collective-forward-v1.response.zip)
+record the single execution of the archived evaluator in a restored full-base
+workspace. Its interpreter, dependency versions, complete `src` tree and exact
+evaluator bytes matched the frozen declaration. No input, source, time step,
+order, observation or numerical budget was changed. The causal coefficient
+producer was not rerun.
+
+Both independent nominal 54-coordinate histories reached \(H=1\): 16 steps
+per class, with 32 planned, attempted and completed steps in total. The evaluator
+reported 43.953 seconds for the calculation and assessment; this wall-clock
+duration is not the model's structural clock. There was no failed step, retry
+or export-error outcome.
+
+The [read-only response audit](../../tests/physics/test_sine_class_port_readout_evidence.py)
+re-admits the primitive sources, absolute target lifts, complete law, support,
+event, schedule and original observation policy. It reconstructs each retained
+Taylor increment and endpoint before rebuilding the consumed readings. Saved
+derivative coefficients and strict Picard generation remain execution premises;
+the audit does not regenerate them or independently authenticate acquisition.
+
+The table gives approximate midpoint summaries and conservative rounded bounds.
+All decisions use the retained rational endpoints, with the single full-law
+source allowance \(B_s=\epsilon/(1-2gH)\) and both recording errors.
+
+| Mediator class | Full-law nominal central form, approximately | Nominal radius, upper bound | Actual-family width, upper bound | Recorded separation margin, lower bound |
+| --- | --- | --- | --- | --- |
+| 1 | \(0.000314379329034230502\) | \(5.7748032214\,10^{-26}\) | \(1.15496084442\,10^{-25}\) | \(3.50843909380\,10^{-5}\) |
+| 2 | \(0.000314379334629583386\) | \(5.7748010426\,10^{-26}\) | \(1.15496040866\,10^{-25}\) | \(3.50843913737\,10^{-5}\) |
+
+For each class, the independently rebuilt nominal radius is below the fixed
+\(10^{-12}\) ceiling and its interval overlaps the frozen nominal prediction.
+The transported actual-family interval lies in the prediction's declared
+\(10^{-10}\) resolution window. Its recorded interval is strictly above the
+grounded tangent port comparator's independently recorded interval, after
+charging \(\delta=10^{-8}\) to each model. All fixed conditions pass separately
+for both classes. The resolution containment retains its policy role explained
+above; it is not counted as another independent corroboration.
+
+The response archive contains the exact original outcome JSON as its sole
+member, without reserialization. Its byte associations are:
+
+| Retained item | Bytes | SHA-256 |
+| --- | --- | --- |
+| Attempt | 761 | `23a3a0faac763d6c964bb9875a83d88c5bd2f19388040f9c4aa37de183a70f16` |
+| Response ZIP | 1,051,693 | `edb0332fc9c60c5ed9ecec37139d380c941d2165d532a92b5f0cfcc95e84a481` |
+| Outcome member `class-collective-forward-v1.json` | 12,691,468 | `ccdd701a4f708b95b4acb460fd79545827c1cc588d5dad553c2caa72a396e194` |
+
+This is a successful finite endpoint comparison of the causal prediction with
+the independent complete-law calculation under the supplied model. The leading
+separation exposes information lost by the specified grounded tangent port
+truncation. It supports retaining internal memory for this intervention; it
+does not exclude every instantaneous closure or establish minimal memory.
+
+The two calculated references are transferred uniformly to the original
+correlated acquired families. They are not new acquired preparations, and the
+calculation does not enumerate every family member or execute a laboratory
+measurement. The word's separate work, storage, identity and mean certificates
+retain their original premises. Nonlinear necessity, a new class discriminator,
+autonomous event selection and identification with fundamental physical
+observables remain outside this result. Subsequent admission belongs to the
+[sole execution queue](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).

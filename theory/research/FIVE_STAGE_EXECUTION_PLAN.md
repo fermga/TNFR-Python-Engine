@@ -17,8 +17,9 @@ P1-P5 below governs physical evaluation; it is not another active queue.
 
 **Primary question:** can organized TNFR patterns generate observable
 collective properties that explain phenomena of fundamental physics?
-The next bounded question is whether an independently validated full-law
-response confirms the collective interface's fixed changed-input prediction.
+The next bounded question is whether component causal interfaces can be
+composed through their existing boundary currents with a justified finite
+error bound, retaining the organization that generates those responses.
 The route is **justified nodal dynamics -> collective organization
 -> inherited interaction properties -> independent physical observation**. The
 [ontology](../EMERGENT_ONTOLOGY.md#generative-bound-organization) distinguishes
@@ -57,10 +58,12 @@ now executes that interface for a mediator impulse. It separates a declared
 grounded tangent port alternative with source, numerical and recording errors
 retained. This leading separation tests linear hidden memory, not nonlinear
 necessity or a new class discriminator. The
-[independent full-law producer and protocol](../nodal/SINE_CLASS_COLLECTIVE_FORWARD_PROTOCOL.md#sine-collective-forward-frozen-association)
-are now admitted and frozen. The next obligation is their
-[first reserved evaluation](#current-g3-gate); no such response or physical-data
-campaign has been evaluated.
+[independent full-law comparison](../nodal/SINE_CLASS_COLLECTIVE_FORWARD_PROTOCOL.md#sine-collective-forward-reserved-result)
+completed its single frozen attempt and met the classwise numerical,
+prediction-consistency and recorded-separation criteria. Its two nominal
+references are transported to the original acquired families. The next
+obligation is [causal interface composition](#current-g3-gate), with the
+neighboring patterns supplying boundary inputs under the same nodal law.
 
 Supplied preparation, support, law, events and structural clock remain
 premises. In particular, the very small source/readout allowances and long
@@ -74,7 +77,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Pending reserved evaluation | [Changed-input full-law response](#current-g3-gate): retain one independent complete-law response under the frozen source, input, numerical and observation protocol |
+| Pending theoretical admission | [Causal interface composition](#current-g3-gate): factor the existing three-ring support into component interfaces, derive both boundary rows and bound feedback error with hidden initialization retained |
+| Closed reserved evaluation | [Changed-input full-law response](#reserved-changed-input-full-law-response): both full54 histories complete, fixed source/width/consistency criteria pass, and the separately noisy grounded comparator is excluded |
 | Closed producer and freeze admission | [Changed-input full-law comparison](#changed-input-full-law-comparison): shared full54 producer, absolute source conversion, separate source transport and immutable runtime/protocol association; no response evaluated at freezing |
 | Closed predictor and prospective protocol admission | [Changed-input interface transfer](#changed-input-collective-interface-transfer): causal kernel execution, independent hidden source, changed-word work/identity, and strict separation from a grounded tangent port alternative |
 | Closed theoretical admission | [Nonlinear collective interface](#nonlinear-collective-interface-admission): six-port causal cubic representation, retained hidden source and quadratic feedback, finite output/work error and repeated class separation |
@@ -107,35 +111,66 @@ remain open; no empirical response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="causal-interface-composition"></a>
+## Next primary admission: causal composition through existing boundary currents
+
+Use the same three-C9 support, two admitted central bridges, original acquired
+families, capacities, structural clock and continuous phase lifts as the
+[collective interface](../nodal/SINE_CLASS_COLLECTIVE_INTERFACE.md) and
+[retained full-law comparison](../nodal/SINE_CLASS_COLLECTIVE_FORWARD_PROTOCOL.md#sine-collective-forward-reserved-result).
+Admit three component causal interfaces, each retaining its central form and
+phase, whose boundary inputs come from the other components' evolving ports.
+The complete nodal law and the two bridges remain supplied premises.
+
+1. Split both exact central evolution rows into internal-ring terms and the
+   existing bridge currents. Keep the actual final degrees `(3,4,3)` at the
+   central nodes and degree two elsewhere. Prove that recomposition recovers
+   the original 54-coordinate law, its weighted mean balances and signed
+   boundary storage/work transfer. An isolated degree-two C9 kernel cannot
+   substitute for a block with its joined degree normalization.
+2. Declare sufficient retained and hidden state, common origins, source
+   correlations, observation, finite window and input/port domain. Derive
+   the form **and** phase boundary inputs from the same complete law and
+   establish a well-posed causal feedback problem. A prescribed input or
+   reconstructed pressure is not an endogenous interaction law.
+3. Derive a quantitative error bound for component approximations under that
+   feedback, retaining each hidden initialization and the quadratic feedback
+   needed by cubic response. The existing theorem for finitely many form
+   impulses does not automatically admit continuous boundary inputs. Retain
+   complete-state identity, continuous balances and any supplied event work
+   under their own hypotheses.
+4. Establish that the composed observation preserves at least one named
+   previously admitted interaction distinction, or prove a scoped obstruction
+   or loss of resolution. Reuse compatible retained evidence without replay;
+   rederive coefficients or bounds when the block normalization requires it.
+
+This gate admits a composability theorem and its limits, not another selected
+trajectory. It adds no support edge, source acquisition, coupling fit, physical
+clock or sensor model. A successful composition would explain a collective
+interaction under the supplied nodal law; it would not derive that law's unique
+physical validity or identify a fundamental constituent.
+
 <a id="reserved-changed-input-full-law-response"></a>
-## Next primary evaluation: retain the first changed-input full-law response
+<a id="next-primary-evaluation-retain-the-first-changed-input-full-law-response"></a>
+## Closed evaluation: first changed-input full-law response
 
-Evaluate the [frozen independent comparison](../nodal/SINE_CLASS_COLLECTIVE_FORWARD_PROTOCOL.md#sine-collective-forward-frozen-association)
-once. The causal prediction is retained evidence, not a numerical constraint.
-Keep both original acquired families, common origins, joined support, central
-impulse `7/10000`, horizon one and separate central-form observations.
+The [retained result](../nodal/SINE_CLASS_COLLECTIVE_FORWARD_PROTOCOL.md#sine-collective-forward-reserved-result)
+completed both independent full54 reference histories under the exact frozen
+source, event, clock and numerical policy. The reconstructed classwise
+intervals satisfy the radius ceiling, overlap the prospective nominal
+prediction and meet the declared actual-family resolution policy. Both
+recorded intervals strictly separate the grounded tangent port comparator
+after retaining independent source and recording errors.
 
-1. Select one new isolated workspace and restore the full pinned base,
-   prospective protocol and archived evaluator with the shared restoration
-   entry point. Verify the declared interpreter/dependencies, complete runtime,
-   live evaluator bytes and prior-prediction association before execution.
-2. Invoke the archived evaluator once with its fixed order-12, `1/16` step and
-   32-attempt total policy. Retain the exclusive attempt and the first outcome,
-   including partial evidence, unavailable response or export failure. Do not
-   retry, refine, reset a source or replace the evaluated protocol.
-3. Re-admit the retained law, absolute source, event, clock and step evidence.
-   Reconstruct the endpoint arithmetic before applying source transport once.
-   Check completion, nominal radius, exact nominal prediction overlap,
-   declared actual-family resolution and strict recorded separation from the
-   grounded comparator independently for each class. Never intersect the
-   forward enclosure with a prediction.
-4. Retain the response, source association and read-only audit with the result
-   owner. Classify an unavailable, wide, inconsistent or nondiscriminating
-   outcome according to the fixed policy before changing this queue.
+The original first attempt and response are retained without reserialization
+or scientific replay. The read-only audit rebuilds consumed step arithmetic
+and decisions; retained derivative and Picard generation remain execution
+premises. No prediction narrowed the forward enclosure, and the full-law
+source allowance was applied once to the independently calculated references.
 
-This gate evaluates one finite conditional comparison. It opens no new input
-scan, acquired-source campaign, fit, physical-data evaluation or claim of
-nonlinear necessity, minimal memory or fundamental-particle identification.
+This finite endpoint result supports the specified causal memory description
+under the supplied law. It establishes neither nonlinear necessity, minimal
+memory, a new class discriminator nor identification with physical observations.
 
 <a id="changed-input-full-law-comparison"></a>
 <a id="next-primary-admission-an-independent-changed-input-full-law-comparison"></a>

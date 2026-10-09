@@ -1,0 +1,20 @@
+{
+  "schema":"tnfr.sine-class-collective-forward-attempt.v1",
+  "started_utc":"2026-10-09T14:43:55.476168+00:00",
+  "source_base_commit":"362124d03f34940e23b5d84ca29c6c839d6471a1",
+  "freeze_sha256":"919b2d79ba8beddce19664437d9d0c8738142e771c062878b98af986a38da5d2",
+  "runtime_environment":{
+    "python":"3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+    "implementation":"cpython",
+    "platform":"Windows-11-10.0.26300-SP0",
+    "packages":{
+      "numpy":"2.3.3",
+      "scipy":"1.16.3",
+      "networkx":"3.5",
+      "mpmath":"1.3.0"
+    }
+  },
+  "seed":null,
+  "producer":"tnfr.physics.relational_sine_class_port_readout.bound_sine_class_port_readout",
+  "attempt_policy":"one_fixed_attempt_no_retry_or_adaptation"
+}
