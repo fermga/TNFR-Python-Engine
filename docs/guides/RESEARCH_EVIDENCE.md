@@ -76,6 +76,18 @@ remains an explicit premise unless the selected audit independently checks it.
 Source correlation, full-state handoffs, law and event checks remain with the
 model-specific reader.
 
+The maintained class readout readers share
+[`_reconstruct_readout_step`](../../src/tnfr/physics/_sine_class_readout_evidence.py)
+for retained 54-coordinate observations and 55-coordinate storage/loss steps.
+It re-admits the expected state and clock, method, positive Picard margin,
+smooth-domain marker, Taylor coefficients and remainder before comparing the
+rebuilt increment and endpoint. State vectors and nested coefficient rows must
+be ordered; mappings and sets reject before materialization, and iterators are
+consumed only through the declared row length or shared dimension cap plus one.
+This adds no derivative
+replay or provenance authentication. Each reader still owns its law, source,
+event and attempt-budget checks, failure policy and observation combination.
+
 Inspect incomplete and unsuccessful records as such. Missing observations are
 unavailable, not zero; a completed prefix is not the requested endpoint.
 Scientific consistency, numerical completion and a passing discrimination

@@ -11,6 +11,7 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any, Mapping
 
+from .._exact_time import finite_represented_real
 from ..alias import get_attr
 from ..config.operator_names import (
     CONTRACTION,
@@ -25,6 +26,7 @@ from ..constants.aliases import ALIAS_SI
 from ..metrics.common import normalize_dnfr
 from ..types import Glyph
 from ..utils import clamp01
+from ..utils.numeric import _clipped_ratio
 
 if TYPE_CHECKING:  # pragma: no cover - only for typing
     from ..operators.grammar import GrammarContext
@@ -81,20 +83,24 @@ def glyph_fallback(cand_key: str, fallbacks: Mapping[str, Any]) -> Glyph | str:
 def get_norm(ctx: "GrammarContext", key: str) -> float:
     """Retrieve a global normalisation value from ``ctx.norms``."""
 
-    return float(ctx.norms.get(key, 1.0)) or 1.0
+    return finite_represented_real(ctx.norms.get(key, 1.0), key)[0] or 1.0
 
 
-def _norm_attr(ctx: "GrammarContext", nd, attr_alias: str, norm_key: str) -> float:
+def _norm_attr(
+    ctx: "GrammarContext", nd, attr_alias: str | tuple[str, ...], norm_key: str
+) -> float:
     """Normalise ``attr_alias`` using the global maximum ``norm_key``."""
 
     max_val = get_norm(ctx, norm_key)
-    return clamp01(abs(get_attr(nd, attr_alias, 0.0)) / max_val)
+    value = get_attr(nd, attr_alias, 0.0, strict=True, conv=lambda item: item)
+    return _clipped_ratio(value, max_val, absolute=True)
 
 
 def _si(nd) -> float:
     """Return the structural sense index for ``nd`` clamped to ``[0, 1]``."""
 
-    return clamp01(get_attr(nd, ALIAS_SI, 0.5))
+    value = get_attr(nd, ALIAS_SI, 0.5, strict=True, conv=lambda item: item)
+    return clamp01(value)
 
 
 def normalized_dnfr(ctx: "GrammarContext", nd) -> float:

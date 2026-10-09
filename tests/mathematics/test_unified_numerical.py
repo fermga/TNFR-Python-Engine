@@ -63,6 +63,81 @@ def test_safe_divide_preserves_fractional_fallback_for_integer_input():
     assert result.tolist() == pytest.approx([0.25, 1.0])
 
 
+@pytest.mark.parametrize("numpy_available", [True, False])
+@pytest.mark.parametrize(
+    "bad",
+    [
+        True,
+        np.bool_(False),
+        "1",
+        1 + 0j,
+        math.nan,
+        math.inf,
+        Fraction(1, 10**400),
+        10**400,
+    ],
+)
+def test_division_and_clamping_reject_raw_invalid_values(
+    monkeypatch, numpy_available, bad
+):
+    monkeypatch.setattr(unified_numerical, "NUMPY_AVAILABLE", numpy_available)
+    utilities = TNFRNumericalUtilities(seed=0)
+    # Zero denominators and finite clipping limits must not hide invalid data.
+    for operation in (
+        lambda: utilities.safe_divide(bad, 0, fallback=7),
+        lambda: utilities.safe_divide([1, bad], 1),
+        lambda: utilities.safe_divide(1, bad, fallback=7),
+        lambda: utilities.safe_divide([], bad),
+        lambda: utilities.safe_divide(bad, []),
+        lambda: utilities.safe_divide(1, 0, fallback=bad),
+        lambda: utilities.clamp_value(bad, 0, 1),
+        lambda: utilities.clamp_value([0, bad], 0, 1),
+        lambda: utilities.clamp_value(0, bad, 1),
+        lambda: utilities.clamp_value(0, -1, bad),
+    ):
+        with pytest.raises(TNFRValueError, match="finite real"):
+            operation()
+
+
+@pytest.mark.parametrize("numpy_available", [True, False])
+@pytest.mark.parametrize("numerator,denominator", [(1e308, 0.5), (math.ulp(0.0), 2)])
+@pytest.mark.parametrize("vector", [True, False])
+def test_division_rejects_unrepresentable_results(
+    monkeypatch, numpy_available, numerator, denominator, vector
+):
+    monkeypatch.setattr(unified_numerical, "NUMPY_AVAILABLE", numpy_available)
+    source = [numerator] if vector else numerator
+    with pytest.raises(TNFRValueError, match="overflows or underflows"):
+        TNFRNumericalUtilities(seed=0).safe_divide(source, denominator, fallback=7)
+
+
+@pytest.mark.parametrize("numpy_available", [True, False])
+def test_division_and_clamping_preserve_admitted_subnormals(
+    monkeypatch, numpy_available
+):
+    monkeypatch.setattr(unified_numerical, "NUMPY_AVAILABLE", numpy_available)
+    utilities = TNFRNumericalUtilities(seed=0)
+    tiny = math.ulp(0.0)
+    result = utilities.safe_divide([tiny, -tiny, -0.0, 1], [1, 1, 2, 0], fallback=0.25)
+    assert list(result) == [tiny, -tiny, -0.0, 0.25]
+    assert math.copysign(1, result[2]) == -1
+    assert list(utilities.clamp_value([-1, 0, 1], -tiny, tiny)) == [-tiny, 0, tiny]
+    assert list(utilities.safe_divide([], 1)) == []
+    assert list(utilities.safe_divide(1, [])) == []
+
+
+def test_division_and_clamping_preserve_broadcasting_and_input_storage():
+    utilities = TNFRNumericalUtilities(seed=0)
+    source = np.array([[Fraction(1, 4)], [Fraction(-1, 2)]], dtype=object)
+    before = source.copy()
+    result = utilities.safe_divide(source, np.array([2, 0]), fallback=0.75)
+    np.testing.assert_array_equal(result, [[0.125, 0.75], [-0.25, 0.75]])
+    np.testing.assert_array_equal(
+        utilities.clamp_value(source, -0.25, 0.5), [[0.25], [-0.25]]
+    )
+    np.testing.assert_array_equal(source, before)
+
+
 def test_circular_mean_respects_wrap_and_rejects_undefined_samples():
     utilities = TNFRNumericalUtilities()
     mean = utilities.compute_circular_mean([math.pi - 0.01, -math.pi + 0.01])

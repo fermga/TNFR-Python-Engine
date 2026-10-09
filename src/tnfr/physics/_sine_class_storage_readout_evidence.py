@@ -11,8 +11,14 @@ from fractions import Fraction as Q
 from .._exact_time import exact_or_represented_real
 from ..mathematics._comparison_flow import _exact
 from ..mathematics._rational_interval import INTERVAL_METHOD, I
-from ..mathematics._validated_taylor import reconstruct_box_taylor_arithmetic
-from ._sine_class_readout_evidence import _integer, _interval, _require
+from ._sine_class_readout_evidence import (
+    _box,
+    _integer,
+    _interval,
+    _interval_vector,
+    _reconstruct_readout_step,
+    _require,
+)
 from .relational_observations import _ordered
 from .relational_sine_class_cubic_response import _cubic_parameters
 from .relational_sine_class_mediation import _EDGES, _NODES
@@ -20,9 +26,7 @@ from .relational_sine_class_storage_readout import _HISTORIES, _MODELS, _storage
 
 
 def _box55(values):
-    rows = _ordered(values, "storage evidence state", limit=56)
-    _require(len(rows) == 55, "all 55 storage state coordinates are required")
-    return tuple(map(_interval, rows))
+    return _box(values, 55)
 
 
 @dataclass(frozen=True)
@@ -76,7 +80,7 @@ def _reconstruct_storage_readout(report, admitted_inputs) -> _StorageReadoutEvid
         )
     for key in ("edge_sines", "edge_cosines"):
         _require(
-            tuple(map(_interval, getattr(report.parameters, key)))
+            _interval_vector(getattr(report.parameters, key), len(edges), key)
             == getattr(expected, key),
             "target edge coefficients differ",
         )
@@ -85,7 +89,7 @@ def _reconstruct_storage_readout(report, admitted_inputs) -> _StorageReadoutEvid
         ("initial_phase_deviation_bounds", phases),
     ):
         _require(
-            tuple(map(_interval, getattr(report, key))) == value,
+            _interval_vector(getattr(report, key), 27, key) == value,
             "primitive source differs",
         )
     for key, value in (
@@ -136,7 +140,7 @@ def _reconstruct_storage_readout(report, admitted_inputs) -> _StorageReadoutEvid
     full_source = forms + tuple(t + y for t, y in zip(target, phases)) + (I(0),)
     tangent_source = forms + phases + (I(0),)
     _require(
-        tuple(map(_interval, report.target_phase_bounds)) == target,
+        _interval_vector(report.target_phase_bounds, 27, "target phases") == target,
         "target construction differs",
     )
     _require(
@@ -215,31 +219,9 @@ def _reconstruct_storage_readout(report, admitted_inputs) -> _StorageReadoutEvid
         time, accumulated, local_successes = Q(0), I(0), 0
         for step in history.steps:
             h = min(width, total - time)
-            _require(
-                successes < cap
-                and h > 0
-                and _exact(step.time) == time
-                and _exact(step.duration) == h
-                and _integer(step.order) == order
-                and _box55(step.initial_box) == state,
-                "step schedule or complete source differs",
-            )
-            _require(
-                step.method == "direct_source_box_Picard_Taylor_dyadic128_v1"
-                and _exact(step.picard_interior_margin) > 0
-                and tuple(map(_exact, step.domain_lower_bounds)) == (Q(1),),
-                "strict smooth-domain evidence differs",
-            )
-            tube = _box55(step.tube)
-            remainder = _box55(step.local_remainder_bounds)
-            series = tuple(tuple(map(_interval, row)) for row in step.series)
-            increment, endpoint = reconstruct_box_taylor_arithmetic(
-                state, tube, series, remainder, h, order=order
-            )
-            _require(
-                _box55(step.increment) == increment
-                and _box55(step.endpoint) == endpoint,
-                "retained Taylor arithmetic differs",
+            _require(successes < cap, "step exceeds the attempt cap")
+            increment, endpoint = _reconstruct_readout_step(
+                step, state, time, h, order=order
             )
             accumulated += increment[54]
             state, time = endpoint, time + h
@@ -345,7 +327,7 @@ def _reconstruct_storage_readout(report, admitted_inputs) -> _StorageReadoutEvid
     ):
         actual = getattr(report, key)
         _require(
-            (None if actual is None else tuple(map(_interval, actual)))
+            (None if actual is None else _interval_vector(actual, 8, key))
             == expected_bounds,
             "cached loss vector differs",
         )

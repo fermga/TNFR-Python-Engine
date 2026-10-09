@@ -10,8 +10,13 @@ from fractions import Fraction as Q
 
 from .._exact_time import exact_or_represented_real
 from ..mathematics._comparison_flow import _exact
+from ..mathematics._interval_taylor import MAX_ORDER
 from ..mathematics._rational_interval import INTERVAL_METHOD, I
-from ..mathematics._validated_taylor import reconstruct_box_taylor_arithmetic
+from ..mathematics._validated_taylor import (
+    MAX_BOX_TAYLOR_DIMENSION,
+    reconstruct_box_taylor_arithmetic,
+)
+from .relational_observations import _ordered
 from .relational_sine_class_mediation import _EDGES
 from .relational_sine_class_readout import _admit_class_readout_selectors
 
@@ -37,10 +42,73 @@ def _interval(value):
     return admitted
 
 
-def _box(values):
-    values = tuple(values)
-    _require(len(values) == 54, "evidence must retain all 54 coordinates")
-    return tuple(map(_interval, values))
+def _evidence_rows(values, size, label):
+    rows = _ordered(values, label, limit=size + 1)
+    _require(len(rows) == size, f"{label} must contain exactly {size} entries")
+    return rows
+
+
+def _interval_vector(values, size, label):
+    return tuple(map(_interval, _evidence_rows(values, size, label)))
+
+
+def _box(values, size=54):
+    return _interval_vector(values, size, "evidence state")
+
+
+def _reconstruct_readout_step(step, initial_box, time, duration, *, order):
+    """Admit and rebuild one retained smooth-domain source-box step.
+
+    The caller owns law, source, event, schedule and attempt-budget association.
+    Derivative, remainder and Picard generation remain execution premises;
+    this helper checks their ordered representation and consumed arithmetic.
+    """
+    time, duration = _exact(time), _exact(duration)
+    _require(time >= 0 and duration > 0, "step clock is outside its domain")
+    _require(
+        type(order) is int and 1 <= order <= MAX_ORDER,
+        "step order is outside its domain",
+    )
+    initial = _ordered(
+        initial_box, "expected initial box", limit=MAX_BOX_TAYLOR_DIMENSION + 1
+    )
+    size = len(initial)
+    _require(
+        1 <= size <= MAX_BOX_TAYLOR_DIMENSION,
+        "step dimension is outside its domain",
+    )
+    initial = _box(initial, size)
+    _require(
+        _exact(step.time) == time
+        and _exact(step.duration) == duration
+        and _integer(step.order) == order
+        and _box(step.initial_box, size) == initial,
+        "step schedule or complete source differs",
+    )
+    _require(
+        step.method == "direct_source_box_Picard_Taylor_dyadic128_v1"
+        and _exact(step.picard_interior_margin) > 0
+        and tuple(
+            map(_exact, _evidence_rows(step.domain_lower_bounds, 1, "domain bounds"))
+        )
+        == (Q(1),),
+        "strict smooth-domain step evidence differs",
+    )
+    tube = _box(step.tube, size)
+    remainder = _box(step.local_remainder_bounds, size)
+    series = tuple(
+        _interval_vector(row, order + 1, "Taylor coefficient row")
+        for row in _evidence_rows(step.series, size, "Taylor series")
+    )
+    increment, endpoint = reconstruct_box_taylor_arithmetic(
+        initial, tube, series, remainder, duration, order=order
+    )
+    _require(
+        _box(step.increment, size) == increment
+        and _box(step.endpoint, size) == endpoint,
+        "retained Taylor arithmetic differs",
+    )
+    return increment, endpoint
 
 
 @dataclass(frozen=True)
@@ -131,8 +199,8 @@ def _reconstruct_class_readout(
     source = form + phase
     _require(_box(report.source_box) == source, "source cover differs")
     _require(
-        tuple(map(_interval, report.initial_form_bounds)) == form
-        and tuple(map(_interval, report.initial_phase_bounds)) == phase
+        _interval_vector(report.initial_form_bounds, 27, "initial form") == form
+        and _interval_vector(report.initial_phase_bounds, 27, "initial phase") == phase
         and _interval(report.initial_receiver_form_bounds) == form[observer],
         "source channel association differs",
     )
@@ -253,27 +321,8 @@ def _reconstruct_class_readout(
         time, change = start, I(0)
         for step in segment.steps:
             h = min(width, end - time)
-            _require(
-                h > 0
-                and _exact(step.time) == time
-                and _exact(step.duration) == h
-                and _integer(step.order) == order
-                and _box(step.initial_box) == state,
-                "step schedule or source differs",
-            )
-            _require(
-                _exact(step.picard_interior_margin) > 0
-                and tuple(map(_exact, step.domain_lower_bounds)) == (Q(1),),
-                "strict smooth-domain evidence is unavailable",
-            )
-            tube, remainder = _box(step.tube), _box(step.local_remainder_bounds)
-            series = tuple(tuple(map(_interval, row)) for row in step.series)
-            increment, endpoint = reconstruct_box_taylor_arithmetic(
-                state, tube, series, remainder, h, order=order
-            )
-            _require(
-                _box(step.increment) == increment and _box(step.endpoint) == endpoint,
-                "retained Taylor arithmetic differs",
+            increment, endpoint = _reconstruct_readout_step(
+                step, state, time, h, order=order
             )
             change += increment[observer]
             state, time = endpoint, time + h
@@ -374,7 +423,7 @@ def _reconstruct_class_readout(
     ):
         actual = getattr(report, key)
         _require(
-            (None if actual is None else tuple(map(_interval, actual))) == expected,
+            (None if actual is None else _interval_vector(actual, 4, key)) == expected,
             "cached observation tuple differs",
         )
     _require(

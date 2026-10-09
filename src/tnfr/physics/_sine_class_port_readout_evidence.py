@@ -11,8 +11,15 @@ from fractions import Fraction as Q
 from .._exact_time import exact_or_represented_real
 from ..mathematics._comparison_flow import _exact
 from ..mathematics._rational_interval import INTERVAL_METHOD, I
-from ..mathematics._validated_taylor import reconstruct_box_taylor_arithmetic
-from ._sine_class_readout_evidence import _box, _integer, _interval, _require
+from ._sine_class_readout_evidence import (
+    _box,
+    _evidence_rows,
+    _integer,
+    _interval,
+    _interval_vector,
+    _reconstruct_readout_step,
+    _require,
+)
 from .relational_sine_class_mediation import _EDGES
 
 
@@ -88,7 +95,11 @@ def _reconstruct_port_readout(report, admitted_inputs) -> _PortReadoutEvidence:
         (report.initial_phase_bounds, phases),
     ):
         _require(
-            tuple(tuple(map(_interval, source)) for source in actual) == expected,
+            tuple(
+                _interval_vector(source, 27, "source channel")
+                for source in _evidence_rows(actual, 2, "source covers")
+            )
+            == expected,
             "primitive source association differs",
         )
     _require(len(report.histories) == 2, "complete history inventory is required")
@@ -156,33 +167,9 @@ def _reconstruct_port_readout(report, admitted_inputs) -> _PortReadoutEvidence:
         history_successes = 0
         for step in history.steps:
             h = min(width, total - time)
-            _require(
-                successes < cap
-                and h > 0
-                and _exact(step.time) == time
-                and _exact(step.duration) == h
-                and _integer(step.order) == order
-                and _box(step.initial_box) == state,
-                "step schedule or full-state source differs",
-            )
-            _require(
-                step.method == "direct_source_box_Picard_Taylor_dyadic128_v1",
-                "shared step method differs",
-            )
-            _require(
-                _exact(step.picard_interior_margin) > 0
-                and tuple(map(_exact, step.domain_lower_bounds)) == (Q(1),),
-                "strict smooth-domain evidence is unavailable",
-            )
-            tube = _box(step.tube)
-            remainder = _box(step.local_remainder_bounds)
-            series = tuple(tuple(map(_interval, row)) for row in step.series)
-            increment, endpoint = reconstruct_box_taylor_arithmetic(
-                state, tube, series, remainder, h, order=order
-            )
-            _require(
-                _box(step.increment) == increment and _box(step.endpoint) == endpoint,
-                "retained Taylor arithmetic differs",
+            _require(successes < cap, "step exceeds the attempt cap")
+            increment, endpoint = _reconstruct_readout_step(
+                step, state, time, h, order=order
             )
             state, time = endpoint, time + h
             successes += 1
@@ -272,7 +259,8 @@ def _reconstruct_port_readout(report, admitted_inputs) -> _PortReadoutEvidence:
     endpoints = tuple(value for _, value in readings) if complete else None
     actual = report.endpoint_readout_bounds
     _require(
-        (None if actual is None else tuple(map(_interval, actual))) == endpoints,
+        (None if actual is None else _interval_vector(actual, 2, "endpoint readings"))
+        == endpoints,
         "cached endpoint pair differs",
     )
     _require(

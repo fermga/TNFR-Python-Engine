@@ -10,12 +10,15 @@ from dataclasses import replace
 from decimal import Decimal
 from fractions import Fraction as Q
 from inspect import Parameter, signature
+from itertools import product
 from types import SimpleNamespace
 
 import numpy as np
 import pytest
 
 from tnfr.mathematics._rational_interval import I
+from tnfr.mathematics._validated_taylor import ValidatedBoxTaylorStep
+from tnfr.physics import _sine_class_readout_evidence as evidence_owner
 from tnfr.physics import relational_sine_class_readout as owner
 from tnfr.physics._sine_class_readout_evidence import _reconstruct_class_readout
 from tnfr.sdk.relational_reports import relational_report_to_dict
@@ -78,6 +81,181 @@ def polynomial_report():
     with pytest.MonkeyPatch.context() as patch:
         patch.setattr(owner, "_full_sine_field", _constant_field)
         return owner.bound_sine_class_four_history_readout(**_arguments())
+
+
+def _arithmetic_step(size):
+    """Independent polynomial corners, with endpoint-only tube intersection."""
+    initial = tuple(I(i - 7, i + 9) for i in range(size))
+    changes = tuple(
+        c1 / 2 + Q(3, 4) + c3 / 8 + remainder
+        for c1, c3, remainder in product(
+            (Q(-2), Q(1)), (Q(-1), Q(2)), (Q(-1, 16), Q(1, 8))
+        )
+    )
+    increment = I(min(changes), max(changes))
+    return ValidatedBoxTaylorStep(
+        time=Q(3, 4),
+        duration=Q(1, 2),
+        order=3,
+        initial_box=initial,
+        tube=tuple(I(i - 8, i + 10) for i in range(size)),
+        series=tuple((x, I(-2, 1), I(3), I(-1, 2)) for x in initial),
+        local_remainder_bounds=(I(Q(-1, 16), Q(1, 8)),) * size,
+        increment=(increment,) * size,
+        endpoint=tuple(I(i - 7 + min(changes), i + 10) for i in range(size)),
+        picard_interior_margin=Q(1, 16),
+        domain_lower_bounds=(Q(1),),
+    )
+
+
+def _rebuild_step(step, initial):
+    return evidence_owner._reconstruct_readout_step(
+        step, initial, Q(3, 4), Q(1, 2), order=3
+    )
+
+
+@pytest.mark.parametrize("size", (54, 55))
+@pytest.mark.parametrize("container", (tuple, list, iter))
+def test_shared_retained_step_preserves_independent_corner_arithmetic(size, container):
+    step = _arithmetic_step(size)
+    converted = replace(
+        step,
+        **{
+            key: container(getattr(step, key))
+            for key in (
+                "initial_box",
+                "tube",
+                "local_remainder_bounds",
+                "increment",
+                "endpoint",
+                "domain_lower_bounds",
+            )
+        },
+        series=container(container(row) for row in step.series),
+    )
+    increment, endpoint = _rebuild_step(converted, container(step.initial_box))
+    assert increment == step.increment == (I(Q(-7, 16), Q(13, 8)),) * size
+    assert endpoint == step.endpoint
+    assert endpoint[0] == I(Q(-119, 16), 10)
+    assert increment[0] != endpoint[0] - step.initial_box[0]
+
+
+@pytest.mark.parametrize("size", (54, 55))
+@pytest.mark.parametrize("container", (set, frozenset, dict.fromkeys))
+@pytest.mark.parametrize(
+    "field",
+    (
+        "initial_box",
+        "tube",
+        "local_remainder_bounds",
+        "increment",
+        "endpoint",
+        "series",
+        "coefficient_row",
+        "domain_lower_bounds",
+    ),
+)
+def test_retained_step_rejects_unordered_evidence_before_materialization(
+    size, container, field
+):
+    step = _arithmetic_step(size)
+    if field == "coefficient_row":
+        changes = {"series": (container(step.series[0]),) + step.series[1:]}
+    else:
+        changes = {field: container(getattr(step, field))}
+    with pytest.raises(TypeError, match="ordered iterable"):
+        _rebuild_step(replace(step, **changes), step.initial_box)
+
+
+@pytest.mark.parametrize("size", (54, 55))
+@pytest.mark.parametrize("field", ("initial_box", "series", "coefficient_row"))
+def test_retained_step_bounds_iterator_consumption(size, field):
+    step = _arithmetic_step(size)
+    seen = []
+
+    def endless(value):
+        while True:
+            seen.append(None)
+            yield value
+
+    if field == "coefficient_row":
+        changes = {"series": (endless(I(0)),) + step.series[1:]}
+        expected_count = step.order + 2
+    else:
+        value = step.series[0] if field == "series" else I(0)
+        changes = {field: endless(value)}
+        expected_count = size + 1
+    with pytest.raises(ValueError, match="exactly"):
+        _rebuild_step(replace(step, **changes), step.initial_box)
+    assert len(seen) == expected_count
+
+
+@pytest.mark.parametrize("size", (54, 55))
+@pytest.mark.parametrize(
+    "changes",
+    (
+        {"time": True},
+        {"duration": Q(1, 4)},
+        {"order": True},
+        {"method": "another_step_method"},
+        {"picard_interior_margin": Q(0)},
+        {"domain_lower_bounds": (True,)},
+    ),
+)
+def test_retained_step_rejects_clock_method_and_domain_tampering(size, changes):
+    step = _arithmetic_step(size)
+    with pytest.raises((TypeError, ValueError)):
+        _rebuild_step(replace(step, **changes), step.initial_box)
+
+
+@pytest.mark.parametrize(
+    "changes",
+    (
+        {"initial_box": ()},
+        {"initial_box": (I(0),) * 65},
+        {"initial_box": (True,) * 54},
+        {"initial_box": dict.fromkeys(I(i) for i in range(54))},
+        {"time": True},
+        {"time": -1},
+        {"duration": True},
+        {"duration": 0},
+        {"duration": -1},
+        {"order": True},
+        {"order": Q(3)},
+        {"order": 17},
+    ),
+)
+def test_retained_step_readmits_its_expected_state_and_policy(changes):
+    step = _arithmetic_step(54)
+    arguments = dict(
+        initial_box=step.initial_box, time=step.time, duration=step.duration, order=3
+    )
+    arguments.update(changes)
+    with pytest.raises((TypeError, ValueError)):
+        evidence_owner._reconstruct_readout_step(step, **arguments)
+
+
+@pytest.mark.parametrize("field", ("initial_box", "series", "method"))
+def test_four_history_reader_uses_shared_ordered_step_admission(
+    polynomial_report, field
+):
+    segment = polynomial_report.segments[0]
+    step = segment.steps[0]
+    value = (
+        "another_step_method"
+        if field == "method"
+        else dict.fromkeys(getattr(step, field))
+    )
+    changed = replace(
+        segment, steps=(replace(step, **{field: value}),) + segment.steps[1:]
+    )
+    report = replace(
+        polynomial_report, segments=(changed,) + polynomial_report.segments[1:]
+    )
+    with pytest.raises((TypeError, ValueError)):
+        _reconstruct_class_readout(
+            report, owner._admit_class_readout_inputs(**_arguments())
+        )
 
 
 def test_nine_mandatory_primitives_exclude_target_prediction_and_sensor():

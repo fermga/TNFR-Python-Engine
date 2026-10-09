@@ -13,7 +13,7 @@ import logging
 import math
 import random
 from dataclasses import dataclass
-from numbers import Integral, Real
+from numbers import Integral
 from typing import Any, Iterable, Sequence
 
 from .._exact_time import finite_represented_real
@@ -23,7 +23,10 @@ from ..constants.canonical import (
     K_PHI_CANONICAL_THRESHOLD,
 )
 from ..constants.canonical import PI as CANONICAL_PI
-from ..constants.canonical import U6_STRUCTURAL_POTENTIAL_LIMIT, XI_C_CRITICAL_RATIO
+from ..constants.canonical import (
+    U6_STRUCTURAL_POTENTIAL_LIMIT,
+    XI_C_CRITICAL_RATIO,
+)
 from ..errors import TNFRValueError
 
 # UNIFIED NUMPY IMPORT - Single point of import for entire TNFR codebase
@@ -156,17 +159,7 @@ def _validated_random_size(
 
 
 def _finite_real(value: Any, *, label: str) -> float:
-    """Return one finite non-boolean real scalar."""
-    if isinstance(value, bool) or not isinstance(value, Real):
-        raise TNFRValueError(f"{label} must be a finite real")
-    resolved = float(value)
-    if not math.isfinite(resolved):
-        raise TNFRValueError(f"{label} must be a finite real")
-    return resolved
-
-
-def _finite_phase(value: Any, *, label: str) -> float:
-    """Admit a represented phase while retaining the signed atan2 zero branch."""
+    """Admit a represented real, retaining signed zero for circular readers."""
     try:
         resolved = finite_represented_real(value, label)[0]
     except (TypeError, ValueError, OverflowError) as exc:
@@ -176,8 +169,8 @@ def _finite_phase(value: Any, *, label: str) -> float:
     return math.copysign(0.0, value) if resolved == 0.0 else resolved
 
 
-def _phase_array(value: Any, *, label: str) -> Any:
-    """Admit raw array elements before materializing binary64 phase values."""
+def _real_array(value: Any, *, label: str) -> Any:
+    """Admit raw array elements before materializing binary64 real values."""
     if isinstance(value, (str, bytes, bytearray)):
         raise TNFRValueError(f"{label} must contain only finite real values")
     # Typed real arrays already exclude Boolean, text and complex elements.
@@ -203,14 +196,14 @@ def _phase_array(value: Any, *, label: str) -> Any:
     except (TypeError, ValueError, OverflowError) as exc:
         raise TNFRValueError(f"{label} must contain only finite real values") from exc
     return np.fromiter(
-        (_finite_phase(item, label=label) for item in raw.flat),
+        (_finite_real(item, label=label) for item in raw.flat),
         dtype=float,
         count=raw.size,
     ).reshape(raw.shape)
 
 
 def _normalize_phase_scalar(value: Any) -> float:
-    wrapped = _finite_phase(value, label="phase") % CONSTANTS.MAX_PHASE
+    wrapped = _finite_real(value, label="phase") % CONSTANTS.MAX_PHASE
     # A tiny negative phase can round upward to the excluded endpoint.
     return 0.0 if wrapped == CONSTANTS.MAX_PHASE else wrapped
 
@@ -252,7 +245,7 @@ class TNFRNumericalUtilities:
             Normalized phase values in the half-open [0, 2π) range
         """
         if NUMPY_AVAILABLE and isinstance(phase, np.ndarray):
-            wrapped = _phase_array(phase, label="phase") % CONSTANTS.MAX_PHASE
+            wrapped = _real_array(phase, label="phase") % CONSTANTS.MAX_PHASE
             return np.where(wrapped == CONSTANTS.MAX_PHASE, 0.0, wrapped)
         if hasattr(phase, "__iter__") and not isinstance(
             phase, (str, bytes, bytearray)
@@ -276,8 +269,8 @@ class TNFRNumericalUtilities:
         represented multiples of 2*pi, particularly for large coordinates.
         """
         if NUMPY_AVAILABLE:
-            first = _phase_array(phase1, label="phase1")
-            second = _phase_array(phase2, label="phase2")
+            first = _real_array(phase1, label="phase1")
+            second = _real_array(phase2, label="phase2")
             with np.errstate(over="ignore", invalid="ignore"):
                 diff = first - second
             if not np.all(np.isfinite(diff)):
@@ -295,8 +288,8 @@ class TNFRNumericalUtilities:
                 "phase inputs must both be scalars or equally sized iterables"
             )
         if first_iterable:
-            first = [_finite_phase(item, label="phase1") for item in phase1]
-            second = [_finite_phase(item, label="phase2") for item in phase2]
+            first = [_finite_real(item, label="phase1") for item in phase1]
+            second = [_finite_real(item, label="phase2") for item in phase2]
             if len(first) != len(second):
                 raise TNFRValueError("phase iterables must have equal length")
             differences = [a - b for a, b in zip(first, second)]
@@ -305,7 +298,7 @@ class TNFRNumericalUtilities:
             return [
                 math.atan2(math.sin(value), math.cos(value)) for value in differences
             ]
-        diff = _finite_phase(phase1, label="phase1") - _finite_phase(
+        diff = _finite_real(phase1, label="phase1") - _finite_real(
             phase2, label="phase2"
         )
         if not math.isfinite(diff):
@@ -387,19 +380,38 @@ class TNFRNumericalUtilities:
     def safe_divide(
         self, numerator: ArrayLike, denominator: ArrayLike, fallback: float = 0.0
     ) -> ArrayLike:
-        """Divide values and substitute fallback at zero denominators."""
+        """Divide admitted reals, substituting fallback only at exact zeros.
+
+        Raw values must survive binary64 materialization. Nonfinite results
+        and nonzero quotients rounded to zero reject rather than using fallback.
+        """
         fallback_value = _finite_real(fallback, label="fallback")
         if NUMPY_AVAILABLE:
             num, den = np.broadcast_arrays(
-                np.asarray(numerator, dtype=float),
-                np.asarray(denominator, dtype=float),
+                _real_array(numerator, label="numerator"),
+                _real_array(denominator, label="denominator"),
             )
-            return np.divide(
-                num,
-                den,
-                out=np.full(num.shape, fallback_value, dtype=float),
-                where=(den != 0),
-            )
+            with np.errstate(over="ignore", under="ignore", invalid="ignore"):
+                result = np.divide(
+                    num,
+                    den,
+                    out=np.full(num.shape, fallback_value, dtype=float),
+                    where=(den != 0),
+                )
+            if not np.all(np.isfinite(result)) or np.any(
+                (num != 0) & (den != 0) & (result == 0)
+            ):
+                raise TNFRValueError("division result overflows or underflows binary64")
+            return result
+
+        def divide(num, den):
+            if den == 0:
+                return fallback_value
+            result = num / den
+            if not math.isfinite(result) or (num != 0 and result == 0):
+                raise TNFRValueError("division result overflows or underflows binary64")
+            return result
+
         numerator_is_iterable = hasattr(numerator, "__iter__") and not isinstance(
             numerator, (str, bytes, bytearray)
         )
@@ -407,12 +419,16 @@ class TNFRNumericalUtilities:
             denominator, (str, bytes, bytearray)
         )
         if numerator_is_iterable:
-            numerators = list(numerator)
+            numerators = [_finite_real(item, label="numerator") for item in numerator]
         else:
+            numerator = _finite_real(numerator, label="numerator")
             numerators = None
         if denominator_is_iterable:
-            denominators = list(denominator)
+            denominators = [
+                _finite_real(item, label="denominator") for item in denominator
+            ]
         else:
+            denominator = _finite_real(denominator, label="denominator")
             denominators = None
 
         if numerators is not None and denominators is not None:
@@ -426,20 +442,13 @@ class TNFRNumericalUtilities:
         elif denominators is not None:
             pairs = ((numerator, item) for item in denominators)
         else:
-            return numerator / denominator if denominator != 0 else fallback_value
-        return [
-            (
-                item_numerator / item_denominator
-                if item_denominator != 0
-                else fallback_value
-            )
-            for item_numerator, item_denominator in pairs
-        ]
+            return divide(numerator, denominator)
+        return [divide(first, second) for first, second in pairs]
 
     def compute_circular_mean(self, angles: ArrayLike) -> float:
         """Compute the mean of admitted represented phases with a nonzero resultant."""
         if NUMPY_AVAILABLE:
-            values = _phase_array(angles, label="angle")
+            values = _real_array(angles, label="angle")
             if values.size == 0:
                 raise TNFRValueError("circular mean requires at least one angle")
             mean_sin = float(np.mean(np.sin(values)))
@@ -451,7 +460,7 @@ class TNFRNumericalUtilities:
                 and not isinstance(angles, (str, bytes, bytearray))
                 else [angles]
             )
-            values = [_finite_phase(angle, label="angle") for angle in source]
+            values = [_finite_real(angle, label="angle") for angle in source]
             if not values:
                 raise TNFRValueError("circular mean requires at least one angle")
             mean_sin = math.fsum(math.sin(angle) for angle in values) / len(values)
@@ -476,19 +485,24 @@ class TNFRNumericalUtilities:
     def clamp_value(
         self, value: ArrayLike, min_val: float, max_val: float
     ) -> ArrayLike:
-        """Clamp values to a validated finite numeric interval."""
+        """Clamp admitted represented reals to a finite numeric interval."""
         lower = _finite_real(min_val, label="min_val")
         upper = _finite_real(max_val, label="max_val")
         if lower > upper:
             raise TNFRValueError("min_val must be less than or equal to max_val")
         if NUMPY_AVAILABLE:
-            return np.clip(value, lower, upper)
+            return np.clip(_real_array(value, label="value"), lower, upper)
         else:
             # Fallback implementation
-            if hasattr(value, "__iter__"):
-                return [max(lower, min(upper, v)) for v in value]
+            if hasattr(value, "__iter__") and not isinstance(
+                value, (str, bytes, bytearray)
+            ):
+                return [
+                    max(lower, min(upper, _finite_real(v, label="value")))
+                    for v in value
+                ]
             else:
-                return max(lower, min(upper, value))
+                return max(lower, min(upper, _finite_real(value, label="value")))
 
     def kahan_sum_nd(
         self, values: Iterable[Sequence[float]], dims: int

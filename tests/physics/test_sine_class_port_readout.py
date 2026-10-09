@@ -480,6 +480,25 @@ def test_reader_rebuilds_step_arithmetic_and_rejects_forged_cached_step(
         _rebuild(report)
 
 
+@pytest.mark.parametrize("field", ("initial_box", "series", "coefficient_row"))
+@pytest.mark.parametrize("container", (set, dict.fromkeys))
+def test_port_reader_rejects_unordered_state_and_series(
+    polynomial_report, field, container
+):
+    history = polynomial_report.histories[0]
+    step = history.steps[0]
+    if field == "coefficient_row":
+        changes = {"series": (container(step.series[0]),) + step.series[1:]}
+    else:
+        changes = {field: container(getattr(step, field))}
+    history = replace(history, steps=(replace(step, **changes),) + history.steps[1:])
+    report = replace(
+        polynomial_report, histories=(history,) + polynomial_report.histories[1:]
+    )
+    with pytest.raises(TypeError, match="ordered iterable"):
+        _rebuild(report)
+
+
 def test_reader_rejects_changed_support_law_and_source(polynomial_report):
     bad_geometry = replace(
         polynomial_report.geometry, edges=polynomial_report.geometry.edges[:-1]
