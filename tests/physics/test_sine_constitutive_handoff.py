@@ -7,6 +7,7 @@ import pytest
 
 from tests.sine_evidence_helpers import forbid_sine_regeneration
 from tnfr.physics import _sine_constitutive_handoff as owner
+from tnfr.physics import _sine_constitutive_recovery as recovery_owner
 
 ERROR = Q(1, 10**10)
 
@@ -276,7 +277,7 @@ def test_bad_primitive_values_reject_before_source_construction(
     def forbidden(**kwargs):
         pytest.fail("source construction preceded raw scalar admission")
 
-    monkeypatch.setattr(owner, "_assess_constitutive_class_pair", forbidden)
+    monkeypatch.setattr(recovery_owner, "_assess_constitutive_class_pair", forbidden)
     with pytest.raises((TypeError, ValueError)):
         _assess(**{field: value})
 

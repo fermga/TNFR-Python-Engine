@@ -170,6 +170,23 @@ and retain exact subgrid arithmetic. The full-record theorem quantifies one
 shared sensor; it does not certify separation across independently varying
 unknown sensor maps. Reuse module reports and prohibit scientific regeneration.
 
+For [constitutive inheritance through organized interfaces](theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md),
+select `tests/physics/test_sine_constitutive_inheritance.py`,
+`tests/physics/test_sine_constitutive_inheritance_algebra.py` and
+`tests/physics/test_sine_constitutive_recovery.py` with the existing
+handoff, acquisition, discrimination and sensor owners when the shared
+`_sine_constitutive_recovery.py` changes. Rebuild both fine supports and edge
+sums independently, including degrees, first/higher harmonic factors and
+registered phase offsets. Check both collective rows and the joint form,
+clock, reciprocal-coefficient and constitutive-parameter map; a current-only
+match does not establish complete-law equivalence. Test pulled-back storage,
+its additive support baseline, inputs and original-coordinate observations.
+Keep exact positive subgrid attachment costs, source mean constraints, own-law
+Hessian/gap margins and the finite full-state defect. Exercise loss of
+registration in ninth-moment-only observations and unavailable source/budget
+premises. Algebraic parameter extension does not transfer formation, and
+invariance of the organized family does not prove its generic attraction.
+
 For [preparation information and acquired modes](theory/nodal/SINE_PREPARATION_MODE_SELECTION.md),
 select `tests/physics/test_sine_preparation_mode_selection.py` with the shared
 preparation and isolated-class controls above. Reconstruct the Laplacian energy

@@ -195,8 +195,22 @@ derives finite domain, gain, curvature and sensor-error conditions preserving
 that distinction. A common nonlinear observation can alter the mixed signs
 without erasing full-record separation; neither sign nor raw form is therefore
 a sensor-independent physical identity. Physical resolution and independent
-calibration of an apparatus remain open. These results do not transfer to the
-different Cayley source corridor or derive an inherited law for a new support.
+calibration of an apparatus remain open. These observation results do not
+transfer to the different Cayley source corridor.
+
+The separate [organized-inheritance theorem](nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md)
+derives both collective rows for two prescribed interfaces between registered
+winding-one C9 organizations. Matching contacts preserve the complete law
+after a clock conversion. Three-offset contacts change the first harmonic
+relative to the ninth and eighteenth ones; equivalence requires an explicit
+form chart and changes to both the constitutive parameter and reciprocal
+coefficient. The fixed-coefficient family is therefore not closed under this
+composition, although a larger algebraic family represents the inherited law.
+Actual recovered sources retain their residuals, new support work and a
+separate full-state identity bound. Exact invariant-family motion, nearby
+finite approximation and local identity are distinct conclusions. Neither
+the enlarged parameters nor a ninth phase moment alone inherit the original
+source guarantees or recover discarded attachment registration.
 
 Distinct internal geometries need not be distinguishable through every
 contact. The [central-contact obstruction](nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-contact-admission)
@@ -309,6 +323,14 @@ retains that internal influence in a closed collective description, removing
 only the interchangeable constituent labels. Its constrained coordinates keep
 the continuous degrees of freedom and do not derive spontaneous scale
 formation or a universally sufficient scalar macro-node.
+
+The [registered C9 composition](nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md)
+adds an interface-dependent constitutive example: the internal pattern can
+filter distinct phase harmonics differently. Its four-coordinate law closes
+on a declared invariant family, while the actual acquired states require
+separate residual and identity bounds. That restriction does not eliminate
+the internal state of arbitrary neighboring configurations or select when
+the interface forms.
 
 Here structural participation does not identify the entire joint state with
 one scalar EPI coordinate. The current representation also retains phase,
@@ -518,7 +540,7 @@ description, not a proof that its observed coherent identity persists.
 | --- | --- | --- |
 | Pulse and internal organization | The [actual mean-contact balance](nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-collective-pulse-transfer) derives exchange between collective motion and contact deviations on the conservative unit C5/private-leaf support. Certain phase preparations release collective storage and initiate internal form/phase motion. | The mean pulse is not generally closed; its lift-dependent remainder is signed. Release and internal growth do not prove the receiver acquires an identity. |
 | Resonance and environmental memory | The [work-port response](nodal/RESONANCE_FOUNDATIONS.md#collocated-resonance) and [causal bridge memory](nodal/RESONANCE_FOUNDATIONS.md#sine-bridge-causal-memory) both retain joint form/phase channels and an explicit input/readout or hidden source. Hidden initial state can drive visible response without an added external force. | A positive-loss driven gain theorem is not a conservative autonomous oscillation theorem. A two-C6 tangent kernel cannot be used as the nonlinear C5 environment; the reduction method, not its coefficients, transfers. |
-| Scale inheritance and moving geometry | [Replica inheritance](nodal/SINE_PAIR_STATE.md#sine-replica-inheritance) retains smaller constituents, while the [phase-offset criterion](nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-phase-offset-partition) identifies compatible collective families. Both expose the internal information required beyond group means. | Exact closure or prepared invariance does not establish spontaneous grouping, attraction, or the same scalar law at arbitrary scales. Different supports retain different inherited coefficients. |
+| Scale inheritance and moving geometry | [Replica inheritance](nodal/SINE_PAIR_STATE.md#sine-replica-inheritance) retains smaller constituents, the [phase-offset criterion](nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-phase-offset-partition) identifies compatible collective families, and [registered organized interfaces](nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md) derive changes in the constitutive and reciprocal coefficients. | Exact closure or prepared invariance does not establish spontaneous grouping, attraction, or the same scalar law at arbitrary scales. Different supports retain different inherited coefficients; acquired-state identity requires its own complete-law bound. |
 | Formation and finite maintenance | [Same-orbit formation](nodal/SINE_CONSERVATIVE_PREPARATION.md#sine-conservative-formation-retention) joins zero winding to a full-state target retaining acute identity for one scaled unit, using both nonlinear corridors, a phase band and complete-field error bounds. [Energy-speed windows](nodal/SINE_CONSERVATIVE_PREPARATION.md#sine-energy-speed-retention) and [moving-reference bounds](nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-moving-pattern-window) remain separate tools. | The source and target centers are defined by the exact flow, and the source tolerance is formally positive but extremely small. This is conditional existence, not an operational preparation, autonomous selection, indefinite maintenance or physical identification. |
 | Primitive information and constitutive freedom | [First-resultant sufficiency](nodal/SINE_CONSTITUTIVE_INFORMATION.md#first-phase-moment-sufficiency) conditionally selects a sine current, while [storage-family controls](nodal/RESONANCE_FOUNDATIONS.md#storage-family-pattern-robustness) distinguish a shared identity from potential-dependent response. | Supplying the information class, storage or mobility remains an independent premise. Equilibrium geometry and tangent agreement do not select every nonlinear interaction or timescale. |
 

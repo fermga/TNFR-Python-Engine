@@ -14,26 +14,17 @@ from __future__ import annotations
 from dataclasses import dataclass
 from fractions import Fraction as Q
 
-from .._exact_time import exact_or_represented_real as _exact
 from ..mathematics._rational_interval import INTERVAL_METHOD
-from ._sine_class_constitutive_acquisition import (
-    _assess_constitutive_class_pair,
-    _ConstitutiveFormedClassPair,
+from ._sine_class_constitutive_acquisition import _ConstitutiveFormedClassPair
+from ._sine_constitutive_recovery import (
+    _DECAY_POWER,
+    _DWELL,
+    _ENDPOINT_RADIUS,
+    _FORMATION_TIME,
+    _RADIUS,
+    _assess_constitutive_recovery,
 )
-from ._sine_class_constitutive_comparison import _deformation
-from ._sine_lyapunov import (
-    _sine_lyapunov_coefficients,
-    _sine_lyapunov_initial_upper,
-    _sine_lyapunov_return_squared,
-)
-from .reversible_eigenmode_reference import _MAX_RATIONAL_EXPONENT
 
-_FORMATION_TIME = Q(100)
-_RADIUS = Q(1, 12)
-_DWELL = Q(10**13)
-_ENDPOINT_RADIUS = Q(1, 10**70)
-_DECAY_POWER = 512
-_GAP, _RATE = Q(1, 5), Q(2)
 _AMPLITUDE = Q(7, 10000)
 _JOINED_BARRIER = Q(1, 486000)
 
@@ -130,61 +121,12 @@ def _assess_constitutive_handoff(
     proved family [0,1], absent capture, insufficient recovery and nonpositive
     identity margins yield explicit unavailability rather than a reset.
     """
-    coefficient = _deformation(deformation)
-    rx = _exact(form_error_bound, "form_error_bound")
-    rt = _exact(phase_error_bound, "phase_error_bound")
-    if rx < 0 or rt < 0:
-        raise ValueError("preparation error bounds must be nonnegative")
-    source = _assess_constitutive_class_pair(
-        deformation=coefficient,
-        scaled_time=_FORMATION_TIME,
-        form_error_bound=rx,
-        phase_error_bound=rt,
-        radius=_RADIUS,
+    recovery = _assess_constitutive_recovery(
+        deformation=deformation,
+        form_error_bound=form_error_bound,
+        phase_error_bound=phase_error_bound,
     )
-    eta = source.eta_bounds
-    mu, maximum, lower, upper, rate = _sine_lyapunov_coefficients(
-        eta_lower=eta.lo,
-        eta_upper=eta.hi,
-        cosine_lower=source.phase_hessian_lower_bound,
-        gap_lower=_GAP,
-        rate_upper=_RATE,
-        phase_hessian_upper=source.phase_hessian_upper_bound,
-    )
-    initial = _sine_lyapunov_initial_upper(
-        eta_upper=eta.hi,
-        rate_upper=_RATE,
-        gap_lower=_GAP,
-        position_upper=upper,
-        form_norm_upper=source.endpoint_form_norm_upper_bounds[0],
-        phase_norm_upper=source.endpoint_target_phase_norm_upper_bounds[0],
-    )
-    source_ok = (
-        coefficient <= 1
-        and source.initial_zero_winding_certified
-        and source.formation_certified_by_class[0]
-        and source.source_budget_certified_by_class[0]
-    )
-    exponent = rate * _DWELL if rate is not None else None
-    decay_ok = (
-        exponent is not None and _DECAY_POWER <= exponent <= _MAX_RATIONAL_EXPONENT
-    )
-    decay = Q(1, 2**_DECAY_POWER) if decay_ok else None
-    returned = x2 = y2 = form_margin = phase_margin = None
-    if decay is not None:
-        returned, x2, y2 = _sine_lyapunov_return_squared(
-            initial_upper=initial,
-            decay_upper=decay,
-            eta_lower=eta.lo,
-            gap_lower=_GAP,
-            rate_upper=_RATE,
-            position_lower=lower,
-        )
-        form_margin = _ENDPOINT_RADIUS**2 - x2
-        phase_margin = _ENDPOINT_RADIUS**2 - y2
-    handoff = (
-        source_ok and form_margin is not None and form_margin > 0 and phase_margin > 0
-    )
+    source, handoff = recovery.source, recovery.recovery_certified
     eps, u = _ENDPOINT_RADIUS, source.phase_hessian_upper_bound
     contact_work = Q(0), 4 * (1 + u) * eps**2
     joined_excess = 10 * (1 + u) * eps**2
@@ -216,38 +158,28 @@ def _assess_constitutive_handoff(
                 identity_certified=handoff and radius_margin > 0 and storage_margin > 0,
             )
         )
-    unresolved = []
-    if coefficient > 1:
-        unresolved.append("deformation_outside_proved_family")
-    if not source_ok:
-        unresolved.append("original_class_one_source_not_certified")
-    if not decay_ok:
-        unresolved.append("fixed_dwell_decay_not_certified")
-    if form_margin is None or form_margin <= 0:
-        unresolved.append("actual_form_handoff_radius_not_certified")
-    if phase_margin is None or phase_margin <= 0:
-        unresolved.append("actual_phase_handoff_radius_not_certified")
+    unresolved = list(recovery.unresolved_conditions)
     if not all(branch.identity_certified for branch in branches):
         unresolved.append("joined_four_branch_identity_not_certified")
     return _ConstitutiveHandoff(
         source=source,
-        deformation=coefficient,
-        form_error_bound=rx,
-        phase_error_bound=rt,
-        transformed_stiffness_lower_bound=mu,
-        transformed_stiffness_upper_bound=maximum,
-        lyapunov_position_lower_coefficient=lower,
-        lyapunov_position_upper_coefficient=upper,
-        lyapunov_initial_upper_bound=initial,
-        lyapunov_decay_rate=rate,
-        decay_exponent=exponent,
-        exact_decay_upper_bound=decay,
-        returned_lyapunov_upper_bound=returned,
-        endpoint_form_norm_squared_upper_bound=x2,
-        endpoint_phase_norm_squared_upper_bound=y2,
-        endpoint_form_margin=form_margin,
-        endpoint_phase_margin=phase_margin,
-        source_certified=source_ok,
+        deformation=recovery.deformation,
+        form_error_bound=recovery.form_error_bound,
+        phase_error_bound=recovery.phase_error_bound,
+        transformed_stiffness_lower_bound=recovery.transformed_stiffness_lower_bound,
+        transformed_stiffness_upper_bound=recovery.transformed_stiffness_upper_bound,
+        lyapunov_position_lower_coefficient=recovery.lyapunov_position_lower_coefficient,
+        lyapunov_position_upper_coefficient=recovery.lyapunov_position_upper_coefficient,
+        lyapunov_initial_upper_bound=recovery.lyapunov_initial_upper_bound,
+        lyapunov_decay_rate=recovery.lyapunov_decay_rate,
+        decay_exponent=recovery.decay_exponent,
+        exact_decay_upper_bound=recovery.exact_decay_upper_bound,
+        returned_lyapunov_upper_bound=recovery.returned_lyapunov_upper_bound,
+        endpoint_form_norm_squared_upper_bound=recovery.endpoint_form_norm_squared_upper_bound,
+        endpoint_phase_norm_squared_upper_bound=recovery.endpoint_phase_norm_squared_upper_bound,
+        endpoint_form_margin=recovery.endpoint_form_margin,
+        endpoint_phase_margin=recovery.endpoint_phase_margin,
+        source_certified=recovery.source_certified,
         handoff_certified=handoff,
         attachment_work_bounds=contact_work,
         joined_excess_storage_upper_bound=joined_excess,

@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Derive [constitutive inheritance through two registered organized interfaces](theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md).
+  Matching contacts preserve the law after a common clock conversion; the
+  three-offset contact requires derived changes to both the constitutive
+  parameter and reciprocal coefficient under an explicit form chart. Retain
+  full storage, positive attachment work, original acquired-source residuals
+  and a separate full-state identity bound. Share the isolated recovery kernel
+  with the existing handoff; no event selector or universal hierarchy follows.
 - Admit [calibrated scalar observation of the carried constitutive comparison](theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-calibrated-observation).
   Derive sensor-domain, gain, curvature and sensor-unit error conditions for
   finite separation. A common nonlinear sensor can make both mixed signs

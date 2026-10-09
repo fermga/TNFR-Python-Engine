@@ -1039,6 +1039,11 @@ scale law, composite binding energy or fundamental constituent follows.
 The [foundation compatibility audit](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission)
 owns those distinctions; the execution plan owns subsequent work.
 
+The separate [registered-composition comparison](ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md)
+derives inherited complete laws for two different two-C9 interfaces, with
+their own support work and actual-source bounds. Those conditional maps do
+not supply an inherited law for the three-C9 support used here.
+
 ## Implementation and independent controls
 
 [`_sine_class_constitutive_comparison.py`](../../src/tnfr/physics/_sine_class_constitutive_comparison.py)
