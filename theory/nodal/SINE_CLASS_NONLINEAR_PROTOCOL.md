@@ -519,3 +519,153 @@ controls use unrelated source fixtures and shared-kernel postconditions.
 The fixed class-two response must remain unevaluated until its source,
 protocol, numerical budget and first-outcome retention are separately
 frozen; this admission opens no physical-data campaign.
+
+
+<a id="sine-nonlinear-protocol-frozen-evaluation"></a>
+## Prospective freeze of the matched four-history evaluation
+
+This protocol separates the analytic prediction from its future validated
+forward evaluation. The present admission freezes preparation association,
+all laws and observations, the numerical policy and first-outcome handling.
+It generates no reserved trajectory, response or attempt record. Any later
+outcome belongs in a separate retained record; a freeze receipt is not an
+execution certificate or evidence of physical measurement.
+
+### F1: complete source and the retained information
+
+Use the actual acquired family associated with the unchanged
+[class-mediation source proof](SINE_CLASS_MEDIATED_RESPONSE.md#sine-class-mediated-protocol)
+and its [retained evidence](SINE_CLASS_MEDIATED_RESPONSE.md#sine-class-mediated-result).
+The source has component classes \((1,2,1)\), original preparation errors,
+formation and relaxation already declared there, and final componentwise
+form and phase error norms at most \(\epsilon=10^{-32}\), with the original
+zero unweighted means. Acquisition is a conditional mathematical premise;
+the new forward calculation neither reruns formation nor replaces its
+proof by a cached passing flag.
+
+Construct and retain all 54 rational source intervals by (22), including
+the independent enclosure of pi and the signed phase coefficients. Archive
+the source recipe, its realized bounds and its association with the
+original preparation/proof revision. Every acquired state is covered, but
+the independent interval corners can violate the consumed norm or mean
+correlations. Keep the correlated family and its Cartesian outer cover
+as distinct domains throughout the audit.
+
+The one source supplies all four histories in the fixed order
+\((00,10,01,11)\). Observe signed receiver form at coordinate 22 at their
+common final time. Four scalar recording errors are each bounded by
+\(\delta=10^{-30}\). This is a declared observation-error model in
+normalized structural form units, without an inferred laboratory unit or
+instrument calibration. Forms, continuous phase lifts, full mediator
+state and all event ancestry remain in the forward evidence.
+
+### F2 and F3: unchanged law, events and numerical policy
+
+Retain the complete law (1), unit capacities, the same 27-node support and
+degree normalization, \(\gamma=1/(1023\pi)\), and structural clock
+\(\tau=e t\). The donor-only form jumps have
+\(a=b=1/2000\), delay \(s=1\) and final time \(T=2\). The delayed-only
+history carries the unprobed prefix; it is not a newly prepared state.
+The branch tree, exact phase-preserving jumps and full-state handoffs are
+those of the validated producer above. No source reset, wrapping, mean
+projection, fitted pressure, alternate law or predicted response enters
+that producer.
+
+The identity radius is \(r=1/12\), with contact work allowance
+\(10^{-12}\) and each probe work allowance \(2\,10^{-6}\). The matched
+source/event theorem supplies their conditional storage and radius
+bounds. The forward smooth-domain flag alone supplies none of these
+identity or work conclusions, especially for additional box corners.
+
+Fix one numerical policy before observing any reserved response:
+
+| Quantity | Frozen value or rule |
+| --- | --- |
+| Step size | \(1/64\) structural time units, clipped only at declared event/final boundaries |
+| Taylor order | 16 |
+| Global unique-attempt cap | 384: two prefixes of 64 steps and four suffixes of 64 steps |
+| Arithmetic | Shared exact rational and outward dyadic-128 interval arithmetic, with the archived elementary-function implementation |
+| Tube admission | Unchanged shared strict Picard inclusion and full source-box Taylor coefficients/remainder |
+| Randomness | None; no fitting, seed selection or source sweep |
+| Failure policy | Global first failure, with every completed prefix, failed attempt and unattempted branch retained |
+
+For a fixed smooth order-17 remainder coefficient, halving the step doubles
+the number of steps and reduces their accumulated local truncation scale
+by \(2^{16}\). This is an a priori policy rationale, not a promise about
+strict tube admission or final interval width. Source uncertainty,
+parameter rounding, wrapping and finite arithmetic remain separately
+relevant. There is no extra width threshold: retain the actual widths and
+evaluate the declared discrimination margins.
+
+### F4: separate forward, consistency and discrimination claims
+
+The previously derived true-response prediction is the open rational band
+\(J=(-3.2\,10^{-27},-3\,10^{-27})\) on the acquired correlated family.
+The future forward producer must return its own interval
+\(I=[I_-,I_+]\) from primitive source bounds and the fixed numerical policy.
+It must not consume the predicted sign or endpoints, and its interval must
+never be intersected with \(J\) to manufacture a successful result.
+
+Retain full completion, source association and each of these distinct
+predicates rather than collapsing them into one passing label:
+
+| Predicate | Meaning when the forward interval is available |
+| --- | --- |
+| \(I_+>-3.2\,10^{-27}\) and \(I_-<-3\,10^{-27}\) | Nonempty overlap with the open prediction band; consistency, not independent confirmation of the full prediction |
+| \(I\subset J\) | A stronger sufficient enclosure check, including the outer cover's additional states |
+| \(I_+<0\) | Uniform negative true mixed response on the forward source cover |
+| \(I_++4\delta<0\) | Every admitted nonlinear recorded mixed response is negative |
+| \(I_++8\delta<0\) | Nonlinear and same-source tangent four-endpoint record sets are disjoint under their separate four-error budgets |
+
+The mixed tangent response is exactly zero for the same complete initial
+state and input histories. Its possible recorded mixed values lie in
+\([-4\delta,4\delta]\), while the nonlinear recorded interval is
+\(I+[-4\delta,4\delta]\). This explains the strict eight-error separation
+criterion; the four-error sign criterion alone is insufficient for that
+claim. These are complete-model software comparisons, not physical
+identification or observational equivalence of continuous histories.
+
+The primary forward interval uses the suffix increments in (24). Retain
+its four operands, all raw final receiver bands and the separate raw
+endpoint mixed interval. Different widths expose different retained
+correlations; no narrow construction can be substituted after seeing a
+preferred sign. Width includes source uncertainty and numerical enclosure
+effects, not a measured sensor error. A wide interval or failed
+containment can be inconclusive because the Cartesian cover is larger
+than the acquired family. Missing completion leaves common-final-time
+predicates unavailable. Keep invalid or missing evidence, complete but
+unresolved bounds, and disjointness from the open theorem band as distinct
+outcomes. A conflict calls for auditing the source association, theorem
+and numerical premises; it is not automatically an acquired-state or
+physical counterexample. Touching only an excluded theorem endpoint does
+not establish overlap. Exact equality at a strict margin does not pass.
+
+### Archive boundary and the first later outcome
+
+Use the stem `class-nonlinear-readout-v1`. The protocol owns the exact
+source recipe and realized bounds, support/node order, held laws and
+units, source-proof associations, all inputs/events, branch order,
+observation definition, numerical policy, fixed predicate meanings and
+first-outcome procedure. The source archive retains the immutable base
+revision and any explicit overlays, the prospective proof prefix, the
+protocol and isolated evaluator/support dependencies. Record byte sizes,
+SHA-256 digests, arithmetic/runtime versions and the exact allowed forward
+argument list; the predictor and preparation assessor are not execution
+inputs to the forward call.
+
+The freeze consists only of `.protocol.json`, `.source.zip` and
+`.freeze.json`, created without replacing earlier evidence. The receipt
+associates those immutable bytes and records
+`evaluation_status_at_freeze="not_evaluated"`. This historical field
+remains true even after a separately admitted later evaluation. It is neither provenance authentication nor a claim that the
+archived evaluator has run. Tests may inspect source, hashes, primitive
+arithmetic and call isolation without executing the reserved worker.
+
+When a later evaluation is admitted, retain its first outcome under this
+frozen policy, including strict-inclusion failure, budget exhaustion,
+partial histories, exceptions or export failure. Do not retry, expand
+the budget, narrow the source or revise a predicate to turn that outcome
+into a success. A correction requires separately identified evidence.
+All earlier frozen protocols and responses remain unchanged. The sole
+[execution queue](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+controls that later admission.

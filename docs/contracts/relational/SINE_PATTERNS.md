@@ -1467,6 +1467,13 @@ The schema is `tnfr.sine-class-four-history-readout.v1`; shared SDK
 projection and atomic export retain the full evidence and availability.
 The [guide](../../guides/relational/SINE_PATTERNS.md#sine-class-four-history-readout)
 uses an unrelated stationary fixture, not the reserved nonlinear design.
+The [separately frozen evaluation protocol](../../../theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-frozen-evaluation)
+associates the canonical source cover and its acquisition premises with
+fixed inputs, observations and numerical policy. Its freeze receipt is
+not a response or attempt record. Forward intervals remain independent of
+the analytic prediction; source association, finite completion, open-band
+consistency, containment and strict zero/four-error/eight-error margins
+are separate checks. No reserved flow is part of freeze inspection.
 
 <a id="sine-class-nonlinear-protocol"></a>
 ### Finite nonlinear separation with the complete event history

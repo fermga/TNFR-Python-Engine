@@ -1234,6 +1234,45 @@ prefix by a midpoint or silently retry with a larger budget. Any future
 reserved source, prediction, budget and first-outcome policy must be
 frozen separately; this example neither fits nor tests that prediction.
 
+The [matched evaluation protocol](../../../theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-frozen-evaluation)
+freezes the class-two source, observation and numerical policy before its
+response. Inspect its primitive JSON and freeze receipt read-only; neither
+inspection nor a passing hash check runs the producer or establishes a
+response. Keep the original acquired-family proof separate from the
+Cartesian cover, and retain both forward mixed constructions. The future
+forward interval must remain unmodified by the analytic prediction.
+
+The [protocol](../../assets/sine_formed_classes/class-nonlinear-readout-v1.protocol.json),
+[source archive](../../assets/sine_formed_classes/class-nonlinear-readout-v1.source.zip)
+and [freeze receipt](../../assets/sine_formed_classes/class-nonlinear-readout-v1.freeze.json)
+can be inspected from the repository root without importing a scientific
+producer or an archived helper:
+
+```python
+from pathlib import Path
+from tnfr.utils.io import json_loads
+
+assets = Path("docs/assets/sine_formed_classes")
+stem = "class-nonlinear-readout-v1"
+protocol = json_loads((assets / (stem + ".protocol.json")).read_bytes())
+freeze = json_loads((assets / (stem + ".freeze.json")).read_bytes())
+assert protocol["schema"] == "tnfr.sine-class-nonlinear-readout-protocol.v1"
+assert freeze["schema"] == "tnfr.sine-class-nonlinear-readout-freeze.v1"
+assert protocol["evaluation_status_at_freeze"] == "not_evaluated"
+assert freeze["evaluation_status_at_freeze"] == "not_evaluated"
+assert protocol["producer_inputs"]["order"] == 16
+assert protocol["producer_inputs"]["max_steps"] == 384
+assert protocol["numerical_policy"]["time_step"] == {
+    "numerator": 1, "denominator": 64,
+}
+```
+
+`evaluation_status_at_freeze` describes the immutable pre-evaluation
+record; it is not a query about a later outcome. This inspection creates
+neither an attempt nor a response. A later evaluation must retain its first
+outcome, including failure or an inconclusive interval, under the same
+protocol.
+
 <a id="sine-class-nonlinear-protocol"></a>
 ### Check a finite nonlinear separation margin
 

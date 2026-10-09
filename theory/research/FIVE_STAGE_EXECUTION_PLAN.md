@@ -30,9 +30,10 @@ is admitted: it retains full state, exact event ancestry, finite evidence
 and honest partial failure independently of the prediction. The
 [finite nonlinear theorem](#informative-nonlinear-interaction-protocol)
 and earlier [short-window overlap](#two-probe-nonlinear-superposition)
-remain valid. The sole next admission is to
-[freeze the matched four-history evaluation](#current-g3-gate), not yet
-executed. No reserved response for this protocol has been generated. The earlier
+remain valid. The [matched evaluation freeze](#frozen-nonlinear-four-history-evaluation)
+is complete. The sole next admission is to
+[execute and retain its first outcome](#current-g3-gate); the reserved
+response remains unevaluated. The earlier
 [effective-memory theorem](#acquired-mediator-effective-memory) and
 [class-response certificate](#generative-class-mediated-response) remain
 unchanged. The
@@ -51,7 +52,8 @@ no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next primary admission, not yet executed | [Freeze the matched four-history evaluation](#current-g3-gate): preserve the acquired-family association, observation criteria, numerical budget and first outcome before any reserved response |
+| Next primary admission, not yet executed | [Execute and retain the first frozen outcome](#current-g3-gate): unchanged source, protocol and numerical policy; preserve success, failure, conflict or inconclusive evidence |
+| Closed freeze admission | [Matched four-history evaluation freeze](#frozen-nonlinear-four-history-evaluation): immutable source/protocol/receipt association; no response or attempt generated |
 | Closed producer admission | [Validated four-history observation producer](#validated-nonlinear-four-history-observation): full-state branches, exact events, shared-prefix cancellation and partial-failure evidence |
 | Closed theoretical gate | [Informative nonlinear interaction protocol](#informative-nonlinear-interaction-protocol): finite signed nonlinear/tangent separation under the declared longer horizon, with source, work and identity retained |
 | Closed theoretical gate | [Two-probe nonlinear superposition](#two-probe-nonlinear-superposition): actual local curvature, symmetry-aware finite bounds and a scoped four-endpoint observation obstruction |
@@ -73,24 +75,41 @@ no empirical response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="reserved-nonlinear-four-history-response"></a>
+## Next primary admission: execute and retain the first frozen outcome
+
+Execute the [frozen matched evaluation](#frozen-nonlinear-four-history-evaluation)
+once under its unchanged source, complete law, branch history, observation
+and numerical policy. Preserve full finite evidence or its honest partial
+prefix, then distinguish source/evidence availability, open-prediction
+consistency, true sign, recorded sign and nonlinear/tangent record-set
+separation. The first outcome may be unsuccessful or inconclusive; no
+source narrowing, interval intersection, budget increase or silent retry
+may replace it. This is the sole next admission. Its reserved response
+has not been evaluated, and the completed freeze does not automatically
+execute or schedule it.
+
 <a id="frozen-nonlinear-four-history-evaluation"></a>
-## Next primary admission: freeze the matched four-history evaluation
+<a id="next-primary-admission-freeze-the-matched-four-history-evaluation"></a>
+<a id="active-primary-admission-freeze-the-matched-four-history-evaluation"></a>
+## Closed primary admission: freeze the matched four-history evaluation
 
-Freeze one source/protocol/archive association for the fixed class-two
-nonlinear prediction before evaluating its reserved response. Preserve
-the canonical full-state outer cover and its original acquired-family
-proof, all four matched histories, declared impulses, delay and horizon,
-common receiver observation, sensor errors and separate work/identity
-obligations. A box enclosure does not make every corner acquired or
-replace the source correlations consumed by the theorem.
+The [prospective protocol owner](../nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-frozen-evaluation),
+[exact protocol](../../docs/assets/sine_formed_classes/class-nonlinear-readout-v1.protocol.json),
+[source archive](../../docs/assets/sine_formed_classes/class-nonlinear-readout-v1.source.zip)
+and [immutable freeze receipt](../../docs/assets/sine_formed_classes/class-nonlinear-readout-v1.freeze.json)
+associate the canonical full-state cover with its original acquired-family
+proof, matched histories, exact events and fixed observation/numerical
+policy. A box enclosure does not make every corner acquired or replace
+the correlations required by the work and identity theorem.
 
-Fix the validated step size, Taylor order, total unique-attempt budget,
-finite-enclosure and observation stopping criteria, source revision and
-first-outcome retention before any response. Keep raw endpoint and
-prefix-cancelled increment evidence distinct. Do not tune the preparation,
-budget or prediction to a reserved result. This is the sole next
-admission; no response evaluation or physical-data campaign has been
-performed by the completed producer work.
+Read-only integrity and primitive-arithmetic checks retain distinct raw
+endpoint and prefix-cancelled increment evidence, strict observation
+criteria and first-outcome handling. The receipt's historical
+`evaluation_status_at_freeze="not_evaluated"` is not an execution verdict.
+No response or attempt record was generated, no acquisition was rerun and
+all earlier frozen evidence remains unchanged. Physical identification
+and attainable measurement precision do not follow from this freeze.
 
 <a id="validated-nonlinear-four-history-observation"></a>
 <a id="next-primary-admission-validated-four-history-observation-producer"></a>

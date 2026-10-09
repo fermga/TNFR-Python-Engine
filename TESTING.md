@@ -182,6 +182,30 @@ numerical enclosure effects; no sensor error is supplied by the producer.
 Do not evaluate the prospective class-two source to tune this admission;
 retain every earlier frozen source and response unchanged.
 
+For the [matched four-history freeze](theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-frozen-evaluation),
+audit immutable protocol/archive/receipt associations and the canonical
+source cover from primitive arithmetic. Check the acquired-family
+assumptions separately from its Cartesian cover, fixed event ancestry,
+the unique-step budget and the isolated forward argument list. Read-only
+controls must reject altered bytes, undeclared inputs and any response or
+attempt claim at the freeze stage; they must not call acquisition,
+prediction, the reserved producer or an archived worker. Test open-band
+overlap/containment and strict zero/four-error/eight-error classification
+using unrelated synthetic intervals, including equality and unavailable
+evidence. Hash agreement establishes association, not authentication or
+the truth of retained derivative enclosures.
+
+```sh
+python -m pytest tests/physics/test_sine_class_readout_freeze.py tests/physics/test_sine_class_readout_protocol_algebra.py -q
+```
+
+The [independent protocol arithmetic](tests/physics/test_sine_class_readout_protocol_algebra.py)
+checks the fixed branch budget, source cover and strict observation
+criteria without executing a reserved flow. The
+[freeze audit](tests/physics/test_sine_class_readout_freeze.py)
+checks the archived execution boundary and immutable byte associations;
+it is not a retained-response audit.
+
 For a physical-source admission, test deductions from the declared source
 law separately from manufacturer specifications and measured responses.
 The [digital-PLL audit](theory/research/DPLL_PHYSICAL_ADMISSION.md) uses
