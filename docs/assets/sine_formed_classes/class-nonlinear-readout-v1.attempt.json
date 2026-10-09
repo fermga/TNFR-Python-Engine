@@ -1,0 +1,12 @@
+{
+  "schema":"tnfr.sine-class-nonlinear-readout-attempt.v1",
+  "started_utc":"2026-10-09T08:07:34.252390+00:00",
+  "artifact_sha256":{
+    ".protocol.json":"5a2d24df657e07c1bf08e3caffbc5800faf3f1460732e08ba9cce8a43930e776",
+    ".source.zip":"c8d96bddc169b7de29bdc21412174eb9bacc63d0ed290a61ec242d2c14171826",
+    ".freeze.json":"4d0d6b7d59fd84caed6d04323189632d470a0b164f76d2d0399123f2eee9efc7"
+  },
+  "producer_call_limit":1,
+  "global_step_attempt_limit":384,
+  "scope":"Exclusive intent record, not independent execution authentication"
+}

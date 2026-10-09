@@ -31,9 +31,11 @@ and honest partial failure independently of the prediction. The
 [finite nonlinear theorem](#informative-nonlinear-interaction-protocol)
 and earlier [short-window overlap](#two-probe-nonlinear-superposition)
 remain valid. The [matched evaluation freeze](#frozen-nonlinear-four-history-evaluation)
-is complete. The sole next admission is to
-[execute and retain its first outcome](#current-g3-gate); the reserved
-response remains unevaluated. The earlier
+is complete. Its [first reserved evaluation](#reserved-nonlinear-four-history-response)
+closed with a retained full-law enclosure separating nonlinear and tangent
+four-record sets under the declared error budget. The sole next admission
+is [mediator-organization dependence of that nonlinear interaction](#current-g3-gate);
+no further response has been evaluated. The earlier
 [effective-memory theorem](#acquired-mediator-effective-memory) and
 [class-response certificate](#generative-class-mediated-response) remain
 unchanged. The
@@ -41,7 +43,7 @@ unchanged. The
 auxiliary result, with no admitted physical bridge. The
 [finite-noise/horizon theorem](#sine-aperture-resolution-admission) is closed.
 The [reserved finite-aperture result](#reserved-aperture-inference-admission)
-remains unchanged. No response acquisition, fitting or physical-data
+remains unchanged. No source acquisition, fitting or physical-data
 evaluation is active; declared mathematical budgets do not establish
 attainable preparation or measurement precision.
 Physical constituent emergence and independent law selection remain open;
@@ -52,8 +54,9 @@ no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next primary admission, not yet executed | [Execute and retain the first frozen outcome](#current-g3-gate): unchanged source, protocol and numerical policy; preserve success, failure, conflict or inconclusive evidence |
-| Closed freeze admission | [Matched four-history evaluation freeze](#frozen-nonlinear-four-history-evaluation): immutable source/protocol/receipt association; no response or attempt generated |
+| Next theoretical admission | [Mediator organization and nonlinear interaction](#current-g3-gate): matched acquired families, complete-law contrast or a scoped obstruction before another response |
+| Closed reserved evaluation | [First frozen four-history outcome](#reserved-nonlinear-four-history-response): full completion, independent forward enclosure, theorem consistency and strict nonlinear/tangent record-set separation |
+| Closed freeze admission | [Matched four-history evaluation freeze](#frozen-nonlinear-four-history-evaluation): immutable source/protocol/receipt association, with no response or attempt generated at freezing |
 | Closed producer admission | [Validated four-history observation producer](#validated-nonlinear-four-history-observation): full-state branches, exact events, shared-prefix cancellation and partial-failure evidence |
 | Closed theoretical gate | [Informative nonlinear interaction protocol](#informative-nonlinear-interaction-protocol): finite signed nonlinear/tangent separation under the declared longer horizon, with source, work and identity retained |
 | Closed theoretical gate | [Two-probe nonlinear superposition](#two-probe-nonlinear-superposition): actual local curvature, symmetry-aware finite bounds and a scoped four-endpoint observation obstruction |
@@ -75,19 +78,44 @@ no empirical response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
-<a id="reserved-nonlinear-four-history-response"></a>
-## Next primary admission: execute and retain the first frozen outcome
+<a id="mediator-organization-nonlinear-interaction"></a>
+## Next primary admission: mediator organization and nonlinear interaction
 
-Execute the [frozen matched evaluation](#frozen-nonlinear-four-history-evaluation)
-once under its unchanged source, complete law, branch history, observation
-and numerical policy. Preserve full finite evidence or its honest partial
-prefix, then distinguish source/evidence availability, open-prediction
-consistency, true sign, recorded sign and nonlinear/tangent record-set
-separation. The first outcome may be unsuccessful or inconclusive; no
-source narrowing, interval intersection, budget increase or silent retry
-may replace it. This is the sole next admission. Its reserved response
-has not been evaluated, and the completed freeze does not automatically
-execute or schedule it.
+Determine whether the finite nonlinear mixed response itself depends on
+the mediator's acquired organization. Compare \(M_1-M_2\), where each
+\(M_k=R_{11}-R_{10}-R_{01}+R_{00}\) uses four histories from one actual
+class-\(k\) source. The two classes have separate actually reached families
+under a matched preparation protocol; retain the same support, complete
+law, capacities, clock, probes and observation definition.
+
+Derive a finite separated contrast, or a scoped symmetry or resolution
+obstruction, including full nonlinear and source errors, carried event
+history, preparation costs, work and identity. Different heat coefficients
+or generic cosine dependence alone do not close this gate. This question
+differs from both the earlier one-probe class contrast and the now retained
+within-class nonlinear/tangent separation. Admit the prediction and its
+budgets before any new reserved response; no such response or physical
+identification is part of this theoretical admission.
+
+<a id="reserved-nonlinear-four-history-response"></a>
+<a id="next-primary-admission-execute-and-retain-the-first-frozen-outcome"></a>
+<a id="active-primary-evaluation-retain-the-first-frozen-outcome"></a>
+## Closed primary evaluation: first frozen four-history outcome
+
+The [retained result](../nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-reserved-result)
+completed the first frozen evaluation under its full pinned source and
+unchanged numerical policy. The independent forward enclosure is inside
+the open analytic prediction and certifies both the negative recorded mixed
+response and the stronger nonlinear/tangent four-record separation. The
+exclusive attempt, full finite evidence and raw as well as prefix-cancelled
+readouts are retained without retry or source narrowing.
+
+Read-only audits reconstruct retained arithmetic and consumed predicates;
+they do not regenerate derivative enclosures. The Cartesian source cover
+contains the acquired correlated family without making every corner an
+acquired state. Formation, work and identity still require their original
+matched premises. This software result establishes no physical measurement
+or independently selected fundamental law.
 
 <a id="frozen-nonlinear-four-history-evaluation"></a>
 <a id="next-primary-admission-freeze-the-matched-four-history-evaluation"></a>
@@ -107,7 +135,7 @@ Read-only integrity and primitive-arithmetic checks retain distinct raw
 endpoint and prefix-cancelled increment evidence, strict observation
 criteria and first-outcome handling. The receipt's historical
 `evaluation_status_at_freeze="not_evaluated"` is not an execution verdict.
-No response or attempt record was generated, no acquisition was rerun and
+At freezing no response or attempt record was generated, no acquisition was rerun and
 all earlier frozen evidence remains unchanged. Physical identification
 and attainable measurement precision do not follow from this freeze.
 

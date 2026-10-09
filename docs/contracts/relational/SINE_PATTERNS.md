@@ -1482,6 +1482,10 @@ not a response or attempt record. Forward intervals remain independent of
 the analytic prediction; source association, finite completion, open-band
 consistency, containment and strict zero/four-error/eight-error margins
 are separate checks. No reserved flow is part of freeze inspection.
+The [retained first evaluation](../../../theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-reserved-result)
+adds a separate attempt and byte-preserving response archive; it does not
+change this producer's domains or turn its source cover into an acquisition
+certificate.
 
 <a id="sine-class-nonlinear-protocol"></a>
 ### Finite nonlinear separation with the complete event history

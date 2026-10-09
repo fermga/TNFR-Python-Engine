@@ -239,6 +239,23 @@ criteria without executing a reserved flow. The
 checks the archived execution boundary and immutable byte associations;
 it is not a retained-response audit.
 
+For the [retained first outcome](theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-reserved-result),
+select the [read-only response audit](tests/physics/test_sine_class_readout_evidence.py):
+
+```sh
+python -m pytest tests/physics/test_sine_class_readout_evidence.py -q
+```
+
+Its module fixture reads the canonical response ZIP once, verifies the
+unchanged outer and uncompressed bytes, and checks the pinned
+source/protocol/attempt association. It reconstructs every retained Taylor
+increment and endpoint, full-state handoffs, exact events, raw endpoint
+and shared-prefix mixed bounds, and all five declared predicates. Guards
+prevent producer, field, jet, Picard and subprocess execution. Retained
+derivative enclosures and their generation remain numerical premises;
+arithmetic reconstruction is not independent derivative validation. The
+source cover does not erase the acquired family's correlation requirements.
+
 For a physical-source admission, test deductions from the declared source
 law separately from manufacturer specifications and measured responses.
 The [digital-PLL audit](theory/research/DPLL_PHYSICAL_ADMISSION.md) uses

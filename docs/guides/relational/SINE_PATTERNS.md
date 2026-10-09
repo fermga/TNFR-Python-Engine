@@ -1239,7 +1239,7 @@ freezes the class-two source, observation and numerical policy before its
 response. Inspect its primitive JSON and freeze receipt read-only; neither
 inspection nor a passing hash check runs the producer or establishes a
 response. Keep the original acquired-family proof separate from the
-Cartesian cover, and retain both forward mixed constructions. The future
+Cartesian cover, and retain both forward mixed constructions. The
 forward interval must remain unmodified by the analytic prediction.
 
 The [protocol](../../assets/sine_formed_classes/class-nonlinear-readout-v1.protocol.json),
@@ -1269,16 +1269,38 @@ assert protocol["numerical_policy"]["time_step"] == {
 
 `evaluation_status_at_freeze` describes the immutable pre-evaluation
 record; it is not a query about a later outcome. This inspection creates
-neither an attempt nor a response. A later evaluation must retain its first
-outcome, including failure or an inconclusive interval, under the same
-protocol.
+neither an attempt nor a response. The
+[first retained outcome](../../../theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-reserved-result)
+now has a separate
+[attempt ledger](../../assets/sine_formed_classes/class-nonlinear-readout-v1.attempt.json)
+and [response ZIP](../../assets/sine_formed_classes/class-nonlinear-readout-v1.response.zip).
+The ZIP preserves the complete original JSON as one member; do not rerun
+the producer to inspect this outcome. Its transport can be inspected
+without materializing the large JSON:
 
-After current-source maintenance, follow the
+```python
+from zipfile import ZipFile
+
+with ZipFile(assets / (stem + ".response.zip")) as archive:
+    entries = archive.infolist()
+    assert len(entries) == 1
+    assert entries[0].filename == stem + ".json"
+    assert entries[0].file_size == 191_886_903
+```
+
+This metadata check proves neither the content digest nor the numerical
+verdict. The [retained-evidence test selection](../../../TESTING.md)
+verifies bytes and reconstructs consumed arithmetic without executing
+the archived worker. The result owner records exact response bounds and
+the separate four-error sign and eight-error record-set conclusions.
+
+This evaluation used the
 [frozen-source restoration workflow](../RESEARCH_EVIDENCE.md#restore-the-declared-source-before-a-later-execution)
-before any separately admitted execution. This protocol requires the full
-`fa8e98a9b1bdd755709da481de7fc092b57bfe65` source tree and its archived
-helpers; a current reader's successful audit does not make refactored
-runtime code interchangeable with that frozen implementation.
+with the complete `fa8e98a9b1bdd755709da481de7fc092b57bfe65` source tree
+and its archived helpers. Its first outcome is now retained; restoration
+refuses an existing attempt. A current reader's successful audit does not
+make refactored runtime code interchangeable with the frozen implementation
+or authorize a replay.
 
 <a id="sine-class-nonlinear-protocol"></a>
 ### Check a finite nonlinear separation margin

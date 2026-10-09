@@ -669,3 +669,95 @@ into a success. A correction requires separately identified evidence.
 All earlier frozen protocols and responses remain unchanged. The sole
 [execution queue](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 controls that later admission.
+
+
+<a id="sine-nonlinear-protocol-reserved-result"></a>
+## Retained first full-law evaluation
+
+The first evaluation following the frozen protocol above completed once
+under the complete pinned source revision
+`fa8e98a9b1bdd755709da481de7fc092b57bfe65`. The retained status is
+`certified_reserved_readout`, with no evaluation error: all 384 attempted
+steps completed, comprising six segments of 64 steps. No source narrowing,
+retry, numerical-budget change or intersection with the analytic prediction
+was used. The freeze receipt's `not_evaluated` value remains its historical
+status at freezing, not the status of this later outcome.
+
+The primary, prefix-cancelled interval is exactly
+
+\[
+ I=\left[-\frac{263844792565}{2^{126}},
+         -\frac{263523400319}{2^{126}}\right].
+ \tag{25}
+\]
+
+The separate raw endpoint mixed interval is
+\([-527739886489/2^{127},-526996499279/2^{127}]\).
+The following decimal bounds are rounded outward; exact rational endpoints
+in the retained record determine all predicates.
+
+| Quantity | Retained bound |
+| --- | --- |
+| Primary true mixed response \(I\) | \([-3.101480631540357847189,-3.097702683844646977897]10^{-27}\) |
+| Primary interval width | \(\le 3.777947695710869290439\,10^{-30}\) |
+| Raw endpoint mixed interval width | \(\le 4.369237329142707581834\,10^{-30}\) |
+| Nonlinear recorded mixed response \(I+[-4\delta,4\delta]\) | \([-3.105480631540357847189,-3.093702683844646977897]10^{-27}\) |
+| Four-record separation margin \(-I_+-8\delta\) | \(>3.089702683844646977897\,10^{-27}\) |
+
+All five declared predicates pass: open-theorem overlap, the stronger
+containment \(I\subset(-3.2\,10^{-27},-3.0\,10^{-27})\), negative true
+mixed response, negative recorded mixed response and disjoint nonlinear
+and same-source tangent four-endpoint record sets. The last conclusion
+uses the separate eight-error margin, not merely the recorded sign.
+The narrower primary interval comes from the prospectively selected
+shared-prefix cancellation; both constructions and all operands remain
+retained.
+
+### Retained bytes and read-only audit
+
+The [exclusive attempt ledger](../../docs/assets/sine_formed_classes/class-nonlinear-readout-v1.attempt.json)
+and [compressed response](../../docs/assets/sine_formed_classes/class-nonlinear-readout-v1.response.zip)
+are associated with the unchanged
+[protocol](../../docs/assets/sine_formed_classes/class-nonlinear-readout-v1.protocol.json),
+[source archive](../../docs/assets/sine_formed_classes/class-nonlinear-readout-v1.source.zip)
+and [freeze receipt](../../docs/assets/sine_formed_classes/class-nonlinear-readout-v1.freeze.json).
+Compression changes only the transport: the ZIP contains the single member
+`class-nonlinear-readout-v1.json`, with the exact original response bytes.
+
+| Retained object | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Attempt ledger | 543 | `616361ae09d035199ef672432b6a544f576f344e01c453f6df4f40e1107d6c93` |
+| Response ZIP | 10,554,263 | `b2e96205ed6f185a1193e4a936735572be8f59fd9a585c13203d53309875fbc5` |
+| Uncompressed response member | 191,886,903 | `35c5c049dd00576f515a8ad3e63969a0bf9c12708ded9376beb7f48d7c9e9be2` |
+
+The [read-only evidence audit](../../tests/physics/test_sine_class_readout_evidence.py)
+checks the outer and inner bytes, pinned source/protocol/attempt association,
+primitive source and held-law declarations, every retained step's arithmetic,
+full-state handoffs and events, both mixed constructions and the five
+predicates. It performs no producer, field, jet, Picard or archived-worker
+execution. The archived generation of derivative enclosures and Picard certificates
+remains a numerical execution premise; reconstructing retained arithmetic
+does not independently regenerate or prove those derivatives.
+
+The archived prospective proof has 33,289 bytes and SHA-256
+`5bc192cfa87230c6aaace9def4e98c819d5ec3e9c68f2e2dd38c9da1ca82181d`;
+its content is preserved above. All earlier frozen evidence is unchanged.
+
+### Scope of the observed separation
+
+This is a validated software enclosure for the supplied complete law and
+source cover. Every conditionally acquired correlated source lies in that
+cover; an arbitrary Cartesian corner need not be acquired or satisfy the
+mean, work and identity premises. Those conclusions still use the matched
+source/event theorem, not the solver's smooth-domain flag. No formation
+was rerun and no source was reset between paired histories.
+
+The result separates this finite nonlinear interaction from its declared
+same-source tangent alternative under the fixed four-reading error model.
+It neither identifies a physical particle or interaction nor establishes
+attainable laboratory preparation, clock or measurement precision. The
+finite negative response is consistent with the earlier positive formal
+joint-short-time coefficient, whose limiting regime differs. Dependence
+of this nonlinear mixed response on the mediator's acquired class remains
+a separate question in the sole
+[execution queue](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).
