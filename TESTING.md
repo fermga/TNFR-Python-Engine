@@ -186,6 +186,17 @@ between each member's hitting/capture time and the common deadline justified
 by subsequent trapping. Failed initial cones or strict margins stay unavailable;
 capture does not assign the same deadline to a smaller recovery radius.
 
+For [constitutive robustness of that selector](theory/nodal/SINE_PREPARATION_PATH_ROBUSTNESS.md),
+select `tests/physics/test_sine_constitutive_path_capture.py`, the source-path
+and sine-capture controls, and the constitutive comparison/acquisition owners.
+Check the law-independent source extraction against its existing consumers.
+Independently verify the deformed closing current `j(pi-q)`, the endpoint
+minimum cancellation, own-law transit and exact quartic source correction,
+finite contraction, full-cell convexity and storage trapping. The deformation
+endpoint bounds apply to the whole interval by proved monotonicity, not sampling.
+Reject malformed intervals before materialization; failed strict margins remain
+unavailable. No sine classification or frozen response may supply a verdict.
+
 For [class-mediated collective response](theory/nodal/SINE_CLASS_MEDIATED_RESPONSE.md),
 select both the primitive/report controls and independent full-support
 algebra. Rebuild the 27-node support, its `(3,4,3)` central degrees, common

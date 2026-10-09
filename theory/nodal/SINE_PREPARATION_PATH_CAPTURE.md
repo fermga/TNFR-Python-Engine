@@ -16,6 +16,11 @@ The source-specific argument here excludes those saddles, consensus and
 the negative unit winding for this entire corridor. It does not assert a
 universal attractor for other preparations or for other constitutive laws.
 
+The [constitutive extension](SINE_PREPARATION_PATH_ROBUSTNESS.md) proves the
+same source-specific capture for the already declared potential family by
+rebuilding its current, continuation, contraction and storage bounds. The
+present sine proof and its tighter contraction rate remain unchanged.
+
 <a id="sine-path-capture-carried-state"></a>
 ## The original source and an exact continuation coordinate
 

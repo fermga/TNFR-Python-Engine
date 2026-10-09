@@ -180,8 +180,13 @@ That stronger [capture argument](nodal/SINE_PREPARATION_PATH_CAPTURE.md)
 is available for the original interior source corridor: its actual mixed
 form/phase state enters the winding-one storage trap, excluding all other
 energy-compatible candidates there, including the saddle exceptions. The
-result retains the same supplied law and full source uncertainty; transfer
-to another law requires its own force, curvature and storage bounds.
+result retains the same supplied law and full source uncertainty. The
+[constitutive extension](nodal/SINE_PREPARATION_PATH_ROBUSTNESS.md) rebuilds
+force, passage, curvature and storage bounds for the declared potential family
+and proves the same capture uniformly over `lambda in [0,1]`. This formation
+outcome therefore does not distinguish those laws. Their different nominal
+nonlinear interaction onsets remain; transferring that distinction to actual
+acquired states and a finite observation requires its own argument.
 
 Distinct internal geometries need not be distinguishable through every
 contact. The [central-contact obstruction](nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-contact-admission)

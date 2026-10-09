@@ -91,9 +91,14 @@ geometries. The [source-specific selector](#source-specific-basin-selection)
 now proves winding-one capture for the entire interior family, excluding
 the other 56 candidates, including exceptional saddle sources. It retains
 the original uncertainty and supplies a common acute-cell capture deadline,
-not a small-radius recovery time or a complete basin map. The sole next
-admission is [constitutive robustness of this selector](#current-g3-gate):
-which explicit current and storage conditions preserve its mechanism?
+not a small-radius recovery time or a complete basin map. The
+[own-law robustness theorem](#constitutive-selector-robustness) now retains
+that whole interior corridor uniformly over `lambda in [0,1]`, with the
+original source errors and the same total slow-time budget. This captured
+identity does not distinguish those laws. The sole next admission is
+[finite constitutive discrimination after acquisition](#current-g3-gate):
+does their nominal interaction distinction survive an actual carried-state
+handoff, with each law's residuals and finite response errors retained?
 The [prepared storage observer](#storage-comparison-producer-admission)
 is retained as an instrument; it has no frozen protocol or reserved response
 and is not the next campaign.
@@ -110,7 +115,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next theoretical admission | [Constitutive selector robustness](#current-g3-gate): derive sufficient current, curvature, loss and preparation conditions, then assess the existing matched potential family uniformly with its own source and capture bounds |
+| Next theoretical admission | [Carried-state constitutive discrimination](#current-g3-gate): admit one finite interaction observation of the original acquired class-one sources under the two existing endpoint laws, with own-law handoff, work, residuals and response bounds |
+| Closed theoretical robustness admission | [Constitutive selector robustness](#constitutive-selector-robustness): uniform winding-one capture of the original interior source corridor over `lambda in [0,1]`, with rebuilt source, passage, contraction and full-storage bounds |
 | Closed theoretical selector admission | [Source-specific basin selection](#source-specific-basin-selection): whole-family winding-one capture through the actual phase passage, excluding the other 56 candidates with a finite acute-cell deadline |
 | Closed theoretical limit admission | [Post-slip limits](#post-slip-capture-admission): every actual trajectory converges to one complete critical state among 57 relative candidates; three attractors and 54 hyperbolic saddles, with fixed-parameter exceptional-source scope retained |
 | Closed theoretical path admission | [Source-to-basin mechanism](#source-to-basin-mode-selection): two uniform capture corridors and a third corridor proving that actual finite-time winding two is transient; other parameters and the complete basin map remain unresolved |
@@ -157,7 +163,7 @@ remain open; no empirical response has passed complete physical admission.
 
 <a id="current-g3-gate"></a>
 <a id="foundational-organized-pattern-admission"></a>
-<a id="constitutive-selector-robustness"></a>
+<a id="carried-state-constitutive-discrimination"></a>
 ## Primary plan: foundations tested by organized patterns
 
 Investigate which premises are sufficient, necessary within a declared class,
@@ -177,61 +183,57 @@ to its actual state, scale and execution path before treating a matched
 geometric or response property as sufficient. Retain the distinction between
 defining requirements, supplied hypotheses and derived restrictions.
 
-The next question is: **which constitutive conditions preserve the proved
-source-to-capture mechanism, and which dynamical distinctions remain free?**
-Use the [whole-family sine selector](../nodal/SINE_PREPARATION_PATH_CAPTURE.md#sine-preparation-path-capture)
-as a proved mechanism, then derive explicit sufficient inequalities for an
-odd periodic edge current and its reciprocal potential. Keep the isolated
-C9 support, unit capacities, positive loss, both clock rows and the exact
-[Cayley source path](../nodal/SINE_PREPARATION_PATH_SELECTION.md#sine-preparation-path-selection)
-on `s in [3/4,4/5]`. Preserve both full state channels, paired latent errors,
-initial phases, means and the original preparation budget. Storage equality
-along that path is admitted within each law; actual source storage need not
-be equal between different potentials.
+The next question is: **can the two existing complete laws be distinguished
+by one finite interaction of their actually acquired organizations?** The
+[robust selector](../nodal/SINE_PREPARATION_PATH_ROBUSTNESS.md) makes the
+captured identity non-discriminating within the declared potential family.
+The [nominal interaction theorem](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-mixed-onset)
+nevertheless gives opposite local mixed signs for its endpoint laws
+`lambda=0` and `lambda=1`. It starts at an exact target and supplies no
+finite observation budget or transfer to acquired residuals. Close this
+specific gap before interpreting the response as a property of formed
+objects. No additional law, source sweep or physical-data campaign is active.
 
-The required conditions must cover global forcing and regularity, current
-ordering through the passage, positive curvature in the subsequent chart,
-the reciprocal loss identity and its full storage boundary. Admit the
-actual source transit and retained form error under each law before using
-the mixed-coordinate cone or a capture estimate. An independently prepared
-phase-gradient state, a target reset or a sine-specific error bound cannot
-replace that continuation. Fixed support and capacity remain supplied
-premises; phase-cut passages remain smooth evolution, not hybrid events.
+Use three copies of the already admitted
+[original class-one source family](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-same-source-acquisition)
+under each endpoint law. Retain the full original source uncertainty,
+unit capacities, positive loss, structural clock and all form/phase rows.
+The same primitive preparation specification can be used in both models;
+their reached states and own-law source storage need not agree. Preserve
+the actual state through any further recovery dwell. Entry into an acute
+cell is not contact readiness or a reset to the target. Derive each law's
+quantitative return and joined-state bounds before using them.
 
-Apply these conditions uniformly to the already declared
-[`V_lambda` family](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-complete-law)
-for `lambda in [0,1]`. This is one bounded test of a sufficient mechanism,
-not a search over more candidate laws. Rebuild its own-law source cost,
-passage, contraction, storage and identity margins. Methods can transfer;
-the sine verdict and deadline do not transfer automatically. If a new
-finite budget is necessary, justify it from those inequalities before
-evaluation rather than tuning it to a trajectory.
+Admit one prescribed attachment on the existing three-C9 support, with
+bridges `(4,13)` and `(13,22)`, followed by the existing simultaneous
+central-form inputs `a=b=7/10000` at nodes 4 and 22. Use the four branches
+with neither input, each single input and both inputs, paired at the same
+actual full pre-input state within each law. Observe only their mixed
+mediator form `M(T)=x_13^11(T)-x_13^10(T)-x_13^01(T)+x_13^00(T)`.
+Attachment remains a supplied event with its own storage work, changed
+degrees and retained relative origins. Its admission does not select its
+occurrence. Do not infer equal event work from identical input amplitudes
+when the actual pre-event states differ.
 
-Separate robustness of a captured identity from equality of the complete
-dynamics. The existing laws share organized targets and local fields through
-quadratic order but admit different nominal nonlinear interaction onsets.
-Identify which current properties constrain selection and which such
-response distinctions survive. Matching the capture conclusion establishes
-neither a universal attractor, absence of fixed laws, nor a uniquely selected
-fundamental law. Other path parameters retain their unresolved status.
-
-An acquired mode can index an inherited effective description only after the
-actual state enters its admitted capture chart. Preserve that state's hidden
-initialization, residuals, validity domain and error; the class label alone
-does not close its future dynamics. Reuse the
+Derive a common finite recovery/observation budget and an explicit readout
+allowance from the two actual laws before evaluating any response. Retain
+the acquired hidden initialization, source errors, full-state nonlinear
+remainders and identity margins. Broken nominal symmetry can introduce
+response terms absent at the exact target; it must be bounded rather than
+removed by resetting or averaging the source. Matching targets, tangents
+and quadratic fields does not transfer sine-specific complex growth or
+finite-time estimates to the added harmonics. Reuse the
 [effective-interface owners](../nodal/SINE_CLASS_COLLECTIVE_INTERFACE.md#sine-collective-interface-domain)
-only after matching their source, support and law. Subsequent contact,
-maintenance protocols and response observations retain separate obligations
-and are not activated here.
-No autonomous mode selector, distribution of initial states or probability
-of outcomes is inferred. Constitutive freedom, preparation freedom and
-information discarded by observation remain different questions.
+only after re-admitting the complete law and all consumed bounds.
 
-This connects the active comparison to the broader generative question:
-which independently justified complete laws can form distinguishable stable
-organizations from a specified identity-absent source? Existing acquisition
-remains a conditional witness. Its information, support and preparation costs
-are not promoted into autonomous constituent birth.
+This is an analytic admission of one constitutive discriminator, not a
+reserved response evaluation. A subsequent producer or protocol freeze
+requires its own queue decision after the theorem and observation are
+admitted. Preserve the earlier frozen sine responses without regeneration.
+Do not add laws, source classes, observation channels or repeated campaigns
+to rescue a failed comparison. Other source-path intervals, autonomous
+preparation, support selection, inherited scale laws and physical
+identification retain their separate unresolved obligations.
 
 1. **Declare the object and the claim.** Specify sufficient form/phase state,
    identity, source class, clock, support, capacity, boundaries and observation.
@@ -243,15 +245,16 @@ are not promoted into autonomous constituent birth.
    operator is consumed, its live preconditions, ordered composition and
    postconditions. A collective event needs its own descent and occurrence
    analysis even when the continuous collective law closes.
-2. **Specify the proposed selection mechanism.** State sufficient current,
-   curvature, loss and source conditions and their domain. Separate the
-   fixed preparation from constitutive freedom and retain each law's own
-   error bounds. No additional controller is introduced to force a mode.
+2. **Specify the proposed discrimination.** State the two complete laws,
+   actual-state handoff, prescribed attachment and mixed observation.
+   Separate the fixed preparation from constitutive freedom and retain
+   each law's own source, recovery and response bounds. No controller is
+   introduced to force a mode or a response sign.
 3. **Derive a discrimination or obstruction.** Match the declared preparation
    observations, geometry, units, clock and costs under each complete law.
    Check symmetries, equilibrium boundaries, reachable identities, balances,
-   event occurrence and information loss. Determine which mode distinctions
-   survive the admitted source errors and what the preparation map discards.
+   event occurrence and information loss. Determine whether the interaction
+   distinction survives the admitted source and observation errors.
    Distinguish a new initial condition from a symmetry copy or a changed law. A
    necessary condition or failed sufficient bound is not a formation theorem.
 4. **Integrate only the justified result.** Preserve useful conditional proofs
@@ -261,14 +264,16 @@ are not promoted into autonomous constituent birth.
    observation and error model are admitted. A controller added to produce a
    desired object is an additional premise, not a derivation of that object.
 
-The gate closes with explicit sufficient conditions and a uniform own-law
-assessment of the declared potential family, or a proved obstruction to a
-specified mechanism on that domain. A failed sufficient inequality alone
-does not prove a different basin. If selection survives uniformly, treat
-this formation outcome as non-discriminating within that admitted class;
-do not extend the queue by sampling further laws with the same result.
-Retain response distinctions, undecided source regions and later effective
-state handoffs. No outcome probability or autonomous preparation follows.
+The gate closes with strict separation of the two laws' admitted finite
+record sets for this carried-state comparison, or a proved observational
+collision or obstruction on its stated domain. A nominal sign difference
+alone is insufficient; a failed sufficient inequality is unavailable
+evidence, not proof of identical dynamics or an impossible discriminator.
+State any unresolved estimate explicitly rather than expanding the design
+or claiming a negative result. Formation remains non-discriminating within
+the already admitted family; further same-result law sampling is not the
+next task. No outcome probability, autonomous preparation, universal
+attractor or unique physical law follows from either outcome.
 
 The dependency order for subsequent work is:
 
@@ -293,6 +298,31 @@ The physical objective guides which mathematical property matters. Laboratory
 examples supply possible controls and discriminators; they do not replace
 the generative objective with imitation of a convenient apparatus. Substrate
 origin, universal laws and recurrence across scales remain open hypotheses.
+
+<a id="constitutive-selector-robustness"></a>
+## Closed theoretical admission: uniform constitutive selector robustness
+
+The [own-law selector theorem](../nodal/SINE_PREPARATION_PATH_ROBUSTNESS.md)
+proves winding-one capture for the entire original interior source corridor
+`s in [3/4,4/5]` and every declared `lambda in [0,1]`. It re-admits global
+force and regularity, source transit, passage-current ordering, local
+curvature and the full storage boundary for the actual potential. The
+original correlated source errors and preparation budget are retained;
+within-law source storage equality does not require equal storage across
+different potentials.
+
+The same eight-unit passage and 128-unit relaxation allowances suffice in
+the slow clock, with an own-law contraction rate `1/32`. The common deadline
+remains `tau=200+136/eta`, where `eta=gamma^2`, because each member enters
+its forward-trapped winding-one cell before that time. This is neither a
+borrowed sine certificate nor a small-radius recovery or contact-readiness
+claim. No trajectory, source sweep or frozen response was evaluated.
+
+Captured identity and acquisition therefore do not select one law within
+this class. The opposite nominal nonlinear onsets remain valid, while
+finite carried-state response discrimination is the next admission above.
+Other source intervals, a universal attractor, autonomous support or
+preparation and physical law selection remain open.
 
 <a id="source-specific-basin-selection"></a>
 ## Closed theoretical admission: whole-family winding-one capture

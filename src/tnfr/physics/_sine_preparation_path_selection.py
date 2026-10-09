@@ -130,6 +130,120 @@ def _correlated_ramp_storage_bounds(angle):
 
 
 @dataclass(frozen=True)
+class _PreparationPathSource:
+    """Fresh law-independent source geometry, norms and storage ingredients.
+
+    The source consumes a fixed graph, capacities and clock but no edge
+    current, potential, transit radius or capture verdict. A law consumer
+    must supply its own forcing and initial phase storage correction.
+    """
+
+    parameter_interval: tuple[Q, Q]
+    scaled_time: Q
+    form_error_bound: Q
+    phase_error_bound: Q
+    path: _CayleyPath
+    path_operator_bounds: tuple[tuple[I, ...], ...]
+    p_bounds: I
+    q_bounds: I
+    nominal_initial_form_bounds: tuple[I, ...]
+    transported_form_error_bound: Q
+    gamma_bounds: I
+    eta_bounds: I
+    metric_unit_norm_bounds: I
+    nominal_scaled_initial_norm_upper_bound: Q
+    scaled_initial_error_norm_upper_bound: Q
+    initial_phase_error_norm_upper_bound: Q
+    scaled_initial_norm_upper_bound: Q
+    initial_form_storage_upper_bound: Q
+    quadratic_initial_phase_storage_upper_bound: Q
+    initial_zero_winding_margin_bounds: I
+    ramp_angle_bounds: I
+    lift_correction_bounds: I
+    uniform_form_error_transport_upper_bound: Q = _ERROR_TRANSPORT
+
+
+def _prepare_path_source(
+    *, parameter_interval, scaled_time, form_error_bound, phase_error_bound
+) -> _PreparationPathSource:
+    """Admit primitives and rebuild the original source without a flow law."""
+    raw = _ordered(parameter_interval, "parameter_interval", limit=3)
+    if len(raw) != 2:
+        raise ValueError("parameter_interval must contain exactly two endpoints")
+    lower, upper = tuple(_exact(value, "parameter_interval") for value in raw)
+    time = _exact(scaled_time, "scaled_time")
+    rx = _exact(form_error_bound, "form_error_bound")
+    rt = _exact(phase_error_bound, "phase_error_bound")
+    if not 0 <= lower <= upper <= 1:
+        raise ValueError("parameter_interval requires 0 <= lower <= upper <= 1")
+    if time < 0 or _GAP * time > _MAX_RATIONAL_EXPONENT:
+        raise ValueError("scaled_time requires 0 <= scaled_time/5 <= 4096")
+    if rx < 0 or rt < 0:
+        raise ValueError("preparation error bounds must be nonnegative")
+
+    path = _path_construction()
+    _verify_cycle_gap()
+    low_coefficients, high_coefficients = (
+        _path_coefficients(path, value) for value in (lower, upper)
+    )
+    # p decreases; q,f,g increase on [0,1], as proved by the verified
+    # kappa<1/3 and p_linear<0. Exact endpoint fractions precede I rounding.
+    p = I(high_coefficients[0], low_coefficients[0])
+    q = I(low_coefficients[1], high_coefficients[1])
+    f = I(low_coefficients[2], high_coefficients[2])
+    g = I(low_coefficients[3], high_coefficients[3])
+    operator = tuple(
+        tuple(
+            I(int(i == j)) + f * path.generator[i][j] + g * path.generator_squared[i][j]
+            for j in _NODES
+        )
+        for i in _NODES
+    )
+    ramp = tuple(Q(j - 4) for j in _NODES)
+    dipole = tuple(Q(int(j == 3) - int(j == 4)) for j in _NODES)
+    forms = tuple(_SOURCE_SCALE * (p * h + q * r) for h, r in zip(dipole, ramp))
+    pi = pi_interval()
+    gamma, eta = Q(1, 1023) / pi, Q(1, 1023**2) / pi**2
+    metric_norm = sqrt(I(18))
+    transported_error = _ERROR_TRANSPORT * rx
+    # ||p*h+q*r||^2=2p^2-2pq+60q^2; p,q are positive. Drop the
+    # negative cross term after algebra, rather than box the large lift.
+    nominal_norm = (
+        gamma * _SOURCE_SCALE * sqrt(I(2 * (2 * p.hi**2 + 60 * q.hi**2)))
+    ).hi
+    form_error = (gamma * metric_norm * transported_error).hi
+    phase_error = (metric_norm * rt).hi
+    first = path.source.initial_forms_by_class[0]
+    form_storage = sum(
+        ((abs(first[j] - first[i]) + 2 * rx) ** 2 / 2 for i, j in _EDGES), Q(0)
+    )
+    return _PreparationPathSource(
+        parameter_interval=(lower, upper),
+        scaled_time=time,
+        form_error_bound=rx,
+        phase_error_bound=rt,
+        path=path,
+        path_operator_bounds=operator,
+        p_bounds=p,
+        q_bounds=q,
+        nominal_initial_form_bounds=forms,
+        transported_form_error_bound=transported_error,
+        gamma_bounds=gamma,
+        eta_bounds=eta,
+        metric_unit_norm_bounds=metric_norm,
+        nominal_scaled_initial_norm_upper_bound=nominal_norm,
+        scaled_initial_error_norm_upper_bound=form_error,
+        initial_phase_error_norm_upper_bound=phase_error,
+        scaled_initial_norm_upper_bound=nominal_norm + form_error,
+        initial_form_storage_upper_bound=form_storage,
+        quadratic_initial_phase_storage_upper_bound=18 * rt**2,
+        initial_zero_winding_margin_bounds=pi / 2 - 2 * rt,
+        ramp_angle_bounds=gamma * _SOURCE_SCALE * q,
+        lift_correction_bounds=gamma * _SOURCE_SCALE * p - 2 * pi * _LIFT_SCALE,
+    )
+
+
+@dataclass(frozen=True)
 class _PreparationPathSelection:
     """A uniform conditional statement for the entire admitted path interval.
 
@@ -252,54 +366,33 @@ def _assess_preparation_path_selection(
     nonnegative, with scaled_time/5 <= 4096. All four primitives are required.
     The fixed source, law and storage policy are rebuilt before their use.
     """
-    raw = _ordered(parameter_interval, "parameter_interval", limit=3)
-    if len(raw) != 2:
-        raise ValueError("parameter_interval must contain exactly two endpoints")
-    lower, upper = tuple(_exact(value, "parameter_interval") for value in raw)
-    time = _exact(scaled_time, "scaled_time")
-    rx = _exact(form_error_bound, "form_error_bound")
-    rt = _exact(phase_error_bound, "phase_error_bound")
-    if not 0 <= lower <= upper <= 1:
-        raise ValueError("parameter_interval requires 0 <= lower <= upper <= 1")
-    if time < 0 or _GAP * time > _MAX_RATIONAL_EXPONENT:
-        raise ValueError("scaled_time requires 0 <= scaled_time/5 <= 4096")
-    if rx < 0 or rt < 0:
-        raise ValueError("preparation error bounds must be nonnegative")
-
-    path = _path_construction()
+    prepared = _prepare_path_source(
+        parameter_interval=parameter_interval,
+        scaled_time=scaled_time,
+        form_error_bound=form_error_bound,
+        phase_error_bound=phase_error_bound,
+    )
+    lower, upper = prepared.parameter_interval
+    time, rx, rt = (
+        prepared.scaled_time,
+        prepared.form_error_bound,
+        prepared.phase_error_bound,
+    )
+    path = prepared.path
     source = path.source
-    _verify_cycle_gap()
-    low_coefficients, high_coefficients = (
-        _path_coefficients(path, value) for value in (lower, upper)
-    )
-    # p decreases; q,f,g increase on [0,1], as proved by the verified
-    # kappa<1/3 and p_linear<0. Exact endpoint fractions precede I rounding.
-    p = I(high_coefficients[0], low_coefficients[0])
-    q = I(low_coefficients[1], high_coefficients[1])
-    f = I(low_coefficients[2], high_coefficients[2])
-    g = I(low_coefficients[3], high_coefficients[3])
-    operator = tuple(
-        tuple(
-            I(int(i == j)) + f * path.generator[i][j] + g * path.generator_squared[i][j]
-            for j in _NODES
-        )
-        for i in _NODES
-    )
+    p, q = prepared.p_bounds, prepared.q_bounds
+    operator = prepared.path_operator_bounds
     ramp = tuple(Q(j - 4) for j in _NODES)
     dipole = tuple(Q(int(j == 3) - int(j == 4)) for j in _NODES)
-    forms = tuple(_SOURCE_SCALE * (p * h + q * r) for h, r in zip(dipole, ramp))
+    forms = prepared.nominal_initial_form_bounds
     pi = pi_interval()
-    gamma, inverse_gamma = Q(1, 1023) / pi, 1023 * pi
-    eta, forcing = Q(1, 1023**2) / pi**2, sqrt(I(18))
-    transported_error = _ERROR_TRANSPORT * rx
-    # ||p*h+q*r||^2=2p^2-2pq+60q^2; p,q are positive. Drop the
-    # negative cross term after algebra, rather than box the large lift.
-    nominal_norm = (
-        gamma * _SOURCE_SCALE * sqrt(I(2 * (2 * p.hi**2 + 60 * q.hi**2)))
-    ).hi
-    form_error = (gamma * forcing * transported_error).hi
-    phase_error = (forcing * rt).hi
-    initial_norm = nominal_norm + form_error
+    gamma, inverse_gamma = prepared.gamma_bounds, 1023 * pi
+    eta, forcing = prepared.eta_bounds, prepared.metric_unit_norm_bounds
+    transported_error = prepared.transported_form_error_bound
+    nominal_norm = prepared.nominal_scaled_initial_norm_upper_bound
+    form_error = prepared.scaled_initial_error_norm_upper_bound
+    phase_error = prepared.initial_phase_error_norm_upper_bound
+    initial_norm = prepared.scaled_initial_norm_upper_bound
     decay = I(*_negative_exp_bounds(_GAP * time))
     scaled_radius, phase_radius = _prepared_transit_radii(
         time=time,
@@ -313,10 +406,7 @@ def _assess_preparation_path_selection(
     form_norm = inverse_gamma.hi * scaled_radius * inverse_root_two
     phase_remainder = (phase_radius + form_error + phase_error) * inverse_root_two
     edge_error = sqrt(I(2)).hi * phase_remainder
-    t, delta = (
-        gamma * _SOURCE_SCALE * q,
-        gamma * _SOURCE_SCALE * p - 2 * pi * _LIFT_SCALE,
-    )
+    t, delta = prepared.ramp_angle_bounds, prepared.lift_correction_bounds
     error_interval = I(-edge_error, edge_error)
     unwrapped = tuple(
         2 * pi * (_LIFT_SCALE * (dipole[j] - dipole[i]))
@@ -330,13 +420,12 @@ def _assess_preparation_path_selection(
     phase_storage = proxy_storage + 6 * phase_remainder
     form_storage = 2 * form_norm**2
     total_storage = form_storage + phase_storage
-    first = source.initial_forms_by_class[0]
     source_storage = (
-        sum(((abs(first[j] - first[i]) + 2 * rx) ** 2 / 2 for i, j in _EDGES), Q(0))
-        + 18 * rt**2
+        prepared.initial_form_storage_upper_bound
+        + prepared.quadratic_initial_phase_storage_upper_bound
     )
     source_margin = I(_STORAGE_BUDGET - source_storage)
-    initial_margin = pi / 2 - 2 * rt
+    initial_margin = prepared.initial_zero_winding_margin_bounds
     initial_zero, source_ok = initial_margin.lo > 0, source_margin.lo > 0
     geometry = _derive(_NODES, _EDGES)
     offsets, phase_edges, cut_margins, acute_margins, periods, faces, barriers = (

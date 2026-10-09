@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Prove [source-path capture uniformly across the declared potential family](theory/nodal/SINE_PREPARATION_PATH_ROBUSTNESS.md).
+  Rebuild each law's source transit, closing-edge current, contraction and
+  full storage bounds. The shared winding-one outcome leaves the existing
+  nonlinear interaction distinction unresolved; it does not select a law.
 - Prove [winding-one capture for the complete interior source family](theory/nodal/SINE_PREPARATION_PATH_CAPTURE.md)
   through its actual mixed form/phase state. A finite passage cone and acute
   contraction exclude the prior saddle and alternative-attractor candidates,

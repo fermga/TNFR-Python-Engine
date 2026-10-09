@@ -11,6 +11,13 @@ An own-law acquisition argument below also places the original isolated-C9
 source families in their capture neighborhoods for every member of this
 potential family, at the original common time and error budgets.
 
+The separate [source-path robustness theorem](SINE_PREPARATION_PATH_ROBUSTNESS.md)
+also carries the original uncertain interior Cayley corridor through its phase
+passage into winding-one capture for every member of this family. Its own-law
+current and storage bounds make that formation outcome non-discriminating.
+The nominal interaction distinction below retains its scope; neither formation
+result transfers it to an acquired residual state or a finite response.
+
 The [earlier mobility counterfamily](SINE_PAIR_MOBILITY.md#sine-replica-constitutive-nonselection)
 and [smooth local continuation](SINE_CONSTITUTIVE_INFORMATION.md#local-phase-storage-nonselection)
 already establish other nonselection results. Here mobility stays constant,

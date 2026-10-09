@@ -103,6 +103,7 @@ nav:
           - "Preparation paths, capture and forced phase passage": theory/nodal/SINE_PREPARATION_PATH_SELECTION.md
           - "Terminal restrictions on the same preparation path": theory/nodal/SINE_PREPARATION_PATH_LIMITS.md
           - "Source-specific capture through the actual phase passage": theory/nodal/SINE_PREPARATION_PATH_CAPTURE.md
+          - "Constitutive robustness of source-path capture": theory/nodal/SINE_PREPARATION_PATH_ROBUSTNESS.md
           - "Native local recovery and regional interaction": theory/nodal/RELATIONAL_RECOVERY_AND_INTERACTION.md
           - "Native phase domains and capture": theory/nodal/RELATIONAL_DOMAIN_AND_CAPTURE.md
           - "Native validated transit and preparation controls": theory/nodal/RELATIONAL_FORMATION_CONTROLS.md
