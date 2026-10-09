@@ -324,13 +324,27 @@ the inspected reduced prediction, not the full-law forward enclosure.
 This selection admits the producer and prospective freeze; it does not execute
 the selected forward response. Freeze controls inspect source, protocol and
 attempt boundaries. The [evaluator wiring controls](tests/research/test_sine_class_collective_forward_evaluator.py)
-compile archived function definitions and exercise only temporary records with
-mocked scientific calls and Git inspection. They check preflight rejection,
+admit pinned archive/member bytes before compiling function definitions and
+exercise only temporary records with mocked scientific calls and Git inspection.
+They can be selected independently of the freeze audit. They check preflight rejection,
 exclusive attempts and retained projection/export failures without executing
 the selected producer or restoring its workspace. Numerical completion,
 resolution, prediction consistency and discrimination remain separate verdicts;
 an earlier passing prediction cannot narrow or substitute for a future forward
 interval.
+
+The forward-policy, forward-freeze and retained-prediction audits share the
+lazy [execution guard](tests/sine_evidence_helpers.py). Each module opts in
+separately: scientific generators and their imported aliases, acquisition and
+restoration are blocked until fixture teardown. Subprocesses are prohibited
+except for the freeze audit's exact pinned read-only Git commands. Independent
+mathematical assertions and artifact hashes remain with each audit owner.
+The [guard controls](tests/research/test_sine_evidence_helpers.py) check lazy
+imports, alias coverage and restoration after failure or nested use:
+
+```sh
+python -m pytest tests/research/test_sine_evidence_helpers.py -q
+```
 
 For [common-scale amplitude feasibility](theory/nodal/SINE_CLASS_AMPLITUDE_FEASIBILITY.md),
 check whole-interval coefficient homogeneity and higher-amplitude bounds,

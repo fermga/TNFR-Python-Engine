@@ -1,11 +1,13 @@
 """Synthetic evaluator wiring; no selected scientific producer is executed.
 
+Pinned archive and member bytes are admitted before parsing or compilation.
 Only function definitions are compiled from the frozen evaluator. Main runs
 solely against unrelated temporary records and mocked scientific entry points.
 Archived imports, source restoration and real subprocesses are never executed.
 """
 
 import ast
+import io
 import logging
 import time
 import zipfile
@@ -22,6 +24,7 @@ from tnfr.research.artifact_io import (
     encode_exact_tree,
     file_receipt,
     read_bytes_bounded,
+    sha256_bytes,
     write_json_once,
 )
 from tnfr.utils.io import json_dumps, json_loads
@@ -32,12 +35,23 @@ ARCHIVE = (
 )
 DRIVER = "build/class-collective-forward-freeze/evaluate_forward.py"
 STEM = "docs/assets/synthetic-forward"
+ARCHIVE_BYTES = 100793
+ARCHIVE_SHA256 = "a99b8f05153ebebe4964c7512183d606fb3d1e5317f133e20af57c28833204a3"
+DRIVER_BYTES = 6170
+DRIVER_SHA256 = "9da61efce1e3a67e738ee1c3cc8384ce13f1134bdefd3dfec0e0915b3ffbf582"
 
 
-@pytest.fixture(scope="module")
-def evaluator_source():
-    with zipfile.ZipFile(ARCHIVE) as archive:
-        source = archive.read(DRIVER)
+def _compile_evaluator(path):
+    # This owner must be safe when selected without the separate freeze audit.
+    # Hash the same bounded bytes that ZipFile consumes, before opening it.
+    data = read_bytes_bounded(path, max_bytes=ARCHIVE_BYTES)
+    if len(data) != ARCHIVE_BYTES or sha256_bytes(data) != ARCHIVE_SHA256:
+        raise ValueError("frozen evaluator archive association differs")
+    with zipfile.ZipFile(io.BytesIO(data)) as archive:
+        with archive.open(DRIVER) as stream:
+            source = stream.read(DRIVER_BYTES + 1)
+    if len(source) != DRIVER_BYTES or sha256_bytes(source) != DRIVER_SHA256:
+        raise ValueError("frozen evaluator member association differs")
     tree = ast.parse(source)
     functions = [node for node in tree.body if isinstance(node, ast.FunctionDef)]
     assert {node.name for node in functions} == {
@@ -54,6 +68,29 @@ def evaluator_source():
             "exec",
         ),
     )
+
+
+@pytest.fixture(scope="module")
+def evaluator_source():
+    return _compile_evaluator(ARCHIVE)
+
+
+@pytest.mark.parametrize("size_delta", [-1, 0, 1])
+def test_unassociated_archive_is_rejected_before_open_or_parse(
+    tmp_path, monkeypatch, size_delta
+):
+    path = tmp_path / "unassociated.zip"
+    path.write_bytes(b"x" * (ARCHIVE_BYTES + size_delta))
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("unassociated archive reached ZIP opening or AST parsing")
+
+    monkeypatch.setattr(zipfile, "ZipFile", forbidden)
+    monkeypatch.setattr(ast, "parse", forbidden)
+    with pytest.raises(
+        ValueError, match="association differs|exceeds audit byte budget"
+    ):
+        _compile_evaluator(path)
 
 
 @dataclass

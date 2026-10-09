@@ -451,5 +451,7 @@ independent full-law forward observation. It separates the specified
 grounded tangent alternative, with a leading effect already present in
 linear hidden memory. Nonlinear necessity, minimal memory, new class
 discrimination and physical identification do not follow. The
+[independent forward protocol](SINE_CLASS_COLLECTIVE_FORWARD_PROTOCOL.md#sine-collective-forward-frozen-association)
+owns the complete-law comparison and its source association; the
 [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-owns the independent comparison still to be admitted.
+owns its evaluation status and next action.

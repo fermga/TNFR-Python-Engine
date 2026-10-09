@@ -63,6 +63,11 @@ archive. Hashes bind bytes to the declaration being checked. They do not
 authenticate chronology, prove that a program produced those bytes or certify
 an unverified mathematical premise.
 
+Isolated evaluator-wiring tests must independently admit the pinned archive and
+member bytes before parsing or compiling their function definitions. A separate
+freeze audit may not run in the same test selection. Keep these mocked controls
+distinct from importing an archived module or invoking its scientific producer.
+
 Reconstruct each consumed derived field from the admitted primitive evidence.
 A stored passing flag, cached interval or reported total cannot replace that
 calculation. Retained Taylor arithmetic can be checked without regenerating

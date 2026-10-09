@@ -351,6 +351,8 @@ The archive retains 24 files, including the complete producer, evidence reader,
 source/policy owners, shared numerical kernels, this prospective document and
 the future evaluator. The full Git base pins dependencies beyond those snapshots.
 The archived document is the unchanged prefix preceding this admission record.
+Its references to the "present gate" describe the historical producer-admission
+stage. Current execution status belongs to the sole research queue.
 
 The protocol retains the two original class-source covers and their nominal
 references, absolute phase conversion, sole jump, fixed order-12 steps of

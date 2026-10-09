@@ -5,7 +5,6 @@ execution premise; these tests inspect admission and rebuilt endpoint arithmetic
 Synthetic bands exercise prospective decisions, never a reserved forward flow.
 """
 
-import subprocess
 from dataclasses import replace
 from fractions import Fraction as Q
 from pathlib import Path
@@ -13,6 +12,7 @@ from types import SimpleNamespace
 
 import pytest
 
+from tests.sine_evidence_helpers import forbid_sine_regeneration
 from tnfr.mathematics._rational_interval import I
 from tnfr.research import sine_class_collective_forward as owner
 
@@ -25,64 +25,7 @@ SMALL = Q(1, 2**600)
 
 @pytest.fixture(scope="module", autouse=True)
 def no_coefficient_flow_or_worker_execution():
-    from tnfr.mathematics import _validated_taylor
-    from tnfr.physics import (
-        _sine_class_port_prediction,
-        _sine_flow,
-        _sine_formed_contact,
-        relational_sine_class_comparison_readout,
-        relational_sine_class_cubic_response,
-        relational_sine_class_port_readout,
-        relational_sine_class_readout,
-    )
-
-    def forbidden(*args, **kwargs):
-        pytest.fail("a forward-policy test attempted scientific regeneration")
-
-    with pytest.MonkeyPatch.context() as patch:
-        for module, names in (
-            (
-                _sine_class_port_prediction,
-                (
-                    "_predict_collective_port_response",
-                    "_causal_coefficients",
-                    "_kernel_coefficients",
-                    "_causal_linear_series",
-                    "_nonlinear_forcing",
-                    "_grounded_series",
-                ),
-            ),
-            (
-                relational_sine_class_cubic_response,
-                (
-                    "bound_sine_class_cubic_response",
-                    "_class_cubic_coefficients",
-                    "_time_coefficients",
-                    "_coefficient_segment",
-                ),
-            ),
-            (
-                _validated_taylor,
-                ("flow_jets", "picard_tube", "validated_box_taylor_step"),
-            ),
-            (_sine_flow, ("_full_sine_field", "_sine_rate_evaluator")),
-            (_sine_formed_contact, ("_unprobed_handoff",)),
-            (
-                relational_sine_class_readout,
-                ("bound_sine_class_four_history_readout",),
-            ),
-            (
-                relational_sine_class_comparison_readout,
-                ("bound_sine_class_comparison_readout",),
-            ),
-            (
-                relational_sine_class_port_readout,
-                ("bound_sine_class_port_readout", "validated_box_taylor_step"),
-            ),
-            (subprocess, ("run", "Popen", "check_output")),
-        ):
-            for name in names:
-                patch.setattr(module, name, forbidden)
+    with forbid_sine_regeneration():
         yield
 
 

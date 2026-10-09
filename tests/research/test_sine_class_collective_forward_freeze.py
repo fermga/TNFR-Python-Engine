@@ -7,7 +7,6 @@ Picard generation remain execution premises, not authenticated by this audit.
 
 import ast
 import re
-import subprocess
 import zipfile
 from dataclasses import asdict
 from fractions import Fraction as Q
@@ -16,6 +15,7 @@ from types import SimpleNamespace
 
 import pytest
 
+from tests.sine_evidence_helpers import forbid_sine_regeneration
 from tnfr.research.artifact_io import (
     decode_exact_tree,
     encode_exact_tree,
@@ -47,91 +47,12 @@ PROTOCOL_SHA256 = "e47ac667ecedf44d0863dd21a44da7deacc507a742a026cd0fe7d9bfd066f
 
 @pytest.fixture(scope="module", autouse=True)
 def no_scientific_regeneration():
-    from tnfr.mathematics import _validated_taylor
-    from tnfr.physics import (
-        _sine_class_port_prediction,
-        _sine_flow,
-        _sine_formed_contact,
-        relational_sine_class_comparison_readout,
-        relational_sine_class_cubic_response,
-        relational_sine_class_port_readout,
-        relational_sine_class_readout,
-    )
-    from tnfr.research import frozen_source
-
     receipt = json_loads(
         read_bytes_bounded(ROOT / (STEM + ".freeze.json"), max_bytes=1024**2)
     )
     base = receipt["source_base_commit"]
     assert base == BASE and re.fullmatch(r"[0-9a-f]{40}", base)
-    original_popen = subprocess.Popen
-
-    def forbidden(*args, **kwargs):
-        pytest.fail("freeze audit attempted a producer, restoration or worker")
-
-    def read_only_git(args, *positional, **kwargs):
-        command = list(args) if isinstance(args, (tuple, list)) else []
-        allowed = command in (
-            ["git", "rev-parse", "--show-toplevel"],
-            ["git", "cat-file", "-t", base],
-        )
-        allowed |= (
-            len(command) == 3
-            and command[:2] == ["git", "show"]
-            and command[2].startswith(base + ":src/")
-        )
-        assert allowed and not kwargs.get(
-            "shell"
-        ), "unexpected subprocess in freeze audit"
-        assert Path(kwargs["cwd"]).resolve() == ROOT
-        return original_popen(args, *positional, **kwargs)
-
-    with pytest.MonkeyPatch.context() as patch:
-        for module, names in (
-            (
-                _sine_class_port_prediction,
-                (
-                    "_predict_collective_port_response",
-                    "_causal_coefficients",
-                    "_kernel_coefficients",
-                    "_causal_linear_series",
-                    "_nonlinear_forcing",
-                    "_grounded_series",
-                ),
-            ),
-            (
-                relational_sine_class_cubic_response,
-                (
-                    "bound_sine_class_cubic_response",
-                    "_class_cubic_coefficients",
-                    "_time_coefficients",
-                    "_coefficient_segment",
-                ),
-            ),
-            (
-                _validated_taylor,
-                ("validated_box_taylor_step", "flow_jets", "picard_tube"),
-            ),
-            (_sine_flow, ("_full_sine_field", "_sine_rate_evaluator")),
-            (_sine_formed_contact, ("_unprobed_handoff",)),
-            (relational_sine_class_readout, ("bound_sine_class_four_history_readout",)),
-            (
-                relational_sine_class_comparison_readout,
-                ("bound_sine_class_comparison_readout",),
-            ),
-            (
-                relational_sine_class_port_readout,
-                (
-                    "bound_sine_class_port_readout",
-                    "_full_sine_field",
-                    "validated_box_taylor_step",
-                ),
-            ),
-            (frozen_source, ("restore_frozen_source",)),
-        ):
-            for name in names:
-                patch.setattr(module, name, forbidden)
-        patch.setattr(subprocess, "Popen", read_only_git)
+    with forbid_sine_regeneration(git_root=ROOT, git_base=base):
         yield
 
 
