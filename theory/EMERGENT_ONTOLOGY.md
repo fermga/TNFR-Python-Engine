@@ -190,8 +190,13 @@ nonlinear interaction onsets remain. The
 now transfers that distinction to a finite raw-form observation of the original
 class-one ramp families, using each law's recovery, contact work and nonlinear
 remainder. It retains very small mathematical error allowances and a supplied
-observation map; physical resolution and independent sensor calibration remain
-open. This is not a transfer to the different Cayley source corridor.
+observation map. The [common-sensor theorem](nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-calibrated-observation)
+derives finite domain, gain, curvature and sensor-error conditions preserving
+that distinction. A common nonlinear observation can alter the mixed signs
+without erasing full-record separation; neither sign nor raw form is therefore
+a sensor-independent physical identity. Physical resolution and independent
+calibration of an apparatus remain open. These results do not transfer to the
+different Cayley source corridor or derive an inherited law for a new support.
 
 Distinct internal geometries need not be distinguishable through every
 contact. The [central-contact obstruction](nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-contact-admission)

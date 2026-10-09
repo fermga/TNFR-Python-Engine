@@ -24,6 +24,9 @@ class-one ramp sources. Own-law recovery, prescribed attachment work and a
 real nonlinear remainder give opposite finite measured signs under an explicit
 mathematical error allowance. No laboratory resolution or physical clock is
 inferred from that allowance.
+The [scalar calibration theorem](#organized-pattern-calibrated-observation)
+then separates preservation of those signs from separation of complete
+recorded observations under a common independently specified sensor.
 
 The [earlier mobility counterfamily](SINE_PAIR_MOBILITY.md#sine-replica-constitutive-nonselection)
 and [smooth local continuation](SINE_CONSTITUTIVE_INFORMATION.md#local-phase-storage-nonselection)
@@ -832,6 +835,175 @@ contact, and accounting for support and impulse work are supplied by the
 [own-law handoff above](#organized-pattern-carried-handoff). The theorem supplies neither a physical identification
 nor an evaluated experimental response.
 
+<a id="organized-pattern-calibrated-observation"></a>
+## Independent scalar calibration and the recorded distinction
+
+Retain both complete laws, the original acquired class-one sources, their
+own-law recovery, attachment work, four prescribed inputs and fixed
+\(T=10^{-6}\) in structural \(\tau\)-time from the preceding theorem.
+Every elapsed duration below uses that clock. This section changes only the
+prospective observation. For each law write its four actual mediator
+readings as \(Y_{ij}=x_{13}^{ij}(T)\), and supply one static scalar sensor
+\[
+ r_{ij}=h(Y_{ij})+\eta_{ij},\qquad |\eta_{ij}|\le\delta_h.
+\]
+The same \(h\) is used in all four histories and both candidate laws.
+Its domain, orientation, units and calibration are specified independently
+of those responses. No particular sensor is measured here. The error
+\(\delta_h\) is in sensor units, not a transferred raw-form error allowance.
+The map is a passive observation, not a
+[state-chart change](../FUNDAMENTAL_THEORY.md#26-a-structural-coordinate-must-transform-its-pressure);
+it changes none of the laws, inputs, capacities, clocks or work balances.
+
+### Absolute operating range and single-input increments
+
+Let \(\varepsilon=10^{-70}\), \(m=7/10000\), and
+\[
+ q=Y_{00},\qquad u=Y_{10}-q,\qquad v=Y_{01}-q,\qquad
+ M=Y_{11}-Y_{10}-Y_{01}+q.
+\]
+These are actual readings, with no resetting or subtraction of a newly
+chosen source mean. The full unscaled vector field is globally Lipschitz
+with constant below three. Within one law, branches with and without one
+input have initial full-state maximum-norm distance \(m\), while their
+mediator form initially agrees. Hence
+\[
+ |u|,\ |v|\le m(e^{3T}-1)<4mT=:B.
+\]
+Indeed the mediator derivative difference is bounded by \(3me^{3t}\);
+integrating it and using \(e^{3T}\le(1-3T)^{-1}\) proves the estimate.
+The same argument bounds \(|Y_{11}-q|<B\), because the two simultaneous
+inputs still have maximum norm \(m\). The zero-input branch stays within
+\(2\varepsilon\) of its nominal equilibrium, so \(|q|<2\varepsilon\).
+The raw readings therefore lie in the smaller interval with radius
+\(R_{\rm raw}=2\varepsilon+B\). Every \(q+s+t\) with \(s\) between
+zero and \(u\) and \(t\) between zero and \(v\), and the segment from
+\(q+u+v\) to \(Y_{11}\), lie in
+\[
+ [-R_*,R_*],\qquad R_*=2\varepsilon+2B<10^{-8}.
+\]
+This derives an absolute operating range from the admitted source origins;
+common form shifts would require a correspondingly shifted calibrated domain.
+The individually nonzero post-input means are still retained.
+
+### Calibration for a mixed threshold and the opposite signs
+
+Supply a convex interval \(I\) containing \([-R_*,R_*]\), a sensor
+\(h\in C^2(I)\), and independently justified constants
+\[
+ h'(z)\ge g>0,\qquad |h''(z)|\le K
+ \quad(z\in I),\qquad \delta_h\ge0.
+\]
+Here \(g\) has sensor units per form unit and \(K\) has sensor units per
+squared form unit. An arbitrary common sensor offset cancels. No upper
+gain bound is needed for the following one-sided sign certificate.
+Two applications of the fundamental theorem of calculus give the exact
+identity
+\[
+ \begin{split}
+ h(Y_{11})-h(Y_{10})-h(Y_{01})+h(Y_{00})
+ &=a_h M+\int_0^u\int_0^v h''(q+s+t)\,dt\,ds,\\
+ a_h&=\int_0^1 h'(q+u+v+\sigma M)\,d\sigma\ge g.
+ \end{split}
+\]
+The integrals are oriented when an increment is negative; their absolute
+value is at most \(K|uv|\le KB^2\). Let \(s_0,s_1>0\) be the
+fresh carried raw-response margins, so every admitted source obeys
+\(M_0\le-s_0\) and \(M_1\ge s_1\). These margins include the full
+nonlinear tail and actual-state residual, but no raw-reading error: the
+sensor error is added separately. The recorded mixed scalars therefore obey
+\[
+ M_{r,0}\le-\sigma_0,\qquad M_{r,1}\ge\sigma_1,\qquad
+ \sigma_\lambda=g s_\lambda-KB^2-4\delta_h.
+\]
+Strictly positive \(\sigma_0,\sigma_1\) certify opposite recorded signs.
+Strict separation by a mixed threshold needs only
+\(\Delta_h=\sigma_0+\sigma_1>0\): the fixed threshold
+\((\sigma_1-\sigma_0)/2\) lies strictly between the two admitted mixed
+ranges even when one sign margin is nonpositive. The resulting complete
+four-record distance is at least \(\Delta_h/4\) in maximum norm.
+The four errors may be correlated or adversarial; no cancellation or
+independence is assumed. A nonpositive sufficient margin is an unavailable
+certificate for its stated statistic, not proof of observational equivalence.
+
+One explicit prospective contract, in the chosen structural and sensor
+units, is
+\[
+ I=[-10^{-8},10^{-8}],\qquad
+ g=\tfrac12,\qquad K=10^{-35},\qquad \delta_h=10^{-54}.
+\]
+The preceding theorem gives \(s_\lambda>8\,10^{-52}\), whereas
+\(KB^2=7.84\,10^{-53}\). Thus
+\(\sigma_\lambda>3\,10^{-52}\) under both endpoint laws.
+This class is nonempty and includes nonlinear maps: for example
+\(h(z)=b+z+z^2/(2\,10^{35})\) satisfies the contract for any fixed
+offset \(b\). The small curvature allowance is a calibration premise,
+not a discovered property of an apparatus. No laboratory access to that
+allowance, the source accuracy, recovery dwell or observation clock follows.
+
+### Full records, sensor nuisance and a nonlinear sign counterexample
+
+There is a separate consequence needing only positive gain. Fix one common
+\(h\) with \(h'\ge g\) throughout the interval containing all raw readings.
+For any pair of admitted raw four-vectors \(Y^0,Y^1\), possibly from
+different reached sources under their respective laws, the mixed functional
+has coefficient norm four, so
+\[
+ \|Y^1-Y^0\|_\infty\ge\frac{s_0+s_1}{4}.
+\]
+Applying the same increasing sensor to both vectors and then admitting
+their individual errors yields the complete-record bound
+\[
+ \boxed{\ \|r^1-r^0\|_\infty
+       \ge \frac{g(s_0+s_1)}4-2\delta_h\ }.
+\]
+A positive right-hand side separates those four-reading record sets for
+that common sensor even without a curvature bound. With \(g=1/2\) and
+\(\delta_h=10^{-54}\) it exceeds \(10^{-52}\). This is a
+fixed-common-map statement, uniform over the admitted choices of that map.
+It does not establish separation after independently unioning the two
+laws over different nuisance maps \(h_0,h_1\). By contrast, whenever the
+curvature-based \(\Delta_h\) is positive, the same mixed threshold works
+for every admitted sensor, so even those separately unioned classes retain
+that separation. The explicit calibration above also preserves both signs.
+Neither argument fits an observation law to a response.
+
+Monotonicity alone does not preserve the mixed sign, even for these actual
+TNFR histories. The mediator derivative difference at the input time is
+exactly \(m/4\) for either single input: only its adjacent form value
+changes, and the phases initially agree. Relative to the common target,
+the initial full-state norms are at most \(m+\varepsilon\) for that
+branch and \(\varepsilon\) for the zero-input branch. Since the field
+vanishes at the target, their displacements through time \(t\le T\)
+are bounded by \(4(m+\varepsilon)t\) and \(4\varepsilon t\).
+Lipschitz continuity and integration then give
+\[
+ |u-mT/4|,\ |v-mT/4|\le6(m+2\varepsilon)T^2,
+ \qquad u,v>mT/8.
+\]
+The finite raw-response bound also implies \(|M_\lambda|<10^{-48}\):
+the absolute leading coefficient is at most \(\gamma^4m^3/32\),
+the additional time-tail coefficient is \(36T<1/32\), and
+\(\gamma<1/3000\), with the residual \(8\varepsilon\) retained.
+Now fix the single sensor \(h(z)=z+z^2\) on \(I=[-10^{-8},10^{-8}]\).
+It has \(h'(z)\ge1-2\,10^{-8}>1/2\), but its curvature is two.
+Its exact noiseless mixed scalar is
+\[
+ [1+2(q+u+v)+M]M+2uv.
+\]
+The bracket lies between \(1-2\,10^{-8}\) and \(1+2\,10^{-8}\),
+because it is the average derivative on the segment already admitted.
+Thus the recorded mixed scalar under either law exceeds
+\[
+ \frac{m^2T^2}{32}-2\,10^{-48}-4\,10^{-54}>10^{-20}.
+\]
+Both signs are positive although the raw signs are opposite. This example
+uses the actual full source families and declared error bounds, not a
+synthetic trajectory or an evaluated response. Nevertheless, the
+fixed-common-map complete-record separation above remains positive.
+Losing this particular mixed-sign statistic therefore does not erase the
+law distinction or establish an overlap of complete recorded observations.
+
 <a id="organized-pattern-information-boundary"></a>
 ## What this comparison constrains, and what it leaves open
 
@@ -904,3 +1076,13 @@ rebuild the tail constants and response coefficients, retain exact tiny
 rational records and reject unsupported source or readout margins. The
 returned intervals admit a prospective comparison; they are not evaluated
 responses or calibration records.
+
+The [scalar-sensor assessment](../../src/tnfr/physics/_sine_constitutive_sensor.py)
+rebuilds that raw comparison with zero raw-reading error before admitting
+the independent operating-domain, gain, curvature and sensor-error bounds.
+It distinguishes uniform mixed-threshold separation, preservation of both
+signs and a fixed-common-map complete-record certificate. Its
+[controls](../../tests/physics/test_sine_constitutive_sensor.py) exercise
+strict calibration margins, the retained absolute range and the actual-source
+quadratic-sensor sign counterexample. No sensor callable, cached report or
+response-derived calibration substitutes for these primitive premises.

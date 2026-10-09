@@ -99,10 +99,13 @@ identity does not distinguish those laws. The
 [finite carried-state discriminator](#carried-state-constitutive-discrimination)
 now separates their recorded mixed form responses with each law's acquisition,
 recovery, attachment work, residuals and finite response bounds retained.
-The sole next admission is the
-[calibration of its observation map](#current-g3-gate): which independently
-specified scalar sensor conditions preserve that distinction when observing
-the four actual mediator readings?
+The [calibrated-observation theorem](#calibrated-constitutive-observation)
+now supplies common sensor conditions preserving finite discrimination,
+while distinguishing a mixed-sign change from full-record ambiguity.
+The sole next admission is
+[constitutive inheritance through organized composition](#current-g3-gate):
+which complete laws and justified parameter maps result when these objects
+are connected through independently specified interfaces?
 The [prepared storage observer](#storage-comparison-producer-admission)
 is retained as an instrument; it has no frozen protocol or reserved response
 and is not the next campaign.
@@ -119,7 +122,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next theoretical admission | [Calibrated constitutive observation](#current-g3-gate): admit one common scalar sensor class and independent gain/curvature calibration for the existing carried-state four-reading discriminator; distinguish mixed-sign preservation from separation of complete recorded observations |
+| Next theoretical admission | [Constitutive inheritance through organized composition](#current-g3-gate): derive complete collective laws for two fixed C9 attachment controls, with explicit state/parameter maps, own-law identity, contact work and carried residuals |
+| Closed theoretical observation admission | [Calibrated constitutive observation](#calibrated-constitutive-observation): common scalar sensor conditions preserve finite mixed separation; a nonlinear sensor can remove opposite signs without collapsing complete records |
 | Closed theoretical discrimination admission | [Carried-state constitutive discrimination](#carried-state-constitutive-discrimination): opposite finite recorded mixed responses under the two existing endpoint laws, with original acquired sources, own-law recovery, attachment work and full response errors retained |
 | Closed theoretical robustness admission | [Constitutive selector robustness](#constitutive-selector-robustness): uniform winding-one capture of the original interior source corridor over `lambda in [0,1]`, with rebuilt source, passage, contraction and full-storage bounds |
 | Closed theoretical selector admission | [Source-specific basin selection](#source-specific-basin-selection): whole-family winding-one capture through the actual phase passage, excluding the other 56 candidates with a finite acute-cell deadline |
@@ -168,7 +172,7 @@ remain open; no empirical response has passed complete physical admission.
 
 <a id="current-g3-gate"></a>
 <a id="foundational-organized-pattern-admission"></a>
-<a id="calibrated-constitutive-observation"></a>
+<a id="organized-constitutive-inheritance"></a>
 ## Primary plan: foundations tested by organized patterns
 
 Investigate which premises are sufficient, necessary within a declared class,
@@ -188,53 +192,67 @@ to its actual state, scale and execution path before treating a matched
 geometric or response property as sufficient. Retain the distinction between
 defining requirements, supplied hypotheses and derived restrictions.
 
-The next question is: **which independently calibrated observation maps
-preserve the distinction between these two laws' formed-object responses?**
-The [finite carried-state theorem](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-finite-carried-response)
-uses mediator form itself, with an additive error on each reading. It supplies
-a mathematical discriminator without identifying form with a sensor output.
-The existing [gain/clock owner](../nodal/SINE_CLOCK_INFERENCE.md#sine-clock-source-and-law)
-admits a held affine sensor for a different experiment; it does not justify
-that sensor or cover nonlinear calibration for this four-history comparison.
+The next question is: **which restrictions does composing organized NFR
+patterns impose on their inherited complete laws?** The
+[matched-potential family](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-complete-law)
+supplies distinct laws with admitted isolated C9 organizations. Its
+[calibrated observation](#calibrated-constitutive-observation) distinguishes
+finite responses conditionally; it does not decide which law survives a
+change of organizational scale.
 
-Retain exactly the two endpoint laws, original acquired class-one sources,
-carried recovery, prescribed attachment, simultaneous inputs, structural
-clock and finite horizon of the new theorem. Write its actual readings as
-`Y_ij=x_13^ij(T)`. Admit a prospective observation class
-`r_ij=h(Y_ij)+eta_ij`, using the same named static scalar sensor across all
-four histories and both candidate models. Declare its domain, orientation,
-units and independently supplied calibration/error bounds before consuming
-the response. Positive gain bounds and bounds on sensor curvature are
-candidate calibration premises, not measured facts or already proved
-sufficient conditions. Retain the full source uncertainty and absolute
-reference origins when establishing the sensor's required operating range.
-Admit observation errors in sensor units; the completed theorem's raw-form
-allowance is not an unchanged error budget after an arbitrary sensor map.
+Use two fixed analytic controls on two winding-one C9 components. Retain
+local node indices `j=0,...,8`, unit capacities and internal cycle edges.
+The first interface adds the nine matching edges `(0,j)--(1,j)`. The second
+adds all 27 edges `(0,j)--(1,j+s)` for `s in {0,+1,-1}`, with indices modulo
+nine. These are prescribed unit supports, not selected occurrences or a
+topology search. Retain the declared loss, structural clock and actual final
+degrees. The fine constitutive parameter stays in `lambda in [0,1]`, the
+domain of the existing acquired-family guarantee. The larger algebraic
+family `lambda >= 0` may enter a parameter-equivalence comparison, but it
+does not inherit those source, recovery or identity guarantees.
 
-Derive how the recorded mixed scalar changes under that observation and
-which finite calibration conditions preserve strict discrimination. Separate
-a passive sensor map from a regular state-chart change, which must transform
-the full law, inputs, storage and observations under the
+Begin with the proposed organized family
+`x_(r,j)=X_r`, `theta_(r,j)=Phi_r+(2*pi/9)*(j-4)` on declared continuous
+lifts. Prove its invariance before using it as a collective law. Pattern
+orientation and attachment registration are retained data; a circular mean
+may vanish and a ninth phase moment alone need not preserve registration.
+Distinguish the restriction to this family from an exact re-encoding of all
+fine coordinates or a generic quotient that discards internal state. The
+existing [replica inheritance](../nodal/SINE_PAIR_STATE.md#sine-replica-inheritance),
+[mean-closure obstruction](../nodal/SINE_PAIR_MOBILITY.md#collective-mean-closure-obstruction)
+and [causal interface composition](../nodal/SINE_CLASS_INTERFACE_COMPOSITION.md)
+remain reusable boundaries; repeating them is not the new result.
+
+Derive both collective evolution rows, storage and boundary work from each
+actual complete fine law. Before interpreting equivalence, declare the
+allowed capacity/clock maps and any invertible form-unit chart under the
 [form-chart contract](../FUNDAMENTAL_THEORY.md#26-a-structural-coordinate-must-transform-its-pressure).
-The possibility that sensor nonlinearity changes a mixed sign must be tested;
-a changed sign alone does not prove that the two laws' complete four-reading
-record sets overlap. A common sensor may contribute to both mixed scalars
-while leaving other recorded differences available. Any overlap claim must
-exhibit compatible full readings and calibration under its explicitly stated
-nuisance-parameter quantifiers. Do not fit a separate observation map to each
-law's response or assert impossibility from a failed sufficient bound.
+Transform every row, input, storage and observation consistently. Determine
+whether the inherited law belongs to the original normalized potential
+family, requires a derived parameter map or an explicitly larger family,
+or fails the claimed inheritance. The interface's effect on the first and
+higher phase harmonics is a prospective discriminator, not an already
+established parameter-flow result. Do not select a preferred law by hiding
+geometry in a fitted capacity, clock or sensor.
 
-Close this analytic admission with an explicit independently specified
-calibration contract sufficient for the existing finite comparison, or a
-proved observational equivalence or obstruction on its stated sensor class.
-If a weaker class fails, record exactly which calibration information is
-missing; do not assume physical access to the resulting mathematical budget.
-No new physical sensor, dataset, trajectory, producer or protocol freeze is
-active. The existing analytic law separation requires none of those to remain
-valid in its structural coordinates. Preserve frozen sine evidence and avoid
-another response campaign merely to reproduce its consequence. Autonomous
-preparation, support selection, inherited scale laws and physical
-identification retain their separate unresolved obligations.
+The actual acquired sources do not lie exactly on the proposed organized
+family. Retain their original errors, recovered residuals and absolute
+origins; admit each new support event's work and subsequent full-state
+identity using its own law. The earlier two-bridge work allowance and
+capture certificate do not transfer to these interfaces. A nominal invariant
+family alone does not prove transverse stability or acquired-object
+composition. If approximation is needed, state its finite horizon and
+full-state defect before evaluation, retaining hidden initialization and
+memory where necessary. A positive support-event cost requires a declared
+supply; previous continuous loss is not that supply.
+
+Close with a complete inherited law and justified parameter map, a controlled
+finite approximation, or a scoped obstruction to the stated composition
+claim. Failure of a sufficient bound is unresolved admission, not an
+impossibility theorem. No trajectory, response producer, topology sweep,
+physical dataset or protocol freeze is active. Same-law inheritance, if
+obtained, does not select that law uniquely; altered parameters alone do not
+prove autonomous scale selection or a universal hierarchy.
 
 1. **Declare the object and the claim.** Specify sufficient form/phase state,
    identity, source class, clock, support, capacity, boundaries and observation.
@@ -246,16 +264,15 @@ identification retain their separate unresolved obligations.
    operator is consumed, its live preconditions, ordered composition and
    postconditions. A collective event needs its own descent and occurrence
    analysis even when the continuous collective law closes.
-2. **Specify the proposed discrimination.** State the two complete laws,
-   actual-state handoff, prescribed attachment and common sensor class.
-   Separate fixed preparation and calibration premises from constitutive
-   freedom, retaining each law's own response bounds. No controller or
-   response-fitted sensor is introduced to force a mode or a response sign.
+2. **Specify the proposed discrimination.** Fix both attachment controls,
+   complete fine laws, retained state and allowed parameter/chart maps.
+   Separate constitutive freedom from supplied preparation and support.
+   No controller, fitted sensor or hidden clock adjustment supplies closure.
 3. **Derive a discrimination or obstruction.** Match the declared preparation
    observations, geometry, units, clock and costs under each complete law.
    Check symmetries, equilibrium boundaries, reachable identities, balances,
-   event occurrence and information loss. Determine whether the interaction
-   distinction survives the admitted source and observation errors.
+   event occurrence and information loss. Determine whether both collective
+   rows close and whether actual source residuals retain the claimed identity.
    Distinguish a new initial condition from a symmetry copy or a changed law. A
    necessary condition or failed sufficient bound is not a formation theorem.
 4. **Integrate only the justified result.** Preserve useful conditional proofs
@@ -265,14 +282,13 @@ identification retain their separate unresolved obligations.
    observation and error model are admitted. A controller added to produce a
    desired object is an additional premise, not a derivation of that object.
 
-The gate distinguishes structural law separation, invariance of a selected
-mixed sign, and identifiable recorded observations under the declared sensor
-class. Only the first is already supplied by the carried-state theorem.
-State an unresolved estimate or missing calibration premise explicitly
-rather than expanding the design or claiming a negative result. Formation
-remains non-discriminating within the admitted law family; further
-same-result law sampling is not the next task. No outcome probability,
-autonomous preparation, universal attractor or unique physical law follows.
+The gate distinguishes compatibility of a composed complete law, exact
+collective restriction, robust inherited dynamics and law selection.
+Continuous closure does not establish collective event descent or occurrence;
+those require the [operator criterion](../STRUCTURAL_OPERATORS.md#collective-operator-descent).
+State unresolved source, identity or equivalence estimates explicitly rather
+than expanding the design. Independent physical calibration, autonomous
+preparation, support selection and constituent identification remain open.
 
 The dependency order for subsequent work is:
 
@@ -281,7 +297,7 @@ The dependency order for subsequent work is:
 | Complete foundations | State and law choices are explicit; independent selection arguments and surviving countermodels are retained |
 | Formation and identity | Entry from the declared source, stability/maintenance and preparation costs; autonomous preparation and scale/support selection are separately identified |
 | Composite organization | Dynamical attachment/interaction, retained constituent identity and a declared separation/work criterion; negative rectangular storage excess alone is not binding |
-| Inheritance across scales | Only for a claimed inheritance across scales, reopen after the foundational comparison for a named grouping of admitted organized states. Derive an effective member of the declared complete-law family with justified parameter and clock maps, or a bounded defect or scoped obstruction. Retain necessary hidden state, memory and event contracts through the existing [scale](../TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) and [collective closure](../nodal/DERIVED_FORM_PHASE.md#collective-interaction-closure-and-relational-state) owners. Matching a tangent or re-encoding the full state alone does not establish inheritance |
+| Inheritance across scales | The current fixed-interface gate concerns one declared grouping. A hierarchy needs compatible repeated composition, justified parameter and clock maps, and identity/source control at every claimed level. Retain necessary hidden state, memory and event contracts through the existing [scale](../TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) and [collective closure](../nodal/DERIVED_FORM_PHASE.md#collective-interaction-closure-and-relational-state) owners. Matching a tangent or re-encoding the full state alone does not establish inheritance |
 | Physical interpretation | Derive geometric/measurement transformations and quantitative observables with units, independent preparation and alternatives before identifying a fundamental constituent |
 
 For each subsequent law or hypothesis, record its status, independent
@@ -297,6 +313,25 @@ The physical objective guides which mathematical property matters. Laboratory
 examples supply possible controls and discriminators; they do not replace
 the generative objective with imitation of a convenient apparatus. Substrate
 origin, universal laws and recurrence across scales remain open hypotheses.
+
+<a id="calibrated-constitutive-observation"></a>
+## Closed theoretical admission: calibration of a common scalar observation
+
+The [calibrated-observation theorem](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-calibrated-observation)
+retains the original two laws, actual acquired sources, contact/input word and
+finite response horizon. It derives a sufficient absolute sensor domain and
+conditions on one common scalar sensor's gain, curvature and sensor-unit
+errors for strict mixed separation, including a nonzero threshold when
+opposite signs are unnecessary. An explicit mathematical calibration class
+preserves both signs; no sensor or laboratory capability is measured.
+
+A fixed shared increasing sensor also preserves full-record separation under
+its own gain/error condition without a curvature premise. This statement
+does not compare unions over independently varying unknown sensors. The same
+nonlinear sensor can make both mixed signs positive on the actual response
+families, so sign change does not establish observational equivalence.
+Physical calibration, the tiny error budgets and structural-clock access
+remain unestablished. No new response or frozen scientific producer was run.
 
 <a id="carried-state-constitutive-discrimination"></a>
 ## Closed theoretical admission: finite discrimination after acquisition
@@ -321,8 +356,9 @@ trajectory, and needs no reserved response campaign to establish its stated
 law separation. Its very small observation allowance and long structural
 dwell are mathematical budgets, not laboratory capabilities. It does not
 admit a nonlinear sensor, independent physical law selection, autonomous
-attachment or a physical constituent. The active gate above isolates the
-remaining observation-map premise without changing this completed theorem.
+attachment or a physical constituent. The separate
+[calibrated-observation result](#calibrated-constitutive-observation) admits
+the common nonlinear sensor conditions without changing this theorem.
 
 <a id="constitutive-selector-robustness"></a>
 ## Closed theoretical admission: uniform constitutive selector robustness

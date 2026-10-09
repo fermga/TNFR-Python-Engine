@@ -157,6 +157,19 @@ carried-state errors and all four raw-reading errors. A failed sufficient bound
 is unavailability, not an observational collision. The observation allowances
 are mathematical premises, not demonstrated physical calibration or resolution.
 
+For [common scalar-sensor calibration](theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-calibrated-observation),
+select `tests/physics/test_sine_constitutive_sensor.py` with the carried-state
+discrimination and handoff owners. Rebuild the absolute operating range and
+single-input increments from the actual source and complete-law bounds;
+propagate gain, curvature and four errors in sensor units. Distinguish strict
+mixed-threshold separation, opposite signs and fixed-common-sensor full-record
+separation. Exercise a common nonlinear sensor that changes the signs without
+collapsing the records, insufficient calibration and invalid primitive inputs.
+Re-admit source/calibration primitives rather than consuming cached verdicts,
+and retain exact subgrid arithmetic. The full-record theorem quantifies one
+shared sensor; it does not certify separation across independently varying
+unknown sensor maps. Reuse module reports and prohibit scientific regeneration.
+
 For [preparation information and acquired modes](theory/nodal/SINE_PREPARATION_MODE_SELECTION.md),
 select `tests/physics/test_sine_preparation_mode_selection.py` with the shared
 preparation and isolated-class controls above. Reconstruct the Laplacian energy

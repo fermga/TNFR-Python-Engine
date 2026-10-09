@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Admit [calibrated scalar observation of the carried constitutive comparison](theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-calibrated-observation).
+  Derive sensor-domain, gain, curvature and sensor-unit error conditions for
+  finite separation. A common nonlinear sensor can make both mixed signs
+  positive while the complete records remain separated. Integrate exact calibration
+  checks while preserving source, work and response evidence; physical
+  calibration remains open.
 - Admit [finite constitutive discrimination after actual acquisition](theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-finite-carried-response).
   Own-law nonlinear recovery and supplied contact retain the original source
   errors, work and identity. A real nonlinear remainder separates the two
