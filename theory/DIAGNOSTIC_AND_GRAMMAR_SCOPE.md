@@ -882,16 +882,17 @@ NFR and operator properties are part of this admission, with their logical
 status retained. Use the [NFR property requirements](EMERGENT_ONTOLOGY.md#12-can-nfr-properties-justify-a-joint-law)
 and [participation in form](EMERGENT_ONTOLOGY.md#nfr-participation-in-form)
 to specify identity, form/capacity domains, retained internal and boundary
-state, circular phase and any claimed nested description. A law must respect the admitted domains and
-symmetries; a reduction must preserve the information consumed by its claimed
-response or account for its loss. Name which requirements are definitions,
-independent constitutive premises or consequences of the chosen model.
+state, circular phase and any claimed nested description. A law must respect
+the admitted domains and symmetries; a reduction must preserve the information
+consumed by its claimed response or account for its loss. Name which
+requirements are definitions, independent constitutive premises or consequences
+of the chosen model.
 
 For claimed operator actions, select the actual execution path and apply its
 [event-map and composition contracts](STRUCTURAL_OPERATORS.md#22-operator-as-transformation),
 including live admission, target/history dependence, primary and secondary
-state changes, ordering and event costs. A collective description also needs the
-[operator descent criterion](STRUCTURAL_OPERATORS.md#collective-operator-descent).
+state changes, ordering and event costs. A collective description also needs
+the [operator descent criterion](STRUCTURAL_OPERATORS.md#collective-operator-descent).
 The [grammar scope](UNIFIED_GRAMMAR_RULES.md#purpose-and-authority) remains
 distinct from continuous-law selection and autonomous event occurrence.
 A detached continuous comparison has its own laws and declared interventions;
@@ -928,6 +929,11 @@ owners, with matched domains, sources, events, balances and observations.
 Diagnostics and grammar do not silently provide its missing controller.
 Preserve valid conditional objects and counterexamples while testing a
 prospective discriminator, equivalence or obstruction between alternatives.
+Reusing a proof method or numerical kernel does not transfer the old law's
+derivative, regularity, source or trapping bounds. Match every consumed
+hypothesis before inheriting a certificate; otherwise derive it for the new
+complete law. A local response coefficient alone is not a finite-response
+separation with an admitted error budget.
 The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 selects the investigation; this admission criterion creates no parallel queue.
 

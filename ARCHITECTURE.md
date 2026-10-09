@@ -81,9 +81,19 @@ same owners for static analyzers. Its
 importing the package; the [testing guide](TESTING.md#code-quality-and-documentation-checks)
 owns regeneration and drift checks.
 
-Physics imports NumPy and NetworkX as core dependencies declared in
-`pyproject.toml`. Optional SciPy and acceleration paths retain their own
-availability checks and fallback behavior.
+The core dependencies declared in `pyproject.toml` include NumPy, SciPy and
+NetworkX. Individual consumers retain availability checks and fallback behavior;
+acceleration backends are optional.
+
+The shared [`relational_report_to_dict`](src/tnfr/sdk/relational_reports.py)
+exporter keeps owner-managed report registration in one explicit dispatch map.
+It resolves the registered owner of an actual report or its registered base
+class, then delegates to that owner's projection without importing unrelated
+research owners for dispatch. Native reports retain their shared label checks.
+This includes complete port readouts and the prepared full/tangent storage
+readout; exact fractions, null availability and nested evidence remain intact.
+Dispatch establishes supported Python types, not scientific admission or
+provenance. Detached mathematical objects do not install a law in `Network.G`.
 
 ## Nodal execution flow
 

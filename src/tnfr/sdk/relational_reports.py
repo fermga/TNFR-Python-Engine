@@ -9,9 +9,159 @@ from __future__ import annotations
 import math
 from dataclasses import fields, is_dataclass
 from fractions import Fraction
+from importlib import import_module
 from typing import Any
 
 __all__ = ("relational_report_to_dict",)
+
+
+# One dispatch registry: values are trusted import owners, never report metadata.
+# The owning class identity is checked through the actual MRO before delegation.
+_OWNER_MANAGED_REPORTS = {
+    "BridgeClockLawDiscrimination": "tnfr.physics.relational_bridge_discrimination",
+    "BridgeFiniteLawDiscrimination": "tnfr.physics.relational_bridge_discrimination",
+    "BridgeStorageFamilyAssessment": "tnfr.physics.relational_sine_resonance",
+    "JointPairObservation": "tnfr.physics.relational_sine_scale",
+    "PhaseInformationResponse": "tnfr.physics.phase_response",
+    "PhaseMomentInformationAssessment": "tnfr.physics.phase_response",
+    "PhaseMomentMotion": "tnfr.physics.phase_response",
+    "PhasePairObservation": "tnfr.physics.relational_sine_scale",
+    "ReturnPathGeometryResponseAssessment": "tnfr.physics.phase_cycle_geometry",
+    "ReturnPathStorageGeometryAssessment": "tnfr.physics.phase_cycle_geometry",
+    "SaddleStorageDiscriminator": "tnfr.physics.relational_phase_storage",
+    "SineApertureBudget": "tnfr.physics.relational_sine_aperture_budget",
+    "SineApertureInference": "tnfr.physics.relational_sine_aperture_inference",
+    "SineApertureReadout": "tnfr.physics.relational_sine_aperture_readout",
+    "SineBridgeChannelAssessment": "tnfr.physics.relational_sine_resonance",
+    "SineBridgeMemoryAssessment": "tnfr.physics.relational_sine_bridge_memory",
+    "SineBudgetConsensus": "tnfr.physics.relational_sine_budget",
+    "SineC5LeafSaddle": "tnfr.physics.relational_sine_resonance",
+    "SineClassAmplitudeFeasibility": "tnfr.physics.relational_sine_class_amplitude_feasibility",
+    "SineClassComparisonReadout": "tnfr.physics.relational_sine_class_comparison_readout",
+    "SineClassCubicResponse": "tnfr.physics.relational_sine_class_cubic_response",
+    "SineClassFourHistoryReadout": "tnfr.physics.relational_sine_class_readout",
+    "SineClassMediatedMemory": "tnfr.physics.relational_sine_class_memory",
+    "SineClassMediatedMemoryBound": "tnfr.physics.relational_sine_class_memory",
+    "SineClassMediation": "tnfr.physics.relational_sine_class_mediation",
+    "SineClassNonlinearOrganization": "tnfr.physics.relational_sine_class_nonlinear_organization",
+    "SineClassNonlinearProtocol": "tnfr.physics.relational_sine_class_nonlinear_protocol",
+    "SineClassPortReadout": "tnfr.physics.relational_sine_class_port_readout",
+    "SineClassSpatialObservation": "tnfr.physics.relational_sine_class_spatial_observation",
+    "SineClassStorageReadout": "tnfr.physics.relational_sine_class_storage_readout",
+    "SineClassSuperposition": "tnfr.physics.relational_sine_class_superposition",
+    "SineClockDriftInference": "tnfr.physics.relational_sine_clock_drift_inference",
+    "SineClockInference": "tnfr.physics.relational_sine_clock_inference",
+    "SineCollectivePulseBalance": "tnfr.physics.relational_sine_partition",
+    "SineConservativeHandoff": "tnfr.physics.relational_sine_entry",
+    "SineConservativePhaseTransport": "tnfr.physics.relational_sine_entry",
+    "SineConservativeSourceGeometry": "tnfr.physics.relational_sine_entry",
+    "SineConservativeWindingEntry": "tnfr.physics.relational_sine_entry",
+    "SineConstitutiveRobustness": "tnfr.research.sine_constitutive_robustness",
+    "SineContactAveraging": "tnfr.physics.relational_sine_partition",
+    "SineCurvatureInference": "tnfr.physics.relational_sine_curvature_inference",
+    "SineCycleBarrier": "tnfr.physics.relational_sine_regional",
+    "SineCycleIdentityAssessment": "tnfr.physics.relational_sine_recovery",
+    "SineCycleResonance": "tnfr.physics.relational_sine_resonance",
+    "SineCycleRetention": "tnfr.physics.relational_sine_regional",
+    "SineCycleSymmetryAssessment": "tnfr.physics.relational_sine_symmetry",
+    "SineFormIncrementAssessment": "tnfr.physics.relational_sine_comparison",
+    "SineFormationResponse": "tnfr.physics.relational_sine_formation_response",
+    "SineFormedClassContact": "tnfr.physics.relational_sine_formed_class_contact",
+    "SineFormedClassMaintenance": "tnfr.physics.relational_sine_formed_class_maintenance",
+    "SineFormedClassPair": "tnfr.physics.relational_sine_formed_classes",
+    "SineFormedClassResponse": "tnfr.physics.relational_sine_formed_classes",
+    "SineGlobalPairState": "tnfr.physics.relational_sine_pair",
+    "SineInvolutionReduction": "tnfr.physics.relational_sine_symmetry",
+    "SineInvolutionState": "tnfr.physics.relational_sine_symmetry",
+    "SineJointPairingProjection": "tnfr.physics.relational_sine_scale",
+    "SineJointPairingWindowAssessment": "tnfr.physics.relational_sine_scale",
+    "SineMediatedResponse": "tnfr.physics.relational_sine_resonance",
+    "SineMetricConnection": "tnfr.physics.relational_sine_metric_connection",
+    "SineMixedPairStateAssessment": "tnfr.physics.relational_sine_scale",
+    "SineMobilityComparison": "tnfr.physics.relational_sine_comparison",
+    "SineMobilityGeometryAssessment": "tnfr.physics.relational_sine_scale",
+    "SineMobilityRelativeBalance": "tnfr.physics.relational_sine_comparison",
+    "SineModeGain": "tnfr.physics.relational_sine_resonance",
+    "SineMovingPatternWindow": "tnfr.physics.relational_sine_partition",
+    "SinePairCancellationObservation": "tnfr.physics.relational_sine_pair",
+    "SinePairEmissionAssessment": "tnfr.physics.relational_sine_scale",
+    "SinePairFiniteExchange": "tnfr.physics.relational_sine_pair",
+    "SinePairPersistentResponse": "tnfr.physics.relational_sine_pair",
+    "SinePairPulseAssessment": "tnfr.physics.relational_sine_resonance",
+    "SinePairReceiverConfounding": "tnfr.physics.relational_sine_pair",
+    "SinePairReceiverDefect": "tnfr.physics.relational_sine_pair",
+    "SinePairReceiverReadout": "tnfr.physics.relational_sine_pair",
+    "SinePairReceiverTwoLaw": "tnfr.physics.relational_sine_pair",
+    "SinePairReceiverTwoTime": "tnfr.physics.relational_sine_pair",
+    "SinePairSupportSymmetryAssessment": "tnfr.physics.relational_sine_scale",
+    "SinePairingMobilityAssessment": "tnfr.physics.relational_sine_scale",
+    "SinePairingTransitionAssessment": "tnfr.physics.relational_sine_scale",
+    "SinePairingWindowAssessment": "tnfr.physics.relational_sine_scale",
+    "SinePathMemoryAssessment": "tnfr.physics.relational_sine_resonance",
+    "SinePatternComposition": "tnfr.physics.relational_sine_composition",
+    "SinePhaseOffsetPartition": "tnfr.physics.relational_sine_partition",
+    "SinePhaseOffsetState": "tnfr.physics.relational_sine_partition",
+    "SinePortComposition": "tnfr.physics.relational_sine_port_composition",
+    "SinePortCompositionState": "tnfr.physics.relational_sine_port_composition",
+    "SinePortFormTracking": "tnfr.physics.relational_sine_port_form_tracking",
+    "SinePortRelaxation": "tnfr.physics.relational_sine_port_relaxation",
+    "SinePreparedComposition": "tnfr.physics.relational_sine_composition",
+    "SinePreparedEntry": "tnfr.physics.relational_sine_entry",
+    "SineRecoveryResonance": "tnfr.physics.relational_sine_resonance",
+    "SineRecurrenceAssessment": "tnfr.physics.relational_sine_resonance",
+    "SineReducedClassPortState": "tnfr.physics.relational_sine_reduced_class_ports",
+    "SineReducedClassPorts": "tnfr.physics.relational_sine_reduced_class_ports",
+    "SineRegionalChannelHistory": "tnfr.physics.relational_sine_regional",
+    "SineRegionalOrganization": "tnfr.physics.relational_sine_regional",
+    "SineRegionalStorageBalance": "tnfr.physics.relational_sine_comparison",
+    "SineRegionalTransfer": "tnfr.physics.relational_sine_comparison",
+    "SineReplicaCapacityAssessment": "tnfr.physics.relational_sine_scale",
+    "SineReplicaEquilibriaAssessment": "tnfr.physics.relational_sine_scale",
+    "SineReplicaPersistenceAssessment": "tnfr.physics.relational_sine_scale",
+    "SineReplicaPulseAssessment": "tnfr.physics.relational_sine_replica_pulse",
+    "SineReplicaPulseFiniteWorkResponse": "tnfr.physics.relational_sine_replica_pulse",
+    "SineReplicaPulseSplitting": "tnfr.physics.relational_sine_replica_pulse",
+    "SineReplicaPulseVariation": "tnfr.physics.relational_sine_replica_pulse",
+    "SineReplicaPulseWorkResponse": "tnfr.physics.relational_sine_replica_pulse",
+    "SineReplicaScaleAssessment": "tnfr.physics.relational_sine_scale",
+    "SineReplicaStiffnessTraceCurve": "tnfr.physics.relational_sine_replica_pulse",
+    "SineReversiblePreparation": "tnfr.physics.relational_sine_regional",
+    "SineSaddleCorridor": "tnfr.physics.relational_sine_corridor",
+    "SineSaddleFormation": "tnfr.physics.relational_sine_corridor",
+    "SineSaddleMetricForecast": "tnfr.physics.relational_sine_metric_forecast",
+    "SineSaddlePreparation": "tnfr.physics.relational_sine_corridor",
+    "SineSaddleRetentionBand": "tnfr.physics.relational_sine_corridor",
+    "SineSaddleSensitivity": "tnfr.physics.relational_sine_sensitivity",
+    "SineSlowCapture": "tnfr.physics.relational_sine_reduction",
+    "SineSlowPhaseBound": "tnfr.physics.relational_sine_reduction",
+    "SineStarMomentClosure": "tnfr.physics.phase_response",
+    "SineStatePairingAssessment": "tnfr.physics.relational_sine_scale",
+    "SineTwoPortCapture": "tnfr.physics.relational_sine_two_port_capture",
+    "SineTwoPortCompatibility": "tnfr.physics.relational_sine_two_port_compatibility",
+    "SineTwoPortDipole": "tnfr.physics.relational_sine_two_port_dipole",
+    "SineTwoPortHandoffObstruction": "tnfr.physics.relational_sine_two_port_compatibility",
+    "SineTwoPortInference": "tnfr.physics.relational_sine_two_port_inference",
+    "SineTwoPortProbe": "tnfr.physics.relational_sine_two_port_probe",
+    "SineTwoPortReadout": "tnfr.physics.relational_sine_two_port_readout",
+    "SineTwoPortTransit": "tnfr.physics.relational_sine_two_port_transit",
+    "SineTwoPulseInference": "tnfr.physics.relational_sine_two_pulse_inference",
+}
+
+
+def _is_owner_managed_report(report: Any) -> bool:
+    """Recognize registered classes and their real subclasses lazily.
+
+    A matching name/module only selects a trusted owner; it is not admission.
+    An arbitrary object exposing ``to_dict`` remains unsupported.
+    """
+    # Bypass metaclass attribute overrides and metaclass MRO properties alike.
+    for base in type.__dict__["__mro__"].__get__(type(report)):
+        owner_name = _OWNER_MANAGED_REPORTS.get(base.__name__)
+        if owner_name is not None and base.__module__ == owner_name:
+            owner = import_module(owner_name)
+            if base is getattr(owner, base.__name__):
+                return True
+    return False
 
 
 def _validate_label(value: Any) -> None:
@@ -116,25 +266,18 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
     typed round trip, resumable checkpoint or provenance authentication.
     No theorem eligibility is recomputed and no producer or trajectory runs.
     """
+    if _is_owner_managed_report(report):
+        return {
+            "schema": "tnfr.relational-report.v1",
+            "report_type": type(report).__name__,
+            "report": report.to_dict()["report"],
+        }
+
     from ..dynamics.relational import (
         RelationalConsensusTangent,
         RelationalExchangeField,
         RelationalExchangeStep,
         RelationalUniformTangent,
-    )
-    from ..physics.phase_cycle_geometry import (
-        ReturnPathGeometryResponseAssessment,
-        ReturnPathStorageGeometryAssessment,
-    )
-    from ..physics.phase_response import (
-        PhaseInformationResponse,
-        PhaseMomentInformationAssessment,
-        PhaseMomentMotion,
-        SineStarMomentClosure,
-    )
-    from ..physics.relational_bridge_discrimination import (
-        BridgeClockLawDiscrimination,
-        BridgeFiniteLawDiscrimination,
     )
     from ..physics.relational_capture import (
         RelationalCaptureCertificate,
@@ -169,303 +312,7 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
         RelationalResetObservation,
         RelationalSampleJetBudget,
     )
-    from ..physics.relational_phase_storage import SaddleStorageDiscriminator
-    from ..physics.relational_sine_aperture_budget import SineApertureBudget
-    from ..physics.relational_sine_aperture_inference import SineApertureInference
-    from ..physics.relational_sine_aperture_readout import SineApertureReadout
-    from ..physics.relational_sine_bridge_memory import SineBridgeMemoryAssessment
-    from ..physics.relational_sine_budget import SineBudgetConsensus
-    from ..physics.relational_sine_class_amplitude_feasibility import (
-        SineClassAmplitudeFeasibility,
-    )
-    from ..physics.relational_sine_class_comparison_readout import (
-        SineClassComparisonReadout,
-    )
-    from ..physics.relational_sine_class_cubic_response import SineClassCubicResponse
-    from ..physics.relational_sine_class_mediation import SineClassMediation
-    from ..physics.relational_sine_class_memory import (
-        SineClassMediatedMemory,
-        SineClassMediatedMemoryBound,
-    )
-    from ..physics.relational_sine_class_nonlinear_organization import (
-        SineClassNonlinearOrganization,
-    )
-    from ..physics.relational_sine_class_nonlinear_protocol import (
-        SineClassNonlinearProtocol,
-    )
-    from ..physics.relational_sine_class_readout import SineClassFourHistoryReadout
-    from ..physics.relational_sine_class_spatial_observation import (
-        SineClassSpatialObservation,
-    )
-    from ..physics.relational_sine_class_superposition import SineClassSuperposition
-    from ..physics.relational_sine_clock_drift_inference import SineClockDriftInference
-    from ..physics.relational_sine_clock_inference import SineClockInference
-    from ..physics.relational_sine_comparison import (
-        SineFormIncrementAssessment,
-        SineMobilityComparison,
-        SineMobilityRelativeBalance,
-        SineRegionalStorageBalance,
-        SineRegionalTransfer,
-    )
-    from ..physics.relational_sine_composition import (
-        SinePatternComposition,
-        SinePreparedComposition,
-    )
-    from ..physics.relational_sine_corridor import (
-        SineSaddleCorridor,
-        SineSaddleFormation,
-        SineSaddlePreparation,
-        SineSaddleRetentionBand,
-    )
-    from ..physics.relational_sine_curvature_inference import SineCurvatureInference
-    from ..physics.relational_sine_entry import (
-        SineConservativeHandoff,
-        SineConservativePhaseTransport,
-        SineConservativeSourceGeometry,
-        SineConservativeWindingEntry,
-        SinePreparedEntry,
-    )
-    from ..physics.relational_sine_formation_response import SineFormationResponse
-    from ..physics.relational_sine_formed_class_contact import SineFormedClassContact
-    from ..physics.relational_sine_formed_class_maintenance import (
-        SineFormedClassMaintenance,
-    )
-    from ..physics.relational_sine_formed_classes import (
-        SineFormedClassPair,
-        SineFormedClassResponse,
-    )
-    from ..physics.relational_sine_metric_connection import SineMetricConnection
-    from ..physics.relational_sine_metric_forecast import SineSaddleMetricForecast
-    from ..physics.relational_sine_pair import (
-        SineGlobalPairState,
-        SinePairCancellationObservation,
-        SinePairFiniteExchange,
-        SinePairPersistentResponse,
-        SinePairReceiverConfounding,
-        SinePairReceiverDefect,
-        SinePairReceiverReadout,
-        SinePairReceiverTwoLaw,
-        SinePairReceiverTwoTime,
-    )
-    from ..physics.relational_sine_partition import (
-        SineCollectivePulseBalance,
-        SineContactAveraging,
-        SineMovingPatternWindow,
-        SinePhaseOffsetPartition,
-        SinePhaseOffsetState,
-    )
-    from ..physics.relational_sine_port_composition import (
-        SinePortComposition,
-        SinePortCompositionState,
-    )
-    from ..physics.relational_sine_port_form_tracking import SinePortFormTracking
-    from ..physics.relational_sine_port_relaxation import SinePortRelaxation
-    from ..physics.relational_sine_recovery import SineCycleIdentityAssessment
-    from ..physics.relational_sine_reduced_class_ports import (
-        SineReducedClassPorts,
-        SineReducedClassPortState,
-    )
-    from ..physics.relational_sine_reduction import SineSlowCapture, SineSlowPhaseBound
-    from ..physics.relational_sine_regional import (
-        SineCycleBarrier,
-        SineCycleRetention,
-        SineRegionalChannelHistory,
-        SineRegionalOrganization,
-        SineReversiblePreparation,
-    )
-    from ..physics.relational_sine_replica_pulse import (
-        SineReplicaPulseAssessment,
-        SineReplicaPulseFiniteWorkResponse,
-        SineReplicaPulseSplitting,
-        SineReplicaPulseVariation,
-        SineReplicaPulseWorkResponse,
-        SineReplicaStiffnessTraceCurve,
-    )
-    from ..physics.relational_sine_resonance import (
-        BridgeStorageFamilyAssessment,
-        SineBridgeChannelAssessment,
-        SineC5LeafSaddle,
-        SineCycleResonance,
-        SineMediatedResponse,
-        SineModeGain,
-        SinePairPulseAssessment,
-        SinePathMemoryAssessment,
-        SineRecoveryResonance,
-        SineRecurrenceAssessment,
-    )
-    from ..physics.relational_sine_scale import (
-        JointPairObservation,
-        PhasePairObservation,
-        SineJointPairingProjection,
-        SineJointPairingWindowAssessment,
-        SineMixedPairStateAssessment,
-        SineMobilityGeometryAssessment,
-        SinePairEmissionAssessment,
-        SinePairingMobilityAssessment,
-        SinePairingTransitionAssessment,
-        SinePairingWindowAssessment,
-        SinePairSupportSymmetryAssessment,
-        SineReplicaCapacityAssessment,
-        SineReplicaEquilibriaAssessment,
-        SineReplicaPersistenceAssessment,
-        SineReplicaScaleAssessment,
-        SineStatePairingAssessment,
-    )
-    from ..physics.relational_sine_sensitivity import SineSaddleSensitivity
-    from ..physics.relational_sine_symmetry import (
-        SineCycleSymmetryAssessment,
-        SineInvolutionReduction,
-        SineInvolutionState,
-    )
-    from ..physics.relational_sine_two_port_capture import SineTwoPortCapture
-    from ..physics.relational_sine_two_port_compatibility import (
-        SineTwoPortCompatibility,
-        SineTwoPortHandoffObstruction,
-    )
-    from ..physics.relational_sine_two_port_dipole import SineTwoPortDipole
-    from ..physics.relational_sine_two_port_inference import SineTwoPortInference
-    from ..physics.relational_sine_two_port_probe import SineTwoPortProbe
-    from ..physics.relational_sine_two_port_readout import SineTwoPortReadout
-    from ..physics.relational_sine_two_port_transit import SineTwoPortTransit
-    from ..physics.relational_sine_two_pulse_inference import SineTwoPulseInference
     from ..physics.relational_transit import RelationalTransitCertificate
-    from ..research.sine_constitutive_robustness import SineConstitutiveRobustness
-
-    if isinstance(
-        report,
-        (
-            PhaseInformationResponse,
-            PhaseMomentInformationAssessment,
-            PhaseMomentMotion,
-            SineStarMomentClosure,
-            ReturnPathStorageGeometryAssessment,
-            ReturnPathGeometryResponseAssessment,
-            SineConservativeHandoff,
-            SineConservativePhaseTransport,
-            SineConservativeSourceGeometry,
-            SineConservativeWindingEntry,
-            SineRegionalStorageBalance,
-            SineCycleBarrier,
-            SineCycleRetention,
-            SineReversiblePreparation,
-            SineRegionalOrganization,
-            SineRegionalChannelHistory,
-            SineBudgetConsensus,
-            SineBridgeMemoryAssessment,
-            SinePatternComposition,
-            SinePreparedComposition,
-            SinePreparedEntry,
-            SineCollectivePulseBalance,
-            SineContactAveraging,
-            SineMovingPatternWindow,
-            SinePhaseOffsetPartition,
-            SinePhaseOffsetState,
-            SineSlowCapture,
-            SineSlowPhaseBound,
-            SineCycleSymmetryAssessment,
-            SineInvolutionReduction,
-            SineInvolutionState,
-            SineBridgeChannelAssessment,
-            SineC5LeafSaddle,
-            SineSaddleCorridor,
-            SineSaddleFormation,
-            SineSaddlePreparation,
-            SaddleStorageDiscriminator,
-            SineConstitutiveRobustness,
-            SineSaddleRetentionBand,
-            SineSaddleSensitivity,
-            SineSaddleMetricForecast,
-            SineMetricConnection,
-            BridgeStorageFamilyAssessment,
-            BridgeFiniteLawDiscrimination,
-            BridgeClockLawDiscrimination,
-            SineCycleResonance,
-            SineModeGain,
-            SineRecoveryResonance,
-            SineMediatedResponse,
-            SinePairPulseAssessment,
-            SinePathMemoryAssessment,
-            SineRecurrenceAssessment,
-            SineCycleIdentityAssessment,
-            SineFormIncrementAssessment,
-            SineMobilityComparison,
-            SineMobilityRelativeBalance,
-            SineRegionalTransfer,
-            SineMobilityGeometryAssessment,
-            SineReplicaScaleAssessment,
-            SineReplicaStiffnessTraceCurve,
-            SineGlobalPairState,
-            SinePairCancellationObservation,
-            SinePairFiniteExchange,
-            SinePairPersistentResponse,
-            SineFormationResponse,
-            SineFormedClassContact,
-            SineReducedClassPorts,
-            SineReducedClassPortState,
-            SinePortComposition,
-            SinePortCompositionState,
-            SinePortRelaxation,
-            SinePortFormTracking,
-            SineClassMediation,
-            SineClassMediatedMemory,
-            SineClassMediatedMemoryBound,
-            SineClassSuperposition,
-            SineClassCubicResponse,
-            SineClassSpatialObservation,
-            SineClassAmplitudeFeasibility,
-            SineClassNonlinearOrganization,
-            SineClassNonlinearProtocol,
-            SineClassFourHistoryReadout,
-            SineClassComparisonReadout,
-            SineTwoPortCompatibility,
-            SineTwoPortHandoffObstruction,
-            SineTwoPortCapture,
-            SineTwoPortDipole,
-            SineTwoPortInference,
-            SineTwoPortProbe,
-            SineTwoPortReadout,
-            SineTwoPortTransit,
-            SineTwoPulseInference,
-            SineClockInference,
-            SineCurvatureInference,
-            SineClockDriftInference,
-            SineApertureBudget,
-            SineApertureInference,
-            SineApertureReadout,
-            SineFormedClassMaintenance,
-            SineFormedClassPair,
-            SineFormedClassResponse,
-            SinePairReceiverConfounding,
-            SinePairReceiverDefect,
-            SinePairReceiverReadout,
-            SinePairReceiverTwoTime,
-            SinePairReceiverTwoLaw,
-            JointPairObservation,
-            PhasePairObservation,
-            SineJointPairingProjection,
-            SineJointPairingWindowAssessment,
-            SineMixedPairStateAssessment,
-            SinePairEmissionAssessment,
-            SinePairSupportSymmetryAssessment,
-            SinePairingMobilityAssessment,
-            SinePairingTransitionAssessment,
-            SinePairingWindowAssessment,
-            SineStatePairingAssessment,
-            SineReplicaCapacityAssessment,
-            SineReplicaEquilibriaAssessment,
-            SineReplicaPersistenceAssessment,
-            SineReplicaPulseAssessment,
-            SineReplicaPulseFiniteWorkResponse,
-            SineReplicaPulseSplitting,
-            SineReplicaPulseVariation,
-            SineReplicaPulseWorkResponse,
-        ),
-    ):
-        return {
-            "schema": "tnfr.relational-report.v1",
-            "report_type": type(report).__name__,
-            "report": report.to_dict()["report"],
-        }
 
     if not isinstance(
         report,

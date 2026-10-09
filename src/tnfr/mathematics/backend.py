@@ -245,6 +245,14 @@ class _TorchBackend:
     supports_autodiff: ClassVar[bool] = True
 
     def as_array(self, value: Any, *, dtype: Any | None = None) -> Any:
+        np_mod = cached_import("numpy")
+        if (
+            np_mod is not None
+            and isinstance(value, np_mod.ndarray)
+            and not value.flags.writeable
+        ):
+            # Torch tensors cannot preserve NumPy's read-only storage contract.
+            value = value.copy(order="K")
         tensor = self._torch.as_tensor(value, device=self._device)
         if dtype is None:
             return tensor

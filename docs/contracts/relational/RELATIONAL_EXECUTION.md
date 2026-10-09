@@ -454,11 +454,21 @@ conditional finite-horizon error bounds. Its neighborhood and derivative
 constants are not part of an executable admission certificate; the SDK still
 executes and reports the full nonlinear state.
 
+<a id="relational-report-export"></a>
+
 `tnfr.sdk.relational_report_to_dict(report)` projects native relational reports
 and explicitly registered owner-managed reports. The
 [shared dispatcher](../../../src/tnfr/sdk/relational_reports.py) owns the accepted
 types; unsupported values reject. Each report's subsection states its scientific
 scope. Having a `to_dict()` method alone does not register an arbitrary object.
+Known-type dispatch resolves only the relevant registered owner, rather than
+importing unrelated research report owners. It checks the actual registered
+class identity and retains support for subclasses inheriting that registered
+base; a matching class name or module string alone is insufficient. This is
+dispatch admission, not re-admission of the scientific fields.
+The detached `SineClassPortReadout` and `SineClassStorageReadout` reports use
+the same export path as the existing formation, maintenance and composition
+reports, with no new live-network execution wrapper.
 Its detached JSON-compatible envelope has
 `schema="tnfr.relational-report.v1"`, `report_type` and recursively projected
 `report` fields. Exact fractions use
@@ -470,9 +480,13 @@ than replaced with `repr` or serialized as dataclass contents. Save the mapping 
 
 This projection is not the `StudyResult` schema, a restorable checkpoint, a
 source fingerprint or authentication of a caller-supplied report. Node-type
-reconstruction is not promised. It supplies no new CLI execution mode.
+reconstruction is not promised. Export does not recompute theorem eligibility,
+validate acquisition or regenerate a producer; report-consuming scientific
+calculations retain their own primitive and evidence reconstruction contracts.
+It supplies no new CLI execution mode.
 [Usage](../../guides/relational/RELATIONAL_EXECUTION.md#observe-a-prepared-relational-pattern) belongs to the
-shared SDK guide.
+shared SDK guide; the [formed-object workflow](../../guides/relational/SINE_PATTERNS.md#formed-object-sdk-workflow)
+includes an exact zero-horizon export example.
 
 <a id="relational-attachment-observation"></a>
 ### Supplied relational attachment observation

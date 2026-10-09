@@ -19,9 +19,9 @@ premises, including the nodal row, remain revisable with explicit scope;
 completion of a model does not by itself require replacing that row.
 Further response calculations serve a named foundational or generative
 question; increasing precision or adding an observable alone does not
-determine the next task. The intended
-route remains formation and interaction of organizations, then independently
-testable physical properties, including the eventual constituent hypothesis.
+determine the next task. The intended route remains formation and interaction
+of organizations, then independently testable physical properties, including
+the eventual constituent hypothesis.
 
 <a id="current-checkpoint"></a>
 ## Current checkpoint and resumption
@@ -177,6 +177,29 @@ this first comparison, not consequences already forced by the NFR definition
 or the operator catalog. Its supplied probes retain their event contracts;
 identifying a probe with a registered operator or deriving its autonomous
 occurrence needs the corresponding proof.
+
+Before calculating the alternative response, specify its oriented edge
+current, parity, periodic potential and normalization, and the reciprocal
+phase row. Check the joint storage balance in the declared clock. At the
+target gaps `0`, `+/-2*pi/9` and `+/-4*pi/9`, state exactly which potential
+values and derivatives agree; matching a full tangent does not match every
+higher derivative consumed by nonlinear interaction. Declare the common
+supplied source and observation separately from acquisition under either law,
+and account for each preparation and intervention in its own model.
+
+The comparison must identify whether its result concerns a local onset or a
+finite response with errors. The sine-specific
+[amplitude and source bounds](../nodal/SINE_CLASS_COLLECTIVE_INTERFACE.md#sine-collective-interface-fidelity)
+and [analytic storage tail](../nodal/SINE_CLASS_STORAGE_EXCESS.md#sine-storage-complete-errors)
+are not bounds for an arbitrary smooth alternative. Supply real derivative
+bounds on the consumed domain, or explicitly justify an analytic extension
+and its complex-domain bounds when that proof method is used. Re-admit any
+local identity or source transport certificate under the new law. The
+[validated Taylor kernel](../../src/tnfr/mathematics/_validated_taylor.py)
+is reusable machinery; the existing sine fields and prepared storage observer
+implement fixed laws and cannot evaluate an alternative by relabeling it.
+Select the relevant [foundation controls](../../TESTING.md#select-research-checks-by-contract)
+and add independent controls for the new mathematical consequence.
 
 This connects the active comparison to the broader generative question:
 which independently justified complete laws can form distinguishable stable
@@ -536,8 +559,10 @@ retain their scope.
 The shared conditional calculator consumes scalar coefficient premises;
 the retained-evidence audit separately reconstructs the base enclosure.
 This proof-only admission evaluates no new coefficient, acquired source
-or nonlinear trajectory. It selects neither a single intervention nor a
-physical measurement model; those obligations remain in the next gate.
+or nonlinear trajectory. The later [scaled comparison](#reserved-scaled-cross-class-comparison)
+selects and evaluates one intervention under its frozen mathematical protocol.
+A physical measurement model remains subject to the separate
+[measurement admission](#supporting-measurement-bridge).
 
 <a id="organization-sensitive-observation"></a>
 <a id="next-primary-admission-an-observation-of-organization-dependent-interaction"></a>

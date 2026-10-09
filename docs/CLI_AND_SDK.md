@@ -123,6 +123,13 @@ requirements. `relational_report_to_dict` exports their scopes, exact fractions,
 intervals and unavailable fields through the shared SDK envelope; exporting a
 report neither advances a network nor admits it as input to another theorem.
 
+For acquired winding classes, recovery, joined interfaces and complete-state
+readouts, follow the [formed-object workflow](guides/relational/SINE_PATTERNS.md#formed-object-sdk-workflow).
+It uses the existing mathematical owners and the same exact report exporter,
+with a zero-horizon storage example that performs no evolution. These APIs
+retain their supplied source and complete law; they do not implicitly read
+`Network.G` or change the native relational execution model.
+
 ## Run and export the same study from either interface
 
 The Python declaration is explicit and serializable:

@@ -118,6 +118,15 @@ remain associated with their own complete laws. Read retained evidence without
 replaying its producers; test each new constitutive consequence independently
 when its mathematical owner changes.
 
+For claimed NFR representations and collective actions, also select
+`tests/physics/test_epi_phase_representation_scope.py` and
+`tests/physics/test_operator_quotient.py`; the routine gate covers registered
+operator and grammar contracts. A new constitutive comparison must test its
+actual full field, balance, matching order and law-specific derivative/source
+bounds. Existing sine controls do not certify a different current, even when
+target storage and the full tangent agree. Keep local-onset evidence separate
+from finite-horizon discrimination and from acquisition under the new law.
+
 For [class-mediated collective response](theory/nodal/SINE_CLASS_MEDIATED_RESPONSE.md),
 select both the primitive/report controls and independent full-support
 algebra. Rebuild the 27-node support, its `(3,4,3)` central degrees, common
@@ -1312,6 +1321,14 @@ typing facade. After changing that map, run
 source AST without importing TNFR, and the
 [facade tests](tests/physics/test_physics_facade_imports.py) check typed exports,
 runtime object identity and cold import boundaries.
+
+For shared relational report export, select
+`tests/sdk/test_relational_reports.py`. Preserve every registered owner-managed
+type, actual-class and subclass admission, native label validation, exact
+fractions and unavailable fields. Cold-process controls must show that export
+does not import unrelated research owners. Use guarded zero-horizon reports
+or synthetic wiring for producer-backed types; an SDK export test must not
+regenerate a selected scientific response.
 
 Optional pre-commit setup requires installing `pre-commit` separately before
 `pre-commit install`. [.pre-commit-config.yaml](.pre-commit-config.yaml)

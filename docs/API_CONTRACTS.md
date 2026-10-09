@@ -626,6 +626,10 @@ adapter falls back to NumPy; unknown names raise `LookupError`.
 and the canonical `core.exceptions.BackendUnavailableError` identity.
 Backend selection supplies a numerical implementation, not an evolution law;
 reproducibility records must identify the adapter actually used.
+The PyTorch adapter copies read-only NumPy arrays before conversion because
+tensors cannot preserve their write protection. Writable arrays retain the
+existing sharing behavior when dtype/device permit; native tensor conversion
+preserves identity and autograd when no conversion is needed.
 The NumPy adapter delegates general matrix exponentials to the required SciPy
 dependency. If SciPy is unavailable, that operation raises
 `BackendUnavailableError`; a possibly defective eigenvector decomposition is

@@ -4,6 +4,75 @@ Relative patterns and origins, composition, equilibrium and symmetry, prepared f
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+<a id="formed-object-sdk-workflow"></a>
+## Work with formed-object reports and exact SDK exports
+
+Use the mathematical owner for the claim being assessed: the existing
+[formation](#sine-formed-class-pair),
+[maintenance](#sine-formed-class-maintenance) and
+[composition](#sine-reduced-port-composition) examples supply their own
+primitive inputs and return detached reports. Keep the report together with
+its source bounds, node order, complete law, capacity, clock, events and error
+budgets. Passing an identity or formation check does not by itself admit a
+different support, probe or reduced state; use that consumer's source contract.
+These owners do not install their supplied sine law in a live `Network`.
+
+Use `tnfr.sdk.relational_report_to_dict` to project a supported report and
+`export_to_json` to save it with the shared atomic writer. This includes
+`SineClassPortReadout` and `SineClassStorageReadout`; their mathematical owners
+remain the source of execution and evidence admission. The
+[export contract](../../contracts/relational/RELATIONAL_EXECUTION.md#relational-report-export)
+preserves exact rational records, ordered state and unavailable fields.
+
+The following zero-horizon example constructs all eight full/tangent source
+and event records and exports them. Its zero loss integral follows from the
+zero duration; it tests neither formation nor a finite storage prediction.
+The phase input is a deviation from the named class target, in original radians.
+
+```python
+from fractions import Fraction as Q
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+from tnfr.physics.relational_sine_class_storage_readout import (
+    bound_sine_class_storage_readout,
+)
+from tnfr.sdk import export_to_json, relational_report_to_dict
+from tnfr.utils.io import json_loads
+
+report = bound_sine_class_storage_readout(
+    mediator_class=2,
+    initial_form_bounds=((Q(0), Q(0)),) * 27,
+    initial_phase_deviation_bounds=((Q(0), Q(0)),) * 27,
+    donor_amplitude=Q(1, 100),
+    receiver_amplitude=-Q(1, 300),
+    horizon=Q(0),
+    time_step=Q(1, 64),
+    order=2,
+    max_steps=1,
+)
+assert report.completed_history_count == 8
+assert report.attempted_step_count == 0
+assert report.excess_storage_bounds.lo == report.excess_storage_bounds.hi == 0
+
+payload = relational_report_to_dict(report)
+assert payload["report_type"] == "SineClassStorageReadout"
+assert payload["report"]["donor_amplitude"] == {
+    "numerator": 1, "denominator": 100,
+}
+with TemporaryDirectory() as directory:
+    path = Path(directory) / "storage-report.json"
+    export_to_json(payload, path)
+    assert json_loads(path.read_bytes()) == payload
+```
+
+For a nonzero horizon, inspect completion and failure evidence before consuming
+an output. Enclosure widths can include source uncertainty, wrapping and
+numerical error; sensor errors and work/identity premises need their own
+admission. JSON export preserves the supplied report, not a validated source,
+a resumable state or proof of acquisition. Scientific consumers must re-admit
+the required primitives and rebuild the evidence they use.
+
 <a id="sine-aperture-budget"></a>
 ### Check a finite-noise and horizon budget before selecting readings
 
