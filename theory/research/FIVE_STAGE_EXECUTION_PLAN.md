@@ -25,10 +25,11 @@ The route is **justified nodal dynamics -> collective organization
 collective properties from their physical identification. A sufficient
 representation does not independently justify the law that evolves it.
 
-The sole next primary admission is
-[class-mediated collective response](#current-g3-gate), not yet executed:
-derive how an acquired mediator's internal organization changes interaction
-between other patterns under one complete nodal law. The
+The [class-mediated collective response](#generative-class-mediated-response)
+gate is closed by its first frozen conditional analytic assessment. The
+sole next primary admission is [acquired-mediator effective memory](#current-g3-gate),
+not yet executed: derive a controlled donor-receiver law that retains the
+mediator's internal class and hidden initialization. The
 [digital-PLL review](#terrestrial-coupled-phase-admission) is a closed
 auxiliary result, with no admitted physical bridge. The
 [finite-noise/horizon theorem](#sine-aperture-resolution-admission) is closed.
@@ -44,7 +45,8 @@ no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next primary admission, not yet executed | [Class-mediated collective response](#current-g3-gate): inherited finite interaction signature from changing only an acquired mediator's internal class |
+| Next primary admission, not yet executed | [Acquired-mediator effective memory](#current-g3-gate): retain class, hidden initialization and finite nonlinear error in a donor-receiver interaction law |
+| Closed conditional analytic assessment | [Class-mediated collective response](#generative-class-mediated-response): first frozen full-family contrast, phase-feedback control, work and identity certificates; no simulated or measured trajectory |
 | Closed auxiliary admission | [Terrestrial coupled-phase feasibility](#terrestrial-coupled-phase-admission): selected digital-PLL bridge not admitted; neither a prerequisite for generative pattern research nor a physical identification |
 | Latest closed theoretical gate | [Finite-noise/horizon resolution](#sine-aperture-resolution-admission): sufficient error/window budgets and a separate complete-history noise-overlap obstruction |
 | Latest closed reserved gate | [Finite-aperture software evaluation](#reserved-aperture-inference-admission): first frozen full-history averages, public-only inverse and declared transfer/alternative controls |
@@ -61,33 +63,45 @@ no empirical response has passed complete physical admission.
 | Supporting method | [P1-P5 physical admission](#supporting-measurement-bridge), with source-specific limits in the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena) |
 
 <a id="current-g3-gate"></a>
+<a id="acquired-mediator-effective-memory"></a>
+## Next primary admission: acquired-mediator effective memory
+
+Derive the effective donor-receiver law after eliminating the actual
+two-contact acquired mediator of the
+[closed class-response result](../nodal/SINE_CLASS_MEDIATED_RESPONSE.md#sine-class-mediated-result).
+Retain the same full law, support, clock, class information, complete hidden
+initialization, source families, event work and identity obligations. Bound
+the nonlinear reduction error tightly enough to preserve the certified
+finite class contrast. Compare an explicitly declared instantaneous law
+on a stated preparation and observation domain; unavailable information
+must remain unavailable.
+
+The [component port kernel](../nodal/SINE_REDUCED_CLASS_PORTS.md#the-retained-component-state-and-one-contact-normalization)
+and [existing causal-memory method](../nodal/RESONANCE_FOUNDATIONS.md#sine-bridge-causal-memory)
+are reusable prerequisites. A generic convolution identity alone is not
+the new result: the obligation is a controlled interaction law for this
+actually acquired, two-contact mediator and its observed class effect.
+No new response campaign, assumed instantaneous closure, autonomous support
+selection or physical identification is part of this admission.
+
 <a id="generative-class-mediated-response"></a>
-## Next primary admission: class-mediated collective response
+<a id="next-primary-admission-class-mediated-collective-response"></a>
+<a id="active-primary-admission-class-mediated-collective-response"></a>
+## Closed primary admission: class-mediated collective response
 
-Derive an effective interaction characteristic from acquired internal
-organization. Reuse the three-C9 path of
-[degree-aware composition](../nodal/SINE_REDUCED_PORT_COMPOSITION.md#sine-reduced-port-composition),
-holding its actual fine support, central contacts, capacities, complete
-law, clock, donor and receiver classes fixed. Vary only the acquired
-mediator class between one and two. The shared component method retains
-the actual port degrees `(3,4,3)`; its earlier frozen composition
-certificate did not establish this finite class-dependent contrast.
+The [retained first assessment](../nodal/SINE_CLASS_MEDIATED_RESPONSE.md#sine-class-mediated-result)
+certifies a finite receiver contrast when only the acquired mediator class
+changes on the three-C9 path. Both class comparisons retain the actual
+formation families, paired donor-probe/unprobed histories, port degrees,
+complete nonlinear error, work and all three identities. The postcontact
+phase-blind control does not reproduce the separated class response.
 
-The observable is a receiver response induced by a declared donor probe,
-with a paired unprobed baseline to separate it from prepared static
-currents. Carry the actual formed families and complete histories without
-resetting them to target equilibria. Retain source pairing and uncertainty,
-preparation costs, contact and probe work, all three identities and the
-full nonlinear or controlled-reduction error. A repeated pole-ratio
-identity or a fitted inverse is not this interaction result.
-
-Admit a finite separated receiver response or a scoped symmetry/error
-obstruction. Freeze one preparation, probe, readout, horizon and numerical
-budget before evaluating a reserved response; none is evaluated here.
-The intended conclusion is a collective interaction property inherited
-from nodal organization. Physical mass, charge, spin and constituent
-identification remain further hypotheses. The original composition
-protocol and all other frozen evidence stay unchanged.
+This is a conditional analytic certificate assessment, not a simulated or
+measured response. Source costs differ; the supplied preparation, law,
+contact/probe events and structural clock remain premises. It derives an
+interaction property of acquired organization without identifying physical
+mass, charge or spin. Previous composition and all other frozen evidence
+remain unchanged.
 
 <a id="terrestrial-coupled-phase-admission"></a>
 ## Closed auxiliary admission: terrestrial coupled-phase feasibility

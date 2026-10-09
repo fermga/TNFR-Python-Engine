@@ -1179,6 +1179,69 @@ retains the protocol, proof and channel verdicts. The
 checks source/record consistency separately from reading a JSON. No support
 selection, autonomous preparation or physical observation is inferred.
 
+<a id="sine-class-mediated-response"></a>
+### Inspect how an acquired mediator changes transmission
+
+`assess_sine_class_mediation` studies a donor, mediator and receiver on the
+same central-contact path. Donor and receiver remain class one; only the
+mediator changes between classes one and two. A supplied central donor
+form jump is paired with an unprobed continuation of the same reached
+state, and the receiver central form difference defines the response.
+The [proof and prospective protocol](../../../theory/nodal/SINE_CLASS_MEDIATED_RESPONSE.md#sine-class-mediated-protocol)
+retain all original source coordinates, formation and relaxation, changed
+port degrees, contact/probe work and all three winding identities.
+
+Before a new assessment, declare its twelve primitive inputs through the
+[contract](../../contracts/relational/SINE_PATTERNS.md#sine-class-mediated-response).
+The API rebuilds the source handoff and bounds the finite nonlinear
+contrast analytically. It does not run a trajectory or consume a passing
+report as evidence. Inspect `source_handoff_certified` before interpreting
+`actual_contrast_bounds` or `recorded_contrast_bounds`; both are unavailable
+when the actual-family handoff fails. Ideal coefficients alone cannot
+certify a formed-family response.
+
+Read `response_certified`, `phase_blind_alternative_excluded`,
+`identity_certified` and `work_within_allowances` together. The common
+early diffusion terms are class blind; the finite distinction is inherited
+from later mediator form/phase feedback. The phase-blind control is a
+postcontact ablation supplied with the same reached sources, not an
+alternative proof of their preceding formation. Baseline subtraction
+removes a prepared static current from the response definition, while the
+retained error allowance still covers the actual unprobed trajectory.
+
+The prototype's strict mathematical readout budget and long structural
+dwell are premises, not established sensor precision or laboratory time.
+Different acquired classes retain different source costs. The source,
+contact/probe selection and complete law remain supplied; an interaction
+signature does not identify physical mass, charge or spin.
+
+Inspect the [retained first assessment](../../../theory/nodal/SINE_CLASS_MEDIATED_RESPONSE.md#sine-class-mediated-result)
+without rerunning its source admission or analytic assessment. From the
+repository root:
+
+```python
+from fractions import Fraction as Q
+from pathlib import Path
+from tnfr.utils.io import json_loads
+
+saved = json_loads(Path(
+    "docs/assets/sine_formed_classes/class-mediation-v1.json"
+).read_text(encoding="utf-8"))
+report = saved["response"]["report"]
+lower = report["recorded_contrast_bounds"]["lo"]
+contrast_lower = Q(lower["numerator"], lower["denominator"])
+assert saved["evaluation_kind"] == "conditional_analytic_complete_family_no_trajectory"
+assert report["status"] == "certified_class_mediation"
+assert contrast_lower > Q(1, 10**25)
+assert report["identity_certified"] and report["work_within_allowances"]
+```
+
+This only inspects retained values. The dedicated read-only evidence audit
+in [TESTING](../../../TESTING.md#current-checks-and-retained-evidence)
+separately reconstructs consumed arithmetic and checks the frozen source
+association. A passing stored verdict alone does not verify its premises
+or authenticate provenance.
+
 <a id="sine-reduced-port-composition"></a>
 ### Assemble reduced components with their actual contact degrees
 

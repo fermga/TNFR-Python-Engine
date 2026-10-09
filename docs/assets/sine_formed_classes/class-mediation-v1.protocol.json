@@ -1,0 +1,243 @@
+{
+  "schema": "tnfr.sine-class-mediation-protocol.v1",
+  "evaluation_kind": "conditional_analytic_complete_family_no_trajectory",
+  "inputs": {
+    "formation_time": {
+      "numerator": 100,
+      "denominator": 1
+    },
+    "relaxation_duration": {
+      "numerator": 10000000000000,
+      "denominator": 1
+    },
+    "contact_duration": {
+      "numerator": 1,
+      "denominator": 10000
+    },
+    "probe_amplitude": {
+      "numerator": 1,
+      "denominator": 1000
+    },
+    "form_error_bound": {
+      "numerator": 1,
+      "denominator": 10000000000
+    },
+    "phase_error_bound": {
+      "numerator": 1,
+      "denominator": 10000000000
+    },
+    "endpoint_radius": {
+      "numerator": 1,
+      "denominator": 100000000000000000000000000000000
+    },
+    "radius": {
+      "numerator": 1,
+      "denominator": 12
+    },
+    "decay_power": 512,
+    "readout_error_bound": {
+      "numerator": 1,
+      "denominator": 1000000000000000000000000000000
+    },
+    "contact_work_allowance": {
+      "numerator": 1,
+      "denominator": 1000000000000
+    },
+    "probe_work_allowance": {
+      "numerator": 1,
+      "denominator": 500000
+    }
+  },
+  "contrast_threshold": {
+    "numerator": 1,
+    "denominator": 10000000000000000000000000
+  },
+  "source_base_commit": "ca4350535c9ef4014e96695136e0edecbe38a573",
+  "runtime_overlays": [
+    "src/tnfr/physics/relational_sine_class_mediation.py",
+    "src/tnfr/sdk/relational_reports.py"
+  ],
+  "runtime": {
+    "python": "3.13.6",
+    "implementation": "CPython",
+    "platform": "Windows-11-10.0.26300-SP0",
+    "dependencies": {
+      "numpy": "2.3.3",
+      "networkx": "3.5"
+    },
+    "precision": "exact rational bounds; outward dyadic128/Machin elementary intervals",
+    "randomness": "none; no RNG or seed",
+    "execution": "one analytic certificate assessment; no trajectory or parameter sweep"
+  },
+  "support": {
+    "nodes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        8,
+        0
+      ],
+      [
+        9,
+        10
+      ],
+      [
+        10,
+        11
+      ],
+      [
+        11,
+        12
+      ],
+      [
+        12,
+        13
+      ],
+      [
+        13,
+        14
+      ],
+      [
+        14,
+        15
+      ],
+      [
+        15,
+        16
+      ],
+      [
+        16,
+        17
+      ],
+      [
+        17,
+        9
+      ],
+      [
+        18,
+        19
+      ],
+      [
+        19,
+        20
+      ],
+      [
+        20,
+        21
+      ],
+      [
+        21,
+        22
+      ],
+      [
+        22,
+        23
+      ],
+      [
+        23,
+        24
+      ],
+      [
+        24,
+        25
+      ],
+      [
+        25,
+        26
+      ],
+      [
+        26,
+        18
+      ],
+      [
+        4,
+        13
+      ],
+      [
+        13,
+        22
+      ]
+    ],
+    "target_order": "component-major, local j=0..8"
+  },
+  "cases": [
+    [
+      1,
+      1,
+      1
+    ],
+    [
+      1,
+      2,
+      1
+    ]
+  ],
+  "law": "x'=-K L x+gamma K S(theta); theta'=gamma K L x; gamma=1/(1023*pi), tau=e*t, e=1023/1024, w=1/1024, beta=capacity=1; actual live degrees",
+  "preparation": "Original isolated C9 sources k*(2046/9)*(355/113)^2*(j-4), initially flat phase with aligned zero origins. Independent errors in all sixteen relative coordinates/component with exact separate zero sums and per-coordinate budgets; whole-family storage ceiling 1e9 per component. Source costs need not agree.",
+  "handoff": "Fresh class formation at tau=100 and uninterrupted dwell 1e13; both actual component norm bounds <=1e-32, guarded rational decay2^-512. No target reset or incoming verdict.",
+  "events": "At tau_c=100+1e13, install contacts(4,13),(13,22) without a state change. Immediately add a*e4 to form in probe member; phases unchanged. Paired baseline receives no kick. No further events.",
+  "observation": "R_k=x_probe[22](tau_c+h)-x_base[22](tau_c+h), exactly paired source within each class, independent source errors across classes. Contrast R1-R2. Four separate scalar reading errors <=delta; normalized structural form units.",
+  "alternative": "Postcontact phase-blind ablation x'=-K L x, theta'=gamma K L x on the same prepared states, contact and kick. This does not replace its prior formation law. Retain source and four-reading error bounds.",
+  "stopping_rule": "Fresh formation/handoff, both probe/baseline identities, separate contact and probe work allowances, and recorded R1-R2 lower bound strictly above1e-25 and the declared phase-blind upper bound; otherwise retain unavailable/failed outcome without retuning.",
+  "pressure": "Complete sine law consumed analytically at every state; no held-pressure integration or response-reconstructed pressure",
+  "archive_scope": "Base Git revision plus every changed src overlay; exact pre-assessment proof, protocol and producer. No dependency binaries; hashes associate bytes only."
+}

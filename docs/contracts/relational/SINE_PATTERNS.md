@@ -1394,6 +1394,82 @@ physical identification or practical-time claim is supplied.
 The [usage guide](../../guides/relational/SINE_PATTERNS.md#sine-port-relaxation)
 shows how to inspect the retained bounds without rerunning their assessment.
 
+<a id="sine-class-mediated-response"></a>
+### Acquired mediator class and a transmitted form response
+
+[`assess_sine_class_mediation`](../../../src/tnfr/physics/relational_sine_class_mediation.py)
+returns `SineClassMediation` from twelve mandatory keyword primitives:
+`formation_time`, `relaxation_duration`, `contact_duration`,
+`probe_amplitude`, `form_error_bound`, `phase_error_bound`, `endpoint_radius`,
+`radius`, `decay_power`, `readout_error_bound`, `contact_work_allowance` and
+`probe_work_allowance`. The
+[theorem](../../../theory/nodal/SINE_CLASS_MEDIATED_RESPONSE.md#sine-class-mediated-response)
+owns the complete-law response, work and identity proof; this detached
+assessment installs neither a support event nor a probe in a live graph.
+
+All scalar arguments use shared exact-or-represented-real admission before
+arithmetic; exact rationals retain their value. Booleans, nonfinite values
+and nonzero values lost during represented-real conversion reject. Times,
+amplitude, errors and allowances are nonnegative, `endpoint_radius>0`,
+`0<radius<=1/12`, and `contact_duration<=1/4`. `decay_power` is an ordinary
+integer in `[0,4096]`; the shared formation/dwell exponential caps apply.
+Zero amplitude or duration admits a calculation without a positive-response
+certificate. Invalid domains reject; a failed sufficient certificate reports
+`unavailable` and its unmet obligations.
+
+The fixed comparison has three C9 components, with classes `(1,1,1)` and
+`(1,2,1)`, aligned origins, unit capacities and central contacts on a path.
+It retains the actual central degrees `(3,4,3)`, all 54 form/phase
+coordinates, `tau=e*t`, `e=1023/1024` and `gamma=1/(1023*pi)`. Within each
+class, the same reached source is continued with and without the donor
+central form jump. The receiver central form difference is `R_k`; the
+reported contrast is `R_1-R_2`. Cross-class source residuals need not agree.
+Formation sources and their different preparation costs are retained, so
+this is not an equal-cost comparison or an ideal-target reset.
+
+`source_handoff` rebuilds both class formations and unprobed handoffs from
+original primitive errors and budgets. No previous report is an input.
+`leading_contrast_bounds`, `linear_tail_upper_bound` and
+`nonlinear_contrast_error_upper_bound` concern an ideal reference used in
+the proof. `actual_contrast_bounds` adds the four full-history preparation
+errors, and `recorded_contrast_bounds` adds four scalar readout errors.
+The response begins to depend on the mediator class at derivative order
+three; common earlier terms do not supply a class distinction. Without the
+fresh source handoff, actual response, work, means and post-probe family
+bounds are `None`, even though ideal coefficients remain available.
+
+`joined_bounds` admits the unprobed family using full sine storage.
+`post_probe_radius_squared_upper_bound`,
+`post_probe_excess_storage_upper_bound` and their strict margins separately
+admit post-probe identity and recovery. The degree-weighted form mean shifts
+by `3*probe_amplitude/58`; recovery retains the resulting mean leaf.
+`contact_work_bounds` and `probe_work_bounds` refer to distinct supplied
+events. Their allowance comparisons are non-strict and use exact rational
+upper-bound arithmetic; a zero allowance margin may pass equality.
+Neither earlier loss nor positive response substitutes for work admission.
+
+The complete phase-blind comparison `x'=-KLx; theta'=gamma*KLx` applies
+only after the same source handoff and contact. Its paired form response
+is class independent. `phase_blind_recorded_contrast_bounds` retains a
+conservative source/readout allowance; `phase_blind_alternative_excluded`
+requires a strictly positive separation margin from that null bound.
+This does not certify the alternative's formation or identity, or exclude
+other constitutive laws.
+
+`status="certified_class_mediation"` requires fresh source handoff,
+strictly positive recorded contrast, phase-blind separation, both baseline
+and probe identity, and both work allowances. A frozen protocol may demand
+a stronger positive threshold than the reusable API. The direct schema is
+`tnfr.sine-class-mediation.v1`; shared SDK projection and atomic export
+retain exact and unavailable fields. This is an inherited collective
+interaction property conditional on the supplied law, preparation and
+interface. No autonomous event selection or physical constituent identity
+follows. The [guide](../../guides/relational/SINE_PATTERNS.md#sine-class-mediated-response)
+distinguishes assessment from reading retained evidence.
+The [first frozen assessment](../../../theory/nodal/SINE_CLASS_MEDIATED_RESPONSE.md#sine-class-mediated-result)
+applies its separately declared stronger threshold; its report does not
+broaden these reusable domains or establish physical measurement precision.
+
 <a id="sine-reduced-port-composition"></a>
 ### Degree-aware assembly of reduced component ports
 

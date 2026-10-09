@@ -68,6 +68,30 @@ individual module/test links; proofs own model-specific hypotheses, constants
 and frozen preparations. This guide groups the obligations needed to choose
 coverage, rather than repeating each research result.
 
+For [class-mediated collective response](theory/nodal/SINE_CLASS_MEDIATED_RESPONSE.md),
+select both the primitive/report controls and independent full-support
+algebra. Rebuild the 27-node support, its `(3,4,3)` central degrees, common
+early derivatives and the first class-dependent receiver term. Retain
+paired probe/unprobed histories, all source errors, the complete phase-blind
+postcontact control, exact event work and actual conserved-mean shifts.
+Reflection and absent-probe controls must not invent a distinction that the
+interface hides. A tangent coefficient alone cannot replace a finite
+nonlinear remainder, fresh formation handoff or full-family identity.
+
+```sh
+python -m pytest tests/physics/test_sine_class_mediation.py tests/physics/test_sine_class_mediation_algebra.py tests/physics/test_sine_class_mediation_evidence.py -q
+```
+
+Before the protocol freeze, these controls must not evaluate an admitted
+reserved source. After a retained outcome exists, audit its primitives and
+arithmetic separately from report wiring; keep old formation/contact
+evidence unchanged and do not rerun frozen producers for unrelated changes.
+The [read-only saved-evidence suite](tests/physics/test_sine_class_mediation_evidence.py)
+checks the archive/protocol association, preserved prospective proof,
+original source and endpoint budgets, exact interval inflation, work and
+identity margins, and all declared stopping predicates. It neither calls
+the assessor nor executes its archived producer.
+
 For a physical-source admission, test deductions from the declared source
 law separately from manufacturer specifications and measured responses.
 The [digital-PLL audit](theory/research/DPLL_PHYSICAL_ADMISSION.md) uses
