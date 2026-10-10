@@ -469,8 +469,10 @@ Check all twelve primitive allowances before dependencies, actual class-one
 trapping, the two-row half/quarter clock conversion, and every coupled source,
 work, identity and observation margin. Necessary bounds do not certify entry.
 Keep the original fixed consumers unchanged; use their admitted original
-budgets and synthetic failures for wiring. Test the single-corner instrument
-with fakes and inspect retained evidence without replaying the frozen corner.
+budgets and synthetic failures for wiring. Select
+`tests/research/test_organized_joint_resource_evaluator.py` for the instrument
+with fakes and `tests/physics/test_organized_joint_resource_evidence.py` for
+read-only retained evidence, without replaying the frozen corner.
 Changing the prospective source or resource box requires a new declaration,
 not routine test regeneration.
 

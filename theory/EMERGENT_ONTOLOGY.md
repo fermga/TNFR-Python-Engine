@@ -601,6 +601,15 @@ separately prepared contacts are not an operational phase scan. Neither the
 envelope nor its fifteen finite identity bounds supplies later maintenance
 on the enlarged support or an autonomous alignment rule.
 
+The [joint resource admission](nodal/ORGANIZED_JOINT_RESOURCES.md)
+separates the conditional object's existence and finite interaction from one
+overly restrictive preparation budget. It admits a wider original source
+family, shorter uninterrupted recovery and larger reading errors together,
+with the same complete law and supplied events. Necessary work and time
+restrictions remain. Such robustness supports a usable mathematical object;
+it does not establish an intrinsic scalar interaction coefficient, autonomous
+preparation or a laboratory realization.
+
 The [continued-contact classification](nodal/ORGANIZED_CONTACT_MAINTENANCE.md)
 now distinguishes stable constituent retention from preservation of the
 additional outer identity. The actual outer-zero control, including all

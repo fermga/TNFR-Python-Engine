@@ -228,7 +228,10 @@ sector, even on nonacute charts. An exact retained-identity saddle separates
 existence from stability. The [bounded full-fine search](#organized-contact-stationary-search)
 found no stationary certificate, while its exact chamber audit identifies
 additional mixed-cycle information required by uninterrupted maintenance.
-The next active question is [joint preparation resources for the proved finite interaction](#current-g3-gate).
+The [joint resource result](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result)
+admits wider primitive errors, a shorter recovery dwell and larger reading
+errors together, while retaining necessary work and time restrictions.
+The next active question is [finite coupling across normalized interfaces](#organized-interface-factorization-admission).
 Stationary compatibility in the source chamber remains unresolved for the
 proposed stable-stationary maintenance route, with no continued search active.
 The [prepared storage observer](#storage-comparison-producer-admission)
@@ -247,7 +250,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next theoretical admission | [Joint preparation resources](#current-g3-gate): distinguish necessary restrictions from sufficient source width, recovery dwell, work and readout budgets for the already-proved finite collective interaction |
+| Next theoretical admission | [Finite coupling across normalized interfaces](#organized-interface-factorization-admission): decide whether one intrinsic real scalar per actual organization can factor its finite response across two prospectively fixed probe interfaces |
+| Closed joint resource admission | [Joint preparation resources](#organized-joint-preparation-resources): one frozen corner admits the whole source/readout box under the same complete sine law; necessary phase-compression, contact-noise and acquisition-work restrictions remain separate |
 | Unresolved maintenance dependency, no active search | [Source-chamber stationary compatibility](../nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md): a certified stable target or a global stationary obstruction in the complete source class remains missing; actual source capture and winding loss are also unresolved |
 | Closed finite stationary search and chamber audit | [Full-fine contact search](#organized-contact-stationary-search): all 24 prescribed attempts stopped near an imposed margin with nonzero current; no target certificate or global exclusion. An exact counterexample shows that the fifteen windings omit mixed-cycle information required by uninterrupted maintenance |
 | Closed scoped stationary obstruction | [Reflected contact identity](#organized-contact-reflection-admission): constituent winding, odd C9 length and stationary currents force slot-independent relative origins; negative full-state cuts exclude stability throughout the declared reflection sector, including nonacute charts. An exact nonacute saddle retains all fifteen windings |
@@ -391,22 +395,21 @@ The [finite stationary search](#organized-contact-stationary-search) closes
 without a target certificate or a global exclusion. Its chamber theorem
 sharpens the source-compatible domain but supplies no convex storage or
 general stationary classification. Repeating local optimization would not
-resolve that missing proof. The next active gate therefore addresses the
-joint preparation resources of the finite interaction already established,
-which does not depend on indefinite outer-one capture.
-
-The original primitive allowances remain `1e-10`; `q=1e-70` is a derived
-recovery residual, not a required initial or sensor precision. Nevertheless,
-the supplied recovery dwell `2*10^13`, outer common-form offsets reaching
-`+/-8184`, and separately paid assembly work are operational premises still
-to justify. The recovery/contact duration ratio is `2*10^16` in the declared
-clock. These are internal scale comparisons, not seconds, laboratory
-capabilities or demonstrated physical impossibilities.
+resolve that missing proof. The finite interaction and its
+[joint resource domain](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result)
+do not depend on indefinite outer-one capture. The new domain admits all
+twelve primitive allowances through `1e-6`, recovery dwell `8e10` and larger
+errors in both reading stages. Earlier preparations and evidence retain
+their original budgets. The supplied common-form offsets reaching `+/-8184`
+and assembly-work floor remain; structural units are not laboratory units.
+The next missing property is finite transferability across independently
+normalized interfaces, beyond invariance under a rigid relative origin.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
 | Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Unresolved stable-stationary maintenance route; no active search.** The finite search is closed without a certificate; other classes do not repair uninterrupted maintenance. Reopen with a constructive target or an analytical certificate mechanism, not more starts |
-| Operational preparation, work and timescales | Admit a coupled resource domain for the already-proved finite interaction: source width, recovery dwell, paid work and readout error together, or a necessary-bound obstruction | **Sole immediate gate** below. Preserve the finite-window identity and response claim; indefinite outer-one maintenance is not presumed. Optimizing one sufficient constant without changing a capability is insufficient |
+| Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
+| Transferable collective coupling | Decide finite source/probe factorization across two independently normalized interfaces with the same actual source member, complete history and bounded errors | **Sole immediate gate** below. This tests a specific intrinsic scalar-coupling hypothesis; it does not identify charge or derive a physical interaction |
 | Fundamental physical properties and independent observation | Start with a precisely defined property of fundamental physics: its symmetry, conservation/composition rules and measurable response. Determine which mathematical obligations TNFR meets or lacks, then admit a discriminating signature with preparation, clock, sensor, calibration/reserved separation and equally informed alternatives under [P1-P5](#supporting-measurement-bridge) | **Essential and eligible** once a concrete property, signature and bridge are specified; it need not wait for unique law selection or substrate origin. No current dataset has complete admission. Close at an admitted bridge, equivalence without a discriminator, or a scoped mapping/uncertainty obstruction |
 | Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Conceptually critical**, with no new compatibility scan active. If a countermodel shares all proposed premises, the uniqueness claim fails in that scope |
 | Autonomous preparation, support, capacity and events | Supply actual occurrence and state-evolution laws when claiming autonomous assembly. [Event work](../nodal/RELATIONAL_SUPPORT_EVENTS.md), passivity and [operator descent](../STRUCTURAL_OPERATORS.md) do not select occurrence | **Claim-dependent**. Current contacts and preparation remain supplied. Do not postpone investigation of the existing conditional composite until every origin question is solved |
@@ -420,69 +423,69 @@ An added observable earns inclusion by deciding the selected prediction or a
 meaningful minimality obstruction. Existing failed physical-source admissions
 remain failed; more samples cannot repair their complete-law mismatches.
 
-Only joint preparation-resource admission is active. The table is a reassessment
+Only finite interface-factorization admission is active. The table is a reassessment
 of dependencies, not a fixed sequence or parallel campaign list. It preserves
 the objective of generated, physically testable organization without identifying
 winding, phase cancellation or storage with material constituents.
 
 <a id="organized-joint-preparation-resources"></a>
-### Immediate question: which preparation resources are actually required?
+### Closed joint preparation-resource admission
 
-**Can a jointly justified source-width, recovery-dwell, work and readout
-budget retain the existing finite collective interaction under the same
-complete law?** The objective is to distinguish necessary requirements from
-conservative sufficient estimates, using the actual carried source history.
-The [finite external interaction](../nodal/ORGANIZED_EXTERNAL_INTERACTION.md),
-[relative-origin comparison](../nodal/ORGANIZED_EXTERNAL_REGISTRATION.md) and
-[sequential observations](../nodal/ORGANIZED_SEQUENTIAL_OBSERVATION.md) already
-supply the capability whose resources are to be assessed. This gate does not
-assume indefinite outer-one retention or change the interface to recover it.
+The [result owner](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result)
+retains declaration/source revision `0ca8630d` and its single successful
+corner assessment. The coupled domain admits all 96 relative preparation
+directions with wider source errors, shorter recovery and larger errors in
+both observation stages. Fresh source recovery, full outer acquisition,
+mean-centered observation inclusion, event work, storage, response and all
+fifteen finite-contact identities pass together. Necessary phase-compression,
+reading/horizon and winding/work bounds do not establish optimality or
+laboratory attainability. The exact fixed-ramp work floor remains material.
 
-The [prospective resource declaration](../nodal/ORGANIZED_JOINT_RESOURCES.md#prospective-resource-declaration)
-fixes one maximum corner before evaluation. Its analytical owner jointly
-retains the complete history and supplies separate necessary bounds; no
-result for the changed preparation is presumed by the declaration.
+<a id="organized-interface-factorization-admission"></a>
+### Immediate question: can an intrinsic scalar coupling transfer across probes?
 
-1. **Trace the joint dependency.** Identify where the original twelve source
-   allowances, recovered residual, recovery dwell, acquisition and observation
-   work, finite contact window and reading error enter the current proof.
-   Separate supplied numbers, sufficient contraction/transport estimates and
-   genuine necessary lower bounds. The `q=1e-70` recovery remainder is not a
-   primitive preparation or sensor accuracy requirement. Structural time and
-   work still require independent laboratory-unit bridges.
-2. **Derive a coupled domain before evaluating alternatives.** Retain the
-   same complete rows, support, capacities, clock conversion, acquired source
-   and observation word, with all fine errors and paid event work. Seek an
-   explicit sufficient region or a necessary obstruction for the same
-   response distinction and all fifteen finite-window identities. Treat
-   relaxation of a recovery estimate as a theorem question, not a new initial
-   source substituted after evaluation. Preserve original frozen responses;
-   any genuinely changed preparation needs its own prospective declaration.
-3. **Decide a capability, not a decimal.** Close at an admitted joint resource
-   domain, a necessary tradeoff excluding it, or a precise missing preparation
-   or observation premise. Do not optimize only a sensor threshold or one
-   contraction constant while leaving the coupled restrictions unexamined.
-   No new trajectories, origin sweeps, stationary searches or physical-data
-   fitting are activated by this analytical audit.
-4. **Retain the unresolved maintenance boundary.** The fifteen observed
-   windings omit mixed-cycle information; uninterrupted maintenance requires
-   the complete source chamber. A stable stationary target there or a global
-   exclusion remains unproved. A convex lifted chamber is not a convex
-   potential or a separable law. Reopen that branch with an analytical
-   certificate mechanism or constructive target; do not turn the 24 failed
-   numerical endpoints into a general theorem or infer actual winding loss.
-   Special-source retention remains separate: an unstable equilibrium can
-   have a stable manifold meeting the preparation, and cut-free finite-time
-   trajectories can approach a cut asymptotically. Stable stationary existence
-   has not been proved necessary for every notion of indefinite retention.
+**Can one real coefficient belonging to an actual organized source, multiplied
+by a probe-only coefficient, represent its finite interaction across two
+independently normalized interfaces?** This is a precise structural obligation
+for the [intrinsic-property comparison](../EMERGENT_ONTOLOGY.md#research-target-physical-properties-of-collective-patterns).
+It does not assume that all physical interactions admit this factorization
+or identify the coefficient with electric charge. Existing counterexamples
+already exclude winding-only response and moment-only closure; repeating
+those onset calculations would not close this gate.
 
-This prioritizes a concrete obstacle between the current conditional
-organization and an admissible physical protocol, while preserving the
-fundamental-property-first objective. Better structural resource bounds alone
-would still not identify a particle property or establish laboratory
-attainability. The independent measurement, preparation and clock bridge
-remains essential. Existing formation, finite response and outer-zero capture
-results retain their original scopes and frozen evidence.
+1. **Declare two interfaces before evaluation.** Retain the admitted joint
+   resource box, the same C9 donor, clock, horizon, readings and event budgets.
+   Use the existing same-slot contact and one fixed childwise cyclic slot
+   registration. Both have 45 unit donor contacts, host/donor degrees 5/7
+   and unchanged internal and host-outer edges. Derive and freeze the second
+   registration and decision criterion before any response assessment; no
+   registration scan is active. Equal total conductance alone does not prove
+   response equivalence or carry a source certificate to changed support.
+2. **Re-admit the complete finite history.** Rebuild each contact's phase
+   correlations, both reactions and mean equations. Justify transfer of the
+   degree-based nonlinear remainder, exact mean correlations, paid event work,
+   storage and all fifteen finite-window identities. Retain both structural
+   state channels even when the selected readout is a mean-form increment.
+3. **Decide finite factorization.** Form a two-by-two response matrix: rows
+   are the acquired outer-zero and outer-one organizations; columns are the
+   two interfaces. Each row uses one retained precontact source member in two
+   counterfactual contacts. Propagate all source and reading uncertainty. A
+   determinant interval excluding zero rules out `R(s,p)=a(s)*b(p)` in this
+   declared domain. Exact factorization with controlled finite error would
+   admit it; an unresolved determinant identifies an unavailable test, not
+   permission for an unbounded sweep. Leading-order rank alone is insufficient.
+4. **Keep the quantifiers and physical boundary.** Same-source counterfactuals
+   are not operational copies. Independently prepared records require their
+   preparation uncertainty explicitly. A rank obstruction rules out one real
+   scalar factor, not complex, vector, tensor, multichannel or memory-dependent
+   descriptions, and not TNFR. It specifies information needed for a future
+   independent preparation, clock and measurement bridge.
+
+No new stationary search, trajectory campaign or physical-data fitting is
+active. The unresolved maintenance route retains the complete source chamber,
+possible special-source stable manifolds and asymptotic approaches to cuts;
+finite search nonfinding is not a global obstruction or actual winding loss.
+Reopen it with a constructive target or an analytical certificate mechanism.
 
 For each subsequent law or hypothesis, record its status, independent
 premises, consequences, countermodels and decision in the existing definition
@@ -522,7 +525,7 @@ unspecified, and an explicit same-windings counterexample occupies a different
 class. Existing source bounds place the actual preparation in the product
 class. Uninterrupted cut-free maintenance cannot leave it. This closes the
 domain-admission ambiguity. The stationary question remains open while the
-[next gate](#current-g3-gate) addresses resources for the proved finite interaction.
+[current gate](#current-g3-gate) addresses finite coupling across interfaces.
 It identifies no particle property and does not alter previous acquisition,
 finite interaction or outer-zero capture results.
 

@@ -350,9 +350,61 @@ shared acquisition, recovery, heat-transport and observation kernels.
 Incoming cached verdicts cannot certify the new preparation. Original
 fixed-protocol consumers retain their original defaults and evidence.
 
-A successful corner would establish the declared joint resource domain;
-a failed sufficient check would leave it unavailable rather than impossible.
+The corner decision below concerns only the declared joint resource domain.
+A failed sufficient check would leave it unavailable rather than impossible.
 Neither outcome resolves indefinite outer-one maintenance, selects this law
 uniquely, supplies autonomous preparation or identifies a material property.
 Work and time here have structural units. Independent preparation, clock
 and observation bridges remain necessary for a fundamental-physics test.
+
+<a id="joint-resource-corner-result"></a>
+## 4. Retained corner decision
+
+The declaration and complete source were committed at `0ca8630d` before
+the single assessment. The [attempt record](../../docs/assets/organized_joint_resources/attempt.json)
+retains exact parameters, clock, support, arithmetic and the Git source
+inventory. The [first result](../../docs/assets/organized_joint_resources/result.json)
+is **`joint_resource_box_admitted`**: all six source recoveries and every
+coupled acquisition, observation, work, storage, response and finite-identity
+condition pass. No trajectory, source producer, parameter sweep or second
+candidate was evaluated. The monotonic inclusion argument in Section 1
+therefore admits the full declared box, including all 96 relative source
+directions at its positive corner.
+
+The following decimals are outward summaries of retained exact rational
+bounds, not new numerical runs or replacements for the record:
+
+| Quantity | Certified bound at the maximum corner |
+| --- | --- |
+| Recovery exponent `kappa*D/2` | Above 101.08, exceeding the declared power 80 |
+| Actual recovered form / target-phase Euclidean norms | Below `2.32e-13` / `4.57e-16`, respectively; both below the handoff allowance `1e-8` |
+| Sequential cycle-sum width | Below 1.477 radians, strictly below `2*pi` |
+| Outer-one response capability at every relative origin | Below `7.730e-9`, against threshold `1e-8` |
+| Outer-zero per-source witness capability | Above `3.866e-7`, against threshold `3e-7` |
+| Fixed-origin signed response contrast | Above `3.897e-7`, against threshold `1e-7` |
+| New contact work | Below 90.003 |
+| Present joined storage, outer one / outer zero | Below 169.740 / 138.636, both below 200 |
+| Six original preparation storage bounds combined | Below 1,087,375,716 |
+| Initial-storage plus subsequent absolute-work account | Below 2,594,377,602; this is separate from present storage and the outer-attachment budget |
+
+Relative to the earlier fixed preparation, this admits primitive component
+allowances 10,000 times wider, a supplied recovery dwell 250 times shorter,
+and reading errors 10 times larger in each of the two observation stages,
+simultaneously. The endpoint allowance is a recovery conclusion and transport
+premise; it is not the initial preparation or sensor precision. This establishes
+a new conditional capability region without rewriting any earlier evidence.
+
+The necessary restrictions remain material. The exact supplied-ramp outer
+attachment work is at least **1,507,001,760**. The separate winding/time lower
+bound exceeds 9,174,760 at acquisition duration 200; it is weaker than the
+fixed-ramp bound and must not be added to it. For this original phase family,
+the rational compression witness forces total preparation time above
+6,839,825 quarter-clock units. It does not establish that the admitted dwell
+`8e10` is optimal. Contact noise and duration retain their separate necessary
+restrictions from (15).
+
+The result removes an unnecessarily severe inherited resource choice while
+retaining substantial supplied preparation and work. It does not establish
+experimental attainability, autonomous assembly, indefinite outer-one
+maintenance or physical identification. The next task remains solely in the
+[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).
