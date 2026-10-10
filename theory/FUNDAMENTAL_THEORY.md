@@ -24,7 +24,8 @@ the interpretation of grammar calibration and field thresholds here.
 
 ### 2.1 Nodal Equation
 
-On a continuous segment in a declared structural chart, nodal evolution satisfies
+On an unforced continuous segment in a declared structural chart, nodal evolution
+satisfies
 
 $$
 \frac{\partial \mathrm{EPI}}{\partial t} = \nu_f(t) \, \Delta \mathrm{NFR}(t) \tag{1}
@@ -78,6 +79,9 @@ an infinite-horizon estimate. Its numerical calibration and the three-operation
 U4b window use a mean-rate surrogate, not every graph mode's decay time.
 
 For locally finite operator events, add their actual EPI jumps to (2).
+For a separately supplied continuous input Gamma, the form row is
+`x_dot=nu_f*p+Gamma`; include Gamma in the integrated velocity and in any
+absolute-integrability criterion. Condition (3) alone does not bound that input.
 Changing node support or structural chart requires an explicit identification
 map. The integral is a Banach-valued integral when EPI is Banach-valued;
 neither subtraction nor integration is defined by a bare set of forms alone.
@@ -194,7 +198,7 @@ the coefficient multiplying a capacity difference must supply the missing
 X*T scale. Normalizing four numeric weights to sum to one does not establish
 that physical normalization. This remains a constitutive/metrology obligation.
 
-One useful consequence does follow without a new force. On a continuous
+One useful consequence does follow without a new force. On an unforced continuous
 interval with positive capacity, define each node's accumulated activity
 
 ```text

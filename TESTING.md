@@ -426,9 +426,9 @@ For dependency changes also select
 `tests/physics/test_organized_observation_dependencies.py`. Its fresh-process
 import guards reject acquisition/composition imports even when the surrounding
 test session has already loaded them. Invalid source primitives must reject
-before loading the optional source-inclusion assessor. Shared coordinate
-admission additionally needs the repeated-composition and preparation-reuse
-controls; it preserves ordered finite-length input, exact represented values
+before loading the acquisition assessor for an explicit source-inclusion check.
+Shared coordinate admission additionally needs the repeated-composition and
+preparation-reuse controls; it preserves ordered finite-length input, exact represented values
 and rejection of unsupported scalar types without float coercion.
 
 For [identity-preserving assembly work](theory/nodal/ORGANIZED_ASSEMBLY_WORK.md),
