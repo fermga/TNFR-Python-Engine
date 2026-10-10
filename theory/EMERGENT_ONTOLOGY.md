@@ -580,6 +580,16 @@ does not inherit the earlier smaller probe's all-future capture. Supplied
 jumps still require their own operator descent and occurrence if claimed as
 registered actions. Physical calibration and identification remain open.
 
+An [external contact spanning all five children](nodal/ORGANIZED_EXTERNAL_INTERACTION.md)
+now derives a finite interaction from that carried state. Under one supplied
+registration, the two acquired organizations produce separated responses in
+another actual C9 constituent while all fifteen marked identities persist
+through the contact horizon. Both boundary reactions and the new storage
+are retained. The contact samples relative phase correlations across the
+composite; neither winding nor an instantaneous moment with mean coordinates
+supplies autonomous future evolution. This is a conditional collective
+interaction property, not a topological charge or a nonadditivity theorem.
+
 Here structural participation does not identify the entire joint state with
 one scalar EPI coordinate. The current representation also retains phase,
 capacity and support; reducing these to a richer form description would need

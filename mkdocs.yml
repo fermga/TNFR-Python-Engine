@@ -114,6 +114,7 @@ nav:
           - "Finite probe response of the acquired outer organization": theory/nodal/ORGANIZED_OUTER_RESPONSE.md
           - "Observing outer winding with unknown child phase origins": theory/nodal/ORGANIZED_OUTER_OBSERVATION.md
           - "Observing outer winding on one continuing organization": theory/nodal/ORGANIZED_SEQUENTIAL_OBSERVATION.md
+          - "External interaction of an acquired collective organization": theory/nodal/ORGANIZED_EXTERNAL_INTERACTION.md
           - "Composition-compatible constitutive laws": theory/nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md
           - "Oriented-interface profile inheritance": theory/nodal/ORIENTED_INTERFACE_PROFILE_INHERITANCE.md
           - "Network-wide organized compatibility": theory/nodal/ORGANIZED_NETWORK_COMPATIBILITY.md

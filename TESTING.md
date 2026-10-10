@@ -431,6 +431,18 @@ Shared coordinate admission additionally needs the repeated-composition and
 preparation-reuse controls; it preserves ordered finite-length input, exact represented values
 and rejection of unsupported scalar types without float coercion.
 
+For [collective external interaction](theory/nodal/ORGANIZED_EXTERNAL_INTERACTION.md),
+select `tests/physics/test_organized_external_interaction.py` with outer-winding,
+sequential-observation, repeated-composition and isolated-recovery owners.
+Check the full 54-node support, both reciprocal rows and boundary reactions,
+the symbolic supplied pi/2 registration and the uniform quarter coefficient
+despite unequal degrees. Source admission must precede reconstruction; invalid
+or unavailable sources cannot yield an actual interaction certificate.
+Retain the whole observation word's endpoint drift, exact mean correlations,
+four-reading error, separate contact work and all fifteen marked identities.
+Static arbitrary-state and closure witnesses are not acquired trajectories.
+Use the shared no-trajectory/frozen-producer guards and module-scoped reports.
+
 For [identity-preserving assembly work](theory/nodal/ORGANIZED_ASSEMBLY_WORK.md),
 select `tests/physics/test_organized_assembly_work.py` with
 `tests/physics/test_acquired_organized_network_capture.py`,
