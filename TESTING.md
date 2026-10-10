@@ -291,6 +291,21 @@ target nor a phase-only approximation supplies full-state entry. Exercise
 primitive admission and unavailable bounds before interpreting a report.
 These analytic controls generate no trajectory or reserved response.
 
+For the [slow receiver admission](theory/nodal/ORGANIZED_RECEIVER_SLOW_ADMISSION.md),
+select `tests/physics/test_organized_receiver_slow_admission.py` with
+`tests/physics/test_organized_receiver_mechanism.py`,
+`tests/physics/test_organized_joint_acquisition.py` and
+`tests/physics/test_acquired_organized_network_capture.py`. Check the exact
+second-order phase equation and its energy against both complete fine rows;
+the inverse Laplacian acts only on the conserved global mean-zero leaf.
+Independently verify the source-inclusive, uniform first-order defect bound,
+the time-400 phase-rate signs and the donor/receiver winding distinction.
+Retain every original error and distinguish actual phase motion from the
+earlier mixed-coordinate current. Exercise invalid primitive admission and
+unavailable inequalities; no cached report, symmetric nominal source or
+small defect supplies a whole-family capture verdict. These analytic controls
+evaluate neither a reduced trajectory nor a frozen response producer.
+
 For [preparation information and acquired modes](theory/nodal/SINE_PREPARATION_MODE_SELECTION.md),
 select `tests/physics/test_sine_preparation_mode_selection.py` with the shared
 preparation and isolated-class controls above. Reconstruct the Laplacian energy

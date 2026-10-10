@@ -18,6 +18,7 @@ from .phase_cycle_geometry import PhaseCycleGeometry, _rebuild
 from .relational_observations import _ordered
 from .relational_sine_comparison import SineExchangeComparison
 from .relational_sine_pattern import SineRelativePattern
+from .reversible_eigenmode_reference import _negative_exp_bounds
 from .structural_diffusion import _exact_flow_gap_from_rationals
 
 
@@ -64,6 +65,36 @@ def _prepared_transit_radii(
     )
     phase_radius = scaled_form_radius + feedback_upper * time * forcing_upper
     return scaled_form_radius, phase_radius
+
+
+def _prepared_velocity_defect(
+    *,
+    time,
+    gap_lower,
+    feedback_upper,
+    lipschitz_upper,
+    forcing_upper,
+    initial_defect_upper,
+):
+    """Bound slow velocity error after an admitted fast relaxation time.
+
+    Callers supply exact rational nonnegative bounds for the complete rows
+    a'=-A*a+epsilon*F(theta), theta'=A*a on a preserved mean-zero leaf.
+    The generator gap and global derivative bound must satisfy g>epsilon*K.
+    The resulting decreasing envelope bounds theta_s-F(theta), s=epsilon*t,
+    for every later time. It is not a phase trajectory or capture bound.
+    """
+    if (
+        min(time, feedback_upper, lipschitz_upper, forcing_upper, initial_defect_upper)
+        < 0
+    ):
+        raise ValueError("velocity defect requires nonnegative bounds and time")
+    damping = gap_lower - feedback_upper * lipschitz_upper
+    if damping <= 0:
+        raise ValueError("velocity defect requires gap greater than feedback stiffness")
+    decay = I(*_negative_exp_bounds(damping * time))
+    floor = feedback_upper * lipschitz_upper * forcing_upper / damping
+    return damping, decay, floor, decay.hi * initial_defect_upper + floor
 
 
 def _prepared_duhamel_bounds(

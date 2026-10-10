@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Admit [controlled slow receiver evolution](theory/nodal/ORGANIZED_RECEIVER_SLOW_ADMISSION.md)
+  for the unchanged two-ramp source. Derive an exact second-order phase law
+  retaining form as velocity and the complete storage as its energy; bound
+  the first-order phase velocity defect uniformly after structural time 400.
+  At time 400, actual noncentral receiver phase rates have the donor-directed signs,
+  while winding remains zero. State a full-source differential-inclusion
+  contract for donor retention and joined capture, without evaluating a
+  trajectory or claiming eventual receiver formation.
 - Derive the [locally unprepared receiver mechanism](theory/nodal/ORGANIZED_RECEIVER_MECHANISM.md)
   under the unchanged equal-weight three-C9 law. Rebuild the two-ramp source
   and complete contact cost; prove donor winding one and receiver winding

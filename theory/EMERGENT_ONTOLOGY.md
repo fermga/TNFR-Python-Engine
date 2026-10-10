@@ -287,6 +287,19 @@ accounted for. Interaction-induced motion is therefore present without
 already establishing a new identity. Eventual receiver acquisition, donor
 retention and entry to joined capture remain separate unresolved claims.
 
+The [slow receiver admission](nodal/ORGANIZED_RECEIVER_SLOW_ADMISSION.md)
+derives an exact second-order phase description on the conserved global
+mean-zero leaf. Its velocity retains the original form, and its structural
+energy is the original complete storage divided by four; this is a change
+of state description, not a new physical mass law. After structural time 400,
+a uniform bound controls the difference between the actual slow phase
+velocity and the descent field. At that time the receiver's actual noncentral
+phase rates point toward the donor ramp, with donor winding one and receiver
+winding zero. This strengthens the causal mechanism without establishing
+acquisition. The source-inclusive differential-inclusion contract retains
+donor branch margins and complete-state capture; the nominal reflection
+symmetry cannot remove the family's nonsymmetric perturbations.
+
 Distinct internal geometries need not be distinguishable through every
 contact. The [central-contact obstruction](nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-contact-admission)
 shows that the nominal formed C9 classes can remain invisible to the same
