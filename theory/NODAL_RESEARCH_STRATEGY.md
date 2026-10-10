@@ -262,6 +262,15 @@ lose interaction-relevant correlations. This establishes which description
 is sufficient under which hypotheses, without transferring auxiliary-source
 equilibria or claiming finite maintenance of the attached acquired objects.
 
+The [full-state capture result](nodal/ORGANIZED_SOURCE_CAPTURE.md) admits that
+actual source through an acute-cell barrier, with every fine preparation
+error and both evolution rows retained. All five windings persist and the
+joined registration converges. Removing only the donor contact from the
+same prepared state preserves different component means and excludes the
+same alignment. This is a controlled collective property under the supplied
+law and attachment. It does not exhaust possible properties of more complex
+organizations or make their effective laws identical to a constituent law.
+
 ### Ordered geometry connects transfer to formation
 
 The [sine pattern owner](nodal/SINE_PATTERN_DYNAMICS.md) combines entry,

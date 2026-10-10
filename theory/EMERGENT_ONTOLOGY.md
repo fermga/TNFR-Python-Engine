@@ -53,6 +53,15 @@ The fine state includes form, phase, capacity, support and any history actually
 consumed by the law. The effective object may carry properties of their joint
 configuration and trajectory which no individual node has.
 
+The existing repertoire of collective properties is not assumed exhaustive.
+When a more complex organization becomes admissible, reassess its identity,
+sufficient state and effective dynamics: a lower-level description may omit
+new relational information. A proposed property needs a defined observation
+and a control that distinguishes organization-dependent behavior from what
+the prepared parts already possess. An effective law derived on that domain
+is compatible with an unchanged fine law; it does not by itself select a new
+universal microscopic law.
+
 A common substrate could admit distinct, reproducible families of collective
 organization at different scales. This is stronger than a mere change of scale:
 the proposed families must have distinguishable dynamics, composition rules and
@@ -525,8 +534,17 @@ contact storage. Conserved preparation totals can eliminate donor means on
 the exact carrier family; arbitrary fine states still retain correlations
 absent from all child means. The actual acquired host and recovered donor
 are admitted at attachment with unchanged residuals, not projected to that
-family. Their subsequent maintenance and the contact's occurrence remain
-separate obligations; this source is not the previous auxiliary scalar law.
+family. This source is not the previous auxiliary scalar law.
+
+The [full-state capture theorem](nodal/ORGANIZED_SOURCE_CAPTURE.md) separately
+admits the entire acquired source to an invariant acute winding domain and
+proves convergence to one common registration. All five child windings persist.
+For the same reached source without the donor contact, separately conserved
+component means exclude that common registration. This is a conditional
+organization-dependent relational property: the connected whole acquires a
+shared registration absent from the disconnected control, while the child
+windings already existed. It supplies no finite settling time, new primitive
+law, autonomous contact occurrence or general classification of larger objects.
 
 Here structural participation does not identify the entire joint state with
 one scalar EPI coordinate. The current representation also retains phase,

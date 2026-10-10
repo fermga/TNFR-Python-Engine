@@ -355,6 +355,17 @@ preparation allowances before rebuilding either source; transform both donor
 rows and its complete formation/recovery clock. Initial winding and bounded
 attachment work certify neither future retention nor a selected event.
 
+For [organized-source capture](theory/nodal/ORGANIZED_SOURCE_CAPTURE.md),
+select `tests/physics/test_organized_source_capture.py` with the source-port,
+parent-acquisition and isolated-recovery owners. Check the full fine target,
+both signed cycle-boundary faces and matching-edge faces, and the actual
+reached-source excess rather than the earlier assembly storage or a carrier
+projection. Retain exact fine errors below the trigonometric interval grid.
+The same-source disconnected control must preserve its separate component
+means; distinguish its obstruction from a simulated endpoint. Failed source,
+chart or strict barrier premises yield unavailable capture. No finite settling
+deadline or continuous parent-registration certificate follows.
+
 For [identity-preserving assembly work](theory/nodal/ORGANIZED_ASSEMBLY_WORK.md),
 select `tests/physics/test_organized_assembly_work.py` with
 `tests/physics/test_acquired_organized_network_capture.py`,
