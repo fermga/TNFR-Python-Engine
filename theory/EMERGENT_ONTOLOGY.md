@@ -630,6 +630,16 @@ including near an acute C9 twist. This restricts proposed observations;
 it does not erase the organizations' internal state or exclude a physical
 model that retains it. No mapped charge or material constituent is established.
 
+The [retained-state electrical comparison](nodal/ORGANIZED_ELECTRICAL_REALIZATION.md#organized-collective-electrical-realization)
+provides a constructive collective distinction: the direct fine-node
+charge/phase interpretation fails passive capacitance admission, while the
+six whole C9 objects on their exact same-slot carrier admit an ideal passive
+electrical representation. This follows from their inherited complete law
+and wheel geometry, with aggregate inventory and storage retained. It is a
+restricted effective description, not physical charge emerging merely from
+renaming nodes. Its extension to actual prepared deviations and independent
+measurements remains an obligation.
+
 The [continued-contact classification](nodal/ORGANIZED_CONTACT_MAINTENANCE.md)
 now distinguishes stable constituent retention from preservation of the
 additional outer identity. The actual outer-zero control, including all

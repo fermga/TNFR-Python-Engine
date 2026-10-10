@@ -485,6 +485,18 @@ These tests check the implemented obstruction; the exhaustive invariant and
 modal projectability proofs belong to the theory owner. They neither execute
 trajectories nor replay frozen evidence, and do not admit a physical sensor.
 
+For the [complete-state electrical comparison](theory/nodal/ORGANIZED_ELECTRICAL_REALIZATION.md),
+select `tests/physics/test_organized_electrical_realization.py` with the shared
+slot-contact and exact-linear-algebra controls. Reuse one exact full-support
+inverse. Check the cycle obstruction against its independent resistance formula,
+grounded sign preservation, the positive complete-graph control and the actual
+wheel's positive component reconstruction. Full helical-carrier rows, aggregate
+charge, the retained internal storage constant and factor-nine dissipation
+must agree with the fine observer. Off-carrier controls retain the exact
+mean phase row, a nonzero quadratic covariance defect and an actually negative
+storage remainder within its signed bound. These are algebra/execution controls, not
+an acquired-source error certificate, physical calibration or circuit experiment.
+
 For [finite interface factorization](theory/nodal/ORGANIZED_INTERFACE_FACTORIZATION.md),
 select `tests/physics/test_organized_slot_registration.py` and
 `tests/physics/test_organized_interface_factorization.py` with the joint-resource,

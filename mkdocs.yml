@@ -119,6 +119,7 @@ nav:
           - "Joint preparation resources for finite interaction": theory/nodal/ORGANIZED_JOINT_RESOURCES.md
           - "Finite coupling across normalized interfaces": theory/nodal/ORGANIZED_INTERFACE_FACTORIZATION.md
           - "Conserved charge observations": theory/nodal/ORGANIZED_CHARGE_OBSERVATION.md
+          - "Complete-state electrical realization": theory/nodal/ORGANIZED_ELECTRICAL_REALIZATION.md
           - "Organized identity under continued external contact": theory/nodal/ORGANIZED_CONTACT_MAINTENANCE.md
           - "Reflection obstruction for full-fine contact identity": theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md
           - "Full-fine stationary contact and marked chambers": theory/nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md

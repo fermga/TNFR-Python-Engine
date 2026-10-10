@@ -233,6 +233,18 @@ map/domain restrictions, not an exclusion of electric charge, polarization
 or a model retaining independent internal material state. The reference's
 ordinary extended-charge response already permits rank two.
 
+The [complete-state electrical comparison](nodal/ORGANIZED_ELECTRICAL_REALIZATION.md)
+retains phase and an independently supplied ideal Josephson reference. The
+direct fine-island map fails the required capacitance signs on C9 and the
+same-slot 54-node contact. In contrast, the exact six-child helical carrier
+has an explicit passive lumped-circuit realization: aggregate charge and
+circular registration phase obey the full reference law, with the variable
+storage and total loss matched. Its dense capacitor/resistor wiring is part
+of the construction. This is a conditional collective realization; actual
+off-carrier source errors, sensor calibration and physical preparation have
+not been admitted. The Josephson relations and their constants remain
+supplied physics, and the result does not derive quantum behavior.
+
 The [two-contact response](nodal/SINE_PAIR_INTERACTION.md#sine-two-contact-orientation-response)
 already establishes orientation-sensitive interaction in a specified finite
 experiment with evolving source and probes. The

@@ -234,7 +234,7 @@ errors together, while retaining necessary work and time restrictions.
 The [finite interface result](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result)
 excludes a purely multiplicative scalar source/probe factor, retaining actual
 source members and every allowed reading-error correction. The next active
-question is [retained charge and internal electrical state](#organized-charge-internal-state-admission).
+question is [the acquired collective electrical description](#organized-collective-electrical-source-admission).
 Stationary compatibility in the source chamber remains unresolved for the
 proposed stable-stationary maintenance route, with no continued search active.
 The [prepared storage observer](#storage-comparison-producer-admission)
@@ -253,7 +253,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next complete-state bridge admission | [Charge and internal electrical state](#organized-charge-internal-state-admission): fix one independently justified passive electrical reference and test complete flow, circular state, charge transfer and storage/work together |
+| Next collective source admission | [Acquired collective electrical description](#organized-collective-electrical-source-admission): retain actual same-slot source deviations, circular observation, finite closure error, storage and net transfer around the exact passive collective realization |
+| Closed complete-state constitutive comparison | [Charge and internal electrical state](#organized-charge-internal-state-admission): a direct fine-island map fails passive capacitance signs; the exact six-child carrier admits a constructive ideal passive circuit with matched variable energy and loss |
 | Closed scoped charge-map obstruction | [Charge versus spatial response](#organized-charge-response-bridge-admission): identical-site conserved observations are affine in form; the full-density map fails unforced Ohmic closure, and homogeneous local edge redistribution cannot close near an acute C9 twist |
 | Closed finite factorization obstruction | [Two normalized interfaces](#organized-interface-factorization-admission): a nonzero true and error-rectified determinant excludes one purely multiplicative scalar source/probe factor throughout the declared source box; it does not identify or exclude physical charge |
 | Closed joint resource admission | [Joint preparation resources](#organized-joint-preparation-resources): one frozen corner admits the whole source/readout box under the same complete sine law; necessary phase-compression, contact-noise and acquisition-work restrictions remain separate |
@@ -411,16 +412,18 @@ The [finite interface obstruction](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md
 now separates a purely multiplicative scalar factor from structure-dependent
 interaction. It does not identify which independent physical quantity, if
 any, this state could represent. The [charge-map result](../nodal/ORGANIZED_CHARGE_OBSERVATION.md)
-now excludes the stated density-only realizations and identifies the need
-to test a reference that retains internal constitutive state. This does not
-authorize inventing that state law from TNFR's desired response.
+excludes the stated density-only realizations. The [retained-state comparison](../nodal/ORGANIZED_ELECTRICAL_REALIZATION.md)
+now supplies an exact passive electrical representation of the six-child
+carrier while excluding the direct fine-island map. Actual source deviations
+remain the immediate issue; a supplied Josephson reference is not a TNFR
+derivation of its material law or quantum constants.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
 | Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Unresolved stable-stationary maintenance route; no active search.** The finite search is closed without a certificate; other classes do not repair uninterrupted maintenance. Reopen with a constructive target or an analytical certificate mechanism, not more starts |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
-| Fundamental physical properties and independent observation | Retain charge and internal constitutive state in one independent passive electrical reference; compare its complete law, circular domain and work/storage with TNFR under [P1-P5](#supporting-measurement-bridge) | **Sole immediate gate** below. The density-only map gate is closed in its stated classes; no dataset or fit is admitted. Close at a complete-law equivalence, scoped obstruction or explicitly nonunique compatible family |
+| Fundamental physical properties and independent observation | Test whether the exact passive collective realization remains a justified finite description of the existing acquired same-slot families, with actual hidden deviations and complete work/observation accounting | **Sole immediate gate** below. The ideal carrier result is conditional; no physical source, calibration or fit is admitted. Close at a source-inclusive finite bound or a specific obstruction to the proposed collective description |
 | Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Conceptually critical**, with no new compatibility scan active. If a countermodel shares all proposed premises, the uniqueness claim fails in that scope |
 | Autonomous preparation, support, capacity and events | Supply actual occurrence and state-evolution laws when claiming autonomous assembly. [Event work](../nodal/RELATIONAL_SUPPORT_EVENTS.md), passivity and [operator descent](../STRUCTURAL_OPERATORS.md) do not select occurrence | **Claim-dependent**. Current contacts and preparation remain supplied. Do not postpone investigation of the existing conditional composite until every origin question is solved |
 | Internal activity and recurrence | Separate preservation of identity from permanent motion; the [positive-loss boundary](../nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission) and alternative-mobility results retain different premises | **Prepared alternative** for a named claim requiring sustained activity. Neither a stationary identity nor finite response establishes recurrence or transfers an invariant measure |
@@ -433,7 +436,7 @@ An added observable earns inclusion by deciding the selected prediction or a
 meaningful minimality obstruction. Existing failed physical-source admissions
 remain failed; more samples cannot repair their complete-law mismatches.
 
-Only charge-plus-internal-state admission is active. The table is a reassessment
+Only acquired collective electrical-description admission is active. The table is a reassessment
 of dependencies, not a fixed sequence or parallel campaign list. It preserves
 the objective of generated, physically testable organization without identifying
 winding, phase cancellation or storage with material constituents.
@@ -486,48 +489,68 @@ justified smaller invariant preparation domain. No physical data or frozen
 producer was evaluated.
 
 <a id="organized-charge-internal-state-admission"></a>
-### Immediate question: retain charge and internal electrical state
+### Closed charge-plus-internal-state comparison
 
-**Can the complete quarter law admit an independently justified passive
-charge-plus-phase electrical realization, including its storage and work?**
-The purpose is to test the internal-state possibility left by the closed
-charge-map gate, rather than demand that charge density alone predict every
-physical process. Keep the [atlas's electrical comparison boundary](../PHYSICAL_REGIME_CORRESPONDENCES.md#charge-and-magnetic-response-boundary)
-and [collective-property ontology](../EMERGENT_ONTOLOGY.md#research-target-physical-properties-of-collective-patterns).
+The [result owner](../nodal/ORGANIZED_ELECTRICAL_REALIZATION.md) fixes the
+independent ideal passive Josephson/capacitance/resistance reference and
+compares both complete rows and storage. A direct fine-island charge/phase
+map on C9 and the same-slot 54-node support requires forbidden capacitance
+signs, even after neutral common-potential elimination or static passive
+hidden-node reduction. Positive energy alone does not repair that constraint.
 
-1. **Fix one independent reference before deriving maps.** Review primary
-   formulations of a passive electrical network with capacitance, dissipation
-   and periodic phase storage, including the atlas's existing Josephson
-   boundary. State the entire charge and internal-phase law, its physical
-   voltage/phase relation, grounding or neutral sector, inputs and domain.
-   Any quantum constitutive relation is a supplied reference premise, not
-   a derivation of quantization from TNFR. Do not select a new material law
-   merely because it reproduces the desired sine term.
-2. **Match full state and work, not just current shape.** Start with the
-   fixed-reference inventory and its exact quarter-law boundary current;
-   keep phase as additional state. Derive the necessary charge, voltage,
-   clock and energy scales and the actual capacitance/dissipation operators.
-   Test physical realizability, reciprocity, common-origin and circular
-   covariance, storage and source/event work on the same support. A formal
-   matrix or inverse Laplacian alone is not an electrostatic geometry.
-3. **Close at a complete-law decision.** Establish an invertible or explicitly
-   lossy map with its complete field relation, or a specific model/map
-   obstruction. If multiple reference realizations remain, expose that
-   freedom. Exact correspondence would be a conditional realization rather
-   than an empirical discriminator or microscopic emergence theorem. Admit
-   any later measured contrast only with an equally informed conventional
-   alternative, source/clock/sensor bounds and reserved evaluation.
-4. **Preserve scope and evidence.** Do not reopen the [P2/Volts route](PASSIVE_TRANSPORT_PROTOCOL.md),
-   rerun acquired responses, launch a trajectory/parameter sweep or operate
-   apparatus. No data fitting or purchase is active. Other collective maps
-   and restricted prepared families remain possibilities, not parallel
-   queues; do not repeat the already excluded local edge-density class.
+For the exact six-child helical carrier, the inherited wheel law instead
+admits explicit positive capacitors, resistors and sinusoidal junctions.
+Aggregate charge and circular registration phase give a complete collective
+map; variable storage and total loss agree, with the internal fine-storage
+constant retained. The electrical wiring need not reproduce individual
+TNFR edge currents. This closes the declared constitutive gate constructively
+at the collective level, not at arbitrary fine states. The scales remain
+free, the Josephson relations are supplied physics and no measured material
+property or elementary-charge quantization has been derived.
 
-This is a complete-state constitutive comparison toward the physical goal.
-It does not claim elementary-charge quantization, material formation or
-emergence of electromagnetism. Any physical realization still needs independent
-observation and preparation; unique law selection and substrate origin remain
-separate open questions.
+<a id="organized-collective-electrical-source-admission"></a>
+### Immediate question: an electrical description of the acquired organizations
+
+**Does the ideal collective description remain justified for the existing
+acquired same-slot interaction, including its actual internal deviations?**
+The exact carrier is an invariant conditional model; the frozen source is
+near it and cannot be reset to it. This gate must decide the resulting
+finite error and information obligations, rather than repeat circuit synthesis
+or improve a previously evaluated response's precision.
+
+1. **Admit the observation on the actual source.** Apply the
+   [retained-reference charge and circular collar observation](../nodal/ORGANIZED_ELECTRICAL_REALIZATION.md#collective-electrical-departure-identities)
+   to the existing source family, including its unavailable domain; do not
+   replace it by an unqualified mean of angles. Retain marking, preparation,
+   conserved origins and the clock. Reuse the actual six-child source and
+   complete same-slot law; no new source, contact or parameter search.
+2. **Transport actual hidden deviations.** Use the existing recovery,
+   observation and contact bounds to retain each prepared state. Reuse the
+   owner's exact mean rows, quadratic sine-covariance bound and signed
+   storage/loss identities rather than re-deriving their nominal carrier.
+   Establish collar validity and a uniform finite error on the original
+   contact horizon before interpreting the passive circuit approximation.
+   A leading tangent, a nominal carrier or repeated mean measurements do
+   not establish this claim. Freeze any new numerical decision/budget before
+   a reserved assessment and preserve the original evaluated responses.
+3. **Keep physical and structural work explicit.** Match net charge transfer
+   for unions of children and the supplied uniform form-drive work pairing
+   where admitted. Dense electrical wires need not preserve individual fine
+   edge currents or regional energy allocations. Distinguish hidden storage
+   and closure-defect work from an external source. The contact's actual
+   switching/capacitance change needs separate accounting; the earlier TNFR
+   event budget is not an electrical occurrence or passivity certificate.
+4. **Close with a bounded decision.** Retain a source-inclusive conditional
+   finite description, or identify the observation, defect or work premise
+   that prevents it. An abstract circuit equivalence gives no empirical
+   discriminator against that same conventional circuit. Sensor, physical
+   preparation, laboratory clock and component tolerances remain independent
+   later obligations. No hardware, data fitting or P2/Volts replay is active.
+
+The shifted registration is outside this first zero-frustration realization:
+its effective phase biases cannot be silently gauged away or identified with
+magnetic flux. It is not a parallel gate. General collective maps and physical
+constituent formation remain open under the [ontology](../EMERGENT_ONTOLOGY.md#research-target-physical-properties-of-collective-patterns).
 
 No new stationary search, trajectory campaign or physical-data fitting is
 active. The unresolved maintenance route retains the complete source chamber,
@@ -573,7 +596,7 @@ unspecified, and an explicit same-windings counterexample occupies a different
 class. Existing source bounds place the actual preparation in the product
 class. Uninterrupted cut-free maintenance cannot leave it. This closes the
 domain-admission ambiguity. The stationary question remains open while the
-[current gate](#current-g3-gate) addresses charge and internal electrical state.
+[current gate](#current-g3-gate) addresses the acquired collective electrical description.
 It identifies no particle property and does not alter previous acquisition,
 finite interaction or outer-zero capture results.
 
