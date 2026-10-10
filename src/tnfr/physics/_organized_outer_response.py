@@ -11,13 +11,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from fractions import Fraction as Q
 
-from .._exact_time import exact_or_represented_real as _exact
 from ..mathematics._rational_interval import I, cos, pi_interval, sin
 from ._organized_outer_winding import (
     _OrganizedOuterWinding,
     _assess_organized_outer_winding,
 )
 from ._repeated_organized_composition import _vector
+from ._sine_preparation import _prepared_degree_four_probe_remainder
 
 _EPSILON = Q(1, 1000)
 _DELAY = Q(1, 100)
@@ -64,16 +64,11 @@ def _outer_response_finite_remainder(*, gamma_upper, initial_form_upper_bound):
     nonlinear probe feedback are retained. This is not an ODE approximation
     or a bound transferred from a tangent model.
     """
-    gamma = _exact(gamma_upper, "gamma_upper")
-    initial = _exact(initial_form_upper_bound, "initial_form_upper_bound")
-    if min(gamma, initial) < 0:
-        raise ValueError("finite response bounds require nonnegative inputs")
-    if 2 * gamma**2 * _DELAY**2 > Q(1, 2):
-        raise ValueError("fixed finite response comparison is outside its domain")
-    return (
-        2 * gamma * _EPSILON * _DELAY**2
-        + 2 * gamma**2 * _EPSILON * (initial + gamma * _DELAY) * _DELAY**2
-        + Q(4, 3) * gamma**3 * _EPSILON * _DELAY**3
+    return _prepared_degree_four_probe_remainder(
+        gamma_upper=gamma_upper,
+        initial_form_upper_bound=initial_form_upper_bound,
+        phase_jump_upper_bound=_EPSILON,
+        elapsed_time=_DELAY,
     )
 
 

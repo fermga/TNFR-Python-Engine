@@ -567,6 +567,20 @@ Here the information absent from a list of constituent identities is their
 relational state. The result does not make response a function of winding
 alone, prove a resonance spectrum or establish fractality at arbitrary scales.
 
+The [outer-observation theorem](nodal/ORGANIZED_OUTER_OBSERVATION.md)
+adds a conditional identification contract: fifteen collective form readings
+under fixed opposite probes determine all nine outer windings without giving
+the inverse the child phase origins. The broader admitted state class contains
+the earlier acquired families, but its generic members are not proved formed.
+Its same-source observation, finite work and identity premises remain explicit.
+A singleton necessary sector is not authentication of an arbitrary record.
+
+The specified five-child organization can therefore be described as a
+collective NFR with declared membership, acquired identity and interaction,
+while retaining its constituent state and boundary relations. Its observable
+winding labels one aspect of identity; it does not supply a complete scalar
+EPI description or replace the state required by the full evolution law.
+
 Here structural participation does not identify the entire joint state with
 one scalar EPI coordinate. The current representation also retains phase,
 capacity and support; reducing these to a richer form description would need

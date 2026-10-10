@@ -74,6 +74,38 @@ def _prepared_heat_error_radii(
     return form + gamma * convolution * phase_radius, phase_radius
 
 
+def _prepared_degree_four_probe_remainder(
+    *, gamma_upper, initial_form_upper_bound, phase_jump_upper_bound, elapsed_time
+):
+    """Bound a finite matched phase-probe increment for the quarter-rate law.
+
+    The caller admits degree-four unit support, both reciprocal smooth-sine
+    rows, held unit capacity, an unchanged initial form and an initial edge
+    phase jump bounded by ``phase_jump_upper_bound``. Heat contraction and
+    the global sine derivative retain background motion and probe feedback.
+    The result bounds the coordinate maximum error from the initial slope;
+    it neither selects a protocol nor certifies its state, work or identity.
+    """
+    gamma, initial, jump, time = (
+        exact_or_represented_real(value, name)
+        for name, value in (
+            ("gamma_upper", gamma_upper),
+            ("initial_form_upper_bound", initial_form_upper_bound),
+            ("phase_jump_upper_bound", phase_jump_upper_bound),
+            ("elapsed_time", elapsed_time),
+        )
+    )
+    if min(gamma, initial, jump, time) < 0:
+        raise ValueError("finite response bounds require nonnegative inputs")
+    if 2 * gamma**2 * time**2 > Q(1, 2):
+        raise ValueError("finite response comparison is outside its domain")
+    return (
+        2 * gamma * jump * time**2
+        + 2 * gamma**2 * jump * (initial + gamma * time) * time**2
+        + Q(4, 3) * gamma**3 * jump * time**3
+    )
+
+
 def _prepared_transit_radii(
     *,
     time,

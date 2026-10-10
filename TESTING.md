@@ -394,6 +394,19 @@ checks. Every original allowance must be admitted before source rebuilding;
 failed premises remain unavailable. Keep trajectory and frozen-producer
 guards active for these analytic contracts.
 
+For [unknown-origin outer observation](theory/nodal/ORGANIZED_OUTER_OBSERVATION.md),
+select `tests/physics/test_organized_outer_observation.py` with outer-response,
+outer-winding and shared preparation owners. Verify the reusable finite
+increment bound preserves the earlier protocol exactly. The inverse receives
+only 15 primitive mean-form readings; opposite probes share one baseline,
+which cancels in the odd combination and appears twice in the even one.
+Check both quadratures, fine-angle allowances, every interface and the full
+cycle sum. Necessary candidate intersections are not joint realizability
+witnesses. Keep inconsistent records, unsupported premises and conditional
+identification distinct. Independent static record enclosures must not be
+described as measured finite trajectories. Probe work is per branch, and
+the broader state class has only the declared finite identity horizon.
+
 For [identity-preserving assembly work](theory/nodal/ORGANIZED_ASSEMBLY_WORK.md),
 select `tests/physics/test_organized_assembly_work.py` with
 `tests/physics/test_acquired_organized_network_capture.py`,

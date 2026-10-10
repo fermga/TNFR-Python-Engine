@@ -288,6 +288,15 @@ contrast does not uniquely identify a winding sector. Neither result implies
 autonomous preparation or exhausts the properties available to more complex
 organizations.
 
+The [unknown-origin observation contract](nodal/ORGANIZED_OUTER_OBSERVATION.md)
+then distinguishes response discrimination from identity inference. It
+recovers two boundary quadratures from opposite finite probes and combines
+all five interfaces before identifying a winding. Original fine deviations,
+common-baseline error correlations and branch consistency survive that
+reduction. The result is uniform on a declared state class containing the
+previous acquired sources; formation of the larger class and realization of
+its matched observation branches remain separate obligations.
+
 ### Ordered geometry connects transfer to formation
 
 The [sine pattern owner](nodal/SINE_PATTERN_DYNAMICS.md) combines entry,
