@@ -515,6 +515,21 @@ rerun the single declared assessment.
 Use `tests/physics/test_organized_electrical_source_evidence.py` to reconstruct
 the exact retained bounds, fixed protocol and source receipts read-only.
 
+For [operational electrical identification](theory/nodal/ORGANIZED_ELECTRICAL_IDENTIFICATION.md),
+select `tests/physics/test_organized_electrical_identification.py` and
+`tests/physics/test_organized_electrical_pulse_obstruction.py` with the exact
+electrical realization, source, collective-observer and rational-matrix controls.
+Check every capacitor/conductor branch before scale inference; equal traces
+cannot certify the required matrices. Reserved amplitudes must not change
+calibration. Disjoint shape, uniformity and predicted-amplitude intervals have
+different exclusions; overlap is necessary compatibility only. Retain exact
+represented input, tiny physical quantities, bounded ordered consumption,
+primitive re-admission and cold-import isolation from source/solver owners.
+The phase-event controls use the precontact C5 reference, not the wheel;
+distinguish capacitor energy-time, peak energy and Joule heat, and retain the
+endpoint-charge limitation of the affine equality path. These static checks
+admit neither a finite pulse, the original source history nor a physical dataset.
+
 For [finite interface factorization](theory/nodal/ORGANIZED_INTERFACE_FACTORIZATION.md),
 select `tests/physics/test_organized_slot_registration.py` and
 `tests/physics/test_organized_interface_factorization.py` with the joint-resource,

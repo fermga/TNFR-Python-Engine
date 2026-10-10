@@ -644,6 +644,15 @@ storage/work retained. The ideal comparator starts at actual collective
 means; these are not inferred from earlier form readings. Independent
 physical measurements and component switching remain obligations.
 
+The [operational identification](nodal/ORGANIZED_ELECTRICAL_IDENTIFICATION.md)
+separates an unfitted electrical component relation from physical emergence.
+Independent linear calibration fixes the current amplitude only under the
+previously supplied reciprocal coefficient and sine law; fitting that
+coefficient removes the scalar prediction. The literal instantaneous phase
+events in the prepared history cannot be executed with finite work in the
+unchanged electrical reference. Finite-duration actuation needs its own
+state, observation and work admission before any experimental claim.
+
 The [continued-contact classification](nodal/ORGANIZED_CONTACT_MAINTENANCE.md)
 now distinguishes stable constituent retention from preservation of the
 additional outer identity. The actual outer-zero control, including all

@@ -248,6 +248,15 @@ from existing form readings. Sensor calibration, physical preparation and
 support switching have not been admitted. The Josephson relations and their constants remain
 supplied physics, and the result does not derive quantum behavior.
 
+The [operational comparison](nodal/ORGANIZED_ELECTRICAL_IDENTIFICATION.md)
+now characterizes the component-shape and scale-independent relation remaining
+after separate capacitance/conductance calibration. It is a conditional
+restriction of the fixed complete law, not a universal TNFR constant; an
+equally configured conventional circuit remains indistinguishable. The
+reference also excludes finite-work instantaneous relative-phase jumps,
+so the existing mathematical observation word is not already a laboratory
+preparation. No physical data or apparatus has passed this admission.
+
 The [two-contact response](nodal/SINE_PAIR_INTERACTION.md#sine-two-contact-orientation-response)
 already establishes orientation-sensitive interaction in a specified finite
 experiment with evolving source and probes. The

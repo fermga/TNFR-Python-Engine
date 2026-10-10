@@ -122,6 +122,11 @@ admitted.
 
 ## Complete TNFR state and the declared direct map
 
+The separate [operational identification](ORGANIZED_ELECTRICAL_IDENTIFICATION.md)
+derives the remaining component relation after independent calibration and
+the finite-work boundary for the source's phase interventions. It changes
+neither this reference nor the exact construction below.
+
 On a fixed connected simple unit graph with \(n\ge2\), write
 
 \[
