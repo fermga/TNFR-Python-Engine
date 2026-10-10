@@ -17,7 +17,7 @@ from ._organized_network_capture import (
     _OrganizedTriangleCapture,
 )
 from ._organized_network_compatibility import _EQUAL_CONTROL, _UNEQUAL_CONTROL, _mixings
-from ._sine_preparation import _prepared_transit_radii
+from ._sine_preparation import _prepared_form_costs, _prepared_transit_radii
 from .relational_sine_formed_classes import _SOURCE_SCALE
 from .reversible_eigenmode_reference import _negative_exp_bounds
 
@@ -109,13 +109,11 @@ def _assess_organized_joint_acquisition(
     capture = _derive_organized_triangle_capture(mixing=weights)
     geometry = capture.geometry
     forms = tuple(_SOURCE_SCALE * (node % 9 - 4) for node in geometry.nodes)
-    gradient = [Q(0)] * 27
+    costs, gradient = _prepared_form_costs(
+        form=forms, weighted_edges=geometry.weighted_edges
+    )
     internal, contact = Q(0), Q(0)
-    for a, b, weight in geometry.weighted_edges:
-        difference = forms[a] - forms[b]
-        gradient[a] += weight * difference
-        gradient[b] -= weight * difference
-        cost = weight * difference**2 / 2
+    for (a, b, _), cost in zip(geometry.weighted_edges, costs):
         if a // 9 == b // 9:
             internal += cost
         else:

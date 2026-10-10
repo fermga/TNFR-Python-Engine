@@ -21,6 +21,24 @@ from .relational_sine_pattern import SineRelativePattern
 from .structural_diffusion import _exact_flow_gap_from_rationals
 
 
+def _prepared_form_costs(*, form, weighted_edges):
+    """Return exact edge storage and its nodal gradient for admitted data.
+
+    Callers supply finite rational forms and validated nonnegative weighted
+    edges indexed in that form tuple. Costs retain contact edges; grouping,
+    source-error allowances and preparation budgets belong to the consumer.
+    No source or trajectory verdict is inferred by this algebraic kernel.
+    """
+    gradient = [Q(0)] * len(form)
+    costs = []
+    for a, b, weight in weighted_edges:
+        difference = form[a] - form[b]
+        gradient[a] += weight * difference
+        gradient[b] -= weight * difference
+        costs.append(weight * difference**2 / 2)
+    return tuple(costs), tuple(gradient)
+
+
 def _prepared_transit_radii(
     *,
     time,

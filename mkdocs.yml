@@ -106,6 +106,7 @@ nav:
           - "Capture of the acquired three-object assembly": theory/nodal/ACQUIRED_ORGANIZED_NETWORK_CAPTURE.md
           - "Identity-preserving assembly work": theory/nodal/ORGANIZED_ASSEMBLY_WORK.md
           - "Joint acquisition on preexisting fine support": theory/nodal/ORGANIZED_JOINT_ACQUISITION.md
+          - "Locally unprepared receiver mechanism": theory/nodal/ORGANIZED_RECEIVER_MECHANISM.md
           - "Preparation information and acquired modes": theory/nodal/SINE_PREPARATION_MODE_SELECTION.md
           - "Preparation paths, capture and forced phase passage": theory/nodal/SINE_PREPARATION_PATH_SELECTION.md
           - "Terminal restrictions on the same preparation path": theory/nodal/SINE_PREPARATION_PATH_LIMITS.md

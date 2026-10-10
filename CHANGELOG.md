@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Derive the [locally unprepared receiver mechanism](theory/nodal/ORGANIZED_RECEIVER_MECHANISM.md)
+  under the unchanged equal-weight three-C9 law. Rebuild the two-ramp source
+  and complete contact cost; prove donor winding one and receiver winding
+  zero at structural time 200, with receiver winding excluded from
+  preparation to a proved necessary acquisition timescale. Retain exact
+  regional boundary work and the full slow memory law. Later receiver
+  acquisition, donor retention and joined capture remain unresolved; no
+  trajectory, forcing or source retuning is introduced.
 - Prove [joint acquisition on preexisting fine support](theory/nodal/ORGANIZED_JOINT_ACQUISITION.md)
   for both fixed three-C9 contacts. The original phase-flat ramp families
   acquire all three winding identities and enter their full-state capture

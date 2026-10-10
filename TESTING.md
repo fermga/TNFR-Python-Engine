@@ -276,6 +276,21 @@ before assessment and unavailable strict margins without inferring failure
 of the actual flow. Preserve the earlier capture and work contracts; these
 static checks rerun no trajectory or frozen producer.
 
+For the [locally unprepared receiver mechanism](theory/nodal/ORGANIZED_RECEIVER_MECHANISM.md),
+select `tests/physics/test_organized_receiver_mechanism.py` with
+`tests/physics/test_organized_joint_acquisition.py` and
+`tests/physics/test_organized_network_compatibility.py`. Rebuild the two-ramp
+source on the complete equal-weight support, including receiver contact
+storage, original coordinate errors and conserved global means. Check the
+time-200 donor/receiver winding distinction, complete initial-layer heat
+bound and strict receiver exclusion interval, actual regional boundary work
+and mixed-coordinate identity against independent fine-node calculations;
+check the slow comparison's heat and Lipschitz bounds. Preserve the distinction
+between a necessary delay and eventual nonformation; neither the shared
+target nor a phase-only approximation supplies full-state entry. Exercise
+primitive admission and unavailable bounds before interpreting a report.
+These analytic controls generate no trajectory or reserved response.
+
 For [preparation information and acquired modes](theory/nodal/SINE_PREPARATION_MODE_SELECTION.md),
 select `tests/physics/test_sine_preparation_mode_selection.py` with the shared
 preparation and isolated-class controls above. Reconstruct the Laplacian energy

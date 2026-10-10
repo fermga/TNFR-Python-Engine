@@ -274,6 +274,19 @@ structured form preparations and complete sine law remain supplied. No
 locally unprepared child's acquisition, autonomous source, primitive support
 birth or physical bound state follows.
 
+The [receiver mechanism](nodal/ORGANIZED_RECEIVER_MECHANISM.md) removes the
+third local ramp while retaining the equal-weight support, complete law and
+original uncertainty. By structural time 200 the two prepared regions have
+winding one, while the receiver still has winding zero. A certified exclusion
+interval from preparation supplies a necessary first-acquisition timescale,
+separating initial form relaxation from possible acquisition by slow phase
+transport. At time 200 its noncentral mixed-coordinate currents point toward
+the donor ramp. Complete source storage,
+regional boundary work and the exact memory of the retained form are
+accounted for. Interaction-induced motion is therefore present without
+already establishing a new identity. Eventual receiver acquisition, donor
+retention and entry to joined capture remain separate unresolved claims.
+
 Distinct internal geometries need not be distinguishable through every
 contact. The [central-contact obstruction](nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-contact-admission)
 shows that the nominal formed C9 classes can remain invisible to the same
