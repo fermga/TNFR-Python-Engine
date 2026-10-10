@@ -601,6 +601,17 @@ separately prepared contacts are not an operational phase scan. Neither the
 envelope nor its fifteen finite identity bounds supplies later maintenance
 on the enlarged support or an autonomous alignment rule.
 
+The [continued-contact classification](nodal/ORGANIZED_CONTACT_MAINTENANCE.md)
+now distinguishes stable constituent retention from preservation of the
+additional outer identity. The actual outer-zero control, including all
+observation backaction, remains captured after a separately supplied zero-origin
+contact. The exact carrier with acute outer winding one must leave that acute
+cell, and a full-fine stable equilibrium retaining it requires a quantified
+amount of internal reorganization. Acute-chart exit is not winding loss; the
+actual outer-one source's eventual fate remains open. Constituent windings,
+internal shape and collective identity therefore require separate maintenance
+arguments on the actual interface and law. None is yet a particle identity.
+
 Here structural participation does not identify the entire joint state with
 one scalar EPI coordinate. The current representation also retains phase,
 capacity and support; reducing these to a richer form description would need

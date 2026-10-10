@@ -216,10 +216,14 @@ after that whole observation word, retaining contact work and fifteen marked
 identities. The [relative-origin envelope](#organized-external-port-registration-admission)
 now separates an all-origin small response from a per-source achievable larger
 response, retaining the same source, interface, nonlinear remainder and work.
-The boundary moment remains incomplete state. After reassessing research
-needs, the sole next task is [continued-contact identity admission](#current-g3-gate):
-determine whether the enlarged law can maintain the acquired composite as
-the contact reorganizes it, beginning with its own stationary/capture geometry.
+The boundary moment remains incomplete state. The
+[continued-contact classification](#organized-contact-maintenance-admission)
+now proves all-future capture of the actual outer-zero control at supplied
+zero donor origin, and a different obstruction for outer winding one.
+Its exact carrier must exit the old acute cell; full-fine stable retention
+there requires substantial internal redistribution. The sole next question
+is [full-fine organization beyond that obstruction](#current-g3-gate), before
+claiming continued retention or loss of the actual outer-one source.
 The [prepared storage observer](#storage-comparison-producer-admission)
 is retained as an instrument; it has no frozen protocol or reserved response
 and is not the next campaign.
@@ -236,7 +240,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next theoretical admission | [Identity under continued contact](#current-g3-gate): classify organized stationary/capture geometry or an identity/stability obstruction on the actual joined support before claiming retention of the carried source families; no serial short-horizon refinement |
+| Next theoretical admission | [Full-fine outer identity under contact](#current-g3-gate): determine whether internal reorganization beyond the proved instability domain can support a stable stationary outer identity on the same interface; existence, source entry and actual winding loss remain separate |
+| Closed theoretical contact classification | [Continued-contact geometry and control capture](#organized-contact-maintenance-admission): stable aligned target, antipodal saddle, carrier acute-chart exit, a full-fine near-carrier instability obstruction and all-future capture of the actual zero-origin outer-zero control |
 | Closed theoretical capability admission | [Relative-origin external port](#organized-external-port-registration-admission): every outer-one source has a uniformly small finite response; each outer-zero source has a larger response at some origin, with nonlinear error, two raw reading errors, contact work and fifteen finite identities retained |
 | Closed theoretical external interaction | [Carried composite contact](#organized-composite-interaction-admission): finite external mean-form contrast on the enlarged 54-node support, with both reactions, supplied registration, all original errors, separate contact work and fifteen marked identities; mean coordinates and an instantaneous contact moment do not close future response |
 | Closed theoretical single-history observation | [Sequential outer identity](#organized-sequential-observation-admission): twenty-five primitive readings identify winding without source copies or resets; full background motion and probe backaction, cumulative absolute event work and all fourteen finite identities are retained |
@@ -315,7 +320,7 @@ remain open; no empirical response has passed complete physical admission.
 
 <a id="current-g3-gate"></a>
 <a id="foundational-organized-pattern-admission"></a>
-<a id="organized-contact-maintenance-admission"></a>
+<a id="organized-full-fine-contact-identity-admission"></a>
 ## Primary plan: foundations tested by organized patterns
 
 Investigate which premises are sufficient, necessary within a declared class,
@@ -347,14 +352,17 @@ is a substantive completed gate. It does not establish what remains of the
 object after continued interaction, an operational preparation or a measured
 physical correspondence. These are the principal remaining dependencies.
 
-The immediate gap is dynamical survival on the changed support. The exact
-external mean satisfies `R_D'=-3*R_D/2-gamma*A/4`, so its homogeneous
-form-relaxation time is `2/3` in the same clock. The frozen contact lasts
-`1/1000`, only `0.0015` of that scale. This comparison does not approximate
-the evolving forcing or prove later loss: it identifies what the short-time
-certificate leaves undecided. The old product capture trap does not transfer
-to the new wheel contact. Longer-time persistence needs the actual joined
-geometry and source, rather than a sequence of longer onset estimates.
+The [continued-contact theorem](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md)
+now closes the first geometry and control-source question. The actual
+outer-zero family at supplied donor origin zero retains its constituents
+and converges after the whole observation word. The outer-one carrier,
+however, cannot remain in its old acute chart. In the full fine state,
+any stable stationary organization retaining all nine acute outer windings
+must have internal phase defect `D>9d>1.6`, whereas the actual initial family
+has `D<1.395e-16`. That is an obstruction to retaining the same internal
+shape, not proof that the composite winding disappears. Whether a stable
+reorganized fine state exists is the immediate missing geometric premise.
+Neither source entry nor a loss deadline follows from the obstruction.
 
 The original primitive allowances remain `1e-10`; `q=1e-70` is a derived
 recovery residual, not a required initial or sensor precision. Nevertheless,
@@ -366,8 +374,8 @@ capabilities or demonstrated physical impossibilities.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
-| Composite identity under interaction | Determine organized stationary/capture geometry or an identity/stability obstruction for the actual joined `C9 x W6` law. A retained-identity result must include the original acquired and observed source, every fine error and the supplied relative origin | **Sole immediate gate** below. Close at source-inclusive retention, a scoped loss/instability obstruction, or a precisely identified missing premise. Stable targets alone do not establish entry |
-| Operational preparation, work and timescales | Admit a coupled resource domain for a named maintained interaction: source width, dwell, work and readout error together, or a necessary-bound obstruction | **Next operational dependency** if maintenance is admitted; reconsider the selected organization if it fails. Optimizing one sufficient constant without changing a capability is insufficient |
+| Composite identity under interaction | Determine whether the full fine state can reorganize beyond the proved instability domain while retaining a stable stationary outer identity on the same `C9 x W6` support | **Sole immediate gate** below. Close at certified existence/stability, a scoped obstruction, or a precise missing premise. The captured outer-zero control does not settle this; stable targets alone still do not establish source entry |
+| Operational preparation, work and timescales | Admit a coupled resource domain for a named maintained interaction: source width, dwell, work and readout error together, or a necessary-bound obstruction | **Next operational dependency** for the intended maintained collective identity. The positive outer-zero control does not transfer that identity or resolve its source history. Optimizing one sufficient constant without changing a capability is insufficient |
 | Fundamental physical properties and independent observation | Start with a precisely defined property of fundamental physics: its symmetry, conservation/composition rules and measurable response. Determine which mathematical obligations TNFR meets or lacks, then admit a discriminating signature with preparation, clock, sensor, calibration/reserved separation and equally informed alternatives under [P1-P5](#supporting-measurement-bridge) | **Essential and eligible** once a concrete property, signature and bridge are specified; it need not wait for unique law selection or substrate origin. No current dataset has complete admission. Close at an admitted bridge, equivalence without a discriminator, or a scoped mapping/uncertainty obstruction |
 | Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Conceptually critical**, with no new compatibility scan active. If a countermodel shares all proposed premises, the uniqueness claim fails in that scope |
 | Autonomous preparation, support, capacity and events | Supply actual occurrence and state-evolution laws when claiming autonomous assembly. [Event work](../nodal/RELATIONAL_SUPPORT_EVENTS.md), passivity and [operator descent](../STRUCTURAL_OPERATORS.md) do not select occurrence | **Claim-dependent**. Current contacts and preparation remain supplied. Do not postpone investigation of the existing conditional composite until every origin question is solved |
@@ -381,49 +389,53 @@ An added observable earns inclusion by deciding the selected prediction or a
 meaningful minimality obstruction. Existing failed physical-source admissions
 remain failed; more samples cannot repair their complete-law mismatches.
 
-Only continued-contact identity admission is active. The table is a reassessment
+Only full-fine contact identity admission is active. The table is a reassessment
 of dependencies, not a fixed sequence or parallel campaign list. It preserves
 the objective of generated, physically testable organization without identifying
 winding, phase cancellation or storage with material constituents.
 
-### Immediate question: does the interacting composite retain its identity?
+### Immediate question: can internal reorganization preserve the outer identity?
 
-**Which organized states can the already attached system maintain, and does
-the actual acquired source remain in or reach such a regime?** Keep the
-54-node `C9 x W6` support, the complete uniform-quarter smooth-sine law, held
-capacities, clock, all original source errors and the preceding observation
-history. Retain every supplied relative origin as a parameter; do not silently
-select a favorable alignment or replace the actual source by an exact carrier.
+**Does the same joined law admit a stable full-fine stationary organization
+with the marked outer winding, beyond the proved near-carrier obstruction?**
+The [contact theorem](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md) identifies
+where a robust stationary target cannot lie, while leaving this alternative
+open. Its actual outer-zero capture is a separate positive control. Retain
+the supplied unit support, complete law, capacity and clock; do not change
+contact weights or select another law merely to recover a desired answer.
 
-1. **Admit the joined geometry first.** Define the six internal and nine old
-   outer identities and their loss faces on this support. Determine which
-   relative stationary states or capture regions can preserve them under
-   the complete law, or prove a scoped obstruction. Any carrier equilibrium
-   or stability claim must distinguish its twelve-coordinate restriction
-   from the full fine state and account for neutral common modes.
-2. **Carry the actual source only into justified regions.** Reuse the original
-   acquisition, recovery and full observation history, regional work and
-   cycle/mean correlations. If retained geometry exists, prove its source
-   inclusion and transverse control; existence of a stable target alone does
-   not establish maintenance. If an obstruction occurs, identify its identity,
-   source and relative-origin scope without claiming every trajectory loses it.
-3. **Use a dynamical criterion, not serial horizon extension.** Select a
-   retention, capture or loss question supported by the geometry. Freeze any
-   additional finite experiment's preparation, observation, horizon and budget
-   before evaluation. Use the same complete-law clocks; damping time alone
-   does not select a physical or numerical deadline.
-4. **Close and reassess.** Accept source-inclusive maintenance, a proved scoped
-   identity-loss/stability obstruction, or an explicit missing premise. Do not
-   continue tightening short-time response or adding moments if it cannot
-   decide that claim. Maintenance activates its resource-admission dependency;
-   an obstruction instead motivates revisiting the organization, interface or
-   independently justified law, preserving all earlier finite results.
+1. **Declare the retained identity and domain.** Keep the six internal
+   winding-one cycles and nine old outer winding-one cycles distinct from
+   their acute charts and from a particular internal shape. State whether
+   the proposed domain keeps those charts acute or permits nonacute gaps
+   short of a winding cut. A conclusion on a restricted chart must remain
+   restricted to it. Retain all fine coordinates and the neutral common modes.
+2. **Decide stationary compatibility before a new source campaign.** Seek a
+   certified stationary state and full-state stability, or a scoped geometric
+   obstruction, accounting for the necessary internal redistribution when
+   the outer charts stay acute. A carrier ansatz, a positive storage budget,
+   negative edge weights or a numerically small residual alone cannot decide
+   full-fine existence or stability. Any numerical enclosure needs its own
+   frozen domain, precision and budget before evaluation.
+3. **Keep geometry and actual preparation separate.** If a stable target is
+   admitted, source inclusion from the original acquired and observed family
+   becomes a named subsequent obligation, with every residual and supplied
+   relative origin retained. If a domain is excluded, do not infer actual
+   winding loss, an exit deadline or exclusion of a broader domain. An unstable
+   equilibrium may still have a stable manifold meeting a prepared family.
+4. **Stop at a discriminating result.** A certified reorganized stationary
+   identity, a scoped obstruction or an explicit missing premise closes this
+   question. Do not open serial response-horizon refinements or searches that
+   merely return more unverified stationary candidates. Reassess the identity,
+   interface and physical-property dependency before changing the model.
 
-Reuse the [external-contact complete law](../nodal/ORGANIZED_EXTERNAL_INTERACTION.md),
-[uniform relative-origin bounds](../nodal/ORGANIZED_EXTERNAL_REGISTRATION.md),
-[regional work](../nodal/ORGANIZED_REGIONAL_RETENTION.md) and source-aware
-capture methods. No new long-time source inclusion or contact stability result
-has been assessed, and no new trajectory or physical-data campaign is active.
+This tests whether interaction can require a different internal organization
+while preserving a collective identity. It serves the eventual physical
+question of persistence and transformation of interacting objects, without
+identifying these windings with particles or predicting a measured lifetime.
+No full-fine reorganized target, actual outer-one capture or winding-loss
+result has yet been assessed. No new trajectory or physical-data campaign is
+active. Existing finite response and control capture results remain valid.
 
 For each subsequent law or hypothesis, record its status, independent
 premises, consequences, countermodels and decision in the existing definition
@@ -445,6 +457,33 @@ alone does not identify physical spin. Laboratory examples supply controls
 and discriminators without replacing the generative objective. Substrate
 origin, universal laws and recurrence across scales remain open hypotheses.
 
+<a id="organized-contact-maintenance-admission"></a>
+## Closed theoretical admission: stationary contact and actual control capture
+
+The [result owner](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md) preserves
+declaration `4c4addf1`. On the full joined support, aligned constituent
+origins have 106 stable relative directions, while the antipodal-donor
+stationary control has nine unstable directions; both retain two conserved
+neutral means. Identical marked winding labels do not imply equal stability.
+
+No exact-carrier stationary state lies in the closed acute outer-winding-one
+cell, so every carrier trajectory starting there exits that cell in finite,
+unspecified time. A separate full-fine Hessian argument excludes stable
+stationary retention of all nine acute outer windings whenever internal
+defect `D<=9d`, with `9d>1.6`. The actual outer-one source starts below
+`1.395e-16`, but no future defect bound or actual winding loss follows.
+
+For the separately declared outer-zero source at donor origin zero, the
+complete observation history leaves initial joined excess below `1.116e-12`,
+against the frozen `1/100` threshold and a boundary above `0.2426`. All
+original fine errors are retained. A full-state trap proves all-future
+retention of its fifteen marked windings and convergence to the aligned
+target. New attachment work is below `8.714e-14`; historical preparation
+and observation costs remain separate. This is an analytic control-source
+result, without a trajectory, settling deadline or transfer to other origins.
+The [next gate](#current-g3-gate) asks whether a different internal shape can
+support stable outer identity on the same law and interface.
+
 <a id="organized-external-port-registration-admission"></a>
 ## Closed theoretical admission: relative-origin interaction capability
 
@@ -463,9 +502,9 @@ per increment are retained. Contact work stays below 91, joined storage below
 uniformly over relative origin. This is an analytical family bound, with no
 trajectory, origin scan or physical measurement. The boundary amplitude still
 depends on source, interface and law; neither it nor the means close future
-evolution. The [priority reassessment](#research-priority-assessment) selects
-continued-contact identity as the next question and separates its resource
-and physical-observation dependencies.
+evolution. The [continued-contact result](#organized-contact-maintenance-admission)
+separately classifies stationary geometry and one actual control's future
+capture; it does not extend this finite envelope to later times.
 
 <a id="organized-composite-interaction-admission"></a>
 ## Closed theoretical admission: carried collective external interaction

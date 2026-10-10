@@ -454,6 +454,19 @@ Check complete source reconstruction once, unavailable-source gating and
 independence from the old pi/2 response verdict. Contact work and all fifteen
 finite identities must hold uniformly; static examples certify no trajectory.
 
+For [continued-contact identity](theory/nodal/ORGANIZED_CONTACT_MAINTENANCE.md),
+select `tests/physics/test_organized_contact_maintenance.py` with external
+interaction, relative-origin registration, outer-winding, sequential-observation
+and isolated-recovery owners. Independently assemble the full Laplacian and
+phase Hessian, check joint mode multiplicities and the complete two-row tangent,
+including neutral common means and the unstable antipodal control. Preserve the
+distinction between carrier acute-chart exit, a conditional full-fine instability
+domain and actual winding loss. The zero-origin control must rebuild its whole
+source/history, retain supplied event work separately and admit every joined
+acute face before claiming all-future capture. Rejected inputs and unavailable
+sources cannot pass through the old fixed-origin comparison verdict. No
+trajectory, origin scan or frozen-source regeneration is needed.
+
 For [identity-preserving assembly work](theory/nodal/ORGANIZED_ASSEMBLY_WORK.md),
 select `tests/physics/test_organized_assembly_work.py` with
 `tests/physics/test_acquired_organized_network_capture.py`,
