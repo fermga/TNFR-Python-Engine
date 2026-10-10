@@ -271,6 +271,12 @@ inputs. The complete source and work costs remain explicit. Interpreting
 those readings and inputs as a calibrated electrical experiment still
 requires a physical observation, preparation, clock and error model; no
 laboratory response was evaluated.
+The [fixed C5 specification](nodal/ORGANIZED_ELECTRICAL_PROTOCOL.md)
+now derives this voltage dictionary, carries the actual fine deviations
+through all finite inputs and separates source error from sensor uncertainty.
+An unnormalized current statistic avoids requiring observed initial phases;
+its conditional amplitude restriction still needs independently admitted
+physical calibration, preparation, timing and tracking.
 
 The [two-contact response](nodal/SINE_PAIR_INTERACTION.md#sine-two-contact-orientation-response)
 already establishes orientation-sensitive interaction in a specified finite

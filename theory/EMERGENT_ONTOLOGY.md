@@ -665,6 +665,11 @@ one continuing history, with actual-source inclusion and full identity/work
 bounds. Its inverse receives neither hidden phases nor the answer's label.
 This is conditional observability of an organized identity, with physical
 calibration and autonomous input occurrence still open.
+The [five-child electrical specification](nodal/ORGANIZED_ELECTRICAL_PROTOCOL.md)
+retains that history and its fine deviations under an explicit voltage
+observation. Its phase-free current-amplitude consequence is a testable
+restriction of the supplied law, not a derived material constant; physical
+preparation, sensor and actuator admission remain separate.
 
 The [continued-contact classification](nodal/ORGANIZED_CONTACT_MAINTENANCE.md)
 now distinguishes stable constituent retention from preservation of the

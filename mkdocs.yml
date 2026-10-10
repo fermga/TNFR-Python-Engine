@@ -124,6 +124,7 @@ nav:
           - "Operational electrical identification": theory/nodal/ORGANIZED_ELECTRICAL_IDENTIFICATION.md
           - "Finite input on the actual five-child organization": theory/nodal/ORGANIZED_ELECTRICAL_ACTUATION.md
           - "Observing collective winding with finite form inputs": theory/nodal/ORGANIZED_FINITE_OBSERVATION.md
+          - "Five-child electrical observation protocol": theory/nodal/ORGANIZED_ELECTRICAL_PROTOCOL.md
           - "Organized identity under continued external contact": theory/nodal/ORGANIZED_CONTACT_MAINTENANCE.md
           - "Reflection obstruction for full-fine contact identity": theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md
           - "Full-fine stationary contact and marked chambers": theory/nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md

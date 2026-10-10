@@ -560,6 +560,19 @@ Use `tests/physics/test_organized_finite_observation_evidence.py` to reconstruct
 the frozen receipt, source inclusion, full-history observation errors, cycle
 resolution and resource bounds without importing or rerunning the assessor.
 
+For the [five-child electrical protocol](theory/nodal/ORGANIZED_ELECTRICAL_PROTOCOL.md),
+select `tests/physics/test_organized_electrical_protocol.py` and
+`tests/physics/test_organized_electrical_protocol_theory.py` with electrical
+identification, pulse obstruction, finite observation and hidden-source
+transport controls. Reconstruct C5 matrices and the complete voltage/charge
+rows, retain the Laplacian inverse in voltage readout, and charge calibration,
+baseline and supplied additional errors to the unchanged raw allowance.
+Test malformed late readings even when earlier component shapes fail, common
+voltage gauge cancellation, interval exclusions and the conditional character
+of a winding result. The phase-free current statistic and loose source
+inequalities are mathematical controls; they neither rerun frozen assessors
+nor admit physical sensors, hidden-phase initialization or a different law.
+
 For [finite interface factorization](theory/nodal/ORGANIZED_INTERFACE_FACTORIZATION.md),
 select `tests/physics/test_organized_slot_registration.py` and
 `tests/physics/test_organized_interface_factorization.py` with the joint-resource,
