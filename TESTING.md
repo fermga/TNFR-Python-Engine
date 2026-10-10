@@ -598,6 +598,20 @@ counterexample. These controls do not certify instrument performance or
 reclassify typical/coverage uncertainties as deterministic bounds. Source
 cache downloads are not test dependencies; no producer is rerun.
 
+For the [collective matrix-response comparison](theory/nodal/ORGANIZED_EFFECTIVE_LAW.md),
+select `tests/physics/test_organized_effective_law.py` with
+`tests/physics/test_exact_linear_algebra.py` and the electrical-feasibility
+controls. Rebuild the C5 Laplacian from edges and check the complete driven
+rows, zero-loading limit, common modes, own storage and work, and both rows
+under the charge-like chart. Positive definiteness does not imply entrywise
+nonnegative response. Wrong-input and wrong-chart controls must fail the
+claimed balance; the old storage can increase while the new storage decreases.
+These are detached exact algebra controls, using rational gamma probes for
+identities independent of its fixed model value. They install no runtime law,
+execute no trajectory or frozen assessment, and supply no acquired-source
+identity or formation certificate. Existing frozen producers and evidence
+remain unchanged.
+
 For [finite interface factorization](theory/nodal/ORGANIZED_INTERFACE_FACTORIZATION.md),
 select `tests/physics/test_organized_slot_registration.py` and
 `tests/physics/test_organized_interface_factorization.py` with the joint-resource,

@@ -177,7 +177,10 @@ equivalence or obstruction that distinguishes competing explanations.
 Constructed organizations also test the foundations: which properties follow
 from their retained structure, and which depend on a supplied law or event?
 NFR properties and operator contracts constrain that question without selecting
-a unique continuous law. The
+a unique continuous law. Changed coupling can alter the
+[collective response and storage](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/ORGANIZED_EFFECTIVE_LAW.md),
+so their complete law and retained state need admission before a new physical
+observation protocol. The
 [execution plan](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 owns the precise task, acceptance conditions and next step. The
 [strategy](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_RESEARCH_STRATEGY.md) explains the rationale; the

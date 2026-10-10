@@ -227,13 +227,12 @@ A small shape departure needs a matrix perturbation theorem carrying
 both rows, preparation, memory, observation and discrimination error. It
 cannot be assigned the intrinsic fine-state remainder by terminology.
 
-There is a concrete algebraic starting point for such a changed model. On
-the neutral collective leaf, V=v0 L U gives
-`q=c*v0*(I+(c_J/c)*L^2)*U`. Therefore the form row acquires the inverse
-matrix `(I+(c_J/c)*L^2)^(-1)`, while the voltage-phase relation remains
-unchanged. Redefining charge to remove this factor would instead change
-the phase row. Neither operation preserves the old complete law or its
-source and discrimination certificates automatically.
+On the neutral collective leaf, V=v0 L U gives
+`q=c*v0*(I+(c_J/c)*L^2)*U`. The
+[matrix-response comparison](../nodal/ORGANIZED_EFFECTIVE_LAW.md)
+owns the resulting changed rows, storage and charge-coordinate contract.
+This collective reference supplies no automatic transfer of the fine-source
+acquisition or frozen discrimination certificates.
 
 ## 5. Independent source review and preparation gap
 

@@ -31,236 +31,46 @@ within the active gate before promoting such a possibility to a result.
 <a id="current-checkpoint"></a>
 ## Current checkpoint and resumption
 
-**Primary question:** can organized TNFR patterns generate observable
-collective properties that explain phenomena of fundamental physics?
-The route is **justified nodal dynamics -> collective organization
--> inherited interaction properties -> independent physical observation**. The
-[ontology](../EMERGENT_ONTOLOGY.md#generative-bound-organization) distinguishes
-collective properties from their physical identification. A sufficient
-representation does not independently justify the law that evolves it.
+**Primary question:** can justified nodal dynamics produce organizations
+whose collective properties explain independently measured physics?
+The [ontology](../EMERGENT_ONTOLOGY.md#generative-bound-organization)
+separates collective identity, formation, interaction and physical identification.
+A sufficient representation does not independently justify its evolution law.
 
-Under the supplied smooth-sine law, acquired patterns have conditional
-[interaction and return](../nodal/SINE_CLASS_REPEATED_INTERACTION.md) and
-[causal component composition](../nodal/SINE_CLASS_INTERFACE_COMPOSITION.md)
-with hidden initialization, both boundary channels and finite error retained.
-The [distinct-neighbor theorem](../nodal/SINE_CLASS_NEIGHBOR_NONADDITIVITY.md)
-and its [independent full-law result](../nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL.md#sine-neighbor-forward-reserved-result)
-now support a finite nonadditive mediator response against separately matched
-nonlinear single-neighbor functionals under the frozen source and observation
-premises. The numerical, consistency and separate recorded-comparator checks
-all pass; no physical identification follows from that comparison.
-
-Existing frozen calculations support
-[within-class nonlinearity](#reserved-nonlinear-four-history-response),
-[organization-dependent interaction](#reserved-scaled-cross-class-comparison)
-and a separate [hidden-memory distinction](#reserved-changed-input-full-law-response)
-under their own protocols. The memory comparison does not establish nonlinear
-necessity. Earlier [central](../nodal/SINE_CLASS_CUBIC_RESPONSE.md#sine-cubic-finite-result)
-and [spatial](../nodal/SINE_CLASS_SPATIAL_OBSERVATION.md#sine-spatial-finite-result)
-noise obstructions retain their original budgets; later designs do not erase
-them. Result owners and the status table below retain the completed gates.
-
-The [excess-storage theorem](../nodal/SINE_CLASS_STORAGE_EXCESS.md)
-now proves a finite negative rectangular storage excess, equivalently a
-positive integrated rectangular loss excess, beyond the complete tangent
-model under that same word. It retains hidden quadratic feedback, all higher
-amplitude orders and the original common-source uncertainty. This is an
-analytic prediction; the earlier form response does not evaluate it.
-
-These objects now serve as test cases for a return to the foundations. The
+Conditional formation, memory, composition, interaction and observation
+results remain available under their declared complete laws. The closed
+gates below link their proof and evidence owners. The
 [constitutive audit](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission)
-finds that the nodal row, dissipation, circularity and shared organized
-equilibria do not select the complete sine law, capacity/support evolution,
-preparation or event occurrence. Those freedoms are known through explicit
-countermodels, not inferred from a failed implementation. The conditional
-formation, memory, interaction and storage results remain valid in their
-declared models.
+retains explicit countermodels: nodal consistency, dissipation and common
+organized equilibria do not uniquely select the dynamics.
 
-The [target-matched law comparison](#target-matched-organized-law-result)
-now separates target identity from nonlinear interaction: two complete
-positive-loss laws have equal target storage, tangent and quadratic fields,
-yet opposite nominal mixed onset. That local theorem alone does not transfer
-finite-response signs. A separate
-[own-law acquisition result](#same-source-acquisition-result) now proves that
-the original full source families acquire both identities uniformly over
-`lambda in [0,1]`, with unchanged errors, time, radius and storage budget.
-That robustness does not select a unique law or an autonomous preparation.
-The [preparation-information result](#preparation-information-mode-selection)
-now proves that exactly matched initial phase, means and storage can lead to
-different acquired winding magnitudes under the fixed sine law. The
-[source-path result](#source-to-basin-mode-selection) gives two uniform
-capture corridors and an interior corridor whose actual winding two must
-later be lost. The [post-slip limit theorem](#post-slip-capture-admission)
-proves convergence to one of 57 energy-compatible relative critical
-geometries. The [source-specific selector](#source-specific-basin-selection)
-now proves winding-one capture for the entire interior family, excluding
-the other 56 candidates, including exceptional saddle sources. It retains
-the original uncertainty and supplies a common acute-cell capture deadline,
-not a small-radius recovery time or a complete basin map. The
-[own-law robustness theorem](#constitutive-selector-robustness) now retains
-that whole interior corridor uniformly over `lambda in [0,1]`, with the
-original source errors and the same total slow-time budget. This captured
-identity does not distinguish those laws. The
-[finite carried-state discriminator](#carried-state-constitutive-discrimination)
-now separates their recorded mixed form responses with each law's acquisition,
-recovery, attachment work, residuals and finite response bounds retained.
-The [calibrated-observation theorem](#calibrated-constitutive-observation)
-now supplies common sensor conditions preserving finite discrimination,
-while distinguishing a mixed-sign change from full-record ambiguity.
-The [organized-inheritance theorem](#organized-constitutive-inheritance)
-now derives complete collective laws for two registered interfaces, with
-form/clock/parameter maps, full storage and actual acquired-state identity.
-One interface preserves the original coefficients; the other requires a
-larger constitutive family and does not select a unique law.
-The [composition-compatible classification](#composition-compatible-constitutive-laws)
-now exhibits admitted nonsine analytic currents with the same organized
-target storage, tangent and quadratic fields, and the same constitutive
-profile under both interfaces. Those requirements therefore do not select
-sine. The [oriented-interface classification](#interface-robust-profile-inheritance)
-selects sine only after additionally requiring the same profile throughout
-an open interval of weighted contacts. That is an independent composition
-premise; nonsine laws still have exact inherited dynamics with retained
-boundary coefficients. The [network compatibility theorem](#organized-network-compatibility)
-now derives the three-object law and its chart conditions:
-the contact phase shifts must sum to zero modulo a turn and the inherited
-amplitudes must agree. Both fixed interior controls fail the cycle condition;
-the unequal control also fails the amplitude condition. Their exact collective
-laws remain valid with the boundary coefficients retained. The separate
-[acquired-assembly theorem](#acquired-organized-network-capture) now proves
-full-state winding retention and convergence from the original independently
-recovered sources for both controls, with their distinct joined targets and
-supplied contact work. The
-[assembly-work theorem](#organized-assembly-work-admission) proves that even
-simultaneous fine-state reorganization cannot passively assemble these
-recovered children within the declared acute winding-one endpoint class.
-The [joint-acquisition theorem](#organized-joint-acquisition) now proves
-formation of all three identities and entry to joined capture by the fixed
-time 200 when the same primitive ramps evolve on the connected support from
-preparation. It retains every source error and the full initial contact
-storage under the declared budget. The
-[receiver-mechanism theorem](#organized-receiver-mechanism-admission) now
-separates the two-ramp source's initial relaxation from slow phase transport:
-at time 200 both donors have winding one and the receiver has winding zero,
-and receiver winding remains zero throughout the proved initial interval.
-The resulting necessary acquisition timescale is about `1.62*10^7`
-structural units. Exact regional work and the retained form's memory remain
-part of the complete law. The [slow admission](#organized-receiver-slow-capture-admission)
-now derives an exact second-order phase description and a uniform defect
-bound for first-order descent after structural time 400. At time 400, actual
-receiver phase rates have the donor-directed signs while its winding remains
-zero. The subsequent [frozen enclosure](#organized-receiver-prospective-enclosure)
-certifies loss of both donor windings for the entire unchanged source family,
-while the receiver retains winding zero throughout the validated interval.
-This excludes donor-retaining transfer under this preparation and law;
-eventual regeneration remains unresolved. The
-[regional retention theorem](#organized-identity-preserving-interaction)
-now supplies conditional donor work budgets, necessary receiver-passage work
-and a phase-only invariance obstruction. The preserved donor loss exhausts
-both donor reserves. The
-[constitutive barrier and work theorem](#constitutive-identity-barriers-and-work)
-now proves that exact boundary minima and regional power remain free under
-the matched target and registered inheritance conditions. The
-[own-law source comparison](#constitutive-receiver-source-outcome) now
-certifies receiver winding zero throughout the preserved finite prefix for
-the entire original source and law interval. Its donor endpoint comparison
-is unavailable; the sine donor-loss result remains separate. All-future
-receiver trapping remains a [source-specific open branch](#constitutive-receiver-long-time-trapping).
-The [repeated-composition admission](#repeated-organized-composition-admission)
-now gives a finite predictive parent response with full transverse errors
-and retained identities, while proving that discarded child-to-port
-association prevents exact mean-only closure. The
-[parent-acquisition admission](#organized-parent-acquisition-admission) now
-derives entry from independently uncertain acquired children and predicts
-from their actual reached means. The
-[restoring-response admission](#organized-parent-restoring-response-admission)
-carries one supplied intervention through finite recovery and resolves a later
-interaction that equal initial parent means cannot predict. The
-[continuous-actuation obstruction](#organized-parent-continuous-actuation-admission)
-now excludes every form-only input within the one-unit duration and three-unit
-work budget. The [constructive realization](#organized-parent-constructive-actuation-admission)
-now supplies a four-unit path with exact endpoints, retained children and
-admitted release. The [collective realization](#organized-parent-collective-actuation-admission)
-uses only eight initial child means and four uniform input channels, with
-actual work, fine endpoint error and the subsequent response admitted.
-The [finite-reservoir comparison](#organized-parent-reservoir-exchange-admission)
-now excludes the fixed disruption readout for the whole admitted source,
-despite a valid autonomous balance, finite work and retained children.
-Registration at its later deadline is not a demonstrated loss/return cycle.
-The [reservoir memory classification](#organized-parent-reservoir-memory-admission)
-now gives different locally attracting geometries on fixed information
-leaves at zero leakage, and a separate registered target at original positive
-leakage. Its full-state traps do not establish entry from the previous source.
-The [organized-source port](#organized-source-port-admission) now derives both
-interaction channels, source reaction and contact storage from an additional
-C9. Conserved preparation totals close its exact carrier restriction, while
-general fine means still lose phase correlations. The separate
-[full-state capture theorem](#organized-source-capture-admission) now retains
-all five actual acquired windings for all future time and proves convergence
-to a common registration. A disconnected same-source control cannot share
-that registration because it conserves distinct component means.
-The [outer-winding theorem](#organized-outer-winding-admission) now acquires
-an initially absent winding on all nine outer cycles while retaining five
-actual C9 identities. Its paired zero-common-form control remains outer-unwound.
-The [finite probe comparison](#organized-outer-response-admission) now
-resolves different incremental receiver responses from those actual sources,
-including nonlinear motion, signed work and four-reading uncertainty.
-The [unknown-origin observation theorem](#organized-outer-observation-admission)
-now identifies outer winding from fifteen matched collective readings, with
-finite nonlinear error, supplied probe work and finite identity retention.
-The [single-history theorem](#organized-sequential-observation-admission)
-now removes those matched copies: twenty-five readings identify the initial
-winding with cumulative work and identity retained through the complete word.
-The [external-contact theorem](#organized-composite-interaction-admission)
-now resolves a finite exchange contrast with another actual constituent
-after that whole observation word, retaining contact work and fifteen marked
-identities. The [relative-origin envelope](#organized-external-port-registration-admission)
-now separates an all-origin small response from a per-source achievable larger
-response, retaining the same source, interface, nonlinear remainder and work.
-The boundary moment remains incomplete state. The
-[continued-contact classification](#organized-contact-maintenance-admission)
-now proves all-future capture of the actual outer-zero control at supplied
-zero donor origin, and a different obstruction for outer winding one.
-Its exact carrier must exit the old acute cell; full-fine stable retention
-there requires substantial internal redistribution. The
-[reflection obstruction](#organized-contact-reflection-admission) also
-excludes stable stationary retention in the declared full-fine reflection
-sector, even on nonacute charts. An exact retained-identity saddle separates
-existence from stability. The [bounded full-fine search](#organized-contact-stationary-search)
-found no stationary certificate, while its exact chamber audit identifies
-additional mixed-cycle information required by uninterrupted maintenance.
-The [joint resource result](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result)
-admits wider primitive errors, a shorter recovery dwell and larger reading
-errors together, while retaining necessary work and time restrictions.
-The [finite interface result](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result)
-excludes a purely multiplicative scalar source/probe factor, retaining actual
-source members and every allowed reading-error correction. The
-[source-inclusive electrical bound](#organized-collective-electrical-source-admission)
-now retains actual internal deviations throughout the original finite contact.
-The [operational comparison](#organized-electrical-operational-identification)
-now isolates an unfitted component relation and the literal phase-jump
-preparation obstruction. Finite actuation and uncertain current discrimination
-now have conditional certificates; the [physical feasibility audit](#organized-electrical-physical-feasibility)
-admits no apparatus. The next active question is
-[finite-window collective electrical observation](#organized-electrical-finite-window-design).
-Stationary compatibility in the source chamber remains unresolved for the
-proposed stable-stationary maintenance route, with no continued search active.
-The [prepared storage observer](#storage-comparison-producer-admission)
-is retained as an instrument; it has no frozen protocol or reserved response
-and is not the next campaign.
+The [electrical feasibility review](#organized-electrical-physical-feasibility)
+closed without admitting an apparatus for the frozen endpoint-voltage
+protocol. In particular, positive ring capacitance changes the complete
+collective response; scalar calibration cannot absorb it. This motivates
+the **single active foundational gate**:
+[collective state and inherited response](#organized-effective-law-admission).
+It starts from the declared C5 comparison and asks for own-law identity and
+finite predictive sufficiency before reopening
+[finite-window physical observation](#organized-electrical-finite-window-design).
 
-Supplied preparation, support, law, events and structural clock remain
-premises. In particular, the very small source/readout allowances and long
-preparation dwell are mathematical budgets, not demonstrated laboratory
-capabilities. No new acquisition run, fitting or physical-data evaluation
-is active. Physical constituent emergence and independent law selection
-remain open; no empirical response has passed complete physical admission.
+No 45-node acquisition, physical readout or source certificate transfers to
+that changed law by default. Earlier frozen protocols, negative results and
+responses retain their original premises. The unresolved stationary
+maintenance route has no active search; the prepared storage observer
+remains an instrument without a frozen response campaign. No new source
+replay, numerical scan, physical-data evaluation or fitting is active.
+Physical constituent emergence, autonomous preparation and unique law
+selection remain open. No empirical response has passed complete physical
+admission.
 
 <a id="2-one-status-board-and-dependency-chain"></a>
 ## Queue status
 
 | Status | Scope and owner |
 | --- | --- |
-| Next finite-window collective electrical observation | [Observation design](#organized-electrical-finite-window-design): derive an independently measurable collective response with explicit sensor dynamics, finite windows and component-shape departure; assess physical-unit conditioning before any new response |
+| Active collective effective-law admission | [State and inherited response](#organized-effective-law-admission): admit identity and finite predictive state for the supplied matrix-response comparison under its own law, storage, preparation and clock |
+| Deferred finite-window collective electrical observation | [Observation design](#organized-electrical-finite-window-design): reopen after effective-law admission; retain sensor dynamics, physical loading, finite windows and independent feasibility before a new response |
 | Closed scoped physical feasibility review | [Independent physical admission](#organized-electrical-physical-feasibility): no reviewed apparatus admits the frozen endpoint-voltage protocol; clock-independent precision/aperture demand, junction-capacitance shape mismatch and missing complete preparation remain distinct |
 | Closed conditional electrical discrimination | [Current-amplitude discrimination](#organized-electrical-robust-current-test): one frozen joint-box assessment separates two own-law current envelopes under one input/statistic, with nonzero calibration, tracking and aperture error |
 | Closed conditional fixed-support electrical specification | [Five-child electrical observation protocol](#organized-electrical-fixed-support-protocol): complete C5 dictionary, actual-source departure, primitive voltage observation and supplied-work translation; physical preparation, timing and tracking remain unadmitted |
@@ -380,70 +190,46 @@ defining requirements, supplied hypotheses and derived restrictions.
 The [outer-winding source](../nodal/ORGANIZED_OUTER_WINDING.md),
 [single-history observation](../nodal/ORGANIZED_SEQUENTIAL_OBSERVATION.md) and
 [relative-origin interaction](../nodal/ORGANIZED_EXTERNAL_REGISTRATION.md)
-now support conditional formation, observation and finite collective response
-on one carried source history. The response comparison separates an all-origin
-upper bound for outer-one sources from a larger response at a source-dependent
-witness origin for each outer-zero source. It supplies no alignment selector,
-continued-contact identity, operational preparation or measured physical
-correspondence. These are the principal remaining dependencies.
+supply conditional formation, observation and finite collective response.
+These results do not establish an alignment selector, indefinite maintenance,
+operational preparation or a measured physical correspondence.
 
-The [continued-contact theorem](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md)
-now closes the first geometry and control-source question. The actual
-outer-zero family at supplied donor origin zero retains its constituents
-and converges after the whole observation word. The outer-one carrier,
-however, cannot remain in its old acute chart. In the full fine state,
-any stable stationary organization retaining all nine acute outer windings
-must have internal phase defect `D>9d>1.6`, whereas the actual initial family
-has `D<1.395e-16`. That is an obstruction to retaining the same internal
-shape, not proof that the composite winding disappears. Whether a stable
-reorganized fine state exists remains a missing geometric premise for the
-proposed stable-stationary maintenance route.
-Neither source entry nor a loss deadline follows from the obstruction.
-
-The [reflection theorem](../nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md)
-excludes another complete stationary sector without a small-defect or acute
-gap assumption. Under the declared wheel reflection with phase inversion
-about the hub, the marked constituent windings and odd cycle length force
-slot-independent relative origins. Every retained-outer-winding stationary
-state then has a negative full-state Hessian direction. The exact cubic
-saddle shows that existence itself is possible. Any stable target must lie
-outside every reflection sector of this form; neither an invariant source
-symmetry nor spontaneous symmetry breaking has been established. This is a
-new structural restriction, not a refinement of an observation threshold.
-
-The [finite stationary search](#organized-contact-stationary-search) closes
-without a target certificate or a global exclusion. Its chamber theorem
-sharpens the source-compatible domain but supplies no convex storage or
-general stationary classification. Repeating local optimization would not
-resolve that missing proof. The finite interaction and its
+The separate [continued-contact](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md)
+and [reflection](../nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md)
+obstructions retain their own sectors. The
+[finite stationary search](#organized-contact-stationary-search) found no
+target certificate and proved no global exclusion; source-compatible
+stationary geometry remains open. Finite interaction and its
 [joint resource domain](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result)
-do not depend on indefinite outer-one capture. The new domain admits all
-twelve primitive allowances through `1e-6`, recovery dwell `8e10` and larger
-errors in both reading stages. Earlier preparations and evidence retain
-their original budgets. The supplied common-form offsets reaching `+/-8184`
-and assembly-work floor remain; structural units are not laboratory units.
+do not require that indefinite maintenance result. Repeating local starts
+would not resolve the missing certificate mechanism.
+
 The [finite interface obstruction](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result)
-now separates a purely multiplicative scalar factor from structure-dependent
-interaction. It does not identify which independent physical quantity, if
-any, this state could represent. The [charge-map result](../nodal/ORGANIZED_CHARGE_OBSERVATION.md)
-excludes the stated density-only realizations. The [retained-state comparison](../nodal/ORGANIZED_ELECTRICAL_REALIZATION.md)
-now supplies an exact passive electrical representation of the six-child
-carrier while excluding the direct fine-island map. The
-[actual-source comparison](../nodal/ORGANIZED_ELECTRICAL_SOURCE.md#source-electrical-admission-result)
-now controls internal deviations throughout the declared contact. The
-[operational comparison](../nodal/ORGANIZED_ELECTRICAL_IDENTIFICATION.md)
-separates the unfitted fixed-law component relation from calibration and
-establishes a finite-work obstruction to the literal instantaneous phase
-events. Their finite-duration replacement is the immediate dependency;
-the supplied Josephson reference still does not derive its material law or
-quantum constants from TNFR.
+and [charge-map result](../nodal/ORGANIZED_CHARGE_OBSERVATION.md) restrict
+scalar-factor and density-only interpretations. The
+[complete-state electrical comparison](../nodal/ORGANIZED_ELECTRICAL_REALIZATION.md),
+[actual-source bounds](../nodal/ORGANIZED_ELECTRICAL_SOURCE.md#source-electrical-admission-result)
+and [operational dictionary](../nodal/ORGANIZED_ELECTRICAL_IDENTIFICATION.md)
+retain conditional realizations. Finite actuation and current discrimination
+are closed in their declared models; physical feasibility is not admitted.
+The supplied Josephson reference does not derive its material law or quantum
+constants from TNFR.
+
+The missing matrix response exposed by that audit is a concrete foundational
+question, rather than a reason to repeat the same experiment more precisely.
+The [new complete-law owner](../nodal/ORGANIZED_EFFECTIVE_LAW.md) supplies its
+state, two rows and storage/work identity. Those algebraic results do not
+supply acquisition or a finite identity/prediction certificate. Closing that
+gap tests how sufficient state, inherited response and storage fit together
+before a sensor model is added.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
 | Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Unresolved stable-stationary maintenance route; no active search.** The finite search is closed without a certificate; other classes do not repair uninterrupted maintenance. Reopen with a constructive target or an analytical certificate mechanism, not more starts |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
-| Fundamental physical properties and independent observation | Admit or obstruct the preparation and instrumentation premises of the phase-free current discriminator using independent physical evidence | **Sole immediate gate** below. Two prospective record sets are conditionally separated; no physical record has selected a law. No hardware purchase, deployment, response fitting or new numerical scan is active |
+| Sufficient collective state and inherited response | Decide own-law identity and finite predictive sufficiency for the declared matrix-response comparison; distinguish scalar capacity, response geometry and eliminated-state memory | **Sole active gate** below. Exact balance and invertible coordinates alone do not close it; a finite consequence or scoped obstruction is required |
+| Fundamental physical properties and independent observation | Admit complete preparation, loading and an independently measurable finite-window consequence after the collective law is admitted | **Deferred dependency.** The endpoint-voltage feasibility review is closed without physical admission; conditional record separation remains intact |
 | Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Conceptually critical**, with no new compatibility scan active. If a countermodel shares all proposed premises, the uniqueness claim fails in that scope |
 | Autonomous preparation, support, capacity and events | Supply actual occurrence and state-evolution laws when claiming autonomous assembly. [Event work](../nodal/RELATIONAL_SUPPORT_EVENTS.md), passivity and [operator descent](../STRUCTURAL_OPERATORS.md) do not select occurrence | **Claim-dependent**. Current contacts and preparation remain supplied. Do not postpone investigation of the existing conditional composite until every origin question is solved |
 | Internal activity and recurrence | Separate preservation of identity from permanent motion; the [positive-loss boundary](../nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission) and alternative-mobility results retain different premises | **Prepared alternative** for a named claim requiring sustained activity. Neither a stationary identity nor finite response establishes recurrence or transfers an invariant measure |
@@ -456,8 +242,8 @@ An added observable earns inclusion by deciding the selected prediction or a
 meaningful minimality obstruction. Existing failed physical-source admissions
 remain failed; more samples cannot repair their complete-law mismatches.
 
-Only preparation and measurement feasibility is active. The table is a reassessment
-of dependencies, not a fixed sequence or parallel campaign list. It preserves
+Only the [effective-law gate](#organized-effective-law-admission) is active.
+The table assesses dependencies, not a fixed sequence or parallel campaigns. It preserves
 the objective of generated, physically testable organization without identifying
 winding, phase cancellation or storage with material constituents.
 
@@ -629,69 +415,91 @@ physical impossibility nor a rejection of either current law follows.
 The source receipt and static algebra controls retain this review without
 changing any frozen declaration, producer or analytical result.
 
+<a id="organized-effective-law-admission"></a>
+### Immediate question: collective state and inherited response
+
+**Can a prepared organized reference retain a declared identity and a finite
+predictive response when its collective form dynamics has a matrix response?**
+Use the [complete C5 comparison](../nodal/ORGANIZED_EFFECTIVE_LAW.md), with
+fixed `W_r=I+r*L^2`, as the bounded test case. Its two-row law, storage/work
+balance and chart controls are admitted conditional algebra. Its law is
+supplied, not selected by the nodal row or inherited from the 45-node source.
+
+1. **Fix the question before evaluating a response.** Declare a bounded
+   parameter interval with nonzero r, preparation class, identity criterion,
+   clock, input, horizon and observation. Begin with the prepared collective
+   reference; a fine-node extension or a laboratory sensor would add premises
+   and is not silently part of this gate.
+2. **Use the complete law and its own storage.** Check the proposed domain,
+   joint symmetries, input work, boundary and retained coordinates against the
+   owner. Primitive scalar capacity, a collective response matrix and a
+   coordinate change have different meanings. The old storage can increase
+   under this law, so old decay or acquisition bounds cannot be reused.
+3. **Close a finite identity and prediction question.** Prove own-law identity
+   retention and a controlled response on the declared domain, or establish
+   a scoped obstruction. Show which state the prediction consumes and what
+   would be lost by a proposed reduction. Add derived memory only if actual
+   elimination calls for it, retaining hidden initialization and forcing.
+   An invertible rewriting, a common equilibrium or a more precise version
+   of the old response is not sufficient closure.
+4. **Integrate only a justified reusable mechanism.** Reuse shared exact
+   algebra, reduction and integrator owners when their contracts apply.
+   Any reserved numerical response requires a newly frozen preparation,
+   complete law, observation and budget before evaluation. Transfer of
+   acquired child identities or source transport would need its own fine
+   law, map and error proof; it is not an acceptance shortcut.
+
+Close with a canonical theorem/counterexample and its meaningful controls,
+then reassess the dependency below. This gate does not require a unique
+fundamental law, autonomous origin or universal scale selection to be solved.
+It does require stating what is supplied and what has actually been derived.
+
 <a id="organized-electrical-finite-window-design"></a>
-### Immediate question: finite-window collective electrical observation
+### Deferred: finite-window collective electrical observation
 
-**Can an independently measurable finite-window response retain an unfitted
-consequence of organized TNFR dynamics with physically declared loading?**
-The task is a new observation-law derivation and feasibility assessment,
-not another evaluation of the old endpoint-voltage corner.
+Reopen after the active gate supplies an admitted state/law/identity domain
+or a scoped obstruction that changes the physical comparison. The question
+remains whether an independently measurable finite-window response preserves
+an unfitted consequence with physically declared loading. This would be a
+new protocol, not another evaluation of the old endpoint-voltage corner.
 
-1. **Select and declare one observation mechanism before its response.**
-   Examine integrated current or flux sensing using primary terrestrial
-   methods. Keep sensor state, transfer, input, clock, finite support and
-   loading; state whether errors are deterministic or jointly statistical.
-   Do not use an inferred phase or the tested amplitude to calibrate itself.
-2. **Derive the complete coupled description.** At minimum account for a
-   positive ring-capacitance term, rather than absorbing it into scalar
-   calibration. Derive both rows, storage and any memory from discarded state.
-   Distinguish a prepared collective reference from the actual fine organization;
-   transfer formation and identity only with a matching source/law proof.
-3. **Check conditioning before numerical campaigns.** Obtain a laboratory-unit
-   separation/availability condition including acquisition windows, preparation,
-   input work and component/measurement defects. Compare one consistent regime
-   with independent method evidence. Close with a supported prospective design
-   or a scoped obstruction; relaxing old error numbers is not admission.
-4. **Preserve prospective evaluation.** No hardware purchase, experiment,
-   source replay, parameter scan or response fitting is active. A candidate
-   that passes complete admission still needs a new frozen protocol and
-   separate calibration/reserved data under P1-P5 before evaluation.
+- Declare one observation mechanism with sensor state, transfer, input,
+  clock, finite support and loading; distinguish deterministic error bounds
+  from joint statistical coverage. No tested amplitude or inferred phase
+  may calibrate itself.
+- Match both dynamical rows, storage and any eliminated-state memory to the
+  admitted model. Retain positive ring-capacitance shape and distinguish a
+  prepared collective reference from a formed fine organization.
+- Establish laboratory-unit conditioning with windows, preparation, work,
+  component defects and independent terrestrial method evidence before a
+  campaign. Close with a supported prospective design or a scoped obstruction;
+  relaxed old error allowances do not admit a new apparatus.
+- A passing design still needs separate calibration and reserved data under
+  P1-P5. No hardware purchase, deployment, source replay, numerical scan,
+  response fitting or physical-data evaluation is active.
 
-Recovering established physical relations remains the generative objective;
-the test need not predict a deviation from known physics. Independent
-calibration and a previously unfitted consequence remain necessary before
-an equivalent circuit can provide physical evidence for this TNFR model.
+Recovering established physical relations remains the objective; the test
+need not predict a deviation from known physics. An equivalent circuit
+becomes physical evidence only with an independent preparation/measurement
+bridge and a previously unfitted consequence. The shifted registration is
+outside this zero-frustration comparison: its phase biases cannot be silently
+gauged away or identified with magnetic flux.
 
-The shifted registration is outside this first zero-frustration realization:
-its effective phase biases cannot be silently gauged away or identified with
-magnetic flux. It is not a parallel gate. General collective maps and physical
-constituent formation remain open under the [ontology](../EMERGENT_ONTOLOGY.md#research-target-physical-properties-of-collective-patterns).
+The [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena)
+starts each physical question from required transformations, composition,
+balances and measurable consequences. Conserved structure alone is not
+identified charge; internal phase rotation alone is not physical spin.
+General collective maps, constituent formation and recurrence across scales
+remain open under the [ontology](../EMERGENT_ONTOLOGY.md#research-target-physical-properties-of-collective-patterns).
 
-No new stationary search, trajectory campaign or physical-data fitting is
-active. The unresolved maintenance route retains the complete source chamber,
-possible special-source stable manifolds and asymptotic approaches to cuts;
-finite search nonfinding is not a global obstruction or actual winding loss.
-Reopen it with a constructive target or an analytical certificate mechanism.
-
-For each subsequent law or hypothesis, record its status, independent
-premises, consequences, countermodels and decision in the existing definition
-or proof owner and parameter ledger. Close or revise the active gate before
-selecting the next unresolved dependency here. A proposed law is not accepted
-merely because it produces a desired object, and a retained hypothesis is not
-reported as derived. This is a dependency-ordered investigation, not a promise
-that one uniquely selected law or a finite exhaustive list must exist.
-
-These are dependencies of this one plan, not parallel active campaigns.
-The physical comparison begins with a property of fundamental physics to
-explain, using the [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena)
-to state its required transformations, composition, balances and observable
-consequences. Then assess the proposed TNFR derivation and its missing premises,
-and select an independent experimental discriminator. The physical question
-guides the choice of accessible data or apparatus. A conserved structural
-quantity alone does not identify electric charge, and internal phase rotation
-alone does not identify physical spin. Laboratory examples supply controls
-and discriminators without replacing the generative objective. Substrate
-origin, universal laws and recurrence across scales remain open hypotheses.
+For each subsequent law or hypothesis, retain its premises, consequences,
+countermodels and decision in the existing definition or proof owner.
+Close or revise the active gate before selecting another dependency here.
+A law is not accepted merely because it produces a desired object; no finite
+exhaustive list or uniquely selected law is promised. The stationary route
+remains separate and reopens only with a constructive target or an analytical
+certificate mechanism, preserving the complete source chamber, possible
+special-source stable manifolds and asymptotic approaches to cuts.
 
 <a id="organized-contact-stationary-search"></a>
 ## Closed finite stationary search and marked-chamber admission
@@ -710,9 +518,8 @@ fifteen selected windings: 32 further cycle-space directions remain
 unspecified, and an explicit same-windings counterexample occupies a different
 class. Existing source bounds place the actual preparation in the product
 class. Uninterrupted cut-free maintenance cannot leave it. This closes the
-domain-admission ambiguity. The stationary question remains open while the
-[current gate](#current-g3-gate) addresses independent preparation and
-measurement feasibility for the fixed five-child current discriminator.
+domain-admission ambiguity. The stationary question remains open and separate
+from the [current gate](#current-g3-gate).
 It identifies no particle property and does not alter previous acquisition,
 finite interaction or outer-zero capture results.
 

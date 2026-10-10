@@ -910,6 +910,14 @@ selection principle needs independent justification; reproducing a desired
 pattern does not provide it. Distinguish genuinely different completions from
 coordinate or clock changes that transform every row of the same model.
 
+The [matrix-response comparison](nodal/ORGANIZED_EFFECTIVE_LAW.md)
+makes that distinction explicit for a changed collective form row: it needs
+its own storage and input action, whereas a regular charge-like chart
+transforms both rows of that same law. Shared equilibria do not transfer the
+old storage bound, fine-source acquisition or finite observation certificate.
+Neither a static matrix nor closed collective equations supply an eliminated
+hidden-state history or a collective event's occurrence law.
+
 The [organized-target comparison](nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-constitutive-freedom)
 retains positive loss, target storage, the complete tangent and the quadratic
 field, yet reverses the nominal mixed interaction's leading nonlinear sign.

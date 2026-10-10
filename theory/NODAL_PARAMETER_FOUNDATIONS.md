@@ -276,6 +276,12 @@ The [inherited metric](nodal/INHERITED_FORM_DYNAMICS.md#132-inherited-metric-res
 already distinguishes coordinate mobility from primitive capacity. Reusing
 these results prevents another investigation based on an unproved identification.
 
+The separate [matrix-response comparison](nodal/ORGANIZED_EFFECTIVE_LAW.md)
+keeps scalar capacities fixed while specifying a coupled pressure map and
+its own storage. Its static matrix is neither a derived capacity law nor a
+memory kernel. Changing to charge-like coordinates transforms both evolution
+rows; it does not justify replacing scalar capacity in the native executor.
+
 The derived-form realization has its own compact
 [variable contract](nodal/DERIVED_FORM_PHASE.md#variable-contract-for-the-derived-form-family)
 and [joint-realizability result](nodal/DERIVED_FORM_PHASE.md#joint-realizability-of-collective-relations).

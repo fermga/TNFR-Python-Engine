@@ -13,6 +13,10 @@ A collective measurement map is allowed; sensors need not equal primitive EPI.
 The primary line is:
   information -> interaction -> complete law -> organization -> observation
 
+Constructed organizations also test their foundations: an altered interaction
+or observation boundary can expose missing state or change the complete law.
+Such a change requires its own admission before a new physical protocol.
+
 This file classifies contributions. It contains no task queue, theorem
 inventory or run history. Use the maintained owners:
 
@@ -35,6 +39,8 @@ and what state predicts its future. Instantaneous current and sufficient
 future state are different obligations. Derived moments need not be new
 primitive variables. Conditional selection and countermodels identify what
 remains undetermined; compatibility alone cannot select a fundamental law.
+Matching equilibria or full tangents does not transfer nonlinear source
+transport, acquisition or capture bounds to a changed law.
 
   theory/NODAL_PARAMETER_FOUNDATIONS.md#derived-information-ledger
   theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md
@@ -64,6 +70,11 @@ Repeated composition connects all three contributions: sufficient boundary
 state must predict a parent's interaction while the children retain their
 identities. Exact-family inheritance, controlled off-family behavior and
 formation from acquired children remain separate obligations.
+Primitive nodal capacity, inherited scalar response and collective matrix
+mobility must be distinguished. The inherited law retains its phase row,
+clock, input pairing and storage, including the information needed at a
+changed boundary. A static matrix is not temporal memory; eliminating an
+evolving constituent or sensor can require memory and hidden initialization.
 
   theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md
   theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md
@@ -87,9 +98,14 @@ The atlas retains candidate mechanisms and
 source reviews; protocols are designs until admitted. Public terrestrial
 surface data or ordinary laboratory protocols must be usable with a workstation.
 No extraterrestrial observations or large-facility programme is part of this line.
+The electrical feasibility audit supplies a concrete link back to the
+foundations: scalar calibration does not cover an altered capacitance shape.
+The resulting complete-law question belongs to contributions A and C;
+physical readout design depends on its admitted state, dynamics and boundary.
 
   theory/research/FIVE_STAGE_EXECUTION_PLAN.md#supporting-measurement-bridge
   theory/PHYSICAL_REGIME_CORRESPONDENCES.md
+  theory/research/ORGANIZED_ELECTRICAL_FEASIBILITY.md
   theory/research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md
   theory/research/PASSIVE_TRANSPORT_PROTOCOL.md
 

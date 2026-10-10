@@ -436,6 +436,14 @@ to a different receiver with explicit finite error for discarded modes and
 initial uncertainty. This supplies neither an exact nonlinear quotient nor
 physical identification; the full-law identity proof remains separate.
 
+The [matrix-response comparison](nodal/ORGANIZED_EFFECTIVE_LAW.md)
+distinguishes a complete prepared collective law from a derived description
+of acquired constituents. Its retained form/phase state is sufficient for
+that law; using it for a finer organization still requires a reduction and
+own-law identity bounds. A static response matrix changes the joint
+storage/response contract without itself supplying temporal memory or a
+new primitive capacity.
+
 A larger NFR would organize the internal nodes or patterns without erasing
 their existence or motion. The [conservative sine replica calculation](nodal/SINE_PAIR_STATE.md#sine-replica-inheritance)
 gives a restricted exact example of inherited influence: internal phase

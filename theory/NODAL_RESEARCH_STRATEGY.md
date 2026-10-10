@@ -18,7 +18,9 @@ The primary progression derives organization and its interaction properties
 from the nodal dynamics; it requires no prior identification of a primitive
 coordinate with a laboratory sensor. Direct-realization audits are auxiliary.
 Independent physical observation becomes the next obligation when a derived
-collective property has a specific falsifiable comparison.
+collective property has a specific falsifiable comparison and its complete
+preparation, interaction and observation model is admitted. A realization
+audit can expose a missing law or retained state before that point.
 That comparison starts from a property of fundamental physics and its precise
 symmetry, conservation, composition and measurement requirements. Assess what
 TNFR derives and what remains supplied before selecting the experimental
@@ -74,6 +76,17 @@ when it decides one of these questions.
 Physical confrontation can begin once a concrete signature and independent
 bridge are admitted, without waiting for unique law selection or substrate
 origin. The plan selects the next bounded question from these dependencies.
+
+The [electrical feasibility audit](research/ORGANIZED_ELECTRICAL_FEASIBILITY.md)
+provides such a foundational question: additional ring capacitance changes
+the collective form row by a matrix while leaving the voltage-phase row
+unchanged. The priority is to determine the sufficient state and complete
+law of that changed organization before designing its physical readout.
+This uses an explicit counterexample to scalar calibration; it does not
+promote the electrical realization to a universal TNFR law or replace the
+earlier conditional organizations with prepared ideal circuits. Gate status,
+acceptance and the conditions for returning to finite-window observation
+remain in the [sole queue](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).
 
 | Question | Required distinction | Owner |
 | --- | --- | --- |
@@ -139,6 +152,36 @@ state. Eliminating constituents can instead induce memory, correlations or
 many-body dependence. Such an effective law retains its hidden initialization,
 forcing and approximation domain; it cannot silently replace the fine law.
 
+### Inherited response, storage and predictive state
+
+Primitive capacity, collective mobility and observation geometry have
+different owners. A matrix mapping collective pressure to a form rate does
+not by itself replace nonnegative scalar nodal capacity. The
+[parameter foundation](NODAL_PARAMETER_FOUNDATIONS.md) owns primitive
+admission, the [scale bridge](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#1-pure-epi-coarse-graining)
+gives a conditional inherited response factor, and the
+[ontology](EMERGENT_ONTOLOGY.md#generative-bound-organization) requires retained
+constituents and interaction-relevant boundary information.
+
+The [matrix-response comparison](nodal/ORGANIZED_EFFECTIVE_LAW.md)
+owns the concrete complete law motivated by the feasibility audit. Its
+static matrix acts on the collective form row; it is not an established
+universal effective law, a memory kernel or a new formation theorem. A
+coordinate change that removes it from that row also changes other consumed rows.
+Admission therefore compares the complete law, its storage and input pairing,
+symmetries, retained state and identity domain. The original acquired-state
+certificates cannot be inherited by labeling the matrix a small correction.
+
+This connects three reusable mechanisms: scale reduction determines what
+response geometry is inherited; storage identifies the corresponding work
+and loss; memory records the influence of eliminated dynamical state.
+Static mobility alone adds no temporal memory. If a boundary or sensor has
+its own evolving state, either retain that state or derive its elimination
+with initialization and forcing intact. Continuous predictive closure also
+does not descend a collective operator: its targets, history, admission and
+occurrence remain subject to the
+[event criterion](STRUCTURAL_OPERATORS.md#collective-operator-descent).
+
 <a id="formation-premise-ledger"></a>
 ## 3. Model and formation premises that survive reuse
 
@@ -151,7 +194,7 @@ transferring a correct result to an incompatible model.
 | Native resultant-direction exchange | Regular argument-domain admission; continuous claims and executor behavior remain distinct |
 | Positive-loss sine dynamics | Dissipation and full-state preparation bounds remain premises of acquisition, recovery and composition |
 | Conservative sine dynamics | Formation, invariant-family maintenance, geometric identity and recurrence have different preparation/support hypotheses |
-| Alternative mobility or storage | Shared balances or equilibria do not transfer invariant measures or nonlinear trajectories |
+| Alternative mobility or storage | Shared balances, equilibria or full tangents do not transfer nonlinear remainders, source transport, acquisition or invariant measures |
 | Operators and hybrid events | Configured words, jumps and live preconditions neither inherit continuous-storage guarantees nor derive occurrence |
 
 Formation starts without the declared target identity. A two-sided invariant
@@ -200,131 +243,61 @@ dynamics survive composition, then determine what forms that organization.
 An exact re-encoding is not necessarily a reduction, and a repeated graph
 or nested declaration alone does not derive a hierarchy.
 
-The [organized pair law](nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md)
-and [network compatibility](nodal/ORGANIZED_NETWORK_COMPATIBILITY.md) already
-show why boundary registration, amplitudes, form scaling and clock maps
-must be retained together. Repeating those factors algebraically adds no
-identity or source admission. The
+Boundary registration, amplitudes, form scaling and clocks must be retained
+together: the [organized pair law](nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md)
+and [network compatibility](nodal/ORGANIZED_NETWORK_COMPATIBILITY.md) explain
+when their charts agree. The
 [predictive repeated composition](nodal/REPEATED_ORGANIZED_COMPOSITION.md)
-admits a finite interaction beyond its exact registered family: its parent
-response error resolves the specified contact contrast while fine deviations
-and both identity levels remain bounded. Discarded child-to-port association
-still prevents exact closure. Reuse requires the same source, contacts and
-finite domain; another grouping needs its own predictive and identity bounds.
-A closed stationary parent alone does not test this capability.
+adds finite off-family control, but discarded child-to-port association
+still prevents exact mean closure. Equal parent means therefore need not
+predict the same response, as the
+[restoring-response comparison](nodal/ORGANIZED_PARENT_RESTORING_RESPONSE.md)
+also demonstrates. Another grouping needs its own state and identity bounds.
 
-[Carried-source capture](nodal/ACQUIRED_ORGANIZED_NETWORK_CAPTURE.md) and
-[joint acquisition](nodal/ORGANIZED_JOINT_ACQUISITION.md) supply methods and
-particular source families, not universal preparation certificates. A new
-support or interaction must re-admit their hypotheses and work. A supplied
-parent registration or neighborhood can establish conditional maintenance;
-it cannot establish that the parent formed from independently acquired
-children. The [parent-acquisition result](nodal/ORGANIZED_PARENT_ACQUISITION.md)
-closes this entry obligation for one declared matching-support source, carrying
-all original fine errors into a resolved prediction from the actual reached
-means. Its antipodal control retains acquired constituents without acquiring
-the marked parent registration. The two support factors still have identical
-nominal relaxation laws: prepared amplitude differences do not establish
-autonomous hierarchy or timescale selection. A composite's response to loss
-and restoration of its internal registration needs its own admission. The
-[restoring-response result](nodal/ORGANIZED_PARENT_RESTORING_RESPONSE.md)
-provides it for one supplied internal phase event, with original uncertainty,
-work and child identity retained. Its resolved later interaction distinguishes
-equal initial parent means; retaining the child association supplies the missing
-predictive information. This is a conditional response on held support, without
-an inferred occurrence law or physical binding claim.
+Source transport is the connection between exact-family inheritance and
+actual formation. [Carried-source capture](nodal/ACQUIRED_ORGANIZED_NETWORK_CAPTURE.md),
+[joint acquisition](nodal/ORGANIZED_JOINT_ACQUISITION.md) and
+[parent acquisition](nodal/ORGANIZED_PARENT_ACQUISITION.md) retain fine
+uncertainty for particular sources and supports. They do not make a supplied
+parent registration a formed identity. The
+[outer-winding construction](nodal/ORGANIZED_OUTER_WINDING.md) similarly needs
+both full-state source transport and a separate product barrier to retain
+the children while acquiring a parent winding. Matching child identities
+does not remove the influence of their form preparation and attachment work;
+prepared amplitude differences do not select autonomous hierarchy or clocks.
 
-An admitted hybrid map additionally needs a realization argument if it is
-claimed to follow from continuous actuation. The
-[form-actuation bound](nodal/ORGANIZED_PARENT_CONTINUOUS_ACTUATION.md)
-retains the actual acquired endpoints and separates their storage difference
-from path loss. It excludes every integrable form input under the fixed
-one-unit duration and three-unit work budget. A larger necessary budget or
-duration by itself would still not construct an admissible path or justify
-autonomous occurrence.
+Realizability connects events to continuous dynamics through an admitted
+input and work law. The [form-actuation obstruction](nodal/ORGANIZED_PARENT_CONTINUOUS_ACTUATION.md)
+separates an endpoint storage difference from the loss along a path. Its
+fixed budget and duration cannot be relaxed retrospectively by a
+[constructive path](nodal/ORGANIZED_PARENT_CONSTRUCTIVE_ACTUATION.md) under
+different premises. The [collective construction](nodal/ORGANIZED_PARENT_COLLECTIVE_ACTUATION.md)
+reduces observation and actuation authority while carrying fine-state error,
+work and release recovery. Neither a necessary budget nor a supplied
+successful input establishes an autonomous occurrence law.
 
-The [constructive realization](nodal/ORGANIZED_PARENT_CONSTRUCTIVE_ACTUATION.md)
-adds a sufficient result under its own frozen four-unit path. It retains
-actual endpoint forms, all fine source errors, child identity during actuation
-and the signed net work budget. Its full-state initialization and all-node
-actuation authority are reduced by the
-[collective construction](nodal/ORGANIZED_PARENT_COLLECTIVE_ACTUATION.md),
-which uses eight initial means and four uniform channels. Its same-input
-comparison carries the unresolved fine state into actual work, approximate
-endpoints and a separately admitted recovery. The eight-coordinate forecast
-uses no release measurement. This is controlled collective sufficiency for
-one preparation and horizon; exact observation, supplied timing and the input
-source remain premises rather than derived autonomous behavior.
+Source dynamics and retained preparation constrain what an available
+budget can accomplish. The [finite-reservoir comparison](nodal/ORGANIZED_PARENT_RESERVOIR_EXCHANGE.md)
+excludes its declared disruption criterion despite a consistent balance and
+retained children. The [fixed-port memory classification](nodal/ORGANIZED_PARENT_RESERVOIR_MEMORY.md)
+shows how conserved preparation information can instead label distinct
+attracting geometries. An [organized-source port](nodal/ORGANIZED_SOURCE_PORT.md)
+retains both reciprocal rows and new contact storage; its exact carrier can
+reconstruct donor means, while general fine means still omit correlations.
+Its [full-state capture](nodal/ORGANIZED_SOURCE_CAPTURE.md) needs a separate
+barrier. Source-inclusive balance, sufficient state and capture are coupled
+obligations, not interchangeable certificates.
 
-The separate [finite-reservoir model](nodal/ORGANIZED_PARENT_RESERVOIR_EXCHANGE.md)
-addresses that source premise through a declared autonomous exchange. It has
-a consistent storage balance and preserves the original children, but its
-fixed registration-loss criterion is excluded by a source-inclusive upper
-bound. This distinguishes an admitted storage budget from the dynamics required for
-a response. The negative result retains its source and readout; changing a
-reservoir law or asking about another time is a separately declared question.
-
-The [fixed-port memory classification](nodal/ORGANIZED_PARENT_RESERVOIR_MEMORY.md)
-then distinguishes complete law from retained preparation: at zero leakage,
-one lifted conserved quantity labels different locally stable geometries.
-Original positive leakage has a separate local equilibrium and attraction
-argument. The comparison retains all fine transverse directions and explicit
-traps; it does not promote an equilibrium family to a preparation mechanism.
-Thus a shared sign of storage loss does not select stable organization or
-erase the information consumed by the complete dynamics.
-
-The [organized-source port](nodal/ORGANIZED_SOURCE_PORT.md) then derives
-interaction from an existing constituent rather than supplying a scalar
-reservoir row. Both form and phase reactions and the new contact storage
-remain explicit. Its exact carrier restriction can reconstruct donor means
-from host means and conserved preparation totals; general fine means still
-lose interaction-relevant correlations. This establishes which description
-is sufficient under which hypotheses, without transferring auxiliary-source
-equilibria or claiming finite maintenance of the attached acquired objects.
-
-The [full-state capture result](nodal/ORGANIZED_SOURCE_CAPTURE.md) admits that
-actual source through an acute-cell barrier, with every fine preparation
-error and both evolution rows retained. All five windings persist and the
-joined registration converges. Removing only the donor contact from the
-same prepared state preserves different component means and excludes the
-same alignment. This is a controlled collective property under the supplied
-law and attachment. It does not exhaust possible properties of more complex
-organizations or make their effective laws identical to a constituent law.
-
-The [outer-winding result](nodal/ORGANIZED_OUTER_WINDING.md) tests a new
-identity on a different supplied product support. Five acquired C9s retain
-their internal windings while all nine outer slot cycles acquire winding
-one from initial winding zero. The exact carrier map transfers both rows
-with its clock; full-state source transport and a separate product barrier
-are needed to extend the primitive C5 method to actual acquired children.
-The paired zero-common-form source remains outer-unwound. Supplied form
-information and attachment work therefore matter even when child identities
-match. An additional identity and an interaction observable sensitive to it
-are separate results. The [finite probe comparison](nodal/ORGANIZED_OUTER_RESPONSE.md)
-now resolves a difference between the actual acquired organizations' paired
-receiver responses, with complete nonlinear remainders and signed work.
-The relevant additional information is relational state; this particular
-contrast does not uniquely identify a winding sector. Neither result implies
-autonomous preparation or exhausts the properties available to more complex
-organizations.
-
-The [unknown-origin observation contract](nodal/ORGANIZED_OUTER_OBSERVATION.md)
-then distinguishes response discrimination from identity inference. It
-recovers two boundary quadratures from opposite finite probes and combines
-all five interfaces before identifying a winding. Original fine deviations,
-common-baseline error correlations and branch consistency survive that
-reduction. The result is uniform on a declared state class containing the
-previous acquired sources; formation of the larger class and realization of
-its matched observation branches remain separate obligations.
-
-The [single-history result](nodal/ORGANIZED_SEQUENTIAL_OBSERVATION.md)
-then removes that matched-preparation dependency. Endpoint combinations
-cancel constant and affine background slopes, while bounds retain background
-curvature and the motion induced by every probe. Returning the imposed offset
-to zero is not a reset. The initial identity is inferred from public readings
-and retained through the finite word, with cumulative absolute event work
-accounted separately. These are sufficient observations under a known complete
-law; they do not select that law or replace the state needed for later interaction.
+Observation connects these state distinctions to accessible records.
+The [finite probe comparison](nodal/ORGANIZED_OUTER_RESPONSE.md) resolves a
+relational response contrast without uniquely identifying a winding sector.
+The [unknown-origin contract](nodal/ORGANIZED_OUTER_OBSERVATION.md) needs
+multiple interfaces, consistent branches and correlated baseline errors for
+identity inference. The [single-history construction](nodal/ORGANIZED_SEQUENTIAL_OBSERVATION.md)
+removes matched preparation while retaining cumulative disturbance and work;
+returning a commanded offset to zero is not a reset. These observations
+infer identity under a supplied complete law. They neither select that law
+nor replace the state needed to predict later interactions.
 
 ### Ordered geometry connects transfer to formation
 
