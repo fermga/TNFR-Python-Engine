@@ -1,14 +1,18 @@
-"""Analytic small-support controls for detached stationary root inclusion."""
+"""Analytic controls for detached stationary root inclusion."""
 
 from dataclasses import FrozenInstanceError
 from fractions import Fraction as Q
 from itertools import repeat
 
+import numpy as np
 import pytest
 
 from tests.sine_evidence_helpers import forbid_sine_regeneration
 from tnfr.mathematics._rational_interval import I, pi_interval
 from tnfr.physics import _organized_stationary_certificate as owner
+from tnfr.physics._organized_external_interaction import (
+    _derive_organized_external_interaction,
+)
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -101,6 +105,47 @@ def test_three_node_grounding_and_supplied_inverse_are_checked():
     # Edges meeting the fixed gauge move by r; the third moves by 2*r.
     assert report.lower_edge_hessian[2] < report.lower_edge_hessian[0]
     assert report.lower_edge_hessian[0] == report.lower_edge_hessian[1]
+
+
+def test_full_contact_dimension_certifies_known_constant_phase_control():
+    # Constant phase is an analytic root on this connected support, with
+    # Hessian exactly its unit Laplacian. This exercises all 53 free phases;
+    # it neither searches for a target nor retains the winding-one identity.
+    geometry = _derive_organized_external_interaction()
+    edges = tuple((left, right) for left, right, _ in geometry.weighted_edges)
+    assert len(geometry.node_order) == 54
+    assert len(edges) == 144
+    assert all(weight == 1 for _, _, weight in geometry.weighted_edges)
+    laplacian = np.zeros((54, 54), dtype=np.int64)
+    for left, right in edges:
+        laplacian[left, left] += 1
+        laplacian[right, right] += 1
+        laplacian[left, right] -= 1
+        laplacian[right, left] -= 1
+    assert tuple(laplacian.diagonal()) == (5,) * 45 + (7,) * 9
+    proposed_inverse = np.linalg.inv(laplacian[1:, 1:])
+    assert np.isfinite(proposed_inverse).all()
+    scale = 2**40
+    inverse = tuple(
+        tuple(Q(int(round(float(value) * scale)), scale) for value in row)
+        for row in proposed_inverse
+    )
+    report = owner._certify_organized_stationary(
+        phase_center=(0,) * 54,
+        edges=edges,
+        radius=Q(1, 10**7),
+        inverse=inverse,
+    )
+    assert len(report.grounded_hessian_bounds) == 53
+    assert all(len(row) == 53 for row in report.grounded_hessian_bounds)
+    for actual, expected in zip(report.grounded_hessian_bounds, laplacian[1:, 1:]):
+        assert all(bound.contains(int(value)) for bound, value in zip(actual, expected))
+    assert all(bound.contains(0) for bound in report.phase_current_bounds)
+    assert report.maximum_degree == 7
+    assert report.qbox == report.q0 + 28 * report.radius * report.inverse_norm
+    assert report.root_inclusion_certified
+    assert report.relative_hessian_positive
+    assert report.stable_stationary_certified
 
 
 def test_a_compensated_negative_edge_can_have_positive_relative_hessian():

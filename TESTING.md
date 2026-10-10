@@ -494,6 +494,10 @@ bad preconditioners, compensated negative edges, failed inclusion and
 unresolved zero directions. Exact marked-cycle counterexamples distinguish
 the fifteen observations from the full cut-free component. Test optimizer
 wiring with fakes; do not regenerate the frozen candidate campaign.
+Select `tests/physics/test_organized_contact_search_evidence.py` for read-only
+reconstruction of the retained 24 endpoints, marked branches and strictly
+nonzero interval current witnesses. Historical Git byte association may be
+unavailable in a shallow checkout; that does not skip the endpoint audits.
 
 For [identity-preserving assembly work](theory/nodal/ORGANIZED_ASSEMBLY_WORK.md),
 select `tests/physics/test_organized_assembly_work.py` with

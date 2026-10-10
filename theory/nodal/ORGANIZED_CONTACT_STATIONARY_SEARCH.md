@@ -197,3 +197,54 @@ internal gaps remain `2*pi/9`. This proves membership using the existing
 admitted source contract, without rerunning its producers or implying that
 this interpolation is a trajectory of the law. The chosen zero-mean target
 representative can be translated to any retained common phase mean.
+
+## Retained finite outcome
+
+The declaration and instrument were frozen in
+`75497035c5e0840b164897119ce5a50dcf6bda91` before their single execution.
+The [attempt record](../../docs/assets/organized_contact_stationary/search-v1/attempt.json)
+retains source revision/blobs, numeric backend, the ordered support and branch
+vector. The same directory preserves all 24 exact binary64 starts and
+endpoints. The [outcome](../../docs/assets/organized_contact_stationary/search-v1/outcome.json)
+is `finite_search_without_certificate`.
+
+All 24 SLSQP calls returned a success label for their constrained
+optimization problem. None passed the independent stationary/interior
+screen, so there was no root polish or candidate certificate call. They used
+925 iterations and 1,581 value/gradient calls in total; per attempt these
+ranged from 7 to 63 iterations and from 7 to 106 calls. There was no budget
+extension, exception, source evolution or subsequent retry.
+
+| Endpoint observation | Range over the retained attempts |
+| --- | --- |
+| Grounded gradient infinity norm | `0.0007324218215945957` to `2.4513699598554446` |
+| Tightened-chart slack | `-3.4488e-12` to `6.4838e-14` |
+| Numerical minimum grounded-Hessian eigenvalue | `-3.7261` to `-1.5304` |
+| Phase potential | `62.4010` to `66.6337` |
+
+Every endpoint reached an imposed margin face to solver precision. The tiny
+negative tightened slacks are numerical constraint violations, not exact
+admission of that tightened closed domain. The actual principal cuts are
+still approximately `1/1024` radians away. Read-only reconstruction from the
+stored primitive coordinates checks all fifteen windings and a strictly
+nonzero current at every endpoint; it invokes neither initialization nor
+optimization. Numerical negative curvature here is a local storage
+diagnostic at nonstationary points, not an equilibrium-instability theorem.
+
+The artificial constraints can stop a descent with nonzero gradient.
+Consequently an optimizer success label does not produce a stationary
+organization under the unforced complete law. These 24 endpoints supply no
+stable target, no global nonexistence proof, and no evidence that the actual
+source crosses a winding cut. Other minima in this chamber, the omitted
+margin strips, weakly stable or degenerate targets, and other realizable
+marked classes are not excluded. The new exact certificate remains a
+reusable acceptance mechanism; its analytic controls do not turn this
+nonfinding into a successful 54-node candidate.
+
+The mathematical advance is the complete marked-class restriction and its
+explicit same-fifteen-windings counterexample. A target compatible with
+uninterrupted maintenance from the original source must lie in its product
+marked class. Existence and full-state stability within that class remain
+the missing analytical premise; increasing the number of optimizer starts
+would not supply it. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns the reassessment and next admission, independently of this frozen result.

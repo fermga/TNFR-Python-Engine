@@ -623,6 +623,18 @@ fifteen windings. Stable stationary identity would therefore need to lie
 outside that reflection sector; this does not derive spontaneous symmetry
 breaking or determine the actual acquired source's fate.
 
+The [marked-chamber result](nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md#marked-cycle-information-and-connected-chambers)
+also distinguishes a selected identity observation from the complete
+topological information retained during continuous contact. The fifteen
+windings leave 32 marked cycle-space directions unspecified. Two exact
+configurations can share those observations and differ on a mixed square;
+they cannot connect without a marked cut. Uninterrupted maintenance from
+the prepared product chamber therefore requires its complete marked class.
+This adds no primitive state: those windings are functions of the existing
+phases and support. Nor does a convex lifted chamber make its nonlinear
+storage convex or its coordinates dynamically separable. The bounded
+stationary search supplies no stable target or actual-source loss theorem.
+
 Here structural participation does not identify the entire joint state with
 one scalar EPI coordinate. The current representation also retains phase,
 capacity and support; reducing these to a richer form description would need

@@ -225,9 +225,12 @@ there requires substantial internal redistribution. The
 [reflection obstruction](#organized-contact-reflection-admission) also
 excludes stable stationary retention in the declared full-fine reflection
 sector, even on nonacute charts. An exact retained-identity saddle separates
-existence from stability. The sole next question is
-[stationary identity outside that sector](#current-g3-gate), before
-claiming continued retention or loss of the actual outer-one source.
+existence from stability. The [bounded full-fine search](#organized-contact-stationary-search)
+found no stationary certificate, while its exact chamber audit identifies
+additional mixed-cycle information required by uninterrupted maintenance.
+The next active question is [joint preparation resources for the proved finite interaction](#current-g3-gate).
+Stationary compatibility in the source chamber remains unresolved for the
+proposed stable-stationary maintenance route, with no continued search active.
 The [prepared storage observer](#storage-comparison-producer-admission)
 is retained as an instrument; it has no frozen protocol or reserved response
 and is not the next campaign.
@@ -244,7 +247,9 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next theoretical admission | [Full-fine outer identity outside reflection](#current-g3-gate): decide stationary compatibility on the same interface without the excluded reflection restriction; existence, full-state stability, source entry and actual winding loss remain separate |
+| Next theoretical admission | [Joint preparation resources](#current-g3-gate): distinguish necessary restrictions from sufficient source width, recovery dwell, work and readout budgets for the already-proved finite collective interaction |
+| Unresolved maintenance dependency, no active search | [Source-chamber stationary compatibility](../nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md): a certified stable target or a global stationary obstruction in the complete source class remains missing; actual source capture and winding loss are also unresolved |
+| Closed finite stationary search and chamber audit | [Full-fine contact search](#organized-contact-stationary-search): all 24 prescribed attempts stopped near an imposed margin with nonzero current; no target certificate or global exclusion. An exact counterexample shows that the fifteen windings omit mixed-cycle information required by uninterrupted maintenance |
 | Closed scoped stationary obstruction | [Reflected contact identity](#organized-contact-reflection-admission): constituent winding, odd C9 length and stationary currents force slot-independent relative origins; negative full-state cuts exclude stability throughout the declared reflection sector, including nonacute charts. An exact nonacute saddle retains all fifteen windings |
 | Closed theoretical contact classification | [Continued-contact geometry and control capture](#organized-contact-maintenance-admission): stable aligned target, antipodal saddle, carrier acute-chart exit, a full-fine near-carrier instability obstruction and all-future capture of the actual zero-origin outer-zero control |
 | Closed theoretical capability admission | [Relative-origin external port](#organized-external-port-registration-admission): every outer-one source has a uniformly small finite response; each outer-zero source has a larger response at some origin, with nonlinear error, two raw reading errors, contact work and fifteen finite identities retained |
@@ -367,7 +372,8 @@ any stable stationary organization retaining all nine acute outer windings
 must have internal phase defect `D>9d>1.6`, whereas the actual initial family
 has `D<1.395e-16`. That is an obstruction to retaining the same internal
 shape, not proof that the composite winding disappears. Whether a stable
-reorganized fine state exists is the immediate missing geometric premise.
+reorganized fine state exists remains a missing geometric premise for the
+proposed stable-stationary maintenance route.
 Neither source entry nor a loss deadline follows from the obstruction.
 
 The [reflection theorem](../nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md)
@@ -381,6 +387,14 @@ outside every reflection sector of this form; neither an invariant source
 symmetry nor spontaneous symmetry breaking has been established. This is a
 new structural restriction, not a refinement of an observation threshold.
 
+The [finite stationary search](#organized-contact-stationary-search) closes
+without a target certificate or a global exclusion. Its chamber theorem
+sharpens the source-compatible domain but supplies no convex storage or
+general stationary classification. Repeating local optimization would not
+resolve that missing proof. The next active gate therefore addresses the
+joint preparation resources of the finite interaction already established,
+which does not depend on indefinite outer-one capture.
+
 The original primitive allowances remain `1e-10`; `q=1e-70` is a derived
 recovery residual, not a required initial or sensor precision. Nevertheless,
 the supplied recovery dwell `2*10^13`, outer common-form offsets reaching
@@ -391,8 +405,8 @@ capabilities or demonstrated physical impossibilities.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
-| Composite identity under interaction | Decide whether a stationary target outside the excluded reflection sectors can retain all fifteen windings and be stable on the same `C9 x W6` support | **Sole immediate gate** below. Close at certified existence/stability, a scoped obstruction, or a precise missing premise. The reflected saddle and captured outer-zero control do not settle this; stable targets alone still do not establish source entry |
-| Operational preparation, work and timescales | Admit a coupled resource domain for a named maintained interaction: source width, dwell, work and readout error together, or a necessary-bound obstruction | **Next operational dependency** for the intended maintained collective identity. The positive outer-zero control does not transfer that identity or resolve its source history. Optimizing one sufficient constant without changing a capability is insufficient |
+| Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Unresolved stable-stationary maintenance route; no active search.** The finite search is closed without a certificate; other classes do not repair uninterrupted maintenance. Reopen with a constructive target or an analytical certificate mechanism, not more starts |
+| Operational preparation, work and timescales | Admit a coupled resource domain for the already-proved finite interaction: source width, recovery dwell, paid work and readout error together, or a necessary-bound obstruction | **Sole immediate gate** below. Preserve the finite-window identity and response claim; indefinite outer-one maintenance is not presumed. Optimizing one sufficient constant without changing a capability is insufficient |
 | Fundamental physical properties and independent observation | Start with a precisely defined property of fundamental physics: its symmetry, conservation/composition rules and measurable response. Determine which mathematical obligations TNFR meets or lacks, then admit a discriminating signature with preparation, clock, sensor, calibration/reserved separation and equally informed alternatives under [P1-P5](#supporting-measurement-bridge) | **Essential and eligible** once a concrete property, signature and bridge are specified; it need not wait for unique law selection or substrate origin. No current dataset has complete admission. Close at an admitted bridge, equivalence without a discriminator, or a scoped mapping/uncertainty obstruction |
 | Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Conceptually critical**, with no new compatibility scan active. If a countermodel shares all proposed premises, the uniqueness claim fails in that scope |
 | Autonomous preparation, support, capacity and events | Supply actual occurrence and state-evolution laws when claiming autonomous assembly. [Event work](../nodal/RELATIONAL_SUPPORT_EVENTS.md), passivity and [operator descent](../STRUCTURAL_OPERATORS.md) do not select occurrence | **Claim-dependent**. Current contacts and preparation remain supplied. Do not postpone investigation of the existing conditional composite until every origin question is solved |
@@ -406,70 +420,64 @@ An added observable earns inclusion by deciding the selected prediction or a
 meaningful minimality obstruction. Existing failed physical-source admissions
 remain failed; more samples cannot repair their complete-law mismatches.
 
-Only full-fine contact identity admission is active. The table is a reassessment
+Only joint preparation-resource admission is active. The table is a reassessment
 of dependencies, not a fixed sequence or parallel campaign list. It preserves
 the objective of generated, physically testable organization without identifying
 winding, phase cancellation or storage with material constituents.
 
-### Immediate question: can a target outside reflection retain the outer identity?
+<a id="organized-joint-preparation-resources"></a>
+### Immediate question: which preparation resources are actually required?
 
-**Does the same joined law admit a stable full-fine stationary organization
-with the marked windings outside the excluded reflection sectors?**
-The [contact theorem](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md) and
-[reflection obstruction](../nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md)
-identify domains where a stable target cannot lie. The actual outer-zero
-capture is a separate positive control; the nonacute cubic example is a
-stationary saddle. Neither resolves this remaining alternative. Retain
-the supplied unit support, complete law, capacity and clock; do not change
-contact weights or select another law merely to recover a desired answer.
+**Can a jointly justified source-width, recovery-dwell, work and readout
+budget retain the existing finite collective interaction under the same
+complete law?** The objective is to distinguish necessary requirements from
+conservative sufficient estimates, using the actual carried source history.
+The [finite external interaction](../nodal/ORGANIZED_EXTERNAL_INTERACTION.md),
+[relative-origin comparison](../nodal/ORGANIZED_EXTERNAL_REGISTRATION.md) and
+[sequential observations](../nodal/ORGANIZED_SEQUENTIAL_OBSERVATION.md) already
+supply the capability whose resources are to be assessed. This gate does not
+assume indefinite outer-one retention or change the interface to recover it.
 
-1. **Declare the retained identity and domain.** Keep the six internal
-   winding-one cycles and nine old outer winding-one cycles distinct from
-   their acute charts and from a particular internal shape. State whether
-   the proposed domain keeps those charts acute or permits nonacute gaps
-   short of a winding cut. A conclusion on a restricted chart must remain
-   restricted to it. Retain all fine coordinates and the neutral common modes.
-   Do not impose another unproved symmetry to simplify the remaining problem.
-2. **Decide stationary compatibility before a new source campaign.** Seek a
-   certified stationary state and full-state stability, or a scoped geometric
-   obstruction, accounting for the necessary internal redistribution when
-   the outer charts stay acute. A carrier ansatz, a positive storage budget,
-   negative edge weights or a numerically small residual alone cannot decide
-   full-fine existence or stability. Before numerical candidate generation,
-   freeze its domain, initialization rule, precision, finite work budget and
-   the meaning of an incomplete search. A successful candidate needs root
-   inclusion and a full relative-Hessian certificate. Positive definiteness
-   suffices; extra zero directions require further analysis, not an automatic
-   instability verdict. Failure to find a candidate is not global exclusion.
-3. **Keep geometry and actual preparation separate.** If a stable target is
-   admitted, source inclusion from the original acquired and observed family
-   becomes a named subsequent obligation, with every residual and supplied
-   relative origin retained. If a domain is excluded, do not infer actual
-   winding loss, an exit deadline or exclusion of a broader domain. An unstable
-   equilibrium may still have a stable manifold meeting a prepared family.
-4. **Stop at a discriminating result.** A certified reorganized stationary
-   identity, a scoped obstruction or an explicit missing premise closes this
-   question. Do not open serial response-horizon refinements or searches that
-   merely return more unverified stationary candidates. Reassess the identity,
-   interface and physical-property dependency before changing the model.
+1. **Trace the joint dependency.** Identify where the original twelve source
+   allowances, recovered residual, recovery dwell, acquisition and observation
+   work, finite contact window and reading error enter the current proof.
+   Separate supplied numbers, sufficient contraction/transport estimates and
+   genuine necessary lower bounds. The `q=1e-70` recovery remainder is not a
+   primitive preparation or sensor accuracy requirement. Structural time and
+   work still require independent laboratory-unit bridges.
+2. **Derive a coupled domain before evaluating alternatives.** Retain the
+   same complete rows, support, capacities, clock conversion, acquired source
+   and observation word, with all fine errors and paid event work. Seek an
+   explicit sufficient region or a necessary obstruction for the same
+   response distinction and all fifteen finite-window identities. Treat
+   relaxation of a recovery estimate as a theorem question, not a new initial
+   source substituted after evaluation. Preserve original frozen responses;
+   any genuinely changed preparation needs its own prospective declaration.
+3. **Decide a capability, not a decimal.** Close at an admitted joint resource
+   domain, a necessary tradeoff excluding it, or a precise missing preparation
+   or observation premise. Do not optimize only a sensor threshold or one
+   contraction constant while leaving the coupled restrictions unexamined.
+   No new trajectories, origin sweeps, stationary searches or physical-data
+   fitting are activated by this analytical audit.
+4. **Retain the unresolved maintenance boundary.** The fifteen observed
+   windings omit mixed-cycle information; uninterrupted maintenance requires
+   the complete source chamber. A stable stationary target there or a global
+   exclusion remains unproved. A convex lifted chamber is not a convex
+   potential or a separable law. Reopen that branch with an analytical
+   certificate mechanism or constructive target; do not turn the 24 failed
+   numerical endpoints into a general theorem or infer actual winding loss.
+   Special-source retention remains separate: an unstable equilibrium can
+   have a stable manifold meeting the preparation, and cut-free finite-time
+   trajectories can approach a cut asymptotically. Stable stationary existence
+   has not been proved necessary for every notion of indefinite retention.
 
-This tests whether interaction can require a different internal organization
-while preserving a collective identity. It serves the eventual physical
-question of persistence and transformation of interacting objects, without
-identifying these windings with particles or predicting a measured lifetime.
-No stable target outside the reflected sectors, actual outer-one capture or
-winding-loss result has been established. No new trajectory or physical-data
-campaign is active. Existing finite response and control capture results
-remain valid. The geometric question addresses persistence; it does not
-replace the independent property-first physical comparison above.
-
-The [bounded stationary protocol](../nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md)
-selects one finite search in the preparation's marked-cycle chamber. It
-retains 53 relative coordinates without reflection constraints. The fifteen
-declared windings leave 32 additional cycle-space directions unspecified;
-an exact counterexample separates the broader identity class from this
-cut-free component. Only a root and full-Hessian certificate can admit a
-stable target, and the fixed 24-start budget is not an exhaustive search.
+This prioritizes a concrete obstacle between the current conditional
+organization and an admissible physical protocol, while preserving the
+fundamental-property-first objective. Better structural resource bounds alone
+would still not identify a particle property or establish laboratory
+attainability. The independent measurement, preparation and clock bridge
+remains essential. Existing formation, finite response and outer-zero capture
+results retain their original scopes and frozen evidence.
 
 For each subsequent law or hypothesis, record its status, independent
 premises, consequences, countermodels and decision in the existing definition
@@ -491,6 +499,28 @@ alone does not identify physical spin. Laboratory examples supply controls
 and discriminators without replacing the generative objective. Substrate
 origin, universal laws and recurrence across scales remain open hypotheses.
 
+<a id="organized-contact-stationary-search"></a>
+## Closed finite stationary search and marked-chamber admission
+
+The [result owner](../nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md)
+preserves declaration `75497035`. Its one 24-start full-fine search retained
+all 53 relative phases, the complete 144-edge potential and the same law.
+Every endpoint stopped near an artificial winding margin with a nonzero
+current; no endpoint qualified for root polishing or exact certification.
+Read-only interval witnesses establish nonstationarity of those particular
+endpoints. This is a finite nonfinding, not a global obstruction or a
+trajectory of the acquired source.
+
+The accompanying exact proof distinguishes complete marked classes from the
+fifteen selected windings: 32 further cycle-space directions remain
+unspecified, and an explicit same-windings counterexample occupies a different
+class. Existing source bounds place the actual preparation in the product
+class. Uninterrupted cut-free maintenance cannot leave it. This closes the
+domain-admission ambiguity. The stationary question remains open while the
+[next gate](#current-g3-gate) addresses resources for the proved finite interaction.
+It identifies no particle property and does not alter previous acquisition,
+finite interaction or outer-zero capture results.
+
 <a id="organized-contact-reflection-admission"></a>
 ## Closed scoped obstruction: stationary identity with reflection
 
@@ -509,8 +539,9 @@ stationary existence is different from stability. Its fixed algebraic
 enclosure was declared in `9c7c3ef4`; it assesses no prepared source and
 runs no trajectory. The theorem does not assert an invariant reflection
 sector, symmetry breaking, actual source capture or winding loss. The
-[remaining gate](#current-g3-gate) concerns targets outside those sectors
-under the same law and support.
+[chamber admission](#organized-contact-stationary-search) retains stationary
+compatibility outside those sectors as unresolved under the same law and
+support, with no further numerical search active.
 
 <a id="organized-contact-maintenance-admission"></a>
 ## Closed theoretical admission: stationary contact and actual control capture
@@ -537,8 +568,8 @@ target. New attachment work is below `8.714e-14`; historical preparation
 and observation costs remain separate. This is an analytic control-source
 result, without a trajectory, settling deadline or transfer to other origins.
 The [reflection classification](#organized-contact-reflection-admission)
-excludes a broader stationary sector; the [remaining gate](#current-g3-gate)
-retains the same law and interface outside that restriction.
+excludes a broader stationary sector; the [chamber admission](#organized-contact-stationary-search)
+leaves targets outside it unresolved on the same law and interface.
 
 <a id="organized-external-port-registration-admission"></a>
 ## Closed theoretical admission: relative-origin interaction capability
