@@ -306,6 +306,17 @@ unavailable inequalities; no cached report, symmetric nominal source or
 small defect supplies a whole-family capture verdict. These analytic controls
 evaluate neither a reduced trajectory nor a frozen response producer.
 
+For the [source-preserving receiver enclosure](theory/nodal/ORGANIZED_RECEIVER_ENCLOSURE.md),
+select `tests/physics/test_organized_receiver_enclosure_geometry.py`,
+`tests/research/test_organized_receiver_enclosure.py` and the shared metric
+Taylor, frozen-source and exact-artifact controls. Use synthetic reference
+states; never replay the reserved two-ramp trajectory during regression.
+Check both mean-zero reflection sectors against an independent full-space
+Jacobian certificate, fixed seams, signed scalar growth, endpoint recentering,
+and whole-step donor margins. An unavailable donor corridor must not prevent
+later certified endpoint loss. Audit retained records without regenerating
+them; preserve first attempts, failed-step records and every valid prefix.
+
 For [preparation information and acquired modes](theory/nodal/SINE_PREPARATION_MODE_SELECTION.md),
 select `tests/physics/test_sine_preparation_mode_selection.py` with the shared
 preparation and isolated-class controls above. Reconstruct the Laplacian energy

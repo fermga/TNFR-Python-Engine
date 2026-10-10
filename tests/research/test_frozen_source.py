@@ -18,6 +18,7 @@ SOURCE = "src/control.py"
 HELPER = "build/frozen/evaluate.py"
 FORWARD = "tnfr.sine-class-collective-forward"
 NEIGHBOR = "tnfr.sine-class-neighbor-forward"
+RECEIVER = "tnfr.organized-receiver-enclosure"
 
 
 def _git(root, *arguments):
@@ -142,7 +143,9 @@ def test_inspection_is_read_only_and_uses_git_base(source):
     assert not (root / HELPER).exists()
 
 
-@pytest.mark.parametrize("schema", ["tnfr.sine-class-comparison", FORWARD, NEIGHBOR])
+@pytest.mark.parametrize(
+    "schema", ["tnfr.sine-class-comparison", FORWARD, NEIGHBOR, RECEIVER]
+)
 def test_adapter_requires_its_matching_protocol_and_manifest(source, schema):
     root, files, base = source
     protocol = json_loads(files[STEM + ".protocol.json"])
@@ -425,23 +428,24 @@ def test_failed_restoration_is_preserved_and_cannot_be_reused(
         restore_frozen_source(root, RECEIPT, target)
 
 
-@pytest.fixture
-def neighbor_forward_source(source):
+@pytest.fixture(params=[NEIGHBOR, RECEIVER])
+def source_without_prior_response(source, request):
     root, files, base = source
+    schema = request.param
     protocol = json_loads(files[STEM + ".protocol.json"])
-    protocol["schema"] = NEIGHBOR + "-protocol.v1"
+    protocol["schema"] = schema + "-protocol.v1"
     protocol["source_specification"]["prior_artifact_receipts"] = []
     files[STEM + ".protocol.json"] = _json(protocol)
     (root / (STEM + ".protocol.json")).write_bytes(files[STEM + ".protocol.json"])
-    _pack(root, files, base, schema=NEIGHBOR)
-    return root, files, base
+    _pack(root, files, base, schema=schema)
+    return root, files, base, schema
 
 
-def test_neighbor_forward_restores_full_base_without_prior_response(
-    neighbor_forward_source, tmp_path
+def test_full_base_restoration_without_prior_response(
+    source_without_prior_response, tmp_path
 ):
-    root, files, base = neighbor_forward_source
-    destination = tmp_path / "neighbor-restored"
+    root, files, base, _ = source_without_prior_response
+    destination = tmp_path / "source-restored"
     original = (root / SOURCE).read_bytes()
     report = restore_frozen_source(root, RECEIPT, destination)
     assert report.source_base_commit == base and report.prior_artifact_count == 0
@@ -455,10 +459,10 @@ def test_neighbor_forward_restores_full_base_without_prior_response(
 
 
 @pytest.mark.parametrize("suffix", [".attempt.json", ".json", ".export-error.json"])
-def test_neighbor_forward_preserves_first_outcome_before_restoration(
-    neighbor_forward_source, tmp_path, suffix
+def test_no_prior_source_preserves_first_outcome_before_restoration(
+    source_without_prior_response, tmp_path, suffix
 ):
-    root, _, _ = neighbor_forward_source
+    root, _, _, _ = source_without_prior_response
     retained = root / (STEM + suffix)
     retained.write_bytes(b"first retained outcome")
     destination = tmp_path / "not-created"
@@ -472,22 +476,50 @@ def test_neighbor_forward_preserves_first_outcome_before_restoration(
 
 
 @pytest.mark.parametrize("suffix", [".attempt.json", ".json", ".export-error.json"])
-def test_neighbor_forward_cannot_install_outcome_supplements(
-    neighbor_forward_source, suffix
+def test_no_prior_source_cannot_install_outcome_supplements(
+    source_without_prior_response, suffix
 ):
-    root, files, base = neighbor_forward_source
+    root, files, base, schema = source_without_prior_response
     files[STEM + suffix] = b"fabricated outcome"
-    _pack(root, files, base, schema=NEIGHBOR)
+    _pack(root, files, base, schema=schema)
     with pytest.raises(ValueError, match="cannot install"):
         inspect_frozen_source(root, RECEIPT)
 
 
-def test_neighbor_forward_rejects_cross_schema_manifest(neighbor_forward_source):
-    root, files, base = neighbor_forward_source
+def test_no_prior_source_rejects_cross_schema_manifest(source_without_prior_response):
+    root, files, base, schema = source_without_prior_response
 
     def unrelated(manifest):
         manifest["schema"] = FORWARD + "-source-snapshot.v1"
 
-    _pack(root, files, base, unrelated, schema=NEIGHBOR)
+    _pack(root, files, base, unrelated, schema=schema)
     with pytest.raises(ValueError, match="source manifest association"):
+        inspect_frozen_source(root, RECEIPT)
+
+
+@pytest.mark.parametrize("source_without_prior_response", [RECEIVER], indirect=True)
+def test_receiver_partial_steps_block_restoration_without_rewriting(
+    source_without_prior_response, tmp_path
+):
+    root, _, _, _ = source_without_prior_response
+    steps = root / (STEM + ".steps")
+    steps.mkdir()
+    retained = steps / "step-0001.json"
+    retained.write_bytes(b"partial valid prefix")
+    assert inspect_frozen_source(root, RECEIPT).existing_outcome_files == (
+        STEM + ".steps",
+    )
+    destination = tmp_path / "not-created"
+    with pytest.raises(FileExistsError, match="first attempt"):
+        restore_frozen_source(root, RECEIPT, destination)
+    assert not destination.exists()
+    assert retained.read_bytes() == b"partial valid prefix"
+
+
+@pytest.mark.parametrize("source_without_prior_response", [RECEIVER], indirect=True)
+def test_receiver_freeze_cannot_supply_step_prefix(source_without_prior_response):
+    root, files, base, schema = source_without_prior_response
+    files[STEM + ".steps/step-0001.json"] = b"fabricated prefix"
+    _pack(root, files, base, schema=schema)
+    with pytest.raises(ValueError, match="cannot install retained steps"):
         inspect_frozen_source(root, RECEIPT)

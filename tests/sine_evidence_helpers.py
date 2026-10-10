@@ -37,6 +37,18 @@ _TARGETS = (
         "tnfr.mathematics._validated_taylor",
         ("flow_jets", "picard_tube", "validated_box_taylor_step"),
     ),
+    (
+        "tnfr.mathematics._validated_metric",
+        ("flow_jets", "picard_tube", "validated_metric_taylor_step"),
+    ),
+    (
+        "tnfr.research.organized_receiver_enclosure",
+        (
+            "run_receiver_enclosure",
+            "_advance_receiver_reference",
+            "validated_metric_taylor_step",
+        ),
+    ),
     ("tnfr.physics._sine_flow", ("_full_sine_field", "_sine_rate_evaluator")),
     ("tnfr.physics._sine_formed_contact", ("_unprobed_handoff",)),
     (

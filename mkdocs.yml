@@ -108,6 +108,7 @@ nav:
           - "Joint acquisition on preexisting fine support": theory/nodal/ORGANIZED_JOINT_ACQUISITION.md
           - "Locally unprepared receiver mechanism": theory/nodal/ORGANIZED_RECEIVER_MECHANISM.md
           - "Controlled slow receiver admission": theory/nodal/ORGANIZED_RECEIVER_SLOW_ADMISSION.md
+          - "Source-preserving receiver enclosure": theory/nodal/ORGANIZED_RECEIVER_ENCLOSURE.md
           - "Preparation information and acquired modes": theory/nodal/SINE_PREPARATION_MODE_SELECTION.md
           - "Preparation paths, capture and forced phase passage": theory/nodal/SINE_PREPARATION_PATH_SELECTION.md
           - "Terminal restrictions on the same preparation path": theory/nodal/SINE_PREPARATION_PATH_LIMITS.md

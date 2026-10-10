@@ -1,7 +1,7 @@
 """Inspect and restore a declared frozen source without executing its code.
 
 Supported adapters are the class nonlinear-readout, comparison, collective
-forward and neighbor-forward v1 schemas.
+forward, neighbor-forward and organized receiver-enclosure v1 schemas.
 Checks associate retained bytes with a complete Git base; they do not validate
 the experiment's mathematical premises, runtime dependencies or chronology.
 Other freeze schemas need an explicit adapter, not guessed field semantics.
@@ -43,6 +43,10 @@ _SCHEMAS = {
     "tnfr.sine-class-neighbor-forward-freeze.v1": (
         "tnfr.sine-class-neighbor-forward-protocol.v1",
         "tnfr.sine-class-neighbor-forward-source-snapshot.v1",
+    ),
+    "tnfr.organized-receiver-enclosure-freeze.v1": (
+        "tnfr.organized-receiver-enclosure-protocol.v1",
+        "tnfr.organized-receiver-enclosure-source-snapshot.v1",
     ),
 }
 
@@ -220,8 +224,14 @@ def _snapshot(root: Path, receipt_path: str) -> _Snapshot:
         "tnfr.sine-class-comparison-freeze.v1",
         "tnfr.sine-class-collective-forward-freeze.v1",
         "tnfr.sine-class-neighbor-forward-freeze.v1",
+        "tnfr.organized-receiver-enclosure-freeze.v1",
     }:
         outcome_paths += (stem + ".export-error.json",)
+    if receipt["schema"] == "tnfr.organized-receiver-enclosure-freeze.v1":
+        steps_path = stem + ".steps"
+        outcome_paths += (steps_path,)
+        if any(name.startswith(steps_path + "/") for name in retained):
+            raise ValueError("source supplements cannot install retained steps")
     if any(name in retained for name in outcome_paths):
         raise ValueError("source supplements cannot install attempt/outcome evidence")
     existing = tuple(name for name in outcome_paths if _local_path(root, name).exists())

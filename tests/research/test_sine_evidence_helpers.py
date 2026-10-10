@@ -72,6 +72,14 @@ def test_known_import_aliases_are_explicitly_covered():
         in declared["tnfr.physics.relational_sine_class_comparison_readout"]
     )
     assert declared["tnfr.research.frozen_source"] == ("restore_frozen_source",)
+    assert {
+        "run_receiver_enclosure",
+        "_advance_receiver_reference",
+        "validated_metric_taylor_step",
+    } <= set(declared["tnfr.research.organized_receiver_enclosure"])
+    assert {"flow_jets", "picard_tube", "validated_metric_taylor_step"} <= set(
+        declared["tnfr.mathematics._validated_metric"]
+    )
 
 
 def test_lazy_consumer_import_binds_original_owner_before_any_patch(monkeypatch):
