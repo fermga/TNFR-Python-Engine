@@ -675,6 +675,11 @@ separates two supplied complete amplitude laws under one common observation,
 retaining nonzero calibration, tracking and sampling errors. This makes the
 conditional models distinguishable; it does not select a law from physical
 data or transfer formation to the alternative.
+The [physical feasibility review](research/ORGANIZED_ELECTRICAL_FEASIBILITY.md)
+admits no reviewed apparatus for that frozen observation. A clock-independent
+precision/aperture demand, a junction-capacitance shape mismatch and missing
+independent preparation distinguish an ideal collective description from
+physical realization. They do not reject organized emergence or select a law.
 
 The [continued-contact classification](nodal/ORGANIZED_CONTACT_MAINTENANCE.md)
 now distinguishes stable constituent retention from preservation of the

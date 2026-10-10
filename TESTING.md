@@ -588,6 +588,16 @@ the frozen source receipt, calibration coefficients, both own-law error and
 identity bounds, and their separation from archived primitives. These
 read-only controls do not import or rerun the consuming bound or assessor.
 
+For [physical feasibility of organized current observation](theory/research/ORGANIZED_ELECTRICAL_FEASIBILITY.md),
+select `tests/physics/test_organized_electrical_feasibility.py` with the
+electrical-protocol and robust-current theory controls and read-only current
+evidence controls. Independent matrices and rational scales check the sharp
+voltage-error map, aperture/clock restriction, integrated delivery, actual
+work and hidden-loss subtraction, and the positive ring-capacitance shape
+counterexample. These controls do not certify instrument performance or
+reclassify typical/coverage uncertainties as deterministic bounds. Source
+cache downloads are not test dependencies; no producer is rerun.
+
 For [finite interface factorization](theory/nodal/ORGANIZED_INTERFACE_FACTORIZATION.md),
 select `tests/physics/test_organized_slot_registration.py` and
 `tests/physics/test_organized_interface_factorization.py` with the joint-resource,

@@ -126,6 +126,7 @@ nav:
           - "Observing collective winding with finite form inputs": theory/nodal/ORGANIZED_FINITE_OBSERVATION.md
           - "Five-child electrical observation protocol": theory/nodal/ORGANIZED_ELECTRICAL_PROTOCOL.md
           - "Current discrimination under uncertainty": theory/nodal/ORGANIZED_ROBUST_CURRENT.md
+          - "Physical feasibility of organized current observation": theory/research/ORGANIZED_ELECTRICAL_FEASIBILITY.md
           - "Organized identity under continued external contact": theory/nodal/ORGANIZED_CONTACT_MAINTENANCE.md
           - "Reflection obstruction for full-fine contact identity": theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md
           - "Full-fine stationary contact and marked chambers": theory/nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md

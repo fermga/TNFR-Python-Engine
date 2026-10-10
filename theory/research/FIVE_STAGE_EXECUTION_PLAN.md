@@ -238,8 +238,10 @@ source members and every allowed reading-error correction. The
 now retains actual internal deviations throughout the original finite contact.
 The [operational comparison](#organized-electrical-operational-identification)
 now isolates an unfitted component relation and the literal phase-jump
-preparation obstruction. The next active question is
-[finite-duration phase actuation](#organized-electrical-finite-actuation).
+preparation obstruction. Finite actuation and uncertain current discrimination
+now have conditional certificates; the [physical feasibility audit](#organized-electrical-physical-feasibility)
+admits no apparatus. The next active question is
+[finite-window collective electrical observation](#organized-electrical-finite-window-design).
 Stationary compatibility in the source chamber remains unresolved for the
 proposed stable-stationary maintenance route, with no continued search active.
 The [prepared storage observer](#storage-comparison-producer-admission)
@@ -258,7 +260,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next preparation and measurement feasibility | [Independent physical admission](#organized-electrical-physical-feasibility): test whether a terrestrial laboratory protocol can independently support the initial-state, component, clock, sensor and input premises of the reserved discriminator |
+| Next finite-window collective electrical observation | [Observation design](#organized-electrical-finite-window-design): derive an independently measurable collective response with explicit sensor dynamics, finite windows and component-shape departure; assess physical-unit conditioning before any new response |
+| Closed scoped physical feasibility review | [Independent physical admission](#organized-electrical-physical-feasibility): no reviewed apparatus admits the frozen endpoint-voltage protocol; clock-independent precision/aperture demand, junction-capacitance shape mismatch and missing complete preparation remain distinct |
 | Closed conditional electrical discrimination | [Current-amplitude discrimination](#organized-electrical-robust-current-test): one frozen joint-box assessment separates two own-law current envelopes under one input/statistic, with nonzero calibration, tracking and aperture error |
 | Closed conditional fixed-support electrical specification | [Five-child electrical observation protocol](#organized-electrical-fixed-support-protocol): complete C5 dictionary, actual-source departure, primitive voltage observation and supplied-work translation; physical preparation, timing and tracking remain unadmitted |
 | Closed finite observation admission | [Observation with finite inputs](#organized-electrical-finite-observation): new diffusion-corrected form readings identify the initial winding throughout the admitted prior, with actual source inclusion and full finite identity/work bounds |
@@ -612,36 +615,47 @@ physical instrumentation have not been admitted. No actual current response
 has selected either law, and no failed candidate or frozen source was replayed.
 
 <a id="organized-electrical-physical-feasibility"></a>
-### Immediate question: independent preparation and measurement feasibility
+### Closed scoped review: independent preparation and measurement feasibility
 
-**Can a workstation-accessible terrestrial laboratory protocol independently
-support the preparation and error premises of this current discriminator?**
-The remaining question concerns physical evidence, not more digits in the
-conditional interval gap or another exact-circuit equivalence.
+The [physical feasibility owner](ORGANIZED_ELECTRICAL_FEASIBILITY.md#organized-electrical-physical-admission)
+records `physical_status=not_admitted`, `evaluation=not_tested` for the
+reviewed sources and endpoint-voltage protocol. Laboratory-unit translation
+gives a clock-independent precision/aperture compatibility condition and
+retains integrated tracking, leakage and actual work. Positive ring-junction
+capacitance violates the exact scalar capacitance shape. Independent bounds
+on complete preparation and a simultaneous observation-error guarantee also
+remain missing. These are separate scoped limitations; neither a universal
+physical impossibility nor a rejection of either current law follows.
+The source receipt and static algebra controls retain this review without
+changing any frozen declaration, producer or analytical result.
 
-1. **Translate the complete requirements before choosing a response.**
-   Retain nominal component shapes, allowed scalar calibration, initial-state
-   sets, both evolution rows, clock, all input windows and the same current
-   statistic. Express timing, sensor range/noise, plateau leakage, integrated
-   tracking and work in laboratory units, retaining scale-invariant ratios.
-   A change of units cannot supply missing information or dynamic range.
-2. **Audit independent preparation and instrumentation evidence.** Use primary
-   laboratory sources or traceable specifications available from a workstation.
-   Establish what can bound the initial relative-state set without assuming
-   the answer, and whether one consistent component/sensor/actuator regime
-   supports the full declared protocol. Exact shape, noise and timing premises
-   need evidence; fitting current responses cannot calibrate their own test.
-3. **Close with a supported candidate or a scoped obstruction.** Identify
-   missing observations, incompatible requirements and the minimal model or
-   protocol change a failed admission would require. Failure of this sufficient
-   budget does not prove that all experiments or TNFR laws are impossible.
-   Do not silently relax a frozen assumption or replace the fine model by a
-   circuit whose initialization was already supplied.
-4. **Keep experimental selection prospective.** Only an admitted protocol
-   can select calibration and reserved data under P1-P5. No apparatus purchase,
-   deployment, new response evaluation, parameter scan or fitted law is active.
-   Preserve the frozen two-law result; a changed preparation or waveform
-   requires a new declaration before its discriminating response.
+<a id="organized-electrical-finite-window-design"></a>
+### Immediate question: finite-window collective electrical observation
+
+**Can an independently measurable finite-window response retain an unfitted
+consequence of organized TNFR dynamics with physically declared loading?**
+The task is a new observation-law derivation and feasibility assessment,
+not another evaluation of the old endpoint-voltage corner.
+
+1. **Select and declare one observation mechanism before its response.**
+   Examine integrated current or flux sensing using primary terrestrial
+   methods. Keep sensor state, transfer, input, clock, finite support and
+   loading; state whether errors are deterministic or jointly statistical.
+   Do not use an inferred phase or the tested amplitude to calibrate itself.
+2. **Derive the complete coupled description.** At minimum account for a
+   positive ring-capacitance term, rather than absorbing it into scalar
+   calibration. Derive both rows, storage and any memory from discarded state.
+   Distinguish a prepared collective reference from the actual fine organization;
+   transfer formation and identity only with a matching source/law proof.
+3. **Check conditioning before numerical campaigns.** Obtain a laboratory-unit
+   separation/availability condition including acquisition windows, preparation,
+   input work and component/measurement defects. Compare one consistent regime
+   with independent method evidence. Close with a supported prospective design
+   or a scoped obstruction; relaxing old error numbers is not admission.
+4. **Preserve prospective evaluation.** No hardware purchase, experiment,
+   source replay, parameter scan or response fitting is active. A candidate
+   that passes complete admission still needs a new frozen protocol and
+   separate calibration/reserved data under P1-P5 before evaluation.
 
 Recovering established physical relations remains the generative objective;
 the test need not predict a deviation from known physics. Independent

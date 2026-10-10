@@ -282,6 +282,12 @@ now separates the fixed and doubled amplitudes under a declared joint
 uncertainty box, with each model's complete history bounded independently.
 The result concerns disjoint prospective record sets. Independent physical
 support for the preparation and measurement premises remains unestablished.
+The [independent feasibility review](research/ORGANIZED_ELECTRICAL_FEASIBILITY.md)
+finds no admitted apparatus in the reviewed sources: the endpoint-voltage
+method has a clock-independent precision/aperture demand, positive ring
+capacitance violates its exact matrix shape, and complete preparation is
+missing. This limits the specified experimental bridge, without rejecting
+either conditional law or establishing a universal physical obstruction.
 
 The [two-contact response](nodal/SINE_PAIR_INTERACTION.md#sine-two-contact-orientation-response)
 already establishes orientation-sensitive interaction in a specified finite
