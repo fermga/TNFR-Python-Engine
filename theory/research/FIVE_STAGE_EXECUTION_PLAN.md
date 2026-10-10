@@ -158,10 +158,11 @@ the matched target and registered inheritance conditions. The
 [own-law source comparison](#constitutive-receiver-source-outcome) now
 certifies receiver winding zero throughout the preserved finite prefix for
 the entire original source and law interval. Its donor endpoint comparison
-is unavailable; the sine donor-loss result remains separate. The sole next
-task is [long-time receiver trapping](#current-g3-gate): determine whether a
-source-valid full-state domain excludes delayed receiver acquisition without
-extending the frozen trajectory or refining the donor endpoint observation.
+is unavailable; the sine donor-loss result remains separate. All-future
+receiver trapping remains a [source-specific open branch](#constitutive-receiver-long-time-trapping).
+The sole next task is [repeated composition with retained state](#current-g3-gate):
+test whether an organized component supports a further collective description
+under interaction, with constituent identity and off-family errors admitted.
 The [prepared storage observer](#storage-comparison-producer-admission)
 is retained as an instrument; it has no frozen protocol or reserved response
 and is not the next campaign.
@@ -178,7 +179,7 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next theoretical admission | [Long-time receiver trapping](#current-g3-gate): seek a source-valid full-state invariant domain after the certified prefix, or identify the precise obstruction to excluding delayed acquisition |
+| Next theoretical admission | [Repeated organized composition](#current-g3-gate): admit one second grouping and its boundary interaction under a complete inherited law, retaining sufficient state, constituent identity and full-state errors, or prove a scoped obstruction |
 | Closed uniform finite comparison | [Own-law source and receiver outcome](#constitutive-receiver-source-outcome): unchanged preparation and fixed constitutive interval retain receiver winding zero through the preserved prefix; changed-law donor endpoint classification remains unavailable |
 | Closed constitutive discrimination | [Identity barriers and regional work](#constitutive-identity-barriers-and-work): exact C9 boundary minima differ despite matched target/local/inheritance properties; regional powers differ at identical complete state and storage, without a transferred acquisition or retention outcome |
 | Closed conditional retention admission | [Identity-preserving interaction](#organized-identity-preserving-interaction): full-state regional work gives sufficient donor prefix budgets and necessary receiver passage work; the frozen original-source loss exhausts donor reserves, and phase-only cells fail over unrestricted forms |
@@ -241,7 +242,7 @@ remain open; no empirical response has passed complete physical admission.
 
 <a id="current-g3-gate"></a>
 <a id="foundational-organized-pattern-admission"></a>
-<a id="constitutive-receiver-long-time-trapping"></a>
+<a id="repeated-organized-composition-admission"></a>
 ## Primary plan: foundations tested by organized patterns
 
 Investigate which premises are sufficient, necessary within a declared class,
@@ -261,55 +262,98 @@ to its actual state, scale and execution path before treating a matched
 geometric or response property as sufficient. Retain the distinction between
 defining requirements, supplied hypotheses and derived restrictions.
 
-The next question is: **does the same source remain unable to form receiver
-winding at all later times, or is delayed acquisition still dynamically
-accessible?** The [uniform finite comparison](../nodal/CONSTITUTIVE_RECEIVER_COMPARISON.md)
-excludes acquisition only through elapsed slow time `19/2`. A source-valid
-invariant domain would give a different, long-time result; a more precise
-donor endpoint observation would not answer this question.
+<a id="research-priority-assessment"></a>
+### Priority, readiness and missing evidence
 
-1. **Retain the full model and source.** Keep `lambda in [-1/10000,1/10000]`,
-   the equal-weight 27-node support, held capacities, clocks, original ramp
-   preparation and every admitted error direction. Re-admit the certified
-   endpoint phase family together with the independently justified retained
-   form or velocity bounds. Do not infer an exact endpoint state from its
-   reference center, or attach a sine capture verdict to another law.
-2. **Test a full-state trapping mechanism.** Seek a domain containing that
-   whole family whose actual boundary dynamics excludes receiver winding
-   passage. Retain form, contact storage, correlations and own-law dissipation.
-   Use the [regional work theorem](../nodal/ORGANIZED_REGIONAL_RETENTION.md)
-   and [own-law barriers](../nodal/CONSTITUTIVE_IDENTITY_BARRIERS.md) with
-   their actual hypotheses. A phase-only cell over arbitrary forms is already
-   known not to be invariant. An endpoint below a marginal barrier or a
-   presumed global semicircle is not a substitute for joint admission.
-3. **Make a bounded analytic decision.** Prove all-future receiver retention
-   for the unchanged family if a strict invariant-domain admission closes.
-   Otherwise identify the exact failed boundary or source-inclusion premise
-   and give a quantitative obstruction or counterexample within its scope.
-   Failure of this sufficient trap leaves delayed acquisition unresolved;
-   it does not demonstrate a later passage or prescribe a new law.
-4. **Integrate the mechanism and its limits.** Place reusable bounds with
-   their shared owners and preserve all finite results. Long-time retention
-   would identify a preparation/law basin obstruction; eventual formation
-   would still require actual passage and complete-state capture evidence.
-   Either result remains distinct from autonomous preparation or physical
-   identification.
+Foundational importance and immediate readiness are different. Conditional
+law selection, exact memory, event descent, regional work and local capture
+already have proof owners. Restating those mechanisms is not a new research
+result. The selected immediate gap is how much of an actual organization's identity
+and predictive description survives further composition and interaction.
+This joins the portfolio's information, organization and scale contributions
+without treating one prepared receiver as a prerequisite for the whole paradigm.
 
-This is an analytic gate. Do not extend or replay the frozen trajectory,
-scan laws or contacts, shrink source errors, introduce a controller, or
-launch a new response calculation. Do not make refinement of the unavailable
-donor endpoint the next campaign: it is not required to establish the finite
-receiver exclusion or to formulate the long-time question.
+| Research front | Existing basis and genuinely missing result | Priority and activation |
+| --- | --- | --- |
+| Repeated composition and sufficient collective state | [Pair inheritance](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md), [network compatibility](../nodal/ORGANIZED_NETWORK_COMPATIBILITY.md) and [carried-source capture](../nodal/ACQUIRED_ORGANIZED_NETWORK_CAPTURE.md) exist. A further grouping must retain boundary information, admit both evolution rows and preserve constituent/parent identity beyond an exact rigid family | **Sole immediate gate**, specified below. Broad foundational reach with available analytic tools; success is not presumed |
+| Formation, composite identity and work | [Joint acquisition](../nodal/ORGANIZED_JOINT_ACQUISITION.md), [assembly work](../nodal/ORGANIZED_ASSEMBLY_WORK.md) and [regional budgets](../nodal/ORGANIZED_REGIONAL_RETENTION.md) separate preparation, entry and maintenance. Missing claims include source-derived directional accessibility and a structural separation criterion that distinguishes loss of the composite from destruction of its children | **High conditional follow-on** when composition exposes an entry or identity obligation. A new result must supply a joint invariant/entry domain or a derived contact-work budget; sufficient energy or negative mixed storage alone is not binding |
+| Effective memory and controlled reduction | [Causal component composition](../nodal/SINE_CLASS_INTERFACE_COMPOSITION.md) and [bridge memory](../nodal/RESONANCE_FOUNDATIONS.md#sine-bridge-causal-memory) already retain hidden state. A formal slow expansion is not a time-domain approximation | **High conditional method** if the selected collective observation fails closure. Derive one admitted state augmentation or a preparation/domain/horizon error bound; do not build a generic memory framework |
+| Identity, internal activity and constitutive freedom | [Positive-loss and conservative boundaries](../nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission) distinguish static identity, moving constituents and recurrence. [Alternative mobility](../nodal/SINE_PAIR_MOBILITY.md#sine-mobility-relative-geometry) protects geometry without an established equivalent invariant measure | **Prepared alternative**, when a selected object requires sustained activity. One bounded question is invariant-density admission for the existing alternative mobility; failure of a phase-only density ansatz does not exclude every full-state measure |
+| Independent selection of laws and information premises | [First-moment selection](../nodal/SINE_CONSTITUTIVE_INFORMATION.md#first-phase-moment-sufficiency) is conditional; [recursive inheritance countermodels](../nodal/SINE_PAIR_MOBILITY.md#sine-replica-constitutive-nonselection) retain kinetic freedom | **Conceptually critical**, but another compatibility scan cannot establish uniqueness. Reopen with an independently justified restriction or an admitted discriminating observation; retain valid alternative complete laws meanwhile |
+| Autonomous preparation, contacts, capacity and collective events | [Relation laws](../nodal/RELATION_FOUNDATIONS.md), [capacity admission](../CAPACITY_LOCALIZATION_BALANCE.md), [support work](../nodal/RELATIONAL_SUPPORT_EVENTS.md) and [operator descent](../STRUCTURAL_OPERATORS.md) have separate contracts. Neither passivity nor a valid inherited event selects its occurrence | **Critical for autonomous assembly**, not an established prerequisite for fixed-support results. Select the particular missing law or operator only when a named claim consumes it, and justify its independent premises before adding it |
+| Independent physical observation | The [P1-P5 contract](#supporting-measurement-bridge) and [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md) separate internal constructions from measured properties | **Essential for physical identification**. Activate one falsifiable collective observable with independent preparation, readout, clock and alternatives. It need not wait for every foundational question, but no current dataset has complete admission |
 
-The dependency order for subsequent work is:
+Only the first row is active. The others are conditional routes, not a fixed
+seven-step schedule or a ranking of their ultimate scientific importance.
+Fixed capacity and support define legitimate conditional models; their
+autonomous selection becomes necessary only for claims that require it.
 
-| Dependency | Required advance before the associated claim |
-| --- | --- |
-| Complete foundations | State and law choices are explicit; independent selection arguments and surviving countermodels are retained |
-| Formation and identity | Entry from the declared source, stability/maintenance and preparation costs; autonomous preparation and scale/support selection are separately identified |
-| Composite organization | Dynamical attachment/interaction, retained constituent identity and a declared separation/work criterion; negative rectangular storage excess alone is not binding |
-| Inheritance across scales | Network compatibility retains relational data when pairwise charts cannot coexist. Both recovered-source capture and joint acquisition from three ramps hold on the fixed contacts, while late identity-preserving assembly has a positive work floor. Acquisition of a locally unprepared child remains separate. A hierarchy still needs compatible repeated composition, justified parameter and clock maps, identity/source control and preparation or assembly work at every claimed level. Retain necessary hidden state, memory and event contracts through the existing [scale](../TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) and [collective closure](../nodal/DERIVED_FORM_PHASE.md#collective-interaction-closure-and-relational-state) owners. Matching a tangent or re-encoding the full state alone does not establish inheritance |
-| Physical interpretation | Derive geometric/measurement transformations and quantitative observables with units, independent preparation and alternatives before identifying a fundamental constituent |
+### Immediate question: a further organized composition under interaction
+
+**Can an organized component participate in a second grouping with a
+sufficient collective state and a controlled inherited dynamics, while its
+constituents retain their declared identities?** A positive result would
+admit one additional level in one complete model. An obstruction could show
+which boundary information, internal state or memory that description needs.
+Neither outcome would select a unique law or establish universal fractality.
+
+1. **Fix the smallest discriminating construction.** Use the existing
+   positive-loss sine organization family with held capacities and supplied
+   support, not a mixture of the native, conservative and operator paths.
+   First fix what the parent must predict, such as a boundary-current or
+   form-response record, and which internal coordinates its state discards.
+   Declare two grouping maps, child and parent identity observations, node
+   registration, units and clocks. Fix one matching interface and one
+   registration-sensitive control, together with a nontrivial boundary
+   interaction, input amplitude class, source neighborhood, finite structural
+   horizon and allowed error independently of the evaluated response.
+   Tie the allowed error to a specified response feature or control contrast
+   that the parent must resolve; a loose finite continuity bound is insufficient.
+   A larger cyclic graph with a stationary nested target is insufficient:
+   the parent must have a specified interaction whose evolution is tested.
+2. **Derive the complete inherited model at both stages.** Retain all
+   consumed boundary amplitudes, relative origins, forms and phase lifts;
+   derive both evolution rows, storage, loss, boundary-input work and any
+   declared event work. Forced evolution cannot inherit an unforced capture
+   certificate without its actual input-work bound.
+   Match the coefficient, capacity and clock maps jointly, and re-admit the
+   resulting parameter domains. Test whether the second grouping requires
+   information discarded by the first. Use the existing
+   [scale](../TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) and
+   [collective closure](../nodal/DERIVED_FORM_PHASE.md#collective-interaction-closure-and-relational-state)
+   owners; exact embeddings, quotients and controlled reductions have
+   different acceptance conditions.
+3. **Admit actual fine-state error and identity.** Go beyond the invariant
+   family: derive a nonzero full-state domain with quantitative approximation
+   and identity bounds for the declared finite interaction, or give an
+   explicit obstruction within the proposed state/domain class. Retain
+   transverse deviations and hidden initialization, using existing capture
+   and causal-composition mechanisms only after matching their models.
+   State whether the original acquired source is included. If it is not,
+   report that failed admission separately; copied targets or a reset to
+   equilibrium do not transfer acquisition to the parent.
+4. **Close with a discriminating result.** A positive admission must state
+   the genuinely reduced information, inherited law, error and identity
+   scope and meet the declared response resolution. Report whether retained
+   registration yields a resolved control contrast or a proved observational
+   equivalence; overlapping error intervals alone prove neither. A negative
+   result must identify a failed compatibility condition,
+   quantitative domain obstruction or two admitted fine preparations with
+   the same proposed parent state and incompatible selected responses. It
+   must answer this second-stage question, not restate a general mean-closure
+   counterexample. A loose sufficient bound leaves the claim unresolved.
+   Products of chart factors, full-state relabeling and the already known
+   contact-cycle obstruction alone do not close this gate. If additional
+   state or memory is necessary, record the precise obligation for the next
+   task rather than widening this gate into universal minimality.
+
+This is a bounded analytic admission, not a new trajectory campaign.
+Preserve preparation and attachment work at each claimed level; autonomous
+grouping, support occurrence, second-level formation and physical binding
+remain separate unless independently demonstrated. Do not replay frozen
+sources, scan laws or contacts, shrink old error families, or introduce a
+controller to secure a desired result. Integrate a new reusable mechanism
+with its existing owner and consumer only when the derivation requires it.
 
 For each subsequent law or hypothesis, record its status, independent
 premises, consequences, countermodels and decision in the existing definition
@@ -342,9 +386,9 @@ bound is unavailable, with its deficit recorded by the result owner; it does
 not extend or overturn the separate sine donor-loss certificate. No new
 trajectory, law scan or reserved response was evaluated. The original
 prospective maximum horizon `32` was not reached or reinterpreted as evidence.
-The [active gate](#current-g3-gate) asks whether a full-state trap can exclude
-delayed acquisition, preserving the finite comparison and its unresolved
-donor classification.
+The [deferred long-time question](#constitutive-receiver-long-time-trapping)
+retains delayed acquisition and the unresolved donor classification. Neither
+is a prerequisite for the active repeated-composition admission.
 
 <a id="constitutive-identity-barriers-and-work"></a>
 ## Closed constitutive discrimination: identity barriers and work
@@ -1483,16 +1527,32 @@ with free nuisance state or remove exact common-law-rate/clock equivalence.
 
 These are unresolved dependencies, not parallel tasks.
 
+<a id="constitutive-receiver-long-time-trapping"></a>
+**Long-time trapping of the original 27-node receiver remains open.** The
+[finite comparison](../nodal/CONSTITUTIVE_RECEIVER_COMPARISON.md) excludes
+acquisition only through elapsed slow time `19/2`. Reopen an analytic trap
+only for a named accessibility hypothesis or a reusable source-derived
+work/velocity criterion that needs this example. Preserve
+`lambda in [-1/10000,1/10000]`, the equal-weight support, held capacities,
+clocks, original ramps and every admitted error direction. An all-future
+claim needs joint endpoint source inclusion and inward boundary dynamics
+with retained form/velocity, correlations and own-law dissipation. The
+[regional work](../nodal/ORGANIZED_REGIONAL_RETENTION.md) and
+[own-law barrier](../nodal/CONSTITUTIVE_IDENTITY_BARRIERS.md) results alone
+do not supply that trap. A failed sufficient bound leaves delayed acquisition
+unresolved. No frozen-trajectory replay, horizon extension or refinement of
+the unavailable donor endpoint is activated by retaining this question.
+
 | Dependency | What remains and when to reopen |
 | --- | --- |
 | Operational winding-zero source width and complete numerical horizon | The [retained saddle trial](../nodal/SINE_CONSERVATIVE_PREPARATION.md#sine-operational-saddle-preparation) certifies the connection on prefixes but not a positive inverse-inclusion source radius or its complete forward horizon. Reopen only for a named downstream preparation, composition or physical-comparison claim that needs those specific data; declare separate evidence and a justified new budget. Do not retry the closed trial to improve its verdict |
 | Formation robust across different laws | The fixed mapped source fails the declared [one-percent comparison](../nodal/SINE_CONSERVATIVE_PREPARATION.md#sine-constitutive-robustness) by conserved storage. Reopen only for an independently constrained law or a named preparation with a justified positive own-law barrier margin. Passing that necessary budget alone is not formation; do not move the old source to erase its negative result |
 | Original eleven-node receiver transfer | The nonlinear net-work/basin-entry estimate for (5-sqrt(5))/2<F<=4 outside the retained exclusions. Reopen only if a named formation hypothesis needs that source class; reuse [receiver port work](archive/receiver/SINE_RECEIVER_TRANSFER_AND_CAPTURE.md#sine-receiver-port-passage), without threshold optimization or an H2 rerun for completeness |
-| Alternative-mobility activity and recurrence | Nonstalling/circulation and an invariant measure equivalent to relative volume. Reopen for a named observation or formation result needing them; [relative-geometry protection](../nodal/SINE_PAIR_MOBILITY.md#sine-mobility-relative-geometry) alone does not transfer recurrence |
+| Alternative-mobility activity and recurrence | Nonstalling/circulation and an invariant measure equivalent to relative volume. Reopen for a named internal-activity, observation or formation claim. One bounded analytic target is the existing `div(rho F_rel)=0` density obligation and integrability of its phase-only candidate; failure of that candidate does not exclude every full-state density. [Relative-geometry protection](../nodal/SINE_PAIR_MOBILITY.md#sine-mobility-relative-geometry) alone does not transfer recurrence |
 | General partial observation and internal-state recovery | General joint noisy record/state compatibility and a uniform sufficient derivative order remain deferred. The [fixed-law endpoint certificate](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-readout), [one-unknown-coefficient test](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-two-time) and [two-unknown-coefficient separation](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-two-law) cover only their named binary families and bounded preparation/readout errors. Reopen broader recovery only when a selected response needs it; reuse [sample admission](../nodal/SINE_ENVIRONMENTAL_MEMORY.md#sine-finite-sample-admission), [regular internal observability](../nodal/SINE_PAIR_STATE.md#sine-replica-internal-observability) and [cancellation classification](../nodal/SINE_PAIR_STATE.md#sine-pair-cancellation-observability) |
-| Controlled slow bridge reduction | Preparation, hidden source and time-domain approximation error. Reopen only when a selected response needs reduction of its exact causal memory; reactive coefficients do not derive local damping |
+| Controlled slow bridge reduction | Preparation, hidden source and time-domain approximation error. Reopen only when a selected response needs reduction of its [exact causal memory](../nodal/RESONANCE_FOUNDATIONS.md#sine-bridge-causal-memory); fix the preparation, domain and finite horizon, then bound the actual full/reduced trajectories. Existing reactive coefficients are not that bound and do not derive local damping |
 | Nonlinear mediated rebound or broader pulse estimates | Quantitative remainder or finite-preparation bounds beyond the already admitted finite-kick response. Reopen only for a named response claim outside that scope; do not repeat the closed bounded calculation |
-| Universal law, support, capacity and hierarchy selection | Beyond the closed collective-state representation, independent justification of these premises remains open. Reopen a broader claim only with its own F1-F4 admission; synchronization, passivity and contact eligibility do not select an occurrence law |
+| Universal law, autonomous support/capacity and hierarchy selection | The active gate tests one further composition under a supplied complete law; it does not activate universal hierarchy formation or select that law. Independent justification of these premises remains open. Reopen a broader claim only with its own F1-F4 admission; synchronization, passivity and contact eligibility do not select an occurrence law |
 | Approximate physical reduction and data evaluation | Activate only when a named mechanism or information discriminator needs independent confrontation. The [primitive-phase review](PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#primitive-phase-information-boundary) supplies source metadata and obstructions, not admitted data. The [receiver defect certificate](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-defect) propagates declared complete-row errors for its own model; it does not establish source-specific mapped-law bounds. Reopening the direct oscillator route needs a justified preparation/reduction and sensor/clock bridge; more samples do not repair its closure obstruction. No blanket search or response fit is active |
 
 Earlier C4/C8 continuations, C5 itineraries, C6 global-runtime certification,

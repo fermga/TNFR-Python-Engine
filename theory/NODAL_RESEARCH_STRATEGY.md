@@ -45,6 +45,16 @@ The common dependency is **information -> interaction -> complete law**.
 Formation, persistence, composition and physical comparison consume this same
 foundation rather than selecting separate fundamental laws.
 
+Use that dependency to unify investigations around a claimed capability of
+an object: which state predicts its interaction, which dynamics maintains
+its identity, and which new information another grouping needs. These are
+coupled obligations, not reasons to open one campaign for every parameter.
+Ultimate importance does not set immediate priority. Prefer a question that
+can distinguish alternatives with an existing complete model and produce a
+new consequence useful to several branches. The plan's
+[priority assessment](research/FIVE_STAGE_EXECUTION_PLAN.md#research-priority-assessment)
+owns the current choice and conditions for alternatives.
+
 | Question | Required distinction | Owner |
 | --- | --- | --- |
 | What does an interaction consume? | Primitive state, derived moments, form/rate associations and retained origins | [Information ledger](NODAL_PARAMETER_FOUNDATIONS.md#derived-information-ledger), [relation foundations](nodal/RELATION_FOUNDATIONS.md) |
@@ -84,6 +94,13 @@ alternatives, retain the constitutive freedom; repeated compatibility checks
 cannot promote it to uniqueness. The [comparison atlas](PHYSICAL_REGIME_CORRESPONDENCES.md)
 and [phase-information protocol](research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#primitive-phase-information-boundary)
 retain source-specific obstacles without opening separate campaigns.
+
+Conditional uniqueness already proved from a chosen information restriction
+is not an unresolved derivation to repeat. Conversely, a family that survives
+organization and recursive inheritance can still retain independent kinetic
+freedom, as the [mobility countermodels](nodal/SINE_PAIR_MOBILITY.md#sine-replica-constitutive-nonselection)
+show. A useful next discriminator must reach beyond the premises those
+countermodels already share.
 
 ### Present interaction and sufficient future state
 
@@ -146,6 +163,13 @@ affect visible motion. Their supports and nonlinear/tangent domains differ.
 A lift-dependent collective storage split can have a signed remainder; a
 nondecaying memory kernel does not derive irreversible local damping.
 
+Choose the required notion of persistence before selecting a law: static
+identity, indefinite internal activity and almost-everywhere recurrence
+need different evidence. Geometry protected under an alternative mobility
+does not inherit an invariant measure. Likewise, a slow expansion of an
+exact memory kernel needs an independently admitted preparation and a
+time-domain error bound before becoming a predictive reduced model.
+
 ### Collective inheritance retains constituents
 
 [Scale geometry](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) and
@@ -155,6 +179,25 @@ route for testing the fractality hypothesis: identify which information and
 dynamics survive composition, then determine what forms that organization.
 An exact re-encoding is not necessarily a reduction, and a repeated graph
 or nested declaration alone does not derive a hierarchy.
+
+The [organized pair law](nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md)
+and [network compatibility](nodal/ORGANIZED_NETWORK_COMPATIBILITY.md) already
+show why boundary registration, amplitudes, form scaling and clock maps
+must be retained together. Repeating those factors algebraically adds no
+identity or source admission. A further grouping is informative when its
+parent has a specified interaction to predict and a declared amount of
+discarded state. Test both the exact family and a full fine-state domain;
+the latter connects inheritance to memory, approximation and constituent
+maintenance. A closed stationary parent alone does not test this capability.
+
+[Carried-source capture](nodal/ACQUIRED_ORGANIZED_NETWORK_CAPTURE.md) and
+[joint acquisition](nodal/ORGANIZED_JOINT_ACQUISITION.md) supply methods and
+particular source families, not universal preparation certificates. A new
+support or interaction must re-admit their hypotheses and work. A supplied
+parent registration or neighborhood can establish conditional maintenance;
+it cannot establish that the parent formed from independently acquired
+children. This distinction lets a bounded inheritance result guide the next
+formation question without promising autonomous hierarchy formation.
 
 ### Ordered geometry connects transfer to formation
 
@@ -167,6 +210,15 @@ Existence with flow-defined centers, an executable preparation and a validated
 numerical horizon remain separate evidence. Winding is one identity test,
 not a definition of every pattern.
 
+[Regional balances](nodal/ORGANIZED_REGIONAL_RETENTION.md) already distinguish
+available storage from the direction of motion. Combining their formulas
+with an existing velocity row is not a new accessibility theorem. A new
+formation criterion must derive an actual source-dependent prefix work
+budget, admit a joint state domain, or prove a scoped obstruction. This
+criterion may help several models, but its coefficients and source verdicts
+remain model-specific. An unresolved prepared receiver is therefore a
+possible mechanism test, not a universal prerequisite for the foundations.
+
 <a id="relational-capture-reuse-audit"></a>
 ### Composition, memory and effective relations
 
@@ -178,6 +230,21 @@ Constant means or cancelling currents do not establish absent internal motion.
 Supplied contact, effective interaction and primitive relation birth are
 different claims. Event passivity also does not select occurrence; continuous
 loss is not an event reserve without a reservoir law.
+
+Composite identity adds another obligation: define loss of the parent's
+organization while retaining its children, then ask which transitions or
+work can reach that endpoint class. Restoring links and capture are useful
+premises; a signed mixed storage response is not that separation criterion
+or a physical binding energy. The [ontology](EMERGENT_ONTOLOGY.md#generative-bound-organization)
+owns the identity claim rather than an auxiliary interaction score.
+
+If the collective description consumes a named operator, reuse the existing
+[event-descent criterion](STRUCTURAL_OPERATORS.md) for its state, targets,
+history and admission before deriving a new event rule. Exact continuous
+closure alone does not descend that event or select its occurrence. Held
+capacity and support remain complete model premises; justify autonomous
+adaptation or relation birth when the chosen claim requires them, not as an
+unexamined remedy for an unsuccessful formation example.
 
 <a id="organization-dependent-nonlinearity"></a>
 ### Organization-dependent nonlinear interaction
