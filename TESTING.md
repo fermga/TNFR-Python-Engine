@@ -259,6 +259,18 @@ their relative origins are additional preparation information. Degree-three
 capture does not supply degree-four response or event work. These static
 analytic tests evaluate no trajectory or frozen producer.
 
+For [acquired parent registration](theory/nodal/ORGANIZED_PARENT_ACQUISITION.md),
+select `tests/physics/test_organized_parent_acquisition.py` with the repeated
+composition, isolated recovery and source-acquisition controls. Independently
+check both separated modes against the complete 36-node rows, both clock
+transformations, full-source error and strict entry/readout inequalities.
+Keep actual reached forms and phase means in the predictor; the generic
+parent residual ball does not imply the longer source-specific forecast.
+Exercise all eight primitive allowances before recovery, unavailable sources,
+exact residual work and the correlated antipodal symmetry without replacing
+pi by a represented angle. These are static analytic controls; no trajectory
+or frozen producer is regenerated.
+
 For [identity-preserving assembly work](theory/nodal/ORGANIZED_ASSEMBLY_WORK.md),
 select `tests/physics/test_organized_assembly_work.py` with
 `tests/physics/test_acquired_organized_network_capture.py`,

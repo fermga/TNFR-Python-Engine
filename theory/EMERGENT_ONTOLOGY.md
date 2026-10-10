@@ -459,6 +459,14 @@ Separate unordered child states can still omit which states meet at the ports,
 preventing exact parent closure. The prepared registration, supplied contacts
 and finite error bounds do not establish formation of the parent identity.
 
+The separate [parent-registration acquisition](nodal/ORGANIZED_PARENT_ACQUISITION.md)
+starts with acquired children that lack that marked parent identity, proves
+entry while retaining their fine uncertainty and winding, and predicts a later
+interaction from the reached state. An antipodal correlated source under the
+same law never enters. Preparation therefore remains consequential; the marked
+grouping and symmetric support do not select an autonomous hierarchy or a
+separation of internal and external timescales.
+
 Here structural participation does not identify the entire joint state with
 one scalar EPI coordinate. The current representation also retains phase,
 capacity and support; reducing these to a richer form description would need

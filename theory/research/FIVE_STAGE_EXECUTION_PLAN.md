@@ -163,9 +163,12 @@ receiver trapping remains a [source-specific open branch](#constitutive-receiver
 The [repeated-composition admission](#repeated-organized-composition-admission)
 now gives a finite predictive parent response with full transverse errors
 and retained identities, while proving that discarded child-to-port
-association prevents exact mean-only closure. The sole next task is
-[parent acquisition from prepared children](#current-g3-gate): test entry
-from a source lacking the parent identity under the same complete law.
+association prevents exact mean-only closure. The
+[parent-acquisition admission](#organized-parent-acquisition-admission) now
+derives entry from independently uncertain acquired children and predicts
+from their actual reached means. The sole next task is the
+[acquired parent's restoring response](#current-g3-gate): admit one finite
+internal intervention, its work, identity recovery and sufficient predictive state.
 The [prepared storage observer](#storage-comparison-producer-admission)
 is retained as an instrument; it has no frozen protocol or reserved response
 and is not the next campaign.
@@ -182,7 +185,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next theoretical admission | [Parent acquisition with retained children](#current-g3-gate): admit a new relative-child preparation outside parent registration, then prove source-inclusive entry and maintained child identities under the same 36-node law, or identify a scoped obstruction |
+| Next theoretical admission | [Acquired-parent restoring response](#current-g3-gate): admit one internal registration intervention and its work, then test child retention, parent recovery and a finite prediction using sufficient collective state |
+| Closed theoretical parent-acquisition admission | [Acquired parent registration](#organized-parent-acquisition-admission): original independently uncertain children enter marked parent identity, retain their winding and admit a resolved prediction from actual reached means; a correlated acquired antipodal control never enters |
 | Closed theoretical repeated-composition admission | [Predictive organized parents](#repeated-organized-composition-admission): controlled finite response on both fixed weighted contacts, full transverse identity bounds, carried acquired-parent inclusion and an exact obstruction from discarded child-to-port association |
 | Closed uniform finite comparison | [Own-law source and receiver outcome](#constitutive-receiver-source-outcome): unchanged preparation and fixed constitutive interval retain receiver winding zero through the preserved prefix; changed-law donor endpoint classification remains unavailable |
 | Closed constitutive discrimination | [Identity barriers and regional work](#constitutive-identity-barriers-and-work): exact C9 boundary minima differ despite matched target/local/inheritance properties; regional powers differ at identical complete state and storage, without a transferred acquisition or retention outcome |
@@ -246,7 +250,7 @@ remain open; no empirical response has passed complete physical admission.
 
 <a id="current-g3-gate"></a>
 <a id="foundational-organized-pattern-admission"></a>
-<a id="organized-parent-acquisition-admission"></a>
+<a id="organized-parent-restoring-response-admission"></a>
 ## Primary plan: foundations tested by organized patterns
 
 Investigate which premises are sufficient, necessary within a declared class,
@@ -272,67 +276,67 @@ defining requirements, supplied hypotheses and derived restrictions.
 Foundational importance and immediate readiness are different. Conditional
 law selection, exact memory, event descent, regional work and local capture
 already have proof owners. Restating those mechanisms is not a new research
-result. The selected immediate gap is whether the parent identity required
-by the finite repeated-composition result can itself be acquired from
-prepared children under that same complete law.
+result. The [parent-acquisition theorem](../nodal/ORGANIZED_PARENT_ACQUISITION.md)
+now supplies entry and a resolved subsequent prediction for its fixed source.
+The selected immediate gap is the acquired parent's restoring response when
+one admitted intervention disrupts its internal registration while retaining
+the children: which collective state predicts that recovery and interaction?
 This joins the portfolio's information, organization and scale contributions
 without treating one prepared receiver as a prerequisite for the whole paradigm.
 
 | Research front | Existing basis and genuinely missing result | Priority and activation |
 | --- | --- | --- |
 | Repeated composition and sufficient collective state | [Pair inheritance](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md), [network compatibility](../nodal/ORGANIZED_NETWORK_COMPATIBILITY.md) and [carried-source capture](../nodal/ACQUIRED_ORGANIZED_NETWORK_CAPTURE.md) now support a [finite two-level prediction](../nodal/REPEATED_ORGANIZED_COMPOSITION.md) with full transverse errors. Its approximate parent law retains a specific exact-closure obstruction | **Admitted for the fixed finite model**. Reuse its identity and predictive domain; broader hierarchy, other contacts and indefinite approximation remain separate |
-| Formation, composite identity and work | [Joint acquisition](../nodal/ORGANIZED_JOINT_ACQUISITION.md), [assembly work](../nodal/ORGANIZED_ASSEMBLY_WORK.md) and [regional budgets](../nodal/ORGANIZED_REGIONAL_RETENTION.md) separate preparation, entry and maintenance. The new parent response assumes the parent registration identity already holds | **Sole immediate gate**, specified below: source-to-parent entry with children retained. A structural separation/work criterion remains a distinct later claim; sufficient energy or negative mixed storage alone is not binding |
+| Formation, composite identity and work | [Parent acquisition](../nodal/ORGANIZED_PARENT_ACQUISITION.md) now supplies full-source entry and predictive use, with an acquired antipodal nonentry control. [Assembly work](../nodal/ORGANIZED_ASSEMBLY_WORK.md) and [regional budgets](../nodal/ORGANIZED_REGIONAL_RETENTION.md) retain preparation and energetic boundaries | **Sole immediate gate**, specified below: one admitted internal intervention and its restoring response, with children retained and sufficient collective state tested. Physical binding and autonomous contact selection remain separate claims |
 | Effective memory and controlled reduction | [Causal component composition](../nodal/SINE_CLASS_INTERFACE_COMPOSITION.md) and [bridge memory](../nodal/RESONANCE_FOUNDATIONS.md#sine-bridge-causal-memory) already retain hidden state. A formal slow expansion is not a time-domain approximation | **High conditional method** if the selected collective observation fails closure. Derive one admitted state augmentation or a preparation/domain/horizon error bound; do not build a generic memory framework |
 | Identity, internal activity and constitutive freedom | [Positive-loss and conservative boundaries](../nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission) distinguish static identity, moving constituents and recurrence. [Alternative mobility](../nodal/SINE_PAIR_MOBILITY.md#sine-mobility-relative-geometry) protects geometry without an established equivalent invariant measure | **Prepared alternative**, when a selected object requires sustained activity. One bounded question is invariant-density admission for the existing alternative mobility; failure of a phase-only density ansatz does not exclude every full-state measure |
 | Independent selection of laws and information premises | [First-moment selection](../nodal/SINE_CONSTITUTIVE_INFORMATION.md#first-phase-moment-sufficiency) is conditional; [recursive inheritance countermodels](../nodal/SINE_PAIR_MOBILITY.md#sine-replica-constitutive-nonselection) retain kinetic freedom | **Conceptually critical**, but another compatibility scan cannot establish uniqueness. Reopen with an independently justified restriction or an admitted discriminating observation; retain valid alternative complete laws meanwhile |
 | Autonomous preparation, contacts, capacity and collective events | [Relation laws](../nodal/RELATION_FOUNDATIONS.md), [capacity admission](../CAPACITY_LOCALIZATION_BALANCE.md), [support work](../nodal/RELATIONAL_SUPPORT_EVENTS.md) and [operator descent](../STRUCTURAL_OPERATORS.md) have separate contracts. Neither passivity nor a valid inherited event selects its occurrence | **Critical for autonomous assembly**, not an established prerequisite for fixed-support results. Select the particular missing law or operator only when a named claim consumes it, and justify its independent premises before adding it |
 | Independent physical observation | The [P1-P5 contract](#supporting-measurement-bridge) and [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md) separate internal constructions from measured properties | **Essential for physical identification**. Activate one falsifiable collective observable with independent preparation, readout, clock and alternatives. It need not wait for every foundational question, but no current dataset has complete admission |
 
-Only the parent-formation question is active. The others are conditional routes, not a fixed
+Only the acquired-parent restoring-response question is active. The others are conditional routes, not a fixed
 seven-step schedule or a ranking of their ultimate scientific importance.
 Fixed capacity and support define legitimate conditional models; their
 autonomous selection becomes necessary only for claims that require it.
 
-### Immediate question: acquire parent identity while retaining the children
+### Immediate question: restoring response of an acquired parent
 
-**Can the same complete dynamics create the parent registration identity
-from a declared source that lacks it, while keeping all four acquired child
-identities?** The [finite predictive theorem](../nodal/REPEATED_ORGANIZED_COMPOSITION.md)
-assumes that identity at preparation. Its inclusion of already acquired
-parent pairs does not answer this new entry question.
+**Can an acquired parent lose and recover its internal registration while
+its children persist, and which retained collective coordinates predict the
+ensuing interaction?** Use the actual family reached at slow time four in
+the [parent-acquisition theorem](../nodal/ORGANIZED_PARENT_ACQUISITION.md).
+Its marked identity and source-specific forecast do not yet answer this
+intervention question or establish structural resistance to separation.
 
-1. **Declare a genuinely unregistered parent source.** Reuse the original
-   isolated acquired C9 families and their full uncertainty, not the already
-   aligned parent-pair source. Fix new relative child origins that place
-   the entire source outside the parent same-slot gap bound of `1/4`, with
-   every child still winding one. Retain the marked 36-node law, capacities,
-   clock and one of its admitted fixed contacts. Declare source offsets,
-   preparation/attachment work, target domain and analytic decision criteria
-   before assessing entry. The source choice must express missing parent
-   organization, not optimize a sufficient bound after its result.
-2. **Admit source-to-domain dynamics on the full state.** Derive an entry
-   mechanism and a justified finite deadline or an explicit obstruction,
-   retaining fine residuals and child winding throughout the passage. Exact
-   first-stage internal-mode dynamics can guide the proof, but cannot replace
-   a whole-source argument. A suitable exact nonentry control may distinguish
-   relaxation from an invariant internal registration; its restricted source
-   scope must remain explicit.
-3. **Connect acquired identity to predictive use.** Enter a declared parent
-   identity domain and admit its subsequent interaction or controlled reduced
-   dynamics from the actual reached state. The old zero-parent-form and
-   `Delta=1/20` preparation are not automatically reached, and the finite
-   response certificate cannot be reused by resetting means or residuals.
-   Carry any new means, hidden associations and work with their own bounds.
-4. **Close at the genuine decision.** Accept source-inclusive entry and
-   maintenance, or a scoped invariant/work/source obstruction. A failed
-   sufficient estimate leaves acquisition unresolved. Record any missing
-   premise precisely; do not expand into an origin, support-selection or
-   universal-hierarchy campaign.
+1. **Admit one internal intervention before evaluating it.** Retain the
+   matching 36-node law, original source uncertainty, capacities and clock.
+   Select one supplied, parent-mean-preserving relative displacement of the
+   two children in one parent, sufficient to leave its registration domain
+   while preserving their winding. Admit the actual input or hybrid-event
+   contract and its fine-state realization before invoking an operator name
+   or a collective event. Freeze amplitude, work, readout, horizon and error
+   budget; neither the occurrence nor its work supply is autonomous.
+2. **Carry the acquired state through disruption and recovery.** Retain
+   actual forms, phases, original fine residuals and all work from that event.
+   Establish child retention and a finite return to parent identity, or an
+   explicit obstruction. A fresh nominal parent or a smaller error family
+   cannot replace the reached source. Re-admit every post-event bound even
+   though the continuous law and fixed support are unchanged.
+3. **Test sufficient predictive state over the finite response.** Compare
+   the eight child-mean coordinates, with their fine-error bound, against
+   the four parent observations that the intervention leaves unchanged.
+   Resolve a later interaction or recovery observable, not only the already
+   known instantaneous port-association counterexample. Retain hidden
+   initialization or memory when consumed; do not assert an exact quotient.
+4. **Close at the source-inclusive decision.** Accept the admitted restoring
+   response and its finite predictive distinction, or a scoped obstruction.
+   An unavailable sufficient estimate remains unresolved. This gate neither
+   selects a unique grouping nor assumes that the two support factors have
+   different relaxation times, and it does not establish physical binding.
 
-This remains a bounded analytic admission. Supplied child preparation,
-relative origins and contacts do not derive autonomous assembly. Preserve
-all previous acquired sources and negative controls, and introduce no new
-controller, contact scan, error shrinking or frozen-trajectory replay.
+This remains one bounded analytic admission. Preserve the previous sources,
+antipodal control and frozen evidence. No controller, contact scan, source
+refinement, universal hierarchy or new numerical campaign is activated.
 
 For each subsequent law or hypothesis, record its status, independent
 premises, consequences, countermodels and decision in the existing definition
@@ -347,6 +351,28 @@ The physical objective guides which mathematical property matters. Laboratory
 examples supply possible controls and discriminators; they do not replace
 the generative objective with imitation of a convenient apparatus. Substrate
 origin, universal laws and recurrence across scales remain open hypotheses.
+
+<a id="organized-parent-acquisition-admission"></a>
+## Closed theoretical admission: acquired parent registration
+
+The [result owner](../nodal/ORGANIZED_PARENT_ACQUISITION.md) preserves the
+declaration committed before analytic evaluation. On the matching 36-node
+law, four independently recovered C9 families initially lack the marked
+parent registration. Their 64 fine source directions enter the declared
+parent domain by slow time four, with all children retained through time five.
+A global heat-integral comparison controls the complete state over that passage.
+
+The subsequent prediction starts from the actual reached means and retains
+their source correlations and nonzero forms. Its explicit phase-gap forecast
+has error below the fixed `1e-5` budget and the actual decline exceeds `1e-4`.
+This long source-specific result does not extend the generic earlier residual
+ball's horizon. Supplied contact work and the original isolated recovery dwell
+remain premises. A correlated antipodal acquired-source control never enters
+parent registration under the same law; independent perturbations do not
+inherit that all-future nonentry claim. The marked grouping is not a uniquely
+selected hierarchy or a separation of internal and external timescales.
+The [active gate](#current-g3-gate) tests its restoring response after one
+admitted internal intervention.
 
 <a id="repeated-organized-composition-admission"></a>
 ## Closed theoretical admission: predictive repeated organized composition
@@ -367,7 +393,8 @@ and approximate outside its exact family. Both original acquired parent
 families are included after re-admitting their residuals, supplied relative
 origins and new support work. This is an analytic finite interaction result,
 not a new trajectory, universal hierarchy or autonomous parent formation.
-The [active gate](#current-g3-gate) now tests the parent identity's acquisition.
+The [separate acquisition](#organized-parent-acquisition-admission) closes
+source-to-parent entry for the matching contact and its declared child source.
 
 <a id="constitutive-receiver-source-outcome"></a>
 ## Closed uniform comparison: original source and finite receiver exclusion
@@ -388,7 +415,7 @@ trajectory, law scan or reserved response was evaluated. The original
 prospective maximum horizon `32` was not reached or reinterpreted as evidence.
 The [deferred long-time question](#constitutive-receiver-long-time-trapping)
 retains delayed acquisition and the unresolved donor classification. Neither
-is a prerequisite for the active parent-acquisition admission.
+is a prerequisite for the active acquired-parent restoring-response admission.
 
 <a id="constitutive-identity-barriers-and-work"></a>
 ## Closed constitutive discrimination: identity barriers and work
@@ -1552,7 +1579,7 @@ the unavailable donor endpoint is activated by retaining this question.
 | General partial observation and internal-state recovery | General joint noisy record/state compatibility and a uniform sufficient derivative order remain deferred. The [fixed-law endpoint certificate](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-readout), [one-unknown-coefficient test](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-two-time) and [two-unknown-coefficient separation](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-two-law) cover only their named binary families and bounded preparation/readout errors. Reopen broader recovery only when a selected response needs it; reuse [sample admission](../nodal/SINE_ENVIRONMENTAL_MEMORY.md#sine-finite-sample-admission), [regular internal observability](../nodal/SINE_PAIR_STATE.md#sine-replica-internal-observability) and [cancellation classification](../nodal/SINE_PAIR_STATE.md#sine-pair-cancellation-observability) |
 | Controlled slow bridge reduction | Preparation, hidden source and time-domain approximation error. Reopen only when a selected response needs reduction of its [exact causal memory](../nodal/RESONANCE_FOUNDATIONS.md#sine-bridge-causal-memory); fix the preparation, domain and finite horizon, then bound the actual full/reduced trajectories. Existing reactive coefficients are not that bound and do not derive local damping |
 | Nonlinear mediated rebound or broader pulse estimates | Quantitative remainder or finite-preparation bounds beyond the already admitted finite-kick response. Reopen only for a named response claim outside that scope; do not repeat the closed bounded calculation |
-| Universal law, autonomous support/capacity and hierarchy selection | The active gate tests parent acquisition from prepared children under a supplied complete law; it does not activate universal hierarchy formation or select that law. Independent justification of these premises remains open. Reopen a broader claim only with its own F1-F4 admission; synchronization, passivity and contact eligibility do not select an occurrence law |
+| Universal law, autonomous support/capacity and hierarchy selection | The active gate tests the restoring response of acquired parents under a supplied complete law and admitted intervention; it does not activate universal hierarchy formation or select that law. Independent justification of these premises remains open. Reopen a broader claim only with its own F1-F4 admission; synchronization, passivity and contact eligibility do not select an occurrence law |
 | Approximate physical reduction and data evaluation | Activate only when a named mechanism or information discriminator needs independent confrontation. The [primitive-phase review](PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#primitive-phase-information-boundary) supplies source metadata and obstructions, not admitted data. The [receiver defect certificate](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-defect) propagates declared complete-row errors for its own model; it does not establish source-specific mapped-law bounds. Reopening the direct oscillator route needs a justified preparation/reduction and sensor/clock bridge; more samples do not repair its closure obstruction. No blanket search or response fit is active |
 
 Earlier C4/C8 continuations, C5 itineraries, C6 global-runtime certification,

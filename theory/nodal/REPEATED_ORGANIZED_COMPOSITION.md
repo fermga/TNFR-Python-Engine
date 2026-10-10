@@ -406,3 +406,8 @@ It neither selects the sine law nor transfers this result to the native
 runtime, arbitrary events, other interfaces or indefinite horizons.
 Constituent formation, supplied parent preparation, conditional maintenance,
 autonomous assembly and physical identification remain distinct.
+The separate [parent-acquisition theorem](ORGANIZED_PARENT_ACQUISITION.md)
+admits entry from four independently uncertain acquired children under the
+matching control, then predicts from the actual reached state. Its longer
+source-specific horizon retains correlations absent from the generic residual
+ball here; it does not extend this theorem by changing only its clock or radius.

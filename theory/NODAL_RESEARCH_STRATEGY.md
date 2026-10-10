@@ -199,8 +199,14 @@ particular source families, not universal preparation certificates. A new
 support or interaction must re-admit their hypotheses and work. A supplied
 parent registration or neighborhood can establish conditional maintenance;
 it cannot establish that the parent formed from independently acquired
-children. This distinction lets a bounded inheritance result guide the next
-formation question without promising autonomous hierarchy formation.
+children. The [parent-acquisition result](nodal/ORGANIZED_PARENT_ACQUISITION.md)
+closes this entry obligation for one declared matching-support source, carrying
+all original fine errors into a resolved prediction from the actual reached
+means. Its antipodal control retains acquired constituents without acquiring
+the marked parent registration. The two support factors still have identical
+nominal relaxation laws: prepared amplitude differences do not establish
+autonomous hierarchy or timescale selection. A composite's response to loss
+and restoration of its internal registration remains a separate question.
 
 ### Ordered geometry connects transfer to formation
 
