@@ -500,6 +500,15 @@ observations retain child association; they are not the four parent means.
 Exact initial observations, marked channels and supplied intervention timing
 remain premises, without autonomous event occurrence or physical identification.
 
+The [finite-reservoir extension](nodal/ORGANIZED_PARENT_RESERVOIR_EXCHANGE.md)
+replaces the prescribed time profile by a jointly evolving auxiliary form
+coordinate with its own pressure and storage. Reciprocal exchange supplies a
+complete loss balance and a finite net-work budget. The fixed model nevertheless
+fails its registration-loss readout for the entire declared source, while
+preserving the children. Thus autonomous exchange, energy consistency and a
+particular organizational response are distinct claims. The auxiliary scalar
+is supplied constitutive state; its formation as an NFR has not been derived.
+
 Here structural participation does not identify the entire joint state with
 one scalar EPI coordinate. The current representation also retains phase,
 capacity and support; reducing these to a richer form description would need

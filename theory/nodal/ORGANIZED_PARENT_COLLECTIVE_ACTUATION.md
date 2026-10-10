@@ -401,3 +401,8 @@ label, enter (18). Marked children, exact initial observations, phase lifts,
 fixed capacities/support and supplied actuation timing remain premises.
 There is no autonomous occurrence law, physical observation bridge, optimal
 control claim or additional chronological no-actuation comparison.
+
+The separate [autonomous reservoir question](ORGANIZED_PARENT_RESERVOIR_EXCHANGE.md)
+adds an explicit source state and reciprocal exchange law. Its two network
+inputs can differ under joint-state perturbation, so its error proof and
+response decision do not follow from the identical-input estimate above.

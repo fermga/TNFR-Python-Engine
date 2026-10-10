@@ -236,6 +236,14 @@ uses no release measurement. This is controlled collective sufficiency for
 one preparation and horizon; exact observation, supplied timing and the input
 source remain premises rather than derived autonomous behavior.
 
+The separate [finite-reservoir model](nodal/ORGANIZED_PARENT_RESERVOIR_EXCHANGE.md)
+addresses that source premise through a declared autonomous exchange. It has
+a consistent storage balance and preserves the original children, but its
+fixed registration-loss criterion is excluded by a source-inclusive upper
+bound. This distinguishes an admitted storage budget from the dynamics required for
+a response. The negative result retains its source and readout; changing a
+reservoir law or asking about another time is a separately declared question.
+
 ### Ordered geometry connects transfer to formation
 
 The [sine pattern owner](nodal/SINE_PATTERN_DYNAMICS.md) combines entry,

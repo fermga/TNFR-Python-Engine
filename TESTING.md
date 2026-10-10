@@ -321,6 +321,18 @@ recovery after propagating endpoint mismatch. Old aggregate verdicts or an
 outer-gap-only forecast cannot replace these premises. No release observation,
 fine-state feedback, source refinement or frozen producer is admitted.
 
+For [autonomous reservoir exchange](theory/nodal/ORGANIZED_PARENT_RESERVOIR_EXCHANGE.md),
+select `tests/physics/test_organized_parent_reservoir_exchange.py` with the
+acquisition, repeated-composition and original source controls above. Verify
+both exchange signs, the factor-nine reservoir reaction, all three rows and
+clocks, and the full joint storage derivative. Zero reservoir state is not a
+disconnected port. Exercise the joint-error comparison with distinct reservoir
+responses and check the cooperative supersolutions without replacing the
+finite-inertia law by its singular limit. Retain the entire reservoir interval
+and every original source allowance. Distinguish a proved failed readout,
+an unavailable estimate and registration at the later deadline; the latter
+does not prove a loss-and-return cycle. No frozen producer is replayed.
+
 For [identity-preserving assembly work](theory/nodal/ORGANIZED_ASSEMBLY_WORK.md),
 select `tests/physics/test_organized_assembly_work.py` with
 `tests/physics/test_acquired_organized_network_capture.py`,
