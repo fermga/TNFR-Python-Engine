@@ -497,6 +497,22 @@ mean phase row, a nonzero quadratic covariance defect and an actually negative
 storage remainder within its signed bound. These are algebra/execution controls, not
 an acquired-source error certificate, physical calibration or circuit experiment.
 
+For the [actual-source electrical comparison](theory/nodal/ORGANIZED_ELECTRICAL_SOURCE.md),
+select `tests/physics/test_organized_electrical_source.py` and
+`tests/physics/test_organized_collective_observation.py` with the ideal electrical,
+joint-resource, sequential-observation, outer-winding and slot-contact owners.
+Compare the rational hidden transport against an independent continuous positive
+majorant. Check invalid primitive values, strict domain margins, complete source
+history and both product supports. Synthetic admission tests use the older
+source budget, never the reserved corner. Circular observation must survive
+independent full turns and argument cuts, retain the actual donor origin and
+return unavailable for unproved collars; its derivative is the consistent
+arithmetic mean, not the raw resultant derivative. Keep the signed storage,
+hidden work and loss distinct. The finite approximation does not prove exact
+aggregate passivity, phase recovery from earlier form readings or physical
+component calibration. Use the shared fake-only lifecycle controls; do not
+rerun the single declared assessment.
+
 For [finite interface factorization](theory/nodal/ORGANIZED_INTERFACE_FACTORIZATION.md),
 select `tests/physics/test_organized_slot_registration.py` and
 `tests/physics/test_organized_interface_factorization.py` with the joint-resource,
