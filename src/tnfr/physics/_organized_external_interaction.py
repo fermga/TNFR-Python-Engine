@@ -102,8 +102,8 @@ class _OrganizedExternalInteractionObservation:
     form_original_rate_bounds: tuple[I, ...]
     phase_original_rate_bounds: tuple[I, ...]
     child_form_means: tuple[Q, ...]
-    # Raw offset means omit the supplied pi/2 donor origin; these are not
-    # the complete lifted phase means of the six children.
+    # Raw offset means omit the supplied donor origin (pi/2 in the original
+    # protocol); these are not the complete lifted phase means of the children.
     child_phase_offset_means: tuple[Q, ...]
     child_form_tau_rate_bounds: tuple[I, ...]
     child_phase_tau_rate_bounds: tuple[I, ...]
@@ -133,6 +133,16 @@ def _observe_organized_external_interaction(*, form, phase_offsets):
     values = _vector(form, "form", _SIZE)
     offsets = _vector(phase_offsets, "phase_offsets", _SIZE)
     geometry = _derive_organized_external_interaction()
+    return _observe_admitted_external_interaction(values, offsets, geometry)
+
+
+def _observe_admitted_external_interaction(values, offsets, geometry):
+    """Shared full-state field kernel for caller-admitted contact preparations.
+
+    The calling observer owns primitive admission and freshly derived support
+    and origin. This kernel neither authenticates incoming reports nor asserts
+    source acquisition, identity retention or future response.
+    """
     lifted_offsets = offsets[:45] + tuple(
         value + geometry.external_phase_origin_bounds for value in offsets[45:]
     )

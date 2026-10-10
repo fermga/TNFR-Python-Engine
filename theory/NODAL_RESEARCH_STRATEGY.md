@@ -19,6 +19,11 @@ from the nodal dynamics; it requires no prior identification of a primitive
 coordinate with a laboratory sensor. Direct-realization audits are auxiliary.
 Independent physical observation becomes the next obligation when a derived
 collective property has a specific falsifiable comparison.
+That comparison starts from a property of fundamental physics and its precise
+symmetry, conservation, composition and measurement requirements. Assess what
+TNFR derives and what remains supplied before selecting the experimental
+discriminator. Accessible apparatus and datasets serve that physical question;
+their availability does not define the phenomenon the paradigm must explain.
 
 An identity can persist while its constituents move. A larger NFR can retain
 smaller constituents and their causal influence; a supplied graph or partition
@@ -54,6 +59,19 @@ can distinguish alternatives with an existing complete model and produce a
 new consequence useful to several branches. The plan's
 [priority assessment](research/FIVE_STAGE_EXECUTION_PLAN.md#research-priority-assessment)
 owns the current choice and conditions for alternatives.
+
+A resolved finite interaction leaves three distinct obligations: whether the
+organization survives the continuing contact, whether its preparation and
+measurement budgets admit an operational realization, and whether an
+independently measured property distinguishes its complete law from alternatives.
+The [relative-origin result](nodal/ORGANIZED_EXTERNAL_REGISTRATION.md) removes
+one favorable-alignment premise without closing those obligations. Changing
+support requires its own stationary geometry, stability and actual-source
+inclusion; an isolated capture certificate cannot supply them. A new moment
+or tighter remainder is useful when it decides one of these questions.
+Physical confrontation can begin once a concrete signature and independent
+bridge are admitted, without waiting for unique law selection or substrate
+origin. The plan selects the next bounded question from these dependencies.
 
 | Question | Required distinction | Owner |
 | --- | --- | --- |

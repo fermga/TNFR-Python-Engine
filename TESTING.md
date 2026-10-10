@@ -443,6 +443,17 @@ four-reading error, separate contact work and all fifteen marked identities.
 Static arbitrary-state and closure witnesses are not acquired trajectories.
 Use the shared no-trajectory/frozen-producer guards and module-scoped reports.
 
+For [relative-origin interaction capability](theory/nodal/ORGANIZED_EXTERNAL_REGISTRATION.md),
+select `tests/physics/test_organized_external_registration.py` with the fixed
+external-interaction owner and its source dependencies above. Independently
+check arbitrary-origin full rows, both origin-excluded boundary quadratures
+and outward radial bounds. Preserve the distinction between an upper bound
+for every origin and a larger response at a source-dependent witness origin;
+retain the uniform nonlinear remainder and two errors for each increment.
+Check complete source reconstruction once, unavailable-source gating and
+independence from the old pi/2 response verdict. Contact work and all fifteen
+finite identities must hold uniformly; static examples certify no trajectory.
+
 For [identity-preserving assembly work](theory/nodal/ORGANIZED_ASSEMBLY_WORK.md),
 select `tests/physics/test_organized_assembly_work.py` with
 `tests/physics/test_acquired_organized_network_capture.py`,

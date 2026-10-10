@@ -120,7 +120,10 @@ measurement model.
   can [identify that winding along one continuing history](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/ORGANIZED_SEQUENTIAL_OBSERVATION.md)
   without supplying the observer with the constituent phase origins. The
   proof retains the complete constituent state, probe work and finite identity
-  bounds; the winding alone does not predict every future interaction.
+  bounds. A declared [external-contact comparison](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/ORGANIZED_EXTERNAL_REGISTRATION.md)
+  separates a uniformly small finite response from a larger response available
+  at some relative alignment. The winding alone does not predict every future
+  interaction or its long-term survival.
 - **Retention and recovery:** admitted patterns remain in protected regions
   and recover after bounded inputs. [Repeated joined interaction](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/SINE_CLASS_REPEATED_INTERACTION.md)
   retains each branch's state, accumulated means and work under its supplied

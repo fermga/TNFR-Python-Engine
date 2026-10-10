@@ -590,6 +590,17 @@ composite; neither winding nor an instantaneous moment with mean coordinates
 supplies autonomous future evolution. This is a conditional collective
 interaction property, not a topological charge or a nonadditivity theorem.
 
+The [relative-origin envelope](nodal/ORGANIZED_EXTERNAL_REGISTRATION.md)
+separates this finite capability from one favorable alignment. Every admitted
+outer-one source has a small response at every relative origin; each admitted
+outer-zero source has some origin with a larger response, even with the full
+nonlinear remainder and both reading errors. The witness may depend on hidden
+state. The initial boundary amplitude is invariant under that supplied rigid
+rotation, but still depends on the actual interface, source and law. These
+separately prepared contacts are not an operational phase scan. Neither the
+envelope nor its fifteen finite identity bounds supplies later maintenance
+on the enlarged support or an autonomous alignment rule.
+
 Here structural participation does not identify the entire joint state with
 one scalar EPI coordinate. The current representation also retains phase,
 capacity and support; reducing these to a richer form description would need
