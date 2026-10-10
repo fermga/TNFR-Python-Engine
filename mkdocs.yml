@@ -104,6 +104,7 @@ nav:
           - "Parent registration acquired from organized children": theory/nodal/ORGANIZED_PARENT_ACQUISITION.md
           - "Restoring response of an acquired organized parent": theory/nodal/ORGANIZED_PARENT_RESTORING_RESPONSE.md
           - "Continuous form actuation of the acquired-parent phase event": theory/nodal/ORGANIZED_PARENT_CONTINUOUS_ACTUATION.md
+          - "Constructive continuous realization of the acquired-parent phase event": theory/nodal/ORGANIZED_PARENT_CONSTRUCTIVE_ACTUATION.md
           - "Composition-compatible constitutive laws": theory/nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md
           - "Oriented-interface profile inheritance": theory/nodal/ORIENTED_INTERFACE_PROFILE_INHERITANCE.md
           - "Network-wide organized compatibility": theory/nodal/ORGANIZED_NETWORK_COMPATIBILITY.md

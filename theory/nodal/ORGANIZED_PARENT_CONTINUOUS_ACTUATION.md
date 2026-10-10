@@ -282,3 +282,9 @@ strict rejection margin. They validate the implementation of the conditional
 theorem; a finite collection of force samples would not prove its universal
 input quantifier. Structural work and duration retain their declared units,
 without a sensor bridge, material interpretation or uniquely selected law.
+
+The separate [constructive-actuation theorem](ORGANIZED_PARENT_CONSTRUCTIVE_ACTUATION.md)
+uses a frozen four-unit path to establish a sufficient realization with the
+same source, target, input channel and net work budget. Its actual path and
+child-retention proof are additional evidence; the one-unit obstruction above
+and its frozen protocol remain unchanged.

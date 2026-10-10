@@ -295,6 +295,20 @@ depend on later unforced restoration or readout verdicts. Reusing signed event
 work must preserve the previous restoring-response report exactly. No driven
 trajectory or frozen producer is evaluated by these analytic controls.
 
+For [constructive phase-event realization](theory/nodal/ORGANIZED_PARENT_CONSTRUCTIVE_ACTUATION.md),
+select `tests/physics/test_organized_parent_constructive_actuation.py` with
+the continuous-actuation, restoring-response, acquired-parent, repeated-
+composition and original source controls above. Independently verify the cubic
+and both endpoint derivatives, the fixed inverse-Laplacian displacement,
+complete forced rows and clock changes, and the exact integrated polynomial
+loss. Check every path identity margin and the original fine uncertainty;
+nominal endpoints alone do not establish full-source reachability. Verify
+release separately from path admission, including its shifted clock and source
+association. The detached path evaluator authenticates no preparation and
+executes no solver or graph mutation. Shared interval field extraction must
+preserve previous observations exactly; retain malformed-input and subgrid
+controls. Do not replay frozen source producers.
+
 For [identity-preserving assembly work](theory/nodal/ORGANIZED_ASSEMBLY_WORK.md),
 select `tests/physics/test_organized_assembly_work.py` with
 `tests/physics/test_acquired_organized_network_capture.py`,

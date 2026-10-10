@@ -168,6 +168,32 @@ class _RepeatedCompositionObservation:
     )
 
 
+def _bounded_sine_edge_fields(*, phase_offsets, weighted_edges, alpha_bounds):
+    """Enclose currents and potentials for caller-admitted lifted offsets.
+
+    Offsets may be exact rationals or outward intervals from a prescribed
+    path. Callers own primitive admission, support, winding carrier and state
+    provenance; this algebraic kernel certifies none of those premises.
+    """
+
+    @lru_cache(maxsize=128)
+    def trigonometry(gap):
+        # Reuse arithmetic only within this calculation, never a state verdict.
+        return sin(gap), cos(gap)
+
+    current, potential = [I(0) for _ in phase_offsets], []
+    edge_currents = []
+    for a, b, weight in weighted_edges:
+        gap = alpha_bounds * ((b % 9) - (a % 9)) + phase_offsets[b] - phase_offsets[a]
+        sine, cosine = trigonometry(gap)
+        edge_current = weight * sine
+        current[a] += edge_current
+        current[b] -= edge_current
+        edge_currents.append(edge_current)
+        potential.append(weight * (1 - cosine))
+    return tuple(current), tuple(potential), tuple(edge_currents)
+
+
 def _observe_repeated_composition(*, interface, form, phase_offsets):
     """Observe complete exact detached state without projecting it to a source."""
     name = _interface(interface)
@@ -177,23 +203,11 @@ def _observe_repeated_composition(*, interface, form, phase_offsets):
     costs, gradient = _prepared_form_costs(
         form=values, weighted_edges=geometry.weighted_edges
     )
-
-    @lru_cache(maxsize=128)
-    def trigonometry(gap):
-        # At most 108 edge gaps and one parent gap, all admitted intervals.
-        # Reuse arithmetic only within this observation, never state or verdicts.
-        return sin(gap), cos(gap)
-
-    current, potential = [I(0) for _ in range(_SIZE)], []
-    edge_currents = []
-    for a, b, weight in geometry.weighted_edges:
-        gap = geometry.alpha_bounds * ((b % 9) - (a % 9)) + offsets[b] - offsets[a]
-        sine, cosine = trigonometry(gap)
-        edge_current = weight * sine
-        current[a] += edge_current
-        current[b] -= edge_current
-        edge_currents.append(edge_current)
-        potential.append(weight * (1 - cosine))
+    current, potential, edge_currents = _bounded_sine_edge_fields(
+        phase_offsets=offsets,
+        weighted_edges=geometry.weighted_edges,
+        alpha_bounds=geometry.alpha_bounds,
+    )
     gamma, k = geometry.gamma_bounds, geometry.clock_factor
     dx = tuple(k * (-q + gamma * s) for q, s in zip(gradient, current))
     dy = tuple(k * gamma * q for q in gradient)
@@ -215,7 +229,8 @@ def _observe_repeated_composition(*, interface, form, phase_offsets):
     outer_start = len(geometry.internal_edges) + len(geometry.parent_edges)
     total_costs = tuple(I(x) + y for x, y in zip(costs, potential))
     outer_current = sum(edge_currents[outer_start:], I(0)) / 18
-    mean_sine, mean_cosine = trigonometry(I(tmeans[1] - tmeans[0]))
+    mean_gap = I(tmeans[1] - tmeans[0])
+    mean_sine, mean_cosine = sin(mean_gap), cos(mean_gap)
     rigid_current = geometry.kappa_bounds * mean_sine
     nominal_work = 9 * (xmeans[1] - xmeans[0]) ** 2 + 18 * (
         1 - geometry.kappa_bounds * mean_cosine

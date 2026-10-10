@@ -172,9 +172,11 @@ carries one supplied intervention through finite recovery and resolves a later
 interaction that equal initial parent means cannot predict. The
 [continuous-actuation obstruction](#organized-parent-continuous-actuation-admission)
 now excludes every form-only input within the one-unit duration and three-unit
-work budget. The sole next task is [constructive continuous reachability](#current-g3-gate):
-admit one prescribed finite-duration path with the same actual endpoints and
-budget, preserving the children and the unchanged phase law.
+work budget. The [constructive realization](#organized-parent-constructive-actuation-admission)
+now supplies a four-unit path with exact endpoints, retained children and
+admitted release. The sole next task is [collective actuation admission](#current-g3-gate):
+test whether eight child means and four child-uniform inputs suffice for a
+controlled approximate realization and its subsequent response.
 The [prepared storage observer](#storage-comparison-producer-admission)
 is retained as an instrument; it has no frozen protocol or reserved response
 and is not the next campaign.
@@ -191,7 +193,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next theoretical admission | [Constructive continuous reachability](#current-g3-gate): freeze one prescribed path and duration, then establish actual endpoints, full-source child retention and input work within the unchanged three-unit budget |
+| Next theoretical admission | [Collective actuation admission](#current-g3-gate): use only eight actual child means and four child-uniform form inputs; admit fine-state endpoint error, work, child retention and a corrected post-release forecast |
+| Closed theoretical constructive realization | [Four-unit prescribed actuation](#organized-parent-constructive-actuation-admission): exact actual endpoints, retained children throughout, signed net work below three, and admitted autonomous release; complete initial-state knowledge and all-node actuation remain premises |
 | Closed theoretical actuation obstruction | [Finite-work form actuation](#organized-parent-continuous-actuation-admission): complete input balance and a necessary transport loss exclude the supplied phase map for every integrable form input in one slow unit within the three-unit budget |
 | Closed theoretical restoring-response admission | [Acquired-parent restoring response](#organized-parent-restoring-response-admission): source-inclusive disruption and finite recovery, paid event work, and a resolved later interaction invisible in the initial four parent means but predictable with eight child means |
 | Closed theoretical parent-acquisition admission | [Acquired parent registration](#organized-parent-acquisition-admission): original independently uncertain children enter marked parent identity, retain their winding and admit a resolved prediction from actual reached means; a correlated acquired antipodal control never enters |
@@ -258,7 +261,7 @@ remain open; no empirical response has passed complete physical admission.
 
 <a id="current-g3-gate"></a>
 <a id="foundational-organized-pattern-admission"></a>
-<a id="organized-parent-constructive-actuation-admission"></a>
+<a id="organized-parent-collective-actuation-admission"></a>
 ## Primary plan: foundations tested by organized patterns
 
 Investigate which premises are sufficient, necessary within a declared class,
@@ -289,67 +292,67 @@ supplies entry and a resolved subsequent prediction for its fixed source. The
 [restoring response](../nodal/ORGANIZED_PARENT_RESTORING_RESPONSE.md) additionally
 resolves internal disruption, finite return and retained predictive information.
 The [actuation bound](../nodal/ORGANIZED_PARENT_CONTINUOUS_ACTUATION.md)
-excludes a one-unit realization, but a necessary work-duration inequality
-cannot construct any admissible path. The selected immediate gap is continuous
-reachability: can one prescribed path realize the endpoint within the same
-work budget at a separately declared duration, with all children retained?
+excludes a one-unit realization. The
+[constructive theorem](../nodal/ORGANIZED_PARENT_CONSTRUCTIVE_ACTUATION.md)
+supplies a four-unit realization but consumes the complete initial fine state
+and all-node input. The selected immediate gap is collective sufficiency:
+can eight child means and four uniform input channels retain a useful
+realization and release without observing or cancelling every fine deviation?
 This joins the portfolio's information, organization and scale contributions
 without treating one prepared receiver as a prerequisite for the whole paradigm.
 
 | Research front | Existing basis and genuinely missing result | Priority and activation |
 | --- | --- | --- |
 | Repeated composition and sufficient collective state | [Pair inheritance](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md), [network compatibility](../nodal/ORGANIZED_NETWORK_COMPATIBILITY.md) and [carried-source capture](../nodal/ACQUIRED_ORGANIZED_NETWORK_CAPTURE.md) now support a [finite two-level prediction](../nodal/REPEATED_ORGANIZED_COMPOSITION.md) with full transverse errors. Its approximate parent law retains a specific exact-closure obstruction | **Admitted for the fixed finite model**. Reuse its identity and predictive domain; broader hierarchy, other contacts and indefinite approximation remain separate |
-| Formation, composite identity and work | [Parent acquisition](../nodal/ORGANIZED_PARENT_ACQUISITION.md) supplies entry; [restoring response](../nodal/ORGANIZED_PARENT_RESTORING_RESPONSE.md) supplies a paid intervention and finite return. The [actuation bound](../nodal/ORGANIZED_PARENT_CONTINUOUS_ACTUATION.md) separates endpoint work from necessary continuous loss | **Sole immediate gate**, specified below: one constructive finite-work realization with full-source path identity. Physical binding and autonomous contact selection remain separate claims |
+| Formation, composite identity and work | [Parent acquisition](../nodal/ORGANIZED_PARENT_ACQUISITION.md) supplies entry; [restoring response](../nodal/ORGANIZED_PARENT_RESTORING_RESPONSE.md) supplies a paid intervention and finite return. [Constructive actuation](../nodal/ORGANIZED_PARENT_CONSTRUCTIVE_ACTUATION.md) realizes the endpoint with full-state initialization; the [one-unit obstruction](../nodal/ORGANIZED_PARENT_CONTINUOUS_ACTUATION.md) remains | **Sole immediate gate**, specified below: realization with collective observations and child-uniform inputs, including fine-error, work and release admission. Physical binding and autonomous occurrence remain separate claims |
 | Effective memory and controlled reduction | [Causal component composition](../nodal/SINE_CLASS_INTERFACE_COMPOSITION.md) and [bridge memory](../nodal/RESONANCE_FOUNDATIONS.md#sine-bridge-causal-memory) already retain hidden state. A formal slow expansion is not a time-domain approximation | **High conditional method** if the selected collective observation fails closure. Derive one admitted state augmentation or a preparation/domain/horizon error bound; do not build a generic memory framework |
 | Identity, internal activity and constitutive freedom | [Positive-loss and conservative boundaries](../nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission) distinguish static identity, moving constituents and recurrence. [Alternative mobility](../nodal/SINE_PAIR_MOBILITY.md#sine-mobility-relative-geometry) protects geometry without an established equivalent invariant measure | **Prepared alternative**, when a selected object requires sustained activity. One bounded question is invariant-density admission for the existing alternative mobility; failure of a phase-only density ansatz does not exclude every full-state measure |
 | Independent selection of laws and information premises | [First-moment selection](../nodal/SINE_CONSTITUTIVE_INFORMATION.md#first-phase-moment-sufficiency) is conditional; [recursive inheritance countermodels](../nodal/SINE_PAIR_MOBILITY.md#sine-replica-constitutive-nonselection) retain kinetic freedom | **Conceptually critical**, but another compatibility scan cannot establish uniqueness. Reopen with an independently justified restriction or an admitted discriminating observation; retain valid alternative complete laws meanwhile |
 | Autonomous preparation, contacts, capacity and collective events | [Relation laws](../nodal/RELATION_FOUNDATIONS.md), [capacity admission](../CAPACITY_LOCALIZATION_BALANCE.md), [support work](../nodal/RELATIONAL_SUPPORT_EVENTS.md) and [operator descent](../STRUCTURAL_OPERATORS.md) have separate contracts. Neither passivity nor a valid inherited event selects its occurrence | **Critical for autonomous assembly**, not an established prerequisite for fixed-support results. Select the particular missing law or operator only when a named claim consumes it, and justify its independent premises before adding it |
 | Independent physical observation | The [P1-P5 contract](#supporting-measurement-bridge) and [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md) separate internal constructions from measured properties | **Essential for physical identification**. Activate one falsifiable collective observable with independent preparation, readout, clock and alternatives. It need not wait for every foundational question, but no current dataset has complete admission |
 
-Only constructive continuous reachability is active. The others are conditional routes, not a fixed
+Only collective actuation admission is active. The others are conditional routes, not a fixed
 seven-step schedule or a ranking of their ultimate scientific importance.
 Fixed capacity and support define legitimate conditional models; their
 autonomous selection becomes necessary only for claims that require it.
 
-### Immediate question: constructive continuous reachability
+### Immediate question: collective actuation with unresolved fine state
 
-**Can one explicitly prescribed form input realize the actual phase-event
-endpoint within three work units while preserving the children along the
-entire path?** The one-slow-unit obstruction remains closed. This question
-adds an existence proof, rather than refining its lower bound or relabeling
-the impossible duration as a successful trial.
+**Do eight actual child means and four child-uniform form inputs suffice for
+an accurate realization and subsequent parent response?** This reduces the
+information and input authority consumed by the constructive theorem. It is
+not a more precise evaluation of its existing full-state recipe.
 
-1. **Freeze one source-dependent path before assessment.** Retain the same
-   complete forced law, actual initial `z4`, target `T(z4)`, support, capacities
-   and clocks. Declare one duration separately from the failed one-unit
-   protocol. A candidate is a cubic phase interpolation with both endpoint
-   phase velocities fixed by the actual nonzero form `x4`. Fix its coefficients,
-   duration and the same signed net input-work budget of three before evaluating
-   the bounds; do not scan durations or reset the reached form.
-2. **Realize both complete rows and endpoints.** Recover form from the
-   prescribed phase velocity using the graph Laplacian on its admitted
-   mean-zero subspace, retaining the common form mode. Define `Gamma` from
-   initial complete state and the prescribed path before its response. This
-   is supplied actuation, not pressure reconstructed from a measured response
-   or a selected natural law. Verify regularity, both endpoint forms, every
-   phase endpoint and the transformations of the input clock.
-3. **Carry the original source along the whole path.** Retain fine errors,
-   actual initial velocities and all child phase branches. Bound the exact
-   input work through endpoint storage plus integrated path loss. Necessary
-   endpoint work or a nominal path alone does not certify source-inclusive
-   realization or child retention. Signed net work does not by itself bound
-   total positive supply, input amplitude or actuator bandwidth.
-4. **Admit the release and scope.** If the full endpoint is exactly `T(z4)`,
-   match source and autonomous complete law before transferring the previous
-   restoring theorem by elapsed-time translation. Retain full-node actuation
-   authority and initial-state knowledge as supplied premises; no autonomous
-   occurrence or partial-observation controller follows. A failed bound for
-   this candidate remains unavailable unless an independent obstruction applies.
+1. **Freeze one projected input recipe.** Observe each child's actual form
+   mean and mean phase offset relative to the declared winding carrier at
+   `s=4`. Lift those eight observations to the exact child-constant family and
+   apply the same four-unit cubic recipe to that reference. The resulting
+   input must be constant within each child and use no hidden fine coordinate.
+   Retain the complete forced law, support, capacities and clocks. Freeze the
+   endpoint/readout error budgets and the same net work budget of three before
+   assessing the new source-inclusive bounds.
+2. **Keep every unresolved fine coordinate.** Compare the actual source and
+   its projected reference under the same supplied input. A projection is an
+   observation, not a reset of the actual graph. Carry the original fine
+   errors through the forced interval, child winding constraints and complete
+   work balance. The earlier state-dependent exact-path error formula does
+   not transfer to this different input recipe without a new argument.
+3. **Re-admit the endpoint and release.** The actual endpoint need only
+   approximate `T(z4)` within the frozen budget; eight means do not recover
+   arbitrary hidden state. Propagate that actual endpoint mismatch into the
+   subsequent autonomous response and its eight-coordinate forecast. Matching
+   only parent means, or invoking the exact-endpoint release theorem without
+   its hypothesis, cannot establish recovery or prediction.
+4. **Close at collective sufficiency or a scoped obstruction.** Require
+   full-source path identity, input-work admission and a resolved finite
+   post-release prediction. Retain the supplied child marks, phase lifts,
+   common input distribution and initial collective observations. This does
+   not select occurrence, derive a universal parent quotient or establish
+   positive-only supply, actuator bandwidth or a physical measurement bridge.
 
-This is one bounded analytic construction, with no control search, contact scan,
-source refinement or new numerical campaign. A contact-removal comparison
-remains conditional; circular-registration claims from lifted means would also
-need phase-branch admission.
+This is one bounded analytic comparison using a prescribed input. No control
+search, contact scan, source refinement or new numerical campaign is activated.
+The one-unit obstruction and exact full-state realization remain unchanged.
 
 For each subsequent law or hypothesis, record its status, independent
 premises, consequences, countermodels and decision in the existing definition
@@ -364,6 +367,28 @@ The physical objective guides which mathematical property matters. Laboratory
 examples supply possible controls and discriminators; they do not replace
 the generative objective with imitation of a convenient apparatus. Substrate
 origin, universal laws and recurrence across scales remain open hypotheses.
+
+<a id="organized-parent-constructive-actuation-admission"></a>
+## Closed theoretical admission: constructive continuous realization
+
+The [result owner](../nodal/ORGANIZED_PARENT_CONSTRUCTIVE_ACTUATION.md)
+preserves the four-unit cubic recipe committed as `2f0eab07`. For every actual
+acquired state at `s=4`, its initial-state-dependent input reaches exactly
+`T(z4)` at `s=8`, including every form and declared phase lift. Both complete
+rows and endpoint velocities match, with no state jump or phase forcing.
+
+The original fine uncertainty is retained throughout. Every child keeps winding
+one, and the exact polynomial loss plus signed endpoint storage gives net work
+below `5/2`, within the unchanged budget of three. This is a sufficient path
+construction; it does not contradict the one-unit obstruction or establish
+minimal work, positive-only supply or actuator bandwidth.
+
+After forcing is removed at `s=8`, exact endpoint and autonomous-law matching
+transfer the earlier eight-coordinate prediction to `s=9` and parent recovery
+to `s=12`. A translated paired control would need its own matched initial state;
+no new comparison against a system freely evolving throughout the intervention
+is claimed. Full initial-state knowledge and all-node actuation remain supplied
+premises. The [active gate](#current-g3-gate) tests their collective reduction.
 
 <a id="organized-parent-continuous-actuation-admission"></a>
 ## Closed theoretical admission: finite-work continuous actuation obstruction
@@ -385,8 +410,9 @@ The result preserves the earlier hybrid restoration theorem and excludes
 neither other durations nor independently admitted input channels. Equality
 in the transport bound is incompatible with the actual endpoint forms, but
 no sharper uniform optimum or optimal controller is claimed. The
-[active construction](#current-g3-gate) addresses the missing existence and
-path-identity obligations, with the failed protocol retained unchanged.
+[constructive realization](#organized-parent-constructive-actuation-admission)
+separately supplies existence and path identity, with the failed protocol
+retained unchanged.
 
 <a id="organized-parent-restoring-response-admission"></a>
 ## Closed theoretical admission: restoring response of an acquired parent
@@ -475,7 +501,7 @@ trajectory, law scan or reserved response was evaluated. The original
 prospective maximum horizon `32` was not reached or reinterpreted as evidence.
 The [deferred long-time question](#constitutive-receiver-long-time-trapping)
 retains delayed acquisition and the unresolved donor classification. Neither
-is a prerequisite for the [active realization construction](#current-g3-gate).
+is a prerequisite for the [active collective-actuation admission](#current-g3-gate).
 
 <a id="constitutive-identity-barriers-and-work"></a>
 ## Closed constitutive discrimination: identity barriers and work
@@ -1639,7 +1665,7 @@ the unavailable donor endpoint is activated by retaining this question.
 | General partial observation and internal-state recovery | General joint noisy record/state compatibility and a uniform sufficient derivative order remain deferred. The [fixed-law endpoint certificate](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-readout), [one-unknown-coefficient test](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-two-time) and [two-unknown-coefficient separation](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-two-law) cover only their named binary families and bounded preparation/readout errors. Reopen broader recovery only when a selected response needs it; reuse [sample admission](../nodal/SINE_ENVIRONMENTAL_MEMORY.md#sine-finite-sample-admission), [regular internal observability](../nodal/SINE_PAIR_STATE.md#sine-replica-internal-observability) and [cancellation classification](../nodal/SINE_PAIR_STATE.md#sine-pair-cancellation-observability) |
 | Controlled slow bridge reduction | Preparation, hidden source and time-domain approximation error. Reopen only when a selected response needs reduction of its [exact causal memory](../nodal/RESONANCE_FOUNDATIONS.md#sine-bridge-causal-memory); fix the preparation, domain and finite horizon, then bound the actual full/reduced trajectories. Existing reactive coefficients are not that bound and do not derive local damping |
 | Nonlinear mediated rebound or broader pulse estimates | Quantitative remainder or finite-preparation bounds beyond the already admitted finite-kick response. Reopen only for a named response claim outside that scope; do not repeat the closed bounded calculation |
-| Universal law, autonomous support/capacity and hierarchy selection | The active gate constructs one supplied continuous input and tests its endpoint, path identity and work; it does not select autonomous actuation, universal hierarchy formation or the complete law. Independent justification of these premises remains open. Reopen a broader claim only with its own F1-F4 admission; synchronization, passivity and contact eligibility do not select an occurrence law |
+| Universal law, autonomous support/capacity and hierarchy selection | The active gate tests collective observation and input sufficiency for one supplied realization; it does not select autonomous actuation, universal hierarchy formation or the complete law. Independent justification of these premises remains open. Reopen a broader claim only with its own F1-F4 admission; synchronization, passivity and contact eligibility do not select an occurrence law |
 | Approximate physical reduction and data evaluation | Activate only when a named mechanism or information discriminator needs independent confrontation. The [primitive-phase review](PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#primitive-phase-information-boundary) supplies source metadata and obstructions, not admitted data. The [receiver defect certificate](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-defect) propagates declared complete-row errors for its own model; it does not establish source-specific mapped-law bounds. Reopening the direct oscillator route needs a justified preparation/reduction and sensor/clock bridge; more samples do not repair its closure obstruction. No blanket search or response fit is active |
 
 Earlier C4/C8 continuations, C5 itineraries, C6 global-runtime certification,

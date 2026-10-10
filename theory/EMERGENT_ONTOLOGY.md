@@ -487,6 +487,15 @@ even allowing arbitrary integrable form inputs. This restricts the declared
 input channel, duration and budget; it neither invalidates the supplied jump
 nor selects an autonomous event or another fundamental law.
 
+The separate [constructive realization](nodal/ORGANIZED_PARENT_CONSTRUCTIVE_ACTUATION.md)
+supplies a four-slow-unit input that reaches the exact same endpoint within
+the net work budget and preserves every child throughout the path. Its input
+depends on actual initial complete state, including the reached forms, and
+assumes actuation at all nodes. These are supplied control premises. Exact
+endpoint and complete-law matching then permit the admitted restoring response
+after release; they do not establish autonomous event occurrence or realization
+from parent means alone.
+
 Here structural participation does not identify the entire joint state with
 one scalar EPI coordinate. The current representation also retains phase,
 capacity and support; reducing these to a richer form description would need

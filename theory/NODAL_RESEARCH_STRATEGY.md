@@ -223,6 +223,14 @@ one-unit duration and three-unit work budget. A larger necessary budget or
 duration by itself would still not construct an admissible path or justify
 autonomous occurrence.
 
+The [constructive realization](nodal/ORGANIZED_PARENT_CONSTRUCTIVE_ACTUATION.md)
+adds a sufficient result under its own frozen four-unit path. It retains
+actual endpoint forms, all fine source errors, child identity during actuation
+and the signed net work budget. Its full-state initialization and all-node
+actuation authority remain premises. Reducing those observation or input
+requirements would need a new approximation and release argument, even though
+the exact endpoint permits reuse of the earlier restoring theorem.
+
 ### Ordered geometry connects transfer to formation
 
 The [sine pattern owner](nodal/SINE_PATTERN_DYNAMICS.md) combines entry,
