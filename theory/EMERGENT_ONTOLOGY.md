@@ -451,6 +451,14 @@ separate residual and identity bounds. That restriction does not eliminate
 the internal state of arbitrary neighboring configurations or select when
 the interface forms.
 
+The [predictive repeated composition](nodal/REPEATED_ORGANIZED_COMPOSITION.md)
+extends this distinction to two marked parents under a fixed positive-loss
+sine law. A finite approximate parent response remains informative throughout
+its admitted fine-state neighborhood while child and parent identities persist.
+Separate unordered child states can still omit which states meet at the ports,
+preventing exact parent closure. The prepared registration, supplied contacts
+and finite error bounds do not establish formation of the parent identity.
+
 Here structural participation does not identify the entire joint state with
 one scalar EPI coordinate. The current representation also retains phase,
 capacity and support; reducing these to a richer form description would need

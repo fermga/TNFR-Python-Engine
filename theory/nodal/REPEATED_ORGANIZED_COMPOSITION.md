@@ -393,6 +393,9 @@ rebuilds the fixed weighted geometry, full rows and work from primitive
 form/lift inputs. It encloses coefficients and finite analytic bounds with
 shared outward rational arithmetic. Source admission reconstructs the two
 parent reports from primitive allowances; cached verdicts are not premises.
+Within one static observation, identical admitted phase-gap intervals share
+their sine/cosine evaluations. This bounded local reuse preserves every
+outward-rounded operation and is discarded before the next observation.
 The [independent controls](../../tests/physics/test_repeated_organized_composition.py)
 compare direct weighted edge sums, both grouping stages, the port-association
 witness, bootstrap/resolution boundaries and original-source admission.

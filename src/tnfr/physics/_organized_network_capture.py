@@ -8,7 +8,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from fractions import Fraction as Q
+from functools import lru_cache
 
+from .._exact_time import exact_or_represented_real as _exact
 from ..mathematics._exact_linear_algebra import exact_matrix_inverse
 from ..mathematics._rational_interval import I, cos, pi_interval, sin, sqrt
 from ._organized_network_compatibility import _EQUAL_CONTROL as _EQUAL
@@ -18,6 +20,7 @@ from ._organized_network_compatibility import (
     _mixings,
     _OrganizedTriangle,
 )
+from .relational_observations import _ordered
 
 _TARGET_GAP = Q(22, 25)
 _CELL_GAP = Q(2)
@@ -27,22 +30,58 @@ _LAPLACIAN_GAP = Q(2, 5)
 
 
 def _edge_resistances(geometry):
-    """Exact grounded solve on the actual full support, without projection."""
-    laplacian = [[Q(0) for _ in range(27)] for _ in range(27)]
-    for a, b, weight in geometry.weighted_edges:
+    """Admit actual support before caching its exact grounded solve.
+
+    Only immutable support primitives enter the bounded cache. Geometry,
+    source evidence and target/barrier verdicts are always rebuilt by callers.
+    """
+    nodes = _ordered(geometry.nodes, "nodes", limit=28)
+    if any(type(node) is not int for node in nodes):
+        raise TypeError("capture support nodes must be exact integers")
+    nodes = tuple(sorted(nodes))
+    if nodes != tuple(range(27)):
+        raise ValueError("capture support requires nodes 0 through 26")
+    edges = []
+    for edge in _ordered(geometry.weighted_edges, "weighted_edges", limit=352):
+        row = _ordered(edge, "weighted edge", limit=4)
+        if len(row) != 3:
+            raise ValueError("weighted edges require two nodes and a weight")
+        a, b, weight = row
+        if type(a) is not int or type(b) is not int:
+            raise TypeError("capture edge nodes must be exact integers")
+        if a not in nodes or b not in nodes or a == b:
+            raise ValueError("capture edges require distinct admitted nodes")
+        weight = _exact(weight, "edge weight")
+        if weight <= 0:
+            raise ValueError("capture edge weights must be positive")
+        edges.append((min(a, b), max(a, b), weight))
+    if len({(a, b) for a, b, _ in edges}) != len(edges):
+        raise ValueError("capture support cannot repeat an undirected edge")
+    support = tuple(sorted(edges))
+    values = _support_edge_resistances(nodes, support)
+    by_edge = dict(zip(support, values))
+    return tuple(by_edge[edge] for edge in edges)
+
+
+@lru_cache(maxsize=2)
+def _support_edge_resistances(nodes, edges):
+    """Solve an already admitted canonical support; cache no theorem verdict."""
+    dimension = len(nodes)
+    ground = dimension - 1
+    laplacian = [[Q(0) for _ in nodes] for _ in nodes]
+    for a, b, weight in edges:
         laplacian[a][a] += weight
         laplacian[b][b] += weight
         laplacian[a][b] -= weight
         laplacian[b][a] -= weight
-    inverse = exact_matrix_inverse(tuple(tuple(row[:26]) for row in laplacian[:26]))
+    inverse = exact_matrix_inverse(
+        tuple(tuple(row[:ground]) for row in laplacian[:ground])
+    )
 
     def entry(a, b):
-        return inverse[a][b] if a < 26 and b < 26 else Q(0)
+        return inverse[a][b] if a < ground and b < ground else Q(0)
 
-    return tuple(
-        entry(a, a) + entry(b, b) - 2 * entry(a, b)
-        for a, b, _ in geometry.weighted_edges
-    )
+    return tuple(entry(a, a) + entry(b, b) - 2 * entry(a, b) for a, b, _ in edges)
 
 
 def _target(geometry):

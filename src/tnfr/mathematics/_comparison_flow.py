@@ -41,7 +41,9 @@ def scalar_affine_upper(radius, rate, duration, defect):
     radius, duration and forcing. The caller proves the underlying Dini
     inequality and its whole-time domain. This arithmetic supplies neither
     a trajectory nor that domain. Both growth and decay retain outward
-    rounding; the admitted numerical range is ``abs(rate*h)<=1``.
+    rounding; the admitted numerical range is ``abs(rate*h)<=1``. Nonzero
+    rates below the interval grid retain their exact denominator when
+    enclosing ``phi=(exp(rate*h)-1)/rate``.
     """
     radius, rate, duration, defect = (
         exact_or_represented_real(value, name)
@@ -54,12 +56,24 @@ def scalar_affine_upper(radius, rate, duration, defect):
     )
     if min(radius, duration, defect) < 0 or abs(rate * duration) > 1:
         raise ValueError("comparison requires nonnegative bounds and |rate*h|<=1")
+    if duration == 0:
+        return I(radius).hi
     if rate == 0:
         return I(radius + defect * duration).hi
-    exponential = I(*exp_unit_bounds(abs(rate * duration)))
+    lower, upper = exp_unit_bounds(abs(rate * duration))
+    exponential = I(lower, upper)
     if rate < 0:
         exponential = 1 / exponential
-    phi = (exponential - 1) / rate
+    if I(rate).contains(0):
+        # A nonzero exact rate may include zero after dyadic rounding.
+        # Divide the exact endpoints first, also avoiding cancellation when
+        # exp(rate*h) differs from one by less than a dyadic grid interval.
+        if rate < 0:
+            lower, upper = 1 / upper, 1 / lower
+        endpoints = ((lower - 1) / rate, (upper - 1) / rate)
+        phi = I(min(endpoints), max(endpoints))
+    else:
+        phi = (exponential - 1) / rate
     return (exponential * radius + phi * defect).hi
 
 

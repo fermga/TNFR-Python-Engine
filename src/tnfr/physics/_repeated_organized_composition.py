@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from fractions import Fraction as Q
+from functools import lru_cache
 
 from .._exact_time import exact_or_represented_real as _exact
 from .._exact_time import exp_unit_bounds
@@ -176,15 +177,23 @@ def _observe_repeated_composition(*, interface, form, phase_offsets):
     costs, gradient = _prepared_form_costs(
         form=values, weighted_edges=geometry.weighted_edges
     )
+
+    @lru_cache(maxsize=128)
+    def trigonometry(gap):
+        # At most 108 edge gaps and one parent gap, all admitted intervals.
+        # Reuse arithmetic only within this observation, never state or verdicts.
+        return sin(gap), cos(gap)
+
     current, potential = [I(0) for _ in range(_SIZE)], []
     edge_currents = []
     for a, b, weight in geometry.weighted_edges:
         gap = geometry.alpha_bounds * ((b % 9) - (a % 9)) + offsets[b] - offsets[a]
-        edge_current = weight * sin(gap)
+        sine, cosine = trigonometry(gap)
+        edge_current = weight * sine
         current[a] += edge_current
         current[b] -= edge_current
         edge_currents.append(edge_current)
-        potential.append(weight * (1 - cos(gap)))
+        potential.append(weight * (1 - cosine))
     gamma, k = geometry.gamma_bounds, geometry.clock_factor
     dx = tuple(k * (-q + gamma * s) for q, s in zip(gradient, current))
     dy = tuple(k * gamma * q for q in gradient)
@@ -206,9 +215,10 @@ def _observe_repeated_composition(*, interface, form, phase_offsets):
     outer_start = len(geometry.internal_edges) + len(geometry.parent_edges)
     total_costs = tuple(I(x) + y for x, y in zip(costs, potential))
     outer_current = sum(edge_currents[outer_start:], I(0)) / 18
-    rigid_current = geometry.kappa_bounds * sin(I(tmeans[1] - tmeans[0]))
+    mean_sine, mean_cosine = trigonometry(I(tmeans[1] - tmeans[0]))
+    rigid_current = geometry.kappa_bounds * mean_sine
     nominal_work = 9 * (xmeans[1] - xmeans[0]) ** 2 + 18 * (
-        1 - geometry.kappa_bounds * cos(I(tmeans[1] - tmeans[0]))
+        1 - geometry.kappa_bounds * mean_cosine
     )
     loss = k * sum((q**2 for q in gradient), Q(0))
     direct = sum((q * a - s * b for q, s, a, b in zip(gradient, current, dx, dy)), I(0))

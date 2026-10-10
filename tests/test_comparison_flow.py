@@ -207,6 +207,41 @@ def test_scalar_growth_contains_independent_high_precision_solution(rate):
         assert _decimal(upper) - expected < Decimal("1e-30")
 
 
+@pytest.mark.parametrize("sign", (-1, 1))
+@pytest.mark.parametrize("defect", (Q(0), Q(11, 10**6)))
+@pytest.mark.parametrize(
+    "magnitude,duration",
+    (
+        (Q(1, 10**100), Q(1)),
+        (Q(1, 1 << 129), Q(1)),
+        (Q(1, 10**100), Q(10**100)),
+    ),
+)
+def test_scalar_subgrid_nonzero_rates_enclose_independent_decimal_solution(
+    sign, magnitude, duration, defect
+):
+    rate, radius = sign * magnitude, Q(1, 7)
+    upper = scalar_affine_upper(radius, rate, duration, defect)
+    with localcontext() as context:
+        # Resolve exp(1e-100)-1 independently, even before dividing by rate.
+        context.prec = 240
+        exponential = (_decimal(rate) * _decimal(duration)).exp()
+        integral = (exponential - 1) / _decimal(rate)
+        expected = exponential * _decimal(radius) + integral * _decimal(defect)
+        assert _decimal(upper) >= expected
+        assert _decimal(upper) - expected < max(Decimal(1), expected) * Decimal("1e-30")
+
+
+@pytest.mark.parametrize("sign", (-1, 1))
+def test_scalar_subgrid_rate_contains_independent_affine_taylor_bound(sign):
+    rate = sign * Q(1, 10**100)
+    upper = scalar_affine_upper(0, rate, 1, 1)
+    # The integral of exp(rate*s) on [0,1] has this quadratic Taylor upper
+    # bound for decay. For growth, use exp(z) <= 1+z+z*z on [0,1/2].
+    reference_upper = 1 + rate / 2 + rate**2 / (6 if sign < 0 else 3)
+    assert reference_upper <= upper < reference_upper + Q(1, 10**30)
+
+
 @pytest.mark.parametrize(
     "arguments",
     [
@@ -217,6 +252,10 @@ def test_scalar_growth_contains_independent_high_precision_solution(rate):
         (Q(0), Q(2), Q(1), Q(0)),
         (Q(0), float("nan"), Q(1), Q(0)),
         (Q(0), Q(0), float("inf"), Q(0)),
+        (Q(0), True, Q(0), Q(0)),
+        (Q(0), float("nan"), Q(0), Q(0)),
+        (Q(0), Q(1, 10**100), Q(0), float("nan")),
+        (Q(0), Q(1, 10**100), Q(0), Q(-1)),
     ],
 )
 def test_scalar_growth_rejects_invalid_primitive_domains(arguments):
@@ -227,3 +266,11 @@ def test_scalar_growth_rejects_invalid_primitive_domains(arguments):
 def test_zero_duration_retains_initial_uncertainty():
     upper = scalar_affine_upper(Q(1, 3), Q(-1), Q(0), Q(1))
     assert Q(1, 3) <= upper < Q(1, 3) + Q(1, 10**30)
+
+
+@pytest.mark.parametrize("rate", (Q(-1, 10**100), Q(0), Q(1, 10**100)))
+@pytest.mark.parametrize("radius", (Q(0), Q(1, 3), Q(1, 10**100)))
+def test_zero_duration_subgrid_rate_retains_outward_initial_uncertainty(rate, radius):
+    upper = scalar_affine_upper(radius, rate, Q(0), Q(1))
+    assert radius <= upper < radius + Q(1, 1 << 128)
+    assert (upper == 0) == (radius == 0)

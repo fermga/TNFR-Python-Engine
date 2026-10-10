@@ -196,6 +196,115 @@ def test_all_edge_resistances_come_from_the_actual_weighted_fine_laplacian(repor
         assert max(report.edge_effective_resistances) > Q(1, 2)
 
 
+@pytest.fixture
+def resistance_solves(monkeypatch):
+    cache = capture_owner._support_edge_resistances
+    cache.cache_clear()
+    inverse = capture_owner.exact_matrix_inverse
+    matrices = []
+
+    def counted(matrix):
+        matrices.append(matrix)
+        return inverse(matrix)
+
+    monkeypatch.setattr(capture_owner, "exact_matrix_inverse", counted)
+    yield matrices
+    cache.cache_clear()
+
+
+@pytest.mark.parametrize("mixing", (_EQUAL, _UNEQUAL))
+def test_resistance_cache_preserves_exact_values_and_original_edge_order(
+    mixing, resistance_solves
+):
+    cold = capture_owner._derive_organized_triangle_capture(mixing=mixing)
+    warm = capture_owner._derive_organized_triangle_capture(mixing=mixing)
+    assert warm == cold
+    assert warm is not cold and warm.geometry is not cold.geometry
+    assert len(resistance_solves) == 1
+    reordered = replace(
+        cold.geometry,
+        nodes=tuple(reversed(cold.geometry.nodes)),
+        weighted_edges=tuple(
+            (b, a, float(weight))
+            for a, b, weight in reversed(cold.geometry.weighted_edges)
+        ),
+    )
+    assert capture_owner._edge_resistances(reordered) == tuple(
+        reversed(cold.edge_effective_resistances)
+    )
+    assert len(resistance_solves) == 1
+
+
+def test_resistance_cache_keys_actual_weights_and_support_and_is_bounded(
+    resistance_solves,
+):
+    geometry = capture_owner._derive_organized_triangle(mixing=_EQUAL)
+    original = capture_owner._edge_resistances(geometry)
+    doubled = replace(
+        geometry,
+        weighted_edges=tuple((a, b, 2 * w) for a, b, w in geometry.weighted_edges),
+    )
+    assert capture_owner._edge_resistances(doubled) == tuple(r / 2 for r in original)
+    assert len(resistance_solves) == 2
+    reduced = replace(geometry, weighted_edges=geometry.weighted_edges[1:])
+    removed_edge = capture_owner._edge_resistances(reduced)
+    # Removing conductance cannot reduce the remaining effective resistances.
+    assert all(new >= old for new, old in zip(removed_edge, original[1:]))
+    assert any(new > old for new, old in zip(removed_edge, original[1:]))
+    assert len(resistance_solves) == 3
+    assert capture_owner._support_edge_resistances.cache_info().currsize == 2
+    assert capture_owner._edge_resistances(geometry) == original
+    assert len(resistance_solves) == 4  # The oldest support was evicted.
+
+
+@pytest.mark.parametrize(
+    "changes",
+    (
+        {"nodes": (False, *range(1, 27))},
+        {"edge": (0, True, Q(1))},
+        {"edge": (0, 1, True)},
+        {"edge": (0, 1, float("nan"))},
+        {"edge": (0, 1, float("inf"))},
+        {"edge": (0, 1, "1")},
+        {"edge": (0, 1, 0)},
+        {"edge": (0, 1, -1)},
+        {"edge": (0, 27, 1)},
+        {"edge": (0, 0, 1)},
+        {"edge": (1, 2, 1)},  # Duplicate an existing undirected edge.
+    ),
+)
+def test_invalid_support_cannot_enter_a_warm_resistance_cache(
+    changes, resistance_solves
+):
+    geometry = capture_owner._derive_organized_triangle(mixing=_EQUAL)
+    capture_owner._edge_resistances(geometry)
+    previous = capture_owner._support_edge_resistances.cache_info()
+    if "edge" in changes:
+        changes = {"weighted_edges": (changes["edge"], *geometry.weighted_edges[1:])}
+    with pytest.raises((TypeError, ValueError)):
+        capture_owner._edge_resistances(replace(geometry, **changes))
+    assert capture_owner._support_edge_resistances.cache_info() == previous
+    assert len(resistance_solves) == 1
+
+
+def test_warm_resistances_cannot_supply_a_target_or_boundary_verdict(
+    resistance_solves, monkeypatch
+):
+    warm = _assess()
+    assert warm.capture_certified
+    target = capture_owner._target
+    with monkeypatch.context() as patch:
+        patch.setattr(capture_owner, "_target", lambda g: (*target(g)[:-1], False))
+        failed_target = _assess()
+    assert not failed_target.target_certified and not failed_target.capture_certified
+    monkeypatch.setattr(capture_owner, "_RESISTANCE", Q(1, 2))
+    failed_boundary = _assess()
+    assert failed_boundary.target_certified
+    assert not failed_boundary.barrier_certified
+    assert not failed_boundary.capture_certified
+    assert len(resistance_solves) == 1
+
+
 def test_nonacute_trap_uses_bregman_and_radial_bounds_not_positive_hessian(reports, mp):
     dmax, limit = mp.mpf(".88"), mp.mpf(2)
     coefficient = (mp.cos(dmax) - mp.cos(limit) - (limit - dmax) * mp.sin(dmax)) / (

@@ -184,11 +184,14 @@ The [organized pair law](nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md)
 and [network compatibility](nodal/ORGANIZED_NETWORK_COMPATIBILITY.md) already
 show why boundary registration, amplitudes, form scaling and clock maps
 must be retained together. Repeating those factors algebraically adds no
-identity or source admission. A further grouping is informative when its
-parent has a specified interaction to predict and a declared amount of
-discarded state. Test both the exact family and a full fine-state domain;
-the latter connects inheritance to memory, approximation and constituent
-maintenance. A closed stationary parent alone does not test this capability.
+identity or source admission. The
+[predictive repeated composition](nodal/REPEATED_ORGANIZED_COMPOSITION.md)
+admits a finite interaction beyond its exact registered family: its parent
+response error resolves the specified contact contrast while fine deviations
+and both identity levels remain bounded. Discarded child-to-port association
+still prevents exact closure. Reuse requires the same source, contacts and
+finite domain; another grouping needs its own predictive and identity bounds.
+A closed stationary parent alone does not test this capability.
 
 [Carried-source capture](nodal/ACQUIRED_ORGANIZED_NETWORK_CAPTURE.md) and
 [joint acquisition](nodal/ORGANIZED_JOINT_ACQUISITION.md) supply methods and

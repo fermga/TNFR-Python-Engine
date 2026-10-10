@@ -455,7 +455,10 @@ The [capture implementation](../../src/tnfr/physics/_acquired_organized_network_
 rebuilds the selected rational support, target enclosures, edge resistance
 certificate, original source recovery, support work and full-state barrier.
 The shared [target and barrier owner](../../src/tnfr/physics/_organized_network_capture.py)
-has no source or entry premise. This recovered-source consumer and the
+has no source or entry premise. It re-admits the exact support before reusing
+its pure grounded resistance solve in a bounded two-entry cache; edge ordering
+is restored for each caller. Target, barrier and source verdicts are not cached.
+This recovered-source consumer and the
 separate [connected-source acquisition](ORGANIZED_JOINT_ACQUISITION.md)
 each admit their own preparation and reached-state bounds before applying it.
 It does not accept incoming report verdicts as replacement premises.

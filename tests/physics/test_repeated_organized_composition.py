@@ -139,6 +139,83 @@ def test_full_weighted_rows_both_groupings_storage_and_work(arbitrary_state, mp)
     )
 
 
+def test_local_trigonometry_reuses_only_current_observation(
+    arbitrary_state, monkeypatch
+):
+    report = arbitrary_state
+    arguments = dict(
+        interface=report.geometry.interface,
+        form=report.form,
+        phase_offsets=report.phase_offsets,
+    )
+    calls = []
+    original_sin = owner.sin
+
+    def counted_sin(gap):
+        calls.append(gap)
+        return original_sin(gap)
+
+    monkeypatch.setattr(owner, "sin", counted_sin)
+    first = owner._observe_repeated_composition(**arguments)
+    first_calls = tuple(calls)
+    assert len(first_calls) == len(set(first_calls))
+    assert len(first_calls) < len(report.geometry.weighted_edges)
+    calls.clear()
+    second = owner._observe_repeated_composition(**arguments)
+    assert tuple(calls) == first_calls  # A new observation rebuilds its arithmetic.
+
+    # Disable only memoization; retain every original outward-rounded operation.
+    monkeypatch.setattr(owner, "lru_cache", lambda **kwargs: lambda function: function)
+    calls.clear()
+    uncached = owner._observe_repeated_composition(**arguments)
+    assert len(calls) == len(report.geometry.weighted_edges) + 1
+    assert first == second == uncached == report
+
+
+@pytest.mark.parametrize("interface", ("matching", "symmetric"))
+@pytest.mark.parametrize("rho", (Q(1, 100), Q(1, 200)))
+def test_quadratic_current_bound_keeps_asymmetric_fine_residuals(interface, rho, mp):
+    residuals = tuple(
+        rho
+        * (
+            (-1) ** child * Q(1, 3) + Q(j - 4, 12)
+            if parent == 0
+            else (-1) ** child * Q(1, 5) + (Q(j * j) - Q(68, 3)) / 100
+        )
+        for parent in range(2)
+        for child in range(2)
+        for j in range(9)
+    )
+    assert all(sum(residuals[start : start + 18]) == 0 for start in (0, 18))
+    assert all(sum(residuals[start : start + 9]) != 0 for start in range(0, 36, 9))
+    assert all(len(set(residuals[start : start + 9])) > 1 for start in range(0, 36, 9))
+    offsets = tuple(
+        (-Q(1, 40) if i < 18 else Q(1, 40)) + value for i, value in enumerate(residuals)
+    )
+    report = owner._observe_repeated_composition(
+        interface=interface, form=_ZERO, phase_offsets=offsets
+    )
+    radius = max(abs(value) for value in residuals)
+    assert report.parent_phase_residual_sup == radius
+    alpha, delta = 2 * mp.pi / 9, mp.mpf(1) / 20
+    shifts = (0,) if interface == "matching" else (-1, 0, 1)
+    current = mp.mpf(0)
+    for shift in shifts:
+        linear = mp.mpf(0)
+        for child in range(2):
+            for j in range(9):
+                a, b = 9 * child + j, 18 + 9 * child + (j + shift) % 9
+                gap = alpha * ((j + shift) % 9 - j) + delta
+                difference = _mp(mp, residuals[b] - residuals[a])
+                linear += mp.cos(gap) * difference
+                current += mp.sin(gap + difference) / (18 * len(shifts))
+        assert abs(linear) < mp.mpf("1e-110")
+    kappa = 1 if interface == "matching" else (1 + 2 * mp.cos(alpha)) / 3
+    defect = current - kappa * mp.sin(delta)
+    assert 0 < abs(defect) <= 2 * _mp(mp, radius) ** 2
+    _contains(mp, report.projected_current_defect_bounds, defect)
+
+
 @pytest.mark.parametrize("interface", ("matching", "symmetric"))
 def test_first_stage_eight_state_law_keeps_distinct_child_coordinates(interface, mp):
     forms = (-Q(1, 10), Q(1, 5), Q(3, 10), -Q(1, 5))
