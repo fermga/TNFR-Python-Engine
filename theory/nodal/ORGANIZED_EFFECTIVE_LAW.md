@@ -187,7 +187,11 @@ This comparison installs no execution law, SDK method or operator.
 The [independent algebra controls](../../tests/physics/test_organized_effective_law.py)
 check (1)-(5), the r=0 boundary and deliberate wrong-chart/input controls.
 They evaluate no reserved response. Exact matrix calculations reuse
-[shared linear algebra](../../src/tnfr/mathematics/_exact_linear_algebra.py);
-any later reduced observation should reuse
-[coordinate memory](../../src/tnfr/mathematics/linear_observation.py).
+[shared linear algebra](../../src/tnfr/mathematics/_exact_linear_algebra.py).
+The [coordinate-memory owner](../../src/tnfr/mathematics/linear_observation.py)
+can split an admitted fixed linear/tangent generator or rational spatial
+blocks. It does not close the nonlinear sine law. Such reuse must retain
+nonlinear residuals, hidden initialization and forcing where consumed;
+rationalizing gamma would specify a different coefficient, not certify
+the exact comparison above. A nonlinear reduction needs its own proof.
 Generic runtime integration is justified only by a proved consumer contract.

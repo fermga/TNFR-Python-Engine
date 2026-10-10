@@ -101,6 +101,21 @@ individual module/test links; proofs own model-specific hypotheses, constants
 and frozen preparations. This guide groups the obligations needed to choose
 coverage, rather than repeating each research result.
 
+For shared [Krylov and Hankel arithmetic](src/tnfr/mathematics/krylov.py), select
+`tests/mathematics/test_krylov_admission.py`,
+`tests/mathematics/test_arithmetic_pulse.py` and
+`tests/test_linear_observation.py`. Check exact rank against independently
+known determinants, including integer matrices beyond binary64 resolution;
+integer division must not silently introduce floating-point elimination.
+Exercise finite coefficient admission, Boolean/nonfinite rejection, matrix
+and vector dimensions, and nonnegative integer moment counts before
+arithmetic or empty-count shortcuts. Finite floating coefficients denote
+their represented rational values, without tolerance-based rank decisions.
+Retain the difference between reachable Krylov dimension and output-visible
+Hankel rank. Consumer checks preserve rational arithmetic, observed-state
+closure and hidden initialization; they do not replay frozen producers or
+turn a finite linear rank into a nonlinear closure theorem.
+
 For the [constitutive foundation audit](theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission),
 select the countermodels and complete-law controls whose premises are being
 reassessed. Check pressure selection, capacity and support freedom, auxiliary

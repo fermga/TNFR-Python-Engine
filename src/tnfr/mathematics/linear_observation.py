@@ -7,13 +7,17 @@ Known affine sources can be projected once this linear space is admitted.
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Set
 from dataclasses import dataclass
 from fractions import Fraction
 from numbers import Integral
 
 from .._exact_time import exact_or_represented_real
-from ._exact_linear_algebra import exact_matrix_inverse, exact_matrix_product
+from ._exact_linear_algebra import (
+    _ordered,
+    _rational_matrix as _matrix,
+    exact_matrix_inverse,
+    exact_matrix_product,
+)
 from .krylov import exact_rank
 
 __all__ = [
@@ -127,28 +131,6 @@ class FormLossObservationBound:
     scope: str
     method: str = "quadrature_covariance"
     generator_norm_upper_bound: Fraction | None = None
-
-
-def _ordered(values, label):
-    if isinstance(values, (str, bytes, bytearray, Mapping, Set)):
-        raise TypeError(f"{label} must be an ordered collection")
-    try:
-        return tuple(values)
-    except TypeError as exc:
-        raise TypeError(f"{label} must be an ordered collection") from exc
-
-
-def _matrix(values, label):
-    rows = _ordered(values, label)
-    if not rows:
-        raise ValueError(f"{label} must be nonempty")
-    return tuple(
-        tuple(
-            exact_or_represented_real(value, f"{label}[{i}]")
-            for value in _ordered(row, f"{label}[{i}]")
-        )
-        for i, row in enumerate(rows)
-    )
 
 
 def _conservative_observation(generator, output_rows):

@@ -360,7 +360,7 @@ def _weights(model):
 
 
 def _relational_model_coefficients(model):
-    """Admit authoritative stored coefficients without normalizing them again.
+    """Normalize scalar representations without rescaling the stored mix.
 
     Construction normalizes the supplied two-channel mix. Later consumers
     validate its current values before arithmetic or graph staging; a frozen
@@ -451,6 +451,7 @@ def _relative_phase_gap(left, right, *, wider):
 
 
 def _field(staged, model):
+    loss_weight, exchange_weight, storage_scale = _relational_model_coefficients(model)
     nodes = tuple(staged)
     edges = tuple(staged.edges())
     indices = {node: i for i, node in enumerate(nodes)}
@@ -540,7 +541,7 @@ def _field(staged, model):
         if metric <= 0:
             raise ValueError("the represented phase metric must be positive")
         mobility = Q(capacity[i]) / Q(metric)
-        exact_rate = Q(model.phase_weight) / Q(model.storage_scale) * mobility * q[i]
+        exact_rate = exchange_weight / storage_scale * mobility * q[i]
         rate = _finite(exact_rate, "phase rate")
         sources.append(source)
         metrics.append(metric)
@@ -570,21 +571,21 @@ def _field(staged, model):
             raise ValueError("nonzero nodal rate underflows to zero")
         rates.append(rate)
         nodal_defects.append(Q(rate) - expected)
-        split = -Q(model.epi_weight) * q[i] / len(neighbors[i]) + Q(
-            model.phase_weight
-        ) * Q(sources[i])
+        split = -loss_weight * q[i] / len(neighbors[i]) + exchange_weight * Q(
+            sources[i]
+        )
         split_defects.append(Q(p) - split)
     dissipation = tuple(
-        Q(model.epi_weight) * Q(capacity[i]) * q[i] ** 2 / len(row)
+        loss_weight * Q(capacity[i]) * q[i] ** 2 / len(row)
         for i, row in enumerate(neighbors)
     )
     exchange = tuple(
-        Q(model.phase_weight) * Q(capacity[i]) * q[i] * Q(sources[i])
+        exchange_weight * Q(capacity[i]) * q[i] * Q(sources[i])
         for i in range(len(nodes))
     )
     form_work = tuple(q[i] * Q(rates[i]) for i in range(len(nodes)))
     phase_work = tuple(
-        Q(model.storage_scale) * Q(phase_gradient[i]) * Q(phase_rate[i])
+        storage_scale * Q(phase_gradient[i]) * Q(phase_rate[i])
         for i in range(len(nodes))
     )
     form_residual = tuple(
@@ -604,7 +605,7 @@ def _field(staged, model):
     loss = sum(work.dissipation, Q(0))
     storage_rate = sum(work.form_work, Q(0)) + sum(work.phase_work, Q(0))
     balance_residual = sum(work.balance_residual, Q(0))
-    storage = form_storage + Q(model.storage_scale) * phase_storage
+    storage = form_storage + storage_scale * phase_storage
     return RelationalExchangeField(
         model,
         nodes,
@@ -712,6 +713,7 @@ def _joint_tangent_without_metric_derivative(field):
     if field.relative_resultant is None or field.phase_mobility is None:
         raise RuntimeError("native field omitted its captured phase coefficients")
     model = field.model
+    loss_weight, exchange_weight, storage_scale = _relational_model_coefficients(model)
     size = len(field.nodes)
     indices = {node: i for i, node in enumerate(field.nodes)}
     neighbors = [[] for _ in range(size)]
@@ -743,25 +745,18 @@ def _joint_tangent_without_metric_derivative(field):
         capacity = Q(field.capacity[i])
         upper_rows.append(
             tuple(
-                _finite(
-                    -Q(model.epi_weight) * capacity * value / len(row), "form tangent"
-                )
+                _finite(-loss_weight * capacity * value / len(row), "form tangent")
                 for value in laplacian
             )
             + tuple(
-                _finite(
-                    Q(model.phase_weight) * capacity * Q(value), "phase-to-form tangent"
-                )
+                _finite(exchange_weight * capacity * Q(value), "phase-to-form tangent")
                 for value in materialized_source
             )
         )
         lower_rows.append(
             tuple(
                 _finite(
-                    Q(model.phase_weight)
-                    / Q(model.storage_scale)
-                    * field.phase_mobility[i]
-                    * value,
+                    exchange_weight / storage_scale * field.phase_mobility[i] * value,
                     "form-to-phase tangent",
                 )
                 for value in laplacian

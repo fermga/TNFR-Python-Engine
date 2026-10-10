@@ -61,9 +61,13 @@ and positive phase weight use the native coefficient normalization once;
 `model.effective_weights` retains that normalized pair. Native staging and
 detached sine capture revalidate authoritative stored coefficients through the
 shared relational owner before field arithmetic or writes. Revalidation rejects
-Boolean, nonfinite and out-of-domain values without normalizing again. Exact
+Boolean, nonfinite and out-of-domain values without rescaling the mix again. Exact
 rational proof coefficients retain their values; native outputs also require
-binary64 representability. Reconstructing a model or report does not authenticate
+binary64 representability. Field, storage/work and tangent arithmetic consume
+the normalized Python-rational coefficients, including reconstructed NumPy
+integer payloads; the report retains the supplied model association without
+using its unnormalized payloads for those calculations.
+Reconstructing a model or report does not authenticate
 its provenance or exempt its fields from admission. Graph-level pressure
 mixes, custom pressure hooks, clipping rails, histories and automatic policies
 are outside this selected model, and their configuration is preserved.

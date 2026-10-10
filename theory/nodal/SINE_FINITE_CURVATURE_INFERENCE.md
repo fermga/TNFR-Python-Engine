@@ -624,7 +624,8 @@ research gate requires separate admission in the execution plan.
 <a id="sine-curvature-inference-result"></a>
 ## Retained first evaluation
 
-The prospective statements above retain their pre-evaluation wording.
+This reserved gate is closed. The prospective statements above retain their
+pre-evaluation wording, including the historical active-gate reference.
 The first reserved evaluation completed with
 `certified_reserved_curvature_inference`: all **109 fixed conditions** passed
 (35 for each of the three cases, plus four paired-source conditions).
@@ -710,5 +711,5 @@ routine checkout newline conversions. Hashes associate retained records;
 they do not independently authenticate execution chronology or acquisition.
 The [read-only evidence audit](../../tests/physics/test_sine_curvature_evidence.py)
 checks retained primitives and certificate arithmetic without rerunning the
-producer or inverse. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-records the closed gate and the separate inactive boundary.
+producer or inverse. The [closed gate record](../research/FIVE_STAGE_EXECUTION_PLAN.md#reserved-curvature-inference-admission)
+retains this evaluation's status; the execution plan alone selects current work.

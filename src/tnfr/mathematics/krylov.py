@@ -15,15 +15,21 @@ output. A reversible operator needs its appropriate metric or a separately
 proved observability condition; these functions do not infer one.
 
 The functions compute ranks separately over ℚ using :class:`fractions.Fraction`.
-A user-shortened moment sequence can undercount the full Hankel rank. The
-caller supplies rational inputs; no physical-state or particle interpretation
-follows from these finite linear-algebra identities.
+A user-shortened moment sequence can undercount the full Hankel rank.
+Integer and rational inputs remain exact; other admitted real coefficients
+retain their binary64 values before rational arithmetic. Such a represented
+matrix does not certify an ideal irrational model. No physical-state or
+particle interpretation follows from these finite linear-algebra identities.
 """
 
 from __future__ import annotations
 
 from fractions import Fraction
+from numbers import Real
 from typing import Sequence
+
+from ._exact_linear_algebra import _rational_matrix, _rational_vector
+from ._integer_admission import _integer_argument
 
 __all__ = [
     "matvec",
@@ -34,14 +40,33 @@ __all__ = [
     "hankel_rank",
 ]
 
-Matrix = Sequence[Sequence[Fraction]]
-Vector = Sequence[Fraction]
+Matrix = Sequence[Sequence[Real]]
+Vector = Sequence[Real]
+
+
+def _system(L, v):
+    matrix = _rational_matrix(L, "matrix", allow_empty=True)
+    vector = _rational_vector(v, "vector")
+    if len(matrix) != len(vector) or any(len(row) != len(vector) for row in matrix):
+        raise ValueError("matrix must be square and match the vector dimension")
+    return matrix, vector
+
+
+def _count(value):
+    count = _integer_argument(value, "count")
+    if count < 0:
+        raise ValueError("count must be nonnegative")
+    return count
+
+
+def _matvec(L, v):
+    return [sum((a * b for a, b in zip(row, v)), Fraction(0)) for row in L]
 
 
 def matvec(L: Matrix, v: Vector) -> list[Fraction]:
-    """Matrix-vector product ``L·v`` (exact)."""
-    n = len(v)
-    return [sum(L[i][j] * v[j] for j in range(n)) for i in range(n)]
+    """Square matrix-vector product after shared real admission (exact)."""
+    matrix, vector = _system(L, v)
+    return _matvec(matrix, vector)
 
 
 def _dot(u: Vector, v: Vector) -> Fraction:
@@ -50,25 +75,41 @@ def _dot(u: Vector, v: Vector) -> Fraction:
 
 def moment_sequence(L: Matrix, v: Vector, count: int) -> list[Fraction]:
     """The moments ``μ_m = vᵀ Lᵐ v`` for ``m = 0 … count−1`` (exact)."""
+    count = _count(count)
+    matrix, vector = _system(L, v)
+    return _moments(matrix, vector, count)
+
+
+def _moments(L, v, count):
+    """Advance already admitted coordinates only as far as the last moment."""
     moments: list[Fraction] = []
     w = list(v)
-    for _ in range(count):
+    for index in range(count):
         moments.append(_dot(v, w))
-        w = matvec(L, w)
+        if index + 1 < count:
+            w = _matvec(L, w)
     return moments
 
 
 def hankel_matrix(moments: Sequence[Fraction]) -> list[list[Fraction]]:
     """The ``r×r`` Hankel matrix ``H_{ij} = μ_{i+j}`` (``r = ⌈len/2⌉``)."""
+    moments = _rational_vector(moments, "moments")
     r = (len(moments) + 1) // 2
     return [[moments[i + j] for j in range(r)] for i in range(r)]
 
 
 def exact_rank(matrix: Matrix) -> int:
-    """Exact rank over ℚ via fraction Gaussian elimination."""
-    M = [list(row) for row in matrix]
+    """Exact rank of the admitted rational matrix, including empty shapes.
+
+    Integer division must not introduce floating arithmetic. Reject ragged
+    rows and invalid scalars before pivot selection, even for zero columns.
+    """
+    admitted = _rational_matrix(matrix, "matrix", allow_empty=True)
+    M = [list(row) for row in admitted]
     rows = len(M)
     cols = len(M[0]) if rows else 0
+    if any(len(row) != cols for row in M):
+        raise ValueError("matrix must be rectangular")
     used = [False] * rows
     rank = 0
     for col in range(cols):
@@ -88,6 +129,7 @@ def exact_rank(matrix: Matrix) -> int:
 
 def krylov_dimension(L: Matrix, v: Vector) -> int:
     """``dim span{v, Lv, L²v, …}`` (exact incremental row reduction)."""
+    L, v = _system(L, v)
     n = len(v)
     pivots: list[tuple[int, list[Fraction]]] = []
 
@@ -109,13 +151,16 @@ def krylov_dimension(L: Matrix, v: Vector) -> int:
         r = [x / r[nz] for x in r]
         pivots.append((nz, r))
         dim += 1
-        w = matvec(L, w)
+        if dim < n:
+            w = _matvec(L, w)
     return dim
 
 
 def hankel_rank(L: Matrix, v: Vector, *, count: int | None = None) -> int:
     """Rank of the Hankel moment matrix of ``(L, v)`` (exact)."""
+    L, v = _system(L, v)
     n = len(v)
     if count is None:
-        count = 2 * n - 1
-    return exact_rank(hankel_matrix(moment_sequence(L, v, count)))
+        count = max(0, 2 * n - 1)
+    count = _count(count)
+    return exact_rank(hankel_matrix(_moments(L, v, count)))

@@ -55,6 +55,16 @@ $$h(t) = e_0^\top e^{-\nu_f L t} e_0 = \sum_{j=1}^{s} a_j\, e^{-\nu_f \lambda_j 
 
 ## 3. Verification (MEASURED, exact)
 
+The shared Krylov/rank helpers admit ordered matrix/vector inputs through
+the common exact-or-represented scalar boundary before arithmetic. Integers
+and rational values remain exact; a supplied floating coefficient denotes
+its represented binary64 rational, not an ideal irrational coefficient.
+Ragged matrices, mismatched square systems, Boolean/nonfinite scalars and
+invalid moment counts reject. Empty rank is zero; a zero count still admits
+the complete supplied system. The
+[admission controls](../tests/mathematics/test_krylov_admission.py) include
+large-integer determinant witnesses that floating division would collapse.
+
 Everything is computed over ℚ with :class:`fractions.Fraction` (no floating-point
 ambiguity). For every prime ``p ∈ {5,…,23}`` and ``k ∈ {1,2,3,4,6}`` the three
 computable ranks agree and equal ``gcd(k, p−1) + 1`` (35/35). The Krylov

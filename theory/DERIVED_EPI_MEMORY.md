@@ -1417,5 +1417,5 @@ Reception rows, pressure-generation defect, integration remainder and later
 EPI writes remain separate. These formulas neither make the complete
 binary64 reset globally affine nor supply a global gain. The
 [retained five-step window](THOL_BIRTH_AND_TRANSPORT.md#18-five-additional-native-policy-steps)
-provides candidate records for this next admission task; its current common-IL
+provides candidate records for such a runtime link; its current common-IL
 observer correctly declines the EN and AL steps.

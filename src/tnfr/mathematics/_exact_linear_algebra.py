@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Set
 from fractions import Fraction
+
+from .._exact_time import exact_or_represented_real
 
 __all__ = [
     "ExactSquareMatrix",
@@ -14,6 +17,32 @@ __all__ = [
 ]
 
 ExactSquareMatrix = tuple[tuple[Fraction, ...], ...]
+
+
+def _ordered(values, label):
+    """Detach an ordered input without accepting mappings or unordered sets."""
+    if isinstance(values, (str, bytes, bytearray, Mapping, Set)):
+        raise TypeError(f"{label} must be an ordered collection")
+    try:
+        return tuple(values)
+    except TypeError as exc:
+        raise TypeError(f"{label} must be an ordered collection") from exc
+
+
+def _rational_vector(values, label):
+    """Admit rational or represented-real entries before exact arithmetic."""
+    return tuple(
+        exact_or_represented_real(value, f"{label}[{i}]")
+        for i, value in enumerate(_ordered(values, label))
+    )
+
+
+def _rational_matrix(values, label, *, allow_empty=False):
+    """Detach and normalize rows; the consumer admits its required shape."""
+    rows = _ordered(values, label)
+    if not rows and not allow_empty:
+        raise ValueError(f"{label} must be nonempty")
+    return tuple(_rational_vector(row, f"{label}[{i}]") for i, row in enumerate(rows))
 
 
 def _require_exact_square_matrix(

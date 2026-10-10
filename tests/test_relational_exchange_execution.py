@@ -7,7 +7,7 @@ autonomous-law selection, trajectory persistence or physical bridge is inferred.
 import math
 import pickle
 from copy import copy, deepcopy
-from dataclasses import FrozenInstanceError
+from dataclasses import FrozenInstanceError, replace
 from fractions import Fraction as Q
 
 import networkx as nx
@@ -65,6 +65,67 @@ def test_stored_model_admission_precedes_field_or_step_work(monkeypatch, field, 
     with pytest.raises((TypeError, ValueError)):
         step_relational_exchange(graph, model=model, dt=Q(1, 128))
     assert pickle.dumps(graph) == before
+
+
+@pytest.mark.parametrize(
+    "coefficient,numerator,denominator",
+    (
+        ("storage_scale", 2**62, 1),
+        ("storage_scale", 3, 2),
+        ("epi_weight", 1, 2),
+        ("phase_weight", 1, 2),
+    ),
+)
+@pytest.mark.parametrize("operation", ("field", "uniform", "consensus", "step"))
+@pytest.mark.filterwarnings("error:overflow encountered")
+def test_reconstructed_rational_coefficients_use_normalized_arithmetic(
+    coefficient, numerator, denominator, operation
+):
+    np = pytest.importorskip("numpy")
+    raw = (
+        np.int64(numerator)
+        if denominator == 1
+        else Q(np.int64(numerator), np.int64(denominator))
+    )
+    exact = Q(numerator, denominator)
+    model = copy(RelationalExchangeModel(2))
+    reference = copy(model)
+    # Reconstructed authoritative state must be admitted again. A Fraction
+    # can itself retain fixed-width NumPy numerator/denominator payloads.
+    object.__setattr__(model, coefficient, raw)
+    object.__setattr__(reference, coefficient, exact)
+    graph = _pair(
+        form=(0.25, 0.25) if operation == "uniform" else (0.25, -0.5),
+        phase=(0.0, 0.0) if operation == "consensus" else (0.0, 0.1),
+    )
+    expected_graph = deepcopy(graph)
+    before = _snapshot(graph)
+    if operation == "step":
+        expected = step_relational_exchange(expected_graph, model=reference, dt=1 / 128)
+        actual = step_relational_exchange(graph, model=model, dt=1 / 128)
+        fields = ((actual.before, expected.before), (actual.after, expected.after))
+        assert replace(actual, before=expected.before, after=expected.after) == expected
+        assert tuple(graph.nodes(data=True)) == tuple(expected_graph.nodes(data=True))
+        assert graph.graph["_t"] == expected_graph.graph["_t"]
+    else:
+        observer = {
+            "field": relational.evaluate_relational_exchange,
+            "uniform": relational.evaluate_relational_uniform_tangent,
+            "consensus": relational.evaluate_relational_consensus_tangent,
+        }[operation]
+        expected = observer(expected_graph, model=reference)
+        actual = observer(graph, model=model)
+        if operation == "field":
+            fields = ((actual, expected),)
+        else:
+            fields = ((actual.field, expected.field),)
+            assert replace(actual, field=expected.field) == expected
+        assert _snapshot(graph) == before
+    for field, expected_field in fields:
+        assert field.model is model
+        assert replace(field, model=reference) == expected_field
+        assert type(field.storage.numerator) is int
+        assert type(field.storage.denominator) is int
 
 
 def _graph():
