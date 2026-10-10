@@ -263,3 +263,52 @@ owns continuation. A complete finite observation protocol must retain the
 elapsed intervals, actual release forms, cumulative work and inference
 errors. Reusing the frozen instantaneous word or its verdict would omit
 the very state evolution established here.
+
+<a id="finite-actuation-result"></a>
+## 5. Frozen decision and its handoff
+
+Declaration, consuming source and driver were committed at
+`9488f528226679b649724634ff950a917c57fb5f` before the single assessment.
+The preserved [attempt](../../docs/assets/organized_electrical_actuation/attempt.json)
+and [result](../../docs/assets/organized_electrical_actuation/result.json)
+record one evaluation and verdict `finite_organized_electrical_actuation_admitted`.
+All twelve prerequisite flags, six source margins and ten decision margins
+pass. No source trajectory or physical experiment was evaluated.
+The [read-only evidence controls](../../tests/physics/test_organized_electrical_actuation_evidence.py)
+reconstruct source receipts, support, primitive bounds and the decision
+without executing the assessor again.
+
+The following are outward decimal summaries of exact archived bounds, in
+the declared structural units:
+
+| Quantity | Certified bound |
+| --- | --- |
+| Actual endpoint form magnitude | less than `0.001319` |
+| Form change from actual pulse entry | less than `0.002948` |
+| Phase error relative to the entry-plus-command objective | less than `8.203e-7` radians |
+| Hidden form / phase Euclidean norms throughout the pulse | less than `3.049e-8` / `6.004e-8` |
+| Minimum outer acute-gap margin | greater than `0.1975` radians |
+| Circular collar margin | greater than `1.5707962` radians |
+| Form / phase departure from the shifted unforced continuation | less than `7.779e-6` / `4.841e-9` |
+| Peak full storage | less than `1.071e8` |
+| Full continuous loss | greater than `1.859e6` and less than `2.678e7` |
+| Peak form storage, necessary lower bound | greater than `1.239e6` |
+| Positive supplied work, necessary lower bound | greater than `1.858e6` |
+| Absolute supplied work and sum of positive channel work | less than `2.410e8` |
+
+The supply lower bound is a direct consequence of (10), (14) and
+`H_entry<=180*M0^2+180<181`; it does not treat dissipation alone as supplied
+work or spend an undeclared initial reservoir.
+
+The source remains the reached five-child state, with its unknown means and
+fine deviations. Its endpoint has the declared approximate phase translation,
+all five internal and nine outer windings retained, and a finite residual
+form change. The input is then released without resetting that endpoint.
+
+This closes one finite-actuation construction. The large continuous cost is
+part of the result; finite realizability does not imply efficient realization.
+Neither the original jump-work budget nor its instantaneous readout inverse
+is restored by this admission. The remaining observation history needs its
+own law, timing, source-transport and inference proof before it can support
+an operational electrical protocol. An autonomous source of the input and
+physical identification remain separate open questions.

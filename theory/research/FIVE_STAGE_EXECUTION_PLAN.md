@@ -258,7 +258,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next finite actuation admission | [Finite-duration phase intervention](#organized-electrical-finite-actuation): replace one supplied instantaneous observation event on the actual five-child source with a declared finite input and explicit state/work bounds |
+| Next finite observation admission | [Observation with finite inputs](#organized-electrical-finite-observation): derive a complete protocol and inverse from carried collective form readings, with actual elapsed time, fine identity and cumulative work |
+| Closed single finite intervention | [Finite-duration phase intervention](#organized-electrical-finite-actuation): one prescribed neutral form pulse retains the actual five-child source and identities with explicit endpoint error and substantial continuous cost |
 | Closed operational identification | [Operational electrical dictionary](#organized-electrical-operational-identification): independent C/G calibration leaves an unfitted current relation only for the supplied fixed law; the literal instantaneous phase word has a finite-work obstruction |
 | Closed collective source admission | [Acquired collective electrical description](#organized-collective-electrical-source-admission): actual same-slot source deviations have an admitted circular observation and uniform finite circuit error, with signed hidden storage, loss and work retained |
 | Closed complete-state constitutive comparison | [Charge and internal electrical state](#organized-charge-internal-state-admission): a direct fine-island map fails passive capacitance signs; the exact six-child carrier admits a constructive ideal passive circuit with matched variable energy and loss |
@@ -436,7 +437,7 @@ quantum constants from TNFR.
 | Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Unresolved stable-stationary maintenance route; no active search.** The finite search is closed without a certificate; other classes do not repair uninterrupted maintenance. Reopen with a constructive target or an analytical certificate mechanism, not more starts |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
-| Fundamental physical properties and independent observation | Resolve finite actuation of the supplied phase interventions, retaining actual source state and work before making the conditional electrical relation an experimental protocol | **Sole immediate gate** below. Independent calibration leaves a fixed-law prediction; physical preparation and observation are not admitted. No physical data, fitting or hardware is active |
+| Fundamental physical properties and independent observation | Derive a complete observation protocol from finite inputs, retaining actual source state, elapsed time and work before making the conditional electrical relation an experimental protocol | **Sole immediate gate** below. One finite pulse is admitted; its old instantaneous inverse does not transfer. Independent calibration leaves a fixed-law prediction; physical preparation and observation are not admitted. No physical data, fitting or hardware is active |
 | Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Conceptually critical**, with no new compatibility scan active. If a countermodel shares all proposed premises, the uniqueness claim fails in that scope |
 | Autonomous preparation, support, capacity and events | Supply actual occurrence and state-evolution laws when claiming autonomous assembly. [Event work](../nodal/RELATIONAL_SUPPORT_EVENTS.md), passivity and [operator descent](../STRUCTURAL_OPERATORS.md) do not select occurrence | **Claim-dependent**. Current contacts and preparation remain supplied. Do not postpone investigation of the existing conditional composite until every origin question is solved |
 | Internal activity and recurrence | Separate preservation of identity from permanent motion; the [positive-loss boundary](../nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission) and alternative-mobility results retain different premises | **Prepared alternative** for a named claim requiring sustained activity. Neither a stationary identity nor finite response establishes recurrence or transfers an invariant measure |
@@ -553,43 +554,48 @@ support switching and law selection remain unresolved; no physical dataset
 or hardware campaign has been admitted.
 
 <a id="organized-electrical-finite-actuation"></a>
-### Immediate question: a finite intervention on the actual organization
+### Closed finite intervention on the actual organization
 
-**Can one of the supplied phase interventions be replaced by a finite-duration
-input while retaining the actual source, identity and explicit work?** This
-addresses the identified operational obstruction. It is not another precision
-refinement of the already admitted post-contact approximation.
+The [result owner](../nodal/ORGANIZED_ELECTRICAL_ACTUATION.md#finite-actuation-result)
+retains freeze `9488f528` and the single admitted analytical assessment.
+One independently prescribed neutral form pulse replaces the first positive
+phase intervention approximately, with both rows live and no hidden-state
+observation. Actual recovery, acquisition and the initial unforced window
+are retained. All five internal and nine outer identities survive with
+bounded endpoint error, full storage, loss and supplied work. Its large
+continuous cost is explicit; efficient actuation and autonomous occurrence
+are not established. The actual release state, including residual form and
+added elapsed time, cannot inherit the old reading inverse.
 
-The [fixed candidate and proof](../nodal/ORGANIZED_ELECTRICAL_ACTUATION.md)
-use one open-loop neutral form pulse on the actual five-child source. Its
-declaration fixes the added duration, endpoint errors and separate continuous
-work/storage budgets. It consumes no hidden-state observation and supplies no
-autonomous actuator. Its single analytical decision must follow source freeze.
+<a id="organized-electrical-finite-observation"></a>
+### Immediate question: observation with finite inputs
 
-1. **Declare the actual source and input.** Use the five-child precontact
-   C9-by-C5 source at the relevant point of its history, with its retained
-   means and hidden deviations. A neutral uniform-child form input is the
-   already justified current-port class; leave the complete phase row live.
-   State what the actuator may know. Hidden phase/state feedback cannot be
-   silently supplied by the earlier twenty-five form readings.
-2. **Construct one finite replacement.** Specify a waveform, duration and
-   endpoint objective for a marked phase intervention, keeping both rows,
-   actual elapsed clock and any residual form change. A kinematic phase path
-   or prescribed end label is not an executable control. Prove an admitted
-   control or a scoped obstruction before selecting numerical budgets; use
-   shared execution owners if numerical flow is required.
-3. **Bound the full cost and state departure.** Retain fine deviations,
-   phase collar, internal/outer identity, peak storage, supplied work and
-   continuous loss. Apply the finite-pulse lower bounds on the correct
-   five-child support. Do not spend signed hidden storage or old jump-work
-   bounds as an undeclared physical reservoir. Freeze any reserved numerical
-   decision before its single assessment.
-4. **Close at one justified intervention.** State whether and how its endpoint
-   could feed the remaining observation history. The original instantaneous
-   word, reading schedule and inverse do not survive a finite-duration
-   replacement automatically; extending to the full word requires a later
-   explicit admission. Preserve frozen evidence. No physical data, apparatus,
-   new support search or P2/Volts replay is active.
+**Can a finite-input observation protocol identify the actual outer identity
+from collective form readings while carrying state, time and work?** This
+tests an operational consequence of the collective electrical description.
+It does not ask for a more precise repetition of the old instantaneous word.
+
+1. **Declare one complete protocol before its response.** Start from the same
+   acquired five-child families and retain the whole carried source. Specify
+   marked inputs, finite waveforms, elapsed intervals, observations and
+   release; use the admitted pulse mechanism only within its proved domain.
+   Actual phases and future readings cannot silently control the input.
+2. **Derive the observation and inverse together.** Account for the known
+   input contribution to form, live background drift, hidden deviations and
+   residual form after each pulse. Determine whether the accessible readings
+   distinguish the identity under declared uncertainty, or prove a scoped
+   obstruction. The old twenty-five-reading formula is not already valid.
+3. **Admit the complete history and its resources.** Retain all fine cycles,
+   collars, clock, peak storage, cumulative positive supplied work and loss.
+   Do not add overlapping independent marginal budgets as if they described
+   one realizable history. Freeze any reserved numerical decision before its
+   single assessment; preserve all earlier evidence and failed candidates.
+4. **Close this observation gate before physical evaluation.** A successful
+   inference is conditional on the supplied law and inputs. Independent
+   preparation, component/clock/sensor calibration and physical comparison
+   remain required. Autonomous actuation requires a separate source model;
+   it is not a parallel active campaign. No hardware, physical dataset,
+   support search or P2/Volts replay is active.
 
 Recovering established physical relations remains the generative objective;
 the test need not predict a deviation from known physics. Independent
@@ -645,7 +651,8 @@ unspecified, and an explicit same-windings counterexample occupies a different
 class. Existing source bounds place the actual preparation in the product
 class. Uninterrupted cut-free maintenance cannot leave it. This closes the
 domain-admission ambiguity. The stationary question remains open while the
-[current gate](#current-g3-gate) addresses finite-duration actuation needed by the collective physical comparison.
+[current gate](#current-g3-gate) addresses observation with finite inputs
+needed by the collective physical comparison.
 It identifies no particle property and does not alter previous acquisition,
 finite interaction or outer-zero capture results.
 

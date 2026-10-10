@@ -541,6 +541,9 @@ five-child recovery and initial unforced prefix; do not consume later
 observation/contact verdicts or run the reserved assessor in tests. The single
 committed analytical instrument owns that assessment. A passing pulse bound
 does not admit the old observation inverse, autonomous forcing or hardware.
+Use `tests/physics/test_organized_electrical_actuation_evidence.py` to check
+the frozen receipts and reconstruct its state, cost and decision bounds from
+archived primitives without importing or rerunning the assessor.
 
 For [finite interface factorization](theory/nodal/ORGANIZED_INTERFACE_FACTORIZATION.md),
 select `tests/physics/test_organized_slot_registration.py` and

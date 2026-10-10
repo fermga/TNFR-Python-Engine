@@ -257,6 +257,13 @@ reference also excludes finite-work instantaneous relative-phase jumps,
 so the existing mathematical observation word is not already a laboratory
 preparation. No physical data or apparatus has passed this admission.
 
+The [one-pulse construction](nodal/ORGANIZED_ELECTRICAL_ACTUATION.md#finite-actuation-result)
+provides a finite external input without observing hidden phases, with
+actual-source identity and full work bounds. Its necessary continuous costs
+are substantial in structural units; no laboratory energy scale or efficient
+actuator follows. The changed elapsed time and residual form prohibit reusing
+the original instantaneous observation inverse without a new protocol proof.
+
 The [two-contact response](nodal/SINE_PAIR_INTERACTION.md#sine-two-contact-orientation-response)
 already establishes orientation-sensitive interaction in a specified finite
 experiment with evolving source and probes. The

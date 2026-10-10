@@ -289,6 +289,11 @@ No endpoint form restoration, fine-source inclusion, winding retention or
 finite-pulse budget follows from the lower bounds alone. The original
 structural event-work budget cannot be converted into a payment for (11).
 
+The separate [finite-input construction](ORGANIZED_ELECTRICAL_ACTUATION.md#finite-actuation-result)
+now supplies those source, identity and resource obligations for one
+approximate intervention, retaining a nonzero endpoint form error. It does
+not admit the original complete observation word or a physical actuator.
+
 There is also a conditional clock restriction. If a future model extends
 one constant calibrated b over the entire old preparation and contact,
 its isolated recovery/contact duration ratio remains `8e10/1e-3=8e13`.
@@ -323,8 +328,8 @@ executing an acquired-source or physical response.
 The operational gate closes with an unfitted conditional relation (2)-(4)
 and a specific obstruction (10)-(11) to directly implementing the existing
 instantaneous preparation word. No physical evaluation is admitted. The
-next task belongs solely to the [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate):
-the physical bridge must resolve finite actuation and its actual state/work
-consequences before a source-inclusive circuit comparison can become an
-experimental protocol. The supplied gamma and Josephson constant remain
+remaining task belongs solely to the [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate):
+one admitted pulse must become a justified finite observation protocol before
+the source-inclusive circuit comparison can support an experimental protocol.
+The supplied gamma and Josephson constant remain
 independent constitutive premises throughout.

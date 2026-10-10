@@ -653,6 +653,14 @@ events in the prepared history cannot be executed with finite work in the
 unchanged electrical reference. Finite-duration actuation needs its own
 state, observation and work admission before any experimental claim.
 
+The [finite-actuation construction](nodal/ORGANIZED_ELECTRICAL_ACTUATION.md#finite-actuation-result)
+admits one externally prescribed neutral form pulse on the actual five-child
+source, retaining its fine state and cycle identities with explicit endpoint
+errors and substantial continuous work costs. The signal uses no hidden-state
+feedback. It is not a newly emerged force: deriving its autonomous occurrence
+would require a retained source and its coupled dynamics. The complete
+finite-input observation protocol and physical calibration remain open.
+
 The [continued-contact classification](nodal/ORGANIZED_CONTACT_MAINTENANCE.md)
 now distinguishes stable constituent retention from preservation of the
 additional outer identity. The actual outer-zero control, including all
