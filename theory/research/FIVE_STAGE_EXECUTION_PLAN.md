@@ -450,7 +450,7 @@ An added observable earns inclusion by deciding the selected prediction or a
 meaningful minimality obstruction. Existing failed physical-source admissions
 remain failed; more samples cannot repair their complete-law mismatches.
 
-Only finite-duration phase-actuation admission is active. The table is a reassessment
+Only finite-input observation admission is active. The table is a reassessment
 of dependencies, not a fixed sequence or parallel campaign list. It preserves
 the objective of generated, physically testable organization without identifying
 winding, phase cancellation or storage with material constituents.
@@ -574,6 +574,11 @@ added elapsed time, cannot inherit the old reading inverse.
 from collective form readings while carrying state, time and work?** This
 tests an operational consequence of the collective electrical description.
 It does not ask for a more precise repetition of the old instantaneous word.
+
+The [prospective protocol](../nodal/ORGANIZED_FINITE_OBSERVATION.md) fixes
+fifteen finite ramps, fifteen unforced reading windows and a new correction
+for form diffusion. It carries one full history and supplies no measured
+phase or adaptive input; its single source/noise decision follows freeze.
 
 1. **Declare one complete protocol before its response.** Start from the same
    acquired five-child families and retain the whole carried source. Specify

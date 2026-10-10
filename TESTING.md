@@ -545,6 +545,18 @@ Use `tests/physics/test_organized_electrical_actuation_evidence.py` to check
 the frozen receipts and reconstruct its state, cost and decision bounds from
 archived primitives without importing or rerunning the assessor.
 
+For [observation with finite inputs](theory/nodal/ORGANIZED_FINITE_OBSERVATION.md),
+select `tests/physics/test_organized_finite_observation.py` with the existing
+outer/sequential observation and electrical actuation controls. Check the
+150-scalar ordering, right-continuous finite word, diffusion-corrected
+increments, correlated reading errors, incompatible cycles and unavailable
+uniform certificates. Synthetic quadrature records are algebra controls, not
+generated actual-source trajectories. Retain the initial-state prior when
+reusing the circular kernel and rebuild new full-history errors. Test source
+inclusion through mocked primitives; the single committed driver alone owns
+the reserved source/noise assessment. Never substitute the earlier phase-jump
+inverse, its budgets or its acquired-source response.
+
 For [finite interface factorization](theory/nodal/ORGANIZED_INTERFACE_FACTORIZATION.md),
 select `tests/physics/test_organized_slot_registration.py` and
 `tests/physics/test_organized_interface_factorization.py` with the joint-resource,
